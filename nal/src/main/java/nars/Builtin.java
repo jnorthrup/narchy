@@ -2,7 +2,6 @@ package nars;
 
 import jcog.Texts;
 import jcog.User;
-import jcog.data.list.FasterList;
 import nars.op.*;
 import nars.op.data.flat;
 import nars.op.data.reflect;
@@ -33,8 +32,7 @@ import java.util.TreeSet;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
-import static nars.term.atom.Bool.Null;
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.Bool.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -98,6 +96,12 @@ public class Builtin {
 //                    return inh;
 //                }
 //            },
+            new Functor.AbstractInlineFunctor2("eventOf") {
+                @Override
+                protected Term apply(Term conj, Term event) {
+                    return Conj.containsEvent(conj, event) ? True : False;
+                }
+            },
 
             /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
             new Functor.AbstractInlineFunctor2("conjWithout") {
@@ -242,7 +246,7 @@ public class Builtin {
                 else {
                     if (condition == True)
                         return ifTrue;
-                    else if (condition == Bool.False)
+                    else if (condition == False)
                         return ifFalse;
                     else
                         return Null;
@@ -254,7 +258,7 @@ public class Builtin {
                 else {
                     if (condition.equals(True))
                         return conseqTrue;
-                    else if (condition.equals(Bool.False))
+                    else if (condition.equals(False))
                         return conseqFalse;
                 }
                 return Null;
@@ -450,37 +454,39 @@ public class Builtin {
         });
 
 
+    nar.on(new Functor.AbstractInlineFunctor1("chooseAnySubEvent") {
+
+        @Override
+        protected Term apply1(Term conj) {
+            return Conj.chooseEvent(conj, nar.random(),
+                    true, true,
+                    (when, what)->true);
+        }
+    });
+
        nar.on(new Functor.AbstractInlineFunctor2("chooseUnifiableSubEvent") {
            @Override
            protected Term apply(Term conj, Term event) {
-
+               if (event instanceof nars.term.Variable)
+                   return Null; //impossible
                //choose a likely unifiable candiate sub-event.  do not choose an equal match
                if (conj.op()==NEG)
                    conj = conj.unneg();
-
-               if (event instanceof Variable )
-                   return Null; //impossible
-
                boolean requireVars = !event.hasVars();
                if (requireVars && !conj.hasVars())
                    return Null;
 
+               boolean econj = event.op()==CONJ;
+               int edt = event.dt();
+
                if (event instanceof Compound && (conj.structure() & event.op().bit) == 0)
                    return Null;
 
-               boolean econj = event.op()==CONJ;
-               int edt = event.dt();
-               FasterList<Term> candidates = new FasterList(0);
-               conj.eventsWhile((when,what)->{
-                   if ((!requireVars || what.hasVars())
-                           && Terms.possiblyUnifiable(event, what, true, Op.Variable)) {
-                       candidates.add(what);
-                   }
-                   return true;
-               }, 0, (!econj || edt!=DTERNAL), (!econj || edt!=0), true);
-               if (candidates.isEmpty())
-                   return Null;
-               return candidates.get(nar.random());
+               return Conj.chooseEvent(conj, nar.random(),(!econj || edt!=DTERNAL), (!econj || edt!=0),
+                       (when, what)->{
+                   return (!requireVars || what.hasVars())
+                           && Terms.possiblyUnifiable(event, what, true, Op.Variable);
+              });
            }
        });
 
@@ -527,7 +533,7 @@ public class Builtin {
                         if (i >= 0 && i < len)
                             return x.sub(i);
                         else
-                            return Bool.False;
+                            return False;
 
                     } else if (o == PROD && index.subs() == 2) {
                         Term start = (index).sub(0);
@@ -546,7 +552,7 @@ public class Builtin {
                                     }
                                 }
 
-                                return Bool.False;
+                                return False;
                             }
                         }
 

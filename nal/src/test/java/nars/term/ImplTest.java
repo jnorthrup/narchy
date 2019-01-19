@@ -312,5 +312,11 @@ public class ImplTest {
 
          */
 
+        @Test void testDoubleImplicationTemporal() {
+            assertEq("((x&&y)==>z)", "(x==>(y==>z))"); //eternal
+            assertEq("((x&&y) ==>+1 z)", "(x==>(y ==>+1 z))"); //eternal
+            assertEq("((x &&+1 y)==>z)", "(x ==>+1 (y==>z))"); //temporal
+            assertEq("((x &&+1 y) ==>+1 z)", "(x ==>+1 (y ==>+1 z))"); //temporal
+        }
 
 }

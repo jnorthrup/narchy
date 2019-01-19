@@ -52,7 +52,7 @@ public interface Variable extends Atomic {
     @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion"})
     default boolean unifyForward(Term _y, Unify u) {
 
-        if (equals(_y))
+        if (_y instanceof Variable && equals(_y))
             return true;
 
         Op xOp = op();

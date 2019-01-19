@@ -24,41 +24,44 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
     }
 
 
-    public static Atomic label(int subterm) {
+    private static Atomic label(int subterm) {
         return (subterm == 0 ? Derivation.TaskTerm : Derivation.BeliefTerm);
+    }
+    public static Atomic label(boolean taskOrBelief) {
+        return (taskOrBelief ? Derivation.TaskTerm : Derivation.BeliefTerm);
     }
 
     protected static final Atomic UNIFY = $.the("unify");
 
-    /**
-     * this will be called prior to UnifySubtermThenConclude.
-     * so as part of an And condition, it is legitimate for this
-     * to return false and interrupt the procedure when unification fails
-     * in the first stage.
-     */
-    public static final class NextUnify extends UnifyTerm {
-
-        /**
-         * which premise component, 0 (task) or 1 (belief)
-         */
-        private final int subterm;
-
-
-        public NextUnify(int subterm, Term pattern) {
-            super($.funcFast(UNIFY, UnifyTerm.label(subterm), pattern), pattern);
-            this.subterm = subterm;
-        }
-
-        @Override
-        public final boolean test(Derivation d) {
-            boolean unified = d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, false);
-//            if (!unified) {
-//                System.err.println(pattern + " "+ d);
-//            }
-            return unified && d.use(Param.TTL_UNIFY);
-        }
-
-    }
+//    /**
+//     * this will be called prior to UnifySubtermThenConclude.
+//     * so as part of an And condition, it is legitimate for this
+//     * to return false and interrupt the procedure when unification fails
+//     * in the first stage.
+//     */
+//    public static final class NextUnify extends UnifyTerm {
+//
+//        /**
+//         * which premise component, 0 (task) or 1 (belief)
+//         */
+//        private final int subterm;
+//
+//
+//        public NextUnify(int subterm, Term pattern) {
+//            super($.funcFast(UNIFY, UnifyTerm.label(subterm), pattern), pattern);
+//            this.subterm = subterm;
+//        }
+//
+//        @Override
+//        public final boolean test(Derivation d) {
+//            boolean unified = d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, false);
+////            if (!unified) {
+////                System.err.println(pattern + " "+ d);
+////            }
+//            return unified && d.use(Param.TTL_UNIFY);
+//        }
+//
+//    }
 
     /**
      * returns false if the deriver is noticed to have depleted TTL,
@@ -67,28 +70,30 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
     public static final class NextUnifyTransform extends UnifyTerm {
 
         /**
-         * which premise component, 0 (task) or 1 (belief)
+         * which premise component to match
          */
-        public final int subterm;
+        public final boolean taskOrBelief;
         public final PREDICATE<Derivation> eachMatch;
 
 
-        public NextUnifyTransform(int subterm, /*@NotNull*/ Term pattern, /*@NotNull*/ PREDICATE<Derivation> eachMatch) {
-            super($.funcFast(UNIFY, label(subterm), pattern, eachMatch), pattern);
-            this.subterm = subterm;
+        public NextUnifyTransform(boolean taskOrBelief, /*@NotNull*/ Term pattern, /*@NotNull*/ PREDICATE<Derivation> eachMatch) {
+            super($.funcFast(UNIFY, label(taskOrBelief), pattern, eachMatch), pattern);
+            this.taskOrBelief = taskOrBelief;
             this.eachMatch = eachMatch;
         }
 
         @Override
         public final boolean test(Derivation d) {
+
+            PREDICATE<Derivation> lastMatch = d.forEachMatch; //HACK stack push
             d.forEachMatch = eachMatch;
 
-            boolean unified = d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, true);
+            boolean unified = d.unify(pattern, taskOrBelief ? d.taskTerm : d.beliefTerm, true);
 //            if (!unified) {
 //                System.err.println(d);
 //            }
 
-            d.forEachMatch = null;
+            d.forEachMatch = lastMatch;
 
             return d.use(Param.TTL_UNIFY);
         }

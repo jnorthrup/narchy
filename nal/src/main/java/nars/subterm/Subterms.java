@@ -642,13 +642,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
             boolean cx = u.vars(x), cy = u.vars(y);
             boolean forward;
             if (cx == cy) {
-//                if (!cx) {
-//                    boolean dx = u.constant(a), dy = u.constant(b);
-//                    if (dx && dy)
-//                        forward = a.volume() <= b.volume();
-//                    else
-//                        forward = dx;
-//                } else
+                if (!cx) {
+                    boolean dx = u.constant(a), dy = u.constant(b);
+                    if (dx && dy)
+                        forward = a.volume() <= b.volume();
+                    else
+                        forward = dx;
+                } else
                     forward = x.volume() <= y.volume();
             } else {
                 forward = cx;

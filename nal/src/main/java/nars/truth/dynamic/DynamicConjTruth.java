@@ -35,13 +35,17 @@ public class DynamicConjTruth {
                 range = ETERNAL;
             }
 
+            boolean factored = Conj.isFactoredSeq(superterm);
+
 
             int n = components.size();
             ConjLazy l = new ConjLazy(n);
             for (TaskRegion t : components) {
                 long s = t.start();
                 long when;
-                if ((s == ETERNAL) || ((range == ETERNAL) || (range>0 && s <= start && t.end() >= end)))
+                if ((s == ETERNAL) || (range == ETERNAL))
+                    when = ETERNAL;
+                else if (factored && (range>0 && s <= start && t.end() >= end))
                     when = ETERNAL; //the component spans the entire range, so consider it an eternal factor
                 else
                     when = s;

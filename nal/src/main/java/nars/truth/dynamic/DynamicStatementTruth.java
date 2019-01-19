@@ -143,7 +143,8 @@ public class DynamicStatementTruth {
 
                 Term xxu = xx.unneg();
                 int tdt = xxu.dt();
-                long tWhen = tdt == DTERNAL ? ETERNAL : -tdt;
+                long tWhen = tdt == DTERNAL ? ETERNAL :
+                        (subjOrPred ? (-tdt) : (+tdt));
 
                 boolean forceNegate = false;
                 if (xx.op() == NEG) {
@@ -184,7 +185,7 @@ public class DynamicStatementTruth {
             if (cs == DTERNAL || cs == ETERNAL) {
                 outerDT = DTERNAL; //some temporal information destroyed
             } else {
-                outerDT = -Tense.occToDT(cs + sect.eventRange());
+                outerDT = Tense.occToDT(subjOrPred ? -cs - sect.eventRange() : cs);
             }
 
         } else {

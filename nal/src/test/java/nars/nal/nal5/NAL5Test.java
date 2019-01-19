@@ -208,7 +208,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void anonymous_analogy1_depvar() {
-        test.nar.termVolumeMax.set(8);
+        test.nar.termVolumeMax.set(5);
         test
                 .believe("(a:#1 && y)")
                 .believe("a:x", 0.80f, 0.9f)
@@ -725,18 +725,18 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_induction0SimpleDepVar() {
-        TestNAR tester = test;
-        tester.nar.termVolumeMax.set(6);
-        tester.believe("((&&,x1,#1) ==> c)");
-        tester.believe("((&&,y1,#1) ==> c)");
-        tester.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
-        tester.mustBelieve(cycles, "(y1 ==> x1)", 1.00f, 0.45f);
+        test
+        .termVolMax(6)
+        .believe("((&&,x1,#1) ==> c)")
+        .believe("((&&,y1,#1) ==> c)")
+        .mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f)
+        .mustBelieve(cycles, "(y1 ==> x1)", 1.00f, 0.45f);
     }
 
     @Test
     void conditional_induction0SimpleDepVar2() {
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(8);
+        tester.termVolMax(7);
         tester.believe("((x1 && #1) ==> (a && #1))");
         tester.believe("((y1 && #1) ==> (a && #1))");
         tester.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
@@ -1029,5 +1029,11 @@ public class NAL5Test extends NALTest {
                 .mustQuestion(cycles, "(z ==>+- y)")
         ;
     }
+    @Test public void implConjNeutralize() {
+        test
+                .believe("((x && y) ==> z)")
+                .believe("((x && --y) ==> --z)")
+                .mustBelieve(cycles, "((y ==> z) && (--y ==> --z))", 1f, 0.45f)
+        ;
+    }
 }
-

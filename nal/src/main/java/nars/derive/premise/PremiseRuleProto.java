@@ -74,13 +74,12 @@ public class PremiseRuleProto extends PremiseRuleSource {
 //        } else {
 
         //smaller one first
-        if (taskPattern.volume() <= beliefPattern.volume() &&
-                !(hasEllipsis(beliefPattern) && !hasEllipsis(taskPattern))) {
-            post.add(new UnifyTerm.NextUnify(0, taskPattern));
-            post.add(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc));
+        if ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.vars() <= beliefPattern.vars()) {
+            post.add(new UnifyTerm.NextUnifyTransform(true, taskPattern,
+                    new UnifyTerm.NextUnifyTransform(false, beliefPattern, conc)));
         } else {
-            post.add(new UnifyTerm.NextUnify(1, beliefPattern));
-            post.add(new UnifyTerm.NextUnifyTransform(0, taskPattern, conc));
+            post.add(new UnifyTerm.NextUnifyTransform(false, beliefPattern,
+                    new UnifyTerm.NextUnifyTransform(true, taskPattern, conc)));
         }
 
 //        }

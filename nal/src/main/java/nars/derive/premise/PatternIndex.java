@@ -343,7 +343,7 @@ public class PatternIndex extends MapConceptIndex {
 //                @Nullable Versioned<MatchConstraint> uc = u.constraints(ellipsis);
 
                 //xFixed is effectively sorte unless eMatch!=nulld
-                List<Term> xFixed = null;
+                List<Term> xFixed = new FasterList(0);
 
                 SortedSet<Term> yFree =
                         //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
@@ -351,49 +351,34 @@ public class PatternIndex extends MapConceptIndex {
                         y.toSetSorted(u::tryResolve);
 
                 Subterms xx = subterms();
-                int s = xx.subs(), x0s = s;
+                int s = xx.subs();
 
                 Ellipsis ellipsis = this.ellipsis;
-                EllipsisMatch eMatch = null; //iterated if found
                 for (int k = 0; k < s; k++) {
 
 
-                    Term xk = k < x0s ? xx.sub(k) : eMatch.sub(k - x0s);
+                    Term xk = xx.sub(k);
                     Term x = u.tryResolve(xk);
 
-                    if (xk == ellipsis) {
-                        if (xk!=x) {
+                    if (xk.equals(ellipsis)) {
+                        if (!x.equals(xk)) {
+                            ellipsis = null;
                             if (x instanceof EllipsisMatch) {
-                                eMatch = ((EllipsisMatch)x);
-                                s += eMatch.subs();
-                                ellipsis = null;
+                                for (Term ex : x.subterms()) {
+                                    if (!include(ex, xFixed, yFree, u))
+                                        return false;
+                                }
                             }
                         }
-
-                    } else {
-
-                        boolean xConst = u.constant(x);
-                        if (xConst) {
-
-                            if (!yFree.remove(x))
-                                return false;
-                            //else: eliminated
-
-                        } else {
-
-                            if (xFixed == null)
-                                xFixed = new FasterList<>(s - k);
-
-                            xFixed.add(x);
-
-                        }
+                        continue;
                     }
 
-
+                    if (!include(x, xFixed, yFree, u))
+                        return false;
                 }
 
 
-                final int xs = xFixed != null ? xFixed.size() : 0;
+                final int xs = xFixed.size();
 
                 int ys = yFree.size();
 
@@ -470,6 +455,10 @@ public class PatternIndex extends MapConceptIndex {
                 }
 
 
+            }
+
+            private static boolean include(Term x, List<Term> xFixed, SortedSet<Term> yFree, Unify u) {
+                return u.constant(x) ? yFree.remove(x) : xFixed.add(x);
             }
 
         }

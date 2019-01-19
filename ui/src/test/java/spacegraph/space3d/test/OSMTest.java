@@ -1,6 +1,7 @@
 package spacegraph.space3d.test;
 
 import jcog.User;
+import org.objectweb.asm.ByteVector;
 import org.xml.sax.SAXException;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
@@ -15,6 +16,7 @@ public class OSMTest {
 
     static class OSMGraphTest {
         public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+
             IRL i = new IRL(User.the());
 
             Osm o = new Osm().load("/home/me/test.osm.bz2");

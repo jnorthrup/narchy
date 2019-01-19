@@ -186,12 +186,20 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
                     case 2:
                         x = dtdt("(a ==>" + dtStr(XA) + " x)");
                         y = dtdt("(a ==>" + dtStr(YA) + " y)");
-                        xy = dtdt("(a ==>" + dtStr(YA) + " (x &&" + dtStr(XY) + " y))");
+                        xy = dtdt("(a ==>" + dtStr(YA) +
+                                (XA <= YA ?
+                                    " (x &&" + dtStr(XY) + " y))":
+                                    " (y &&" + dtStr(XY) + " x))"));
                         break;
                     case -2:
                         x = dtdt("(a ==>" + dtStr(XA) + " x)");
                         y = dtdt("(a ==>" + dtStr(YA) + " y)");
-                        xy = dtdt("(a ==>" + dtStr(YA) + " ((--,x) &&" + dtStr(XY) + " (--,y)))");
+                        xy = dtdt("(a ==>" + dtStr(YA) +
+                                //" ((--,x) &&" + dtStr(XY) + " (--,y)))"
+                                (XA <= YA ?
+                                        " ((--,x) &&" + dtStr(XY) + " (--,y)))":
+                                        " ((--,y) &&" + dtStr(XY) + " (--,x)))")
+                        );
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -326,5 +334,10 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         assertEquals(0.81f, t.truth().conf(), 0.01f);
     }
 
+    @Test void testReconstructImplConjTemporal() {
+        //((((left-right)-->fz) &&+6555 (left-->fz))==>(right-->fz)). -280⋈41620 %.14;.24%
+        //((--,(left-->fz)) ==>+300 (right-->fz)). 7460⋈44240 %.40;.43%
+        //DONT produce: ((((left-right)-->fz) &&+6555 (left-->fz))&&(--,(left-->fz)))
+    }
 
 }

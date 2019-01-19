@@ -60,7 +60,7 @@ public class DynTaskify extends DynEvi {
 
     }
 
-    @Nullable public static DynTaskify eval(Term template, AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
+    @Nullable private static DynTaskify eval(Term template, AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
         assert (template.op() != NEG);
 
         DynTaskify d = new DynTaskify(template, model, beliefOrGoal, a.filter, a.nar);

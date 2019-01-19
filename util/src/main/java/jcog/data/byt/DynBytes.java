@@ -19,6 +19,7 @@ import static jcog.data.byt.util.IntCoding.decodeZigZagLong;
 
 /**
  * dynamic byte array with mostly append-oriented functionality
+ * @see org.objectweb.asm.ByteVector
  */
 public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes, AutoCloseable {
 
@@ -309,61 +310,62 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     public final void writeShort(int v) {
         int s = ensureSized(2);
         byte[] e = this.bytes;
-        e[s] = (byte) (v >> 8);
-        e[s + 1] = (byte) v;
-        this.len += 2;
+        e[s++] = (byte) (v >> 8);
+        e[s++] = (byte) v;
+        this.len = s;
     }
 
     @Override
     public final void writeChar(int v) {
 
-        int s = ensureSized(2);
-        byte[] e = this.bytes;
-        e[s] = (byte) (v >> 8);
-        e[s + 1] = (byte) v;
-        this.len += 2;
+        writeShort(v);
+//        int s = ensureSized(2);
+//        byte[] e = this.bytes;
+//        e[s] = (byte) (v >> 8);
+//        e[s + 1] = (byte) v;
+//        this.len += 2;
 
     }
 
     @Override
     public final void writeInt(int v) {
-
         int s = ensureSized(4);
         byte[] e = this.bytes;
-        e[s] = (byte) (v >> 24);
-        e[s + 1] = (byte) (v >> 16);
-        e[s + 2] = (byte) (v >> 8);
-        e[s + 3] = (byte) v;
-        this.len += 4;
+        e[s++] = (byte) (v >> 24);
+        e[s++] = (byte) (v >> 16);
+        e[s++] = (byte) (v >> 8);
+        e[s++] = (byte) v;
+        this.len = s;
     }
 
     @Override
     public final void writeLong(long v) {
 
         int s = ensureSized(8);
-        this.len += 8;
         byte[] e = this.bytes;
-        e[s] = (byte) ((int) (v >> 56));
-        e[s + 1] = (byte) ((int) (v >> 48));
-        e[s + 2] = (byte) ((int) (v >> 40));
-        e[s + 3] = (byte) ((int) (v >> 32));
-        e[s + 4] = (byte) ((int) (v >> 24));
-        e[s + 5] = (byte) ((int) (v >> 16));
-        e[s + 6] = (byte) ((int) (v >> 8));
-        e[s + 7] = (byte) ((int) v);
+        e[s++] = (byte) ((int) (v >> 56));
+        e[s++] = (byte) ((int) (v >> 48));
+        e[s++] = (byte) ((int) (v >> 40));
+        e[s++] = (byte) ((int) (v >> 32));
+        e[s++] = (byte) ((int) (v >> 24));
+        e[s++] = (byte) ((int) (v >> 16));
+        e[s++] = (byte) ((int) (v >> 8));
+        e[s++] = (byte) ((int) v);
+        this.len = s;
     }
 
     @Override
     public final void writeFloat(float v) {
 
-        int s = ensureSized(4);
-        byte[] e = this.bytes;
-        this.len += 4;
+//        int s = ensureSized(4);
+//        byte[] e = this.bytes;
         int bits = Float.floatToIntBits(v);
-        e[s] = (byte) (bits >> 24);
-        e[s + 1] = (byte) (bits >> 16);
-        e[s + 2] = (byte) (bits >> 8);
-        e[s + 3] = (byte) bits;
+        writeInt(bits);
+//        e[s++] = (byte) (bits >> 24);
+//        e[s++] = (byte) (bits >> 16);
+//        e[s++] = (byte) (bits >> 8);
+//        e[s++] = (byte) bits;
+//        this.len = s;
     }
 
     @Override
@@ -397,29 +399,31 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     }
 
     @Override
-    public Appendable append(CharSequence csq) {
+    public final Appendable append(CharSequence csq) {
         return append(csq, 0, csq.length());
     }
 
     @Override
-    public Appendable append(CharSequence csq, int start, int end) {
-        for (int i = start; i < end; i++) {
-            writeChar(csq.charAt(i));
-        }
+    public final Appendable append(CharSequence csq, int start, int end) {
+        for (int i = start; i < end;)
+            writeChar(csq.charAt(i++));
         return this;
     }
 
     @Override
-    public Appendable append(char c) {
+    public final Appendable append(char c) {
         writeChar(c);
         return this;
     }
 
-    public void appendTo(DataOutput out) throws IOException {
+    public final void appendTo(DataOutput out) throws IOException {
         out.write(bytes, 0, len);
     }
 
-    public void writeUnsignedByte(int i) {
+    public final void appendTo(OutputStream o) throws IOException {
+        o.write(bytes, 0, len);
+    }
+    public final void writeUnsignedByte(int i) {
         writeByte(i & 0xff);
     }
 
@@ -432,9 +436,6 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     }
 
 
-    public void appendTo(OutputStream o) throws IOException {
-        o.write(bytes, 0, len);
-    }
 
     public void writeUnsignedLong(long x) {
         int pos = ensureSized(8 + 2 /* max */);

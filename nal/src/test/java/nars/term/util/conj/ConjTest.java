@@ -39,15 +39,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ConjTest {
 
-    @Test void testSeq(){
-        Term t = $$("((--,((--,(((--,_1)&|(--,_2)) &&+180 ((--,_1)&|(--,_2)))) &&+65225 _2))&&((--,_2) &&+65983 _2))");
-        assertEq(False, t);
-//        assertTrue(Conj.isSeq(
-//            //neg x seq
-//                t
-//        ));
-    }
-
     @Test
     void conjWTFF() {
         Conj x = new Conj();
@@ -55,18 +46,14 @@ public class ConjTest {
         x.add(0, $$("a:y"));
         assertEq("((x-->a)&|(y-->a))", x.term());
     }
+
     @Test
     void conjWTFF2() {
         assertEq(False,
                 $$("(&&, ((--,#1) &&+232 (--, (tetris --> curi))),(--, right),right)")
         );
     }
-    @Test
-    void conjDisjWTF() {
-        assertEq(False,
-                $$("( (||,(||+- ,((--,_3(_1,_2)) &&+- $1),_3(_4,_5)),_3(_1,_2)) &&  (--,_3(_4,_5)))")
-        );
-    }
+
 
 
     @Test
@@ -368,14 +355,6 @@ public class ConjTest {
                 y,
                 "( (a&&b) && (a&|b) )");
 
-    }
-
-    @Test
-    void testPromoteEternalToParallel() {
-        assertEq(
-                //"((b&&c)&|a)",
-                "(&|,a,b,c)",
-                "(a&|(b && c))");
     }
 
     @Test
@@ -819,12 +798,13 @@ public class ConjTest {
 
     }
 
-    @Test void testConjLazyRemoveIf() {
+    @Test
+    void testConjLazyRemoveIf() {
         ConjLazy c = ConjLazy.events($$("((&|,c,f) &&+1 g)"));
         assertEquals(3, c.size());
 
         assertFalse(
-            c.removeIf((when, what) -> when == 1 && what.toString().equals("c"))
+                c.removeIf((when, what) -> when == 1 && what.toString().equals("c"))
         );
         assertEquals(3, c.size());
 
@@ -842,8 +822,8 @@ public class ConjTest {
     @Test
     void testConjWithoutAllParallel3() {
         assertEq("(f &&+1 g)", Conj.diff(
-            $$("((&|,c,f) &&+1 g)"),
-            $$("(&|,c,d,e)")));
+                $$("((&|,c,f) &&+1 g)"),
+                $$("(&|,c,d,e)")));
     }
 
     @Test
@@ -1651,34 +1631,33 @@ public class ConjTest {
 
     }
 
-    @Test void testPromoteEternalDisjunctionToParallel()  {
+    @Test
+    void testEternalDisjunctionToParallel() {
 
         assertEq("(||,x,y,z)", "(||,(||,x,y),z)");
         assertEq("(||,x,y,z)", "(||,--(--x && --y), z)");
         assertEq("(--,(&|,(--,x),(--,y),(--,z)))", "(--,(((--,x)&|(--,y))&|(--,z)))");
-        assertEq("(--,(&|,(--,x),(--,y),(--,z)))", "(||,--(--x &| --y), z)"); //promoted
+        //assertEq("(--,(&|,(--,x),(--,y),(--,z)))", "(||,--(--x &| --y), z)"); //promoted
+        assertEq("(||,(--,((--,x)&|(--,y))),z)", "(||,--(--x &| --y), z)"); //promoted
 
     }
 
-    @Test void testDisjunctionStackOverflow()  {
+    @Test
+    void testDisjunctionStackOverflow() {
         assertEq("(||,x,y,z)", "((x || y) || z)");
         assertEq("((||,y,z)&&(--,x))", "((||,(x || y),z) && --x)");
 
+        assertEq("((||,y,z)&&(--,x))", "((||,x,y,z) && --x)");
+        assertEq("x", "((||,x,y,z) && x)");
+
         assertEq("((--,((--,y)&|(--,z)))&&(--,x))", "(--(&|, --x, --y, --z) && --x)");
+        assertEq("x", "(--(&|, --x, --y, --z) && x)");
 
-
-
-        //must promote the outer || to ||+0
-        assertEq("((--,((--,y)&|(--,z)))&&(--,x))", "((||,(--,(--x &| --y)),z) && --x)");
-
-        //TODO
-        // && [(||,noid(3,14),(--,((--,L)&|(--,R)))), (--,L)]
-        // && [(||,noid(3,14),(--,((--,R)&|L))), L]
     }
 
     @Test
     void testDisjunctEqual() {
-        @NotNull Term pp = p(x);
+        Term pp = p(x);
         assertEquals(pp, disj(pp, pp));
     }
 
@@ -2127,43 +2106,49 @@ public class ConjTest {
         );
     }
 
-    @Test void testFactorizeEternalConj1() {
+    @Test
+    void testFactorizeEternalConj1() {
         Conj c = new Conj();
         c.add(1, $$("(a&&x)"));
         c.add(2, $$("(b&&x)"));
-        assertTrue(c.eventCount(ETERNAL)==0);
-        assertTrue(c.eventOccurrences()==2);
+        assertTrue(c.eventCount(ETERNAL) == 0);
+        assertTrue(c.eventOccurrences() == 2);
         c.factor();
-        assertTrue(c.eventCount(ETERNAL)==1);
-        assertTrue(c.eventOccurrences()==3);
+        assertTrue(c.eventCount(ETERNAL) == 1);
+        assertTrue(c.eventOccurrences() == 3);
         assertEq("((a &&+1 b)&&x)", c.term());
         assertEquals(1, c.shift());
     }
 
-    @Test void testFactorizeEternalConj2() {
+    @Test
+    void testFactorizeEternalConj2() {
         Conj c = new Conj();
         c.add(1, $$("(a&&(x&&y))"));
         c.add(2, $$("(b&&(x&&y))"));
-        assertTrue(c.eventCount(ETERNAL)==0);
-        assertTrue(c.eventOccurrences()==2);
+        assertTrue(c.eventCount(ETERNAL) == 0);
+        assertTrue(c.eventOccurrences() == 2);
         c.factor();
-        assertTrue(c.eventCount(ETERNAL)==2);
-        assertTrue(c.eventOccurrences()==3);
+        assertTrue(c.eventCount(ETERNAL) == 2);
+        assertTrue(c.eventOccurrences() == 3);
+        assertEq("(x&&y)", c.term(ETERNAL));
+        assertEq("a", c.term(1));
+        assertEq("b", c.term(2));
         assertEq("(&&,(a &&+1 b),x,y)", c.term());
-        assertEquals(1, c.shift());
     }
-    @Test void testFactorizeParallelConjETE() {
+
+    @Test
+    void testFactorizeParallelConjETE() {
         Term x = $$("(a&|b)");
         Term y = $$("(b&|c)");
         Conj c = new Conj();
         c.add(ETERNAL, x);
-        assertEquals(1,c.eventCount(ETERNAL));
+        assertEquals(1, c.eventCount(ETERNAL));
         c.add(ETERNAL, y);
-        assertEquals(2,c.eventCount(ETERNAL));
+        assertEquals(2, c.eventCount(ETERNAL));
         assertEquals(1, c.eventOccurrences());
         c.factor();
-        assertTrue(c.eventCount(ETERNAL)==2); //unchanged
-        assertTrue(c.eventOccurrences()==1);
+        assertTrue(c.eventCount(ETERNAL) == 2); //unchanged
+        assertTrue(c.eventOccurrences() == 1);
         assertEq("((a&|b)&&(b&|c))", c.term());
     }
 
@@ -2230,7 +2215,7 @@ public class ConjTest {
         Term a = $$(a0);
         assertEq(a0, a);
         Term b = $$("(--,(_2(_1)&|(_3-->_1)))");
-        assertEq(False, CONJ.the(0, a, b));
+        assertEq("((_3-->_1) &&+710 _2(_1))", CONJ.the(0, a, b));
 
     }
 
@@ -2259,6 +2244,11 @@ public class ConjTest {
 
     @Test
     void testSequentialDisjunctionAbsorb() {
+        {
+            assertEq("((--,R)&&(--,jump))", "(--R && (R || --jump))");
+            assertEq("((--,R) &&+600 (--,jump))", "(--R && --(--R &&+600 jump))");
+        }
+
         Term t = CONJ.the(0,
                 $$("(--,((--,R) &&+600 jump))"),
                 $$("(--,L)"),
@@ -2299,6 +2289,7 @@ public class ConjTest {
         );
 
     }
+
     @Test
     void testDisjunctionParallelReduction2() {
 
@@ -2321,19 +2312,23 @@ public class ConjTest {
 
         assertEq("((a&|b)&&c)", "((&|,a,b)&&c)"); //NOT collapse
 
-        assertEq("(&|,a,b,c)", "((&&,a,b)&|c)"); //collapse
+        assertEq("((a&&b)&|c)", "((&&,a,b)&|c)"); //NOT collapse
     }
+
     @Test
     void testCollapseEteParallel2() {
-        assertEq("(&|,a,b,c,d)", "(&|,(&&,a,b),c,d)");
-
+        assertEq("(&|,(a&&b),c,d)", "(&|,(&&,a,b),c,d)"); //NOT collapse
         assertEq("(&&,(a&|b),c,d)", "(&&,(&|,a,b),c,d)"); //NOT collapse
     }
 
     @Test
     void testCollapseEteParallel3() {
 
+        {
+            assertEq("((--,(c&|d))&&(a&|b))", ConjCommutive.the(DTERNAL, $$("(--,(c&|d))"), $$("(a&|b)")));
+        }
         assertEq("((--,(c&|d))&&(a&|b))", "((&|,a,b) && --(&|,c,d))"); //NOT collapse
+
         assertEq("(&|,(--,(c&|d)),a,b)", "((&&,a,b) &| --(&|,c,d))");
 
 
@@ -2344,7 +2339,6 @@ public class ConjTest {
 
         assertEq("(a &&+1 (b&|c))", "(a &&+1 (b&&c))");
         assertEq("(a &&+1 (&|,b,c,d))", "(a &&+1 (b&|(c&&d)))");
-
 
 
     }
@@ -2365,21 +2359,25 @@ public class ConjTest {
         }
     }
 
-    @Test void testDisj1() {
+    @Test
+    void testDisj1() {
 
-        assertEq("((||,x,y)&&a)","(||,(a && x),(a && y))");
-        assertEq("((||,x,y)&&a)","--(--(a && x) && --(a && y))");
-        assertEq("(--,((||,x,y)&&a))","(--(a && x) && --(a && y))");
+        assertEq("((||,x,y)&&a)", "(||,(a && x),(a && y))");
+        assertEq("((||,x,y)&&a)", "--(--(a && x) && --(a && y))");
+        assertEq("(--,((||,x,y)&&a))", "(--(a && x) && --(a && y))");
 
-        assertEq("x","(||,(a && x),(--a && x))");
-        assertEq("x","--(--(a && x) && --(--a && x))");
+        assertEq("x", "(||,(a && x),(--a && x))");
+        assertEq("x", "--(--(a && x) && --(--a && x))");
     }
 
-    @Test void testConjOR() {
+    @Test
+    void testConjOR() {
         Term c = $$("(((_1,_2)&|(_1,_3)) &&+2 ((_1,_2)&|(_1,_3)))");
-        assertFalse( c.OR(x->x instanceof Ellipsis) );
+        assertFalse(c.OR(x -> x instanceof Ellipsis));
     }
-    @Test void testDisjuncSeq1() {
+
+    @Test
+    void testDisjuncSeq1() {
 
 
         //simple case of common event
@@ -2387,9 +2385,10 @@ public class ConjTest {
         assertEq("(a &&+1 (--,((--,b) &&+1 (--,b))))", c);
     }
 
-    @Test void testBalancing() {
+    @Test
+    void testBalancing() {
 
-        Term ct = Conj.conjSeqFinal( 590, $$( "((--,(left &&+380 (--,left)))&|(--,left))"), $$("(--,(left &&+280 (--,left)))"));
+        Term ct = Conj.conjSeqFinal(590, $$("((--,(left &&+380 (--,left)))&|(--,left))"), $$("(--,(left &&+280 (--,left)))"));
 
 
         String as = "(((#1 &&+3080 #1) &&+16040 (#1 &&+1100 (--,((--,#1) &&+3580 (--,#1))))) &&+6540 (--,#1))";
@@ -2397,14 +2396,15 @@ public class ConjTest {
         String bs = "(((#1 &&+3080 #1) &&+16040 #1) &&+1100 ((--,((--,#1) &&+3580 (--,#1))) &&+6540 (--,#1)))";
         Term b = $$(bs);
 
-        assertEq(a,b);
+        assertEq(a, b);
         a.printRecursive();
         assertEquals(bs, a.toString());
         assertEquals(bs, b.toString());
     }
 
-    @Test void testConceptOfDisjunctionFckup() {
-        assertEq("TODO", $$("((--,(&|,(--,(1-->ang)),ang,3))&&(--,(2-->ang)))").concept());
+    @Test
+    void testConceptOfDisjunctionFckup() {
+        assertEq("TODO", $$("((--,(&|,(--,(1-->ang)),ang,z))&&(--,(2-->ang)))").concept());
         //TODO ((grid,#1,13) &&+440 (--,((||,(--,(grid,#1,#1)),rotate)&&left))) .concept()
         //TODO ((&|,(tetris-->curi),(--,left),(--,rotate))&&(--,((--,rotate) &&+819 (--,left))))
     }
@@ -2434,7 +2434,8 @@ public class ConjTest {
     private final Random rng = new XoRoShiRo128PlusRandom(1);
     private final NAR n = NARS.shell();
 
-    @Deprecated public static Term conj(FasterList<LongObjectPair<Term>> events) {
+    @Deprecated
+    static Term conj(FasterList<LongObjectPair<Term>> events) {
         int eventsSize = events.size();
         switch (eventsSize) {
             case 0:
@@ -2454,5 +2455,18 @@ public class ConjTest {
         return ce.term();
     }
 
+    @Test
+    public void factorizeInProductsTest() {
+        /* https://github.com/Horazon1985/ExpressionBuilder/blob/master/test/logicalexpression/computationtests/GeneralLogicalTests.java#L109 */
+        //LogicalExpression logExpr = LogicalExpression.build("(a|b)&(a|c)&x&(a|d)");
+        //LogicalExpression expectedResult = LogicalExpression.build("(a|b&c&d)&x");
+        assertEq("((||,(&&,b,c,d),a)&&x)", "((( (a||b) && (a||c)) && x) && (a||d))");
+    }
+
+
+    @Test void testFactorizeDNF() {
+        //https://www.wolframalpha.com/input/?i=not+(a+and+b)++and+not+(a+and+c)
+        assertEq("(--,((||,b,c)&&a))" , "(--(a && b) && --(a && c))");
+    }
 }
 

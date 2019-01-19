@@ -246,10 +246,10 @@
 //        ((&&,--X,A..+) ==> Z), (Y ==> X)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionPN)
 //         (Y ==> X), ((&&,--X,A..+) ==> Z)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionN)
 
-    //Primary Inverting Sub-Condition (Equivalence emulation_
-    ((&&,X,A..+) ==> Z), (C ==> Z), eventOfNeg(C,X)    |- ((X ==> Z) && (--X ==> --Z)), (Belief:AbductionPN)
-    ((&&,X,A..+) ==> Z), (C ==> Z), eventOfNeg(C,X)    |- ((X ==> --Z) && (--X ==> Z)), (Belief:AbductionNP)
-       (Z ==> (&&,X,A..+)), (--Z ==> C), eventOfNeg(C,X) |- ((Z ==> X) && (--Z ==> --X)), (Belief:AbductionPB)
+    //Primary Inverting Sub-Condition (Equivalence emulation)
+    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z)    |- ((X ==> Z) && (--X ==> --Z)), (Belief:AbductionPN)
+    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z)    |- ((X ==> --Z) && (--X ==> Z)), (Belief:AbductionNP)
+       (Z ==> (&&,X,A..+)), (--Z ==> (&&,--X,A..+)) |- ((Z ==> X) && (--Z ==> --X)), (Belief:AbductionPB)
 
 
     ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
@@ -260,8 +260,8 @@
     (C ==> X), (E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)   |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
       //TODO check (--C ==> X), (--E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)    |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
 
-        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) &&   M) ==> Z), (Belief:AbductionPB)
-        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) && --M) ==> Z), (Belief:AbductionPBPN)
+        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) &&   M) ==> Z), (Belief:InductionPB)
+        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) && --M) ==> Z), (Belief:InductionPBPN)
 
 //        ((&&,M,X,A..*) ==> C), (Y ==> C) |- unisubst((M ==> C),X,Y), (Belief:AbductionPB)
 //        ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- unisubst((M ==> X),X,Y,"$"), (Belief:AbductionPB)

@@ -18,6 +18,7 @@ import nars.time.Tense;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ByteProcedure;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableByteIterator;
@@ -36,6 +37,7 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -49,6 +51,10 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 /**
  * representation of conjoined (eternal, parallel, or sequential) events specified in one or more conjunctions,
  * for use while constructing, merging, and/or analyzing
+ *
+ * https://en.wikipedia.org/wiki/Logical_equivalence
+ * https://en.wikipedia.org/wiki/Negation_normal_form
+ * https://en.wikipedia.org/wiki/Conjunctive_normal_form
  */
 public class Conj extends ByteAnonMap implements ConjBuilder {
 
@@ -215,6 +221,19 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             }
         }
         return Terms.sorted(u);
+    }
+
+    public static Term chooseEvent(Term conj, Random random, boolean decomposeDternal, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
+
+        FasterList<Term> candidates = new FasterList();
+        conj.eventsWhile((when,what)->{
+            if (valid.accept(when,what))
+                candidates.add(what);
+            return true;
+        }, 0, decomposeDternal, decomposeParallel, true);
+        if (candidates.isEmpty())
+            return Null;
+        return candidates.get(random);
     }
 
     //    private static boolean isEventSequence(Term container, Term subseq, boolean neg, boolean firstOrLast) {
@@ -1092,7 +1111,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //        }
 //    }
 
-    private boolean addEvent(long at, Term x) {
+    protected boolean addEvent(long at, Term x) {
 //        if (Param.DEBUG) {
 //            if (at == DTERNAL) //HACK
 //                throw new WTF("probably meant at=ETERNAL not DTERNAL");
@@ -1245,6 +1264,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     private static Term disjunctionVsNonDisjunction(Term conjUnneg, Term incoming, boolean eternal) {
 //        if (incoming.op()==CONJ)
 //            throw new WTF(incoming + " should have been decomposed further");
+
+        assert(conjUnneg.op()==CONJ);
 
         final Term[] result = new Term[1];
         conjUnneg.eventsWhile((when, what) -> {
@@ -1600,9 +1621,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             } else if (ww == True)
                 return true;
 
-            return c.add(whn, ww);
+            try {
+                return c.add(whn, ww);
+            } catch(StackOverflowError e) {
+                throw new WTF(); //TEMPORARY
+            }
 
-        }, 0, true, true, false);
+        }, eternal ? ETERNAL : 0, true, true, false);
         if (!ok)
             return False;
 
@@ -1639,22 +1664,31 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (!eConj && !iConj)
             return null;  //OK neither a conj/disj
 
+        boolean existingPolarity = existing.op() != NEG;
+
         if (!Term.commonStructure(existingUnneg.structure() & (~CONJ.bit), incomingUnneg.structure() & (~CONJ.bit)))
             return null; //OK no potential for interaction
 
-        boolean existingPolarity = existing.op() != NEG;
-
-
         Term base;
-        if (eConj && iConj) {
+        if (eConj && !iConj)
+            base = existing;
+        else if (iConj && !eConj)
+            base = incoming;
+        else if (!existingPolarity && incomingPolarity)
+            base = existing; //forces disjunctify
+        else if (!incomingPolarity && existingPolarity)
+            base = incoming; //forces disjunctify
+        else { //if (eConj && iConj) {
+            assert(eConj && iConj && existingPolarity==incomingPolarity);
             //decide which is larger, swap for efficiency
             boolean swap = ((existingPolarity == incomingPolarity) && incoming.volume() > existing.volume());
             base = swap ? incoming : existing;
-        } else if (eConj && !iConj) {
-            base = existing;
-        } else /*if (xConj && !eConj)*/ {
-            base = incoming;
         }
+//        else if (eConj && !iConj) {
+//            base = existing;
+//        } else /*if (xConj && !eConj)*/ {
+//            base = incoming;
+//        }
 
         boolean conjPolarity = base == existing ? existingPolarity : incomingPolarity;
 
@@ -1911,35 +1945,35 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             case 0:
                 temporal = null;
                 break;
-            case 1:
-                //one other non-eternal time
-                LongObjectPair<Object> e = event.keyValuesView().select(x -> x.getOne() != ETERNAL).getFirst();
-                Term t = term(e.getOne(), e.getTwo(), tmp);
-                if (t == null || t == True) {
-                    t = null;
-                } else if (t == False) {
-                    return this.result = False;
-                } else if (t == Null) {
-                    return this.result = Null;
-                }
-                if (t != null) {
-                    if (eternal != null && e.getOne() == 0) {
-                        boolean econj = eternal.op() == CONJ;
-                        if (!econj || eternal.dt() == DTERNAL) {
-                            //promote eternal to parallel
-                            if (!econj) {
-                                return ConjCommutive.the(0, eternal, t);
-                            } else {
-                                List<Term> ecl = new FasterList(eternal.subs() + 1);
-                                eternal.subterms().addTo(ecl);
-                                ecl.add(t);
-                                return ConjCommutive.the(0, ecl);
-                            }
-                        }
-                    }
-                }
-                temporal = t;
-                break;
+//            case 1:
+//                //one other non-eternal time
+//                LongObjectPair<Object> e = event.keyValuesView().select(x -> x.getOne() != ETERNAL).getFirst();
+//                Term t = term(e.getOne(), e.getTwo(), tmp);
+//                if (t == null || t == True) {
+//                    t = null;
+//                } else if (t == False) {
+//                    return this.result = False;
+//                } else if (t == Null) {
+//                    return this.result = Null;
+//                }
+//                if (t != null) {
+//                    if (eternal != null && e.getOne() == 0) {
+//                        boolean econj = eternal.op() == CONJ;
+//                        if (!econj || eternal.dt() == DTERNAL) {
+//                            //promote eternal to parallel
+//                            if (!econj) {
+//                                return ConjCommutive.the(0, eternal, t);
+//                            } else {
+//                                List<Term> ecl = new FasterList(eternal.subs() + 1);
+//                                eternal.subterms().addTo(ecl);
+//                                ecl.add(t);
+//                                return ConjCommutive.the(0, ecl);
+//                            }
+//                        }
+//                    }
+//                }
+//                temporal = t;
+//                break;
             default:
                 FasterList<LongObjectPair<Term>> temporals = null;
 
@@ -1993,13 +2027,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 if (temporal.equalsNeg(eternal))
                     return False;
 
-                //both conj or disj sequences?
-                if (((eternal.op()==CONJ && eternal.dt()!=DTERNAL) && Conj.isSeq(temporal.unneg())))
-                    return Null; //too complex
+//                //both conj or disj sequences?
+//                if (((eternal.op()==CONJ && eternal.dt()!=DTERNAL) && Conj.isSeq(temporal.unneg())))
+//                    return Null; //too complex
 
                 //temporal disjunction sequence AND eternal component?
-                if (Conj.isSeq(temporal.unneg()) && (eternal.unneg().op()==CONJ || temporal.containsRecursively(eternal.unneg())))
-                    return Null; //too complex
+//                if (Conj.isSeq(temporal.unneg()) && (eternal.unneg().op()==CONJ || temporal.containsRecursively(eternal.unneg())))
+//                    return Null; //too complex
 
 //                if (temporal.op() == CONJ && Term.commonStructure(eternal, temporal)) {
 //                    if (Conj.isSeq(temporal) || eternal.op() == CONJ) {
@@ -2023,7 +2057,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
                 int tdt = temporal.dt();
                 int edt = eternal.dt();
-                if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)))
+                if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
                     return terms.conj(DTERNAL, temporal, eternal); //needs flatten
                 else {
 
