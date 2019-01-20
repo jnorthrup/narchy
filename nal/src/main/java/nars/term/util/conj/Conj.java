@@ -608,7 +608,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return x.dt() == DTERNAL && isSeq(x);
     }
 
-    static final Predicate<Term> isTemporalComponent = x -> x.op() == CONJ && x.dt() != DTERNAL;
+    static final Predicate<Term> isTemporalComponent = Conj::isSeq;
     static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
 
     /**
@@ -893,7 +893,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.eventRange());
 
-        return conjSeqFinal(dt, left, right);
+        return !dtSpecial(dt) ? conjSeqFinal(dt, left, right) : conjoin(left, right, dt==DTERNAL);
     }
 
     public static Term conjSeqFinal(int dt, Term left, Term right) {
@@ -938,6 +938,18 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //        }
 
         Term t = terms.theCompound(CONJ, dt, left, right);
+        //HACK temporary
+        if (((left instanceof Compound && right instanceof Compound && left.hasAny(CONJ) && right.hasAny(CONJ))
+                )
+                && t.anon().volume()!=t.volume()) {
+            try {
+                t = terms.conj(dt, left, right); //factorization, etc
+            } catch (StackOverflowError e) {
+                if (Param.DEBUG)
+                    throw new WTF(); //TEMPORARY
+            }
+        }
+
 
 //        if (t.op()==CONJ && t.OR(tt -> tt.op()==NEG && tt.unneg().op()==CONJ)) {
 //            //HACK verify
@@ -1621,11 +1633,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             } else if (ww == True)
                 return true;
 
-            try {
+//            try {
                 return c.add(whn, ww);
-            } catch(StackOverflowError e) {
-                throw new WTF(); //TEMPORARY
-            }
+//            } catch(StackOverflowError e) {
+//                throw new WTF(); //TEMPORARY
+//            }
 
         }, eternal ? ETERNAL : 0, true, true, false);
         if (!ok)
@@ -2055,13 +2067,12 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                    }
 //                }
 
+
                 int tdt = temporal.dt();
                 int edt = eternal.dt();
                 if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
                     return terms.conj(DTERNAL, temporal, eternal); //needs flatten
                 else {
-
-
                     return terms.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
                 }
             }
@@ -2299,8 +2310,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 if (when==ETERNAL && ((FasterList<Term>)tmp).count(Conj::isSeq)>1)
                     return Null; //too complex
 
-                int dt = when == ETERNAL ? DTERNAL : 0;
-                return terms.theSortedCompound(CONJ, dt, tmp);
+                return terms.theSortedCompound(CONJ, when == ETERNAL ? DTERNAL : 0, tmp);
             }
 
         }

@@ -33,9 +33,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
     public final FloatRange conceptForgetRate = new FloatRange(0.9f, 0f, 1f /* 2f */);
 
-    /**
-     * TODO make dynamicalyl adjustable thru MutableInteger etc
-     */
+
     public final IntRange activeCapacity = new IntRange(256, 0, 2024) {
         @Override
         protected void changed() {

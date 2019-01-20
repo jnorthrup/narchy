@@ -72,10 +72,10 @@ public abstract class Param {
     public static final int TaskLinkSpreadDefault =
             //16;
             //12;
-            //10;
+            10;
             //8;
             //7;
-            6;
+            //6;
             //5;
             //4;
             //3;

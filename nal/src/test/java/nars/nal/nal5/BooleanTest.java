@@ -3,14 +3,19 @@ package nars.nal.nal5;
 import nars.*;
 import nars.concept.Concept;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.function.IntFunction;
+
+import static nars.Op.BELIEF;
 import static nars.Op.CONJ;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * NAL5 Boolean / Boolean Satisfiability / Boolean Conditionality
@@ -194,6 +199,71 @@ class BooleanTest {
             x.beliefs().forEachTask(t -> System.out.println(t.proof()));
             System.out.println();
         }
+
+    }
+
+    @Test void testSATRandom() {
+        NAR n = NARS.tmp();
+//        n.log();
+
+
+        int s = 9, c = 3000, cRemoveInputs = c/2;
+        boolean temporal = true;
+        int d = (temporal ? c/10 : 1);
+
+        IntFunction<Term> termizer =
+                //(i)->$$("x" + i);
+                (i)->$.inh($.the(i),$.the("x"));
+
+        n.time.dur(d);
+
+
+
+        Set<Task> inputs = new LinkedHashSet();
+        boolean[] b = new boolean[s];
+        Term[] t = new Term[s];
+        Truth[] r = new Truth[s];
+        for (int i = 0; i < s; i++) {
+            b[i] = n.random().nextBoolean();
+            inputs.add( n.believe((t[i] = termizer.apply(i)).negIf(!b[i]), temporal ? Tense.Present : Tense.Eternal, 1f, 0.9f) );
+            if (temporal)
+                n.run(1); //stagger input
+        }
+        for (int i = 0; i < c; i++) {
+
+            n.run();
+
+            if (i == cRemoveInputs) {
+                n.tasks().forEach(z->{
+                    if (z.isBelief() && z.conf() >= n.confDefault(BELIEF))
+                        inputs.add(z); //get all structural transformed inputs (ex: images)
+                });
+                inputs.forEach(z -> {
+                    z.delete();
+                    n.concept(z).remove(z);
+                });
+            }
+
+            if (i >= cRemoveInputs) {
+                for (int j = 0; j < s; j++) {
+                    Truth tj = n.beliefTruth(t[j], temporal ? n.time() : ETERNAL);
+                    if (tj != null) {
+                        r[j] = tj;
+                        assertEquals(b[j], r[j].isPositive());
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < s; i++) {
+            System.out.println(t[i] + " " + b[i] + " " + r[i]);
+            int ii = i;
+            n.concept(t[i]).tasks().forEach(z -> {
+               if (z.isBelief()) {
+                   assertEquals(b[ii],z.isPositive(),()->z.proof());
+               }
+            });
+        }
+
 
     }
 }

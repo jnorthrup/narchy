@@ -19,7 +19,6 @@ import nars.unify.mutate.Termutator;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -67,7 +66,7 @@ public abstract class Unify extends Versioning implements Subst {
 
 
     public int dtTolerance = 0;
-    private List<ConstrainedVersionedTerm> constrained = new FasterList();
+    private FasterList<ConstrainedVersionedTerm> constrained = new FasterList();
 
 
     /**

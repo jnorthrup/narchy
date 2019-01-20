@@ -33,9 +33,20 @@ public class TextEditModel extends Widget implements ScrollXY.ScrolledXY{
     public synchronized void setBuffer(Buffer buf) {
         if (buffer != buf) {
             buffer = buf;
-            view = new TextEditView(buf);
+            view = new TextEditView(buf) {
+                @Override
+                protected void updatePositions() {
+                    super.updatePositions();
+                    updated();
+                }
+            };
         }
     }
+
+    protected void updated() {
+
+    }
+
     @Override
     public final boolean key(KeyEvent e, boolean pressedOrReleased) {
         //TODO anything from super.key(..) ?

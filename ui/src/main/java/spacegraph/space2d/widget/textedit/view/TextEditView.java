@@ -39,7 +39,7 @@ public class TextEditView implements BufferListener {
         int x1 = Math.max(0, (int) Math.floor(vx));
         int y1 = Math.max(0, (int) Math.round(vy));
         int x2 = x1 + (int) Math.ceil(vw);
-        int y2 = y1 + (int) Math.round(vh);
+        int y2 = y1 + Math.round(vh);
 
         if (cursor)
             this.cursor.draw(g);
@@ -103,7 +103,7 @@ public class TextEditView implements BufferListener {
         }));
     }
 
-    private void updatePositions() {
+    protected void updatePositions() {
         Collections.sort(lines);
         float h = 0f;
         for (LineView lv : lines) {

@@ -61,20 +61,23 @@ public class DynamicConjTruth {
         @Override
         public boolean components(Term conj, long start, long end, ObjectLongLongPredicate<Term> each) {
 
-            boolean seqFactored = Conj.isFactoredSeq(conj);
-            if(seqFactored) {
-                //evaluate the eternal components first.
-                // this is more efficient than sequence distribution,
-                // and avoids the evidence overlap problem
-                Term eternal = Conj.seqEternal(conj);
-                Term temporal = Conj.seqTemporal(conj);
-                if (each.accept(eternal, start, end + temporal.eventRange())) {
-                    //now concentrate on the temporal component:
-                    conj = temporal;
-                } else {
-                    //attempt distributed sequential evaluation
-                }
-            }
+            //try to evaluate the eternal component of factored sequence independently
+            //but this can dilute its truth too much if the sequence is sparse. better to evaluate it
+            //piecewise
+//            boolean seqFactored = Conj.isFactoredSeq(conj);
+//            if(seqFactored) {
+//                //evaluate the eternal components first.
+//                // this is more efficient than sequence distribution,
+//                // and avoids the evidence overlap problem
+//                Term eternal = Conj.seqEternal(conj);
+//                Term temporal = Conj.seqTemporal(conj);
+//                if (each.accept(eternal, start, end + temporal.eventRange())) {
+//                    //now concentrate on the temporal component:
+//                    conj = temporal;
+//                } else {
+//                    //attempt distributed sequential evaluation
+//                }
+//            }
 
             int superDT = conj.dt();
             boolean dternal = !Conj.isSeq(conj) && superDT == DTERNAL;

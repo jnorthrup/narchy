@@ -218,10 +218,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     }
 
-    @Override
-    protected boolean exhaustiveFind() {
-        return false;
-    }
 
     @Override
     public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {

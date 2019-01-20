@@ -2468,5 +2468,11 @@ public class ConjTest {
         //https://www.wolframalpha.com/input/?i=not+(a+and+b)++and+not+(a+and+c)
         assertEq("(--,((||,b,c)&&a))" , "(--(a && b) && --(a && c))");
     }
+
+    @Test void test_Not_A_Sequence() {
+        Term x = $$("(((--,((--,believe(z,rotate)) &&+4680 (--,believe(z,rotate))))&|(--,left))&&(right &&+200 (--,right)))");
+        assertTrue(Conj.isSeq(x));
+        assertEquals(1, Conj.seqEternalComponents(x.subterms()).cardinality());
+    }
 }
 

@@ -104,6 +104,9 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         @Override
         public boolean test(Derivation d) {
             d.clear();
+
+            assert(d.forEachMatch == null); //TEMPORARY
+            d.forEachMatch = null;
             return true;
         }
     };

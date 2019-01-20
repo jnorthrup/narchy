@@ -22,12 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 150;
+    private final static int cycles = 350;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
-        //test.nar.confResolution.set(0.04f); //coarse
         test.nar.termVolumeMax.set(18);
         test.nar.confMin.set(0.3f);
     }
@@ -1330,9 +1329,9 @@ public class NAL7Test extends NALTest {
         */
 
         test
-                .input("(((a-->b) &&+1 (b-->c)) &&+9 (d-->e)). :|:")
+                .input("(((a-->b) &&+1 (b-->c)) &&+1 (d-->e)). :|:")
                 .input("((a-->b) &&+1 (b-->c)). :|:")
-                .mustBelieve(cycles, "(d-->e)", 1f, 0.73f, 10 /* 10? */)
+                .mustBelieve(cycles, "(d-->e)", 1f, 0.73f, 2 )
                 .mustNotOutput(cycles, "d", BELIEF, 0, 1, 0, 1, t -> true)
         ;
     }

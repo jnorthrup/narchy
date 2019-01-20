@@ -44,7 +44,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
      * current view, in local grid coordinate
      */
     private volatile RectFloat view;
-    private volatile v2 viewMin, viewMax;
+    private volatile v2 viewMin = new v2(1,1), viewMax = new v2(1,1);
 
     private boolean autoHideScrollForSingleColumnOrRow = false;
 
@@ -97,12 +97,14 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
     public ScrollXY<S> viewMax(v2 viewMax) {
         this.viewMax = viewMax;
+        this.viewMin = new v2(Math.min(viewMax.x, viewMin.x),Math.min(viewMax.y, viewMin.y));
         layoutModel(); //TODO update if changed
         return this;
     }
 
     public ScrollXY<S> viewMin(v2 viewMin) {
         this.viewMin = viewMin;
+        this.viewMax = new v2(Math.max(viewMax.x, viewMin.x),Math.max(viewMax.y, viewMin.y));
         layoutModel(); //TODO update if changed
         return this;
     }
@@ -122,11 +124,10 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         } else {
 
             //break suspected deadlock
-            //Exe.invoke(() -> {
-                //this.view = view.fence(RectFloat.WH(viewMax.x, viewMax.y)); //TODO cache
+//            Exe.invoke(() -> {
                 this.view = view;
                 layoutModel();
-            //});
+//            });
         }
         return this;
     }
@@ -138,7 +139,18 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     }
 
     private void layoutModel() {
+
+        if (view!=null) {
+            float vw = Util.clamp(view.w, viewMin.x, viewMax.x);
+            float vh = Util.clamp(view.h, viewMin.y, viewMax.y);
+            this.view = RectFloat.X0Y0WH(
+                    Util.clamp(view.x, 0, viewMax.x),
+                    Util.clamp(view.y, 0, viewMax.y),
+                    vw, vh);
+        }
+
         S m = this.content;
+
         if (m instanceof Container)
             ((Container)m).layout();
     }

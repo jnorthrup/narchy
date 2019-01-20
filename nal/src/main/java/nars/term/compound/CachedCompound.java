@@ -148,12 +148,10 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             this.dt = dt;
 
 
-
-//            if (dt==DTERNAL && op==CONJ && subs()>1 && Conj.isSeq(sub(0)) && Conj.isSeq(sub(1)))
-//                throw new WTF(); //TEMPORARY
-
-//            if (anon().volume()!=volume())
-//                throw new WTF(); //TEMPORARY
+//            if (anon().volume()!=volume()) {
+//                System.out.println(this + " could be reduced?"); //TEMPORARY
+//                //throw new WTF(); //TEMPORARY
+//            }
 
 //            if (dt!=XTERNAL && dt > 2147470000)//TEMPORARY
 //                throw new WTF();

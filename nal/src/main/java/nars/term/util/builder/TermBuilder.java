@@ -129,7 +129,7 @@ public abstract class TermBuilder {
         return theCompound(o, dt, u, null);
     }
 
-    protected Term theCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
+    protected final Term theCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
         assert (!o.atomic) : o + " is atomic, yet given subterms: " + Arrays.toString(t);
 
 

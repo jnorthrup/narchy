@@ -31,14 +31,16 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
         view(initialSize);
 
         this.model = (MyTextEditModel) content;
-        updateScroll();
 
         model.painter = (gl,r)->{
-            model.paint(bounds, view(), model.focused, gl);
+            model.paint(content.bounds, view(), model.focused, gl);
         };
+        model.onChange = this::updateScroll;
 
         model.actions = TextEditActions.DEFAULT_ACTIONS;
         model.keys = TextEditActions.DEFAULT_KEYS;
+
+        updateScroll();
 
     }
 
@@ -92,7 +94,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
         return model.buffer().text();
     }
 
-    private void updateScroll() {
+    protected void updateScroll() {
         viewMax(new v2(model.buffer.width(), model.buffer.height()));
     }
 
@@ -111,10 +113,18 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
 
     public static class MyTextEditModel extends TextEditModel {
         public BiConsumer<GL2,SurfaceRender> painter = null;
+        public Runnable onChange = ()->{};
+
         @Override
         protected void paintIt(GL2 gl, SurfaceRender rr) {
             super.paintIt(gl, rr);
             painter.accept(gl, rr);
+        }
+
+        @Override
+        protected void updated() {
+            super.updated();
+            Runnable x = onChange; if (x!=null) x.run();
         }
     }
 }
