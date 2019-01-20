@@ -3,16 +3,22 @@ package nars.term.util.builder;
 import com.google.common.collect.Iterators;
 import jcog.memoize.byt.ByteHijackMemoize;
 import jcog.pri.PriProxy;
+import nars.IO;
 import nars.Op;
 import nars.subterm.MappedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.compound.LightCompound;
+import nars.term.compound.LightDTCompound;
+import nars.term.util.cache.Intermed;
 import nars.term.util.cache.Intermed.InternedCompoundByComponents;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.*;
+import static nars.term.util.TermTest.assertEq;
+import static nars.term.util.builder.InterningTermBuilder.tmpKey;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InterningTermBuilderTest {
@@ -63,5 +69,15 @@ class InterningTermBuilderTest {
 //        i.terms[Op.IMPL.id].print();
 //        i.terms[CONJ.id].print();
         }
+    }
+
+    @Test void testKeyConstructionEquivalence() {
+        byte[] a = new InternedCompoundByComponents(CONJ, 1, this.a.neg(), this.b).key.arrayCopy();
+        tmpKey().clear();
+        byte[] b = new Intermed.InternedCompoundTransform(new LightDTCompound( new LightCompound(CONJ, this.a.neg(), this.b), 1)).key.arrayCopy();
+        tmpKey().clear();
+        assertArrayEquals(a, b);
+        assertEq(IO.bytesToTerm(a),IO.bytesToTerm(b));
+        assertEquals("((--,a) &&+1 b)", IO.bytesToTerm(a).toString());
     }
 }

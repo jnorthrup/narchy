@@ -212,7 +212,7 @@ public class IO {
                 case VAR_QUERY:
                     return readVariable(in, o);
                 case IMG:
-                    return in.readByte() == '/' ? Op.ImgExt : Op.ImgInt;
+                    return in.readByte() == ((byte)'/') ? Op.ImgExt : Op.ImgInt;
                 case BOOL:
                     byte code = in.readByte();
                     switch (code) {
@@ -295,21 +295,13 @@ public class IO {
      */
     private static Term readCompound(DataInput in, /*@NotNull*/ Op o, boolean temporal) throws IOException {
 
+        int dt = temporal ? IntCoding.readZigZagInt(in) : DTERNAL;
+
         Term[] v = readTermContainer(in);
 
-        int dt;
-
-        if (temporal) {
-            //dt = in.readInt();
-            dt = IntCoding.readZigZagInt(in);
-        } else {
-            dt = DTERNAL;
-        }
-
         Term y = o.the(dt, v);
-        if (y instanceof Bool)
-            throw new TermException(o, dt, v, "invalid term");
-
+        if (!(y instanceof Compound))
+            throw new TermException(o, dt, v, "read invalid compound");
 
         return y;
     }

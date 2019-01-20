@@ -221,10 +221,12 @@ public interface Compound extends Term, IPair, Subterms {
 
         out.writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
 
-        appendSubtermsTo(out);
-
         if (temporal)
             IntCoding.writeZigZagInt(dt, out);
+
+        appendSubtermsTo(out);
+
+
 
     }
 

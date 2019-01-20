@@ -30,7 +30,7 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
     private final int hashDT;
     private final Compound ref;
 
-    private LightDTCompound(Compound base, int dt) {
+    public LightDTCompound(Compound base, int dt) {
 
         Op op = base.op();
 
@@ -66,7 +66,7 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
         }
 
 
-        assert dt == DTERNAL || dt == XTERNAL;// || (Math.abs(dt) < Param.DT_ABS_LIMIT) : "abs(dt) limit reached: " + dt;
+        //assert dt == DTERNAL || dt == XTERNAL;// || (Math.abs(dt) < Param.DT_ABS_LIMIT) : "abs(dt) limit reached: " + dt;
 
         this.dt = dt;
 
