@@ -831,7 +831,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         int sp = space();
         int cp = capacity();
-        if (sp < cp && s >= (int) (loadFactor * sp)) {
+        if (sp < cp && s >= (loadFactor * sp)) {
 
             int ns = Util.lerp(growthLerpRate, sp, cp);
             if ((cp - ns) / ((float) cp) >= loadFactor)

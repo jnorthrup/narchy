@@ -28,7 +28,7 @@ public class PriBuffer<Y> {
 
     /** pending Y activation collation */
     final Map<Y, UnitPrioritizable> items =
-            ///new ConcurrentHashMapUnsafe<>(1024);
+            //new ConcurrentHashMapUnsafe<>(1024);
             new java.util.concurrent.ConcurrentHashMap(1024);
 
     private final PriMerge merge;
@@ -51,34 +51,28 @@ public class PriBuffer<Y> {
         return items.isEmpty(); /* && termlink.isEmpty();*/
     }
 
-    public Y put(Y x, float pri) {
-        return put(x, pri, null);
+    public void put(Y x, float pri) {
+        put(x, pri, null);
     }
 
-    public Y put(Y y, float pri, @Nullable OverflowDistributor<Y> overflow) {
+    public void put(Y y, float pri, @Nullable OverflowDistributor<Y> overflow) {
         assert(pri == pri); //        if (pri!=pri)     return null;
 
-        return putRaw(y, pri, overflow);
+        putRaw(y, pri, overflow);
     }
 
-    private Y putRaw(Y x, float pri, @Nullable OverflowDistributor<Y> overflow) {
+    private void putRaw(Y x, float pri, @Nullable OverflowDistributor<Y> overflow) {
         if (pri!=pri)
-            return null;
+            return;
 
-        UnitPrioritizable y = items.compute(x, (xx, px) -> {
-            if (px != null) {
-                if (x != px)
-                    merge(px, x, pri, overflow);
-                return px;
-            } else {
-                if (xx instanceof UnitPrioritizable)
-                    return (UnitPrioritizable) xx;
-                else
-                    return new UnitPri(pri);
-            }
-        });
+        UnitPrioritizable y = items.compute(x, x instanceof UnitPrioritizable ?
+                (xx, px) -> px != null ? px : (UnitPrioritizable) xx :
+                (xx, px) -> px != null ? px : new UnitPri(Float.NaN)
+        );
 
-        return y.getClass() == UnitPri.class ? x : (Y) y;
+        if (y != x)
+            merge(y, x, pri, overflow);
+
     }
 
     protected void merge(UnitPrioritizable existing, Y incoming, float pri, OverflowDistributor<Y> overflow) {
