@@ -7,11 +7,14 @@ import nars.NARS;
 import nars.Narsese;
 import nars.term.Term;
 import nars.term.atom.Int;
+import nars.term.util.TermTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
@@ -19,10 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** arithmetic operators and arithmetic introduction tests */
 class ArithmeticTest {
+    static final NAR n = NARS.shell();
 
     @Test
     void testAddSolve() throws Narsese.NarseseException {
-        NAR n = NARS.shell();
+
         n.log();
         n.believe("(add(1,$x,3)==>its($x))");
         n.run(2);
@@ -40,9 +44,9 @@ class ArithmeticTest {
 
     @Test
     void testAddCommutive() throws Narsese.NarseseException {
-        NAR t = NARS.shell();
-        String fwd = $.$("add(#x,1)").eval(t).toString();
-        String rev = $.$("add(1,#x)").eval(t).toString();
+
+        String fwd = $.$("add(#x,1)").eval(n).toString();
+        String rev = $.$("add(1,#x)").eval(n).toString();
         assertEquals("add(#1,1)", fwd);
         assertEquals(fwd, rev);
 
@@ -147,10 +151,11 @@ class ArithmeticTest {
 
     @Test
     void testCompleteAddInduction() {
-        NAR n = NARS.tmp(6);
+        NAR n = NARS.tmp();
+        n.log();
         new Arithmeticize.ArithmeticIntroduction( n, 16);
 
-        final int cycles = 1500;
+        final int cycles = 500;
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
@@ -169,4 +174,27 @@ class ArithmeticTest {
         t.test();
     }
 
+    @Test
+    void testComparator() {
+        TermTest.assertEq("-1", $$("cmp(1,2)").eval(n));
+        TermTest.assertEq("cmp(1,2,-1)",$$("cmp(1,2,#x)").eval(n));
+        TermTest.assertEq("cmp(1,2,-1)",$$("cmp(2,1,#x)").eval(n));
+        TermTest.assertEq("cmp(#1,2,#2)",$$("cmp(#1,2,#x)").eval(n));
+//        TermTest.assertEq("less(#1,2)", "less(#1,2)");
+//        TermTest.assertEq(False, $.$$("less(1,1)"));
+//        TermTest.assertEq(False, $.$$("less(2,1)"));
+
+        assertComparator("(x(1)==>x(2))", "[((x(#1)==>x(#2))&&cmp(#1,#2,-1)), ((x(#1)==>x(add(#1,1)))&&equal(#1,1))]");
+        assertComparator("(x(2)==>x(1))", "[((x(#1)==>x(#2))&&cmp(#2,#1,-1)), ((x(add(#1,1))==>x(#1))&&equal(#1,1))]");
+
+    }
+
+    private void assertComparator(String x, String y) {
+        Set<String> solutions = new TreeSet();
+        for (int i = 0; i < 10; i++) {
+            Term s = Arithmeticize.apply($$(x), true, rng);
+            solutions.add(s.toString());
+        }
+        assertEquals(y, solutions.toString());
+    }
 }

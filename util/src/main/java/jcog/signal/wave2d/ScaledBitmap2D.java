@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.function.Supplier;
 
+import static java.awt.RenderingHints.*;
 import static java.awt.color.ColorSpace.TYPE_RGB;
 
 /**
@@ -67,6 +68,9 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
             img = new BufferedImage(pw, ph, in instanceof BufferedImage ? ((BufferedImage)in).getType() : TYPE_RGB);
             raster = img.getRaster();
             outgfx = img.createGraphics();
+            outgfx.setRenderingHint(KEY_ANTIALIASING,VALUE_ANTIALIAS_ON);
+            outgfx.setRenderingHint(KEY_RENDERING,VALUE_RENDER_QUALITY);
+            outgfx.setRenderingHint(KEY_INTERPOLATION,VALUE_INTERPOLATION_BICUBIC);
 
 
 

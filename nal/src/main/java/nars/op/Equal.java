@@ -1,6 +1,7 @@
 package nars.op;
 
 import nars.$;
+import nars.Op;
 import nars.The;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
@@ -11,6 +12,7 @@ import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INT;
+import static nars.term.atom.Bool.False;
 
 public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implements The {
 
@@ -39,7 +41,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
                 return p;
 
             if (!x.hasVars() && !y.hasVars())
-                return Bool.False; //constant in-equal
+                return False; //constant in-equal
 
         }
         //TODO support N-ary equality
@@ -89,7 +91,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
             //indeterminable
             return null;
         } else {
-            return Bool.False;
+            return False;
         }
 
     }
@@ -103,7 +105,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
         if (x.equals(y))
             return Bool.True; //fast equality pre-test
         if (x.equalsNeg(y))
-            return Bool.False;
+            return False;
 
         return null;
     }
@@ -117,5 +119,49 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
     protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
         return xy == Bool.True ? y : null;
     }
+
+    /** general purpose comparator: cmp(x, y, x.compareTo(y)) */
+    public final static Functor cmp = new Functor.SimpleBinaryFunctor("cmp") {
+
+        @Override
+        protected Term apply3(Evaluation e, Term x, Term y, Term xy) {
+            int c = x.compareTo(y);
+            if (c == 0) {
+                Int zero = Int.the(0);
+                if (!xy.equals(zero) && !xy.op().var)
+                    return False; //incorrect value
+                else
+                    xy = zero;
+            } if (c > 0) {
+
+                //swap argument order
+                Term s = x;
+                x = y;
+                y = s;
+
+                Op xyo = xy.op();
+                if (xyo ==INT) {
+                    xy = Int.the(-((Int)xy).id);
+                } else if (!xyo.var) {
+                    xy = $.varDep("cmp_tmp"); //erase constant, forcing recompute
+                }
+                return $.func(Equal.cmp, x, y, xy);
+            }
+            return super.apply3(e, x, y, xy);
+        }
+
+        @Override
+        protected Term compute(Evaluation e, Term x, Term y) {
+            if (x.equals(y))
+                return Int.the(0);
+            if (!x.op().var && !y.op().var) {
+                return Int.the( x.compareTo(y) );
+            } else {
+                return null;
+            }
+        }
+
+    };
+
 
 }

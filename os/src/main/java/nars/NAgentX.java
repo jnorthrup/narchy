@@ -218,7 +218,8 @@ abstract public class NAgentX extends NAgent {
 
 
                         new CaffeineIndex(
-                                96 * 1024
+                                //96 * 1024
+                                64 * 1024
                                 //8 * 1024
                                 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
 //                        new HijackConceptIndex(
@@ -258,14 +259,14 @@ abstract public class NAgentX extends NAgent {
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> actionLinker = ListTermLinker(actionConcepts);
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> rewardLinker = ListTermLinker(rewardConcepts);
 
-//        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
-//                actionConcepts,
-//                //sensorConcepts,
-//                rewardLinker
-//                //ConceptTermLinker
-//        );
-//        senseReward.timing = new ActionTiming(n);
-//
+        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
+                actionConcepts,
+                //sensorConcepts,
+                rewardLinker
+                //ConceptTermLinker
+        );
+        senseReward.timing = new ActionTiming(n);
+
 //        ZipperDeriver senseActions = BeliefSource.forConcepts(n, rules,
 //                sensorConcepts,
 //                actionLinker
@@ -292,7 +293,7 @@ abstract public class NAgentX extends NAgent {
 
         MetaAgent meta = new MetaAgent(a);
 
-        window(AttentionUI.attentionGraph(n, a), 600, 600);
+        //window(AttentionUI.attentionGraph(n, a), 600, 600);
 
         window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
 
@@ -355,7 +356,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(26);
+        n.termVolumeMax.set(24);
 
         ((AbstractConceptIndex)n.concepts).activeCapacity.set(1024);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1f/8f); //HACK TODO based on active bag capacity

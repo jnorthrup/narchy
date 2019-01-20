@@ -369,10 +369,10 @@ public class Derivation extends PreDerivation {
     }
 
     protected float pri(Task t) {
+        float p = t.priElseZero();
         return
-                //t.priElseZero()
-                t.isEternal() ? t.priElseZero() :
-                        Param.evi(t.priElseZero(), t.minTimeTo(nar.time()), nar.dur());
+                p;
+                //t.isEternal() ? p : Param.evi(p, t.minTimeTo(nar.time()), nar.dur());
     }
 
     public boolean budget(Task task, Task belief) {

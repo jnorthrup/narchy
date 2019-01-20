@@ -10,11 +10,9 @@ public class ChoicePointStore {
     }
     
     public void add(ChoicePointContext cpc) {
-        if (pointer == null) {
-            pointer = cpc;
-            return;
+        if (pointer != null) {
+            cpc.prevChoicePointContext = pointer;
         }
-        cpc.prevChoicePointContext = pointer;
         pointer = cpc;
     }
     

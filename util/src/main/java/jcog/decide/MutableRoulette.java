@@ -150,6 +150,8 @@ public final class MutableRoulette {
     public int next() {
 
         //assert (remaining > 0);
+        if (remaining == 0)
+            return -1;
 
         float[] w = this.w;
 

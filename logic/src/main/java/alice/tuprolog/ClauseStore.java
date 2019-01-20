@@ -112,10 +112,17 @@ public final class ClauseStore {
      */
     private static void reunify(List<Var> varsToReunify, List<Term> saveUnifications, int size) {
 
-        ListIterator<Var> it1 = varsToReunify.listIterator(size);
-        ListIterator<Term> it2 = saveUnifications.listIterator(size);
-        while (it1.hasPrevious()) {
-            it1.previous().setLink(it2.previous());
+        if (varsToReunify instanceof FasterList && saveUnifications instanceof FasterList) {
+            for (int i = size-1, j = i; i >= 0;) {
+                varsToReunify.get(i--).setLink(saveUnifications.get(j--));
+            }
+        } else {
+
+            ListIterator<Var> it1 = varsToReunify.listIterator(size);
+            ListIterator<Term> it2 = saveUnifications.listIterator(size);
+            while (it1.hasPrevious()) {
+                it1.previous().setLink(it2.previous());
+            }
         }
     }
 

@@ -325,7 +325,7 @@ public class FZero extends NAgentX {
     private void initLeftRightPushButtonMutex() {
 
         this.actionPushButtonMutex(
-                $$("left"), $$("right"),
+                $.inh($$("left"),id), $.inh($$("right"),id),
                 ((BooleanProcedure) l -> fz.left = l), r -> fz.right = r
         );
     }
@@ -441,12 +441,12 @@ public class FZero extends NAgentX {
 //        final float[] _a = {0};
 //        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
-        return actionUnipolar($.the("fwd") /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
+        return actionUnipolar($.inh($$("fwd"),id) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
             float a =
                     //_a[0] = (float) fwdFilter.out(_a[0], a0);
                     a0;
 
-            float thresh = 0.1f; //nar.freqResolution.floatValue()*2;
+            float thresh = nar.freqResolution.floatValue()*2;
             if (a > 0.5f + thresh) {
                 float thrust = /*+=*/ (2 * (a - 0.5f)) * (fwdFactor * fwdSpeed);
                 fz.vehicleMetrics[0][6] = thrust;

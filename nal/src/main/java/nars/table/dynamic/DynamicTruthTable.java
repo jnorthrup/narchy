@@ -5,7 +5,6 @@ import nars.task.util.Answer;
 import nars.term.Term;
 import nars.truth.dynamic.AbstractDynamicTruth;
 import nars.truth.dynamic.DynTaskify;
-import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -23,26 +22,18 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 
 
     @Override
-    public final void match(Answer t) {
+    public final void match(Answer a) {
 
-        if (t.template == null)
-            t.template(term);
+        if (a.template == null)
+            a.template(term);
 
-        Task tt = taskDynamic(t);
+        Task tt = DynTaskify.task(model, beliefOrGoal, a);
         if (tt != null)
-            t.tryAccept(tt);
+            a.tryAccept(tt);
     }
 
 
-    /**
-     * generates a dynamic matching task
-     */
-    @Nullable
-    public Task taskDynamic(Answer a) {
 
-        return DynTaskify.task(model, beliefOrGoal, a);
-
-    }
 
 
 //    @Override

@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import static nars.Op.*;
+import static nars.op.Equal.cmp;
 import static nars.term.Functor.f0;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.DTERNAL;
@@ -50,6 +51,8 @@ public class Builtin {
     public static final Functor[] statik = {
 
             Equal.the,
+            cmp,
+
             Member.the,
 
             Subst.replace,

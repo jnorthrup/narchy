@@ -212,13 +212,13 @@ class BooleanTest {
 
     static void testSATRandom(boolean beliefOrGoal) {
         NAR n = NARS.tmp();
-        n.log();
+//        n.log();
 
 
 
         int s = 9, c = 3000, cRemoveInputs = c/2;
         boolean temporal = true;
-        int d = (temporal ? c/10 : 1);
+        int d = 1;
 
         IntFunction<Term> termizer =
                 //(i)->$$("x" + i);

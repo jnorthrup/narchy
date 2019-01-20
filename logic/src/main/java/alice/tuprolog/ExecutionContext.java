@@ -99,7 +99,7 @@ public class ExecutionContext {
      */
     void saveParentState() {
         if (fatherCtx != null) {
-            fatherGoalId = fatherCtx.goalsToEval.getCurrentGoalId();
+            fatherGoalId = fatherCtx.goalsToEval.current();
             fatherVarsList = fatherCtx.trailingVars;
         }
     }
@@ -113,26 +113,24 @@ public class ExecutionContext {
      * got TAIL RECURSION OPTIMIZATION!
      */
 
-    void performTailRecursionOptimization(Engine e) {
+    void tailCallOptimize(Engine e) {
 
         ExecutionContext ctx = e.currentContext;
         if (!haveAlternatives) {
             SubGoalStore ge = ctx.goalsToEval;
-            if (ge.getCurSGId() == null) {
-                if (!ge.haveSubGoals()) {
-                    String gn = ctx.currentGoal.name();
-                    switch (gn) {
-                        case "catch":
-                        case "java_catch":
-                            break; 
+            if (ge.getCurSGId() == null && !ge.haveSubGoals()) {
+                String gn = ctx.currentGoal.name();
+                switch (gn) {
+                    case "catch":
+                    case "java_catch":
+                        break;
 
-                        default: {
-                            fatherCtx = ctx.fatherCtx;
-                            
-                            depth = ctx.depth;
-                            return;
+                    default: {
+                        fatherCtx = ctx.fatherCtx;
 
-                        }
+                        depth = ctx.depth;
+                        return;
+
                     }
                 }
             }

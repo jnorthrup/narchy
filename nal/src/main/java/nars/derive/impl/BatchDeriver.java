@@ -14,7 +14,6 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.link.Activate;
 import nars.link.TaskLink;
-import nars.task.Tasklike;
 import nars.term.Term;
 
 import java.util.Collection;
@@ -29,7 +28,7 @@ import java.util.function.Supplier;
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(1, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(2, 1, 32);
 
 
     /**
@@ -99,7 +98,7 @@ public class BatchDeriver extends Deriver {
 
             premiseMatrix(a, d);
 
-            return conceptsRemain[0]-- > 0;
+            return --conceptsRemain[0] > 0;
         });
 
 //        int s = premises.size();
@@ -130,7 +129,7 @@ public class BatchDeriver extends Deriver {
 
         Supplier<Term> beliefSrc;
         if (concept.term().op().atomic) {
-            Bag<Tasklike, TaskLink> src = concept.tasklinks();
+            Bag<?, TaskLink> src = tasklinks;
             beliefSrc = ()->src.sample(rng).term();
         } else {
             Sampler<Term> src = concept.linker();
@@ -164,7 +163,7 @@ public class BatchDeriver extends Deriver {
                 if (b != null && premises.add(new Premise(task, b))) {
                     p++;
                 }
-            } while (premisesPerTaskLinkTried-- > 0);
+            } while (--premisesPerTaskLinkTried > 0);
 
             if (p > 0)
                 tasksFired.add(task);

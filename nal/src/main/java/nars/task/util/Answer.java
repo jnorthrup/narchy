@@ -37,7 +37,7 @@ public final class Answer implements AutoCloseable {
             Param.STAMP_CAPACITY - 1;
             //Math.max(1, Param.STAMP_CAPACITY / 2);
 
-    public static final int BELIEF_SAMPLE_CAPACITY = Math.max(1, BELIEF_MATCH_CAPACITY / 2);
+    public static final int BELIEF_SAMPLE_CAPACITY = 2; //Math.max(1, BELIEF_MATCH_CAPACITY / 2);
     public static final int QUESTION_SAMPLE_CAPACITY = 1;
 
     private final FloatRank<Task> rank;

@@ -1,5 +1,6 @@
 package nars.link;
 
+import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.pri.OverflowDistributor;
@@ -323,7 +324,10 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
     @Override
     public void sample(Random rng, Function<? super Term, SampleReaction> each) {
-        each.apply(get(rng).term());
+        Termed termed = get(rng);
+        if (termed==null)
+            throw new WTF(); //TEMPORARY
+        each.apply(termed.term());
     }
 
 

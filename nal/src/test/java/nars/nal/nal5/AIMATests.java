@@ -84,7 +84,7 @@ class AIMATests {
         //n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
         //n.concept("Criminal").print();
 
-        n.run(5000);
+        n.run(8000);
 //        n.synch();
 
 //        Concept qc = n.concept(Q);

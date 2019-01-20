@@ -520,7 +520,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 
         protected abstract Term compute(Evaluation e, Term x, Term y);
 
-        Term apply3(Evaluation e, Term x, Term y, Term xy) {
+        protected Term apply3(Evaluation e, Term x, Term y, Term xy) {
             boolean xVar = x.op().var;
             boolean yVar = y.op().var;
             if (xy.op().var) {
@@ -549,7 +549,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                         return null; //true, keep
                     } else {
                         
-                        return Bool.Null;
+                        return Bool.Null; //false?
                     }
                 } else {
                     return computeFromXY(e, x, y, xy);
@@ -562,6 +562,28 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         protected abstract Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy);
 
         protected abstract Term computeYfromXandXY(Evaluation e, Term x, Term y, Term xy);
+    }
+
+    public abstract static class SimpleBinaryFunctor extends BinaryBidiFunctor {
+
+        public SimpleBinaryFunctor(String name) {
+            super(name);
+        }
+
+        @Override
+        protected Term computeFromXY(Evaluation e, Term x, Term y, Term xy) {
+            return null;
+        }
+
+        @Override
+        protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
+            return null;
+        }
+
+        @Override
+        protected Term computeYfromXandXY(Evaluation e, Term x, Term y, Term xy) {
+            return null;
+        }
     }
 
     public abstract static class CommutiveBinaryBidiFunctor extends BinaryBidiFunctor {
@@ -623,11 +645,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         }
     }
 
-    private static class MyAbstractInlineFunctor2Inline extends AbstractInlineFunctor2 {
-        private @NotNull
+    public static class MyAbstractInlineFunctor2Inline extends AbstractInlineFunctor2 {
         final BiFunction<Term, Term, Term> ff;
 
-        MyAbstractInlineFunctor2Inline(String termAtom, BiFunction<Term, Term, Term> ff) {
+        public MyAbstractInlineFunctor2Inline(String termAtom, BiFunction<Term, Term, Term> ff) {
             super(termAtom);
             this.ff = ff;
         }

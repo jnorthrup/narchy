@@ -25,17 +25,15 @@ import java.util.List;
 
 /**
  * @author Alex Benini
- *
  */
 public class StateRuleSelection extends State {
-    
-    
-    
+
+
     public StateRuleSelection(EngineRunner c) {
         this.c = c;
         stateName = "Init";
     }
-    
+
     /* (non-Javadoc)
      * @see alice.tuprolog.AbstractRunState#doJob()
      */
@@ -45,34 +43,35 @@ public class StateRuleSelection extends State {
          * Individuo compatibleGoals e
          * stabilisco se derivo da Backtracking.
          */
-        Struct goal = e.currentContext.currentGoal;
         ChoicePointContext alternative = e.currentAlternative;
         e.currentAlternative = null;
         ClauseStore clauseStore;
-        boolean fromBacktracking = true;
+        boolean fromBacktracking;
         if (alternative == null) {
             /* from normal evaluation */
             fromBacktracking = false;
-            
+
 
             List<Var> varsList = new FasterList<>();
             e.currentContext.trailingVars = new OneWayList<>(varsList, e.currentContext.trailingVars);
 
+            Struct goal = e.currentContext.currentGoal;
             Deque<ClauseInfo> g = c.find(goal);
-            clauseStore = g!=null ? ClauseStore.build(goal, varsList, g) : null;
-
-            if (clauseStore == null){
+            if (g.isEmpty() || (clauseStore = ClauseStore.build(goal, varsList, g))==null) {
                 e.nextState = c.BACKTRACK;
                 return;
             }
-        } else
+
+        } else {
+            fromBacktracking = true;
             clauseStore = alternative.compatibleGoals;
-        
+        }
+
         /*-----------------------------------------------------
          * Scelgo una regola fra quelle potenzialmente compatibili.
          */
         ClauseInfo clause = clauseStore.fetch();
-        
+
         /*-----------------------------------------------------
          * Build ExecutionContext and ChoicePointContext
          */
@@ -80,13 +79,10 @@ public class StateRuleSelection extends State {
         ExecutionContext curCtx = e.currentContext;
         ec.clause = clause.clause;
 
-        
+
         clause.copyTo(ec.getId(), ec);
 
 
-        
-        
-        
         ec.choicePointAfterCut = e.choicePointSelector.getPointer();
         if (alternative != null) {
             ChoicePointContext choicePoint = alternative;
@@ -95,8 +91,8 @@ public class StateRuleSelection extends State {
             Struct currentGoal = choicePoint.executionContext.currentGoal;
             while (currentGoal.subs() == 2 && currentGoal.name().equals(";")) {
                 if (choicePoint.prevChoicePointContext != null) {
-                    int distance = depth - choicePoint.prevChoicePointContext.executionContext.depth;
-                    while (distance == 0 && choicePoint.prevChoicePointContext != null) {
+                    int distance;
+                    while ((distance = depth - choicePoint.prevChoicePointContext.executionContext.depth) == 0 && choicePoint.prevChoicePointContext != null) {
                         ec.choicePointAfterCut = choicePoint.prevChoicePointContext.prevChoicePointContext;
                         choicePoint = choicePoint.prevChoicePointContext;
                     }
@@ -110,33 +106,32 @@ public class StateRuleSelection extends State {
                     break;
             }
         }
-            
+
         Struct curGoal = curCtx.currentGoal;
         List<Var> unifiedVars = e.currentContext.trailingVars.head;
-        curGoal.unify(unifiedVars,unifiedVars,ec.headClause);
-        
+        curGoal.unify(unifiedVars, unifiedVars, ec.headClause);
+
         ec.haveAlternatives = clauseStore.haveAlternatives();
-        
-        
+
+
         if (ec.haveAlternatives && !fromBacktracking) {
             ChoicePointContext cpc = new ChoicePointContext();
             cpc.compatibleGoals = clauseStore;
 
             cpc.executionContext = curCtx;
-            cpc.indexSubGoal = curCtx.goalsToEval.getCurrentGoalId();
+            cpc.indexSubGoal = curCtx.goalsToEval.current();
             cpc.varsToDeunify = e.currentContext.trailingVars;
             e.choicePointSelector.add(cpc);
         }
-        
-        if (!ec.haveAlternatives && fromBacktracking) {            
-                    e.choicePointSelector.removeUnusedChoicePoints();
-                }
-        
-        ec.performTailRecursionOptimization(e);
-        
+
+        if (fromBacktracking && !ec.haveAlternatives) {
+            e.choicePointSelector.removeUnusedChoicePoints();
+        }
+
+        ec.tailCallOptimize(e);
         ec.saveParentState();
         e.currentContext = ec;
         e.nextState = c.GOAL_SELECTION;
     }
-    
+
 }

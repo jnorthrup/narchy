@@ -11,6 +11,8 @@ import jcog.util.FloatFloatToFloatFunction;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.util.builder.MemoizingTermBuilder;
+import nars.term.util.transform.Conceptualization;
+import nars.term.util.transform.Retemporalize;
 import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 
@@ -22,6 +24,8 @@ import static nars.Op.*;
  * NAR Parameters
  */
 public abstract class Param {
+
+
 
 
     static {
@@ -41,6 +45,11 @@ public abstract class Param {
 //                    )
 //                );
     }
+
+    public static final Retemporalize conceptualization =
+            Conceptualization.FlattenAndDeduplicateConj
+            //Conceptualization.FlattenAndDeduplicateAndUnnegateConj //untested
+            ;
 
     public static final boolean FILTER_SIGNAL_TABLE_TEMPORAL_TASKS = true;
 
@@ -72,8 +81,8 @@ public abstract class Param {
     public static final int TaskLinkSpreadDefault =
             //16;
             //12;
-            10;
-            //8;
+            //10;
+            8;
             //7;
             //6;
             //5;
@@ -282,9 +291,9 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
-    public final IntRange matchTTL = new IntRange(8, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange subUnifyTTLMax = new IntRange( 6, 1, 32);
+    public final IntRange matchTTL = new IntRange(4, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 4;
 
@@ -292,11 +301,11 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 3f;
+    public static final float TEST_TIME_MULTIPLIER = 4f;
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 3;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
 
 
     /**

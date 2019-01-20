@@ -22,46 +22,6 @@ public abstract class Retemporalize extends TermTransform.NegObliviousTermTransf
     public static final Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
 
 
-    /**
-     * un-temporalize
-     */
-    public final static Retemporalize root = new Retemporalize() {
-
-        @Override
-        public Term transformTemporal(Compound x, int dtNext) {
-            Op xo = x.op();
-            // && dtNext == DTERNAL ? XTERNAL : DTERNAL);
-            int dt = xo.temporal ? XTERNAL : DTERNAL;
-            Term y = x.transform(this, xo, dt);
-            if (y instanceof Compound && y.op()==CONJ) {
-                Subterms yy = y.subterms();
-                if (yy.OR(yyy -> yyy.op()==CONJ)) {
-                    //collapse any embedded CONJ which will inevitably have dt=XTERNAL
-                    UnifiedSet<Term> t = new UnifiedSet(yy.subs());
-                    for (Term yyy : yy) {
-                        if (yyy.op()==CONJ) {
-                            yyy.subterms().forEach(t::add);
-                        } else {
-                            t.add(yyy);
-                        }
-                    }
-                    if (yy.subs() != 1 && t.size() == 1) {
-                        Term tf = t.getFirst();
-                        return Op.terms.theCompound(CONJ, XTERNAL, tf, tf);
-                    } else
-                        return CONJ.the(XTERNAL, t);
-                }
-            }
-            return y;
-        }
-
-        @Override
-        public int dt(Compound x) {
-            return x.op().temporal ? XTERNAL : DTERNAL;
-        }
-    };
-
-
     abstract int dt(Compound x);
 
     @Nullable

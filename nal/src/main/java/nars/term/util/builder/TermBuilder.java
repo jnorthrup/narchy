@@ -2,6 +2,7 @@ package nars.term.util.builder;
 
 import jcog.data.byt.DynBytes;
 import nars.Op;
+import nars.Param;
 import nars.subterm.*;
 import nars.term.Compound;
 import nars.term.Neg;
@@ -15,7 +16,6 @@ import nars.term.util.TermException;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjCommutive;
 import nars.term.util.transform.CompoundNormalization;
-import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
 import nars.unify.ellipsis.EllipsisMatch;
 import nars.unify.ellipsis.Ellipsislike;
@@ -324,7 +324,9 @@ public abstract class TermBuilder {
     public Term root(Compound x) {
         if (!x.hasAny(Op.Temporal))
             return x;
-        return x.temporalize(Retemporalize.root);
+        return x.temporalize(
+                Param.conceptualization
+        );
     }
 
     public Term concept(Compound x) {

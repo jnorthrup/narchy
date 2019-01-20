@@ -18,7 +18,6 @@ import nars.term.anon.Anon;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
@@ -51,7 +50,8 @@ public class Arithmeticize {
 
     private static final int minInts = 2;
 
-    final static Variable V = $.varDep("A_");
+    final static Variable A = $.varDep("A_");
+    final static Variable B = $.varDep("B_");
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
         MathFunc.add.term, MathFunc.add,
@@ -94,7 +94,7 @@ public class Arithmeticize {
         @Override
         @Nullable
         protected Term newTerm(Task xx) {
-            return Arithmeticize.apply(xx.term(), null, nar.termVolumeMax.intValue(), xx.isEternal(), nar.random());
+            return Arithmeticize.apply(xx.term(), null, nar.termVolumeMax.intValue(), true, nar.random());
         }
     }
 
@@ -131,10 +131,6 @@ public class Arithmeticize {
             else
                 x = xxx;
         }
-//        if (!x.equals(xx))
-//            System.out.println("pre-eval");
-
-
 
         IntHashSet ints = new IntHashSet(4);
         x.recurseTerms(t->t.hasAny(Op.INT), t -> {
@@ -151,36 +147,11 @@ public class Arithmeticize {
         if (ui < minInts)
             return x; 
 
-        int[] ii = ints.toSortedArray();  
+        ArithmeticOp[] mmm = mods(ints);
 
-        List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mmm = mods(ii);
+        Term y = mmm[ Roulette.selectRoulette(mmm.length, c -> mmm[c].score, random) ]
+                    .apply(x, cdt, anon);
 
-        int choice = Roulette.selectRoulette(mmm.size(), c -> mmm.get(c).getTwo().size(), random);
-
-        IntObjectPair<List<Pair<Term, Function<Term, Term>>>> m = mmm.get(choice);
-
-        Term baseTerm = Int.the(m.getOne());
-        if (anon!=null)
-            baseTerm = anon.put(baseTerm);
-
-
-
-        Term yy = x.replace(baseTerm, V);
-
-        for (Pair<Term, Function<Term, Term>> s : m.getTwo()) {
-            Term s0 = s.getOne();
-            Term s1 = s.getTwo().apply(V);
-            if (anon!=null)
-                s0 = anon.put(s0); 
-            yy = yy.replace(s0, s1);
-        }
-
-        Term equality =
-                //SIM.the(baseTerm, V);
-                $.func(Equal.the, Terms.sorted(baseTerm, V));
-
-        Term y = CONJ.the(equality, cdt, yy);
-        if (y.op()!=CONJ) return null;
         if (y.volume() > volMax) return null;
 
 //        Term y = IMPL.the(equality, eternal ? DTERNAL : 0, yy);
@@ -213,74 +184,75 @@ public class Arithmeticize {
         }
     }
 
-    static final Function<IntArrayListCached,List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>>> cached;
+    static final Function<IntArrayListCached,ArithmeticOp[]> cached;
     static {
-        HijackMemoize<IntArrayListCached,List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>>>
+        HijackMemoize<IntArrayListCached,ArithmeticOp[]>
                 modsCache = new HijackMemoize<>(Arithmeticize::_mods, 512, 3);
         cached = Memoizers.the.add(Arithmeticize.class.getSimpleName() + "_mods", modsCache);
     }
 
-    static List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mods(int[] ii) {
-        return cached.apply(new IntArrayListCached(ii));
+    static ArithmeticOp[] mods(IntHashSet ii) {
+        return cached.apply(new IntArrayListCached(ii.toSortedArray()));
     }
 
-    static List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> _mods(IntArrayListCached iii) {
+    static ArithmeticOp[] _mods(IntArrayListCached iii) {
         
         
 
         int[] ii = iii.toArray();
 
-        IntObjectHashMap<List<Pair<Term, Function<Term,Term>>>> mods = new IntObjectHashMap<>(ii.length);
+        List<ArithmeticOp> ops = new FasterList();
+        IntObjectHashMap<List<Pair<Term, Function<Term,Term>>>> eqMods = new IntObjectHashMap<>(ii.length);
+
+        for (int aIth = 0; aIth < ii.length; aIth++) {
+            int a = ii[aIth];
+            for (int bIth = 0; bIth < ii.length; bIth++) {
+                if (aIth == bIth) continue;
+
+                int b = ii[bIth];
 
 
-        
-        for (int a = 0; a < ii.length; a++) {
-            int ia = ii[a];
-            for (int b = 0; b < ii.length; b++) {
-                if (a == b) continue;
-
-                int ib = ii[b];
-
-
-                int BMinA = ib - ia;
-                if (ia == -ib) {
+                int BMinA = b - a;
+                if (a == -b) {
                     
-                    maybe(mods, ia).add(pair(
-                            Int.the(ib), v-> $.func(MathFunc.mul, v,Int.NEG_ONE)
+                    maybe(eqMods, a).add(pair(
+                            Int.the(b), v-> $.func(MathFunc.mul, v,Int.NEG_ONE)
                     ));
 
 
 
-                } else if (ia!=0 && Math.abs(ia)!=1 && ib!=0 && Math.abs(ib)!=1 && Util.equals(ib/ia, (float)ib /ia)) {
+                } else if (a!=0 && Math.abs(a)!=1 && b!=0 && Math.abs(b)!=1 && Util.equals(b/a, (float)b /a)) {
 
                     
-                    maybe(mods, ia).add(pair(
-                            Int.the(ib), v->$.func(MathFunc.mul, v, $.the(ib/ia))
+                    maybe(eqMods, a).add(pair(
+                            Int.the(b), v->$.func(MathFunc.mul, v, $.the(b/a))
                     ));
-                } else if (ia < ib) { 
+                } else if (a < b) {
 
-                    maybe(mods, ia).add(pair(
-                            Int.the(ib), v-> $.func(MathFunc.add, v, $.the(BMinA))
-                    ));
-
-                } else if (ib < ia) {
-                    maybe(mods, ib).add(pair(
-                            Int.the(ia), v-> $.func(MathFunc.add, v, $.the(ia - ib))
+                    maybe(eqMods, a).add(pair(
+                            Int.the(b), v-> $.func(MathFunc.add, v, $.the(BMinA))
                     ));
 
+                } else if (b < a) {
+
+                    maybe(eqMods, b).add(pair(
+                            Int.the(a), v-> $.func(MathFunc.add, v, $.the(a - b))
+                    ));
                 }
 
+                if (a < b) {
 
-
-
-
-
-
-
-
+                    ops.add(new CompareOp(a, b));
+                }
             }
         }
-        return !mods.isEmpty() ? mods.keyValuesView().toList() : List.of();
+
+        eqMods.keyValuesView().forEach((kv)->{
+            assert(!kv.getTwo().isEmpty());
+            ops.add(new BaseEqualExpressionArithmeticOp(kv.getOne(), kv.getTwo().toArray(Pair[]::new)));
+        });
+
+        return ops.isEmpty() ? ArithmeticOp.EmptyArray : ops.toArray(ArithmeticOp.EmptyArray);
     }
 
     public static List<Pair<Term, Function<Term, Term>>> maybe(IntObjectHashMap<List<Pair<Term, Function<Term, Term>>>> mods, int ia) {
@@ -290,7 +262,70 @@ public class Arithmeticize {
     public static final Logger logger = LoggerFactory.getLogger(Arithmeticize.class);
 
 
+    abstract static class ArithmeticOp  {
+        public static final ArithmeticOp[] EmptyArray = new ArithmeticOp[0];
+        public final float score;
 
+        protected ArithmeticOp(float score) {
+            this.score = score;
+        }
 
+        abstract Term apply(Term x, int cdt, @Nullable Anon anon);
+    }
 
+    static class BaseEqualExpressionArithmeticOp extends ArithmeticOp  {
+        final int base;
+        private final Pair<Term, Function<Term, Term>>[] mods;
+
+        BaseEqualExpressionArithmeticOp(int base, Pair<Term, Function<Term, Term>>[] mods) {
+            super(mods.length);
+            this.base = base;
+            this.mods = mods;
+        }
+
+        @Override
+        public Term apply(Term x, int cdt, @Nullable Anon anon) {
+
+            Term baseTerm = Int.the(base);
+            if (anon!=null)
+                baseTerm = anon.put(baseTerm);
+
+            Term yy = x.replace(baseTerm, A);
+
+            for (Pair<Term, Function<Term, Term>> s : mods) {
+                Term s0 = s.getOne();
+                Term s1 = s.getTwo().apply(A);
+                if (anon!=null)
+                    s0 = anon.put(s0);
+                yy = yy.replace(s0, s1);
+            }
+
+            Term equality =
+                    //SIM.the(baseTerm, V);
+                    $.func(Equal.the, Terms.sorted(baseTerm, A));
+
+            Term y = CONJ.the(equality, cdt, yy);
+
+            if (y.op()!=CONJ) return null;
+            return y;
+        }
+    }
+
+    private static class CompareOp extends ArithmeticOp {
+        private final int a, b;
+
+        public CompareOp(int a, int b) {
+            super(1);
+            this.a = a;
+            this.b = b;
+        }
+
+        @Override
+        Term apply(Term x, int cdt, @Nullable Anon anon) {
+            //TODO anon
+            Int aaa = Int.the(a), bbb = Int.the(b);
+            Term xx = x.replace(Map.of(aaa, A, bbb, B));
+            return CONJ.the(cdt, xx, $.func(Equal.cmp, A, B, $.the(-1)));
+        }
+    }
 }

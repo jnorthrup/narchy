@@ -35,6 +35,7 @@ public class Arkancide extends NAgentX {
     //final int visW = 48, visH = 32;
     //final int visW = 24, visH = 16;
     final int visW = 16, visH = 12;
+    //final int visW = 8, visH = 6;
 
 
     static float paddleSpeed;
@@ -91,7 +92,7 @@ public class Arkancide extends NAgentX {
 
 
             )/*.blur()*/);
-            cc.resolution(0.05f);
+            //cc.resolution(0.05f);
 
             VectorSensorView vsv = new VectorSensorView(cc, nar);
 //            onFrame(vsv::update);
@@ -172,7 +173,7 @@ public class Arkancide extends NAgentX {
     }
 
     private void initPushButton() {
-        actionPushButtonMutex(Atomic.the("L"), Atomic.the("R"),
+        actionPushButtonMutex($.inh(Atomic.the("L"),id), $.inh(Atomic.the("R"),id),
                 (b) -> b && noid.paddle.move(-paddleSpeed),
                 (b) -> b && noid.paddle.move(+paddleSpeed)
         );

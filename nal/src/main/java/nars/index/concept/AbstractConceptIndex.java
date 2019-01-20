@@ -12,7 +12,6 @@ import nars.Param;
 import nars.attention.BufferedBag;
 import nars.attention.PriBuffer;
 import nars.concept.Concept;
-import nars.control.DurService;
 import nars.link.Activate;
 import nars.term.Term;
 import nars.term.Termed;
@@ -81,8 +80,8 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
         active.setCapacity(activeCapacity.intValue());
 
 
-        //nar.onCycle(this::updateConcepts);
-        DurService.on(nar, n->updateConcepts());
+        nar.onCycle(this::updateConcepts);
+        //DurService.on(nar, n->updateConcepts());
 
     }
 

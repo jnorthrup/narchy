@@ -46,7 +46,7 @@ public class ConjClustering extends Causable {
     private final BufferedCauseChannel in;
     private final byte punc;
 
-    public final FloatRange termVolumeMaxFactor = new FloatRange(0.9f, 0, 1f);
+    public final FloatRange termVolumeMaxFactor = new FloatRange(0.75f, 0, 1f);
 
     private final Predicate<Task> filter;
     private long now;

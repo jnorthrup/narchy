@@ -38,7 +38,7 @@ public class SortedSubtermsTest {
         assertTrue(remapped3Neg instanceof MappedSubterms);
     }
 
-    public static Subterms assertEq(Term... x) {
+    protected static Subterms assertEq(Term... x) {
         return assertEq(x, x);
     }
 
