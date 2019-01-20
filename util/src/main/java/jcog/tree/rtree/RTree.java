@@ -57,12 +57,12 @@ public class RTree<T> implements Space<T> {
 
     public final Spatialization<T> model;
 
-    public RTree(int min, int max, Split<T> splitType) {
-        this((x-> (HyperRegion) x), min, max, splitType);
+    public RTree(int max, Split<T> splitType) {
+        this((x-> (HyperRegion) x), max, splitType);
     }
 
-    public RTree(@Nullable Function<T, HyperRegion> spatialize, final int mMin, final int mMax, final Split<T> splitType) {
-        this(new Spatialization<>(spatialize, splitType, mMin, mMax));
+    public RTree(@Nullable Function<T, HyperRegion> spatialize, final int mMax, final Split<T> splitType) {
+        this(new Spatialization<>(spatialize, splitType, mMax));
     }
 
     public RTree(Spatialization<T> model) {
@@ -197,15 +197,15 @@ public class RTree<T> implements Space<T> {
 
     @Override
     public void whileEachIntersecting(HyperRegion rect, Predicate<T> t) {
-        HyperRegion b = root.bounds();
-        if (b != null && rect.intersects(b))
+//        HyperRegion b = root.bounds();
+//        if (b != null && rect.intersects(b))
             root.intersecting(rect, t, model);
     }
 
     @Override
     public void whileEachContaining(HyperRegion rect, final Predicate<T> t) {
-        HyperRegion b = root.bounds();
-        if (b != null && rect.intersects(b))
+//        HyperRegion b = root.bounds();
+//        if (b != null && rect.intersects(b))
             root.containing(rect, t, model);
     }
 
@@ -244,7 +244,7 @@ public class RTree<T> implements Space<T> {
         Stats stats = new Stats();
         stats.setType(model);
         stats.setMaxFill(model.max);
-        stats.setMinFill(model.min);
+
         root.collectStats(stats, 0);
         return stats;
     }

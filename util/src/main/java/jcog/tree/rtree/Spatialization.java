@@ -15,17 +15,10 @@ public class Spatialization<X> {
     public final Split<X> split;
     public final Function<X, HyperRegion> bounds;
     public final short max;       
-    public final short min;       
 
-    public Spatialization(@Deprecated final Function<X, HyperRegion> bounds, final Split<X> split, final int min, final int max) {
-        if (min<2)
-            throw new UnsupportedOperationException("min split must be >=2");
-        if (max < min)
-            throw new UnsupportedOperationException("min split must be < max split");
-        assert(min>=1);
-        assert(max>=min);
+
+    public Spatialization(@Deprecated final Function<X, HyperRegion> bounds, final Split<X> split, final int max) {
         this.max = (short) max;
-        this.min = (short) min;
         this.bounds = bounds;
         this.split = split;
     }

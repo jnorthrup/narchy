@@ -65,7 +65,7 @@ class QuadraticSplitLeafTest {
     @Test
     void splitCorrectnessTest() {
 
-        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(2, 4, TYPE);
+        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(4, TYPE);
         rTree.add(new RectDouble(0, 0, 3, 3));
         rTree.add(new RectDouble(1, 1, 2, 2));
         rTree.add(new RectDouble(2, 2, 4, 4));
@@ -161,7 +161,7 @@ class QuadraticSplitLeafTest {
      */
     @Test
     void causeLinearSplitOverflow() {
-        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(2, 8, TYPE);
+        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(8, TYPE);
         final Random rand = new Random(13);
         for (int i = 0; i < 500; i++) {
             final int x1 = rand.nextInt(10);

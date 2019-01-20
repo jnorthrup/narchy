@@ -614,6 +614,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                 long dt = pt[0];
 
+                if (dt == ETERNAL) dt = 0; //HACK
+
                 if (!(ss instanceof Absolute) && !(ee instanceof Absolute)) {
                     start = TIMELESS;
                 } else {

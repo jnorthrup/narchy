@@ -118,8 +118,11 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         return new HyperRectFloat(FloatND.fill(i, NEGATIVE_INFINITY), FloatND.fill(i, POSITIVE_INFINITY));
     }
 
-    public static HyperRectFloat cube(float[] touch, float r) {
-        float[] a = touch.clone(), b = touch.clone();
+    public static HyperRectFloat cube(float[] center, float r) {
+        if (r == 0)
+            return new HyperRectFloat(center); //point
+
+        float[] a = center.clone(), b = center.clone();
         for (int i = 0; i < a.length; i++) {
             a[i] -= r;
             b[i] += r;

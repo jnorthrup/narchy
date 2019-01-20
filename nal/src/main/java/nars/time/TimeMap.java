@@ -16,7 +16,7 @@ public class TimeMap extends RTree<Task> implements Consumer<Task> {
 
     public TimeMap() {
         super((task) -> new RectDouble(task.start(), task.end(), task.hashCode(), task.hashCode()),
-                2, 8, AxialSplit);
+                8, AxialSplit);
     }
 
 //    public TimeMap(@NotNull NAR n) {

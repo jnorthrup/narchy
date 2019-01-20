@@ -56,11 +56,11 @@ public class UnifyPreFilter extends AbstractPred<PreDerivation> {
 
     @Override
     public boolean test(PreDerivation d) {
-        Term x = xpInT != null ? d.taskTerm.sub(xpInT) : d.beliefTerm.sub(xpInB);
+        Term x = xpInT != null ? d.taskTerm.subPath(xpInT) : d.beliefTerm.subPath(xpInB);
         assert (x != Bool.Null);
         if (x == null)
             return false; //ex: seeking a negation but wasnt negated
-        Term y = ypInT != null ? d.taskTerm.sub(ypInT) : d.beliefTerm.sub(ypInB);
+        Term y = ypInT != null ? d.taskTerm.subPath(ypInT) : d.beliefTerm.subPath(ypInB);
         assert (y != Bool.Null) : (ypInT != null ? d.taskTerm : d.beliefTerm) + " does not resolve "
                 + Arrays.toString((ypInT != null ? ypInT : ypInB)) + " in " + d.taskTerm;
         if (y == null)

@@ -130,6 +130,7 @@ public interface Node<X> extends Nodelike<X> {
      * @return whether to continue visit
      */
     boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model);
+    boolean intersectingNodes(HyperRegion rect, Predicate<Node<X>> t, Spatialization<X> model);
 
     boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model);
 

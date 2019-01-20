@@ -8,8 +8,8 @@ import nars.IO;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.compound.UnitCompound;
 
+import static nars.Op.NEG;
 import static nars.term.util.builder.InterningTermBuilder.tmpKey;
 import static nars.time.Tense.DTERNAL;
 
@@ -30,6 +30,7 @@ public class Intermed extends ByteKey.ByteKeyExternal  {
 
         public InternedCompoundByComponents(Op o, int dt, Term... subs) {
             super();
+            assert(o!=NEG); //has special byte pattern
             this.op = o.id; this.dt = dt; this.subs = subs;
             write(o, dt);
             write(subs);
@@ -59,20 +60,24 @@ public class Intermed extends ByteKey.ByteKeyExternal  {
         public InternedCompoundTransform(Term x) {
             super();
             this.term = x;
-            write(x);
+
+            x.appendTo((ByteArrayDataOutput) key);
+            //write(x);
             commit();
         }
 
 
     }
 
-    protected void write(Term x) {
-        write(x.op(), x.dt());
-        if (x instanceof UnitCompound)
-            write((UnitCompound)x);
-        else
-            write(x.subterms());
-    }
+//    protected void write(Term x) {
+//        write(x.op(), x.dt());
+//        if (x instanceof UnitCompound) {
+//            key.writeByte(1);
+//            write(x.sub(0)); //.appendTo((ByteArrayDataOutput) key);
+//        }
+//        else
+//            write(x.subterms());
+//    }
 
     protected void write(Op o, int dt) {
 
@@ -92,26 +97,26 @@ public class Intermed extends ByteKey.ByteKeyExternal  {
             s.appendTo((ByteArrayDataOutput) key);
     }
 
-    protected void write(UnitCompound u) {
-        key.writeByte(1);
-        u.sub().appendTo((ByteArrayDataOutput) key);
-    }
-
     protected void write(Subterms subs) {
-        int n = subs.subs();
+        subs.appendTo(key);
+
+//        int n = subs.subs();
         //assert(n < Byte.MAX_VALUE);
-        key.writeByte(n);
-        for (Term s : subs)
-            s.appendTo((ByteArrayDataOutput) key);
+        //key.writeByte(n);
+        //subs.forEachWith((s,z) -> s.appendTo(z), (ByteArrayDataOutput)key);
+
+//        for (Term s : subs) {
+//            s.appendTo((ByteArrayDataOutput) key);
+//        }
     }
 
-    public static class SubtermsKey extends Intermed {
+    public static class SubtermsKey extends ByteKeyExternal {
         public final Subterms subs;
-
+    
         public SubtermsKey(Subterms s) {
-            super();
-            this.subs = s;
+            super(tmpKey());
             s.appendTo(key);
+            this.subs = s;
             commit();
         }
     }

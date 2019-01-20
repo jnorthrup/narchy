@@ -32,6 +32,8 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
     private final boolean discover; //TODO AtomicBoolean for GUI control etc
     private final NAR nar;
 
+    static final int outCapacity = 128; //TODO abstract
+
     protected final CauseChannel<ITask> recv;
     private final TaskLeak send;
 
@@ -74,7 +76,8 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
         this.port = port;
         this.discover = discover;
 
-        this.send = new TaskLeak(nar) {
+
+        this.send = new TaskLeak(outCapacity, nar) {
             @Override
             public boolean filter(Task next) {
                 if (next.isCommand() || !peer.connected() || next.stamp().length == 0 /* don't share assumptions */)
@@ -92,7 +95,7 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
 
             @Override
             protected float leak(Task next) {
-                return InterNAR.this.leak(next);
+                return InterNAR.this.send(next);
             }
         };
 
@@ -141,10 +144,10 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
 
 
 
-    protected float leak(Task next) {
+    protected float send(Task next) {
 
 
-        logger.debug("{} share {}", peer, next);
+        logger.debug("{} send {}", peer, next);
 
         @Nullable byte[] msg = IO.taskToBytes(next);
         assert (msg != null);

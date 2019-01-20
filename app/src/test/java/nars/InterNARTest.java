@@ -41,7 +41,7 @@ public class InterNARTest {
         final int CONNECT_INTERVAL_MS = 30;
 
 
-        final float NET_FPS = 25f;
+        final float NET_FPS = 10f;
         final float NAR_FPS = NET_FPS * 2;
         final int INTERACT_TIME = 700;
 
@@ -72,6 +72,7 @@ public class InterNARTest {
                 super.starting(nar);
                 runFPS(NET_FPS);
             }
+
         };
         InterNAR bi = new InterNAR(b, 0, false) {
 

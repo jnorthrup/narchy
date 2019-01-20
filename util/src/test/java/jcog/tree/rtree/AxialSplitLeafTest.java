@@ -69,7 +69,7 @@ class AxialSplitLeafTest {
     @Test
     void splitCorrectnessTest() {
 
-        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(2, 4, TYPE);
+        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(4, TYPE);
         rTree.add(new RectDouble(0, 0, 3, 3));
         rTree.add(new RectDouble(1, 1, 2, 2));
         rTree.add(new RectDouble(2, 2, 4, 4));
@@ -151,7 +151,7 @@ class AxialSplitLeafTest {
         final int entryCount = 50000;
         final RectDouble[] rects = RTree2DTest.generateRandomRects(entryCount);
 
-        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(2, maxLeaf, TYPE);
+        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(maxLeaf, TYPE);
         for (int i = 0; i < rects.length; i++)
             rTree.add(rects[i]);
 

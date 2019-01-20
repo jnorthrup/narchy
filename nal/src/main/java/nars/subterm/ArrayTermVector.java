@@ -10,7 +10,6 @@ import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * Holds a vector or tuple of terms.

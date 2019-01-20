@@ -130,14 +130,14 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public @Nullable Term sub(int start, int end, byte... path) {
+    public @Nullable Term subPath(int start, int end, byte... path) {
         if (end == start)
             return this;
         byte a = path[start];
         if (a!=0)
             return null;
         Term s = sub();
-        return ((end - start) == 1) ? s : s.sub(start + 1, end, path);
+        return ((end - start) == 1) ? s : s.subPath(start + 1, end, path);
     }
 
 //    @Override

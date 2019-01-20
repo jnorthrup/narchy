@@ -30,7 +30,7 @@ public class OsmSurface extends Surface {
             new OsmSpace.RawProjection();
             //new OsmSpace.ECEFProjection();
 
-    public final AtomicBoolean showIndexBounds = new AtomicBoolean(false);
+    public final AtomicBoolean showIndexBounds = new AtomicBoolean(true);
 
 
     final v2 translate = new v2();
@@ -57,8 +57,10 @@ public class OsmSurface extends Surface {
         {
             renderMap(gl);
 
-            if (showIndexBounds.get())
-                renderIndexBounds(gl);
+            if (showIndexBounds.get()) {
+//                renderIndexBounds(gl);
+                renderTouchedIndexBounds(gl);
+            }
         }
 
         projection.untransform(gl, bounds);
@@ -67,24 +69,41 @@ public class OsmSurface extends Surface {
 
     }
 
+    private void renderTouchedIndexBounds(GL2 gl) {
+        index.index.root().intersectingNodes(HyperRectFloat.cube(touch, 0), n->{
+            renderBounds(gl, n.bounds());
+            return true;
+        }, index.index.model);
+    }
+
     private void renderIndexBounds(GL2 gl) {
 
         gl.glLineWidth(2);
 
         index.index.root().streamNodesRecursively().forEach(n -> {
-            HyperRegion b = n.bounds();
-            if (b instanceof HyperRectFloat) {
-                HyperRectFloat r = (HyperRectFloat)b;
-                float x1 = r.min.coord(0);
-                float y1 = r.min.coord(1);
-                Draw.colorHash(gl, r.hashCode(), 0.25f);
-                //Draw.rect(
-                Draw.rectStroke(
-                        x1, y1, r.max.coord(0)-x1, r.max.coord(1)-y1,
-                        gl
-                );
-            }
+            renderBounds(gl, n.bounds());
         });
+    }
+
+    private void renderBounds(GL2 gl, HyperRegion b) {
+        if (b instanceof HyperRectFloat) {
+            HyperRectFloat r = (HyperRectFloat)b;
+            float x1 = r.min.coord(0), y1 = r.min.coord(1);
+            float x2 = r.max.coord(0), y2 = r.max.coord(1);
+
+            float[] ff = new float[3];
+            projection.project(x1, y1, 0, ff, 0);
+            x1 = ff[0]; y1 = ff[1];
+            projection.project(x2, y2, 0, ff, 0);
+            x2 = ff[0]; y2 = ff[1];
+
+            Draw.colorHash(gl, r.hashCode(), 0.25f);
+            Draw.rect(
+            //Draw.rectStroke(
+                    x1, y1, x2-x1, y2-y1,
+                    gl
+            );
+        }
     }
 
     private void renderMap(GL2 gl) {
@@ -193,6 +212,7 @@ public class OsmSurface extends Surface {
         }
     };
 
+    float touch[] = new float[3];
 
 
     @Override
@@ -213,10 +233,9 @@ public class OsmSurface extends Surface {
 
             //TODO unproject screen to world
 
-            float touch[] = new float[3];
             projection.unproject(wx, wy, wz, touch);
             System.out.println(Texts.n4(wx,wy,wz) + " -> " + Texts.n4(touch));
-            index.index.whileEachIntersecting(HyperRectFloat.cube(touch, 0.0001f), (each)->{
+            index.index.whileEachIntersecting(HyperRectFloat.cube(touch, 0), (each)->{
                 if (each.tags!=null) {
                     System.out.println(each.tags);
                 }

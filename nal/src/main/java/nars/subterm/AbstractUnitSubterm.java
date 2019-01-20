@@ -31,7 +31,7 @@ abstract class AbstractUnitSubterm implements Subterms {
             Term s = sub();
             return end - start == 1 ?
                     s :
-                    s.sub(start + 1, end);
+                    s.subPath(start + 1, end);
         }
     }
 

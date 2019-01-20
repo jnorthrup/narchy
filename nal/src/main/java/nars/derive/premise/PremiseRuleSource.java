@@ -642,7 +642,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
         byte[] pp = p.toByteArray();
         int depth = pp.length;
-        Term t = depth == 0 ? root : root.sub(pp);
+        Term t = depth == 0 ? root : root.subPath(pp);
 
         Op to = t.op();
         if (to == Op.VAR_PATTERN)
@@ -953,7 +953,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
         public Function<PreDerivation, Term> path(byte... path) {
             return (path.length == 0) ? this :
-                    d -> apply(d).sub(path);
+                    d -> apply(d).subPath(path);
         }
     }
 

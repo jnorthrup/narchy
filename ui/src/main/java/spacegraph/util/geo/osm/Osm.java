@@ -12,6 +12,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +35,7 @@ public class Osm {
 
     public final Long2ReferenceRBTreeMap<OsmNode> nodes = new Long2ReferenceRBTreeMap();
 //    public final LongObjectHashMap<OsmNode> nodes;
-    private final LongObjectHashMap<OsmRelation> relations = new LongObjectHashMap();
+    public final LongObjectHashMap<OsmRelation> relations = new LongObjectHashMap();
     public final LongObjectHashMap<OsmWay> ways = new LongObjectHashMap();
 
 
@@ -59,7 +60,7 @@ public class Osm {
     }
 
     public Osm load(String filename) throws SAXException, IOException, ParserConfigurationException {
-        InputStream fis = new FileInputStream(filename);
+        InputStream fis = new BufferedInputStream(new FileInputStream(filename), 128 * 1024);
 
         if (filename.endsWith(".gz")) {
             fis = new GZIPInputStream(fis);

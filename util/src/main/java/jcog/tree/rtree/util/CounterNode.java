@@ -138,8 +138,12 @@ public final class CounterNode<X> implements Node<X> {
 
     @Override
     public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
-        this.node.intersecting(rect, t, model);
-        return false;
+        return this.node.intersecting(rect, t, model);
+    }
+
+    @Override
+    public boolean intersectingNodes(HyperRegion rect, Predicate<Node<X>> t, Spatialization<X> model) {
+        return this.node.intersectingNodes(rect, t, model);
     }
 
     @Override

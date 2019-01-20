@@ -24,7 +24,6 @@ import jcog.Util;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.point.Double2D;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by jcovert on 6/15/15.

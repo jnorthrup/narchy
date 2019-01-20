@@ -3,7 +3,6 @@ package jcog.test.control;
 import nars.NAR;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
-import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import static nars.$.the;
@@ -14,7 +13,7 @@ abstract public class MiniTest extends NAgent {
     public final SummaryStatistics dex = new SummaryStatistics();
 
     public MiniTest(NAR n) {
-        super((Term)null, FrameTrigger.durs(1), n);
+        super(MiniTest.class.getSimpleName(), FrameTrigger.durs(1), n);
         //statPrint = n.emotion.printer(System.out);
 
         reward(the("reward"), () -> {

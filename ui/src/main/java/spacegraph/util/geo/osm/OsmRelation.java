@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 /**
  * Created by unkei on 2017/04/26.
  */
-class OsmRelation extends OsmGroup {
+public class OsmRelation extends OsmGroup {
 
     public OsmRelation(long id, List<OsmElement> children, Map<String, String> tags) {
         super(id, tags);

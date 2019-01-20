@@ -6,7 +6,6 @@ import jcog.memoize.byt.ByteKey;
 import nars.derive.Derivation;
 
 import static nars.Op.*;
-import static nars.Op.QUEST;
 
 public class PremiseKey extends ByteKey.ByteKeyExternal {
 

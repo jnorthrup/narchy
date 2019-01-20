@@ -47,7 +47,7 @@ class SensorBeliefTablesTest {
             List<Task> tt = xb.streamTasks().collect(toList());
             assertEquals(2, tt.size());
             assertEquals(2, tt.get(0).range());
-            assertEquals(3, tt.get(1).range());
+            assertEquals(2, tt.get(1).range());
 
             assertEquals(1, tt.get(0).stamp()[0]);
             assertEquals(2, tt.get(1).stamp()[0]);

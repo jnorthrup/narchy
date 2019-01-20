@@ -24,7 +24,7 @@ class RTreeNDTest {
     @Test
     void pointSearchTest() {
 
-        final RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 2, 8, Spatialization.DefaultSplits.AXIAL.get());
+        final RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 8, Spatialization.DefaultSplits.AXIAL.get());
 
         for (int i = 0; i < 10; i++) {
             pTree.add(new Double2D(i, i));
@@ -57,7 +57,7 @@ class RTreeNDTest {
         System.out.println("rectNDSearchTest2");
 
         for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
-            RTree<HyperRectFloat> rTree = RTree2DTest.createRectNDTree(2, 8, type);
+            RTree<HyperRectFloat> rTree = RTree2DTest.createRectNDTree(8, type);
             for (int i = 0; i < entryCount; i++) {
                 rTree.add(new HyperRectFloat(new FloatND(i, i), new FloatND(i + 3, i + 3)));
             }
@@ -117,7 +117,7 @@ class RTreeNDTest {
             System.out.println("\tRectNDSearchAllTest[dim=" + dim + ']');
 
             for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
-                RTree<HyperRectFloat> rTree = RTree2DTest.createRectNDTree(2, 8, type);
+                RTree<HyperRectFloat> rTree = RTree2DTest.createRectNDTree(8, type);
                 for (int i = 0; i < rects.length; i++) {
                     rTree.add(rects[i]);
                 }
@@ -171,7 +171,7 @@ class RTreeNDTest {
         final int entryCount = 20;
 
         for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
-            RTree<RectDouble> rTree = createRectDouble2DTree(2, 8, type);
+            RTree<RectDouble> rTree = createRectDouble2DTree(8, type);
             for (int i = 0; i < entryCount; i++) {
                 rTree.add(new RectDouble(i, i, i + 3, i + 3));
             }
@@ -213,7 +213,7 @@ class RTreeNDTest {
         final int entryCount = 20;
 
         for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
-            RTree<RectDouble> rTree = createRectDouble2DTree(2, 8, type);
+            RTree<RectDouble> rTree = createRectDouble2DTree(8, type);
             for (int i = 0; i < entryCount; i++) {
                 rTree.add(new RectDouble(i, i, i + 3, i + 3));
             }
@@ -279,7 +279,7 @@ class RTreeNDTest {
         final RectDouble[] rects = generateRandomRects(entryCount);
 
         for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
-            RTree<RectDouble> rTree = createRectDouble2DTree(2, 8, type);
+            RTree<RectDouble> rTree = createRectDouble2DTree(8, type);
             for (int i = 0; i < rects.length; i++) {
                 rTree.add(rects[i]);
             }
@@ -319,7 +319,7 @@ class RTreeNDTest {
 
         final RectDouble[] rects = generateRandomRects(entryCount);
         for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
-            RTree<RectDouble> rTree = createRectDouble2DTree(2, 8, type);
+            RTree<RectDouble> rTree = createRectDouble2DTree(8, type);
             for (int i = 0; i < rects.length; i++) {
                 rTree.add(rects[i]);
             }
@@ -346,7 +346,7 @@ class RTreeNDTest {
 
         for (int j = 0; j < 6; j++) {
             for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
-                RTree<RectDouble> rTree = createRectDouble2DTree(2, 12, type);
+                RTree<RectDouble> rTree = createRectDouble2DTree(12, type);
                 for (int i = 0; i < rects.length; i++) {
                     rTree.add(rects[i]);
                 }
@@ -569,16 +569,16 @@ class RTreeNDTest {
     }
 
     private static RTree<RectDouble> createRectDouble2DTree(Spatialization.DefaultSplits splitType) {
-        return createRectDouble2DTree(2, 8, splitType);
+        return createRectDouble2DTree(8, splitType);
     }
 
-    private static RTree<RectDouble> createRectDouble2DTree(int minM, int maxM, Spatialization.DefaultSplits splitType) {
-        return new RTree<>((x -> x), minM, maxM, splitType.get());
+    private static RTree<RectDouble> createRectDouble2DTree(int maxM, Spatialization.DefaultSplits splitType) {
+        return new RTree<>((x -> x), maxM, splitType.get());
     }
 
     @Test
     void testAddsubtreeWithSideTree() {
-        final RTree<RectDouble> rTree = createRectDouble2DTree(3, 6, Spatialization.DefaultSplits.QUADRATIC);
+        final RTree<RectDouble> rTree = createRectDouble2DTree(6, Spatialization.DefaultSplits.QUADRATIC);
 
         final RectDouble search;
 

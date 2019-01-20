@@ -2,13 +2,11 @@ package nars.derive.op;
 
 import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
-import nars.term.util.transform.Retemporalize;
 
-import static nars.Op.*;
+import static nars.Op.NEG;
 
 /**
  * Derivation term construction step of the derivation process that produces a derived task

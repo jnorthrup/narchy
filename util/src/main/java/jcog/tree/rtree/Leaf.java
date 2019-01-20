@@ -53,6 +53,13 @@ public final class Leaf<X> extends AbstractNode<X> {
         this.size = 0;
     }
 
+    @Override
+    public boolean intersectingNodes(HyperRegion rect, Predicate<Node<X>> t, Spatialization<X> model) {
+        if (rect.intersects(bounds))
+            return t.test(this);
+        else
+            return true;
+    }
 
     @Override
     public Iterator iterateNodes() {

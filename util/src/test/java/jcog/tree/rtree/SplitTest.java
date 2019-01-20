@@ -31,7 +31,7 @@ class SplitTest {
                     int HALF = TOTAL/2;
 
 
-                    final RTree<RectDouble> t = RTree2DTest.createRect2DTree(s, min, max);
+                    final RTree<RectDouble> t = RTree2DTest.createRect2DTree(s, max);
                     int i = 0;
                     for (int i1 = 0; i1 < HALF; i1++) {
                         RectDouble r = rects[i1];

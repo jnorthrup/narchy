@@ -49,7 +49,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public @Nullable Term sub(int start, int end, byte... path) {
+    public @Nullable Term subPath(int start, int end, byte... path) {
         return end==start ? this : subterms().subSub(start, end, path);
     }
 

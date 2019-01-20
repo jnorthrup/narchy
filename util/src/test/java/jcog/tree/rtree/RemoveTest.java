@@ -10,7 +10,7 @@ public class RemoveTest {
 
     @Test
     void testRemoveRebalance() {
-        RTree r = RTree2DTest.createRect2DTree(Spatialization.DefaultSplits.AXIAL, 2, 3);
+        RTree r = RTree2DTest.createRect2DTree(Spatialization.DefaultSplits.AXIAL, 3);
 
         final RectDouble[] rects = RTree2DTest.generateRandomRects(32);
 

@@ -833,7 +833,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         private RTreeBeliefModel() {
             super((t -> t), RTreeBeliefTable.SPLIT,
-                    RTreeBeliefTable.MIN_TASKS_PER_LEAF,
                     RTreeBeliefTable.MAX_TASKS_PER_LEAF);
         }
 

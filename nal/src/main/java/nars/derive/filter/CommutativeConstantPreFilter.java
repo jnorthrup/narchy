@@ -69,12 +69,12 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
     public boolean test(PreDerivation d) {
 
         Term contentHolder = ellipsisInTaskOrBelief ? d.beliefTerm : d.taskTerm;
-        Term content = contentHolder.sub(this.contentPath);
+        Term content = contentHolder.subPath(this.contentPath);
         if (content == null)
             return false;
 
         Term containerHolder = ellipsisInTaskOrBelief ?  d.taskTerm : d.beliefTerm;
-        Term ellipsisContainer = containerHolder.sub(this.ellipsisPath);
+        Term ellipsisContainer = containerHolder.subPath(this.ellipsisPath);
 
         return ellipsisContainer!=null && ellipsisContainer.contains(content);
     }

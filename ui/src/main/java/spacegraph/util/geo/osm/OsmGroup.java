@@ -30,7 +30,9 @@ abstract public class OsmGroup extends OsmElement {
             n = children.size();
 
         switch (n) {
-            case 0: bounds = HyperRectFloat.unbounded3; break;
+            case 0:
+                bounds = HyperRectFloat.unbounded3;
+                break;
             case 1:
                 bounds = children.get(0);
                 break;
@@ -46,17 +48,12 @@ abstract public class OsmGroup extends OsmElement {
 
     @Override
     public HyperRegion mbr(HyperRegion r) {
-        HyperRegion bounds = this.bounds;
-        if (bounds == null)
-            validate();
-        return bounds.mbr(r);
+        return bounds().mbr(r);
     }
 
     @Override
     public double coord(int dimension, boolean maxOrMin) {
-        HyperRegion b = bounds();
-
-        return b.coord(dimension, maxOrMin);
+        return bounds().coord(dimension, maxOrMin);
     }
 
     public HyperRegion bounds() {

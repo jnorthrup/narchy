@@ -1,6 +1,5 @@
 package nars.subterm;
 
-import nars.subterm.TermList;
 import nars.term.Term;
 
 /** for temporary, single-use only */

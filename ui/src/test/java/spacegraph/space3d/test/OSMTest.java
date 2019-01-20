@@ -1,14 +1,15 @@
 package spacegraph.space3d.test;
 
 import jcog.User;
-import org.objectweb.asm.ByteVector;
 import org.xml.sax.SAXException;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
+import spacegraph.util.geo.osm.OsmElement;
 import spacegraph.video.OsmSurface;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import static spacegraph.SpaceGraph.window;
 
@@ -20,7 +21,14 @@ public class OSMTest {
             IRL i = new IRL(User.the());
 
             Osm o = new Osm().load("/home/me/test.osm.bz2");
-            o.nodes.values().forEach(i.index::add);
+            Consumer<OsmElement> index = x -> {
+                if (x.tags != null && !x.tags.isEmpty())
+                    i.index.add(x);
+            };
+            o.nodes.values().forEach(index);
+            o.ways.values().forEach(index);
+//            o.relations.values().forEach(i.index::add);
+//            System.out.println(o.nodes.size() + " nodes");
             o.ready = true;
 
             System.out.println(o);
