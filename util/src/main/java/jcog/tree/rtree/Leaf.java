@@ -111,13 +111,9 @@ public final class Leaf<X> extends AbstractNode<X> {
 
         if (addOrMerge) {
             boolean mightContain = size > 0 && bounds.contains(tb);
-
-            for (int i = 0, s = size; i < s; i++) {
-                X x = data[i];
-
-                if (x == null) continue;
-
-                if (mightContain) {
+            if (mightContain) {
+                for (int i = 0, s = size; i < s; i++) {
+                    X x = data[i];
                     if (x.equals(t)) {
                         model.onMerge(x, t);
                         return null;
@@ -171,9 +167,7 @@ public final class Leaf<X> extends AbstractNode<X> {
     public boolean contains(X x, HyperRegion b, Spatialization<X> model) {
 
         final int s = size;
-        if (s > 0) {
-            if (!bounds.contains(b))
-                return false;
+        if (s > 0 && bounds.contains(b)) {
 
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
@@ -228,24 +222,22 @@ public final class Leaf<X> extends AbstractNode<X> {
     }
 
     @Override
-    public Node<X> replace(final X told, final X tnew, Spatialization<X> model) {
+    public Node<X> replace(final X told, HyperRegion oldBounds, final X tnew, Spatialization<X> model) {
         final int s = size;
-        if (s <= 0)
-            return this;
+        if (s > 0 && bounds.contains(oldBounds)) {
+            X[] data = this.data;
+            HyperRegion r = null;
+            for (int i = 0; i < s; i++) {
+                X d = data[i];
+                if (/*d!=null && */d.equals(told)) {
+                    data[i] = tnew;
+                }
 
-        X[] data = this.data;
-        HyperRegion r = null;
-        for (int i = 0; i < s; i++) {
-            X d = data[i];
-            if (/*d!=null && */d.equals(told)) {
-                data[i] = tnew;
+                r = i == 0 ? model.bounds(data[0]) : r.mbr(model.bounds(data[i]));
             }
 
-            r = i == 0 ? model.bounds(data[0]) : r.mbr(model.bounds(data[i]));
+            this.bounds = r;
         }
-
-        this.bounds = r;
-
         return this;
     }
 
@@ -253,7 +245,7 @@ public final class Leaf<X> extends AbstractNode<X> {
     @Override
     public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         short s = this.size;
-        if (s > 0) {
+        if (s > 0 && rect.intersects(bounds)) {
             boolean containsAll = s > 1 ? rect.contains(bounds) : false; 
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
@@ -268,8 +260,8 @@ public final class Leaf<X> extends AbstractNode<X> {
     @Override
     public boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         short s = this.size;
-        if (s > 0) {
-            boolean containsAll = rect.contains(bounds); 
+        if (s > 0 && rect.intersects(bounds)) {
+            boolean containsAll = s > 1 && rect.contains(bounds);
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
                 X d = data[i];

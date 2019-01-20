@@ -99,8 +99,8 @@ public final class CounterNode<X> implements Node<X> {
     }
 
     @Override
-    public Node<X> replace(X told, X tnew, Spatialization<X> model) {
-        return this.node.replace(told, tnew, model);
+    public Node<X> replace(X told, HyperRegion oldBounds, X tnew, Spatialization<X> model) {
+        return this.node.replace(told, oldBounds, tnew, model);
     }
 
     @Override

@@ -199,7 +199,7 @@ public class Branch<X> extends AbstractNode<X> {
 
         for (int i = 0; i < size; i++) {
             Node<X> cBefore = data[i];
-            HyperRegion cBeforeBounds = cBefore.bounds();
+//            HyperRegion cBeforeBounds = cBefore.bounds();
             if (cBefore.bounds().contains(xBounds)) {
 
                 @Nullable Node<X> cAfter = cBefore.remove(x, xBounds, model, removed);
@@ -286,23 +286,25 @@ public class Branch<X> extends AbstractNode<X> {
     }
 
     @Override
-    public Node<X> replace(final X OLD, final X NEW, Spatialization<X> model) {
-        final HyperRegion tRect = model.bounds(OLD);
+    public Node<X> replace(final X OLD, HyperRegion oldBounds, final X NEW, Spatialization<X> model) {
 
-
-        boolean found = false;
-        Node[] cc = this.data;
-        HyperRegion region = null;
         short s = this.size;
-        for (int i = 0; i < s; i++) {
-            if (!found && tRect.intersects(cc[i].bounds())) {
-                cc[i] = cc[i].replace(OLD, NEW, model);
-                found = true;
+        if (s > 0 && oldBounds.intersects(bounds)) {
+            boolean found = false;
+
+            Node[] cc = this.data;
+            HyperRegion region = null;
+
+            for (int i = 0; i < s; i++) {
+                if (!found && oldBounds.intersects(cc[i].bounds())) {
+                    cc[i] = cc[i].replace(OLD, oldBounds, NEW, model);
+                    found = true;
+                }
+                region = i == 0 ? cc[0].bounds() : grow(region, cc[i]);
             }
-            region = i == 0 ? cc[0].bounds() : grow(region, cc[i]);
-        }
-        if (found) {
-            this.bounds = region;
+            if (found) {
+                this.bounds = region;
+            }
         }
         return this;
     }
@@ -405,7 +407,7 @@ public class Branch<X> extends AbstractNode<X> {
     @Override
     public boolean containing(final HyperRegion rect, final Predicate<X> t, Spatialization<X> model) {
         HyperRegion b = this.bounds;
-        if (b != null) {
+        if (b != null && rect.intersects(b)) {
             int s = size;
             for (int i = 0; i < s; i++) {
                 Node d = data[i];
@@ -422,7 +424,7 @@ public class Branch<X> extends AbstractNode<X> {
     @Override
     public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         HyperRegion b = this.bounds;
-        if (b != null) {
+        if (b != null && rect.intersects(b)) {
             int s = size;
             for (int i = 0; i < s; i++) {
                 Node d = data[i];

@@ -151,7 +151,7 @@ public class RTree<T> implements Space<T> {
 
         if (model.bounds(told).equals(model.bounds(tnew))) {
 
-            root = root.replace(told, tnew, model);
+            root = root.replace(told, model.bounds(told), tnew, model);
             return true;
         } else {
 

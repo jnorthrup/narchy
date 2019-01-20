@@ -70,8 +70,8 @@ public class Tetris extends NAgentX {
                 n);
 
         state = opjects ?
-                    actionsReflect() :
-                    new TetrisState(width, height, timePerFall);
+                actionsReflect() :
+                new TetrisState(width, height, timePerFall);
 
         easy = state.easy;
 
@@ -96,11 +96,12 @@ public class Tetris extends NAgentX {
             }
 
             int r = state.rowsFilled;
-            return r > 0 ? ((float)filled)/(r * state.width) : 0;
+            return r > 0 ? ((float) filled) / (r * state.width) : 0;
         });
 
         grid = new AbstractBitmap2D(state.width, state.height) {
-            @Override public float brightness(int x, int y) {
+            @Override
+            public float brightness(int x, int y) {
                 return state.seen[y * w + x] > 0 ? 1f : 0f;
             }
         };
@@ -120,15 +121,11 @@ public class Tetris extends NAgentX {
         window(new VectorSensorView(pixels, this).withControls(), 400, 900);
 
 
-
-
-
         actionsPushButton();
         //actionsToggle();
         //actionsTriState();
 
         state.reset();
-
 
 
     }
@@ -139,12 +136,24 @@ public class Tetris extends NAgentX {
         NAgentX.runRT(n -> {
             //n.freqResolution.set(0.02f);
 
-//            new Arithmeticize.ArithmeticIntroduction(32, n);
-
-//            new Inperience.Believe(n, 32);
-//            new Inperience.Want(n, 32);
 
             //new Abbreviation(n, ("z"), 4, 5,  8);
+
+//            PriArrayBag<NLink<Term>> implConc = new PriArrayBag<>(PriMerge.plus, 64);
+//            DurService.on(n, (nn) -> {
+//                long now = nn.time();
+//                implConc.commit();
+//                nn.concepts().filter(x -> x.op() == IMPL).forEach(x -> {
+//
+//                    Truth t = x.beliefs().truth(now, nn);
+//                    if (t != null) {
+//                        Term pred = x.term().sub(1);
+//                        implConc.put(new NLink(pred, t.evi()*0.001f));
+//                    }
+//                });
+//                if (!implConc.isEmpty())
+//                    System.out.println(now + ": " + implConc.get(0));
+//            });
 
             return new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
         }, FPS);
@@ -175,31 +184,45 @@ public class Tetris extends NAgentX {
     void actionsPushButton() {
         final Term LEFT =
                 $.the("left");
-                //$.inh("left", id);
+        //$.inh("left", id);
         final Term RIGHT =
                 $.the("right");
-                //$.inh("right", id);
+        //$.inh("right", id);
         final Term ROT =
                 $.the("rotate");
-                //$.inh("rotate", id);
+        //$.inh("rotate", id);
         final Term FALL =
                 $.the("fall");
-                //$.inh("fall", id);
+        //$.inh("fall", id);
 
         actionPushButtonMutex(LEFT, RIGHT,
-                b -> { if (b) { return state.act(TetrisState.LEFT); } else return false; },
-                b -> { if (b) { return state.act(TetrisState.RIGHT); } else return false; }
+                b -> {
+                    if (b) {
+                        return state.act(TetrisState.LEFT);
+                    } else return false;
+                },
+                b -> {
+                    if (b) {
+                        return state.act(TetrisState.RIGHT);
+                    } else return false;
+                }
         );
 
         int debounceDurs = 1;
-        actionPushButton(ROT, debounce(b -> { if (b) { return state.act(TetrisState.CW); } else return false; }, debounceDurs));
+        actionPushButton(ROT, debounce(b -> {
+            if (b) {
+                return state.act(TetrisState.CW);
+            } else return false;
+        }, debounceDurs));
 
         if (canFall)
-            actionPushButton(FALL, debounce(b -> { if (b) { return state.act(TetrisState.FALL); } else return false; }, debounceDurs*2));
+            actionPushButton(FALL, debounce(b -> {
+                if (b) {
+                    return state.act(TetrisState.FALL);
+                } else return false;
+            }, debounceDurs * 2));
 
     }
-
-
 
 
     void actionsTriState() {

@@ -135,13 +135,14 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
     }
 
     @Override
-    public boolean contains(@NotNull final HyperRegion r) {
+    public boolean contains( final HyperRegion r) {
         final RectDouble r2 = (RectDouble) r;
 
         return min.x <= r2.min.x &&
                 max.x >= r2.max.x &&
                 min.y <= r2.min.y &&
                 max.y >= r2.max.y;
+
     }
 
     @Override

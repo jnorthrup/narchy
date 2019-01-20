@@ -15,7 +15,7 @@ abstract public class AbstractNode<V> implements Node<V> {
     }
 
     @Override
-    public final HyperRegion bounds() {
+    public final  HyperRegion bounds() {
         return bounds;
     }
 

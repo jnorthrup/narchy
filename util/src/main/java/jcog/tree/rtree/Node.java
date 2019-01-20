@@ -94,10 +94,11 @@ public interface Node<X> extends Nodelike<X> {
     /**
      * update an existing t in the index
      * @param told - old index to be updated
+     * @param oldBounds
      * @param tnew - value to update old index to
      * @param model
      */
-    Node<X> replace(X told, X tnew, Spatialization<X> model);
+    Node<X> replace(X told, HyperRegion oldBounds, X tnew, Spatialization<X> model);
 
 
 

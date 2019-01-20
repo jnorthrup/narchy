@@ -368,13 +368,19 @@ public class Derivation extends PreDerivation {
 
     }
 
+    protected float pri(Task t) {
+        return
+                //t.priElseZero()
+                t.isEternal() ? t.priElseZero() :
+                        Param.evi(t.priElseZero(), t.minTimeTo(nar.time()), nar.dur());
+    }
 
     public boolean budget(Task task, Task belief) {
-        float taskPri = task.priElseZero();
+        float taskPri = pri(task);
         float priSingle = taskPri;
         float priDouble = belief == null ?
                 taskPri :
-                Param.DerivationPri.apply(taskPri, belief.priElseZero());
+                Param.DerivationPri.apply(taskPri, pri(belief));
 
         if (Param.INPUT_BUFFER_PRI_BACKPRESSURE && Math.max(priDouble,priSingle) < nar.input.priMin() /* TODO cache */)
             return false;

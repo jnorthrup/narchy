@@ -202,9 +202,18 @@ class BooleanTest {
 
     }
 
-    @Test void testSATRandom() {
+    @Test void testSATRandomBelief() {
+        testSATRandom(true);
+    }
+
+    @Test void testSATRandomGoal() {
+        testSATRandom(false);
+    }
+
+    static void testSATRandom(boolean beliefOrGoal) {
         NAR n = NARS.tmp();
-//        n.log();
+        n.log();
+
 
 
         int s = 9, c = 3000, cRemoveInputs = c/2;
@@ -225,7 +234,12 @@ class BooleanTest {
         Truth[] r = new Truth[s];
         for (int i = 0; i < s; i++) {
             b[i] = n.random().nextBoolean();
-            inputs.add( n.believe((t[i] = termizer.apply(i)).negIf(!b[i]), temporal ? Tense.Present : Tense.Eternal, 1f, 0.9f) );
+            Term what = (t[i] = termizer.apply(i)).negIf(!b[i]);
+            Tense when = temporal ? Tense.Present : Tense.Eternal;
+            if (beliefOrGoal)
+                inputs.add( n.believe(what, when, 1f, 0.9f) );
+            else
+                inputs.add( n.want(what, when, 1f, 0.9f) );
             if (temporal)
                 n.run(1); //stagger input
         }
@@ -235,7 +249,7 @@ class BooleanTest {
 
             if (i == cRemoveInputs) {
                 n.tasks().forEach(z->{
-                    if (z.isBelief() && z.conf() >= n.confDefault(BELIEF))
+                    if ((beliefOrGoal ? z.isBelief() : z.isGoal()) && z.conf() >= n.confDefault(BELIEF))
                         inputs.add(z); //get all structural transformed inputs (ex: images)
                 });
                 inputs.forEach(z -> {
@@ -246,7 +260,8 @@ class BooleanTest {
 
             if (i >= cRemoveInputs) {
                 for (int j = 0; j < s; j++) {
-                    Truth tj = n.beliefTruth(t[j], temporal ? n.time() : ETERNAL);
+                    long when = temporal ? n.time() : ETERNAL;
+                    Truth tj = beliefOrGoal ? n.beliefTruth(t[j], when) : n.goalTruth(t[j], when);
                     if (tj != null) {
                         r[j] = tj;
                         assertEquals(b[j], r[j].isPositive());
@@ -258,7 +273,7 @@ class BooleanTest {
             System.out.println(t[i] + " " + b[i] + " " + r[i]);
             int ii = i;
             n.concept(t[i]).tasks().forEach(z -> {
-               if (z.isBelief()) {
+               if (beliefOrGoal ? z.isBelief() : z.isGoal()) {
                    assertEquals(b[ii],z.isPositive(),()->z.proof());
                }
             });

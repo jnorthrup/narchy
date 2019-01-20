@@ -45,6 +45,8 @@ public enum OsmSpace  { ;
 
         abstract public void project(float lon, float lat, float alt, float[] target, int offset);
 
+        abstract public void unproject(float x, float y, float z, float[] target);
+
         public final float[] project(GeoVec3 global, float[] target) {
             return project(global, target, 0);
         }
@@ -82,6 +84,7 @@ public enum OsmSpace  { ;
 
         /** TODO move scale, center, translate to a generic 2D projection impl */
         final FloatRange scale = new FloatRange(16f, 0.001f, 1000f);
+        private float viewScale;
 
         @Override
         public void project(float lon, float lat, float alt, float[] target, int offset) {
@@ -91,18 +94,30 @@ public enum OsmSpace  { ;
         }
 
         @Override
+        public void unproject(float x, float y, float z, float[] target) {
+            float scale = viewScale;
+            target[0] = (x/scale+ center.x) ;
+            target[1] = (y/scale+ center.y) ;
+            target[2] = 0;
+        }
+
+        @Override
         public void transform(GL2 gl, RectFloat bounds) {
 
-            float viewScale = this.scale.floatValue() * Math.max(bounds.w, bounds.h);
+            viewScale = scale(bounds);
 
             gl.glScalef(viewScale, viewScale, 1);
 
             gl.glTranslatef(-center.x, -center.y, 0);
         }
 
+        float scale(RectFloat bounds) {
+            return this.scale.floatValue() * Math.max(bounds.w, bounds.h);
+        }
+
         @Override
         public void pan(float tx, float ty, RectFloat bounds) {
-            float s = -1f  / (scale.floatValue() * Math.max(bounds.w, bounds.h));
+            float s = -1f  / viewScale;
             //center.set(dragStart.x - tx*s, dragStart.y - ty*s);
             center.add(tx*s, ty*s);
         }
@@ -129,6 +144,13 @@ public enum OsmSpace  { ;
 
         {
             camPos.set(0, 0, 0);
+        }
+
+        @Override
+        public void unproject(float x, float y, float z, float[] target) {
+            //TODO
+            target[0] = x;
+            target[1] = y;
         }
 
         @Override
@@ -286,7 +308,7 @@ public enum OsmSpace  { ;
                     b = 0f;
                     a = 0.7f;
 
-                } else if ("tree".equals(natural)) {
+                } else if ("tree".equals(natural) || "scrub".equals(natural)) {
                     pointSize = 3;
                     g = 1f;
                     r = b = 0f;
@@ -327,19 +349,67 @@ public enum OsmSpace  { ;
                     String k = entry.getKey(), v = entry.getValue();
                     switch (k) {
                         case "building":
-                            r = 0f;
-                            g = 1f;
-                            b = 1f;
+                            switch (v) {
+                                case "commercial":
+                                    r = 0.25f;
+                                    g = 0.5f;
+                                    b = 0.5f;
+                                    a = 1f;
+                                    lw = 2f;
+                                    isPolygon = true;
+                                    break;
+                                default:
+                                    r = 0.5f;
+                                    g = 0.25f;
+                                    b = 0.5f;
+                                    a = 1f;
+                                    lw = 1f;
+                                    isPolygon = true;
+                                    break;
+                            }
+                            break;
+                        case "barrier":
+                            r = 0.5f;
+                            g = 0.5f;
+                            b = 0.2f;
                             a = 1f;
                             lw = 1f;
-                            isPolygon = true;
+                            break;
+                        case "waterway":
+                            switch (v) {
+                                case "stream":
+                                case "river":
+                                    r = 0f;
+                                    g = 0f;
+                                    b = 1f;
+                                    a = 1f;
+                                    lw = 1f;
+                                    break;
+                            }
                             break;
                         case "natural":
                             switch (v) {
+                                case "wetland":
                                 case "water":
                                     r = 0f;
                                     g = 0f;
                                     b = 1f;
+                                    a = 1f;
+                                    lw = 1f;
+                                    isPolygon = true;
+                                    break;
+                                case "scrub":
+                                    r = 0f;
+                                    g = 0.5f;
+                                    b = 0f;
+                                    a = 1f;
+                                    lw = 1f;
+                                    isPolygon = true;
+                                    break;
+                                case "valley":
+                                    r = 0.5f;
+                                    g = 0.5f;
+                                    b = 0f;
                                     a = 1f;
                                     lw = 1f;
                                     isPolygon = true;
@@ -357,26 +427,47 @@ public enum OsmSpace  { ;
                                     break;
                             }
                             break;
-//                        case "landuse":
-//                            switch (v) {
-//                                case "forest":
-//                                case "grass":
-//                                    r = 0.1f;
-//                                    g = 0.9f;
-//                                    b = 0f;
-//                                    a = 1f;
-//                                    lw = 1f;
-//                                    isPolygon = true;
-//                                    break;
+                        case "leisure":
+                            switch (v) {
+                                case "park":
+                                    r = 0.1f;
+                                    g = 0.9f;
+                                    b = 0f;
+                                    a = 0.25f;
+                                    lw = 1f;
+                                    isPolygon = true;
+                                    break;
+                            }
+                            break;
+                        case "landuse":
+                            switch (v) {
+                                case "forest":
+                                case "grass":
+                                case "recreation_ground":
+                                    r = 0.1f;
+                                    g = 0.9f;
+                                    b = 0f;
+                                    a = 1f;
+                                    lw = 1f;
+                                    isPolygon = true;
+                                    break;
 //                                case "industrial":
 //                                    break;
 //                                default:
 //                                    System.out.println("unstyled: " + k + " = " + v);
 //                                    break;
-//                            }
-//                            break;
+                            }
+                            break;
                         case "route":
                             switch (v) {
+
+//                                case "sidewalk":
+//                                    r = 0f;
+//                                    g = 0.5f;
+//                                    b = 0f;
+//                                    a = 1f;
+//                                    lw = v.equals("both") ? 1.5f : 0.75f;
+//                                    break;
                                 case "road":
                                     r = 1f;
                                     g = 1f;
@@ -397,8 +488,17 @@ public enum OsmSpace  { ;
                                     break;
                             }
                             break;
+
                         case "highway":
                             switch (v) {
+                                case "service":
+                                    r = 1f;
+                                    g = 0f;
+                                    b = 1f;
+                                    a = 1f;
+                                    lw = 2f;
+                                    break;
+                                case "path":
                                 case "pedestrian":
                                     r = 0f;
                                     g = 0.5f;
@@ -406,12 +506,20 @@ public enum OsmSpace  { ;
                                     a = 1f;
                                     lw = 2f;
                                     break;
+                                case "motorway_link":
                                 case "motorway":
                                     r = 1f;
                                     g = 0.5f;
                                     b = 0f;
                                     a = 1f;
                                     lw = 5f;
+                                    break;
+                                case "tertiary":
+                                    r = 0.7f;
+                                    g = 0.5f;
+                                    b = 0f;
+                                    a = 1f;
+                                    lw = 4f;
                                     break;
                                 default:
                                     r = 1f;
@@ -421,6 +529,9 @@ public enum OsmSpace  { ;
                                     lw = 3f;
                                     break;
                             }
+                            break;
+                        default:
+//                            System.out.println("unstyled: " + k + " = " + v + "(" + tags + ")");
                             break;
                     }
                 }
@@ -475,8 +586,8 @@ public enum OsmSpace  { ;
             dbuf.add((gl)->{
                 gl.glBegin(myNextType);
                 int ii = 0;
-                for (int i = 0; i < coord.length / 6; i++) {
-                    gl.glColor3fv(coord, ii); ii+=3;
+                for (int i = 0; i < coord.length / 7; i++) {
+                    gl.glColor4fv(coord, ii); ii+=4;
                     gl.glVertex3fv(coord, ii); ii+=3;
                 }
                 gl.glEnd();
@@ -492,12 +603,14 @@ public enum OsmSpace  { ;
 
                 double[] pointer = (double[]) vertexData;
 
-                if (pointer.length >= 6) {
+                if (pointer.length >= 7) {
                     //gl.glColor3dv(pointer, 3);
                     vbuf.add((float) pointer[3]);
                     vbuf.add((float) pointer[4]);
                     vbuf.add((float) pointer[5]);
+                    vbuf.add((float) pointer[6]);
                 } else {
+                    vbuf.add(1);
                     vbuf.add(1);
                     vbuf.add(1);
                     vbuf.add(1);
@@ -512,12 +625,14 @@ public enum OsmSpace  { ;
             } else if (vertexData instanceof float[]) {
                 float[] pointer = (float[]) vertexData;
 
-                if (pointer.length >= 6) {
+                if (pointer.length >= 7) {
 //                    gl.glColor3fv(pointer, 3);
                     vbuf.add((float) pointer[3]);
                     vbuf.add((float) pointer[4]);
                     vbuf.add((float) pointer[5]);
+                    vbuf.add((float) pointer[6]);
                 } else {
+                    vbuf.add(1);
                     vbuf.add(1);
                     vbuf.add(1);
                     vbuf.add(1);
@@ -545,12 +660,12 @@ public enum OsmSpace  { ;
         @Override
         public void combine(double[] coords, Object[] data,
                             float[] weight, Object[] outData) {
-            float[] vertex = new float[6];
+            float[] vertex = new float[7];
 
             vertex[0] = (float) coords[0];
             vertex[1] = (float) coords[1];
             vertex[2] = (float) coords[2];
-            for (int cc = 3; cc < 6; cc++) {
+            for (int cc = 3; cc < 7; cc++) {
                 float v = 0;
                 for (int dd = 0; dd < data.length; dd++) {
                     float[] d = (float[]) data[dd];

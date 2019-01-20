@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 public class ActionTiming implements BiFunction<Task, Term, long[]> {
 
     private final NAR nar;
-    public final FloatRange horizonDurs = new FloatRange(2, 0, 32);
+    public final FloatRange horizonDurs = new FloatRange(1, 0, 32);
     //public final FloatRange widthDurs = new FloatRange(2, 0, 8);
 
     public ActionTiming(NAR n) {
@@ -24,12 +24,13 @@ public class ActionTiming implements BiFunction<Task, Term, long[]> {
 
         long start, end;
         long now = nar.time();
-        long then = now + Math.round((nar.random().nextFloat() * horizonDurs.floatValue()) * nar.dur());
+        int dur = nar.dur();
+        long then = now + Math.round((nar.random().nextFloat() * horizonDurs.floatValue()) * dur);
 //        if (task.endsBefore(now)) {
 //        if (!task.isEternal()) {
-            start = then - nar.dur(); // + Math.round( ( nar.random().nextDouble() * horizonDurs.floatValue() ) * nar.dur() );
+            start = then - dur; // + Math.round( ( nar.random().nextDouble() * horizonDurs.floatValue() ) * nar.dur() );
 
-        end = then + nar.dur();
+        end = then + dur;
                     //Math.round(widthDurs.doubleValue()*nar.dur());
 
 //        } else {

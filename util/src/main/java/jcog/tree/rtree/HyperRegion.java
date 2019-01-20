@@ -155,10 +155,15 @@ public interface HyperRegion {
         if (this == x) return true;
         int d = dim();
 
-        for (int i = 0; i < d; i++)
+        /*
+           return !((x > r2.x + r2.w) || (r2.x > x + w) ||
+                (y > r2.y + r2.h) || (r2.y > y + h));
+         */
+        for (int i = 0; i < d; i++) {
             if (coord(i, false) > x.coord(i, true) ||
                     coord(i, true) < x.coord(i, false))
                 return false;
+        }
         return true;
     }
 

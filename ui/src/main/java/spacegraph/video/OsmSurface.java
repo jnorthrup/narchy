@@ -2,6 +2,7 @@ package spacegraph.video;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
+import jcog.Texts;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.rect.HyperRectFloat;
@@ -204,6 +205,24 @@ public class OsmSurface extends Surface {
 
         if (finger.tryFingering(pan)) {
             return this;
+        } else {
+            v2 pos = finger.posPixel;
+            float wx = -bounds.w/2 + pos.x;
+            float wy = -bounds.h/2 + pos.y;
+            float wz = 0;
+
+            //TODO unproject screen to world
+
+            float touch[] = new float[3];
+            projection.unproject(wx, wy, wz, touch);
+            System.out.println(Texts.n4(wx,wy,wz) + " -> " + Texts.n4(touch));
+            index.index.whileEachIntersecting(HyperRectFloat.cube(touch, 0.0001f), (each)->{
+                if (each.tags!=null) {
+                    System.out.println(each.tags);
+                }
+                return true;
+            });
+
         }
 
         return null;

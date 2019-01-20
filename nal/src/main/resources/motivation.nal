@@ -20,7 +20,7 @@
     //G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
 
     //result of achieving/non-achieving goal and current belief
-    G, B, task("!"), hasBelief() |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question, Time:Task)
+    G, B, task("!"), hasBelief() |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question)
 
     //is what with goal
     //G, B, task("!") |-           (?1 && G), (Punctuation:Question)
@@ -31,7 +31,7 @@
       G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-        (&&,polarizeTask(G),polarizeBelief(B)), (Punctuation:Quest)
 
     //bifurcate plan
-    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief() |-        (&&,polarizeRandom(G),polarizeBelief(B)), (Punctuation:Quest, Time:Task)
+    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief() |-        (&&,polarizeRandom(G),polarizeBelief(B)), (Punctuation:Quest, Also:VarIntro)
 
 //    //sequence possibility quest
 //    C, X, task("@"), eventOfPN(C,X) |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest, Time:Task)
@@ -52,6 +52,8 @@
 //inverted condition question/quest
     C, X, eventOf(C,X)     |- substitute(C,X,--X), (Punctuation:Ask, Time:Task)
     C, X, eventOfNeg(C,X)  |- substitute(C,--X,X), (Punctuation:Ask, Time:Task)
+
+
 
     X, C, eventOf(C,X), task("!")     |- conjWithout(C,X),   (Punctuation:Quest)
     X, C, eventOfNeg(C,X), task("!")  |- conjWithout(C,--X), (Punctuation:Quest)
@@ -122,8 +124,8 @@
 
 
 //quest to 'how' impl question
-    B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
-    B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(X) ==> B), (Punctuation:Question)
+    B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question, Also:VarIntro)
+    B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(X) ==> B), (Punctuation:Question, Also:VarIntro)
 
 //what else? impl question
     (A ==> Y), (B ==> Y), task("?") |- (?1 ==> Y), (Punctuation:Question)
