@@ -145,7 +145,9 @@ abstract class ListFuncTest {
                             $$("(append((),(x,y),(x,y)) && append((),(x,b),(x,b)))"),
                             $$("(append((x),(y),(x,y)) && append((x),(b),(x,b)))")
                     ),
-                    Evaluation.eval($$("(&&,append(#x,#y,(x,y)),append(#a,#b,(x,b)),equal(#x,#a))"), n));
+                    Evaluation.eval($$("(&&,append(#x,#y,(x,y)),append(#a,#b,(x,b)),equal(#x,#a))"), n)
+                            //.stream().filter(x->x.op()!=NEG).collect(toSet())
+            );
 
         }
 
@@ -265,7 +267,7 @@ abstract class ListFuncTest {
 
             assertEquals(
                     Set.of($$("(--,reverse((x,y),(x,y)))")),
-                    Evaluation.eval($$("reverse((x,y),(x,y))"), n));
+                    Evaluation.eval($$("reverse((x,y),(x,y))"), true, true, n));
 
         }
 

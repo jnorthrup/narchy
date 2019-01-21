@@ -76,7 +76,7 @@ class SetFuncTest {
     @Test void testMember1_false() {
         assertEquals(
                 Set.of($$("--member(c,{a,b})")),
-                Evaluation.eval($$("member(c,{a,b})"), n));
+                Evaluation.eval($$("member(c,{a,b})"), true, true, n));
 
     }
 

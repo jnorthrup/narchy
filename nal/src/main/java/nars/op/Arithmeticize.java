@@ -115,7 +115,7 @@ public class Arithmeticize {
 
         //pre-evaluate using the arith operators; ignore other operators (unless they are already present, ex: member)
         //Term xx = Evaluation.solveFirst(x, ArithFunctors);
-        Set<Term> xx = Evaluation.eval(x, ArithFunctors);
+        Set<Term> xx = Evaluation.eval(x, true, false, ArithFunctors);
         int xxs = xx.size();
 
         if (xxs == 1) {

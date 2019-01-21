@@ -27,6 +27,7 @@ import java.util.function.Predicate;
 
 import static nars.$.$$;
 import static nars.Op.PROD;
+import static nars.term.atom.Bool.Null;
 
 public class Evaluation {
 
@@ -44,6 +45,10 @@ public class Evaluation {
     @Nullable
     public static Evaluation eval(Term x, NAR nar, Predicate<Term> each) {
         return eval(x, nar::functor, each);
+    }
+    @Nullable
+    public static Evaluation eval(Term x, Function<Atom, Functor> resolver, Predicate<Term> each) {
+        return eval(x, true, false, resolver, each);
     }
 
 //    @Nullable
@@ -88,15 +93,15 @@ public class Evaluation {
      * @return
      */
     @Nullable
-    private static Evaluation eval(Term x, Function<Atom, Functor> resolver, Predicate<Term> each) {
+    private static Evaluation eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver, Predicate<Term> each) {
 
         if (canEval(x)) {
             Evaluator y = new Evaluator(resolver);
-            return y.eval(each, x);
+            return y.eval(each, includeTrues, includeFalses, x);
+        } else {
+            each.test(x); //didnt need evaluating, just input
+            return null;
         }
-
-        each.test(x); //didnt need evaluating, just input
-        return null;
     }
 
     public Evaluation(Predicate<Term> each) {
@@ -115,8 +120,7 @@ public class Evaluation {
                 if (tt.test(subst)) {
                     Term z = y.replace(subst);
                     if (z!=y) {
-                        Evaluator ee = e;//.clone();
-                        if (!eval(ee, z)) //recurse
+                        if (!eval(e, z)) //recurse
                             return false; //CUT
                     }
                     //if (z!=y) {
@@ -142,7 +146,7 @@ public class Evaluation {
                     if (cc == null)
                         break; //null term list
                     if (!cc.test(subst))
-                        break nextProduct;
+                        continue nextProduct;
                 }
 
                 //all components applied successfully
@@ -150,8 +154,7 @@ public class Evaluation {
                 Term z = y.replace(subst);
                 if (z!=y) {
 //                    if (canEval(z)) { // && !(ez = e.clone().query(z)).isEmpty()) {
-                        Evaluator ee = e;//.clone();
-                        if (!eval(ee, z)) //recurse
+                        if (!eval(e, z)) //recurse
                             return false; //CUT
 //                    } else {
 //                        if (!each.test(z))
@@ -166,16 +169,28 @@ public class Evaluation {
 
 
     public boolean eval(Evaluator e, final Term x) {
-        //iterate until stable
+        return eval(e, x, e.discover(x, this));
+    }
+
+    /** fails fast if no known functors apply */
+    public boolean evalTry(Evaluator e, Term x) {
+        ArrayHashSet<Term> d = e.discover(x, this);
+        if (d==null && (termutator==null || termutator.isEmpty())) {
+            each.test(x);
+            return true; //early exit
+        }
+        return eval(e, x, d);
+    }
+
+    protected boolean eval(Evaluator e, final Term x, @Nullable ArrayHashSet<Term> operations) {
 
         Term y = x;
 
-        ArrayHashSet<Term> operations = e.discover(x, this);
         if (operations != null) {
 
             Term prev;
             int vStart, tried, mutStart;
-            main:
+            main: //iterate until stable
             do {
                 prev = y;
                 Iterator<Term> ii = operations.iterator();
@@ -232,8 +247,8 @@ public class Evaluation {
                         }
 
                         z = func.apply(this, args);
-                        if (z == Bool.Null) {
-                            return each.test(Bool.Null);
+                        if (z == Null) {
+                            return each.test(Null);
                         }
                         substAdded = now() != vStart;
                         mutAdded = mutStart != termutators();
@@ -268,14 +283,14 @@ public class Evaluation {
                             if (z != null) {
                                 p = o.replace(finalA, z);
                                 if (o != p && !Functor.isFunc(p))
-                                    return Bool.Null;
+                                    return Null;
                             } else
                                 p = o;
 
                             if (substAdded) {
                                 q = p.replace(subst);
                                 if (p != q && !Functor.isFunc(q))
-                                    return Bool.Null;
+                                    return Null;
                             } else
                                 q = p;
 
@@ -322,12 +337,20 @@ public class Evaluation {
 
     protected Term bool(Term x, Bool b) {
         if (b == Bool.True) {
-            return x;
+            return boolTrue(x);
         } else if ( b == Bool.False) {
-            return x.neg();
+            return boolFalse(x);
         } else {
-            return Bool.Null;
+            return Null;
         }
+    }
+
+    protected Term boolTrue(Term x) {
+        return x;
+    }
+
+    protected Term boolFalse(Term x) {
+        return x.neg();
     }
 
     private int termutators() {
@@ -358,7 +381,7 @@ public class Evaluation {
 
     public static Term solveFirst(Term x, Function<Atom,Functor> resolver) {
         Term[] y = new Term[1];
-        Evaluation.eval(x, resolver, (what) -> {
+        Evaluation.eval(x, true, false, resolver, (what) -> {
             if (what instanceof Bool) {
                 if (y[0]!=null)
                     return true; //ignore and continue try to find a non-bool solution
@@ -374,14 +397,14 @@ public class Evaluation {
     }
     @Deprecated private static FactualEvaluator query(Term x, NAR n) {
         FactualEvaluator f = new FactualEvaluator(n::functor, n.facts(0.75f, true));
-        f.eval((y)->true, x);
+        f.eval((y)->true,true, false,  x);
         return f;
     }
 
     public static Set<Term> queryAll(Term x, NAR n) {
         Set<Term> solutions = new ArrayHashSet(1);
         FactualEvaluator f = new FactualEvaluator(n::functor, n.facts(0.75f, true));
-        f.eval((y)->{ solutions.add(y); return true; }, x);
+        f.eval((y)->{ solutions.add(y); return true; }, true, false, x);
         return solutions;
     }
 
@@ -390,35 +413,36 @@ public class Evaluation {
     }
 
     public static Set<Term> eval(Term x, NAR n) {
-        return eval(x, n::functor);
+        return eval(x, true, false, n);
+    }
+
+    public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, NAR n) {
+        return eval(x, includeTrues, includeFalses, n::functor);
     }
     /**
      * gathers results from one truth set, ex: +1 (true)
      * TODO add limit
      */
-    public static Set<Term> eval(Term x, Function<Atom, Functor> resolver) {
+    public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver) {
         final Set[] yy = {null};
-        Evaluation.eval(x, resolver, (y) -> {
+        Evaluation.eval(x, includeTrues, includeFalses, resolver, (y) -> {
+
+            if (y == Null)
+                return true;
+
             if (yy[0] == null) {
                 yy[0] = new UnifiedSet<>(1);
             }
-            //TODO extract this to a 'wrap' method
-            if (y instanceof Bool) {
-                if (y == Bool.True)
-                    yy[0].add(x);
-                else if (y == Bool.False) {
-                    yy[0].add(x.neg());
-                } else {
-                    //Null, but continue..
-                }
-            } else {
-                yy[0].add(y);
-            }
+            yy[0].add(y);
             return true;
         });
 
         Set z = yy[0];
-        return z == null ? java.util.Set.of($.func(Inperience.wonder, x)) : yy[0];
+        return z == null ?
+                //java.util.Set.of($.func(Inperience.wonder, x))
+                Set.of()
+                :
+                yy[0];
     }
 
 
@@ -507,6 +531,7 @@ public class Evaluation {
     public static boolean canEval(Termlike x) {
         return x.hasAll(Op.FuncBits);
     }
+
 
 
 }

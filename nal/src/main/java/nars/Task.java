@@ -881,7 +881,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
                 return (forked[0] < Param.TASK_EVAL_FORK_LIMIT) && (tried[0] < Param.TASK_EVAL_TRY_LIMIT);
             };
-            new Perceive.TaskEvaluation(each).eval(n.evaluator, x);
+            new Perceive.TaskEvaluation(each).evalTry(n.evaluator, x);
 
         } else {
             if (!Perceive.tryPerceive(this, x, yy, n))

@@ -12,6 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static nars.term.atom.Bool.Null;
+
 /**
  * discovers functors within the provided term, or the term itself.
  * transformation results should not be interned, that is why DirectTermTransform used here
@@ -88,13 +90,22 @@ public class Evaluator extends DirectTermTransform {
 //        return this;
 //    }
 
-    @Nullable public Evaluation eval(Predicate<Term> each, Term... queries) {
-        Evaluation e = new Evaluation(each);
+    @Nullable public Evaluation eval(Predicate<Term> each, boolean includeTrues, boolean includeFalses, Term... queries) {
+        Evaluation e = new Evaluation(each) {
+            @Override
+            protected Term boolTrue(Term x) {
+                return includeTrues ? super.boolTrue(x) : Null;
+            }
+
+            @Override
+            protected Term boolFalse(Term x) {
+                return includeFalses ? super.boolFalse(x) : Null;
+            }
+        };
 
         //iterating at the top level is effectively DFS; a BFS solution is also possible
         for (Term x : queries) {
-
-            e.eval(this, x);
+            e.evalTry(this, x);
         }
         return e;
     }
