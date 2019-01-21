@@ -29,6 +29,9 @@
 package jcog.data.map;
 
 
+import jcog.random.Rand;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -119,4 +122,10 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
         return map.asList();
     }
 
+    @Nullable
+    public T get(Rand rng) {
+        T[] a = map.valueArray();
+        if (a.length == 0) return null;
+        return a[rng.nextInt(a.length)];
+    }
 }

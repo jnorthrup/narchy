@@ -1,7 +1,6 @@
 package nars.exe;
 
 import com.google.common.base.Joiner;
-import jcog.TODO;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.bit.AtomicMetalBitSet;
@@ -9,9 +8,6 @@ import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
-import jcog.exe.valve.InstrumentedWork;
-import jcog.exe.valve.TimeSlicing;
-import jcog.math.FloatRange;
 import jcog.random.SplitMix64Random;
 import nars.NAR;
 import nars.control.DurService;
@@ -34,12 +30,7 @@ abstract public class MultiExec extends UniExec {
     private final Revaluator revaluator;
 
     final AtomicMetalBitSet sleeping = new AtomicMetalBitSet();
-
-
-    /**
-     * increasing the rate closer to 1 reduces the dynamic range of concentration specificity allocation
-     */
-    public final FloatRange explorationRate = FloatRange.unit(0.1f);
+    private long cycleTimeNS;
 
     protected long idleTimePerCycle;
 
@@ -47,29 +38,11 @@ abstract public class MultiExec extends UniExec {
     private static final long NapTime = 2 * 1000 * 1000; //on the order of ~1ms
 
     private final float queueLatencyMeasurementProbability = 0.05f;
-    private Runnable nextCycle;
 
     MultiExec(Revaluator revaluator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
         this.revaluator = revaluator;
     }
-
-//    @Override
-//    public void input(Collection<? extends ITask> xx) {
-//        int CHUNK_THRESH = 2;
-//        int conc = concurrency();
-//        if (xx.size() < conc * CHUNK_THRESH) {
-//            executeLater(new AbstractTask.TasksIterable(xx));
-//        } else {
-//            if (xx instanceof FasterList) {
-//                ((FasterList<ITask>)xx).chunk(conc).forEach((c)->{
-//                    executeLater(new AbstractTask.TasksIterable(c));
-//                });
-//            } else {
-//                executeLater(new AbstractTask.TasksIterable(xx)); //TODO
-//            }
-//        }
-//    }
 
     @Override
     public final void input(Object x) {
@@ -100,236 +73,126 @@ abstract public class MultiExec extends UniExec {
 
 
     private void onDur() {
+
+        updateTiming();
+
         revaluator.update(nar);
 
-        if (nar.time instanceof RealTime) {
-            double cycleNS = nar.loop.periodNS();
-            if(cycleNS < 0) {
-                //paused
-                idleTimePerCycle = NapTime;
-                cpu.cycleTimeNS.set(0);
-            } else {
-                double throttle = nar.loop.throttle.floatValue();
+        //sharing.commit();
 
-                //TODO better idle calculation in each thread / worker
-                idleTimePerCycle = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
+    }
 
-                cpu.cycleTimeNS.set(Math.max(1, Math.round(cycleNS * throttle)));
-            }
 
+    private void updateTiming() {
+        double cycleNS = nar.loop.periodNS();
+        if(cycleNS < 0) {
+            //paused
+            idleTimePerCycle = NapTime;
+            cycleTimeNS = 0;
+        } else {
+            double throttle = nar.loop.throttle.floatValue();
+
+            //TODO better idle calculation in each thread / worker
+            idleTimePerCycle = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
+
+            cycleTimeNS = Math.max(1, Math.round(cycleNS * throttle)) * concurrency();
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
                 input(new QueueLatencyMeasurement(System.nanoTime()));
             }
-
-        } else
-            throw new TODO();
-
-        sharing.commit();
-
-    }
-
-    /** measure queue latency "ping" */
-    private void queueLatency(long start, long end) {
-        long latencyNS = end - start;
-        double cycles = latencyNS / ((double)nar.loop.cycleTimeNS);
-        if (cycles > 1) {
-            logger.info("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(cycles));
         }
     }
 
+
     @Override
     public void start(NAR n) {
+        if (!(n.time instanceof RealTime))
+            throw new UnsupportedOperationException("non-realtime clock not supported");
 
         super.start(n);
         ons.add(DurService.on(n, this::onDur));
 
-        this.nextCycle = n.loop.run;
-
     }
 
-    @Override public TimeSlicing<Object, String> scheduler() {
-        return new TimeSlicing<>("CPU", 1, nar.exe) {
 
+    private void prioritize() {
+        int n = cpu.size();
+        if (n == 0)
+            return;
 
-            @Deprecated
-            @Override
-            protected void trySpawn() {
+        float[] valMin = {Float.POSITIVE_INFINITY}, valMax = {Float.NEGATIVE_INFINITY};
 
+        long now = nar.time();
+
+        cpu.forEach((s) -> {
+            Causable c = s.get();
+
+            boolean sleeping = c.sleeping(now);
+            MultiExec.this.sleeping.set(c.scheduledID, sleeping);
+            if (sleeping) {
+                return;
             }
 
-            @Override
-            @Deprecated
-            protected boolean work() {
-                throw new UnsupportedOperationException();
-            }
+            float v = c.value();
+            s.value = v;
+            assert(v==v);
 
-            @Override
-            public TimeSlicing commit() {
+            if (v > valMax[0]) valMax[0] = v;
+            if (v < valMin[0]) valMin[0] = v;
 
-                int n = size();
-                if (n == 0)
-                    return this;
+        });
 
-                /** min time granularity */
-                long epsilonNS =
-                        1000 /* 1 uS */;
-
-                //nar.loop.cycleTimeNS / (n * 2);
-
-                double[] valMin = {Double.POSITIVE_INFINITY}, valMax = {Double.NEGATIVE_INFINITY};
-
-                long now = nar.time();
-
-                this.forEach((InstrumentedWork s) -> {
-                    Causable c = (Causable) s.who;
-
-                    boolean sleeping = c.sleeping(now);
-                    MultiExec.this.sleeping.set(c.scheduledID, sleeping);
-                    if (sleeping) {
-                        s.pri(0);
-                        return;
-                    }
-
-                    double v = c.value();
-                    assert(v==v);
-
-                    s.value = v;
-                    if (v > valMax[0]) valMax[0] = v;
-                    if (v < valMin[0]) valMin[0] = v;
-
-                });
-
-                double valRange = valMax[0] - valMin[0];
+        float valRange = valMax[0] - valMin[0];
 
 
-                int sleeping = MultiExec.this.sleeping.cardinality();
-                if (Double.isFinite(valRange) && Math.abs(valRange) > Double.MIN_NORMAL) {
-
-                    final double[] valRateMin = {Double.POSITIVE_INFINITY}, valRateMax = {Double.NEGATIVE_INFINITY};
-                    this.forEach((InstrumentedWork s) -> {
-                        Causable c = (Causable) s.who;
-                        if (MultiExec.this.sleeping.get(c.scheduledID))
-                            return;
-
-//                            Causable x = (Causable) s.who;
-                        //if (x instanceof Causable) {
-
-                        long accumTimeNS = Math.max(epsilonNS, s.accumulatedTime(true));
-                        double accumTimeMS = accumTimeNS / 1_000_000.0;
-                        double valuePerMS = (s.value / accumTimeMS);
-                        s.valueRate = valuePerMS;
-                        if (valuePerMS > valRateMax[0]) valRateMax[0] = valuePerMS;
-                        if (valuePerMS < valRateMin[0]) valRateMin[0] = valuePerMS;
-                    });
-                    double valRateRange = valRateMax[0] - valRateMin[0];
-                    if (Double.isFinite(valRateRange) && valRateRange > Double.MIN_NORMAL * n) {
-
-                        float explorationRate = MultiExec.this.explorationRate.floatValue();
-
-                        double[] valueRateSum = {0};
-
-                        forEach((InstrumentedWork s) -> {
-                            Causable c = (Causable) s.who;
-                            if (MultiExec.this.sleeping.get(c.scheduledID))
-                                return;
-
-                            double v = s.valueRate, vv;
-                            if (v == v) {
-                                vv = (v - valRateMin[0]) / valRateRange;
-                            } else {
-                                vv = 0;
-                            }
-                            s.valueRateNormalized = vv;
-                            valueRateSum[0] += vv;
-                        });
-
-                        if (valueRateSum[0] > Double.MIN_NORMAL) {
-
-                            float fair = 1f/(n-sleeping);
-
-                            forEach((InstrumentedWork s) -> {
-                                Causable c = (Causable) s.who;
-                                if (MultiExec.this.sleeping.get(c.scheduledID))
-                                    return;
-
-
-                                float p = (float) (s.valueRateNormalized / valueRateSum[0]);
-
-                                s.pri(
-                                        Util.lerp(explorationRate, p, fair)
-                                );
-                                //System.out.println(s + " " + c);
-                            });
-
-                            return this;
-                        }
-                    }
-
+        final double[] pSum = {0};
+//        int sleeping = MultiExec.this.sleeping.cardinality();
+        if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
+            cpu.forEach((s) -> {
+                Causable c = s.get();
+                if (MultiExec.this.sleeping.get(c.scheduledID)) {
+                    s.pri(0);
+                } else {
+                    float vNorm = Util.normalize(s.value, valMin[0], valMax[0]);
+                    s.pri(vNorm);
+                    pSum[0] += vNorm;
                 }
+            });
+        } else {
+            cpu.forEach((s) -> {
+                Causable c = s.get();
+                if (MultiExec.this.sleeping.get(c.scheduledID)) {
+                    s.pri(0f);
+                } else {
+                    float p = 0.5f;
+                    s.pri(p);
+                    pSum[0] += p;
+                }
+            });
+        }
+        cpu.forEach((s) -> {
+            s.add( Math.round(cycleTimeNS * s.priElseZero()/pSum[0]), cycleTimeNS );
+        });
 
-                /** flat */
-                float flatDemand = n > 1 ? (1f / (n- sleeping)) : 1f;
-                forEach((InstrumentedWork s) -> {
-                    Causable c = (Causable) s.who;
-                    if (!MultiExec.this.sleeping.get(c.scheduledID))
-                        s.pri(flatDemand);
-                });
-
-
-                return this;
-            }
-        };
     }
 
     protected void onCycle(NAR nar) {
-
         nar.time.schedule(this::executeLater);
 
-
+        prioritize();
     }
-
-//
-//    protected void work(FasterList b, int concurrency) {
-//        //in.drainTo(b, (int) Math.ceil(in.size() * (1f / Math.max(1, (concurrency - 1)))));
-//
-//
-//
-//        int batchSize = (int) Math.ceil( (((float)in.capacity()) / Math.max(concurrency, (totalConcurrency - 1))));
-//        //int batchSize = 8;
-//        //int remaining = Math.min(incoming, batchSize);
-//
-//
-//        int drained = in.remove(b, batchSize);
-//
-//
-////            if (drained > 0) {
-////
-////                exe += drained;
-////                //in.clear(b::add, batchSize);
-//////            remaining -= batchSize;
-////
-////                return exe;
-////
-////            }
-//
-//
-//
-//        //System.out.println(Thread.currentThread() + " " + incoming + " " + batchSize + " " + exe);
-//
-//    }
 
 
     @Override
     public void print(Appendable out) {
         try {
-            Joiner.on('\n').appendTo(out, can.values());
+            Joiner.on('\n').appendTo(out, cpu);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public boolean execute(FasterList b, int concurrency) {
+    boolean execute(FasterList b, int concurrency) {
         //TODO sort, distribute etc
         int bn = b.size();
         if (bn == 0)
@@ -353,80 +216,6 @@ abstract public class MultiExec extends UniExec {
         b.clear();
         return true;
     }
-
-//    protected void play() {
-//
-////        long dutyTimeStart = System.nanoTime();
-////        long dutyTimeEnd = System.nanoTime();
-//        double timeSliceNS =
-//                Math.max(1,
-//                    cpu.cycleTimeNS.longValue()// - Math.max(0, (dutyTimeEnd - dutyTimeStart))
-//                        * nar.loop.jiffy.doubleValue()
-//                );
-//
-//        can.forEachValue(c -> {
-//            if (c.c.instance.availablePermits() == 0)
-//                return;
-//
-//
-//            double iterTimeMean = c.iterTimeNS.getMean();
-//            double iterationsMean = c.iterations.getMean();
-//            int work;
-//            if (iterTimeMean == iterTimeMean && iterationsMean==iterationsMean) {
-//
-//                double growth = 1;
-//                double maxIters = growth * Math.max(1, (c.pri() * timeSliceNS / (iterTimeMean / iterationsMean)));
-//                work = (maxIters == maxIters) ?
-//                        Util.clamp((int)Math.round(maxIters), 1, CAN_ITER_MAX) : 1;
-//            } else {
-//                work = 1;
-//            }
-//            //System.out.println(c + " " + work);
-//
-//            //int workRequested = c.;
-//            //b.add((Runnable) (() -> { //new NLink<Runnable>(()->{
-//
-//            play(c, work);
-//
-//
-//            //}));
-//
-//            //c.c.run(nar, WORK_PER_CYCLE, x -> b.add(x.get()));
-//        });
-//    }
-//
-//    private void play(MyAbstractWork c, int work) {
-//
-//        tryCycle();
-//
-//        if (c.start()) {
-//            try {
-//                c.next(work);
-//            } finally {
-//                c.stop();
-//            }
-//        }
-//    }
-
-//    public static class UniBufferedExec extends BufferedExec {
-//        final Flip<List> buffer = new Flip<>(FasterList::new);
-//
-//        final AtomicBoolean cycleBusy = new AtomicBoolean();
-//
-//        @Override
-//        protected void onCycle() {
-//            super.onCycle();
-//
-//            if (!cycleBusy.compareAndSet(false, true))
-//                return; //busy
-//            try {
-//                onCycle(buffer.write(), concurrent());
-//            } finally {
-//                cycleBusy.set(false);
-//            }
-//        }
-//    }
-
 
     public static class WorkerExec extends MultiExec {
 
@@ -549,37 +338,35 @@ abstract public class MultiExec extends UniExec {
 
             private void play(long playTime) {
 
-                double maxJiffyTime = playTime / ((double) (contextGranularity));
-                double minJiffyTime = maxJiffyTime / Math.max(1, can.size());
-
-
                 long until = System.nanoTime() + playTime;
+                int n = cpu.items.size();
+                if (n == 0)
+                    return;
                 do {
-                    InstrumentedCausable c = can.getIndex(rng);
+                    TimedLink s = cpu.get(rng.nextInt(n));
+                    if (s == null)
+                        break;
 
-                    if (c!=null && !sleeping.get(c.c.scheduledID)) {
+                    Causable c = s.get();
 
-                        boolean singleton = c.c.singleton();
-                        if (!singleton || c.c.busy.compareAndSet(false, true)) {
+                    if (!sleeping.get(c.scheduledID)) {
+
+                        boolean singleton = c.singleton();
+                        if (!singleton || c.busy.compareAndSet(false, true)) {
                             try {
 
                                 long runtimeNS =
-                                        Math.round(Util.lerp(c.pri(), minJiffyTime, maxJiffyTime));
-
+                                        s.time.getOpaque() / contextGranularity;
                                 if (runtimeNS > 0) {
                                     long before = System.nanoTime();
-                                    c.runUntil(before, runtimeNS);
-                                    /*
+                                    c.runUntil(before + runtimeNS, nar);
                                     long after = System.nanoTime();
-                                    long excessNS = (after - before) - runtimeNS;
-                                    if (excessNS > runtimeNS/2) {
-                                        System.out.println(c + " exceeded runtime of " + Texts.timeStr(runtimeNS) + " by " + Texts.timeStr(excessNS));
-                                    }*/
+                                    s.use(after - before);
                                 }
 
                             } finally {
                                 if (singleton)
-                                    c.c.busy.set(false);
+                                    c.busy.set(false);
                             }
                         }
                     }
@@ -618,7 +405,7 @@ abstract public class MultiExec extends UniExec {
         }
     }
 
-    private class QueueLatencyMeasurement extends AbstractTask {
+    static private class QueueLatencyMeasurement extends AbstractTask {
 
         private final long start;
 
@@ -629,8 +416,17 @@ abstract public class MultiExec extends UniExec {
         @Override
         public ITask next(NAR n) {
             long end = System.nanoTime();
-            queueLatency(start, end);
+            queueLatency(start, end, n);
             return null;
+        }
+
+        /** measure queue latency "ping" */
+        static void queueLatency(long start, long end, NAR n) {
+            long latencyNS = end - start;
+            double cycles = latencyNS / ((double)n.loop.cycleTimeNS);
+            if (cycles > 0.5) {
+                logger.info("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(cycles));
+            }
         }
     }
 

@@ -22,7 +22,7 @@ public class Sharing<What,Who> {
 
 
     /** CAN/provide/offer something */
-    public Sharing<What, Who> can(Mix<Who,What,Share<Who,What>>... dd) {
+    public Sharing<What, Who> can(Mix... dd) {
         for (Mix<Who,What,Share<Who,What>> d : dd)
             alloc.put(d.what, d);
         return this;

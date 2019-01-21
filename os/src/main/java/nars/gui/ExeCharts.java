@@ -2,9 +2,9 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.exe.valve.InstrumentedWork;
 import jcog.math.FloatRange;
 import jcog.math.MutableEnum;
+import jcog.sort.SortedArray;
 import jcog.sort.TopN;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
@@ -118,12 +118,12 @@ public class ExeCharts {
     }
 
     static class CausableWidget extends Widget {
-        private final UniExec.InstrumentedCausable c;
+        private final UniExec.TimedLink c;
         private final VectorLabel label;
 
-        CausableWidget(UniExec.InstrumentedCausable c) {
+        CausableWidget(UniExec.TimedLink c) {
             this.c = c;
-            label = new VectorLabel(c.c.can.id);
+            label = new VectorLabel(c.get().can.id);
             set(label);
 
         }
@@ -133,20 +133,20 @@ public class ExeCharts {
     enum CauseProfileMode {
         Pri() {
             @Override
-            float valueOf(InstrumentedWork w) {
+            float valueOf(UniExec.TimedLink w) {
                 return w.pri();
             }
         },
         Value() {
             @Override
-            float valueOf(InstrumentedWork w) {
-                return (float) w.value;
+            float valueOf(UniExec.TimedLink w) {
+                return w.value;
             }
         },
         Time() {
             @Override
-            float valueOf(InstrumentedWork w) {
-                return w.accumTimeNS.longValue()/1_000_000f;
+            float valueOf(UniExec.TimedLink w) {
+                return w.time.get();
             }
         };
         /* TODO
@@ -160,11 +160,11 @@ public class ExeCharts {
                         //,0,1
          */
 
-        abstract float valueOf(InstrumentedWork w);
-    };
+        abstract float valueOf(UniExec.TimedLink w);
+    }
 
     public static Surface causeProfiler(NAR nar) {
-        UniExec.InstrumentedCausable[] cc = ((UniExec) nar.exe).can.valueArray();
+        SortedArray<UniExec.TimedLink> cc = ((UniExec) nar.exe).cpu.items;
         int history = 128;
         Plot2D pp = new Plot2D(history,
                 Plot2D.BarLanes
@@ -174,9 +174,9 @@ public class ExeCharts {
 
         final MutableEnum<CauseProfileMode> mode = new MutableEnum<>(CauseProfileMode.Pri);
 
-        for (int i = 0, ccLength = cc.length; i < ccLength; i++) {
-            UniExec.InstrumentedCausable c = cc[i];
-            String label = c.c.id.toString();
+        for (int i = 0, ccLength = cc.size(); i < ccLength; i++) {
+            UniExec.TimedLink c = cc.get(i);
+            String label = c.get().toString();
             //pp[i] = new Plot2D(history, Plot2D.Line).add(label,
             pp.add(label, ()-> mode.get().valueOf(c));
         }
@@ -195,16 +195,16 @@ public class ExeCharts {
 
     public static Surface focusPanel(NAR nar) {
 
-//        ForceDirected2D<UniExec.InstrumentedCausable> fd = new ForceDirected2D<>();
+//        ForceDirected2D<UniExec.TimedLink> fd = new ForceDirected2D<>();
 //        fd.repelSpeed.set(0.5f);
 
-        Graph2D<UniExec.InstrumentedCausable> s = new Graph2D<UniExec.InstrumentedCausable>()
+        Graph2D<UniExec.TimedLink> s = new Graph2D<UniExec.TimedLink>()
                 .render((node, g) -> {
-                    UniExec.InstrumentedCausable c = node.id;
+                    UniExec.TimedLink c = node.id;
 
                     final float epsilon = 0.01f;
                     float p = Math.max(c.priElse(epsilon), epsilon);
-                    float v = c.c.value();
+                    float v = c.get().value();
                     node.color(p, v, 0.25f);
 
 
@@ -222,9 +222,12 @@ public class ExeCharts {
 
 
         return DurSurface.get(
-                new Splitting(s, new Gridding(new PushButton("Stats").click(()->causeSummary(nar, 10)), s.configWidget()), 0.1f),
+                new Splitting(s,
+                        new Gridding(new PushButton("Stats")
+                                .click(()->causeSummary(nar, 10))
+                                , s.configWidget()), 0.1f),
                 nar, () -> {
-                    s.set(((UniExec) nar.exe).can::valueIterator);
+                    s.set(((UniExec) nar.exe).cpu);
                 });
     }
 

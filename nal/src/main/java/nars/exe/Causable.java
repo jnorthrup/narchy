@@ -25,7 +25,7 @@ abstract public class Causable extends NARService {
 
     public final Can can;
 
-    /** id as set by the scheduler to identify it */
+    /** id set by the scheduler on registration */
     @Deprecated public volatile int scheduledID = -1;
 
     final AtomicBoolean busy;
@@ -122,4 +122,7 @@ abstract public class Causable extends NARService {
      */
     public abstract float value();
 
+    public void runUntil(long when, NAR n) {
+        next(n, () -> System.nanoTime() < when);
+    }
 }

@@ -422,7 +422,7 @@ public class Evaluation {
 
     private static final class MyEvaluated extends UnifiedSet<Term> implements Predicate<Term> {
         protected MyEvaluated() {
-            super(0);
+            super(1, 0.99f);
         }
 
         @Override
