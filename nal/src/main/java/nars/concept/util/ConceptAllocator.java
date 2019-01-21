@@ -6,6 +6,7 @@ import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
+import nars.term.Functor;
 
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
@@ -118,6 +119,8 @@ public final class ConceptAllocator implements Consumer<Concept> {
     }
 
     @Deprecated private int tasklinkCap(Concept concept) {
+        if(concept instanceof Functor)
+            return 0;
         return tasklinksCapacity.applyAsInt(concept);
     }
 

@@ -30,7 +30,7 @@ public class UniExec extends AbstractExec {
 
         /** allocated time for execution;
          * may be negative when excessive time consumed */
-        public final AtomicLong time = new AtomicLong(0);
+        public final AtomicLong time = new AtomicLong(0), used = new AtomicLong(0);
 
         /** cached value */
         transient public float value;
@@ -44,6 +44,12 @@ public class UniExec extends AbstractExec {
         }
         void use(long t) {
             time.addAndGet( -t );
+            used.addAndGet(t);
+        }
+
+        public long used() {
+            long t = used.getAndSet(0);
+            return t;
         }
     }
 

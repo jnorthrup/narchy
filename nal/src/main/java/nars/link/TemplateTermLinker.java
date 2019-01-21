@@ -325,8 +325,6 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
     @Override
     public void sample(Random rng, Function<? super Term, SampleReaction> each) {
         Termed termed = get(rng);
-        if (termed==null)
-            throw new WTF(); //TEMPORARY
         each.apply(termed.term());
     }
 

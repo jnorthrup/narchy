@@ -1,6 +1,5 @@
 package nars.concept;
 
-import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.bag.Bag;
 import nars.NAR;
@@ -8,7 +7,6 @@ import nars.Op;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.link.TaskLink;
-import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.question.QuestionTable;
@@ -124,7 +122,7 @@ public class NodeConcept implements Concept {
             taskLinks.clear();
             taskLinks.setCapacity(0);
 
-            if (linker instanceof TemplateTermLinker) ((FasterList)linker).clear(); //HACK TODO maybe add Linker.clear()
+//            if (linker instanceof TemplateTermLinker) ((FasterList)linker).clear(); //HACK TODO maybe add Linker.clear()
 
             return true;
         }

@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -177,6 +178,14 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
      */
     default void pressurize(float f) {
 
+    }
+
+    @Nullable default <X> X reduce(BiFunction<V,X,X> each, X init) {
+        X x = init;
+        for (V v : this) {
+            x = each.apply(v, x);
+        }
+        return x;
     }
 
     /**

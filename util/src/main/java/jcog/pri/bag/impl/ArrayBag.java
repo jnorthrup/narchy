@@ -786,6 +786,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         forEach(x -> each.accept(key(x)));
     }
 
+
     @Override
     public void forEach(Consumer<? super Y> action) {
 

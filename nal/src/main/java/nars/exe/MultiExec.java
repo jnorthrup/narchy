@@ -123,8 +123,16 @@ abstract public class MultiExec extends UniExec {
         float[] valMin = {Float.POSITIVE_INFINITY}, valMax = {Float.NEGATIVE_INFINITY};
 
         long now = nar.time();
+        long maxTime = cpu.reduce((s,max)->Math.max(max, s.time.getOpaque()), Long.MIN_VALUE);
+        if (maxTime < 0) {
+            //shift all time up
+            long shift = 1-maxTime;
+            cpu.forEach(c -> {
+                c.add(shift, cycleTimeNS);
+            });
+        }
 
-        cpu.forEach((s) -> {
+        cpu.forEach(s -> {
             Causable c = s.get();
 
             boolean sleeping = c.sleeping(now);
@@ -133,7 +141,8 @@ abstract public class MultiExec extends UniExec {
                 return;
             }
 
-            float v = c.value();
+            long tUsed = s.used();
+            float v = tUsed > 0 ? (float)((c.value())/(tUsed/1.0e9)) : 0;
             s.value = v;
             assert(v==v);
 
@@ -146,7 +155,6 @@ abstract public class MultiExec extends UniExec {
 
 
         final double[] pSum = {0};
-//        int sleeping = MultiExec.this.sleeping.cardinality();
         if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
             cpu.forEach((s) -> {
                 Causable c = s.get();
@@ -171,7 +179,7 @@ abstract public class MultiExec extends UniExec {
             });
         }
         cpu.forEach((s) -> {
-            s.add( Math.round(cycleTimeNS * s.priElseZero()/pSum[0]), cycleTimeNS );
+            s.add( Math.max(1, Math.round(cycleTimeNS * s.priElseZero()/pSum[0])), cycleTimeNS );
         });
 
     }

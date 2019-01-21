@@ -78,18 +78,6 @@ public abstract class Param {
             , 0, 1);
 
 
-    public static final int TaskLinkSpreadDefault =
-            //16;
-            //12;
-            //10;
-            8;
-            //7;
-            //6;
-            //5;
-            //4;
-            //3;
-            //2;
-            //1;
 
 //    public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 8;
     //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
@@ -364,18 +352,37 @@ public abstract class Param {
 
     public final FloatRange taskLinkActivation = new FloatRange(1f, 0, 2f);
 
+
+
+    public static final int TaskLinkSpreadDefault =
+            //16;
+            //12;
+            //10;
+            //8;
+            //7;
+            //6;
+            //5;
+            4;
+    //3;
+    //2;
+    //1;
+
     /** termlink template layers depth. TODO this will be abstracted to more flexible weighted activation heuristic */
-    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH = 2 /* 2..4 tested to work ok */;
+    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH_min = 2;
+    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH = 3 /* 2..4 tested to work ok */;
 
     /**
      * includes the host as layer 0, so if this returns 1 it will only include the host
      */
     public static int termlinkTemplateLayers(Term root) {
-        return Param.TERMLINK_TEMPLATE_DEPTH;
-//        switch (x.op()) {
-//
-//            case PROD:
-//                return 2;
+        switch (root.op()) {
+            case PROD:
+            case CONJ:
+                return TERMLINK_TEMPLATE_DEPTH_min;
+            default:
+                return Param.TERMLINK_TEMPLATE_DEPTH;
+        }
+
 //
 //            case SETe:
 //            case SETi:
