@@ -419,30 +419,34 @@ public class Evaluation {
     public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, NAR n) {
         return eval(x, includeTrues, includeFalses, n::functor);
     }
+
+    private static final class MyEvaluated extends UnifiedSet<Term> implements Predicate<Term> {
+        protected MyEvaluated() {
+            super(0);
+        }
+
+        @Override
+        public boolean test(Term y) {
+            if (y != Null)
+                add(y);
+            return true;
+        }
+    }
+
     /**
      * gathers results from one truth set, ex: +1 (true)
      * TODO add limit
      */
     public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver) {
-        final Set[] yy = {null};
-        Evaluation.eval(x, includeTrues, includeFalses, resolver, (y) -> {
+        MyEvaluated ee = new MyEvaluated();
 
-            if (y == Null)
-                return true;
+        Evaluation.eval(x, includeTrues, includeFalses, resolver, ee);
 
-            if (yy[0] == null) {
-                yy[0] = new UnifiedSet<>(1);
-            }
-            yy[0].add(y);
-            return true;
-        });
-
-        Set z = yy[0];
-        return z == null ?
-                //java.util.Set.of($.func(Inperience.wonder, x))
-                Set.of()
-                :
-                yy[0];
+        if (ee.isEmpty()) {
+            //java.util.Set.of($.func(Inperience.wonder, x))
+            return Set.of();
+        } else
+            return ee;
     }
 
 
