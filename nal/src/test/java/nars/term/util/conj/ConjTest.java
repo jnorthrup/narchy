@@ -350,7 +350,7 @@ public class ConjTest {
 
     @Test void eteConjInParallelShouldBeParallel() {
         assertEq("(&|,a,b,z)", "((a && b) &| z)");
-        assertEq("(&|,(--,(a&|b)),z)", "(--(a && b) &| z)");
+        assertEq("((--,(a&|b))&|z)", "(--(a && b) &| z)");
     }
 
     @Test void negatedEteConjInSequenceShouldBeParallel() {
@@ -2327,14 +2327,17 @@ public class ConjTest {
     @Test
     void testCollapseEteParallel1() {
 
+        assertEq("(&|,a,b,c)", "((&&,a,b)&|c)"); //collapse
+        //assertEq("((a&&b)&|c)", "((&&,a,b)&|c)"); //NOT collapse
+
         assertEq("((a&|b)&&c)", "((&|,a,b)&&c)"); //NOT collapse
 
-        assertEq("((a&&b)&|c)", "((&&,a,b)&|c)"); //NOT collapse
     }
 
     @Test
     void testCollapseEteParallel2() {
-        assertEq("(&|,(a&&b),c,d)", "(&|,(&&,a,b),c,d)"); //NOT collapse
+        assertEq("(&|,a,b,c,d)", "(&|,(&&,a,b),c,d)"); //collapse
+//        assertEq("(&|,(a&&b),c,d)", "(&|,(&&,a,b),c,d)"); //NOT collapse
         assertEq("(&&,(a&|b),c,d)", "(&&,(&|,a,b),c,d)"); //NOT collapse
     }
 

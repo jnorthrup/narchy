@@ -77,7 +77,7 @@ public enum ConjCommutive {;
                         break;
                     case CONJ:
                         int xdt = x.dt();
-                        if (xdt == dt /*|| (dt == 0 && xdt ==DTERNAL)*/ /* promote inner DTERNAL to parallel */) {
+                        if (xdt == dt || (dt == 0 && xdt ==DTERNAL /* promote inner DTERNAL to parallel */)) {
                             conjMerge = set(conjMerge, i, uLength);
                         } else {
                             //TODO handle promotion of &&/&| as conjMerge rather than conjOther
@@ -85,7 +85,11 @@ public enum ConjCommutive {;
                         }
                         break;
                     case NEG:
-                        if (x.unneg().op() == CONJ) {
+                        Term xu = x.unneg();
+                        if (xu.op() == CONJ) {
+                            if (dt == 0 && xu.dt()==DTERNAL /* promote inner DTERNAL to parallel */) {
+                                u[i] = xu.dt(0).neg();
+                            }
                             disj = set(disj, i, uLength);
                         } else {
                             neg = set(neg, i, uLength);

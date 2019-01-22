@@ -180,9 +180,6 @@ class ArithmeticTest {
         TermTest.assertEq("cmp(1,2,-1)",$$("cmp(1,2,#x)").eval(n));
         TermTest.assertEq("cmp(1,2,-1)",$$("cmp(2,1,#x)").eval(n));
         TermTest.assertEq("cmp(#1,2,#2)",$$("cmp(#1,2,#x)").eval(n));
-//        TermTest.assertEq("less(#1,2)", "less(#1,2)");
-//        TermTest.assertEq(False, $.$$("less(1,1)"));
-//        TermTest.assertEq(False, $.$$("less(2,1)"));
 
         assertComparator("(x(1)==>x(2))", "[((x(#1)==>x(#2))&&cmp(#1,#2,-1)), ((x(#1)==>x(add(#1,1)))&&equal(#1,1))]");
         assertComparator("(x(2)==>x(1))", "[((x(#1)==>x(#2))&&cmp(#2,#1,-1)), ((x(add(#1,1))==>x(#1))&&equal(#1,1))]");
