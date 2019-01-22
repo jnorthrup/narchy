@@ -1,6 +1,5 @@
 package nars.link;
 
-import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.pri.OverflowDistributor;
@@ -397,7 +396,8 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 //                setFast(j, tgtTerm = tgtTerm.term()); //concept was deleted, so revert back to term
 
 
-            Concept tgt = tgtTerm instanceof Concept ? ((Concept)tgtTerm) : nar.conceptualize(tgtTerm);
+            Concept tgt = tgtTerm instanceof Concept ? ((Concept)tgtTerm) :
+                    nar.conceptualize(tgtTerm);
 
             if (tgt !=null) {
 

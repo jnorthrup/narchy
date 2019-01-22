@@ -14,7 +14,6 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
 import nars.task.proxy.SpecialTermTask;
-import nars.task.signal.SignalTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.Tense;
@@ -303,6 +302,9 @@ public class Remember extends AbstractTask {
     @Nullable
     protected Task rememberFilter(Task prev, Task next, Task remembered, float dPri, float dCreationDurs) {
 
+        if (next==remembered && next.isInput())
+            return remembered;
+
         if (dCreationDurs > Param.REMEMBER_REPEAT_THRESH_DURS) {
             prev.setCreation(next.creation());
             return remembered;
@@ -324,8 +326,8 @@ public class Remember extends AbstractTask {
             return null;
         if (next instanceof ConjClustering.STMClusterTask)
             return null;
-        if (next instanceof SignalTask)
-            return null; //TODO determine if this works
+//        if (next instanceof SignalTask)
+//            return null; //TODO determine if this works
 
         if (next.isInput())
             return prev;

@@ -361,11 +361,11 @@ public abstract class Param {
             //8;
             //7;
             //6;
-            //5;
-            4;
-    //3;
-    //2;
-    //1;
+            5;
+            //4;
+            //3;
+            //2;
+            //1;
 
     /** termlink template layers depth. TODO this will be abstracted to more flexible weighted activation heuristic */
     @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH_min = 2;

@@ -31,7 +31,7 @@ public class NALTask extends UnitPri implements Task {
     private final Truth truth;
     private final byte punc;
     private final int hash;
-    private long creation;
+    public long creation;
     private final long start;
     private final long end;
     /*@Stable*/ private final long[] stamp;

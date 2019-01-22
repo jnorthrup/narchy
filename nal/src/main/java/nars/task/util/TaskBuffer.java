@@ -74,14 +74,21 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         if (pp == tt)
             return 0;
 
-        if (pp instanceof NALTask)
-            ((NALTask) pp).priCauseMerge((Task) tt, CauseMerge.AppendUnique);
-        else
+        Task ttt = (Task) tt;
+
+        if (pp instanceof NALTask) {
+            NALTask ppp = (NALTask) pp;
+            ppp.priCauseMerge(ttt, CauseMerge.AppendUnique);
+
+            long inCreation = ttt.creation();
+            if (inCreation > ppp.creation)
+                ppp.creation = inCreation;
+
+        } else
             pp.priMax(tt.pri()); //just without cause update
 
         if (pp instanceof Task) { //HACK
             Task ppp = (Task) pp;
-            Task ttt = (Task) tt;
             if (ppp.isCyclic() && !ttt.isCyclic())
                 ppp.setCyclic(false);
         }

@@ -29,6 +29,7 @@ import java.awt.image.BufferedImage;
 
 import static jcog.Util.compose;
 import static nars.$.$$;
+import static nars.Op.GOAL;
 import static nars.Op.INH;
 import static nars.agent.FrameTrigger.fps;
 import static spacegraph.SpaceGraph.window;
@@ -51,8 +52,16 @@ public class FZero extends NAgentX {
 
     public static void main(String[] args) {
         NAgentX.runRT(n -> {
+            n.onTask(tt->{
+                if (tt.isGoal() && !tt.isInput()) {
+                    System.out.println(tt.proof());
+                }
+            }, GOAL);
+
             n.freqResolution.set(0.02f);
             return new FZero($.the("fz"), n);
+
+
         }, fps);
 
 //        int instances = 2;

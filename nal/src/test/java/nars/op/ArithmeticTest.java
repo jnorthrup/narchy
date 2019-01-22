@@ -187,6 +187,11 @@ class ArithmeticTest {
         assertComparator("(x(1)==>x(2))", "[((x(#1)==>x(#2))&&cmp(#1,#2,-1)), ((x(#1)==>x(add(#1,1)))&&equal(#1,1))]");
         assertComparator("(x(2)==>x(1))", "[((x(#1)==>x(#2))&&cmp(#2,#1,-1)), ((x(add(#1,1))==>x(#1))&&equal(#1,1))]");
 
+        TermTest.assertEq("do(#1)", $$("(&&, cmp(#1,3,1), do(#1), equal(#1,4))").eval(n));
+
+        //backwards solve because cmp==0
+        TermTest.assertEq("do(4,4)", $$("(&&, cmp(#1,#2,0), do(#1,#2), equal(#1,4))").eval(n));
+
     }
 
     private void assertComparator(String x, String y) {

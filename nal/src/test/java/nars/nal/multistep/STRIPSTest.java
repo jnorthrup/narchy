@@ -68,13 +68,13 @@ class STRIPSTest {
                 At(A), Level(low), BoxAt(C), BananasAt(B)
                 */
 
-                "At(A). |",
-                "Level(low). |",
-                "BoxAt(C). |",
-                "BananasAt(B). |",
+                "At(A).",
+                "Level(low).",
+                "BoxAt(C).",
+                "BananasAt(B).",
 
                 /* Goal state:    Eat(bananas) */
-                "Eat(bananas)! |",
+                "Eat(bananas)!",
 
                 
                 "((At($X) &| Level(low)) ==>+1 (--At($X) &| At(#Y))).",
