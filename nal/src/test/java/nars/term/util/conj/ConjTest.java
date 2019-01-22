@@ -341,6 +341,18 @@ public class ConjTest {
 
     }
 
+    @Test void eteConjInSequenceShouldBeParallel() {
+        assertEq("((x&|y) &&+1 w)", "((x && y) &&+1 w)");
+        assertEq("(w &&+1 (x&|y))", "(w &&+1 (x && y))");
+        assertEq("((a&|b) &&+1 (x&|y))", "((a && b) &&+1 (x && y))");
+        assertEq("((a&|b) &&+1 (c&|d))", Conj.sequence($$("(a&&b)"), 0, $$("(c&&d)"), 1));
+
+    }
+    @Test void negatedEteConjInSequenceShouldBeParallel() {
+        assertEq("((--,(a&|b)) &&+1 (x&|y))", "(--(a && b) &&+1 (x && y))");
+        assertEq("(--,((a&|b) &&+1 (x&|y)))", "--((a && b) &&+1 (x && y))");
+    }
+
     @Test
     void testConjParallelOverrideEternal2() {
 
@@ -572,7 +584,7 @@ public class ConjTest {
 
         assertEq("((--,(y &&+1 z))&&x)", "(x&&--(y &&+1 z))");
 
-        assertEq("(x &&+1 (--,(y&&z)))", "(x &&+1 --(y && z))");
+        assertEq("(x &&+1 (--,(y&|z)))", "(x &&+1 --(y && z))");
     }
 
     @Test

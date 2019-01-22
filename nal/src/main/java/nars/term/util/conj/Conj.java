@@ -821,24 +821,31 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     static public Term sequence(Term a, long aStart, Term b, long bStart) {
 
-        if (bStart == ETERNAL && aStart != ETERNAL)
-            throw new WTF();
-        if (aStart == TIMELESS || bStart == TIMELESS)
-            throw new WTF();
+        if (aStart == ETERNAL) {
+            assert(bStart == aStart);
+            return terms.conj(DTERNAL, a, b);
+        } else if (aStart == TIMELESS) {
+            assert(bStart == aStart);
+            return terms.conj(XTERNAL, a, b);
+        } else if (aStart == 0 && bStart == 0) {
+            return terms.conj(0, a, b);
+        }
+
+        assert(bStart!=ETERNAL && bStart!=TIMELESS);
 //        if (aStart == DTERNAL || bStart == DTERNAL || aStart == XTERNAL || bStart == XTERNAL)
 //            throw new WTF("probably meant ETERNAL"); //TEMPORARY
 
-        boolean simple = (a.unneg().op() != CONJ) && (b.unneg().op() != CONJ);
-
-        if (simple) {
-            int dt = aStart == ETERNAL ? DTERNAL : occToDT(bStart - aStart);
-            return conjSeqFinal(dt, a, b);
-        } else {
+//        boolean simple = (a.unneg().op() != CONJ) && (b.unneg().op() != CONJ);
+//
+//        if (simple) {
+//            int dt = occToDT(bStart - aStart);
+//            return conjSeqFinal(dt, a, b);
+//        } else {
             Conj c = new Conj();
             if (c.add(aStart, a))
                 c.add(bStart, b);
             return c.term();
-        }
+//        }
 
     }
 
@@ -1148,6 +1155,12 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         //test this first
         boolean polarity = x.op() != NEG;
         Term xUnneg = polarity ? x : x.unneg();
+
+        if (at!=ETERNAL && !polarity && xUnneg.op()==CONJ && xUnneg.dt()==DTERNAL) {
+            //convert a sequenced negated eternal conjunction to parallel
+            xUnneg = xUnneg.dt(0);
+            x = xUnneg.neg();
+        }
 
         byte id = add(xUnneg);
         if (!polarity) id = (byte) -id;
