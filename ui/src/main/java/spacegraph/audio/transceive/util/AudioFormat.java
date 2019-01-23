@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AudioFormat {
-    public static final int NOT_SPECIFIED = -1;
     private final AudioFormat.Encoding encoding;
     private final float sampleRate;
     private final int sampleSizeInBits;
@@ -15,7 +14,7 @@ public class AudioFormat {
     private final boolean bigEndian;
     private HashMap<String, Object> properties;
 
-    private AudioFormat(AudioFormat.Encoding var1, float var2, int var3, int var4, int var5, float var6, boolean var7) {
+    public AudioFormat(AudioFormat.Encoding var1, float var2, int var3, int var4, int var5, float var6, boolean var7) {
         this.encoding = var1;
         this.sampleRate = var2;
         this.sampleSizeInBits = var3;
@@ -148,7 +147,7 @@ public class AudioFormat {
         static final AudioFormat.Encoding PCM_UNSIGNED = new AudioFormat.Encoding("PCM_UNSIGNED");
         private final String name;
 
-        Encoding(String var1) {
+        public Encoding(String var1) {
             this.name = var1;
         }
 

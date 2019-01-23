@@ -20,7 +20,7 @@ import static nars.$.$$;
 /** test precision of sequence execution (planning) */
 public class NAL8SequenceTest extends NALTest {
 
-    public static final int cycles = 50;
+    public static final int cycles = 550;
 
     @Test
     void testSubSequence2_end() {

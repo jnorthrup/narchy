@@ -24,6 +24,11 @@ public class AudioEvent {
 //        this.converter = TarsosDSPAudioFloatConverter.getConverter(var1);
         this.overlap = 0;
     }
+    public AudioEvent(AudioFormat var1, float[] data) {
+        this(var1);
+
+        setFloatBuffer(data);
+    }
 
     private static double calculateRMS(float[] var0) {
         double var1 = 0.0D;

@@ -177,17 +177,20 @@ class ArithmeticTest {
     @Test
     void testComparator() {
         TermTest.assertEq("-1", $$("cmp(1,2)").eval(n));
-        TermTest.assertEq("cmp(1,2,-1)",$$("cmp(1,2,#x)").eval(n));
-        TermTest.assertEq("cmp(1,2,-1)",$$("cmp(2,1,#x)").eval(n));
-        TermTest.assertEq("cmp(#1,2,#2)",$$("cmp(#1,2,#x)").eval(n));
+        TermTest.assertEq("cmp(1,2,-1)", $$("cmp(1,2,#x)").eval(n));
+        TermTest.assertEq("cmp(1,2,-1)", $$("cmp(2,1,#x)").eval(n));
+        TermTest.assertEq("cmp(#1,2,#2)", $$("cmp(#1,2,#x)").eval(n));
 
-        assertComparator("(x(1)==>x(2))", "[((x(#1)==>x(#2))&&cmp(#1,#2,-1)), ((x(#1)==>x(add(#1,1)))&&equal(#1,1))]");
-        assertComparator("(x(2)==>x(1))", "[((x(#1)==>x(#2))&&cmp(#2,#1,-1)), ((x(add(#1,1))==>x(#1))&&equal(#1,1))]");
+        assertComparator("(f(1)==>f(2))", "[((f(#1)==>f(#2))&&cmp(#1,#2,-1)), ((f(#1)==>f(add(#1,1)))&&equal(#1,1))]");
+        assertComparator("(f(2)==>f(1))", "[((f(#1)==>f(#2))&&cmp(#2,#1,-1)), ((f(add(#1,1))==>f(#1))&&equal(#1,1))]");
+    }
 
-        TermTest.assertEq("do(#1)", $$("(&&, cmp(#1,3,1), do(#1), equal(#1,4))").eval(n));
+    @Test
+    void testComparatorCondition() {
+        TermTest.assertEq("f(4)", $$("(&&, cmp(#1,3,1), f(#1), equal(#1,4))").eval(n));
 
-        //backwards solve because cmp==0
-        TermTest.assertEq("do(4,4)", $$("(&&, cmp(#1,#2,0), do(#1,#2), equal(#1,4))").eval(n));
+        //backwards solve possible because cmp==0
+        TermTest.assertEq("f(4,4)", $$("(&&, cmp(#1,#2,0), f(#1,#2), equal(#1,4))").eval(n));
 
     }
 

@@ -12,7 +12,9 @@ import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.exe.NARLoop;
 import nars.exe.UniExec;
+import nars.exe.UniExec.TimedLink;
 import nars.time.clock.RealTime;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.Graph2D;
@@ -118,10 +120,10 @@ public class ExeCharts {
     }
 
     static class CausableWidget extends Widget {
-        private final UniExec.TimedLink c;
+        private final TimedLink c;
         private final VectorLabel label;
 
-        CausableWidget(UniExec.TimedLink c) {
+        CausableWidget(TimedLink c) {
             this.c = c;
             label = new VectorLabel(c.get().can.id);
             set(label);
@@ -130,23 +132,23 @@ public class ExeCharts {
 
     }
 
-    enum CauseProfileMode {
+    enum CauseProfileMode implements FloatFunction<TimedLink> {
         Pri() {
             @Override
-            float valueOf(UniExec.TimedLink w) {
+            public float floatValueOf(TimedLink w) {
                 return w.pri();
             }
         },
         Value() {
             @Override
-            float valueOf(UniExec.TimedLink w) {
+            public float floatValueOf(TimedLink w) {
                 return w.value;
             }
         },
         Time() {
             @Override
-            float valueOf(UniExec.TimedLink w) {
-                return w.time.get();
+            public float floatValueOf(TimedLink w) {
+                return Math.max(0,w.time.get());
             }
         };
         /* TODO
@@ -159,12 +161,10 @@ public class ExeCharts {
 
                         //,0,1
          */
-
-        abstract float valueOf(UniExec.TimedLink w);
     }
 
     public static Surface causeProfiler(NAR nar) {
-        SortedArray<UniExec.TimedLink> cc = ((UniExec) nar.exe).cpu.items;
+        SortedArray<TimedLink> cc = ((UniExec) nar.exe).cpu.items;
         int history = 128;
         Plot2D pp = new Plot2D(history,
                 Plot2D.BarLanes
@@ -175,10 +175,10 @@ public class ExeCharts {
         final MutableEnum<CauseProfileMode> mode = new MutableEnum<>(CauseProfileMode.Pri);
 
         for (int i = 0, ccLength = cc.size(); i < ccLength; i++) {
-            UniExec.TimedLink c = cc.get(i);
+            TimedLink c = cc.get(i);
             String label = c.get().toString();
             //pp[i] = new Plot2D(history, Plot2D.Line).add(label,
-            pp.add(label, ()-> mode.get().valueOf(c));
+            pp.add(label, ()-> mode.get().floatValueOf(c));
         }
 
         Surface controls = new Gridding(
@@ -198,9 +198,9 @@ public class ExeCharts {
 //        ForceDirected2D<UniExec.TimedLink> fd = new ForceDirected2D<>();
 //        fd.repelSpeed.set(0.5f);
 
-        Graph2D<UniExec.TimedLink> s = new Graph2D<UniExec.TimedLink>()
+        Graph2D<TimedLink> s = new Graph2D<TimedLink>()
                 .render((node, g) -> {
-                    UniExec.TimedLink c = node.id;
+                    TimedLink c = node.id;
 
                     final float epsilon = 0.01f;
                     float p = Math.max(c.priElse(epsilon), epsilon);

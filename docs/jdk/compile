@@ -1,0 +1,17 @@
+# https://stackoverflow.com/questions/15548023/clang-optimization-levels 
+# https://stackoverflow.com/questions/4365980/how-to-use-profile-guided-optimizations-in-g
+
+#make dist-clean
+
+
+#  TOOLCHAIN=clang
+CXX="/usr/bin/g++-9" CC="/usr/bin/gcc-9" BUILD_CC="/usr/bin/gcc-9" BUILD_CXX="/usr/bin/g++-9" JDK="/home/me/jdk11official" ./configure \
+    --with-toolchain-type="gcc" \
+	--with-boot-jdk="/home/me/jdk11official" --disable-hotspot-gtest \
+	--disable-warnings-as-errors \
+	--enable-ccache \
+	--with-extra-cflags="-Ofast -march=native -w" \
+	--without-jtreg
+
+
+time make jdk

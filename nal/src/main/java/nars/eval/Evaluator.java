@@ -22,9 +22,6 @@ public class Evaluator extends DirectTermTransform {
 
     public final Function<Atom, Functor> funcResolver;
 
-
-//        public final MutableSet<Variable> vars = new UnifiedSet(0);
-
     public Evaluator(Function<Atom, Functor> funcResolver) {
         this.funcResolver = funcResolver;
     }
@@ -34,24 +31,31 @@ public class Evaluator extends DirectTermTransform {
     }
 
 
-    @Nullable protected ArrayHashSet<Term> discover(Term x, Evaluation e) {
+    @Nullable
+    protected ArrayHashSet<Term> discover(Term x, Evaluation e) {
         if (!x.hasAny(Op.FuncBits))
             return null;
-        final ArrayHashSet<Term>[] funcAble = new ArrayHashSet[]{null};
-        x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
-            //if (!funcAble[0].contains(xx)) {
-                if (Functor.isFunc(xx)) {
-                    Term yy = this.transform(xx);
-                    if (yy.sub(1) instanceof Functor) {
-                        if (funcAble[0] == null)
-                            funcAble[0] = new ArrayHashSet<>(1);
 
-                        funcAble[0].add(yy);
-                    }
+//        if (funcAble!=null)
+//            funcAble.clear();
+        final ArrayHashSet<Term>[] funcAble = new ArrayHashSet[]{null};
+
+        x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
+            if (Functor.isFunc(xx)) {
+                if (funcAble[0] != null && funcAble[0].contains(xx))
+                    return true;
+
+                Term yy = this.transform(xx);
+                if (yy.sub(1) instanceof Functor) {
+                    if (funcAble[0] == null)
+                        funcAble[0] = new ArrayHashSet<>(1);
+
+                    funcAble[0].add(yy);
                 }
-            //}
+            }
             return true;
         }, null);
+
         return funcAble[0];
     }
 
@@ -90,7 +94,8 @@ public class Evaluator extends DirectTermTransform {
 //        return this;
 //    }
 
-    @Nullable public Evaluation eval(Predicate<Term> each, boolean includeTrues, boolean includeFalses, Term... queries) {
+    @Nullable
+    public Evaluation eval(Predicate<Term> each, boolean includeTrues, boolean includeFalses, Term... queries) {
         Evaluation e = new Evaluation(each) {
             @Override
             protected Term boolTrue(Term x) {

@@ -1,6 +1,7 @@
 package spacegraph.audio.transceive;
 
 
+import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.audio.transceive.reedsolomon.GenericGF;
 import spacegraph.audio.transceive.reedsolomon.ReedSolomonDecoder;
 import spacegraph.audio.transceive.reedsolomon.ReedSolomonEncoder;
@@ -19,6 +20,7 @@ import java.util.Map;
  *   https://github.com/JorenSix/TarsosDSP
  *   https://github.com/zxing/zxing/
  * TODO test
+ * see http://spatula.net/mt/blog/2011/02/modulating-and-demodulating-signals-in-java.html
  */
 public class AudioTransceiver {
 
@@ -35,16 +37,8 @@ public class AudioTransceiver {
     private static final int READ_SUBSAMPLING_FACTOR = 9;
 
 
-    private final AudioFormat fmt;
-//    = new TarsosDSPAudioFormat(
-//            getAudioDispatcher().getFormat().getEncoding(),
-//            getAudioDispatcher().getFormat().getSampleRate(),
-//            getAudioDispatcher().getFormat().getSampleSizeInBits() / READ_SUBSAMPLING_FACTOR,
-//            getAudioDispatcher().getFormat().getChannels(),
-//            getAudioDispatcher().getFormat().getFrameSize() / READ_SUBSAMPLING_FACTOR,
-//            getAudioDispatcher().getFormat().getFrameRate(),
-//            getAudioDispatcher().getFormat().isBigEndian(),
-//            getAudioDispatcher().getFormat().properties());
+    public final AudioFormat fmt;
+
     private final GenericGF lGenericGF = new GenericGF(synth.range.mGaloisPolynomial, synth.range.mFrameLength + 1, 1);
     /**
      * Declare the Galois Field. (5-bit, using root polynomial a^5 + a^2 + 1.)
@@ -52,10 +46,12 @@ public class AudioTransceiver {
      */
     final private ReedSolomonEncoder mReedSolomonEncoder = new ReedSolomonEncoder(lGenericGF);
     final private ReedSolomonDecoder mReedSolomonDecoder = new ReedSolomonDecoder(lGenericGF);
-    private final boolean active;
+
+    private final boolean active = true;
+
     private final boolean mSampleSelf;
-    private double[] mSampleBuffer;
-    private double[] mConfidenceBuffer;
+    private FloatArrayList pitchBuffer;
+    private FloatArrayList confBuffer;
     private final PitchProcessor mPitchProcessor = new PitchProcessor(
             PitchProcessor.PitchEstimationAlgorithm.FFT_YIN,
             WRITE_AUDIO_RATE_SAMPLE_HZ,
@@ -71,20 +67,52 @@ public class AudioTransceiver {
                     }
                 }
                 // Buffer the Pitch and the corresponding Confidence.
-                push(this.mSampleBuffer, pPitchDetectionResult.getPitch());
-                push(this.mConfidenceBuffer, pPitchDetectionResult.getProbability());
+                this.pitchBuffer.add(pPitchDetectionResult.getPitch());
+                this.confBuffer.add(pPitchDetectionResult.getProbability());
                 // Process the signal.
-                receive(this.mReedSolomonDecoder, this.mSampleBuffer, this.mConfidenceBuffer, READ_SUBSAMPLING_FACTOR, pMessage -> {
-
-//                    Log.d(TAG, "Rx(" + pMessage + ")");
-                    // Clear the buffer; prevent multiple transmissions coming through.
-                    Arrays.fill(AudioTransceiver.this.mSampleBuffer, -1.0);
-                    Arrays.fill(AudioTransceiver.this.mConfidenceBuffer, 0.0);
-                });
+                receive(this.mReedSolomonDecoder, this.pitchBuffer, this.confBuffer, READ_SUBSAMPLING_FACTOR, this::_onMessage);
             });
-    /**
-     * TODO: How to know the transmission medium is free?
-     */
+
+
+    private void _onMessage(String pMessage) {
+        // Clear the buffer; prevent multiple transmissions coming through.
+        pitchBuffer.clear();
+        confBuffer.clear();
+        onMessage(pMessage);
+    }
+
+    protected void onMessage(String msg) {
+
+    }
+
+
+    //    = new TarsosDSPAudioFormat(
+//            getAudioDispatcher().getFormat().getEncoding(),
+//            getAudioDispatcher().getFormat().getSampleRate(),
+//            getAudioDispatcher().getFormat().getSampleSizeInBits() / READ_SUBSAMPLING_FACTOR,
+//            getAudioDispatcher().getFormat().getChannels(),
+//            getAudioDispatcher().getFormat().getFrameSize() / READ_SUBSAMPLING_FACTOR,
+//            getAudioDispatcher().getFormat().getFrameRate(),
+//            getAudioDispatcher().getFormat().isBigEndian(),
+//            getAudioDispatcher().getFormat().properties());
+
+    public AudioTransceiver(int sampleRate) {
+        this(new AudioFormat(sampleRate, 16, 1, true, false));
+
+//        int minAudioBufferSize = AudioRecord.getMinBufferSize(sampleRate,
+//                android.media.AudioFormat.CHANNEL_IN_MONO,
+//                android.media.AudioFormat.ENCODING_PCM_16BIT);
+//        int minAudioBufferSizeInSamples =  minAudioBufferSize/2;
+//        if(minAudioBufferSizeInSamples <= audioBufferSize ){
+//            AudioRecord audioInputStream = new AudioRecord(
+//                    MediaRecorder.AudioSource.MIC, sampleRate,
+//                    android.media.AudioFormat.CHANNEL_IN_MONO,
+//                    android.media.AudioFormat.ENCODING_PCM_16BIT,
+//                    audioBufferSize * 2);
+
+//            TarsosDSPAudioFormat format = new TarsosDSPAudioFormat(sampleRate, 16,1, true, false);
+    }
+
     public AudioTransceiver(AudioFormat fmt) {
 
         this.fmt = fmt;
@@ -108,13 +136,13 @@ public class AudioTransceiver {
 //        MainActivity.READ_NUMBER_OF_SAMPLES, 0); /** TODO: Abstract constants. */
 
 
-        this.active = false;
         // Define whether we should listen to our own.
         this.mSampleSelf = true;
         // Declare the SampleBuffer; capable of storing an entire audio, with each symbol sampled at the sub-sampling rate.
-        this.mSampleBuffer = new double[READ_SUBSAMPLING_FACTOR * synth.encodedLen()];
+        int pitchBufferSize = READ_SUBSAMPLING_FACTOR * synth.encodedLen();
+        this.pitchBuffer = new FloatArrayList(pitchBufferSize);
         // Allocate the ConfidenceBuffer; declares the corresponding confidence for each sample.
-        this.mConfidenceBuffer = this.mSampleBuffer.clone();
+        this.confBuffer = new FloatArrayList(pitchBufferSize);
 
     }
 
@@ -132,28 +160,31 @@ public class AudioTransceiver {
         return s.toString();
     }
 
-    /**
-     * Inserts an element at the end of the array, pushing all other elements down towards lesser indices. Returns the popped element.
-     */
-    private static double push(final double[] pBuffer, final double pT) {
-        // Fetch the first element.
-        final double lPopped = pBuffer[0];
-        // Iterate the Buffer.
-        // Offset the entries.
-        System.arraycopy(pBuffer, 1, pBuffer, 0, pBuffer.length - 1);
-        // Append the new sample.
-        pBuffer[pBuffer.length - 1] = pT;
-        // Return the Popped sample.
-        return lPopped;
-    }
+
+//    /**
+//     * Inserts an element at the end of the array, pushing all other elements down towards lesser indices. Returns the popped element.
+//     */
+//    private static double push(final double[] pBuffer, final double pT) {
+//        // Fetch the first element.
+////        final double lPopped = pBuffer[0];
+//        // Iterate the Buffer.
+//        // Offset the entries.
+//        System.arraycopy(pBuffer, 1, pBuffer, 0, pBuffer.length - 1);
+//        // Append the new sample.
+//        pBuffer[pBuffer.length - 1] = pT;
+//        // Return the Popped sample.
+////        return lPopped;
+//    }
 
     /**
      * Called when the samples have been updated.
      */
-    private static void receive(final ReedSolomonDecoder pReedSolomonDecoder, final double[] pSamples, final double[] pConfidences, final int pSubsamples,
+    private static void receive(final ReedSolomonDecoder pReedSolomonDecoder,
+                                FloatArrayList pSamples, FloatArrayList pConfidences,
+                                final int pSubsamples,
                                 final Synth.IListener listener) {
         // Calculate the Number of Symbols.
-        final int lSymbols = (pSamples.length / pSubsamples);
+        final int lSymbols = (pSamples.size() / pSubsamples);
         // Declare the String.
         StringBuilder lAccumulation = new StringBuilder();
         // Iterate the Samples whilst we're building up the string.
@@ -228,17 +259,18 @@ public class AudioTransceiver {
     /**
      * Generates a tone for the audio stream.
      */
-    private static byte[] encode(final CharSequence pData, final int pPeriod) {
+    private static float[] encode(final CharSequence pData, final int pPeriod) {
         // Calculate the Number of Samples per msg.
         final int lNumberOfSamples = (int) (WRITE_AUDIO_RATE_SAMPLE_HZ * (pPeriod / 1000.0f));
-        // Declare the SampleArray.
-        double[] lSampleArray = new double[pData.length() * lNumberOfSamples];
-        // Declare the Generation.
-        final byte[] lGeneration = new byte[lSampleArray.length * 2];
-        // Declare the Offset.
+
+        int pdl = pData.length();
+        float[] lSampleArray = new float[pdl * lNumberOfSamples];
+
+//        final byte[] lGeneration = new byte[lSampleArray.length * 2];
+
         int lOffset = 0;
-        // Iterate the Transmission.
-        for (int i = 0; i < pData.length(); i++) {
+
+        for (int i = 0; i < pdl; i++) {
             // Fetch the Data.
             final Character lData = pData.charAt(i);
             // Fetch the Frequency.
@@ -246,14 +278,14 @@ public class AudioTransceiver {
             // Iterate the NumberOfSamples. (Per msg data.)
             for (int j = 0; j < lNumberOfSamples; j++) {
                 // Update the SampleArray.
-                lSampleArray[lOffset] = Math.sin(2 * Math.PI * j / (WRITE_AUDIO_RATE_SAMPLE_HZ / lFrequency));
+                lSampleArray[lOffset] = (float) Math.sin(2 * Math.PI * j / (WRITE_AUDIO_RATE_SAMPLE_HZ / lFrequency));
                 lOffset++;
             }
         }
         // Reset the Offset.
-        lOffset = 0;
+//        lOffset = 0;
         // Iterate between each sample.
-        for (int i = 0; i < pData.length(); i++) {
+        for (int i = 0; i < pdl; i++) {
             // Fetch the Start and End Indexes of the Sample.
             final int lIo = i * lNumberOfSamples;
             final int lIa = lIo + lNumberOfSamples;
@@ -268,26 +300,27 @@ public class AudioTransceiver {
                 lSampleArray[lIa - j - 1] *= lP;
             }
         }
+        return lSampleArray;
 
-        // Declare the filtering constant.
-        final double lAlpha = 0.3;
-        double lPrevious = 0;
+//        // Declare the filtering constant.
+//        final double lAlpha = 0.3;
+//        double lPrevious = 0;
 
-        // Iterate the SampleArray.
-        for (final double lValue : lSampleArray) {
-            // Fetch the Value.
-            // Filter the Value.
-            final double lFiltered = (lAlpha < 1.0) ? ((lValue - lPrevious) * lAlpha) : lValue;
-            // Assume normalized, so scale to the maximum amplitude.
-            final short lPCM = (short) ((lFiltered * 32767));
-            // Supply the Generation with 16-bit PCM. (The first byte is the low-order byte.)
-            lGeneration[lOffset++] = (byte) (lPCM & 0x00FF);
-            lGeneration[lOffset++] = (byte) ((lPCM & 0xFF00) >>> 8);
-            // Overwrite the Previous with the Filtered value.
-            lPrevious = lFiltered;
-        }
-        // Return the Generation.
-        return lGeneration;
+//        // Iterate the SampleArray.
+//        for (final double lValue : lSampleArray) {
+//            // Fetch the Value.
+//            // Filter the Value.
+//            final double lFiltered = (lAlpha < 1.0) ? ((lValue - lPrevious) * lAlpha) : lValue;
+//            // Assume normalized, so scale to the maximum amplitude.
+//            final short lPCM = (short) ((lFiltered * 32767));
+//            // Supply the Generation with 16-bit PCM. (The first byte is the low-order byte.)
+//            lGeneration[lOffset++] = (byte) (lPCM & 0x00FF);
+//            lGeneration[lOffset++] = (byte) ((lPCM & 0xFF00) >>> 8);
+//            // Overwrite the Previous with the Filtered value.
+//            lPrevious = lFiltered;
+//        }
+//        // Return the Generation.
+//        return lGeneration;
     }
 
     /**
@@ -305,10 +338,9 @@ public class AudioTransceiver {
         for (int i = 0; i < (lFloats.length - lFrameSize); i += lFrameSize) {
             // Segment the buffer.
             final float[] lSegment = Arrays.copyOfRange(lFloats, i, i + lFrameSize);
-            // Allocate an AudioEvent.
-            final AudioEvent lAudioEvent = new AudioEvent(fmt);
-            // Assign the Segment.
-            lAudioEvent.setFloatBuffer(lSegment);
+
+            final AudioEvent lAudioEvent = new AudioEvent(fmt, lSegment);
+
             // Export the AudioEvent to the PitchProessor.
             mPitchProcessor.process(lAudioEvent);
         }
@@ -316,7 +348,7 @@ public class AudioTransceiver {
         return true;
     }
 
-    public final byte[] encode(String pMessage) throws UnsupportedOperationException {
+    public final float[] encode(String pMessage) throws UnsupportedOperationException {
         // Is the message the correct length?
         if (pMessage.length() != synth.payloadLen) {
             // Assert that we can't generate the audio; they need to match the Payload.
@@ -397,16 +429,16 @@ public class AudioTransceiver {
             // Iterate the Samples.
             for (int i = pOffset + lIgnore; i < pOffset + pLength - lIgnore; i++) { /** TODO: fn */
                 // Are we confident in this sample?
-                if (pConfidences[i] > 0.75) {
+                if (pConfidences.get(i) > 0.75) {
                     // Fetch the Sample.
-                    final double lSample = pSamples[i];
+                    final double lSample = pSamples.get(i);
                     // Is the Sample valid?
-                    if (lSample != -1) {
+//                    if (lSample != -1) {
                         // Accumulate the Sample.
                         lFacc += lSample;
                         // Update the accumulated count.
                         lCount++;
-                    }
+//                    }
                 }
             }
             // Result valid?
@@ -514,7 +546,7 @@ public class AudioTransceiver {
             /**
              * Detects a Symbol within an array of Samples and Confidences. Callers must define the segment they wish to analyze within the provided buffers.
              */
-            Result getSymbol(final Synth pSynth, final double[] pSamples, final double[] pConfidences, final int pOffset, final int pLength);
+            Result getSymbol(final Synth pSynth, FloatArrayList pSamples, FloatArrayList pConfidences, final int pOffset, final int pLength);
         }
         /**
          * Called when a transmission has beend detected.

@@ -209,10 +209,11 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     @Override
     public void clear() {
 
-        if (!list.isEmpty()) {
-            list.clear();
-            set.clear();
-        }
+//        if (!list.isEmpty()) {
+        list.clear();
+        set = emptySet();
+        //set.clear();
+//        }
 
     }
 

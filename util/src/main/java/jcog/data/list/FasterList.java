@@ -554,6 +554,7 @@ public class FasterList<X> extends FastList<X> {
         if (totalOffset > 0)
             System.arraycopy(ii, index + 1, ii, index, totalOffset);
         ii[--size] = null;
+        //if (size < 0) throw new ArrayIndexOutOfBoundsException(); //TEMPORARY
     }
 
 
@@ -866,7 +867,7 @@ public class FasterList<X> extends FastList<X> {
 
         @Override
         public boolean hasNext() {
-            return this.currentIndex != this.list.size;
+            return this.currentIndex < this.list.size;
         }
 
         @Override

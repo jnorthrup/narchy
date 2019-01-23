@@ -12,7 +12,7 @@ import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INT;
-import static nars.term.atom.Bool.False;
+import static nars.term.atom.Bool.*;
 
 public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implements The {
 
@@ -26,13 +26,14 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
         return $.func(the, x, y);
     }
 
-    @Override final protected Term apply2(Evaluation e, Term x, Term y) {
-        return compute(e, x,y);
+    @Override
+    final protected Term apply2(Evaluation e, Term x, Term y) {
+        return compute(e, x, y);
     }
 
     @Override
     public Term applyInline(Subterms args) {
-        if (args.subs()==2) {
+        if (args.subs() == 2) {
 
             Term x = args.sub(0), y = args.sub(1);
 
@@ -62,10 +63,10 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
             Term xf = Functor.func(x);
             if (xf.equals(MathFunc.add)) {
                 Term[] xa = Functor.funcArgsArray(x);
-                if (xa.length == 2 && xa[1].op()==INT && xa[0].op().var) {
-                    if (y.op()==INT) {
+                if (xa.length == 2 && xa[1].op() == INT && xa[0].op().var) {
+                    if (y.op() == INT) {
                         //"equal(add(#x,a),b)"
-                        return e.is(xa[0], Int.the( ((Int)y).id - ((Int)xa[1]).id )) ? Bool.True : Bool.Null;
+                        return e.is(xa[0], Int.the(((Int) y).id - ((Int) xa[1]).id)) ? True : Null;
                     }
                 }
             }
@@ -77,11 +78,11 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
             if (xVar) {
                 if (e != null) {
-                    return e.is(x, y) ? Bool.True : Bool.Null;
+                    return e.is(x, y) ? True : Null;
                 }
             } else {
                 if (e != null) {
-                    return e.is(y, x) ? Bool.True : Bool.Null;
+                    return e.is(y, x) ? True : Null;
                 }
             }
 
@@ -99,11 +100,11 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
     @Nullable
     private Term pretest(Term x, Term y) {
         /** null != null, like NaN!=NaN .. it represents an unknokwn or invalid value.  who can know if it equals another one */
-        if (x == Bool.Null || y == Bool.Null)
-            return Bool.Null;
+        if (x == Null || y == Null)
+            return Null;
 
         if (x.equals(y))
-            return Bool.True; //fast equality pre-test
+            return True; //fast equality pre-test
         if (x.equalsNeg(y))
             return False;
 
@@ -117,31 +118,47 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
     @Override
     protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
-        return xy == Bool.True ? y : null;
+        return xy == True ? y : null;
     }
 
-    /** general purpose comparator: cmp(x, y, x.compareTo(y)) */
+    /**
+     * general purpose comparator: cmp(x, y, x.compareTo(y))
+     */
     public final static Functor cmp = new Functor.SimpleBinaryFunctor("cmp") {
+
+        final Int zero = Int.the(0);
 
         @Override
         protected Term apply3(Evaluation e, Term x, Term y, Term xy) {
+            Op xyo = xy.op();
+            if (xyo==INT && xy.equals(zero)) {
+                if (x.op() == INT && y.op().var) {
+                    return e.is(y, x) ? True : Null;
+                } else if (x.op().var && y.op()==INT) {
+                    return e.is(x, y) ? True : Null;
+                }
+            }
+
             int c = x.compareTo(y);
             if (c == 0) {
-                Int zero = Int.the(0);
+
                 if (!xy.equals(zero) && !xy.op().var)
                     return False; //incorrect value
                 else
                     xy = zero;
-            } if (c > 0) {
+            } else if (c > 0) {
 
                 //swap argument order
                 Term s = x;
                 x = y;
                 y = s;
 
-                Op xyo = xy.op();
-                if (xyo ==INT) {
-                    xy = Int.the(-((Int)xy).id);
+                if (xyo == INT) {
+                    int xyi = -((Int) xy).id;
+                    if (x.op() == INT && y.op() == INT) {
+                        return (Integer.compare(((Int) x).id,((Int) y).id) == xyi) ? True : False;
+                    }
+                    xy = Int.the(xyi);
                 } else if (!xyo.var) {
                     xy = $.varDep("cmp_tmp"); //erase constant, forcing recompute
                 }
@@ -155,7 +172,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
             if (x.equals(y))
                 return Int.the(0);
             if (!x.op().var && !y.op().var) {
-                return Int.the( x.compareTo(y) );
+                return Int.the(x.compareTo(y));
             } else {
                 return null;
             }
