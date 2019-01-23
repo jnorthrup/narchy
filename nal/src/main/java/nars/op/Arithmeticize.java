@@ -24,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -48,15 +47,17 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 @Paper
 public class Arithmeticize {
 
+//    private static final Logger logger = LoggerFactory.getLogger(Arithmeticize.class);
+
     private static final int minInts = 2;
 
-    final static Variable A = $.varDep("A_");
-    final static Variable B = $.varDep("B_");
+    final static Variable A = $.varDep("A_"), B = $.varDep("B_");
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
         MathFunc.add.term, MathFunc.add,
         MathFunc.mul.term, MathFunc.mul,
-        Equal.the, Equal.the
+        Equal.the.term, Equal.the,
+        Equal.cmp.term, Equal.cmp
     )::get;
 
     public static class ArithmeticIntroduction extends Introduction {
@@ -201,8 +202,8 @@ public class Arithmeticize {
 
         int[] ii = iii.toArray();
 
-        List<ArithmeticOp> ops = new FasterList();
-        IntObjectHashMap<List<Pair<Term, Function<Term,Term>>>> eqMods = new IntObjectHashMap<>(ii.length);
+        FasterList<ArithmeticOp> ops = new FasterList();
+        IntObjectHashMap<FasterList<Pair<Term, Function<Term,Term>>>> eqMods = new IntObjectHashMap<>(ii.length);
 
         for (int aIth = 0; aIth < ii.length; aIth++) {
             int a = ii[aIth];
@@ -249,17 +250,17 @@ public class Arithmeticize {
 
         eqMods.keyValuesView().forEach((kv)->{
             assert(!kv.getTwo().isEmpty());
-            ops.add(new BaseEqualExpressionArithmeticOp(kv.getOne(), kv.getTwo().toArray(Pair[]::new)));
+            ops.add(new BaseEqualExpressionArithmeticOp(kv.getOne(), kv.getTwo().toArrayRecycled(Pair[]::new)));
         });
 
         return ops.isEmpty() ? ArithmeticOp.EmptyArray : ops.toArray(ArithmeticOp.EmptyArray);
     }
 
-    public static List<Pair<Term, Function<Term, Term>>> maybe(IntObjectHashMap<List<Pair<Term, Function<Term, Term>>>> mods, int ia) {
+    private static FasterList<Pair<Term, Function<Term, Term>>> maybe(IntObjectHashMap<FasterList<Pair<Term, Function<Term, Term>>>> mods, int ia) {
         return mods.getIfAbsentPut(ia, FasterList::new);
     }
 
-    public static final Logger logger = LoggerFactory.getLogger(Arithmeticize.class);
+
 
 
     abstract static class ArithmeticOp  {

@@ -903,7 +903,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return !dtSpecial(dt) ? conjSeqFinal(dt, left, right) : conjoin(left, right, dt==DTERNAL);
     }
 
-    public static Term conjSeqFinal(int dt, Term left, Term right) {
+    static Term conjSeqFinal(int dt, Term left, Term right) {
         assert (dt != XTERNAL);
 
         if (left == Null) return Null;
@@ -946,16 +946,17 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         Term t = terms.theCompound(CONJ, dt, left, right);
         //HACK temporary
-        if (((left instanceof Compound && right instanceof Compound && left.hasAny(CONJ) && right.hasAny(CONJ))
-                )
-                && t.anon().volume()!=t.volume()) {
-            try {
-                t = terms.conj(dt, left, right); //factorization, etc
-            } catch (StackOverflowError e) {
-                if (Param.DEBUG)
-                    throw new WTF(); //TEMPORARY
-            }
-        }
+//        if (((left instanceof Compound && right instanceof Compound && left.hasAny(CONJ) && right.hasAny(CONJ))
+//                )
+//                && t.anon().volume()!=t.volume()) {
+//            try {
+//                t = terms.conj(dt, left, right); //factorization, etc
+//            } catch (StackOverflowError e) {
+//                System.out.println("conj fail: (&&,dt, " + left + " , " + right + ')');
+//                if (Param.DEBUG)
+//                    throw new WTF(); //TEMPORARY
+//            }
+//        }
 
 
 //        if (t.op()==CONJ && t.OR(tt -> tt.op()==NEG && tt.unneg().op()==CONJ)) {

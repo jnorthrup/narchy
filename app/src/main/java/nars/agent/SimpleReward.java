@@ -6,10 +6,14 @@ import nars.NAR;
 import nars.attention.AttBranch;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 
 public class SimpleReward extends Reward {
+
+    private static final Logger logger = LoggerFactory.getLogger(SimpleReward.class);
 
     public final Signal concept;
 
@@ -32,9 +36,19 @@ public class SimpleReward extends Reward {
                 AttBranch b = new AttBranch(term, this.components());
                 return b;
             }
-
         };
         concept.attn.parent(attn);
+
+//        ((BeliefTables)concept.goals()).tables.add(0, new EmptyBeliefTable() {
+//            @Override public void add(Remember r, NAR nar) {
+//                Task i = r.input;
+//
+//                if (i.isNegative()) {
+//                    logger.info("goal contradicts reward:\n{}", i.proof());
+//                    r.forget(i);
+//                }
+//            }
+//        });
 
         alwaysWantEternally(concept.term);
 //        agent.//alwaysWant
