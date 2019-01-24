@@ -137,11 +137,7 @@ public class DynTaskify extends DynEvi {
         if (t == null)
             return null;
 
-
         Task y = d.task(term, t, d::stamp, beliefOrGoal, s, e, nar);
-//        if (y != null && eviFactor != 1) {
-//            y.priMult(eviFactor);
-//        }
         return y;
     }
 

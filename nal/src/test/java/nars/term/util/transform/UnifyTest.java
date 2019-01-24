@@ -25,13 +25,14 @@ public class UnifyTest {
 
     private static final int INITIAL_TTL = 512;
 
-    @Test void testCommonStructureAllVariables() {
-        Unify u = new UnifyAny(new XoRoShiRo128PlusRandom() );
+    @Test
+    void testCommonStructureAllVariables() {
+        Unify u = new UnifyAny(new XoRoShiRo128PlusRandom(1));
 //        assertTrue(
 //            Terms.commonStructureTest( $$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
 //        );
         assertTrue(
-            Subterms.possiblyUnifiable( $$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
+                Subterms.possiblyUnifiable($$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
         );
     }
 
@@ -51,98 +52,103 @@ public class UnifyTest {
     }
 
 
-    private void test(/**/ Op type, String s1, String s2, boolean shouldSub) {
-        test(type, s1, s2, shouldSub, false, false);
-
-        test(type, s1, s2, shouldSub, true, true);
+    static private void test(/**/ Op type, String s1, String s2, boolean shouldSub) {
+        for (int seed : new int[]{1, 2, 3, 4}) {
+            try {
+                test(seed, type, s1, s2, shouldSub, false, false);
+                test(seed, type, s1, s2, shouldSub, true, true);
+            } catch (Narsese.NarseseException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
-    private Unify test(/**/ Op type, String s1, String s2, boolean shouldSub, boolean anon1, boolean anon2) {
+    @Test void testEllipsisContainingTermNotEqual() {
+        assertNotEquals( $$("{a, %X}"), $$("{a, %X..+}"));
+    }
+
+    static private Unify test(int rngSeed, /**/ Op type, String s1, String s2, boolean shouldSub, boolean anon1, boolean anon2) throws Narsese.NarseseException {
 
 
         Anon a = new Anon();
 
-        try {
 
-            Term t2 = Narsese.term(s2, true);
-            if (anon2) t2 = a.put(t2).normalize();
+        Term t2 = Narsese.term(s2, true);
+        if (anon2) t2 = a.put(t2).normalize();
 
-            Term t1;
-            if (type == Op.VAR_PATTERN) {
-                t1 = Narsese.term(s1, false);
-                if (anon1) t1 = pattern(a.put(t1)).normalize();
-                else t1 = pattern(t1).normalize();
-            } else {
-                t1 = Narsese.term(s1, true);
-                if (anon1) t1 = a.put(t1).normalize();
+        Term t1;
+        if (type == Op.VAR_PATTERN) {
+            t1 = Narsese.term(s1, false);
+            //t1 = pattern(anon1 ? a.put(t1) : t1).normalize();
+            t1 = pattern((anon1 ? a.put(t1) : t1).normalize());
+        } else {
+            t1 = Narsese.term(s1, true);
+            if (anon1) t1 = a.put(t1).normalize();
+        }
+
+
+        assertNotNull(t1);
+        assertNotNull(t2);
+
+
+        Set<Term> vars = ((Compound) t1).recurseSubtermsToSet(type);
+        vars.addAll(((Compound) t2).recurseSubtermsToSet(type));
+        int n1 = vars.size();
+
+
+        final boolean[] termuted = {false};
+        AtomicBoolean subbed = new AtomicBoolean(false);
+
+        Unify sub = new Unify(type, new XorShift128PlusRandom(rngSeed), Param.UnificationStackMax) {
+
+            @Override
+            protected void tryMatches() {
+                if (!termutes.isEmpty())
+                    termuted[0] = true;
+                super.tryMatches();
             }
 
+            @Override
+            public void tryMatch() {
 
-            assertNotNull(t1);
-            assertNotNull(t2);
+                if (shouldSub) {
+                    final int[] matched = {0};
+                    this.xy.forEachVersioned((k, v) -> {
+                        if (matchType(k.op())) {
+                            assertNotNull(v);
+                            matched[0]++;
+                        }
+                        return true;
+                    });
 
+                    if (matched[0] == n1) {
+                        subbed.set(true);
 
-            Set<Term> vars = ((Compound) t1).recurseSubtermsToSet(type);
-            vars.addAll( ( (Compound) t2).recurseSubtermsToSet(type) );
-            int n1 = vars.size();
-
-
-            final boolean[] termuted = {false};
-            AtomicBoolean subbed = new AtomicBoolean(false);
-
-            Unify sub = new Unify(type, new XorShift128PlusRandom(1), Param.UnificationStackMax) {
-
-                @Override
-                protected void tryMatches() {
-                    if (!termutes.isEmpty())
-                        termuted[0] = true;
-                    super.tryMatches();
-                }
-
-                @Override
-                public void tryMatch() {
-
-                    if (shouldSub) {
-                        final int[] matched = {0};
-                        this.xy.forEachVersioned((k, v) -> {
-                            if (matchType(k.op())) {
-                                assertNotNull(v);
-                                matched[0]++;
-                            }
-                            return true;
-                        });
-
-                        if (matched[0] == n1) {
-                            subbed.set(true);
-
-                        } /*else {
+                    } /*else {
                             System.out.println("incomplete:\n\t" + xy);
                         }*/
 
 
-                    } else {
+                } else {
 
-                        assertTrue((n1) > (xy.size()), "why matched?: " + xy);
-
-                    }
+                    assertTrue((n1) > (xy.size()), "why matched?: " + xy);
 
                 }
-            };
+
+            }
+        };
 
 
-            sub.setTTL(INITIAL_TTL);
-            boolean u = sub.unify(t1, t2);
-            if (!termuted[0])
-                assertEquals(shouldSub, u);
+        //System.out.println("unify: " + t1 + " , \t" + t2);
+        sub.setTTL(INITIAL_TTL);
+        boolean u = sub.unify(t1, t2);
+        if (!termuted[0])
+            assertEquals(shouldSub, u);
 
-            assertEquals(shouldSub, subbed.get());
+        assertEquals(shouldSub, subbed.get());
 
-            return sub;
+        return sub;
 
-
-        } catch (Narsese.NarseseException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
@@ -797,6 +803,7 @@ public class UnifyTest {
                 "t:(x | {y})",
                 true);
     }
+
     @Test
     void implXternal() {
         test(Op.VAR_PATTERN,

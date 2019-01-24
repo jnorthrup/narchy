@@ -52,8 +52,11 @@ public class LinearTruthPolation extends TruthPolation {
 //            end = Util.clamp(E, start, end);
 //        }
 
+        validate();
+
         float eviFactor = 1f;
         if (nar != null) {
+
             eviFactor *= intermpolate(nar);
             if (eviFactor < ScalarValue.EPSILON)
                 return null;
@@ -71,7 +74,7 @@ public class LinearTruthPolation extends TruthPolation {
         float wSum = 0;
         float eSum = 0;
         for (int i = 0; i < s; i++) {
-            TaskComponent x = update(i, eviMin);
+            TaskComponent x = get(i);
             if (x == null)
                 continue;
 
@@ -107,6 +110,7 @@ public class LinearTruthPolation extends TruthPolation {
 
         return PreciseTruth.byEvi((wFreqSum / wSum), eAvg);
     }
+
 
 //    public long range() {
 //        return start == ETERNAL ? 1 : (end - start) + 1;

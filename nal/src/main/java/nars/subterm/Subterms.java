@@ -1164,8 +1164,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
             } else {
 
                 if (xi != yi) {
-                    if (s == 1)
-                        return new UniSubterm(yi);
+                    //if (s == 1)
+                    //    return new UniSubterm(yi);
 
                     if (y == null)
                         y = new DisposableTermList(s, i);

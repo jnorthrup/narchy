@@ -1,5 +1,6 @@
 package nars.truth.polation;
 
+import com.google.common.collect.Iterables;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.WTF;
@@ -14,6 +15,7 @@ import nars.task.Tasked;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
+import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +36,7 @@ import static nars.time.Tense.ETERNAL;
 @Skill({"Interpolation", "Extrapolation"})
 abstract public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
-    public final long start, end;
+    public long start, end;
     int dur;
 
     /**
@@ -63,13 +65,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
 
-    /**
-     * remove components contributing no evidence
-     */
-    public final TruthPolation filter() {
-        removeIf(x -> update(x, Float.MIN_NORMAL) == null);
-        return this;
-    }
+
 
     @Nullable
     final TaskComponent update(int i, float eviMin) {
@@ -137,7 +133,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             return only(provideStamp);
         }
 
-        filter();
+        validate();
         if ((s = size()) < minResults)
             return null;
 
@@ -439,6 +435,51 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         forEach(t -> System.out.println(t.task.proof()));
     }
 
+    public long start() {
+        return start;
+    }
+
+    public long end() {
+        return end;
+    }
+
+    /**
+     * use after filtering cyclic.
+     * adjust start/end to better fit the (remaining) task components and minimize temporalizing truth dilution.
+     * if the start/end has changed, then evidence for each will need recalculated
+     *  */
+    public void refocus() {
+        if (isEmpty())
+            return;
+
+        long[] union = Tense.union(Iterables.transform(this, (TaskComponent x)->x.task));
+        if (union[0] == ETERNAL)
+            return; //eternal
+        if (start==ETERNAL) {
+            //override eternal range
+        } else {
+            union[0] = Math.min(end, Math.max(start, union[0]));
+            union[1] = Math.max(start, Math.min(end, union[1]));
+        }
+        if (union[0]!=start || union[1]!=end) {
+            invalidateEvi();
+            start = union[0];
+            end = union[1];
+        }
+    }
+
+    protected void validate() {
+        if (start == ETERNAL)
+            refocus();
+        removeIf(x -> update(x, Float.MIN_NORMAL) == null);
+    }
+
+
+    private void invalidateEvi() {
+        for (TaskComponent x : this)
+            x.invalidate();
+    }
+
 
     protected static class TaskComponent implements Tasked {
         final Task task;
@@ -466,6 +507,10 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         @Override
         public @Nullable Task task() {
             return task;
+        }
+
+        public void invalidate() {
+            evi = freq = Float.NaN;
         }
     }
 

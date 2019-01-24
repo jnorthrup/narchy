@@ -174,7 +174,7 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
         dyn.pri(
                 //pri(start, end)
                 reapply(DynEvi::pri, Param.DerivationPri)
-                        * dyn.originality()
+                        * dyn.originality() //HACK
         );
 
         if (Param.DEBUG_EXTRA)

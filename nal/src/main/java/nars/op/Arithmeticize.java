@@ -21,8 +21,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Random;
@@ -234,11 +232,11 @@ public class Arithmeticize {
                             Int.the(b), v-> $.func(MathFunc.add, v, $.the(BMinA))
                     ));
 
-                } else if (b < a) {
-
-                    maybe(eqMods, b).add(pair(
-                            Int.the(a), v-> $.func(MathFunc.add, v, $.the(a - b))
-                    ));
+//                } else if (b < a) {
+//
+//                    maybe(eqMods, b).add(pair(
+//                            Int.the(a), v-> $.func(MathFunc.add, v, $.the(a - b))
+//                    ));
                 }
 
                 if (a < b) {

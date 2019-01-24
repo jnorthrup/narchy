@@ -2,6 +2,7 @@ package nars.time;
 
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.iterator.ArrayIterator;
 import jcog.math.LongInterval;
 import nars.NAR;
 import nars.task.util.TaskRegion;
@@ -148,6 +149,17 @@ public enum Tense {
     }
 
     public static long[] union(TaskRegion... tt) {
+
+        if (tt.length == 1) {
+            return new long[] { tt[0].start(), tt[0].end() };
+        } else if (tt.length == 0) {
+            throw new UnsupportedOperationException();
+        } else {
+            return union(ArrayIterator.iterable(tt));
+        }
+    }
+
+    public static long[] union(Iterable<? extends TaskRegion> tt) {
         long start = Long.MAX_VALUE;
         long end = Long.MIN_VALUE;
         

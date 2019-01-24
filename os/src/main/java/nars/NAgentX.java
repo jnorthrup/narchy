@@ -93,7 +93,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float clockFPS) {
-        return runRT(init, -1, clockFPS, clockFPS);
+        return runRT(init, -1, clockFPS*2, clockFPS);
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, int threads, float narFPS, float durFPS) {

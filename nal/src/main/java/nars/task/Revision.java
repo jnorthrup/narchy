@@ -87,12 +87,6 @@ public enum Revision { ;
 
     }
 
-    @Nullable
-    private static Task merge(NAR nar, TaskRegion... tt) {
-        assert tt.length > 1;
-        long[] u = Tense.union(tt);
-        return merge(nar,  u[0], u[1], tt);
-    }
 
     /**
      * warning: output task will have zero priority and input tasks will not be affected
@@ -101,13 +95,13 @@ public enum Revision { ;
      * also cause merge is deferred in the same way
      */
     @Nullable
-    private static Task merge(NAR nar, long start, long end, TaskRegion... tasks) {
+    private static Task merge(NAR nar, TaskRegion... tasks) {
 
         assert(tasks.length > 1);
 
-        float eviMin = c2wSafe(nar.confMin.floatValue());
+        long[] u = Tense.union(tasks);
 
-        TruthPolation T = Param.truth(start, end, 0).add(tasks);
+        TruthPolation T = Param.truth(u[0], u[1], 0).add(tasks);
 
         MetalLongSet stamp = T.filterCyclic(true, 2);
         if (stamp == null)
@@ -116,7 +110,9 @@ public enum Revision { ;
         if (T.size() == 1)
             return null; //fail
 
-        Truth truth = T.truth(nar, eviMin);
+        T.refocus();
+
+        Truth truth = T.truth(nar, c2wSafe(nar.confMin.floatValue()));
         if (truth == null)
             return null;
 
@@ -130,7 +126,7 @@ public enum Revision { ;
             int dith = nar.dtDither();
             return new UnevaluatedTask(c, punc,
                     tr,
-                    nar.time(), Tense.dither(start, dith), Tense.dither(end, dith),
+                    nar.time(), Tense.dither(T.start(), dith), Tense.dither(T.end(), dith),
                     Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
             );
         });

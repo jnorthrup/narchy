@@ -346,14 +346,15 @@ abstract public class MultiExec extends UniExec {
 
             private void play(long playTime) {
 
-                long until = System.nanoTime() + playTime;
                 int n = cpu.items.size();
                 if (n == 0)
                     return;
+                long until = System.nanoTime() + playTime, after = until;
                 do {
                     TimedLink s = cpu.get(rng.nextInt(n));
-                    if (s == null)
+                    if (s == null) {
                         break;
+                    }
 
                     Causable c = s.get();
 
@@ -364,12 +365,14 @@ abstract public class MultiExec extends UniExec {
                             try {
 
                                 long runtimeNS =
-                                        s.time.getOpaque() / contextGranularity;
+                                        s.time.getOpaque() / (contextGranularity);
                                 if (runtimeNS > 0) {
                                     long before = System.nanoTime();
-                                    c.runUntil(before + runtimeNS, nar);
-                                    long after = System.nanoTime();
+                                    c.runUntil(Math.min(until, before + runtimeNS), nar);
+                                    after = System.nanoTime();
                                     s.use(after - before);
+                                } else {
+                                    after = System.nanoTime(); //safety
                                 }
 
                             } finally {
@@ -377,9 +380,11 @@ abstract public class MultiExec extends UniExec {
                                     c.busy.set(false);
                             }
                         }
+                    } else {
+                        after = System.nanoTime(); //safety
                     }
 
-                } while (/*queueSafe() && */(until > System.nanoTime()));
+                } while (/*queueSafe() && */(until > after));
 
             }
 

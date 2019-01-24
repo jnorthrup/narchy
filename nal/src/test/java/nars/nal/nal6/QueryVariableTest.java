@@ -56,10 +56,6 @@ class QueryVariableTest {
 
     @Test
     void testQuery1() throws Narsese.NarseseException {
-        testQueryAnswered(2, 64);
-    }
-    @Test
-    void testQuery2() throws Narsese.NarseseException {
         testQueryAnswered(4, 64);
     }
 

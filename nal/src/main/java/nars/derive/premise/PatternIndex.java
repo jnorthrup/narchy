@@ -4,7 +4,6 @@ import jcog.TODO;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.Builtin;
-import nars.NAR;
 import nars.Op;
 import nars.index.concept.MapConceptIndex;
 import nars.subterm.BiSubterm;
@@ -38,18 +37,11 @@ import static nars.unify.ellipsis.Ellipsis.firstEllipsis;
  */
 public class PatternIndex extends MapConceptIndex {
 
-    //final Map<InternedSubterms, Subterms> subterms = new HashMap<>(1024);
-    //private final Map<Term, PrediTerm<Derivation>> pred = new HashMap<>(1024);
-
 
     public PatternIndex() {
         super(new ConcurrentHashMap<>(1024));
     }
 
-    public PatternIndex(NAR nar) {
-        this();
-        this.nar = nar;
-    }
 
     /*@NotNull*/
     private static PremisePatternCompound ellipsis(/*@NotNull*/ Compound seed, /*@NotNull*/ Subterms v, /*@NotNull*/ Ellipsis e) {
@@ -185,6 +177,11 @@ public class PatternIndex extends MapConceptIndex {
         @Override
         public final boolean the() {
             return false;
+        }
+
+        @Override
+        public @Nullable Term normalize() {
+            throw new UnsupportedOperationException("normalize before patternify");
         }
 
         public abstract static class PremisePatternCompoundWithEllipsis extends PremisePatternCompound {

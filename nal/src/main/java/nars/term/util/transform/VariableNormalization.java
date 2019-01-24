@@ -81,9 +81,9 @@ public class VariableNormalization extends VariableTransform {
         this(new HashMap<>(size), offset);
     }
 
-    public VariableNormalization(/*@NotNull*/ Map<Variable, Variable> r) {
-        this(r, 0);
-    }
+//    public VariableNormalization(/*@NotNull*/ Map<Variable, Variable> r) {
+//        this(r, 0);
+//    }
 
     private VariableNormalization(/*@NotNull*/ Map<Variable, Variable> r, int offset) {
         this.offset = offset;

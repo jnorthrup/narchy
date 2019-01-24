@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 150;
+    static final int cycles = 250;
 
     @Override
     protected NAR nar() {
@@ -307,8 +307,8 @@ public class NAL3Test extends NALTest {
                 .goal("x:a")
                 .goal("x:b")
                 .quest("x:a")
-                .mustQuest(cycles, "x:(a|b)")
-                .mustGoal(cycles, "x:(a|b)", 1f, 0.81f)
+                .mustQuest(cycles*2, "x:(a|b)")
+                .mustGoal(cycles*2, "x:(a|b)", 1f, 0.81f)
         ;
     }
 }

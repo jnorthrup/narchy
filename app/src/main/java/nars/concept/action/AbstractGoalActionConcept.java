@@ -20,6 +20,7 @@ import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
@@ -196,6 +197,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
                     long lastCuriosity = curiosityTable.series.end();
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
                     long curiEnd = Math.max(curiStart, e);
+
+                    curiStart = Tense.dither(curiStart, n);
+                    curiEnd = Tense.dither(curiEnd, n);
+
                     in.input(
                             curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
                     );

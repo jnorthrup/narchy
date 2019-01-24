@@ -289,11 +289,11 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 4f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**
@@ -375,9 +375,9 @@ public abstract class Param {
      * includes the host as layer 0, so if this returns 1 it will only include the host
      */
     public static int termlinkTemplateLayers(Term root) {
-        if (root.op().statement)
-            return Param.TERMLINK_TEMPLATE_DEPTH;
-        else
+//        if (root.op().statement)
+//            return Param.TERMLINK_TEMPLATE_DEPTH;
+//        else
             return Param.TERMLINK_TEMPLATE_DEPTH_min;
 
 //        switch (root.op()) {

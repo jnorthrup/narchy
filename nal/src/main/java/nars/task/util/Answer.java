@@ -137,18 +137,18 @@ public final class Answer implements AutoCloseable {
                 return Float.NaN;
 
             return
-                -(1 + Math.abs(t.start() - xStart) + Math.abs(t.end() - xEnd));
+                1f/(1 + (Math.abs(t.start() - xStart) + Math.abs(t.end() - xEnd))/2f);
         };
 
         Term xt = x.term();
         if (xt.hasAny(Op.Temporal)) {
 
             return (t) -> {
-                float v1 = f.floatValueOf(t); //will be negative
+                float v1 = f.floatValueOf(t);
                 if (v1 != v1) return Float.NaN;
 
                 Term tt = ((Task) t).term();
-                return v1 * (1f + Intermpolate.dtDiff(xt, tt));
+                return v1 / (1f + Intermpolate.dtDiff(xt, tt));
             };
         } else {
             return f;
@@ -328,10 +328,13 @@ public final class Answer implements AutoCloseable {
             return root;
 
         TruthPolation tp = truthpolation(d, nar.dur());
+
         tp.filterCyclic(root, false);
+
         if (tp.size() == 1)
             return root;
 
+        tp.refocus();
 
         @Nullable Truth tt = truth(tp);
         if (tt == null)
@@ -344,8 +347,7 @@ public final class Answer implements AutoCloseable {
         }
 
 
-        long s = tp.start;
-        long e = tp.end;
+        long s = tp.start(), e = tp.end();
         if (d.allSatisfy(Task::isEternal)) {
             s = e = ETERNAL;
         }
