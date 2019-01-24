@@ -102,11 +102,13 @@ public class DefaultDerivePri implements DerivePri {
             eDerived = t.evi();
             assert(d.taskStart==ETERNAL);
             eParentTask = d._task.isBeliefOrGoal() ? d._task.evi() : 0;
+
             if (!d.concSingle) {
                 assert(d.beliefStart==ETERNAL);
                 eParentBelief = d._belief.evi();
             } else
-                eParentBelief = 0;
+                eParentBelief = Float.NaN;
+
         } else {
             int dur = d.dur;
 
@@ -116,14 +118,22 @@ public class DefaultDerivePri implements DerivePri {
             eParentTask = d._task.isBeliefOrGoal() ?
                     (d._task.isEternal() ? TruthIntegration.evi(d._task, ts, te, dur) : TruthIntegration.evi(d._task))
                         : 0;
+
             if (!d.concSingle)
                 eParentBelief = d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, dur) : TruthIntegration.evi(d._belief);
             else
-                eParentBelief = 0;
+                eParentBelief = Float.NaN;
 
         }
 
-        float eParent = Math.max(eParentTask, eParentBelief);
+        if (eParentBelief!=eParentBelief)
+            eParentBelief =
+                    //0;
+                    eParentTask;
+
+        float eParent =
+                //Math.max(eParentTask, eParentBelief);
+                eParentTask + eParentBelief;
         float cDerived = w2cSafe(eDerived);
         float cParent = w2cSafe(eParent);
         if (cParent < cDerived)

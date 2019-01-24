@@ -375,13 +375,18 @@ public abstract class Param {
      * includes the host as layer 0, so if this returns 1 it will only include the host
      */
     public static int termlinkTemplateLayers(Term root) {
-        switch (root.op()) {
-            case PROD:
-            case CONJ:
-                return TERMLINK_TEMPLATE_DEPTH_min;
-            default:
-                return Param.TERMLINK_TEMPLATE_DEPTH;
-        }
+        if (root.op().statement)
+            return Param.TERMLINK_TEMPLATE_DEPTH;
+        else
+            return Param.TERMLINK_TEMPLATE_DEPTH_min;
+
+//        switch (root.op()) {
+//            case PROD:
+//            case CONJ:
+//                return TERMLINK_TEMPLATE_DEPTH_min;
+//            default:
+//                return Param.TERMLINK_TEMPLATE_DEPTH;
+//        }
 
 //
 //            case SETe:
