@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
@@ -274,11 +273,11 @@ abstract public class NAgentX extends NAgent {
 //        senseActions.timing = new ActionTiming(n);
 
 
-        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.files(n,
-                "nal6.nal", "motivation.nal"),
-                a.actions.stream().collect(Collectors.toList())
-        );
-        motorInference.timing = new ActionTiming(n);
+//        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.files(n,
+//                "nal6.nal", "motivation.nal"),
+//                a.actions.stream().collect(Collectors.toList())
+//        );
+//        motorInference.timing = new ActionTiming(n);
 
 
         //sd.timing = new ActionTiming(n);

@@ -672,8 +672,8 @@ public class NAgent extends NARService implements NSense, NAct {
         };
     }
 
-
-    public float reward() {
+    /** scalar summary of current reward satisfaction state */
+    public final float reward() {
         float total = 0;
         for (Reward r : rewards) {
             total += r.summary();

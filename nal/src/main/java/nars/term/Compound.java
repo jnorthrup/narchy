@@ -787,22 +787,14 @@ public interface Compound extends Term, IPair, Subterms {
             newDT = thisDT;
 
             //apply any shifts caused by range changes
-            if (targetOp == CONJ) {
-                if (newDT!=DTERNAL && newDT!=XTERNAL && xx.subs()==2 && yy.subs()==2) {
-                    int subjRangeBefore = xx.sub(0).eventRange();
-                    int predRangeBefore = xx.sub(1).eventRange();
-                    int subjRangeAfter = yy.sub(0).eventRange();
-                    int predRangeAfter = yy.sub(1).eventRange();
-                    newDT += (subjRangeBefore - subjRangeAfter) + (predRangeBefore-predRangeAfter);
-                }
-            } else if (targetOp == IMPL) {
-                if (newDT!=DTERNAL && newDT!=XTERNAL) {
-                    int subjRangeBefore = xx.sub(0).eventRange();
-                    int predRangeBefore = xx.sub(1).eventRange();
-                    int subjRangeAfter = yy.sub(0).eventRange();
-                    int predRangeAfter = yy.sub(1).eventRange();
-                    newDT += (subjRangeBefore - subjRangeAfter) + (predRangeBefore-predRangeAfter);
-                }
+            if (yy!=xx && targetOp.temporal && newDT!=DTERNAL && newDT!=XTERNAL && xx.subs()==2 && yy.subs() == 2) {
+
+                int subjRangeBefore = xx.sub(0).eventRange();
+                int predRangeBefore = xx.sub(1).eventRange();
+                int subjRangeAfter = yy.sub(0).eventRange();
+                int predRangeAfter = yy.sub(1).eventRange();
+                newDT += (subjRangeBefore - subjRangeAfter) + (predRangeBefore - predRangeAfter);
+
             }
         }
 

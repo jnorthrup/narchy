@@ -28,7 +28,7 @@ public class BooleanReactionTest extends MiniTest {
     }
 
     @Override
-    public float reward() {
+    protected float myReward() {
         float r = reward;
         reward = 0;
         return r;

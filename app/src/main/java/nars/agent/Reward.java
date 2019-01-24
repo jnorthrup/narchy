@@ -69,7 +69,7 @@ public abstract class Reward implements Termed, Iterable<Signal> {
                 $.t(Util.unitize(next), nar().confDefault(BELIEF)) : null;
     }
 
-    public float summary() {
+    public final float summary() {
         return reward;
     }
 

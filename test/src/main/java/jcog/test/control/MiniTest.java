@@ -21,7 +21,7 @@ abstract public class MiniTest extends NAgent {
 //                statPrint.run();
 //                nar.stats(System.out);
 
-            float yy = reward();
+            float yy = myReward();
 
             rewardSum += yy;
             dex.addValue(dexterity());
@@ -33,7 +33,8 @@ abstract public class MiniTest extends NAgent {
         n.on(this);
     }
 
-    public abstract float reward();
+
+    abstract protected float myReward();
 
     public float avgReward() {
         return rewardSum / (((float) nar.time()) / nar.dur());

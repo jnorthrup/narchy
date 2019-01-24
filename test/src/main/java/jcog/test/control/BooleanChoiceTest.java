@@ -28,7 +28,7 @@ public class BooleanChoiceTest extends MiniTest {
     }
 
     @Override
-    public float reward() {
+    protected float myReward() {
         float r = reward;
         reward = Float.NaN;
         return r;

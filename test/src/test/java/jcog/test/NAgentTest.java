@@ -1,34 +1,35 @@
 package jcog.test;
 
 import it.unimi.dsi.fastutil.longs.LongArrayList;
+import jcog.io.Schema;
 import jcog.test.control.BooleanChoiceTest;
 import jcog.test.control.MiniTest;
 import nars.NAR;
 import nars.NARS;
-import nars.Task;
+import nars.Narsese;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
 import nars.control.DurService;
-import nars.term.Term;
+import nars.truth.Truth;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanBooleanPredicate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import tech.tablesaw.api.DoubleColumn;
 
 import static jcog.Texts.n4;
-import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NAgentTest {
 
-    static NAR nar() {
+    static NAR nar(int dur) {
 
         NAR n = NARS.tmp();
         n.termVolumeMax.set(4);
-        n.freqResolution.set(0.25f);
-        n.confResolution.set(0.02f);
-        n.time.dur(1);
+        n.freqResolution.set(0.1f);
+//        n.confResolution.set(0.02f);
+        n.time.dur(dur);
 
         return n;
     }
@@ -40,14 +41,13 @@ public class NAgentTest {
 
 
         int cycles = 2000;
+        int dur = 1; //cycles/100;
 
         boolean posOrNeg = posOrNegChar.charAt(0) == 't';
+        BooleanBooleanPredicate onlyTrue = (prev, next) -> next;
+        BooleanBooleanPredicate onlyFalse = (prev, next) -> !next;
 
-        NAR n = nar();
-        n.goalPriDefault.set(0.9f);
-        n.beliefPriDefault.set(0.8f);
-        n.questionPriDefault.set(0.5f);
-        n.questPriDefault.set(0.5f);
+        NAR n = nar(dur);
 
 //        Param.DEBUG = true;
 //        n.onTask((t)->{
@@ -55,14 +55,33 @@ public class NAgentTest {
 //                System.out.println(t.proof());
 //        }, GOAL);
 
-        BooleanBooleanPredicate onlyTrue = (prev, next) -> next;
-        BooleanBooleanPredicate onlyFalse = (prev, next) -> !next;
-
         MiniTest a = new BooleanChoiceTest(n, posOrNeg ? onlyTrue : onlyFalse);
 
-        n.run(cycles);
 
-        long bs = cycles/2, be = cycles+1;
+
+        Schema s = new Schema();
+        s.addColumns(DoubleColumn.create("reward"),DoubleColumn.create("dex"),DoubleColumn.create("x"));
+        n.onCycle(()->{
+            float reward = a.reward();
+            if (reward!=reward) reward = 0;
+            float dex = a.dexterity();
+            float x = 0;
+            try {
+                Truth t = n.goalTruth("x", n.time());
+                x = t!=null ? t.freq() : 0.5f;
+                s.add(reward, dex, x);
+            } catch (Narsese.NarseseException e) {
+                e.printStackTrace();
+            }
+        });
+
+
+        {
+            n.run(cycles);
+        }
+
+        s.printCSV();
+
 
         float avgReward = a.avgReward();
         double avgDex = a.dex.getMean();
@@ -71,38 +90,42 @@ public class NAgentTest {
         System.out.println("\tavgReward=" + n4(avgReward));
         System.out.println("\tavgDex=" + n4(avgDex));
 
-        Term xIsReward = $$("(x =|> reward)");
-        {
-            Task xIsRewardTask = n.is(xIsReward, bs, be);
-            if(xIsRewardTask!=null)
-                System.out.println(xIsRewardTask.proof());
-            else
-                System.out.println(xIsReward + " null");
-            String s = xIsRewardTask.toStringWithoutBudget();
-            assertTrue(s.contains("(x=|>reward)"));
-            assertTrue(s.contains(posOrNeg ? "%1.0;" : "%0.0;"));
-            assertTrue(xIsRewardTask.conf() > 0.1f);
-            assertTrue(xIsRewardTask.range() > 200);
-        }
-
-        Term notXnotReward = $$("(--x =|> reward)");
-        {
-
-            Task notXnotRewardTask = n.is(notXnotReward, bs, be);
-            if (notXnotRewardTask!=null)
-                System.out.println(notXnotRewardTask.proof());
-            else
-                System.out.println(notXnotReward + " null");
-            String s = notXnotRewardTask.toStringWithoutBudget();
-            assertTrue(s.contains("((--,x)=|>reward)"));
-            assertTrue(s.contains(posOrNeg ? "%0.0;" : "%1.0;"));
-            assertTrue(notXnotRewardTask.conf() > 0.1f);
-            assertTrue(notXnotRewardTask.range() > 250);
-        }
-
-
         assertTrue(avgReward > 0.6f, ()-> avgReward + " avgReward");
         assertTrue(avgDex > 0f);
+
+        //extended verification of beliefs:
+//        long bs = cycles/2, be = cycles+1;
+//        Term xIsReward = $$("(x =|> reward)");
+//        {
+//            Task xIsRewardTask = n.is(xIsReward, bs, be);
+//            if(xIsRewardTask!=null)
+//                System.out.println(xIsRewardTask.proof());
+//            else
+//                System.out.println(xIsReward + " null");
+//            String s = xIsRewardTask.toStringWithoutBudget();
+//            assertTrue(s.contains("(x=|>reward)"));
+//            assertTrue(s.contains(posOrNeg ? "%1.0;" : "%0.0;"));
+//            assertTrue(xIsRewardTask.conf() > 0.1f);
+//            assertTrue(xIsRewardTask.range() > 200);
+//        }
+//
+//        Term notXnotReward = $$("(--x =|> reward)");
+//        {
+//
+//            Task notXnotRewardTask = n.is(notXnotReward, bs, be);
+//            if (notXnotRewardTask!=null)
+//                System.out.println(notXnotRewardTask.proof());
+//            else
+//                System.out.println(notXnotReward + " null");
+//            String s = notXnotRewardTask.toStringWithoutBudget();
+//            assertTrue(s.contains("((--,x)=|>reward)"));
+//            assertTrue(s.contains(posOrNeg ? "%0.0;" : "%1.0;"));
+//            assertTrue(notXnotRewardTask.conf() > 0.1f);
+//            assertTrue(notXnotRewardTask.range() > 250);
+//        }
+
+
+
 
     }
 
@@ -112,9 +135,8 @@ public class NAgentTest {
 
         int cycles = 2000;
 
-        NAR n = nar();
-        n.freqResolution.set(0.1f);
-        n.termVolumeMax.set(8);
+        NAR n = nar(1);
+        n.termVolumeMax.set(6);
 //        n.goalPriDefault.set(0.9f);
 //        n.beliefPriDefault.set(0.1f);
 //        n.time.dur(period/2);
@@ -145,7 +167,7 @@ public class NAgentTest {
 
         int cycles = 500;
 
-        NAR n = nar();
+        NAR n = nar(1);
 
         MiniTest a = new BooleanChoiceTest(n, (next, prev) -> {
             //System.out.println(prev + " " + next);

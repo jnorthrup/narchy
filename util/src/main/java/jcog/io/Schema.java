@@ -10,8 +10,12 @@ import tech.tablesaw.columns.AbstractColumnType;
 import tech.tablesaw.columns.AbstractParser;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.csv.CsvReadOptions;
+import tech.tablesaw.io.csv.CsvWriteOptions;
+import tech.tablesaw.io.csv.CsvWriter;
 import tech.tablesaw.table.Rows;
 
+import java.io.FilterOutputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -180,7 +184,16 @@ public class Schema extends Table {
     }
 
     public void printCSV() {
-        throw new TODO();
+        printCSV(new FilterOutputStream(System.out) {
+            @Override
+            public void close()  {
+                //dont close it - can cause VM shutdown
+            }
+        });
+    }
+
+    public void printCSV(OutputStream o) {
+        new CsvWriter(this, new CsvWriteOptions.Builder(o).header(true).build()).write();
 //        String s = data.columnNames().toString();
 //        System.out.println(s.substring(/*'['*/ 1, s.length()-1 /*']'*/));
     }
