@@ -163,7 +163,7 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
             return (dt == cthat.dt);
 
         } else {
-            return Compound.equals(this, that);
+            return Compound.equals(this, that, true);
         }
 
     }

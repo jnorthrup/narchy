@@ -41,8 +41,6 @@ import jcog.math.Tuple3f;
 public class Vector4f extends Tuple4f {
 
   
-  static final long serialVersionUID = 8749319902347760659L;
-
   /**
    * Constructs and initializes a Vector4f from the specified xyzw coordinates.
    * @param x the x coordinate

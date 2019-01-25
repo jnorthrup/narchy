@@ -5,9 +5,9 @@ import jcog.pri.UnitPri;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
+import org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 //import java.util.concurrent.ConcurrentHashMap;
@@ -28,8 +28,8 @@ public class PriBuffer<Y> {
 
     /** pending Y activation collation */
     final Map<Y, UnitPrioritizable> items =
-            //new ConcurrentHashMapUnsafe<>(1024);
-            new java.util.concurrent.ConcurrentHashMap(1024);
+            new ConcurrentHashMapUnsafe<>(512);
+            //new java.util.concurrent.ConcurrentHashMap(512);
 
     private final PriMerge merge;
 
@@ -85,20 +85,17 @@ public class PriBuffer<Y> {
 
     public void update(ObjectFloatProcedure<Y> each) {
 
-        Iterator<Map.Entry<Y, UnitPrioritizable>> ii = items.entrySet().iterator();
-        while (ii.hasNext()) {
-            Map.Entry<Y, UnitPrioritizable> a = ii.next();
-            Y c = a.getKey();
-            UnitPrioritizable p = a.getValue();
-            ii.remove();
+        items.entrySet().removeIf(e->{
+            float pp = e.getValue().pri();
+            if (pp == pp)
+                each.value(e.getKey(), pp);
+            return true;
+        });
 
-            float pp = p.pri();
-            if (pp == pp) {
-                each.value(c, pp
-                        //c==p ? p.pri() : p.priGetAndDelete()
-                );
-            }
-        }
+//        Iterator<Map.Entry<Y, UnitPrioritizable>> ii = items.entrySet().iterator();
+//        while (ii.hasNext()) {
+//            Map.Entry<Y, UnitPrioritizable> e = ii.next();
+//        }
 
 //        removeIf(a -> {
 //            n.Ys.activate(a.get(), a.pri());
@@ -115,7 +112,6 @@ public class PriBuffer<Y> {
 //        }
 
     }
-
 
     public final void put(OverflowDistributor<Y> overflow, Random random) {
         overflow.shuffle(random).redistribute(this::put);

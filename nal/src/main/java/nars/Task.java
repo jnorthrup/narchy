@@ -120,7 +120,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
     static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
 
-        sb.ensureCapacity(1024);
 
         for (int i = 0; i < indent; i++)
             sb.append("  ");
@@ -818,7 +817,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     }
 
     default String proof() {
-        StringBuilder sb = new StringBuilder(512);
+        StringBuilder sb = new StringBuilder(4096);
         return proof(sb).toString().trim();
     }
 

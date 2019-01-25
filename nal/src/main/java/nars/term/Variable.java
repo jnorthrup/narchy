@@ -8,8 +8,6 @@ import nars.term.var.CommonVariable;
 import nars.unify.Unify;
 import nars.unify.ellipsis.EllipsisMatch;
 
-import static nars.Op.VAR_PATTERN;
-
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
  * varible type, as well as serving as something like the "marker interfaces" of Atomic, Compound, ..
@@ -47,7 +45,7 @@ public interface Variable extends Atomic {
     @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion"})
     default boolean unify(Term _y, Unify u) {
 
-        if (_y instanceof Variable && equals(_y))
+        if (this==_y || (_y instanceof Variable && equals(_y)))
             return true;
 
         Op xOp = op();
@@ -71,12 +69,12 @@ public interface Variable extends Atomic {
                 xOp = x.op();
                 //continue below
             } else {
-                try {
+//                try {
                     return x.unify(y, u);
-                } catch (StackOverflowError e) {
-                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy); //TEMPORARY
-                    return false;
-                }
+//                } catch (StackOverflowError e) {
+//                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy); //TEMPORARY
+//                    return false;
+//                }
             }
         }
 
@@ -92,14 +90,14 @@ public interface Variable extends Atomic {
                 Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
                 if (u.putXY(X, common) && u.putXY(Y, common)) {
                     //map any appearances of X or Y in already-assigned variables
-                    if (u.xy.size() > 2) {
-                        u.xy.replaceAll((var, val) -> {
-                            if (var.equals(X) || var.equals(Y) || !val.hasAny(X.op()))
-                                return val; //unchanged
-                            else
-                                return val.replace(X, common).replace(Y, common);
-                        });
-                    }
+//                    if (u.xy.size() > 2) {
+//                        u.xy.replaceAll((var, val) -> {
+//                            if (var.equals(X) || var.equals(Y) || !val.hasAny(X.op()))
+//                                return val; //unchanged
+//                            else
+//                                return val.replace(X, common).replace(Y, common);
+//                        });
+//                    }
                     return true;
                 }
                 return false;
@@ -108,8 +106,8 @@ public interface Variable extends Atomic {
 
 
 
-        if (y instanceof EllipsisMatch && xOp != VAR_PATTERN)
-            return false;
+//        if (y instanceof EllipsisMatch && xOp != VAR_PATTERN)
+//            return false;
 
         boolean yMatches;
 

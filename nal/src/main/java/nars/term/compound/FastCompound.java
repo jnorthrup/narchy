@@ -324,7 +324,7 @@ abstract public class FastCompound implements Compound /* The */ {
                 }
             }
         } else {
-            return Compound.equals(this, that);
+            return Compound.equals(this, that,false);
         }
         return false;
     }

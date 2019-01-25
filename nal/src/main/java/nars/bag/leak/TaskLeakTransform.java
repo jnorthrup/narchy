@@ -3,7 +3,7 @@ package nars.bag.leak;
 import jcog.Paper;
 import jcog.Skill;
 import nars.NAR;
-import nars.control.channel.BufferedCauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 
 import java.util.function.BooleanSupplier;
@@ -15,16 +15,16 @@ import java.util.function.BooleanSupplier;
 @Skill({"Queing_theory","Feedback"})
 abstract public class TaskLeakTransform extends TaskLeak  {
 
-    protected final BufferedCauseChannel in;
+    protected final CauseChannel in;
 
     protected TaskLeakTransform(NAR nar, byte... puncs) {
         super(nar, puncs);
-        this.in = nar.newChannel(this).buffered();
+        this.in = nar.newChannel(this);//.buffered();
     }
 
     protected TaskLeakTransform(int capacity, NAR nar, byte... puncs) {
         super(capacity, nar, puncs);
-        this.in = nar.newChannel(this).buffered();
+        this.in = nar.newChannel(this);//.buffered();
     }
 
 
@@ -32,7 +32,7 @@ abstract public class TaskLeakTransform extends TaskLeak  {
     protected void next(NAR nar, BooleanSupplier kontinue) {
         if (in == null) return; //HACK
         super.next(nar, kontinue);
-        in.commit();
+        //in.commit();
     }
 
     protected final void input(ITask x) {

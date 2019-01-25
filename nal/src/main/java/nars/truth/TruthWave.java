@@ -156,7 +156,7 @@ public class TruthWave {
             long a = Math.round(t); //Math.round(t - dt/2);
             long b = Math.round(t + dt);
 
-            Truth tr = table.truth(a, b, term, null, precision, nar);
+            Truth tr = table.truth(a, b, term, null, precision, 0, nar);
 
             load(data, (j++) * ENTRY_SIZE,
                     minT, maxT,

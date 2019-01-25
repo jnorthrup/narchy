@@ -107,17 +107,17 @@ abstract public class Causable extends NARService {
      */
     protected abstract void next(NAR n, BooleanSupplier kontinue);
 
-    final int nextCounted(NAR n, BooleanSupplier kontinue) {
-        final int[] count = {1};
-        next(n, ()-> {
-            if (kontinue.getAsBoolean()) {
-                count[0]++;
-                return true;
-            }
-            return false;
-        });
-        return count[0];
-    }
+//    final int nextCounted(NAR n, BooleanSupplier kontinue) {
+//        final int[] count = {1};
+//        next(n, ()-> {
+//            if (kontinue.getAsBoolean()) {
+//                count[0]++;
+//                return true;
+//            }
+//            return false;
+//        });
+//        return count[0];
+//    }
 
     /**
      * returns a system estimated instantaneous-sampled value of invoking this. between 0..1.0
@@ -126,11 +126,6 @@ abstract public class Causable extends NARService {
 
     final static Logger logger = LoggerFactory.getLogger(Causable.class);
 
-    public void runUntil(long when, NAR n) {
-        try {
-            next(n, () -> System.nanoTime() < when);
-        } catch (Throwable t) {
-            logger.error("{} {}", this, t);
-        }
+    public final void runUntil(long when, NAR n) {
     }
 }

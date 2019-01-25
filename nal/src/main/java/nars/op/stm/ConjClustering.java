@@ -13,7 +13,7 @@ import nars.Task;
 import nars.bag.BagClustering;
 import nars.control.CauseMerge;
 import nars.control.DurService;
-import nars.control.channel.BufferedCauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
@@ -43,7 +43,7 @@ public class ConjClustering extends Causable {
     public final BagClustering<Task> data;
     final CentroidConjoiner conjoiner = new CentroidConjoiner();
     private final BagClustering.Dimensionalize<Task> model;
-    private final BufferedCauseChannel in;
+    private final CauseChannel in;
     private final byte punc;
 
     public final FloatRange termVolumeMaxFactor = new FloatRange(0.75f, 0, 1f);
@@ -67,7 +67,7 @@ public class ConjClustering extends Causable {
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super();
 
-        this.in = nar.newChannel(this).buffered();
+        this.in = nar.newChannel(this);//.buffered();
 
         this.model = new BagClustering.Dimensionalize<>(5) {
 
@@ -162,7 +162,7 @@ public class ConjClustering extends Causable {
         conjoiner.kontinue = kontinue;
         data.forEachCentroid(nar, nar.random(), conjoiner::conjoinCentroid);
 
-        in.commit();
+        //in.commit();
     }
 
     private void update(NAR nar) {

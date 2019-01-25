@@ -72,9 +72,7 @@ public interface Compound extends Term, IPair, Subterms {
         return Subterms.super.contains(t);
     }
 
-    static boolean equals(/*@NotNull*/ Compound A, Object b) {
-        return equals(A, b, false);
-    }
+
     static boolean equals(/*@NotNull*/ Compound A, Object b, boolean compareHashCode) {
         if (A == b) return true;
 
@@ -83,9 +81,7 @@ public interface Compound extends Term, IPair, Subterms {
             Op ao = A.op();
             if (ao == B.op()) {
                 return
-                        (!ao.temporal || (A.dt() == B.dt()))
-                                &&
-                                equalSubs(A, B)
+                        equalSubs(A, B) && (!ao.temporal || (A.dt() == B.dt()))
                         ;
             }
         }

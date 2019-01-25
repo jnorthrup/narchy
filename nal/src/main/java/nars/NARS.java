@@ -119,12 +119,13 @@ public class NARS {
 
                 n.termVolumeMax.set(26);
 
-                ((AbstractConceptIndex)n.concepts).activationRate.set(0.001f);
+                ((AbstractConceptIndex)n.concepts).activeCapacity.set(128);
+                ((AbstractConceptIndex)n.concepts).activationRate.set(0.01f);
 
-                n.beliefPriDefault.set(0.5f);
-                n.goalPriDefault.set(0.5f);
-                n.questionPriDefault.set(0.05f);
-                n.questPriDefault.set(0.05f);
+                n.beliefPriDefault.set(0.1f);
+                n.goalPriDefault.set(0.1f);
+                n.questionPriDefault.set(0.01f);
+                n.questPriDefault.set(0.01f);
 
 
             });
@@ -138,7 +139,7 @@ public class NARS {
     public NARS() {
 
         index = () ->
-                new SimpleConceptIndex(2048)
+                new SimpleConceptIndex(1024)
                 //new TemporaryConceptIndex()
         ;
 
@@ -161,8 +162,8 @@ public class NARS {
                         ),
                         //beliefs tmp
                         curve(Concept::volume,
-                                1, 64,
-                                16, 32,
+                                1, 32,
+                                16, 16,
                                 32, 8
                         ),
                         //goals ete
@@ -173,8 +174,8 @@ public class NARS {
                         ),
                         //goals tmp
                         curve(Concept::volume,
-                                1, 64,
-                                16, 32,
+                                1, 32,
+                                16, 16,
                                 32, 8
                         ),
                         //questions

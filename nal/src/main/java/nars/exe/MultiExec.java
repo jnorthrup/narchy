@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 abstract public class MultiExec extends UniExec {
 
-    static final int contextGranularity = 2;
+    static final int contextGranularity = 3;
 
     private static final float inputQueueSizeSafetyThreshold = 1f;
     private final Revaluator revaluator;
@@ -283,6 +283,7 @@ abstract public class MultiExec extends UniExec {
             private boolean alive = true;
 
             final SplitMix64Random rng;
+            private long deadline;
 
             Worker() {
                  rng = new SplitMix64Random((31L * System.identityHashCode(this)) + System.nanoTime());
@@ -352,9 +353,11 @@ abstract public class MultiExec extends UniExec {
                 long until = System.nanoTime() + playTime, after = until;
                 do {
                     TimedLink s = cpu.get(rng.nextInt(n));
-                    if (s == null) {
+                    if (s == null)
                         break;
-                    }
+
+                    long before = System.nanoTime();
+                    after = before; //safety
 
                     Causable c = s.get();
 
@@ -367,12 +370,14 @@ abstract public class MultiExec extends UniExec {
                                 long runtimeNS =
                                         s.time.getOpaque() / (contextGranularity);
                                 if (runtimeNS > 0) {
-                                    long before = System.nanoTime();
-                                    c.runUntil(Math.min(until, before + runtimeNS), nar);
+                                    deadline = Math.min(until, before + runtimeNS);
+                                    try {
+                                        c.next(nar, this::deadline);
+                                    } catch (Throwable t) {
+                                        logger.error("{} {}", this, t);
+                                    }
                                     after = System.nanoTime();
                                     s.use(after - before);
-                                } else {
-                                    after = System.nanoTime(); //safety
                                 }
 
                             } finally {
@@ -380,12 +385,14 @@ abstract public class MultiExec extends UniExec {
                                     c.busy.set(false);
                             }
                         }
-                    } else {
-                        after = System.nanoTime(); //safety
                     }
 
                 } while (/*queueSafe() && */(until > after));
 
+            }
+
+            private boolean deadline() {
+                return System.nanoTime() < deadline;
             }
 
             void sleep() {

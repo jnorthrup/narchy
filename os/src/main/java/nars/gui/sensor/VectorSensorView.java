@@ -54,6 +54,13 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
     /** in durs */
     public final FloatRange timeShift = new FloatRange(0, -64, +64);
+
+    /** durs around target time */
+    public final FloatRange window = new FloatRange(1, 0, 4);
+
+    /** truth duration */
+    public final FloatRange truthDur = new FloatRange(1, 0, 4);
+
     public final AtomicBoolean visBelief = new AtomicBoolean(true);
     public final AtomicBoolean visGoal = new AtomicBoolean(true);
     public final AtomicBoolean visPri = new AtomicBoolean(true);
@@ -64,6 +71,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
     private Consumer<TaskConcept> touchMode = (x) -> { };
     private final TaskConcept[][] concept;
+    private int _truthDur;
 
     public VectorSensorView(Bitmap2DSensor sensor, NAgent a) {
         super(sensor.width, sensor.height);
@@ -195,14 +203,13 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private void accept(NAR nn) {
         dur = nn.dur();
         long now = Math.round(nn.time() + (dur * timeShift.floatValue()));
+        float window = this.window.floatValue();
 
-        this.start = now - dur * 2;
-        this.end = now + dur * 2;
+        this.start = Math.round(now - dur * window);
+        this.end = Math.round(now + dur * window);
 
+        this._truthDur = Math.round(truthDur.floatValue() * dur);
         update();
-
-
-
     }
 
     private final SplitMix64Random noise = new SplitMix64Random(1);
@@ -226,14 +233,14 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
                 null; //s.term;
 
         if (visBelief.get()) {
-            Truth b = s.beliefs().truth(start, end, template, null, truthPrecision, nar);
+            Truth b = s.beliefs().truth(start, end, template, null, truthPrecision, _truthDur, nar);
             bf = b != null ? b.freq() : noise();
         }
 
         R = bf * 0.75f; G = bf * 0.75f; B = bf * 0.75f;
 
         if (visGoal.get()) {
-            Truth d = s.goals().truth(start, end, template, null, truthPrecision, nar);
+            Truth d = s.goals().truth(start, end, template, null, truthPrecision, _truthDur, nar);
             if (d != null) {
                 float f = d.expectation();
 

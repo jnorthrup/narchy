@@ -338,12 +338,12 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
     }
 
 
-    /**
-     * @deprecated Use scaleAdd(double,Tuple4d) instead
-     */
-    public final void scaleAdd(float s, Tuple4d t1) {
-        scaleAdd((double) s, t1);
-    }
+//    /**
+//     * @deprecated Use scaleAdd(double,Tuple4d) instead
+//     */
+//    public final void scaleAdd(float s, Tuple4d t1) {
+//        scaleAdd((double) s, t1);
+//    }
 
 
     /**
@@ -537,13 +537,13 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
 
     }
 
-
-    /**
-     * @deprecated Use clampMax(double,Tuple4d) instead
-     */
-    public final void clampMax(float max, Tuple4d t) {
-        clampMax((double) max, t);
-    }
+//
+//    /**
+//     * @deprecated Use clampMax(double,Tuple4d) instead
+//     */
+//    public final void clampMax(float max, Tuple4d t) {
+//        clampMax((double) max, t);
+//    }
 
 
     /**
@@ -580,54 +580,54 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
     }
 
 
-    /**
-     * @deprecated Use clamp(double,double) instead
-     */
-    public final void clamp(float min, float max) {
-        clamp((double) min, max);
-    }
+//    /**
+//     * @deprecated Use clamp(double,double) instead
+//     */
+//    public final void clamp(float min, float max) {
+//        clamp((double) min, max);
+//    }
 
 
-    /**
-     * Clamps this tuple to the range [low, high].
-     *
-     * @param min the lowest value in this tuple after clamping
-     * @param max the highest value in this tuple after clamping
-     */
-    private void clamp(double min, double max) {
-        if (x > max) {
-            x = max;
-        } else if (x < min) {
-            x = min;
-        }
+//    /**
+//     * Clamps this tuple to the range [low, high].
+//     *
+//     * @param min the lowest value in this tuple after clamping
+//     * @param max the highest value in this tuple after clamping
+//     */
+//    private void clamp(double min, double max) {
+//        if (x > max) {
+//            x = max;
+//        } else if (x < min) {
+//            x = min;
+//        }
+//
+//        if (y > max) {
+//            y = max;
+//        } else if (y < min) {
+//            y = min;
+//        }
+//
+//        if (z > max) {
+//            z = max;
+//        } else if (z < min) {
+//            z = min;
+//        }
+//
+//        if (w > max) {
+//            w = max;
+//        } else if (w < min) {
+//            w = min;
+//        }
+//
+//    }
 
-        if (y > max) {
-            y = max;
-        } else if (y < min) {
-            y = min;
-        }
 
-        if (z > max) {
-            z = max;
-        } else if (z < min) {
-            z = min;
-        }
-
-        if (w > max) {
-            w = max;
-        } else if (w < min) {
-            w = min;
-        }
-
-    }
-
-
-    /**
-     * @deprecated Use clampMin(double) instead
-     */
-    public final void clampMin(float min) {
-        clampMin((double) min);
-    }
+//    /**
+//     * @deprecated Use clampMin(double) instead
+//     */
+//    public final void clampMin(float min) {
+//        clampMin((double) min);
+//    }
 
 
     /**
@@ -643,12 +643,12 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
     }
 
 
-    /**
-     * @deprecated Use clampMax(double) instead
-     */
-    public final void clampMax(float max) {
-        clampMax((double) max);
-    }
+//    /**
+//     * @deprecated Use clampMax(double) instead
+//     */
+//    public final void clampMax(float max) {
+//        clampMax((double) max);
+//    }
 
 
     /**
@@ -677,12 +677,12 @@ public abstract class Tuple4d implements java.io.Serializable, Cloneable {
     }
 
 
-    /**
-     * @deprecated Use interpolate(Tuple4d,Tuple4d,double) instead
-     */
-    public void interpolate(Tuple4d t1, Tuple4d t2, float alpha) {
-        interpolate(t1, t2, (double) alpha);
-    }
+//    /**
+//     * @deprecated Use interpolate(Tuple4d,Tuple4d,double) instead
+//     */
+//    public void interpolate(Tuple4d t1, Tuple4d t2, float alpha) {
+//        interpolate(t1, t2, (double) alpha);
+//    }
 
 
     /**

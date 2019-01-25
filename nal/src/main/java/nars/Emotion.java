@@ -3,7 +3,6 @@ package nars;
 import com.netflix.servo.Metric;
 import com.netflix.servo.MonitorRegistry;
 import com.netflix.servo.monitor.Counter;
-import com.netflix.servo.monitor.StepCounter;
 import com.netflix.servo.publish.BasicMetricFilter;
 import com.netflix.servo.publish.MonitorRegistryMetricPoller;
 import com.netflix.servo.publish.PollRunnable;
@@ -21,7 +20,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static jcog.Texts.n4;
-import static jcog.signal.meter.Meter.meter;
 
 /**
  * emotion - internal mental state
@@ -36,7 +34,6 @@ public class Emotion implements Meter {
     /**
      * priority rate of Task processing attempted
      */
-    public final Counter busyPri = new StepCounter(meter("busyPri"));
 
 
 //    public final Counter conceptCreate = new FastCounter("concept create");
@@ -73,7 +70,7 @@ public class Emotion implements Meter {
      * TODO convert to AtomicFloatArray or something where each value is volatile
      */
     public final float[] want = new float[MetaGoal.values().length];
-    public final AtomicMeanFloat busyVol;
+    public final AtomicMeanFloat busyVol, busyPri;
     /**
      * happiness rate
      */
@@ -95,6 +92,7 @@ public class Emotion implements Meter {
         this.happy = new AtomicMeanFloat("happy");
 
         this.busyVol = new AtomicMeanFloat("busyV");
+        this.busyPri = new AtomicMeanFloat("busyP");
 
         DurService.on(n, this::commit);
     }
@@ -161,7 +159,7 @@ public class Emotion implements Meter {
 
     @Deprecated
     public void busy(float pri, int vol) {
-        busyPri.increment(Math.round(pri * 1000));
+        busyPri.accept(Math.round(pri * 1000));
         busyVol.accept(vol);
     }
 

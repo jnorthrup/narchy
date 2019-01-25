@@ -35,7 +35,7 @@ public class LightCompound extends SeparateSubtermsCompound implements AbstractL
 
     @Override
     public boolean equals(Object obj) {
-        return Compound.equals(this, obj);
+        return Compound.equals(this, obj,true);
     }
 
     @Override

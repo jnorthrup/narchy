@@ -62,7 +62,7 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
     }
 
     @Override
-    public Y put(Y b, @Nullable NumberX overflowingIgnored) {
+    public final Y put(Y b, @Nullable NumberX overflowingIgnored) {
         return put(b);
     }
 
@@ -72,7 +72,7 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
     }
 
     @Override
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
         return bag.isEmpty() && buffer.isEmpty();
     }
 
@@ -100,6 +100,7 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
                 bag.putAsync(y);
             } else {
                 //System.out.println("ignored: " + c + " "+n4(pri));
+                bag.pressurize(pri);
             }
         }
 

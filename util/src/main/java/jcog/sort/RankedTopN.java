@@ -10,17 +10,17 @@ import java.util.function.IntFunction;
 public class RankedTopN<X> extends TopN<Ranked<X>> {
 
     /** source of ranked instances */
-    MetalPool<Ranked> r = null;
+    MetalPool<Ranked<X>> r = null;
 
-    static final ThreadLocal<MetalPool<Ranked>> rr = ThreadLocal.withInitial(()->new MetalPool<>() {
+    static final ThreadLocal<MetalPool> rr = ThreadLocal.withInitial(()->new MetalPool() {
         @Override
         public Ranked create() {
             return new Ranked();
         }
 
         @Override
-        public void put(Ranked i) {
-            i.clear();
+        public void put(Object i) {
+            ((Ranked)i).clear();
             super.put(i);
         }
     });

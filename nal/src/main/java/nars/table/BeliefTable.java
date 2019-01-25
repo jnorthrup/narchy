@@ -56,16 +56,17 @@ public interface BeliefTable extends TaskTable {
     }
 
     default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
-        return truth(start, end, template, filter, Answer.BELIEF_MATCH_CAPACITY, n);
+        return truth(start, end, template, filter, Answer.BELIEF_MATCH_CAPACITY, 0, n);
     }
 
     /** precision = max # of tasks to include in the sample */
-    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, int precision, NAR n) {
+    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, int precision, int dur, NAR n) {
         assert(precision < Param.STAMP_CAPACITY);
         if (isEmpty())
             return null;
-        return Answer.relevance(true, precision, start, end, template, filter, n).
-                match(this).truth();
+        return Answer.relevance(true, precision, start, end, template, filter, n)
+                .dur(dur)
+                .match(this).truth();
     }
 
 

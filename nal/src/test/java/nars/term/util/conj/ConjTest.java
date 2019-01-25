@@ -555,6 +555,10 @@ public class ConjTest {
 
         assertEq(Bool.True, "(||,x,y,a:b,(--,a:b))");
 
+        assertEq(Bool.True, "(||,((--,left) &&+120 (--,left)),left)");
+        assertEq("x", "((||,((--,left) &&+120 (--,left)),left) ==> x)");
+        assertEq("x", "((||,((--,left) &&+120 (--,left)),left) =|> x)");
+        assertEq("(y==>x)", "((&&,(||,((--,left) &&+120 (--,left)),left),y) ==> (x&&y))");
     }
 
     @Test
