@@ -196,8 +196,8 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         dur = nn.dur();
         long now = Math.round(nn.time() + (dur * timeShift.floatValue()));
 
-        this.start = now - dur;
-        this.end = now + dur;
+        this.start = now - dur * 2;
+        this.end = now + dur * 2;
 
         update();
 

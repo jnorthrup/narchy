@@ -9,7 +9,7 @@ import nars.concept.Concept;
 import nars.term.Term;
 import nars.time.Tense;
 
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -93,7 +93,7 @@ public final class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         Term t = term;//.unneg();
         Concept c =
                 //n.concept(t);
-                n.conceptualizeDynamic(t);
+                punc == BELIEF || punc == GOAL ? n.conceptualizeDynamic(t) : n.concept(t);
 
         if (c != null) {
 

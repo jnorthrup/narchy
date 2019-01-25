@@ -23,6 +23,27 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
     @Override
     public void sense(long prev, long now, NAR n) {
+        //long agentDur = now - prev;
+//        long dur = agentDur;
+        //narDur; //Math.min(narDur, agentDur);
+        //long s = prev, e = now;
+        //long s = Math.min(prev + agentDur/2, now-agentDur/2), e = now + agentDur/2;
+        //long s = prev + narDur/2, e = now + narDur/2;
+
+        //long s = now - dur/2, e = now + dur/2;
+
+        //long s = prev, e = now;
+        //long s = now - dur, e = now;
+        //long s = now - dur, e = now + dur;
+        //long s = now, e = next;
+        //long s = now - dur/2, e = next - dur/2;
+        //long s = now - dur, e = next - dur;
+        //long s = prev, e = next;
+        //long agentDur = (now - prev);
+        //long s = now - agentDur/2, e = now + agentDur/2;
+        //long s = now - dur/2, e = now + dur/2;
+
+        long feedbackShift = n.dur();
 
         super.sense(prev, now, n);
 
@@ -34,7 +55,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
         );
 
         in.input(
-            feedback(fb, prev, now, n)
+            feedback(fb, prev + feedbackShift, now + feedbackShift, n)
         );
 
     }

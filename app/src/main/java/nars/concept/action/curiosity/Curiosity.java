@@ -1,5 +1,6 @@
 package nars.concept.action.curiosity;
 
+import jcog.Skill;
 import jcog.data.list.FasterList;
 import jcog.decide.MutableRoulette;
 import jcog.math.FloatRange;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** a curiosity configuration which can be shared by multiple AbstractGoalActionConcept's */
+@Skill({"Curiosity", "Central_pattern_generator","Phantom_limb"})
 public class Curiosity {
 
     public final AtomicBoolean enable = new AtomicBoolean(true);

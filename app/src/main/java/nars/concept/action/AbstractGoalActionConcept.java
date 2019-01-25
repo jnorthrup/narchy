@@ -111,33 +111,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
 
-
-
-
-
         int narDur = n.dur();
 
-        //long agentDur = now - prev;
-//        long dur = agentDur;
-                //narDur; //Math.min(narDur, agentDur);
-        //long s = prev, e = now;
-        //long s = Math.min(prev + agentDur/2, now-agentDur/2), e = now + agentDur/2;
-        long s = prev, e = now + narDur/2;
-        //long s = now - dur/2, e = now + dur/2;
-
-        //long s = prev, e = now;
-        //long s = now - dur, e = now;
-        //long s = now - dur, e = now + dur;
-        //long s = now, e = next;
-        //long s = now - dur/2, e = next - dur/2;
-        //long s = now - dur, e = next - dur;
-        //long s = prev, e = next;
-        //long agentDur = (now - prev);
-        //long s = now - agentDur/2, e = now + agentDur/2;
-        //long s = now - dur/2, e = now + dur/2;
-
-
-
+        final long s = prev, e = now;
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
 
@@ -149,7 +125,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 withoutCuriosity;
                 //Answer.filter(withoutCuriosity, (t) -> t.endsAfter(recent)); //prevent stronger past from overriding weaker future
 
-        try(Answer a = Answer.relevance(true, limit, s, e, term, fil, n)) {
+        try(Answer a = Answer.relevance(true, limit, s, e, term, fil, n).dur(narDur)) {
 
 
             @Nullable TemporalBeliefTable temporalTable = ((BeliefTables) goals()).tableFirst(TemporalBeliefTable.class);
@@ -163,7 +139,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 a.triesRemain = limit; a.match(eternalTable);
             }
 
-            TruthPolation organic = a.truthpolation(narDur); //Math.round(actionWindowDexDurs *dur));
+            TruthPolation organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
 
             //TODO mine truthpolation .stamp()'s and .cause()'s for clues
 
@@ -214,8 +190,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
             //use existing curiosity
             @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
             try (Answer a = Answer.
-                    relevance(true, 1, s, e, term, null, n).match(curiTable)) {
-                TruthPolation curi = a.truthpolation(narDur); //Math.round(actionWindowCuriDurs * dur));
+                    relevance(true, 1, s, e, term, null, n).match(curiTable).dur(narDur)) {
+                TruthPolation curi = a.truthpolation(); //Math.round(actionWindowCuriDurs * dur));
                 if (curi != null) {
                     actionCuri = curi.filtered().truth();
                 } else

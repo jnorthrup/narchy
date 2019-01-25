@@ -186,8 +186,8 @@ public class Premise implements Comparable<Premise> {
 
         Concept beliefConcept = beliefTerm.op().taskable ?
                 n.conceptualizeDynamic(beliefTerm)
-                //n.concept(beliefTerm)
                 //n.conceptualize(beliefTerm)
+                //n.concept(beliefTerm)
                 :
                 null;
 
@@ -271,7 +271,9 @@ public class Premise implements Comparable<Premise> {
                     beliefFilter() :
                     null;
 
-        return bb.sample(focus[0], focus[1], beliefTerm, beliefFilter, nar);
+        return bb.
+                match(focus[0], focus[1], beliefTerm, beliefFilter, nar);
+                //sample(focus[0], focus[1], beliefTerm, beliefFilter, nar);
                   //answer(focus[0], focus[1], beliefTerm, beliefFilter, nar);
     }
 

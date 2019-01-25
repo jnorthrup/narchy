@@ -57,6 +57,9 @@ public final class Answer implements AutoCloseable {
     public RankedTopN<Task> tasks;
     public final Predicate<Task> filter;
 
+    /** truthpolation duration */
+    public int dur = 0;
+
     private Answer(int capacity, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
         this(capacity, Math.round(Param.ANSWER_COMPLETENESS * capacity), rank, filter, nar);
     }
@@ -329,7 +332,7 @@ public final class Answer implements AutoCloseable {
         if (d.size() <= 1)
             return root;
 
-        TruthPolation tp = truthpolation(d, nar.dur());
+        TruthPolation tp = truthpolation(d);
 
         tp.filterCyclic(root, false);
 
@@ -385,20 +388,15 @@ public final class Answer implements AutoCloseable {
     }
 
 
-
     @Nullable public TruthPolation truthpolation() {
-        return truthpolation(nar.dur());
-    }
-
-    @Nullable public TruthPolation truthpolation(int dur) {
         DynEvi d = dynTruth();
-        return d == null ? null : truthpolation(d, dur);
+        return d == null ? null : truthpolation(d);
     }
 
     /**
      * this does not filter cyclic; do that manually
      */
-    private TruthPolation truthpolation(DynEvi d, int dur) {
+    private TruthPolation truthpolation(DynEvi d) {
         long s = d.start();
         long e = s != ETERNAL ? d.end() : ETERNAL;
         if (s!=ETERNAL) {
@@ -495,6 +493,11 @@ public final class Answer implements AutoCloseable {
 
     public final Random random() {
         return nar.random();
+    }
+
+    public Answer dur(int dur) {
+        this.dur = dur;
+        return this;
     }
 
 //
