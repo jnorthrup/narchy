@@ -338,21 +338,14 @@ public class StateEnd extends State {
 
                 if (findSamePredicateIndicator) {
                     if (!(find && p.unify(initGoalBag, initBag))) {
-                        
-                        String s = engineMan.getSetOfSolution() + "\n\nfalse.";
-                        engineMan.setSetOfSolution(s);
-                        
+
                         e.nextState = c.END_FALSE;
 
-                        
-                        engineMan.setRelinkVar(false);
-                        engineMan.setBagOFres(null);
-                        engineMan.setBagOFgoal(null);
-                        engineMan.setBagOFvarSet(null);
-                        engineMan.setBagOFbag(null);
+                        String ss = engineMan.getSetOfSolution();
+                        String s = ss!=null ? ss + "\n\nfalse." : "null\n\nfalse.";
+                        engineMan.endFalse(s);
+
                         return;
-                    } else {
-                        
                     }
                 }
             }
@@ -566,16 +559,11 @@ public class StateEnd extends State {
 
         }
 
-
-
-
         engineMan.setRelinkVar(false);
         engineMan.setBagOFres(null);
         engineMan.setBagOFgoal(null);
         engineMan.setBagOFvarSet(null);
         engineMan.setBagOFbag(null);
-        
-
     }
 
     

@@ -232,7 +232,7 @@ public class Var extends Term {
     /**
      * Gets the term which is direct referred by the variable.
      */
-    public Term link() {
+    public final Term link() {
         return link;
     }
 

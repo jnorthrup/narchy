@@ -260,6 +260,11 @@ public interface Compound extends Term, IPair, Subterms {
 
         Subterms xx = subterms(), yy = y.subterms();
 
+
+        int xs;
+        if ((xs = xx.subs()) != yy.subs())
+            return false;
+
         Op o = op();
 
         if (o == CONJ) {
@@ -273,12 +278,10 @@ public interface Compound extends Term, IPair, Subterms {
             }
         }
 
-        int xs;
-        if ((xs = xx.subs()) != yy.subs())
-            return false;
 
         if (!Subterms.possiblyUnifiable(xx, yy, u))
             return false;
+
 
         if (xs == 1)
             return xx.sub(0).unify(yy.sub(0), u);

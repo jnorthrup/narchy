@@ -313,10 +313,8 @@ public class BasicLibrary extends Library {
 
     public boolean expression_equality_2(Term arg0, Term arg1)
             throws PrologError {
-        if (arg0.term() instanceof Var)
-            throw PrologError.instantiation_error(engine, 1);
-        if (arg1.term() instanceof Var)
-            throw PrologError.instantiation_error(engine, 2);
+        not_var(arg0, 1);
+        not_var(arg1, 2);
         Term val0 = null;
         try {
             val0 = evalExpression(arg0);
@@ -342,10 +340,9 @@ public class BasicLibrary extends Library {
 
     public boolean expression_greater_than_2(Term arg0, Term arg1)
             throws PrologError {
-        if (arg0.term() instanceof Var)
-            throw PrologError.instantiation_error(engine, 1);
-        if (arg1.term() instanceof Var)
-            throw PrologError.instantiation_error(engine, 2);
+        int argNo = 1;
+        not_var(arg0, argNo);
+        not_var(arg1, 2);
         Term val0 = null;
         try {
             val0 = evalExpression(arg0);
@@ -368,12 +365,11 @@ public class BasicLibrary extends Library {
                 (NumberTerm) val1);
     }
 
+
     public boolean expression_less_or_equal_than_2(Term arg0, Term arg1)
             throws PrologError {
-        if (arg0.term() instanceof Var)
-            throw PrologError.instantiation_error(engine, 1);
-        if (arg1.term() instanceof Var)
-            throw PrologError.instantiation_error(engine, 2);
+        not_var(arg0, 1);
+        not_var(arg1, 2);
         Term val0 = null;
         try {
             val0 = evalExpression(arg0);
@@ -403,10 +399,8 @@ public class BasicLibrary extends Library {
 
     public boolean expression_less_than_2(Term arg0, Term arg1)
             throws PrologError {
-        if (arg0.term() instanceof Var)
-            throw PrologError.instantiation_error(engine, 1);
-        if (arg1.term() instanceof Var)
-            throw PrologError.instantiation_error(engine, 2);
+        not_var(arg0, 1);
+        not_var(arg1, 2);
         Term val0 = null;
         try {
             val0 = evalExpression(arg0);
@@ -431,10 +425,8 @@ public class BasicLibrary extends Library {
 
     public boolean expression_greater_or_equal_than_2(Term arg0, Term arg1)
             throws PrologError {
-        if (arg0.term() instanceof Var)
-            throw PrologError.instantiation_error(engine, 1);
-        if (arg1.term() instanceof Var)
-            throw PrologError.instantiation_error(engine, 2);
+        not_var(arg0, 1);
+        not_var(arg1, 2);
         Term val0 = null;
         try {
             val0 = evalExpression(arg0);

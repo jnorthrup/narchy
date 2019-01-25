@@ -1442,7 +1442,7 @@ public class Occurrify extends TimeGraph {
 
     private static long[] rangeCombine(Derivation d, OccIntersect mode) {
         long beliefStart = d.beliefStart;
-        if (d._belief == null || d.beliefStart == ETERNAL)
+        if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL))
             return occ(d._task);
         else if (d.taskStart == ETERNAL)
             return occ(d._belief);

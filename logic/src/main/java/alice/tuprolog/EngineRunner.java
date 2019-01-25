@@ -509,4 +509,9 @@ public class EngineRunner implements java.io.Serializable, Runnable {
     public void clearSinfoSetOf() {
         this.sinfoSetOf = null;
     }
+
+    public final synchronized Solution solve(Term query) {
+        setGoal(query);
+        return solve();
+    }
 }

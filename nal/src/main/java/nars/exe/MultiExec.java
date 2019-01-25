@@ -32,7 +32,7 @@ abstract public class MultiExec extends UniExec {
     final AtomicMetalBitSet sleeping = new AtomicMetalBitSet();
     private long cycleTimeNS;
 
-    protected long idleTimePerCycle;
+    protected long idleTimePerCyclePerThread;
 
     /** global sleep nap period */
     private static final long NapTime = 2 * 1000 * 1000; //on the order of ~1ms
@@ -87,15 +87,15 @@ abstract public class MultiExec extends UniExec {
         double cycleNS = nar.loop.periodNS();
         if(cycleNS < 0) {
             //paused
-            idleTimePerCycle = NapTime;
+            idleTimePerCyclePerThread = NapTime;
             cycleTimeNS = 0;
         } else {
             double throttle = nar.loop.throttle.floatValue();
 
             //TODO better idle calculation in each thread / worker
-            idleTimePerCycle = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
+            idleTimePerCyclePerThread = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
 
-            cycleTimeNS = Math.max(1, Math.round(cycleNS * throttle)) * concurrency();
+            cycleTimeNS = Math.max(1, Math.round(cycleNS * concurrency() * throttle));
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
                 input(new QueueLatencyMeasurement(System.nanoTime()));
@@ -350,7 +350,7 @@ abstract public class MultiExec extends UniExec {
                 int n = cpu.items.size();
                 if (n == 0)
                     return;
-                long until = System.nanoTime() + playTime, after = until;
+                long until = System.nanoTime() + playTime, after;
                 do {
                     TimedLink s = cpu.get(rng.nextInt(n));
                     if (s == null)
@@ -368,7 +368,7 @@ abstract public class MultiExec extends UniExec {
                             try {
 
                                 long runtimeNS =
-                                        s.time.getOpaque() / (contextGranularity);
+                                        s.time.getOpaque() / (concurrency());
                                 if (runtimeNS > 0) {
                                     deadline = Math.min(until, before + runtimeNS);
                                     try {
@@ -396,7 +396,7 @@ abstract public class MultiExec extends UniExec {
             }
 
             void sleep() {
-                long i = WorkerExec.this.idleTimePerCycle;
+                long i = WorkerExec.this.idleTimePerCyclePerThread;
                 if (i > 0) {
 
                     Util.sleepNSwhile(i, NapTime, WorkerExec.this::queueSafe);

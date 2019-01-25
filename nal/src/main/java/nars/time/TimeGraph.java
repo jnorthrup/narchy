@@ -79,8 +79,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     };
 
     protected final ArrayHashSet<Event> solutions = new ArrayHashSet();
-    private transient Predicate<Event> target;
     private transient Term solving;
+    private Predicate<Event> target;
 
 
     /**
@@ -949,18 +949,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
     protected boolean solution(Event y) {
-
-        if (y.start() == TIMELESS && solving.equals(y.id))
-            return true;
-
-        if (!validPotentialSolution(y.id))
-            return true; //ignore
-
-        if (solutions.add(y)) {
+        if (!(y.start() == TIMELESS && solving.equals(y.id)) && validPotentialSolution(y.id)) {
+            solutions.add(y);
             return target.test(y);
-        } else {
-            return true;
         }
+        return true;
     }
 
 

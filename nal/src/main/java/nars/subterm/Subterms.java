@@ -808,15 +808,20 @@ public interface Subterms extends Termlike, Iterable<Term> {
             //cheap constant case invariant tests
 
             //differing constant structure
-            if (XS != YS)
+            if (XS != YS/* || xx.volume()!=yy.volume()*/)
                 return false;
 
-            //if volume differs (and no recursive conjunction subterms)
-            if ((xx.volume() != yy.volume()) &&
-                    (((XS & CONJ.bit) == 0) || !xx.hasXternal()) &&
-                    (((YS & CONJ.bit) == 0) || !yy.hasXternal())
-            )
-                return false;
+            if (((XS & Op.Temporal) == 0) /*&& ((YS & Op.Temporal) == 0)*/ && !xx.equals(yy))
+                return false; //constant, inequal
+
+//            //if volume differs (and no recursive conjunction subterms)
+//            if ((xx.volume() != yy.volume()) &&
+//                    (((XS & CONJ.bit) == 0) || !xx.hasXternal()) &&
+//                    (((YS & CONJ.bit) == 0) || !yy.hasXternal())
+//            )
+//                return false;
+
+
 
             return true; //done
         }

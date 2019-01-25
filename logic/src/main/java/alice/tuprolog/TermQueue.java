@@ -9,9 +9,7 @@ public class TermQueue {
     private final LinkedList<Term> queue = new LinkedList<>();
 
     public boolean get(Term t, Prolog engine, EngineRunner er) {
-        synchronized (queue) {
-            return searchLoop(t, engine, true, true, er);
-        }
+        return searchLoop(t, engine, true, true, er);
     }
 
     private boolean searchLoop(Term t, Prolog engine, boolean block, boolean remove, EngineRunner er) {
@@ -19,7 +17,9 @@ public class TermQueue {
             boolean found;
             do {
                 found = search(t, engine, remove);
-                if (found) return true;
+                if (found)
+                    return true;
+
                 er.setSolving(false);
                 try {
                     queue.wait();
@@ -37,7 +37,6 @@ public class TermQueue {
             Iterator<Term> it = queue.iterator();
             while (it.hasNext()) {
                 if (engine.unify(t, it.next())) {
-                    
                     if (remove)
                         it.remove();
                     return true;
@@ -61,9 +60,7 @@ public class TermQueue {
     }
 
     public boolean wait(Term t, Prolog engine, EngineRunner er) {
-        synchronized (queue) {
-            return searchLoop(t, engine, true, false, er);
-        }
+        return searchLoop(t, engine, true, false, er);
     }
 
     public void store(Term t) {
@@ -82,6 +79,12 @@ public class TermQueue {
     public void clear() {
         synchronized (queue) {
             queue.clear();
+        }
+    }
+
+    public boolean isEmpty() {
+        synchronized (queue) {
+            return queue.isEmpty();
         }
     }
 }

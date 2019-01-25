@@ -206,7 +206,8 @@ public class ThreadLibrary extends Library {
 		if (!mutex.isAtomic() || !mutex.isAtom())
 			throw PrologError.type_error(engine.engine, 1,
                     "atom or atomic", mutex);
-		return engineManager.createLock(mutex.toString());
+		engineManager.createLock(mutex.toString());
+		return true;
 	}
 	
 	public boolean mutex_destroy_1(Term mutex) throws PrologError{
@@ -214,8 +215,7 @@ public class ThreadLibrary extends Library {
 		if (!mutex.isAtomic() || !mutex.isAtom())
 			throw PrologError.type_error(engine.engine, 1,
                     "atom or atomic", mutex);
-		engineManager.destroyLock(mutex.toString());
-		return true;
+		return engineManager.destroyLock(mutex.toString());
 	}
 	
 	public boolean mutex_lock_1(Term mutex) throws PrologError{
@@ -223,7 +223,8 @@ public class ThreadLibrary extends Library {
 		if (!mutex.isAtomic() || !mutex.isAtom())
 			throw PrologError.type_error(engine.engine, 1,
                     "atom or atomic", mutex);
-		return engineManager.mutexLock(mutex.toString());
+		engineManager.mutexLock(mutex.toString());
+		return true;
 	}
 	
 	public boolean mutex_trylock_1(Term mutex) throws PrologError{

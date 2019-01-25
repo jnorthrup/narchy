@@ -27,9 +27,9 @@ abstract public class AND<X> extends AbstractPred<X> {
         this.cost = Util.sum((FloatFunction<PREDICATE>) PREDICATE::cost, cond);
     }
 
-    public final static class ANDn<X> extends AND<X> {
+    private final static class ANDn<X> extends AND<X> {
         /*@Stable*/
-        public final PREDICATE<X>[] cond;
+        private final PREDICATE<X>[] cond;
 
         protected ANDn(PREDICATE<X>[] cond) {
             super(cond);
@@ -56,9 +56,9 @@ abstract public class AND<X> extends AbstractPred<X> {
         }
 
     }
-    public final static class AND2<X> extends AND<X> {
+    private final static class AND2<X> extends AND<X> {
         /*@Stable*/
-        public final PREDICATE<X> a, b;
+        private final PREDICATE<X> a, b;
 
         private AND2(PREDICATE<X> a, PREDICATE<X> b) {
             super(a, b);

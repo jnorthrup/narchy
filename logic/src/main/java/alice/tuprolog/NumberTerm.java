@@ -119,13 +119,13 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
     
     
     
-    
-    /**
-     * gets a copy of this term.
-     */
-    public Term copy(int idExecCtx) {
-        return this;
-    }
+//
+//    /**
+//     * gets a copy of this term.
+//     */
+//    public Term copy(int idExecCtx) {
+//        return this;
+//    }
     
     /**
      * gets a copy (with renamed variables) of the term.
@@ -150,12 +150,12 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
     
     
     @Override
-    void resolveTerm(long count) {
+    final void resolveTerm(long count) {
 
     }
 
     
-    void restoreVariables() {}
+//    void restoreVariables() {}
 
     /**/
 
@@ -384,9 +384,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
             if (this == t) return true;
             if (t instanceof NumberTerm) {
                 NumberTerm n = (NumberTerm) t;
-                if (!n.isInteger())
-                    return false;
-                return value == n.longValue();
+                return n.isInteger() && value == n.intValue();
             } else
                 return false;
         }
@@ -397,14 +395,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          */
         @Override
         boolean unify(List<Var> vl1, List<Var> vl2, Term t) {
-            t = t.term();
-            if (t instanceof Var) {
-                return t.unify(vl2, vl1, this);
-            } else if (t instanceof NumberTerm && ((NumberTerm) t).isInteger()) {
-                return value == ((NumberTerm) t).intValue();
-            } else {
-                return false;
-            }
+            return (t instanceof Var) ? t.unify(vl2, vl1, this) : isEqual(t);
         }
 
         public String toString() {
@@ -499,13 +490,14 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
             } else return t instanceof Var;
         }
         @Override
-        public boolean isGreaterRelink(Term t, ArrayList<String> vorder) {
-            t = t.term();
-            if (t instanceof NumberTerm) {
-                return value>((NumberTerm)t).floatValue();
-            } else if (t instanceof Struct) {
-                return false;
-            } else return t instanceof Var;
+        public final boolean isGreaterRelink(Term t, ArrayList<String> vorder) {
+            return isGreater(t);
+//            t = t.term();
+//            if (t instanceof NumberTerm) {
+//                return value>((NumberTerm)t).floatValue();
+//            } else if (t instanceof Struct) {
+//                return false;
+//            } else return t instanceof Var;
         }
 
         /**
@@ -524,14 +516,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          */
         @Override
         boolean unify(List<Var> vl1, List<Var> vl2, Term t) {
-            t = t.term();
-            if (t instanceof Var) {
-                return t.unify(vl2, vl1, this);
-            } else if (t instanceof NumberTerm && ((NumberTerm) t).isReal()) {
-                return value == ((NumberTerm) t).floatValue();
-            } else {
-                return false;
-            }
+            return t instanceof Var ? t.unify(vl2, vl1, this) : isEqual(t);
         }
 
         public String toString() {
@@ -624,12 +609,13 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
 
         @Override
         public boolean isGreaterRelink(Term t, ArrayList<String> vorder) {
-            t = t.term();
-            if (t instanceof NumberTerm) {
-                return value>((NumberTerm)t).doubleValue();
-            } else if (t instanceof Struct) {
-                return false;
-            } else return t instanceof Var;
+            return isGreater(t);
+//            t = t.term();
+//            if (t instanceof NumberTerm) {
+//                return value>((NumberTerm)t).doubleValue();
+//            } else if (t instanceof Struct) {
+//                return false;
+//            } else return t instanceof Var;
         }
 
         /**

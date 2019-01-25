@@ -161,7 +161,7 @@ public class Struct extends Term {
     /**
      * Builds a compound, with a linked list of arguments
      */
-    Struct(String f, LinkedList<Term> al) {
+    Struct(String f, List<Term> al) {
         name = f;
         if (!al.isEmpty()) {
             this.subs = al.toArray(new Term[subCount = al.size()]);
@@ -553,7 +553,7 @@ public class Struct extends Term {
     @Override
     void resolveTerm(long count) {
         if (!resolved && subCount > 0)
-            resolveTerm(new LinkedList<>(), count);
+            resolveTerm(null, count);
     }
 
 
@@ -566,40 +566,45 @@ public class Struct extends Term {
      */
     void resolveTerm(LinkedList<Var> vl, final long count) {
 
+
         Term[] arg = this.subs;
         int arity = this.subCount;
         for (int c = 0; c < arity; c++) {
             Term term = arg[c];
-            if (term != null) {
-                
-                
-                
-                term = term.term();
-                
-                if (term instanceof Var) {
-                    Var t = (Var) term;
-                    t.setTimestamp(count);
-                    if (!t.isAnonymous()) {
-                        
-                        String name = t.name();
+            if (term == null)
+                continue;
+
+            term = term.term();
+
+            if (term instanceof Var) {
+                Var t = (Var) term;
+                t.setTimestamp(count);
+                if (!t.isAnonymous()) {
+
+                    Var found = null;
+                    if (vl!=null && !vl.isEmpty()) {
+                        String tName = t.name();
                         Iterator<Var> it = vl.iterator();
-                        Var found = null;
                         while (it.hasNext()) {
                             Var vn = it.next();
-                            if (name.equals(vn.name())) {
+                            if (tName.equals(vn.name())) {
                                 found = vn;
                                 break;
                             }
                         }
-                        if (found != null) {
-                            arg[c] = found;
-                        } else {
-                            vl.add(t);
-                        }
                     }
-                } else if (term instanceof Struct) {
-                    ((Struct) term).resolveTerm(vl, count);
+                    if (found != null) {
+                        arg[c] = found;
+                    } else {
+                        if (vl == null) vl = new LinkedList(); //construct to share recursively
+                        vl.add(t);
+                    }
                 }
+            } else if (term instanceof Struct) {
+
+                if (vl == null) vl = new LinkedList(); //construct to share recursively
+
+                ((Struct) term).resolveTerm(vl, count);
             }
         }
         resolved = true;
@@ -706,16 +711,16 @@ public class Struct extends Term {
      */
     Struct fromList() {
         Term ft = subs[0].term();
-        if (!ft.isAtomic()) {
+        if (!ft.isAtomic())
             return null;
-        }
+
         Struct at = (Struct) subs[1].term();
-        LinkedList<Term> al = new LinkedList<>();
+        List<Term> al = new LinkedList<>();
         while (!at.isEmptyList()) {
-            if (!at.isList()) {
+            if (!at.isList())
                 return null;
-            }
-            al.addLast(at.subResolve(0));
+
+            al.add(at.subResolve(0));
             at = (Struct) at.subResolve(1);
         }
         return new Struct(((Struct) ft).name, al);
@@ -775,9 +780,12 @@ public class Struct extends Term {
                 Term[] arg = this.subs;
                 Term[] tsarg = ts.subs;
                 for (int c = 0; c < arity; c++) {
-                    if (!arg[c].unify(vl1, vl2, tsarg[c])) {
+                    if (c > 0 && arg[c]==arg[c-1] && tsarg[c]==tsarg[c-1])
+                        continue; //repeat term, skip
+
+                    if (!arg[c].unify(vl1, vl2, tsarg[c]))
                         return false;
-                    }
+
                 }
                 return true;
             }

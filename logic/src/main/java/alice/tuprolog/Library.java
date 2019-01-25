@@ -295,6 +295,11 @@ public abstract class Library implements Serializable {
         return null;
         }
         */
-    
+
+    protected void not_var(Term arg, int argIth) throws PrologError {
+        if (arg.term() instanceof Var) {
+            throw PrologError.instantiation_error(engine, argIth);
+        }
+    }
     
 }
