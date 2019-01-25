@@ -111,11 +111,7 @@ public abstract class TaskLeak extends Causable {
     @Override
     protected void next(NAR nar, BooleanSupplier kontinue) {
         volMax = nar.termVolumeMax.intValue();
-        source.next((t)->{
-            if (t!=null)
-                leak(t);
-            return kontinue.getAsBoolean();
-        }, nar);
+        source.next(this::leak, kontinue, nar);
     }
 
     public static abstract class TaskSource {
@@ -127,7 +123,7 @@ public abstract class TaskLeak extends Causable {
 
         @Nullable abstract public Off starting(TaskLeak t, NAR n);
 
-        public abstract void next(Predicate<Task> each, NAR nar);
+        public abstract void next(Consumer<Task> each, BooleanSupplier kontinue, NAR nar);
 
         public Off start(TaskLeak t, NAR nar) {
             this.pri = t::priFiltered; //not t::pri
@@ -165,18 +161,17 @@ public abstract class TaskLeak extends Causable {
         }
 
         @Override
-        public void next(Predicate<Task> each, NAR nar) {
+        public void next(Consumer<Task> each, BooleanSupplier kontinue, NAR nar) {
             if (!bag.commit(bagUpdateFn).isEmpty()) {
                 bag.sample(nar.random(), (PriReference<Task> v) -> {
                     Task t = v.get();
                     if (t.isDeleted())
                         return Sampler.SampleReaction.Remove;
 
-                    return each.test(t) ? Sampler.SampleReaction.Remove : Sampler.SampleReaction.RemoveAndStop;
+                    each.accept(t);
+
+                    return kontinue.getAsBoolean() ? Sampler.SampleReaction.Remove : Sampler.SampleReaction.RemoveAndStop;
                 });
-            } else {
-//        if (bag.isEmpty())
-//            sleepRemainderOfCycle();
             }
         }
     }
@@ -212,7 +207,7 @@ public abstract class TaskLeak extends Causable {
         }
 
         @Override
-        public void next(Predicate<Task> each, NAR nar) {
+        public void next(Consumer<Task> each, BooleanSupplier kontinue, NAR nar) {
 
             when = focus();
 
@@ -223,13 +218,13 @@ public abstract class TaskLeak extends Causable {
                 Concept cc = c.get();
                 Term ct = cc.term();
 
-                Task x;
                 if (ct.hasAny(Op.Temporal) || termFilter.test(cc.term())) { //TODO check for impl filters which assume the term is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's term
-                    x = sample(cc);
-                } else
-                    x = null;
+                    Task x = sample(cc);
+                    if (x!=null)
+                        each.accept(x);
+                }
 
-                return each.test(x);
+                return kontinue.getAsBoolean();
             });
         }
 

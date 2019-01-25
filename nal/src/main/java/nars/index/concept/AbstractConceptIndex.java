@@ -61,7 +61,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
                   //      arrayBag()
                         //hijackBag()
 
-            new BufferedBag.DefaultBufferedBag<>(arrayBag(), new PriBuffer<Concept>(Param.conceptMerge)) {
+            new BufferedBag.DefaultBufferedBag<>(arrayBag(), new PriBuffer<Concept>(Param.conceptMerge, nar.exe.concurrent())) {
 
                 @Override
                 protected Term keyInternal(Concept c) {
@@ -73,9 +73,6 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
                 }
 
             };
-
-
-
 
         active.setCapacity(activeCapacity.intValue());
 

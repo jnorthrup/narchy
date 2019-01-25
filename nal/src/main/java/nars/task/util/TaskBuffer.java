@@ -20,9 +20,9 @@ import nars.control.channel.ConsumerX;
 import nars.exe.Exec;
 import nars.task.ITask;
 import nars.task.NALTask;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -219,12 +219,17 @@ abstract public class TaskBuffer implements Consumer<ITask> {
          */
         public final Bag<ITask, ITask> tasks = new BufferedBag.SimpleBufferedBag<>(
                 new PriArrayBag<ITask>(PriMerge.max,
-                        //new HashMap()
-                        new UnifiedMap()
+                        new HashMap()
+                        //new UnifiedMap()
                 ) {
                     @Override
                     protected float merge(ITask existing, ITask incoming) {
                         return TaskBuffer.merge(existing, incoming);
+                    }
+
+                    @Override
+                    protected int histogramBins() {
+                        return 0;
                     }
                 },
                 new PriBuffer<>(PriMerge.max) {

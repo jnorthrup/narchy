@@ -20,7 +20,7 @@ public class Conceptualization {
 
     public final static Retemporalize FlattenAndDeduplicateConj = new Untemporalization() {
         @Override
-        public Term transformConj(Compound y) {
+        protected  Term transformConj(Compound y) {
             Subterms yy = y.subterms();
             if (yy.hasAny(CONJ) && yy.OR(yyy -> yyy.op() == CONJ)) {
                 //collapse any embedded CONJ which will inevitably have dt=XTERNAL
@@ -44,8 +44,10 @@ public class Conceptualization {
 
     abstract private static class Untemporalization extends Retemporalize {
 
+        abstract protected Term transformConj(Compound y);
+
         @Override
-        public Term transformTemporal(Compound x, int dtNext) {
+        public final Term transformTemporal(Compound x, int dtNext) {
             Op xo = x.op();
             int dt = xo.temporal ? XTERNAL : DTERNAL;
             Term y = x.transform(this, xo, dt);
@@ -56,17 +58,16 @@ public class Conceptualization {
             }
         }
 
-        abstract public Term transformConj(Compound y);
-
         @Override
-        public int dt(Compound x) {
+        public final int dt(Compound x) {
             return x.op().temporal ? XTERNAL : DTERNAL;
         }
     }
 
+    /** untested */
     public static final Retemporalize FlattenAndDeduplicateAndUnnegateConj = new Untemporalization() {
         @Override
-        public Term transformConj(Compound y) {
+        protected  Term transformConj(Compound y) {
             Subterms yy = y.subterms();
             if (yy.hasAny(CONJ) /*&& yy.OR(yyy -> yyy.unneg().op() == CONJ)*/) {
                 UnifiedSet<Term> t = new UnifiedSet(yy.subs() * 2);

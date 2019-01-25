@@ -260,9 +260,9 @@ abstract public class Inperience extends TaskLeakTransform {
     protected Inperience(int capacity, byte punc, NAR n) {
         super(capacity, n, punc);
     }
-    protected Inperience(byte punc, NAR n) {
-        super(n, punc);
-    }
+//    protected Inperience(byte punc, NAR n) {
+//        super(n, punc);
+//    }
 
 
     /** prefilter on task punc */

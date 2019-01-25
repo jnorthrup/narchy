@@ -393,17 +393,17 @@ public class KIFInput {
                 break;
 
 
-            case "causes":
-                y = IMPL.the(args.get(0), 1, args.get(1));
-                break;
+//            case "causes":
+//                y = IMPL.the(args.get(0), 1, args.get(1));
+//                break;
 
             case "cooccur":
             case "during":
                 y = CONJ.the(args.get(0), 0, args.get(1));
                 break;
-            case "meetsTemporally":
-                y = CONJ.the(args.get(0), +1, args.get(1));
-                break;
+//            case "meetsTemporally":
+//                y = CONJ.the(args.get(0), +1, args.get(1));
+//                break;
 
             case "domain":
                 

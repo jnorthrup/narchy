@@ -17,10 +17,7 @@ import jcog.signal.wave1d.ArrayHistogram;
 import jcog.sort.SortedArray;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -142,9 +139,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      * trash must be removed from the map, outside of critical section
      * may include the item being added
      */
-    private boolean tryInsertFull(Y toAdd, float toAddPri, @Nullable Consumer<Y> update, final FasterList<Y> trash) {
+    private boolean tryInsertFull(Y toAdd, float toAddPri, @Nullable Consumer<Y> update) {
 
-        int s = cleanIfFull() ? clean(trash, update  /*|| (s == capacity) && get(0) instanceof PLinkUntilDeleted*/) : size();
+        int s = cleanIfFull() ? clean(update  /*|| (s == capacity) && get(0) instanceof PLinkUntilDeleted*/) : size();
 
         int c = capacity();
 
@@ -160,12 +157,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
             if (toAddPri > priMin()) {
 
-                Y removed = items.removeLast();
+                removeFromMap(items.removeLast());
 
                 int i = items.add(toAdd, this);
                 assert (i >= 0);
-
-                trash.add(removed);
 
                 return true;
             }
@@ -186,7 +181,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
 
-    private int clean(Collection<Y> trash, @Nullable Consumer<Y> update) {
+    private int clean(@Nullable Consumer<Y> update) {
 
 //        float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY, mass = 0;
 
@@ -201,13 +196,15 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         int c = capacity();
         int histRange = s;
-        int bins = histogramBins(s);
+        int bins = histogramBins();
         ArrayHistogram hist = this.hist;
         if (hist == null) {
-            hist = new ArrayHistogram(0, histRange-1, bins);
+            if (bins > 0)
+                hist = new ArrayHistogram(0, histRange-1, bins);
         } else {
             hist = hist.clear(0, histRange-1, bins);
         }
+        Collection<Y> trash = null;
         for (int i = 0; i < s; ) {
             Y y = (Y) l[i];
             assert y != null;
@@ -221,7 +218,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 //                min = Math.min(min, p);
 //                max = Math.max(max, p);
 
-                hist.addWithoutSettingMass(i,p);
+                if (hist!=null)
+                    hist.addWithoutSettingMass(i,p);
 
                 m += p;
                 if (p - above >= ScalarValue.EPSILON/2)
@@ -230,6 +228,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
                 above = p;
                 i++;
             } else {
+                if (trash==null)
+                    trash = new LinkedList();
                 trash.add(y);
                 items2.removeFast(i);
                 s--;
@@ -237,26 +237,37 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             }
         }
 
-        this.hist = hist;
-        ArrayBag.MASS.set(this, hist.mass = m);
+        if (hist!=null) {
+            this.hist = hist;
+            ArrayBag.MASS.set(this, hist.mass = m);
+        }
 
         while (s > c) {
             trash.add(this.items.removeLast());
             s--;
         }
 
+        if (trash!=null) {
+            trash.forEach(this::removeFromMap);
+        }
 
         if (mustSortTo != -1)
             sort(0, Math.min(s, mustSortTo));
 
+
         return s;
+    }
+
+    /** override and return 0 to effectively disable histogram sampling (for efficiency if sampling isnt needed) */
+    protected int histogramBins() {
+        return histogramBins(size());
     }
 
     static int histogramBins(int s) {
         //TODO refine
         if (s < 4)
             return 2;
-             if (s < 8)
+        else if (s < 8)
             return 4;
         else if (s < 16)
             return 6;
@@ -497,18 +508,17 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
 
     private void remove(Y y, int suspectedPosition) {
-        boolean removed;
+
         synchronized (items) {
-            if (removed = (items.get(suspectedPosition) == y)) {
+            if (items.get(suspectedPosition) == y) {
                 items.remove(suspectedPosition);
                 removeFromMap(y);
+                return;
             }
         }
-        if (removed) {
-            removed(y); //outside of synch, call removed
-        } else {
-            remove(key(y)); //wasnt found with provided index, use standard method by key
-        }
+
+        remove(key(y)); //wasnt found with provided index, use standard method by key
+
     }
 
     @Override
@@ -541,8 +551,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         boolean inserted;
 
-        @Nullable FasterList<Y> trash;
-
         synchronized (items) {
 
             Y existing = map.get(key);
@@ -560,21 +568,14 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
                 if (s >= capacity) {
 
-                    trash = new FasterList<>(0);
 
-                    inserted = tryInsertFull(incoming, p, null, trash);
-
-                    if (trash != null && !trash.isEmpty())
-                        trash.forEach(this::removeFromMap);
-                    else
-                        trash = null;
+                    inserted = tryInsertFull(incoming, p, null);
 
                 } else {
                     int i = items.add(incoming, -p, this);
                     assert i >= 0;
 
                     inserted = true;
-                    trash = null;
                 }
 
                 if (inserted) {
@@ -585,9 +586,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         }
 
-
-        if (trash != null) //outside synch
-            trash.forEach(this::removed);
 
         if (!inserted) {
 
@@ -685,6 +683,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         if (removed == null) {
             throw new WTF();
         }
+        removed(removed);
         return removed;
     }
 
@@ -697,17 +696,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     @Override
     public Bag<X, Y> commit(Consumer<Y> update) {
 
-        FasterList<Y> trash = new FasterList(0);
-
         synchronized (items) {
 
-            clean(trash, update);
+            clean(update);
 
-            trash.forEach(this::removeFromMap);
         }
 
-
-        trash.forEach(this::removed);
 
         return this;
     }

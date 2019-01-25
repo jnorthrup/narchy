@@ -34,6 +34,7 @@ import nars.term.anon.AnonID;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.compound.UnitCompound;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
@@ -515,13 +516,11 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         if (oc != 0)
             return oc;
 
-        if (this.equals(t)) return 0;
 
-        if (volume == 1) {
-            assert (this instanceof Atomic);
+        if (this instanceof Atomic /* volume == 1 */) {
 
-            if (this instanceof Int && t instanceof Int) {
-                return Integer.compare(((Int) this).id, ((Int) t).id); //avoids zig-zag encoding inconsistency
+            if (this instanceof Int /*&& t instanceof Int*/) {
+                return Integer.compare(((Int) this).id, ((Int) t).id);
             }
             if (this instanceof AnonID && t instanceof AnonID) {
                 return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode
@@ -533,11 +532,13 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
             );
 
         } else {
-
-            int c = Subterms.compare(subterms(), t.subterms());
+            int c = Subterms.compare(
+                    this instanceof UnitCompound ? this : subterms(),
+                    t instanceof UnitCompound ? t : t.subterms());
             return c != 0 ? c : (op.temporal ? Integer.compare(dt(), t.dt()) : 0);
         }
     }
+
 
     default Subterms subterms() {
         return EmptySubterms;

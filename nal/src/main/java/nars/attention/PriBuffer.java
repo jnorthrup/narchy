@@ -5,9 +5,9 @@ import jcog.pri.UnitPri;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
-import org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 //import java.util.concurrent.ConcurrentHashMap;
@@ -27,14 +27,21 @@ public class PriBuffer<Y> {
 
 
     /** pending Y activation collation */
-    final Map<Y, UnitPrioritizable> items =
-            new ConcurrentHashMapUnsafe<>(512);
+    final Map<Y, UnitPrioritizable> items;
+            //new ConcurrentHashMapUnsafe<>(512);
             //new java.util.concurrent.ConcurrentHashMap(512);
 
     private final PriMerge merge;
 
     public PriBuffer(PriMerge merge) {
+        this(merge, new java.util.concurrent.ConcurrentHashMap(512));
+    }
+    public PriBuffer(PriMerge merge, boolean concurrent) {
+        this(merge, concurrent ? new java.util.concurrent.ConcurrentHashMap() : new LinkedHashMap() );
+    }
+    public PriBuffer(PriMerge merge, Map<Y, UnitPrioritizable> items) {
         this.merge = merge;
+        this.items = items;
     }
 
 //    /** implements a plus merge (with collected refund)
