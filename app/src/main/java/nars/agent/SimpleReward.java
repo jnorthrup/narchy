@@ -1,32 +1,22 @@
 package nars.agent;
 
-import com.google.common.collect.Iterators;
 import jcog.math.FloatSupplier;
-import jcog.util.ArrayUtils;
-import nars.NAR;
-import nars.Task;
 import nars.attention.AttBranch;
 import nars.concept.sensor.Signal;
-import nars.control.op.Remember;
-import nars.table.BeliefTables;
-import nars.table.EmptyBeliefTable;
-import nars.table.eternal.EternalTable;
 import nars.term.Term;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
-
-public class SimpleReward extends Reward {
+public class SimpleReward extends BeliefReward {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleReward.class);
+    private final FloatSupplier rewardFunc;
 
-    public final Signal concept;
 
     public SimpleReward(Term id, FloatSupplier r, NAgent a) {
-        super(a, r);
-        NAR nar = nar();
+        super(id, a);
+
+        this.rewardFunc = r;
 //        TermLinker linker = new TemplateTermLinker((TemplateTermLinker) TemplateTermLinker.of(id)) {
 //            @Override
 //            public void sample(Random rng, Function<? super Term, SampleReaction> each) {
@@ -37,36 +27,27 @@ public class SimpleReward extends Reward {
 //                super.sample(rng, each);
 //            }
 //        };
-        concept = new Signal(id, () -> reward, /*linker, */nar) {
-            @Override
-            protected AttBranch newAttn(Term term) {
-                AttBranch b = new AttBranch(term, this.components());
-                return b;
-            }
-        };
-        concept.attn.parent(attn);
 
-        @Nullable EternalTable eteTable = ((BeliefTables) concept.goals()).tableFirst(EternalTable.class);
-        ((BeliefTables)concept.goals()).tables.add(0, new EmptyBeliefTable() {
-            @Override public void add(Remember r, NAR nar) {
-                Task i = r.input;
+//        @Nullable EternalTable eteTable = ((BeliefTables) concept.goals()).tableFirst(EternalTable.class);
+//        ((BeliefTables)concept.goals()).tables.add(0, new EmptyBeliefTable() {
+//            @Override public void add(Remember r, NAR nar) {
+//                Task i = r.input;
+//
+//                if (i.isNegative()) {
+//                    logger.info("goal contradicts reward:\n{}", i.proof());
+//                    r.forget(i);
+//                } else {
+//                    if (!eteTable.isEmpty()) {
+//                        Task eteGoal = eteTable.get(0);
+//                        if (i.conf() < eteGoal.conf() && ArrayUtils.indexOf(i.stamp(), eteGoal.stamp()[0]) != -1) {
+//                            logger.debug("goal subsumed by eternal goal:\n{}", i.proof());
+//                            r.forget(i);
+//                        }
+//                    }
+//                }
+//            }
+//        });
 
-                if (i.isNegative()) {
-                    logger.info("goal contradicts reward:\n{}", i.proof());
-                    r.forget(i);
-                } else {
-                    if (!eteTable.isEmpty()) {
-                        Task eteGoal = eteTable.get(0);
-                        if (i.conf() < eteGoal.conf() && ArrayUtils.indexOf(i.stamp(), eteGoal.stamp()[0]) != -1) {
-                            logger.debug("goal subsumed by eternal goal:\n{}", i.proof());
-                            r.forget(i);
-                        }
-                    }
-                }
-            }
-        });
-
-        alwaysWantEternally(concept.term);
 //        agent.//alwaysWant
 //                alwaysWantEternally
 //                    (concept.term, nar.confDefault(GOAL));
@@ -79,13 +60,24 @@ public class SimpleReward extends Reward {
 //        }, true);
     }
 
-
-
-
     @Override
-    public final Iterator<Signal> iterator() {
-        return Iterators.singletonIterator(concept);
+    protected float reward() {
+        return rewardFunc.asFloat();
     }
+
+    @Override protected Signal newConcept() {
+        Signal concept = new Signal(id, () -> reward, /*linker, */nar()) {
+            @Override
+            protected AttBranch newAttn(Term term) {
+                AttBranch b = new AttBranch(term, this.components());
+                return b;
+            }
+        };
+        concept.attn.parent(attn);
+        return concept;
+    }
+
+
 
     @Override
     public Term term() {
@@ -95,6 +87,6 @@ public class SimpleReward extends Reward {
 
     @Override
     protected void updateReward(long prev, long now) {
-        concept.sense(prev, now, nar());
+        ((Signal)concept).sense(prev, now, nar());
     }
 }

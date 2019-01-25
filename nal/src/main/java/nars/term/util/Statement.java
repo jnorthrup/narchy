@@ -115,15 +115,15 @@ public class Statement {
                     }
 
 
-                    //test for validity by creating the hypothetical conjunction analog of the implication
-                    Conj x = new Conj();
-                    if (!x.add(so, subject))
-                        throw new WTF();
-                    if (!x.add(po, predicate))
-                        return False;
-                    Term cx = x.term();
-                    if (cx instanceof Bool)
-                        return cx;
+//                    //test for validity by creating the hypothetical conjunction analog of the implication
+//                    Conj x = new Conj();
+//                    if (!x.add(so, subject))
+//                        throw new WTF();
+//                    if (!x.add(po, predicate))
+//                        return False;
+//                    Term cx = x.term();
+//                    if (cx instanceof Bool)
+//                        return cx;
 
                     //subtract any common subject components from predicate
                     boolean subjNeg = subject.op() == NEG;
@@ -154,12 +154,25 @@ public class Statement {
                             if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
                                 //HACK return to dternal
                                 newPred = newPred.dt(DTERNAL);
+                                if (newPred instanceof Bool) {
+                                    return newPred;
+                                }
                             }
                         }
 
-                        predicate = newPred;
-                        if (predicate.op() == NEG)
-                            return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
+                        if (!newPred.equals(predicate)) { //HACK check again
+                            try {
+                                return statement(IMPL, dt, subject, newPred); //recurse
+                            } catch (StackOverflowError e) {
+                                System.out.println("stack overflow: ==> " + subject + " " + dt + " " + newPred + "<" + predicate);
+                                throw new WTF("stack overflow: ==> " + subject + " " + dt + " " + newPred + "<" + predicate);
+                            }
+                        }
+
+//                        predicate = newPred;
+//                        if (predicate.op() == NEG)
+//                            return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
+
                     }
                 }
             }

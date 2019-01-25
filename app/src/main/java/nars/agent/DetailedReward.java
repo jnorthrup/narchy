@@ -9,8 +9,8 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.Param;
+import nars.concept.Concept;
 import nars.concept.sensor.FilteredScalar;
-import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
@@ -23,10 +23,12 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class DetailedReward extends Reward {
 
     public final FilteredScalar concept;
+    private final FloatSupplier rewardFunc;
 
     public DetailedReward(Term id, FloatSupplier r, NAgent a) {
-        super(a, r);
+        super(a);
 
+        this.rewardFunc = r;
         NAR nar = a.nar();
 
         concept = new FilteredScalar( () -> reward,
@@ -82,13 +84,18 @@ public class DetailedReward extends Reward {
     }
 
     @Override
-    public Iterator<Signal> iterator() {
+    public Iterator<Concept> iterator() {
         return Iterators.transform(concept.components.iterator(), x-> x);
     }
 
     @Override
     public Term term() {
         return concept.term;
+    }
+
+    @Override
+    protected float reward() {
+        return rewardFunc.asFloat();
     }
 
     @Override

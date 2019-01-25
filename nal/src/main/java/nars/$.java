@@ -92,7 +92,16 @@ public enum $ {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * doesnt normalize, doesnt throw exception, but may throw RuntimeException
+     */
+    public static <T extends Term> T $$$(String term) {
+        try {
+            return (T) Narsese.term(term, false);
+        } catch (Narsese.NarseseException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static Atomic quote(Object text) {
         String s = text.toString();
 

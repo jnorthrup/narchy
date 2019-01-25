@@ -42,8 +42,9 @@ public class ConceptSurface extends TabMenu {
                 x.toString(), () -> new VectorLabel(x.toString()),
                 "budget", () -> {
 
+                    Term xx = x.concept();
                     Plot2D p = new Plot2D(64, Plot2D.Line)
-                            .add("pri", () -> n.concepts.pri(x, 0));
+                            .add("pri", () -> n.concepts.pri(xx, 0));
                     CheckBox boost = new CheckBox("Boost");
                     return DurSurface.get(new Splitting<>(
 
@@ -52,7 +53,7 @@ public class ConceptSurface extends TabMenu {
                             , 0.8f), n, (nn) -> {
                         p.update();
                         if (boost.on()) {
-                            n.activate(x, 1f);
+                            n.activate(xx, 1f);
                         }
                     });
                 },

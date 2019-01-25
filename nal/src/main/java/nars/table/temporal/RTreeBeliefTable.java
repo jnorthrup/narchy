@@ -772,12 +772,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     @Override
     public void whileEach(Predicate<? super Task> each) {
-        whileEachIntersecting(root().bounds(), TaskRegion.asTask(each));
+        intersectsWhile(root().bounds(), TaskRegion.asTask(each));
     }
 
     @Override
     public void whileEach(long minT, long maxT, Predicate<? super Task> each) {
-        whileEachIntersecting(new TimeRange(minT, maxT), TaskRegion.asTask(each));
+        intersectsWhile(new TimeRange(minT, maxT), TaskRegion.asTask(each));
     }
 
     @Override

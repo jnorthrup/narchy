@@ -105,12 +105,12 @@ public interface Space<T> extends Nodelike<T> {
     /**
      * continues finding intersecting regions until the predicate returns false
      */
-    void whileEachIntersecting(HyperRegion rect, Predicate<T> t);
+    boolean intersectsWhile(HyperRegion rect, Predicate<T> t);
 
     /**
      * continues finding containing regions until the predicate returns false
      */
-    void whileEachContaining(HyperRegion rect, Predicate<T> t);
+    boolean containsWhile(HyperRegion rect, Predicate<T> t);
 
     /**
      * Search for entries intersecting given bounding rect

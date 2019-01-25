@@ -196,24 +196,20 @@ public class RTree<T> implements Space<T> {
     }
 
     @Override
-    public void whileEachIntersecting(HyperRegion rect, Predicate<T> t) {
-//        HyperRegion b = root.bounds();
-//        if (b != null && rect.intersects(b))
-            root.intersecting(rect, t, model);
+    public boolean intersectsWhile(HyperRegion rect, Predicate<T> t) {
+         return root.intersecting(rect, t, model);
     }
 
     @Override
-    public void whileEachContaining(HyperRegion rect, final Predicate<T> t) {
-//        HyperRegion b = root.bounds();
-//        if (b != null && rect.intersects(b))
-            root.containing(rect, t, model);
+    public boolean containsWhile(HyperRegion rect, final Predicate<T> t) {
+        return root.containing(rect, t, model);
     }
 
     /**
      * returns how many items were filled
      */
     @Override
-    public int containedToArray(HyperRegion rect, final T[] t) {
+    @Deprecated public int containedToArray(HyperRegion rect, final T[] t) {
         final int[] i = {0};
         root.containing(rect, (x) -> {
             t[i[0]++] = x;
@@ -222,7 +218,7 @@ public class RTree<T> implements Space<T> {
         return i[0];
     }
 
-    public Set<T> containedToSet(HyperRegion rect) {
+    @Deprecated public Set<T> containedToSet(HyperRegion rect) {
         int s = size();
         Set<T> t = new HashSet(s);
         root.containing(rect, x -> {

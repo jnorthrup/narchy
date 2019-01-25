@@ -255,6 +255,21 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         }
     }
 
+    public HyperRectFloat scale(float... s) {
+        int d = dim();
+        assert(s.length == d);
+
+        float[] x = new float[d];
+        float[] min = new float[d], max = new float[d];
+        for (int i = 0; i < x.length; i++) {
+            float center = (float) center(i);
+            float rangeHalf = (float)(range(i)*s[i])/2;
+            min[i] = center - rangeHalf;
+            max[i] = center + rangeHalf;
+        }
+        return new HyperRectFloat(min, max);
+    }
+
 
     @Deprecated
     public final static class Builder<X extends HyperRectFloat> implements Function<X, HyperRegion> {

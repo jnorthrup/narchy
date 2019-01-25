@@ -43,6 +43,10 @@ public enum OsmSpace  { ;
 
         private boolean changed = false;
 
+         public final void project(float lon, float lat, float alt, float[] target) {
+             project(lon, lat, alt, target, 0);
+         }
+
         abstract public void project(float lon, float lat, float alt, float[] target, int offset);
 
         abstract public void unproject(float x, float y, float z, float[] target);
@@ -107,8 +111,8 @@ public enum OsmSpace  { ;
             viewScale = scale(bounds);
 
             gl.glScalef(viewScale, viewScale, 1);
-
             gl.glTranslatef(-center.x, -center.y, 0);
+
         }
 
         float scale(RectFloat bounds) {

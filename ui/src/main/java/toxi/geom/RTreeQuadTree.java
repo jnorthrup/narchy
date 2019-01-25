@@ -39,7 +39,7 @@ public class RTreeQuadTree<X extends VerletParticle2D> extends RTree<X> implemen
     @Override
     public void itemsWithinRadius(Vec2D p, float radius, Consumer<X> results) {
         synchronized (this) {
-            whileEachIntersecting(b(p, radius), (t) -> {
+            intersectsWhile(b(p, radius), (t) -> {
                 results.accept(t);
                 return true;
             });

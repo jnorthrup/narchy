@@ -1,14 +1,12 @@
 package nars.agent;
 
 import jcog.Util;
-import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.AttBranch;
 import nars.attention.AttNode;
 import nars.concept.Concept;
-import nars.concept.sensor.Signal;
 import nars.control.channel.ConsumerX;
 import nars.op.mental.Inperience;
 import nars.table.eternal.DefaultOnlyEternalTable;
@@ -23,16 +21,14 @@ import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFu
 
 import java.util.List;
 
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
-public abstract class Reward implements Termed, Iterable<Signal> {
+public abstract class Reward implements Termed, Iterable<Concept> {
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
 
     protected final NAgent agent;
-    private final FloatSupplier rewardFunc;
 
     protected transient volatile float reward = Float.NaN;
 
@@ -42,11 +38,10 @@ public abstract class Reward implements Termed, Iterable<Signal> {
 
     final AttNode attn;
 
-    public Reward(NAgent a, FloatSupplier r) {
+    public Reward(NAgent a) {
     //TODO
     //public Reward(NAgent a, FloatSupplier r, float confFactor) {
         this.agent = a;
-        this.rewardFunc = r;
 
         this.attn = new AttNode(this);
         attn.reparent(a.attnReward);
@@ -58,9 +53,13 @@ public abstract class Reward implements Termed, Iterable<Signal> {
     public final NAR nar() { return agent.nar(); }
 
     public final void update(long prev, long now) {
-        reward = rewardFunc.asFloat();
+        reward = reward();
         updateReward(prev, now);
     }
+
+    /** scalar value representing the reward state (0..1.0) */
+    protected abstract float reward();
+
 
     abstract protected void updateReward(long prev, long now);
 
@@ -86,7 +85,7 @@ public abstract class Reward implements Termed, Iterable<Signal> {
     }
 
     public void alwaysWantEternally(Term goal, float conf) {
-        Task t = new NALTask(goal, GOAL, $.t(1f, conf), nar().time(),
+        Task t = new NALTask(goal.unneg(), GOAL, $.t(goal.op()==NEG ? 0f : 1f, conf), nar().time(),
                 ETERNAL, ETERNAL,
                 goalUnstamped ? Stamp.UNSTAMPED : nar().evidence()
         );

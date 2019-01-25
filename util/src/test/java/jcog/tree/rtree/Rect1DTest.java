@@ -46,7 +46,7 @@ class Rect1DTest {
             System.out.println(s);
 
             DoubleArrayList d = new DoubleArrayList();
-            t.whileEachIntersecting(new RectDouble1D.DefaultRect1D(1, 101), d::add);
+            t.intersectsWhile(new RectDouble1D.DefaultRect1D(1, 101), d::add);
 
             assertEquals(10, d.size());
 

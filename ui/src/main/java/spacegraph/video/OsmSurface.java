@@ -2,7 +2,7 @@ package spacegraph.video;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
-import jcog.Texts;
+import jcog.data.list.FasterList;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.rect.HyperRectFloat;
@@ -15,10 +15,15 @@ import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
+import spacegraph.util.geo.osm.OsmElement;
+import spacegraph.util.geo.osm.OsmWay;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import static jcog.Texts.n4;
 
 public class OsmSurface extends Surface {
 
@@ -30,10 +35,13 @@ public class OsmSurface extends Surface {
             new OsmSpace.RawProjection();
             //new OsmSpace.ECEFProjection();
 
-    public final AtomicBoolean showIndexBounds = new AtomicBoolean(true);
+    public final AtomicBoolean debugIndexBounds = new AtomicBoolean(false);
 
 
     final v2 translate = new v2();
+
+    private transient GL2 gl;
+    private List<OsmElement> hilight = new FasterList(128);
 
     public OsmSurface(IRL i) {
         this.index = i;
@@ -57,9 +65,15 @@ public class OsmSurface extends Surface {
         {
             renderMap(gl);
 
-            if (showIndexBounds.get()) {
+            if (debugIndexBounds.get()) {
 //                renderIndexBounds(gl);
                 renderTouchedIndexBounds(gl);
+            }
+
+            if (gl != null) {
+                hilight.forEach(each -> {
+                    renderBounds(gl, each);
+                });
             }
         }
 
@@ -86,27 +100,37 @@ public class OsmSurface extends Surface {
     }
 
     private void renderBounds(GL2 gl, HyperRegion b) {
+        if (b instanceof OsmWay)
+            b = ((OsmWay)b).bounds();
         if (b instanceof HyperRectFloat) {
             HyperRectFloat r = (HyperRectFloat)b;
-            float x1 = r.min.coord(0), y1 = r.min.coord(1);
-            float x2 = r.max.coord(0), y2 = r.max.coord(1);
-
-            float[] ff = new float[3];
-            projection.project(x1, y1, 0, ff, 0);
-            x1 = ff[0]; y1 = ff[1];
-            projection.project(x2, y2, 0, ff, 0);
-            x2 = ff[0]; y2 = ff[1];
-
-            Draw.colorHash(gl, r.hashCode(), 0.25f);
-            Draw.rect(
-            //Draw.rectStroke(
-                    x1, y1, x2-x1, y2-y1,
-                    gl
-            );
+            rect(gl, r);
         }
     }
 
+    private void rect(GL2 gl, HyperRectFloat r) {
+        float x1 = r.min.coord(0), y1 = r.min.coord(1);
+        float x2 = r.max.coord(0), y2 = r.max.coord(1);
+
+        float[] ff = new float[3];
+        projection.project(x1, y1, 0, ff, 0);
+        x1 = ff[0];
+        y1 = ff[1];
+        projection.project(x2, y2, 0, ff, 0);
+        x2 = ff[0];
+        y2 = ff[1];
+
+        Draw.colorHash(gl, r.hashCode(), 0.5f);
+        //Draw.rect(
+        Draw.rectStroke(
+                x1, y1, x2-x1, y2-y1,
+                gl
+        );
+    }
+
     private void renderMap(GL2 gl) {
+        this.gl = gl;
+
         if (o !=null) {
 
             RectFloat b = o.geoBounds;
@@ -217,6 +241,10 @@ public class OsmSurface extends Surface {
 
     @Override
     public Surface finger(Finger finger) {
+
+        hilight.clear();
+
+
         float wheel;
         if ((wheel = finger.rotationY(true)) != 0) {
             projection.zoom(wheel);
@@ -234,10 +262,19 @@ public class OsmSurface extends Surface {
             //TODO unproject screen to world
 
             projection.unproject(wx, wy, wz, touch);
-            System.out.println(Texts.n4(wx,wy,wz) + " -> " + Texts.n4(touch));
-            index.index.whileEachIntersecting(HyperRectFloat.cube(touch, 0), (each)->{
+            System.out.println(n4(wx,wy,wz) + " -> " + n4(touch));
+
+//            float[] untouch = new float[3];
+//            projection.project(touch[0], touch[1], touch[2], untouch, 0);
+//            System.out.println("  " + n4(untouch[0] - wx) + " " + n4(untouch[1] - wy));
+
+            float rad = 0.0004f;
+            HyperRectFloat cursor = HyperRectFloat.cube(touch, rad).scale(1,1,0);
+            index.index.intersectsWhile(cursor, (each)->{
                 if (each.tags!=null) {
-                    System.out.println(each.tags);
+                    //System.out.println(each.tags);
+                    hilight.add(each);
+                    each.contains(cursor);
                 }
                 return true;
             });

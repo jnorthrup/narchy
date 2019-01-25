@@ -65,7 +65,7 @@ class RTreeNDTest {
             final HyperRectFloat searchRect = new HyperRectFloat(new FloatND(5, 5), new FloatND(10, 10));
             List<HyperRectFloat> results = new ArrayList();
 
-            rTree.whileEachIntersecting(searchRect, results::add);
+            rTree.intersectsWhile(searchRect, results::add);
             int resultCount = 0;
             for (int i = 0; i < results.size(); i++) {
                 if (results.get(i) != null) {
@@ -223,7 +223,7 @@ class RTreeNDTest {
             final int expectedCount = 9;
             List<RectDouble> results = new ArrayList(expectedCount);
 
-            rTree.whileEachIntersecting(searchRect, results::add);
+            rTree.intersectsWhile(searchRect, results::add);
             final int resultCount = results.size();
 
 
@@ -296,7 +296,7 @@ class RTreeNDTest {
             }
 
             final AtomicInteger visitCount = new AtomicInteger();
-            rTree.whileEachContaining(searchRect, (n) -> {
+            rTree.containsWhile(searchRect, (n) -> {
                 visitCount.incrementAndGet();
                 return true;
             });
@@ -597,7 +597,7 @@ class RTreeNDTest {
 
         final AtomicInteger hitCount = new AtomicInteger();
         
-        rTree.whileEachContaining(search, (closure) -> {
+        rTree.containsWhile(search, (closure) -> {
             hitCount.incrementAndGet();
             return true;
         });

@@ -44,7 +44,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
      * current view, in local grid coordinate
      */
     private volatile RectFloat view;
-    private volatile v2 viewMin = new v2(1,1), viewMax = new v2(1,1);
+    private volatile v2 viewMin = new v2(0,0), viewMax = new v2(1,1);
 
     private boolean autoHideScrollForSingleColumnOrRow = false;
 
@@ -78,8 +78,8 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
 
         this.scale = new XYSlider();
-        set(W,scrollX);
-        set(S,scrollY);
+        set(W,scrollY);
+        set(S,scrollX);
         set(SE, scale);
 
         scale.on((w, h)->{
@@ -143,11 +143,13 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         if (view!=null) {
             float vw = Util.clamp(view.w, viewMin.x, viewMax.x);
             float vh = Util.clamp(view.h, viewMin.y, viewMax.y);
+            scale.set(Util.normalize(view.w, viewMin.x, viewMax.x),Util.normalize(view.h, viewMin.y, viewMax.y));
             this.view = RectFloat.X0Y0WH(
                     Util.clamp(view.x, 0, viewMax.x),
                     Util.clamp(view.y, 0, viewMax.y),
                     vw, vh);
         }
+
 
         S m = this.content;
 

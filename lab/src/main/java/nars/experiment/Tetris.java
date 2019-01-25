@@ -8,6 +8,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
+import nars.agent.BeliefReward;
 import nars.agent.FrameTrigger;
 import nars.gui.sensor.VectorSensorView;
 import nars.op.java.Opjects;
@@ -20,6 +21,7 @@ import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static nars.$.$$;
 import static nars.experiment.Tetris.TetrisState.*;
 import static spacegraph.SpaceGraph.window;
 
@@ -68,6 +70,12 @@ public class Tetris extends NAgentX {
                 FrameTrigger.fps(24f),
                 //FrameTrigger.durs(1),
                 n);
+
+
+        reward(new BeliefReward($$("(tetris(#x1,#y) &| tetris(#x2,#y))"), this));
+        reward(new BeliefReward($$("--(tetris(#x1,#y) &| --tetris(#x2,#y))"), this));
+        reward(new BeliefReward($$("(&|,tetris(#x1,#y),tetris(#x2,#y),add(#x1,1,#x2))"), this));
+        reward(new BeliefReward($$("(&|,tetris(#x,#yl),--tetris(#x,#yh),cmp(#yl,#yh,-1))"), this));
 
         state = opjects ?
                 actionsReflect() :

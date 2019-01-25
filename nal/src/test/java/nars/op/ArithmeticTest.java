@@ -194,6 +194,13 @@ class ArithmeticTest {
 
     }
 
+    @Test
+    void testComparatorWithVars_DontEval() {
+        TermTest.assertEq("cmp(x(1),x(2),-1)", $$("cmp(x(1),x(2),#c)").eval(n)); //constant
+        TermTest.assertEq("cmp(x(#1),x(#2),#3)", $$("cmp(x(#a),x(#b),#c)").eval(n)); //variable
+        TermTest.assertEq("cmp(x(#1),x(#1),0)", $$("cmp(x(#a),x(#a),#c)").eval(n)); //variable, but equality known
+    }
+
     private void assertComparator(String x, String y) {
         Set<String> solutions = new TreeSet();
         for (int i = 0; i < 10; i++) {

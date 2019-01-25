@@ -168,13 +168,15 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     }
 
     @Override
-    public void whileEachContaining(HyperRegion rect, Predicate<T> t) {
-        read(() -> tree.whileEachContaining(rect, t));
+    public boolean containsWhile(HyperRegion rect, Predicate<T> t) {
+        read(() -> tree.containsWhile(rect, t));
+        return false;
     }
 
     @Override
-    public void whileEachIntersecting(HyperRegion rect, Predicate<T> t) {
-        read(() -> tree.whileEachIntersecting(rect, t));
+    public boolean intersectsWhile(HyperRegion rect, Predicate<T> t) {
+        read(() -> tree.intersectsWhile(rect, t));
+        return false;
     }
 
     /**

@@ -427,7 +427,7 @@ public class Branch<X> extends AbstractNode<X> {
         if (b != null && rect.intersects(b) && t.test(this)) {
             int s = size;
             for (int i = 0; i < s; i++) {
-                if (data[i].intersectingNodes(rect, t, model))
+                if (!data[i].intersectingNodes(rect, t, model))
                     return false;
             }
         }

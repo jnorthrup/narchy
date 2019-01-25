@@ -206,7 +206,7 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
 
     @Override
     public void update(ScrollXY s) {
-        s.viewMin(new v2(1, 1));
+        s.viewMin(new v2(0, 0));
         s.viewMax(new v2(cellsX(), cellsY()));
     }
 }

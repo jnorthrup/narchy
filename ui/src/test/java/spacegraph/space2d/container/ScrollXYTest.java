@@ -61,8 +61,8 @@ class ScrollXYTest {
                     })).view(0,0,8,4);
 
 
-            grid.setScrollBar(true, true, false);
-            grid.setScrollBar(false, false, true);
+//            grid.setScrollBar(true, true, false);
+//            grid.setScrollBar(false, false, true);
 
             window(grid, 1024, 800);
         }

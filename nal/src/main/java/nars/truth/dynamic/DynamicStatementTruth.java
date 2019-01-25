@@ -225,16 +225,16 @@ public class DynamicStatementTruth {
 //                    e - s
 //            );
             int innerDT;
-            if (superDT == DTERNAL) {
+            if (superDT == DTERNAL || superDT == XTERNAL) {
                 if (s!=ETERNAL)
                     innerDT = 0;
                 else
                     innerDT = DTERNAL;
             } else {
-                if (s == 0 && e - s==decRange)
+                if (s == start && e - s>=decRange)
                     innerDT = DTERNAL; //eternal component
                 else
-                    innerDT = Tense.occToDT(decRange - s);
+                    innerDT = Tense.occToDT(decRange - (s-start));
             }
 
             Term i;

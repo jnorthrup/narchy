@@ -92,6 +92,14 @@ public class ConjTest {
         assertEq("(--,right)", "((--,(left&&right))&&(--,right))");
     }
 
+    @Test void testSequenceInEternal() {
+        assertEq("((#NIGHT &&+1 #DAY1)&&(#DAY2 &&+1 #NIGHT))",
+            CONJ.the(DTERNAL,
+                $$$("(#NIGHT &&+1 #DAY1)"),
+                $$$("(#DAY2 &&+1 #NIGHT)")
+        ));
+    }
+
     @Test
     void testSimpleEternals() {
         Conj c = new Conj();
@@ -581,7 +589,7 @@ public class ConjTest {
 
         assertEq("((--,(y&|z))&&x)", "(x&&--(y &| z))");
 
-        assertEq("((--,(y&&z))&|x)", "(x &| --(y && z))");
+        assertEq("((--,(y&|z))&|x)", "(x &| --(y && z))");
     }
 
     @Test
@@ -2256,7 +2264,7 @@ public class ConjTest {
 
     @Test
     void testParallelDisjunctionInert() {
-        assertEq("((--,(x&&y))&|z)", CONJ.the(0, $$("--(x&&y)"), $$("z")));
+        assertEq("((--,(x&|y))&|z)", CONJ.the(0, $$("--(x&&y)"), $$("z")));
     }
 
     @Test

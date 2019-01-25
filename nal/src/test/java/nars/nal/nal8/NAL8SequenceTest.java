@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 
 import static nars.$.$$;
+import static nars.Op.GOAL;
 
 /** test precision of sequence execution (planning) */
 public class NAL8SequenceTest extends NALTest {
@@ -180,6 +181,42 @@ public class NAL8SequenceTest extends NALTest {
         //.mustGoal(cycles, "(&|,a,b,d(x,x))", 1, 0.81f) //81% for one step
         ;
     }
+
+    @Test
+    void testGoalDeduction_ParallelWithDepVar() {
+        test
+                .input( "(x(#1,#2) &| y(#1,#2))!")
+                .input( "x(1,1).")
+                .mustGoal(cycles, "y(1,1)", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testGoalDeduction_Neg_ParallelWithDepVar() {
+        test
+                .input( "(--x(#1,#2) &| y(#1,#2))!")
+                .input( "--x(1,1).")
+                .mustGoal(cycles, "y(1,1)", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testGoalDeduction_ParallelWithDepVar_and_Arithmetic() {
+        test
+                .input( "(&|, x(#1,#2), add(#1,#2,#3), y(#3))!")
+                .input( "x(1,1).")
+                .mustGoal(cycles, "y(2)", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testGoalDeduction_ParallelWithDepVar_and_Specific_Arithmetic() {
+        test
+                .input( "(&|, x(#1,#2), y(#1,#2), --equal(#1,#2))!")
+                .input( "x(1,1).")
+                .input( "x(1,2).")
+                .mustGoal(cycles, "y(1,2)", 1, 0.81f) //81% for one step
+                .mustNotOutput(cycles, "y(1,1)", GOAL) //81% for one step
+        ;
+    }
+
 
     @Disabled
     @Test void test1() throws Narsese.NarseseException {

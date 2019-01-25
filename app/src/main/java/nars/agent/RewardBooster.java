@@ -8,7 +8,6 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.concept.action.ActionConcept;
-import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
 import nars.link.Activate;
@@ -37,7 +36,7 @@ public class RewardBooster extends Causable {
         in = n.newChannel(this);
         n.on(this);
 
-        Iterator<Signal> rr = r.iterator();
+        Iterator<Concept> rr = r.iterator();
         this.reward = rr.next();
         if (rr.hasNext())
             throw new TODO();

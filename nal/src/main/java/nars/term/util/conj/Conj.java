@@ -59,7 +59,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
-    public static final int ROARING_UPGRADE_THRESH = 8;
+    public static final int ROARING_UPGRADE_THRESH = 16;
 
     /**
      * TermBuilder to use internally
@@ -2321,8 +2321,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             case 1:
                 return tmp.get(0);
             default: {
-                if (when==ETERNAL && ((FasterList<Term>)tmp).count(Conj::isSeq)>1)
-                    return Null; //too complex
+//                if (when==ETERNAL && ((FasterList<Term>)tmp).count(Conj::isSeq)>1)
+//                    return Null; //too complex
 
                 return terms.theSortedCompound(CONJ, when == ETERNAL ? DTERNAL : 0, tmp);
             }

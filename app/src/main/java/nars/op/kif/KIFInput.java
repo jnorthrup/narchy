@@ -353,7 +353,8 @@ public class KIFInput {
             case "equal":
                 if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
                     
-                    y = impl(args.get(0), args.get(1), false);
+                    //y = impl(args.get(0), args.get(1), false);
+                    y = SIM.the(args.get(0), args.get(1));
                 } else {
                     
                 }

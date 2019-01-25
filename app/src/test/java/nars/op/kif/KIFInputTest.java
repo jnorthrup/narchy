@@ -139,10 +139,10 @@ class KIFInputTest {
 
         n.beliefPriDefault.set(0.05f);
 
-        n.input("load(\"file:///tmp/sumo/Merge.kif.nalz\");");
-        n.input("load(\"file:///tmp/sumo/Mid-level-ontology.kif.nalz\");");
-        n.input("load(\"file:///tmp/sumo/FinancialOntology.kif.nalz\");");
-        n.input("load(\"file:///tmp/sumo/Economy.kif.nalz\");");
+        n.input("load(\"file:///tmp/sumo/merge.nalz\");");
+//        n.input("load(\"file:///tmp/sumo/Mid-level-ontology.kif.nalz\");");
+//        n.input("load(\"file:///tmp/sumo/FinancialOntology.kif.nalz\");");
+//        n.input("load(\"file:///tmp/sumo/Economy.kif.nalz\");");
         n.run(1);
         System.err.println(n.concepts.size() + " concepts");
         n.clear();

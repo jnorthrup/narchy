@@ -7,7 +7,6 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,7 +87,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
             //indeterminable in non-evaluation context
             return null;
-        } else if (xHasVar && yHasVar) {
+        } else if (xHasVar || yHasVar) {
             //indeterminable
             return null;
         } else {
@@ -139,30 +138,32 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
                 }
             }
 
-            int c = x.compareTo(y);
-            if (c == 0) {
+            if (!x.hasVars() && !y.hasVars()) {
+                int c = x.compareTo(y);
+                if (c == 0) {
 
-                if (!xy.equals(zero) && !xy.op().var)
-                    return False; //incorrect value
-                else
-                    xy = zero;
-            } else if (c > 0) {
+                    if (!xy.equals(zero) && !xy.op().var)
+                        return False; //incorrect value
+                    else
+                        xy = zero;
+                } else if (c > 0) {
 
-                //swap argument order
-                Term s = x;
-                x = y;
-                y = s;
+                    //swap argument order
+                    Term s = x;
+                    x = y;
+                    y = s;
 
-                if (xyo == INT) {
-                    int xyi = -((Int) xy).id;
-                    if (x.op() == INT && y.op() == INT) {
-                        return (Integer.compare(((Int) x).id,((Int) y).id) == xyi) ? True : False;
+                    if (xyo == INT) {
+                        int xyi = -((Int) xy).id;
+                        if (x.op() == INT && y.op() == INT) {
+                            return (Integer.compare(((Int) x).id, ((Int) y).id) == xyi) ? True : False;
+                        }
+                        xy = Int.the(xyi);
+                    } else if (!xyo.var) {
+                        xy = $.varDep("cmp_tmp"); //erase constant, forcing recompute
                     }
-                    xy = Int.the(xyi);
-                } else if (!xyo.var) {
-                    xy = $.varDep("cmp_tmp"); //erase constant, forcing recompute
+                    return $.func(Equal.cmp, x, y, xy);
                 }
-                return $.func(Equal.cmp, x, y, xy);
             }
             return super.apply3(e, x, y, xy);
         }
@@ -171,7 +172,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
         protected Term compute(Evaluation e, Term x, Term y) {
             if (x.equals(y))
                 return Int.the(0);
-            if (!x.op().var && !y.op().var) {
+            if (!x.hasVars() && !y.hasVars()) {
                 return Int.the(x.compareTo(y));
             } else {
                 return null;
