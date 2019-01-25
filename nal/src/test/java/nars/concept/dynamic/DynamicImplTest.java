@@ -7,13 +7,16 @@ import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
 import nars.truth.Truth;
+import nars.truth.dynamic.DynamicStatementTruth;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.concept.dynamic.DynamicConjTest.components;
 import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -338,6 +341,28 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         //((((left-right)-->fz) &&+6555 (left-->fz))==>(right-->fz)). -280⋈41620 %.14;.24%
         //((--,(left-->fz)) ==>+300 (right-->fz)). 7460⋈44240 %.40;.43%
         //DONT produce: ((((left-right)-->fz) &&+6555 (left-->fz))&&(--,(left-->fz)))
+    }
+
+
+    @Test
+    void testDynamicConjunctionFactoredInImpl() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.believe($("(x==>a)"), ETERNAL);
+        n.believe($("(y ==>+2 a)"), 0);
+        n.believe($("(z =|> a)"), 2);
+        n.time.dur(8);
+
+        {
+
+            Term xyz = $("((x && (y &&+2 z))=|>a)");
+            assertEquals(
+                    //"[((x&&y) ==>+2 a) @ 0, ((x&&z)=|>a) @ 0]",
+                    "[(x==>a) @ 0..0, (y ==>+2 a) @ 0..0, (z=|>a) @ 0..0]",
+                    components(DynamicStatementTruth.SectImplSubj, xyz, 0, 0).toString());
+            Task t = n.answer(xyz, BELIEF, 0);
+            assertNotNull(t);
+            assertEquals(xyz, t.term());
+        }
     }
 
 }

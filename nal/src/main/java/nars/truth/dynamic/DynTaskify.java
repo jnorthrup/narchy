@@ -75,10 +75,7 @@ public class DynTaskify extends DynEvi {
         if (d == null)
             return null;
 
-
-
         long s, e;
-
 
         int eternals = d.count(Task::isEternal);
         if (eternals == d.size()) {
@@ -158,8 +155,8 @@ public class DynTaskify extends DynEvi {
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
         Task bt = //forceProjection ?
                 //table.answer(subStart, subEnd, subTerm, filter, nar);
-                //table.match(subStart, subEnd, subTerm, filter, nar);
-                table.sample(subStart, subEnd, subTerm, filter, nar);
+                table.match(subStart, subEnd, subTerm, filter, nar);
+                //table.sample(subStart, subEnd, subTerm, filter, nar);
         if (bt == null || !model.acceptComponent(template, bt.term(), bt))
             return false;
 

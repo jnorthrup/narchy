@@ -6,7 +6,6 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.Param;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
@@ -34,8 +33,6 @@ public class Gradius extends NAgentX {
     int lastScore;
 
     public static void main(String[] args) {
-
-        Param.DEBUG = true; //TEMPORARY
 
         NAgentX.runRT(Gradius::new, 25f);
 

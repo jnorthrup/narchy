@@ -216,21 +216,27 @@ public class DynamicStatementTruth {
 
     static public boolean decomposeImplConj(Term superterm, long start, long end, AbstractDynamicTruth.ObjectLongLongPredicate<Term> each, Term common, Term decomposed, boolean subjOrPred, boolean negateComponents) {
 
-//        int outerDT = superterm.dt();
-        long is, ie;
-        if (start == ETERNAL) {
-            is = ie = ETERNAL;
-        } else {
-            is = start;
-            ie = end + decomposed.eventRange();// + outerDT;
-        }
-
-        return DynamicConjTruth.ConjIntersection.components(decomposed, is, ie, (what, s, e) -> {
+        int superDT = superterm.dt();
+        int decRange = decomposed.eventRange();
+        return DynamicConjTruth.ConjIntersection.components(decomposed, start, end, (what, s, e) -> {
             //TODO fix
-            int innerDT = (s == ETERNAL) ? XTERNAL : Tense.occToDT(
-                    //(e-s)-outerDT
-                    e - s
-            );
+//            int innerDT = (s == ETERNAL) ? XTERNAL : Tense.occToDT(
+//                    //(e-s)-outerDT
+//                    e - s
+//            );
+            int innerDT;
+            if (superDT == DTERNAL) {
+                if (s!=ETERNAL)
+                    innerDT = 0;
+                else
+                    innerDT = DTERNAL;
+            } else {
+                if (s == 0 && e - s==decRange)
+                    innerDT = DTERNAL; //eternal component
+                else
+                    innerDT = Tense.occToDT(decRange - s);
+            }
+
             Term i;
             if (subjOrPred) {
                 if (negateComponents)
@@ -242,48 +248,8 @@ public class DynamicStatementTruth {
                     i = i.neg();
             }
 
-            return each.accept(i, s, e);
+            return each.accept(i, start, end);
         });
-//        int innerDT = decomposed.dt();
-//        int decRange;
-//        switch (outerDT) {
-//            case DTERNAL:
-//                decRange = 0;
-//                break;
-//            case XTERNAL:
-//                decRange = XTERNAL;
-//                break;
-//            default:
-//                decRange = decomposed.eventRange();
-//                break;
-//        }
-//        boolean startSpecial = (start == ETERNAL || start == XTERNAL);
-//        //TODO use dynamic conjunction decompose which provides factoring
-//        Op superOp = superterm.op();
-//        return decomposed.eventsWhile((offset, y) -> {
-//                    boolean ixTernal = startSpecial || offset == ETERNAL || offset == XTERNAL;
-//
-//                    long subStart = ixTernal ? start : start + offset;
-//                    long subEnd = end;
-//                    if (subEnd < subStart) {
-//                        //swap
-//                        long x = subStart;
-//                        subStart = subEnd;
-//                        subEnd = x;
-//                    }
-//
-//                    int occ = (outerDT != DTERNAL && decRange != XTERNAL) ? occToDT(decRange - offset + outerDT) : XTERNAL;
-//                    Term x = stmtDecompose(op, subjOrPred, y, common,
-//                            ixTernal ? DTERNAL : occ, negateComponents, false);
-//
-//                    if (x == Null || x.unneg().op()!=superOp)
-//                        return false;
-//
-//                    return each.accept(x, subStart, subEnd);
-//                }
-//                , outerDT == DTERNAL ? ETERNAL : 0, innerDT == 0,
-//                innerDT == DTERNAL,
-//                innerDT == XTERNAL, 0);
     }
 
     static class DynamicInhSectTruth extends AbstractSectTruth {
@@ -418,11 +384,7 @@ public class DynamicStatementTruth {
 
         @Override
         public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            return components(superterm, start, end, each, superterm.sub(0));
-        }
-
-        protected static boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term subj) {
-            return decomposeImplConj(superterm, start, end, each, superterm.sub(1), subj, true, false);
+            return decomposeImplConj(superterm, start, end, each, superterm.sub(1), superterm.sub(0), true, false);
         }
 
         @Override

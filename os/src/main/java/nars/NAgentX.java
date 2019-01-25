@@ -174,7 +174,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-//        Param.STRONG_COMPOSITION = true;
+        //Param.STRONG_COMPOSITION = true;
 //        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -362,8 +362,8 @@ abstract public class NAgentX extends NAgent {
 
         n.beliefPriDefault.set(0.25f);
         n.goalPriDefault.set(0.5f);
-        n.questionPriDefault.set(0.1f);
-        n.questPriDefault.set(0.1f);
+        n.questionPriDefault.set(0.05f);
+        n.questPriDefault.set(0.05f);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);

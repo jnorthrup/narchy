@@ -4,7 +4,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.The;
 import nars.term.compound.UnitCompound;
-import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
@@ -77,9 +76,4 @@ public final class Neg extends UnitCompound implements The {
         return sub.equals(t);
     }
 
-
-    /** @see Compound.unifyForward */
-    @Override public boolean unifyForward(Term y, Unify u) {
-        return (y.op()==NEG && sub.unify(y.unneg(), u));
-    }
 }

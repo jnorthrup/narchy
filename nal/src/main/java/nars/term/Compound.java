@@ -249,9 +249,12 @@ public interface Compound extends Term, IPair, Subterms {
 //    }
 
     @Override
-    default boolean unifyForward(Term y, Unify u) {
+    default boolean unify(Term y, Unify u) {
         return (y instanceof Compound &&
-                (equals(y) || (op() == y.op() && unifySubterms(y, u))));
+                    (equals(y) || (op() == y.op() && unifySubterms(y, u)))
+               )
+               ||
+               (y instanceof Variable && y.unify(this, u));
     }
 
 
@@ -337,8 +340,7 @@ public interface Compound extends Term, IPair, Subterms {
     static boolean unifyXternal(Term y, Term x, Subterms xx, Subterms yy) {
         if (xx.equals(yy)) return true;
         Term xr = x.root();
-        if (x.equals(xr) && y.root().equals(xr)) return true;
-        return false;
+        return x.equals(xr) && y.root().equals(xr);
     }
 
 
@@ -402,8 +404,8 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean isCommutative() {
-        Op op = op();
-        return op == CONJ ? dtSpecial(dt()) : op.commutative && subs() > 1;
+        //Op op = op();
+        return /*op == CONJ ? dtSpecial(dt()) : */op().commutative && subs() > 1;
     }
 
 

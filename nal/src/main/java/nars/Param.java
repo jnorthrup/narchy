@@ -205,9 +205,9 @@ public abstract class Param {
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
      */
-    public final static float SIGNAL_STRETCH_DUR = 16;
+    public final static float SIGNAL_STRETCH_DUR = 4;
 
-    /** maximum time between signal updates to stretch an equivalently truthed data point across.
+    /** maximum time between signal updates to stretch an equivalently-truthed data point across.
      * stretches perception across some amount of lag
      * */
     public final static float SIGNAL_LATCH_DUR =
@@ -279,8 +279,8 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 6, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(4, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 4;

@@ -40,9 +40,7 @@ class BeliefTableTest {
         assertEquals(end, t.end(), ()-> t + " but end should be: " + end + "\n" + t.proof());
     }
 
-    private static float dtDiff(String x, String y) {
-        return Intermpolate.dtDiff($$(x), $$(y));
-    }
+
 
     @Test
     void testEternalBeliefRanking() {
@@ -249,47 +247,5 @@ class BeliefTableTest {
 
     }
 
-    @Test
-    void testDTDiffSame() {
-        assertEquals(0f, dtDiff("(x ==>+5 y)", "(x ==>+5 y)"), 0.001f);
-    }
-    @Test
-    void testDTDiffVariety() {
-        assertEquals(0.05f, dtDiff("(x ==>+5 y)", "(x ==>+- y)"), 0.01f);
-        assertEquals(0.1f, dtDiff("(x ==>+5 y)", "(x ==> y)"), 0.01f);
-        assertEquals(0.4f, dtDiff("(x ==>+5 y)", "(x ==>+3 y)"), 0.01f);
-        assertEquals(0.8f, dtDiff("(x ==>+5 y)", "(x ==>+1 y)"), 0.01f);
-        assertEquals(1f, dtDiff("(x ==>+5 y)", "(x =|> y)"), 0.01f);
-    }
-
-    @Test
-    void testDTImpl1() {
-
-        float a52 = dtDiff("(x ==>+5 y)", "(x ==>+2 y)");
-        float a54 = dtDiff("(x ==>+5 y)", "(x ==>+4 y)");
-        assertTrue(a52 > a54);
-        assertEquals(0.6f, a52, 0.001f);
-        assertEquals(0.2f, a54, 0.001f);
-    }
-
-    @Test
-    void testConjSequence1() {
-
-        float a52 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+2 y) &&+1 z)");
-        float a54 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+4 y) &&+1 z)");
-        assertEquals(0.3, a52, 0.01f);
-        assertEquals(0.1f, a54, 0.001f);
-        assertTrue(a52 > a54);
-    }
-
-    @Test
-    void testDTImplEmbeddedConj() {
-
-
-        float a = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+1 y) ==>+2 z)");
-        float b = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+2 y) ==>+1 z)");
-        assertEquals(0.5f, a, 0.1f);
-        assertEquals(0.25f, b, 0.1f);
-    }
 
 }

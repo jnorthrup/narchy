@@ -5,6 +5,7 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.term.Term;
+import nars.time.Tense;
 
 import java.util.function.BiFunction;
 
@@ -28,9 +29,9 @@ public class ActionTiming implements BiFunction<Task, Term, long[]> {
         long then = now + Math.round((nar.random().nextFloat() * horizonDurs.floatValue()) * dur);
 //        if (task.endsBefore(now)) {
 //        if (!task.isEternal()) {
-            start = then - dur; // + Math.round( ( nar.random().nextDouble() * horizonDurs.floatValue() ) * nar.dur() );
+            start = Tense.dither(then - dur, nar); // + Math.round( ( nar.random().nextDouble() * horizonDurs.floatValue() ) * nar.dur() );
 
-        end = then + dur;
+        end = Tense.dither(then + dur, nar);
                     //Math.round(widthDurs.doubleValue()*nar.dur());
 
 //        } else {

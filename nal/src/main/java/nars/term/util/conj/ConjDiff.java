@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import static nars.time.Tense.ETERNAL;
 
 public class ConjDiff extends Conj {
-    private final Conj se;
+    private final Conj exc;
     private final boolean invert;
     private final long[] excludeEvents;
 
@@ -41,8 +41,8 @@ public class ConjDiff extends Conj {
 
     ConjDiff(Term include, Conj exclude, long offset, boolean invert) {
         super(exclude.termToId, exclude.idToTerm);
-        this.se = exclude;
-        this.excludeEvents = se.event.keySet().toArray();
+        this.exc = exclude;
+        this.excludeEvents = exc.event.keySet().toArray();
         this.invert = invert;
         add(offset, include);
         //distribute();
@@ -68,14 +68,12 @@ public class ConjDiff extends Conj {
         } else {
             int f = test(at, id);
             if (f == -1) return -1;
-            int f2 = (at == ETERNAL) ? f : test(ETERNAL, id);
-            if (f2 == -1) return -1;
-            if (f == +1 || f2 == +1) return +1; //ignore this term (dont repeat in the predicate)
+            if (f == +1) return +1; //ignore this term (dont repeat in the predicate)
         }
         return 0;
     }
 
     private int test(long at, byte id) {
-        return se.conflictOrSame(at, (byte) (id * (invert ? -1 : +1)));
+        return exc.conflictOrSame(at, (byte) (id * (invert ? -1 : +1)));
     }
 }

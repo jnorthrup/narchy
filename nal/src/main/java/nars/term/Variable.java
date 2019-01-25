@@ -43,14 +43,9 @@ public interface Variable extends Atomic {
     }
 
     @Override
-    default boolean unify(Term y, Unify u) {
-        return unifyForward(y, u);
-    }
-
-    @Override
     @Paper
     @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion"})
-    default boolean unifyForward(Term _y, Unify u) {
+    default boolean unify(Term _y, Unify u) {
 
         if (_y instanceof Variable && equals(_y))
             return true;
@@ -76,41 +71,38 @@ public interface Variable extends Atomic {
                 xOp = x.op();
                 //continue below
             } else {
-//                try {
-                    return x.unifyForward(y, u);
-//                } catch (StackOverflowError e) {
-//                    //HACK
-//                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy);
-//                    return false;
-//                }
+                try {
+                    return x.unify(y, u);
+                } catch (StackOverflowError e) {
+                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy); //TEMPORARY
+                    return false;
+                }
             }
         }
 
 
 
-        if (y instanceof Variable && (x==this || x instanceof Variable)) {
-            if (!(y instanceof EllipsisMatch)) {
-                if (xOp == y.op()) {
-                    Variable Y = (Variable) y;
-                    Variable X = (Variable) x;
+        if (y instanceof Variable && x instanceof Variable && !(y instanceof EllipsisMatch) && u.commonVariables) {
+            if (xOp == y.op()) {
+                Variable Y = (Variable) y;
+                Variable X = (Variable) x;
 
-                    //same op: common variable
-                    //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
-                    Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
-                    if (u.putXY(X, common) && u.putXY(Y, common)) {
-                        //map any appearances of X or Y in already-assigned variables
-                        if (u.xy.size() > 2) {
-                            u.xy.replaceAll((var, val) -> {
-                                if (var.equals(X) || var.equals(Y) || !val.hasAny(X.op()))
-                                    return val; //unchanged
-                                else
-                                    return val.replace(X, common).replace(Y, common);
-                            });
-                        }
-                        return true;
+                //same op: common variable
+                //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
+                Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
+                if (u.putXY(X, common) && u.putXY(Y, common)) {
+                    //map any appearances of X or Y in already-assigned variables
+                    if (u.xy.size() > 2) {
+                        u.xy.replaceAll((var, val) -> {
+                            if (var.equals(X) || var.equals(Y) || !val.hasAny(X.op()))
+                                return val; //unchanged
+                            else
+                                return val.replace(X, common).replace(Y, common);
+                        });
                     }
-                    return false;
+                    return true;
                 }
+                return false;
             }
         }
 

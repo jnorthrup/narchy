@@ -34,8 +34,10 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
 public final class Answer implements AutoCloseable {
 
     public final static int BELIEF_MATCH_CAPACITY =
-            Param.STAMP_CAPACITY - 1;
             //Math.max(1, Param.STAMP_CAPACITY / 2);
+            //Param.STAMP_CAPACITY - 1;
+            3;
+
 
     public static final int BELIEF_SAMPLE_CAPACITY = 2; //Math.max(1, BELIEF_MATCH_CAPACITY / 2);
     public static final int QUESTION_SAMPLE_CAPACITY = 1;

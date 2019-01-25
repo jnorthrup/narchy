@@ -29,7 +29,9 @@ public abstract class PreDerivation extends Unify {
     public final RoaringBitmap can = new RoaringBitmap();
     public short[] will = ArrayUtils.EMPTY_SHORT_ARRAY;
 
-    public UnifyPremise unifyPremise = new UnifyPremise();
+    public UnifyPremise unifyPremise = new UnifyPremise(); {
+        unifyPremise.commonVariables = false; //disable common variables for the query variables matched in premise formation; since the task term is not transformed like the belief term is.
+    }
 
     protected PreDerivation(@Nullable Op type, Random random, int stackMax) {
         super(type, random, stackMax);

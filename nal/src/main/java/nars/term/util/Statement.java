@@ -108,8 +108,11 @@ public class Statement {
                             (dt != DTERNAL ? dt : ETERNAL);
 
                     int subjRange = subject.eventRange();
-                    if (po != ETERNAL)
+                    if (po != ETERNAL) {
                         po += subjRange;
+                        if (so == ETERNAL)
+                            so = 0;
+                    }
 
 
                     //test for validity by creating the hypothetical conjunction analog of the implication
@@ -129,7 +132,6 @@ public class Statement {
 
 
                     boolean predChange = !predicate.equals(newPred);
-
 
                     if (predChange) {
 

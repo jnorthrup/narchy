@@ -22,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 350;
+    private final static int cycles = 150;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.termVolumeMax.set(18);
-        test.nar.confMin.set(0.3f);
+        test.nar.confMin.set(0.35f);
     }
 
 
@@ -632,7 +632,7 @@ public class NAL7Test extends NALTest {
 
     private void compositionTest(int t, int dt) {
 
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolumeMax.set(11);
         test.inputAt(t, "hold(John,key). |");
         test.inputAt(t, "(open(John,door) ==>+" + dt + " enter(John,room)).");
 
@@ -1279,12 +1279,11 @@ public class NAL7Test extends NALTest {
 
 
         test
-                .inputAt(1, "(a &&+2 c). :|:")
-                .inputAt(3, "(b &| d). :|:")
-                .mustBelieve(cycles,
-
-                        "(a &&+2 ((b &| c) &| d) )",
-                        1f, 0.81f, 1);
+                .termVolMax(5)
+                .inputAt(1, "(a &&+2 c). |")
+                .inputAt(3, "(b &| d). |")
+                .mustBelieve(cycles*2,
+                        "(a &&+2 (&|,b,c,d) )", 1f, 0.81f, 1);
     }
 
     @Test

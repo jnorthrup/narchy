@@ -357,12 +357,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * @return whether unification succeeded
      */
     default boolean unify(Term y, Unify u) {
-        return (y instanceof Variable ? y.unifyForward(this, u) : unifyForward(y, u));
+        return (y instanceof Variable ? y.unify(this, u) : equals(y));
     }
-    default boolean unifyForward(Term y, Unify u) {
-        return equals(y);
-    }
-
 
     /**
      * true if the operator bit is included in the enabld bits of the provided vector

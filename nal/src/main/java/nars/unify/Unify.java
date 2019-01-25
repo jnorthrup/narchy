@@ -66,6 +66,9 @@ public abstract class Unify extends Versioning implements Subst {
 
 
     public int dtTolerance = 0;
+
+    public boolean commonVariables = true;
+
     private FasterList<ConstrainedVersionedTerm> constrained = new FasterList();
 
 

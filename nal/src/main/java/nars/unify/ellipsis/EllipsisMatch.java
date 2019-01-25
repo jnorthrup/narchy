@@ -2,7 +2,6 @@ package nars.unify.ellipsis;
 
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.compound.LightCompound;
 import nars.term.util.transform.Retemporalize;
@@ -33,30 +32,6 @@ public final class EllipsisMatch extends LightCompound {
         this(term.toArray(Op.EmptyTermArray));
     }
 
-//    @Override
-//    public Term[] arrayShared() {
-//        Subterms s = subterms();
-//        return s instanceof TermList ? ((TermList)s).arrayKeep() : s.arrayShared();
-//    }
-
-//    public static Term[] flatten(Term[] xy, int expectedEllipsisAdds, int expectedEllipsisRemoves) {
-//        int n = xy.length;
-//        Term[] z = new Term[n + expectedEllipsisAdds - expectedEllipsisRemoves];
-//        int k = 0;
-//        for (Term x : xy) {
-//            if (x instanceof EllipsisMatch) {
-//                Term[] xx = x.arrayShared();
-//                for (Term xxx : xx)
-//                    z[k++] = xxx;
-//            } else {
-//                z[k++] = x;
-//            }
-//        }
-//        assert (k == z.length);
-//        return z;
-//    }
-
-
     /** the ellipsis itself contributes no op */
     @Override public int structure() {
         return subterms().structure();
@@ -77,11 +52,11 @@ public final class EllipsisMatch extends LightCompound {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || (obj instanceof EllipsisMatch && subterms().equals(((Compound)obj).subterms()));
+        return this == obj || (obj instanceof EllipsisMatch && subterms().equals(((EllipsisMatch)obj).subterms()));
     }
 
     /** behave like a constant that only matches other EllipsisMatch */ @Override
-    public boolean unifyForward(Term y, Unify u) {
+    public boolean unify(Term y, Unify u) {
         return y instanceof EllipsisMatch && (
             equals(y) || (subs() == y.subs() && unifyLinear(y.subterms(), u))
         );
