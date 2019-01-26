@@ -193,7 +193,7 @@ abstract public class NAgentX extends NAgent {
                         new Valuator.DefaultValuator(0.75f),
                         //new Valuator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
-                        threads <= 0 ? Util.concurrencyExcept(1) : threads, true/* affinity */))
+                        threads <= 0 ? Util.concurrencyExcept(1) : threads, false/* affinity */))
 
 //                .exe(MixMultiExec.get(
 //                            1024,

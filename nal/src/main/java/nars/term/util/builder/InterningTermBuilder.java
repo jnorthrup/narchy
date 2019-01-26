@@ -171,10 +171,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    public static DynBytes tmpKey() {
-        return RecycledDynBytes.get();
-    }
-
     private Term[] resolve(Term[] t) {
         if (!deep)
             return t;

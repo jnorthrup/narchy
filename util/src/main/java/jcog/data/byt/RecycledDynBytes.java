@@ -23,6 +23,10 @@ public class RecycledDynBytes extends DynBytes {
         return r;
     }
 
+    public static DynBytes tmpKey() {
+        return get();
+    }
+
 
     @Override
     public byte[] compact() {

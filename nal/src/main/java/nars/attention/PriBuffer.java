@@ -2,7 +2,7 @@ package nars.attention;
 
 import jcog.pri.OverflowDistributor;
 import jcog.pri.UnitPri;
-import jcog.pri.UnitPrioritizable;
+import jcog.pri.Prioritizable;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ public class PriBuffer<Y> {
 
 
     /** pending Y activation collation */
-    final Map<Y, UnitPrioritizable> items;
+    final Map<Y, Prioritizable> items;
             //new ConcurrentHashMapUnsafe<>(512);
             //new java.util.concurrent.ConcurrentHashMap(512);
 
@@ -39,7 +39,7 @@ public class PriBuffer<Y> {
     public PriBuffer(PriMerge merge, boolean concurrent) {
         this(merge, concurrent ? new java.util.concurrent.ConcurrentHashMap() : new LinkedHashMap() );
     }
-    public PriBuffer(PriMerge merge, Map<Y, UnitPrioritizable> items) {
+    public PriBuffer(PriMerge merge, Map<Y, Prioritizable> items) {
         this.merge = merge;
         this.items = items;
     }
@@ -72,8 +72,8 @@ public class PriBuffer<Y> {
         if (pri!=pri)
             return;
 
-        UnitPrioritizable y = items.compute(x, x instanceof UnitPrioritizable ?
-                (xx, px) -> px != null ? px : (UnitPrioritizable) xx :
+        Prioritizable y = items.compute(x, x instanceof Prioritizable ?
+                (xx, px) -> px != null ? px : (Prioritizable) xx :
                 (xx, px) -> px != null ? px : new UnitPri(Float.NaN)
         );
 
@@ -82,7 +82,7 @@ public class PriBuffer<Y> {
 
     }
 
-    protected void merge(UnitPrioritizable existing, Y incoming, float pri, OverflowDistributor<Y> overflow) {
+    protected void merge(Prioritizable existing, Y incoming, float pri, OverflowDistributor<Y> overflow) {
         if (overflow!=null) {
             overflow.merge(incoming, existing, pri, merge);
         } else {
@@ -90,6 +90,7 @@ public class PriBuffer<Y> {
         }
     }
 
+    /** drains the bufffer while performing an operation on it */
     public void update(ObjectFloatProcedure<Y> each) {
 
         items.entrySet().removeIf(e->{
@@ -99,9 +100,9 @@ public class PriBuffer<Y> {
             return true;
         });
 
-//        Iterator<Map.Entry<Y, UnitPrioritizable>> ii = items.entrySet().iterator();
+//        Iterator<Map.Entry<Y, Prioritizable>> ii = items.entrySet().iterator();
 //        while (ii.hasNext()) {
-//            Map.Entry<Y, UnitPrioritizable> e = ii.next();
+//            Map.Entry<Y, Prioritizable> e = ii.next();
 //        }
 
 //        removeIf(a -> {

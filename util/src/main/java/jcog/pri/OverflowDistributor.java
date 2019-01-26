@@ -23,7 +23,7 @@ public class OverflowDistributor<X> extends MutableFloat {
         overflow(x, a.priAddOverflow(priToAdd), 1f - a.priElseZero());
     }
 
-    public final void merge(X x, UnitPrioritizable existing, float incoming, PriMerge merge) {
+    public final void merge(X x, Prioritizable existing, float incoming, PriMerge merge) {
         overflow(x, merge.merge(existing, incoming), 1f - existing.priElseZero());
     }
 

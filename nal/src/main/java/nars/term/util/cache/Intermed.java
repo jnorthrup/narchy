@@ -10,7 +10,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 
 import static nars.Op.NEG;
-import static nars.term.util.builder.InterningTermBuilder.tmpKey;
+import static jcog.data.byt.RecycledDynBytes.tmpKey;
 import static nars.time.Tense.DTERNAL;
 
 /** interned terms and subterms implementations */

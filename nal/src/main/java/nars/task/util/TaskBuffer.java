@@ -5,8 +5,8 @@ import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.OverflowDistributor;
+import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
-import jcog.pri.UnitPrioritizable;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PriArrayBag;
@@ -234,7 +234,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                 },
                 new PriBuffer<>(PriMerge.max) {
                     @Override
-                    protected void merge(UnitPrioritizable existing, ITask incoming, float pri, OverflowDistributor<ITask> overflow) {
+                    protected void merge(Prioritizable existing, ITask incoming, float pri, OverflowDistributor<ITask> overflow) {
                         TaskBuffer.merge((ITask)existing, incoming);
                     }
                 }
