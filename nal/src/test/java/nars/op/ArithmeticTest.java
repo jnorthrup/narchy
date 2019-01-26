@@ -152,7 +152,7 @@ class ArithmeticTest {
     @Test
     void testCompleteAddInduction() {
         NAR n = NARS.tmp();
-        n.log();
+        //n.log();
         new Arithmeticize.ArithmeticIntroduction( n, 16);
 
         final int cycles = 500;
@@ -181,8 +181,8 @@ class ArithmeticTest {
         TermTest.assertEq("cmp(1,2,-1)", $$("cmp(2,1,#x)").eval(n));
         TermTest.assertEq("cmp(#1,2,#2)", $$("cmp(#1,2,#x)").eval(n));
 
-        assertComparator("(f(1)==>f(2))", "[((f(#1)==>f(#2))&&cmp(#1,#2,-1)), ((f(#1)==>f(add(#1,1)))&&equal(#1,1))]");
-        assertComparator("(f(2)==>f(1))", "[((f(#1)==>f(#2))&&cmp(#2,#1,-1)), ((f(add(#1,1))==>f(#1))&&equal(#1,1))]");
+        assertArithmetic("(f(1)==>f(2))", "[((f(#1)==>f(#2))&&cmp(#1,#2,-1)), ((f(#1)==>f(add(#1,1)))&&equal(#1,1))]");
+        assertArithmetic("(f(2)==>f(1))", "[((f(#1)==>f(#2))&&cmp(#2,#1,-1)), ((f(add(#1,1))==>f(#1))&&equal(#1,1))]");
     }
 
     @Test
@@ -201,7 +201,14 @@ class ArithmeticTest {
         TermTest.assertEq("cmp(x(#1),x(#1),0)", $$("cmp(x(#a),x(#a),#c)").eval(n)); //variable, but equality known
     }
 
-    private void assertComparator(String x, String y) {
+    @Test void testNonConjArithmeticize() {
+        assertArithmetic("x(1,1)", "[x(1,1)]"); //nothing to do
+        assertArithmetic("x(1,2)", "[(cmp(#1,#2,-1)&&x(#1,#2)), (x(#1,add(#1,1))&&equal(#1,1))]");
+        assertArithmetic("((1~2)-->x)", "[(((#1~add(#1,1))-->x)&&equal(#1,1)), (((#2~#1)-->x)&&cmp(#2,#1,-1))]");
+        //assertArithmetic("(((1,1)~(2,3))-->x)", "4 of them");
+    }
+
+    private void assertArithmetic(String x, String y) {
         Set<String> solutions = new TreeSet();
         for (int i = 0; i < 10; i++) {
             Term s = Arithmeticize.apply($$(x), true, rng);

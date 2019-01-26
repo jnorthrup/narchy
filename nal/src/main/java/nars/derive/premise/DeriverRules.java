@@ -45,7 +45,7 @@ public class DeriverRules {
 
         this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.cause)).toArray(Cause[]::new);
 
-        this.whats = new ByteHijackMemoize<>(this::can, 64 * 1024, 3, false);
+        this.whats = new ByteHijackMemoize<>(this::can, 128 * 1024, 3, false);
 
 //            @Override
 //            public float value(PremiseKey premiseKey, short[] shorts) {

@@ -4,7 +4,7 @@ import nars.audio.NARAudio;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.exe.MultiExec;
-import nars.exe.Revaluator;
+import nars.exe.Valuator;
 import nars.index.concept.CaffeineIndex;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
@@ -33,7 +33,7 @@ public class NARchy extends NARS {
                 .index(new CaffeineIndex(32*1024))
                 //.index(new HijackConceptIndex(32*1024, 4))
 
-                .exe(new MultiExec.WorkerExec(new Revaluator.DefaultRevaluator(), threads))
+                .exe(new MultiExec.WorkerExec(new Valuator.DefaultValuator(), threads))
 
                 .time(new RealTime.MS(false ).durFPS(10f))
                 

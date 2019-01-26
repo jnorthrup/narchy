@@ -10,26 +10,94 @@ import nars.NAR;
 import nars.control.Cause;
 import nars.control.Traffic;
 
-import java.util.Arrays;
 import java.util.Random;
 
+import static java.lang.System.arraycopy;
 import static nars.time.Tense.ETERNAL;
 
-/** TODO refactor into an independent DurService that updates causes with wants */
-public interface Revaluator {
+/**
+ * iteratively learns a set of credit-assigned value effects for each of a set of causes,
+ * and decides a priority level to maximize the current value levels
+ */
+public abstract class Valuator {
+
     /**
-     * goal and goalSummary instances correspond to the possible MetaGoal's enum
+     * durs since last update
      */
+    protected double dt;
+
+    /** responsible for interpreting cur[], prev[] and setting all the values in out[] */
+    abstract protected void process();
+
+    volatile long lastUpdate = ETERNAL;
+
+    /**
+     * intermediate calculation buffer
+     */
+    float[] cur = ArrayUtils.EMPTY_FLOAT_ARRAY, prev = ArrayUtils.EMPTY_FLOAT_ARRAY, out = ArrayUtils.EMPTY_FLOAT_ARRAY;
+
+    public void update(NAR nar) {
+
+        long time = nar.time();
+        if (lastUpdate == ETERNAL)
+            lastUpdate = time;
+        int dur = nar.dur();
+        dt = (time - lastUpdate) / ((double) dur);
 
 
-    void update(NAR nar);
+        lastUpdate = time;
+
+        FasterList<Cause> causes = nar.causes;
+
+
+        int cc = causes.size();
+        if (cc == 0)
+            return;
+
+        if (cur.length != cc) {
+            resize(cc);
+        }
+
+        Cause[] ccc = causes.array();
+
+        float[] want = nar.emotion.want;
+
+        for (int i = 0; i < cc; i++) {
+
+            Traffic[] cg = ccc[i].credit;
+
+            ccc[i].commitFast();
+
+            float v = 0;
+            for (int j = 0; j < want.length; j++) {
+                v += want[j] * cg[j].last;
+            }
+
+            prev[i] = cur[i];
+            cur[i] = v;
+        }
+
+
+        process();
+
+        for (int i = 0; i < cc; i++)
+            ccc[i].setValue(out[i]);
+    }
+
+    void resize(int causes) {
+        cur = new float[causes];
+        prev = new float[causes];
+        out = new float[causes];
+    }
+
+
 
 
     /**
      * uses an RBM as an adaptive associative memory to learn and reinforce the co-occurrences of the causes
      * the RBM is an unsupervised network to learn and propagate co-occurring value between coherent Causes
      */
-    class RBMRevaluator extends DefaultRevaluator {
+    class RBMValuator extends DefaultValuator {
 
         private final Random rng;
         double[] next;
@@ -49,7 +117,7 @@ public interface Revaluator {
          */
         private final static float hiddenMultipler = 1f;
 
-        public RBMRevaluator(Random rng) {
+        public RBMValuator(Random rng) {
             super();
             this.rng = rng;
         }
@@ -94,7 +162,7 @@ public interface Revaluator {
     /**
      * denoising autoencoder revaluator
      */
-    class AERevaluator extends DefaultRevaluator {
+    class AEValuator extends DefaultValuator {
 
         private final Random rng;
 
@@ -109,18 +177,20 @@ public interface Revaluator {
 
         private float[] tmp;
 
-        public AERevaluator(Random rng) {
+        public AEValuator(Random rng) {
             super();
             this.momentum.set(0.5f);
             this.rng = rng;
         }
 
         @Override
-        protected float[] update(float[] val) {
+        protected void process() {
+
+            float[] val = out;
 
             int numCauses = val.length;
             if (numCauses < 2)
-                return val;
+                return;
 
             boolean sigmoidEnc = true;
             boolean sigmoidDec = false;
@@ -130,10 +200,10 @@ public interface Revaluator {
 
             //System.out.println(this + "  " + err);
 
-//            for (int i= 0; i < val.length; i++) {
-//                next[i] += val[i]; //plus merge feedback
+//            for (int i= 0; i < cur.length; i++) {
+//                next[i] += cur[i]; //plus merge feedback
 //            }
-            return next;
+            arraycopy(next, 0, out, 0, next.length);
         }
 
         @Override
@@ -148,92 +218,36 @@ public interface Revaluator {
         }
     }
 
-    /** exponential decay memory */
-    class DefaultRevaluator implements Revaluator {
-
+    /**
+     * exponential decay memory
+     */
+    public static class DefaultValuator extends Valuator {
 
 
         final FloatRange momentum = FloatRange.unit(0f);
 
-        volatile long lastUpdate = ETERNAL;
-        /**
-         * intermediate calculation buffer
-         */
-        float[] val = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
-        public DefaultRevaluator() {
+        public DefaultValuator() {
             this(0.5f);
         }
 
-        public DefaultRevaluator(float momentum) {
+        public DefaultValuator(float momentum) {
             this.momentum.set(momentum);
         }
 
+
         @Override
-        public void update(NAR nar) {
+        protected void process() {
+            final float momentum = (float) Math.pow(this.momentum.floatValue(), dt);
 
-            long time = nar.time();
-            if (lastUpdate == ETERNAL)
-                lastUpdate = time;
-            int dur = nar.dur();
-            double dt = (time - lastUpdate) / ((double) dur);
-
-
-            lastUpdate = time;
-
-            FasterList<Cause> causes = nar.causes;
-
-
-            int cc = causes.size();
-            if (cc == 0)
-                return;
-
-            if (val.length != cc) {
-                resize(cc);
+            float[] o = this.out;
+            for (int i = 0; i < o.length; i++) {
+                float next = momentum > 0 ?
+                        Util.lerp(momentum, prev[i], cur[i]) : prev[i];
+                o[i] = next;
             }
-
-            Cause[] ccc = causes.array();
-
-            float[] want = nar.emotion.want;
-            if (Util.and(want, (float w) -> Util.equals(Math.abs(w), Float.MIN_NORMAL))) {
-                Arrays.fill(val, 0);
-                return; //no effect
-            } else {
-
-                final float momentum = (float) Math.pow(this.momentum.floatValue(), dt);
-                for (int i = 0; i < cc; i++) {
-
-                    Traffic[] cg = ccc[i].credit;
-
-                    ccc[i].commitFast();
-
-                    float v = 0;
-                    for (int j = 0; j < want.length; j++) {
-                        v += want[j] * cg[j].last;
-                    }
-
-                    float next = momentum > 0 ? momentum * val[i] + (1f - momentum) * v : v;
-                    assert(next==next);
-                    val[i] = next;
-                }
-            }
-
-            float[] post = update(val);
-
-            for (int i = 0; i < cc; i++)
-                ccc[i].setValue(post[i]);
         }
-
-        void resize(int causes) {
-            val = new float[causes];
-        }
-
-        /**
-         * subclasses can implement their own post-processing filter chain of the value vector
-         */
-        float[] update(float[] val) {
-            return val;
-        }
-
     }
+
+
 }

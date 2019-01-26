@@ -458,16 +458,9 @@ public class Occurrify extends TimeGraph {
 
     /** called after solution.add */
     private boolean eachSolution(Event solution) {
-        assert (solution != null);
-        return true;
+        return (ttl-- > 0);
     }
 
-    @Override protected boolean solution(Event y) {
-        if (ttl-- > 0) {
-            return super.solution(y);
-        }
-        return false;
-    }
 
     @Override protected boolean validPotentialSolution(Term y) {
         return super.validPotentialSolution(y) &&

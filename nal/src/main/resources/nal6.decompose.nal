@@ -3,7 +3,7 @@
     //specific deduction
     C, X, eventOf(C,X), --isVar(X)                    |-   conjWithout(C,  X), (Belief:DeductionPP)
     C, X, eventOfNeg(C,X), --isVar(X), has(C,"--")    |-   conjWithout(C,--X), (Belief:DeductionPN)
-        //anti-specific deduction (weak)
+        //anti-specific deduction: "conjunction contraposition" (weak)
         C, X, eventOf(C,X), --isVar(X)                    |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
         C, X, eventOfNeg(C,X), --isVar(X), has(C,"--")    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
 

@@ -948,10 +948,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
 
-    protected boolean solution(Event y) {
+    protected final boolean solution(Event y) {
         if (!(y.start() == TIMELESS && solving.equals(y.id)) && validPotentialSolution(y.id)) {
-            solutions.add(y);
-            return target.test(y);
+            if (solutions.add(y)) {
+                if (!target.test(y))
+                    return false;
+            }
         }
         return true;
     }

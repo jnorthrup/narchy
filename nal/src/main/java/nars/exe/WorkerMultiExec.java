@@ -30,7 +30,7 @@
 //    private final int qSize;
 //    BusyPool pool;
 //
-//    private final Revaluator revaluator;
+//    private final Valuator revaluator;
 //
 //    /**
 //     * TODO make this adjust in realtime
@@ -43,11 +43,11 @@
 //    private Consumer exe;
 //
 //
-//    public WorkerMultiExec(Revaluator revaluator, int conceptCapacity, int qSize) {
+//    public WorkerMultiExec(Valuator revaluator, int conceptCapacity, int qSize) {
 //        this(revaluator, Util.concurrencyDefault(), conceptCapacity, qSize);
 //    }
 //
-//    public WorkerMultiExec(Revaluator r, int threads, int conceptCapacity, int qSize) {
+//    public WorkerMultiExec(Valuator r, int threads, int conceptCapacity, int qSize) {
 //        super(conceptCapacity);
 //        this.revaluator = r;
 //        this.threads.set(threads);

@@ -32,7 +32,7 @@
 //    void test1() {
 //
 //        int threads = 3;
-//        Focus.DefaultRevaluator reval = new Focus.DefaultRevaluator();
+//        Focus.DefaultValuator reval = new Focus.DefaultValuator();
 //        WorkerMultiExec exe = new WorkerMultiExec(reval, threads, 16,3 /* TODO this shouldnt need to be > 1 */);
 //
 //
@@ -92,7 +92,7 @@
 //        Arrays.fill(n.emotion.want, -1);
 //        n.emotion.want(MetaGoal.Desire, +1);
 //
-//        Exec.Revaluator r = new Focus.DefaultRevaluator();
+//        Exec.Valuator r = new Focus.DefaultValuator();
 //        int cycles = 100;
 //
 //

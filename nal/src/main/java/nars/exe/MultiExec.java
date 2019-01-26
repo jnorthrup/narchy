@@ -24,10 +24,8 @@ import java.util.function.Consumer;
 
 abstract public class MultiExec extends UniExec {
 
-    static final int contextGranularity = 3;
-
-    private static final float inputQueueSizeSafetyThreshold = 1f;
-    private final Revaluator revaluator;
+    private static final float inputQueueSizeSafetyThreshold = 0.990f;
+    private final Valuator valuator;
 
     final AtomicMetalBitSet sleeping = new AtomicMetalBitSet();
     private long cycleTimeNS;
@@ -37,11 +35,11 @@ abstract public class MultiExec extends UniExec {
     /** global sleep nap period */
     private static final long NapTime = 2 * 1000 * 1000; //on the order of ~1ms
 
-    private final float queueLatencyMeasurementProbability = 0.05f;
+    static private final float queueLatencyMeasurementProbability = 0.05f;
 
-    MultiExec(Revaluator revaluator, int concurrency  /* TODO adjustable dynamically */) {
+    MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
-        this.revaluator = revaluator;
+        this.valuator = valuator;
     }
 
     @Override
@@ -66,7 +64,6 @@ abstract public class MultiExec extends UniExec {
 
         if (!in.offer(x)) {
             logger.warn("{} blocked queue on: {}", this, x);
-            //in.add(x);
             executeNow(x);
         }
     }
@@ -76,7 +73,7 @@ abstract public class MultiExec extends UniExec {
 
         updateTiming();
 
-        revaluator.update(nar);
+        valuator.update(nar);
 
         //sharing.commit();
 
@@ -233,12 +230,12 @@ abstract public class MultiExec extends UniExec {
         final AffinityExecutor exe = new AffinityExecutor();
         private List<Worker> workers;
 
-        public WorkerExec(Revaluator r, int threads) {
+        public WorkerExec(Valuator r, int threads) {
             this(r, threads, false);
         }
 
-        public WorkerExec(Revaluator revaluator, int threads, boolean affinity) {
-            super(revaluator, threads);
+        public WorkerExec(Valuator valuator, int threads, boolean affinity) {
+            super(valuator, threads);
             this.threads = threads;
             this.affinity = affinity;
         }
@@ -347,6 +344,8 @@ abstract public class MultiExec extends UniExec {
 
             private void play(long playTime) {
 
+                int granularityDivisor = 2;
+
                 int n = cpu.items.size();
                 if (n == 0)
                     return;
@@ -368,7 +367,7 @@ abstract public class MultiExec extends UniExec {
                             try {
 
                                 long runtimeNS =
-                                        s.time.getOpaque() / (concurrency());
+                                        s.time.getOpaque() / (granularityDivisor);
                                 if (runtimeNS > 0) {
                                     deadline = Math.min(until, before + runtimeNS);
                                     try {

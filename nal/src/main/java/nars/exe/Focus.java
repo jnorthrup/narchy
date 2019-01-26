@@ -26,7 +26,7 @@ class Focus { //extends AtomicRoulette<Causable>
 //    static final float workGrowthRate = 1.01f;
 //
 //
-//    private final Exec.Revaluator revaluator;
+//    private final Exec.Valuator revaluator;
 //
 //
 //    private final MutableInteger concurrency;
@@ -35,7 +35,7 @@ class Focus { //extends AtomicRoulette<Causable>
 //    public double idleTimePerCycle = 0;
 
 
-//    public Focus(NAR n, Exec.Revaluator r, MutableInteger concurrency) {
+//    public Focus(NAR n, Exec.Valuator r, MutableInteger concurrency) {
 //        super(32, Causable[]::new);
 //
 //

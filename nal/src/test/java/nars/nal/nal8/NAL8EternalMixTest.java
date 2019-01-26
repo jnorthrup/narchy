@@ -48,7 +48,7 @@ class NAL8EternalMixTest extends NALTest {
         String x2 = "(hold({t002}) &&+5 at({t001}))";
         String x3 = "((hold({t002}) &&+5 at({t001})) &&+5 open({t001}))";
 
-        test.logDebug()
+        test
             .input("opened:{t001}. |")
             .input("(((hold({t002}) &&+5 at({t001})) &&+5 open({t001})) &&+5 opened:{t001}).")
             .mustBelieve(cycles, x2, 1.0f, 0.40f, -15)

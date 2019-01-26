@@ -186,7 +186,7 @@ public class Arithmeticize {
     static final Function<IntArrayListCached,ArithmeticOp[]> cached;
     static {
         HijackMemoize<IntArrayListCached,ArithmeticOp[]>
-                modsCache = new HijackMemoize<>(Arithmeticize::_mods, 512, 3);
+                modsCache = new HijackMemoize<>(Arithmeticize::_mods, 8 * 1092, 3);
         cached = Memoizers.the.add(Arithmeticize.class.getSimpleName() + "_mods", modsCache);
     }
 

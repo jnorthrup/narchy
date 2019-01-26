@@ -51,7 +51,7 @@
 //    final Sharing sharing = new Sharing();
 //    private final TimeSlicing cpu;
 //
-//    Revaluator revaluator;
+//    Valuator revaluator;
 //    private long idleTimePerCycle;
 //
 //    @Deprecated
@@ -257,7 +257,7 @@
 //            super.start(n);
 //
 //            revaluator =
-//                    new Focus.AERevaluator(new SplitMix64Random(1));
+//                    new Focus.AEValuator(new SplitMix64Random(1));
 //
 //            on = new Ons(
 //

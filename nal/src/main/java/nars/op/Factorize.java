@@ -81,7 +81,7 @@ public class Factorize {
     static final Function<Subterms,Term[]> factorize = Memoizers.the.memoize(
             Factorize.class.getSimpleName() + "_factorize",
             Intermed.SubtermsKey::new,
-            Factorize::_factorize, 8 * 1024);
+            Factorize::_factorize, 32 * 1024);
 
     private static Term[] _factorize(Intermed.SubtermsKey x) {
         Subterms xx = x.subs;
