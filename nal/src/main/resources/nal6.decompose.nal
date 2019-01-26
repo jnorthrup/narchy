@@ -1,8 +1,15 @@
 //conjunction/disjunction structural decomposition
 
+    //specific deduction
+    C, X, eventOf(C,X), --isVar(X)                    |-   conjWithout(C,  X), (Belief:DeductionPP)
+    C, X, eventOfNeg(C,X), --isVar(X), has(C,"--")    |-   conjWithout(C,--X), (Belief:DeductionPN)
+        //anti-specific deduction (weak)
+        C, X, eventOf(C,X), --isVar(X)                    |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
+        C, X, eventOfNeg(C,X), --isVar(X), has(C,"--")    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
+
     //free structural Conjunction/Disjunction decomposition
     C, X, eventOfPN(C,X), --isVar(X)                  |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
-      C, X, eventOfPN(C,X), --isVar(X)                  |-   conjWithoutPN(C,X), (Punctuation:Ask)
+      C, X, eventOfPN(C,X), --isVar(X)                |-   conjWithoutPN(C,X), (Punctuation:Ask)
     C, X, eventOfPN(C,X), conjParallel(C), --isVar(X) |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
     //not right:

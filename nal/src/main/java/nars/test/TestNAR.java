@@ -495,6 +495,9 @@ public class TestNAR {
     public TestNAR mustBelieve(long cyclesAhead, String term, float freq, float confidence, long occTimeAbsolute) {
         return mustOutput(cyclesAhead, term, BELIEF, freq, freq, confidence, confidence, occTimeAbsolute);
     }
+    public TestNAR mustNotBelieve(long cyclesAhead, String term, float freq, float confidence, LongLongPredicate occTimeAbsolute) {
+        return mustNotOutput(cyclesAhead, term, BELIEF, freq, freq, confidence, confidence, occTimeAbsolute);
+    }
 
 
     public TestNAR mustBelieve(long cyclesAhead, String term, float freq, float confidence, long start, long end) {

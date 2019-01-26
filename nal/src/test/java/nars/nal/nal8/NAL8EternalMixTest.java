@@ -45,15 +45,17 @@ class NAL8EternalMixTest extends NALTest {
     @Test
     void subsent_1() {
 
-        TestNAR tester = test;
+        String x2 = "(hold({t002}) &&+5 at({t001}))";
+        String x3 = "((hold({t002}) &&+5 at({t001})) &&+5 open({t001}))";
 
-        tester.input("opened:{t001}. :|:");
-        tester.input("(((hold({t002}) &&+5 at({t001})) &&+5 open({t001})) &&+5 opened:{t001}).");
-
-
-        tester.mustBelieve(cycles, "((hold({t002}) &&+5 at({t001})) &&+5 open({t001}))",
-                1.0f, 0.81f,
-                -15);
+        test.logDebug()
+            .input("opened:{t001}. |")
+            .input("(((hold({t002}) &&+5 at({t001})) &&+5 open({t001})) &&+5 opened:{t001}).")
+            .mustBelieve(cycles, x2, 1.0f, 0.40f, -15)
+            .mustBelieve(cycles, x2, 1.0f, 0.73f, ETERNAL)
+            .mustBelieve(cycles, x3, 1.0f, 0.81f, ETERNAL)
+            .mustNotBelieve(cycles, x2, 1.0f, 0.81f, (s, e) -> s != -15 && s!=ETERNAL)
+            .mustNotBelieve(cycles, x3, 1.0f, 0.81f, (s, e) -> s != -15 && s!=ETERNAL);
 
 
     }
@@ -244,7 +246,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("reachable(SELF,{t002}). | %1.0;0.7%")
                 .inputAt(3, "((reachable(SELF,{t002}) &&+5 pick({t002})) ==>+7 hold(SELF,{t002})).")
-                .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, (t)->t>=3)
+                .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, (t) -> t >= 3)
                 .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, ETERNAL) //via structural reduction
 
         ;
@@ -368,7 +370,7 @@ class NAL8EternalMixTest extends NALTest {
         tester.inputAt(when, "hold:t2. :|:");
 
         String result = "((att1 &&+1 open:t1) ==>+1 opened:t1)";
-        tester.mustBelieve(cycles, result, 1.0f, 0.44f, t->t>=when );
+        tester.mustBelieve(cycles, result, 1.0f, 0.44f, t -> t >= when);
 
     }
 
@@ -378,10 +380,10 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("( ( hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).")
                 .inputAt(10, "hold(SELF,{t002}). :|:")
-                .mustBelieve(cycles*7, "opened:{t001}",
+                .mustBelieve(cycles * 7, "opened:{t001}",
                         1.0f, 0.45f, 25)
-                .mustBelieve(cycles*7, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})",
-                        1.0f, 0.81f, t->(t >= 10));
+                .mustBelieve(cycles * 7, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})",
+                        1.0f, 0.81f, t -> (t >= 10));
 
     }
 
@@ -409,7 +411,7 @@ class NAL8EternalMixTest extends NALTest {
 
         tester.mustBelieve(cycles, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})",
                 1.0f, 0.81f,
-                t->true
+                t -> true
                 //2 + 5
         );
 
@@ -586,7 +588,8 @@ class NAL8EternalMixTest extends NALTest {
                 .mustGoal(cycles, "in", 0f, 0.42f, 0);
     }
 
-    @Disabled @Test
+    @Disabled
+    @Test
     void testGoalImplComponentWithVar() {
 
         test.nar.runAt(cycles * 4, () -> {
