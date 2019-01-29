@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 import static nars.$.$$;

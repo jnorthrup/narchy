@@ -9,8 +9,8 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 
-import static nars.Op.NEG;
 import static jcog.data.byt.RecycledDynBytes.tmpKey;
+import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 
 /** interned terms and subterms implementations */

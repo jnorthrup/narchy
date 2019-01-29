@@ -1,8 +1,8 @@
 package nars.attention;
 
 import jcog.pri.OverflowDistributor;
-import jcog.pri.UnitPri;
 import jcog.pri.Prioritizable;
+import jcog.pri.UnitPri;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -123,6 +123,10 @@ public class PriBuffer<Y> {
 
     public final void put(OverflowDistributor<Y> overflow, Random random) {
         overflow.shuffle(random).redistribute(this::put);
+    }
+
+    public final <Z extends Prioritizable> void put(Z x) {
+        put((Y)x, x.pri());
     }
 
 //    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {

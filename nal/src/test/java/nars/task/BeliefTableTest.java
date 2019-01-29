@@ -6,7 +6,6 @@ import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
-import nars.term.util.Intermpolate;
 import nars.test.TestNAR;
 import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;
@@ -14,7 +13,6 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
 import static nars.task.RevisionTest.x;

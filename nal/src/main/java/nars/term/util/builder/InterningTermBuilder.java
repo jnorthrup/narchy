@@ -1,7 +1,6 @@
 package nars.term.util.builder;
 
 import jcog.data.byt.DynBytes;
-import jcog.data.byt.RecycledDynBytes;
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
 import nars.Op;

@@ -79,12 +79,14 @@ public class SliderModel extends Surface {
 
     @Override
     public Surface finger(Finger f) {
-        if (f.tryFingering(drag)) {
-            return this;
-        } else if (f.pressing(drag.button)) {
+        if (f.pressing(drag.button)) {
             setPoint(f);
             return this;
         }
+        if (f.tryFingering(drag)) {
+            return this;
+        }
+
         return null; 
     }
 

@@ -190,7 +190,7 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Valuator.DefaultValuator(0.75f),
+                        new Valuator.DefaultValuator(0.85f),
                         //new Valuator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
                         threads <= 0 ? Util.concurrencyExcept(1) : threads, false/* affinity */))
