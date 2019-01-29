@@ -7,6 +7,7 @@ import jcog.event.Off;
 import jcog.math.v3;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -117,7 +118,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
                             localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f
                     );
 
-                    this.finger.touch(front);
+                    ((NewtMouseFinger)this.finger).touch(front);
 
                     finger.update(buttons);
 

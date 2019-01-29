@@ -5,6 +5,7 @@ import jcog.math.v3;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMovePixels;
 import spacegraph.input.finger.Fingering;
+import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.util.animate.Animated;
@@ -20,7 +21,7 @@ public class ZoomOrtho extends Ortho {
     private float wheelZoomRate = 0.5f;
 
     public ZoomOrtho(JoglSpace space, Surface content, Finger finger, NewtKeyboard keyboard) {
-        super(space, content, finger, keyboard);
+        super(space, content, keyboard);
 
         animate(new Animated() {
 
@@ -66,19 +67,16 @@ public class ZoomOrtho extends Ortho {
         });
     }
 
-
-    //final AtomicReference<v3> beforeMagnify = new AtomicReference<>(null);
-
     @Override
     public Surface finger(Finger finger) {
-        Surface f = super.finger(finger);
 
+        Surface f = super.finger(finger);
 
         if (!(f instanceof Finger.WheelAbsorb)) {
             //wheel zoom: absorb remaining rotationY
             float dy = finger.rotationY(true);
             if (dy != 0)
-                zoomDelta(dy * wheelZoomRate);
+                zoomDelta(finger, dy * wheelZoomRate);
         }
 
         if (f!=null) {
@@ -156,7 +154,7 @@ public class ZoomOrtho extends Ortho {
         }
 
         @Override
-        protected boolean escapes() {
+        public boolean escapes() {
             return false;
         }
 

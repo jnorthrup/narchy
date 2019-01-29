@@ -37,7 +37,7 @@ public class Tetris extends NAgentX {
 
     private final Bitmap2D grid;
 
-    private final boolean opjects = false;
+    private final boolean opjects = true;
 
     private boolean canFall = false;
 

@@ -128,9 +128,9 @@ public class Windo extends MutableUnitContainer {
                 }
             }
 
-            if (potentialDragMode!=null) {
+            if (potentialDragMode != null) {
                 RenderWhileHovering h = potentialDragMode.hover();
-                if (h!=null)
+                if (h != null)
                     finger.tryFingering(h);
             } else {
                 finger.tryFingering(RenderWhileHovering.Reset);
@@ -178,12 +178,15 @@ public class Windo extends MutableUnitContainer {
         return new FingerSurfaceMove(this);
     }
 
-    /** alllows filtering of certain finger modes */
+    /**
+     * alllows filtering of certain finger modes
+     */
     boolean fingerable(DragEdit d) {
         return true;
     }
 
-    @Deprecated protected boolean opaque() {
+    @Deprecated
+    protected boolean opaque() {
         return true;
     }
 
@@ -194,32 +197,14 @@ public class Windo extends MutableUnitContainer {
         if (p != null && p != DragEdit.MOVE) {
 
             Ortho root = (Ortho) root();
-            if (root == null) {
+            if (root == null)
                 return;
-            }
 
-            float W, H;
-
+            float W = 0.5f,H = 0.5f;
+            v2 mousePos = root.fingerPos;
+            float pmx = mousePos.x, pmy = mousePos.y;
 
             gl.glPushMatrix();
-
-
-            float pmx, pmy;
-//            if (this instanceof ZoomOrtho.HUD) {
-//                W = w();
-//                H = h();
-//                v2 mousePos = root.finger.posPixel;
-//                pmx = mousePos.x;
-//                pmy = mousePos.y;
-//            } else {
-                W = H = 0.5f;
-                v2 mousePos = root.fingerPos;
-                pmx = mousePos.x;
-                pmy = mousePos.y;
-
-
-//            }
-
 
             float resizeBorder = Math.max(W, H) * Windo.resizeBorder;
             switch (p) {
@@ -253,7 +238,7 @@ public class Windo extends MutableUnitContainer {
                     break;
                 case RESIZE_SE:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, W, W-resizeBorder, W, 0, W - resizeBorder, 0);
+                    Draw.quad2d(gl, pmx, pmy, W, W - resizeBorder, W, 0, W - resizeBorder, 0);
                     break;
                 case RESIZE_SW:
                     colorDragIndicator(gl);
@@ -291,8 +276,9 @@ public class Windo extends MutableUnitContainer {
         }
     }
 
-    /** position relative to parent
-     *  0  .. (0.5,0.5) center ... +1
+    /**
+     * position relative to parent
+     * 0  .. (0.5,0.5) center ... +1
      */
     public final Windo posRel(float cx, float cy, float pct) {
         return posRel(cx, cy, pct, pct);

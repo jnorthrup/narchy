@@ -256,6 +256,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return Math.max(w, h);
     }
 
+    public final boolean contains(v2 v) {
+        return contains(v.x, v.y);
+    }
+
     public final boolean contains(float px, float py) {
         return (px >= x && px <= x + w && py >= y && py <= y + h);
     }
@@ -322,5 +326,9 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
     public v2 midPoint(RectFloat o) {
         return new v2((cx()+o.cx())/2 , (cy()+o.cy())/2);
+    }
+
+    public v2 center() {
+        return new v2(cx(), cy());
     }
 }

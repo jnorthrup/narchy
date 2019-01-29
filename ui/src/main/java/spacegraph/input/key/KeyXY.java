@@ -13,15 +13,15 @@ class KeyXY extends SpaceKeys {
         super(g);
 
 
-        watch(KeyEvent.VK_NUMPAD4, (dt)-> moveX(speed), null);
-        watch(KeyEvent.VK_NUMPAD6, (dt)-> moveX(-speed), null);
+        on(KeyEvent.VK_NUMPAD4, (dt)-> moveX(speed), null);
+        on(KeyEvent.VK_NUMPAD6, (dt)-> moveX(-speed), null);
 
-        watch(KeyEvent.VK_NUMPAD8, (dt)-> moveY(speed), null);
-        watch(KeyEvent.VK_NUMPAD2, (dt)-> moveY(-speed), null);
+        on(KeyEvent.VK_NUMPAD8, (dt)-> moveY(speed), null);
+        on(KeyEvent.VK_NUMPAD2, (dt)-> moveY(-speed), null);
 
 
-        watch(KeyEvent.VK_NUMPAD5, (dt)-> moveZ(speed), null);
-        watch(KeyEvent.VK_NUMPAD0, (dt)-> moveZ(-speed), null);
+        on(KeyEvent.VK_NUMPAD5, (dt)-> moveZ(speed), null);
+        on(KeyEvent.VK_NUMPAD0, (dt)-> moveZ(-speed), null);
 
     }
 

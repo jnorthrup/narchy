@@ -139,12 +139,12 @@ protected void layoutChild(Surface aChild, float newPW, float newPH)
     }
 
     @Override
-    protected boolean whileEach(Predicate<Surface> o) {
+    public boolean whileEach(Predicate<Surface> o) {
         return false;
     }
 
     @Override
-    protected boolean whileEachReverse(Predicate<Surface> o) {
+    public boolean whileEachReverse(Predicate<Surface> o) {
         return false;
     }
 

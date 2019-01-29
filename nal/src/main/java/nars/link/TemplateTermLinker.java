@@ -5,7 +5,6 @@ import jcog.data.list.FasterList;
 import jcog.pri.OverflowDistributor;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
-import jcog.pri.bag.Bag;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Op;
@@ -20,7 +19,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.Img;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Function;
@@ -51,34 +49,6 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
      * number of termlinks which are actually conceptualizable; sorted on construction
      */
     private final byte concepts;
-
-    /**
-     * create a batch of tasklinks, sharing common seed data
-     */
-    static void link(TaskLink tasklink, float pri, Collection<Concept> targets, @Nullable OverflowDistributor<Bag> overflow) {
-        assert(!targets.isEmpty());
-
-//        float pEach = Math.max(ScalarValue.EPSILON,
-//                priTransferred / nTargets
-//        );
-        float pEach =
-                //TODO abstract priority transfer function here
-                //pri; //no division
-                pri/targets.size(); //division
-
-
-        for (Concept c : targets) {
-
-            TaskLink tl =
-                    tasklink.clone(pEach);
-            if (tl!=null) {
-                TaskLink.link(tl, c.tasklinks(), overflow);
-            }
-
-        }
-
-
-    }
 
 
     @Override
@@ -278,6 +248,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
      */
     @Override
     public void link(Activate a, Derivation d) {
+
         if (d.tasksFired.isEmpty())
             return;
 
@@ -295,7 +266,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
             int n = taskedLinked.size();
             if (n > 0) {
 
-                OverflowDistributor<Bag> overflow = n > 1 ? new OverflowDistributor<>() : null;
+//                OverflowDistributor<Bag> overflow = n > 1 ? new OverflowDistributor<>() : null;
 
                 NAR nar = d.nar;
 
@@ -303,15 +274,24 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
                 for (Task t : taskedLinked) {
 
-                    //contextual compartmentalization: generify=true -> dont spam propagating tasklinks with the temporal specifics
                     TaskLink tt = TaskLink.tasklink(t, true, true, 0 /* pri will be set in each clone */, nar);
 
-                    link(tt, t.priElseZero() * taskLinkRate, firedConcepts, overflow);
+                    float pri = t.priElseZero() * taskLinkRate;
 
-                    if (overflow != null) {
-                        overflow.shuffle(d.random).redistribute((b, p) -> b.putAsync(tt.clone(p)));
-                        overflow.clear();
+                    float pEach =
+                            //TODO abstract priority transfer function here
+                            pri; //no division
+                            //pri/firedConcepts.size(); //division
+
+
+                    for (Concept c : firedConcepts) {
+                        TaskLink.link(tt.clone(pEach), c.tasklinks(), null /* overflow*/);
                     }
+
+//                    if (overflow != null) {
+//                        overflow.shuffle(d.random).redistribute((b, p) -> b.putAsync(tt.clone(p)));
+//                        overflow.clear();
+//                    }
 
                 }
             }
@@ -329,7 +309,6 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
 
     private int conceptualizeAndTermLink(Activate concept, Derivation d) {
-
 
         int n = concepts;
         if (n == 0)
@@ -392,33 +371,17 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
             Termed tgtTerm = get(j);
 
-//            if (tgtTerm instanceof Concept && ((Concept)tgtTerm).isDeleted())
-//                setFast(j, tgtTerm = tgtTerm.term()); //concept was deleted, so revert back to term
-
-
-            Concept tgt = tgtTerm instanceof Concept ? ((Concept)tgtTerm) :
+            Concept tgt = tgtTerm instanceof Concept ?
+                    ((Concept)tgtTerm)
+                    :
                     nar.conceptualize(tgtTerm);
 
             if (tgt !=null) {
-
                 linking.put(tgt, conceptActivationEach, overflow);
 
-//                if (!(tgtTerm instanceof Concept))
-//                    setFast(j, tgt); //cache concept for the entry
-
                 firedConcepts.add(tgt);
-
-//                        linking.linkPlus(tgt, srcTerm, termlinkForward, refund);
-
-//                        tgtTerm = tgt.term();
-
             }
 
-//                } else {
-//                    refund.add(termlinkForward);
-//                }
-
-//                linking.linkPlus(src, tgtTerm, termlinkReverse, refund);
         }
 
         if(overflow!=null)

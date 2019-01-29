@@ -5,53 +5,87 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRoot;
+import spacegraph.space2d.hud.Ortho;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/** ordinary desktop/laptop computer mouse, as perceived through jogamp NEWT's native interface */
 public class NewtMouseFinger extends MouseFinger implements MouseListener, WindowListener {
 
     final static int MAX_BUTTONS = 5;
 
-    private final JoglWindow win;
     private final JoglSpace space;
+
+    final AtomicBoolean updating = new AtomicBoolean(false);
+    @Nullable private transient Ortho ortho;
+    protected Surface touchNext;
 
     public NewtMouseFinger(JoglSpace s) {
         super(MAX_BUTTONS);
         this.space = s;
-        this.win = s.io;
 
         s.onReady(()->{
+            JoglWindow win = s.io;
             if (win.window.hasFocus())
                 focused.set(true);
 
             win.addMouseListenerPre(this);
             win.addWindowListener(this);
-            this.win.onUpdate((Runnable) this::update);
+            win.onUpdate((Runnable) this::update);
         });
     }
 
-    @Override
-    public void update() {
+    /** called for each layer */
+    public void touch(Surface s) {
 
-
-        touchNext = null;
+        SurfaceRoot rootRoot = s.root();
+        if (rootRoot instanceof Ortho) {
+            this.ortho = (Ortho) rootRoot;
+            this.posOrtho.set(ortho.cam.screenToWorld(posPixel));
+            //System.out.println(posPixel + " pixel -> " + posOrtho + " world");
+        } else {
+            this.ortho = null;
+            this.posOrtho.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+        }
 
         Fingering ff = this.fingering.get();
 
-        ((SpaceGraphFlat)this.space).layers.reverseForEach(l -> {
-            touch(l);
-        });
-
-        @Nullable Surface touchPrev = touching(touchNext);
-        if (ff != Fingering.Null) {
-            if (!ff.update(this)) {
-                ff.stop(this);
-                fingering.set(Fingering.Null);
-            }
+        if (this.touchNext ==null) {
+            this.touchNext = (ff == Fingering.Null || ff.escapes()) ? s.finger(this) : touching.get();
         }
 
+    }
 
-        super.update(); //clear rotation
+    protected void update() {
+
+        if (!updating.compareAndSet(false, true))
+            return; //busy
+
+        try {
+            touchNext = null;
+
+            ((SpaceGraphFlat) this.space).layers.reverseForEach(this::touch);
+
+            Surface touchNext = this.touchNext;
+
+
+            Fingering ff = this.fingering.get();
+
+            @Nullable Surface touchPrev = touching(touchNext);
+            if (ff != Fingering.Null) {
+                if (!ff.update(this)) {
+                    ff.stop(this);
+                    fingering.set(Fingering.Null);
+                }
+            }
+
+            clearRotation();
+        } finally {
+            updating.set(false);
+        }
     }
 
     private boolean update(boolean moved, MouseEvent e) {
@@ -59,6 +93,8 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
     }
 
     private boolean update(boolean moved, MouseEvent e, short[] buttonsDown) {
+
+        JoglWindow win = space.io;
 
         if (moved) {
             int pmx = e.getX(), pmy = win.getHeight() - e.getY();
@@ -98,6 +134,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (e.isConsumed()) return;
 
 
         if (update(false, e, e.getButtonsDown())) {
@@ -108,11 +145,9 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        if (e.isConsumed()) return;
 
         short[] bd = e.getButtonsDown();
-
-
         for (int i = 0, bdLength = bd.length; i < bdLength; i++)
             bd[i] = (short) -bd[i];
 
@@ -126,7 +161,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void mouseDragged(MouseEvent e) {
-
+        if (e.isConsumed()) return;
 
         if (update(true, e))
             if (touching() != null)
@@ -135,10 +170,9 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        if (e.isConsumed()) return;
 
         update(true, e);
-
-
     }
 
     @Override

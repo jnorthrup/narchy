@@ -12,6 +12,7 @@ import jcog.math.v3;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -37,34 +38,39 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class Ortho<S extends Surface> extends Container implements SurfaceRoot, WindowListener, KeyPressed {
 
+    @Deprecated private final NewtKeyboard keyboard;
 
-    private final static float focusAngle = (float) Math.toRadians(45);
+    private final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
+
     private static final int ZOOM_STACK_MAX = 8;
-    public final Finger finger;
-    private final NewtKeyboard keyboard;
-    public final Camera cam;
+    private final Deque<v3> zoomStack = new ArrayDeque();
+
+
     /**
      * current view area, in absolute world coords
      */
     public final v2 scale = new v2(1, 1);
 
-    private final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
-    private final Deque<v3> zoomStack = new ArrayDeque();
-    S surface;
-    public final JoglSpace space;
+    public final Camera cam;
     private final float camZmin = 5;
     private float camZmax = 640000;
     private float camXmin = -1, camXmax = +1;
     private float camYmin = -1, camYmax = +1;
     private final float zoomMargin = 0.1f;
+    private final static float focusAngle = (float) Math.toRadians(45);
 
+    /** parent */
+    public final JoglSpace space;
+
+    /** child */
+    S surface;
 
 
     /** finger position local to this layer/camera */
     public final v2 fingerPos = new v2();
 
 
-    public Ortho(JoglSpace space, S content, Finger finger, NewtKeyboard keyboard) {
+    public Ortho(JoglSpace space, S content, NewtKeyboard keyboard) {
         super();
 
         this.space = space;
@@ -72,8 +78,6 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         this.cam = new Camera();
 
         this.keyboard = keyboard;
-
-        this.finger = finger;
 
         setSurface(content);
 
@@ -233,7 +237,7 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
      * POSITIVE = ?
      * NEGATIVE = ?
      */
-    public void zoomDelta(float delta) {
+    public void zoomDelta(Finger finger, float delta) {
         v2 xy = cam.screenToWorld(delta < 0 ?
                 finger.posPixel
                 :
@@ -386,23 +390,23 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 
 
 
-    /**
-     * called each frame regardless of mouse activity
-     * TODO split this into 2 methods.  one picks the current touchable
-     * and the other method invokes button changes on the result of the first.
-     * this will allow rapid button changes to propagate directly to
-     * the picked surface even in-between pick updates which are invoked
-     * during the update loop.
-     */
-    protected Surface finger() {
-        /** layer specific, separate from Finger */
-        float pmx = finger.posPixel.x, pmy = finger.posPixel.y;
-        float wmx = +cam.x + (-0.5f * w() + pmx) / scale.x;
-        float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
-        fingerPos.set(wmx, wmy);
-
-        return finger.touching();
-    }
+//    /**
+//     * called each frame regardless of mouse activity
+//     * TODO split this into 2 methods.  one picks the current touchable
+//     * and the other method invokes button changes on the result of the first.
+//     * this will allow rapid button changes to propagate directly to
+//     * the picked surface even in-between pick updates which are invoked
+//     * during the update loop.
+//     */
+//    protected Surface finger() {
+//        /** layer specific, separate from Finger */
+//        float pmx = finger.posPixel.x, pmy = finger.posPixel.y;
+//        float wmx = +cam.x + (-0.5f * w() + pmx) / scale.x;
+//        float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
+//        fingerPos.set(wmx, wmy);
+//
+//        return finger.touching();
+//    }
 
 
     @Override

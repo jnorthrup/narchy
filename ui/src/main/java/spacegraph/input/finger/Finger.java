@@ -8,7 +8,6 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.SurfaceHiliteOverlay;
 
@@ -33,6 +32,8 @@ abstract public class Finger {
 
     public final v2 posPixel = new v2(), posScreen = new v2();
 
+    @Deprecated /* HACK */ /* TEMPORARY */ public final v2 posOrtho = new v2(0,0);
+
 
     /**
      * last local and global positions on press (downstroke).
@@ -41,9 +42,6 @@ abstract public class Finger {
     public final v2[] pressPosPixel;
 
 
-    @Deprecated /* HACK */ /* TEMPORARY */ public final v2 posOrtho = new v2(0,0);
-    @Nullable private transient Ortho ortho;
-    protected Surface touchNext;
 
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
@@ -57,6 +55,7 @@ abstract public class Finger {
      * widget above which this finger currently hovers
      */
     public final AtomicReference<Surface> touching = new AtomicReference<>();
+
     protected final AtomicBoolean focused = new AtomicBoolean(false);
 
 
@@ -184,41 +183,11 @@ abstract public class Finger {
     }
 
     /** call once per frame */
-    public void update() {
+    public final void clearRotation() {
         for (AtomicFloat r : rotation)
             r.getAndZero();
-
     }
 
-    /** called for each layer */
-    public void touch(Surface s) {
-
-        SurfaceRoot rootRoot = s.root();
-        if (rootRoot instanceof Ortho) {
-            this.ortho = (Ortho) rootRoot;
-            this.posOrtho.set(ortho.cam.screenToWorld(posPixel));
-            //System.out.println(posPixel + " pixel -> " + posOrtho + " world");
-        } else {
-            this.ortho = null;
-            this.posOrtho.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-        }
-
-        Fingering ff = this.fingering.get();
-//        Fingering f0 = ff;
-        Surface touchNext;
-
-
-        if (this.touchNext ==null) {
-            if (ff == Fingering.Null || ff.escapes()) {
-                touchNext = s.finger(this);
-            } else {
-                touchNext = touching.get();
-            }
-            this.touchNext = touchNext;
-        }
-
-
-    }
 
     protected Surface touching(Surface next) {
         Surface prev = touching.getAndSet(next);
@@ -245,16 +214,16 @@ abstract public class Finger {
 
     final static v2 OOB = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 
-    public v2 relativePos(v2 screen, Surface x) {
-
-        Ortho root = ortho; //(Ortho) x.root();
-        if (root!=null)
-            return relative(root.cam.screenToWorld(screen), x);
-        else
-            return OOB;
-
-
-    }
+//    public v2 relativePos(v2 screen, Surface x) {
+//
+//        Ortho root = ortho; //(Ortho) x.root();
+//        if (root!=null)
+//            return relative(root.cam.screenToWorld(screen), x);
+//        else
+//            return OOB;
+//
+//
+//    }
     /**
      * allows a fingered object to push the finger off it
      */
@@ -291,10 +260,10 @@ abstract public class Finger {
         return pressing(button) && !wasPressed(button);
     }
 
-
-    public boolean releasedNow(int button, Surface c) {
-        return releasedNow(button) && relativePos(pressPosPixel[button], c).inUnit();
-    }
+//
+//    public boolean releasedNow(int button, Surface c) {
+//        return releasedNow(button) && relativePos(pressPosPixel[button], c).inUnit();
+//    }
 
 
 

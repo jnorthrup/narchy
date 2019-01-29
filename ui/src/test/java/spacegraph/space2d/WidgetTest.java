@@ -3,8 +3,11 @@ package spacegraph.space2d;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Graph2DTest;
+import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.ListMenu;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
@@ -32,20 +35,28 @@ public class WidgetTest {
 
     static final Map<String, Supplier<Surface>> menu = Map.of(
             "Button", () -> grid(
+                    new PushButton("PushButton"),
+                    new CheckBox("checkbox"),
                     grid(
-                            new PushButton("PushButton"),
-                            new CheckBox("checkbox"),
-                            grid(
-                                    PushButton.awesome("code"),
-                                    PushButton.awesome("trash"),
-                                    PushButton.awesome("fighter-jet"),
-                                    PushButton.awesome("wrench")
-                            )
+                            PushButton.awesome("code"),
+                            PushButton.awesome("trash"),
+                            PushButton.awesome("fighter-jet"),
+                            PushButton.awesome("wrench")
                     )
-            ),
+            )
+            ,
+            "Dialog", () -> grid(
+                        new TextEdit0("xyz").show(),
+                        new FloatSlider("Level", 0, 0.25f, 1),
+                        new ButtonSet(ButtonSet.Mode.One, new CheckBox("X"), new CheckBox("y"), new CheckBox("z"))
+                    ),
             "Slider", () -> grid(
-                    new FloatSlider("solid slider", .25f  /* pause */, 0, 1),
-                    new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.KnobHoriz),
+                    Splitting.row(
+                            grid(new FloatSlider("solid slider", .25f  /* pause */, 0, 1),
+                                    new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.KnobHoriz)),
+                            0.9f,
+                            new FloatSlider(0.33f, 0, 1).type(SliderModel.KnobVert)
+                    ),
                     new XYSlider()
             ),
             "Label", () -> grid(
@@ -53,24 +64,28 @@ public class WidgetTest {
                     new BitmapLabel("bitmap")
             ),
             "TextEdit", () ->
-                    new TextEdit("Edit this\n...").focus(), //new TextEdit0(new DummyConsole())
+                    new TextEdit("Edit this\n...").
+
+                            focus(), //new TextEdit0(new DummyConsole())
             "Graph2D", () ->
-                    new TabMenu(Map.of(
+                    new
+
+                            TabMenu(Map.of(
                             "Graph2D Simple", () -> Graph2DTest.newSimpleGraph(),
                             "Graph2D UJMP", () -> Graph2DTest.newUjmpGraph()
                     )),
             "Wiring", () ->
                     new GraphEdit<>(1000, 1000)//new GraphEditTest.TinySpeechTest()
             ,
-            "Toy", () -> new MetaFrame(new Sketch2DBitmap(256, 256))
+            "Toy", () -> new
+
+                    MetaFrame(new Sketch2DBitmap(256, 256))
 
     );
 
     public static void main(String[] args) {
         SpaceGraph.window(widgetDemo(), 1200, 800);
     }
-
-
 
 
 //    private static class DummyConsole extends TextEdit0.TextEditUI implements Runnable {

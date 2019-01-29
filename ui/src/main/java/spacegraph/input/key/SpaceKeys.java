@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 
-abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
+public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
     final JoglSpace space;
 
@@ -27,7 +27,7 @@ abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
     private final MutableShortObjectMap<FloatProcedure> keyReleased = new ShortObjectHashMap<>();
     private final Off on;
 
-    SpaceKeys(JoglSpace g) {
+    public SpaceKeys(JoglSpace g) {
         this.space = g;
 
 
@@ -55,7 +55,8 @@ abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
         }
     }
 
-    void watch(int keyCode, @Nullable FloatProcedure ifPressed, @Nullable FloatProcedure ifReleased) {
+    /** add a handler */
+    public void on(int keyCode, @Nullable FloatProcedure ifPressed, @Nullable FloatProcedure ifReleased) {
         pending.add((k)->{
             if (ifPressed != null) {
                 k.keyPressed.put((short) keyCode, ifPressed);

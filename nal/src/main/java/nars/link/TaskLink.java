@@ -12,6 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
+import static nars.time.Tense.ETERNAL;
+
 /**
  * the function of a tasklink is to be a prioritizable strategy for resolving a Task in a NAR.
  * this does not mean that it must reference a specific Task but certain properties of it
@@ -33,7 +35,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
     }
 
     /** creates a copy, with a specific priority */
-    @Nullable TaskLink clone(float pri);
+    TaskLink clone(float pri);
 
     Term term();
     byte punc();
@@ -138,7 +140,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
 
         @Override
         public String toString() {
-            return toBudgetString() + ' ' + term() + ((char) punc()) + ':' + when();
+            return toBudgetString() + ' ' + term() + ((char) punc()) + ':' + (when()!=ETERNAL ? when() : "ETE");
         }
 
         @Override public Term term() {

@@ -86,7 +86,7 @@ public class SplitMix64Random implements Rand {
 
     /* David Stafford's (http:
      * "Mix4" variant of the 64-bit finalizer in Austin Appleby's MurmurHash3 algorithm. */
-    private static int staffordMix4Upper32(long z) {
+    static int staffordMix4Upper32(long z) {
         z = (z ^ (z >>> 33)) * 0x62A9D9ED799705F5L;
         return (int) (((z ^ (z >>> 28)) * 0xCB24D0A5C88C35B3L) >>> 32);
     }
@@ -182,14 +182,6 @@ public class SplitMix64Random implements Rand {
         return staffordMix4Upper32(x += PHI) < 0;
     }
 
-    //@Override
-    public void nextBytes(byte[] bytes) {
-        int i = bytes.length, n = 0;
-        while (i != 0) {
-            n = Math.min(i, 8);
-            for (long bits = staffordMix13(x += PHI); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
-        }
-    }
 
     /**
      * Sets the seed of this generator.
@@ -204,12 +196,63 @@ public class SplitMix64Random implements Rand {
     }
 
 
-    /**
-     * Sets the state of this generator.
-     *
-     * @param state the new state for this generator (must be nonzero).
-     */
-    public void setState(long state) {
-        x = state;
+//    /**
+//     * Sets the state of this generator.
+//     *
+//     * @param state the new state for this generator (must be nonzero).
+//     */
+//    public void setState(long state) {
+//        x = state;
+//    }
+
+    public static class SplitMix64RandomFull extends Random {
+        private long x;
+
+        @Override
+        public void setSeed(long seed) {
+            x = murmurHash3(seed);
+        }
+
+
+        @Override
+        public int nextInt() {
+            return staffordMix4Upper32(x += PHI);
+        }
+
+        @Override
+        public int nextInt(int n) {
+            if (n <= 0) throw new IllegalArgumentException();
+            return (int) ((staffordMix13(x += PHI) >>> 1) % n);
+        }
+
+        @Override
+        public long nextLong() {
+            return staffordMix13(x += PHI);
+        }
+
+        @Override
+        public double nextDouble() {
+            return (staffordMix13(x += PHI) & DOUBLE_MASK) * NORM_53;
+        }
+
+        @Override
+        public float nextFloat() {
+            return (float) ((staffordMix4Upper32(x += PHI) & FLOAT_MASK) * NORM_24);
+        }
+
+        @Override
+        public boolean nextBoolean() {
+            return staffordMix4Upper32(x += PHI) < 0;
+        }
+
+        @Override
+        public void nextBytes(byte[] bytes) {
+            int i = bytes.length, n = 0;
+            while (i != 0) {
+                n = Math.min(i, 8);
+                for (long bits = staffordMix13(x += PHI); n-- != 0; bits >>= 8) bytes[--i] = (byte) bits;
+            }
+        }
+
     }
 }

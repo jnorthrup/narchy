@@ -4,12 +4,13 @@ import com.jogamp.opengl.GL2;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.space2d.container.collection.MutableListContainer;
-import spacegraph.space2d.hud.NewtKeyboard;
+import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.video.JoglSpace;
 
 public class SpaceGraphFlat extends JoglSpace {
+
 
     private ZoomOrtho zoom;
 //    private final Ortho<MutableListContainer> hud;
@@ -20,11 +21,9 @@ public class SpaceGraphFlat extends JoglSpace {
     public SpaceGraphFlat(Surface content) {
         super();
 
-
-        keyboard = new NewtKeyboard(/*TODO this */);
-
         finger = new NewtMouseFinger(this);
 
+        keyboard = new NewtKeyboard(/*TODO this */);
 
         onReady(() -> {
 
@@ -41,7 +40,6 @@ public class SpaceGraphFlat extends JoglSpace {
             //addOverlay(this.keyboard.keyFocusSurface(cam));
 
         Ortho<MutableListContainer> hud = new Ortho<>(this, new MutableListContainer(),
-                finger,
                 keyboard) {
             @Override
             protected boolean autosize() {

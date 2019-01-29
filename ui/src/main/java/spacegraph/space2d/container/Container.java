@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 abstract public class Container extends Surface {
 
     final static MetalAtomicIntegerFieldUpdater<Container> MUSTLAYOUT =
-        new MetalAtomicIntegerFieldUpdater<>(Container.class, "mustLayout");
+            new MetalAtomicIntegerFieldUpdater<>(Container.class, "mustLayout");
 
     private volatile int mustLayout = 0;
 
@@ -63,16 +63,19 @@ abstract public class Container extends Surface {
         return (S) this;
     }
 
-    /** first sub-layer */
+    /**
+     * first sub-layer
+     */
     protected void paintIt(GL2 gl, SurfaceRender r) {
 
     }
 
-    /** last sub-layer */
+    /**
+     * last sub-layer
+     */
     protected void paintAbove(GL2 gl, SurfaceRender r) {
 
     }
-
 
 
     @Override
@@ -101,14 +104,13 @@ abstract public class Container extends Surface {
     }
 
 
-    private final void doPaint(GL2 gl, SurfaceRender r) {
+    private void doPaint(GL2 gl, SurfaceRender r) {
 
         paintIt(gl, r);
 
         paintAbove(gl, r);
 
     }
-
 
 
     protected boolean prePaint(SurfaceRender r) {
@@ -119,32 +121,23 @@ abstract public class Container extends Surface {
     @Override
     public Surface finger(Finger finger) {
 
-        if (!showing())
-            return null;
-
-        if (childrenCount() > 0) {
+        if (showing() && childrenCount() > 0) {
 
             Surface[] found = new Surface[1];
 
             v2 fp = finger.posOrtho;
-            float fx = fp.x, fy = fp.y;
 
             whileEachReverse(c -> {
 
+                if (c instanceof Container && c.showing() && !((Container) c).clipBounds || c.bounds.contains(fp)) {
 
-                if (!c.showing())
-                    return true;
+                    Surface s = c.finger(finger);
+                    if (s != null) {
 
-                if ((c instanceof Container && !((Container) c).clipBounds) || (
-                        c.bounds.contains(fx, fy))) {
+                        found[0] = s;
 
-                        Surface s = c.finger(finger);
-                        if (s != null) {
-
-                            found[0] = s;
-
-                            return false;
-                        }
+                        return false;
+                    }
 
                 }
 
@@ -152,15 +145,13 @@ abstract public class Container extends Surface {
 
             });
 
-            if ((found[0]) != null)
-                return found[0];
+            return found[0];
         }
 
         return null;
     }
 
     protected abstract int childrenCount();
-
 
 
     @Override
@@ -188,9 +179,9 @@ abstract public class Container extends Surface {
 
     }
 
-    protected abstract boolean whileEach(Predicate<Surface> o);
+    public abstract boolean whileEach(Predicate<Surface> o);
 
-    protected abstract boolean whileEachReverse(Predicate<Surface> o);
+    public abstract boolean whileEachReverse(Predicate<Surface> o);
 
 
 }

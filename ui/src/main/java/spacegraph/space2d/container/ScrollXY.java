@@ -59,6 +59,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     public ScrollXY(S scrollable) {
         super();
 
+        this.scale = new XYSlider();
 
         scrollable.update(this);
         if (viewMin == null)
@@ -77,7 +78,6 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         borderSize(defaultScrollEdge);
 
 
-        this.scale = new XYSlider();
         set(W,scrollY);
         set(S,scrollX);
         set(SE, scale);

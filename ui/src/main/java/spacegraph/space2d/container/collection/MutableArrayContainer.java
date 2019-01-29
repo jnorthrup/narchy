@@ -100,7 +100,7 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
     }
 
     @Override
-    protected boolean whileEach(Predicate<Surface> o) {
+    public boolean whileEach(Predicate<Surface> o) {
         for (int i = 0; i < length; i++) {
             S ii = children.get(i);
             if (ii !=null)
@@ -111,7 +111,7 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
     }
 
     @Override
-    protected boolean whileEachReverse(Predicate<Surface> o) {
+    public boolean whileEachReverse(Predicate<Surface> o) {
         for (int i = length - 1; i >= 0; i--) {
             S ii = children.get(i);
             if (ii !=null)

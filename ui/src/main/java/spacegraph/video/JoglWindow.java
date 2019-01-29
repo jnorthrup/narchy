@@ -10,6 +10,7 @@ import jcog.event.Off;
 import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
+import jcog.util.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.UI;
@@ -401,6 +402,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public void addKeyListener(KeyListener m) {
+        if (ArrayUtils.indexOf(window.getKeyListeners(), m)!=-1)
+            return;
         window.addKeyListener(m);
     }
 

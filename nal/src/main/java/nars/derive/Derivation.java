@@ -8,6 +8,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
+import jcog.random.SplitMix64Random;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -244,6 +245,7 @@ public class Derivation extends PreDerivation {
                 , null, Param.UnificationStackMax
         );
 
+        this.random = new SplitMix64Random.SplitMix64RandomFull();
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit);
     }
 
@@ -260,7 +262,9 @@ public class Derivation extends PreDerivation {
 
         this.nar = nar;
 
-        this.random = nar.random();
+        //this.random = nar.random();
+        this.random.setSeed(nar.random().nextLong());
+
         this.unifyPremise.random(this.random);
 
         //this.random.setSeed(nar.random().nextLong());
