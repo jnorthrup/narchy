@@ -98,7 +98,7 @@ public class NewtKeyboard extends Finger implements KeyListener {
         TopN<Surface> next = new TopN<>(new Surface[1], (Surface s) -> {
             v2 c = s.bounds.center();
             double dAngle = Math.abs(angleInRadians - Math.atan2(c.y - xc.y, c.x - xc.x));
-            if (dAngle < Math.PI / 4 /* 45deg */){
+            if (dAngle < Math.PI / 4 /* +-45deg */){
                 float d = 1f / (1 + c.distanceSq(xc));
                 return d;
             } else {

@@ -38,15 +38,15 @@ public class Evaluation {
     private VersionMap<Term, Term> subst;
 
 
-    @Nullable
-    public static Evaluation eval(Term x, NAR nar, Predicate<Term> each) {
-        return eval(x, nar::functor, each);
-    }
-
-    @Nullable
-    public static Evaluation eval(Term x, Function<Atom, Functor> resolver, Predicate<Term> each) {
-        return eval(x, true, false, resolver, each);
-    }
+//    @Nullable
+//    public static Evaluation eval(Term x, NAR nar, Predicate<Term> each) {
+//        return eval(x, nar::functor, each);
+//    }
+//
+//    @Nullable
+//    public static Evaluation eval(Term x, Function<Atom, Functor> resolver, Predicate<Term> each) {
+//        return eval(x, true, false, resolver, each);
+//    }
 
 
     /**
@@ -168,8 +168,6 @@ public class Evaluation {
                 while (ii.hasNext()) {
 
                     Term a = ii.next();
-                    if (a == null)
-                        continue;
 
                     boolean removeEntry, eval;
 
@@ -374,9 +372,9 @@ public class Evaluation {
         return solutions;
     }
 
-    public static Set<Term> eval(String s, NAR n) {
-        return eval($$(s), n);
-    }
+//    public static Set<Term> eval(String s, NAR n) {
+//        return eval($$(s), n);
+//    }
 
     public static Set<Term> eval(Term x, NAR n) {
         return eval(x, true, false, n);

@@ -22,7 +22,6 @@ import nars.term.util.conj.Conj;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.func.TruthFunctions;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +35,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.truth.func.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.confCompose;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ConjClustering extends Causable {
@@ -238,58 +238,61 @@ public class ConjClustering extends Causable {
                 int vol = 0;
 
 
-                do {
-                    if (!gg.hasNext())
-                        break;
+                while (gg.hasNext()) {
 
                     Task t = gg.next().get();
 
+                    Truth tx = t.truth();
+                    float tc = tx.conf();
+                    if (confCompose(conf, tc) < confMin)
+                        continue; //try next
+
                     Term taskTerm = t.term();
 
-                    long taskStart = Tense.dither(t.start(), ditherTime);
-
-                    Truth tx = t.truth();
-                    Term xtn = taskTerm.neg();
-                    if (tx.isNegative()) {
-                        taskTerm = xtn;
-                    }
+                    if (tx.isNegative())
+                        taskTerm = taskTerm.neg();
 
                     int xtv = taskTerm.volume();
-                    if (vol + xtv + 1 >= ConjClustering.this.volMaxSafe || conf * tx.conf() < confMin) {
-                        //continue;
-                        break;
-                    }
-
-                    LongObjectPair<Term> ps = pair(taskStart, taskTerm);
-                    Term xtNeg = taskTerm.neg();
+                    if (vol + xtv + 1 > ConjClustering.this.volMaxSafe)
+                        continue; //try next
 
 
-                    if (!Stamp.overlapsAny(actualStamp, t.stamp())) {
-                        if (!vv.containsKey(pair(taskStart, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
-                            vol += xtv;
+                    long[] tStamp = t.stamp();
 
-                            actualStamp.addAll(t.stamp());
+                    if (!Stamp.overlapsAny(actualStamp, tStamp)) {
 
-                            if (start > taskStart) start = taskStart;
-                            if (end < taskStart) end = taskStart;
+                        long taskStart = Tense.dither(t.start(), ditherTime);
 
-                            float tc = tx.conf();
-                            if (tc > confMax) confMax = tc;
+                        if (vv.isEmpty() || !vv.containsKey(pair(taskStart, taskTerm.neg()))) {
 
-                            conf = TruthFunctions.confCompose(conf, tc);
+                            LongObjectPair<Term> ps = pair(taskStart, taskTerm);
 
-                            float tf = tx.freq();
-                            freq *= tx.isNegative() ? (1f - tf) : tf;
+                            if (null == vv.putIfAbsent(ps, t)) {
+                                vol += xtv;
 
-                            float p = t.priElseZero();
-                            if (p < priMin) priMin = p;
-                            if (p > priMax) priMax = p;
+                                actualStamp.addAll(tStamp);
 
-                            if (vv.size() >= Param.STAMP_CAPACITY)
-                                break;
+                                if (start > taskStart) start = taskStart;
+                                if (end < taskStart) end = taskStart;
+
+
+                                if (tc > confMax) confMax = tc;
+
+                                conf = confCompose(conf, tc);
+
+                                float tf = tx.freq();
+                                freq *= tx.isNegative() ? (1f - tf) : tf;
+
+                                float p = t.priElseZero();
+                                if (p < priMin) priMin = p;
+                                if (p > priMax) priMax = p;
+
+                                if (vv.size() >= Param.STAMP_CAPACITY)
+                                    break;
+                            }
                         }
                     }
-                } while (vol < ConjClustering.this.volMaxSafe - 1 && conf > confMin);
+                }
 
                 int vs = vv.size();
                 if (vs < 2)
@@ -356,10 +359,11 @@ public class ConjClustering extends Causable {
                 }
             }
 
-
             return true;
         }
+
     }
+
 
 
 }

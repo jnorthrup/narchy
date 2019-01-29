@@ -94,13 +94,13 @@ public class TermList extends FasterList<Term> implements Subterms {
         }
     }
 
-
-    public void addAll(Subterms x, int xStart, int xEnd) {
-        ensureCapacity(xEnd-xStart);
-        for (int i = xStart; i < xEnd; i++) {
-            addWithoutResizeCheck(x.sub(i));
-        }
-    }
+//
+//    public void addAll(Subterms x, int xStart, int xEnd) {
+//        ensureCapacity(xEnd-xStart);
+//        for (int i = xStart; i < xEnd; i++) {
+//            addWithoutResizeCheck(x.sub(i));
+//        }
+//    }
 
     /** use this only if a (disposable) TermList is done being modified */
     public Term[] arrayKeep() {

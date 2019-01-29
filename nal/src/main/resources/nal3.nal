@@ -53,6 +53,10 @@
     //(S --> M), X, is(S,"|"), subOf(S,--X) |-   --(X --> M), (Belief:StructuralDeduction)
       //(S --> M), X, is(S,"|"), subOf(S,--X) |-   (X --> M), (Belief:StructuralDeductionNN)
 
+    //union decompose
+    (M --> S), X, is(S,"|"), subOf(S,X)   |-       --(M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+    (S --> M), X, is(S,"&"), subOf(S,X)   |-       --(X --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+
 
 //// inheritance decomposition ////////////////////////////////////////////////////////////////////////////////////
 //if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
@@ -123,13 +127,14 @@
 
 //     //intersection conditional goal decompose
      (S --> M), (X --> M), is(S,"|"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePP)
-       (S --> M), (X --> M), is(S,"|"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePN)
+       (S --> M), (X --> M), is(S,"|"), subOf(S,X) |- --(without(S, X) --> M), (Goal:DecomposeNP)
+       //(S --> M), (X --> M), is(S,"|"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePN)
      (S --> M), (X --> M), is(S,"&"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePN)
-       (S --> M), (X --> M), is(S,"&"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePP)
+       //(S --> M), (X --> M), is(S,"&"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePP)
      (M --> S), (M --> X), is(S,"&"), subOf(S,X) |- (M --> without(S, X)), (Goal:DecomposePP)
-       (M --> S), (M --> X), is(S,"&"), subOf(S,--X) |- (M --> without(S, --X)), (Goal:DecomposePN)
+       //(M --> S), (M --> X), is(S,"&"), subOf(S,--X) |- (M --> without(S, --X)), (Goal:DecomposePN)
      (M --> S), (M --> X), is(S,"|"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePN)
-       (M --> S), (M --> X), is(S,"|"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePP)
+       //(M --> S), (M --> X), is(S,"|"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePP)
 
 //     (M --> (&,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePP,Time:Intersect)
 //     (M --> (|,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePN,Time:Intersect)

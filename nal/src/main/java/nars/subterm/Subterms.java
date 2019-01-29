@@ -88,10 +88,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return xx;
     }
 
-    default boolean equalsRoot(Subterms y) {
-        return equals(y) ||
-                (y.hasAny(Op.Temporal) && y.subs() == subs() && y.structure()==structure() && ANDith((x, i)-> x.equalsRoot(y.sub(i))));
-    }
+//    default boolean equalsRoot(Subterms y) {
+//        return equals(y) ||
+//                (y.hasAny(Op.Temporal) && y.subs() == subs() && y.structure()==structure() && ANDith((x, i)-> x.equalsRoot(y.sub(i))));
+//    }
 
     /** allows a Subterms implementation to accept the byte[] key that was used in constructing it,
      *  allowing it to cache it for fast serialization.  typically it will want to keep:
@@ -102,7 +102,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         void acceptBytes(DynBytes constructedWith);
     }
 
-    static int hash(List<Term> term) {
+    static int hash(Iterable<Term> term) {
         int h = 1;
         for (Term aTerm : term) h = Util.hashCombine(h, aTerm);
         return h;
@@ -123,19 +123,19 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return container.intifyShallow(Util::hashCombine, 1);
     }
 
-    /**
-     * returns sorted ready for commutive; null if nothing in common
-     */
-    static @Nullable MutableSet<Term> intersect(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
-        if ((a.structure() & b.structure()) != 0) {
-
-            Set<Term> as = a.toSet();
-            MutableSet<Term> ab = b.toSet(as::contains);
-            if (ab != null)
-                return ab;
-        }
-        return null;
-    }
+//    /**
+//     * returns sorted ready for commutive; null if nothing in common
+//     */
+//    static @Nullable MutableSet<Term> intersect(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
+//        if ((a.structure() & b.structure()) != 0) {
+//
+//            Set<Term> as = a.toSet();
+//            MutableSet<Term> ab = b.toSet(as::contains);
+//            if (ab != null)
+//                return ab;
+//        }
+//        return null;
+//    }
 
     default void forEachWith(ObjectIntProcedure<Term> t) {
         int s = subs();

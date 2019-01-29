@@ -8,6 +8,7 @@ import nars.nal.nal8.GoalDecompositionTest;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class NAL3GoalTest {
@@ -216,18 +217,36 @@ class NAL3GoalTest {
 
 
         @Test
-        void testIntersectionPosGoalSinglePremiseDecompose() {
+        void testIntersectionPosIntersectionSubGoalSinglePremiseDecompose() {
             test
                     .input("((a|b)-->g)!")
                     .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
                     .mustGoal(cycles, "(b-->g)", 1f, 0.81f)
             ;
         }
-
         @Test
-        void testIntersectionNegGoalSinglePremiseDecompose() {
+        void testIntersectionPosIntersectionPredGoalSinglePremiseDecompose() {
+            test
+                    .input("(g-->(a&b))!")
+                    .mustGoal(cycles, "(g-->a)", 1f, 0.81f)
+                    .mustGoal(cycles, "(g-->b)", 1f, 0.81f)
+            ;
+        }
+        @Disabled
+        @Test
+        void testIntersectionNegIntersectionGoalSinglePremiseDecompose() {
             test
                     .input("--((a|b)-->g)!")
+                    .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
+                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
+            ;
+        }
+
+
+        @Test
+        void testIntersectionNegUnionGoalSinglePremiseDecompose() {
+            test
+                    .input("--((a&b)-->g)!")
                     .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
                     .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
             ;
@@ -282,14 +301,6 @@ class NAL3GoalTest {
 //                    .mustGoal(cycles, "(c-->g)", 1f, 0.81f);
 //        }
 
-        @Test
-        void testIntersectSinglePremiseGoal1Neg() {
-            test
-                    .input("--((a|b)-->g)!")
-
-                    .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
-                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f);
-        }
 
         @Test
         void testDiffGoal1Pos1st() {

@@ -56,7 +56,7 @@ public enum Intermpolate {;
 
             if (ao == CONJ) {
 //                if (Conj.isSeq(a) || Conj.isSeq(b)) {
-                    return new Conjterpolate(a, b, aProp, nar.random()).term(); //root only: conj sequence merge
+                    return new Conjterpolate(a, b, aProp, nar).term(); //root only: conj sequence merge
 //                } else {
 //                    throw new WTF();
 //                }
@@ -98,23 +98,19 @@ public enum Intermpolate {;
     private static Term dtMergeTemporalDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp,
                                                            float depth, NAR nar) {
         int dt = chooseDT(a, b, aProp, nar);
-//        if (dt == DTERNAL) {
-//            return $.disj(a, b); //OR
-//        }
-
         Subterms aa = a.subterms(), bb = b.subterms();
         if (aa.equals(bb))
             return a.dt(dt);
         else {
-            Term[] ab = Util.map(aa.subs(), Term[]::new, i -> {
-                return intermpolate(aa.sub(i), bb.sub(i), aProp, depth / 2, nar);
-            });
+            Term[] ab = Util.map(aa.subs(), Term[]::new, i ->
+                intermpolate(aa.sub(i), bb.sub(i), aProp, depth / 2, nar)
+            );
 
             return a.op().the(dt, ab);
         }
     }
 
-    public static int chooseDT(Term a, Term b, float aProp, NAR nar) {
+    static int chooseDT(Term a, Term b, float aProp, NAR nar) {
         return chooseDT(a.dt(), b.dt(), aProp, nar);
     }
 
@@ -154,7 +150,7 @@ public enum Intermpolate {;
             int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
             float ratio = ((float) delta) / range;
             if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
-                return Tense.dither(ab, nar);
+                return ab;
             }
 //        }
 //

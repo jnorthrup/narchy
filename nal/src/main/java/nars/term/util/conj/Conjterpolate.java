@@ -4,7 +4,11 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSet;
+import nars.NAR;
 import nars.term.Term;
+import nars.term.atom.Bool;
+import nars.term.util.Intermpolate;
+import nars.time.Tense;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.Sets;
@@ -22,37 +26,26 @@ import java.util.Random;
  */
 public class Conjterpolate extends Conj {
 //    private final Random rng;
-
-    float addProb;
+//
+//    float addProb;
 
     /**
      * proportion of a vs. b, ie: (a/(a+b))
      */
 
-    public Conjterpolate(Term a, Term b, float aProp, Random rng) {
+    public Conjterpolate(Term a, Term b, float aProp, NAR nar) {
         super();
 
 
         FasterList<LongObjectPair<Term>> aa = a.eventList();
         FasterList<LongObjectPair<Term>> bb = b.eventList();
         int na = aa.size(), nb = bb.size();
+        int nabOriginal = Math.min(na,nb);
 
         int minLen = Math.min(na, nb);
         int prefixMatched = 0;
         for (; aa.get(prefixMatched).equals(bb.get(prefixMatched)) && ++prefixMatched < minLen; ) ;
 
-//        int suffixMatched = 0;
-//        for (; aa.get(na - 1 - suffixMatched).equals(bb.get(nb - 1 - suffixMatched)) && ++suffixMatched < minLen; ) ;
-//
-//        if (prefixMatched < suffixMatched) {
-            //add the suffixed matched segment
-//            for (int i = 0; i < suffixMatched; i++) {
-//                if (!add(aa.get(na - 1 - i)))
-//                    throw new WTF();
-//            }
-//            aa.removeAbove(suffixMatched);
-//            bb.removeAbove(suffixMatched);
-//        } else if (prefixMatched > 0) {
         if (prefixMatched > 0) {
             for (int i = 0; i < prefixMatched; i++) {
                 if (!add(aa.get(i)))
@@ -62,16 +55,46 @@ public class Conjterpolate extends Conj {
             bb.removeBelow(prefixMatched);
             na -= prefixMatched;
             nb -= prefixMatched;
+            minLen = Math.min(na, nb);
         }
 //        }
 
-
+        if (na > 0 && nb > 0) {
+            int suffixMatched = 0;
+            //TODO compare time relative to end, not beginning
+            for (; aa.get(na - 1 - suffixMatched).equals(bb.get(nb - 1 - suffixMatched)) && ++suffixMatched < minLen; )
+                ;
+//
+            if (suffixMatched > 0) {
+                //add the suffixed matched segment
+                for (int i = 0; i < suffixMatched; i++) {
+                    if (!add(aa.get(na - 1 - i)))
+                        throw new WTF();
+                }
+                aa.removeAbove(suffixMatched);
+                bb.removeAbove(suffixMatched);
+                na -= suffixMatched;
+                nb -= suffixMatched;
+            }
+        }
 
         int remainingEvents = Util.lerp(aProp, na, nb);
         if (remainingEvents > 0) {
             if (nb == 0 ^ na == 0) {
                 addAll((aa.isEmpty() ? bb : aa)); //the remaining events
             } else {
+                if (na ==1 && nb == 1 && nabOriginal>1 && aa.get(0).getTwo().equalsRoot(bb.get(0).getTwo())) {
+                    //special case: only one event remains, with the same root term
+                    Term ab = Intermpolate.intermpolate(aa.get(0).getTwo(), bb.get(0).getTwo(), aProp, nar);
+                    if (!(ab instanceof Bool)) {
+                        long when = Intermpolate.chooseDT(
+                                Tense.occToDT(aa.get(0).getOne()),
+                                Tense.occToDT(bb.get(0).getOne()), aProp, nar);
+                        add(when, ab);
+                        return;
+                    }
+                }
+
                 //add common events
                 MutableSet<LongObjectPair<Term>> common = Sets.intersect(ArrayUnenforcedSet.wrap(aa), ArrayUnenforcedSet.wrap(bb));
                 if (!common.isEmpty()) {
@@ -84,14 +107,18 @@ public class Conjterpolate extends Conj {
                     remainingEvents -= common.size();
                 }
                 if (remainingEvents > 0) {
+
+                    Random rng = nar.random();
                     do {
                         FasterList<LongObjectPair<Term>> which;
                         if (!aa.isEmpty() && !bb.isEmpty())
                             which = rng.nextFloat() < aProp ? aa : bb;
-                        else if (aa.isEmpty())
+                        else if (aa.isEmpty() && !bb.isEmpty())
                             which = bb;
-                        else
+                        else if (bb.isEmpty() && !aa.isEmpty())
                             which = aa;
+                        else
+                            break;  //?
 
                         if (!add(which.remove(rng.nextInt(which.size()))))
                             break;

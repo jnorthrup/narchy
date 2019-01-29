@@ -100,9 +100,9 @@ public class PatrickTests extends NALTest {
 
         int dur = 100;
         tt.nar.time.dur(dur);
-        tt.nar.termVolumeMax.set(23);
+        tt.nar.termVolumeMax.set(19);
 
-        tt.nar.timeResolution.set(10);
+        tt.nar.timeResolution.set(20);
 
         tt.input(
                 "made_of(toothbrush,plastic).",
@@ -144,7 +144,7 @@ public class PatrickTests extends NALTest {
 
         tt.nar.time.dur(100);
         tt.nar.termVolumeMax.set(14);
-
+        tt.nar.timeResolution.set(10);
 
         tt.input(
                 "made_of(toothbrush,plastic).",
