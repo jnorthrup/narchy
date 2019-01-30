@@ -162,7 +162,7 @@ public class NARui {
 
         return Splitting.row(new BagView<>(cc.active, n), 0.8f,
             new Gridding(
-                new XYSlider(cc.conceptForgetRate,
+                new XYSlider(cc.forgetRate,
                         ((AbstractConceptIndex)n.concepts).activationRate
                                 //.subRange(1/1000f, 1/2f)
                 ) {

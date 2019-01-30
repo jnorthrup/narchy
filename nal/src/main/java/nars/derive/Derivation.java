@@ -192,8 +192,6 @@ public class Derivation extends PreDerivation {
     public Deriver deriver;
     public final DynBytes tmpPremiseKey = new DynBytes(256);
 
-    /** temporary storage buffer for recently fired tasklinks */
-    @Deprecated public final ArrayHashSet<Task> tasksFired = new ArrayHashSet<>(32);
     /** temporary storage buffer for recently activated concepts */
     @Deprecated public final Collection<Concept> firedConcepts = new FasterList<>(32);
 
@@ -613,7 +611,6 @@ public class Derivation extends PreDerivation {
         premiseBuffer.clear();
 
         occ.clear();
-        tasksFired.clear();
         firedConcepts.clear();
         _belief = null;
         _task = null;

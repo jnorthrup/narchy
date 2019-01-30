@@ -57,8 +57,8 @@ class NARTestOptimize {
                         (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).activationRate.set(f))
 //                .var("linkActivation", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.taskLinkActivation.set(f))
-//                .var("conceptForgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-//                        (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).conceptForgetRate.set(f))
+//                .var("forgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
+//                        (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).forgetRate.set(f))
 //                .var("linkForgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
 //                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).tasklinkForgetRate.set(f))
 //

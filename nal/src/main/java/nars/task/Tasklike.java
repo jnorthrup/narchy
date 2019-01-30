@@ -56,10 +56,9 @@ public final class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         long when = eternalize || tgt.isEternal() ? ETERNAL : Tense.dither(tgt.mid(), n);
 
         Term tt = tgt.term();
-        Term ttt = conceptRoot ? tt.concept() : tt;
 
         return seed(
-                ttt,
+                conceptRoot ? tt.concept() : tt,
 //                        .negIf(
 //                                polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
 //                        ),

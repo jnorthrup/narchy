@@ -37,7 +37,7 @@ public class Emotion implements Meter {
 //    public final Counter conceptCreateFail = new FastCounter("concept create fail");
 //    public final Counter conceptDelete = new FastCounter("concept delete");
 
-    public final FastCounter conceptFire = new FastCounter("concept fire");
+
     public final FastCounter taskFire = new FastCounter("task fire");
     //public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
     public final FastCounter premiseFire = new FastCounter("premise fire");
@@ -184,7 +184,6 @@ public class Emotion implements Meter {
         short[] cause = t.cause();
         MetaGoal.PerceiveCmplx.learn(cause, ((float)vol) / Param.COMPOUND_VOLUME_MAX, nar.causes);
         MetaGoal.PerceivePri.learn(cause, pri, nar.causes);
-
 
         busy(pri, vol);
 

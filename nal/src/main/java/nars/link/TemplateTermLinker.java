@@ -2,8 +2,6 @@ package nars.link;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
-import jcog.pri.Prioritized;
-import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Op;
@@ -11,7 +9,6 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.derive.Derivation;
-import nars.index.concept.AbstractConceptIndex;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.Img;
@@ -241,60 +238,32 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
 
     /**
-     * balance = nar.termlinkBalance
+     * spread a tasklink to subconcepts of the concept that owns this linker
      */
     @Override
-    public void link(Derivation d) {
+    public void link(Task t, Derivation d) {
 
-        if (d.tasksFired.isEmpty())
+        Collection<Concept> subConcepts = subConcepts(d);
+
+        if (subConcepts.isEmpty())
             return;
 
-        if (conceptualizeAndTermLink(d) <= 0)
-            return;
+        NAR nar = d.nar;
 
-        Collection<Concept> firedConcepts = d.firedConcepts;
+        TaskLink tt = TaskLink.tasklink(Op.EmptyProduct, t, true, true, 0 /* pri will be set in each clone */, nar);
 
-        //default all to all exhausive matrix insertion
-        //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
+        float pri = t.priElseZero();
 
-        if (!firedConcepts.isEmpty()) {
+        float pEach =
+                //TODO abstract priority transfer function here
+                pri; //no division
+                //pri/firedConcepts.size(); //division
 
-            List<Task> taskedLinked = d.tasksFired.list;
-            int n = taskedLinked.size();
-            if (n > 0) {
-
-//                OverflowDistributor<Bag> overflow = n > 1 ? new OverflowDistributor<>() : null;
-
-                NAR nar = d.nar;
-
-                float taskLinkRate = nar.taskLinkActivation.floatValue();
-
-                for (Task t : taskedLinked) {
-
-                    TaskLink tt = TaskLink.tasklink(Op.EmptyProduct,t, true, true, 0 /* pri will be set in each clone */, nar);
-
-                    float pri = t.priElseZero() * taskLinkRate;
-
-                    float pEach =
-                            //TODO abstract priority transfer function here
-                            pri; //no division
-                            //pri/firedConcepts.size(); //division
-
-
-                    for (Concept c : firedConcepts) {
-                        TaskLink.link(tt.clone(c.term(), pEach), nar, null /* overflow*/);
-                    }
-
-//                    if (overflow != null) {
-//                        overflow.shuffle(d.random).redistribute((b, p) -> b.putAsync(tt.clone(p)));
-//                        overflow.clear();
-//                    }
-
-                }
-            }
-
+        for (Concept c : subConcepts) {
+            TaskLink.link(
+                    tt.clone(c.term(), pEach),
+                    nar, null /* overflow*/);
         }
-
 
     }
 
@@ -305,31 +274,31 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
     }
 
 
-    private int conceptualizeAndTermLink(Derivation d) {
+    private Collection<Concept> subConcepts(Derivation d) {
 
         int n = concepts;
         if (n == 0)
-            return 0;
+            return Collections.EMPTY_LIST;
 
         Collection<Concept> firedConcepts = d.firedConcepts;
         firedConcepts.clear();
 
         n = Math.min(n, d.deriver.tasklinkSpread.intValue());
 
-        float taskPriSum = (float) (((FasterList<Task>) (d.tasksFired.list)).sumOfFloat(Prioritized::priElseZero));
+
 
         //taskPriSum *= concept.priElseZero();
-        taskPriSum = Math.max(taskPriSum, ScalarValue.EPSILON);
+//        pri = Math.max(pri, ScalarValue.EPSILON);
 
         NAR nar = d.nar;
-        AbstractConceptIndex koncepts = (AbstractConceptIndex) nar.concepts;
+//        AbstractConceptIndex koncepts = (AbstractConceptIndex) nar.concepts;
 //        PriBuffer<Concept> linking = ((BufferedBag<Term,Concept,?>) koncepts.active).buffer; //HACK
 
-        float conceptActivationEach =
-                //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
-                taskPriSum / Math.max(1, n); //TODO correct # of concepts fired in this batch
-
-        conceptActivationEach *= koncepts.activationRate.floatValue(); //HACK
+//        float conceptActivationEach =
+//                //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
+//                pri / Math.max(1, n); //TODO correct # of concepts fired in this batch
+//
+//        conceptActivationEach *= koncepts.activationRate.floatValue(); //HACK
 
 //            float balance = nar.termlinkBalance.floatValue();
 
@@ -350,8 +319,12 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
         Random rng = d.random;
         int j; boolean inc;
         if (n > 1) {
-            j = rng.nextInt(n); //random starting position
-            inc = rng.nextBoolean();
+            int r = rng.nextInt(); //using only one RNG call
+            inc = r >= 0;
+            j = (r & 0b01111111111111111111111111111111) % n;
+
+//            j = rng.nextInt(n); //random starting position
+//            inc = rng.nextBoolean();
         } else {
             j = 0;
             inc = true;
@@ -373,6 +346,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
                     :
                     nar.conceptualize(tgtTerm);
 
+
             if (tgt !=null) {
 //                linking.put(tgt, conceptActivationEach, overflow);
 
@@ -384,7 +358,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 //        if(overflow!=null)
 //            linking.put(overflow, rng);
 
-        return n;
+        return firedConcepts;
     }
 
 }

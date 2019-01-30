@@ -53,7 +53,7 @@ public class NAgentOptimize {
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
 //                .var("conceptActivation", 0, 1f, 0.1f, (NAR n, float f) -> n.conceptActivation.set(f))
-                .var("taskLinkActivation", 0, 1f, 0.1f, (NAR n, float f) -> n.taskLinkActivation.set(f))
+//                .var("taskLinkActivation", 0, 1f, 0.1f, (NAR n, float f) -> n.taskLinkActivation.set(f))
 //                .var("memoryDuration", 0, 8f, 0.25f,
 //                        (NAR n, float f) -> n.memoryDuration.set(f))
 //                .var("beliefPriDefault", 0, 1f, 0.1f,

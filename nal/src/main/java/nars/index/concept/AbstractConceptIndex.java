@@ -2,7 +2,6 @@ package nars.index.concept;
 
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
-import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
@@ -30,9 +29,9 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
     public Bag<TaskLink, TaskLink> active = Bag.EMPTY;
 
-    public final FloatRange activationRate = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 2f);
+    @Deprecated public final FloatRange activationRate = new FloatRange(1f,1, 1);
 
-    public final FloatRange conceptForgetRate = new FloatRange(0.9f, 0f, 1f /* 2f */);
+    public final FloatRange forgetRate = new FloatRange(0.9f, 0f, 1f /* 2f */);
 
 
     public final IntRange activeCapacity = new IntRange(256, 0, 2024) {
@@ -58,26 +57,10 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
 
         active =
-                //nar.exe.concurrent() ?
-
-                  //      arrayBag()
-                        //hijackBag()
-
-            new BufferedBag.DefaultBufferedBag<>(arrayBag(), new PriBuffer<TaskLink>(
-                    Param.tasklinkMerge, nar.exe.concurrent())) {
-
-                @Override
-                protected TaskLink keyInternal(TaskLink c) {
-                    return c;
-                }
-
-                @Override protected TaskLink valueInternal(TaskLink c, float pri) {
-                    return c;
-                    //c.pri(pri);
-                    //return new Activate(c, pri);
-                }
-
-            };
+            new BufferedBag.SimplestBufferedBag<>( arrayBag(), //hijackBag()
+                new PriBuffer<>(Param.tasklinkMerge,
+                nar.exe.concurrent())
+            );
 
         active.setCapacity(activeCapacity.intValue());
 
@@ -126,7 +109,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
 
     private void updateConcepts() {
-        active.commit(nar.attn.forgetting.forget(active, 1f, conceptForgetRate.floatValue()));
+        active.commit(nar.attn.forgetting.forget(active, 1f, forgetRate.floatValue()));
     }
 
     @Override

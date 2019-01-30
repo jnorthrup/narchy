@@ -103,7 +103,7 @@ public final class MutableRoulette {
 
             int r = rng.nextInt(); //using only one RNG call
             this.direction = r >= 0;
-            this.i = (r & 0b0111111111111111111111111111111) % l;
+            this.i = (r & 0b01111111111111111111111111111111) % l;
         } else {
             this.direction = true;
             this.i = 0;

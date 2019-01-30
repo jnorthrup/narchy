@@ -16,8 +16,8 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.link.Activate;
 import nars.link.TaskLink;
 import nars.link.TermLinker;
+import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Atom;
 
 import java.util.Collection;
 import java.util.Random;
@@ -67,14 +67,12 @@ public class BatchDeriver extends Deriver {
 
         do {
 
-//            if (!d.nar.exe.concurrent()) {
-//                hypothesize(d).asParallel(ForkJoinPool.commonPool(), 2).forEach(p -> {
-//                    p.derive(/* HACK */ Deriver.derivation.get().next(nar, this), matchTTL, deriveTTL);
-//                });
-//            } else {
-            for (Premise p : hypothesize(d))
-                p.derive(d, matchTTL, deriveTTL);
-//            }
+            Collection<Premise> pp = hypothesize(d);
+            if (!pp.isEmpty()) {
+                for (Premise p : pp)
+                    p.derive(d, matchTTL, deriveTTL);
+                pp.clear();
+            }
 
         } while (kontinue.getAsBoolean());
 
@@ -89,11 +87,6 @@ public class BatchDeriver extends Deriver {
         Collection<Premise> premises = d.premiseBuffer;
         premises.clear();
 
-        int links = tasklinksPerIteration.intValue();
-
-        nar.emotion.conceptFire.increment();
-
-
         Random rng = d.random;
 //
 //        Supplier<Term> beliefSrc;
@@ -105,13 +98,11 @@ public class BatchDeriver extends Deriver {
 //            beliefSrc = ()->src.sample(rng);
 //        }
 
-
-
         Bag<TaskLink, TaskLink> tasklinks = ((AbstractConceptIndex) nar.concepts).active;
 
 //        tasklinks.print(); System.out.println();
 
-        tasklinks.sample(rng, links, tasklink->{
+        tasklinks.sample(rng, tasklinksPerIteration.intValue(), tasklink->{
             Term tt = tasklink.term();
 
             Task task = TaskLink.task(tasklink, nar);
@@ -122,29 +113,25 @@ public class BatchDeriver extends Deriver {
             Term src = tasklink.source();
 
             Term b;
-            if (!(src instanceof Atom)) {
+            if (src instanceof Compound) {
                 Concept cc = nar.conceptualize(src);
                 if (cc != null) {
                     TermLinker linker = cc.linker();
 
-                    d.tasksFired.add(task);
-                    linker.link(d);
-                    d.tasksFired.clear();
+                    linker.link(task, d);
 
-
-                    if (!(linker instanceof FasterList) || rng.nextInt(((FasterList) linker).size()+1)==0) //HACK
-                        b = src;
+                    if (cc.term().equals(tt) && ((!(linker instanceof FasterList) || rng.nextInt(((FasterList) linker).size()+1)==0)))
+                        b = src;  //HACK
                     else
                         b = linker.sample(rng); //TODO for atoms
-//                    }
+
                 } else {
                     b = src;
                 }
-            } else {
+            } else if (src.op().conceptualizable) {
                 //scan active tasklinks for a match to the atom
                 //TODO use Rank and sample
                 ArrayHashSet<Term> atomMatches = d.atomMatches;
-                atomMatches.clear();
                 tasklinks.forEach(t -> {
                     if (t!=null && t.source().equals(src)) {
                         Term bb = t.term();
@@ -154,22 +141,17 @@ public class BatchDeriver extends Deriver {
                 });
                 if (!atomMatches.isEmpty()) {
                     b = atomMatches.get(rng);
+                    atomMatches.clear();
                 } else {
                     b = src;
                 }
+            } else {
+                b = src; //variable, int, etc..
             }
 
-//                do {
-
-
-                    if (b != null && premises.add(new Premise(task, b))) {
-//                        p++;
-                    }
-//                } while (--premisesPerTaskLinkTried > 0);
-
-
-
-
+            if (b != null) {
+                premises.add(new Premise(task, b));
+            }
 
             return true;
         });

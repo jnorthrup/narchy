@@ -1,6 +1,7 @@
 package nars.link;
 
 import jcog.pri.bag.Sampler;
+import nars.Task;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.Termed;
@@ -23,7 +24,7 @@ public interface TermLinker extends Sampler<Term> {
      *
      * balance = nar.termlinkBalance
      */
-    void link(Derivation d);
+    void link(Task task, Derivation d);
 
 
     TermLinker NullLinker = new TermLinker() {
@@ -40,7 +41,7 @@ public interface TermLinker extends Sampler<Term> {
 
 
         @Override
-        public void link(Derivation d) {
+        public void link(Task task, Derivation d) {
 
         }
 
