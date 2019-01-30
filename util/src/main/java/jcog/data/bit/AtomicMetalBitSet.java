@@ -1,11 +1,12 @@
 package jcog.data.bit;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 
 /** atomic integer metal bitset, cap = 32 */
 public class AtomicMetalBitSet extends MetalBitSet {
 
-    private static final AtomicIntegerFieldUpdater<AtomicMetalBitSet> X = AtomicIntegerFieldUpdater.newUpdater(AtomicMetalBitSet.class, "x");
+    private static final MetalAtomicIntegerFieldUpdater<AtomicMetalBitSet> X =
+            new MetalAtomicIntegerFieldUpdater<>(AtomicMetalBitSet.class, "x");
 
     private volatile int x;
 

@@ -16,7 +16,6 @@ import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Valuator;
 import nars.gui.NARui;
@@ -348,10 +347,10 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(26);
+        n.termVolumeMax.set(28);
 
-        ((AbstractConceptIndex)n.concepts).activeCapacity.set(1024);
-        ((AbstractConceptIndex)n.concepts).activationRate.set(1f/8f); //HACK TODO based on active bag capacity
+        ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
+        ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
         n.beliefPriDefault.set(0.25f);
         n.goalPriDefault.set(0.5f);
@@ -401,7 +400,7 @@ abstract public class NAgentX extends NAgent {
                 //"equivalence.nal"
                 //  "induction.goal.nal"
         ));
-        bd.timing = new ActionTiming(n);
+        //bd.timing = new ActionTiming(n);
         //bd.termLinksPerTaskLink.set(2);
         //bd.premisesPerConcept.set(4);
 

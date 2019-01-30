@@ -702,14 +702,14 @@ public interface Compound extends Term, IPair, Subterms {
                         break;
                 }
 
-                return tt.sub(0).eventRange() + (dt) + tt.sub(1).eventRange();
+                return tt.subEventRange(0) + (dt) + tt.subEventRange(1);
 
             } else {
                 int s = 0;
 
 
                 for (int i = 0; i < l; i++) {
-                    s = Math.max(s, tt.sub(i).eventRange());
+                    s = Math.max(s, tt.subEventRange(i));
                 }
 
                 return s;
@@ -791,10 +791,10 @@ public interface Compound extends Term, IPair, Subterms {
             //apply any shifts caused by range changes
             if (yy!=xx && targetOp.temporal && newDT!=DTERNAL && newDT!=XTERNAL && xx.subs()==2 && yy.subs() == 2) {
 
-                int subjRangeBefore = xx.sub(0).eventRange();
-                int predRangeBefore = xx.sub(1).eventRange();
-                int subjRangeAfter = yy.sub(0).eventRange();
-                int predRangeAfter = yy.sub(1).eventRange();
+                int subjRangeBefore = xx.subEventRange(0);
+                int predRangeBefore = xx.subEventRange(1);
+                int subjRangeAfter = yy.subEventRange(0);
+                int predRangeAfter = yy.subEventRange(1);
                 newDT += (subjRangeBefore - subjRangeAfter) + (predRangeBefore - predRangeAfter);
 
             }

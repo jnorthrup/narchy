@@ -250,15 +250,15 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
         NAR nar = d.nar;
 
-        TaskLink tt = TaskLink.tasklink(Op.EmptyProduct, t, true, true, 0 /* pri will be set in each clone */, nar);
 
         float pri = t.priElseZero();
 
         float pEach =
                 //TODO abstract priority transfer function here
                 pri; //no division
-                //pri/firedConcepts.size(); //division
+                //pri/subConcepts.size(); //division
 
+        TaskLink tt = TaskLink.tasklink(Op.EmptyProduct, t, true, true, 0 /* pri will be set in each clone */, nar);
         for (Concept c : subConcepts) {
             TaskLink.link(
                     tt.clone(c.term(), pEach),

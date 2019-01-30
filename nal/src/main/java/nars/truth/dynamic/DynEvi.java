@@ -18,6 +18,7 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import nars.util.Timed;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -37,6 +38,7 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
 
     public DynEvi(int size, Task[] t) {
         super(size, t);
+        for (Task x : t) if (x == null) throw new NullPointerException(); //TEMPORARY
     }
 
     private static float pri(TaskRegion x) {
@@ -84,6 +86,10 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
     }
 
 
+    /** temporary */
+    @Override public boolean add(@NotNull Task newItem) {
+        return super.add(newItem);
+    }
 
     @Override
     public @Nullable Task task() {

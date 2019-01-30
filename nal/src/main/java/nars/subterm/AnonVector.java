@@ -172,6 +172,11 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
         return subterms[i];
     }
 
+    /** all of the subterms here are atoms so containing eventRange is impossible */
+    @Override public final int subEventRange(int i) {
+        return 0;
+    }
+
     @Override
     public int subs(Op matchingOp) {
         short match;

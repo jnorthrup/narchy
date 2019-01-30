@@ -6,6 +6,8 @@ import nars.term.Compound;
 import nars.term.Term;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
+import java.util.TreeSet;
+
 import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -70,7 +72,7 @@ public class Conceptualization {
         protected  Term transformConj(Compound y) {
             Subterms yy = y.subterms();
             if (yy.hasAny(CONJ) /*&& yy.OR(yyy -> yyy.unneg().op() == CONJ)*/) {
-                UnifiedSet<Term> t = new UnifiedSet(yy.subs() * 2);
+                TreeSet<Term> t = new TreeSet();
                 yy.recurseTerms(x -> true, (yyy,parent)->{
                     if (parent.unneg().op()==CONJ && yyy.unneg().op()!=CONJ)
                         t.add(yyy);
@@ -85,8 +87,8 @@ public class Conceptualization {
 //                        t.add(yyy);
 //                    }
 //                }
-                if (yy.subs() != 1 && t.size() == 1) {
-                    Term tf = t.getFirst();
+                if (t.size() == 1 && yy.subs() != 1) {
+                    Term tf = t.first();
                     return Op.terms.theCompound(CONJ, XTERNAL, tf, tf);
                 } else
                     return CONJ.the(XTERNAL, t);

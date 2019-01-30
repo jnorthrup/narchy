@@ -142,25 +142,31 @@ abstract public class MappedSubterms extends ProxySubterms {
         /** TODO even more compact 2-bit, 3-bit etc representations */
         final byte[] map;
 
-        final boolean hasNegs;
+        final byte negs;
 
         private ArrayMappedSubterms(Subterms base, byte[] map) {
             super(base); assert(base.subs()==map.length);
             this.map = map;
-            this.hasNegs = super.hasNegs();
+            this.negs = (byte) super.negs();
             this.hash = Subterms.hash(this);
         }
 
         private ArrayMappedSubterms(Subterms base, byte[] map, int hash) {
             super(base); assert(base.subs()==map.length);
             this.map = map;
-            this.hasNegs = super.hasNegs();
+            this.negs = (byte) super.negs();
             this.hash = hash;
         }
 
+
         @Override
-        protected boolean hasNegs() {
-            return hasNegs;
+        protected final boolean hasNegs() {
+            return negs>0;
+        }
+
+        @Override
+        protected final int negs() {
+            return negs;
         }
 
         /** @see AnonVector.appendTo */
@@ -178,12 +184,12 @@ abstract public class MappedSubterms extends ProxySubterms {
         }
 
         @Override
-        public int subs() {
+        public final int subs() {
             return map.length;
         }
 
         @Override
-        protected int subMap(int i) {
+        protected final int subMap(int i) {
             return map[i];
         }
 
@@ -195,7 +201,8 @@ abstract public class MappedSubterms extends ProxySubterms {
                 ArrayMappedSubterms m = (ArrayMappedSubterms) obj;
                 return hash == m.hash && ref.equals(m.ref) && Arrays.equals(map, m.map);
             } else {
-                return obj instanceof Subterms && hash == obj.hashCode() && ((Subterms) obj).equalTerms(this);
+                return obj instanceof Subterms && /*hash == obj.hashCodeSubterms() && */
+                        ((Subterms) obj).equalTerms(this);
             }
         }
 
@@ -220,7 +227,7 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public boolean contains(Term t) {
-        return !hasNegs() ? ref.contains(t) : super.contains(t);
+        return (!hasNegs() || t.op()!=NEG) ? ref.contains(t) : super.contains(t);
     }
 
     @Override
@@ -231,25 +238,37 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public boolean has(int structuralVector, boolean anyOrAll) {
-        return ((structuralVector & Op.NEG.bit) == 0 || !hasNegs()) ? ref.has(structuralVector,anyOrAll) :
-                super.has(structuralVector, anyOrAll);//exhaustive
+        boolean x = ref.has(structuralVector, anyOrAll);
+        if (x || !hasNegs()) return true;
+
+        return super.has(structuralVector, anyOrAll);//exhaustive with NEG's
     }
 
+    /** optimized to avoid wrapping in Neg temporarily */
+    @Override public final int subEventRange(int i) {
+        int xy = subMap(i);
+        if (xy < 0)
+            return 0;
+        return mapToSub(xy).eventRange();
+    }
 
     @Override
     abstract public int subs();
 
-
     @Override
-    public int structure() {
+    public final int structure() {
         int s = ref.structure();
-        return ((s & Op.NEG.bit) != 0) ? s :
-                s | (hasNegs() ? NEG.bit : 0);
+        if (hasNegs())
+            s |= NEG.bit;
+        return s;
     }
 
     @Override
-    public int structureSurface() {
-        return !hasNegs() ? ref.structureSurface() : super.structureSurface();
+    public final int structureSurface() {
+        int s = ref.structureSurface();
+        if (hasNegs())
+            s |= NEG.bit;
+        return s;
     }
 
     @Override
@@ -331,7 +350,10 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public Term sub(int i) {
-        int xy = subMap(i);
+        return mapToSub(subMap(i));
+    }
+
+    private Term mapToSub(int xy) {
         boolean neg = (xy < 0);
         if (neg) xy = -xy;
         Term y  = ref.sub(xy-1);

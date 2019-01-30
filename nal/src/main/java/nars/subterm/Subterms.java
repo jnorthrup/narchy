@@ -70,6 +70,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return ptr != this ? (Term) ptr : null;
     }
 
+    @Nullable default Term subSubUnsafe(int start, int end, byte[] path) {
+        Termlike ptr = this;
+        for (int i = start; i < end; )
+            ptr = ptr.sub(path[i++]);
+        return (Term) ptr;
+    }
+
     default boolean containsAny(Subterms ofThese) {
         //if (ofThese.subs() < 4 /* threshold */) {
             return OR(ofThese::contains);
@@ -86,6 +93,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
             xx[i] = map.apply(sub(i));
         }
         return xx;
+    }
+
+    default int subEventRange(int i) {
+        return sub(i).eventRange();
     }
 
 //    default boolean equalsRoot(Subterms y) {
@@ -1169,9 +1180,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
             } else {
 
                 if (xi != yi) {
-                    //if (s == 1)
-                    //    return new UniSubterm(yi);
-
                     if (y == null)
                         y = new DisposableTermList(s, i);
                 }

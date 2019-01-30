@@ -440,11 +440,10 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         void end(Pool<EdgeVis<X>> edgePool) {
             hide();
-            this.mover = null;
             removeOuts(edgePool);
+            this.mover = null;
 //            clear();
             this.id = null;
-            this.showing = false;
         }
 
 
@@ -480,14 +479,14 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             outs.clear(pool::put);
         }
 
-        private boolean removeOut(EdgeVis<X> x, Pool<EdgeVis<X>> pool) {
-            EdgeVis<X> y = outs.remove(x.to.id);
-            if (y != null) {
-                pool.put(y);
-                return true;
-            }
-            return false;
-        }
+//        private boolean removeOut(EdgeVis<X> x, Pool<EdgeVis<X>> pool) {
+//            EdgeVis<X> y = outs.remove(x.to.id);
+//            if (y != null) {
+//                pool.put(y);
+//                return true;
+//            }
+//            return false;
+//        }
 
         /**
          * adds or gets existing edge
@@ -583,14 +582,13 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                     if (to == null)
                         return;
 
-                    float fx = from.cx(), fy = from.cy();
-
-                    float tx = to.cx(), ty = to.cy();
 
                     float scale = Math.min(from.w(), from.h());
                     float base = Util.lerp(e.weight, scale / 2, scale);
 
                     e.color(gl);
+                    float fx = from.cx(), fy = from.cy();
+                    float tx = to.cx(), ty = to.cy();
                     Draw.halfTriEdge2D(fx, fy, tx, ty, base, gl);
 
                 }

@@ -9,6 +9,7 @@ import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
 import jcog.random.SplitMix64Random;
+import jcog.sort.TopN;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -34,6 +35,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -194,6 +196,7 @@ public class Derivation extends PreDerivation {
 
     /** temporary storage buffer for recently activated concepts */
     @Deprecated public final Collection<Concept> firedConcepts = new FasterList<>(32);
+    @Deprecated public TopN<TaskLink> atomTangent = new TopN<>(new TaskLink[8], (FloatFunction<TaskLink>) ScalarValue::pri);
 
 
     private Function<Atomic, Functor> derivationFunctors;

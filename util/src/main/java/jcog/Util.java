@@ -42,7 +42,6 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.eclipse.collections.impl.tuple.Tuples;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
@@ -674,7 +673,7 @@ public enum Util {
      */
     public static double unitize(double x) {
         assertFinite(x);
-        return Util.clampSafe(x, 0.0, 1.0);
+        return unitizeSafe(x);
     }
 
     /**
@@ -687,8 +686,11 @@ public enum Util {
     public static float unitizeSafe(float x) {
         return Util.clampSafe(x, 0, 1f);
     }
+    public static double unitizeSafe(double x) {
+        return Util.clampSafe(x, 0, 1f);
+    }
 
-    @Contract("_ -> param1")
+
     public static float assertFinite(float x) throws NumberException {
         if (!Float.isFinite(x))
             throw new NumberException("non-finite", x);
