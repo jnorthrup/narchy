@@ -1,6 +1,7 @@
 package nars.derive.impl;
 
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.pri.bag.Bag;
 import nars.NAR;
@@ -141,15 +142,20 @@ public class BatchDeriver extends Deriver {
                 }
             } else {
                 //scan active tasklinks for a match to the atom
-                b = src;
-                for (TaskLink t : tasklinks) {
-
+                //TODO use Rank and sample
+                ArrayHashSet<Term> atomMatches = d.atomMatches;
+                atomMatches.clear();
+                tasklinks.forEach(t -> {
                     if (t!=null && t.source().equals(src)) {
-                        b = t.term();
-                        if(!b.equals(tt))
-                            break;
+                        Term bb = t.term();
+                        if(!bb.equals(src) && !bb.equals(tt))
+                            atomMatches.add(bb);
                     }
-
+                });
+                if (!atomMatches.isEmpty()) {
+                    b = atomMatches.get(rng);
+                } else {
+                    b = src;
                 }
             }
 

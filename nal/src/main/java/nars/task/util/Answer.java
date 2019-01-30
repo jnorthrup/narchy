@@ -22,6 +22,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
+import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -129,8 +130,7 @@ public final class Answer implements AutoCloseable {
 
     /** TODO FloatRank not FloatFunction */
     public static FloatFunction<TaskRegion> mergeability(Task x) {
-        MetalLongSet xStamp = Stamp.toSet(x);
-        xStamp.trim();
+        LongPredicate xStamp = Stamp.toContainment(x);
 
         long xStart = x.start();
         long xEnd = x.end();

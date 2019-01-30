@@ -71,6 +71,8 @@ public class Derivation extends PreDerivation {
         new ArrayHashSet(256);
         //new SortedList<>(256);
 
+    @Deprecated public final ArrayHashSet<Term> atomMatches = new ArrayHashSet();
+
     public final AnonWithVarShift anon;
 
     public final UniSubst uniSubst = new UniSubst(this);

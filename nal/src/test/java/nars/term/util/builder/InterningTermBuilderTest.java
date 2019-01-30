@@ -12,7 +12,6 @@ import nars.term.atom.Atomic;
 import nars.term.compound.LightCompound;
 import nars.term.compound.LightDTCompound;
 import nars.term.util.cache.Intermed;
-import nars.term.util.cache.Intermed.InternedCompoundByComponents;
 import org.junit.jupiter.api.Test;
 
 import static jcog.data.byt.RecycledDynBytes.tmpKey;
@@ -31,9 +30,9 @@ class InterningTermBuilderTest {
         Term pab = t.compound(PROD, a, b);
         assertEquals( "(a,b)", pab.toString());
 
-        ByteHijackMemoize<InternedCompoundByComponents, Term> prodCache = t.terms[PROD.id];
+        ByteHijackMemoize<Intermed.InternedCompoundByComponents, Term> prodCache = t.terms[PROD.id];
 
-        PriProxy<InternedCompoundByComponents, Term> pabEntry = Iterators.get(prodCache.iterator(), 0);
+        PriProxy<Intermed.InternedCompoundByComponents, Term> pabEntry = Iterators.get(prodCache.iterator(), 0);
         assertEquals(pab, pabEntry.get());
         Term pabSame = t.compound(PROD, a, b);
         assertSame(pab, pabSame);
@@ -72,7 +71,7 @@ class InterningTermBuilderTest {
     }
 
     @Test void testKeyConstructionEquivalence() {
-        byte[] a = new InternedCompoundByComponents(CONJ, 1, this.a.neg(), this.b).key.arrayCopy();
+        byte[] a = new Intermed.InternedCompoundByComponentsArray(CONJ, 1, this.a.neg(), this.b).key.arrayCopy();
         tmpKey().clear();
         byte[] b = new Intermed.InternedCompoundTransform(new LightDTCompound( new LightCompound(CONJ, this.a.neg(), this.b), 1)).key.arrayCopy();
         tmpKey().clear();

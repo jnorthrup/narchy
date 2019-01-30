@@ -39,6 +39,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.function.LongPredicate;
 
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -169,6 +170,17 @@ public interface Stamp {
         return new MetalLongSet(task.stamp());
     }
 
+    static LongPredicate toContainment(Stamp task) {
+        long[] s = task.stamp();
+        switch (s.length) {
+            case 0: return (x)->false;
+            case 1: { long y = s[0]; return (x)->x==y; }
+            case 2: { long y0 = s[0], y1 = s[1]; return (x)->x==y0 || x == y1; }
+            case 3: { long y0 = s[0], y1 = s[1], y2 = s[2]; return (x)->x==y0 || x == y1 || x == y2; }
+            default:
+                return LongSets.immutable.of(s)::contains;
+        }
+    }
 
     static MetalLongSet toSet(int expectedCap, Task... t) {
         return toSet(expectedCap, t.length, t);
@@ -405,10 +417,13 @@ public interface Stamp {
         return Util.unitize(((float) common) / denom);
     }
 
-
     static boolean overlapsAny(/*@NotNull*/ MetalLongSet aa,  /*@NotNull*/ long[] b) {
+        return overlapsAny(aa::contains, b);
+    }
+
+    static boolean overlapsAny(/*@NotNull*/ LongPredicate aa,  /*@NotNull*/ long[] b) {
         for (long x : b)
-            if (aa.contains(x))
+            if (aa.test(x))
                 return true;
         return false;
     }

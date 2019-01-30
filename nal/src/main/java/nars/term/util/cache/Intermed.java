@@ -23,22 +23,50 @@ public class Intermed extends ByteKey.ByteKeyExternal  {
         this(tmpKey());
     }
 
-    public static final class InternedCompoundByComponents extends Intermed {
+    public abstract static class InternedCompoundByComponents extends Intermed {
         public final byte op;
         public final int dt;
+
+        public InternedCompoundByComponents(Op o, int dt) {
+            super();
+            assert(o!=NEG);
+            this.op = o.id; this.dt = dt;
+            write(o, dt);
+        }
+
+        public abstract Term[] subs();
+
+    }
+
+    public static final class InternedCompoundByComponentsArray extends InternedCompoundByComponents {
         public final transient Term[] subs;
 
-        public InternedCompoundByComponents(Op o, int dt, Term... subs) {
-            super();
-            assert(o!=NEG); //has special byte pattern
-            this.op = o.id; this.dt = dt; this.subs = subs;
-            write(o, dt);
+        public InternedCompoundByComponentsArray(Op o, int dt, Term... subs) {
+            super(o, dt);
+            this.subs = subs;
             write(subs);
             commit();
         }
 
-        public InternedCompoundByComponents(Term x) {
-            this(x.op(), x.dt(), x.arrayShared());
+        @Override
+        public Term[] subs() {
+            return subs;
+        }
+    }
+
+    public static final class InternedCompoundByComponentsSubs extends InternedCompoundByComponents {
+
+        private final Term x;
+
+        public InternedCompoundByComponentsSubs(Term x) {
+            super(x.op(), x.dt());
+            this.x = x;
+            write(x.subterms());
+            commit();
+        }
+        @Override
+        public Term[] subs() {
+            return x.arrayShared();
         }
     }
 

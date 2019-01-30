@@ -77,15 +77,15 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             //TODO use multiple PROD slices to decrease contention
 
-            ByteHijackMemoize<InternedCompoundByComponents, Term> c;
+            ByteHijackMemoize<Intermed.InternedCompoundByComponents, Term> c;
             if (o == CONJ) {
                 c = newOpCache("conj",
-                        (InternedCompoundByComponents j) -> super.conj(true, j.dt, resolve(j.subs)), cacheSizePerOp);
+                        (InternedCompoundByComponents j) -> super.conj(true, j.dt, resolve(j.subs())), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {
                 c = newOpCache(o.str,
-                        (InternedCompoundByComponents x) -> theCompound(ops[x.op], x.dt, resolve(x.subs), x.key), s);
+                        (InternedCompoundByComponents x) -> theCompound(ops[x.op], x.dt, resolve(x.subs()), x.key), s);
             }
             terms[i] = c;
         }
@@ -113,7 +113,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return subs;
     }
 
-    private Term compoundInterned(InternedCompoundByComponents x) {
+    private Term compoundInterned(Intermed.InternedCompoundByComponents x) {
         return terms[x.op].apply(x);
     }
 
@@ -136,7 +136,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private Term compoundInterned(Op op, int dt, Term[] u) {
-        return compoundInterned(new InternedCompoundByComponents(op, dt, u));
+        return compoundInterned(new Intermed.InternedCompoundByComponentsArray(op, dt, u));
     }
 
 
@@ -200,7 +200,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 negate = false;
             }
             if (x.the() && internableRoot(xo, x.dt())) {
-                Term y = terms[xo.id].apply(new InternedCompoundByComponents(x));
+                Term y = terms[xo.id].apply(new Intermed.InternedCompoundByComponentsSubs(x));
                 if (y != null)
                     return negate ? y.neg() : y;
             }
@@ -270,7 +270,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                     }
                 }
 
-                return this.terms[op.id].apply(new InternedCompoundByComponents(op, dt, subject, predicate)).negIf(negate);
+                return this.terms[op.id].apply(new Intermed.InternedCompoundByComponentsArray(op, dt, subject, predicate)).negIf(negate);
             }
 
             //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
@@ -286,8 +286,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return super.statement(op, dt, subject, predicate);
     }
 
-    private Term _statement(InternedCompoundByComponents c) {
-        Term[] s = resolve(c.subs);
+    private Term _statement(Intermed.InternedCompoundByComponents c) {
+        Term[] s = resolve(c.subs());
         return super.statement(Op.ops[c.op], c.dt, s[0], s[1]);
     }
 
@@ -299,7 +299,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         if (u.length > 1 && internableRoot(CONJ, dt, u)) {
             if (u.length > 1) {
-                return terms[CONJ.id].apply(new InternedCompoundByComponents(CONJ, dt, u));
+                return terms[CONJ.id].apply(new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u));
             }
         }
 
