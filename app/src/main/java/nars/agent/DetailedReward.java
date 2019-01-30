@@ -8,7 +8,6 @@ import jcog.math.FloatPolarNormalizer;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.concept.Concept;
 import nars.concept.sensor.FilteredScalar;
 import nars.control.channel.CauseChannel;
@@ -21,6 +20,12 @@ import static jcog.Util.compose;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 public class DetailedReward extends Reward {
+    /**
+     * NAgent happiness automatic gain control time parameter
+     * TODO verify this is applied based on time, not iterations
+     */
+    final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.0002f;
+    final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.0004f;
 
     public final FilteredScalar concept;
     private final FloatSupplier rewardFunc;
@@ -44,13 +49,13 @@ public class DetailedReward extends Reward {
 
                 pair($.func("chronic", id), compose(
                         new FloatAveraged(0.02f),
-                        new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)
+                        new FloatNormalizer().relax(HAPPINESS_RE_SENSITIZATION_RATE)
                 )),
 
 
                 pair($.func("acute", id), compose(
                         new FloatAveraged(0.1f, false),
-                        new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
+                        new FloatPolarNormalizer().relax(HAPPINESS_RE_SENSITIZATION_RATE_FAST)
                 ))
         ) {
             @Override

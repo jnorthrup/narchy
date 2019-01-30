@@ -139,12 +139,12 @@ public class Occurrify extends TimeGraph {
             throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
 
         if (!d.concSingle && (d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
-            {
-                //immediate shift
-                long range = occ[1] - occ[0];
-                occ[0] = d.taskStart;
-                occ[1] = occ[0] + range;
-            }
+//            {
+//                //immediate shift
+//                long range = occ[1] - occ[0];
+//                occ[0] = d.taskStart;
+//                occ[1] = occ[0] + range;
+//            }
         }
 
 //            if (d.concTruth!=null) {

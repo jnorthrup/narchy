@@ -3,10 +3,7 @@ package nars.nal.nal7;
 import jcog.math.FloatSupplier;
 import jcog.signal.meter.TemporalMetrics;
 import jcog.signal.meter.event.DoubleMeter;
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
@@ -113,22 +110,15 @@ class TemporalInductionTest {
         b.print();
         assertTrue(3 <= b.size());
 
-        
-        
 
-        
-        assertEquals(
-                "(b-->a). 5 %.19;.92%"
-                
-                , n.belief(c.term(), 5).toStringWithoutBudget());
+        Task x = n.belief(c.term(), 5);
+        assertTrue(x.toStringWithoutBudget().startsWith("(b-->a). 5"));
+        assertTrue(x.isNegative());
 
 
-        
-        assertEquals(
-                
-                
-                "(b-->a). 0 %1.0;.90%"
-                , n.belief(c.term(), 0).toStringWithoutBudget());
+        Task y = n.belief(c.term(), 0);
+        assertTrue(y.toStringWithoutBudget().startsWith("(b-->a). 0"));
+        assertTrue(y.isPositive());
 
     }
 
@@ -148,30 +138,30 @@ class TemporalInductionTest {
         
         
     }
-
-    @Test
-    void testQuestionProjection() throws Narsese.NarseseException {
-
-        NAR n = NARS.tmp();
-
-
-
-        n.input("a:b. :|:");
-        
-        n.input("a:b? :/:");
-        n.run(5);
-        n.input("a:b? :/:");
-        n.run(30);
-        n.input("a:b? :/:");
-        n.run(250);
-        n.input("a:b? :/:");
-        n.run(1);
-
-        
-
-        
-        
-    }
+//
+//    @Test
+//    void testQuestionProjection() throws Narsese.NarseseException {
+//
+//        NAR n = NARS.tmp();
+//
+//
+//
+//        n.input("a:b. :|:");
+//
+//        n.input("a:b? :/:");
+//        n.run(5);
+//        n.input("a:b? :/:");
+//        n.run(30);
+//        n.input("a:b? :/:");
+//        n.run(250);
+//        n.input("a:b? :/:");
+//        n.run(1);
+//
+//
+//
+//
+//
+//    }
 
     @Test
     void testInductionStability() throws Narsese.NarseseException {

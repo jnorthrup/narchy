@@ -190,7 +190,7 @@ public abstract class Param {
      * used during Remember's merge repeat suppression filter */
     public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONsqrt;
 
-    /** >=0; higher values decrease the rate at which repeated tasks can be reactivated */
+    /** novelty threshold: >=0; higher values decrease the rate at which repeated tasks can be reactivated */
     public static final float REMEMBER_REPEAT_THRESH_DURS = 2f;
 
 
@@ -210,21 +210,15 @@ public abstract class Param {
             2f;
 
 
-    /**
-     * NAgent happiness automatic gain control time parameter
-     * TODO verify this is applied based on time, not iterations
-     */
-    public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.0002f;
-    public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.0004f;
 
 
     public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
 
     /** if false, keeps intersecting timegraph events separate.  if true, it merges them to one event */
-    public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = false;
+    public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = true;
 
     /** whether timegraph should not return solutions with volume significantly less than the input's */
-    public static final boolean TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS = true;
+    public static final boolean TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS = false;
 
 
 
@@ -282,7 +276,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 3f;
+    public static final float TEST_TIME_MULTIPLIER = 4f;
 
 
     @Range(min = 1, max = 32)

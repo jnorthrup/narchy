@@ -1,6 +1,5 @@
 package nars.task.util.series;
 
-import jcog.TODO;
 import jcog.WTF;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.Longerval;
@@ -87,39 +86,39 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         return closest;
     }
 
-    /**
-     * binary search
-     */
-    public int[] indexOf(long start, long end) {
-        throw new TODO();
-//        int low = 0;
-//        int high = size()-1;
-//
-//        int closest = -1;
-//        while (low <= high) {
-//            int mid = (low + high) >>> 1;
-//            T midVal = q.get(mid);
-//            if (midVal == null)
-//                return closest;
-//            else
-//                closest = mid; //store in case we arrive at internal empty location
-//
-//            if (midVal == null)
-//                break;
-//
-//            long a = midVal.start();
-//            long b = midVal.end();
-//            if (when >= a && when <= b)
-//                return mid; //found
-//
-//            if (when > b)
-//                low = mid + 1;
-//            else
-//                high = mid - 1;
-//        }
-//
-//        return -1; //not found
-    }
+//    /**
+//     * binary search
+//     */
+//    public int[] indexOf(long start, long end) {
+//        throw new TODO();
+////        int low = 0;
+////        int high = size()-1;
+////
+////        int closest = -1;
+////        while (low <= high) {
+////            int mid = (low + high) >>> 1;
+////            T midVal = q.get(mid);
+////            if (midVal == null)
+////                return closest;
+////            else
+////                closest = mid; //store in case we arrive at internal empty location
+////
+////            if (midVal == null)
+////                break;
+////
+////            long a = midVal.start();
+////            long b = midVal.end();
+////            if (when >= a && when <= b)
+////                return mid; //found
+////
+////            if (when > b)
+////                low = mid + 1;
+////            else
+////                high = mid - 1;
+////        }
+////
+////        return -1; //not found
+//    }
 
     /**
      * TODO obey exactRange flag

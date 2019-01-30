@@ -125,7 +125,7 @@ abstract public class MultiExec extends UniExec {
             //shift all time up
             long shift = 1-maxTime;
             cpu.forEach(c -> {
-                c.add(shift, cycleTimeNS);
+                c.add(shift, cycleTimeNS/concurrency());
             });
         }
 
@@ -386,7 +386,7 @@ abstract public class MultiExec extends UniExec {
                         }
                     }
 
-                } while (/*queueSafe() && */(until > after));
+                } while (queueSafe() && (until > after));
 
             }
 
@@ -442,7 +442,7 @@ abstract public class MultiExec extends UniExec {
         /** measure queue latency "ping" */
         static void queueLatency(long start, long end, NAR n) {
             long latencyNS = end - start;
-            double cycles = latencyNS / ((double)n.loop.cycleTimeNS);
+            double cycles = latencyNS / ((double)(n.loop.cycleTimeNS / n.exe.concurrency()));
             if (cycles > 0.5) {
                 logger.info("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(cycles));
             }

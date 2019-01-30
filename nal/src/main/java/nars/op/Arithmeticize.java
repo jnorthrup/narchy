@@ -86,17 +86,18 @@ public class Arithmeticize {
                 return Float.NaN;
 
 
-            float intTerms = numInts / ((float) tt.volume());
+            float intTerms = Util.unitize(numInts / (((float) tt.volume() - numInts)));
             return p * intTerms;
         }
 
         @Override
         @Nullable
         protected Term newTerm(Task xx) {
+
             Term xt = xx.term();
             return Arithmeticize.apply(xt, null, nar.termVolumeMax.intValue(),
-                    xt.op()!=CONJ && xt.dt()!=0, //only parallel if conjunction parallel is input, avoids ((x&|y)&&...)
-                    nar.random());
+            xx.isEternal() || (xt.op()==CONJ && xt.dt()!=0),
+                nar.random());
         }
     }
 

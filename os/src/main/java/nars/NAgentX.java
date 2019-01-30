@@ -17,7 +17,6 @@ import nars.derive.BeliefSource;
 import nars.derive.Derivation;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
-import nars.derive.impl.ZipperDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
@@ -27,9 +26,7 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
-import nars.op.Factorize;
 import nars.op.Introduction;
-import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
@@ -258,13 +255,13 @@ abstract public class NAgentX extends NAgent {
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> actionLinker = ListTermLinker(actionConcepts);
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> rewardLinker = ListTermLinker(rewardConcepts);
 
-        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
-                actionConcepts,
-                //sensorConcepts,
-                rewardLinker
-                //ConceptTermLinker
-        );
-        senseReward.timing = new ActionTiming(n);
+//        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
+//                actionConcepts,
+//                //sensorConcepts,
+//                rewardLinker
+//                //ConceptTermLinker
+//        );
+//        senseReward.timing = new ActionTiming(n);
 
 //        ZipperDeriver senseActions = BeliefSource.forConcepts(n, rules,
 //                sensorConcepts,
@@ -355,7 +352,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(26);
 
         ((AbstractConceptIndex)n.concepts).activeCapacity.set(1024);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1f/8f); //HACK TODO based on active bag capacity
@@ -408,7 +405,7 @@ abstract public class NAgentX extends NAgent {
                 //"equivalence.nal"
                 //  "induction.goal.nal"
         ));
-        //bd.timing = new ActionTiming(n);
+        bd.timing = new ActionTiming(n);
         //bd.termLinksPerTaskLink.set(2);
         //bd.premisesPerConcept.set(4);
 
@@ -417,7 +414,7 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
                 Task::isInput,
                 //t->true,
-                8, 512);
+                16, 256);
 //        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
 //                t->!t.isInput(),
 //                3, 8);
@@ -435,13 +432,13 @@ abstract public class NAgentX extends NAgent {
 //                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,64);
-        Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
+        //Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 
-        new Inperience.Believe(16, n);
-        new Inperience.Want(16, n);
-        new Inperience.Wonder(8, n);
-        new Inperience.Plan(8, n);
+//        new Inperience.Believe(16, n);
+//        new Inperience.Want(16, n);
+//        new Inperience.Wonder(8, n);
+//        new Inperience.Plan(8, n);
 
 
 
