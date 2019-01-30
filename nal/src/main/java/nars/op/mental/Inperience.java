@@ -161,7 +161,7 @@ abstract public class Inperience extends TaskLeakTransform {
 
         @Override
         public boolean acceptTask(Task t) {
-            return polarized(t.freq());
+            return !(t instanceof SignalTask) && polarized(t.freq());
         }
 
         @Override

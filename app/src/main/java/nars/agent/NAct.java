@@ -287,10 +287,12 @@ public interface NAct {
 
 
             float t = thresh.asFloat();
-            boolean x = (ll > t) && lr[1] < t; //(ll - lr[1] > compareThresh);
+            boolean x = (ll > t) && lr[1] <= t; //(ll - lr[1] > compareThresh);
             boolean y = L.accept(x);
 //            if (x && !y) ll = t;
-            lr[0] = ll;
+            lr[0] =
+                    ll;
+                    //y ? ll : 0;
 
             float feedback =
                     y ? 1 : 0;
@@ -307,10 +309,11 @@ public interface NAct {
 
 
             float t = thresh.asFloat();
-            boolean x = (rr > t) && lr[0] < t;// (rr - lr[0] > compareThresh);
+            boolean x = (rr > t) && lr[0] <= t;// (rr - lr[0] > compareThresh);
             boolean y = R.accept(x);
 //            if (x && !y) rr = t;
             lr[1] = rr;
+                    //y ? rr : 0;
 
             float feedback =
                     y ? 1 : 0;

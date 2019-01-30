@@ -140,29 +140,36 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
             if (!x.hasVars() && !y.hasVars()) {
                 int c = x.compareTo(y);
+
+                if (x.op() == INT && y.op() == INT && xy.op()==INT) {
+                    return (Integer.compare(((Int) x).id, ((Int) y).id) == ((Int) xy).id) ? True : False;
+                }
+
                 if (c == 0) {
 
-                    if (!xy.equals(zero) && !xy.op().var)
+                    if (!xy.op().var && !xy.equals(zero))
                         return False; //incorrect value
-                    else
-                        xy = zero;
+                    else {
+                        return e.is(xy, zero) ? True : Null;
+                    }
                 } else if (c > 0) {
 
-                    //swap argument order
-                    Term s = x;
-                    x = y;
-                    y = s;
-
-                    if (xyo == INT) {
-                        int xyi = -((Int) xy).id;
-                        if (x.op() == INT && y.op() == INT) {
-                            return (Integer.compare(((Int) x).id, ((Int) y).id) == xyi) ? True : False;
-                        }
-                        xy = Int.the(xyi);
-                    } else if (!xyo.var) {
-                        xy = $.varDep("cmp_tmp"); //erase constant, forcing recompute
-                    }
-                    return $.func(Equal.cmp, x, y, xy);
+                    //TODO needs eval context to be remapped
+//                    //swap argument order
+//                    Term s = x;
+//                    x = y;
+//                    y = s;
+//
+//                    if (xyo == INT) {
+//                        int xyi = -((Int) xy).id;
+//                        if (x.op() == INT && y.op() == INT) {
+//                            return (Integer.compare(((Int) x).id, ((Int) y).id) == xyi) ? True : False;
+//                        }
+//                        xy = Int.the(xyi);
+//                    } else if (!xyo.var) {
+//                        xy = $.varDep("cmp_tmp"); //erase constant, forcing recompute
+//                    }
+//                    return $.func(Equal.cmp, x, y, xy);
                 }
             }
             return super.apply3(e, x, y, xy);

@@ -168,13 +168,6 @@ public abstract class Param {
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 
-//    /**
-//     * for equivalent tasks
-//     */
-//    public static final PriMerge taskEquivalentMerge =
-//            PriMerge.max;
-    //PriMerge.avg;
-    //PriMerge.avgGeoSlow;
 
     /**
      * budget factor for combining 2 tasks in derivation
@@ -205,7 +198,7 @@ public abstract class Param {
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
      */
-    public final static float SIGNAL_STRETCH_DUR = 4;
+    public final static float SIGNAL_STRETCH_DUR = 8;
 
     /** maximum time between signal updates to stretch an equivalently-truthed data point across.
      * stretches perception across some amount of lag
@@ -279,7 +272,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(4, 1, 32);
 
@@ -289,7 +282,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 4f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)

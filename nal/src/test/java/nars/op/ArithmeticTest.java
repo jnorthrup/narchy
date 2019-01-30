@@ -178,11 +178,15 @@ class ArithmeticTest {
     void testComparator() {
         TermTest.assertEq("-1", $$("cmp(1,2)").eval(n));
         TermTest.assertEq("cmp(1,2,-1)", $$("cmp(1,2,#x)").eval(n));
-        TermTest.assertEq("cmp(1,2,-1)", $$("cmp(2,1,#x)").eval(n));
         TermTest.assertEq("cmp(#1,2,#2)", $$("cmp(#1,2,#x)").eval(n));
 
         assertArithmetic("(f(1)==>f(2))", "[((f(#1)==>f(#2))&&cmp(#1,#2,-1)), ((f(#1)==>f(add(#1,1)))&&equal(#1,1))]");
         assertArithmetic("(f(2)==>f(1))", "[((f(#1)==>f(#2))&&cmp(#2,#1,-1)), ((f(add(#1,1))==>f(#1))&&equal(#1,1))]");
+    }
+    @Test
+    void testComparatorOrdering() {
+        TermTest.assertEq("cmp(1,2,-1)", $$("cmp(2,1,#x)").eval(n));
+
     }
 
     @Test

@@ -1951,6 +1951,14 @@ public enum Util {
         return false;
     }
 
+    public static <X> boolean and(X x, Iterable<Predicate<? super X>> p) {
+        for (Predicate pp : p) {
+            if (!pp.test(x))
+                return false;
+        }
+        return true;
+    }
+
     public static <X> boolean and(Predicate<? super X> p, Iterable<X> xx) {
         for (X x : xx) {
             if (!p.test(x))

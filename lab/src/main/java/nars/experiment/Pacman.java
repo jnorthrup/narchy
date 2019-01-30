@@ -9,7 +9,6 @@ import nars.NAgentX;
 import nars.experiment.pacman.PacmanGame;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
-import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
 import spacegraph.space2d.container.grid.Gridding;
 
@@ -36,7 +35,7 @@ public class Pacman extends NAgentX {
                 MonoBufImgBitmap2D.ColorMode.G,
                 MonoBufImgBitmap2D.ColorMode.B
         }) {
-            Bitmap2DSensor c = senseCamera("(G,c" + cm.name() + ")",
+            Bitmap2DSensor c = senseCamera("c" /*"(G,c"*/ + cm.name()  /* + *")"*/,
                     camScale.filter(cm)
             );
 
@@ -47,7 +46,7 @@ public class Pacman extends NAgentX {
         }
         window(gg, 900, 300);
 
-        actionTriState($.p(id, Atomic.the("x")), (dh) -> {
+        actionTriState($.the("x") /*$.p(id, Atomic.the("x"))*/, (dh) -> {
             switch (dh) {
                 case +1:
                     g.keys[1] = true;
@@ -63,7 +62,7 @@ public class Pacman extends NAgentX {
             }
         });
 
-        actionTriState($.p(id, Atomic.the("y")), (dh) -> {
+        actionTriState($.the("y") /*$.p(id, Atomic.the("y"))*/, (dh) -> {
             switch (dh) {
                 case +1:
                     g.keys[2] = true;

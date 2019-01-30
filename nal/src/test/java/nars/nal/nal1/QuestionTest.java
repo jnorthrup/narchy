@@ -44,7 +44,9 @@ class QuestionTest {
                 "((a &&+1 b) &&+1 c)");
     }
 
-    /** question to answer matching */
+    /**
+     * question to answer matching
+     */
     private void testQuestionAnswer(int cycles, @NotNull String belief, @NotNull String question, @NotNull String expectedSolution) throws Narsese.NarseseException {
         AtomicInteger ok = new AtomicInteger(0);
 
@@ -56,7 +58,7 @@ class QuestionTest {
 
         nar
                 .believe(belief, 1.0f, 0.9f)
-                .question(question, ETERNAL,(q, a) -> {
+                .question(question, ETERNAL, (q, a) -> {
                     if (a.punc() == '.' && a.term().equals(expectedSolutionTerm))
                         ok.incrementAndGet();
                 });
@@ -64,73 +66,16 @@ class QuestionTest {
 
         nar.run(cycles);
 
-        
 
-        assertTrue( ok.get() > 0);
-
-
-
-
-
-
-
-
-
-
-
-
+        assertTrue(ok.get() > 0);
 
 
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /** tests whether the use of a question guides inference as measured by the speed to reach a specific conclusion */
+    /**
+     * tests whether the use of a question guides inference as measured by the speed to reach a specific conclusion
+     */
     @Test
     void questionDrivesInference() {
 
@@ -150,7 +95,7 @@ class QuestionTest {
             return d;
         };
 
-        BiFunction<Integer,Integer,TestNAR> testProvider = (seed, variation) -> {
+        BiFunction<Integer, Integer, TestNAR> testProvider = (seed, variation) -> {
             NAR n = narProvider.apply(seed);
             TestNAR t = new TestNAR(n);
             switch (variation) {
@@ -161,7 +106,7 @@ class QuestionTest {
                     new DeductiveMeshTest(t, dims, timelimit) {
                         @Override
                         public void ask(@NotNull TestNAR n, Term term) {
-                            
+
                         }
                     };
                     break;
@@ -191,37 +136,32 @@ class QuestionTest {
         System.out.println("withOut: " + withOutTime);
 
 
-
-
     }
 
 
-    @Test @Disabled
+    @Test
+    @Disabled
     void testMathBackchain() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
 
-
-
-        n.on("odd", a->{
-            if (a.subs() == 1 && a.sub(0).op()== Op.ATOM) {
+        n.on("odd", a -> {
+            if (a.subs() == 1 && a.sub(0).op() == Op.ATOM) {
                 try {
                     return $.intValue(a.sub(0)) % 2 == 0 ? Bool.False : Bool.True;
                 } catch (NumberFormatException ignored) {
 
                 }
             }
-            return null; 
+            return null;
         });
         n.termVolumeMax.set(24);
         n.input(
-            "({1,2,3,4} --> number).",
-            "((({#x} --> number) && odd(#x)) ==> ({#x} --> ODD)).",
-            "((({#x} --> number) && --odd(#x)) ==> ({#x} --> EVEN)).",
-            "({#x} --> ODD)?",
-            "({#x} --> EVEN)?"
-
-
+                "({1,2,3,4} --> number).",
+                "((({#x} --> number) && odd(#x)) ==> ({#x} --> ODD)).",
+                "((({#x} --> number) && --odd(#x)) ==> ({#x} --> EVEN)).",
+                "({#x} --> ODD)?",
+                "({#x} --> EVEN)?"
 
 
         );
@@ -229,74 +169,75 @@ class QuestionTest {
 
     }
 
-    @Disabled @Test
+    @Disabled
+    @Test
     void testDeriveQuestionOrdinary() {
-        new TestNAR(NARS.tmp()) 
+        new TestNAR(NARS.tmp())
                 .ask("((S | P) --> M)")
                 .believe("(S --> M)")
                 .mustQuestion(512, "(P --> M)").test();
     }
-    @Disabled @Test
+
+    @Disabled
+    @Test
     void testDeriveQuestOrdinary() {
-        new TestNAR(NARS.tmp()) 
+        new TestNAR(NARS.tmp())
                 .quest("((S | P) --> M)")
                 .believe("(S --> M)")
                 .mustQuest(256, "(P --> M)").test();
     }
 
-    @Disabled @Test
+    @Disabled
+    @Test
     void testExplicitEternalizationViaQuestion() {
         new TestNAR(NARS.tmp())
                 .inputAt(1, "x. :|: %1.00;0.90%")
                 .inputAt(4, "x. :|: %0.50;0.90%")
                 .inputAt(7, "x. :|: %0.00;0.90%")
-                .inputAt(8, "$1.0 x?") 
+                .inputAt(8, "$1.0 x?")
                 .mustBelieve(64, "x", 0.5f, 0.73f /*ETERNAL*/)
-                .mustBelieve(64, "x", 0.5f, 0.9f, t -> t==4 /*temporal*/)
+                .mustBelieve(64, "x", 0.5f, 0.9f, t -> t == 4 /*temporal*/)
                 .test();
     }
 
-    @Disabled @Test
+    @Disabled
+    @Test
     void testExplicitEternalizationViaQuestionDynamic() {
         new TestNAR(NARS.tmp())
                 .inputAt(1, "x. :|: %1.00;0.90%")
                 .inputAt(4, "y. :|: %1.00;0.90%")
-                .inputAt(1, "$1.0 (x &&+3 y)? :|:") 
-                .inputAt(1, "$1.0 (x &&+3 y)?") 
-                
-                
+                .inputAt(1, "$1.0 (x &&+3 y)? :|:")
+                .inputAt(1, "$1.0 (x &&+3 y)?")
+
+
                 .mustBelieve(64, "(x &&+3 y)", 1f, 0.45f, t -> t == ETERNAL)
                 .mustBelieve(64, "(x &&+3 y)", 1f, 0.81f, t -> t == 1)
                 .test();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Test
+    void testDepVarInIndepImpl() {
+        new TestNAR(NARS.tmp())
+                .input("f(#x).")
+                .input("(f($x) ==> g($x)).")
+                .mustBelieve(64, "g(#1)", 1f, 0.81f)
+                .test();
+    }
+    @Test
+    void testDepVarInIndepImpl2() {
+        new TestNAR(NARS.tmp())
+                .input("f(#x,y).")
+                .input("(f($x,y) ==> g($x,y)).")
+                .mustBelieve(64, "g(#1,y)", 1f, 0.81f)
+                .test();
+    }
+    @Test
+    void testDepVarInIndepImpl3() {
+        new TestNAR(NARS.tmp())
+                .input("f(#x,#y).")
+                .input("(f($x,#y) ==> g($x,#y)).")
+                .mustBelieve(64, "g(#1,#2)", 1f, 0.81f)
+                .test();
+    }
 
 }

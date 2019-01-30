@@ -2,6 +2,7 @@ package nars.gui;
 
 import com.google.common.base.Joiner;
 import com.googlecode.lanterna.input.KeyType;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.Exe;
@@ -14,6 +15,7 @@ import nars.Narsese;
 import nars.Task;
 import nars.agent.NAgent;
 import nars.concept.Concept;
+import nars.concept.sensor.Signal;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
@@ -21,6 +23,7 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.term.Termed;
 import nars.truth.Truth;
 import nars.util.MemorySnapshot;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
@@ -52,14 +55,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n4;
 import static nars.$.$$;
+import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
@@ -258,6 +264,65 @@ public class NARui {
     }
 
     public static Surface taskView(NAR n) {
+        List<Predicate<Task>> filter = new CopyOnWriteArrayList<>();
+        Consumer<Task> printer = (Task t)->{
+            if (Util.and(t,(Iterable)filter))
+                System.out.println(t);
+        };
+
+        return new LabeledPane("Trace",
+            grid(
+                grid(
+                    new CheckBox("Belief").on(taskTrace(n, BELIEF, printer)),
+                    new CheckBox("Goal").on(taskTrace(n, GOAL, printer)),
+                    new CheckBox("Question").on(taskTrace(n, QUESTION, printer)),
+                    new CheckBox("Quest").on(taskTrace(n, QUEST, printer))
+                ),
+                grid(
+                    new CheckBox("Not Eternal").on(taskFilter(filter, (x)->!x.isEternal())),
+                    new CheckBox("Not Signal").on(taskFilter(filter, (x)->!(x instanceof Signal))),
+                    new CheckBox("Not Input").on(taskFilter(filter, (x)->x.stamp().length > 1))
+                    //TODO priority and complexity sliders
+                )
+            )
+        );
+    }
+
+    static BooleanProcedure taskFilter(List<Predicate<Task>> ff, Predicate<Task> f) {
+        return new BooleanProcedure() {
+            @Override
+            public synchronized void value(boolean on) {
+                if (on) {
+                    ff.add(f);
+                } else {
+                    boolean rem = ff.remove(f);
+                    assert(rem);
+                }
+            }
+        };
+    }
+
+
+    static BooleanProcedure taskTrace(NAR n, byte punc, Consumer<Task> printer) {
+        return new BooleanProcedure() {
+
+            private Off off;
+
+            @Override
+            public synchronized void value(boolean b) {
+                if (b) {
+                    assert(off==null);
+                    off = n.onTask(printer, punc);
+                } else {
+                    assert(off!=null);
+                    off.off();
+                    off = null;
+                }
+            }
+        };
+    }
+
+    public static Surface taskTable(NAR n) {
 
         int cap = 32;
         float rate = 1f;

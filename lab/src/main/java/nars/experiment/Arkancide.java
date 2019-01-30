@@ -72,7 +72,7 @@ public class Arkancide extends NAgentX {
         noid = new Arkanoid();
 
 
-        paddleSpeed = 140 * noid.BALL_VELOCITY;
+        paddleSpeed = 40 * noid.BALL_VELOCITY;
 
 
         //initUnipolar();
@@ -196,10 +196,10 @@ public class Arkancide extends NAgentX {
         int score;
 
 
-        public static final int SCREEN_WIDTH = 360;
+        public static final int SCREEN_WIDTH = 250;
         public static final int SCREEN_HEIGHT = 250;
 
-        public static final int BLOCK_LEFT_MARGIN = 10;
+        public static final int BLOCK_LEFT_MARGIN = 4;
         public static final int BLOCK_TOP_MARGIN = 15;
 
         public static final float BALL_RADIUS = 15.0f;
@@ -211,8 +211,8 @@ public class Arkancide extends NAgentX {
         public static final float BLOCK_WIDTH = 40.0f;
         public static final float BLOCK_HEIGHT = 15.0f;
 
-        public static final int COUNT_BLOCKS_X = 7;
-        public static final int COUNT_BLOCKS_Y = 3;
+        public static final int COUNT_BLOCKS_X = 5;
+        public static final int COUNT_BLOCKS_Y = 1; /* 3 */
 
         public static final float FT_STEP = 4.0f;
 

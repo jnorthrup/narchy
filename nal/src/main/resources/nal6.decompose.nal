@@ -61,10 +61,12 @@
 
     //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
     G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C,--G)),  (Goal:DesireWeak)
+      //G, C, is(C,"&&"), has(C,"--")     |-              --conjBefore(C,--G),  (Goal:DesireWeak)
     G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,  G)),  (Goal:DesireWeakN)
+      //G, C, is(C,"&&")                  |-              --conjBefore(C,  G),  (Goal:DesireWeakN)
 
     //conjunction belief and goal decomposition
-    C, X, is(C,"&&"), --isVar(X)                   |- conjAfter(C,  X), (Belief:DeductionPP,Goal:Deduction)
+    C, X, is(C,"&&"), --isVar(X)                   |- conjAfter(C,  X), (Belief:DeductionPP,Goal:DeductionPP)
     C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |- conjAfter(C,  --X), (Belief:DeductionPN,Goal:DeductionPN)
 //      (C==>A), (X==>A), is(C,"&&"), --isVar(X)     |- (conjAfter(C,  X) ==> A), (Belief:Deduction)
 //      (C==>A), (X==>A), is(C,"&&"), --isVar(X)     |- (conjAfter(C,  X) ==> A), (Belief:DeductionNN)

@@ -350,13 +350,22 @@ public class KIFInput {
                 }
                 break;
 
+            case "greaterThan":
+                if (args.size()==2)
+                    y = $.func("cmp", args.get(0), args.get(1), Int.the(+1));
+                break;
+            case "lessThan":
+                if (args.size()==2)
+                    y = $.func("cmp", args.get(0), args.get(1), Int.the(-1));
+                break;
+
             case "equal":
                 if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
                     
                     //y = impl(args.get(0), args.get(1), false);
                     y = SIM.the(args.get(0), args.get(1));
                 } else {
-                    
+
                 }
                 
                 
@@ -566,6 +575,7 @@ public class KIFInput {
         
         Term tmp = IMPL.the(a, b);
         if (tmp.unneg().op() != IMPL) {
+            //IMPL.the(a, b); //TEMPORARY
             logger.warn("un-impl: {} ==> {} ", a, b);
             return Bool.Null;
         }

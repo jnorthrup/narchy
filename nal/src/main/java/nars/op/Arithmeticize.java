@@ -93,7 +93,10 @@ public class Arithmeticize {
         @Override
         @Nullable
         protected Term newTerm(Task xx) {
-            return Arithmeticize.apply(xx.term(), null, nar.termVolumeMax.intValue(), true, nar.random());
+            Term xt = xx.term();
+            return Arithmeticize.apply(xt, null, nar.termVolumeMax.intValue(),
+                    xt.op()!=CONJ && xt.dt()!=0, //only parallel if conjunction parallel is input, avoids ((x&|y)&&...)
+                    nar.random());
         }
     }
 

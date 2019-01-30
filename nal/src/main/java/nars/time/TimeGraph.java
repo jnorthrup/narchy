@@ -334,7 +334,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             switch (eventTerm.op()) {
 
-                case SECTe:
+//                case SECTe:
                     //TODO n-ary
 //                    Event a = onlyAbsolute(eventTerm.sub(0));
 //                    if (a != null) {
@@ -355,7 +355,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 //                            }
 //                        }
 //                    }
-                    break;
+//                    break;
 
 //                case DIFFi:
 //                case SECTi:
@@ -462,7 +462,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             Subterms es = eventTerm.subterms();
                             int esn = es.subs();
                             for (int i = 0; i < esn; i++)
-                                link(event, 0, know(es.sub(i)));
+                                link(event, 0,
+                                        eventStart==TIMELESS ?
+                                            know(es.sub(i))
+                                            :
+                                            (eventStart==ETERNAL ? know(es.sub(i), ETERNAL) :
+                                                    know(es.sub(i), eventStart, eventEnd))
+                                );
 
                             break;
 
@@ -503,7 +509,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     protected boolean decomposeAddedEvent(Event event) {
-        return true;
+        //return true;
+        return event.id.op().temporal;
     }
 
     private void onNewTerm(Term t) {
