@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.*;
 //        }
 //        if (ret2 != null) {
 //            for (PriReference<Term> entry : ret2.termlinks()) {
-//                Term w = entry.get().term();
+//                Term w = entry.get().target();
 //                if (w.equals(premise1)) {
 //                    return true;
 //                }

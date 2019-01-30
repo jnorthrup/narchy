@@ -29,17 +29,17 @@ class TermRadixTreeTest {
 
         AbstractBytes s4 = TermBytes.termByVolume($("concept"));
         tree.putIfAbsent(s4, (Atomic.the(s4.toString())));
-        AbstractBytes s3 = TermBytes.termByVolume($("term"));
+        AbstractBytes s3 = TermBytes.termByVolume($("target"));
         tree.putIfAbsent(s3, (Atomic.the(s3.toString())));
         AbstractBytes s2 = TermBytes.termByVolume($("termutator"));
         tree.putIfAbsent(s2, (Atomic.the(s2.toString())));
         
 
-        assertNotNull(tree.get(TermBytes.termByVolume($("term"))));
+        assertNotNull(tree.get(TermBytes.termByVolume($("target"))));
         assertNull(tree.get(TermBytes.termByVolume($("xerm"))));
         assertNull(tree.get(TermBytes.termByVolume($("te")))); 
 
-        AbstractBytes s1 = TermBytes.termByVolume($("term"));
+        AbstractBytes s1 = TermBytes.termByVolume($("target"));
         assertNotNull(tree.putIfAbsent(s1, (Atomic.the(s1.toString()))));
         assertEquals(3, tree.size());
 
@@ -85,7 +85,7 @@ class TermRadixTreeTest {
 //            System.out.println(index.concepts.prettyPrint());
 
             assertEquals(x.concept(), y.term(),
-                    ()->y + " is " + y.getClass() + " and should have term equal to " + x.concept());
+                    ()->y + " is " + y.getClass() + " and should have target equal to " + x.concept());
         }
 
         assertEquals(terms.length + preSize, index.size());

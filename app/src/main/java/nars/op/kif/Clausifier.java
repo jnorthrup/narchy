@@ -1127,14 +1127,14 @@ public class Clausifier  {
     }
 
     /** ***************************************************************
-     * This method returns a new, unique skolem term with each
+     * This method returns a new, unique skolem target with each
      * invocation.
      *
      * @param vars A sorted TreeSet of the universally quantified
-     * variables that potentially define the skolem term.  The set may
+     * variables that potentially define the skolem target.  The set may
      * be empty.
      *
-     * @return A String.  The string will be a skolem functional term
+     * @return A String.  The string will be a skolem functional target
      * (a list) if vars contains variables.  Otherwise, it will be an
      * atomic constant.
      */
@@ -1196,7 +1196,7 @@ public class Clausifier  {
      *
      * @see existentialsOut()
      *
-     * @param evSubs A Map of variable - skolem term substitution
+     * @param evSubs A Map of variable - skolem target substitution
      * pairs.
      *
      * @param iUQVs A TreeSet of implicitly universally quantified

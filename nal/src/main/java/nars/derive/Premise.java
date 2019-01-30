@@ -39,10 +39,10 @@ public class Premise implements Comparable<Premise> {
     /**
      * specially constructed hash that is useful for sorting premises by:
      * a) task equivalency (hash)
-     * a) task term equivalency (hash)
-     * b) belief term equivalency (hash)
+     * a) task target equivalency (hash)
+     * b) belief target equivalency (hash)
      * <p>
-     * designed to maximize sequential repeat of derived task term
+     * designed to maximize sequential repeat of derived task target
      */
     public final long hash;
 
@@ -56,7 +56,7 @@ public class Premise implements Comparable<Premise> {
         this.hash =
                 //task's lower 23 bits in bits 40..64
                 (((long) task.hashCode()) << (64 - 24))
-                        | //task term's lower 20 bits in bits 20..40
+                        | //task target's lower 20 bits in bits 20..40
                         (((long) (task.term().hashCode() & 0b00000000000011111111111111111111)) << 20)
                         | //termlink's lower 20 bits in bits 0..20
                         ((beliefTerm.hashCode() & 0b00000000000011111111111111111111));
@@ -72,7 +72,7 @@ public class Premise implements Comparable<Premise> {
     ;
 
     /**
-     * resolve the most relevant belief of a given term/concept
+     * resolve the most relevant belief of a given target/concept
      * <p>
      * patham9 project-eternalize
      * patham9 depending on 4 cases
@@ -320,14 +320,14 @@ public class Premise implements Comparable<Premise> {
 //        if (unifiedBelief) {
 //            Concept originalBeliefConcept = n.conceptualize(beliefTerm());
 //            if (originalBeliefConcept != null) {
-//                Concept taskConcept = n.concept(task.term(), true);
+//                Concept taskConcept = n.concept(task.target(), true);
 //
 //
 //                float pri = termLink.priElseZero() * n.activateLinkRate.floatValue();
 //
 //
-//                Term moreConstantTerm = beliefConcept.term();
-//                Term lessConstantTerm = originalBeliefConcept.term();
+//                Term moreConstantTerm = beliefConcept.target();
+//                Term lessConstantTerm = originalBeliefConcept.target();
 //
 //
 //                beliefConcept.termlinks().putAsync(new PLink<>(lessConstantTerm, pri / 2f));

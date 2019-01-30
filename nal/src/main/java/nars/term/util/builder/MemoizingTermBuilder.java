@@ -8,7 +8,7 @@ import nars.term.util.cache.Intermed.InternedCompoundTransform;
 
 import java.util.UUID;
 
-/** memoizes certain term operations in addition to interning */
+/** memoizes certain target operations in addition to interning */
 public class MemoizingTermBuilder extends InterningTermBuilder {
 
     //TODO <Term,Term>

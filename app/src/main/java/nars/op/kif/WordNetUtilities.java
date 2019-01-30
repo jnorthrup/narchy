@@ -32,7 +32,7 @@ public class WordNetUtilities {
 
     /**
      * ***************************************************************
-     * Get a SUMO term minus its &% prefix and one character mapping suffix.
+     * Get a SUMO target minus its &% prefix and one character mapping suffix.
      */
     public static String getBareSUMOTerm(String term) {
 
@@ -60,7 +60,7 @@ public class WordNetUtilities {
     /**
      * ***************************************************************
      * Convert a list of Terms in the format "&%term1 &%term2" to an ArrayList
-     * of bare term Strings
+     * of bare target Strings
      */
     public static ArrayList convertTermList(String termList) {
 
@@ -74,7 +74,7 @@ public class WordNetUtilities {
 
     /**
      * ***************************************************************
-     * Get a SUMO term mapping suffix.
+     * Get a SUMO target mapping suffix.
      */
     public static char getSUMOMappingSuffix(String term) {
 
@@ -523,8 +523,8 @@ public class WordNetUtilities {
     /**
      * ***************************************************************
      * Read in a file with a nine-digit synset number followed by a space and a
-     * SUMO term. If the term is more specific than the current mapping for that
-     * synset, replace the old term. This is a utility that is not normally
+     * SUMO target. If the target is more specific than the current mapping for that
+     * synset, replace the old target. This is a utility that is not normally
      * called from the interactive Sigma system.
      */
     @SuppressWarnings("HardcodedFileSeparator")
@@ -566,10 +566,10 @@ public class WordNetUtilities {
      * ***************************************************************
      * Given a POS-prefixed synset that is not mapped to SUMO, go up the
      * hypernym links to try to find a synset that is linked. Return the SUMO
-     * term with its mapping type suffix and &% prefix. Note that in cases where
+     * target with its mapping type suffix and &% prefix. Note that in cases where
      * there are multiple hpernyms, When the first hypernym doesn't yield a good
-     * SUMO term, the routine does a depth first search (although going "up" the
-     * tree of hypernyms) to find a good term.
+     * SUMO target, the routine does a depth first search (although going "up" the
+     * tree of hypernyms) to find a good target.
      */
     private static String findMappingFromHypernym(String synset) {
 
@@ -638,7 +638,7 @@ public class WordNetUtilities {
 
                         } else {
                             pw.println(line.trim());
-                            System.out.println("INFO in WordNet.processMissingLinks(): No term found for synset"
+                            System.out.println("INFO in WordNet.processMissingLinks(): No target found for synset"
                                     + synset);
                         }
                     } else {
@@ -662,7 +662,7 @@ public class WordNetUtilities {
     /**
      * ***************************************************************
      * Use the WordNet hyper-/hypo-nym links to deduce a likely tlink for a SUMO
-     * term that has not yet been manually linked. This is a utility routine
+     * target that has not yet been manually linked. This is a utility routine
      * that should not be called during normal Sigma operation.
      */
     @SuppressWarnings("HardcodedFileSeparator")
@@ -733,7 +733,7 @@ public class WordNetUtilities {
                         }
                         if (term == null) {
                             pw.println(line.trim());
-                            System.out.println("Error in WordNetUtilities.updateWNversionProcess(): No term for synsets (old, new): "
+                            System.out.println("Error in WordNetUtilities.updateWNversionProcess(): No target for synsets (old, new): "
                                     + posNum + oldsynset + ' ' + posNum + newsynset);
                         } else {
                             pw.println(line + ' ' + term);

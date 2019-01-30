@@ -225,7 +225,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
     @Override
     public void update() {
 
-        Concept ccd = nar.conceptualizeDynamic(term/* lookup by term, not the termed which could be a dead instance */);
+        Concept ccd = nar.conceptualizeDynamic(term/* lookup by target, not the termed which could be a dead instance */);
         if (ccd == null)
             return;
 

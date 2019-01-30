@@ -64,7 +64,7 @@ public class NARSpeak {
 
 
 //    /**
-//     * TODO abstract to more general commentary triggered by any provided event term
+//     * TODO abstract to more general commentary triggered by any provided event target
 //     */
 //    public static class VocalCommentary extends NAgent {
 //        public VocalCommentary(NAR nar) {
@@ -85,7 +85,7 @@ public class NARSpeak {
 //            nar.onOp("say", (t,n)->{
 //
 //                if (t.end() >= n.time()-n.dur()) {
-//                    Term x = Functor.funcArgsArray(t.term())[0];
+//                    Term x = Functor.funcArgsArray(t.target())[0];
 //                    if (!x.op().var) {
 //                        v.speak(x, t.end(), t.truth());
 //                    }

@@ -33,7 +33,7 @@ public class UnevaluatedTask extends NALTask {
 //
 //        //HACK, for ensuring the operator invocation etc
 //        FasterList<ITask> q = new FasterList(1);
-//        preProcess(n, term(), q);
+//        preProcess(n, target(), q);
 //        return postProcess(q, false);
 //    }
     @Override

@@ -16,13 +16,13 @@ import static nars.Op.VAR_PATTERN;
 abstract public class TermMatch {
 
     /**
-     * test the exact term, if found
+     * test the exact target, if found
      */
     abstract public boolean test(Term t);
 
     /**
      * test what can be inferred from the superterm if the direct locator was not possible
-     * this is not the direct superterm but the root of the term in which the path may be longer than length 1 so several layers may separate them
+     * this is not the direct superterm but the root of the target in which the path may be longer than length 1 so several layers may separate them
      */
     abstract public boolean testSuper(Term x);
 
@@ -37,7 +37,7 @@ abstract public class TermMatch {
 //    }
 
     /**
-     * term representing any unique parameters beyond the the class name which is automatically incorporated into the predicate it forms
+     * target representing any unique parameters beyond the the class name which is automatically incorporated into the predicate it forms
      */
     @Nullable
     public abstract Term param();
@@ -134,7 +134,7 @@ abstract public class TermMatch {
     }
 
     /**
-     * has the term in its structure, one of the true bits of the provide vector ("has any")
+     * has the target in its structure, one of the true bits of the provide vector ("has any")
      */
     public final static class Has extends TermMatch {
         final int struct;
@@ -186,7 +186,7 @@ abstract public class TermMatch {
     }
 
     /**
-     * is of a specific type, and has the term in its structure
+     * is of a specific type, and has the target in its structure
      */
     public final static class IsHas extends TermMatch {
 
@@ -342,7 +342,7 @@ abstract public class TermMatch {
 
         @Override
         public boolean testSuper(Term x) {
-            return (x.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the term and if it was only atoms
+            return (x.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the target and if it was only atoms
         }
 
         @Override

@@ -67,7 +67,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     }
 
     private TermLinker pixelLinker(int xx, int yy) {
-        //n.conceptBuilder.termlinker(term)
+        //n.conceptBuilder.termlinker(target)
 
         Term[] nn;
         Term center = pixelTerm.get(xx, yy);

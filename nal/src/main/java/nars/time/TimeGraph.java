@@ -53,7 +53,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
     /**
-     * index by term
+     * index by target
      */
 //    public final Multimap<Term, Event> byTerm = MultimapBuilder
 //            .hashKeys()
@@ -114,7 +114,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     /**
-     * creates an event for a hypothetical term which may not actually be an event;
+     * creates an event for a hypothetical target which may not actually be an event;
      * but if it is there or becomes there, it will connect what it needs to
      */
     protected Event shadow(Term v) {
@@ -123,7 +123,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     public final Event know(Term v) {
-        //include the temporal information contained in a temporal-containing term;
+        //include the temporal information contained in a temporal-containing target;
         // otherwise it contributes no helpful information
         if (v.hasAny(Op.Temporal))
             return event(v, TIMELESS, TIMELESS, true);
@@ -899,7 +899,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
     /**
-     * preprocess the dt used to construct a new term.
+     * preprocess the dt used to construct a new target.
      * ex: dithering
      */
     @Deprecated
@@ -1038,7 +1038,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         Op xop = x.op();
 
         if (x.equals(x.root())) {
-            //try any absolute events which have different term ID but the same term root as these will be readily valid solutions
+            //try any absolute events which have different target ID but the same target root as these will be readily valid solutions
             FasterList<Event> toTry = null; //buffer to avoid concurrent modification exception
             for (Map.Entry<Term, Collection<Event>> e : byTerm.entrySet()) {
                 Term et = e.getKey();

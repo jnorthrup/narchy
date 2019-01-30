@@ -31,7 +31,7 @@ abstract public class UnifySubst extends Unify {
 
     /**
      *  x and y are two terms being unified to form the set of substitutions.
-     *  the 'input'  term is what transformation will be attempted upon.
+     *  the 'input'  target is what transformation will be attempted upon.
      *  ot may be the same as X or Y, or something completely different.
      */
     public boolean transform(Term input, Term x, Term y, int ttl) {

@@ -6,8 +6,8 @@
 //import nars.control.channel.CauseChannel;
 //import nars.task.ITask;
 //import nars.task.NALTask;
-//import nars.term.Term;
-//import nars.term.atom.Bool;
+//import nars.target.Term;
+//import nars.target.atom.Bool;
 //import nars.truth.Truth;
 //import nars.truth.TruthFunctions;
 //import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -46,13 +46,13 @@
 //        }
 //
 //        if (relation != null) {
-//            Term x = tx.term();
+//            Term x = tx.target();
 //            Truth truX = tx.truth();
 //            if (truX.isNegative()) {
 //                x = x.neg();
 //                truX = truX.neg();
 //            }
-//            Term y = ty.term();
+//            Term y = ty.target();
 //            Truth truY = ty.truth();
 //            if (truY.isNegative()) {
 //                y = y.neg();

@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 
 /**
- * decodes a term from a provied context (X)
+ * decodes a target from a provied context (X)
  * and matches it according to the matcher impl
  */
 public final class TermMatchPred<X> extends AbstractPred<X> {

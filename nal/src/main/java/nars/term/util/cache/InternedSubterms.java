@@ -1,4 +1,4 @@
-//package nars.term.util;
+//package nars.target.util;
 //
 //import com.google.common.io.ByteArrayDataOutput;
 //import jcog.data.byt.HashCachedBytes;
@@ -6,7 +6,7 @@
 //import jcog.pri.UnitPri;
 //import nars.Op;
 //import nars.subterm.Subterms;
-//import nars.term.Term;
+//import nars.target.Term;
 //
 //import java.util.Arrays;
 //

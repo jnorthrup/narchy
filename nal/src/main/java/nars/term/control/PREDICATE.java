@@ -14,7 +14,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * The PrediTerm - a term-identified predicate (boolean-returning) function of a state
+ * The PrediTerm - a target-identified predicate (boolean-returning) function of a state
  *
  * @param X the type of state that is relevant to implementations
  */

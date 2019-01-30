@@ -109,7 +109,7 @@ public class NALSchema {
      * according to presence of a Query variable in a data point.
      *
      * the pointGenerator transforms the raw components of a row
-     * into a compound term (task content). how this is done
+     * into a compound target (task content). how this is done
      * controls the semantics of the data point, with regard
      * to the application: prediction, optimization, etc.
      *

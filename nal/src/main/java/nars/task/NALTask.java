@@ -47,7 +47,7 @@ public class NALTask extends UnitPri implements Task {
         super();
 
         if (!term.op().taskable)
-            throw new TaskException(term, "invalid term: " + term);
+            throw new TaskException(term, "invalid target: " + term);
 
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
             throw new TaskException(term, "null truth");

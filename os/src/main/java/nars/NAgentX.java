@@ -13,8 +13,6 @@ import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
-import nars.derive.BeliefSource;
-import nars.derive.Derivation;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
@@ -41,7 +39,6 @@ import spacegraph.space2d.container.grid.Gridding;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -49,7 +46,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.derive.BeliefSource.ListTermLinker;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -251,9 +247,9 @@ abstract public class NAgentX extends NAgent {
         List<Concept> actionConcepts = a.actions.stream().flatMap(x -> stream(x.components().spliterator(), false)).map(n::concept).collect(toList());
 
         // virtual tasklinks to sensors (sampler)
-        BiFunction<Concept, Derivation, BeliefSource.LinkModel> sensorLinker = ListTermLinker(sensorConcepts);
-        BiFunction<Concept, Derivation, BeliefSource.LinkModel> actionLinker = ListTermLinker(actionConcepts);
-        BiFunction<Concept, Derivation, BeliefSource.LinkModel> rewardLinker = ListTermLinker(rewardConcepts);
+//        BiFunction<Concept, Derivation, BeliefSource.LinkModel> sensorLinker = ListTermLinker(sensorConcepts);
+//        BiFunction<Concept, Derivation, BeliefSource.LinkModel> actionLinker = ListTermLinker(actionConcepts);
+//        BiFunction<Concept, Derivation, BeliefSource.LinkModel> rewardLinker = ListTermLinker(rewardConcepts);
 
 //        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
 //                actionConcepts,
@@ -306,7 +302,7 @@ abstract public class NAgentX extends NAgent {
 
 //        AudioContext cc = new AudioContext();
 //        Clock c = cc.clock(200f);
-//        new Metronome(a.id.term(), c, n);
+//        new Metronome(a.id.target(), c, n);
 //        cc.printCallChain();
 
 
@@ -374,11 +370,11 @@ abstract public class NAgentX extends NAgent {
 //
 //                if (c==null) return null;
 //
-//                Term cct = cc.term();
+//                Term cct = cc.target();
 //
 //                Consumer<TaskLink> cSpecial = new PriForget<>(  Util.lerp(0.25f, 0, 1-((PriForget)c).mult));
 //                return (tl)->{
-//                      if (tl.punc()==GOAL || (tl.term().op()==IMPL && tl.term().sub(1).equals(cct)))
+//                      if (tl.punc()==GOAL || (tl.target().op()==IMPL && tl.target().sub(1).equals(cct)))
 //                          cSpecial.accept(tl);
 //                      else
 //                          c.accept(tl);

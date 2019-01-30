@@ -60,7 +60,7 @@ public class LinearTruthPolation extends TruthPolation {
             eviFactor *= intermpolate(nar);
             if (eviFactor < ScalarValue.EPSILON)
                 return null;
-            /*if (term.volume() > nar.termVolumeMax.intValue())
+            /*if (target.volume() > nar.termVolumeMax.intValue())
                 return null;*/
         }
 

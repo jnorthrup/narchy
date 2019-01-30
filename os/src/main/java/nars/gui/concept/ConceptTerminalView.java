@@ -30,7 +30,7 @@ public class ConceptTerminalView extends ConceptView {
         if (c!=null) {
 
             sa.setLength(0);
-            c.print(sa, false, false, false);
+            c.print(sa, false, false);
 
             io.term.clearScreen();
             io.append(sa);

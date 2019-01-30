@@ -2,7 +2,7 @@
 //
 //import jcog.TODO;
 //import nars.NAR;
-//import nars.term.Term;
+//import nars.target.Term;
 //import nars.truth.Truth;
 //import org.jetbrains.annotations.NotNull;
 //
@@ -16,8 +16,8 @@
 //    private final Consumer<Truth> action;
 //
 //
-//    public BeliefActionConcept(@NotNull Term term, @NotNull NAR n, Consumer<Truth> action) {
-//        super(term, n);
+//    public BeliefActionConcept(@NotNull Term target, @NotNull NAR n, Consumer<Truth> action) {
+//        super(target, n);
 //        this.action = action;
 //    }
 //

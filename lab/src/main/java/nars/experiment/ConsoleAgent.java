@@ -44,7 +44,7 @@ public class ConsoleAgent extends NAgentX {
 
 
     public ConsoleAgent(NAR nar) {
-        super("term", nar);
+        super("target", nar);
 
         R = new TestConsole(
                 Atomic.the("it"),
@@ -232,7 +232,7 @@ public class ConsoleAgent extends NAgentX {
 
         @Override
         protected boolean setBackgroundColor(GL2 gl, TextCharacter c, int col, int row) {
-            float cc = 0.5f; //nar.concepts.pri(charMatrix[col][row].term, 0);
+            float cc = 0.5f; //nar.concepts.pri(charMatrix[col][row].target, 0);
             if (cc == cc) {
                 gl.glColor4f(cc, cc, cc, 0.95f);
                 return true;

@@ -78,7 +78,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         if (x!=null) {
             SeriesBeliefTable.SeriesRemember y = x.input(c);
-            y.remember(new MyTaskLink(c));
+            y.remember(new MyTaskLink());
             return y;
         }
 
@@ -189,11 +189,11 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
     private class MyTaskLink extends AbstractTask {
-        private final TaskConcept c;
+//        private final TaskConcept c;
 
         Task lastActivated = null;
-        public MyTaskLink(TaskConcept c) {
-            this.c = c;
+        public MyTaskLink() {
+//            this.c = c;
         }
 
         @Override
@@ -204,10 +204,10 @@ public class SensorBeliefTables extends BeliefTables {
                 if (p == p) {
                     series.tasklink.pri(p);
 
-                    TaskLink.link(series.tasklink, c);
+                    TaskLink.link(series.tasklink, n);
 
                     if (lastActivated!=lastTask) {
-                        n.activate(c, p);
+//                        n.activate(c, p);
                         lastActivated = lastTask;
                     } //else: reactivate?
                 }

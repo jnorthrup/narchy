@@ -12,9 +12,9 @@ import nars.term.atom.Atom;
 import nars.unify.Unify;
 
 /**
- * the proxy concepts present a bidirectional facade between a referenced and an alias term (alias term can be just a serial # atom wrapped in a product).
+ * the proxy concepts present a bidirectional facade between a referenced and an alias target (alias target can be just a serial # atom wrapped in a product).
  * <p>
- * it replaces the index entry for the referenced with itself and also adds itself so from its start it intercepts all references to itself or the aliased (abbreviated) term whether this occurrs at the top level or as a subterm in another term (or as a subterm in another abbreviation, etc..)
+ * it replaces the index entry for the referenced with itself and also adds itself so from its start it intercepts all references to itself or the aliased (abbreviated) target whether this occurrs at the top level or as a subterm in another target (or as a subterm in another abbreviation, etc..)
  * <p>
  * the index is usually a weakmap or equivalent in which abbreviations can be forgotten as well as any other concept.
  * <p>
@@ -30,8 +30,8 @@ public final class AliasConcept extends TaskConcept {
         super(
                 id,
                 null, null, null, null,
-                abbr.linker(), //shared
-                abbr.tasklinks());
+                abbr.linker() //shared
+                );
 
         this.abbr = abbr;
 

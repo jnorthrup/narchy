@@ -330,11 +330,11 @@ public interface NAct {
 //            float conf = 0.05f; //less than curiosity
 //            x.goals().tables.add(new EternalTable(1));
 //            x.goals().tableFirst(EternalTable.class).add(
-//                    Remember.the(new NALTask(x.term(), GOAL,
+//                    Remember.the(new NALTask(x.target(), GOAL,
 //                            $.t(freq, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 //            x.beliefs().tables.add(new EternalTable(1));
 //            x.beliefs().tableFirst(EternalTable.class).add(
-//                    Remember.the(new NALTask(x.term(), BELIEF,
+//                    Remember.the(new NALTask(x.target(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 
             //x.resolution(0.5f);
@@ -378,12 +378,12 @@ public interface NAct {
         //BeliefTables xg = (BeliefTables) x.goals();
         //xg.tables.add(new EternalTable(1));
 //            xg.tableFirst(EternalTable.class).add(
-//                    Remember.the(new NALTask(x.term(), GOAL,
+//                    Remember.the(new NALTask(x.target(), GOAL,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
 
 //            xb.tables.add(new EternalTable(1));
 //            xb.tableFirst(EternalTable.class).add(
-//                    Remember.the(new NALTask(x.term(), BELIEF,
+//                    Remember.the(new NALTask(x.target(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
         //}
         return x;

@@ -30,7 +30,7 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
         this(term,
                 new SensorBeliefTables(term, true, n.conceptBuilder),
 
-                //n.conceptBuilder.newTable(term, false),
+                //n.conceptBuilder.newTable(target, false),
                 new RTreeBeliefTable(),
 
                 linker,

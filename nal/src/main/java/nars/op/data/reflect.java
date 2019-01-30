@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Produces canonical "Reflective-Narsese" representation of a parameter term
+ * Produces canonical "Reflective-Narsese" representation of a parameter target
  *
  * @author me
  */
@@ -120,7 +120,7 @@ public class reflect {
 //        @Override
 //        public boolean preFilter(Task next) {
 //            if (super.preFilter(next)) {
-//                Term tt = next.term();
+//                Term tt = next.target();
 //                if (tt.subs() > 1 && !tt.hasAny(VAR_QUERY)) {
 //                    if (tt.volume() <= n.termVolumeMax.intValue() * 0.75f)
 //                        return filter.addIfMissing(next);
@@ -131,7 +131,7 @@ public class reflect {
 //
 //        @Override
 //        protected float leak(Task next) {
-//            Term x = next.term().concept();
+//            Term x = next.target().concept();
 //            Term r = $.func(REFLECT_OP, x).eval(n, true).normalize();
 //            if (x.equals(r))
 //                return 0f;
@@ -140,7 +140,7 @@ public class reflect {
 //                if (yvol <= n.termVolumeMax.intValue()) {
 //                    Task y = Task.clone(next, r);
 //                    if (y != null) {
-//                        y.pri(next.priElseZero() * Util.unitize(x.term().volume() / ((float)yvol)));
+//                        y.pri(next.priElseZero() * Util.unitize(x.target().volume() / ((float)yvol)));
 //                        logger.info("+ {}", y);
 //                        input(y);
 //                        return 1;
@@ -170,10 +170,10 @@ public class reflect {
 //        @Override
 //        public boolean preFilter(Task next) {
 //            if (super.preFilter(next)) {
-//                Term tt = next.term();
+//                Term tt = next.target();
 //                if (tt.subs() > 1 && !tt.hasAny(VAR_QUERY))
 //                    if (tt.volume() <= n.termVolumeMax.intValue() * VOL_RATIO_MAX)
-//                        return filter.addIfMissing(tt.term().concept());
+//                        return filter.addIfMissing(tt.target().concept());
 //
 //            }
 //
@@ -186,7 +186,7 @@ public class reflect {
 //
 //
 //
-//            Term x = next.term().concept();
+//            Term x = next.target().concept();
 //            Term reflectionSim = $.sim($.func(REFLECT_OP, x), x).eval(n, true).normalize();
 //            if ((reflectionSim != null && reflectionSim.subs() > 0)) {
 //                int rvol = reflectionSim.volume();
@@ -197,7 +197,7 @@ public class reflect {
 //                            n.confMin.floatValue();
 //
 //                    Task t = new NALTask(reflectionSim, BELIEF, $.t(1f, c), n.time(), ETERNAL, ETERNAL, n.evidence());
-//                    t.pri(next.priElseZero() * Util.unitize(x.term().volume() / ((float)rvol)));
+//                    t.pri(next.priElseZero() * Util.unitize(x.target().volume() / ((float)rvol)));
 //                    input(t);
 //                    logger.info("+ {}", reflectionSim);
 //                    return 1;

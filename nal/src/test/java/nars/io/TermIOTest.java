@@ -102,11 +102,11 @@ class TermIOTest {
     @Test
     void testTermSerialization() throws Exception {
 
-        assertEqualSerialize("<a-->b>" /* term, not the concept */);
-        assertEqualSerialize("<aa-->b>" /* term, not the concept */);
-        assertEqualSerialize("<aa--><b<->c>>" /* term, not the concept */);
+        assertEqualSerialize("<a-->b>" /* target, not the concept */);
+        assertEqualSerialize("<aa-->b>" /* target, not the concept */);
+        assertEqualSerialize("<aa--><b<->c>>" /* target, not the concept */);
         
-        assertEqualSerialize("exe(a,b)" /* term, not the concept */);
+        assertEqualSerialize("exe(a,b)" /* target, not the concept */);
     }
 
     @Test
@@ -122,11 +122,11 @@ class TermIOTest {
     @Test
     void testTemporalSerialization() throws Exception {
 
-        byte[] atemporal = assertEqualSerialize("(a && b)" /* term, not the concept */);
-        byte[] temporal1 = assertEqualSerialize("(a &&+1 b)" /* term, not the concept */);
-        byte[] temporal2 = assertEqualSerialize("(a &&+100 b)" /* term, not the concept */);
-        byte[] temporal3 = assertEqualSerialize("(a &&+100000 b)" /* term, not the concept */);
-        byte[] temporal4 = assertEqualSerialize("(a &&+10000000 b)" /* term, not the concept */);
+        byte[] atemporal = assertEqualSerialize("(a && b)" /* target, not the concept */);
+        byte[] temporal1 = assertEqualSerialize("(a &&+1 b)" /* target, not the concept */);
+        byte[] temporal2 = assertEqualSerialize("(a &&+100 b)" /* target, not the concept */);
+        byte[] temporal3 = assertEqualSerialize("(a &&+100000 b)" /* target, not the concept */);
+        byte[] temporal4 = assertEqualSerialize("(a &&+10000000 b)" /* target, not the concept */);
 
         //test zig-zag variable encoding
         assertEquals(temporal1.length, atemporal.length + 1);
@@ -134,9 +134,9 @@ class TermIOTest {
         assertEquals(temporal3.length, temporal2.length + 1);
         assertEquals(temporal4.length, temporal3.length + 1);
 
-        assertEqualSerialize("(a &&+1 (a &&+1 a))" /* term, not the concept */);
-        assertEqualSerialize("(a ==>+1 b)" /* term, not the concept */);
-        assertEqualSerialize("(b ==>+1 b)" /* term, not the concept */);
+        assertEqualSerialize("(a &&+1 (a &&+1 a))" /* target, not the concept */);
+        assertEqualSerialize("(a ==>+1 b)" /* target, not the concept */);
+        assertEqualSerialize("(b ==>+1 b)" /* target, not the concept */);
 
         assertEqualSerialize("(a ==>+- b)");
         assertEqualSerialize("(a ==>+- a)");
@@ -258,7 +258,7 @@ class TermIOTest {
     private static void assertTermEqualSerialize(String s) throws Narsese.NarseseException, IOException {
         Termed t = $.$(s);
         assertTrue(t.term().isNormalized());
-        assertEqualSerialize(t.term() /* term, not the concept */);
+        assertEqualSerialize(t.term() /* target, not the concept */);
     }
 
     @Test

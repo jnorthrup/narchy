@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import static nars.Op.*;
 
 /**
- * something which is like a term but isnt quite,
+ * something which is like a target but isnt quite,
  * like a subterm container
  * <p>
  * Features exhibited by, and which can classify terms
@@ -141,8 +141,8 @@ public interface Termlike {
 
     /**
      * (first-level only, non-recursive)
-     * if contained within; doesnt match this term (if it's a term);
-     * false if term is atomic since it can contain nothing
+     * if contained within; doesnt match this target (if it's a target);
+     * false if target is atomic since it can contain nothing
      */
     boolean contains(Term t);
 
@@ -225,7 +225,7 @@ public interface Termlike {
     }
 
 //    /**
-//     * if it's larger than this term it can not be equal to this.
+//     * if it's larger than this target it can not be equal to this.
 //     * if it's larger than some number less than that, it can't be a subterm.
 //     */
 //    default boolean impossibleSubTermOrEqualityVolume(int otherTermsVolume) {

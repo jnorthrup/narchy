@@ -118,7 +118,7 @@ public final class Int implements Intlike, The {
 //        }
 //
 //        @Override
-//        public Term term() {
+//        public Term target() {
 //            Term cur = i;
 //            int next = this.i.id + 1;
 //            if (next >= max)

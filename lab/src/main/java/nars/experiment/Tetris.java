@@ -155,7 +155,7 @@ public class Tetris extends NAgentX {
 //
 //                    Truth t = x.beliefs().truth(now, nn);
 //                    if (t != null) {
-//                        Term pred = x.term().sub(1);
+//                        Term pred = x.target().sub(1);
 //                        implConc.put(new NLink(pred, t.evi()*0.001f));
 //                    }
 //                });

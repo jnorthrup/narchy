@@ -425,7 +425,7 @@ public class NARui {
 //                        AspectAlign.Align.Center, b.width, b.height), 500, 500);
 //                }))
 //            .on(x -> x instanceof Concept,
-//                    (Concept x) -> new MetaFrame(new BeliefTableChart(x.term(), a.nar())))
+//                    (Concept x) -> new MetaFrame(new BeliefTableChart(x.target(), a.nar())))
 //            .on(x -> x instanceof LinkedHashMap, (LinkedHashMap x)->{
 //                return new AutoSurface<>(x.keySet());
 //            })

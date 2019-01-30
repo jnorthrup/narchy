@@ -4,21 +4,17 @@ import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.gui.BagView;
 import nars.gui.DurSurface;
 import nars.gui.NARui;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.Plot2D;
-import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.HashMap;
@@ -45,21 +41,23 @@ public class ConceptSurface extends TabMenu {
                     Term xx = x.concept();
                     Plot2D p = new Plot2D(64, Plot2D.Line)
                             .add("pri", () -> n.concepts.pri(xx, 0));
-                    CheckBox boost = new CheckBox("Boost");
-                    return DurSurface.get(new Splitting<>(
 
-                            boost, p
-
-                            , 0.8f), n, (nn) -> {
+//                    CheckBox boost = new CheckBox("Boost");
+                    return DurSurface.get(//new Splitting<>(
+                            //boost,
+                            p
+                    //        , 0.8f)
+                    ,
+                    n, (nn) -> {
                         p.update();
-                        if (boost.on()) {
-                            n.activate(xx, 1f);
-                        }
+//                        if (boost.on()) {
+//                            n.activate(xx, 1f);
+//                        }
                     });
                 },
                 "beliefs", () -> NARui.beliefCharts(n, n.concept(x)),
 //                        "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
-                "tasklinks", () -> new LabeledPane("TaskLinks", new BagView(n.concept(x).tasklinks(), n)),
+//                "tasklinks", () -> new LabeledPane("TaskLinks", new BagView(n.concept(x).tasklinks(), n)),
                 "goal", () -> {
                     return new Gridding(
                             new PushButton("gOAL tRUE").click((b) -> {

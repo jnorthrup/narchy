@@ -146,7 +146,7 @@ public class NARHear extends Loop {
                 new NALTask(term, BELIEF, $.t(1, (nar.confDefault(BELIEF)*confFactor)),
                         now, now, now + nar.dur(), nar.evidence())
 //            new TruthletTask(
-//                term,
+//                target,
 //                BELIEF,
 //                Truthlet.impulse(
 //                        now, now+1 /* TODO use realtime to translate wordDelayMS to cycles */, 1f, 0f,

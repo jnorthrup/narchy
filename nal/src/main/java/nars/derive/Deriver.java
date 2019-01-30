@@ -39,7 +39,7 @@ abstract public class Deriver extends Causable {
 
     /**
      * determines the time for beliefs to be matched during premise formation
-     * input: premise Task, premise belief term
+     * input: premise Task, premise belief target
      * output: long[2] time interval
      **/
     public BiFunction<Task, Term, long[]> timing;
@@ -49,19 +49,17 @@ abstract public class Deriver extends Causable {
 
     protected final DeriverRules rules;
 
-
-
-    /**
-     * source of concepts supplied to this for this deriver
-     */
-    protected final Consumer<Predicate<Activate>> source;
+//    /**
+//     * source of concepts supplied to this for this deriver
+//     */
+//    protected final Consumer<Predicate<Activate>> source;
 
     public DerivePri pri;
     public final IntRange tasklinkSpread =  new IntRange(Param.TaskLinkSpreadDefault, 1, 32);
 
 
     protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
-        this(source, PremiseDeriverCompiler.the(rules), nar);
+        this(PremiseDeriverCompiler.the(rules), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
     }
@@ -77,17 +75,17 @@ abstract public class Deriver extends Causable {
     }
 
 
-    protected Deriver(Consumer<Predicate<Activate>> source, DeriverRules rules, NAR nar) {
-        this(source, rules, nar.attn.derivePri, nar);
+    protected Deriver(DeriverRules rules, NAR nar) {
+        this(rules, nar.attn.derivePri, nar);
     }
 
-    protected Deriver(Consumer<Predicate<Activate>> source, DeriverRules rules, DerivePri pri, NAR nar) {
+    protected Deriver(DeriverRules rules, DerivePri pri, NAR nar) {
         super(
                 $.func("deriver", $.the(serial.getAndIncrement()))
         );
         this.pri = pri;
         this.rules = rules;
-        this.source = source;
+//        this.source = source;
         this.timing =
                 //new TaskOrPresentTiming(nar);
                 //new AdHocDeriverTiming(nar);

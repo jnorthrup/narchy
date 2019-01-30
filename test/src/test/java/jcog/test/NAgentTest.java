@@ -216,7 +216,7 @@ public class NAgentTest {
 
 //        List<Task> tasks = n.tasks().sorted(
 //                Comparators.byFloatFunction((FloatFunction<Task>) task -> -task.priElseZero())
-//                        .thenComparing(Termed::term).thenComparing(System::identityHashCode)).collect(toList());
+//                        .thenComparing(Termed::target).thenComparing(System::identityHashCode)).collect(toList());
 //        tasks.forEach(t -> {
 //            System.out.println(t);
 //        });

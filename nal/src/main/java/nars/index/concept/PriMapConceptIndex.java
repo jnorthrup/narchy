@@ -11,9 +11,9 @@
 //import nars.IO;
 //import nars.concept.Concept;
 //import nars.concept.PermanentConcept;
-//import nars.term.Term;
-//import nars.term.Termed;
-//import nars.term.Variable;
+//import nars.target.Term;
+//import nars.target.Termed;
+//import nars.target.Variable;
 //import nars.truth.Truth;
 //import org.jetbrains.annotations.NotNull;
 //import org.jetbrains.annotations.Nullable;
@@ -58,7 +58,7 @@
 //        @Nullable
 //        @Override
 //        public Term key(PLink<Concept> x) {
-//            return x.id.term();
+//            return x.id.target();
 //        }
 //    }
 //
@@ -165,7 +165,7 @@
 //
 //
 //            @Override
-//            protected Hold mode(Term term, Concept v) {
+//            protected Hold mode(Term target, Concept v) {
 //                if (v instanceof PermanentConcept)
 //                    return STRONG;
 //                else
@@ -173,7 +173,7 @@
 //            }
 //
 //            @Override
-//            protected void onRemove(Term term, Concept termed) {
+//            protected void onRemove(Term target, Concept termed) {
 //                assert (!(termed instanceof PermanentConcept));
 //
 //                PriMapConceptIndex.this.onRemove(termed);
@@ -196,10 +196,10 @@
 //
 //                concept.termlinks().forEach(victimCollector);
 //
-//                super.remove(concept.term());
+//                super.remove(concept.target());
 //
 //                neighbors.forEach(t -> {
-//                    Concept c = super.get(t.term());
+//                    Concept c = super.get(t.target());
 //                    if (c != null) {
 //                        update(c);
 //                    }
@@ -242,7 +242,7 @@
 //
 //        if (createIfMissing) {
 //
-//            return concepts.compute(x, (term, u) -> (Concept) nar.conceptBuilder.apply(term, u));
+//            return concepts.compute(x, (target, u) -> (Concept) nar.conceptBuilder.apply(target, u));
 //        } else {
 //            return concepts.get(x);
 //        }
@@ -291,7 +291,7 @@
 //            }
 //        }
 //        return true;
-//    }, c -> IO.termToBytes(c.term()), 1024, 0.01f);
+//    }, c -> IO.termToBytes(c.target()), 1024, 0.01f);
 //
 //
 //
@@ -339,7 +339,7 @@
 //        Table<?,nars.link.TaskLink> ta = c.tasklinks();
 //        score += (ta.size() / (1f + ta.capacity())) / complexity;
 //
-//        Table<nars.term.Term,PriReference<Term>> te = c.termlinks();
+//        Table<nars.target.Term,PriReference<Term>> te = c.termlinks();
 //        score += (te.size() / (1f + te.capacity())) / complexity;
 //
 //        return score;

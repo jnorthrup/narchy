@@ -32,7 +32,7 @@ public enum Tense {
     public static final int DTERNAL = Integer.MIN_VALUE;
 
     /**
-     * a dt placeholder value for preventing premature flattening during derivation term construction
+     * a dt placeholder value for preventing premature flattening during derivation target construction
      */
     public static final int XTERNAL = Integer.MAX_VALUE;
 

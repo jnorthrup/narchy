@@ -1,5 +1,6 @@
 package nars.gui.sensor;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.random.SplitMix64Random;
@@ -230,7 +231,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         float bf = 0;
 
         Term template =
-                null; //s.term;
+                null; //s.target;
 
         if (visBelief.get()) {
             Truth b = s.beliefs().truth(start, end, template, null, truthPrecision, _truthDur, nar);
@@ -315,8 +316,10 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             set(new ButtonSet<>(ButtonSet.Mode.One,
                     new CheckBox("Pri+", ()->{
                         view.onConceptTouch((c)->{
-                            next.set(()->
-                                view.nar.activate(c, 1f)
+                            next.set(()-> {
+                                        //view.nar.activate(c, 1f)
+                                        throw new TODO();
+                                    }
                             );
                         });
                     }

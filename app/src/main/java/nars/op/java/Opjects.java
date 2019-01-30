@@ -229,7 +229,7 @@ public class Opjects extends DefaultTermizer {
 
 
     /**
-     * registers an alias/binding shortcut term rewrite macro
+     * registers an alias/binding shortcut target rewrite macro
      */
     public Concept alias(String op, Term instance, String method) {
         return nar.on(op, (s) ->
@@ -336,7 +336,7 @@ public class Opjects extends DefaultTermizer {
 
 
     /**
-     * this term should not be used in constructing terms that will leave this class.
+     * this target should not be used in constructing terms that will leave this class.
      * this is so it wont pollute the NAR's index and possibly interfere with other
      * identifiers that it may be equal to (ex: NAR.self())
      */

@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.link.Activate;
+import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 /**
  *
  */
-public abstract class ConceptIndex implements Sampler<Activate> {
+public abstract class ConceptIndex implements Sampler<TaskLink> {
 
 
     public NAR nar;
@@ -82,8 +82,8 @@ public abstract class ConceptIndex implements Sampler<Activate> {
     }
 
     /**
-     * applies normalization and anonymization to resolve the term of the concept the input term maps t
-     * term should be conceptualizable prior to calling this
+     * applies normalization and anonymization to resolve the target of the concept the input target maps t
+     * target should be conceptualizable prior to calling this
      */
     @Nullable
     public final Concept concept(Termed _x, boolean createIfMissing) {
@@ -154,9 +154,9 @@ public abstract class ConceptIndex implements Sampler<Activate> {
 //        }
     }
 
-    public abstract Stream<Activate> active();
+    public abstract Stream<TaskLink> active();
 
-    public abstract void activate(Concept c, float pri);
+//    @Deprecated public abstract void activate(Concept c, float pri);
 
     /** the current priority value of the concept */
     public abstract float pri(Termed concept, float ifMissing);

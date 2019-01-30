@@ -44,9 +44,9 @@ class ActivateTest {
 //        for (int i = 0; i < 100; i++) {
 //            final int[] remain = {9};
 //            ActivatedLinks linkActivations = new ActivatedLinks();
-//            dummy.premiseMatrix(cf, (task, term) -> {
+//            dummy.premiseMatrix(cf, (task, target) -> {
 //                Task ptask = task;
-//                Term pterm = term.get();
+//                Term pterm = target.get();
 //                System.out.println("tasklink=" + ptask + " termlink=" + pterm);
 //                if (pterm instanceof Atom || !A.equals(pterm.sub(0)))
 //                    return true;

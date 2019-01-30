@@ -24,7 +24,7 @@ public interface Subst extends TermTransform.AbstractNegObliviousTermTransform {
             return y;
     }
 
-    /** completely dereferences a term (usually a variable)*/
+    /** completely dereferences a target (usually a variable)*/
     default Term resolve(final Term x) {
         Term y, z = x;
         while ((y = xy(z))!=null) {
@@ -62,7 +62,7 @@ public interface Subst extends TermTransform.AbstractNegObliviousTermTransform {
 
 
     /**
-     * can be used to determine if this subst will have any possible effect on any transforms to any possible term,
+     * can be used to determine if this subst will have any possible effect on any transforms to any possible target,
      * used as a quick test to prevent transform initializations
      */
     boolean isEmpty();

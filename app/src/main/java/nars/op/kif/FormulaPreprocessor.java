@@ -340,8 +340,8 @@ public class FormulaPreprocessor {
      * Get the most specific type for variables.
      *
      * @param kb The KB to be used for processing
-     * @param types a list of sumo types for a sumo term/variable
-     * @return the most specific sumo type for the term/variable
+     * @param types a list of sumo types for a sumo target/variable
+     * @return the most specific sumo type for the target/variable
      *
      * For example
      * types of ?Writing = [Entity, Physical, Process, IntentionalProcess,

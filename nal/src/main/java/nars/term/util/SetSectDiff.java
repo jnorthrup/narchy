@@ -107,7 +107,7 @@ public class SetSectDiff {
                     int existing = y.getIfAbsent(x, Byte.MIN_VALUE);
                     if (existing!=Byte.MIN_VALUE) {
                         if (existing==p)
-                            continue; //same exact term and polarity present
+                            continue; //same exact target and polarity present
                         else {
                             if (!union) {
                                 return null; //intersection of X and its opposite = contradiction

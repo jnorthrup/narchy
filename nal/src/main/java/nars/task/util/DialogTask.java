@@ -9,15 +9,12 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.control.NARService;
-import nars.derive.BeliefSource;
 import nars.derive.Deriver;
-import nars.derive.Derivers;
 import nars.op.SubUnify;
 import nars.term.Term;
 import nars.term.util.Image;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -49,14 +46,15 @@ public class DialogTask extends NARService {
         }
 
 
-        deriver = BeliefSource.forConcepts(n, Derivers.nal(n, 1, 8),
-                tasks.asList().stream().map(t -> {
-
-                    nar.input(t);
-
-                    return nar.concept(t.term(), true);
-
-                }).collect(Collectors.toList()));
+        deriver = null; //TODO
+//        deriver = BeliefSource.forConcepts(n, Derivers.nal(n, 1, 8),
+//                tasks.asList().stream().map(t -> {
+//
+//                    nar.input(t);
+//
+//                    return nar.concept(t.term(), true);
+//
+//                }).collect(Collectors.toList()));
 
         byte[] listenPuncs;
         if (questions && quests)

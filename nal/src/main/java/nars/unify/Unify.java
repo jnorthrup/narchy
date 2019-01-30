@@ -26,7 +26,7 @@ import java.util.Set;
 import static nars.Op.NEG;
 
 
-/* recurses a pair of compound term tree's subterms
+/* recurses a pair of compound target tree's subterms
 across a hierarchy of sequential and permutative fanouts
 where valid matches are discovered, backtracked,
 and collected until power is depleted.
@@ -151,7 +151,7 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
     /**
-     * completely dereferences a term (usually a variable)
+     * completely dereferences a target (usually a variable)
      */
     public final Term resolve(final Variable x) {
         Term /*Variable*/ z = x, y;

@@ -141,7 +141,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
     }
 
-//    /** compares term equality, unnegated */
+//    /** compares target equality, unnegated */
 //    public static final class NotEqualUnnegConstraint extends RelationConstraint {
 //
 //

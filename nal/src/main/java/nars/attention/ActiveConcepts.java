@@ -6,8 +6,8 @@
 //import nars.NAR;
 //import nars.concept.Concept;
 //import nars.link.Activate;
-//import nars.term.Term;
-//import nars.term.Termed;
+//import nars.target.Term;
+//import nars.target.Termed;
 //
 //import java.util.Random;
 //import java.util.function.Function;
@@ -102,6 +102,6 @@
 //
 //    /** the current priority value of the concept */
 //    public float pri(Termed concept, float ifMissing) {
-//        return active.pri(concept.term(), ifMissing);
+//        return active.pri(concept.target(), ifMissing);
 //    }
 //}

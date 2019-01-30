@@ -51,15 +51,15 @@ public interface NARIn {
     }
 
 
-//    default DurService believeWhile(Term term, Truth t, Predicate<Task> cond) {
-//        return taskWhile(term, BELIEF, t, cond);
+//    default DurService believeWhile(Term target, Truth t, Predicate<Task> cond) {
+//        return taskWhile(target, BELIEF, t, cond);
 //    }
 //
-//    default DurService wantWhile(Term term, Truth t, Predicate<Task> cond) {
-//        return taskWhile(term, GOAL, t, cond);
+//    default DurService wantWhile(Term target, Truth t, Predicate<Task> cond) {
+//        return taskWhile(target, GOAL, t, cond);
 //    }
 //
-//    @Deprecated default DurService taskWhile(Term term, byte punc, Truth tru, Predicate<Task> cond) {
+//    @Deprecated default DurService taskWhile(Term target, byte punc, Truth tru, Predicate<Task> cond) {
 //        NAR n = (NAR)this;
 //
 //        long start = n.time();
@@ -70,7 +70,7 @@ public interface NARIn {
 //        float evi = tru.evi();
 //        LongFunction<Truthlet> stepUntil = (toWhen) -> Truthlet.step(inactiveFreq, start, activeFreq, toWhen, activeFreq, evi);
 //
-//        TruthletTask t = new TruthletTask(term, punc, stepUntil.apply(start), n);
+//        TruthletTask t = new TruthletTask(target, punc, stepUntil.apply(start), n);
 //        float pri = n.priDefault(punc);
 //        t.priMax(pri);
 //

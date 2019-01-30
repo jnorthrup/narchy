@@ -23,7 +23,7 @@ public interface TermLinker extends Sampler<Term> {
      *
      * balance = nar.termlinkBalance
      */
-    void link(Activate asrc, Derivation d);
+    void link(Derivation d);
 
 
     TermLinker NullLinker = new TermLinker() {
@@ -40,7 +40,7 @@ public interface TermLinker extends Sampler<Term> {
 
 
         @Override
-        public void link(Activate asrc, Derivation d) {
+        public void link(Derivation d) {
 
         }
 

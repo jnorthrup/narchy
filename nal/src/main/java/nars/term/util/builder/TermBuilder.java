@@ -33,10 +33,10 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 /**
- * interface for term and subterm builders
+ * interface for target and subterm builders
  * this call tree eventually ends by either:
  * - instance(..)
- * - reduction to another term or True/False/Null
+ * - reduction to another target or True/False/Null
  */
 public abstract class TermBuilder {
 
@@ -189,7 +189,7 @@ public abstract class TermBuilder {
         Term y = new CompoundNormalization(x, varOffset).transformCompound(x);
 
 //        LazyCompound yy = new LazyCompound();
-//        new nars.util.term.transform.CompoundNormalization(this, varOffset)
+//        new nars.util.target.transform.CompoundNormalization(this, varOffset)
 //                .transform(this, yy);
 //        Term y = yy.get();
 
@@ -339,18 +339,18 @@ public abstract class TermBuilder {
 
 
         return term.normalize();
-//        Term term2 = term.normalize();
-//        if (term2 != term) {
+//        Term term2 = target.normalize();
+//        if (term2 != target) {
 //            if (term2 == null)
 //                return Bool.Null;
 //
-//            //assert (term2.op() == op): term2 + " not a normal normalization of " + term; //<- allowed to happen when image normalization is involved
+//            //assert (term2.op() == op): term2 + " not a normal normalization of " + target; //<- allowed to happen when image normalization is involved
 //
-//            term = term2.unneg();
+//            target = term2.unneg();
 //        }
 //
 //
-//        return term;
+//        return target;
     }
 
     protected Term statement(Op op, int dt, Term subject, Term predicate) {

@@ -11,8 +11,8 @@ import nars.NAR;
 import nars.Param;
 import nars.attention.BufferedBag;
 import nars.attention.PriBuffer;
-import nars.concept.Concept;
 import nars.link.Activate;
+import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.NotNull;
@@ -22,11 +22,13 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-/** implements a multi-level cache using a Concept Bag as a sample-able short-term memory */
+/** implements a multi-level cache using a Concept Bag as a sample-able short-target memory */
 abstract public class AbstractConceptIndex extends ConceptIndex {
 
-    /** short term memory, TODO abstract and remove */
-    public Bag<Term, Activate> active = Bag.EMPTY;
+    /** short target memory, TODO abstract and remove */
+    //public Bag<Term, Activate> active = Bag.EMPTY;
+
+    public Bag<TaskLink, TaskLink> active = Bag.EMPTY;
 
     public final FloatRange activationRate = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 2f);
 
@@ -42,7 +44,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
 
     @Override
-    public Stream<Activate> active() {
+    public Stream<TaskLink> active() {
         return active.stream();
     }
 
@@ -61,15 +63,18 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
                   //      arrayBag()
                         //hijackBag()
 
-            new BufferedBag.DefaultBufferedBag<>(arrayBag(), new PriBuffer<Concept>(Param.conceptMerge, nar.exe.concurrent())) {
+            new BufferedBag.DefaultBufferedBag<>(arrayBag(), new PriBuffer<TaskLink>(
+                    Param.tasklinkMerge, nar.exe.concurrent())) {
 
                 @Override
-                protected Term keyInternal(Concept c) {
-                    return c.term();
+                protected TaskLink keyInternal(TaskLink c) {
+                    return c;
                 }
 
-                @Override protected Activate valueInternal(Concept c, float pri) {
-                    return new Activate(c, pri);
+                @Override protected TaskLink valueInternal(TaskLink c, float pri) {
+                    return c;
+                    //c.pri(pri);
+                    //return new Activate(c, pri);
                 }
 
             };
@@ -98,21 +103,21 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
             @Override
             protected PriMerge merge() {
-                return Param.conceptMerge;
+                return Param.tasklinkMerge;
             }
         };
     }
 
-    protected Bag<Term, Activate> arrayBag() {
+    protected Bag<TaskLink, TaskLink> arrayBag() {
         return new ArrayBag<>(
                 activeCapacity.intValue(),
-                Param.conceptMerge,
+                Param.tasklinkMerge,
                 new HashMap<>(activeCapacity.intValue() * 2, 0.99f)
         ) {
 
             @Override
-            public Term key(Activate value) {
-                return value.term();
+            public TaskLink key(TaskLink value) {
+                return value;
             }
 
         };
@@ -125,18 +130,19 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
     }
 
     @Override
-    public void sample(Random rng, Function<? super Activate, SampleReaction> each) {
+    public void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
         active.sample(rng, each);
     }
 
-    @Override
-    public void activate(Concept c, float pri) {
-        ((BufferedBag)active).put(c, pri * activationRate.floatValue());
-    }
+//    @Override
+//    public void activate(Concept c, float pri) {
+//        //((BufferedBag)active).put(c, pri * activationRate.floatValue());
+//    }
 
     @Override
     public float pri(Termed concept, float ifMissing) {
-        return active.pri(concept.term(), ifMissing);
+        //return active.pri(concept.term(), ifMissing);
+        return 0; //TODO
     }
 
 }

@@ -12,7 +12,7 @@ public class SubOfConstraint extends RelationConstraint {
 
 
     /**
-     * containment of the term positively (normal), negatively (negated), or either (must test both)
+     * containment of the target positively (normal), negatively (negated), or either (must test both)
      */
     private final int polarityCompare;
 

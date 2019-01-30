@@ -188,7 +188,7 @@ public class PatrickTests extends NALTest {
         <?1 =/> <c --> C>>? 
 
         Expected result: (also in OpenNARS syntax)
-        For appropriate Interval term "time", "time2",
+        For appropriate Interval target "time", "time2",
         <(&/,<a --> A>,time) =/> <c --> C>>.
         and
         <(&/,<b --> B>,time) =/> <c --> C>>.
@@ -218,7 +218,7 @@ public class PatrickTests extends NALTest {
 
         /*
         Expected result: (also in OpenNARS syntax)
-        For appropriate Interval term "time", "time2",
+        For appropriate Interval target "time", "time2",
         <(&/,<a --> A>,time) =/> <c --> C>>.
         and
         <(&/,<b --> B>,time) =/> <c --> C>>.

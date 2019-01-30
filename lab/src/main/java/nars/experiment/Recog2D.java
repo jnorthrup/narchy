@@ -320,7 +320,7 @@ public class Recog2D extends NAgentX {
 //                    float c = nar.confDefault(BELIEF) * (1f - errSum);
 //                    if (c > 0) {
 //                        nar.believe(
-//                                outs.concepts[j].term(),
+//                                outs.concepts[j].target(),
 //                                Tense.Present, y, c);
 //                    }
 //

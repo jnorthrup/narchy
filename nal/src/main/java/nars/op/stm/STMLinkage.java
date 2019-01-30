@@ -16,7 +16,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
 /**
- * Short-term Memory Belief Event Induction.
+ * Short-target Memory Belief Event Induction.
  * Creates links between sequences of perceived events
  * Empties task buffer when plugin is (re)started.
  */
@@ -49,7 +49,7 @@ public class STMLinkage extends NARService {
 
     public static void link(Task at, Concept ac, Pair<Task, Concept> b/*, short cid*/, float factor, NAR nar) {
 
-        //if (a==b) ta.term().equals(tb.term()))
+        //if (a==b) ta.target().equals(tb.target()))
         //return;
 
         /** current task's... */
@@ -68,8 +68,8 @@ public class STMLinkage extends NARService {
         }
 
 //                } else {
-//                    a.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink<>(a.term(), pri/*, cid*/));
-//                    //ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), pri, cid));
+//                    a.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink<>(a.target(), pri/*, cid*/));
+//                    //ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.target(), pri, cid));
 //                }
         //  }
         // }
@@ -77,7 +77,7 @@ public class STMLinkage extends NARService {
     }
 
     static void link(Concept target, Task task, float factor, NAR nar) {
-        TaskLink.link(TaskLink.tasklink(task, true, true, task.priElseZero() * factor, nar), target.tasklinks(), null);
+        TaskLink.link(TaskLink.tasklink(target.term(), task,true,true, task.priElseZero() * factor, nar), nar, null);
     }
 
 

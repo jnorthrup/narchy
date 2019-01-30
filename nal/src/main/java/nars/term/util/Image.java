@@ -186,7 +186,7 @@ public enum Image {;
     public static class ImageBeliefTable extends DynamicTaskTable {
 
         /**
-         * the term of the concept which this relies on for storage of beliefs, and thus remains consistent with
+         * the target of the concept which this relies on for storage of beliefs, and thus remains consistent with
          */
         public final Term normal;
 
@@ -241,7 +241,7 @@ public enum Image {;
             }
 
             Term normalTerm = normal.hasAny(Temporal) ?
-                    /* if temporal, normal is not necessarily equal to the task's term */
+                    /* if temporal, normal is not necessarily equal to the task's target */
                     Image.imageNormalize(imageInput.term())
                     :
                     normal;

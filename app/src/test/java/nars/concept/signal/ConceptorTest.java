@@ -5,9 +5,9 @@
 //import nars.concept.Concept;
 //import nars.concept.sensor.Scalar;
 //import nars.subterm.Subterms;
-//import nars.term.Conceptor;
-//import nars.term.Term;
-//import nars.term.atom.Int;
+//import nars.target.Conceptor;
+//import nars.target.Term;
+//import nars.target.atom.Int;
 //import nars.truth.Truth;
 //import org.jetbrains.annotations.Nullable;
 //import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@
 //        //https://en.wikipedia.org/wiki/Root_mean_square
 //        n.on(new Conceptor("RMS") {
 //            @Override
-//            public Concept apply(Term term, Subterms param) {
+//            public Concept apply(Term target, Subterms param) {
 //
 //                if (param.subs() == 3) {
 //                    Term target = param.sub(0);
@@ -91,7 +91,7 @@
 //        n.on(new Conceptor("pixel") {
 //
 //            @Override
-//            public Concept apply(Term term, Subterms args) {
+//            public Concept apply(Term target, Subterms args) {
 //                if (args.subs()==2) {
 //                    Int x = (Int)args.sub(0);
 //                    Int y = (Int)args.sub(1);
@@ -151,7 +151,7 @@
 ////            }
 //
 //            @Override
-//            public Concept apply(Term term, Subterms args) {
+//            public Concept apply(Term target, Subterms args) {
 //                if (args.subs() == 2) {
 //                    Term xx = args.sub(0);
 //                    Term yy = args.sub(1);

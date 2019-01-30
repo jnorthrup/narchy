@@ -119,7 +119,7 @@ public class NARS {
 
                 n.termVolumeMax.set(26);
 
-                ((AbstractConceptIndex)n.concepts).activeCapacity.set(128);
+                ((AbstractConceptIndex)n.concepts).activeCapacity.set(96);
                 ((AbstractConceptIndex)n.concepts).activationRate.set(0.01f);
 
                 n.beliefPriDefault.set(0.1f);
@@ -189,14 +189,8 @@ public class NARS {
                                 1, 8,
                                 12, 6,
                                 24, 4
-                        ),
-                        //tasklinks
-                        curve(Concept::volume,
-                                1, 48,
-                                2,24,
-                                16,16,
-                                32,12
-                        ))
+                        )
+                )
         );
 
 
@@ -215,7 +209,7 @@ public class NARS {
      * temporary, disposable NAR. useful for unit tests or embedded components
      * safe for single-thread access only.
      *
-     * @param nal adjustable NAL level. level >= 7 include STM (short-term-memory) Linkage plugin
+     * @param nal adjustable NAL level. level >= 7 include STM (short-target-memory) Linkage plugin
      */
     public static NAR tmp(int nal) {
         return new DefaultNAR(nal, false).get();
@@ -253,7 +247,7 @@ public class NARS {
 
     /**
      * provides only low level functionality.
-     * an empty deriver, but allows any kind of term
+     * an empty deriver, but allows any kind of target
      */
     public static NAR shell() {
         return tmp(0);

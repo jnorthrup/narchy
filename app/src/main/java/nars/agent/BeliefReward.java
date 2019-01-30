@@ -23,7 +23,7 @@ public class BeliefReward extends Reward {
         negate = id.op()==NEG;
         concept = newConcept();
         if (concept == null)
-            throw new NullPointerException("concept null for term: " + id);
+            throw new NullPointerException("concept null for target: " + id);
         alwaysWantEternally(id);
     }
 

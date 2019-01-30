@@ -681,7 +681,7 @@ public class Impiler {
 //        public float evi;
 //        //TODO public float pri;
 //
-//        Condition(Term term) {
+//        Condition(Term target) {
 //
 //
 //            truth(null);
@@ -700,7 +700,7 @@ public class Impiler {
 //
 //        @Override
 //        public String toString() {
-//            return term +
+//            return target +
 //                    (evi > 0 ? ("%" + freq + ";" + w2cSafe(evi) + "%") : "");
 //        }
 //    }
@@ -758,7 +758,7 @@ public class Impiler {
 //
 //            BeliefTable table = c.tableAnswering(beliefOrGoal ? BELIEF : GOAL);
 //            if (c.op()!=IMPL) {
-//                MutableNode<Condition, Transition> node = cond(c.term);
+//                MutableNode<Condition, Transition> node = cond(c.target);
 //
 //                //just estimate the truth, whether it is calculable or not, create the node anyway
 //                node.id.truth(table.truth(whenStart, whenEnd, n));
@@ -777,14 +777,14 @@ public class Impiler {
 //        }
 //
 //        public void interpretImpl(TaskConcept c, NAR n, BeliefTable table) {
-//            Task it = table.answer(whenStart, whenEnd, c.term, null, n);
+//            Task it = table.answer(whenStart, whenEnd, c.target, null, n);
 //            if (it!=null) {
-//                int idt = it.term().dt();
+//                int idt = it.target().dt();
 //                if (it != null) {
 //                    //TODO for now dont consider the implication/etc.. as its own event although NARS does
 //                    //  just represent it as transitions
 //                    //TODO dont track evidence
-//                    Term i = c.term;
+//                    Term i = c.target;
 //                    Term subj = i.sub(0), pred = i.sub(1);
 //
 //                    //split the evidence between the positive and negative paths

@@ -297,12 +297,12 @@ public class PredVarInst {
      working.clear();
      List ql2 = null;
      int varPos = ql.indexOf(idxVar);
-     String term = null;
+     String target = null;
      for (j = 0; j < accumulator.size(); j++) {
      ql2 = (List) accumulator.get(j);
-     term = (String) (ql2.get(varPos));
+     target = (String) (ql2.get(varPos));
      
-     working.add(term);
+     working.add(target);
      
      }
      accumulator.clear();
@@ -311,8 +311,8 @@ public class PredVarInst {
      varPos = keyLit.indexOf(idxVar);
      for (j = 0; j < accumulator.size(); j++) {
      ql2 = (List) accumulator.get(j);
-     term = (String) (ql2.get(varPos));
-     if (working.contains(term))
+     target = (String) (ql2.get(varPos));
+     if (working.contains(target))
      answers.add(ql2);
      }
      }
@@ -616,7 +616,7 @@ public class PredVarInst {
      int flen = -1;
      String arg = null;
      String arg0 = null;
-     String term = null;
+     String target = null;
      String origVar = null;
      List lit = null;
      boolean working = true;
@@ -670,11 +670,11 @@ public class PredVarInst {
      
      if (isPossibleRelnArgQueryPred(kb, arg0) && foundVar) {
      
-     term = "";
+     target = "";
      if (queryLit.size() > 2)
-     term = (String) queryLit.get(2);
+     target = (String) queryLit.get(2);
      if (!(arg0.equals("instance")
-     && term.equals("Relation"))) {
+     && target.equals("Relation"))) {
      String queryLitStr = queryLit.toString().intern();
      if (!added.contains(queryLitStr)) {
      ans.add(queryLit);

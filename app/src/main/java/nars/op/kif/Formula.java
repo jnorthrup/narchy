@@ -1999,7 +1999,7 @@ public class Formula implements Comparable, Serializable {
     }
 
     /** ***************************************************************
-     * Test whether a Formula is a functional term.  Note this assumes
+     * Test whether a Formula is a functional target.  Note this assumes
      * the textual convention of all functions ending with "Fn".
      */
     public boolean isFunctionalTerm() {
@@ -2013,7 +2013,7 @@ public class Formula implements Comparable, Serializable {
     }
 
     /** ***************************************************************
-     * Test whether a Formula is a functional term
+     * Test whether a Formula is a functional target
      */
     public static boolean isFunctionalTerm(String s) {
 
@@ -2248,10 +2248,10 @@ public class Formula implements Comparable, Serializable {
     }
 
     /** ***************************************************************
-     * Returns true if term is a standard FOL logical operator, else
+     * Returns true if target is a standard FOL logical operator, else
      * returns false.
      *
-     * @param term A String, assumed to be an atomic SUO-KIF term.
+     * @param term A String, assumed to be an atomic SUO-KIF target.
      */
     public static boolean isLogicalOperator(String term) {
 
@@ -2259,10 +2259,10 @@ public class Formula implements Comparable, Serializable {
     }
 
     /** ***************************************************************
-     * Returns true if term is a valid SUO-KIF term, else
+     * Returns true if target is a valid SUO-KIF target, else
      * returns false.
      *
-     * @param term A String, assumed to be an atomic SUO-KIF term.
+     * @param term A String, assumed to be an atomic SUO-KIF target.
      */
     public static boolean isTerm(String term) {
 
@@ -2279,7 +2279,7 @@ public class Formula implements Comparable, Serializable {
     }
 
     /** ***************************************************************
-     * Returns true if term is a SUO-KIF predicate for comparing two
+     * Returns true if target is a SUO-KIF predicate for comparing two
      * (typically numeric) terms, else returns false.
      *
      * @param term A String.
@@ -2290,7 +2290,7 @@ public class Formula implements Comparable, Serializable {
     }
 
     /** ***************************************************************
-     * Returns true if term is a SUO-KIF mathematical function, else
+     * Returns true if target is a SUO-KIF mathematical function, else
      * returns false.
      *
      * @param term A String.
@@ -2341,7 +2341,7 @@ public class Formula implements Comparable, Serializable {
     }
 
     /** ***************************************************************
-     * Returns true if term is a SUO-KIF function, else returns false.
+     * Returns true if target is a SUO-KIF function, else returns false.
      * Note that this test is purely syntactic, and could fail for
      * functions that do not adhere to the convention of ending all
      * functions with "Fn".
@@ -2355,7 +2355,7 @@ public class Formula implements Comparable, Serializable {
     }
 
     /** ***************************************************************
-     * Returns true if term is a SUO-KIF Skolem term, else returns false.
+     * Returns true if target is a SUO-KIF Skolem target, else returns false.
      *
      * @param term A String.
      *
@@ -2385,7 +2385,7 @@ public class Formula implements Comparable, Serializable {
     }
 
     /** ***************************************************************
-     *  Replace v with term.
+     *  Replace v with target.
      *  TODO: See if a regex replace is faster (commented out buggy code below)
      */
     public Formula replaceVar(String v, String term) {
@@ -2496,7 +2496,7 @@ public class Formula implements Comparable, Serializable {
      * A standard LISP-style pretty printing is employed where an open
      * parenthesis triggers a new line and added indentation.
      *
-     * @param hyperlink - the URL to be referenced to a hyperlinked term.
+     * @param hyperlink - the URL to be referenced to a hyperlinked target.
      * @param indentChars - the proper characters for indenting text.
      * @param eolChars - the proper character for end of line.
      */
@@ -2586,7 +2586,7 @@ public class Formula implements Comparable, Serializable {
                     if (StringUtil.isNonEmptyString(hyperlink)) {
                         formatted.append("<a href=\"");
                         formatted.append(hyperlink);
-                        formatted.append("&term=");
+                        formatted.append("&target=");
                         formatted.append(token);
                         formatted.append("\">");
                         formatted.append(token);
@@ -2611,7 +2611,7 @@ public class Formula implements Comparable, Serializable {
             if (StringUtil.isNonEmptyString(hyperlink)) {
                 formatted.append("<a href=\"");
                 formatted.append(hyperlink);
-                formatted.append("&term=");
+                formatted.append("&target=");
                 formatted.append(token);
                 formatted.append("\">");
                 formatted.append(token);

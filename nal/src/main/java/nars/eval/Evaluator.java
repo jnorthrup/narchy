@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 import static nars.term.atom.Bool.Null;
 
 /**
- * discovers functors within the provided term, or the term itself.
+ * discovers functors within the provided target, or the target itself.
  * transformation results should not be interned, that is why DirectTermTransform used here
  */
 public class Evaluator extends DirectTermTransform {

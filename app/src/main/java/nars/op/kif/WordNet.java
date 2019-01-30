@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  * four WordNet data files, "NOUN.EXC", "VERB.EXC" etc, as well as four WordNet
  * to SUMO mappings files called "WordNetMappings-nouns.txt",
  * "WordNetMappings-verbs.txt" etc The main part of the program prompts the user
- * for an English term and then returns associated SUMO concepts. The two
+ * for an English target and then returns associated SUMO concepts. The two
  * primary public methods are initOnce() and page().
  *
  * @author Ian Niles
@@ -273,7 +273,7 @@ public class WordNet {
 
     /**
      * ***************************************************************
-     * Add a synset (with part of speech number prefix) and the SUMO term that
+     * Add a synset (with part of speech number prefix) and the SUMO target that
      * maps to it.
      */
     private void addSUMOHash(String term, String synset) {
@@ -1042,7 +1042,7 @@ public class WordNet {
      * ***************************************************************
      * Return the best guess at the synset for the given word in the context of
      * the sentence. Returns an ArrayList consisting of a 9-digit WordNet
-     * synset, the corresponding SUMO term, and the score reflecting the quality
+     * synset, the corresponding SUMO target, and the score reflecting the quality
      * of the guess the given synset is the right one.
      */
     private ArrayList findSUMOWordSenseArray(String word, ArrayList words, int POS) {
@@ -1124,7 +1124,7 @@ public class WordNet {
     /**
      * ***************************************************************
      * Return the best guess at the synset for the given word in the context of
-     * the sentence. Returns a SUMO term.
+     * the sentence. Returns a SUMO target.
      */
     private String findSUMOWordSense(String word, ArrayList words, int POS) {
 
@@ -1135,7 +1135,7 @@ public class WordNet {
     /**
      * ***************************************************************
      * Return the best guess at the synset for the given word in the context of
-     * the sentence. Returns a SUMO term.
+     * the sentence. Returns a SUMO target.
      */
     public String findSUMOWordSense(String word, ArrayList words) {
 
@@ -1316,7 +1316,7 @@ public class WordNet {
             /**
              * if (SUMO == null || SUMO == "") System.out.println("INFO in
              * findSUMOWordSense(): word not found: " + word); else
-             * System.out.println("INFO in findSUMOWordSense(): word, term: " +
+             * System.out.println("INFO in findSUMOWordSense(): word, target: " +
              * word + ", " + SUMO);
              */
         }
@@ -1678,7 +1678,7 @@ public class WordNet {
 
     /**
      * ***************************************************************
-     * Get the words and synsets corresponding to a SUMO term. The return is a
+     * Get the words and synsets corresponding to a SUMO target. The return is a
      * Map of words with their corresponding synset number.
      */
     public TreeMap getWordsFromTerm(String SUMOterm) {
@@ -1686,7 +1686,7 @@ public class WordNet {
         TreeMap result = new TreeMap();
         ArrayList synsets = (ArrayList) SUMOHash.get(SUMOterm);
         if (synsets == null) {
-            System.out.println("INFO in WordNet.getWordsFromTerm(): No synsets for term : " + SUMOterm);
+            System.out.println("INFO in WordNet.getWordsFromTerm(): No synsets for target : " + SUMOterm);
             return null;
         }
         for (Object synset1 : synsets) {
@@ -1706,7 +1706,7 @@ public class WordNet {
 
     /**
      * ***************************************************************
-     * Get the SUMO term for the given root form word and part of speech.
+     * Get the SUMO target for the given root form word and part of speech.
      */
     public String getSUMOterm(String word, int pos) {
 

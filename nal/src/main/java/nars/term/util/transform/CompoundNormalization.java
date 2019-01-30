@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INH;
 
-/** procedure for Compound term Normalization */
+/** procedure for Compound target Normalization */
 public final class CompoundNormalization extends VariableNormalization {
 
     private final Term root;
@@ -33,7 +33,7 @@ public final class CompoundNormalization extends VariableNormalization {
 
     @Override
     protected @Nullable Term transformNonNegCompound(Compound x) {
-        /* if x is not the root term (ie. a subterm) */
+        /* if x is not the root target (ie. a subterm) */
         boolean hasImg = x.hasAll(Image.ImageBits);
         if (hasImg && x!=root && x.op()==INH) {
             Term y = Image.normalize(x);

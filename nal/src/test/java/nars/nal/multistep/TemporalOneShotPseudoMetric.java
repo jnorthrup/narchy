@@ -32,7 +32,7 @@ public class TemporalOneShotPseudoMetric implements BiConsumer<ActiveQuestionTas
 
     private List<String> termNames = new ArrayList<>();
     {
-        // generate set of random term names
+        // generate set of random target names
         for (int i=0;i<numberOfTermNames;i++) {
             termNames.add(createRandomString(4, rng));
         }

@@ -18,7 +18,7 @@ public abstract class Introduction extends TaskLeakTransform {
         super(capacity, nar);
     }
 
-    /** returns the new, transformed term or null if the task should not be cloned */
+    /** returns the new, transformed target or null if the task should not be cloned */
     @Nullable
     protected abstract Term newTerm(Task x);
 
@@ -34,7 +34,7 @@ public abstract class Introduction extends TaskLeakTransform {
                 Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) -> new UnevaluatedTask(c, xx, t));
 
                 if (yy != null) {
-                    //discount pri by increase in term complexity
+                    //discount pri by increase in target complexity
 
                     float xc = x.voluplexity(), yc = y.voluplexity();
                     float priSharePct =

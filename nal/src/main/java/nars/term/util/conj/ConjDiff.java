@@ -64,11 +64,11 @@ public class ConjDiff extends Conj {
                 if (f == +1) hasAbsorb = true; //but keep checking for contradictions first
             }
             if (hasAbsorb)
-                return +1; //ignore this term (dont repeat in the predicate)
+                return +1; //ignore this target (dont repeat in the predicate)
         } else {
             int f = test(at, id);
             if (f == -1) return -1;
-            if (f == +1) return +1; //ignore this term (dont repeat in the predicate)
+            if (f == +1) return +1; //ignore this target (dont repeat in the predicate)
         }
         return 0;
     }

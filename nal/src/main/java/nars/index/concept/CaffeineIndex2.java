@@ -5,10 +5,10 @@
 //import nars.Op;
 //import nars.Param;
 //import nars.subterm.Subterms;
-//import nars.term.Term;
-//import nars.term.Termed;
-//import nars.term.Variable;
-//import nars.util.term.TermContainerToOpMap;
+//import nars.target.Term;
+//import nars.target.Termed;
+//import nars.target.Variable;
+//import nars.util.target.TermContainerToOpMap;
 //import org.jetbrains.annotations.NotNull;
 //
 //import java.util.Objects;

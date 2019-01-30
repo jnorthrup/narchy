@@ -10,7 +10,7 @@ import nars.term.var.NormalizedVariable;
 import static nars.Op.*;
 
 /**
- * indicates the term has an anonymous, canonical identifier (16-bit short)
+ * indicates the target has an anonymous, canonical identifier (16-bit short)
  */
 public abstract class AnonID implements Atomic, The {
 
@@ -144,7 +144,7 @@ public abstract class AnonID implements Atomic, The {
         return t0 instanceof AnonID || t0.unneg() instanceof AnonID;
     }
 
-    /** returns 0 if the term is not anon ID or a negation of one */
+    /** returns 0 if the target is not anon ID or a negation of one */
     public static short id(Term t) {
         if (t instanceof AnonID) {
             return ((AnonID)t).anonID;

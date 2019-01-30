@@ -40,7 +40,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     int dur;
 
     /**
-     * content term, either equal in all the tasks, or the result is
+     * content target, either equal in all the tasks, or the result is
      * intermpolated (and evidence reduction applied as necessary)
      */
     public Term term = null;
@@ -252,7 +252,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
         Term first = get(0).task.term();
         if (thisSize == 1 || !first.hasAny(Op.Temporal)) {
-            //assumes that all the terms are from the same concept.  so if the first term has no temporal components the rest should not either.
+            //assumes that all the terms are from the same concept.  so if the first target has no temporal components the rest should not either.
             this.term = first;
             return 1;
         }
@@ -304,7 +304,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 //                removeIf(x -> {
 //                    Task xx = x.task;
 //                    Term xxx;
-//                    if (xx == finalFirst || (xxx = xx.term()).equals(a)) {
+//                    if (xx == finalFirst || (xxx = xx.target()).equals(a)) {
 //                        e1Evi[0] += x.evi;
 //                        return false;
 //                    } else if (xx == finalSecond || xxx.equals(b)) {
@@ -315,7 +315,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 //                    }
 //                });
 
-                //if there isnt more evidence for the primarily sought term, then just use those components
+                //if there isnt more evidence for the primarily sought target, then just use those components
                 Term ab = Intermpolate.intermpolate(a,
                         b, e1Evi / (e1Evi + e2Evi), nar);
 
@@ -343,8 +343,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 //            float e1, e2;
 //            if (size() > 2) {
 //
-//                e1 = (float) sumOfFloat(x -> x.task.term().equals(theFirst) ? x.evi : 0);
-//                e2 = (float) sumOfFloat(x -> x.task.term().equals(finalSecond) ? x.evi : 0);
+//                e1 = (float) sumOfFloat(x -> x.task.target().equals(theFirst) ? x.evi : 0);
+//                e2 = (float) sumOfFloat(x -> x.task.target().equals(finalSecond) ? x.evi : 0);
 //            } else {
 //                e1 = get(0).evi;
 //                e2 = get(1).evi;
@@ -352,13 +352,13 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 //            float firstProp = e1 / (e1 + e2);
 
 
-//            if (Task.taskConceptTerm(term)) {
-//                if (count(t -> !t.task.term().equals(theFirst)) > 1) {
+//            if (Task.taskConceptTerm(target)) {
+//                if (count(t -> !t.task.target().equals(theFirst)) > 1) {
 //                    //remove any that are different and just combine what matches the first
 //                    removeIfTermDiffers(theFirst);
 //                    return 1;
 //                } else {
-//                    this.term = term;
+//                    this.target = target;
 //                    return differenceFactor;
 //                }
 //            } else {
@@ -371,8 +371,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
 //    private void removeIfTermDiffers(Term theFirst) {
-//        removeIf(t -> !t.task.term().equals(theFirst));
-//        this.term = theFirst;
+//        removeIf(t -> !t.task.target().equals(theFirst));
+//        this.target = theFirst;
 //    }
 
     public byte punc() {

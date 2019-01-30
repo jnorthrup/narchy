@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import static nars.Op.*;
 
 /**
- * I = input term type, T = transformable subterm type
+ * I = input target type, T = transformable subterm type
  */
 public interface TermTransform {
 
@@ -111,7 +111,7 @@ public interface TermTransform {
 
 
     /**
-     * constructs a new term for a result
+     * constructs a new target for a result
      */
 //    default Term the(Op op, int dt, TermList t) {
 //        return the(op, dt, (Subterms)t);

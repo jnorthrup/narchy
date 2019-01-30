@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * tests specific to conjunction (and disjunction) compounds
- * TODO use assertEq() where possible for term equality test (not junit assertEquals). it applies more rigorous testing
+ * TODO use assertEq() where possible for target equality test (not junit assertEquals). it applies more rigorous testing
  */
 public class ConjTest {
 

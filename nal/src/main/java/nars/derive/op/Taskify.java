@@ -218,7 +218,7 @@ public class Taskify extends AbstractPred<Derivation> {
 //
 //        if (FILTER_SIMILAR_DERIVATIONS) {
 //
-//            if (parent.term().equals(derived.term()) && parent.punc() == derived.punc() &&
+//            if (parent.target().equals(derived.target()) && parent.punc() == derived.punc() &&
 //                    parent.start() == derived.start() && parent.end() == derived.end()) {
 //                /*if (Arrays.equals(derived.stamp(), parent.stamp()))*/
 //                if (parent.isQuestionOrQuest() ||

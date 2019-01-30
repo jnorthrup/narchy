@@ -84,7 +84,7 @@ public class Conjterpolate extends Conj {
                 addAll((aa.isEmpty() ? bb : aa)); //the remaining events
             } else {
                 if (na ==1 && nb == 1 && nabOriginal>1 && aa.get(0).getTwo().equalsRoot(bb.get(0).getTwo())) {
-                    //special case: only one event remains, with the same root term
+                    //special case: only one event remains, with the same root target
                     Term ab = Intermpolate.intermpolate(aa.get(0).getTwo(), bb.get(0).getTwo(), aProp, nar);
                     if (!(ab instanceof Bool)) {
                         long when = Intermpolate.chooseDT(

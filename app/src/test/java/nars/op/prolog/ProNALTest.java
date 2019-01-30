@@ -42,7 +42,7 @@ public class ProNALTest {
 //                Term qTerm = Operator.args(xx).sub(0).normalize();
 //
 //                n.question(qTerm, ETERNAL,(q, a) -> {
-//                    if (answers.add(a.term().toString())) {
+//                    if (answers.add(a.target().toString())) {
 //                        System.err.println(q + " " + a);
 //                        System.err.println(a.proof());
 //                    } /*else {

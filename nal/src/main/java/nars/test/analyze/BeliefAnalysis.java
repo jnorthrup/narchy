@@ -125,10 +125,6 @@ public class BeliefAnalysis implements Termed {
 		return this;
 	}
 
-	@NotNull
-    public Bag<?,TaskLink> tasklinks() {
-		return concept().tasklinks();
-	}
 
 	public long time() {
 		return nar.time();

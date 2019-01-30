@@ -15,7 +15,7 @@ import nars.attention.BufferedBag;
 import nars.attention.PriBuffer;
 import nars.concept.Concept;
 import nars.exe.Causable;
-import nars.link.Activate;
+import nars.link.TaskLink;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -211,14 +211,14 @@ public abstract class TaskLeak extends Causable {
 
             when = focus();
 
-            nar.concepts.sample(rng, (Predicate<Activate>)(c)->{
+            nar.concepts.sample(rng, (Predicate<? super TaskLink>)(c)->{
 
                 if (c == null) return false; //TODO can this even happen
 
-                Concept cc = c.get();
+                Concept cc = nar.concept(c.source());
                 Term ct = cc.term();
 
-                if (ct.hasAny(Op.Temporal) || termFilter.test(cc.term())) { //TODO check for impl filters which assume the term is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's term
+                if (ct.hasAny(Op.Temporal) || termFilter.test(cc.term())) { //TODO check for impl filters which assume the target is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's target
                     Task x = sample(cc);
                     if (x!=null)
                         each.accept(x);
@@ -248,7 +248,7 @@ public abstract class TaskLeak extends Causable {
             for (int i = 0; i < p.length; i++) {
                 Task x = c.table(p[nextPunc]).sample(when[0], when[1], null, t ->{
                     Term tt = t.term();
-                    if (!hasTemporal || termFilter.test(tt)) //test temporal containing term as this was not done when testing concept
+                    if (!hasTemporal || termFilter.test(tt)) //test temporal containing target as this was not done when testing concept
                         return false;
 
                     return taskFilter.test(t);

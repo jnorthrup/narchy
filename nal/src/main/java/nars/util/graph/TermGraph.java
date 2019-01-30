@@ -13,7 +13,7 @@ public enum TermGraph {
 //
 //    public static AdjGraph<Term, Float> termlink(NAR n, Stream<? extends Termed> it, AdjGraph<Term, Float> g) {
 //        it.forEach(st -> {
-//            Term s = st.term();
+//            Term s = st.target();
 //            if (g.addIfNew(s)) {
 //                Concept c = n.concept(s);
 //                c.termlinks().forEach(tl -> {
@@ -52,7 +52,7 @@ public enum TermGraph {
 //            do {
 //                Iterator<Termed> ii = next.iterator();
 //                while (ii.hasNext()) {
-//                    Term t = ii.next().term();
+//                    Term t = ii.next().target();
 //                    ii.remove();
 //                    if (!done.add(t))
 //                        continue;
@@ -103,15 +103,15 @@ public enum TermGraph {
 //
 //            Termed termed = ml.get(nar);
 //            if (termed == null) return;
-//            Term term = termed.term();
-//            if (term == null) return;
+//            Term target = termed.target();
+//            if (target == null) return;
 //
-//            if (term.op() == IMPL && !term.hasVarQuery() /*&& l.subterms().containsRecursively(t)*/ /* && m.vars()==0 */
+//            if (target.op() == IMPL && !target.hasVarQuery() /*&& l.subterms().containsRecursively(t)*/ /* && m.vars()==0 */
 //
 //            ) {
 //
 //
-//                next.accept(term.concept());
+//                next.accept(target.concept());
 //
 //
 //            }

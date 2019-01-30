@@ -11,8 +11,8 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 /**
- * defines term -> concept mapping.
- * generally, terms name concepts directly except in temporal cases there is a many to one term to concept mapping
+ * defines target -> concept mapping.
+ * generally, terms name concepts directly except in temporal cases there is a many to one target to concept mapping
  * effectively using concepts to 'bin' together varieties of related terms
  */
 public class Conceptualization {

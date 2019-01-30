@@ -92,7 +92,7 @@ public class DefaultTermizer implements Termizer {
     }
 
     /**
-     * dereference a term to an object (but do not un-termize)
+     * dereference a target to an object (but do not un-termize)
      */
     @Nullable
     @Override
@@ -104,7 +104,7 @@ public class DefaultTermizer implements Termizer {
 
         Object x = termToObj.get(t);
         if (x == null)
-            return t; /** return the term intance itself */
+            return t; /** return the target intance itself */
 
         return x;
     }
@@ -276,7 +276,7 @@ public class DefaultTermizer implements Termizer {
     }
 
     /**
-     * generic instance term representation
+     * generic instance target representation
      */
     public static Term instanceTerm(Object o) {
         return $.p(System.identityHashCode(o), 36);

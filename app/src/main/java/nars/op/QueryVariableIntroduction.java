@@ -33,7 +33,7 @@ public class QueryVariableIntroduction {
 //                    @Override
 //                    protected Task clone(@NotNull Task original, Compound c) {
 //                        Task t = super.clone(original, c);
-//                        t.budget().mul(priority, 1f, 1f); //decrease in proportion to the input term's volume
+//                        t.budget().mul(priority, 1f, 1f); //decrease in proportion to the input target's volume
 //                        return t;
 //                    }
 //                },

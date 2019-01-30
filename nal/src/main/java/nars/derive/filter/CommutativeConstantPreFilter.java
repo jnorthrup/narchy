@@ -24,7 +24,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
     private static final Atomic id = Atomic.the("ellipsisCommutativeConstant");
 
     /**
-     * from = non-ellipsis term to check if present as a subterm of what appears at to
+     * from = non-ellipsis target to check if present as a subterm of what appears at to
      */
     public CommutativeConstantPreFilter(byte[] ellipsisPath, byte[] contentPath, boolean ellipsisInTaskOrBelief /* direction */) {
         super($.func(id, PremiseRuleSource.pp(ellipsisPath), PremiseRuleSource.pp(contentPath), ellipsisInTaskOrBelief ? Task : Belief));

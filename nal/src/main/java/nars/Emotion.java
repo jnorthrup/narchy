@@ -1,23 +1,20 @@
 package nars;
 
-import com.netflix.servo.Metric;
-import com.netflix.servo.MonitorRegistry;
-import com.netflix.servo.monitor.Counter;
-import com.netflix.servo.publish.BasicMetricFilter;
-import com.netflix.servo.publish.MonitorRegistryMetricPoller;
-import com.netflix.servo.publish.PollRunnable;
+//import com.netflix.servo.Metric;
+//import com.netflix.servo.MonitorRegistry;
+//import com.netflix.servo.monitor.Counter;
+//import com.netflix.servo.publish.BasicMetricFilter;
+//import com.netflix.servo.publish.MonitorRegistryMetricPoller;
+//import com.netflix.servo.publish.PollRunnable;
+//import com.netflix.servo.util.Clock;
+
 import com.netflix.servo.util.Clock;
 import jcog.signal.meter.ExplainedCounter;
 import jcog.signal.meter.FastCounter;
 import jcog.signal.meter.Meter;
-import jcog.signal.meter.MetricsMapper;
 import jcog.signal.meter.event.AtomicMeanFloat;
 import nars.control.DurService;
 import nars.control.MetaGoal;
-
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
 
 import static jcog.Texts.n4;
 
@@ -40,10 +37,10 @@ public class Emotion implements Meter {
 //    public final Counter conceptCreateFail = new FastCounter("concept create fail");
 //    public final Counter conceptDelete = new FastCounter("concept delete");
 
-    public final Counter conceptFire = new FastCounter("concept fire");
-    public final Counter taskFire = new FastCounter("task fire");
+    public final FastCounter conceptFire = new FastCounter("concept fire");
+    public final FastCounter taskFire = new FastCounter("task fire");
     //public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
-    public final Counter premiseFire = new FastCounter("premise fire");
+    public final FastCounter premiseFire = new FastCounter("premise fire");
 
 
     /**
@@ -51,18 +48,18 @@ public class Emotion implements Meter {
      */
     //public final Counter premiseBurstDuplicate = new FastCounter("premise burst duplicate");
 
-    public final Counter premiseUnderivable = new FastCounter("premise underivable");
-    public final Counter premiseUnbudgetable = new FastCounter("premise unbudgetable");
+    public final FastCounter premiseUnderivable = new FastCounter("premise underivable");
+    public final FastCounter premiseUnbudgetable = new FastCounter("premise unbudgetable");
 
-    public final Counter deriveTask = new FastCounter("derive task");
-    public final Counter deriveTermify = new FastCounter("derive termify");
+    public final FastCounter deriveTask = new FastCounter("derive task");
+    public final FastCounter deriveTermify = new FastCounter("derive termify");
     public final ExplainedCounter deriveFailTemporal = new ExplainedCounter("derive fail temporal");
     public final ExplainedCounter deriveFailEval = new ExplainedCounter("derive fail eval");
-    public final Counter deriveFailVolLimit = new FastCounter("derive fail vol limit");
-    public final Counter deriveFailTaskify = new FastCounter("derive fail taskify");
-    public final Counter deriveFailPrioritize = new FastCounter("derive fail prioritize");
-    public final Counter deriveFailParentDuplicate = new FastCounter("derive fail parent duplicate");
-    public final Counter deriveFailDerivationDuplicate = new FastCounter("derive fail derivation duplicate");
+    public final FastCounter deriveFailVolLimit = new FastCounter("derive fail vol limit");
+    public final FastCounter deriveFailTaskify = new FastCounter("derive fail taskify");
+    public final FastCounter deriveFailPrioritize = new FastCounter("derive fail prioritize");
+    public final FastCounter deriveFailParentDuplicate = new FastCounter("derive fail parent duplicate");
+    public final FastCounter deriveFailDerivationDuplicate = new FastCounter("derive fail derivation duplicate");
 
 
     /**
@@ -77,7 +74,6 @@ public class Emotion implements Meter {
     public final AtomicMeanFloat happy;
     private final NAR nar;
     float _happy;
-    private float termVolMax = 1;
 
     /**
      * count of errors
@@ -118,27 +114,24 @@ public class Emotion implements Meter {
         return nar.time;
     }
 
-    public Runnable getter(MonitorRegistry reg, Supplier<Map<String, Object>> p) {
-        return new PollRunnable(
-                new MonitorRegistryMetricPoller(reg),
-                BasicMetricFilter.MATCH_ALL,
-                new MetricsMapper(name(), clock(), p) {
-                    @Override
-                    protected void update(List<Metric> metrics, Map<String, Object> map) {
-                        super.update(metrics, map);
-                        map.put("emotion", summary());
-                    }
-                }
-        );
-    }
+//    public Runnable getter(MonitorRegistry reg, Supplier<Map<String, Object>> p) {
+//        return new PollRunnable(
+//                new MonitorRegistryMetricPoller(reg),
+//                BasicMetricFilter.MATCH_ALL,
+//                new MetricsMapper(name(), clock(), p) {
+//                    @Override
+//                    protected void update(List<Metric> metrics, Map<String, Object> map) {
+//                        super.update(metrics, map);
+//                        map.put("emotion", summary());
+//                    }
+//                }
+//        );
+//    }
 
     /**
      * new frame started
      */
     public void commit() {
-
-
-        termVolMax = nar.termVolumeMax.floatValue();
 
         _happy = happy.commitSum();
 

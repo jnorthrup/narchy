@@ -38,24 +38,22 @@ public class TaskConcept extends NodeConcept  {
                 goals != null ? goals : b.newTable(term, false),
                 b.questionTable(term, true),
                 b.questionTable(term, false),
-                linker,
-                b.newLinkBag(term));
+                linker);
     }
 
 
     /**
      * Constructor, called in Memory.getConcept only
      *
-     * @param term      A term corresponding to the concept
+     * @param term      A target corresponding to the concept
      * @param termLinks
      * @param taskLinks
      */
     public TaskConcept(Term term,
                        BeliefTable beliefs, BeliefTable goals,
                        QuestionTable questions, QuestionTable quests,
-                       TermLinker linker,
-                       Bag bags) {
-        super(term, linker, bags);
+                       TermLinker linker) {
+        super(term, linker);
         this.beliefs = beliefs;
         this.goals = goals;
         this.questions = questions;
@@ -75,7 +73,7 @@ public class TaskConcept extends NodeConcept  {
     }
 
     /**
-     * Judgments directly made about the term Use ArrayList because of access
+     * Judgments directly made about the target Use ArrayList because of access
      * and insertion in the middle
      */
     @Override
@@ -84,7 +82,7 @@ public class TaskConcept extends NodeConcept  {
     }
 
     /**
-     * Desire values on the term, similar to the above one
+     * Desire values on the target, similar to the above one
      */
     @Override
     public BeliefTable goals() {

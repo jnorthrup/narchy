@@ -100,8 +100,8 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
 //            @Override
 //            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
 //                return Op.DIFFe.the(
-//                        components.get(0).task().term(),
-//                        components.get(1).task().term());
+//                        components.get(0).task().target(),
+//                        components.get(1).task().target());
 //            }
 //
 //        };

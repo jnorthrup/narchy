@@ -182,7 +182,7 @@ public class ConjMatch {
 
                         Term z;
                         if (n == 2) {
-                            z = x.get(1-matchUnify).replace(s.xy); //TODO keep trying if term fails to transform
+                            z = x.get(1-matchUnify).replace(s.xy); //TODO keep trying if target fails to transform
                         } else {
 
                             //include any other events occurring at the same time as matchExact but not those after it
@@ -255,7 +255,7 @@ public class ConjMatch {
 //            Map<Term, Termed> n = new HashMap<>(Builtin.statik.length);
 //            for (Termed s : Builtin.statik) {
 //                if (s instanceof Functor.InlineFunctor)
-//                    n.put(s.term(), s);
+//                    n.put(s.target(), s);
 //            }
 //            this.staticFunctors = Maps.immutable.ofMap(n);
 //        }

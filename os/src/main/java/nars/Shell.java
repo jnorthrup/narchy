@@ -219,14 +219,14 @@ public class Shell {
 //            private final ConsoleTerminal console;
 //            AtomicBoolean menuShown = new AtomicBoolean(false);
 //
-//            public ConsoleWidget(VirtualTerminal term) {
+//            public ConsoleWidget(VirtualTerminal target) {
 //
 //
 //                Surface menu = new Scale(new LabeledPane("Text Scale", new Gridding(
 //                        new XYSlider()
 //                )), 0.5f);
 //
-//                this.console = new ConsoleTerminal(term) {
+//                this.console = new ConsoleTerminal(target) {
 //
 //                    float charAspect = 1.6f;
 //

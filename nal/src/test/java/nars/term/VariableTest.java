@@ -99,7 +99,7 @@ public class VariableTest {
         assertEq("((--,#1)&&(--,#2))", $$("((--,#3) && (--,#2))").normalize());
     }
 
-    /** tests term sort order consistency */
+    /** tests target sort order consistency */
     @Test
     void testVariableSubtermSortAffect0() {
 
@@ -129,7 +129,7 @@ public class VariableTest {
 
     }
 
-    /** tests term sort order consistency */
+    /** tests target sort order consistency */
     @Test
     void testVariableSubtermSortAffectNonComm() {
 
@@ -162,7 +162,7 @@ public class VariableTest {
         }
    }
 
-    /** tests term sort order consistency */
+    /** tests target sort order consistency */
     @Test
     void testVariableSubtermSortAffect1() {
 

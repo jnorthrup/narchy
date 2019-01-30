@@ -11,8 +11,8 @@
 //import nars.table.dynamic.DynamicTaskTable;
 //import nars.task.signal.SignalTask;
 //import nars.task.util.Answer;
-//import nars.term.Term;
-//import nars.term.Termed;
+//import nars.target.Term;
+//import nars.target.Termed;
 //import nars.time.Tense;
 //import nars.truth.Truth;
 //import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
@@ -32,15 +32,15 @@
 //        this(c, belief, null, n);
 //    }
 //
-//    public Scalar(Term term, @Nullable LongToFloatFunction belief, @Nullable LongToFloatFunction goal, NAR n) {
-//        super(term,
+//    public Scalar(Term target, @Nullable LongToFloatFunction belief, @Nullable LongToFloatFunction goal, NAR n) {
+//        super(target,
 //                belief != null ?
 //                        new BeliefTables(
-//                                new ScalarBeliefTable(term, true, belief, n) ) : n.conceptBuilder.newTable(term, true),
+//                                new ScalarBeliefTable(target, true, belief, n) ) : n.conceptBuilder.newTable(target, true),
 //
 //                goal != null ?
 //                        new BeliefTables(
-//                                new ScalarBeliefTable(term, false, goal, n) ) : n.conceptBuilder.newTable(term, false)
+//                                new ScalarBeliefTable(target, false, goal, n) ) : n.conceptBuilder.newTable(target, false)
 //                ,
 //                n.conceptBuilder);
 //
@@ -89,11 +89,11 @@
 //        final long stampSeed;
 //        final long stampStart;
 //
-//        protected ScalarBeliefTable(Term term, boolean beliefOrGoal, LongToFloatFunction value, NAR n) {
-//            super(term, beliefOrGoal);
+//        protected ScalarBeliefTable(Term target, boolean beliefOrGoal, LongToFloatFunction value, NAR n) {
+//            super(target, beliefOrGoal);
 //            stampStart = n.time();
 //
-//            this.stampSeed = term.hashCode();
+//            this.stampSeed = target.hashCode();
 //
 //            this.value = value;
 //        }
@@ -110,7 +110,7 @@
 //        protected Task taskDynamic(Answer a) {
 //            Term template = a.template;
 //            if (template == null)
-//                a.template = template = term;
+//                a.template = template = target;
 //
 //            long start = a.time.start;
 //            long end = a.time.end;
@@ -123,7 +123,7 @@
 //
 //                long stampDelta = mid - stampStart; //TODO optional dithering
 //                long stamp = stampDelta ^ stampSeed; //hash
-//                SignalTask tt = new SignalTask(term, punc(), t, nar.time(), mid, mid, stamp);
+//                SignalTask tt = new SignalTask(target, punc(), t, nar.time(), mid, mid, stamp);
 //                tt.pri(pri.get());
 //                return tt;
 //            }

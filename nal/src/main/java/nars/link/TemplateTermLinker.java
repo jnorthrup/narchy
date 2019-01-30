@@ -2,7 +2,6 @@ package nars.link;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
-import jcog.pri.OverflowDistributor;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtils;
@@ -10,8 +9,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.attention.BufferedBag;
-import nars.attention.PriBuffer;
 import nars.concept.Concept;
 import nars.derive.Derivation;
 import nars.index.concept.AbstractConceptIndex;
@@ -26,7 +23,7 @@ import java.util.stream.Stream;
 
 /**
  * default general-purpose termlink template impl. for compound terms
- * contains a fixed set of subterm components that can be term-linked with.
+ * contains a fixed set of subterm components that can be target-linked with.
  * this implementation stores the conceptualizable terms in the lower part of a list
  * so that they can be accessed quickly as separate from non-conceptualizables.
  *
@@ -247,12 +244,12 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
      * balance = nar.termlinkBalance
      */
     @Override
-    public void link(Activate a, Derivation d) {
+    public void link(Derivation d) {
 
         if (d.tasksFired.isEmpty())
             return;
 
-        if (conceptualizeAndTermLink(a, d) <= 0)
+        if (conceptualizeAndTermLink(d) <= 0)
             return;
 
         Collection<Concept> firedConcepts = d.firedConcepts;
@@ -274,7 +271,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
                 for (Task t : taskedLinked) {
 
-                    TaskLink tt = TaskLink.tasklink(t, true, true, 0 /* pri will be set in each clone */, nar);
+                    TaskLink tt = TaskLink.tasklink(Op.EmptyProduct,t, true, true, 0 /* pri will be set in each clone */, nar);
 
                     float pri = t.priElseZero() * taskLinkRate;
 
@@ -285,7 +282,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
 
                     for (Concept c : firedConcepts) {
-                        TaskLink.link(tt.clone(pEach), c.tasklinks(), null /* overflow*/);
+                        TaskLink.link(tt.clone(c.term(), pEach), nar, null /* overflow*/);
                     }
 
 //                    if (overflow != null) {
@@ -308,7 +305,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
     }
 
 
-    private int conceptualizeAndTermLink(Activate concept, Derivation d) {
+    private int conceptualizeAndTermLink(Derivation d) {
 
         int n = concepts;
         if (n == 0)
@@ -326,7 +323,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
         NAR nar = d.nar;
         AbstractConceptIndex koncepts = (AbstractConceptIndex) nar.concepts;
-        PriBuffer<Concept> linking = ((BufferedBag<Term,Concept,?>) koncepts.active).buffer; //HACK
+//        PriBuffer<Concept> linking = ((BufferedBag<Term,Concept,?>) koncepts.active).buffer; //HACK
 
         float conceptActivationEach =
                 //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
@@ -347,7 +344,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
 //            NumberX refund = new MutableFloat(0);
 
-//            Term srcTerm = src.term();
+//            Term srcTerm = src.target();
 
 
         Random rng = d.random;
@@ -360,7 +357,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
             inc = true;
         }
 
-        OverflowDistributor<Concept> overflow = n > 1 ? new OverflowDistributor<>() : null;
+//        OverflowDistributor<Concept> overflow = n > 1 ? new OverflowDistributor<>() : null;
 
         for (int i = 0; i < n; i++) {
             if (inc) {
@@ -377,15 +374,15 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
                     nar.conceptualize(tgtTerm);
 
             if (tgt !=null) {
-                linking.put(tgt, conceptActivationEach, overflow);
+//                linking.put(tgt, conceptActivationEach, overflow);
 
                 firedConcepts.add(tgt);
             }
 
         }
 
-        if(overflow!=null)
-            linking.put(overflow, rng);
+//        if(overflow!=null)
+//            linking.put(overflow, rng);
 
         return n;
     }

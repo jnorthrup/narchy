@@ -69,7 +69,7 @@ public class DTMatrix<E> {
 	/**
 	 * Metodo che restituisce il valore associato al termine indicato
 	 * @param term Il termine di cui si vuole conoscere il valore associato
-	 * @return Il valore associato al termine term
+	 * @return Il valore associato al termine target
 	 */
 	protected double getValue(E term){
 		int i = index(term);
@@ -99,7 +99,7 @@ public class DTMatrix<E> {
 	/**
 	 * Metodo che imposta un valore per un dato termine
 	 * @param term il valore di cui si vuole associare il valore
-	 * @param value il valore da associare a term
+	 * @param value il valore da associare a target
 	 */
 	protected void setValue(E term, double value){
 		int i = index(term);

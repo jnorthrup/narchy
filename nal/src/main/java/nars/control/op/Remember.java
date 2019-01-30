@@ -51,7 +51,7 @@ public class Remember extends AbstractTask {
             int termVol = input.term().volume();
             int maxVol = n.termVolumeMax.intValue();
             if (termVol > maxVol)
-                throw new TaskException(input, "term exceeds volume maximum: " + termVol + " > " + maxVol);
+                throw new TaskException(input, "target exceeds volume maximum: " + termVol + " > " + maxVol);
         }
 
         if ((!isInput || input instanceof TaskProxy) && input.isBeliefOrGoal() && input.conf() < n.confMin.floatValue()) {

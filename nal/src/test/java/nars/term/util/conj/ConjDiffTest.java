@@ -27,9 +27,9 @@ class ConjDiffTest {
                 "(--(x &&+1 y) ==>+1 (--y &&+1 z))");
 
 //        assertEq("c", ConjDiff.the(
-//                $$("(--x &&+5 c)"), 5, $$("x"), ETERNAL, true).term()); //unchanged
+//                $$("(--x &&+5 c)"), 5, $$("x"), ETERNAL, true).target()); //unchanged
 //        assertEq("((--,x) &&+5 c)", ConjDiff.the(
-//                $$("(--x &&+5 c)"), 5, $$("x"), 0, true).term()); //unchanged
+//                $$("(--x &&+5 c)"), 5, $$("x"), 0, true).target()); //unchanged
 
     }
 
@@ -44,7 +44,7 @@ class ConjDiffTest {
         assertEq("z", ConjDiff.the(
                 $$("(x&&z)"), ETERNAL, $$("(x&&y)"), 0).term());
 //        assertEq("z", ConjDiff.the(
-//                $$("(x&&z)"), 0, $$("(x&&y)"), ETERNAL).term());
+//                $$("(x&&z)"), 0, $$("(x&&y)"), ETERNAL).target());
 
         assertEq("z", ConjDiff.the(
                 $$("(x&&z)"), 1, $$("(x&&y)"), 1).term());

@@ -70,11 +70,11 @@ public class DetailedReward extends Reward {
 //             //TODO add these to On/Off
 //            agent.//alwaysWant/*Eternally*/
 //                    alwaysWantEternally
-//                    (concept.components.get(0).term, nar.confDefault(GOAL) * 0.75f );
+//                    (concept.components.get(0).target, nar.confDefault(GOAL) * 0.75f );
 //            agent.//alwaysWant/*Eternally*/
-//                    alwaysWantEternally(concept.components.get(1).term, nar.confDefault(GOAL));
+//                    alwaysWantEternally(concept.components.get(1).target, nar.confDefault(GOAL));
 //            agent.//alwaysWant/*Eternally*/
-//                    alwaysWantEternally(concept.components.get(2).term, nar.confDefault(GOAL) * 0.5f); //acute
+//                    alwaysWantEternally(concept.components.get(2).target, nar.confDefault(GOAL) * 0.5f); //acute
 //            for (Signal x : concept.components) {
 //                EternalTable ete = ((BeliefTables)x.beliefs()).tableFirst(EternalTable.class);
 //                if (ete!=null)

@@ -34,12 +34,12 @@ public class FastCounter extends AtomicLong implements Monitor<Number>, Counter 
      * {@inheritDoc}
      */
     @Override
-    public final Number getValue(int pollerIdx) {
+    public final Long getValue(int pollerIdx) {
         return getValue();
     }
 
     @Override
-    public final Number getValue() {
+    public final Long getValue() {
         return getOpaque();
     }
 

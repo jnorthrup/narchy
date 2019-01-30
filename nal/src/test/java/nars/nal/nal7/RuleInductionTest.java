@@ -61,7 +61,7 @@ class RuleInductionTest {
         };
         new STMLinkage(n, 1);
 
-        d.conceptsPerIteration.set(2);
+        d.tasklinksPerIteration.set(2);
 
         n.time.dur(dur);
 

@@ -48,7 +48,7 @@ public class SetFunc {
         }
     };
     /**
-     * all X which are in the first term AND not in the second term
+     * all X which are in the first target AND not in the second target
      */
     public static final Functor differ = new BinarySetFunctor("differ") {
 

@@ -21,7 +21,7 @@ public class SimpleReward extends BeliefReward {
 //            @Override
 //            public void sample(Random rng, Function<? super Term, SampleReaction> each) {
 //                if (rng.nextFloat() < 0.9f) {
-//                    if ((each.apply(a.actions.get(rng.nextInt(a.actions.size())).term())).stop)
+//                    if ((each.apply(a.actions.get(rng.nextInt(a.actions.size())).target())).stop)
 //                        return;
 //                }
 //                super.sample(rng, each);
@@ -50,13 +50,13 @@ public class SimpleReward extends BeliefReward {
 
 //        agent.//alwaysWant
 //                alwaysWantEternally
-//                    (concept.term, nar.confDefault(GOAL));
+//                    (concept.target, nar.confDefault(GOAL));
 //        agent.alwaysQuestionDynamic(()->{
 //            int dt =
 //                    //0;
 //                    nar.dur();
 //            Random rng = nar.random();
-//            return IMPL.the(agent.actions.get(rng).term().negIf(rng.nextBoolean()), dt, concept.term());
+//            return IMPL.the(agent.actions.get(rng).target().negIf(rng.nextBoolean()), dt, concept.target());
 //        }, true);
     }
 

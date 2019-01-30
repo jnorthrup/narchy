@@ -5,7 +5,7 @@ import nars.Op;
 import java.util.function.Predicate;
 
 /**
- * has, or is associated with a specific term
+ * has, or is associated with a specific target
  */
 public interface Termed extends Termlike {
 
@@ -18,7 +18,7 @@ public interface Termed extends Termlike {
 
 //    @Override
 //    default int complexity() {
-//        return term().complexity();
+//        return target().complexity();
 //    }
 
     @Override

@@ -53,24 +53,6 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
     }
 
-    @Override
-    @Deprecated public Bag newLinkBag(Term t) {
-        int v = t.volume();
-
-        //if shared, seems to require ConcurrentHashMap if exec is concurrent
-//        Map shared = newBagMap(v);
-//
-//        return new Bag[]{
-//                new PLinkArrayBag<Term>(0, Param.termlinkMerge, shared),
-//                new PLinkArrayBag<TaskLink>(0, Param.tasklinkMerge, shared)
-//        };
-
-        return
-                //new PLinkArrayBag<Term>(0, Param.termlinkMerge, newBagMap(v)),
-                new PLinkArrayBag(0, Param.tasklinkMerge, newBagMap(v))
-        ;
-    }
-
 
     @Override
     public BeliefTables newTable(Term c, boolean beliefOrGoal) {

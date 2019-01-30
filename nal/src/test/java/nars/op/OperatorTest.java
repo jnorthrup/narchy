@@ -41,7 +41,7 @@ class OperatorTest {
         assertTrue(invoked.get());
     }
 
-    /** tests Builtin.System and evaluating a term input as a command */
+    /** tests Builtin.System and evaluating a target input as a command */
     @Test
     void testThe() throws Narsese.NarseseException {
         NAR n = NARS.tmp();

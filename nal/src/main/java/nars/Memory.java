@@ -451,7 +451,7 @@ public class Memory {
     }
 
     /**
-     * resolves memory by NAR's current Self term
+     * resolves memory by NAR's current Self target
      */
     private static class NARResolver implements MemoryResolver {
         private final NAR nar;

@@ -8,7 +8,7 @@ import nars.term.Term;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
-/** accepts a separate term as a facade to replace the apparent content term of
+/** accepts a separate target as a facade to replace the apparent content target of
  * a proxied task
   */
 public class SpecialTermTask extends TaskProxy {
@@ -26,7 +26,7 @@ public class SpecialTermTask extends TaskProxy {
             @Nullable ObjectBooleanPair<Term> z = Task.tryContent(term, task.punc(), false);
             this.term = z.getOne();
             if (z.getTwo())
-                throw new TaskException(term, this + " can not support negated content term");
+                throw new TaskException(term, this + " can not support negated content target");
         } else {
             this.term = term;
         }

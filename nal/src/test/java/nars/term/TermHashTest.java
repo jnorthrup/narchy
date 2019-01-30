@@ -11,7 +11,7 @@ import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * test term hash and structure bits
+ * test target hash and structure bits
  */
 class TermHashTest {
 

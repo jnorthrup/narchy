@@ -29,7 +29,7 @@ import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
  * uses dynamic truth models and recursive dynamic belief evaluation to compute
  * accurately truthed, timed, and evidentially stamped composite/aggregate truths
  * with varying specified or unspecified internal temporal features described by
- * a template term.
+ * a template target.
  *
  * additionally tracks evidential overlap while being constructed, and provide the summation of evidence after*/
 @Paper
@@ -216,13 +216,13 @@ public class DynTaskify extends DynEvi {
     }
 
 
-//    public final Task task(Term term, Truth t, boolean beliefOrGoal, NAR n) {
-//        return task(term, t, beliefOrGoal, false, n);
+//    public final Task task(Term target, Truth t, boolean beliefOrGoal, NAR n) {
+//        return task(target, t, beliefOrGoal, false, n);
 //
 //    }
 
-//    public final Truth truth(Term term, BiFunction<DynTruth, NAR, Truth> o, boolean beliefOrGoal, NAR n) {
-//        return (Truth) eval(term, o, false, beliefOrGoal, n);
+//    public final Truth truth(Term target, BiFunction<DynTruth, NAR, Truth> o, boolean beliefOrGoal, NAR n) {
+//        return (Truth) eval(target, o, false, beliefOrGoal, n);
 //    }
 
 //    /**

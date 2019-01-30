@@ -70,7 +70,7 @@ class DynamicSectTest {
 //            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x-z)-->a)")), now));
 
 //            Task withNeg = n.answer($("((x|--y)-->a)"), BELIEF, 0);
-//            assertEquals("((x-y)-->a)", withNeg.term().toString());
+//            assertEquals("((x-y)-->a)", withNeg.target().toString());
 //            assertEquals(0f, withNeg.truth().freq());
         }
     }

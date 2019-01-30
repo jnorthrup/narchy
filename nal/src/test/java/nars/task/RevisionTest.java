@@ -2,11 +2,9 @@ package nars.task;
 
 import com.google.common.collect.Lists;
 import jcog.pri.ScalarValue;
-import jcog.pri.bag.Bag;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.link.TaskLink;
 import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
@@ -396,11 +394,6 @@ public class RevisionTest {
 
     }
 
-    private static void printTaskLinks(BeliefAnalysis b) {
-        System.out.println("Tasklinks @ " + b.time());
-        b.tasklinks().print();
-    }
-
     protected static void permuteChoose(Compound a, Compound b, String expected) {
         assertEquals(expected, permuteIntermpolations(a, b).toString());
     }
@@ -632,61 +625,58 @@ public class RevisionTest {
         assertEquals(0.947f, t.conf(), 0.01f);
     }
 
-    /**
-     * test that budget is conserved during a revision between
-     * the input tasks and the result
-     */
-    @Test
-    void testRevisionBudgeting() {
-        NAR n = newNAR(6);
-
-        BeliefAnalysis b = new BeliefAnalysis(n, x);
-
-        assertEquals(0, b.priSum(), 0.01f);
-
-        b.believe(1.0f, 0.5f).run(1);
-
-        Bag<?, TaskLink> tasklinks = b.concept().tasklinks();
-
-        assertEquals(0.5f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.01f);
-
-        printTaskLinks(b);
-        System.out.println("--------");
-
-        float linksBeforeRevisionLink = tasklinks.priSum();
-
-        b.believe(0.0f, 0.5f).run(1);
-
-        printTaskLinks(b);
-        System.out.println("--------");
-
-        b.run(1);
-        tasklinks.commit();
-
-        printTaskLinks(b);
-        System.out.println("--------");
-
-        System.out.println("Beliefs: ");
-        b.print();
-        System.out.println("\tSum Priority: " + b.priSum());
-
-
-        float beliefAfter2;
-        assertEquals(1.0f, beliefAfter2 = b.priSum(), 0.1f /* large delta to allow for forgetting */);
-
-
-        assertEquals(0.71f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.06f);
-
-        b.print();
-
-
-        assertEquals(3, b.size(true));
-
-
-        assertEquals(beliefAfter2, b.priSum(), 0.01f);
-
-
-    }
+//    /**
+//     * test that budget is conserved during a revision between
+//     * the input tasks and the result
+//     */
+//    @Test
+//    void testRevisionBudgeting() {
+//        NAR n = newNAR(6);
+//
+//        BeliefAnalysis b = new BeliefAnalysis(n, x);
+//
+//        assertEquals(0, b.priSum(), 0.01f);
+//
+//        b.believe(1.0f, 0.5f).run(1);
+//
+//        Bag<?, TaskLink> tasklinks = b.concept().tasklinks();
+//
+//        assertEquals(0.5f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.01f);
+//
+//        System.out.println("--------");
+//
+//        float linksBeforeRevisionLink = tasklinks.priSum();
+//
+//        b.believe(0.0f, 0.5f).run(1);
+//
+//        System.out.println("--------");
+//
+//        b.run(1);
+//        tasklinks.commit();
+//
+//        System.out.println("--------");
+//
+//        System.out.println("Beliefs: ");
+//        b.print();
+//        System.out.println("\tSum Priority: " + b.priSum());
+//
+//
+//        float beliefAfter2;
+//        assertEquals(1.0f, beliefAfter2 = b.priSum(), 0.1f /* large delta to allow for forgetting */);
+//
+//
+//        assertEquals(0.71f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.06f);
+//
+//        b.print();
+//
+//
+//        assertEquals(3, b.size(true));
+//
+//
+//        assertEquals(beliefAfter2, b.priSum(), 0.01f);
+//
+//
+//    }
 
     @Test
     public void testMergeTruthDilution() {

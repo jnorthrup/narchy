@@ -48,7 +48,7 @@ class CommonVariableTest {
     @Test
     void CommonVariableOfCommonVariable() {
         Variable c123 = CommonVariable.common( c12,  p3);
-        assertEquals("###1#2##3# class nars.term.var.CommonVariable", (c123 + " " + c123.getClass()));
+        assertEquals("###1#2##3# class nars.target.var.CommonVariable", (c123 + " " + c123.getClass()));
 
         
         assertEquals("####1#2##3##2#", CommonVariable.common( c123, p2).toString());

@@ -582,8 +582,8 @@ public class TermReductionsTest extends NarseseTest {
 
     }
 
-//    private void tryDiff(NAR n, String term, String truthExpected) throws Narsese.NarseseException {
-//        assertEquals(truthExpected, n.beliefTruth(term, ETERNAL).toString(), term::toString);
+//    private void tryDiff(NAR n, String target, String truthExpected) throws Narsese.NarseseException {
+//        assertEquals(truthExpected, n.beliefTruth(target, ETERNAL).toString(), target::toString);
 //
 //    }
 

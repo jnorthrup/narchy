@@ -15,8 +15,8 @@
 //import nars.task.ITask;
 //import nars.task.NALTask;
 //import nars.task.signal.SignalTask;
-//import nars.term.Term;
-//import nars.term.Termed;
+//import nars.target.Term;
+//import nars.target.Termed;
 //import nars.time.Tense;
 //import nars.truth.Truth;
 //import nars.truth.TruthAccumulator;
@@ -87,10 +87,10 @@
 //        this(everyDurs, a.nar(),
 //                Iterables.concat(
 //                        Iterables.transform(
-//                                a.actions(), Termed::term
+//                                a.actions(), Termed::target
 //                        ),
 //                        Iterables.transform(
-//                                a.happy, Termed::term
+//                                a.happy, Termed::target
 //                        )
 //                ),
 //                relativeTargetDurs
@@ -175,7 +175,7 @@
 //        if (implDT == DTERNAL)
 //            implDT = 0;
 //
-//        Term implTerm = impl.term();
+//        Term implTerm = impl.target();
 //        Term S = implTerm.sub(0);
 //        boolean Sneg = false;
 //        if (S.op()==NEG) {

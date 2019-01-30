@@ -10,7 +10,6 @@ import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
-import nars.concept.util.ConceptBuilder;
 import nars.eval.Evaluation;
 import nars.link.TermLinker;
 import nars.op.Equal;
@@ -30,9 +29,9 @@ import static nars.Op.*;
 import static nars.term.Terms.atomOrNull;
 
 /**
- * a functor is a term transform which immediately returns
+ * a functor is a target transform which immediately returns
  * a result Term from the TermContainer arguments of
- * a function term, for example: f(x) or f(x, y).
+ * a function target, for example: f(x) or f(x, y).
  */
 abstract public class Functor extends NodeConcept implements PermanentConcept, BiFunction<Evaluation, Subterms, Term>, Atomic {
 
@@ -41,7 +40,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     protected Functor(Atom atom) {
-        super(atom, TermLinker.NullLinker, ConceptBuilder.NullConceptBuilder);
+        super(atom, TermLinker.NullLinker);
     }
 
     public static Atomic func(Term x) {
@@ -75,14 +74,14 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     /**
-     * creates a new functor from a term name and a lambda
+     * creates a new functor from a target name and a lambda
      */
     public static LambdaFunctor f(String termAtom, Function<Subterms, Term> f) {
         return f(fName(termAtom), f);
     }
 
     /**
-     * creates a new functor from a term name and a lambda
+     * creates a new functor from a target name and a lambda
      */
     private static LambdaFunctor f(Atom termAtom, Function<Subterms, Term> f) {
         return new LambdaFunctor(termAtom, f);
@@ -168,7 +167,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     /**
-     * a functor involving a concept resolved by the 1st argument term
+     * a functor involving a concept resolved by the 1st argument target
      */
     public static LambdaFunctor f1Concept(String termAtom, NAR nar, BiFunction<Concept, NAR, Term> ff) {
         return f1(fName(termAtom), t -> {
@@ -259,7 +258,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 //    }
 
     /** marker interface for functors which are allowed to be applied during
-     * transformation or term construction processes.
+     * transformation or target construction processes.
      * these are good for simple functors that are guaranteed to return quickly.
      */
     public interface InlineFunctor extends BiFunction<Evaluation, Subterms,Term> {
@@ -601,7 +600,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         @Override
         protected Term apply2(Evaluation e, Term x, Term y) {
             if (x.compareTo(y) > 0) {
-                //return $.func((Atomic) term(), y, x);
+                //return $.func((Atomic) target(), y, x);
                 Term z = x;
                 x = y;
                 y = z;

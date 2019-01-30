@@ -16,7 +16,7 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 /**
- * temporal term intermpolation
+ * temporal target intermpolation
  */
 public enum Intermpolate {;
 

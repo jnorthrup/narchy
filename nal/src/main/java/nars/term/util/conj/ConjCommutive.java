@@ -269,7 +269,7 @@ public enum ConjCommutive {;
         return co.AND(cc -> absorb(cc, x));
     }
 
-    /** tests hypothetically distributing the incoming term to all the events in conj */
+    /** tests hypothetically distributing the incoming target to all the events in conj */
     private static boolean conflict(Term x, Term incoming) {
         if (x.equals(incoming))
             return false;
@@ -285,7 +285,7 @@ public enum ConjCommutive {;
         return false;
     }
 
-    /** tests whether the term is absorbed */
+    /** tests whether the target is absorbed */
     private static boolean absorb(Term x, Term incoming) {
         if (x.equals(incoming))
             return true;

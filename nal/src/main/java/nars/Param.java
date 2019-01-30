@@ -117,7 +117,7 @@ public abstract class Param {
     /** TODO needs tested whether recursive Unification inherits TTL */
     public static final int EVALUATION_TTL = 32;
 
-//    /** within how many durations a difference in dt is acceptable for term unification */
+//    /** within how many durations a difference in dt is acceptable for target unification */
 //    public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 1f;
 
 //    public static final boolean LINK_VARIABLE_UNIFIED_PREMISE = false;
@@ -156,11 +156,6 @@ public abstract class Param {
     public static boolean DEBUG_ENSURE_DITHERED_TRUTH = false;
     public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE = false;
     public static boolean DEBUG_ENSURE_DITHERED_DT = false;
-
-    public static final PriMerge conceptMerge =
-            PriMerge.plus;
-            //PriMerge.max;
-
 
     public static final PriMerge tasklinkMerge =
             PriMerge.max;
@@ -276,7 +271,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 4f;
+    public static final float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)
@@ -343,14 +338,14 @@ public abstract class Param {
 
     public static final int TaskLinkSpreadDefault =
             //16;
-            //12;
+            12;
             //10;
             //8;
             //7;
             //6;
             //5;
             //4;
-            3;
+            //3;
             //2;
             //1;
 
@@ -450,7 +445,7 @@ public abstract class Param {
 
 
 //    /**
-//     * abs(term.dt()) safety limit for non-dternal/non-xternal temporal compounds
+//     * abs(target.dt()) safety limit for non-dternal/non-xternal temporal compounds
 //     * exists for debugging
 //     */
 //    @Deprecated
@@ -471,9 +466,9 @@ public abstract class Param {
 
 
     /**
-     * hard upper-bound limit on Compound term complexity;
+     * hard upper-bound limit on Compound target complexity;
      * if this is exceeded it may indicate a recursively
-     * malformed term due to a serious inference bug
+     * malformed target due to a serious inference bug
      */
     public final IntRange termVolumeMax = new IntRange(COMPOUND_VOLUME_MAX, 0, COMPOUND_VOLUME_MAX);
 

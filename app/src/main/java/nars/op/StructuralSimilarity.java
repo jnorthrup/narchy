@@ -5,8 +5,8 @@
 //import nars.Op;
 //import nars.Task;
 //import nars.task.TaskBuilder;
-//import nars.term.Compound;
-//import nars.term.Term;
+//import nars.target.Compound;
+//import nars.target.Term;
 //
 //import java.util.Collections;
 //import java.util.HashSet;

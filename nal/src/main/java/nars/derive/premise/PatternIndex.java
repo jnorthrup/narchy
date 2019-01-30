@@ -33,7 +33,7 @@ import static nars.time.Tense.XTERNAL;
 import static nars.unify.ellipsis.Ellipsis.firstEllipsis;
 
 /**
- * Index which specifically holds the term components of a deriver ruleset.
+ * Index which specifically holds the target components of a deriver ruleset.
  */
 public class PatternIndex extends MapConceptIndex {
 
@@ -60,7 +60,7 @@ public class PatternIndex extends MapConceptIndex {
     @SuppressWarnings("Java8MapApi")
     @Override
     public Term get(/*@NotNull*/ Term x, boolean createIfMissing) {
-        //return x.term();
+        //return x.target();
         if (x.op() == NEG)
             return get(x.unneg(), createIfMissing).neg();
 
@@ -101,13 +101,13 @@ public class PatternIndex extends MapConceptIndex {
 //    public final PrediTerm<Derivation> intern(@Nullable PrediTerm<Derivation> x) {
 //        if (x == null)
 //            return null;
-//        PrediTerm<Derivation> y = pred.putIfAbsent(x.term(), x);
+//        PrediTerm<Derivation> y = pred.putIfAbsent(x.target(), x);
 //        return y != null ? y : x;
 //    }
 
 
     public final Term intern(Term x) {
-        return get(x, true); //.term();
+        return get(x, true); //.target();
     }
 
     public static final class PremiseRuleNormalization extends VariableNormalization {
@@ -401,7 +401,7 @@ public class PatternIndex extends MapConceptIndex {
 
 
                 if (xs >= 1 && ys > 0) {
-                    //test matches against the one constant term
+                    //test matches against the one constant target
                     for (int ixs = 0; ixs < xs; ixs++) {
                         Term ix = xFixed.get(ixs);
 

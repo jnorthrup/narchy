@@ -327,7 +327,7 @@ public class TrackXY_NAR extends NAgentX {
             };
 
 
-            ((BatchDeriver) d).conceptsPerIteration.set(derivationStrength);
+            ((BatchDeriver) d).tasklinksPerIteration.set(derivationStrength);
 
 
             new STMLinkage(n, 1) {
@@ -356,7 +356,7 @@ public class TrackXY_NAR extends NAgentX {
 //                if (tt instanceof DerivedTask && tt.isGoal()) {
 //                    //if (n.concept(tt) instanceof ActionConcept)
 //                    System.out.println(tt.proof());
-////                    Term ttt = tt.term();
+////                    Term ttt = tt.target();
 ////                    if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
 ////                        boolean l = ttt.toString().equals("left");
 ////                        boolean r = ttt.toString().equals("right");

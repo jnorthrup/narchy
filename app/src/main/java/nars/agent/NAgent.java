@@ -126,7 +126,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //
 //        actReward = new AttnDistributor(
 //                Iterables.concat(
-//                    //() -> Iterators.singletonIterator(nar.conceptualize(term())),
+//                    //() -> Iterators.singletonIterator(nar.conceptualize(target())),
 //                    Iterables.concat(actions,
 //                    Iterables.concat(rewards))),
 //            (_p)->{
@@ -155,7 +155,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //    protected <A extends ActionConcept> void actionAdded(A a) {
 //
 //        //alwaysQuest(a, true);
-//        //alwaysQuestionEternally(Op.IMPL.the($.varQuery(1), a.term), true, false);
+//        //alwaysQuestionEternally(Op.IMPL.the($.varQuery(1), a.target), true, false);
 //
 ////        alwaysQuestionEternally(a,
 ////                false,
@@ -163,9 +163,9 @@ public class NAgent extends NARService implements NSense, NAct {
 ////        );
 //
 //
-////        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
-////        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);
-//        //alwaysQuestionEternally(Op.CONJ.the($.varDep(1), a.term.neg()));
+////        alwaysQuestion(IMPL.the(c.target, 0, $$("reward:#x")), true);
+////        alwaysQuestion(IMPL.the(c.target.neg(), 0, $$("reward:#x")), true);
+//        //alwaysQuestionEternally(Op.CONJ.the($.varDep(1), a.target.neg()));
 //    }
 
     @Override
@@ -199,7 +199,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //    }
 //
 //    @Deprecated public Task alwaysWantEternally(Termed x, float conf) {
-//        Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), nar.time(),
+//        Task t = new NALTask(x.target(), GOAL, $.t(1f, conf), nar.time(),
 //                ETERNAL, ETERNAL,
 //                nar.evidence()
 //                //Stamp.UNSTAMPED
@@ -213,7 +213,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //
 //        always.add((prev, now, next) ->
 //
-//                new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
+//                new NALTask(x.target(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
 //                        now, next,
 //                        //evidenceShared
 //                        nar.evidence()
@@ -241,7 +241,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //            Termed tt = x.get();
 //            if (tt == null) return null;
 //
-//            return new NALTask(tt.term(), questionOrQuest ? QUESTION : QUEST, null, now,
+//            return new NALTask(tt.target(), questionOrQuest ? QUESTION : QUEST, null, now,
 //                    now, next,
 //                    stamp
 //            )/* {
@@ -256,7 +256,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //
 //    private void alwaysQuestionEternally(Termed x, boolean questionOrQuest, boolean stamped) {
 //
-//        NALTask etq = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
+//        NALTask etq = new NALTask(x.target(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
 //                ETERNAL, ETERNAL,
 //                //evidenceShared
 //                stamped ? nar.evidence() : Stamp.UNSTAMPED
@@ -357,7 +357,7 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     /**
-     * default reward term builder from String
+     * default reward target builder from String
      */
     protected Term rewardTerm(String reward) {
         return $.func($$(reward), id);

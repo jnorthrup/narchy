@@ -25,7 +25,7 @@
 
 
 //Hypothesize Subcondition Identity
-//      hypothesize that two subconditions which unify actually refer to the same term,
+//      hypothesize that two subconditions which unify actually refer to the same target,
 //      eliminating the variable and simplifying the statement
 
 //      ex: ((f(x) && f($1)) ==> g($1))  |-   (f(x) ==> g(x))

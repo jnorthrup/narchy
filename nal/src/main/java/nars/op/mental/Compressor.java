@@ -8,9 +8,9 @@
 //import nars.*;
 //import nars.concept.PermanentConcept;
 //import nars.task.NALTask;
-//import nars.term.Compound;
-//import nars.term.Term;
-//import nars.term.var.Variable;
+//import nars.target.Compound;
+//import nars.target.Term;
+//import nars.target.var.Variable;
 //import net.byteseek.automata.factory.MutableStateFactory;
 //import net.byteseek.automata.trie.TrieFactory;
 //import net.byteseek.io.reader.ByteArrayReader;
@@ -36,7 +36,7 @@
 //
 //import static java.util.stream.Collectors.toList;
 //import static nars.Op.BELIEF;
-//import static nars.term.Terms.compoundOrNull;
+//import static nars.target.Terms.compoundOrNull;
 //import static nars.time.Tense.ETERNAL;
 //
 ///**
@@ -141,7 +141,7 @@
 //    }
 //
 //
-//    /* boost in proportion to the volume of the uncompressed term, with a scaling factor relative to the capacity of the bag (to avoid clipping at 1.0) */
+//    /* boost in proportion to the volume of the uncompressed target, with a scaling factor relative to the capacity of the bag (to avoid clipping at 1.0) */
 //    protected float score(Compound decompressed) {
 //        return 1f/code.capacity() * (decompressed.volume() - 1); /* -1 to compensate for the cost of the abbreviation, ie. an atom */
 //    }
@@ -280,7 +280,7 @@
 //
 //    public Task transcode(Task tt, boolean en) {
 //
-//        Term i = tt.term();
+//        Term i = tt.target();
 //        Term o = transcode(i, en);
 //        if (o != i) {
 //
@@ -369,7 +369,7 @@
 //        int numCodes = code.size();
 //
 //        //POSSIBLE OPTIMIZATIONS
-//        //  if the substitution occurred within a non-commutive term, it is probably safe to continue from before the substitution, not from the beginning
+//        //  if the substitution occurred within a non-commutive target, it is probably safe to continue from before the substitution, not from the beginning
 //        //  obtain the byte[] width of each segment, and if this is less than a known min compression/decompression target range, skip it since no code would apply there
 //
 //        do {

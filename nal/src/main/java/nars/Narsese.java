@@ -151,7 +151,7 @@ public final class Narsese {
 
         Term content = ((Term) x[1]).normalize();
             /*if (!(content instanceof Compound)) {
-                throw new NarseseException("Task term unnormalizable: " + contentRaw);
+                throw new NarseseException("Task target unnormalizable: " + contentRaw);
 
             } else */
 
@@ -249,7 +249,7 @@ public final class Narsese {
     }
 
     /**
-     * parse one term NOT NORMALIZED
+     * parse one target NOT NORMALIZED
      */
     Term _term(String s) throws NarseseException {
 

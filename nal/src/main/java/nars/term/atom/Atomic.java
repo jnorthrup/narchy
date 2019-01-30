@@ -356,7 +356,7 @@ public interface Atomic extends Term {
     }
 
     /**
-     * determines if the string is invalid as an unquoted term according to the characters present
+     * determines if the string is invalid as an unquoted target according to the characters present
      */
     static boolean isQuoteNecessary(CharSequence t) {
         int len = t.length();

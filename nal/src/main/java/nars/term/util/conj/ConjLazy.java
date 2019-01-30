@@ -9,7 +9,7 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 
 /**
- * prepares construction of a conjunction term from components,
+ * prepares construction of a conjunction target from components,
  * in the most efficient method possible according to them.
  * it is lighter weight than Conj.java in buffering / accumulating
  * events prior to complete construction.

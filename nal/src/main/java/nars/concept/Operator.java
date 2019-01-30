@@ -2,7 +2,6 @@ package nars.concept;
 
 import jcog.util.ArrayUtils;
 import nars.*;
-import nars.concept.util.ConceptBuilder;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
@@ -36,7 +35,7 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
     public final BiFunction<Task, NAR, Task> model;
 
     private Operator(Atom atom, BiFunction<Task, NAR, Task> model) {
-        super(atom, TermLinker.NullLinker, ConceptBuilder.NullConceptBuilder);
+        super(atom, TermLinker.NullLinker);
         this.model = model;
     }
 
@@ -61,7 +60,7 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
     }
 
     /**
-     * returns the arguments of an operation (task or term)
+     * returns the arguments of an operation (task or target)
      */
     public static Subterms args(Term operation) {
         assert (operation.op() == INH && operation.subIs(1, ATOM));

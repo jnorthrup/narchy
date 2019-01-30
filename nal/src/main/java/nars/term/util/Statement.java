@@ -121,7 +121,7 @@ public class Statement {
 //                        throw new WTF();
 //                    if (!x.add(po, predicate))
 //                        return False;
-//                    Term cx = x.term();
+//                    Term cx = x.target();
 //                    if (cx instanceof Bool)
 //                        return cx;
 

@@ -133,9 +133,9 @@ class DynamicConjTest {
         Task atOne = n.belief(xye, 1);
         Task atEte = n.belief(xye, ETERNAL);
 
-//        assertEquals(xx, atZero.term().toString());
-//        assertEquals(xx, atOne.term().toString());
-//        assertEquals(xx, atEte.term().toString());
+//        assertEquals(xx, atZero.target().toString());
+//        assertEquals(xx, atOne.target().toString());
+//        assertEquals(xx, atEte.target().toString());
 
         assertEquals(1, atOne.start());
         assertEquals(0, atEte.start());
@@ -252,7 +252,7 @@ class DynamicConjTest {
                 Op.CONJ.the(XTERNAL, new Term[]{$.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"), $.$("(joy-->fz)"), $.$("fwd")}).normalize();
 
         assertTrue(c instanceof Compound, () -> c.toString());
-        assertTrue(Task.taskConceptTerm(c), () -> c + " should be a valid task term");
+        assertTrue(Task.taskConceptTerm(c), () -> c + " should be a valid task target");
     }
 
     @Test
@@ -262,7 +262,7 @@ class DynamicConjTest {
                 Op.CONJ.the(XTERNAL, new Term[]{$.$("(--,((--,#1)&&#2))"), $.$("(--,#2)"), $.varDep(1)}).normalize();
 
         assertTrue(c instanceof Compound, () -> c.toString());
-        assertTrue(Task.taskConceptTerm(c), () -> c + " should be a valid task term");
+        assertTrue(Task.taskConceptTerm(c), () -> c + " should be a valid task target");
     }
 
     @Test

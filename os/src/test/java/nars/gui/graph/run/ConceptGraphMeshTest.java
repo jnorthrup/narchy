@@ -3,7 +3,7 @@
 //import nars.NAR;
 //import nars.NARS;
 //import nars.concept.Concept;
-//import nars.term.Term;
+//import nars.target.Term;
 //import nars.test.impl.DeductiveMeshTest;
 //import org.jetbrains.annotations.NotNull;
 //import spacegraph.SpaceGraph;
@@ -39,10 +39,10 @@
 //                        float gh = g.h()*0.8f;
 //
 //                        g.forEachValue(n -> {
-//                            Term t = n.id.term();
+//                            Term t = n.id.target();
 //                            if (t.op()==PROD && t.subs()==2 && t.sub(0).op()==INT && t.sub(1).op()==INT) {
-//                                float x = ((nars.term.atom.Int)t.sub(0)).id;
-//                                float y = ((nars.term.atom.Int)t.sub(1)).id;
+//                                float x = ((nars.target.atom.Int)t.sub(0)).id;
+//                                float y = ((nars.target.atom.Int)t.sub(1)).id;
 //                                n.pos(//RectFloat2D.XYWH(
 //                                        //g.x() + (gw / 2 - gw / 4) + (float) Math.random() * gw / 2f,
 //                                        //g.y() + (gh / 2 - gh / 4) + (float) Math.random() * gh / 2f,

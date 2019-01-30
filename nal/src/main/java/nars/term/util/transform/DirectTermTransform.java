@@ -28,10 +28,10 @@ public abstract class DirectTermTransform extends TermTransform.NegObliviousTerm
 //
 //
 //        public CachedDirectTermTransform(int capacity) {
-//            this.localIntern = new QuickMemoize<>(capacity, this::term);
+//            this.localIntern = new QuickMemoize<>(capacity, this::target);
 //        }
 //
-//        private Term term(HashCachedPair<Term,Subterms> xy) {
+//        private Term target(HashCachedPair<Term,Subterms> xy) {
 //            Term x = xy.getOne();
 //            return localBuilder.theCompound(x.op(), x.dt(), xy.getTwo());
 //        }

@@ -107,7 +107,7 @@ public class Evaluation {
 
                 for (Predicate<VersionMap<Term, Term>> cc : c) {
                     if (cc == null)
-                        break; //null term list
+                        break; //null target list
                     if (!cc.test(subst))
                         continue nextProduct;
                 }

@@ -26,7 +26,7 @@ import static nars.Op.*;
 import static nars.task.RevisionTest.x;
 import static org.junit.jupiter.api.Assertions.*;
 
-/** term tests to be organzied more specifically */
+/** target tests to be organzied more specifically */
 public class TermTestMisc {
 
     private final NAR n = NARS.shell();
@@ -169,8 +169,8 @@ public class TermTestMisc {
         TreeSet<Term> set = new TreeSet<>();
         boolean added1 = set.add(term1);
         boolean added2 = set.add(term2);
-        assertTrue(added1, "term 1 added to set");
-        assertTrue(added2, "term 2 added to set");
+        assertTrue(added1, "target 1 added to set");
+        assertTrue(added2, "target 2 added to set");
 
         assertEquals(2, set.size());
 
@@ -196,7 +196,7 @@ public class TermTestMisc {
 
 
     /**
-     * test consistency between subterm conceptualization and term conceptualization
+     * test consistency between subterm conceptualization and target conceptualization
      */
     @Test
     void testRootOfImplWithConj() throws Narsese.NarseseException {
@@ -228,7 +228,7 @@ public class TermTestMisc {
 
         try {
             Task x = n.inputTask(t + '.');
-            fail(t + " is invalid compound term");
+            fail(t + " is invalid compound target");
         } catch (Throwable tt) {
             assertTrue(true);
         }

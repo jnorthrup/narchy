@@ -46,8 +46,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     public abstract TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal);
 
-    public abstract Bag newLinkBag(Term term);
-
     private Concept taskConcept(final Term t) {
 
         BeliefTable B, G;
@@ -63,7 +61,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             G = goalable(t) ?
                     dmt.newTable(t, false, this) :
                     BeliefTable.Empty;
-            L = dmt.newTaskLinkBag(t, this);
         } else {
 //                //3. handle dynamic conceptualizers (experimental)
 //                Term conceptor = Functor.func(t);
@@ -80,22 +77,20 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             //4. default task concept
             B = this.newTable(t, true);
             G = goalable(t) ? this.newTable(t, false) : BeliefTable.Empty;
-            L = this.newLinkBag(t);
         }
 
 
 
         return new TaskConcept(t, B, G,
                 this.questionTable(t, true), this.questionTable(t, false),
-                this.termlinker(t),
-                L);
+                this.termlinker(t));
     }
 
 
     protected abstract NodeConcept nodeConcept(final Term t);
 
 //    public void on(Conceptor c) {
-//        conceptors.put(c.term, c);
+//        conceptors.put(c.target, c);
 //    }
 
 
@@ -130,7 +125,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
     }
 
     /**
-     * returns the builder for the term, or null if the term is not dynamically truthable
+     * returns the builder for the target, or null if the target is not dynamically truthable
      */
     @Nullable
     public static AbstractDynamicTruth dynamicModel(Term t) {
@@ -352,10 +347,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             return QuestionTable.Empty;
         }
 
-        @Override
-        public Bag newLinkBag(Term term) {
-            return Bag.EMPTY;
-        }
     };
 
 }

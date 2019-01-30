@@ -15,7 +15,7 @@ import static nars.Op.IMPL;
 
 /**
  * adapter for reifying NARS beliefs (above a certain confidence threshold) as
- * term-level facts for use during evaluation
+ * target-level facts for use during evaluation
  */
 public class Facts implements Function<Term, Stream<Term>> {
     private final NAR nar;
@@ -32,7 +32,7 @@ public class Facts implements Function<Term, Stream<Term>> {
     public Stream<Term> apply(Term x) {
         //TODO filter or handle temporal terms appropriately
         /* stages
-            1. resolve the term itself
+            1. resolve the target itself
             2. check its termlinks, and local neighborhood graph termlinks
             3. exhaustive concept index scan
         */

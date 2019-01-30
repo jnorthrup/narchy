@@ -701,7 +701,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     /**
      * first layer operator scan
-     * TODO check for obvious constant term mismatch
+     * TODO check for obvious constant target mismatch
      * @return 0: must unify, -1: impossible, +1: unified already
      */
     private static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
@@ -1095,7 +1095,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /**
-     * only removes the next found item. if this is for use in non-commutive term, you may need to call this repeatedly
+     * only removes the next found item. if this is for use in non-commutive target, you may need to call this repeatedly
      */
     @Nullable
     default Term[] subsExcluding(Term x) {
@@ -1148,7 +1148,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (yi == null || yi == Bool.Null)
                 return null;
 
-            //these fail-fast cases must be consistent with the term construction process.
+            //these fail-fast cases must be consistent with the target construction process.
             if (yi == Bool.False && superOp == CONJ)
                 return Op.FalseSubterm;
 

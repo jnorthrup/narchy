@@ -7,8 +7,8 @@
 //import nars.Param;
 //import nars.concept.Concept;
 //import nars.control.NARService;
-//import nars.term.Term;
-//import nars.term.Termed;
+//import nars.target.Term;
+//import nars.target.Termed;
 //import nars.unify.UnifySubst;
 //import nars.util.graph.TermGraph;
 //
@@ -22,8 +22,8 @@
 //    @Override
 //    protected void starting(NAR nar) {
 //        nar.onTask(t -> {
-//            if (t.isQuestionOrQuest() && t.term().hasVarQuery()) {
-//                Term tt = t.term();
+//            if (t.isQuestionOrQuest() && t.target().hasVarQuery()) {
+//                Term tt = t.target();
 //                AdjGraph<Term, Float> g = spider(nar, t, 3);
 //                g.nodes.keysView().takeWhile(r -> {
 //                    new UnifySubst(null, nar, (z) -> true, Param.TTL_MIN).unify(tt, r.v, true);
@@ -42,7 +42,7 @@
 //     */
 //    private AdjGraph<Term, Float> spider(NAR nar, Termed t, AdjGraph<Term, Float> g, int recurse) {
 //
-//        Term tt = t.term();
+//        Term tt = t.target();
 //        if (tt.op().conceptualizable && g.addIfNew(tt) && recurse > 0) {
 //
 //

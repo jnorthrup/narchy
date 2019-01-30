@@ -16,7 +16,7 @@ import static nars.time.Tense.DTERNAL;
  * fast to construct but not immediately usable (or determined to be valid)
  * without calling the .the()
  * consists of a tape flat linear tape of instructions which
- * when executed construct the term
+ * when executed construct the target
  * */
 public class LazyCompound {
     private ByteAnonMap sub = null;

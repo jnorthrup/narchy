@@ -144,7 +144,7 @@ public class Arkancide extends NAgentX {
 //                }
 //            }
 ////           if (t.isQuest()) {
-////               nar.concepts.stream().filter(x -> x.op() == IMPL && x.sub(1).equals(t.term())).forEach(i -> {
+////               nar.concepts.stream().filter(x -> x.op() == IMPL && x.sub(1).equals(t.target())).forEach(i -> {
 ////                   //System.out.println(i);
 ////                   //nar.que(i.sub(0), QUEST, t.start(), t.end());
 ////                   nar.want(i.sub(0), Tense.Present,1f, 0.9f);

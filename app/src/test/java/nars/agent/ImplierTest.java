@@ -4,7 +4,7 @@
 //import nars.NARS;
 //import nars.Narsese;
 //import nars.agent.util.Implier;
-//import nars.term.Term;
+//import nars.target.Term;
 //import org.junit.jupiter.api.Test;
 //
 //import static nars.$.$;

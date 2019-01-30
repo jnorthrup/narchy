@@ -63,7 +63,7 @@ abstract public class Inperience extends TaskLeakTransform {
 
 
 
-    /** semanticize, as much as possible, a term so it can enter higher order
+    /** semanticize, as much as possible, a target so it can enter higher order
      * TODO merge with NLPGen stuff
      * */
     final static TermTransform Described = new TermTransform.NegObliviousTermTransform() {
@@ -186,14 +186,14 @@ abstract public class Inperience extends TaskLeakTransform {
 //                        t;
 //                        //c.table(BELIEF).answer(t.start(), t.end(), tt, null, nar);
 
-                Term bb = //belief != null ? Described.transform(belief.term().negIf(belief.isNegative())) :
+                Term bb = //belief != null ? Described.transform(belief.target().negIf(belief.isNegative())) :
                         Described.transform(tt);
                 return $.funcImg(believe, self, bb);
             } else {
 //                Task goal = t;
 //                        //c.table(GOAL).answer(t.start(), t.end(), tt.unneg(), null, nar);
 
-                Term gg = //goal!=null ? Described.transform(goal.term().negIf(goal.isNegative())) :
+                Term gg = //goal!=null ? Described.transform(goal.target().negIf(goal.isNegative())) :
                         Described.transform(tt);
                 return $.funcImg(want, self, gg);
 
@@ -243,7 +243,7 @@ abstract public class Inperience extends TaskLeakTransform {
         @Override
         protected Term reify(Task t) {
             return reifyQuestion(
-                    //t.term().eval(nar),
+                    //t.target().eval(nar),
                     t.term(),
                     t.punc(), nar);
         }

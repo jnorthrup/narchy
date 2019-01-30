@@ -37,14 +37,14 @@ public class LinearModel implements Serializable, Cloneable {
     protected double prediction;
     /** The set of weights used to predict */
     protected double[] weights;
-    /** The model's bias term */
+    /** The model's bias target */
     protected double bias;
 
     /**
      * Create a new LinearModel.
      *
      * @param numFeatures The length of the state vector used by this model.
-     * @param useBias Whether to use a bias term.
+     * @param useBias Whether to use a bias target.
      */
     public LinearModel(int numFeatures, boolean useBias) {
         this.useBias = useBias;

@@ -43,7 +43,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * compute as a byte trie, where each shadow is represented as a byte[] only
  * commutive subterms handled in a special way, pulling the target subterm's variable replacement to the 0th index regardless where it was originally
  * the remaining terms are sorted in their natural order
- * final term does not need to ompute shadows except for paths which already exist; so order largest term last? (especially if only 2)
+ * final target does not need to ompute shadows except for paths which already exist; so order largest target last? (especially if only 2)
  *
  * TODO
  * allow modification of inner conjunctions, not only at top level
@@ -170,12 +170,12 @@ public class Factorize {
     }
 
     /**
-     * returns the subterms, as a sorted term array set, for the new conjunction.  or null if there was nothing factorable
+     * returns the subterms, as a sorted target array set, for the new conjunction.  or null if there was nothing factorable
      */
     @Nullable
     protected static Term[] applyConj(Term[] x, Variable f) {
 
-        /** shadow term -> replacements */
+        /** shadow target -> replacements */
         final UnifiedSetMultimap<Term, ObjectBytePair<Term>>[] pp = new UnifiedSetMultimap[]{null};
         byte n = (byte) x.length;
         for (int i = 0; i < n; i++) {

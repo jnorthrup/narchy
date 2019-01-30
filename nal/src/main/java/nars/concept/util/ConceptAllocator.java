@@ -6,7 +6,6 @@ import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
-import nars.term.Functor;
 
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
@@ -17,8 +16,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
 
     private final ToIntFunction<Concept>
             beliefsEteCapacity, beliefsTempCapacity,
-            goalsEteCapacity, goalsTempCapacity, questionsCapacity, questsCapacity,
-            tasklinksCapacity;
+            goalsEteCapacity, goalsTempCapacity, questionsCapacity, questsCapacity;
 
 
 
@@ -66,27 +64,19 @@ public final class ConceptAllocator implements Consumer<Concept> {
     public ConceptAllocator(
             ToIntFunction<Concept> beliefsEteCapacity, ToIntFunction<Concept> beliefsTempCapacity,
             ToIntFunction<Concept> goalsEteCapacity, ToIntFunction<Concept> goalsTempCapacity,
-            ToIntFunction<Concept> questionsCapacity, ToIntFunction<Concept> questsCapacity,
-            ToIntFunction<Concept> taskLinksCapacity) {
+            ToIntFunction<Concept> questionsCapacity, ToIntFunction<Concept> questsCapacity) {
         this.beliefsEteCapacity = beliefsEteCapacity;
         this.beliefsTempCapacity = beliefsTempCapacity;
         this.goalsEteCapacity = goalsEteCapacity;
         this.goalsTempCapacity = goalsTempCapacity;
         this.questionsCapacity = questionsCapacity;
         this.questsCapacity = questsCapacity;
-        this.tasklinksCapacity = taskLinksCapacity;
     }
 
     @Override public final void accept(Concept c) {
-        apply(c);
-
         if (c instanceof TaskConcept) {
             apply((TaskConcept)c);
         }
-    }
-
-    private void apply(Concept c) {
-        c.tasklinks().setCapacity(tasklinkCap(c));
     }
 
 
@@ -118,11 +108,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
                         goalsEteCapacity : goalsTempCapacity)).applyAsInt(concept);
     }
 
-    @Deprecated private int tasklinkCap(Concept concept) {
-        if(concept instanceof Functor)
-            return 0;
-        return tasklinksCapacity.applyAsInt(concept);
-    }
+
 
     private int questionCap(TaskConcept concept, boolean questionOrQuest) {
         return (questionOrQuest ? questionsCapacity : questsCapacity).applyAsInt(concept);

@@ -149,11 +149,11 @@ public class MetaAgent {
 //
 //        for (Sensor s : a.sensors) {
 //            if (!(s instanceof Signal)) { //HACK only if compound sensor
-//                Term term = s.term();
+//                Term target = s.target();
 //
 //                //HACK
 //                if (s instanceof DigitizedScalar)
-//                    term = $.quote(term.toString()); //throw new RuntimeException("overly complex sensor term");
+//                    target = $.quote(target.toString()); //throw new RuntimeException("overly complex sensor target");
 //
 //                //HACK TODO divide by # of contained concepts, reported by Sensor interface
 //                float maxPri;
@@ -163,7 +163,7 @@ public class MetaAgent {
 //                    maxPri = 1;
 //                }
 //
-//                m.actionUnipolar($.func("aware", term), (p) -> {
+//                m.actionUnipolar($.func("aware", target), (p) -> {
 //                    FloatRange pp = s.pri();
 //                    pp.set(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
 //                });
@@ -173,7 +173,7 @@ public class MetaAgent {
 
 //        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d) -> {
 //            if (d == d) {
-//                //deep incrases both duration and max term volume
+//                //deep incrases both duration and max target volume
 //                this.nar.time.dur(Util.lerp(d * d, 20, 120));
 //                this.nar.termVolumeMax.set(Util.lerp(d, 30, 60));
 //            }

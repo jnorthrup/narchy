@@ -211,7 +211,7 @@ public enum Op {
 
 
     /**
-     * for ellipsis, when seen as a term
+     * for ellipsis, when seen as a target
      */
 
     ;
@@ -255,7 +255,7 @@ public enum Op {
     public static final char STAMP_SEPARATOR = ';';
     public static final char STAMP_STARTER = ':';
     /**
-     * bitvector of non-variable terms which can not be part of a goal term
+     * bitvector of non-variable terms which can not be part of a goal target
      */
     public static final int NonGoalable = or(IMPL);
     public static final int varBits = Op.or(VAR_PATTERN, VAR_DEP, VAR_QUERY, VAR_INDEP);
@@ -288,7 +288,7 @@ public enum Op {
     public static final int Set = or(Op.SETe, Op.SETi);
 
     /**
-     * events are defined as the non-conjunction sub-components of conjunctions, or the term itself if it is not a conj
+     * events are defined as the non-conjunction sub-components of conjunctions, or the target itself if it is not a conj
      */
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
     public static final int Variable = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
@@ -363,7 +363,7 @@ public enum Op {
     public final boolean indepVarParent;
     public final boolean depVarParent;
     /**
-     * whether it is a special or atomic term that isnt conceptualizable.
+     * whether it is a special or atomic target that isnt conceptualizable.
      * negation is an exception to this, being unconceptualizable itself
      * but it will have conceptualizable=true.
      */
@@ -408,7 +408,7 @@ public enum Op {
     }*/
     public final byte id;
 
-    /** whether the term of this op is valid, by tiself, as an event or condition */
+    /** whether the target of this op is valid, by tiself, as an event or condition */
     public boolean eventable;
 
 
@@ -651,7 +651,7 @@ public enum Op {
 
 
     /**
-     * encodes a structure vector as a human-readable term.
+     * encodes a structure vector as a human-readable target.
      * if only one bit is set then the Op's strAtom is used instead of the binary
      * representation.
      * TODO make an inverse decoder
@@ -764,17 +764,17 @@ public enum Op {
     }
 
     /**
-     * alternate method args order for 2-term w/ infix DT
+     * alternate method args order for 2-target w/ infix DT
      */
     public final Term the(Term a, int dt, Term b) {
         return the(dt, a, b);
     }
 
     /**
-     * entry point into the term construction process.
+     * entry point into the target construction process.
      * this call tree eventually ends by either:
      * - instance(..)
-     * - reduction to another term or True/False/Null
+     * - reduction to another target or True/False/Null
      */
     public Term the(int dt, Term... u) {
         return compound(this, dt, u);

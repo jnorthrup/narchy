@@ -73,7 +73,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
     /**
-     * state which will be set in a terminal condition, or upon term construction in non-terminal condition
+     * state which will be set in a terminal condition, or upon target construction in non-terminal condition
      */
     private Term result = null;
 
@@ -206,7 +206,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                             return new Term[]{uu};
                         }
                     }
-                    throw new RuntimeException("should have found non-True term to return");
+                    throw new RuntimeException("should have found non-True target to return");
                 }
                 default: {
                     Term[] y = new Term[sizeAfterTrueRemoved];
@@ -445,7 +445,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
     /**
-     * means that the internal represntation of the term is concurrent
+     * means that the internal represntation of the target is concurrent
      */
     public static boolean concurrentInternal(int dt) {
         switch (dt) {
@@ -576,7 +576,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //            } else {
 //                throw new TODO();
 //            }
-//            y = c.term();
+//            y = c.target();
 ////                FasterList<LongObjectPair<Term>> ee = Conj.eventList(x);
 ////                ee.remove(nar.random().nextInt(ee.size()));
 ////                y = Conj.conj(ee);
@@ -1017,7 +1017,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     /**
      * returns false if contradiction occurred, in which case this
      * ConjEvents instance is
-     * now corrupt and its result via .term() should be considered final
+     * now corrupt and its result via .target() should be considered final
      */
     @Override
     public boolean add(long at, Term x) {
@@ -1274,7 +1274,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
     /**
-     * merge an incoming term with a disjunctive sub-expression (occurring at same event time) reductions applied:
+     * merge an incoming target with a disjunctive sub-expression (occurring at same event time) reductions applied:
      * ...
      */
     private static Term disjunctify(Term existing, Term incoming, boolean eternal) {
@@ -1318,7 +1318,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         if (result[0] == False) {
             //removing the matching subterm from the disjunction and reconstruct it
-            //then merge the incoming term
+            //then merge the incoming target
 
 
             if (!isSeq(conjUnneg)) {
@@ -1446,7 +1446,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     @Nullable
     public static Conj intersect(Conj x, Conj y) {
 
-        assert (x.termToId == y.termToId) : "x and y should share term map";
+        assert (x.termToId == y.termToId) : "x and y should share target map";
 
         MutableLongSet commonEvents = x.event.keySet().select(y.event::containsKey);
         if (commonEvents.isEmpty())
@@ -1538,7 +1538,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //            //return null; //no change
 //            return Null;
 //        } else {
-////            //TODO factor out the common events, and rewrite the disjunction as an extra CONJ term with the two options (if they are compatible)
+////            //TODO factor out the common events, and rewrite the disjunction as an extra CONJ target with the two options (if they are compatible)
 ////            //HACK simple case
 ////            if (a.subs()==2 && b.subs()==2 && !a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)){
 ////                Term common = a.sub(0);
@@ -1746,7 +1746,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         Term xy = merge(x, y, eternalOrParallel, true);
 
-        //decode result term
+        //decode result target
         if (xy == True) {
             return x; //x absorbs y
         } else if (xy == null) {
@@ -1974,7 +1974,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //            case 1:
 //                //one other non-eternal time
 //                LongObjectPair<Object> e = event.keyValuesView().select(x -> x.getOne() != ETERNAL).getFirst();
-//                Term t = term(e.getOne(), e.getTwo(), tmp);
+//                Term t = target(e.getOne(), e.getTwo(), tmp);
 //                if (t == null || t == True) {
 //                    t = null;
 //                } else if (t == False) {
@@ -2280,8 +2280,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
 
-//    private Term term(long when, Object what) {
-//        return term(when, what, null);
+//    private Term target(long when, Object what) {
+//        return target(when, what, null);
 //    }
 
 
@@ -2354,7 +2354,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return c;
     }
 
-//    public boolean addDithered(Term term, long start, long end, int maxSamples, int minSegmentLength, NAR nar) {
+//    public boolean addDithered(Term target, long start, long end, int maxSamples, int minSegmentLength, NAR nar) {
 //        if (start != ETERNAL) {
 //            int d = nar.timeResolution.intValue();
 //            if (d != 1) {
@@ -2362,7 +2362,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                end = Tense.dither(end, d);
 //            }
 //        }
-//        return add(term, start, end, maxSamples, minSegmentLength);
+//        return add(target, start, end, maxSamples, minSegmentLength);
 //    }
 
     /**

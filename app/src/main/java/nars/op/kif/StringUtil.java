@@ -125,14 +125,14 @@ public class StringUtil {
     }
 
     /**************************************************************
-     * A String token that separates a qualified KIF term name
+     * A String token that separates a qualified KIF target name
      * from the namespace abbreviation prefix that qualifies it.
      */
     private static String KIF_NAMESPACE_DELIMITER = ":";
 
     /*************************************************************
      * Returns the string used in SUO-KIF to separate a namespace
-     * prefix from the term it qualifies.
+     * prefix from the target it qualifies.
      */
     public static String getKifNamespaceDelimiter() {
         return KIF_NAMESPACE_DELIMITER;
@@ -140,7 +140,7 @@ public class StringUtil {
 
     /**************************************************************
      * Sets to str the String used in SUO-KIF to separate a namespace
-     * prefix from the term it qualifies.
+     * prefix from the target it qualifies.
      */
     public static String setKifNamespaceDelimiter(String str) {
         KIF_NAMESPACE_DELIMITER = str;
@@ -148,14 +148,14 @@ public class StringUtil {
     }
 
     /**************************************************************
-     * A String token that separates a qualified term name from
+     * A String token that separates a qualified target name from
      * the W3C namespace abbreviation prefix that qualifies it.
      */
     private static String W3C_NAMESPACE_DELIMITER = ":";
 
     /***************************************************************
      * Returns the string preferred by W3C to separate a namespace
-     * prefix from the term it qualifies.
+     * prefix from the target it qualifies.
      */
     public static String getW3cNamespaceDelimiter() {
         return W3C_NAMESPACE_DELIMITER;
@@ -163,7 +163,7 @@ public class StringUtil {
 
     /****************************************************************
      * Sets to str the String token preferred by W3C to separate a
-     * namespace prefix from the term it qualifies.
+     * namespace prefix from the target it qualifies.
      */
     public static String setW3cNamespaceDelimiter(String str) {
         W3C_NAMESPACE_DELIMITER = str;
@@ -173,9 +173,9 @@ public class StringUtil {
     /***************************************************************
      * A "safe" alphanumeric ASCII string that can be substituted for
      * the W3C or SUO-KIF string delimiting a namespace prefix from an
-     * unqualified term name.  The safe delimiter is used to produce
+     * unqualified target name.  The safe delimiter is used to produce
      * input formulae or files that can be loaded by Vampire and other
-     * provers unable to handle term names containing non-alphanumeric
+     * provers unable to handle target names containing non-alphanumeric
      * characters.
      */
     private static String SAFE_NAMESPACE_DELIMITER = "0xx1";
@@ -183,9 +183,9 @@ public class StringUtil {
     /***************************************************************
      * Returns a "safe" alphanumeric ASCII string that can be
      * substituted for the W3C or SUO-KIF string delimiting a
-     * namespace prefix from an unqualified term name.  The safe
+     * namespace prefix from an unqualified target name.  The safe
      * delimiter is used to produce input formulae or files that can
-     * be loaded by Vampire and other provers unable to handle term
+     * be loaded by Vampire and other provers unable to handle target
      * names containing non-alphanumeric characters.
      */
     public static String getSafeNamespaceDelimiter() {
@@ -195,9 +195,9 @@ public class StringUtil {
     /****************************************************************
      * Sets to str the "safe" alphanumeric ASCII String value that can
      * be substituted for the W3C or SUO-KIF string delimiting a
-     * namespace prefix from an unqualified term name.  The safe
+     * namespace prefix from an unqualified target name.  The safe
      * delimiter is used to produce input formulae or files that can
-     * be loaded by Vampire and other provers unable to handle term
+     * be loaded by Vampire and other provers unable to handle target
      * names containing non-alphanumeric characters.
      */
     public static String setSafeNamespaceDelimiter(String str) {
@@ -1208,7 +1208,7 @@ public class StringUtil {
     }
 
     /***************************************************************
-     * Replaces the namespace delimiter in term with a string that is
+     * Replaces the namespace delimiter in target with a string that is
      * safe for inference, and for all common file systems.
      */
     public static String toSafeNamespaceDelimiter(String term) {
@@ -1232,10 +1232,10 @@ public class StringUtil {
     }
 
     /***************************************************************
-     * Replaces the namespace delimiter in term with a string that is
+     * Replaces the namespace delimiter in target with a string that is
      * safe for inference and for all common file systems, but only if
      * kbHref is an empty string or == null.  If kbHref is not empty,
-     * term is probably being prepared for display in the Sigma
+     * target is probably being prepared for display in the Sigma
      * Browser and does not have to be converted to a "safe" form.
      */
     public static String toSafeNamespaceDelimiter(String kbHref, String term) {

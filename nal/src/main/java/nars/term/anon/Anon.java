@@ -13,7 +13,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * term anonymization context, for canonicalization and generification of compounds
+ * target anonymization context, for canonicalization and generification of compounds
  * //return new DirectTermTransform() {
  * //return new TermTransform.NegObliviousTermTransform() {
  */

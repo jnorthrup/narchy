@@ -24,7 +24,7 @@ import static nars.time.Tense.XTERNAL;
 public final class LightDTCompound extends SeparateSubtermsCompound {
 
     /**
-     * numeric (term or "dt" temporal relation)
+     * numeric (target or "dt" temporal relation)
      */
     private final int dt;
     private final int hashDT;

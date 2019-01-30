@@ -53,7 +53,7 @@ public class BiPolarAction extends AbstractSensor {
         this(id.valueOf(true), id.valueOf(false), model, motor, nar);
     }
 
-    //TODO BooleanObjectFunction<Term> term namer
+    //TODO BooleanObjectFunction<Term> target namer
     public BiPolarAction(Term pos, Term neg, Polarization model, FloatToFloatFunction motor, NAR nar) {
         super(PROD.the(pos, neg), nar);
 

@@ -234,7 +234,7 @@ public enum $ {
     }
 
     /**
-     * encodes a boolean bitvector as an Int term, or if larger than 31 bits, as an Atom string
+     * encodes a boolean bitvector as an Int target, or if larger than 31 bits, as an Atom string
      */
     public static Term p(boolean... t) {
         if (t.length < 31) {
@@ -453,7 +453,7 @@ public enum $ {
 
 
     /**
-     * gets the atomic term of an integer, with specific radix (up to 36)
+     * gets the atomic target of an integer, with specific radix (up to 36)
      */
     public static Atom intRadix(int i, int radix) {
         return (Atom) $.quote(Integer.toString(i, radix));

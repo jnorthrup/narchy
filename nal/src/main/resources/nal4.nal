@@ -16,7 +16,7 @@
     (P --> X), X, task("?@"), is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Time:Task)
 
 
-//TODO structural transform forward lightweight shortcuts, eliminate need for intermediate image term/concept
+//TODO structural transform forward lightweight shortcuts, eliminate need for intermediate image target/concept
 //(P-->I), (R-->I), is(P,"*"), subsMin(P,2), subsMin(R,2), neqAndCom(P,R) |- ...
 
 ////composition on both sides of a statement

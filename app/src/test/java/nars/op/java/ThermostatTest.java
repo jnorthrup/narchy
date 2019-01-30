@@ -227,7 +227,7 @@ public class ThermostatTest {
         public boolean test(Task task) {
             boolean result = pred.test(task);
             System.out.print(nar.time() + "\t");
-            //nar.concept(task.term(), false).printSummary(System.out, nar);
+            //nar.concept(task.target(), false).printSummary(System.out, nar);
             return result;
         }
     }

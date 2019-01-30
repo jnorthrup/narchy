@@ -20,7 +20,7 @@ public interface Variable extends Atomic {
      * The syntactic complexity of a variable is 0, because it does not refer to
      * any concept.
      *
-     * @return The complexity of the term, an integer
+     * @return The complexity of the target, an integer
      */
     @Override
     default int complexity() {

@@ -1,9 +1,8 @@
 package nars.derive.impl;
 
-import jcog.data.set.ArrayHashSet;
+import jcog.data.list.FasterList;
 import jcog.math.IntRange;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.Sampler;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -12,9 +11,12 @@ import nars.derive.Deriver;
 import nars.derive.Premise;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
+import nars.index.concept.AbstractConceptIndex;
 import nars.link.Activate;
 import nars.link.TaskLink;
+import nars.link.TermLinker;
 import nars.term.Term;
+import nars.term.atom.Atom;
 
 import java.util.Collection;
 import java.util.Random;
@@ -22,24 +24,18 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
+    public final IntRange tasklinksPerIteration = new IntRange(3, 1, 32);
 
 
-    /**
-     * controls the rate at which tasklinks 'spread' to interact with termlinks
-     */
-    public final IntRange taskLinksPerConcept = new IntRange(1, 1, 8);
-
-    /**
-     * how many premises to keep per concept; should be <= Hypothetical count
-     */
-    public final IntRange premisesPerLink = new IntRange(1, 1, 8);
+//    /**
+//     * how many premises to keep per concept; should be <= Hypothetical count
+//     */
+//    public final IntRange premisesPerLink = new IntRange(1, 1, 8);
 
 //    /** what % premises to actually try deriving */
 //    public final FloatRange premiseElitism = new FloatRange(0.5f, 0, 1f);
@@ -92,99 +88,88 @@ public class BatchDeriver extends Deriver {
         Collection<Premise> premises = d.premiseBuffer;
         premises.clear();
 
-        int[] conceptsRemain = new int[]{ conceptsPerIteration.intValue() };
-
-        source.accept(a -> {
-
-            premiseMatrix(a, d);
-
-            return --conceptsRemain[0] > 0;
-        });
-
-//        int s = premises.size();
-//        if (s > 2)
-//            premises.sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
-
-        return premises;
-    }
-
-
-    /**
-     * hypothesize a matrix of premises, M tasklinks x N termlinks
-     */
-    private void premiseMatrix(Activate conceptActivation, Derivation d) {
+        int links = tasklinksPerIteration.intValue();
 
         nar.emotion.conceptFire.increment();
 
 
-        Concept concept = conceptActivation.get();
-
-        Bag<?, TaskLink> tasklinks = concept.tasklinks();
-        if (tasklinks.isEmpty())
-            return;
-
-        nar.attn.forgetting.update(concept, nar);
-
         Random rng = d.random;
-
-        Supplier<Term> beliefSrc;
-        if (concept.term().op().atomic) {
-            Bag<?, TaskLink> src = tasklinks;
-            beliefSrc = ()->src.sample(rng).term();
-        } else {
-            Sampler<Term> src = concept.linker();
-            beliefSrc = ()->src.sample(rng);
-        }
-
-
-        final ArrayHashSet<TaskLink> taskLinksFired = d.taskLinksFired;
-        final ArrayHashSet<Task> tasksFired = d.tasksFired;
-        taskLinksFired.clear();
-        tasksFired.clear();
+//
+//        Supplier<Term> beliefSrc;
+//        if (concept.term().op().atomic) {
+//            Bag<?, TaskLink> src = tasklinks;
+//            beliefSrc = ()->src.sample(rng).term();
+//        } else {
+//            Sampler<Term> src = concept.linker();
+//            beliefSrc = ()->src.sample(rng);
+//        }
 
 
-        int nTaskLinks = tasklinks.size();
 
-        Collection<Premise> premises = d.premiseBuffer;
+        Bag<TaskLink, TaskLink> tasklinks = ((AbstractConceptIndex) nar.concepts).active;
 
+//        tasklinks.print(); System.out.println();
 
-        tasklinks.sample(rng, Math.min(taskLinksPerConcept.intValue(), nTaskLinks), tasklink -> {
+        tasklinks.sample(rng, links, tasklink->{
+            Term tt = tasklink.term();
 
             Task task = TaskLink.task(tasklink, nar);
             if (task == null)
                 return true;
 
-            int premisesPerTaskLinkTried = this.premisesPerLink.intValue();
 
-            int p = 0;
+            Term src = tasklink.source();
 
-            do {
-                Term b = beliefSrc.get();
-                if (b != null && premises.add(new Premise(task, b))) {
-                    p++;
+            Term b;
+            if (!(src instanceof Atom)) {
+                Concept cc = nar.conceptualize(src);
+                if (cc != null) {
+                    TermLinker linker = cc.linker();
+
+                    d.tasksFired.add(task);
+                    linker.link(d);
+                    d.tasksFired.clear();
+
+
+                    if (!(linker instanceof FasterList) || rng.nextInt(((FasterList) linker).size()+1)==0) //HACK
+                        b = src;
+                    else
+                        b = linker.sample(rng); //TODO for atoms
+//                    }
+                } else {
+                    b = src;
                 }
-            } while (--premisesPerTaskLinkTried > 0);
+            } else {
+                //scan active tasklinks for a match to the atom
+                b = src;
+                for (TaskLink t : tasklinks) {
 
-            if (p > 0)
-                tasksFired.add(task);
+                    if (t!=null && t.source().equals(src)) {
+                        b = t.term();
+                        if(!b.equals(tt))
+                            break;
+                    }
+
+                }
+            }
+
+//                do {
+
+
+                    if (b != null && premises.add(new Premise(task, b))) {
+//                        p++;
+                    }
+//                } while (--premisesPerTaskLinkTried > 0);
+
+
+
+
 
             return true;
         });
 
-        concept.linker().link(conceptActivation, d);
-
+        return premises;
     }
 
-
-//    /**
-//     * TODO forms matrices of premises of M tasklinks and N termlinks which
-//     * are evaluated after buffering some limited amount of these in a set
-//     */
-//    abstract static class MatrixDeriver extends Deriver {
-//        /* TODO */
-//        protected MatrixDeriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
-//            super(source, rules, nar);
-//        }
-//    }
 
 }

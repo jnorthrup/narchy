@@ -74,7 +74,7 @@ public class DynamicStatementTruth {
     @Nullable
     private static Term[] stmtReconstruct(boolean subjOrPred, List<Task> components) {
 
-        //extract passive term and verify they all match (could differ temporally, for example)
+        //extract passive target and verify they all match (could differ temporally, for example)
         Term common = components.get(0).term().unneg().sub(subjOrPred ?  1 : 0);
         int n = components.size();
         if (((FasterList<Task>) components).anySatisfy(1, n,
@@ -83,7 +83,7 @@ public class DynamicStatementTruth {
             return null; //differing passive component; TODO this can be detected earlier, before truth evaluation starts
 
         return Util.map(0, n, Term[]::new, tr ->
-                //components.get(tr).task().term().sub(subjOrPred ? 0 : 1)
+                //components.get(tr).task().target().sub(subjOrPred ? 0 : 1)
                 subSubjPredWithNegRewrap(!subjOrPred, components.get(tr))
         );
     }
@@ -124,7 +124,7 @@ public class DynamicStatementTruth {
 //        if (!Param.DEBUG) {
 //            //elide reconstruction when superterm will not differ by temporal terms
 //            //TODO improve
-//            if (superSect.subs() == components.size() && ((FasterList<Task>) components).allSatisfy(t -> t != null && !((Task) t).term().sub(subjOrPred ? 0 : 1).isTemporal())) {
+//            if (superSect.subs() == components.size() && ((FasterList<Task>) components).allSatisfy(t -> t != null && !((Task) t).target().sub(subjOrPred ? 0 : 1).isTemporal())) {
 //                if (!superSect.isTemporal())
 //                    return superterm;
 //            }
@@ -324,7 +324,7 @@ public class DynamicStatementTruth {
     public static final AbstractDynamicTruth SectPred = new DynamicInhSectTruth(false, false);
 
     /**
-     * according to composition rules, the intersection term is computed with union truth, and vice versa
+     * according to composition rules, the intersection target is computed with union truth, and vice versa
      */
     public static final AbstractDynamicTruth SectImplSubj = new SectImplSubj();
 //        public static final DynamicTruthModel SectImplSubjNeg = new SectImplSubj() {
@@ -368,7 +368,7 @@ public class DynamicStatementTruth {
 //                //TODO test if the superterm will be equivalent to the component terms before reconstructing
 //                Term[] t = new Term[components.size()];
 //                for (int i = 0, componentsSize = components.size(); i < componentsSize; i++) {
-//                    t[i] = components.get(i).term();
+//                    t[i] = components.get(i).target();
 //                }
 //
 //

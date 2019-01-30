@@ -314,14 +314,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     private void render() {
-
-        renderers.forEach(layer -> cells.forEachValue(nv -> {
-            if (nv.visible())
-                layer.node(nv, edit);
-//            else
-//                throw new WTF();
-        } ));
-
+        renderers.forEach(layer -> layer.render(cells,edit));
     }
 
 
@@ -330,7 +323,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
      */
     public static final class GraphEditing<X> {
 
-        private final Graph2D<X> graph;
+        public final Graph2D<X> graph;
 
         GraphEditing(Graph2D<X> g) {
             this.graph = g;
@@ -406,6 +399,15 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
          * and generate new links from it to target nodes.
          */
         void node(NodeVis<X> node, GraphEditing<X> graph);
+
+        default void render(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
+            cells.forEachValue(nv -> {
+                if (nv.visible())
+                    node(nv, edit);
+//            else
+//                throw new WTF();
+            });
+        }
 
     }
 

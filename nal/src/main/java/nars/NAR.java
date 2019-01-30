@@ -213,7 +213,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     /**
-     * resolves functor by its term
+     * resolves functor by its target
      */
     public final Functor functor(Atom term) {
         Termed x = concept(term);
@@ -230,7 +230,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         LongSummaryStatistics goals = new LongSummaryStatistics();
         LongSummaryStatistics questions = new LongSummaryStatistics();
         LongSummaryStatistics quests = new LongSummaryStatistics();
-        Histogram tasklinkCount = new Histogram(1, 1024, 3);
+
 
         HashBag clazz = new HashBag();
         HashBag rootOp = new HashBag();
@@ -249,9 +249,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 volume.recordValue(ct.volume());
                 rootOp.add(ct.op());
                 clazz.add(ct.getClass().toString());
-
-
-                tasklinkCount.recordValue(c.tasklinks().size());
 
                 beliefs.accept(c.beliefs().size());
                 goals.accept(c.goals().size());
@@ -272,11 +269,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         x.put("belief count", ((double) beliefs.getSum()));
         x.put("goal count", ((double) goals.getSum()));
-
-        Texts.histogramDecode(tasklinkCount, "tasklink count", 4, x::put);
-
-        x.put("tasklink total", ((double) tasklinkCount.getTotalCount()));
-
 
         Util.toMap(rootOp, "concept op", x::put);
 
@@ -1011,7 +1003,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     /**
-     * resolves a term or concept to its currrent Concept
+     * resolves a target or concept to its currrent Concept
      */
     @Nullable
     public final Concept concept(Termed x) {
@@ -1024,7 +1016,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     /**
-     * resolves a term to its Concept; if it doesnt exist, its construction will be attempted
+     * resolves a target to its Concept; if it doesnt exist, its construction will be attempted
      */
     @Nullable
     public final Concept conceptualize(/**/ Termed termed) {
@@ -1034,7 +1026,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Nullable
     public final Concept concept(/**/Termed x, boolean createIfMissing) {
 //        if (Param.DEBUG) {
-//            int v = x.term().volume();
+//            int v = x.target().volume();
 //            int max = termVolumeMax.intValue();
 //            if (v > max) {
 //                //return null; //too complex
@@ -1045,8 +1037,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return concepts.concept(x, createIfMissing);
     }
 
-    public final Stream<Activate> conceptsActive() {
-        return concepts.active();
+    @Deprecated public final Stream<Activate> conceptsActive() {
+        return concepts.active().map(x-> x.source()).distinct()
+                .map(x->concept(x))
+                .filter(Objects::nonNull).map(c -> new Activate(c,1)); //HACK
+        //return Stream.empty();
+        //return concepts.active();
     }
 
     public final Stream<Concept> concepts() {
@@ -1132,7 +1128,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             if (existing != c) {
 
                 if (!(c instanceof PermanentConcept)) {
-                    throw new RuntimeException("concept already indexed for term: " + c.term());
+                    throw new RuntimeException("concept already indexed for target: " + c.term());
                 }
             }
         }
@@ -1149,7 +1145,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     /**
-     * registers a term rewrite functor
+     * registers a target rewrite functor
      */
 
     public final Functor.LambdaFunctor on(String termAtom, Function<Subterms, Term> f) {
@@ -1427,22 +1423,22 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             return c;
         }
     }
-    @Nullable
-    public final Concept activate(Termed t, float activationApplied) {
-        return activate(t, activationApplied, false);
-    }
-    @Nullable
-    public final Concept activate(Termed t, float activationApplied, boolean forceConceptualize) {
-
-        /** conceptualize regardless */
-        Concept c = forceConceptualize ? conceptualize(t) : concept(t);
-        if (c!=null && activationApplied >= 0) {
-            concepts.activate(c, activationApplied);
-        }
-
-        return c;
-
-    }
+//    @Nullable
+//    public final Concept activate(Termed t, float activationApplied) {
+//        return activate(t, activationApplied, false);
+//    }
+//    @Nullable
+//    public final Concept activate(Termed t, float activationApplied, boolean forceConceptualize) {
+//
+//        /** conceptualize regardless */
+//        Concept c = forceConceptualize ? conceptualize(t) : concept(t);
+//        if (c!=null && activationApplied >= 0) {
+//            concepts.activate(c, activationApplied);
+//        }
+//
+//        return c;
+//
+//    }
 
     public Stream<Service<NAR>> services() {
         return services.stream();
@@ -1478,7 +1474,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     /**
-     * conceptualize a term if dynamic truth is possible; otherwise return concept if exists
+     * conceptualize a target if dynamic truth is possible; otherwise return concept if exists
      */
     public final Concept conceptualizeDynamic(Termed concept) {
 

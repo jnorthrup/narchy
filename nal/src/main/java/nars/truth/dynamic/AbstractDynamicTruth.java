@@ -1,6 +1,5 @@
 package nars.truth.dynamic;
 
-import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
@@ -22,7 +21,7 @@ abstract public class AbstractDynamicTruth {
     public abstract boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
 
     /**
-     * used to reconstruct a dynamic term from some or all components
+     * used to reconstruct a dynamic target from some or all components
      */
     abstract public Term reconstruct(Term superterm, List<Task> c, NAR nar, long start, long end);
 
@@ -41,9 +40,6 @@ abstract public class AbstractDynamicTruth {
         );
     }
 
-    public Bag newTaskLinkBag(Term t, ConceptBuilder b) {
-        return b.newLinkBag(t);
-    }
 
     @FunctionalInterface
     public interface ObjectLongLongPredicate<T> {

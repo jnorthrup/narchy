@@ -16,7 +16,7 @@ import static nars.Op.VAR_DEP;
 import static nars.term.atom.Bool.Null;
 
 /**
- * substituteIfUnifies....(term, varFrom, varTo)
+ * substituteIfUnifies....(target, varFrom, varTo)
  * <p>
  * <patham9_> for A ==> B, D it is valid to unify both dependent and independent ones ( unify(A,D) )
  * <patham9_> same for B ==> A, D     ( unify(A,D) )
@@ -31,7 +31,7 @@ import static nars.term.atom.Bool.Null;
  * <patham9_> we also allow both in 2.0.x here
  * <sseehh> in all cases?
  * <sseehh> no this isnt the general solution i imagined would be necessary. it may need just special cases always, i dunno
- * <sseehh> my dep/indep introducer is general because it isnt built from any specific rule but operates on any term
+ * <sseehh> my dep/indep introducer is general because it isnt built from any specific rule but operates on any target
  * <patham9_> the cases I mentioned above, are there cases that are not captured here?
  * <sseehh> i dont know i have to look at them all
  * <sseehh> i jus tknow that currently each one is either dep or indep
@@ -106,7 +106,7 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
                 throw new UnsupportedOperationException("unrecognized parameter: " + ai);
         }
 
-        /** term being transformed if x unifies with y */
+        /** target being transformed if x unifies with y */
         Term c = a.sub(0);
 
 

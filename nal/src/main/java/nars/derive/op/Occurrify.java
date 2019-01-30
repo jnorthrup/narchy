@@ -42,7 +42,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * unknowns to solve otherwise the result is impossible:
  * - derived task start time
  * - derived task end time
- * - dt intervals for any XTERNAL appearing in the input term
+ * - dt intervals for any XTERNAL appearing in the input target
  * knowns:
  * - for each task and optional belief in the derived premise:
  * - start/end time of the task
@@ -139,12 +139,12 @@ public class Occurrify extends TimeGraph {
             throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
 
         if (!d.concSingle && (d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
-//            {
-//                //immediate shift
-//                long range = occ[1] - occ[0];
-//                occ[0] = d.taskStart;
-//                occ[1] = occ[0] + range;
-//            }
+            {
+                //immediate shift
+                long range = occ[1] - occ[0];
+                occ[0] = d.taskStart;
+                occ[1] = occ[0] + range;
+            }
         }
 
 //            if (d.concTruth!=null) {
@@ -256,7 +256,7 @@ public class Occurrify extends TimeGraph {
 
 
     /**
-     * whether a term is 'temporal' and its derivations need analyzed by the temporal solver:
+     * whether a target is 'temporal' and its derivations need analyzed by the temporal solver:
      * if there is any temporal terms with non-DTERNAL dt()
      */
     public static boolean temporal(Term x) {
@@ -351,7 +351,7 @@ public class Occurrify extends TimeGraph {
             boolean equalBT = beliefTerm.equals(taskTerm);
             Event beliefEvent = (beliefStart != TIMELESS) ?
                     know(beliefTerm, beliefStart, beliefEnd) :
-                    ((!equalBT) ? know(beliefTerm) : taskEvent) /* same term, reuse the same event */;
+                    ((!equalBT) ? know(beliefTerm) : taskEvent) /* same target, reuse the same event */;
         }
 
 
@@ -382,7 +382,7 @@ public class Occurrify extends TimeGraph {
 //        Op so = sub.op();
 //        if (so == NEG) nextNeg.add(sub.unneg());
 //        else if (sup == null || ((so == IMPL || so == CONJ)))
-//            nextPos.add(sub); //dont add the inner positive unneg'd term of a negation unless conj (ie. disj)
+//            nextPos.add(sub); //dont add the inner positive unneg'd target of a negation unless conj (ie. disj)
 //
 ////        if (so == IMPL) {
 ////            Term a = sub.sub(0);
@@ -399,7 +399,7 @@ public class Occurrify extends TimeGraph {
 //        Op so = sub.op();
 //        if (so == NEG) nextNeg.remove(sub.unneg());
 //        else if (sup == null || ((so == IMPL || so == CONJ)))
-//            nextPos.remove(sub); //dont add the inner positive unneg'd term of a negation unless conj (ie. disj)
+//            nextPos.remove(sub); //dont add the inner positive unneg'd target of a negation unless conj (ie. disj)
 ////
 ////        if (so == IMPL) {
 ////            Term a = sub.sub(0);

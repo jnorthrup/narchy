@@ -575,7 +575,7 @@ public class KBcache implements Serializable {
     }
 
     /** ***************************************************************
-     * return child term for the given cl from rel expressions.
+     * return child target for the given cl from rel expressions.
      */
     public HashSet<String> getChildTerms(String cl, String rel) {
 

@@ -1,16 +1,13 @@
 package nars.concept;
 
 import jcog.data.map.CompactArrayMap;
-import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
-import nars.link.TaskLink;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.question.QuestionTable;
-import nars.task.Tasklike;
 import nars.term.Term;
 import nars.term.Termed;
 
@@ -23,11 +20,11 @@ import java.util.stream.Stream;
 public class NodeConcept implements Concept {
 
     public final Term term;
-    private final Bag<Tasklike, TaskLink> taskLinks;
+
 
     private final TermLinker linker;
 
-    /** cached here, == term.hashCode() */
+    /** cached here, == target.hashCode() */
     private final int hash;
 
     public final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
@@ -35,22 +32,14 @@ public class NodeConcept implements Concept {
     public NodeConcept(Term term, NAR nar) {
         this(term, nar.conceptBuilder);
     }
-    public NodeConcept(Term term, TermLinker linker, NAR nar) {
-        this(term, linker, nar.conceptBuilder);
-    }
 
     public NodeConcept(Term term, ConceptBuilder b) {
-        this(term, b.termlinker(term), b.newLinkBag(term));
+        this(term, b.termlinker(term));
     }
 
-    public NodeConcept(Term term, TermLinker linker, ConceptBuilder b) {
-        this(term, linker, b.newLinkBag(term));
-    }
-
-    NodeConcept(Term term, TermLinker linker, Bag b) {
+    protected NodeConcept(Term term, TermLinker linker) {
         assert (term.op().conceptualizable): term + " not conceptualizable";
         this.term = term;
-        this.taskLinks = b;
         this.hash = term.hashCode();
 
         this.linker = linker;
@@ -79,13 +68,6 @@ public class NodeConcept implements Concept {
         return term.op();
     }
 
-
-    @Override
-    public Bag<Tasklike, TaskLink> tasklinks() {
-        return taskLinks;
-    }
-
-
     @Override
     public final TermLinker linker() {
         return linker;
@@ -95,9 +77,6 @@ public class NodeConcept implements Concept {
     public Stream<Task> tasks(boolean includeBeliefs, boolean includeQuestions, boolean includeGoals, boolean includeQuests) {
         return Stream.empty();
     }
-
-
-
 
     @Override
     public final boolean equals(Object obj) {
@@ -119,9 +98,6 @@ public class NodeConcept implements Concept {
     public boolean delete( NAR nar) {
         Object[] c = meta.clearPut(DELETED, DELETED);
         if (c==null || (c.length!=2 || c[0]!=DELETED)) {
-            taskLinks.clear();
-            taskLinks.setCapacity(0);
-
 //            if (linker instanceof TemplateTermLinker) ((FasterList)linker).clear(); //HACK TODO maybe add Linker.clear()
 
             return true;

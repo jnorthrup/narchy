@@ -167,7 +167,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
                 @Nullable Term n = t.normalize();
                 if (!n.equals(t))
-                    return fail(t, "task term not a normalized Compound", safe);
+                    return fail(t, "task target not a normalized Compound", safe);
             }
         }
 
@@ -177,10 +177,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
             return fail(t, "not taskable", safe);
 
         if (t.hasAny(Op.VAR_PATTERN))
-            return fail(t, "term has pattern variables", safe);
+            return fail(t, "target has pattern variables", safe);
 
         if (!t.hasAny(Op.ATOM.bit | Op.INT.bit | Op.varBits))
-            return fail(t, "term has no substance", safe);
+            return fail(t, "target has no substance", safe);
 
         if (punc == Op.BELIEF || punc == Op.GOAL) {
             if (t.hasVarQuery())
@@ -191,7 +191,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
 
         if ((punc == Op.GOAL || punc == Op.QUEST) && !goalable(t))
-            return fail(t, "Goal/Quest task term may not be Implication", safe);
+            return fail(t, "Goal/Quest task target may not be Implication", safe);
 
         return !(t instanceof Compound) || validTaskCompound((Compound) t, safe);
     }
@@ -291,7 +291,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
                     }
 
                     byte lastBranch = p.get(statementPathLength);
-                    assert (lastBranch == 0 || lastBranch == 1) : lastBranch + " for path " + p + " while validating term: " + t;
+                    assert (lastBranch == 0 || lastBranch == 1) : lastBranch + " for path " + p + " while validating target: " + t;
 
 
                     if (Util.branchOr(statementNum, count, lastBranch) == 3) {
@@ -359,7 +359,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
         ((NALTask) y).cause(x.cause()/*.clone()*/);
 
-//        if (x.term().equals(y.term()) && x.isCyclic())
+//        if (x.target().equals(y.target()) && x.isCyclic())
 //            y.setCyclic(true);
 
         return y;
@@ -383,11 +383,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     }
 
     /**
-     * attempts to prepare a term for use as a Task content.
+     * attempts to prepare a target for use as a Task content.
      *
-     * @return null if unsuccessful, otherwise the resulting compound term and a
+     * @return null if unsuccessful, otherwise the resulting compound target and a
      * boolean indicating whether a truth negation occurred,
-     * necessitating an inversion of truth when constructing a Task with the input term
+     * necessitating an inversion of truth when constructing a Task with the input target
      */
     @Nullable
     static ObjectBooleanPair<Term> tryContent(/*@NotNull*/Term t, byte punc, boolean safe) {

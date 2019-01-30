@@ -18,8 +18,6 @@ abstract public class Forgetting {
 
     }
 
-    abstract public void update(Concept c, NAR n);
-
 
     public final @Nullable Consumer forget(Bag b, float depressurizationRate, float temperature) {
 
@@ -58,18 +56,15 @@ abstract public class Forgetting {
     public static class AsyncForgetting extends Forgetting {
 
 
-        public final FloatRange tasklinkForgetRate = new FloatRange(1f, 0f, 1f);
-
-        public final void update(Concept c, NAR n) {
-            Bag<Tasklike, TaskLink> tasklinks = c.tasklinks();
-            tasklinks.commit(forgetTasklinks(c, tasklinks));
-        }
-
-        protected Consumer<TaskLink> forgetTasklinks(Concept c, Bag<Tasklike, TaskLink> tasklinks) {
-            return forget(tasklinks, 1f, tasklinkForgetRate.floatValue());
-        }
-
-
+//        public final FloatRange tasklinkForgetRate = new FloatRange(1f, 0f, 1f);
+//
+//
+//
+//        protected Consumer<TaskLink> forgetTasklinks(Concept c, Bag<Tasklike, TaskLink> tasklinks) {
+//            return forget(tasklinks, 1f, tasklinkForgetRate.floatValue());
+//        }
+//
+//
         @Override
         protected Consumer forget(float temperature, int size, int cap, float pressure, float mass) {
             return PriForget.forgetPressure(temperature, size, cap, pressure, mass);
@@ -80,7 +75,7 @@ abstract public class Forgetting {
 //    @Deprecated public static class TimedForgetting extends Forgetting {
 //
 //        /**
-//         * number of clock durations composing a unit of short term memory decay (used by bag forgetting)
+//         * number of clock durations composing a unit of short target memory decay (used by bag forgetting)
 //         */
 //        public final FloatRange memoryDuration = new FloatRange(1f, 0f, 64f);
 //

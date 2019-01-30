@@ -51,7 +51,7 @@ public class KIF {
     /** The set of all terms in the knowledge base. This is a set of Strings. */
     public TreeSet<String> terms = new TreeSet<String>();
 
-    /** A hashMap to store term frequencies for each term in knowledge base */
+    /** A hashMap to store target frequencies for each target in knowledge base */
     public Map<String, Integer> termFrequency = new HashMap<String, Integer>();
 
     /**
@@ -387,20 +387,20 @@ public class KIF {
     /*****************************************************************
      * This routine creates a key that relates a token in a logical statement to the
      * entire statement. It prepends to the token a string indicating its
-     * position in the statement. The key is of the form type-[num]-term, where
+     * position in the statement. The key is of the form type-[num]-target, where
      * [num] is only present when the type is "arg", meaning a statement in
-     * which the term is nested only within one pair of parentheses. The other
+     * which the target is nested only within one pair of parentheses. The other
      * possible types are "ant" for rule antecedent, "cons" for rule consequent,
-     * and "stmt" for cases where the term is nested inside multiple levels of
+     * and "stmt" for cases where the target is nested inside multiple levels of
      * parentheses. An example key would be arg-0-instance for a appearance of
-     * the term "instance" in a statement in the predicate position.
+     * the target "instance" in a statement in the predicate position.
      *
      * @param sval            - the token such as "instance", "Human" etc.
-     * @param inAntecedent    - whether the term appears in the antecedent of a rule.
-     * @param inConsequent    - whether the term appears in the consequent of a rule.
-     * @param argumentNum     - the argument position in which the term appears. The
+     * @param inAntecedent    - whether the target appears in the antecedent of a rule.
+     * @param inConsequent    - whether the target appears in the consequent of a rule.
+     * @param argumentNum     - the argument position in which the target appears. The
      *            predicate position is argument 0. The first argument is 1 etc.
-     * @param parenLevel      - if the paren level is > 1 then the term appears nested in a
+     * @param parenLevel      - if the paren level is > 1 then the target appears nested in a
      *            statement and the argument number is ignored.
      */
     private String createKey(String sval, boolean inAntecedent, boolean inConsequent, int argumentNum, int parenLevel) {

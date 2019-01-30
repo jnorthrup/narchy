@@ -8,7 +8,7 @@ import java.util.function.BiPredicate;
 import static nars.Op.CONJ;
 
 /**
- * tests various potential relations between a containing term and a subterm
+ * tests various potential relations between a containing target and a subterm
  */
 public enum SubtermCondition implements BiPredicate<Term, Term> {
 

@@ -10,7 +10,6 @@ import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
-import nars.task.Tasklike;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
@@ -37,11 +36,6 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
 
     /**
-     * current tasklink seed for newly cloned Tasklinks
-     */
-    Tasklike tasklinkPtr = null;
-
-    /**
      * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
      */
     public final TaskLink.GeneralTaskLink tasklink;
@@ -50,8 +44,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         super(c, beliefOrGoal);
         this.series = s;
 
-        tasklinkPtr = seed(term, punc(), ETERNAL);
-        tasklink = new TaskLink.GeneralTaskLink(tasklinkPtr, 0);
+        tasklink = new TaskLink.GeneralTaskLink(c, seed(term, punc(), ETERNAL), 0);
 
     }
 
@@ -250,7 +243,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
 //    private class SeriesTaskLink extends TaskLink.GeneralTaskLink {
 //        public SeriesTaskLink() {
-//            super(seed(SeriesBeliefTable.this.term, SeriesBeliefTable.this.punc(), Tense.ETERNAL), 0);
+//            super(seed(SeriesBeliefTable.this.target, SeriesBeliefTable.this.punc(), Tense.ETERNAL), 0);
 //        }
 //
 //        @Override

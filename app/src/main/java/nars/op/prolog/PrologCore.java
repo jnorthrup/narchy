@@ -187,7 +187,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         Term tt = question.term();
         /*if (t.op() == Op.NEGATE) {
             
-            tt = ((Compound)tt).term(0);
+            tt = ((Compound)tt).target(0);
             truth = !truth;
         }*/
 
@@ -364,10 +364,10 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                     return new Struct(":-", st[1], st[0] /* reversed */);
                 case CONJ: {
                     return new Struct(",", st); //TODO may need special depvar handling
-//                    int s = term.subs();
-//                    alice.tuprolog.Term t = pterm(term.sub(s - 1));
+//                    int s = target.subs();
+//                    alice.tuprolog.Term t = pterm(target.sub(s - 1));
 //                    for (int i = s-2; i >= 0; i--) {
-//                        t = new Struct(",", t, pterm(term.sub(i)));
+//                        t = new Struct(",", t, pterm(target.sub(i)));
 //                    }
 //                    return t;
                 } case NEG:

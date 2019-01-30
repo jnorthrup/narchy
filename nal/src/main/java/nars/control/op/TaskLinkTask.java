@@ -7,6 +7,7 @@ import nars.concept.TaskConcept;
 import nars.link.TaskLink;
 import nars.task.AbstractTask;
 import nars.task.ITask;
+import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 /** creates a seed tasklink for a processed Task that can subdivide recursively on propagation */
@@ -34,14 +35,16 @@ public class TaskLinkTask extends AbstractTask {
         pri = Math.max(EPSILON, pri);
 
         //full task pri to concept
-        Concept c = n.activate(concept == null ? task : concept, pri, true);
+        Termed cc = concept == null ? task : concept;
+        Concept c = //n.activate(cc, pri, true);
+                n.conceptualize(cc);
         if (c == null)
             return null;
 
         //2. tasklink
         TaskLink.link(
-                TaskLink.the(task, generify(), eternalize(), pri, n),
-                c);
+                TaskLink.the(c.term(), task, generify(), eternalize(), pri, n),
+                n);
 
 
         //3. feel

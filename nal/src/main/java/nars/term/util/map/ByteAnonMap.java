@@ -7,10 +7,10 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 /** this assumes < 127 unique elements */
 public class ByteAnonMap {
 
-    /** term -> id */
+    /** target -> id */
     public final ObjectByteHashMap<Term> termToId;
 
-    /** id -> term */
+    /** id -> target */
     public final FasterList<Term> idToTerm;
 
     public ByteAnonMap(ObjectByteHashMap<Term> termToId, FasterList<Term> idtoTerm) {

@@ -42,7 +42,7 @@ public class C4 {
             n.goalPriDefault.set(0.75f);
             this.n = n;
 
-            Deriver.derivers(n).forEach(d -> ((BatchDeriver) d).conceptsPerIteration.set(4));
+            Deriver.derivers(n).forEach(d -> ((BatchDeriver) d).tasklinksPerIteration.set(4));
 
 
             Opjects o = new Opjects(n);

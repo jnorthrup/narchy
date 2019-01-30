@@ -4,7 +4,7 @@
 //import nars.Task;
 //import nars.table.temporal.TemporalBeliefTable;
 //import nars.task.Revision;
-//import nars.term.Term;
+//import nars.target.Term;
 //import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 //import org.jetbrains.annotations.Nullable;
 //
@@ -32,7 +32,7 @@
 //        return
 //                template == null || !template.hasAny(Op.Temporal) ?
 //                        new Best(start, end) :
-//                        new BestWithFactor(start, end, t-> 1 / (1 + Revision.dtDiff(template, t.term())));
+//                        new BestWithFactor(start, end, t-> 1 / (1 + Revision.dtDiff(template, t.target())));
 //    }
 //
 //    //TODO involving some randomness:

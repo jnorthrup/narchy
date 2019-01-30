@@ -132,7 +132,7 @@ public class PriBuffer<Y> {
 //    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {
 //
 //        public final static Comparator<TermLinkage> preciseComparator = Comparator
-//            .comparing((TermLinkage x)->x.Y.term())
+//            .comparing((TermLinkage x)->x.Y.target())
 //            .thenComparingDouble((TermLinkage x)->-x.pri()) //descending
 //            .thenComparingInt((TermLinkage x)->x.hashTarget) //at this point the order doesnt matter so first decide by hash
 //            .thenComparing((TermLinkage x)->x.target);

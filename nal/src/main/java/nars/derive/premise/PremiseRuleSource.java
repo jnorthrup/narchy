@@ -109,7 +109,7 @@ public class PremiseRuleSource extends ProxyTerm {
         this.taskPattern = PatternIndex.patternify(precon[0]);
         this.beliefPattern = PatternIndex.patternify(precon[1]);
         if (beliefPattern.op() == Op.ATOM) {
-            throw new RuntimeException("belief term must contain no atoms: " + beliefPattern);
+            throw new RuntimeException("belief target must contain no atoms: " + beliefPattern);
         }
 
 

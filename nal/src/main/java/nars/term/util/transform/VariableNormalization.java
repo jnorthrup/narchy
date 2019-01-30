@@ -14,7 +14,7 @@ import java.util.Map;
  * Destructive mode modifies the input Compound instance, which is
  * fine if the concept has been created and unreferenced.
  * <p>
- * The term 'destructive' is used because it effectively destroys some
+ * The target 'destructive' is used because it effectively destroys some
  * information - the particular labels the input has attached.
  */
 public class VariableNormalization extends VariableTransform {

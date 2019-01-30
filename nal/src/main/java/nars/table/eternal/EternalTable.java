@@ -2,7 +2,6 @@ package nars.table.eternal;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.decide.MutableRoulette;
 import jcog.pri.Prioritizable;
 import jcog.sort.SortedArray;
 import nars.$;
@@ -86,27 +85,24 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     @Override
     public void sample(Answer a) {
         int s = size();
-        if (s == 0)
-            return;
-        if (s == 1) {
-            a.tryAccept(first());
-            return;
-        }
 
-        float[] w = new float[s];
-        for (int i = 0; i < s; i++) {
-            Task t = get(i);
-            if (t!=null)
-                w[i] = t.evi(); //* originality ?
-        }
-        MutableRoulette r = new MutableRoulette(w, (c)->0, a.nar.random());
-        Task nextTask = null;
-        do {
-            int c = r.next();
-            if (c<0)
-                break;
-            nextTask = get(c);
-        } while (a.tryAccept(nextTask));
+//            float[] w = new float[s];
+            for (int i = 0; i < s; i++) {
+                Task t = get(i);
+                if (!a.tryAccept(t))
+                    break;
+//                if (t != null)
+//                    w[i] = t.evi(); //* originality ?
+            }
+//            MutableRoulette r = new MutableRoulette(w, (c) -> 0, a.nar.random());
+//            Task nextTask = null;
+//            do {
+//                int c = r.next();
+//                if (c < 0)
+//                    break;
+//                nextTask = get(c);
+//            } while (a.tryAccept(nextTask));
+        
     }
 
     public void setTaskCapacity(int c) {

@@ -118,7 +118,7 @@ public class Builtin {
             },
 
 
-            /** applies the changes in structurally similar terms "from" and "to" to the target term */
+            /** applies the changes in structurally similar terms "from" and "to" to the target target */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {
                 if (from.equals(to))
                     return Null;
@@ -310,8 +310,8 @@ public class Builtin {
 
         nar.on(SetFunc.sort(nar));
 
-        /** dynamic term builder - useful for NAR specific contexts like clock etc.. */
-        nar.on(Functor.f("term", (Subterms s) -> {
+        /** dynamic target builder - useful for NAR specific contexts like clock etc.. */
+        nar.on(Functor.f("target", (Subterms s) -> {
             Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
             Term[] args = s.sub(1).subterms().arrayShared();
             if (args.length == 2) {
@@ -415,7 +415,7 @@ public class Builtin {
 //                    return Bool.Null; /* can't shrink below one element */
 //                case 2:
 //                    int n = nar.random().nextInt(2);
-//                    return oo.the(t.sub(n)) /* keep the remaining term wrapped in a set */;
+//                    return oo.the(t.sub(n)) /* keep the remaining target wrapped in a set */;
 //                default:
 //                    Term[] y = Terms.dropRandom(nar.random(), t.subterms());
 //                    return oo.the(y);

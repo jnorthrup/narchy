@@ -61,7 +61,7 @@
 //        n.onTask(t -> {
 //            if (t instanceof DerivedTask) {
 //                if (t.isGoal()) {
-//                    if (actions.contains(t.term())) {
+//                    if (actions.contains(t.target())) {
 //
 //                        float dir = new PreciseTruth(t.freq(), t.evi(a.nar().time(), a.nar().dur()), false).freq() - 0.5f;
 //

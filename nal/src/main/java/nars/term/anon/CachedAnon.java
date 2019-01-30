@@ -55,7 +55,7 @@ public class CachedAnon extends Anon {
             getCache.computeIfAbsent(x, xx -> super.transformNonNegCompound(xx));
     }
 
-    /** whether a term is cacheable */
+    /** whether a target is cacheable */
     protected boolean cache(Compound x, boolean putOrGet) {
         return true;
     }

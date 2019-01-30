@@ -54,7 +54,7 @@ import static nars.Op.NEG;
 import static nars.time.Tense.*;
 
 /**
- * a compound term
+ * a compound target
  * TODO make this an interface extending Subterms
  */
 public interface Compound extends Term, IPair, Subterms {
@@ -432,7 +432,7 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     /**
-     * replaces the 'from' term with 'to', recursively
+     * replaces the 'from' target with 'to', recursively
      */
     default Term replace(Term from, Term to) {
         return MapSubst.replace(from,to).transform(this);
@@ -1114,7 +1114,7 @@ public interface Compound extends Term, IPair, Subterms {
  * override in subclasses to avoid unnecessary reinit
  */
     /*public CompoundTerm _clone(final Term[] replaced) {
-        if (Terms.equals(term, replaced)) {
+        if (Terms.equals(target, replaced)) {
             return this;
         }
         return clone(replaced);

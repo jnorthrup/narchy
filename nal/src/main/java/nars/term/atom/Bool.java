@@ -13,7 +13,7 @@ import static nars.Op.BOOL;
  *      Null - absolutely nonsense
  *
  *  these represent an intrinsic level of truth that exist within the context of
- *  an individual term.  not to be confused with Task-level Truth
+ *  an individual target.  not to be confused with Task-level Truth
  */
 abstract public class Bool extends AbstractAtomic implements The {
 

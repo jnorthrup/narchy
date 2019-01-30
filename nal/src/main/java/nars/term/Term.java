@@ -338,7 +338,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
 
     /**
-     * Commutivity in NARS means that a Compound term's
+     * Commutivity in NARS means that a Compound target's
      * subterms will be unique and arranged in order (compareTo)
      * <p>
      * <p>
@@ -353,7 +353,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
 
     /**
-     * @param y       another term
+     * @param y       another target
      * @param ignored the unification context
      * @return whether unification succeeded
      */
@@ -397,7 +397,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     /**
-     * returns the unique sub-event time of the given term,
+     * returns the unique sub-event time of the given target,
      * or DTERNAL if not present or there is not one unique time.
      */
     @Deprecated default int subTimeOnly(Term x) {
@@ -641,7 +641,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
 
     /**
-     * returns this term in a form which can identify a concept, or Null if it can't
+     * returns this target in a form which can identify a concept, or Null if it can't
      * generally this is equivalent to root() but for compound it includes
      * unnegation and normalization steps. this is why conceptual() and root() are
      * different
@@ -651,7 +651,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     /**
-     * the skeleton of a term, without any temporal or other meta-assumptions
+     * the skeleton of a target, without any temporal or other meta-assumptions
      */
     default Term root() {
         return this;

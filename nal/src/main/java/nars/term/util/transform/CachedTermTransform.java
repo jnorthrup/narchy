@@ -1,8 +1,8 @@
-//package nars.term.util.transform;
+//package nars.target.util.transform;
 //
-//import nars.term.Compound;
-//import nars.term.Term;
-//import nars.term.atom.Atomic;
+//import nars.target.Compound;
+//import nars.target.Term;
+//import nars.target.atom.Atomic;
 //import org.jetbrains.annotations.Nullable;
 //
 //import java.util.Map;
@@ -33,7 +33,7 @@
 //    public Term transformCompound(Compound x) {
 //        return cache.apply(x, xx -> {
 //            Term y = proxy.transformCompound((Compound) xx);
-//            //return (y == null) ? nulled(xx) : y.term();
+//            //return (y == null) ? nulled(xx) : y.target();
 //            return y;
 //        });
 //    }

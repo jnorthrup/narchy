@@ -196,9 +196,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     @Cached
     public Rule Term(boolean oper, boolean temporal) {
         /*
-                 <term> ::= <word>                             
+                 <target> ::= <word>
                         | <variable>                         
-                        | <compound-term>                    
+                        | <compound-target>
                         | <statement>                        
         */
 
@@ -341,7 +341,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             } else {
 
                 QuantityTerm q = (QuantityTerm) timeDelta;
-                return $.func("term", o.strAtom, $.p(subj, pred), q);
+                return $.func("target", o.strAtom, $.p(subj, pred), q);
             }
         }
     }
@@ -428,7 +428,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
 
     /**
-     * an atomic term, returns a String because the result may be used as a Variable name
+     * an atomic target, returns a String because the result may be used as a Variable name
      */
     public Rule AtomStr() {
         return seq(
@@ -543,20 +543,20 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     
         /*
-         <compound-term> ::= "{" <term> {","<term>} "}"         
-                        | "[" <term> {","<term>} "]"         
-                        | "(&," <term> {","<term>} ")"       
-                        | "(|," <term> {","<term>} ")"       
-                        | "(*," <term> {","<term>} ")"       
-                        | "(/," <term> {","<term>} ")"       
-                        | "(\," <term> {","<term>} ")"       
-                        | "(||," <term> {","<term>} ")"      
-                        | "(&&," <term> {","<term>} ")"      
-                        | "(&/," <term> {","<term>} ")"      
-                        | "(&|," <term> {","<term>} ")"      
-                        | "(--," <term> ")"                  
-                        | "(-," <term> "," <term> ")"        
-                        | "(~," <term> "," <term> ")"        
+         <compound-target> ::= "{" <target> {","<target>} "}"
+                        | "[" <target> {","<target>} "]"
+                        | "(&," <target> {","<target>} ")"
+                        | "(|," <target> {","<target>} ")"
+                        | "(*," <target> {","<target>} ")"
+                        | "(/," <target> {","<target>} ")"
+                        | "(\," <target> {","<target>} ")"
+                        | "(||," <target> {","<target>} ")"
+                        | "(&&," <target> {","<target>} ")"
+                        | "(&/," <target> {","<target>} ")"
+                        | "(&|," <target> {","<target>} ")"
+                        | "(--," <target> ")"
+                        | "(-," <target> "," <target> ")"
+                        | "(~," <target> "," <target> ")"
 
         */
 
@@ -606,7 +606,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     private static final Object functionalForm = new Object();
 
     /**
-     * list of terms prefixed by a particular compound term operate
+     * list of terms prefixed by a particular compound target operate
      */
     @Deprecated
     Rule MultiArgTerm(@Nullable Op defaultOp, char close, boolean initialOp, boolean allowInternalOp) {
@@ -757,11 +757,11 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
 
         }
-        throw new RuntimeException(o + " is not a term");
+        throw new RuntimeException(o + " is not a target");
     }
 
     /**
-     * produce a term from the terms (& <=1 NALOperator's) on the value stack
+     * produce a target from the terms (& <=1 NALOperator's) on the value stack
      */
     @Nullable
     @Deprecated

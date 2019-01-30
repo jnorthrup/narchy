@@ -9,7 +9,7 @@ import nars.term.control.AbstractPred;
 import static nars.Op.NEG;
 
 /**
- * Derivation term construction step of the derivation process that produces a derived task
+ * Derivation target construction step of the derivation process that produces a derived task
  * <p>
  * Each rule corresponds to a unique instance of this
  * <p>

@@ -1,6 +1,7 @@
 package nars.op.mental;
 
 
+import jcog.TODO;
 import jcog.bloom.StableBloomFilter;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.MutableIntRange;
@@ -36,7 +37,7 @@ import static nars.time.Tense.ETERNAL;
 /**
  * compound<->dynamic atom abbreviation.
  *
- * @param S serial term type
+ * @param S serial target type
  */
 public class Abbreviation/*<S extends Term>*/ extends Causable {
 
@@ -95,7 +96,7 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
 //            @Override
 //            protected float leak(Task t) {
 //
-//                leak(t.term(), t.priElseZero());
+//                leak(t.target(), t.priElseZero());
 //
 //                //TODO control rate in/out
 //                abbreviateNext();
@@ -261,9 +262,12 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
     protected void next(NAR n, BooleanSupplier kontinue) {
         do {
 
-            Activate a = n.concepts.sample(n.random());
+            Activate a = null;
             if (a == null)
-                break;
+                throw new TODO();
+//            Activate a = n.concepts.sampleConcept(n.random());
+//            if (a == null)
+//                break;
 
             Term at = a.term();
             if (at instanceof Compound) {

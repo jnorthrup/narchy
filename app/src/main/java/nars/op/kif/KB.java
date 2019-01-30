@@ -125,7 +125,7 @@ public class KB implements Serializable {
 
     /**
      * A HashMap of ArrayLists of String formulae, containing all the formulae
-     * in the KB. Keys are the formula itself, a formula ID, and term indexes
+     * in the KB. Keys are the formula itself, a formula ID, and target indexes
      * created in KIF.createKey(). The actual formula can be retrieved by using
      * the returned String as the key for the variable formulaMap
      */
@@ -133,13 +133,13 @@ public class KB implements Serializable {
 
     /**
      * The natural language formatting strings for relations in the KB. It is a
-     * HashMap of language keys and HashMap values. The interior HashMap is term
+     * HashMap of language keys and HashMap values. The interior HashMap is target
      * name keys and String values.
      */
     private HashMap<String, HashMap<String, String>> formatMap = new HashMap<String, HashMap<String, String>>();
 
     /** The natural language strings for terms in the KB. It is a HashMap of
-     * language keys and HashMap values. The interior HashMap is term name keys
+     * language keys and HashMap values. The interior HashMap is target name keys
      * and String values.
      */
     private HashMap<String, HashMap<String, String>> termFormatMap = new HashMap<String, HashMap<String, String>>();
@@ -312,11 +312,11 @@ public class KB implements Serializable {
     /***************************************************
      * Only called in
      * BrowseBody.jsp when a single match is found. Purpose is to simplify a
-     * RegEx to its only matching term
+     * RegEx to its only matching target
      *
      * @param term
      *            a String
-     * @return modified term a String
+     * @return modified target a String
      */
     public String simplifyTerm(String term) {
 
@@ -326,8 +326,8 @@ public class KB implements Serializable {
     }
 
     /****************************************************
-     * Takes a term
-     * (interpreted as a Regular Expression) and returns true if any term in the
+     * Takes a target
+     * (interpreted as a Regular Expression) and returns true if any target in the
      * KB has a match with the RE.
      *
      * @param term
@@ -340,13 +340,13 @@ public class KB implements Serializable {
     }
 
     /****************************************************
-     * Takes a term
+     * Takes a target
      * (interpreted as a Regular Expression) and returns an ArrayList containing
-     * every term in the KB that has a match with the RE.
+     * every target in the KB that has a match with the RE.
      *
      * @param term
      *            A String
-     * @return An ArrayList of terms that have a match to term
+     * @return An ArrayList of terms that have a match to target
      */
     private ArrayList<String> getREMatch(String term) {
 
@@ -510,14 +510,14 @@ public class KB implements Serializable {
     }
 
     /***************************************************************
-     * Determine whether a particular term is an immediate instance, which has a statement
-     * of the form (instance term otherTerm). Note that this does not count for
+     * Determine whether a particular target is an immediate instance, which has a statement
+     * of the form (instance target otherTerm). Note that this does not count for
      * terms such as Attribute(s) and Relation(s), which may be defined as
-     * subAttribute(s) or subrelation(s) of another instance. If the term is not
+     * subAttribute(s) or subrelation(s) of another instance. If the target is not
      * an instance, return an empty ArrayList. Otherwise, return an ArrayList of
-     * the Formula(s) in which the given term is defined as an instance.
-     * Note! This does not return instances of the given term, but rather the
-     * terms of which the given term is an instance.
+     * the Formula(s) in which the given target is defined as an instance.
+     * Note! This does not return instances of the given target, but rather the
+     * terms of which the given target is an instance.
      */
     ArrayList<Formula> instancesOf(String term) {
 
@@ -525,7 +525,7 @@ public class KB implements Serializable {
     }
 
     /***************************************************************
-     * Get all instances of a given term
+     * Get all instances of a given target
      */
     public Set<String> instances(String term) {
 
@@ -644,8 +644,8 @@ public class KB implements Serializable {
      * whether a particular class or instance "child" is a child of the given
      * "parent".
      *
-     * @param child  A String, the name of a term.
-     * @param parent A String, the name of a term.
+     * @param child  A String, the name of a target.
+     * @param parent A String, the name of a target.
      * @return true if child and parent constitute an actual or implied relation
      * in the current KB, else false.
      */
@@ -839,11 +839,11 @@ public class KB implements Serializable {
 
     /***************************************************************
      * Returns the
-     * first term found that corresponds to targetArgnum in the Formulas
+     * first target found that corresponds to targetArgnum in the Formulas
      * obtained from the method call askWithRestriction(argnum1, term1, argnum2,
      * term2).
      *
-     * @return A SUO-KIF term (String), or null is no answer can be retrieved.
+     * @return A SUO-KIF target (String), or null is no answer can be retrieved.
      */
     public String getFirstTermViaAskWithRestriction(int argnum1, String term1, int argnum2, String term2,
                                                     int targetArgnum) {
@@ -884,7 +884,7 @@ public class KB implements Serializable {
             for (int i = 0; i < plen; i++) {
                 f = partial.get(i);
                 if (f == null)
-                    System.out.println("Error in KB.askWithRestriction(): null formula searching on term: " + term);
+                    System.out.println("Error in KB.askWithRestriction(): null formula searching on target: " + term);
                 String thisArg = f.getArgument(arg);
                 if (thisArg == null) {
                     System.out.println("Error in KB.askWithRestriction(): null argument: " + f);
@@ -1006,7 +1006,7 @@ public class KB implements Serializable {
      * Returns the
      * first SUO-KIF terms that matches the request, or null.
      *
-     * @return A term (String), or null.
+     * @return A target (String), or null.
      */
     public String getFirstTermViaAWTR(int argnum1, String term1, int argnum2, String term2, int argnum3, String term3,
                                       int targetArgnum) {
@@ -1026,7 +1026,7 @@ public class KB implements Serializable {
      * terms.
      *
      * @param knownArgnum  The argument position of knownArg
-     * @param knownArg     The term that appears in the argument knownArgnum of the
+     * @param knownArg     The target that appears in the argument knownArgnum of the
      *                     ground atomic Formulae in the KB
      * @param targetArgnum The argument position of the terms being sought
      * @return An ArrayList of Strings, which will be empty if no match found.
@@ -1071,8 +1071,8 @@ public class KB implements Serializable {
      * ArrayList containing the Formulas that match the request.
      *
      * @param kind   May be one of "ant", "cons", "stmt", or "arg"
-     * @param term   The term that appears in the statements being requested.
-     * @param argnum The argument position of the term being asked for. The first
+     * @param term   The target that appears in the statements being requested.
+     * @param argnum The argument position of the target being asked for. The first
      *               argument after the predicate is "1". This parameter is ignored
      *               if the kind is "ant", "cons" or "stmt".
      * @return An ArrayList of Formula(s), which will be empty if no match
@@ -1085,7 +1085,7 @@ public class KB implements Serializable {
         String msg = null;
         if (StringUtil.emptyString(term)) {
             msg = ("Error in KB.ask(\"" + kind + "\", " + argnum + ", \"" + term + "\"), "
-                    + "search term is null, or an empty string");
+                    + "search target is null, or an empty string");
             errors.add(msg);
         }
         if (term.length() > 1 && term.charAt(0) == '"' && term.charAt(term.length() - 1) == '"') {
@@ -1164,7 +1164,7 @@ public class KB implements Serializable {
      *
      * @param relation       The name of a predicate, which is assumed to be the 0th
      *                       argument of one or more atomic Formulae
-     * @param idxArgnum      The argument position occupied by term in the ground atomic
+     * @param idxArgnum      The argument position occupied by target in the ground atomic
      *                       Formulae that will be retrieved to gather the target (answer)
      *                       terms
      * @param idxTerm        A constant that occupies idxArgnum position in each of the
@@ -1238,7 +1238,7 @@ public class KB implements Serializable {
      *
      * @param relation     The name of a predicate, which is assumed to be the 0th
      *                     argument of one or more atomic Formulae
-     * @param idxArgnum    The argument position occupied by term in the ground atomic
+     * @param idxArgnum    The argument position occupied by target in the ground atomic
      *                     Formulae that will be retrieved to gather the target (answer)
      *                     terms
      * @param idxTerm      A constant that occupies idxArgnum position in each of the
@@ -1264,7 +1264,7 @@ public class KB implements Serializable {
      *
      * @param relation     The name of a predicate, which is assumed to be the 0th
      *                     argument of one or more atomic Formulae.
-     * @param idxArgnum    The argument position occupied by term in the ground atomic
+     * @param idxArgnum    The argument position occupied by target in the ground atomic
      *                     Formulae that will be retrieved to gather the target (answer)
      *                     terms.
      * @param idxTerm      A constant that occupies idxArgnum position in each of the
@@ -1274,7 +1274,7 @@ public class KB implements Serializable {
      *                     be retrieved.
      * @param useInverses  If true, the inverses of relation and its subrelations will be
      *                     also be used to try to find answer terms.
-     * @return A SUO-KIF constants (String), or null if no term can be
+     * @return A SUO-KIF constants (String), or null if no target can be
      * retrieved.
      */
     public String getFirstTermViaPredicateSubsumption(String relation, int idxArgnum, String idxTerm, int targetArgnum,
@@ -1299,7 +1299,7 @@ public class KB implements Serializable {
      *
      * @param relation     The name of a predicate, which is assumed to be the 0th
      *                     argument of one or more atomic Formulae
-     * @param idxArgnum    The argument position occupied by term in the ground atomic
+     * @param idxArgnum    The argument position occupied by target in the ground atomic
      *                     Formulae that will be retrieved to gather the target (answer)
      *                     terms
      * @param idxTerm      A constant that occupies idxArgnum position in the first
@@ -1344,7 +1344,7 @@ public class KB implements Serializable {
     }
 
     /***************************************************************
-     * Get all children of the given term following instance and
+     * Get all children of the given target following instance and
      * subclass relations as well as the indicated rel
      */
     private HashSet<String> getAllSub(String term, String rel) {
@@ -1437,7 +1437,7 @@ public class KB implements Serializable {
     /***************************************************************
      * Rename
      * term2 as term1 throughout the knowledge base. This is an operation with
-     * side effects - the term names in the KB are changed.
+     * side effects - the target names in the KB are changed.
      */
     public void rename(String term2, String term1) {
 
@@ -1956,7 +1956,7 @@ public class KB implements Serializable {
 
         
         if (!terms.contains(term)) {
-            System.out.println("KB.termDepth(): no such term " + term);
+            System.out.println("KB.termDepth(): no such target " + term);
             return 0;
         }
         if (term.equals("Entity") || StringUtil.isNumeric(term))
@@ -1976,7 +1976,7 @@ public class KB implements Serializable {
         
         HashSet<String> result = new HashSet<>();
         if (!terms.contains(term)) {
-            System.out.println("KB.immediateParents(): no such term " + term);
+            System.out.println("KB.immediateParents(): no such target " + term);
             return result;
         }
         ArrayList<Formula> forms = askWithRestriction(0,"subclass",1,term);
@@ -1995,9 +1995,9 @@ public class KB implements Serializable {
 
     /*****************************************************************
      * Analogous to compareTo(), return -1,0 or 1 depending on whether
-     * the first term is "smaller", equal to or "greater" than the
-     * second, respectively.  A term that is the parent of another
-     * is "smaller".  If not a parent of the other, the smaller term
+     * the first target is "smaller", equal to or "greater" than the
+     * second, respectively.  A target that is the parent of another
+     * is "smaller".  If not a parent of the other, the smaller target
      * is that which is fewer "levels" from their common parent.
      * Therefore, terms that are not the same can still be "equal"
      * if they're at the same level of the taxonomy.
@@ -2022,7 +2022,7 @@ public class KB implements Serializable {
     }
 
     /*****************************************************************
-     * Takes a term and returns true if the term occurs in the KB.
+     * Takes a target and returns true if the target occurs in the KB.
      *
      * @param term A String.
      * @return true or false.
@@ -2133,9 +2133,9 @@ public class KB implements Serializable {
     }
 
     /** ***************************************************************
-     * Get the alphabetically nearest terms to the given term, which is not in the KB.
+     * Get the alphabetically nearest terms to the given target, which is not in the KB.
      * Elements 0-(k-1) should be alphabetically lesser and k-(2*k-1)
-     * alphabetically greater. If the term is at the beginning or end of the
+     * alphabetically greater. If the target is at the beginning or end of the
      * alphabet, fill in blank items with the empty string: "".
      */
     private ArrayList<String> getNearestKTerms(String term, int k) {
@@ -2168,9 +2168,9 @@ public class KB implements Serializable {
     }
 
     /*****************************************************************
-     * Get the alphabetically nearest terms to the given term, which is not in the KB.
+     * Get the alphabetically nearest terms to the given target, which is not in the KB.
      * Elements 0-14 should be alphabetically lesser and 15-29 alphabetically
-     * greater. If the term is at the beginning or end of the alphabet, fill in
+     * greater. If the target is at the beginning or end of the alphabet, fill in
      * blank items with the empty string: "".
      */
     private ArrayList<String> getNearestTerms(String term) {
@@ -2179,7 +2179,7 @@ public class KB implements Serializable {
     }
 
     /*****************************************************************
-     * Get the neighbors of this initial uppercase term (class or function).
+     * Get the neighbors of this initial uppercase target (class or function).
      */
     public ArrayList<String> getNearestRelations(String term) {
 
@@ -2188,7 +2188,7 @@ public class KB implements Serializable {
     }
 
     /*****************************************************************
-     * Get the neighbors of this initial lowercase term (relation).
+     * Get the neighbors of this initial lowercase target (relation).
      */
     public ArrayList<String> getNearestNonRelations(String term) {
 
@@ -2197,7 +2197,7 @@ public class KB implements Serializable {
     }
 
     /*****************************************************************
-     * Get the alphabetically num lower neighbor of this initial term, which must exist
+     * Get the alphabetically num lower neighbor of this initial target, which must exist
      * in the current KB otherwise an empty string is returned.
      */
     public String getAlphaBefore(String term, int num) {
@@ -2219,7 +2219,7 @@ public class KB implements Serializable {
     }
 
     /*****************************************************************
-     * Get the alphabetically num higher neighbor of this initial term, which must exist
+     * Get the alphabetically num higher neighbor of this initial target, which must exist
      * in the current KB otherwise an empty string is returned.
      */
     public String getAlphaAfter(String term, int num) {
@@ -2255,7 +2255,7 @@ public class KB implements Serializable {
      * Populates the format maps for language lang.
      *
      * see termFormatMap is a HashMap of language keys and HashMap values. The
-     *      interior HashMaps are term keys and format string values.
+     *      interior HashMaps are target keys and format string values.
      *
      * see formatMap is the same but for relation format strings.
      */
@@ -2287,7 +2287,7 @@ public class KB implements Serializable {
             }
             col = askWithRestriction(0, "termFormat", 1, lang);
             if ((col == null) || col.isEmpty())
-                System.out.println("Error in KB.loadFormatMaps(): No term format file loaded for language: " + lang);
+                System.out.println("Error in KB.loadFormatMaps(): No target format file loaded for language: " + lang);
             else {
                 HashMap<String, String> langTermFormatMap = termFormatMap.get(lang);
                 Iterator<Formula> ite = col.iterator();
@@ -2332,9 +2332,9 @@ public class KB implements Serializable {
     }
 
     /*****************************************************************
-     * This method creates a dictionary (Map) of SUO-KIF term symbols -- the keys --
+     * This method creates a dictionary (Map) of SUO-KIF target symbols -- the keys --
      * and a natural language string for each key that is the preferred name for
-     * the term -- the values -- in the context denoted by lang. If the Map has
+     * the target -- the values -- in the context denoted by lang. If the Map has
      * already been built and the language hasn't changed, just return the
      * existing map. This is a case of "lazy evaluation".
      *
@@ -3003,9 +3003,9 @@ public class KB implements Serializable {
     }
 
     /***************************************************************
-     * Hyperlink terms identified with '&%' to the URL that brings up that term in the
-     * browser. Handle (and ignore) suffixes on the term. For example
-     * "&%Processes" would get properly linked to the term "Process", if present
+     * Hyperlink terms identified with '&%' to the URL that brings up that target in the
+     * browser. Handle (and ignore) suffixes on the target. For example
+     * "&%Processes" would get properly linked to the target "Process", if present
      * in the knowledge base.
      */
     public String formatDocumentation(String href, String documentation, String language) {
@@ -3020,8 +3020,8 @@ public class KB implements Serializable {
                 suffix = ".html";
                 isStaticFile = true;
             }
-            else if (!href.endsWith("&term="))
-                href += "&term=";
+            else if (!href.endsWith("&target="))
+                href += "&target=";
             int i = -1;
             int j = -1;
             int start = 0;

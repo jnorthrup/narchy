@@ -136,7 +136,7 @@ public class TruthletTask extends SignalTask {
 
 //    public void truth(Truthlet newTruthlet, boolean relink, NAR n) {
 //        if (truthlet!=newTruthlet) {
-//            Concept c = n.concept(term(), true);
+//            Concept c = n.concept(target(), true);
 //            if (c != null) {
 //                update(c, (tt) -> {
 //                    tt.truthlet = newTruthlet;

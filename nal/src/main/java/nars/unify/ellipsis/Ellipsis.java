@@ -35,7 +35,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
     }
 
     /**
-     * this needs to use .term(x) instead of Term[] because of shuffle terms
+     * this needs to use .target(x) instead of Term[] because of shuffle terms
      */
     @Nullable
     public static Ellipsislike firstEllipsis(Termlike x) {

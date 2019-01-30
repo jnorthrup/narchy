@@ -9,7 +9,7 @@ import nars.term.util.Image;
 import nars.term.var.NormalizedVariable;
 
 /**
- * cached values for term/subterm metadata
+ * cached values for target/subterm metadata
  */
 abstract public class TermMetadata implements Termlike {
 
@@ -53,7 +53,7 @@ abstract public class TermMetadata implements Termlike {
     }
 
 
-    /** not a conclusive test but meant to catch most cases where the term is already normalized */
+    /** not a conclusive test but meant to catch most cases where the target is already normalized */
     public static boolean normalized(Subterms x) {
 
         //the product containing an image itself may be normalized but superterms containing it are not automatically considered normal

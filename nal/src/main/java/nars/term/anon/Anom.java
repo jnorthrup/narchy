@@ -8,7 +8,7 @@ import nars.term.Term;
 
 import static nars.Op.ATOM;
 
-/* indexed anonymous term */
+/* indexed anonymous target */
 public final class Anom extends AnonID {
 
     private static final byte ANOM_SUBTYPE = 1;
@@ -50,7 +50,7 @@ public final class Anom extends AnonID {
 //    public int compareTo(Term yy) {
 //        if (this == yy) return 0;
 //
-//        Term y = yy.term();
+//        Term y = yy.target();
 //        if (y instanceof Anom) {
 //            return Integer.compare(id, ((Int) y).id);
 //        } else {

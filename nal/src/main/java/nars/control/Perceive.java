@@ -89,7 +89,7 @@ public enum Perceive { ;
 
 
     static boolean perceived(Task t, Collection<ITask> queue, NAR n) {
-//        Term tt = t.term();
+//        Term tt = t.target();
 //        Op tto = tt.op();
 //        if (!tto.taskable) {
 //            if (tto == NEG) throw new WTF("neg could be inverted and it would be ok"); //HACK
@@ -117,7 +117,7 @@ public enum Perceive { ;
 
 //    private static void conjDecompose(Task t, Collection<ITask> queue, NAR n) {
 //        byte punc = t.punc();
-//        Term tt = t.term();
+//        Term tt = t.target();
 //        Truth tTruth = t.truth();
 //
 //        Truth reducedTruth = NALTruth.StructuralDeduction.apply(tTruth, null, n, n.confMin.floatValue());

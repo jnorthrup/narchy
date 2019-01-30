@@ -9,12 +9,12 @@
 //import nars.concept.Concept;
 //import nars.concept.NodeConcept;
 //import nars.link.CauseLink;
-//import nars.term.Term;
+//import nars.target.Term;
 //import org.jetbrains.annotations.NotNull;
 //
 ///**
 // *  Anonymizing spider which creates anonymous meta-concepts
-// *  with task and term links to their instances.  it acts like a
+// *  with task and target links to their instances.  it acts like a
 // *  fuzzy index that links groups of structurally related concepts.
 // *
 // *  We take away the face and leave only the message.
@@ -56,7 +56,7 @@
 //
 //    @Override
 //    protected float leak(Task task) {
-//        Term taskTerm = task.term().root();
+//        Term taskTerm = task.target().root();
 //        Term a = taskTerm.anon();
 //        if (a == null)
 //            return 0;

@@ -156,7 +156,7 @@ public enum Revision { ;
 //
 //        Top<Task> top = new Top<>(t -> TruthIntegration.eviInteg(t, 1));
 //
-//        if (x.term().equals(y.term()) && !Stamp.overlapsAny(x, y)) {
+//        if (x.target().equals(y.target()) && !Stamp.overlapsAny(x, y)) {
 //
 //            Task xy = merge(nar, nar.dur(), start, end, true, x, y);
 //            if (xy != null && (filter == null || filter.test(xy)))

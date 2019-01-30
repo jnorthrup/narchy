@@ -41,7 +41,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     private static final ToIntFunction<Term> depIndepFilter = t ->
         (t.op().var) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
 
-    /** if no variables are present in the target term, use the normalized variable which can help ensure avoidance of a need for full compound normalization */
+    /** if no variables are present in the target target, use the normalized variable which can help ensure avoidance of a need for full compound normalization */
     private static final Variable UnnormalizedVarIndep = $.varIndep("_v");
     private static final Variable UnnormalizedVarDep = $.varDep("_v");
     private static final Variable FirstNormalizedVarIndep = $.varIndep(1);
@@ -132,7 +132,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         for (ByteList p: paths) {
             Term t = null;
             int pathLength = p.size();
-            for (int i = -1; i < pathLength - 1 /* dont include the selected term itself */; i++) {
+            for (int i = -1; i < pathLength - 1 /* dont include the selected target itself */; i++) {
                 t = (i == -1) ? input : t.sub(p.get(i));
                 Op o = t.op();
 

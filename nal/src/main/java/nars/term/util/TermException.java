@@ -11,7 +11,7 @@ import java.util.Arrays;
 import static nars.time.Tense.DTERNAL;
 
 /**
- * contains fields for storing term construction parameters
+ * contains fields for storing target construction parameters
  */
 public final class TermException extends SoftException {
 

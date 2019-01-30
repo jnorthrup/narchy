@@ -19,7 +19,7 @@ public class TermBytes extends HashCachedBytes {
     private static final boolean COMPRESS = false;
 
     /**
-     * term with volume byte prepended for sorting by volume
+     * target with volume byte prepended for sorting by volume
      */
     public static TermBytes termByVolume(Term x) {
         int vol = x.volume();
@@ -79,20 +79,20 @@ public class TermBytes extends HashCachedBytes {
         throw new UnsupportedOperationException();
     }
 
-//    private static void writeTermSeq(DataOutput out, Term term, boolean includeTemporal) throws IOException {
+//    private static void writeTermSeq(DataOutput out, Term target, boolean includeTemporal) throws IOException {
 //
 //
-//        if (term instanceof Atomic) {
-//            if (IO.isSpecial(term)) {
+//        if (target instanceof Atomic) {
+//            if (IO.isSpecial(target)) {
 //                out.writeByte(SPECIAL_OP);
 //            }
 //
 //
 //
-//            writeStringBytes(out, term);
+//            writeStringBytes(out, target);
 //
 //        } else {
-//            writeCompoundSeq(out, (Compound) term, includeTemporal);
+//            writeCompoundSeq(out, (Compound) target, includeTemporal);
 //        }
 //    }
 

@@ -191,10 +191,9 @@ public class Derivation extends PreDerivation {
     public final DynBytes tmpPremiseKey = new DynBytes(256);
 
     /** temporary storage buffer for recently fired tasklinks */
-    public final ArrayHashSet<TaskLink> taskLinksFired = new ArrayHashSet<>(32);
-    public final ArrayHashSet<Task> tasksFired = new ArrayHashSet<>(32);
+    @Deprecated public final ArrayHashSet<Task> tasksFired = new ArrayHashSet<>(32);
     /** temporary storage buffer for recently activated concepts */
-    public final Collection<Concept> firedConcepts = new FasterList<>(32);
+    @Deprecated public final Collection<Concept> firedConcepts = new FasterList<>(32);
 
 
     private Function<Atomic, Functor> derivationFunctors;
@@ -350,14 +349,14 @@ public class Derivation extends PreDerivation {
 
             this.beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
 //            if (beliefTerm.op()==NEG)
-//                anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm); //TEMPORARY
+//                anon.putShift(this._beliefTerm = nextBelief.target(), taskTerm); //TEMPORARY
             //this.belief = new SpecialTermTask(beliefTerm, nextBelief);
         } else {
 
             this.beliefTerm =
                     !(nextBeliefTerm instanceof Variable) ?
                         anon.putShift(this._beliefTerm = nextBeliefTerm, taskTerm) :
-                        anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the term may be structural
+                        anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the target may be structural
 
             //this.belief = null;
             this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
@@ -443,7 +442,7 @@ public class Derivation extends PreDerivation {
             this.overlapDouble =
                     Stamp.overlaps(this._task, _belief)
                     ||
-                    //auto-filter double-premise, with same term and same time
+                    //auto-filter double-premise, with same target and same time
                     taskStart==beliefStart && taskPunc==_belief.punc() && taskTerm.equals(beliefTerm);
 
 
@@ -636,7 +635,7 @@ public class Derivation extends PreDerivation {
     }
 
 
-    /** resolve a term (ex: task term or belief term) with the result of 2nd-layer substitutions */
+    /** resolve a target (ex: task target or belief target) with the result of 2nd-layer substitutions */
     public Term retransform(Term x) {
         Term y = x;
 
