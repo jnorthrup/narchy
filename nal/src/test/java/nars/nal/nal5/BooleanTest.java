@@ -216,7 +216,7 @@ class BooleanTest {
 
 
 
-        int s = 9, c = 3000, cRemoveInputs = c/2;
+        int s = 9, c = 5000, cRemoveInputs = c/2;
         boolean temporal = true;
         int d = 1;
 

@@ -40,12 +40,10 @@ abstract public class AtomicRandom extends Random {
     }
 
     private void exit() {
-        BUSY.set(this,0);
-        //BUSY.set(this, 0);
+        BUSY.lazySet(this,0);
     }
 
     private void enter() {
-        //while (!BUSY.compareAndSet(this, 0, 1))
         while (!BUSY.weakCompareAndSet(this, 0, 1))
             Thread.onSpinWait();
     }

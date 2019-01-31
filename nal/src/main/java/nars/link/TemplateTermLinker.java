@@ -241,7 +241,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
      * spread a tasklink to subconcepts of the concept that owns this linker
      */
     @Override
-    public void link(Task t, Derivation d) {
+    public void link(TaskLink tasklink, Task t, Derivation d) {
 
         Collection<Concept> subConcepts = subConcepts(d);
 
@@ -251,7 +251,10 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
         NAR nar = d.nar;
 
 
-        float pri = t.priElseZero();
+        float pri =
+                t.priElseZero();
+                //tasklink.priElseZero();
+                //t.priElseZero() * tasklink.priElseZero();
 
         float pEach =
                 //TODO abstract priority transfer function here

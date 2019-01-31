@@ -24,7 +24,7 @@ public interface TermLinker extends Sampler<Term> {
      *
      * balance = nar.termlinkBalance
      */
-    void link(Task task, Derivation d);
+    void link(TaskLink tasklink, Task task, Derivation d);
 
 
     TermLinker NullLinker = new TermLinker() {
@@ -41,7 +41,7 @@ public interface TermLinker extends Sampler<Term> {
 
 
         @Override
-        public void link(Task task, Derivation d) {
+        public void link(TaskLink tasklink, Task task, Derivation d) {
 
         }
 

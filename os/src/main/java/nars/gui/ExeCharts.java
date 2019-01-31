@@ -145,12 +145,13 @@ public class ExeCharts {
                 return w.value;
             }
         },
-        Time() {
-            @Override
-            public float floatValueOf(TimedLink w) {
-                return Math.max(0,w.time.get());
-            }
-        };
+//        Time() {
+//            @Override
+//            public float floatValueOf(TimedLink w) {
+//                return Math.max(0,w.time.get());
+//            }
+//        }
+        ;
         /* TODO
                                 //c.accumTimeNS.get()/1_000_000.0 //ms
                                 //(c.iterations.getMean() * c.iterTimeNS.getMean())/1_000_000.0 //ms

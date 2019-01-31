@@ -26,7 +26,7 @@ public class Treadmill64 extends AtomicLongArray implements SpinMutex {
 
         restart: while (true) {
 
-            int now = mod.get();
+            int now = mod.getAcquire();
             if (now == -1) now = 0; //skip 0
 
             /** optimistic pre-scan determined free slot */
@@ -34,7 +34,7 @@ public class Treadmill64 extends AtomicLongArray implements SpinMutex {
 
             for (int i = slots-1; i >= 0; i--) {
                 //long v = getOpaque(i);
-                long v = get(i);
+                long v = getAcquire(i);
                 if (v == hash) {
                     Thread.onSpinWait();
                     continue restart;  //collision
@@ -42,13 +42,12 @@ public class Treadmill64 extends AtomicLongArray implements SpinMutex {
                     jProlly = i;
             }
 
-            if (mod.compareAndSet(now, now+1)) { //TODO separate into modIn and modOut?
-                if (jProlly!=-1)
-                    if (compareAndSet(jProlly, 0, hash))
-                        return jProlly;
+            if (mod.weakCompareAndSetRelease(now, now+1)) { //TODO separate into modIn and modOut?
+                if (jProlly != -1 && weakCompareAndSetRelease(jProlly, 0, hash))
+                    return jProlly;
 
                 for (int j = 0; j < slots; j++)
-                    if (j!=jProlly && compareAndSet(j, 0, hash))
+                    if (j!=jProlly && weakCompareAndSetRelease(j, 0, hash))
                         return j;
             }
 

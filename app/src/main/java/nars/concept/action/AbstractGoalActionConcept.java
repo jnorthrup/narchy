@@ -141,7 +141,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
             TruthPolation organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
 
-            //TODO mine truthpolation .stamp()'s and .cause()'s for clues
+            //TODO my truthpolation .stamp()'s and .cause()'s for clues
 
             if (organic != null) {
                 actionDex = organic.filtered().truth();

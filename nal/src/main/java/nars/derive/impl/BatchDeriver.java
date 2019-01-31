@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-    public final IntRange tasklinksPerIteration = new IntRange(3, 1, 32);
+    public final IntRange tasklinksPerIteration = new IntRange(2, 1, 32);
 
 
 //    /**
@@ -120,7 +120,7 @@ public class BatchDeriver extends Deriver {
                 if (cc != null) {
                     TermLinker linker = cc.linker();
 
-                    linker.link(task, d);
+                    linker.link(tasklink, task, d);
 
                     if (cc.term().equals(tt) && ((!(linker instanceof FasterList) || rng.nextInt(((FasterList) linker).size()+1)==0)))
                         b = src;  //HACK
@@ -151,7 +151,7 @@ public class BatchDeriver extends Deriver {
     }
 
     /** acts as a virtual tasklink bag associated with an atom concept allowing it to otherwise act as a junction between tasklinking compounds which share it */
-    private Term atomTangentRanked(Term src, Term tt, TopN<TaskLink> match, Derivation d, Iterable<TaskLink> tasklinks) {
+    private static Term atomTangentRanked(Term src, Term tt, TopN<TaskLink> match, Derivation d, Iterable<TaskLink> tasklinks) {
 
         tasklinks.forEach((x)->{
             float xp = x.priElseZero();
@@ -170,7 +170,7 @@ public class BatchDeriver extends Deriver {
             return null;
     }
 
-    private Term atomTangentRandom(Term tt, Term src, Derivation d, Bag<TaskLink, TaskLink> tasklinks) {
+    private static Term atomTangentRandom(Term tt, Term src, Derivation d, Bag<TaskLink, TaskLink> tasklinks) {
         Term b;//TODO use Rank and sample
         ArrayHashSet<Term> atomMatches = d.atomMatches;
         tasklinks.forEach(t -> {

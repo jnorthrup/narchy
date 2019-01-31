@@ -19,7 +19,7 @@ public class StopWords {
 			"go", "had", "has", "hasnt", "have", "he", "hence", "her", "here", "hereafter", "hereby", "herein",
 			"hereupon", "hers", "herself", "him", "himself", "his", "how", "however", "hundred", "ie", "if", "in",
 			"inc", "indeed", "interest", "into", "is", "it", "its", "itself", "keep", "last", "latter", "latterly",
-			"least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "mine", "more",
+			"least", "less", "ltd", "made", "many", "may", "me", "meanwhile", "might", "mill", "my", "more",
 			"moreover", "most", "mostly", "move", "much", "must", "my", "myself", "name", "namely", "neither", "never",
 			"nevertheless", "next", "nine", "no", "nobody", "none", "noone", "nor", "not", "nothing", "now", "nowhere",
 			"of", "off", "often", "on", "once", "one", "only", "onto", "or", "other", "others", "otherwise", "our",

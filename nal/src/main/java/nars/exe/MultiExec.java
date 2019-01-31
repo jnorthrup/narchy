@@ -9,6 +9,7 @@ import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import jcog.random.SplitMix64Random;
+import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.control.DurService;
 import nars.task.AbstractTask;
@@ -22,13 +23,14 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 
+import static nars.time.Tense.ETERNAL;
+
 abstract public class MultiExec extends UniExec {
 
-    private static final float inputQueueSizeSafetyThreshold = 0.990f;
+    private static final float inputQueueSizeSafetyThreshold = 0.999f;
     private final Valuator valuator;
 
     final AtomicMetalBitSet sleeping = new AtomicMetalBitSet();
-    private long cycleTimeNS;
 
     protected long idleTimePerCyclePerThread;
 
@@ -85,14 +87,11 @@ abstract public class MultiExec extends UniExec {
         if(cycleNS < 0) {
             //paused
             idleTimePerCyclePerThread = NapTime;
-            cycleTimeNS = 0;
         } else {
             double throttle = nar.loop.throttle.floatValue();
 
             //TODO better idle calculation in each thread / worker
             idleTimePerCyclePerThread = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
-
-            cycleTimeNS = Math.max(1, Math.round(cycleNS * concurrency() * throttle));
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
                 input(new QueueLatencyMeasurement(System.nanoTime()));
@@ -120,14 +119,7 @@ abstract public class MultiExec extends UniExec {
         float[] valMin = {Float.POSITIVE_INFINITY}, valMax = {Float.NEGATIVE_INFINITY};
 
         long now = nar.time();
-        long maxTime = cpu.reduce((s,max)->Math.max(max, s.time.getOpaque()), Long.MIN_VALUE);
-        if (maxTime < 0) {
-            //shift all time up
-            long shift = 1-maxTime;
-            cpu.forEach(c -> {
-                c.add(shift, cycleTimeNS/concurrency());
-            });
-        }
+
 
         cpu.forEach(s -> {
             Causable c = s.get();
@@ -175,9 +167,9 @@ abstract public class MultiExec extends UniExec {
                 }
             });
         }
-        cpu.forEach((s) -> {
-            s.add( Math.max(1, Math.round(cycleTimeNS * s.priElseZero()/pSum[0])), cycleTimeNS );
-        });
+//        cpu.forEach((s) -> {
+//            s.add( Math.max(1, Math.round(cycleTimeNS * s.priElseZero()/pSum[0])), cycleTimeNS );
+//        });
 
     }
 
@@ -240,7 +232,6 @@ abstract public class MultiExec extends UniExec {
             this.affinity = affinity;
         }
 
-
         @Override
         public void start(NAR n) {
 
@@ -277,10 +268,19 @@ abstract public class MultiExec extends UniExec {
 
             private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
 
+            TimedLink.MyTimedLink[] play = new TimedLink.MyTimedLink[0];
+
             private boolean alive = true;
 
             final SplitMix64Random rng;
             private long deadline;
+
+            private static final long minMaxExe = 10_000 /* 10uS */;
+
+            int i = 0;
+            long lastScheduled = ETERNAL;
+            private int n;
+            private long maxExe;
 
             Worker() {
                  rng = new SplitMix64Random((31L * System.identityHashCode(this)) + System.nanoTime());
@@ -344,45 +344,83 @@ abstract public class MultiExec extends UniExec {
 
             private void play(long playTime) {
 
-                int granularityDivisor = 2;
 
-                int n = cpu.items.size();
-                if (n == 0)
-                    return;
-                long until = System.nanoTime() + playTime, after;
+                long now = nar.time();
+                if (now >= lastScheduled + nar.dur()) {
+
+                    lastScheduled = now;
+
+                    n = cpu.size();
+                    if (n == 0)
+                        return;
+
+                    int granularity = 2;
+                    maxExe = playTime / (granularity);
+                    if (maxExe < minMaxExe)
+                        return;
+
+                    if (play.length != n) {
+                        //TODO more careful test for change
+                        play = new TimedLink.MyTimedLink[n];
+                        for (int i = 0; i < n; i++)
+                            play[i] = cpu.get(i).my();
+                    }
+
+
+                    //schedule
+                    long maxTime = Long.MIN_VALUE;
+                    for (TimedLink.MyTimedLink m : play) {
+                        if (m.time > maxTime)
+                            maxTime = m.time;
+                    }
+
+                    float overspend = 2;
+                    long shift = maxTime < 0 ? 1 - maxTime : 0;
+                    for (TimedLink.MyTimedLink m : play) {
+                        m.add(Math.max(1, Math.round(shift + (playTime * overspend) * m.pri())), -playTime / 2, playTime / 2);
+                    }
+
+
+                    ArrayUtils.shuffle(play, rng);
+
+                }
+
+                long start = System.nanoTime();
+                long until = start + playTime, after = start /* assigned for safety */;
                 do {
-                    TimedLink s = cpu.get(rng.nextInt(n));
-                    if (s == null)
-                        break;
+                    if (i == n) i = 0;
+                    TimedLink.MyTimedLink s = play[i++];
 
-                    long before = System.nanoTime();
-                    after = before; //safety
 
-                    Causable c = s.get();
+                    Causable c = s.causable();
 
                     if (!sleeping.get(c.scheduledID)) {
 
                         boolean singleton = c.singleton();
-                        if (!singleton || c.busy.compareAndSet(false, true)) {
-                            try {
+                        if (!singleton || c.busy.weakCompareAndSetAcquire(false, true)) {
+//                            try {
 
-                                long runtimeNS =
-                                        s.time.getOpaque() / (granularityDivisor);
-                                if (runtimeNS > 0) {
-                                    deadline = Math.min(until, before + runtimeNS);
-                                    try {
-                                        c.next(nar, this::deadline);
-                                    } catch (Throwable t) {
-                                        logger.error("{} {}", this, t);
-                                    }
-                                    after = System.nanoTime();
-                                    s.use(after - before);
+                            long runtimeNS = Math.min(s.time, maxExe);
+
+                            long before = System.nanoTime();
+
+                            after = before; //safety
+
+                            if (runtimeNS > 0) {
+                                deadline = Math.min(until, before + runtimeNS);
+                                try {
+                                    c.next(nar, this::deadline);
+                                } catch (Throwable t) {
+                                    logger.error("{} {}", this, t);
                                 }
-
-                            } finally {
-                                if (singleton)
-                                    c.busy.set(false);
+                                after = System.nanoTime();
+                                s.use(after - before);
                             }
+
+//                            } finally {
+                            if (singleton)
+                                c.busy.setRelease(false);
+//                            }
                         }
                     }
 

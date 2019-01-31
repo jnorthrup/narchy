@@ -20,7 +20,7 @@ public class AtomicArrayTensor extends AbstractArrayTensor {
 
     @Override
     public float getAt(int linearCell) {
-        return Float.intBitsToFloat( data.get(linearCell) );
+        return Float.intBitsToFloat( data.getOpaque(linearCell) );
     }
 
     @Override
@@ -32,9 +32,9 @@ public class AtomicArrayTensor extends AbstractArrayTensor {
     @Override public void add(float x, int linearCell) {
         int prev, next;
         do {
-            prev = data.get(linearCell);
+            prev = data.getAcquire(linearCell);
             next = floatToIntBits(intBitsToFloat(prev) + x); //next = floatToIntBits(f.apply(intBitsToFloat(prev), y));
-        } while(!data.compareAndSet(linearCell, prev, next));
+        } while(!data.weakCompareAndSetRelease(linearCell, prev, next));
     }
 
     @Override

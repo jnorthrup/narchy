@@ -6,8 +6,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * proxies to a delegate bag
@@ -63,6 +65,15 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
         bag.forEachKey(each);
     }
 
+    @Override
+    public Stream<Y> stream() {
+        return bag.stream();
+    }
+
+    @Override
+    public Spliterator<Y> spliterator() {
+        return bag.spliterator();
+    }
 
     @Override
     public float depressurizePct(float rate) {

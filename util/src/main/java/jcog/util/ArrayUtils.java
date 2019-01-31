@@ -19,6 +19,7 @@ package jcog.util;
 
 import jcog.data.array.IntComparator;
 import jcog.data.bit.MetalBitSet;
+import jcog.random.Rand;
 import org.eclipse.collections.api.block.function.primitive.*;
 import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 
@@ -8192,6 +8193,11 @@ public enum ArrayUtils {;
      * @since 3.6
      */
     public static void shuffle(Object[] array, Random random) {
+        for (int i = array.length; i > 1; i--) {
+            swap(array, i - 1, random.nextInt(i), 1);
+        }
+    }
+    public static void shuffle(Object[] array, Rand random) {
         for (int i = array.length; i > 1; i--) {
             swap(array, i - 1, random.nextInt(i), 1);
         }

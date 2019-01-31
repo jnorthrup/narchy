@@ -20,17 +20,13 @@ import java.util.function.Consumer;
  */
 public class UniExec extends AbstractExec {
 
-    //public final ConcurrentFastIteratingHashSet<Causable> can = new ConcurrentFastIteratingHashSet<>(new Causable[0]);
-
     static final int inputQueueCapacityPerThread = 1024;
 
     final MetalConcurrentQueue in;
 
-    public static class TimedLink extends PLink<Causable> {
+    public static final class TimedLink extends PLink<Causable> {
 
-        /** allocated time for execution;
-         * may be negative when excessive time consumed */
-        public final AtomicLong time = new AtomicLong(0), used = new AtomicLong(0);
+        public final AtomicLong used = new AtomicLong(0);
 
         /** cached value */
         transient public float value;
@@ -39,17 +35,47 @@ public class UniExec extends AbstractExec {
             super(causable, 0);
         }
 
-        void add(long t, long reserve) {
-            time.accumulateAndGet(t, (x,tt) -> Util.clamp(x + t, -reserve, reserve));
-        }
+//        void add(long t, long reserve) {
+//            time.accumulateAndGet(t, (x,tt) -> Util.clamp(x + t, -reserve, reserve));
+//        }
         void use(long t) {
-            time.addAndGet( -t );
             used.addAndGet(t);
         }
 
         public long used() {
-            long t = used.getAndSet(0);
-            return t;
+            return used.getAndSet(0);
+        }
+
+        public MyTimedLink my() { return new MyTimedLink(); }
+
+        /** thread-local view */
+        public class MyTimedLink {
+
+            /** allocated time for execution;
+             * may be negative when excessive time consumed */
+            public long time = 0;
+
+            final Causable can = TimedLink.this.get();
+
+//            public long add(long t) {
+//
+//            }
+            public void use(long t) {
+                TimedLink.this.use(t);
+                time -= t;
+            }
+
+            public float pri() {
+                return TimedLink.this.priElseZero();
+            }
+
+            public void add(long t, long min, long max) {
+                time = Util.clamp(time + t, min, max);
+            }
+
+            public Causable causable() {
+                return can;
+            }
         }
     }
 

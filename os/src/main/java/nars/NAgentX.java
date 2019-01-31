@@ -16,6 +16,7 @@ import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Valuator;
 import nars.gui.NARui;
@@ -24,6 +25,7 @@ import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Introduction;
+import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
@@ -211,7 +213,7 @@ abstract public class NAgentX extends NAgent {
                                 128 * 1024
                                 //96 * 1024
                                 //64 * 1024
-                                //8 * 1024
+                                //16 * 1024
                                 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
 //                        new HijackConceptIndex(
 //
@@ -400,7 +402,7 @@ abstract public class NAgentX extends NAgent {
                 //"equivalence.nal"
                 //  "induction.goal.nal"
         ));
-        //bd.timing = new ActionTiming(n);
+        bd.timing = new ActionTiming(n);
         //bd.termLinksPerTaskLink.set(2);
         //bd.premisesPerConcept.set(4);
 
@@ -410,9 +412,9 @@ abstract public class NAgentX extends NAgent {
                 Task::isInput,
                 //t->true,
                 16, 256);
-//        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
-//                t->!t.isInput(),
-//                3, 8);
+        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
+                t->!t.isInput(),
+                4, 16);
 //        {
 //
 //            SpaceGraph.window(
@@ -431,7 +433,7 @@ abstract public class NAgentX extends NAgent {
 
 
 //        new Inperience.Believe(16, n);
-//        new Inperience.Want(16, n);
+        new Inperience.Want(16, n);
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
 
