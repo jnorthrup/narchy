@@ -85,7 +85,7 @@ public class DDList<E> implements Iterable<E> {
         return size;
     }
 
-    /** addAt the raw item to the list, will be bagged */
+    /** add the raw item to the list, will be bagged */
     public DD<E> add(E item) {
         if (item == null) throw new RuntimeException("Bag requires non-null items");
         DD<E> d = pool.get(item, id);

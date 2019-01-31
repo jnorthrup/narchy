@@ -53,7 +53,7 @@ public interface ConjBuilder {
 //
 //                Subterms tt = x.subterms();
 //                if (tt.hasAny(CONJ)) {
-//                    //addAt any contained sequences first
+//                    //add any contained sequences first
 //                    return tt.AND(ttt ->
 //                            (ttt.op() != CONJ || Tense.dtSpecial(ttt.dt())) || add(0, ttt)
 //                    ) && tt.AND(ttt ->

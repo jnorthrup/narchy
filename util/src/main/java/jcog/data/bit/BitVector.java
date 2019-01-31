@@ -50,7 +50,7 @@ import java.util.RandomAccess;
  * <P>The only <i>caveat</i> is that sometimes the standard interface naming clashes slightly
  * with standard usage: for instance, {@link #clear(long)} will <em>not</em> set to zero
  * all bits (use {@link #fill(int) fill(0)} for that purpose), but rather will set the
- * vector length to zero. Also, {@link #add(long, int)} will not addAt logically a value at
+ * vector length to zero. Also, {@link #add(long, int)} will not add logically a value at
  * the specified index, but rather will insert a new bit with the specified value at the specified
  * position.
  * 

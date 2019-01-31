@@ -101,7 +101,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
      * @param index     The relative index (starting at 0 and going to end - start - 1) in
      *                  the sequence.
      * @param newValue  The new value of this node.
-     * @param sequencer The sequencer used to addAt the returned node to this node.
+     * @param sequencer The sequencer used to add the returned node to this node.
      * @return The reference to the child node created that's sequence starts at
      * index.
      */
@@ -124,7 +124,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
      * have had this node's reference passed to it's constructor as the parent
      * parameter. This needs to be done to keep the size calculations accurate.
      *
-     * @param child     The TrieNode to addAt as a child.
+     * @param child     The TrieNode to add as a child.
      * @param sequencer The sequencer to use to determine the place of the node in the
      *                  children PerfectHashMap.
      */

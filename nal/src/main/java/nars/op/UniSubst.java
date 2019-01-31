@@ -53,7 +53,7 @@ import static nars.term.atom.Bool.Null;
  * <sseehh> but i had since removed that
  * <patham9_> I see
  * <patham9_> yes dep-var unification needs a dep-var that was unified. while the cases where ind-var unification is used, it doesnt matter if there is a variable at all
- * <sseehh> ok that clarifies it ill addAt your notes here as comments
+ * <sseehh> ok that clarifies it ill add your notes here as comments
  * <sseehh> coding this now, carefly
  * <sseehh> carefuly
  * <patham9_> also i can't think of a case where dep-var unification would need the ability to also unify ind-vars, if you find such a case i don't see an issue with allowing it, as long as it requires one dep-var to be unified it should work
@@ -62,7 +62,7 @@ import static nars.term.atom.Bool.Null;
  * <patham9_> so its really this:
  * <patham9_> allow dep-var unify on ind-var unify, but not vice versa.
  * <patham9_> and require at least one dep-var to be unified in dep-var unification.
- * <patham9_> in principle the restriction to have at least one dep-var unified could be skipped, but the additional weaker result doesn't addAt any value to the system
+ * <patham9_> in principle the restriction to have at least one dep-var unified could be skipped, but the additional weaker result doesn't add any value to the system
  */
 public class UniSubst extends Functor implements Functor.InlineFunctor {
 

@@ -182,7 +182,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                             if (Param.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
                                 if (af.containsOrEquals(start, end)) {
-                                    //addAt = false;
+                                    //add = false;
                                     //break; //dont affect the stored graph, but return the smaller interval that was input
 
                                     return af; //return the absorbing event

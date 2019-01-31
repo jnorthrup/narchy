@@ -16,7 +16,7 @@ public class AddFunctionCommand extends Command {
 	private Variable nLine;
 
 	/**
-	 * Construct a command to addAt the supplied function to the
+	 * Construct a command to add the supplied function to the
 	 * supplied function collection.
 	 *
 	 * @param   RenderableCollection   the collection
@@ -36,7 +36,7 @@ public class AddFunctionCommand extends Command {
 	}
 
 	/**
-	 * Evaluate the function and addAt it to the collection.
+	 * Evaluate the function and add it to the collection.
 	 */
 	public void execute() {
 		renderables.add(new Renderable(f.eval(), nLine.eval()));

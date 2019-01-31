@@ -43,7 +43,7 @@ public interface TaskTable {
     }
 
     /**
-     * TODO addAt 'intersects or contains' option
+     * TODO add 'intersects or contains' option
      */
     default void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
         if (minT == ETERNAL) {

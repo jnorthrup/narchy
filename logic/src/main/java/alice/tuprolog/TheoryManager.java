@@ -361,7 +361,7 @@ public class TheoryManager {
     }
 
     /**
-     * addAt a goal eventually defined by last parsed theory.
+     * add a goal eventually defined by last parsed theory.
      */
     public /*synchronized*/ void addStartGoal(Struct g) {
         startGoalStack.push(g);

@@ -330,7 +330,7 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
 
     /**
      * Sets the value of this tuple to the scalar multiplication
-     * of tuple t1 and then adds tuple t2 (this = addAt + s*mul ).
+     * of tuple t1 and then adds tuple t2 (this = add + s*mul ).
      *
      * @param s  the scalar value
      * @param mul the tuple to be scaled and added
@@ -348,7 +348,7 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
                 s * mz + add.z);
     }
 
-    /** this = addAt + s * mul1 * mul2 */
+    /** this = add + s * mul1 * mul2 */
     public final void scaleAdd(float s, Tuple3f mul1, Tuple3f mul2, Tuple3f add) {
 
         set(s * mul1.x * mul2.x + add.x,

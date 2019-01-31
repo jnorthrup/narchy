@@ -395,7 +395,7 @@ public class Shell {
             /**
              * Adds an auto-close trigger to use on this terminal.
              *
-             * @param autoCloseTrigger Auto-close trigger to addAt to this terminal
+             * @param autoCloseTrigger Auto-close trigger to add to this terminal
              * @return Itself
              */
             public MySwingTerminalFrame addAutoCloseTrigger(TerminalEmulatorAutoCloseTrigger autoCloseTrigger) {

@@ -37,7 +37,7 @@ import spacegraph.util.math.Vector4f;
  * narrow phase.<p>
  * 
  * The cache can be empty, or hold 1, 2, 3 or 4 points. Some collision algorithms (GJK)
- * might only addAt one point at a time, updates/refreshes old contact points, and throw
+ * might only add one point at a time, updates/refreshes old contact points, and throw
  * them away if necessary (distance becomes too large).<p>
  * 
  * Reduces the cache to 4 points, when more then 4 points are added, using following rules:

@@ -38,7 +38,7 @@ public class GameSVCmds {
      * PACKET FILTERING
      * 
      * 
-     * You can addAt or remove addresses from the filter list with:
+     * You can add or remove addresses from the filter list with:
      * 
      * addip <ip> removeip <ip>
      * 

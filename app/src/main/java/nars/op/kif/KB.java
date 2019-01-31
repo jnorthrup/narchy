@@ -1520,7 +1520,7 @@ public class KB implements Serializable {
      * "<assertionResponse>...</assertionResponse>" where the body should be "
      * Formula has been added to the session database" if all went well.
      * <p>
-     * TODO: If we find a way to directly addAt assertions into opened inference
+     * TODO: If we find a way to directly add assertions into opened inference
      * engine, we can roll back to 1.111 version
      *
      * @param input The String representation of a SUO-KIF Formula.

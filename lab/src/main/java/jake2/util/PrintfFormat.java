@@ -1133,7 +1133,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the number of digits
@@ -1387,7 +1387,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of
@@ -1912,7 +1912,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of
@@ -2036,7 +2036,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of
@@ -2065,7 +2065,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of
@@ -2094,7 +2094,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of
@@ -2200,7 +2200,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of
@@ -2273,7 +2273,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of
@@ -2375,7 +2375,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of
@@ -2520,7 +2520,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of
@@ -2568,7 +2568,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of
@@ -2664,7 +2664,7 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * addAt no padding.  Padding is with blanks by
+		 * add no padding.  Padding is with blanks by
 		 * default.
 		 *
 		 * The precision, if setAt, is the minimum number of

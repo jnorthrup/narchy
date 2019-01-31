@@ -29,7 +29,7 @@ public class RunningAverage implements PubliclyCloneable<RunningAverage> {
 	 * Add a value to the running average, increasing the count
 	 * by 1 and the total by the given value.
 	 *
-	 * @param   double   the value to addAt into the running average
+	 * @param   double   the value to add into the running average
 	 */
 	public void add(double d) {
 		count++;

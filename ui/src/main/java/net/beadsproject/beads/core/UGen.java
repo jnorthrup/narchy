@@ -461,7 +461,7 @@ public abstract class UGen extends Auvent {
 
     /**
      * Adds a UGen to this UGen's dependency list, causing the dependent UGen to
-     * get updated when this one does. This is used to addAt UGens without outputs (such as {@link Clock} to the call chain. As will UGens in the regular call chain, if a dependent UGen gets killed, this UGen will remove it from its dependency list.
+     * get updated when this one does. This is used to add UGens without outputs (such as {@link Clock} to the call chain. As will UGens in the regular call chain, if a dependent UGen gets killed, this UGen will remove it from its dependency list.
      *
      * @param dependent the dependent UGen.
      */

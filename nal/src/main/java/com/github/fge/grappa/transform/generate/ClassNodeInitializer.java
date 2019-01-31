@@ -146,7 +146,7 @@ public final class ClassNodeInitializer
     public MethodVisitor visitMethod(final int access, String name,
                                      final String desc, final String signature, final String[] exceptions) {
         if ("<init>".equals(name)) {
-            // do not addAt constructors from super classes or private constructors
+            // do not add constructors from super classes or private constructors
             if (ownerClass != classNode.getParentClass())
                 return null;
             if ((access & ACC_PRIVATE) > 0)
@@ -160,7 +160,7 @@ public final class ClassNodeInitializer
             return constructor;
         }
 
-        // only addAt non-native, non-abstract methods returning Rules
+        // only add non-native, non-abstract methods returning Rules
         if (!Type.getReturnType(desc).equals(Type.getType(Rule.class)))
             return null;
         if ((access & (ACC_NATIVE | ACC_ABSTRACT)) > 0)
@@ -173,7 +173,7 @@ public final class ClassNodeInitializer
             throw new InvalidGrammarException("rule methods cannot be final");
 
         // check, whether we do not already have a method with that name and
-        // descriptor; if we do we addAt the method with a "$" prefix in order
+        // descriptor; if we do we add the method with a "$" prefix in order
         // to have it processed and be able to reference it later if we have to
         String methodKey = name + desc;
         while (classNode.getRuleMethods().containsKey(methodKey)) {

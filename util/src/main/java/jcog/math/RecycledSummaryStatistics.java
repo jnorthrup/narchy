@@ -7,7 +7,7 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 /**
  * floatSummaryStatistics in java.util can't be cleared
  * wtf
- * anyway we'll addAt stdev calcluation to this and it will
+ * anyway we'll add stdev calcluation to this and it will
  * serve as a lighter weight replacement for Apache
  * Commons Math SummaryStatistics which also is undesirable
  *

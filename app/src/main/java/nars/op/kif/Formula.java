@@ -1836,8 +1836,8 @@ public class Formula implements Comparable, Serializable {
     /** ***************************************************************
      * Makes implicit quantification explicit.
      *
-     * @param query controls whether to addAt universal or existential
-     * quantification.  If true, addAt existential.
+     * @param query controls whether to add universal or existential
+     * quantification.  If true, add existential.
      *
      * @result the formula as a String, with explicit quantification
      */

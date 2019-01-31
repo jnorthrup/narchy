@@ -77,7 +77,7 @@ public class Premise implements Comparable<Premise> {
      * patham9 project-eternalize
      * patham9 depending on 4 cases
      * patham9 https:
-     * sseehh__ ok ill addAt that in a bit
+     * sseehh__ ok ill add that in a bit
      * patham9 you need  project-eternalize-to
      * sseehh__ btw i disabled immediate eternalization entirely
      * patham9 so https:

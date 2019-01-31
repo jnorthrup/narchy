@@ -66,7 +66,7 @@ public class Conjterpolate extends Conj {
                 ;
 //
             if (suffixMatched > 0) {
-                //addAt the suffixed matched segment
+                //add the suffixed matched segment
                 for (int i = 0; i < suffixMatched; i++) {
                     if (!add(aa.get(na - 1 - i)))
                         throw new WTF();
@@ -95,7 +95,7 @@ public class Conjterpolate extends Conj {
                     }
                 }
 
-                //addAt common events
+                //add common events
                 MutableSet<LongObjectPair<Term>> common = Sets.intersect(ArrayUnenforcedSet.wrap(aa), ArrayUnenforcedSet.wrap(bb));
                 if (!common.isEmpty()) {
                     for (LongObjectPair<Term> c : common) {
@@ -264,9 +264,9 @@ public class Conjterpolate extends Conj {
 //                    if (merged != at) {
 //
 //                        if ((merged == DTERNAL || merged == XTERNAL) && (at != DTERNAL && bt != DTERNAL && at != XTERNAL && bt != XTERNAL)) {
-//                            //addAt as unique event (below)
+//                            //add as unique event (below)
 //                        } else {
-////                            boolean r = aa.remove(what, at); //remove original addAt the new merged
+////                            boolean r = aa.remove(what, at); //remove original add the new merged
 ////                            if (!r) {
 ////                                assert (r);
 ////                            }
@@ -365,7 +365,7 @@ public class Conjterpolate extends Conj {
 //                    }
 //                }
 //            });
-//addAt remaining
+//add remaining
 //                assert (!aa.isEmpty() && !bb.isEmpty());
 //
 //                ArrayHashSet<LongObjectPair<Term>> ab = new ArrayHashSet(aa.size() + bb.size());

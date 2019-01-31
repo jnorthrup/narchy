@@ -950,7 +950,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        }
 //
 //        /**
-//         * TODO addAt a Random argument so it can decide randomly whether to scan the left or right zone first.
+//         * TODO add a Random argument so it can decide randomly whether to scan the left or right zone first.
 //         * order matters because the quality limit may terminate it.
 //         * however maybe the quality can be specified in terms that are compared
 //         * only after the pair has been scanned making the order irrelevant.
@@ -971,7 +971,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                otherwise limit by the Leaf capacity */
 //            if ((!eternal && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (eternal && s <= Answer.TASK_LIMIT)) {
 //                table.forEach /*forEachOptimistic*/(this::accept);
-//                //TODO this might be faster to addAt directly then sort the results after
+//                //TODO this might be faster to add directly then sort the results after
 //                //eliminating need for the Cache map
 //                return this;
 //            }

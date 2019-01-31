@@ -88,7 +88,7 @@ public class Collision {
 
     /**
      * Compute the point states given two manifolds. The states pertain to the transition from
-     * manifold1 to manifold2. So state1 is either persist or remove while state2 is either addAt or
+     * manifold1 to manifold2. So state1 is either persist or remove while state2 is either add or
      * persist.
      *
      * @param state1

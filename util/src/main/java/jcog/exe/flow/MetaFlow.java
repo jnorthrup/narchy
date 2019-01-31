@@ -250,7 +250,7 @@ public class MetaFlow {
                 return this;
 
 
-            //TODO addAt to buffer, with codepoints etc
+            //TODO add to buffer, with codepoints etc
             writeByte('{');
             for (Object x : args) {
                 writeUTF(x.toString()); //HACK
@@ -356,7 +356,7 @@ public class MetaFlow {
 //        String CLASSES = HOME + "/classes";
 //        String LIB = HOME + "/lib";
 //
-//        // addAt the classes dir and each jar in lib to a List of URLs.
+//        // add the classes dir and each jar in lib to a List of URLs.
 //        List urls = new ArrayList();
 //        urls.addAt(new File(CLASSES).toURL());
 //        for (File f : new File(LIB).listFiles()) {

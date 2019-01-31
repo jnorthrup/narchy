@@ -31,7 +31,7 @@ enum Move {
      */
     final TowersOfHanoi.Pole from;
     /**
-     * The pole to addAt a disc to.
+     * The pole to add a disc to.
      */
     final TowersOfHanoi.Pole to;
 

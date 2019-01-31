@@ -1,7 +1,7 @@
 package jcog.data;
 
 /** extends Number with mutable methods
- * TODO addAt more mutation methods
+ * TODO add more mutation methods
  * */
 abstract public class NumberX extends Number {
 

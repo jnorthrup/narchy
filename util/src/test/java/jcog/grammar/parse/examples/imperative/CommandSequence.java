@@ -26,7 +26,7 @@ public class CommandSequence extends Command {
 	 * cascade an <code>execute</code> command.
 	 * 
 	 * @param Command
-	 *            a command to addAt to this command sequence
+	 *            a command to add to this command sequence
 	 */
 	public void addCommand(Command c) {
 		commands().add(c);

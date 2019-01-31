@@ -401,7 +401,7 @@ public class Evaluation {
 
     /**
      * gathers results from one truth setAt, ex: +1 (true)
-     * TODO addAt limit
+     * TODO add limit
      */
     public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver) {
         MyEvaluated ee = new MyEvaluated();

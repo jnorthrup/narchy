@@ -22,7 +22,7 @@
 //
 ///**
 // * Contains static methods for wiring certain kinds of graphs. The general
-// * contract of all methods is that they accept any graph and addAt edges
+// * contract of all methods is that they accept any graph and add edges
 // * as specified in the documentation.
 // */
 //public class GraphFactory {
@@ -41,7 +41,7 @@
 //     * The added connections are defined as follows. If k is even, links to
 //     * i-k/2, i-k/2+1, ..., i+k/2 are added (but not to i), thus adding an
 //     * equal number of predecessors and successors.
-//     * If k is odd, then we addAt one more successors than predecessors.
+//     * If k is odd, then we add one more successors than predecessors.
 //     * For example, for k=4: 2 predecessors, 2 successors.
 //     * For k=5: 2 predecessors, 3 successors.
 //     * For k=1: each node is linked only to its successor.

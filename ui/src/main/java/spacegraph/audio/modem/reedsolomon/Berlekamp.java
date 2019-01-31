@@ -150,7 +150,7 @@ public class Berlekamp implements Settings {
             for (j = 0; j < i; j++)
                 tmp1[j] = 0;
 
-            /* addAt into partial product */
+            /* add into partial product */
             for (j = 0; j < (Settings.kMaxDeg * 2); j++)
                 dst[j] ^= tmp1[j];
         }

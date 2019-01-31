@@ -32,7 +32,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.CharHashSet;
 import java.util.*;
 
 /**
- * Initialize terminal set from examples (tokens, ranges) and addAt significant tokens to the terminal setAt.
+ * Initialize terminal set from examples (tokens, ranges) and add significant tokens to the terminal setAt.
  * This terminal set builder always adds character classes \d \w.
  * As usual, it adds terminal sets to the predefined set in configuration file.
  * The configuration file should contain a list of constant with predefined separators.

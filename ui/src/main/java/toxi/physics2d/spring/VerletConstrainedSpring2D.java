@@ -69,7 +69,7 @@ public class VerletConstrainedSpring2D extends VerletSpring2D {
 
     protected void updateSpring(boolean applyConstraints, float am, float bm) {
         Vec2D delta = b.sub(a);
-        // addAt minute offset to avoid div-by-zero errors
+        // add minute offset to avoid div-by-zero errors
         float dist = delta.magnitude() + EPS;
         float aMassInv = 1 / am;
         float bMassInv = 1 / bm;

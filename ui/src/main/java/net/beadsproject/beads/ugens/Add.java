@@ -35,7 +35,7 @@ public class Add extends UGen {
 
     /**
      * Constructor for an Add object with a given UGen as input and another as adder.
-     * i.e., use this as quickest way to addAt two UGens together.
+     * i.e., use this as quickest way to add two UGens together.
      *
      * @param context   the AudioContext.
      * @param input     the input UGen.

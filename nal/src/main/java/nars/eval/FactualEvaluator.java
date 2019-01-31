@@ -217,7 +217,7 @@ public class FactualEvaluator extends Evaluator {
 
                         Node nx = nodeOrAdd(x);
                         if (y.equals(x)) {
-                            nx.add(Bool.True); //if x==y addAt True ?
+                            nx.add(Bool.True); //if x==y add True ?
                         } else if (y.equalsNeg(x)) {
                             nx.add(Bool.False);
                         } else {

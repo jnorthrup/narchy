@@ -181,7 +181,7 @@ public class Impiler {
                                         } else {
                                             Term f = cc.term();
                                             cc = new Conj();
-                                            cc.add(ETERNAL, f); //addAt existing accumulated sequence DTERNALly
+                                            cc.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
                                         }
                                         if (s!=n-1) {
                                             if (!cc.add(ETERNAL, Z))
@@ -752,7 +752,7 @@ public class Impiler {
 //            assert(this.whenStart !=XTERNAL && this.whenEnd!=XTERNAL);
 //        }
 //
-//        /** addAt a condition to be included in the model as a state node */
+//        /** add a condition to be included in the model as a state node */
 //        public void addAt(TaskConcept c, NAR n) {
 //
 //

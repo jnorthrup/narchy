@@ -147,7 +147,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
      * acting as the original NoveltyBag did in OpenNARS
      * using this the system can shift energy towards exploration (more conceptualization) OR
      * towards more refined truth (more selectivity in task generation with regard to relatively
-     * stable set of concepts they would addAt to)
+     * stable set of concepts they would add to)
      */
     public static abstract class AdaptiveTaskBuffer extends TaskBuffer {
 

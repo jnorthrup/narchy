@@ -26,8 +26,8 @@ Added by Roman Ponomarev (rponom@gmail.com)
 April 04, 2008
 
 TODO:
- - addAt clamping od accumulated impulse to improve stability
- - addAt conversion for ODE constraint solver
+ - add clamping od accumulated impulse to improve stability
+ - add conversion for ODE constraint solver
 */
 
 package spacegraph.space3d.phys.constraint;

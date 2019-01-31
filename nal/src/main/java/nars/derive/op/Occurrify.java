@@ -382,7 +382,7 @@ public class Occurrify extends TimeGraph {
 //        Op so = sub.op();
 //        if (so == NEG) nextNeg.addAt(sub.unneg());
 //        else if (sup == null || ((so == IMPL || so == CONJ)))
-//            nextPos.addAt(sub); //dont addAt the inner positive unneg'd target of a negation unless conj (ie. disj)
+//            nextPos.addAt(sub); //dont add the inner positive unneg'd target of a negation unless conj (ie. disj)
 //
 ////        if (so == IMPL) {
 ////            Term a = sub.sub(0);
@@ -399,7 +399,7 @@ public class Occurrify extends TimeGraph {
 //        Op so = sub.op();
 //        if (so == NEG) nextNeg.remove(sub.unneg());
 //        else if (sup == null || ((so == IMPL || so == CONJ)))
-//            nextPos.remove(sub); //dont addAt the inner positive unneg'd target of a negation unless conj (ie. disj)
+//            nextPos.remove(sub); //dont add the inner positive unneg'd target of a negation unless conj (ie. disj)
 ////
 ////        if (so == IMPL) {
 ////            Term a = sub.sub(0);
@@ -456,7 +456,7 @@ public class Occurrify extends TimeGraph {
 
     private int ttl = 0;
 
-    /** called after solution.addAt */
+    /** called after solution.add */
     private boolean eachSolution(Event solution) {
         return (ttl-- > 0);
     }

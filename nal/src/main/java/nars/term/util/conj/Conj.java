@@ -1526,7 +1526,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
             //two sequence-likes. maybe some preprocessing that can be applied here
-            //otherwise just addAt the new event
+            //otherwise just add the new event
             if (!Conj.isSeq(existing) && !Conj.isSeq(incoming))
                 return null;
 
@@ -1579,8 +1579,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      * @param incoming
      * @param eternalOrParallel * True - absorb and ignore the incoming
      *                          * Null/False - short-circuit annihilation due to contradiction
-     *                          * non-null - merged value.  if merged equals current item, as-if True returned. otherwise remove the current item, recurse and addAt the new merged one
-     *                          * null - do nothing, no conflict.  addAt x to the event time
+     *                          * non-null - merged value.  if merged equals current item, as-if True returned. otherwise remove the current item, recurse and add the new merged one
+     *                          * null - do nothing, no conflict.  add x to the event time
      * @param create            - whether this is being used for testing potential construction, or to actually create the conjunction.
      *                          can be used as a hint whether to proceed with full conjunction construction or not.
      */
@@ -2036,7 +2036,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             if (what instanceof byte[]) {
                 byte[] bWhat = (byte[]) what;
                 if (common.isEmpty()) {
-                    //addAt the first set of events
+                    //add the first set of events
                     events(bWhat, common::add);
                 } else {
                     if (common.removeIf(c -> !eventsContains(bWhat, c))) {

@@ -48,7 +48,7 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 
 	/**
 	 * TODO: This constructor optionally takes in a pointer to points. Each point is assumed to be 3 consecutive float (x,y,z), the striding defines the number of bytes between each point, in memory.
-	 * It is easier to not pass any points in the constructor, and just addAt one point at a time, using addPoint.
+	 * It is easier to not pass any points in the constructor, and just add one point at a time, using addPoint.
 	 * ConvexHullShape make an internal copy of the points.
 	 */
 	

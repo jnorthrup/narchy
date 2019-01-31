@@ -68,10 +68,10 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
         return lines.map(String::trim).filter(s -> !s.isEmpty() && !s.startsWith("//")).map(s -> {
 
             if (s.contains("..")) {
-                s = s.replace("A..", "%A.."); //addAt var pattern manually to ellipsis
-                //s = s.replace("%A..B=_", "%A..%B=_"); //addAt var pattern manually to ellipsis
-                s = s.replace("B..", "%B.."); //addAt var pattern manually to ellipsis
-                //s = s.replace("%A.._=B", "%A.._=%B"); //addAt var pattern manually to ellipsis
+                s = s.replace("A..", "%A.."); //add var pattern manually to ellipsis
+                //s = s.replace("%A..B=_", "%A..%B=_"); //add var pattern manually to ellipsis
+                s = s.replace("B..", "%B.."); //add var pattern manually to ellipsis
+                //s = s.replace("%A.._=B", "%A.._=%B"); //add var pattern manually to ellipsis
             }
 
 

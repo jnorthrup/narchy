@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 /** adapted from: https://github.com/nunomachado/nando-dql
- * TODO addAt replay buffer in subclass
+ * TODO add replay buffer in subclass
  * */
 public class DQN2 extends Agent {
 

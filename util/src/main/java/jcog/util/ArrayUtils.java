@@ -5137,8 +5137,8 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([true, false], true) = [true, false, true]
      * </pre>
      *
-     * @param array   the array to copy and addAt the element to, may be {@code null}
-     * @param element the object to addAt at the last index of the new array
+     * @param array   the array to copy and add the element to, may be {@code null}
+     * @param element the object to add at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5164,8 +5164,8 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and addAt the element to, may be {@code null}
-     * @param element the object to addAt at the last index of the new array
+     * @param array   the array to copy and add the element to, may be {@code null}
+     * @param element the object to add at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5191,8 +5191,8 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt(['1', '0'], '1') = ['1', '0', '1']
      * </pre>
      *
-     * @param array   the array to copy and addAt the element to, may be {@code null}
-     * @param element the object to addAt at the last index of the new array
+     * @param array   the array to copy and add the element to, may be {@code null}
+     * @param element the object to add at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5218,8 +5218,8 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and addAt the element to, may be {@code null}
-     * @param element the object to addAt at the last index of the new array
+     * @param array   the array to copy and add the element to, may be {@code null}
+     * @param element the object to add at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5245,8 +5245,8 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and addAt the element to, may be {@code null}
-     * @param element the object to addAt at the last index of the new array
+     * @param array   the array to copy and add the element to, may be {@code null}
+     * @param element the object to add at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5272,8 +5272,8 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and addAt the element to, may be {@code null}
-     * @param element the object to addAt at the last index of the new array
+     * @param array   the array to copy and add the element to, may be {@code null}
+     * @param element the object to add at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5299,8 +5299,8 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and addAt the element to, may be {@code null}
-     * @param element the object to addAt at the last index of the new array
+     * @param array   the array to copy and add the element to, may be {@code null}
+     * @param element the object to add at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5326,8 +5326,8 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and addAt the element to, may be {@code null}
-     * @param element the object to addAt at the last index of the new array
+     * @param array   the array to copy and add the element to, may be {@code null}
+     * @param element the object to add at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5400,7 +5400,7 @@ public enum ArrayUtils {;
      * </pre>
      *
      * @param <T>     the component type of the array
-     * @param array   the array to addAt the element to, may be {@code null}
+     * @param array   the array to add the element to, may be {@code null}
      * @param index   the position of the new object
      * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
@@ -5444,7 +5444,7 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([true, false], 1, true) = [true, true, false]
      * </pre>
      *
-     * @param array   the array to addAt the element to, may be {@code null}
+     * @param array   the array to add the element to, may be {@code null}
      * @param index   the position of the new object
      * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
@@ -5479,7 +5479,7 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt(['a', 'b', 'c'], 1, 't') = ['a', 't', 'b', 'c']
      * </pre>
      *
-     * @param array   the array to addAt the element to, may be {@code null}
+     * @param array   the array to add the element to, may be {@code null}
      * @param index   the position of the new object
      * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
@@ -5514,7 +5514,7 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([2, 6, 3], 2, 1)   = [2, 6, 1, 3]
      * </pre>
      *
-     * @param array   the array to addAt the element to, may be {@code null}
+     * @param array   the array to add the element to, may be {@code null}
      * @param index   the position of the new object
      * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
@@ -5549,7 +5549,7 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([2, 6, 3], 2, 1)   = [2, 6, 1, 3]
      * </pre>
      *
-     * @param array   the array to addAt the element to, may be {@code null}
+     * @param array   the array to add the element to, may be {@code null}
      * @param index   the position of the new object
      * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
@@ -5584,7 +5584,7 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([2, 6, 3], 2, 1)   = [2, 6, 1, 3]
      * </pre>
      *
-     * @param array   the array to addAt the element to, may be {@code null}
+     * @param array   the array to add the element to, may be {@code null}
      * @param index   the position of the new object
      * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
@@ -5619,7 +5619,7 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([2L, 6L, 3L], 2, 1L)   = [2L, 6L, 1L, 3L]
      * </pre>
      *
-     * @param array   the array to addAt the element to, may be {@code null}
+     * @param array   the array to add the element to, may be {@code null}
      * @param index   the position of the new object
      * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
@@ -5654,7 +5654,7 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([2.9f, 6.0f, 0.3f], 2, 1.0f)   = [2.9f, 6.0f, 1.0f, 0.3f]
      * </pre>
      *
-     * @param array   the array to addAt the element to, may be {@code null}
+     * @param array   the array to add the element to, may be {@code null}
      * @param index   the position of the new object
      * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
@@ -5689,7 +5689,7 @@ public enum ArrayUtils {;
      * ArrayUtils.addAt([2.9, 6.0, 0.3], 2, 1.0)    = [2.9, 6.0, 1.0, 0.3]
      * </pre>
      *
-     * @param array   the array to addAt the element to, may be {@code null}
+     * @param array   the array to add the element to, may be {@code null}
      * @param index   the position of the new object
      * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
@@ -5709,7 +5709,7 @@ public enum ArrayUtils {;
      * The last parameter is the class, which may not equal element.getClass
      * for primitives.
      *
-     * @param array   the array to addAt the element to, may be {@code null}
+     * @param array   the array to add the element to, may be {@code null}
      * @param index   the position of the new object
      * @param element the object to addAt
      * @param clss    the type of the element being added

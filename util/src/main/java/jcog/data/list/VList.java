@@ -133,7 +133,7 @@ public final class VList<T> extends AbstractList<T> {
      */
     @Override
     public boolean add(T elem) {
-    /* If no free space exists, addAt a new element to the list. */
+    /* If no free space exists, add a new element to the list. */
         if (mHead == null || mHead.mFreeSpace == 0)
             mHead = new VListCell<>(mHead == null ? 1 : mHead.mElems.length * 2, mHead);
 

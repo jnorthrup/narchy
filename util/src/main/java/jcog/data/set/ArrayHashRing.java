@@ -1,7 +1,7 @@
 package jcog.data.set;
 
 /** fixed capacity ArrayHashSet. new items remove oldest item. combination of Set and Deque
- * TODO addAt ability to addAt/remove from both ends, like Deque<>
+ * TODO add ability to addAt/remove from both ends, like Deque<>
  * TODO use actual ring-buffer instead of List<> for faster removal from the start */
 public class ArrayHashRing<X> extends ArrayHashSet<X> {
 

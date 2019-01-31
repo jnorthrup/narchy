@@ -44,7 +44,7 @@ public class pmove_state_t {
 	/** each unit = 8 ms. */
 	public byte pm_time; 
 	public short gravity;
-	/** addAt to command angles to get view direction. */
+	/** add to command angles to get view direction. */
 	public final short[] delta_angles = { 0, 0, 0 };
 	/** changed by spawns, rotating objects, and teleporters.*/
 	

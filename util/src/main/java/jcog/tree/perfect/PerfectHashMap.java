@@ -96,7 +96,7 @@ public class PerfectHashMap<T>
     * @param key
     *        The key to use that determines placement of the value.
     * @param value
-    *        The value to addAt to the map.
+    *        The value to add to the map.
     * @return The previous value with the same key, or null if non existed.
     */
    public T put( int key, T value )
@@ -143,7 +143,7 @@ public class PerfectHashMap<T>
     * Adds a given number of spaces to the beginning of the underlying table.
     * 
     * @param spaces
-    *        The number of spaces to addAt to the beginning of the table.
+    *        The number of spaces to add to the beginning of the table.
     */
    private void prepend( int spaces )
    {

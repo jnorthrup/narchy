@@ -227,7 +227,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
         @Override
         protected boolean tasklink() {
-            return false; //tasklink addAt procedure is added manually in SensorBeliefTables
+            return false; //tasklink add procedure is added manually in SensorBeliefTables
         }
 
 //        @Override

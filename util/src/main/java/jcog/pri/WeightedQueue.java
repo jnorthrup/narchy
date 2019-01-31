@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * always a good idea to memoize weight so it doesn't throw.
  *
  * In the interests of not writing unit tests for methods no one uses there is a lot of UnsupportedOperationException.
- * If you need them then addAt them and addAt proper unit tests to WeightedQueueTest. "Good" tests. 100% coverage including
+ * If you need them then add them and add proper unit tests to WeightedQueueTest. "Good" tests. 100% coverage including
  * exception paths and resource leaks.
  **/
 public class WeightedQueue<T> implements BlockingQueue<T>

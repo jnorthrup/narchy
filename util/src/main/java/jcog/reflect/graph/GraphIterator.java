@@ -675,7 +675,7 @@
 //        if( fetchFinishSended )return;
 //        fetchFinishSended = true;
 //        addEvent(new GraphIteratorEvent.FetchFinish<>(this));
-//        logFiner( "addAt FetchFinish event into event queue" );
+//        logFiner( "add FetchFinish event into event queue" );
 //    }
 //    //</editor-fold>
 //

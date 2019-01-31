@@ -28,7 +28,7 @@ public class Springing extends Container {
 //    PropChangeListener       _pcl = pce -> childPropChange(pce);
     
 /**
- * Override to addAt layout info.
+ * Override to add layout info.
  */
 public void addChild(Surface aChild, int anIndex)
 {

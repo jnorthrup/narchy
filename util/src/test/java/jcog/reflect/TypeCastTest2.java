@@ -40,7 +40,7 @@ public class TypeCastTest2 {
     
 
 
-    // TODO addAt test methods here.
+    // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
     // @Test

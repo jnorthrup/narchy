@@ -31,7 +31,7 @@ import java.awt.image.BufferedImage;
  *    gameplay mechanic)
  *
  * Pong: Requires ball, collision detection, AI for opponent
- * Break-Out: Requires addAt and remove item logic
+ * Break-Out: Requires add and remove item logic
  * Space Invaders: Requires image of alien, or definition of "blocks"
  *    layout. Requires Alien movement logic
  * Asteroids: either requires line-drawing or image of asteroid, and

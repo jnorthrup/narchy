@@ -210,11 +210,11 @@ public class PatternIndex extends MapConceptIndex {
                     Term x = subterms.sub(0);
                     Term y = subterms.sub(1);
                     if (x instanceof Ellipsislike) {
-                        //raw ellipsis, the conjunction got removed somewhere. HACK re-addAt it
+                        //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
                         x = CONJ.the(x);
                     }
                     if (y instanceof Ellipsislike) {
-                        //raw ellipsis, the conjunction got removed somewhere. HACK re-addAt it
+                        //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
                         y = CONJ.the(y);
                     }
                     subterms = new BiSubterm(x, y); //avoid interning

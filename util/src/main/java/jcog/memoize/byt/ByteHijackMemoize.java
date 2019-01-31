@@ -43,7 +43,7 @@ public class ByteHijackMemoize<X extends ByteKey,Y> extends HijackMemoize<X,Y> {
     }
 
     public Huffman buildCodec(Huffman h) {
-        //TODO addAt incremental codec building from multiple ByteHijackMemoize's
+        //TODO add incremental codec building from multiple ByteHijackMemoize's
         return h;
     }
 

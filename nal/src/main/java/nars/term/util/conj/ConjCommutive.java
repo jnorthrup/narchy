@@ -226,12 +226,12 @@ public enum ConjCommutive {;
         long sdt = dt == DTERNAL ? ETERNAL : 0;
         //try {
 
-        //iterate in reverse order to addAt the smaller (by volume) items first
+        //iterate in reverse order to add the smaller (by volume) items first
 
         if (seq != null) {
             ConjBuilder c = new Conj(u.length);
-            //addAt the non-conj terms at ETERNAL last.
-            //then if the conjOther is a sequence, addAt it at zero
+            //add the non-conj terms at ETERNAL last.
+            //then if the conjOther is a sequence, add it at zero
             for (int i = u.length - 1; i >= 0; i--) {
                 if (seq.get(i)) {
                     if (!c.add(sdt, u[i]))

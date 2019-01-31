@@ -149,7 +149,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     /**
      * If the given object is not associated with a node yet, adds a new
      * node. Returns the index of the node. If the graph was constructed to have
-     * a specific size, it is not possible to addAt nodes and therefore calling
+     * a specific size, it is not possible to add nodes and therefore calling
      * this method will throw an exception.
      *
      * @throws NullPointerException if the size was specified at construction time.

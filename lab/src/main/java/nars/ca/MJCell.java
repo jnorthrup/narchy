@@ -16,7 +16,7 @@ import java.awt.*;
  * 1.25, 04.07.2000
  *  - Rules definitions were extracted from the compiled applet
  *    and are now specified in an external text file. It's no longer necessary to
- *    recompile the applet just in order to addAt a new rule.
+ *    recompile the applet just in order to add a new rule.
  *  - New rules:
  *    Generations: Burst, BurstII, Circuit_Genesis, BelZhab Sediment,
  *    FlamingStarbows, Glisserati, Rake, Snake Cyclic CA: Cubism, LavaLamp,

@@ -109,12 +109,12 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     private JButton addButton(String name, JPanel panel, boolean state) {
         /** create the button */
         JButton b = new JButton(name);
-        /** addAt action handler */
+        /** add action handler */
         b.addActionListener(this);
         /** set state */
         b.setEnabled(state);
         if (panel != null)
-        /** addAt it to the container */
+        /** add it to the container */
             panel.add(b);
         /** return the button */
         return b;
@@ -135,7 +135,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         } catch (Exception e) {
             return;
         }
-        /** addAt the meta event listener */
+        /** add the meta event listener */
         sequencer.addMetaEventListener(this);
     }
 
@@ -194,7 +194,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     }
 
     /**
-     * Attemps to addAt a sound file.
+     * Attemps to add a sound file.
      *
      * @param file file object to addAt
      */
@@ -204,7 +204,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
         if (s.endsWith(".au") || s.endsWith(".rmf") ||
                 s.endsWith(".mid") || s.endsWith(".wav") ||
                 s.endsWith(".aif") || s.endsWith(".aiff")) {
-            /** addAt the file */
+            /** add the file */
             sounds.add(file);
         }
     }

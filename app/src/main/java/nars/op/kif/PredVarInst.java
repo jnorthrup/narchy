@@ -34,7 +34,7 @@ public class PredVarInst {
      * @param input formula
      * @param types type condition extracted from domain expression
      *
-     * @return addAt explicit type condition into types
+     * @return add explicit type condition into types
      */
     private static HashMap<String,HashSet<String>> addExplicitTypes(KB kb, Formula input, HashMap<String,HashSet<String>> types) {
         

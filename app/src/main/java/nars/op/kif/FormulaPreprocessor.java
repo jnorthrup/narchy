@@ -213,9 +213,9 @@ public class FormulaPreprocessor {
     }
 
     /** ***************************************************************
-     * Recursively addAt sortals for existentially quantified variables
+     * Recursively add sortals for existentially quantified variables
      *
-     * @param kb The KB used to addAt type restrictions.
+     * @param kb The KB used to add type restrictions.
      * @param f The formula in KIF syntax
      * @param sb A StringBuilder used to store the new formula with sortals
      */
@@ -534,7 +534,7 @@ public class FormulaPreprocessor {
     }
 
     /** ***************************************************************
-     * utility method to addAt a String element to a HashMap of String
+     * utility method to add a String element to a HashMap of String
      * keys and a value of an HashSet of Strings
      */
     private static void addToMap(HashMap<String,HashSet<String>> map, String key, String element) {

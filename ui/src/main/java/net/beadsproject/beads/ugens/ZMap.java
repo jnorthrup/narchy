@@ -199,7 +199,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
     }
 
     /**
-     * Returns ZMap to its default setting: multiply by 1, addAt 0 (mapping [0,1]
+     * Returns ZMap to its default setting: multiply by 1, add 0 (mapping [0,1]
      * to [0,1] with no clipping).
      *
      * @return This ZMap instance.
@@ -220,7 +220,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
      * Sets the multiplier and the shift.
      *
      * @param multiplier The value to multiply by the incoming signal.
-     * @param shift      The value to then addAt to the result.
+     * @param shift      The value to then add to the result.
      * @return This ZMap instance.
      */
     private ZMap multiplyThenAdd(float multiplier, float shift) {
@@ -238,7 +238,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
      * A convenience method; specifies a linear map by adding first, then
      * multiplying.
      *
-     * @param preshift   The value to first addAt to the signal.
+     * @param preshift   The value to first add to the signal.
      * @param multiplier The value then multiplied by the result.
      * @return This ZMap instance.
      */
@@ -276,7 +276,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
     }
 
     /**
-     * Sets the value to addAt to the signal after it has been multiplied by the
+     * Sets the value to add to the signal after it has been multiplied by the
      * multiplier.
      *
      * @param shift The amount to addAt.
