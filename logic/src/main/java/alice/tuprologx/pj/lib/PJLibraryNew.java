@@ -77,7 +77,7 @@ public class PJLibraryNew extends OOLibrary {
         "new_object(ClassName,Args,Id):- !, java_object_std(ClassName, Args, Id).\n" +
 		"Obj <- What :- java_call1(Obj,What,Res), Res \\== false.\n" +
 		"Obj <- What returns Res :- java_call1(Obj,What,Res).\n" +
-        "java_call1('.'(C,F), setAt(X), Res):-lookup_field(C, F, Field), java_access(C, F, Field, setAt(X), Res).\n" +
+        "java_call1('.'(C,F), set(X), Res):-lookup_field(C, F, Field), java_access(C, F, Field, set(X), Res).\n" +
         "java_call1('.'(C,F), get(X), Res):-lookup_field(C, F, Field), java_access(C, F, Field, get(X), Res).\n" +
         "java_call1(Obj, What, Res):-java_call2(Obj, What, Res).\n" +
         "java_call2(Obj, What, Res):-lookup_method(Obj, What, Meth), not prolog_method(Meth), !, java_method_call(Obj, Meth, What, Res, false, false).\n" +

@@ -12,7 +12,7 @@ import jcog.grammar.parse.PubliclyCloneable;
 
 /**
  * Objects of this class maintain a running average. Each
- * number that is added with the <code>addAt</code> method
+ * number that is added with the <code>add</code> method
  * increases the count by 1, and the total by the amount
  * added.
  * 

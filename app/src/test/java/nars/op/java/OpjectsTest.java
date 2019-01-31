@@ -63,7 +63,7 @@ public class OpjectsTest {
         n.onTask(sb::append);
 
 
-        n.input("setAt(x,1)! :|:");
+        n.input("set(x,1)! :|:");
 
         n.run(dur);
 
@@ -147,7 +147,7 @@ public class OpjectsTest {
         String s = sb.toString();
         System.out.println("log:\n" + s);
         assertTrue(s.contains("get(y,0)."));
-        assertTrue(s.contains("setAt(y,1)."));
+        assertTrue(s.contains("set(y,1)."));
     }
 
     @Test

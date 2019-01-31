@@ -1142,7 +1142,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                                 arraycopy(b, i + 1, b, i, b.length - 1 - i);
                                 i--; //compactify
                             } else
-                                b[i] = 0; //erase, continue comparing. the result remains eligible for addAt
+                                b[i] = 0; //erase, continue comparing. the result remains eligible for add
 
                             return add(at, result);
                         }

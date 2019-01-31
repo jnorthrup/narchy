@@ -137,7 +137,7 @@ public class JavaLibraryTestCase {
         assertTrue(info.isSuccess());
 		assertEquals(0, Integer.parseInt(info.getVarValue("Res").toString()));
 		
-		theory = "demo_2(Value, NewValue) :- set_classpath([" + paths + "]), class('TestStaticClass').'id' <- setAt(Value), \n" +
+		theory = "demo_2(Value, NewValue) :- set_classpath([" + paths + "]), class('TestStaticClass').'id' <- set(Value), \n" +
 				"class('TestStaticClass').'id' <- get(NewValue).";
 		prolog.setTheory(new Theory(theory));
 		info = prolog.solve("demo_2(5, Val).");
