@@ -24,7 +24,7 @@ import java.awt.event.KeyListener;
 
 /** A crude keyboard controller. The following keys are mapped:
  *    R - reset
- *    Q - quit
+ *    Q - stop
  *    space - fire
  *    ASWD, arrow keys - joystick movement
  *

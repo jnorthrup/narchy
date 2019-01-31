@@ -451,7 +451,7 @@ public final class Com
 
 	public static void Quit()
 	{
-		SV_MAIN.SV_Shutdown("Server quit\n", false);
+		SV_MAIN.SV_Shutdown("Server stop\n", false);
 		CL.Shutdown();
 
 		if (Globals.logfile != null)

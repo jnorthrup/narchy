@@ -301,7 +301,7 @@ public class NEWTWin {
         animCtrl.fpsCounter.tickFPS();
         if( shouldQuit ) {
             deactivateGLContext();
-            Cbuf.ExecuteText(Defines.EXEC_APPEND, "quit");
+            Cbuf.ExecuteText(Defines.EXEC_APPEND, "stop");
         } else if( shouldReparent  ) {
             shouldReparent  = false;
             deactivateGLContext();
@@ -326,7 +326,7 @@ public class NEWTWin {
     public final void checkQuit() {
         if( shouldQuit ) {
             deactivateGLContext();
-            Cbuf.ExecuteText(Defines.EXEC_APPEND, "quit");
+            Cbuf.ExecuteText(Defines.EXEC_APPEND, "stop");
         }
     }
     

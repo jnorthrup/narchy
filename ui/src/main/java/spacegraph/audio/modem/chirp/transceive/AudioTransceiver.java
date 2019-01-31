@@ -1,13 +1,13 @@
-package spacegraph.audio.transceive;
+package spacegraph.audio.modem.chirp.transceive;
 
 
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
-import spacegraph.audio.transceive.reedsolomon.GenericGF;
-import spacegraph.audio.transceive.reedsolomon.ReedSolomonDecoder;
-import spacegraph.audio.transceive.reedsolomon.ReedSolomonEncoder;
-import spacegraph.audio.transceive.util.AudioEvent;
-import spacegraph.audio.transceive.util.AudioFormat;
-import spacegraph.audio.transceive.util.PitchProcessor;
+import spacegraph.audio.modem.chirp.transceive.reedsolomon.GenericGF;
+import spacegraph.audio.modem.chirp.transceive.reedsolomon.ReedSolomonDecoder;
+import spacegraph.audio.modem.chirp.transceive.reedsolomon.ReedSolomonEncoder;
+import spacegraph.audio.modem.chirp.transceive.util.AudioEvent;
+import spacegraph.audio.modem.chirp.transceive.util.AudioFormat;
+import spacegraph.audio.modem.chirp.transceive.util.PitchProcessor;
 
 import java.util.Arrays;
 import java.util.Collections;

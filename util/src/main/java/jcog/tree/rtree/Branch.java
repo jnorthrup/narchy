@@ -22,7 +22,6 @@ package jcog.tree.rtree;
 
 
 import com.google.common.base.Joiner;
-import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
@@ -224,38 +223,25 @@ public class Branch<X> extends AbstractNode<X> {
                             return data[0]; //reduce to only leaf
                         default: {
                             //TODO possibly rebalance
-//                            if (cBefore == cAfter) {
-//                                if (!cBeforeBounds.equals(cAfter.bounds())) {
-//                                    updateBounds();
+
+//                                if (Util.and((Node z) -> z instanceof Leaf, data)) {
+//                                    int values = Util.sum((ToIntFunction<Node>) Node::size, data);
+//                                    if (values <= model.max) {
+//                                        Leaf<X> compacted = model.newLeaf();
+//                                        int p = 0;
+//                                        for (int k = 0, dataLength = size(); k < dataLength; k++) {
+//                                            Node<X> z = data[k];
+//                                            X[] data1 = ((Leaf<X>) z).data;
+//                                            for (int j = 0, data1Length = z.size(); j < data1Length; j++) {
+//                                                X zz = data1[j];
+//                                                compacted.data[p++] = zz;
+//                                                compacted.grow(model.bounds(zz));
+//                                            }
+//                                        }
+//                                        compacted.size = (short) p;
+//                                        return compacted;
+//                                    }
 //                                }
-//                                return this;
-//                            } else {
-//                                //rebalance
-//                                final Node<X>[] b = new Node[]{model.newLeaf()};
-//                                streamValues().forEach(v -> {
-//                                    Node<X> bc = b[0].add(v, true, model, new boolean[1]);
-//                                    if (bc != null)
-//                                        b[0] = bc;
-//                                });
-//                                return b[0];
-                                if (Util.and((Node z) -> z instanceof Leaf, data)) {
-                                    int values = Util.sum((Node z) -> z.size(), data);
-                                    if (values <= model.max) {
-                                        Leaf<X> compacted = model.newLeaf();
-                                        int p = 0;
-                                        for (int k = 0, dataLength = size(); k < dataLength; k++) {
-                                            Node<X> z = data[k];
-                                            X[] data1 = ((Leaf<X>) z).data;
-                                            for (int j = 0, data1Length = z.size(); j < data1Length; j++) {
-                                                X zz = data1[j];
-                                                compacted.data[p++] = zz;
-                                                compacted.grow(model.bounds(zz));
-                                            }
-                                        }
-                                        compacted.size = (short) p;
-                                        return compacted;
-                                    }
-                                }
 
                                 updateBounds();
                                 return this;

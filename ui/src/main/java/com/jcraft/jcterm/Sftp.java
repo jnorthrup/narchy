@@ -54,7 +54,7 @@ class Sftp implements Runnable {
             "pwd                           Display remote working directory",
             "stat path                     Display info about path\n"
                     + "exit                          Quit sftp",
-            "quit                          Quit sftp",
+            "stop                          Quit sftp",
             "rename oldpath newpath        Rename remote file",
             "rmdir path                    Remove remote directory",
             "rm path                       Delete remote file",
@@ -165,7 +165,7 @@ class Sftp implements Runnable {
                     continue;
 
                 String cmd = (String) cmds.elementAt(0);
-                if (cmd.equals("quit")) {
+                if (cmd.equals("stop")) {
                     c.quit();
                     break;
                 }

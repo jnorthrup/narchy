@@ -21,7 +21,7 @@
  *
  */
 
-package spacegraph.audio.transceive.util;
+package spacegraph.audio.modem.chirp.transceive.util;
 
 
 /**

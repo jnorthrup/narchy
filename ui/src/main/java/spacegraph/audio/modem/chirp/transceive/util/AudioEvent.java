@@ -3,7 +3,7 @@
 // (powered by Fernflower decompiler)
 //
 
-package spacegraph.audio.transceive.util;
+package spacegraph.audio.modem.chirp.transceive.util;
 
 //import be.tarsos.dsp.io.TarsosDSPAudioFloatConverter;
 

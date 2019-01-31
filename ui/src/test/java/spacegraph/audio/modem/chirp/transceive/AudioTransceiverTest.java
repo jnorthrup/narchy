@@ -1,8 +1,8 @@
-package spacegraph.audio.transceive;
+package spacegraph.audio.modem.chirp.transceive;
 
 import jcog.data.list.FasterList;
 import org.junit.jupiter.api.Test;
-import spacegraph.audio.transceive.util.AudioEvent;
+import spacegraph.audio.modem.chirp.transceive.util.AudioEvent;
 
 import java.util.List;
 

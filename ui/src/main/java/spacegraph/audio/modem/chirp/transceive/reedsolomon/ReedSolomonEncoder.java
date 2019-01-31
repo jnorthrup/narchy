@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package spacegraph.audio.transceive.reedsolomon;
+package spacegraph.audio.modem.chirp.transceive.reedsolomon;
 
 import java.util.ArrayList;
 import java.util.List;

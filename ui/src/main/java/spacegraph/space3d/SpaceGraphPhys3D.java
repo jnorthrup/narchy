@@ -409,7 +409,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
 				drawString(s, Math.round(xOffset), Math.round(yStart), TEXT_COLOR);
 				yStart += yIncr;
 
-				s = "q to quit";
+				s = "q to stop";
 				drawString(s, Math.round(xOffset), Math.round(yStart), TEXT_COLOR);
 				yStart += yIncr;
 

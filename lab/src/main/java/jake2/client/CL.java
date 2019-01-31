@@ -299,7 +299,7 @@ public final class CL {
 
             if (Globals.server_state != 0) {
                 
-                SV_MAIN.SV_Shutdown("Server quit\n", false);
+                SV_MAIN.SV_Shutdown("Server stop\n", false);
             } else {
                 Disconnect();
             }
@@ -590,7 +590,7 @@ public final class CL {
      * Shutdown
      * 
      * FIXME: this is a callback from Sys_Quit and Com_Error. It would be better
-     * to run quit through here before the final handoff to the sys code.
+     * to run stop through here before the final handoff to the sys code.
      */
     static boolean isdown;
 
@@ -1365,7 +1365,7 @@ public final class CL {
         Cmd.AddCommand("record", Record_f);
         Cmd.AddCommand("stop", Stop_f);
 
-        Cmd.AddCommand("quit", Quit_f);
+        Cmd.AddCommand("stop", Quit_f);
 
         Cmd.AddCommand("connect", Connect_f);
         Cmd.AddCommand("reconnect", Reconnect_f);

@@ -4361,10 +4361,10 @@ public final class Menu extends Key {
     static void Quit_Draw() {
         int w, h;
         Dimension d = new Dimension();
-        re.DrawGetPicSize(d, "quit");
+        re.DrawGetPicSize(d, "stop");
         w = d.getWidth();
         h = d.getHeight();
-        re.DrawPic((viddef.getWidth() - w) / 2, (viddef.getHeight() - h) / 2, "quit");
+        re.DrawPic((viddef.getWidth() - w) / 2, (viddef.getHeight() - h) / 2, "stop");
     }
 
     static final xcommand_t Menu_Quit = new xcommand_t() {
