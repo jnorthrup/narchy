@@ -10,8 +10,13 @@ public class IntSlider extends FloatSlider {
 
     public IntSlider(IntRange x) {
         this(x.intValue(), x.min, x.max);
-        input = x::floatValue; //x::floatValue;
-        slider.on((SliderModel s, float v) -> x.set(v));
+        on(x::set);
+        input = x;
+    }
+
+    public IntSlider(String label, IntRange x) {
+        this(x);
+        this.labelText = label;
     }
 
 //    protected FloatSliderModel slider(float v, float min, float max) {

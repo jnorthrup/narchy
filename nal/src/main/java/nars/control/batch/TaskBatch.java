@@ -1,7 +1,7 @@
 package nars.control.batch;
 
+import jcog.pri.PriBuffer;
 import jcog.pri.op.PriMerge;
-import nars.attention.PriBuffer;
 
 /**
  *bounded-explosive semi-weighted task batching

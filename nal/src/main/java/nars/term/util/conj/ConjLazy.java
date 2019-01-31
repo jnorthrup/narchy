@@ -1,5 +1,6 @@
 package nars.term.util.conj;
 
+import jcog.data.set.LongObjectArraySet;
 import nars.term.Term;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;

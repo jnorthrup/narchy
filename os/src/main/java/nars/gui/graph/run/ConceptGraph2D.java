@@ -245,7 +245,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 case QUEST: if (!quest) return; break;
             }
 
-            Term targetTerm = l.term().concept();
+            Term targetTerm = l.target().concept();
 //                if (targetTerm.equals(sourceTerm.target()))
 //                    return; //ignore
 

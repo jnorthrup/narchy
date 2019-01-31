@@ -12,6 +12,9 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldUpdater<T> {
     private static final Unsafe U = Util.unsafe;
     private final long offset;
+//    private final VarHandle INT;
+
+
     //private final Class<?> cclass;
 //        private final Class<T> tclass;
 
@@ -21,6 +24,7 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
         try {
             field = AccessController.doPrivileged((PrivilegedExceptionAction<Field>)
                     () -> tclass.getDeclaredField(fieldName));
+            field.trySetAccessible();
 //                modifiers = field.getModifiers();
             ////ReflectUtil.ensureMemberAccess(caller, tclass, (Object)null, modifiers);
             //ClassLoader cl = tclass.getClassLoader();
@@ -43,6 +47,18 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
 //                this.tclass = tclass;
         this.offset = U.objectFieldOffset(field);
 //            }
+
+        //    private static final VarHandle INT;
+
+
+//        try {
+//            INT = MethodHandles.privateLookupIn(tclass, MethodHandles.lookup()).in(tclass)
+//                    .unreflectVarHandle(field);
+//                //.findVarHandle(tclass,fieldName,int.class);
+//        } catch (Exception e) {
+//            throw new WTF(e);
+//        }
+
     }
 
 
@@ -62,6 +78,7 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
     public final boolean weakCompareAndSet(T obj, int expect, int update) {
         //return U.compareAndSwapInt(obj, this.offset, expect, update);
         return compareAndSet(obj, expect, update);
+        //return INT.weakCompareAndSet(obj, expect, update);
     }
 
     public final void set(T obj, int newValue) {
@@ -79,7 +96,7 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
 
     public final int getOpaque(T obj) {
         return U.getIntVolatile(obj, this.offset);
-        //return U.getIntOpaque(obj, this.offset);
+        //return (int) INT.getOpaque(obj);
     }
 
     public final int getAndSet(T obj, int newValue) {

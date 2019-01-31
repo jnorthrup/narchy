@@ -5,16 +5,15 @@ import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.OverflowDistributor;
+import jcog.pri.PriBuffer;
 import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
-import nars.NAR;
 import nars.Task;
-import nars.attention.BufferedBag;
-import nars.attention.PriBuffer;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
 import nars.exe.Exec;
@@ -364,7 +363,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                         int nEach = (int) Math.ceil(((float) n) / (c - 1));
                         for (int i = 0; i < c && n > 0; i++) {
 
-                            ((Exec) target)/*HACK*/.input((Consumer<NAR>) (nn) -> {
+                            ((Exec) target)/*HACK*/.input((nn) -> {
 
                                 FasterList batch = BagTaskBuffer.batch.get();
                                 Bag<ITask, ITask> t = tasks;
@@ -373,7 +372,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                                     t = ((BufferedBag)t).bag;
 
                                 if (t instanceof ArrayBag) {
-                                    ((ArrayBag) t).popBatch(nEach, batch);
+                                    ((ArrayBag) t).popBatch(nEach, batch::add);
                                 } else {
                                     t.pop(null, nEach, batch::add); //per item.. may be slow
                                 }

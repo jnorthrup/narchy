@@ -1,9 +1,6 @@
 package nars.concept.util;
 
-import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.PLinkArrayBag;
 import nars.Op;
-import nars.Param;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.link.TemplateTermLinker;

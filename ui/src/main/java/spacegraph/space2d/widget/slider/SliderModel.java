@@ -12,15 +12,15 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * abstract 1D slider/scrollbar
  */
 public class SliderModel extends Surface {
 
 
-    /** dead-zone at the edges to latch min/max values */
+    /**
+     * dead-zone at the edges to latch min/max values
+     */
     static private final float margin =
             0.0001f;
     public static final int BUTTON = 0;
@@ -29,13 +29,13 @@ public class SliderModel extends Surface {
     @Nullable
     private ObjectFloatProcedure<SliderModel> change;
 
-    /** true when asynch change handler is awaiting execution */
-    final AtomicBoolean changing = new AtomicBoolean(false);
+
 
     private volatile float p;
 
     public SliderModel() {
     }
+
     public SliderModel(float v) {
         setValue(v);
     }
@@ -56,7 +56,9 @@ public class SliderModel extends Surface {
     public interface SliderUI {
         void paint(float p, GL2 gl);
 
-        /** resolves the 2d hit point to a 1d slider value */
+        /**
+         * resolves the 2d hit point to a 1d slider value
+         */
         float p(v2 hitPoint);
 
     }
@@ -71,7 +73,8 @@ public class SliderModel extends Surface {
     }
 
     final FingerDragging drag = new FingerDragging(BUTTON) {
-        @Override protected boolean drag(Finger f) {
+        @Override
+        protected boolean drag(Finger f) {
             setPoint(f);
             return true;
         }
@@ -87,7 +90,7 @@ public class SliderModel extends Surface {
             return this;
         }
 
-        return null; 
+        return null;
     }
 
     private void setPoint(Finger f) {
@@ -108,20 +111,15 @@ public class SliderModel extends Surface {
     }
 
     protected void onChanged() {
-        if (change!=null) {
-            if (changing.compareAndSet(false,true)) {
-                Exe.invokeLater(() -> {
-                    try {
-                        ObjectFloatProcedure<SliderModel> c = this.change;
-                        if (c != null) {
-                            c.value(this, value());
-                        }
-                    } finally {
-                        changing.set(false);
-                    }
-                });
-            }
+        if (change != null) {
+            Exe.invokeLater(this::_onChanged);
         }
+    }
+
+    private void _onChanged() {
+        ObjectFloatProcedure<SliderModel> c = this.change;
+        if (c != null)
+            c.value(this, value());
     }
 
 
@@ -138,7 +136,9 @@ public class SliderModel extends Surface {
         return v(p);
     }
 
-    /** normalize: gets the output value given the proportion (0..1.0) */
+    /**
+     * normalize: gets the output value given the proportion (0..1.0)
+     */
     float v(float p) {
         return p;
     }
@@ -153,6 +153,7 @@ public class SliderModel extends Surface {
     private static float pHorizontal(v2 hitPoint) {
         return pTarget(hitPoint.x);
     }
+
     private static float pVertical(v2 hitPoint) {
         return pTarget(1 - hitPoint.y);
     }
@@ -166,25 +167,26 @@ public class SliderModel extends Surface {
             return x;
     }
 
-    /** resulting value is lower aligned */
+    /**
+     * resulting value is lower aligned
+     */
     private static float pTarget(float x, float knob) {
-        return Util.clamp(pTarget(x) - knob/2, 0, 1-knob);
+        return Util.clamp(pTarget(x) - knob / 2, 0, 1 - knob);
     }
-
 
 
     private static final SliderUI SolidLeft = new SliderUI() {
         @Override
         public void paint(float p, GL2 gl) {
-            float W = 1; 
+            float W = 1;
             float H = 1;
             float barSize = W * p;
 
-            
-            gl.glColor4f(0f, 0f, 0f, 0.5f);
-            Draw.rect(barSize, 0, W-barSize, H, gl);
 
-            
+            gl.glColor4f(0f, 0f, 0f, 0.5f);
+            Draw.rect(barSize, 0, W - barSize, H, gl);
+
+
             gl.glColor4f(0.75f * 1f - p, 0.75f * p, 0f, 0.8f);
             Draw.rect(0, 0, barSize, H, gl);
         }
@@ -195,16 +197,20 @@ public class SliderModel extends Surface {
         }
     };
 
-    /** default impl, with point-center */
+    /**
+     * default impl, with point-center
+     */
     public static final SliderUI KnobVert = new KnobVert() {
         @Override
         public float p(v2 hitPoint) {
-            return 1-pTarget(hitPoint.y, 0);
+            return 1 - pTarget(hitPoint.y, 0);
         }
     };
 
 
-    /** default impl, with point-center */
+    /**
+     * default impl, with point-center
+     */
     public static final SliderUI KnobHoriz = new KnobHoriz() {
         @Override
         public float p(v2 hitPoint) {
@@ -243,7 +249,7 @@ public class SliderModel extends Surface {
             Draw.rect(0, 0, W, H, gl);
 
             gl.glColor4f(1f - p, p, 0f, 0.75f);
-            Draw.rect(x , 0, knob, H, gl);
+            Draw.rect(x, 0, knob, H, gl);
         }
 
         @Override
@@ -254,7 +260,9 @@ public class SliderModel extends Surface {
 
     abstract public static class Knob implements SliderUI {
 
-        /** proportion of the total range of which the knob is visible */
+        /**
+         * proportion of the total range of which the knob is visible
+         */
         public float knob = 0.05f;
 
         public float W = 1;

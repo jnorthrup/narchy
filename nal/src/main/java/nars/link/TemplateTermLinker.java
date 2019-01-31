@@ -14,7 +14,10 @@ import nars.term.Termed;
 import nars.term.var.Img;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 

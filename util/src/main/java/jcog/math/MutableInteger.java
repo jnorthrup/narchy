@@ -22,12 +22,14 @@ package jcog.math;
  * limitations under the License.
  */
 
+import jcog.data.NumberX;
+
 import java.util.function.IntSupplier;
 
 /**
  * A mutable <code>integer</code> wrapper.
  */
-public class MutableInteger extends Number implements Comparable, IntSupplier {
+public class MutableInteger extends NumberX implements Comparable, IntSupplier, FloatSupplier {
 
 
     /**
@@ -81,6 +83,11 @@ public class MutableInteger extends Number implements Comparable, IntSupplier {
     }
 
 
+    @Override
+    public void add(float x) {
+        set(value + x);
+    }
+
     public final void set(float value) {
         if (value!=value)
             throw new NumberException("NaN", value);
@@ -101,7 +108,7 @@ public class MutableInteger extends Number implements Comparable, IntSupplier {
      * @throws ClassCastException   if the type is not a {@link Number}
      */
     public final void set(Number value) {
-        set(Math.round(value.floatValue()));
+        set(value.floatValue());
     }
 
 
@@ -152,6 +159,11 @@ public class MutableInteger extends Number implements Comparable, IntSupplier {
     @Override
     public final double doubleValue() {
         return value;
+    }
+
+    @Override
+    public final float asFloat() {
+        return floatValue();
     }
 
     /**

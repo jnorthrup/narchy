@@ -2,14 +2,14 @@ package nars.index.concept;
 
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.pri.PriBuffer;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Param;
-import nars.attention.BufferedBag;
-import nars.attention.PriBuffer;
 import nars.link.Activate;
 import nars.link.TaskLink;
 import nars.term.Term;

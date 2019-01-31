@@ -1,7 +1,6 @@
 package nars.concept;
 
 import jcog.data.list.FasterList;
-import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Param;
 import nars.Task;

@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static nars.$.$$;
-import static nars.term.atom.Bool.*;
+import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** arithmetic operators and arithmetic introduction tests */

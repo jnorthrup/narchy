@@ -1,13 +1,11 @@
 package nars.test.analyze;
 
 import jcog.pri.Prioritized;
-import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.Termed;

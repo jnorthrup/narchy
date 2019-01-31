@@ -2,9 +2,9 @@ package spacegraph.space2d;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.space2d.container.collection.MutableListContainer;
-import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.video.JoglSpace;

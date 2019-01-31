@@ -1,12 +1,8 @@
 package nars.attention;
 
-import jcog.math.FloatRange;
 import jcog.pri.bag.Bag;
 import jcog.pri.op.PriForget;
 import nars.NAR;
-import nars.concept.Concept;
-import nars.link.TaskLink;
-import nars.task.Tasklike;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

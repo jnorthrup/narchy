@@ -24,7 +24,7 @@ public class FloatSlider extends Widget {
 
     private final VectorLabel label = new VectorLabel();
     FloatSupplier input;
-    private String labelText = "";
+    protected String labelText = "";
 
     protected final SliderModel slider;
 
@@ -48,12 +48,15 @@ public class FloatSlider extends Widget {
 
     public FloatSlider(FloatRange f) {
         this(new DefaultFloatSlider(f.get(), f.min, f.max));
+        on(f::set);
         input = f;
     }
     public FloatSlider(AtomicFloat f, float min, float max) {
         this(new DefaultFloatSlider(f.get(), min, max));
+        on(f::set);
         input = f;
     }
+
 
     private FloatSlider(FloatSliderModel m) {
         super();
@@ -101,6 +104,7 @@ public class FloatSlider extends Widget {
         return super.prePaint(r);
     }
 
+
     public float get() {
         return slider.value();
     }
@@ -109,11 +113,21 @@ public class FloatSlider extends Widget {
         slider.setValue(value);
     }
 
-    public FloatSlider on(ObjectFloatProcedure<SliderModel> c) {
+    public final FloatSlider on(ObjectFloatProcedure<SliderModel> c) {
+        if (input instanceof NumberX) {
+            ObjectFloatProcedure<SliderModel> c0 = c;
+            c = (each,x) -> {
+                //chain
+                ((NumberX)input).set(x);
+                c0.value(each,x);
+            };
+        }
         slider.on(c);
         return this;
     }
-    public FloatSlider on(FloatProcedure c) {
+
+
+    public final FloatSlider on(FloatProcedure c) {
         return on((ObjectFloatProcedure<SliderModel>)(SliderModel x, float v)->c.value(v));
     }
 
@@ -141,26 +155,27 @@ public class FloatSlider extends Widget {
         public abstract float min();
         public abstract float max();
 
-
-        @Override
-        protected void onChanged() {
-            super.onChanged();
-            FloatSlider parent = parent(FloatSlider.class);
-            if (parent!=null) {
-
-                FloatSupplier input = parent.input;
-                if (input instanceof NumberX) {
-                    ((NumberX) input).set(value());
-                }
-            }
-        }
+//
+//        @Override
+//        protected void _onChanged() {
+//
+//            FloatSlider parent = parent(FloatSlider.class);
+//            if (parent!=null) {
+//
+//                FloatSupplier input = parent.input;
+//                if (input instanceof NumberX) {
+//                    ((NumberX) input).set(value());
+//                }
+//            }
+//            super._onChanged();
+//        }
 
 
         @Override
         protected float p(float v) {
             float min = min(), max = max();
-            min = Math.min(min, max); //HAcK
-            max = Math.max(min, max); //HAcK
+//            min = Math.min(min, max); //HAcK
+//            max = Math.max(min, max); //HAcK
             return Util.equals(min, max, ScalarValue.EPSILON) ? 0.5f : (Util.clamp(v, min, max) - min) / (max - min);
         }
 

@@ -3,14 +3,14 @@ package nars.bag;
 import jcog.data.list.FasterList;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
+import jcog.pri.PriBuffer;
 import jcog.pri.Prioritized;
 import jcog.pri.VLink;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.op.PriMerge;
 import jcog.util.ArrayUtils;
-import nars.attention.BufferedBag;
-import nars.attention.PriBuffer;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.Nullable;
 

@@ -3,6 +3,7 @@ package nars.gui;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.math.IntRange;
 import jcog.math.MutableEnum;
 import jcog.sort.SortedArray;
 import jcog.sort.TopN;
@@ -30,6 +31,7 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -257,7 +259,7 @@ public class ExeCharts {
     static class NARLoopPanel extends LoopPanel {
 
         private final NAR nar;
-        final FloatRange durMS = new FloatRange(1f, 1f, 2000f);
+        final IntRange durMS = new IntRange(1, 1, 1000);
         private final RealTime time;
 
         public NARLoopPanel(NARLoop loop) {
@@ -267,7 +269,7 @@ public class ExeCharts {
             if (nar.time instanceof RealTime) {
                 time = ((RealTime) nar.time);
                 add(
-                        new FloatSlider("Dur(ms)", durMS)
+                        new IntSlider("Dur(ms)", durMS)
                                 .on(durMS->nar.time.dur(Math.max((int)Math.round(durMS), 1))),
                         new FloatSlider("Throttle", loop.throttle)
                 );

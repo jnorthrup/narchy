@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.$.$$;
 import static nars.Op.PROD;
 import static nars.term.atom.Bool.Null;
 

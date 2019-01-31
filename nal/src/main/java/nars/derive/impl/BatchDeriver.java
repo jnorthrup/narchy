@@ -105,7 +105,7 @@ public class BatchDeriver extends Deriver {
 //        tasklinks.print(); System.out.println();
 
         tasklinks.sample(rng, tasklinksPerIteration.intValue(), tasklink->{
-            Term tt = tasklink.term();
+            Term tt = tasklink.target();
 
             Task task = TaskLink.task(tasklink, nar);
             if (task == null)
@@ -168,7 +168,7 @@ public class BatchDeriver extends Deriver {
         });
 
         if (!match.isEmpty()) {
-            Term y = match.getRoulette(d.random).term();
+            Term y = match.getRoulette(d.random).target();
             match.clear();
             return y;
         } else
@@ -196,7 +196,7 @@ public class BatchDeriver extends Deriver {
     @Nullable
     static private Term atomTangent(Term tt, Term src, TaskLink t) {
         if (src.equals(t.source())) {
-            Term y = t.term();
+            Term y = t.target();
             if (!src.equals(y) && !tt.equals(y)) {
                 return y;
             }

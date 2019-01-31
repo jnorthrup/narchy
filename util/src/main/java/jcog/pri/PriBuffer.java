@@ -1,8 +1,5 @@
-package nars.attention;
+package jcog.pri;
 
-import jcog.pri.OverflowDistributor;
-import jcog.pri.Prioritizable;
-import jcog.pri.UnitPri;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;

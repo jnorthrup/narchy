@@ -1,6 +1,7 @@
-package nars.attention;
+package jcog.pri.bag.impl;
 
 import jcog.data.NumberX;
+import jcog.pri.PriBuffer;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;

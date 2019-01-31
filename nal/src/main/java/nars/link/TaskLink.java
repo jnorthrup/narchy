@@ -45,7 +45,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
     Term source();
 
     /** task term (target) of the task linked */
-    Term term();
+    Term target();
 
     byte punc();
 
@@ -151,14 +151,14 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
 
         @Override
         public String toString() {
-            return toBudgetString() + ' ' + term() + ((char) punc()) + ':' + (when()!=ETERNAL ? when() : "ETE") + ":" + source();
+            return toBudgetString() + ' ' + target() + ((char) punc()) + ':' + (when()!=ETERNAL ? when() : "ETE") + ":" + source();
         }
 
         @Override public Term source() {
             return id.getOne();
         }
 
-        @Override public Term term() {
+        @Override public Term target() {
             return id.getTwo().target;
         }
 

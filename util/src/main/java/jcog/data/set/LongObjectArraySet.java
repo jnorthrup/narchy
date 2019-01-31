@@ -1,4 +1,4 @@
-package nars.term.util.conj;
+package jcog.data.set;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;

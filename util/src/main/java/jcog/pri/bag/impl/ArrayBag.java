@@ -102,8 +102,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     @Override
     public final void setCapacity(int nextCapacity) {
 
-        if (setCapacityIfChanged(nextCapacity)) {
-            synchronized (items) {
+        if (capacity()==nextCapacity)
+            return; //same
+
+        synchronized (items) {
+            if (setCapacityIfChanged(nextCapacity)) {
                 if (size() > capacity() /* must check again */)
                     commit(null);
             }
@@ -170,7 +173,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
     /**
-     * allows an implementation to remove items which may have been deleted (by anything) since commit checked for them
+     * allows an implementation to remove items which may have been deleted
+     * (by anything) since commit checked for them
      */
     protected boolean cleanIfFull() {
         return false;
@@ -184,14 +188,15 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     private int clean(@Nullable Consumer<Y> update) {
 
 //        float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY, mass = 0;
+        int s = size();
 
 
         SortedArray<Y> items2 = this.items;
         final Object[] l = items2.array();
 
         float above = Float.POSITIVE_INFINITY;
-        int mustSortTo = -1;
-        int s = size();
+        boolean sorted = true;
+
         float m = 0;
 
         int c = capacity();
@@ -204,55 +209,53 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         } else {
             hist = hist.clear(0, histRange-1, bins);
         }
-        Collection<Y> trash = null;
         for (int i = 0; i < s; ) {
             Y y = (Y) l[i];
-            assert y != null;
+            //assert y != null;
             float p = pri(y);
 
             if (update != null && p == p) {
                 update.accept(y);
                 p = pri(y);
             }
+
             if (p == p) {
-//                min = Math.min(min, p);
-//                max = Math.max(max, p);
 
                 if (hist!=null)
                     hist.addWithoutSettingMass(i,p);
 
                 m += p;
-                if (p - above >= ScalarValue.EPSILON/2)
-                    mustSortTo = i;
 
-                above = p;
+                if (sorted) {
+                    if (p - above >= ScalarValue.EPSILON / 2) {
+                        sorted = false;
+                    } else {
+                        above = p;
+                    }
+                }
+
                 i++;
+
             } else {
-                if (trash==null)
-                    trash = new LinkedList();
-                trash.add(y);
-                items2.removeFast(i);
+                removeFromMap(items2.remove(i));
                 s--;
                 //dont increment i
             }
+        }
+
+        if (!sorted) {
+            sort(0, s);
+        }
+
+        while (s > c) {
+            removeFromMap(this.items.removeLast());
+            s--;
         }
 
         if (hist!=null) {
             this.hist = hist;
             ArrayBag.MASS.set(this, hist.mass = m);
         }
-
-        while (s > c) {
-            trash.add(this.items.removeLast());
-            s--;
-        }
-
-        if (trash!=null) {
-            trash.forEach(this::removeFromMap);
-        }
-
-        if (mustSortTo != -1)
-            sort(0, Math.min(s, mustSortTo));
 
 
         return s;
@@ -698,7 +701,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         synchronized (items) {
 
-            clean(update);
+            if (!isEmpty())
+                clean(update);
 
         }
 
@@ -714,7 +718,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     @Override
     public final void clear() {
-        clear(this::removed);
+
+        popBatch(size(), null);
         MASS.zero(this);
         depressurizePct(1);
     }
@@ -734,10 +739,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         Collection<Y> popped = new FasterList<>(n > 0 ? Math.min(n, size()) : size());
 
-        popBatch(n, popped);
+        popBatch(n, popped::add);
 
-        if (popped != null)
-            popped.forEach(each);
+        popped.forEach(each);
 
     }
 
@@ -753,7 +757,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
 
-    public Sampler<Y> popBatch(int n, Collection<Y> popped) {
+    public Sampler<Y> popBatch(int n, @Nullable Consumer<Y> popped) {
 
         synchronized (items) {
 
@@ -762,7 +766,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
                 int toRemove = n == -1 ? s : Math.min(s, n);
 
-                items.removeRange(0, toRemove, e -> popped.add(removeFromMap(e)));
+                items.removeRange(0, toRemove,
+                        popped!=null ? e -> popped.accept(removeFromMap(e))
+                                :
+                                this::removeFromMap
+                );
 
             }
         }
