@@ -38,7 +38,7 @@ public class GameTarget {
         String buffer;
 
         if (GameBase.st.noise == null) {
-            game_import_t.dprintf("target_speaker with no noise set at "
+            game_import_t.dprintf("target_speaker with no noise setAt at "
                     + Lib.vtos(ent.s.origin) + '\n');
             return;
         }
@@ -472,7 +472,7 @@ public class GameTarget {
      * Set "sounds" to one of the following: 1) sparks 2) blue water 3) brown
      * water 4) slime 5) lava 6) blood
      * 
-     * "count" how many pixels in the splash "dmg" if set, does a radius damage
+     * "count" how many pixels in the splash "dmg" if setAt, does a radius damage
      * at this location when it splashes useful for lava/sparks
      */
     static final EntUseAdapter use_target_splash = new EntUseAdapter() {

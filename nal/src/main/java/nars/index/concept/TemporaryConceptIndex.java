@@ -34,7 +34,7 @@
 //    }
 //
 //    @Override
-//    public void set(Term src, Termed target) {
+//    public void setAt(Term src, Termed target) {
 //        @Nullable Activate a = active.remove(src);
 //        permanent.put(src, target);
 //        if (a!=null)

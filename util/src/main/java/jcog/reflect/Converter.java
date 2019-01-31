@@ -60,7 +60,7 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements GetWei
         }
 
 //        path.stream().filter((ed) -> ( ed!=null )).forEach((ed) -> {
-//            this.convertors.add(ed.getEdge());
+//            this.convertors.addAt(ed.getEdge());
 //        });
 
         attachListener();

@@ -136,7 +136,7 @@
 //                    } catch (Exception e) {
 //                        e.printStackTrace();
 //                    } finally {
-//                        evicting.set(false);
+//                        evicting.setAt(false);
 //                    }
 //                });
 //            }
@@ -189,7 +189,7 @@
 //                Consumer<PriReference<Term>> victimCollector = (k) -> {
 //                    Term t = k.get();
 //                    if (t != null) {
-//                        neighbors.add(t);
+//                        neighbors.addAt(t);
 //                    }
 //                };
 //
@@ -257,7 +257,7 @@
 //    };
 //
 //    @Override
-//    public void set(@NotNull Term src, @NotNull Termed target) {
+//    public void setAt(@NotNull Term src, @NotNull Termed target) {
 //        concepts.merge(src, (Concept) target, setOrReplaceNonPermanent);
 //    }
 //

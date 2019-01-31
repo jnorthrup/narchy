@@ -1622,7 +1622,7 @@ public class PlayerClient {
     }
 
     /** 
-     * Returns true, if the players gender flag was set to female. 
+     * Returns true, if the players gender flag was set to female.
      */
     public static boolean IsFemale(edict_t ent) {
         char info;

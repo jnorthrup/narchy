@@ -416,20 +416,20 @@
 //            int wLcb = 1;
 //            List<Band> wBands = new ArrayList<>();
 //
-//            wBands.add(new Band(sso, 0, wLfq));
+//            wBands.addAt(new Band(sso, 0, wLfq));
 //
 //            for (int b = 0; b < wHss; b++) {
 //
 //                double wCb = ((Math.log((double) b + lso) - o) * r) + 1.0;
 //                if (Math.round(wCb) != wLcb) {
-//                    wBands.add(new Band(b + sso, wLfq, wFqt[b + sso]));
+//                    wBands.addAt(new Band(b + sso, wLfq, wFqt[b + sso]));
 //                    wLfq = wFqt[b + sso];
 //                    wLcb = (int) Math.round(wCb);
 //                }
 //            }
 //
 //            if (wBands.size() < pBandCount) {
-//                wBands.add(new Band((wHss - 1) + sso, wLfq, wFqt[(wHss - 1) + sso]));
+//                wBands.addAt(new Band((wHss - 1) + sso, wLfq, wFqt[(wHss - 1) + sso]));
 //            }
 //            return wBands.toArray(new Band[0]);
 //        }

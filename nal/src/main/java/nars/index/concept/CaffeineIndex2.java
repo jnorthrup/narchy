@@ -153,7 +153,7 @@
 //
 //        TermContainerToOpMap<Termed> v = vectors.getIfPresent(vector(x));
 //        if (v != null) {
-//            v.set(x.op().id, null);
+//            v.setAt(x.op().id, null);
 //
 //
 //
@@ -177,8 +177,8 @@
 //    }
 //
 //    @Override
-//    public void set(@NotNull Term src, @NotNull Termed target) {
-//        vectorOrCreate(src).set(src.op().id, target);
+//    public void setAt(@NotNull Term src, @NotNull Termed target) {
+//        vectorOrCreate(src).setAt(src.op().id, target);
 //    }
 //
 //    private TermContainerToOpMap<Termed> vectorOrCreate(@NotNull Term x) {

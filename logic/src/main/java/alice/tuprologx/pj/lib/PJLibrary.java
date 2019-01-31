@@ -94,7 +94,7 @@ public class PJLibrary extends Library {
 		"java_object_bt(ClassName,Args,Id):- destroy_object(Id).\n" +
 		"Obj <- What :- java_call(Obj,What,Res), Res \\== false.\n" +
 		"Obj <- What returns Res :- java_call(Obj,What,Res).\n" +
-		"java_array_set(Array,Index,Object):-           class('java.lang.reflect.Array') <- set(Array as 'java.lang.Object',Index,Object as 'java.lang.Object'),!.\n" +
+		"java_array_set(Array,Index,Object):-           class('java.lang.reflect.Array') <- setAt(Array as 'java.lang.Object',Index,Object as 'java.lang.Object'),!.\n" +
 		"java_array_set(Array,Index,Object):-			java_array_set_primitive(Array,Index,Object).\n"+
 		"java_array_get(Array,Index,Object):-           class('java.lang.reflect.Array') <- get(Array as 'java.lang.Object',Index) returns Object,!.\n" +
 		"java_array_get(Array,Index,Object):-       java_array_get_primitive(Array,Index,Object).\n"+
@@ -314,7 +314,7 @@ public class PJLibrary extends Library {
 				}
 				Struct sel = (Struct) objId;
 				if (sel.name().equals(".") && sel.subs() == 2 && method.subs() == 1) {
-					if (methodName.equals("set"))
+					if (methodName.equals("setAt"))
 						return java_set(sel.subResolve(0), sel.subResolve(1), method.subResolve(0));
 					else if (methodName.equals("get"))
 						return java_get(sel.subResolve(0), sel.subResolve(1), method.subResolve(0));

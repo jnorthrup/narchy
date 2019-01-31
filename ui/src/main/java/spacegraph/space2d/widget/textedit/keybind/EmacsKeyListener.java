@@ -216,7 +216,7 @@ public class EmacsKeyListener implements TextEditKeys {
         Stroke stroke = new Stroke(supportKey, keyCode);
 
         synchronized(this) {
-//            currentStrokes.add(stroke);
+//            currentStrokes.addAt(stroke);
             String actionName = getActionName(stroke);
             if (actionName != null) {
                 model.execute(actionName);

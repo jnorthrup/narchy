@@ -318,7 +318,7 @@ public class TypeCastGraph
                     targetType,
                     // java 8
                 /*(pathFound) -> { 
-                    variants.add(pathFound);
+                    variants.addAt(pathFound);
                     if( variants.size()<findPathMinimum && findPathMinimum>=0 ){
                         return false;
                     }
@@ -333,7 +333,7 @@ public class TypeCastGraph
             );
             
             /*if( path!=null ){
-                lvariants.add(path);
+                lvariants.addAt(path);
             }*/
 
         }
@@ -343,7 +343,7 @@ public class TypeCastGraph
 //            path = findPath(startCls, targetType);
 //            return path;
 //        }).filter((path) -> ( path!=null )).forEach((path) -> {
-//            lvariants.add(path);
+//            lvariants.addAt(path);
 //        });
 
         return p;
@@ -395,7 +395,7 @@ public class TypeCastGraph
 //        Collection<Path<Class, Function>> removeSet = new LinkedHashSet<>();
 //        for (Path<Class, Function> p : lvariants) {
 //            if (p.nodeCount() < 2) {
-//                removeSet.add(p);
+//                removeSet.addAt(p);
 //            }
 //        }
 //        lvariants.removeAll(removeSet);

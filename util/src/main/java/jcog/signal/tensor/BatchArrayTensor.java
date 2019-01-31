@@ -24,7 +24,7 @@ abstract public class BatchArrayTensor extends ArrayTensor {
     }
 
     @Override
-    public void set(float v, int cell) {
+    public void setAt(float v, int cell) {
         throw new UnsupportedOperationException("only batch operations available");
     }
 

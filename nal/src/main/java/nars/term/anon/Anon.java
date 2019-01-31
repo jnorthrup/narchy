@@ -164,7 +164,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
 ////
 ////            }
 //            } finally {
-//                validateLock.set(false);
+//                validateLock.setAt(false);
 //            }
 //        }
 //    }

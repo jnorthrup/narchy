@@ -137,7 +137,7 @@ public class TextureRenderer {
   }
 
   // Internal constructor to avoid confusion since alpha only makes
-  // sense when intensity is not set
+  // sense when intensity is not setAt
   private TextureRenderer(final int width, final int height, final boolean alpha, final boolean intensity, final boolean mipmap) {
     this.alpha = alpha;
     this.intensity = intensity;

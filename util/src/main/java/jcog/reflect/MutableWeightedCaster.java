@@ -56,7 +56,7 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
 //        weakListeners.stream().forEach((wref) -> {
 //            WeightChangeListener l = wref.get();
 //            if( l==null ){
-//                removeSet.add( wref );
+//                removeSet.addAt( wref );
 //            }else{
 //                l.weightChanged(ev);
 //            }
@@ -155,10 +155,10 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
 //        weakListeners.stream().forEach((wref) -> {
 //            WeightChangeListener l = wref.get();
 //            if( l==null ){
-//                removeSet.add( wref );
+//                removeSet.addAt( wref );
 //            }
 //            if( l==listener ){
-//                removeSet.add( wref );
+//                removeSet.addAt( wref );
 //            }
 //        });
 //        weakListeners.removeAll(removeSet);

@@ -435,9 +435,12 @@ public interface Compound extends Term, IPair, Subterms {
      * replaces the 'from' target with 'to', recursively
      */
     default Term replace(Term from, Term to) {
-        return MapSubst.replace(from,to).transform(this);
-//        if (this.equals(from))
-//            return to;
+        if (this.equals(from))
+            return to;
+        if (impossibleSubTerm(from))
+            return this;
+      return MapSubst.replace(from,to).transform(this);
+
 //
 //        Subterms oldSubs = subterms();
 //        Subterms newSubs = oldSubs.replaceSub(from, to, op());

@@ -42,7 +42,7 @@ public abstract class ConvexCast {
 	
 	
 	/**
-	 * RayResult stores the closest result. Alternatively, add a callback method
+	 * RayResult stores the closest result. Alternatively, addAt a callback method
 	 * to decide about closest/all results.
 	 */
 	public static class CastResult {

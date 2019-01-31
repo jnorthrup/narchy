@@ -279,7 +279,7 @@ public class SimpleSDGraph<N, E> implements SingleDirectedGraph<N, E> {
     }
 
     /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#add
+     * @see org.gocha.collection.graph.IGraph#addAt
      */
     @Override
     public void add(N node) {
@@ -375,7 +375,7 @@ public class SimpleSDGraph<N, E> implements SingleDirectedGraph<N, E> {
     }
 
     /* (non-Javadoc)
-     * @see org.gocha.collection.graph.SingleGraph#set
+     * @see org.gocha.collection.graph.SingleGraph#setAt
      */
     @Override
     public void set(N a, N b, E e) {

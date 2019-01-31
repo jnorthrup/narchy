@@ -129,7 +129,7 @@ public class FPGrow {
     }
 
     /**
-     * Generate all the possible combinations for a given item set. Use bitmap
+     * Generate all the possible combinations for a given item setAt. Use bitmap
      *
      * @param path
      * @param combinations

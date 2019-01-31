@@ -10,9 +10,9 @@ import java.util.function.*;
  * concurrent map wrapping key,value pairs in cell instances
  * that are recycled in an internal pool.
  *
- * this can be useful for managing maps with set-like semantics
- *  --add
- *  --set
+ * this can be useful for managing maps with setAt-like semantics
+ *  --addAt
+ *  --setAt
  *  --remove
  *
  * uses ConcurrentFastIteratingHashMap which maintains an additional

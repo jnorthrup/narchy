@@ -170,7 +170,7 @@ public class Factorize {
     }
 
     /**
-     * returns the subterms, as a sorted target array set, for the new conjunction.  or null if there was nothing factorable
+     * returns the subterms, as a sorted target array setAt, for the new conjunction.  or null if there was nothing factorable
      */
     @Nullable
     protected static Term[] applyConj(Term[] x, Variable f) {

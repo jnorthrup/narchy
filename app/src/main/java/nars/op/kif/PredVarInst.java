@@ -34,7 +34,7 @@ public class PredVarInst {
      * @param input formula
      * @param types type condition extracted from domain expression
      *
-     * @return add explicit type condition into types
+     * @return addAt explicit type condition into types
      */
     private static HashMap<String,HashSet<String>> addExplicitTypes(KB kb, Formula input, HashMap<String,HashSet<String>> types) {
         
@@ -251,9 +251,9 @@ public class PredVarInst {
      for (Iterator iql = tmplist.iterator(); iql.hasNext();) {
      ql = (List) iql.next();
      if (((String)(ql.get(0))).equals("instance"))
-     ioLits.add(ql);
+     ioLits.addAt(ql);
      else
-     sortedQLits.add(ql);
+     sortedQLits.addAt(ql);
      }
      sortedQLits.addAll(ioLits);
      
@@ -285,7 +285,7 @@ public class PredVarInst {
      tryNextQueryLiteral = (satisfiable || (getVarCount(ql) > 1));
      
      if (satisfiable) {
-     simplificationLits.add(ql);
+     simplificationLits.addAt(ql);
      if (keyLit == null) {
      keyLit = ql;
      answers = KB.formulasToArrayLists(accumulator);
@@ -302,7 +302,7 @@ public class PredVarInst {
      ql2 = (List) accumulator.get(j);
      target = (String) (ql2.get(varPos));
      
-     working.add(target);
+     working.addAt(target);
      
      }
      accumulator.clear();
@@ -313,14 +313,14 @@ public class PredVarInst {
      ql2 = (List) accumulator.get(j);
      target = (String) (ql2.get(varPos));
      if (working.contains(target))
-     answers.add(ql2);
+     answers.addAt(ql2);
      }
      }
      }
      }
      if (satisfiable && (keyLit != null)) {
-     result.add(simplificationLits);
-     result.add(keyLit);
+     result.addAt(simplificationLits);
+     result.addAt(keyLit);
      result.addAll(answers);
      }
      else
@@ -366,7 +366,7 @@ public class PredVarInst {
      varWithTypes = (ArrayList) varsWithTypes.get(var);
      indexedQueryLits = gatherPredVarQueryLits(kb, varWithTypes);
      if (!indexedQueryLits.isEmpty()) {
-     ans.add(indexedQueryLits);
+     ans.addAt(indexedQueryLits);
      }
      }
      }
@@ -423,7 +423,7 @@ public class PredVarInst {
      HashSet<String> val = ar.get(key);
      if (val == null)
      val = new HashSet<String>();
-     val.add(value);
+     val.addAt(value);
      ar.put(key, val);
      return ar;
      }
@@ -643,12 +643,12 @@ public class PredVarInst {
      origVar = Clausifier.getOriginalVar(arg0, varMap);
      if (origVar.equals(var)
      && !varWithTypes.contains("Predicate")) {
-     varWithTypes.add("Predicate");
+     varWithTypes.addAt("Predicate");
      }
      }
      else {
      queryLit = new ArrayList();
-     queryLit.add(arg0);
+     queryLit.addAt(arg0);
      boolean foundVar = false;
      for (int i = 1; i < flen; i++) {
      arg = f.getArgument(i);
@@ -658,7 +658,7 @@ public class PredVarInst {
      if (arg.equals(var))
      foundVar = true;
      }
-     queryLit.add(arg);
+     queryLit.addAt(arg);
      }
      }
      
@@ -677,9 +677,9 @@ public class PredVarInst {
      && target.equals("Relation"))) {
      String queryLitStr = queryLit.toString().intern();
      if (!added.contains(queryLitStr)) {
-     ans.add(queryLit);
+     ans.addAt(queryLit);
      
-     added.add(queryLitStr);
+     added.addAt(queryLitStr);
      }
      }
      }
@@ -700,13 +700,13 @@ public class PredVarInst {
      argType = (String) varWithTypes.get(j);
      if (!argType.equals("Relation")) {
      queryLit = new ArrayList();
-     queryLit.add("instance");
-     queryLit.add(var);
-     queryLit.add(argType);
+     queryLit.addAt("instance");
+     queryLit.addAt(var);
+     queryLit.addAt(argType);
      qlString = queryLit.toString().intern();
      if (!added.contains(qlString)) {
-     ans.add(queryLit);
-     added.add(qlString);
+     ans.addAt(queryLit);
+     added.addAt(qlString);
      }
      }
      }
@@ -714,7 +714,7 @@ public class PredVarInst {
      
      
      if (!ans.isEmpty())
-     ans.add(0, var);
+     ans.addAt(0, var);
      return ans;
      }
      

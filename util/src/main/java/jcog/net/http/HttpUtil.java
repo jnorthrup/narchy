@@ -104,7 +104,7 @@ public final class HttpUtil
          *
          * @param dest The string builder to put the read line
          * @param buf The buffer to read from
-         * @param lws If set, [CRLF] 1*( SP | HT ) is not the end of a line.
+         * @param lws If setAt, [CRLF] 1*( SP | HT ) is not the end of a line.
          * @return false if no line was found (CRLF)
          */
         

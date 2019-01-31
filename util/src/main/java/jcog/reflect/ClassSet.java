@@ -24,7 +24,7 @@
 package jcog.reflect;
 
 import java.util.*;
-//import org.gocha.collection.set.BasicEventSet;
+//import org.gocha.collection.setAt.BasicEventSet;
 
 /**
  * Набор классов с поддержкой конструкции instanceof
@@ -263,7 +263,7 @@ public class ClassSet extends HashSet<Class> {
 //        if( isEmpty() )return null;
 //        Set<Class> set = this.getWrappedSet();
 //        if( set instanceof TreeSet ){
-//            TreeSet<Class> tset = (TreeSet)set;
+//            TreeSet<Class> tset = (TreeSet)setAt;
 //            return tset.first();
 //        }
 //        Class res = null;
@@ -285,7 +285,7 @@ public class ClassSet extends HashSet<Class> {
 //        if( isEmpty() )return null;
 //        Set<Class> set = this.getWrappedSet();
 //        if( set instanceof TreeSet ){
-//            TreeSet<Class> tset = (TreeSet)set;
+//            TreeSet<Class> tset = (TreeSet)setAt;
 //            return tset.last();
 //        }
 //        Class res = null;

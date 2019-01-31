@@ -102,7 +102,7 @@ public class GImpactBvh {
 	}
 
 	/**
-	 * This attemps to refit the box set.
+	 * This attemps to refit the box setAt.
 	 */
 	public void update()
 	{
@@ -110,7 +110,7 @@ public class GImpactBvh {
 	}
 
 	/**
-	 * This rebuild the entire set.
+	 * This rebuild the entire setAt.
 	 */
 	public void buildSet() {
 		

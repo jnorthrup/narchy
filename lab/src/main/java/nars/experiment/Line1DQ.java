@@ -17,7 +17,7 @@
 //        n.time.dur(5);
 //
 //        Line1DSimplest a = new Line1DSimplest();
-//        a.curiosity.set(0.01f);
+//        a.curiosity.setAt(0.01f);
 //
 //        a.onFrame((z) -> {
 //            a.target(

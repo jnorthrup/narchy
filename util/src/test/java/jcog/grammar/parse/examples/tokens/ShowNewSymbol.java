@@ -6,7 +6,7 @@ import jcog.grammar.parse.tokens.Tokenizer;
 import java.io.IOException;
 
 /**
- * This class shows how to add a new multi-character symbol.
+ * This class shows how to addAt a new multi-character symbol.
  * 
  * @author Steven J. Metsker
  *
@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 public class ShowNewSymbol {
 	/**
-	 * Demonstrate how to add a multi-character symbol.
+	 * Demonstrate how to addAt a multi-character symbol.
 	 */
 	public static void main(String args[]) throws IOException {
 		Tokenizer t = new Tokenizer("42.001 =~= 42");

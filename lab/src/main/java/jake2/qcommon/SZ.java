@@ -56,7 +56,7 @@ public final class SZ {
 	
 		if (buf.cursize + length > buf.maxsize) {
 			if (!buf.allowoverflow)
-				Com.Error(Defines.ERR_FATAL, "SZ_GetSpace: overflow without allowoverflow set");
+				Com.Error(Defines.ERR_FATAL, "SZ_GetSpace: overflow without allowoverflow setAt");
 	
 			if (length > buf.maxsize)
 				Com.Error(Defines.ERR_FATAL, "SZ_GetSpace: " + length + " is > full buffer size");

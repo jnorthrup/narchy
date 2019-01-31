@@ -48,7 +48,7 @@ public class SymbolState extends TokenizerState {
 	 * Add a multi-character symbol.
 	 * 
 	 * @param String
-	 *            the symbol to add, such as "=:="
+	 *            the symbol to addAt, such as "=:="
 	 */
 	public void add(String s) {
 		symbols.add(s);

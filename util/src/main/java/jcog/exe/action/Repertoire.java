@@ -6,7 +6,7 @@ package jcog.exe.action;
  *
  * set of invokable procedures (actions) that can be invoked by a controller
  *
- * the prototype implementation only supports a fixed set
+ * the prototype implementation only supports a fixed setAt
  * they are indexed by number
  *
  * each action's mutable priority is modeled as a thread-local fuzzy bitmap (32-bit float

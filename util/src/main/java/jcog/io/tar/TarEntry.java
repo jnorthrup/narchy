@@ -47,7 +47,7 @@ public class TarEntry {
 	/**
 	 * Constructor to create an entry from an existing TarHeader object.
 	 * 
-	 * This method is useful to add new entries programmatically (e.g. for
+	 * This method is useful to addAt new entries programmatically (e.g. for
 	 * adding files or directories that do not exist in the file system).
 	 */
 	public TarEntry(TarHeader header) {

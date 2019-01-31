@@ -89,7 +89,7 @@ public class VChannels {
      * Increase the size of an array
      *
      * @param a      Array to expand
-     * @param amount Number of elements to add to the array
+     * @param amount Number of elements to addAt to the array
      * @return Expanded array
      */
     private static Object arrayExpand(Object a, int amount) {

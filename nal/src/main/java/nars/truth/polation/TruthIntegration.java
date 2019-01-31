@@ -103,11 +103,11 @@ public class TruthIntegration {
 //        }
 //
 //        @Override
-//        public boolean add(long newItem) {
+//        public boolean addAt(long newItem) {
 //            int size = this.size;
 //            if (size > 0 && items[size-1] == newItem)
 //                return true; //equal to the last value
-//            return super.add(newItem);
+//            return super.addAt(newItem);
 //        }
 //
 //        @Override

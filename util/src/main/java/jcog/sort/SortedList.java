@@ -5,7 +5,7 @@ import jcog.data.list.FasterList;
 
 /**
  * insertion sorted list. It is constructed with a comparator that
- * can compare two objects and sorted objects accordingly. When you add an object
+ * can compare two objects and sorted objects accordingly. When you addAt an object
  * to the list, it is inserted in the correct place. Object that are equal
  * according to the comparator, will be in the list in the order that they were
  * added to this list. Add only objects that the comparator can compare.</p>

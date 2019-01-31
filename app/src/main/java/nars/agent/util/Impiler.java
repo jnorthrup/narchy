@@ -25,6 +25,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjBuilder;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -137,7 +138,7 @@ public class Impiler {
                             int n = path.size();
                             //DynTruth d = new DynTruth(n); //<- for tracking evidence?
 
-                            Conj cc = new Conj();
+                            ConjBuilder cc = new Conj();
                             long when = 0;
 
                             Truth t = null;
@@ -180,7 +181,7 @@ public class Impiler {
                                         } else {
                                             Term f = cc.term();
                                             cc = new Conj();
-                                            cc.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
+                                            cc.add(ETERNAL, f); //addAt existing accumulated sequence DTERNALly
                                         }
                                         if (s!=n-1) {
                                             if (!cc.add(ETERNAL, Z))
@@ -636,7 +637,7 @@ public class Impiler {
 //
 //        private void scan(Concept at, ImplBag incoming, int depth) {
 //            @Nullable ImplEdge x = incoming.first();
-//            add(x);
+//            addAt(x);
 //        }
 //
 //    }
@@ -652,7 +653,7 @@ public class Impiler {
 //        include.forEach(x -> {
 //            Concept c = n.conceptualizeDynamic(x);
 //            if (c instanceof TaskConcept)
-//                i.add((TaskConcept) c, n);
+//                i.addAt((TaskConcept) c, n);
 //        });
 //        return i;
 //    }
@@ -751,8 +752,8 @@ public class Impiler {
 //            assert(this.whenStart !=XTERNAL && this.whenEnd!=XTERNAL);
 //        }
 //
-//        /** add a condition to be included in the model as a state node */
-//        public void add(TaskConcept c, NAR n) {
+//        /** addAt a condition to be included in the model as a state node */
+//        public void addAt(TaskConcept c, NAR n) {
 //
 //
 //

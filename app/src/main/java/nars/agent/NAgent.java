@@ -1,7 +1,6 @@
 package nars.agent;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
 import jcog.event.ListTopic;
@@ -14,7 +13,6 @@ import jcog.math.FloatSupplier;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.attention.AttNode;
 import nars.concept.Concept;
@@ -134,7 +132,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //                float p = _p;
 //                actions.forEach(a->a.pri.pri(p));
 ////                rewards.forEach(r->r.pri(p));
-////                pri.set(p);
+////                pri.setAt(p);
 //
 //                rewards.forEach(r->r.pri(pri.floatValue()));
 //        }, nar);
@@ -205,13 +203,13 @@ public class NAgent extends NARService implements NSense, NAct {
 //                //Stamp.UNSTAMPED
 //        );
 //
-//        always.add((prev, now, next) -> t);
+//        always.addAt((prev, now, next) -> t);
 //        return t;
 //    }
 //    public void alwaysWant(Termed x, float confFactor) {
 //        //long[] evidenceShared = nar.evidence();
 //
-//        always.add((prev, now, next) ->
+//        always.addAt((prev, now, next) ->
 //
 //                new NALTask(x.target(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
 //                        now, next,
@@ -234,7 +232,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //
 //    public void alwaysQuestionDynamic(Supplier<Termed> x, boolean questionOrQuest, boolean stamped) {
 //
-//        always.add((prev, now, next) -> {
+//        always.addAt((prev, now, next) -> {
 //
 //            long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
 //
@@ -262,7 +260,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //                stamped ? nar.evidence() : Stamp.UNSTAMPED
 //
 //        );
-//        always.add((prev, now, next) -> etq);
+//        always.addAt((prev, now, next) -> etq);
 //    }
 
 
@@ -539,22 +537,6 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
         //curiosity conf initial setting  HACK
-
-
-        float curiConf =
-                //nar.confMin.floatValue();
-                //nar.confMin.floatValue() * 2;
-                nar.confMin.floatValue() * 4;
-                //Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);
-                //nar.confDefault(GOAL)/4;
-                //nar.confDefault(GOAL)/3;
-                //nar.confDefault(GOAL)/2;
-                //nar.confDefault(GOAL)/3;
-                //w2c(c2w(nar.confDefault(GOAL))/3);
-                //w2c(c2w(nar.confDefault(GOAL))/2);
-                //nar.confDefault(GOAL);
-
-        curiosity.conf.set(Util.clamp(curiConf, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF));
 
 
         for (ActionConcept a : aaa) {

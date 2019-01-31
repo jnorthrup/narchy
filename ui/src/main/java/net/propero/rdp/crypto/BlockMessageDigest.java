@@ -78,7 +78,7 @@ abstract class BlockMessageDigest {
      *
      * @param data   the data to be added.
      * @param offset the start of the data in the array.
-     * @param length the number of bytes of data to add.
+     * @param length the number of bytes of data to addAt.
      */
     private void engineUpdate(byte[] data, int offset, int length)
             throws CryptoException {

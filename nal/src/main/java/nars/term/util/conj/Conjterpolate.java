@@ -66,7 +66,7 @@ public class Conjterpolate extends Conj {
                 ;
 //
             if (suffixMatched > 0) {
-                //add the suffixed matched segment
+                //addAt the suffixed matched segment
                 for (int i = 0; i < suffixMatched; i++) {
                     if (!add(aa.get(na - 1 - i)))
                         throw new WTF();
@@ -95,7 +95,7 @@ public class Conjterpolate extends Conj {
                     }
                 }
 
-                //add common events
+                //addAt common events
                 MutableSet<LongObjectPair<Term>> common = Sets.intersect(ArrayUnenforcedSet.wrap(aa), ArrayUnenforcedSet.wrap(bb));
                 if (!common.isEmpty()) {
                     for (LongObjectPair<Term> c : common) {
@@ -137,9 +137,9 @@ public class Conjterpolate extends Conj {
 //
 //        long dt = Conj.isSeq(a) || Conj.isSeq(b) || a.dt()==0 || b.dt()==0 ? 0 : ETERNAL;
 //        addProb = aProp;
-//        if (add(dt, a)) {
+//        if (addAt(dt, a)) {
 //            addProb = 1-aProp;
-//            if (add(dt, b)) {
+//            if (addAt(dt, b)) {
 //
 //            }
 //        }
@@ -149,9 +149,9 @@ public class Conjterpolate extends Conj {
 
 //
 //    @Override
-//    public boolean add(long at, Term x) {
+//    public boolean addAt(long at, Term x) {
 //        if (rng.nextFloat() < addProb)
-//            return super.add(at, x);
+//            return super.addAt(at, x);
 //        else
 //            return true; //ignore
 //    }
@@ -183,8 +183,8 @@ public class Conjterpolate extends Conj {
 //        assert (a != b);
 //        assert (a != DTERNAL && b != DTERNAL && a != XTERNAL && b != XTERNAL);
 //        ByteHashSet common = new ByteHashSet();
-//        events((byte[])event.remove(a), common::add);
-//        events((byte[])event.remove(b), common::add);
+//        events((byte[])event.remove(a), common::addAt);
+//        events((byte[])event.remove(b), common::addAt);
 //
 //        //detect conflicting combination
 //        byte[] ca = common.toArray();
@@ -207,7 +207,7 @@ public class Conjterpolate extends Conj {
 //    }
 //
 //        @Override
-//        public boolean add(long bt, final Term what) {
+//        public boolean addAt(long bt, final Term what) {
 //            assert (bt != XTERNAL);
 //
 //            {
@@ -216,7 +216,7 @@ public class Conjterpolate extends Conj {
 //
 //                byte tid = termToId.getIfAbsent(neg ? what.unneg() : what, (byte) -1);
 //                if (tid == (byte) -1)
-//                    return super.add(bt, what);
+//                    return super.addAt(bt, what);
 //
 //                byte tInA = (byte) (tid * (neg ? -1 : +1));
 //
@@ -227,12 +227,12 @@ public class Conjterpolate extends Conj {
 //                    if (wat instanceof RoaringBitmap) {
 //                        RoaringBitmap r = (RoaringBitmap) wat;
 //                        if (r.contains(tInA) && !r.contains(-tInA)) {
-//                            whens.add(when);
+//                            whens.addAt(when);
 //                        }
 //                    } else {
 //                        byte[] ii = (byte[]) wat;
 //                        if (ArrayUtils.indexOf(ii, tInA) != -1 && ArrayUtils.indexOf(ii, (byte) -tInA) == -1) {
-//                            whens.add(when);
+//                            whens.addAt(when);
 //                        }
 //                    }
 //                });
@@ -264,20 +264,20 @@ public class Conjterpolate extends Conj {
 //                    if (merged != at) {
 //
 //                        if ((merged == DTERNAL || merged == XTERNAL) && (at != DTERNAL && bt != DTERNAL && at != XTERNAL && bt != XTERNAL)) {
-//                            //add as unique event (below)
+//                            //addAt as unique event (below)
 //                        } else {
-////                            boolean r = aa.remove(what, at); //remove original add the new merged
+////                            boolean r = aa.remove(what, at); //remove original addAt the new merged
 ////                            if (!r) {
 ////                                assert (r);
 ////                            }
-//                            return super.add(merged, what);
+//                            return super.addAt(merged, what);
 //                        }
 //
 //                    } else {
 //                        return true; //exact
 //                    }
 //                }
-//                return super.add(bt, what);
+//                return super.addAt(bt, what);
 //
 //            }
 //
@@ -348,7 +348,7 @@ public class Conjterpolate extends Conj {
 //                    r.forEach((int ri) -> {
 //                        boolean neg = (ri < 0);
 //                        if (neg) ri = -ri;
-//                        if (!add(when, idToTerm.get(ri-1).negIf(neg))) {
+//                        if (!addAt(when, idToTerm.get(ri-1).negIf(neg))) {
 //                            err[0] = true;
 //                        }
 //                    });
@@ -359,20 +359,20 @@ public class Conjterpolate extends Conj {
 //                            break; //eol
 //                        boolean neg = (ri < 0);
 //                        if (neg) ri = (byte) -ri;
-//                        if (!add(when, idToTerm.get(ri-1).negIf(neg))) {
+//                        if (!addAt(when, idToTerm.get(ri-1).negIf(neg))) {
 //                            err[0] = true;
 //                        }
 //                    }
 //                }
 //            });
-//add remaining
+//addAt remaining
 //                assert (!aa.isEmpty() && !bb.isEmpty());
 //
 //                ArrayHashSet<LongObjectPair<Term>> ab = new ArrayHashSet(aa.size() + bb.size());
 //                ab.addAll(aa);
 //                ab.addAll(bb);
 //                for (int i = 0; i < remainingEvents; i++) {
-//                    if (!add(ab.remove(rng))) {
+//                    if (!addAt(ab.remove(rng))) {
 //                        //oops try to prevent if this happens
 //                        break;
 //                    }

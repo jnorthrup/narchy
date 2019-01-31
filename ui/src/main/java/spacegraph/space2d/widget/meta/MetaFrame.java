@@ -75,7 +75,7 @@ public class MetaFrame extends Bordering implements HudHover {
             pos(r.pixelVisible().scale(0.8f));
             //pos(0, 0, r.pw, r.ph);
 
-            //renderExpanded.set(r);
+            //renderExpanded.setAt(r);
             //renderExpanded.restart(r.pw, r.ph, r.dtMS);
 //            renderExpanded.dtMS = r.dtMS;
 //            renderExpanded.scaleX = 1;
@@ -219,10 +219,10 @@ public class MetaFrame extends Bordering implements HudHover {
 //                PushButton.awesome("tag"),
 //                PushButton.awesome("sitemap")
 //        );
-//        set(E, m);
+//        setAt(E, m);
 
 //        PushButton hideButton = PushButton.awesome("times");
-//        set(NE, new Scale(hideButton, 0.8f));
+//        setAt(NE, new Scale(hideButton, 0.8f));
 
 
     protected String name() {

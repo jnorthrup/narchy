@@ -104,7 +104,7 @@ public class SlingPanel extends JPanel {
 	}
 
 	/**
-	 * Set the renderables this component will display, and set
+	 * Set the renderables this component will display, and setAt
 	 * the number of lines to use for the display of each
 	 * function.
 	 *

@@ -195,7 +195,7 @@ public class PrologInvocationContext {
                     Cons<?,?> res = si.getSolution();
                     int size = outputVariables.size();                    
                     if (size == 0) {
-                        resultList.add(si.isSuccess() ? Boolean.TRUE : Boolean.FALSE);   
+                        resultList.addAt(si.isSuccess() ? Boolean.TRUE : Boolean.FALSE);
                     }
                     else {
                         Term<?>[] termList = new Term<?>[size];
@@ -208,10 +208,10 @@ public class PrologInvocationContext {
                             i++;
                         }
                         if (termList.length > 1) {
-                            resultList.add(Cons.make(res.getName(),termList));                              
+                            resultList.addAt(Cons.make(res.getName(),termList));
                         }
                         else {
-                            resultList.add(termList[0]);                              
+                            resultList.addAt(termList[0]);
                         }
                     }                    
                 }                                

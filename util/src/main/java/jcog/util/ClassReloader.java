@@ -55,7 +55,7 @@ package jcog.util;
 //                Constructor<?> ctor = cls.getDeclaredConstructor(argTypes);
 //                ctor.setAccessible(true);
 //                Object obj = ctor.newInstance(args);
-//                if(obj instanceof Unloadable) instanceUnloaders.add((Unloadable)obj);
+//                if(obj instanceof Unloadable) instanceUnloaders.addAt((Unloadable)obj);
 //                return (X) obj;
 //            } catch(ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
 //                throw new RuntimeException(e);
@@ -192,7 +192,7 @@ package jcog.util;
 //                            throw new ClassNotFoundException("Unable to load class " + name, new ClassFormatError("Methods annotated with @Unloader must take zero arguments"));
 //                        }
 //                        synchronized(reloader.lock) {
-//                            reloader.classUnloaders.add(new Unloadable() {
+//                            reloader.classUnloaders.addAt(new Unloadable() {
 //                                @Override
 //                                public void unload() throws Exception {
 //                                    method.invoke(null);

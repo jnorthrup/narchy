@@ -124,8 +124,8 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
         int observations = numInputs();
 
-        sequenceState = new ArrayTensor( observations, seqLen );
-        sequenceActions = new ArrayTensor(this.targets, seqLen);
+        sequenceState = new ArrayTensor( new int[] { observations, seqLen } );
+        sequenceActions = new ArrayTensor(new int[] { this.targets, seqLen });
         state = new ArrayTensor( observations );
         actions = new ArrayTensor(this.targets);
         idealActions = new ArrayTensor(this.targets);
@@ -381,14 +381,14 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
         // generate state:
         int observations = numInputs();
         for( int i = 0; i < observations; ++i ) {
-            state.set(sequenceState.get(seq, i), i);
+            state.setAt(sequenceState.get(seq, i), i);
         }
     }
 
     protected void updateIdealActions() {
         // generate ideal actions
         for(int i = 0; i < targets; ++i ) {
-            idealActions.set(sequenceActions.get(seq, i), i);
+            idealActions.setAt(sequenceActions.get(seq, i), i);
         }
     }
 
@@ -443,7 +443,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
         int nextAction = a.act(null /* TODO */, reward, state.data);
         actions.fill(0);
-        actions.set(1f, nextAction);
+        actions.setAt(1f, nextAction);
 
         ++seq;
 

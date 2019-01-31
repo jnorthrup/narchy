@@ -43,7 +43,7 @@ public final class FnSet extends NodeSet<Fn> {
 //     *
 //     * @param type the type to find matching functions of
 //     * @return a list of all functions in this set that have the specified return type, or {@code null} if there are no functions with the required return type
-//     * in this set
+//     * in this setAt
 //     */
 //    public List<Fn> getByType(NodeType type) {
 //
@@ -55,7 +55,7 @@ public final class FnSet extends NodeSet<Fn> {
      *
      * @param signature the signature to find matching functions of
      * @return a list of all functions in this set that have the specified signature, or {@code null} if there are no functions with the required signature in
-     * this set
+     * this setAt
      */
     public List<Fn> asList(Signature signature) {
         Fn[] elements = get(signature);

@@ -282,7 +282,7 @@ public class ConsoleAgent extends NAgentX {
 //
 //                }
 //
-//                beliefs[cx][cy].set(
+//                beliefs[cx][cy].setAt(
 //                        nar.conceptualize($.inst(terms[cx][cy], $.the(String.valueOf(value)))),
 //                        $.t(1f, 0.9f),
 //                        () -> nar.time.nextStamp(),

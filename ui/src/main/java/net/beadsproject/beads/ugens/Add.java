@@ -22,7 +22,7 @@ public class Add extends UGen {
 
     /**
      * Constructor for an Add object that sets a UGen to control the value to
-     * add.
+     * addAt.
      *
      * @param context   The audio context.
      * @param channels  The number of channels.
@@ -35,7 +35,7 @@ public class Add extends UGen {
 
     /**
      * Constructor for an Add object with a given UGen as input and another as adder.
-     * i.e., use this as quickest way to add two UGens together.
+     * i.e., use this as quickest way to addAt two UGens together.
      *
      * @param context   the AudioContext.
      * @param input     the input UGen.
@@ -52,7 +52,7 @@ public class Add extends UGen {
      *
      * @param context  The audio context.
      * @param channels The number of channels.
-     * @param adder    The value to add.
+     * @param adder    The value to addAt.
      */
     public Add(AudioContext context, int channels, float adder) {
         super(context, channels, channels);

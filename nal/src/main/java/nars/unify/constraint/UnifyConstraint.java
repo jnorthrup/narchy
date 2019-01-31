@@ -65,7 +65,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 //        RoaringBitmap constraints = new RoaringBitmap();
 //        for (int i = 0, cl = cc.length; i < cl; i++) {
 //            Term x = cc[i];
-//                constraints.add(i);
+//                constraints.addAt(i);
 //            }
 //        }
 //        if (constraints.getCardinality() < 2) {
@@ -85,14 +85,14 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 //                    } else {
 //                        if (end - start >= 1) {
 //
-//                            ranges.add(pair(start, end));
+//                            ranges.addAt(pair(start, end));
 //                        }
 //                        start = -1;
 //                    }
 //                }
 //            }
 //            if (end - start >= 1)
-//                ranges.add(pair(start, end));
+//                ranges.addAt(pair(start, end));
 //
 //            if (ranges.size() > 1) throw new TODO();
 //            IntIntPair rr = ranges.get(0);
@@ -101,23 +101,23 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 //            List<PrediTerm<Derivation>> l = new FasterList();
 //            int i;
 //            for (i = 0; i < start; i++) {
-//                l.add(a.cond[i]);
+//                l.addAt(a.cond[i]);
 //            }
 //
 //            CompoundConstraint.the(
 //                    Util.map(MatchConstraint.class::cast, MatchConstraint[]::new, ArrayUtils.subarray(a.cond, rr.getOne(), rr.getTwo() + 1))
-//            ).forEach(l::add);
+//            ).forEach(l::addAt);
 //
 //            i = end + 1;
 //            for (; i < a.cond.length; i++) {
-//                l.add(a.cond[i]);
+//                l.addAt(a.cond[i]);
 //            }
 //            return AndCondition.the((List) l);
 //        }
 //    }
 
     /**
-     * @param targetVariable current value of the target variable (null if none is set)
+     * @param targetVariable current value of the target variable (null if none is setAt)
      * @param potentialValue potential value to assign to the target variable
      * @param f              match context
      * @return true if match is INVALID, false if VALID (reversed)

@@ -49,14 +49,14 @@
 //            new Variables<>(subject).discover().tweaks.forEach((Tweak x) -> {
 //                Map<String, Object> rr = rules.row(x.id);
 //                if (rr.isEmpty()) {
-//                    issues.add("unknown: " + x.id);
+//                    issues.addAt("unknown: " + x.id);
 //                } else {
 //
 //                    for (String y : tags) {
 //                        Object rc = rr.get(y);
 //                        if (rc!=null) {
 //                            log.put(x, rc);
-//                            x.set(subject, floatize(rc));
+//                            x.setAt(subject, floatize(rc));
 //                        }
 //                    }
 //                }

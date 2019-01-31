@@ -154,7 +154,7 @@ public class VerletSpring2D {
 
     protected void updateSpring(boolean applyConstraints, float am, float bm) {
         Vec2D delta = b.sub(a);
-        // add minute offset to avoid div-by-zero errors
+        // addAt minute offset to avoid div-by-zero errors
         float dist = delta.magnitude() + EPS;
         float aInvMass = 1/ am;
 

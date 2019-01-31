@@ -5,28 +5,32 @@ import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static nars.Op.CONJ;
 import static nars.term.Terms.sorted;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
-/** utilities for working with commutive conjunctions (DTERNAL, parallel, and XTERNAL) */
+/**
+ * utilities for working with commutive conjunctions (DTERNAL, parallel, and XTERNAL)
+ */
 public enum ConjCommutive {;
 
     public static Term the(int dt, Term... u) {
         return theSorted(dt, sorted(u));
     }
+
     public static Term the(int dt, Collection<Term> u) {
         return theSorted(dt, sorted(u));
     }
 
-    /** assumes u is sorted */
+    /**
+     * assumes u is sorted
+     */
     public static Term theSorted(int dt, Term... u) {
         if (u.length == 0)
             return True;
@@ -40,15 +44,14 @@ public enum ConjCommutive {;
             //quick test
             Term a = u[0], b = u[1];
             //if (Term.commonStructure(a, b)) {
-                if (a.equals(b))
-                    return u[0];
-                if (a.equalsNeg(b))
-                    return False;
+            if (a.equals(b))
+                return u[0];
+            if (a.equalsNeg(b))
+                return False;
             //}
 
 
-
-            if (a.unneg().op() != CONJ && b.unneg().op()!=CONJ) {
+            if (a.unneg().op() != CONJ && b.unneg().op() != CONJ) {
                 //fast construct for simple case, verified above to not contradict itself
                 return conjDirect(dt, /*sorted*/u);
             }
@@ -77,7 +80,7 @@ public enum ConjCommutive {;
                         break;
                     case CONJ:
                         int xdt = x.dt();
-                        if (xdt == dt || (dt == 0 && xdt ==DTERNAL /* promote inner DTERNAL to parallel */)) {
+                        if (xdt == dt || (dt == 0 && xdt == DTERNAL /* promote inner DTERNAL to parallel */)) {
                             conjMerge = set(conjMerge, i, uLength);
                         } else {
                             //TODO handle promotion of &&/&| as conjMerge rather than conjOther
@@ -87,7 +90,7 @@ public enum ConjCommutive {;
                     case NEG:
                         Term xu = x.unneg();
                         if (xu.op() == CONJ) {
-                            if (dt == 0 && xu.dt()==DTERNAL /* promote inner DTERNAL to parallel */) {
+                            if (dt == 0 && xu.dt() == DTERNAL /* promote inner DTERNAL to parallel */) {
                                 u[i] = xu.dt(0).neg();
                             }
                             disj = set(disj, i, uLength);
@@ -102,17 +105,17 @@ public enum ConjCommutive {;
             }
 
             if (conjMerge != null) {
-                if (flatten!=null)
+                if (flatten != null)
                     flatten.clear();
                 for (int i = 0, uLength = u.length; i < uLength; i++) {
                     if (conjMerge.get(i)) {
                         Term x = u[i];
                         if (x == True) continue;
-                        if (flatten == null) flatten = new UnifiedSet(uLength*2);
+                        if (flatten == null) flatten = new UnifiedSet(uLength * 2);
                         x.subterms().forEach(flatten::add);
                     }
                 }
-                if (flatten!=null) {
+                if (flatten != null) {
                     for (int i = 0, uLength = u.length; i < uLength; i++) {
                         if (!conjMerge.get(i))
                             flatten.add(u[i]);
@@ -123,40 +126,40 @@ public enum ConjCommutive {;
                     u = ArrayUtils.removeAll(u, conjMerge);
                     break;
                 }
-                if (u.length==1)
+                if (u.length == 1)
                     return u[0];
 
             }
 
-        } while (conjMerge!=null);
+        } while (conjMerge != null);
 
-        if (pos!=null && neg!=null) {
+        if (pos != null && neg != null) {
             if (coNegate(pos, neg, u))
                 return False;
         }
 
-        if (pos!=null && pos.cardinality() == u.length) {
+        if (pos != null && pos.cardinality() == u.length) {
             //all pos
             //assertNot2(u);
             return conjDirect(dt, u);
         }
 
-        if (neg!=null && neg.cardinality() == u.length) {
+        if (neg != null && neg.cardinality() == u.length) {
             //assertNot2(u);
             return conjDirect(dt, u);
         }
 
 
-        if (pos!=null && neg!=null && (pos.cardinality() + neg.cardinality()) == u.length) {
+        if (pos != null && neg != null && (pos.cardinality() + neg.cardinality()) == u.length) {
 
             //mix of pos and negative, check for co-negation
 
             return conjDirect(dt, u);
         }
 
-        int seqCount = seq!=null ? seq.cardinality() : 0;
-        if (seqCount==1) {
-            if (disj==null) {
+        int seqCount = seq != null ? seq.cardinality() : 0;
+        if (seqCount == 1) {
+            if (disj == null) {
 
                 //try simple cases
                 int coi = seq.first(true);
@@ -178,7 +181,7 @@ public enum ConjCommutive {;
                         }
                     }
 
-                    if (indep == u.length-1) {
+                    if (indep == u.length - 1) {
 //                        //promote dternal wrapped parallel disjunction to parallel
 //                        if (dt == DTERNAL && co.dt()==0)
 //                            return theSorted(0, u); //need to start over (recurse)
@@ -186,7 +189,7 @@ public enum ConjCommutive {;
                         return conjDirect(dt, u); //all independent
                     }
 
-                    if (elim == u.length-1)
+                    if (elim == u.length - 1)
                         return co; //all absorbed
 
 
@@ -202,14 +205,14 @@ public enum ConjCommutive {;
         if (u.length == 2) {
             //TODO exclude the case with disj and conjOther
             int dd;
-            if (disj!=null && disj.cardinality()==1 && seqCount ==0)
+            if (disj != null && disj.cardinality() == 1 && seqCount == 0)
                 dd = disj.first(true);
-            else if (dt == DTERNAL && seqCount ==1)
+            else if (dt == DTERNAL && seqCount == 1)
                 dd = seq.first(true);
             else
                 dd = -1;
 
-            if (dd!=-1) {
+            if (dd != -1) {
                 Term d = u[dd];
                 Term x = u[1 - dd];
                 Term cj = Conj.conjoin(d, x, dt == DTERNAL);
@@ -223,43 +226,43 @@ public enum ConjCommutive {;
         long sdt = dt == DTERNAL ? ETERNAL : 0;
         //try {
 
-            //iterate in reverse order to add the smaller (by volume) items first
+        //iterate in reverse order to addAt the smaller (by volume) items first
 
-            if (seq!=null) {
-                Conj c = new Conj(u.length);
-                //add the non-conj terms at ETERNAL last.
-                //then if the conjOther is a sequence, add it at zero
-                for (int i = u.length-1; i >= 0; i--) {
-                    if (seq.get(i)) {
-                        if (!c.add(sdt, u[i]))
-                            return c.term(); //fail
-                    }
-                }
-                for (int i = u.length-1; i >= 0; i--) {
-                    if (!seq.get(i))
-                        if (!c.add(sdt, u[i]))
-                            return c.term(); //fail
-                }
-                return c.term();
-
-            } else {
-                switch (u.length) {
-                    case 0:
-                        return True;
-                    case 1:
-                        return u[0];
-                    case 2:
-                        return Conj.conjoin(u[0], u[1], dt == DTERNAL);
-                    default: {
-                        Conj c = new Conj(u.length);
-                        for (int i = u.length-1; i >= 0; i--) {
-                            if (!c.add(sdt, u[i]))
-                                break;
-                        }
-                        return c.term();
-                    }
+        if (seq != null) {
+            ConjBuilder c = new Conj(u.length);
+            //addAt the non-conj terms at ETERNAL last.
+            //then if the conjOther is a sequence, addAt it at zero
+            for (int i = u.length - 1; i >= 0; i--) {
+                if (seq.get(i)) {
+                    if (!c.add(sdt, u[i]))
+                        return c.term(); //fail
                 }
             }
+            for (int i = u.length - 1; i >= 0; i--) {
+                if (!seq.get(i))
+                    if (!c.add(sdt, u[i]))
+                        return c.term(); //fail
+            }
+            return c.term();
+
+        } else {
+            switch (u.length) {
+                case 0:
+                    return True;
+                case 1:
+                    return u[0];
+                case 2:
+                    return Conj.conjoin(u[0], u[1], dt == DTERNAL);
+                default: {
+                    ConjBuilder c = new Conj(u.length);
+                    for (int i = u.length - 1; i >= 0; i--) {
+                        if (!c.add(sdt, u[i]))
+                            break;
+                    }
+                    return c.term();
+                }
+            }
+        }
 //        } catch (StackOverflowError e) {
 //            throw new WTF("StackOverflow: && " + sdt + " " + Arrays.toString(u)); //TEMPORARY
 //        }
@@ -269,7 +272,9 @@ public enum ConjCommutive {;
         return co.AND(cc -> absorb(cc, x));
     }
 
-    /** tests hypothetically distributing the incoming target to all the events in conj */
+    /**
+     * tests hypothetically distributing the incoming target to all the events in conj
+     */
     private static boolean conflict(Term x, Term incoming) {
         if (x.equals(incoming))
             return false;
@@ -285,7 +290,9 @@ public enum ConjCommutive {;
         return false;
     }
 
-    /** tests whether the target is absorbed */
+    /**
+     * tests whether the target is absorbed
+     */
     private static boolean absorb(Term x, Term incoming) {
         if (x.equals(incoming))
             return true;
@@ -315,7 +322,7 @@ public enum ConjCommutive {;
             int pn = pos.first(true);
             Term p = u[pn];
             for (int i = 0; i < u.length; i++) {
-                if (i!=pn && u[i].unneg().equals(p))
+                if (i != pn && u[i].unneg().equals(p))
                     return true;
             }
             return false;
@@ -325,7 +332,7 @@ public enum ConjCommutive {;
                 int nn = neg.first(true);
                 Term un = u[nn].unneg();
                 for (int i = 0; i < u.length; i++) {
-                    if (i!=nn && un.equals(u[i]))
+                    if (i != nn && un.equals(u[i]))
                         return true;
                 }
                 return false;
@@ -342,13 +349,13 @@ public enum ConjCommutive {;
                 }
                 s = new HashSet(size);
                 for (int i = 0; i < u.length; i++) {
-                    if (pos.get(i)==pn) {
+                    if (pos.get(i) == pn) {
                         Term ui = u[i];
                         s.add(pn ? ui : ui.unneg());
                     }
                 }
                 for (int i = 0; i < u.length; i++) {
-                    if (pos.get(i)!=pn) {
+                    if (pos.get(i) != pn) {
                         Term ui = u[i];
                         if (s.contains(pn ? ui.unneg() : ui))
                             return true;
@@ -367,11 +374,49 @@ public enum ConjCommutive {;
 
 
     public static boolean contains(Term container, Term x) {
-        if (x.op()==CONJ && !Conj.isSeq(x)) {
+        if (x.op() == CONJ && !Conj.isSeq(x)) {
             //test for containment of all x's components
             if (x.subterms().AND(container::contains))
                 return true;
         }
         return container.contains(x);
+    }
+
+    public static Term theXternal(Term[] u) {
+        int ul = u.length;
+        Term[] args;
+        switch (ul) {
+            case 0:
+                return Bool.True;
+
+            case 1:
+                return u[0];
+
+            case 2:
+                //special case: simple arity=2
+                if (!u[0].equals(u[1])) // && !unfoldableInneralXternalConj(u[0]) && !unfoldableInneralXternalConj(u[1])) {
+                    args = sorted(u);
+                else
+                    args = new Term[]{u[0], u[0]}; //repeat
+                break;
+
+            default: {
+
+                TreeSet<Term> uux = new TreeSet();
+                Collections.addAll(uux, u);
+
+                if (uux.size() == 1) {
+                    Term only = uux.first();
+                    args = new Term[]{only, only}; //repeat
+                } else {
+                    args = sorted(uux);
+                }
+
+            }
+
+        }
+
+        return Op.terms.theCompound(CONJ, XTERNAL, args);
+
     }
 }

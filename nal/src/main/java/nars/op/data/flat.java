@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * recursively collects the contents of set/list compound target argument's
+ * recursively collects the contents of setAt/list compound target argument's
  * into a list, to one of several resulting target types:
  * product
  * set (TODO)

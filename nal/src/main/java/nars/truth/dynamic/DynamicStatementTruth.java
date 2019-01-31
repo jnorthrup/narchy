@@ -9,7 +9,8 @@ import nars.Task;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.util.Image;
-import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjBuilder;
+import nars.term.util.conj.ConjLazy;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
@@ -137,7 +138,10 @@ public class DynamicStatementTruth {
             //TODO DynamicConjTruth.ConjIntersection.reconstruct()
 
             //IMPL: compute innerDT for the conjunction
-            Conj c = new Conj(); //TODO LazyConj
+            ConjBuilder c =
+                    //new Conj(); //TODO LazyConj
+                    new ConjLazy(components.size());
+
             for (TaskRegion x : components) {
                 Term xx = ((Task) x).term();
 

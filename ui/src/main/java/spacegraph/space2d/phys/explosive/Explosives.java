@@ -86,7 +86,7 @@
 //
 //
 //
-//            projectile.setTransform(barrel.pos.add(direction.scaled((barrelLength / 2f) + bulletLength)), heading);
+//            projectile.setTransform(barrel.pos.addAt(direction.scaled((barrelLength / 2f) + bulletLength)), heading);
 //
 //
 //
@@ -129,7 +129,7 @@
 //                    float blastScatter = bulletRadius * (blasts - 1);
 //                    float blastRadius = bulletRadius;
 //                    for (int i = 0; i < blasts; i++) {
-//                        W.addBody(new Fireball(W, getWorldCenter().add(
+//                        W.addBody(new Fireball(W, getWorldCenter().addAt(
 //                                new v2((float) rng.nextGaussian() * blastScatter, (float) rng.nextGaussian() * blastScatter)),
 //                                blastRadius));
 //                    }

@@ -451,7 +451,7 @@ public class Huffman {
             symbolIdx = 0;
             symbol = null;
             bitLen = 0;
-            //add codes to symbolIdx bit by bit until symbol is found, &7 == % 8, this loop takes up the majority of the total decompress time
+            //addAt codes to symbolIdx bit by bit until symbol is found, &7 == % 8, this loop takes up the majority of the total decompress time
             while (symbol == null && codeIdx < codesLen) {
                 symbolIdx |= ((byte) ((codes[codeIdx / 8]) >>> (codeIdx++ & 7)) & (byte) 1) << bitLen;
                 symbol = codeIdx2Symbols[++bitLen][symbolIdx];
@@ -473,7 +473,7 @@ public class Huffman {
                     symbolIdx = 0;
                     bitLen = 0;
                     symbol = null;
-                    //add codes to symbolIdx bit by bit until symbol is found
+                    //addAt codes to symbolIdx bit by bit until symbol is found
                     while (symbol == null && codeIdx < codesLen) {
                         symbolIdx |= ((byte) ((codes[codeIdx / 8]) >>> (codeIdx++ & 7)) & (byte) 1) << bitLen;
                         symbol = defCodeIdx2Symbols[++bitLen][symbolIdx];
@@ -524,11 +524,11 @@ public class Huffman {
             if (((codesIdx + 7) / 8) + ((aCode[0] + 7) / 8) > codes.length) codes = expand(codes, (aCode[0] + 7) / 8);
             codes = addSymbolToCodes(codes, codesIdx, aCode);
             codesIdx += aCode[0];
-            //if symbol not in main tree consult default tree, if not in default tree then just add uncompressed
+            //if symbol not in main tree consult default tree, if not in default tree then just addAt uncompressed
             if (curMatchIdx == altCodeIdx) {
                 if (useAltOnly) {
                     if (((codesIdx + 16) / 8) > codes.length) codes = expand(codes, 2);
-                    //set raw bit to true and add byte without compression
+                    //set raw bit to true and addAt byte without compression
                     codes[codesIdx / 8] |= 1 << (codesIdx & 7);
                     codesIdx++;
                     for (int q = 0; q < 8; q++) {
@@ -548,7 +548,7 @@ public class Huffman {
                         startIdx += defsymbol2Code[curMatchIdx].length;
                     } else {
                         if (((codesIdx + 16) / 8) > codes.length) codes = expand(codes, 2);
-                        //set raw bit to true and add byte without compression
+                        //set raw bit to true and addAt byte without compression
                         codes[codesIdx / 8] |= 1 << (codesIdx & 7);
                         codesIdx++;
                         for (int q = 0; q < 8; q++) {
@@ -1015,7 +1015,7 @@ public class Huffman {
         }
     }
 
-    //find out what symbols are really used during compression and add to freqList
+    //find out what symbols are really used during compression and addAt to freqList
     class FUGenerator implements Runnable {
         final Stream<byte[]> workQueue;
         int startIdx, endIdx, symbIdx;

@@ -72,7 +72,7 @@ public class LazyCompound {
 
     final static byte MAX_CONTROL_CODES = (byte) Op.ops.length;
 
-    /** add an already existent sub */
+    /** addAt an already existent sub */
     public LazyCompound add(Term sub) {
         code().writeByte( MAX_CONTROL_CODES + sub().intern(sub) );
         return this;

@@ -1,7 +1,7 @@
 package jcog.signal.tensor;
 
 public interface TensorTo {
-    void set(float newValue, int linearCell);
+    void setAt(float newValue, int linearCell);
 
-    void set(float newValue, int... cell);
+    void set(float newValue, int[] cell);
 }

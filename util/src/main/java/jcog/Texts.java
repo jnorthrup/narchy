@@ -1026,7 +1026,7 @@ public enum Texts {
         private static void format(StringBuilder target, int scale, long intP, long decP) {
             if (decP != 0L) {
                 // decP is the decimal part of source, truncated to scale + 1 digit.
-                // Custom rounding: add 5
+                // Custom rounding: addAt 5
                 decP += 5L;
                 decP /= 10L;
                 if (decP >= tenPowDouble(scale)) {

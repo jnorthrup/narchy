@@ -410,7 +410,7 @@ public class KB implements Serializable {
 
     /***************************************************************
      * Remove from
-     * the given set any item which is a superclass of another item in the set.
+     * the given set any item which is a superclass of another item in the setAt.
      *
      * @param set
      * @return
@@ -1520,7 +1520,7 @@ public class KB implements Serializable {
      * "<assertionResponse>...</assertionResponse>" where the body should be "
      * Formula has been added to the session database" if all went well.
      * <p>
-     * TODO: If we find a way to directly add assertions into opened inference
+     * TODO: If we find a way to directly addAt assertions into opened inference
      * engine, we can roll back to 1.111 version
      *
      * @param input The String representation of a SUO-KIF Formula.
@@ -2861,8 +2861,8 @@ public class KB implements Serializable {
 
     /*****************************************************************
      * This method retrieves the upward transitive closure of all Class names
-     * contained in the input set. The members of the input set are not included
-     * in the result set.
+     * contained in the input setAt. The members of the input set are not included
+     * in the result setAt.
      *
      * @param classNames
      *            A Set object containing SUO-KIF class names (Strings).
@@ -2881,7 +2881,7 @@ public class KB implements Serializable {
     }
 
     /*****************************************************************
-     * This method retrieves all instances of the classes named in the input set.
+     * This method retrieves all instances of the classes named in the input setAt.
      *
      * @param classNames
      *            A Set of String, containing SUO-KIF class names

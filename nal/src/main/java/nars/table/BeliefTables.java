@@ -159,7 +159,7 @@ public class BeliefTables implements BeliefTable {
 //                        //TODO maybe sort by evi decreasing
 //                        Task e = eternal.eternalize(t, temporal.capacity(), temporal.tableDur(), n);
 //                        if (e != null)
-//                            eternal.add(r, n, e);
+//                            eternal.addAt(r, n, e);
 //                    }
 //                });
 //            }
@@ -207,7 +207,7 @@ public class BeliefTables implements BeliefTable {
 
     @Override
     public void setTaskCapacity(int newCapacity) {
-        throw new UnsupportedOperationException("can only set capacity to individual tables contained by this");
+        throw new UnsupportedOperationException("can only setAt capacity to individual tables contained by this");
     }
 
 

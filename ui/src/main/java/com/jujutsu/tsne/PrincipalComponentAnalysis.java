@@ -37,13 +37,13 @@ import static org.ejml.dense.row.SingularOps_DDRM.descendingOrder;
  * <p>
  * Principal Component Analysis (PCA) is typically used to develop a linear model for a set of data
  * (e.g. face images) which can then be used to test for membership.  PCA works by converting the
- * set of data to a new basis that is a subspace of the original set.  The subspace is selected
+ * set of data to a new basis that is a subspace of the original setAt.  The subspace is selected
  * to maximize information.
  * </p>
  * <p>
  * PCA is typically derived as an eigenvalue problem.  However in this implementation {@link org.ejml.interfaces.decomposition.SingularValueDecomposition SVD}
  * is used instead because it will produce a more numerically stable solution.  Computation using EVD requires explicitly
- * computing the variance of each sample set. The variance is computed by squaring the residual, which can
+ * computing the variance of each sample setAt. The variance is computed by squaring the residual, which can
  * cause loss of precision.
  * </p>
  *
@@ -214,7 +214,7 @@ public class PrincipalComponentAnalysis {
     /**
      * <p>
      * The membership error for a sample.  If the error is less than a threshold then
-     * it can be considered a member.  The threshold's value depends on the data set.
+     * it can be considered a member.  The threshold's value depends on the data setAt.
      * </p>
      * <p>
      * The error is computed by projecting the sample into eigenspace then projecting
@@ -240,7 +240,7 @@ public class PrincipalComponentAnalysis {
 
     /**
      * Computes the dot product of each basis vector against the sample.  Can be used as a measure
-     * for membership in the training sample set.  High values correspond to a better fit.
+     * for membership in the training sample setAt.  High values correspond to a better fit.
      *
      * @param sample Sample of original data.
      * @return Higher value indicates it is more likely to be a member of input dataset.

@@ -208,8 +208,8 @@ abstract class ListFuncTest {
             n.input("hanoi(0,#A,#B,#C,()).");
             n.input(
                     "((&&" +
-                            ",hanoi(add($N,-1),$A,$C,$B,#Moves1)" +
-                            ",hanoi(add($N,-1),$B,$A,$C,#Moves2)" +
+                            ",hanoi(addAt($N,-1),$A,$C,$B,#Moves1)" +
+                            ",hanoi(addAt($N,-1),$B,$A,$C,#Moves2)" +
                             ",append(#Moves1,append(to($A,$C),#Moves2),$Moves)) ==> hanoi($N,$A,$B,$C,$Moves)).");
 
             for (; levels > 0; levels--)

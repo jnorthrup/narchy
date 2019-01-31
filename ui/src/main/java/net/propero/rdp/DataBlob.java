@@ -8,7 +8,7 @@
  * Copyright (c) 2005 Propero Limited
  *
  * Purpose: Encapsulates Blobs of byte data, of arbitrary size (although
- *          data cannot be changed once set)
+ *          data cannot be changed once setAt)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

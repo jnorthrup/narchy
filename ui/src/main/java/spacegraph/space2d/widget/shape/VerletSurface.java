@@ -188,7 +188,7 @@ public class VerletSurface extends Surface implements Animated {
 
             Vec2D pNext = b.targetVerlet(vv, ss);
             if (pNext != null) {
-                //p.next.set(pNext);
+                //p.next.setAt(pNext);
                 //System.out.println(vv.id + " " + vv.x + "," + vv.y);
 
 
@@ -202,9 +202,9 @@ public class VerletSurface extends Surface implements Animated {
                 float density = 0.01f;
                 vv.mass = ss.bounds.area() * density;
 
-//                    vv.set(pNext);
-//                    vv.prev.set(pNext);
-                //vv.next.set(pNext);
+//                    vv.setAt(pNext);
+//                    vv.prev.setAt(pNext);
+                //vv.next.setAt(pNext);
             }
         });
 
@@ -220,7 +220,7 @@ public class VerletSurface extends Surface implements Animated {
             //pre
             v.addConstraint(vv -> {
                 Surface ss = wrs.get();
-//                vv.next.set(b.targetVerlet(vv, ss));
+//                vv.next.setAt(b.targetVerlet(vv, ss));
 //                vv.constrainAll(physics.bounds);
 
                 if (ss == null) {
@@ -239,15 +239,15 @@ public class VerletSurface extends Surface implements Animated {
 
 //                Vec2D pNext = b.targetVerlet(vv, ss);
 //                if (pNext != null) {
-//                    //p.next.set(pNext);
+//                    //p.next.setAt(pNext);
 //                    //float speed = 0.05f;
 ////                        System.out.println(vv.id + " " + vv.x + "," + vv.y);
 //                    //vv.addForce(pNext.sub(vv).normalize().scaleSelf(speed));
 ////                    vv.clearForce();
 ////                    vv.clearVelocity();
-//                    vv.next.set(pNext);
-//                    vv.prev.set(pNext);
-//                    vv.set(pNext);
+//                    vv.next.setAt(pNext);
+//                    vv.prev.setAt(pNext);
+//                    vv.setAt(pNext);
 //
 //                }
             });

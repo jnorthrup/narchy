@@ -40,7 +40,7 @@ public class ImageTracer {
                 System.out.println("Example usage:\r\n\r\njava -jar ImageTracer.jar <filename> outfilename test.svg " +
                         "ltres 1 qtres 1 pathomit 1 numberofcolors 128 colorquantcycles 15 " +
                         "scale 1 roundcoords 1 lcpr 0 qcpr 0 desc 1 viewbox 0  blurradius 0 blurdelta 20 \r\n" +
-                        "\r\nOnly <filename> is mandatory, if some of the other optional parameters are missing, they will be set to these defaults. " +
+                        "\r\nOnly <filename> is mandatory, if some of the other optional parameters are missing, they will be setAt to these defaults. " +
                         "\r\nWarning: if outfilename is not specified, then <filename>.svg will be overwritten." +
                         "\r\nSee https://github.com/jankovicsandras/imagetracerjava for details. \r\nThis is version " + versionnumber);
             } else {

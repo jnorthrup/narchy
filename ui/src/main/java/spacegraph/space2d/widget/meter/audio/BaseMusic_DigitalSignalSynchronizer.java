@@ -53,11 +53,11 @@
 //        return mSynchronizer;
 //    }
 //
-//    public void add(BaseMusic_DigitalSignalProcessorInterface inSignalProcessor) {
+//    public void addAt(BaseMusic_DigitalSignalProcessorInterface inSignalProcessor) {
 //        if (mSynchronizer!=null) {
 //            inSignalProcessor.initialize(mSampleSize, src.audioFormat);
 //        }
-//        dsp.add(inSignalProcessor);
+//        dsp.addAt(inSignalProcessor);
 //    }
 //
 //    private Normalizer getNormalizer() {

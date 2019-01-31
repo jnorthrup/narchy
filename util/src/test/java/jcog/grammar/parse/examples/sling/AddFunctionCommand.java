@@ -16,12 +16,12 @@ public class AddFunctionCommand extends Command {
 	private Variable nLine;
 
 	/**
-	 * Construct a command to add the supplied function to the
+	 * Construct a command to addAt the supplied function to the
 	 * supplied function collection.
 	 *
 	 * @param   RenderableCollection   the collection
 	 *
-	 * @param   SlingFunction   the function to evaluate and add
+	 * @param   SlingFunction   the function to evaluate and addAt
 	 *                          at execution time
 	 *
 	 * @param   nLine   a varialbe representing the number of
@@ -36,7 +36,7 @@ public class AddFunctionCommand extends Command {
 	}
 
 	/**
-	 * Evaluate the function and add it to the collection.
+	 * Evaluate the function and addAt it to the collection.
 	 */
 	public void execute() {
 		renderables.add(new Renderable(f.eval(), nLine.eval()));
@@ -48,6 +48,6 @@ public class AddFunctionCommand extends Command {
 	 * @return   a string description of this command
 	 */
 	public String toString() {
-		return "add(" + f + ", " + renderables + ")";
+		return "addAt(" + f + ", " + renderables + ")";
 	}
 }

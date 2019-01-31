@@ -159,7 +159,7 @@ public class Predict_NARS_Core {
 
             
             int dt = 1;
-            /*if (last!=val && chg.set("((y" + val + ") &&-" + dt + " (--,(y" + last + "))). :|:")) {
+            /*if (last!=val && chg.setAt("((y" + val + ") &&-" + dt + " (--,(y" + last + "))). :|:")) {
                 last = val;
             }*/
 

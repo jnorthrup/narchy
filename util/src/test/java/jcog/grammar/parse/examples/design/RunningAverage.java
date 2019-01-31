@@ -12,7 +12,7 @@ import jcog.grammar.parse.PubliclyCloneable;
 
 /**
  * Objects of this class maintain a running average. Each
- * number that is added with the <code>add</code> method
+ * number that is added with the <code>addAt</code> method
  * increases the count by 1, and the total by the amount
  * added.
  * 
@@ -29,7 +29,7 @@ public class RunningAverage implements PubliclyCloneable<RunningAverage> {
 	 * Add a value to the running average, increasing the count
 	 * by 1 and the total by the given value.
 	 *
-	 * @param   double   the value to add into the running average
+	 * @param   double   the value to addAt into the running average
 	 */
 	public void add(double d) {
 		count++;

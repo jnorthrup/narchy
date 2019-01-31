@@ -135,7 +135,7 @@ public enum Perceive { ;
 //                Task tSubEvent = Task.clone(t, what, reducedTruth, punc, Tense.dither(when, n), Tense.dither(when + range, n));
 //
 //                if (tSubEvent != null)
-//                    subTasks.add(tSubEvent);
+//                    subTasks.addAt(tSubEvent);
 //                return true;
 //            }, s, true, false, false, 0);
 //
@@ -168,7 +168,7 @@ public enum Perceive { ;
                     }
                 } catch (Throwable xtt) {
                     logger.warn("{} operator {} exception {}", t, o, xtt);
-                    //queue.add(Operator.error(this, xtt, n.time()));
+                    //queue.addAt(Operator.error(this, xtt, n.time()));
                     return false;
                 }
                 if (cmd) {

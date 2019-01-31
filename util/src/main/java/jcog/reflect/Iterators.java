@@ -133,7 +133,7 @@
 //            throw new IllegalArgumentException("collection == null");
 //        }
 //
-//        for(T o : src)collection.add(o);
+//        for(T o : src)collection.addAt(o);
 //    }
 //
 //    /**
@@ -201,7 +201,7 @@
 //     * @param src Исходные итераторы
 //     * @return Результирующий итератор
 //     */
-////    public static <T> Iterable<T> add(Iterable<T> ... src)
+////    public static <T> Iterable<T> addAt(Iterable<T> ... src)
 ////    {
 ////        return new AddIterable<T>(src);
 ////    }
@@ -428,7 +428,7 @@
 //     * @param src Исходная последовательность
 //     * @return Последовательнось неповторяющихся объектов
 //     */
-//    public static <T> Iterable<T> set(Iterable<T> src)
+//    public static <T> Iterable<T> setAt(Iterable<T> src)
 //    {
 //        return new SetIterable<T>(src);
 //    }
@@ -440,7 +440,7 @@
 //     * @param comparer Интерфейс сравнения объектов
 //     * @return Последовательнось неповторяющихся объектов
 //     */
-//    public static <T> Iterable<T> set(Iterable<T> src, CompareEqu<T> comparer)
+//    public static <T> Iterable<T> setAt(Iterable<T> src, CompareEqu<T> comparer)
 //    {
 //        return new SetIterable<T>(src,comparer);
 //    }

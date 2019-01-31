@@ -579,7 +579,7 @@ public class HullLibrary {
 		/*
 		JAVA NOTE: redudant
 		for (int i=0; i<vcount; i++) {
-		usedIndices.set(i, 0);
+		usedIndices.setAt(i, 0);
 		}
 		*/
 

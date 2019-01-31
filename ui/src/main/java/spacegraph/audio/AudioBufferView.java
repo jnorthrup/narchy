@@ -121,11 +121,11 @@ public class AudioBufferView extends Gridding {
 //            switch (chans) {
 //                case 1:
 //                    for (int i = 0; i < bufferSamples; i++)
-//                        rawWave.add(samples[i]);
+//                        rawWave.addAt(samples[i]);
 //                    break;
 //                case 2:
 //                    for (int i = 0; i < bufferSamples; )
-//                        rawWave.add((samples[i++] + samples[i++]) / 2f); //HACK
+//                        rawWave.addAt((samples[i++] + samples[i++]) / 2f); //HACK
 //                    break;
 //                default:
 //                    throw new UnsupportedOperationException();
@@ -158,10 +158,10 @@ public class AudioBufferView extends Gridding {
 //                    if (busy.compareAndSet(false, true)) {
 //                        try {
 //                            freqDomain.update();
-//                            freqDomain.forEach(this::set);
+//                            freqDomain.forEach(this::setAt);
 //                            autorange();
 //                        } finally {
-//                            busy.set(false);
+//                            busy.setAt(false);
 //                        }
 //                    }
 //                });
@@ -203,7 +203,7 @@ public class AudioBufferView extends Gridding {
 //                        history.addAll(ss[i]);
 //
 //
-//                    busy.set(false);
+//                    busy.setAt(false);
 //
 //                });
 //            }
@@ -261,14 +261,14 @@ public class AudioBufferView extends Gridding {
 //                //new Plot2D.BitmapWave(512, 256)
 //                Plot2D.Line
 //        );
-//        audioPlot.add(rawWave);
+//        audioPlot.addAt(rawWave);
 
 //            Plot2D audioPlot2 = new Plot2D(bufferSamples,
 //                    new Plot2D.BitmapPlot(1024, 256)
 //                    //Plot2D.Line
 //            );
 //
-//            audioPlot2.add(wavelet1d);
+//            audioPlot2.addAt(wavelet1d);
 
 //        BitmapMatrixView freqHistory = new BitmapMatrixView(freqSamplesPerFrame, historyFrames, (y, x) -> {
 //            if (data == null)

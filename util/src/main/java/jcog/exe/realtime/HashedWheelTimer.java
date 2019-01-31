@@ -118,9 +118,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             while ((c = cursor.getAndAccumulate(wheels, (cc, w) -> (cc + 1) % w)) >= 0) {
 
                 if (model.run(c) == 0) {
-                    if (empties++ >= wheels * SLEEP_EPOCHS) {
+                    if (empties++ >= wheels * SLEEP_EPOCHS)
                         break;
-                    }
+
                 } else
                     empties = 0;
 
@@ -471,7 +471,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         /**
          * returns how approximately how many entries were in the wheel at start.
-         * used in part to determine if the entire wheel is empty
+         * used in part to determine if the entire wheel is empty.
+         *
          */
         abstract public int run(int wheel);
 

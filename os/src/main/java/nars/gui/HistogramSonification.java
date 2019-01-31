@@ -73,7 +73,7 @@ public class HistogramSonification extends Gridding {
 //                if (x) {
 ////                    g = new Granulize(gBuf, 44100, 0.2f, 0.9f, new XoRoShiRo128PlusRandom(1));
 ////                    //.setStretchFactor(1/50f)
-////                    g.pitchFactor.set(4f);
+////                    g.pitchFactor.setAt(4f);
 //
 //                    Audio.the().play(g);
 //                } else {

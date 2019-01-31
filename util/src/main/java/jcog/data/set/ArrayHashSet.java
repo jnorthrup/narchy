@@ -92,7 +92,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     @Override
     public boolean addAll(Collection<? extends X> c) {
-        //throw new TODO("optimized bulk add");
+        //throw new TODO("optimized bulk addAt");
         boolean added = false;
         for (X x : c) {
             added |= add(x);
@@ -212,7 +212,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 //        if (!list.isEmpty()) {
         list.clear();
         set = emptySet();
-        //set.clear();
+        //setAt.clear();
 //        }
 
     }
@@ -311,7 +311,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
             } else {
                 if (set.contains(element)) {
 
-                    throw new IllegalArgumentException("Cannot set already-present element in a different position in ArrayHashSet.");
+                    throw new IllegalArgumentException("Cannot setAt already-present element in a different position in ArrayHashSet.");
                 } else {
                     arrayListIterator.set(element);
                     set.remove(lastElementProvided);

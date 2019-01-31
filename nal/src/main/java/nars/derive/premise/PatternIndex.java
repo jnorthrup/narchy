@@ -210,11 +210,11 @@ public class PatternIndex extends MapConceptIndex {
                     Term x = subterms.sub(0);
                     Term y = subterms.sub(1);
                     if (x instanceof Ellipsislike) {
-                        //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
+                        //raw ellipsis, the conjunction got removed somewhere. HACK re-addAt it
                         x = CONJ.the(x);
                     }
                     if (y instanceof Ellipsislike) {
-                        //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
+                        //raw ellipsis, the conjunction got removed somewhere. HACK re-addAt it
                         y = CONJ.the(y);
                     }
                     subterms = new BiSubterm(x, y); //avoid interning
@@ -422,7 +422,7 @@ public class PatternIndex extends MapConceptIndex {
                                 if (Subterms.possiblyUnifiable(ix, yy, u.varBits)) {
 //                                    if (yMatchableWithX == null)
 //                                        yMatchableWithX = new FasterList(1);
-//                                    yMatchableWithX.add(yy);
+//                                    yMatchableWithX.addAt(yy);
                                     canMatch = true; break;
                                 }
                             }

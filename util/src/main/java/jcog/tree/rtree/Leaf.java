@@ -313,7 +313,7 @@ public final class Leaf<X> extends AbstractNode<X> {
     }
 
     /**
-     * Figures out which newly made leaf node (see split method) to add a data entry to.
+     * Figures out which newly made leaf node (see split method) to addAt a data entry to.
      *
      * @param a left node
      * @param b right node

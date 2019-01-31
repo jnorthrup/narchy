@@ -19,7 +19,7 @@ public class OpjectsTest {
         protected int v;
 
         public void set(int x) {
-            System.err.println("set: " + x);
+            System.err.println("setAt: " + x);
             this.v = x;
         }
 
@@ -63,7 +63,7 @@ public class OpjectsTest {
         n.onTask(sb::append);
 
 
-        n.input("set(x,1)! :|:");
+        n.input("setAt(x,1)! :|:");
 
         n.run(dur);
 
@@ -147,7 +147,7 @@ public class OpjectsTest {
         String s = sb.toString();
         System.out.println("log:\n" + s);
         assertTrue(s.contains("get(y,0)."));
-        assertTrue(s.contains("set(y,1)."));
+        assertTrue(s.contains("setAt(y,1)."));
     }
 
     @Test

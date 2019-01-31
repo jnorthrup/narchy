@@ -37,7 +37,7 @@ public class ThermostatTest {
         n.termVolumeMax.set(18);
         n.freqResolution.set(0.2f);
         n.confResolution.set(0.05f);
-        //n.activateConceptRate.set(0.1f);
+        //n.activateConceptRate.setAt(0.1f);
 
         n.goalPriDefault.set(0.5f);
         //n.emotion.want(MetaGoal.Believe, -0.1f);
@@ -93,7 +93,7 @@ public class ThermostatTest {
 
             training[0] = true;
 
-            //op.exeThresh.set(1f);
+            //op.exeThresh.setAt(1f);
             for (int i = 0; i < subTrainings; i++) {
                 for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold}) {
 

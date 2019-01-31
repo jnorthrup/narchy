@@ -234,7 +234,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 //
 //            long sinceLastFrameStart = now - lastFrameStart;
 //
-//            //priPixel.set(priPixel(pri.floatValue()));
+//            //priPixel.setAt(priPixel(pri.floatValue()));
 //
 ////            int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
 ////

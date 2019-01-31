@@ -446,7 +446,7 @@ public class edict_t {
         } 
 
         if (key.equals("item")) {
-            game_import_t.error("ent.set(\"item\") called.");
+            game_import_t.error("ent.setAt(\"item\") called.");
             return true;
         } 
 

@@ -72,7 +72,7 @@ public final class Jake2 {
         
         for (int n = 0; n <  args.length; n++)
         {
-            if (args[n].equals("+set"))
+            if (args[n].equals("+setAt"))
             {
                 if (n++ >= args.length)
                     break;

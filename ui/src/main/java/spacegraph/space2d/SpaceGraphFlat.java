@@ -57,7 +57,7 @@ public class SpaceGraphFlat extends JoglSpace {
             }
         };
         add(hud);
-//        hud.content().add(new PushButton("x").pos(0, 0, 100f, 100f));
+//        hud.content().addAt(new PushButton("x").pos(0, 0, 100f, 100f));
 
 
         });

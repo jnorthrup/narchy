@@ -27,7 +27,7 @@ import java.util.Arrays;
 /**
  * LZ4 compression and decompression routines.
  * from Apache Lucene
- * TODO add unit test
+ * TODO addAt unit test
  * <p>
  * http://code.google.com/p/lz4/
  * http://fastcompression.blogspot.fr/p/lz4.html

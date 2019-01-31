@@ -68,7 +68,7 @@ public class ClassReader {
   /**
    * A flag to expand the stack map frames. By default stack map frames are visited in their
    * original format (i.e. "expanded" for classes whose version is less than V1_6, and "compressed"
-   * for the other classes). If this flag is set, stack map frames are always visited in expanded
+   * for the other classes). If this flag is setAt, stack map frames are always visited in expanded
    * format (this option adds a decompression/compression step in ClassReader and ClassWriter which
    * degrades performance quite a lot).
    */
@@ -2444,13 +2444,13 @@ public class ClassReader {
   }
 
   /**
-   * Creates a label without the {@link Label#FLAG_DEBUG_ONLY} flag set, for the given bytecode
+   * Creates a label without the {@link Label#FLAG_DEBUG_ONLY} flag setAt, for the given bytecode
    * offset. The label is created with a call to {@link #readLabel} and its {@link
    * Label#FLAG_DEBUG_ONLY} flag is cleared.
    *
    * @param bytecodeOffset a bytecode offset in a method.
    * @param labels the already created labels, indexed by their offset.
-   * @return a Label without the {@link Label#FLAG_DEBUG_ONLY} flag set.
+   * @return a Label without the {@link Label#FLAG_DEBUG_ONLY} flag setAt.
    */
   private Label createLabel(final int bytecodeOffset, final Label[] labels) {
     Label label = readLabel(bytecodeOffset, labels);
@@ -2459,7 +2459,7 @@ public class ClassReader {
   }
 
   /**
-   * Creates a label with the {@link Label#FLAG_DEBUG_ONLY} flag set, if there is no already
+   * Creates a label with the {@link Label#FLAG_DEBUG_ONLY} flag setAt, if there is no already
    * existing label for the given bytecode offset (otherwise does nothing). The label is created
    * with a call to {@link #readLabel}.
    *

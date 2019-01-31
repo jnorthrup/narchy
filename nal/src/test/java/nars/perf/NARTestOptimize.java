@@ -50,36 +50,36 @@ class NARTestOptimize {
 //                        (NAR n, int i) -> n.attn.active.setCapacity(i))
 
 //                .var("ttlMax", 1 * Param.TTL_MIN, 8 * Param.TTL_MIN, 3,
-//                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+//                        (NAR n, int i) -> n.deriveBranchTTL.setAt(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
                 .var("conceptActivation", ScalarValue.EPSILONsqrt, 1f, 0.1f,
                         (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).activationRate.set(f))
 //                .var("linkActivation", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.taskLinkActivation.set(f))
+//                        (NAR n, float f) -> n.taskLinkActivation.setAt(f))
 //                .var("forgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-//                        (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).forgetRate.set(f))
+//                        (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).forgetRate.setAt(f))
 //                .var("linkForgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-//                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).tasklinkForgetRate.set(f))
+//                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).tasklinkForgetRate.setAt(f))
 //
 //                .var("beliefPriDefault", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-//                        (NAR n, float f) -> n.beliefPriDefault.set(f))
+//                        (NAR n, float f) -> n.beliefPriDefault.setAt(f))
 //                .var("questionPriDefault", ScalarValue.EPSILONsqrt, 1f, 0.1f,
 //                        (NAR n, float f) -> {
-//                            n.questionPriDefault.set(f);
-//                            n.questPriDefault.set(f);
+//                            n.questionPriDefault.setAt(f);
+//                            n.questPriDefault.setAt(f);
 //                        })
 //                .var("goalPriDefault", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.goalPriDefault.set(f))
+//                        (NAR n, float f) -> n.goalPriDefault.setAt(f))
 
 //                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDerivePri)(n.attn.deriving)).
-//                                        relGrowthExponent.set(f)))
+//                                        relGrowthExponent.setAt(f)))
 //                .var("derivationScale", 0.5f, 2f, 0.1f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
-//                                        scale.set(f)))
+//                                        scale.setAt(f)))
             ;
 
 

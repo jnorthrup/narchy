@@ -48,13 +48,13 @@ class Focus { //extends AtomicRoulette<Causable>
 //            if (x instanceof Causable) {
 //                Causable c = (Causable) x;
 //                if (xa.getTwo())
-//                    add(c);
+//                    addAt(c);
 //                else
 //                    remove(c);
 //            }
 //        });
 //
-//        n.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
+//        n.services().filter(x -> x instanceof Causable).forEach(x -> addAt((Causable) x));
 //
 //        n.onCycle(this::onCycle);
 //    }
@@ -200,7 +200,7 @@ class Focus { //extends AtomicRoulette<Causable>
 //            }
 //
 //        } finally {
-//            updating.set(false);
+//            updating.setAt(false);
 //        }
 //    }
 //

@@ -11,9 +11,9 @@ public enum AutoTranscodeTensor { ;
 
     /**  TODO AutodecodeTensor (reverse) - generate from encoded. and possibly share autoencoder instance */
 
-    public static class AutoDecodeTensor extends ArrayTensor {
-
-    }
+//    public static class AutoDecodeTensor extends ArrayTensor {
+//
+//    }
 
     public static class AutoEncodeTensor extends ArrayTensor {
         private final Tensor in;
@@ -40,7 +40,7 @@ public enum AutoTranscodeTensor { ;
                 float[] ii = in.snapshot();
 
 
-                //set(a.train(dii, learnRate, 0));
+                //setAt(a.train(dii, learnRate, 0));
                 ae.put(ii, (float) learnRate, 0, 0, true);
                 set(ae.y);
 

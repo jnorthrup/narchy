@@ -674,7 +674,7 @@
 ////
 ////
 ////
-////                    add(new Windo(tt).pos(0,0, w, h));
+////                    addAt(new Windo(tt).pos(0,0, w, h));
 ////                }
 ////            }
 ////        }
@@ -698,8 +698,8 @@
 //        private Surface addNewSurface(Box box) {
 //            Surface s = newSurface(box);
 //            if (s!=null) {
-//                //add(s);
-//                add(s);
+//                //addAt(s);
+//                addAt(s);
 //            }
 //            return s;
 //        }
@@ -737,7 +737,7 @@
 //        public TextSurface(TextBox box) {
 //            super(box);
 //            this.label = new BitmapLabel("");
-//            add(label);
+//            addAt(label);
 //        }
 //
 //        @Override

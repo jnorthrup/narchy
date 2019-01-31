@@ -430,8 +430,8 @@ public class NARio extends NAgentX {
 
             NARio x;
             x = new NARio(n);
-//            n.freqResolution.set(0.02f);
-//            n.confResolution.set(0.01f);
+//            n.freqResolution.setAt(0.02f);
+//            n.confResolution.setAt(0.01f);
 
 
             return x;

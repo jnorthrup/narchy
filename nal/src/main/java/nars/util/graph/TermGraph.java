@@ -54,7 +54,7 @@ public enum TermGraph {
 //                while (ii.hasNext()) {
 //                    Term t = ii.next().target();
 //                    ii.remove();
-//                    if (!done.add(t))
+//                    if (!done.addAt(t))
 //                        continue;
 //
 //                    Concept tc = nar.concept(t);
@@ -62,7 +62,7 @@ public enum TermGraph {
 //                        return;
 //
 //                    recurseTerm(nar, g, (impl) -> {
-//                        if (acceptEdge.test(impl) && done.add(impl)) {
+//                        if (acceptEdge.test(impl) && done.addAt(impl)) {
 //                            Term s = impl.sub(0);
 //                            if (!acceptNode.test(s))
 //                                return;
@@ -80,8 +80,8 @@ public enum TermGraph {
 //                            if (p == null || !p.op().conceptualizable)
 //                                return;
 //
-//                            next.add(s);
-//                            next.add(p);
+//                            next.addAt(s);
+//                            next.addAt(p);
 //                            if (s.op().conceptualizable && p.op().conceptualizable) {
 //                                g.addNode(s);
 //                                g.addNode(p);

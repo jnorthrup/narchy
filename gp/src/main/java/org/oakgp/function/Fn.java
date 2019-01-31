@@ -93,6 +93,6 @@ public interface Fn {
 
     /**
      * sorted but not deduplicated.
-     * true for commutive functions like add, multiply, etc. */
+     * true for commutive functions like addAt, multiply, etc. */
     default boolean argsSorted() { return false; }
 }

@@ -494,11 +494,11 @@ class RTreeNDTest {
 
         RectDouble rect = new RectDouble(0, 0, 2, 2);
         rTree.add(rect);
-        assertTrue(rTree.size() > 0, "Did not add HyperRect to Tree");
+        assertTrue(rTree.size() > 0, "Did not addAt HyperRect to Tree");
         rTree.remove(rect);
         assertTrue(rTree.size() == 0, "Did not remove HyperRect from Tree");
         rTree.add(rect);
-        assertTrue(rTree.size() > 0, "Tree nulled out and could not add HyperRect back in");
+        assertTrue(rTree.size() > 0, "Tree nulled out and could not addAt HyperRect back in");
     }
 
     @Disabled

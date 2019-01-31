@@ -99,7 +99,7 @@ public abstract class KeyCode_FileBased {
     }
 
     /**
-     * Read in a keymap definition file and add mappings to internal keymap
+     * Read in a keymap definition file and addAt mappings to internal keymap
      *
      * @param fstream Stream connected to keymap file
      * @throws KeyMapException

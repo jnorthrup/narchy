@@ -90,7 +90,7 @@ class Polygon {
     private final ArrayList<int[]> _triangles = new ArrayList<>();
 
     /**
-     * typedef map<unsigned int, set<unsigned int> >   AdjEdgeMap;
+     * typedef map<unsigned int, setAt<unsigned int> >   AdjEdgeMap;
      * data for monotone piece searching purpose;
      */
     private final IntObjectHashMap<IntHashSet> _startAdjEdgeMap = new IntObjectHashMap<>(0);

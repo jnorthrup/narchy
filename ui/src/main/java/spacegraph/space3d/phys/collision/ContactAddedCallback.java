@@ -29,7 +29,7 @@ import spacegraph.space3d.phys.collision.narrow.ManifoldPoint;
 
 /**
  * Called when contact has been created between two collision objects. At least
- * one of object must have {@link CollisionFlags#CUSTOM_MATERIAL_CALLBACK} flag set.
+ * one of object must have {@link CollisionFlags#CUSTOM_MATERIAL_CALLBACK} flag setAt.
  * 
  * @see BulletGlobals#setContactAddedCallback
  * @author jezek2

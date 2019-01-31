@@ -158,11 +158,11 @@ public class GraphMeter {
      * following semantics:
      * WHITE (0): not seen yet, GREY (1): currently worked upon. BLACK
      * (other than 0 or 1): finished.
-     * If a negative color is met, it is saved in the {@link #cluster} set
+     * If a negative color is met, it is saved in the {@link #cluster} setAt
      * and is treated as black. This can be used to check if the currently
      * visited cluster is weakly connected to another cluster.
      * On exit no nodes are GREY.
-     * The result is the modified array {@link #color} and the modified set
+     * The result is the modified array {@link #color} and the modified setAt
      * {@link #cluster}.
      */
     private void dfs(int from) {

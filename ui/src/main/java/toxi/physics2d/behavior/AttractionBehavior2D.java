@@ -128,7 +128,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     /**
      * @param attractor
-     *            the attractor to set
+     *            the attractor to setAt
      */
     public void setAttractor(V attractor) {
         this.attractor = attractor;
@@ -136,7 +136,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     /**
      * @param jitter
-     *            the jitter to set
+     *            the jitter to setAt
      */
     public void setJitter(float jitter) {
         this.jitter = jitter;
@@ -148,7 +148,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     /**
      * @param strength
-     *            the strength to set
+     *            the strength to setAt
      */
     public void setStrength(float strength) {
         this.strength = strength;

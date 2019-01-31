@@ -283,13 +283,13 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             if (a != null && b != null && a.fixtures != null && b.fixtures != null) {
 //                RayCastOutput out12 = new RayCastOutput();
 //                RayCastInput in12 = new RayCastInput();
-//                in12.p2.set(a.pos);
-//                in12.p1.set(b.pos);
+//                in12.p2.setAt(a.pos);
+//                in12.p1.setAt(b.pos);
 //                in12.maxFraction = 1f;
 //                if (a.fixtures.raycast(out12, in12, 0)) {
 //                    RayCastInput in21 = new RayCastInput();
-//                    in21.p1.set(a.pos);
-//                    in21.p2.set(b.pos);
+//                    in21.p1.setAt(a.pos);
+//                    in21.p2.setAt(b.pos);
 //                    in21.maxFraction = 1-out12.fraction;
 //                    RayCastOutput out21 = new RayCastOutput();
 //                    if (b.fixtures.raycast(out21, in21, 0)) {
@@ -696,9 +696,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 ////                RayCastInput input = new RayCastInput();
 ////                RayCastOutput output = new RayCastOutput();
 ////                {
-////                    input.p2.set(0, 0);
+////                    input.p2.setAt(0, 0);
 ////                    float r = radius() * 2;
-////                    input.p1.set(0 + normal.x * r, 0 + normal.y * r);
+////                    input.p1.setAt(0 + normal.x * r, 0 + normal.y * r);
 ////                    input.maxFraction = 1.0f;
 ////
 ////                    boolean hit = body.fixtures.raycast(output, input, 0);
@@ -707,9 +707,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 ////                    myWeldLocal = hitPoint;
 ////                }
 ////                {
-////                    input.p2.set(0, 0);
+////                    input.p2.setAt(0, 0);
 ////                    float r = x.radius() * 2;
-////                    input.p1.set(0 - normal.x * r, 0 - normal.y * r);
+////                    input.p1.setAt(0 - normal.x * r, 0 - normal.y * r);
 ////                    input.maxFraction = 1.0f;
 ////
 ////                    boolean hit = x.body.fixtures.raycast(output, input, 0);
@@ -728,8 +728,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 ////            WeldJointDef jd = new WeldJointDef();
 ////            jd.bodyA = this.body;
 ////            jd.bodyB = x.body;
-////            jd.localAnchorA.set(myLocal.scaled(0.5f));
-////            jd.localAnchorB.set(theirLocal.scaled(0.5f));
+////            jd.localAnchorA.setAt(myLocal.scaled(0.5f));
+////            jd.localAnchorB.setAt(theirLocal.scaled(0.5f));
 ////            jd.referenceAngle = ((v2) myLocal).angle(theirLocal);
 ////            jd.collideConnected = false;
 ////            jd.dampingRatio = 0.5f;
@@ -839,7 +839,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 ////
 ////                if (enabled) {
 ////                    for (Surface x : children) {
-////                        built.add(toggleWindo.getOne().sprout(x, childScale).getOne());
+////                        built.addAt(toggleWindo.getOne().sprout(x, childScale).getOne());
 ////                    }
 ////                } else {
 ////

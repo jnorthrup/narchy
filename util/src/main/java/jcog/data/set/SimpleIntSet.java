@@ -27,7 +27,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
     private int[] keys;
 
     /**
-     * Creates a new empty integer set
+     * Creates a new empty integer setAt
      */
     public SimpleIntSet() {
         this(DEFAULT_CAPACITY);
@@ -52,7 +52,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
     }
 
     /**
-     * Creates a new set of integers from the given set
+     * Creates a new set of integers from the given setAt
      *
      * @param set the set of integers to create a copy of
      */
@@ -144,7 +144,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
     }
 
     /**
-     * @param e element to be added to this set
+     * @param e element to be added to this setAt
      * @return true if this set did not already contain the specified element
      */
     public boolean add(int e) {

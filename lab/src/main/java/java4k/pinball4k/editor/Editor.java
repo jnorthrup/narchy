@@ -63,7 +63,7 @@ public class Editor extends JFrame {
 				
 				
 				if (props.contains(levelObj) == false) {
-					props.add(levelObj.properties);
+					props.addAt(levelObj.properties);
 				}
 			}
 		}

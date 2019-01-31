@@ -148,7 +148,7 @@ public class XorShift128PlusRandom extends AtomicRandom {
      * <p>
      * <p>The seed will be passed twice through {@link HashCommon#murmurHash3(long)}. In this way, if the
      * user passes a small value we will avoid the short irregular transient associated
-     * with states with a very small number of bits set.
+     * with states with a very small number of bits setAt.
      *
      * @param seed a nonzero seed for this generator (if zero, the generator will be seeded with {@link Long#MIN_VALUE}).
      */

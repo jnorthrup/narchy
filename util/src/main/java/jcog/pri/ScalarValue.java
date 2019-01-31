@@ -23,7 +23,7 @@ public interface ScalarValue extends Prioritized {
     float EPSILONsqrt = (float)Math.sqrt(EPSILON);
 
     /** setter
-     *  @return value after set
+     *  @return value after setAt
      * */
     float pri(float p);
 

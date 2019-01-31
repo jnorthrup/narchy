@@ -296,7 +296,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
 //    }
 
 //    public Windo sprout(S from, S toAdd, float scale) {
-//        Windo to = add(toAdd);
+//        Windo to = addAt(toAdd);
 //        to.pos(RectFloat.XYWH(from.cx(), from.cy(), from.w() * scale, from.h() * scale));
 //
 //        VerletParticle2D toParticle = physics.bind(to, VerletSurface.VerletSurfaceBinding.Center, false);
@@ -533,7 +533,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
 //    private PhyWindow put(Surface content, RectFloat2D initialBounds, boolean collides) {
 //        PhyWindow s = new PhyWindow(initialBounds, collides);
 //
-//        s.add(content);
+//        s.addAt(content);
 //
 //        return s;
 //    }
@@ -564,9 +564,9 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
 //            }
 //
 //            @Override
-//            public ToggleButton set(boolean expanded) {
+//            public ToggleButton setAt(boolean expanded) {
 //
-//                super.set(expanded);
+//                super.setAt(expanded);
 //
 //                synchronized (wire) {
 //
@@ -685,7 +685,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
 //                    def.collideConnected = true;
 //
 //
-//                    def.target.set(f.pos);
+//                    def.target.setAt(f.pos);
 //
 //                    def.maxForce = 500f * touched2D.getMass();
 //                    def.dampingRatio = 0;

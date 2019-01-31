@@ -27,7 +27,7 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
     public <S extends SoundProducer> Sound<S> addSoundProducer(S producer, SoundSource soundSource, float volume, float priority) {
         Sound s = new Sound(producer, soundSource, volume, priority);
         if (!s.isLive())
-            throw new RuntimeException("dont add a dead sound");
+            throw new RuntimeException("dont addAt a dead sound");
         add(s);
         return s;
     }

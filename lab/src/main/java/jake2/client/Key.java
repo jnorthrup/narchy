@@ -310,7 +310,7 @@ public class Key extends Globals {
 				return; 
 
 			if (key >= 200 && Globals.keybindings[key] == null)
-				Com.Printf(Key.KeynumToString(key) + " is unbound, hit F4 to set.\n");
+				Com.Printf(Key.KeynumToString(key) + " is unbound, hit F4 to setAt.\n");
 		}
 		else {
 			key_repeats[key] = 0;

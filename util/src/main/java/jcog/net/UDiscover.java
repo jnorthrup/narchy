@@ -74,7 +74,7 @@ abstract public class UDiscover<P>  {
                 p = new DatagramPacket(myID, myID.length, ia, port);
                 q = new DatagramPacket(theirID, theirID.length);
 
-                //busy.set(false);
+                //busy.setAt(false);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -127,7 +127,7 @@ abstract public class UDiscover<P>  {
         } catch (Exception e) {
             logger.error("{} {}", this, e);
         }/* finally {
-            busy.set(false);
+            busy.setAt(false);
         }*/
 
         return true;
@@ -135,7 +135,7 @@ abstract public class UDiscover<P>  {
 
     public void stop() {
         synchronized (this) {
-            //busy.set(true);
+            //busy.setAt(true);
             if (ms != null) {
                 ms.close();
                 ms = null;

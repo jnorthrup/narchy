@@ -237,9 +237,9 @@ public class Shell {
 //
 //                    Predicate<Finger> pressable = Finger.clicked(0, () -> {
 //                        if (menuShown.compareAndSet(false, true)) {
-//                            set(menu);
+//                            setAt(menu);
 //                        } else if (menuShown.compareAndSet(true, false)) {
-//                            set(new EmptySurface());
+//                            setAt(new EmptySurface());
 //                        }
 //                    });
 //
@@ -277,7 +277,7 @@ public class Shell {
 //                };
 //
 //
-//                set(console);
+//                setAt(console);
 //            }
 //        }
 
@@ -395,7 +395,7 @@ public class Shell {
             /**
              * Adds an auto-close trigger to use on this terminal.
              *
-             * @param autoCloseTrigger Auto-close trigger to add to this terminal
+             * @param autoCloseTrigger Auto-close trigger to addAt to this terminal
              * @return Itself
              */
             public MySwingTerminalFrame addAutoCloseTrigger(TerminalEmulatorAutoCloseTrigger autoCloseTrigger) {

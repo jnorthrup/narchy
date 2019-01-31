@@ -37,7 +37,7 @@ public class WordOrReservedState extends WordState {
 	/**
 	 * Adds the specified string as a known reserved word. 
 	 *
-	 * @param   String   the word to add
+	 * @param   String   the word to addAt
 	 */
 	public void addReservedWord(String word) {
 		reserved.addElement(word);

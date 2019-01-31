@@ -1,10 +1,12 @@
 package nars.concept.action.curiosity;
 
 import jcog.Skill;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.decide.MutableRoulette;
 import jcog.math.FloatRange;
 import jcog.math.MutableEnum;
+import nars.NAR;
 import nars.Param;
 import nars.agent.NAgent;
 import nars.concept.action.AbstractGoalActionConcept;
@@ -14,6 +16,7 @@ import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /** a curiosity configuration which can be shared by multiple AbstractGoalActionConcept's */
 @Skill({"Curiosity", "Central_pattern_generator","Phantom_limb"})
@@ -75,14 +78,28 @@ public class Curiosity {
 
         this.rate.set(initialRate);
 
-        update();
-        a.onFrame(this::update);
+        a.onFrame((Consumer<NAR>)this::update);
 
     }
 
-    private void update() {
+    private void update(NAR nar) {
         if (!enable.getOpaque())
             return;
+
+        float curiConf =
+                //nar.confMin.floatValue();
+                nar.confMin.floatValue() * 2;
+                //nar.confMin.floatValue() * 4;
+                //Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);
+                //nar.confDefault(GOAL)/4;
+                //nar.confDefault(GOAL)/3;
+                //nar.confDefault(GOAL)/2;
+                //nar.confDefault(GOAL)/3;
+                //w2c(c2w(nar.confDefault(GOAL))/3);
+                //w2c(c2w(nar.confDefault(GOAL))/2);
+                //nar.confDefault(GOAL);
+
+        conf.set(Util.clamp(curiConf, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF));
 
         int cc = curiosity.size();
 

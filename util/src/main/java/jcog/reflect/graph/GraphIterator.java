@@ -36,7 +36,7 @@
 //import xyz.cofe.collection.Func2;
 //import xyz.cofe.collection.NodesExtracter;
 //import xyz.cofe.collection.Pair;
-//import xyz.cofe.collection.set.SyncEventSet;
+//import xyz.cofe.collection.setAt.SyncEventSet;
 //import xyz.cofe.common.ListenersHelper;
 //import xyz.cofe.common.Reciver;
 //
@@ -307,7 +307,7 @@
 //     */
 //    public void addEvent( GraphIteratorEvent<N,E> event ){
 //        if( event!=null && eventQueue!=null ){
-//            eventQueue.add(event);
+//            eventQueue.addAt(event);
 //        }
 //    }
 //    //</editor-fold>
@@ -542,20 +542,20 @@
 //                }
 //
 //                Iterable<Pair<N,E>> iterPaths = follow.extract(startNode);
-//                if( addVisited && visited!=null )visited.add(startNode);
+//                if( addVisited && visited!=null )visited.addAt(startNode);
 //
 //                ArrayList<Path<N,E>> result = new ArrayList<>();
 //                if( iterPaths!=null ){
 //                    for( Pair<N,E> p : iterPaths ){
 //                        if( p==null || p.A()==null || p.B()==null )continue;
-//                        result.add(startPath(startNode, p.A(), p.B()));
+//                        result.addAt(startPath(startNode, p.A(), p.B()));
 //                    }
 //                    if( result.isEmpty() ){
-//                        result.add( startPath(startNode) );
+//                        result.addAt( startPath(startNode) );
 //                    }
 //                    return result;
 //                }else{
-//                    result.add( startPath(startNode) );
+//                    result.addAt( startPath(startNode) );
 //                    return result;
 //                }
 //            }
@@ -654,7 +654,7 @@
 //                E nextEdge = p.B();
 //
 //                Path<N,E> followPath = join(path, nextNode, nextEdge);
-//                followsPaths.add(followPath);
+//                followsPaths.addAt(followPath);
 //            }
 //        }else{
 //            logFiner( "no follows, last node ({0}) is terminal", from );
@@ -675,7 +675,7 @@
 //        if( fetchFinishSended )return;
 //        fetchFinishSended = true;
 //        addEvent(new GraphIteratorEvent.FetchFinish<>(this));
-//        logFiner( "add FetchFinish event into event queue" );
+//        logFiner( "addAt FetchFinish event into event queue" );
 //    }
 //    //</editor-fold>
 //
@@ -729,7 +729,7 @@
 //                if( from!=null ){
 //                    if( !from.hasCycles() ){
 //                        N lastNode = from.node(-1);
-//                        if( lastNode!=null && visited!=null )visited.add(lastNode);
+//                        if( lastNode!=null && visited!=null )visited.addAt(lastNode);
 //
 //                        List<Path<N,E>> followPaths = followPaths(from);
 //                        if( followPaths!=null && !followPaths.isEmpty() ){

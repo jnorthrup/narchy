@@ -283,10 +283,10 @@
 //    }
 //
 //    private void believe(Term p, long at, Truth belief) {
-//        beliefTruth.computeIfAbsent(pair(at, p), (k) -> new TruthAccumulator()).add(belief);
+//        beliefTruth.computeIfAbsent(pair(at, p), (k) -> new TruthAccumulator()).addAt(belief);
 //    }
 //    private void goal(Term p, long at, Truth goal) {
-//        goalTruth.computeIfAbsent(pair(at, p), (k) -> new TruthAccumulator()).add(goal);
+//        goalTruth.computeIfAbsent(pair(at, p), (k) -> new TruthAccumulator()).addAt(goal);
 //    }
 //
 //    private void commit() {
@@ -327,7 +327,7 @@
 //
 //
 //
-//            gen.add(y);
+//            gen.addAt(y);
 //        });
 //    }
 //

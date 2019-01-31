@@ -216,7 +216,9 @@ public class Evaluation {
 
                         z = func.apply(this, args);
                         if (z == Null) {
-                            return each.test(Null);
+                            ii.remove();
+                            y = Null;
+                            break main;
                         }
                         substAdded = now() != vStart;
                         mutAdded = mutStart != termutators();
@@ -339,7 +341,7 @@ public class Evaluation {
 
     public static Term solveFirst(Term x, Function<Atom, Functor> resolver) {
         Term[] y = new Term[1];
-        Evaluation.eval(x, true, false, resolver, (what) -> {
+        Evaluation.eval(x, true, true, resolver, (what) -> {
             if (what instanceof Bool) {
                 if (y[0] != null)
                     return true; //ignore and continue try to find a non-bool solution
@@ -398,8 +400,8 @@ public class Evaluation {
     }
 
     /**
-     * gathers results from one truth set, ex: +1 (true)
-     * TODO add limit
+     * gathers results from one truth setAt, ex: +1 (true)
+     * TODO addAt limit
      */
     public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver) {
         MyEvaluated ee = new MyEvaluated();

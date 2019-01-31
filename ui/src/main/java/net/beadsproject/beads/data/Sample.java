@@ -431,7 +431,7 @@ public class Sample {
             }
         }
         if (theRealAudioFileWriterClass == null) {
-            throw new IOException("Sample: No AudioFile Class has been set and the default JavaSoundAudioFile Class cannot be found. Aborting write(). You may need to link to beads-io.jar.");
+            throw new IOException("Sample: No AudioFile Class has been setAt and the default JavaSoundAudioFile Class cannot be found. Aborting write(). You may need to link to beads-io.jar.");
         }
         try {
             AudioFileWriter audioFileWriter = theRealAudioFileWriterClass.getConstructor().newInstance();
@@ -595,7 +595,7 @@ public class Sample {
         try {
             audioFileReader = theRealAudioFileReaderClass.getConstructor().newInstance();
         } catch (Exception e1) {
-            throw new IOException("Sample: No AudioFileReader Class has been set and the default JavaSoundAudioFile Class cannot be found. Aborting write(). You may need to link to beads-io.jar.");
+            throw new IOException("Sample: No AudioFileReader Class has been setAt and the default JavaSoundAudioFile Class cannot be found. Aborting write(). You may need to link to beads-io.jar.");
         }
         try {
             this.theSampleData = audioFileReader.readAudioFile(file);

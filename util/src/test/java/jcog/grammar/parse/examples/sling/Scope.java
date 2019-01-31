@@ -29,7 +29,7 @@ public class Scope {
 	 * Returns a variable of the given name from this scope.
 	 *
 	 * If the so-named variable is not already in this scope,
-	 * the scope will create it and add the variable to itself.
+	 * the scope will create it and addAt the variable to itself.
 	 * 
 	 * @param String the variable name
 	 * 

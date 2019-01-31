@@ -221,7 +221,7 @@ public class PitchProcessor {
                     // found tau, exit loop and return
                     // store the probability
                     // From the YIN paper: The threshold determines the list of
-                    // candidates admitted to the set, and can be interpreted as the
+                    // candidates admitted to the setAt, and can be interpreted as the
                     // proportion of aperiodic power tolerated
                     // within a periodic signal.
                     //

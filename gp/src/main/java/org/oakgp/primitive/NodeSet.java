@@ -49,7 +49,7 @@ public class NodeSet<N> {
      * Returns a list of all constants in this set that are of the specified type.
      *
      * @param type the type to find matching constants of
-     * @return a list of all constants in this set that are the specified type, or {@code null} if there are no constants of the required type in this set
+     * @return a list of all constants in this set that are the specified type, or {@code null} if there are no constants of the required type in this setAt
      */
     public List<N> asList(NodeType type) {
         N[] t = get(type);

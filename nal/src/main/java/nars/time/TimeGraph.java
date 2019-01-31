@@ -17,6 +17,7 @@ import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjSeq;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -181,7 +182,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                             if (Param.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
                                 if (af.containsOrEquals(start, end)) {
-                                    //add = false;
+                                    //addAt = false;
                                     //break; //dont affect the stored graph, but return the smaller interval that was input
 
                                     return af; //return the absorbing event
@@ -323,7 +324,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 //            byTerm.put(eventTerm, new UnifiedSet(2).with(event)); //TODO pool these Set's
 //            onNewTerm(eventTerm);
 //        } else {
-//            if (!ee.add(event))
+//            if (!ee.addAt(event))
 //                //if (!byTerm.put(eventTerm, event))
 //                return; //already present
 //        }
@@ -376,7 +377,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 //                            for (Event es : events().get(s)) {
 //                                if (es instanceof Absolute) {
 //                                    //TODO select more carefully
-//                                    subOcc.add(es.mid());
+//                                    subOcc.addAt(es.mid());
 //                                    continue nextTerm;
 //                                }
 //                            }
@@ -785,7 +786,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             }
         }
 
-        Term c = Conj.sequence(a.id, dt == DTERNAL ? ETERNAL : 0, b.id, dt == DTERNAL ? ETERNAL : dt);
+        Term c = ConjSeq.sequence(a.id, dt == DTERNAL ? ETERNAL : 0, b.id, dt == DTERNAL ? ETERNAL : dt);
 
 
         return solveOccurrence(c, a.start(), durMerge(a, b), each);
@@ -927,9 +928,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     Term x1 = x.sub(1);
 
                     if (dir) {
-                        return Conj.sequence(x0, 0, x1, dt);
+                        return ConjSeq.sequence(x0, 0, x1, dt);
                     } else {
-                        return Conj.sequence(x1, 0, x0, -dt);
+                        return ConjSeq.sequence(x1, 0, x0, -dt);
                     }
 
 
@@ -943,7 +944,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     Term xEarly = x.sub(early);
                     Term xLate = x.sub(1 - early);
 
-                    return Conj.sequence(
+                    return ConjSeq.sequence(
                             xEarly, 0,
                             xLate, dt);
                 }

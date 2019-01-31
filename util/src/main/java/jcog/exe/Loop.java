@@ -89,12 +89,12 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     public final void ready() {
-        executing.set(false);
+        executing.setRelease(false);
     }
 
     @Override
     protected boolean isReady() {
-        return !executing.getOpaque();
+        return !executing.getAcquire();
     }
 
     static int fpsToMS(float fps) {
@@ -167,7 +167,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     @Override
     public final void run() {
 
-        if (executing.compareAndExchange(false, true))
+        if (!executing.weakCompareAndSetVolatile(false, true))
             return;
 
         beforeNext();

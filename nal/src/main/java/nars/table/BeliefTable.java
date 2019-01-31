@@ -32,7 +32,7 @@ public interface BeliefTable extends TaskTable {
 
     /**
      * minT and maxT inclusive
-     * TODO add Predicate<> form of this for early exit
+     * TODO addAt Predicate<> form of this for early exit
      */
     void forEachTask(long minT, long maxT, Consumer<? super Task> x);
 

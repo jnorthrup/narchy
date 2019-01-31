@@ -73,7 +73,8 @@ public class Derivation extends PreDerivation {
         new ArrayHashSet(256);
         //new SortedList<>(256);
 
-    @Deprecated public final ArrayHashSet<Term> atomMatches = new ArrayHashSet();
+//    @Deprecated public final ArrayHashSet<Term> atomMatches = new ArrayHashSet();
+    @Deprecated public TopN<TaskLink> atomTangent = new TopN<>(new TaskLink[64], (FloatFunction<TaskLink>) ScalarValue::pri);
 
     public final AnonWithVarShift anon;
 
@@ -196,7 +197,6 @@ public class Derivation extends PreDerivation {
 
     /** temporary storage buffer for recently activated concepts */
     @Deprecated public final Collection<Concept> firedConcepts = new FasterList<>(32);
-    @Deprecated public TopN<TaskLink> atomTangent = new TopN<>(new TaskLink[8], (FloatFunction<TaskLink>) ScalarValue::pri);
 
 
     private Function<Atomic, Functor> derivationFunctors;
@@ -238,7 +238,7 @@ public class Derivation extends PreDerivation {
 
 
     /**
-     * if using this, must set: nar, index, random, DerivationBudgeting
+     * if using this, must setAt: nar, index, random, DerivationBudgeting
      */
     public Derivation() {
         super(

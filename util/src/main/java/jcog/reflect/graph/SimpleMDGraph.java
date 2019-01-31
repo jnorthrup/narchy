@@ -290,7 +290,7 @@ public class SimpleMDGraph<N, E> implements MultipleDirectedGraph<N, E> {
     }
 
     /* (non-Javadoc)
-     * @see org.gocha.collection.graph.MultiGraph#set
+     * @see org.gocha.collection.graph.MultiGraph#setAt
      */
     @Override
     public void set(N a, N b, Iterable<E> e) {
@@ -355,7 +355,7 @@ public class SimpleMDGraph<N, E> implements MultipleDirectedGraph<N, E> {
     }
 
     /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#add
+     * @see org.gocha.collection.graph.IGraph#addAt
      */
     @Override
     public void add(N node) {

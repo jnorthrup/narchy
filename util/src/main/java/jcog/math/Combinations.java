@@ -23,7 +23,7 @@ public final class Combinations {
             throw new IllegalArgumentException("Set must have at least one element");
         }
         if (r > n) {
-            throw new IllegalArgumentException("Subset length can not be greater than set length");
+            throw new IllegalArgumentException("Subset length can not be greater than setAt length");
         }
         this.n = n;
         this.r = r;

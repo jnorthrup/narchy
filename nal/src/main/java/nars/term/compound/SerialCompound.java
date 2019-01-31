@@ -37,20 +37,16 @@ public class SerialCompound extends DynBytes implements Compound, The {
         boolean temporal = o.temporal && dt!=DTERNAL;
 
         writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
+        if (temporal)
+            IntCoding.writeZigZagInt(dt, this);
 
         writeByte(subterms.length);
 
         int v = 1;
-
-
         for (Term x: subterms) {
             x.appendTo((ByteArrayDataOutput) this);
-
             v += x.volume();
         }
-
-        if (temporal)
-            IntCoding.writeZigZagInt(dt, this);
 
         assert(v < Param.COMPOUND_VOLUME_MAX);
         this.volume = (byte) v;

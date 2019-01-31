@@ -105,7 +105,7 @@ public class ObjectPropertiesUI extends JPanel {
 		fieldPnl.setLayout(new GridLayout(fields.length, 2));
 		
 		for (Field field : fields) {
-			fieldPnl.add(new JLabel(field.getName()));
+			fieldPnl.addAt(new JLabel(field.getName()));
 			
 			JComponent fieldCmp = new JTextField();
 			if (new String("" + field.getType()).equals("boolean")) {
@@ -118,7 +118,7 @@ public class ObjectPropertiesUI extends JPanel {
 			}
 			
 			fieldTxtMap.put(field.getName(), fieldCmp);
-			fieldPnl.add(fieldCmp);
+			fieldPnl.addAt(fieldCmp);
 		}
 		
 		JButton storeBtn = new JButton("Store");
@@ -129,9 +129,9 @@ public class ObjectPropertiesUI extends JPanel {
 		});
 		
 		setLayout(new BorderLayout());
-		add(new JLabel("Object properties:"), BorderLayout.NORTH);
-		add(fieldPnl, BorderLayout.CENTER);
-		add(storeBtn, BorderLayout.SOUTH);
+		addAt(new JLabel("Object properties:"), BorderLayout.NORTH);
+		addAt(fieldPnl, BorderLayout.CENTER);
+		addAt(storeBtn, BorderLayout.SOUTH);
 	}*/
 	
 	/**
@@ -177,16 +177,16 @@ public class ObjectPropertiesUI extends JPanel {
 					try {
 						if (field.getName().equals("behaviorId")) {
 							JComboBox behaviorList = (JComboBox) fieldTxtMap.get(field.getName());
-							field.set(props, behaviorList.getSelectedIndex());
+							field.setAt(props, behaviorList.getSelectedIndex());
 						} else if (field.getType().toString().equals("boolean")) {
 							JComboBox boolList = (JComboBox) fieldTxtMap.get(field.getName());
-							field.set(props, Boolean.valueOf(boolList.getSelectedItem().toString()));
+							field.setAt(props, Boolean.valueOf(boolList.getSelectedItem().toString()));
 						} else if (field.getType().toString().equals("int")) {
 							JTextField fieldTxt = (JTextField) fieldTxtMap.get(field.getName());
-							field.set(props, Integer.valueOf(fieldTxt.getText()));
+							field.setAt(props, Integer.valueOf(fieldTxt.getText()));
 						} else if (field.getType().toString().equals("float")) {
 							JTextField fieldTxt = (JTextField) fieldTxtMap.get(field.getName());
-							field.set(props, Float.valueOf(fieldTxt.getText()));
+							field.setAt(props, Float.valueOf(fieldTxt.getText()));
 						}
 					} catch (Exception e) {
 						System.out.println(getClass() + " error storing field " + field);

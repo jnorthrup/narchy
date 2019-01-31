@@ -53,6 +53,11 @@ public class Builtin {
             Equal.the,
             cmp,
 
+
+            MathFunc.add,
+            MathFunc.mul,
+            MathFunc.XOR.the,
+
             Member.the,
 
             Subst.replace,
@@ -72,13 +77,7 @@ public class Builtin {
             Image.imageInt,
             Image.imageExt,
 
-            /** XOR(a,b) == (a && --b) || (--a && b) */
-            new Functor.AbstractInlineFunctor2("xor") {
-                @Override
-                protected Term apply(Term a, Term b) {
-                    return $.or( $.and(a, b.neg()), $.and(a.neg(), b) );
-                }
-            },
+
 
 //            new Functor.AbstractInlineFunctor2("sectRepolarize") {
 //                @Override
@@ -283,9 +282,6 @@ public class Builtin {
             }),
 
 
-            MathFunc.add,
-            MathFunc.mul,
-
 
             Functor.f1("quote", x -> x)
     };
@@ -394,7 +390,7 @@ public class Builtin {
 
 //        /**
 //         * TODO rename this to 'dropAnyCommutive'
-//         * remove an element from a commutive conjunction (or set), at random, and try re-creating
+//         * remove an element from a commutive conjunction (or setAt), at random, and try re-creating
 //         * the compound. wont necessarily work in all situations.
 //         * TODO move the type restriction to another functor to wrap this
 //         *

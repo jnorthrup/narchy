@@ -955,7 +955,7 @@ public class Gradius4K extends GamePanel {
 	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 	  a applet = new a();
 	  applet.setPreferredSize(new java.awt.Dimension(512, 512));
-	  frame.add(applet, java.awt.BorderLayout.CENTER);
+	  frame.addAt(applet, java.awt.BorderLayout.CENTER);
 	  frame.setResizable(false);
 	  frame.pack();
 	  frame.setLocationRelativeTo(null);

@@ -40,8 +40,8 @@
 //
 //
 //
-//        conceptActivationRate.set(1f/taskCapacity);
-//        taskLinkActivationRate.set(1f/taskCapacity);
+//        conceptActivationRate.setAt(1f/taskCapacity);
+//        taskLinkActivationRate.setAt(1f/taskCapacity);
 //    }
 //
 //
@@ -63,7 +63,7 @@
 //
 //        Concept c = nar.conceptualizeDynamic(a);
 //        if (c == null) {
-//            nar.concepts.set(a, c = new AnonConcept(a, nar));
+//            nar.concepts.setAt(a, c = new AnonConcept(a, nar));
 //        }
 //
 //        float pri = task.priElseZero();

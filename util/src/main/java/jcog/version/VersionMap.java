@@ -123,7 +123,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
     /**
      * records an assignment operation
-     * follows semantics of set()
+     * follows semantics of setAt()
      */
     @Override
     public final Y put(X key, Y value) {

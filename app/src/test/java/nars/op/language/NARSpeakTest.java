@@ -41,7 +41,7 @@ public class NARSpeakTest {
         n.termVolumeMax.set(16);
         n.freqResolution.set(0.1f);
         n.timeResolution.set(50);
-//        n.confMin.set(0.1f);
+//        n.confMin.setAt(0.1f);
 
         n.log();
         n.input(

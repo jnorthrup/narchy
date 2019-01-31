@@ -95,8 +95,8 @@
 //    }
 //
 //    @Override
-//    public boolean add(byte[] bytes) {
-//        return delegate.add(new RawBytes(bytes));
+//    public boolean addAt(byte[] bytes) {
+//        return delegate.addAt(new RawBytes(bytes));
 //    }
 //
 //    @Override
@@ -113,7 +113,7 @@
 //    public boolean addAll(Collection<? extends byte[]> c) {
 //        boolean ret = false;
 //        for (byte[] bytes : c) {
-//            ret |= add(bytes);
+//            ret |= addAt(bytes);
 //        }
 //        return ret;
 //    }

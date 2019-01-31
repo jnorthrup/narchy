@@ -222,7 +222,7 @@ public enum Image {;
 
             int results = m.tasks.size();
             if (results > 0) {
-            //HACK apply this as an add-on transformation to a final result, not every intermediate possible result
+            //HACK apply this as an addAt-on transformation to a final result, not every intermediate possible result
                 Ranked<Task>[] tt = m.tasks.items;
                 Term image = this.term;
                 for (int i = 0; i < results; i++) {

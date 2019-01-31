@@ -5090,16 +5090,16 @@ public enum ArrayUtils {;
      * in which case the return type is Object[]
      *
      * <pre>
-     * ArrayUtils.add(null, null)      = IllegalArgumentException
-     * ArrayUtils.add(null, "a")       = ["a"]
-     * ArrayUtils.add(["a"], null)     = ["a", null]
-     * ArrayUtils.add(["a"], "b")      = ["a", "b"]
-     * ArrayUtils.add(["a", "b"], "c") = ["a", "b", "c"]
+     * ArrayUtils.addAt(null, null)      = IllegalArgumentException
+     * ArrayUtils.addAt(null, "a")       = ["a"]
+     * ArrayUtils.addAt(["a"], null)     = ["a", null]
+     * ArrayUtils.addAt(["a"], "b")      = ["a", "b"]
+     * ArrayUtils.addAt(["a", "b"], "c") = ["a", "b", "c"]
      * </pre>
      *
      * @param <T>     the component type of the array
-     * @param array   the array to "add" the element to, may be {@code null}
-     * @param element the object to add, may be {@code null}
+     * @param array   the array to "addAt" the element to, may be {@code null}
+     * @param element the object to addAt, may be {@code null}
      * @return A new array containing the existing elements plus the new element
      * The returned array type will be that of the input array (unless null),
      * in which case it will have the same type as the element.
@@ -5132,13 +5132,13 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, true)          = [true]
-     * ArrayUtils.add([true], false)       = [true, false]
-     * ArrayUtils.add([true, false], true) = [true, false, true]
+     * ArrayUtils.addAt(null, true)          = [true]
+     * ArrayUtils.addAt([true], false)       = [true, false]
+     * ArrayUtils.addAt([true, false], true) = [true, false, true]
      * </pre>
      *
-     * @param array   the array to copy and add the element to, may be {@code null}
-     * @param element the object to add at the last index of the new array
+     * @param array   the array to copy and addAt the element to, may be {@code null}
+     * @param element the object to addAt at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5159,13 +5159,13 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, 0)   = [0]
-     * ArrayUtils.add([1], 0)    = [1, 0]
-     * ArrayUtils.add([1, 0], 1) = [1, 0, 1]
+     * ArrayUtils.addAt(null, 0)   = [0]
+     * ArrayUtils.addAt([1], 0)    = [1, 0]
+     * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and add the element to, may be {@code null}
-     * @param element the object to add at the last index of the new array
+     * @param array   the array to copy and addAt the element to, may be {@code null}
+     * @param element the object to addAt at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5186,13 +5186,13 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, '0')       = ['0']
-     * ArrayUtils.add(['1'], '0')      = ['1', '0']
-     * ArrayUtils.add(['1', '0'], '1') = ['1', '0', '1']
+     * ArrayUtils.addAt(null, '0')       = ['0']
+     * ArrayUtils.addAt(['1'], '0')      = ['1', '0']
+     * ArrayUtils.addAt(['1', '0'], '1') = ['1', '0', '1']
      * </pre>
      *
-     * @param array   the array to copy and add the element to, may be {@code null}
-     * @param element the object to add at the last index of the new array
+     * @param array   the array to copy and addAt the element to, may be {@code null}
+     * @param element the object to addAt at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5213,13 +5213,13 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, 0)   = [0]
-     * ArrayUtils.add([1], 0)    = [1, 0]
-     * ArrayUtils.add([1, 0], 1) = [1, 0, 1]
+     * ArrayUtils.addAt(null, 0)   = [0]
+     * ArrayUtils.addAt([1], 0)    = [1, 0]
+     * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and add the element to, may be {@code null}
-     * @param element the object to add at the last index of the new array
+     * @param array   the array to copy and addAt the element to, may be {@code null}
+     * @param element the object to addAt at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5240,13 +5240,13 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, 0)   = [0]
-     * ArrayUtils.add([1], 0)    = [1, 0]
-     * ArrayUtils.add([1, 0], 1) = [1, 0, 1]
+     * ArrayUtils.addAt(null, 0)   = [0]
+     * ArrayUtils.addAt([1], 0)    = [1, 0]
+     * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and add the element to, may be {@code null}
-     * @param element the object to add at the last index of the new array
+     * @param array   the array to copy and addAt the element to, may be {@code null}
+     * @param element the object to addAt at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5267,13 +5267,13 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, 0)   = [0]
-     * ArrayUtils.add([1], 0)    = [1, 0]
-     * ArrayUtils.add([1, 0], 1) = [1, 0, 1]
+     * ArrayUtils.addAt(null, 0)   = [0]
+     * ArrayUtils.addAt([1], 0)    = [1, 0]
+     * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and add the element to, may be {@code null}
-     * @param element the object to add at the last index of the new array
+     * @param array   the array to copy and addAt the element to, may be {@code null}
+     * @param element the object to addAt at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5294,13 +5294,13 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, 0)   = [0]
-     * ArrayUtils.add([1], 0)    = [1, 0]
-     * ArrayUtils.add([1, 0], 1) = [1, 0, 1]
+     * ArrayUtils.addAt(null, 0)   = [0]
+     * ArrayUtils.addAt([1], 0)    = [1, 0]
+     * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and add the element to, may be {@code null}
-     * @param element the object to add at the last index of the new array
+     * @param array   the array to copy and addAt the element to, may be {@code null}
+     * @param element the object to addAt at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5321,13 +5321,13 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, 0)   = [0]
-     * ArrayUtils.add([1], 0)    = [1, 0]
-     * ArrayUtils.add([1, 0], 1) = [1, 0, 1]
+     * ArrayUtils.addAt(null, 0)   = [0]
+     * ArrayUtils.addAt([1], 0)    = [1, 0]
+     * ArrayUtils.addAt([1, 0], 1) = [1, 0, 1]
      * </pre>
      *
-     * @param array   the array to copy and add the element to, may be {@code null}
-     * @param element the object to add at the last index of the new array
+     * @param array   the array to copy and addAt the element to, may be {@code null}
+     * @param element the object to addAt at the last index of the new array
      * @return A new array containing the existing elements plus the new element
      * @since 2.1
      */
@@ -5392,17 +5392,17 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, 0, null)      = IllegalArgumentException
-     * ArrayUtils.add(null, 0, "a")       = ["a"]
-     * ArrayUtils.add(["a"], 1, null)     = ["a", null]
-     * ArrayUtils.add(["a"], 1, "b")      = ["a", "b"]
-     * ArrayUtils.add(["a", "b"], 3, "c") = ["a", "b", "c"]
+     * ArrayUtils.addAt(null, 0, null)      = IllegalArgumentException
+     * ArrayUtils.addAt(null, 0, "a")       = ["a"]
+     * ArrayUtils.addAt(["a"], 1, null)     = ["a", null]
+     * ArrayUtils.addAt(["a"], 1, "b")      = ["a", "b"]
+     * ArrayUtils.addAt(["a", "b"], 3, "c") = ["a", "b", "c"]
      * </pre>
      *
      * @param <T>     the component type of the array
-     * @param array   the array to add the element to, may be {@code null}
+     * @param array   the array to addAt the element to, may be {@code null}
      * @param index   the position of the new object
-     * @param element the object to add
+     * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
      * @throws IndexOutOfBoundsException if the index is out of range (index &lt; 0 || index &gt; array.length).
      * @throws IllegalArgumentException  if both array and element are null
@@ -5438,15 +5438,15 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, 0, true)          = [true]
-     * ArrayUtils.add([true], 0, false)       = [false, true]
-     * ArrayUtils.add([false], 1, true)       = [false, true]
-     * ArrayUtils.add([true, false], 1, true) = [true, true, false]
+     * ArrayUtils.addAt(null, 0, true)          = [true]
+     * ArrayUtils.addAt([true], 0, false)       = [false, true]
+     * ArrayUtils.addAt([false], 1, true)       = [false, true]
+     * ArrayUtils.addAt([true, false], 1, true) = [true, true, false]
      * </pre>
      *
-     * @param array   the array to add the element to, may be {@code null}
+     * @param array   the array to addAt the element to, may be {@code null}
      * @param index   the position of the new object
-     * @param element the object to add
+     * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
      * @throws IndexOutOfBoundsException if the index is out of range (index &lt; 0 || index &gt; array.length).
      * @deprecated this method has been superseded by {@link #insert(int, boolean[], boolean...)} and
@@ -5472,16 +5472,16 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add(null, 0, 'a')            = ['a']
-     * ArrayUtils.add(['a'], 0, 'b')           = ['b', 'a']
-     * ArrayUtils.add(['a', 'b'], 0, 'c')      = ['c', 'a', 'b']
-     * ArrayUtils.add(['a', 'b'], 1, 'k')      = ['a', 'k', 'b']
-     * ArrayUtils.add(['a', 'b', 'c'], 1, 't') = ['a', 't', 'b', 'c']
+     * ArrayUtils.addAt(null, 0, 'a')            = ['a']
+     * ArrayUtils.addAt(['a'], 0, 'b')           = ['b', 'a']
+     * ArrayUtils.addAt(['a', 'b'], 0, 'c')      = ['c', 'a', 'b']
+     * ArrayUtils.addAt(['a', 'b'], 1, 'k')      = ['a', 'k', 'b']
+     * ArrayUtils.addAt(['a', 'b', 'c'], 1, 't') = ['a', 't', 'b', 'c']
      * </pre>
      *
-     * @param array   the array to add the element to, may be {@code null}
+     * @param array   the array to addAt the element to, may be {@code null}
      * @param index   the position of the new object
-     * @param element the object to add
+     * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   (index &lt; 0 || index &gt; array.length).
@@ -5508,15 +5508,15 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add([1], 0, 2)         = [2, 1]
-     * ArrayUtils.add([2, 6], 2, 3)      = [2, 6, 3]
-     * ArrayUtils.add([2, 6], 0, 1)      = [1, 2, 6]
-     * ArrayUtils.add([2, 6, 3], 2, 1)   = [2, 6, 1, 3]
+     * ArrayUtils.addAt([1], 0, 2)         = [2, 1]
+     * ArrayUtils.addAt([2, 6], 2, 3)      = [2, 6, 3]
+     * ArrayUtils.addAt([2, 6], 0, 1)      = [1, 2, 6]
+     * ArrayUtils.addAt([2, 6, 3], 2, 1)   = [2, 6, 1, 3]
      * </pre>
      *
-     * @param array   the array to add the element to, may be {@code null}
+     * @param array   the array to addAt the element to, may be {@code null}
      * @param index   the position of the new object
-     * @param element the object to add
+     * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   (index &lt; 0 || index &gt; array.length).
@@ -5543,15 +5543,15 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add([1], 0, 2)         = [2, 1]
-     * ArrayUtils.add([2, 6], 2, 10)     = [2, 6, 10]
-     * ArrayUtils.add([2, 6], 0, -4)     = [-4, 2, 6]
-     * ArrayUtils.add([2, 6, 3], 2, 1)   = [2, 6, 1, 3]
+     * ArrayUtils.addAt([1], 0, 2)         = [2, 1]
+     * ArrayUtils.addAt([2, 6], 2, 10)     = [2, 6, 10]
+     * ArrayUtils.addAt([2, 6], 0, -4)     = [-4, 2, 6]
+     * ArrayUtils.addAt([2, 6, 3], 2, 1)   = [2, 6, 1, 3]
      * </pre>
      *
-     * @param array   the array to add the element to, may be {@code null}
+     * @param array   the array to addAt the element to, may be {@code null}
      * @param index   the position of the new object
-     * @param element the object to add
+     * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   (index &lt; 0 || index &gt; array.length).
@@ -5578,15 +5578,15 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add([1], 0, 2)         = [2, 1]
-     * ArrayUtils.add([2, 6], 2, 10)     = [2, 6, 10]
-     * ArrayUtils.add([2, 6], 0, -4)     = [-4, 2, 6]
-     * ArrayUtils.add([2, 6, 3], 2, 1)   = [2, 6, 1, 3]
+     * ArrayUtils.addAt([1], 0, 2)         = [2, 1]
+     * ArrayUtils.addAt([2, 6], 2, 10)     = [2, 6, 10]
+     * ArrayUtils.addAt([2, 6], 0, -4)     = [-4, 2, 6]
+     * ArrayUtils.addAt([2, 6, 3], 2, 1)   = [2, 6, 1, 3]
      * </pre>
      *
-     * @param array   the array to add the element to, may be {@code null}
+     * @param array   the array to addAt the element to, may be {@code null}
      * @param index   the position of the new object
-     * @param element the object to add
+     * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   (index &lt; 0 || index &gt; array.length).
@@ -5613,15 +5613,15 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add([1L], 0, 2L)           = [2L, 1L]
-     * ArrayUtils.add([2L, 6L], 2, 10L)      = [2L, 6L, 10L]
-     * ArrayUtils.add([2L, 6L], 0, -4L)      = [-4L, 2L, 6L]
-     * ArrayUtils.add([2L, 6L, 3L], 2, 1L)   = [2L, 6L, 1L, 3L]
+     * ArrayUtils.addAt([1L], 0, 2L)           = [2L, 1L]
+     * ArrayUtils.addAt([2L, 6L], 2, 10L)      = [2L, 6L, 10L]
+     * ArrayUtils.addAt([2L, 6L], 0, -4L)      = [-4L, 2L, 6L]
+     * ArrayUtils.addAt([2L, 6L, 3L], 2, 1L)   = [2L, 6L, 1L, 3L]
      * </pre>
      *
-     * @param array   the array to add the element to, may be {@code null}
+     * @param array   the array to addAt the element to, may be {@code null}
      * @param index   the position of the new object
-     * @param element the object to add
+     * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   (index &lt; 0 || index &gt; array.length).
@@ -5648,15 +5648,15 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add([1.1f], 0, 2.2f)               = [2.2f, 1.1f]
-     * ArrayUtils.add([2.3f, 6.4f], 2, 10.5f)        = [2.3f, 6.4f, 10.5f]
-     * ArrayUtils.add([2.6f, 6.7f], 0, -4.8f)        = [-4.8f, 2.6f, 6.7f]
-     * ArrayUtils.add([2.9f, 6.0f, 0.3f], 2, 1.0f)   = [2.9f, 6.0f, 1.0f, 0.3f]
+     * ArrayUtils.addAt([1.1f], 0, 2.2f)               = [2.2f, 1.1f]
+     * ArrayUtils.addAt([2.3f, 6.4f], 2, 10.5f)        = [2.3f, 6.4f, 10.5f]
+     * ArrayUtils.addAt([2.6f, 6.7f], 0, -4.8f)        = [-4.8f, 2.6f, 6.7f]
+     * ArrayUtils.addAt([2.9f, 6.0f, 0.3f], 2, 1.0f)   = [2.9f, 6.0f, 1.0f, 0.3f]
      * </pre>
      *
-     * @param array   the array to add the element to, may be {@code null}
+     * @param array   the array to addAt the element to, may be {@code null}
      * @param index   the position of the new object
-     * @param element the object to add
+     * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   (index &lt; 0 || index &gt; array.length).
@@ -5683,15 +5683,15 @@ public enum ArrayUtils {;
      * whose component type is the same as the element.
      *
      * <pre>
-     * ArrayUtils.add([1.1], 0, 2.2)              = [2.2, 1.1]
-     * ArrayUtils.add([2.3, 6.4], 2, 10.5)        = [2.3, 6.4, 10.5]
-     * ArrayUtils.add([2.6, 6.7], 0, -4.8)        = [-4.8, 2.6, 6.7]
-     * ArrayUtils.add([2.9, 6.0, 0.3], 2, 1.0)    = [2.9, 6.0, 1.0, 0.3]
+     * ArrayUtils.addAt([1.1], 0, 2.2)              = [2.2, 1.1]
+     * ArrayUtils.addAt([2.3, 6.4], 2, 10.5)        = [2.3, 6.4, 10.5]
+     * ArrayUtils.addAt([2.6, 6.7], 0, -4.8)        = [-4.8, 2.6, 6.7]
+     * ArrayUtils.addAt([2.9, 6.0, 0.3], 2, 1.0)    = [2.9, 6.0, 1.0, 0.3]
      * </pre>
      *
-     * @param array   the array to add the element to, may be {@code null}
+     * @param array   the array to addAt the element to, may be {@code null}
      * @param index   the position of the new object
-     * @param element the object to add
+     * @param element the object to addAt
      * @return A new array containing the existing elements and the new element
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   (index &lt; 0 || index &gt; array.length).
@@ -5705,13 +5705,13 @@ public enum ArrayUtils {;
     }
 
     /**
-     * Underlying implementation of add(array, index, element) methods.
+     * Underlying implementation of addAt(array, index, element) methods.
      * The last parameter is the class, which may not equal element.getClass
      * for primitives.
      *
-     * @param array   the array to add the element to, may be {@code null}
+     * @param array   the array to addAt the element to, may be {@code null}
      * @param index   the position of the new object
-     * @param element the object to add
+     * @param element the object to addAt
      * @param clss    the type of the element being added
      * @return A new array containing the existing elements and the new element
      */

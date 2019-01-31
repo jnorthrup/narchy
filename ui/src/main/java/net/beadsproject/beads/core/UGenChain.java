@@ -55,7 +55,7 @@ public class UGenChain extends UGen {
      * Adds the specified Chain input to all of a target UGen's inputs.
      *
      * @param chainInputIndex The index of the Chain input.
-     * @param targetUGen      The UGen to which to add the Chain input.
+     * @param targetUGen      The UGen to which to addAt the Chain input.
      */
     public void drawFromChainInput(int chainInputIndex, UGen targetUGen) {
         for (int i = 0; i < targetUGen.ins; i++) {
@@ -67,7 +67,7 @@ public class UGenChain extends UGen {
      * Adds the specified Chain input to a target UGen's input.
      *
      * @param chainInputIndex  The index of the Chain input.
-     * @param targetUGen       The target UGen to which to add the Chain input.
+     * @param targetUGen       The target UGen to which to addAt the Chain input.
      * @param targetInputIndex The input of the target UGen.
      */
     public void drawFromChainInput(int chainInputIndex, UGen targetUGen,
@@ -101,7 +101,7 @@ public class UGenChain extends UGen {
      *
      * @param chainOutputIndex  The Chain output.
      * @param sourceUGen        The source UGen.
-     * @param sourceOutputIndex The output of the source UGen to add to the Chain output.
+     * @param sourceOutputIndex The output of the source UGen to addAt to the Chain output.
      */
     public void addToChainOutput(int chainOutputIndex, UGen sourceUGen,
                                  int sourceOutputIndex) {

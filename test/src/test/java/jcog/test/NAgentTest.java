@@ -28,7 +28,7 @@ public class NAgentTest {
         NAR n = NARS.tmp();
         n.termVolumeMax.set(4);
         n.freqResolution.set(0.1f);
-//        n.confResolution.set(0.02f);
+//        n.confResolution.setAt(0.02f);
         n.time.dur(dur);
 
         return n;
@@ -137,8 +137,8 @@ public class NAgentTest {
 
         NAR n = nar(1);
         n.termVolumeMax.set(6);
-//        n.goalPriDefault.set(0.9f);
-//        n.beliefPriDefault.set(0.1f);
+//        n.goalPriDefault.setAt(0.9f);
+//        n.beliefPriDefault.setAt(0.1f);
 //        n.time.dur(period/2);
 
         MiniTest a = new BooleanChoiceTest(n, (prev, next)->{

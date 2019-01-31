@@ -21,7 +21,7 @@ import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.inputs.Context;
 
 /**
- * This terminal set do nothing. New TerminalSet nodes are not added to the NodeFactory.   
+ * This terminal set do nothing. New TerminalSet nodes are not added to the NodeFactory.
  * @author MaleLabTs
  */
 public class EmptyTerminalSetBuilder implements TerminalSetBuilder{

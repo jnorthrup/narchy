@@ -158,7 +158,7 @@ public class RevisionTest {
 //
 //        System.out.println("TRUTHPOLATION");
 //        for (long d = start; d < end; d++) {
-//            Truth a1 = new FocusingLinearTruthPolation(d, d, 1).add(l).truth();
+//            Truth a1 = new FocusingLinearTruthPolation(d, d, 1).addAt(l).truth();
 //            System.out.println(d + ": " + a1);
 //        }
 //    }

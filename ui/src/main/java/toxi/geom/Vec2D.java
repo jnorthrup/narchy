@@ -229,7 +229,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
     /**
      * Adds vector v and overrides coordinates with result.
      *
-     * @param v vector to add
+     * @param v vector to addAt
      * @return itself
      */
     public final Vec2D addSelf(Vec2D v) {
@@ -257,7 +257,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
 //    @Override
 //    public Vec3D bisect(Vec2D b) {
 //        Vec2D diff = this.sub(b);
-//        Vec2D sum = this.add(b);
+//        Vec2D sum = this.addAt(b);
 //        float dot = diff.dot(sum);
 //        return new Vec3D(diff.x, diff.y, -dot / 2);
 //    }

@@ -43,9 +43,9 @@ class FunctorTest {
     void testAdd1() throws Narsese.NarseseException {
         NAR d = NARS.tmp();
 
-        d.input("add(1,2,#x)!");
+        d.input("addAt(1,2,#x)!");
         d.run(16);
-        d.input("add(4,5,#x)!");
+        d.input("addAt(4,5,#x)!");
         d.run(16);
     }
 
@@ -53,9 +53,9 @@ class FunctorTest {
     void testAdd1Temporal() throws Narsese.NarseseException {
         NAR d = NARS.tmp();
 
-        d.input("add(1,2,#x)! :|:");
+        d.input("addAt(1,2,#x)! :|:");
         d.run(16);
-        d.input("add(4,5,#x)! :|:");
+        d.input("addAt(4,5,#x)! :|:");
         d.run(16);
     }
 
@@ -105,7 +105,7 @@ class FunctorTest {
     @Test
     void testExecutionResultIsCondition() throws Narsese.NarseseException {
         NAR d = NARS.tmp();
-        d.input("(add($x,1,$y) ==> ($y <-> inc($x))).");
+        d.input("(addAt($x,1,$y) ==> ($y <-> inc($x))).");
         d.input("((inc(2) <-> $x) ==> its($x)).");
         d.run(cycles);
     }

@@ -228,7 +228,7 @@
 //     *
 //     * Additional Keys:
 //     * - 3/4: font +/-
-//     * - h: toogle draw 'font set'
+//     * - h: toogle draw 'font setAt'
 //     * - f: toggle draw fps
 //     * - space: toggle font (ubuntu/java)
 //     * - i: live input text input (CR ends it, backspace supported)
@@ -546,9 +546,9 @@
 //        boolean nextFontSet() {
 //            try {
 //                final int set = ( fontSet == FontFactory.UBUNTU ) ? FontFactory.JAVA : FontFactory.UBUNTU ;
-//                final Font _font = FontFactory.get(set).getDefault();
+//                final Font _font = FontFactory.get(setAt).getDefault();
 //                if(null != _font) {
-//                    fontSet = set;
+//                    fontSet = setAt;
 //                    font = _font;
 //                    fontName = font.getFullFamilyName(null).toString();
 //                    fontNameBox = font.getMetricBounds(fontName, font.getPixelSize(fontSizeFName, dpiH));
@@ -561,11 +561,11 @@
 //            return false;
 //        }
 //
-//        public boolean setFontSet(final int set, final int family, final int stylebits) {
+//        public boolean setFontSet(final int setAt, final int family, final int stylebits) {
 //            try {
-//                final Font _font = FontFactory.get(set).get(family, stylebits);
+//                final Font _font = FontFactory.get(setAt).get(family, stylebits);
 //                if(null != _font) {
-//                    fontSet = set;
+//                    fontSet = setAt;
 //                    font = _font;
 //                    fontName = font.getFullFamilyName(null).toString();
 //                    fontNameBox = font.getMetricBounds(fontName, font.getPixelSize(fontSizeFName, dpiH));

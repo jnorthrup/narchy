@@ -2,6 +2,7 @@ package nars.term.util.conj;
 
 import nars.term.Term;
 import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
 import static nars.Op.CONJ;
 import static nars.term.atom.Bool.*;
@@ -25,8 +26,11 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         this(4);
     }
 
-    /** consistent with ConjBuilder - semantics slightly different than superclass and List.add: returns true only if False or Null have been added; a duplicate value returns true */
-    @Override public boolean add(long when, Term t) {
+    /**
+     * consistent with ConjBuilder - semantics slightly different than superclass and List.addAt: returns true only if False or Null have been added; a duplicate value returns true
+     */
+    @Override
+    public boolean addEvent(long when, Term t) {
         boolean result = true;
         if (t == True)
             return true; //ignore
@@ -39,6 +43,42 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         super.add(when, t);
 
         return result;
+    }
+
+    @Override
+    public int eventOccurrences() {
+        int s = size();
+        if (s == 0) return 0;
+        else if (s == 1) return 1;
+        else if (s == 2) {
+            //quick tests
+            if (when[0] == when[1]) return 1;
+            else return 2;
+        } else if (s == 3) {
+            //quick tests
+            boolean a01 = when[0] == when[1];
+            if (a01) {
+                if (when[1] == when[2]) return 1;
+                else return 2;
+            }
+            return when[1] == when[2] ? 2 : 3;
+        }
+
+        LongHashSet h = new LongHashSet(s);
+        for (int i = 0; i < s; i++) {
+            h.add(when[i]);
+        }
+        return h.size();
+    }
+
+    @Override
+    public int eventCount(long w) {
+        int s = size();
+        int c = 0;
+        for (int i = 0; i < s; i++)
+            if (this.when[i] == w)
+                c++;
+        return c;
     }
 
     @Override
@@ -88,7 +128,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                     if (a.equals(b))
                         return a; //quick test
                     else
-                        return ConjCommutive.the((w0 == ETERNAL) ? DTERNAL : 0, a, b);
+                        return CONJ.the((w0 == ETERNAL) ? DTERNAL : 0, a, b);
                 }
                 break;
             }
@@ -103,12 +143,12 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                 }
                 //all same time
                 if (parallel)
-                    return ConjCommutive.the((w0 == ETERNAL) ? DTERNAL : 0, this);
+                    return CONJ.the((w0 == ETERNAL) ? DTERNAL : 0, this);
             }
         }
 
         //failsafe impl:
-        Conj c = new Conj(n);
+        ConjBuilder c = new Conj(n);
         for (int i = 0; i < n; i++) {
             Term t = this.get(i);
             if (!c.add(when[i], t))
@@ -116,7 +156,6 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         }
         return c.term();
     }
-
 
 
 }

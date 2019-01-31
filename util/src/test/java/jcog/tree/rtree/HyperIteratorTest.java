@@ -8,7 +8,7 @@ public class HyperIteratorTest {
 //
 //        final RTree<RectDouble> r = RTree2DTest.createRect2DTree(2, 4, Spatialization.DefaultSplits.AXIAL);
 //        for (int i = 0; i < rects.length; i++)
-//            r.add(rects[i]);
+//            r.addAt(rects[i]);
 //
 //        HyperIterator0<RectDouble> rr = new HyperIterator0(r.model, r.root(), new RectDouble(260.0,21.0,584.0,344.0),
 //                Space.BoundsMatch.CONTAINS, null);

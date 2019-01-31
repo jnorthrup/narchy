@@ -39,7 +39,7 @@ public class TermTestMisc {
 
     @Test
     void testIntifyVarCountOfSubtermsContainingVars() throws Narsese.NarseseException {
-        assertEquals(2, $.$("(add(s(s(0)),s(s(0)),?R)==>goal(?R))").varQuery());
+        assertEquals(2, $.$("(addAt(s(s(0)),s(s(0)),?R)==>goal(?R))").varQuery());
     }
 
 
@@ -169,8 +169,8 @@ public class TermTestMisc {
         TreeSet<Term> set = new TreeSet<>();
         boolean added1 = set.add(term1);
         boolean added2 = set.add(term2);
-        assertTrue(added1, "target 1 added to set");
-        assertTrue(added2, "target 2 added to set");
+        assertTrue(added1, "target 1 added to setAt");
+        assertTrue(added2, "target 2 added to setAt");
 
         assertEquals(2, set.size());
 

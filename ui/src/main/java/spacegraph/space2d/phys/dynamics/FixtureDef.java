@@ -35,7 +35,7 @@ import spacegraph.space2d.phys.fracture.PolygonFixture;
  */
 public class FixtureDef {
     /**
-     * The shape, this must be set. The shape will be cloned, so you can create the shape on the
+     * The shape, this must be setAt. The shape will be cloned, so you can create the shape on the
      * stack.
      */
     public Shape shape = null;
@@ -100,7 +100,7 @@ public class FixtureDef {
     }
 
     /**
-     * The shape, this must be set. The shape will be cloned, so you can create the shape on the
+     * The shape, this must be setAt. The shape will be cloned, so you can create the shape on the
      * stack.
      */
     public Shape getShape() {
@@ -108,7 +108,7 @@ public class FixtureDef {
     }
 
     /**
-     * The shape, this must be set. The shape will be cloned, so you can create the shape on the
+     * The shape, this must be setAt. The shape will be cloned, so you can create the shape on the
      * stack.
      */
     private void setShape(Shape shape) {

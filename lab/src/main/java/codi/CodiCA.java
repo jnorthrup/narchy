@@ -13,7 +13,7 @@ public class CodiCA extends CA {
     private int CAChanged;
     private boolean SignalingInited;
 
-    /** add blocks every 2 cells TODO verify this is what it actually means */
+    /** addAt blocks every 2 cells TODO verify this is what it actually means */
     private boolean gridBlock = true;
 
 

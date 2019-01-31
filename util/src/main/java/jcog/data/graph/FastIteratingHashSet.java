@@ -23,8 +23,8 @@
 //    }
 //
 //    @Override
-//    public boolean add(X x) {
-//        if (super.add(x)) {
+//    public boolean addAt(X x) {
+//        if (super.addAt(x)) {
 //            cache = null;
 //            return true;
 //        }

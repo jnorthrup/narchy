@@ -27,7 +27,7 @@ public class OSMTest {
             };
             o.nodes.values().forEach(index);
             o.ways.values().forEach(index);
-//            o.relations.values().forEach(i.index::add);
+//            o.relations.values().forEach(i.index::addAt);
 //            System.out.println(o.nodes.size() + " nodes");
             o.ready = true;
 
@@ -64,7 +64,7 @@ public class OSMTest {
 //        sg.io.show(800, 800);
 
 
-//        sg.add(new SubOrtho(WidgetTest.widgetDemo()).posWindow(0, 0, 0.3f, 1f));
+//        sg.addAt(new SubOrtho(WidgetTest.widgetDemo()).posWindow(0, 0, 0.3f, 1f));
 
     }
 }

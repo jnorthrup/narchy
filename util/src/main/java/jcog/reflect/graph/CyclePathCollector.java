@@ -206,10 +206,10 @@
 //            if( path.hasCycles() && !path.isEmpty() && path.nodeCount()>1 ){
 //                if( checkExists ){
 //                    if( !exists(path, checkAllNodes) ){
-//                        paths.add(path);
+//                        paths.addAt(path);
 //                    }
 //                }else{
-//                    paths.add(path);
+//                    paths.addAt(path);
 //                }
 //            }
 //        }

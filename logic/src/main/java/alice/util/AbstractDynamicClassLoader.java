@@ -9,7 +9,7 @@ import java.util.HashMap;
  * 
  * @author Alessio Mercurio
  * 
- * Custom abstract classloader used to add/remove dynamically URLs from it
+ * Custom abstract classloader used to addAt/remove dynamically URLs from it
  * needed by JavaLibrary.
  *
  */

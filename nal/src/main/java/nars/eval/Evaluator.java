@@ -66,7 +66,7 @@ public class Evaluator extends DirectTermTransform {
 //
 ////            x.sub(0).recurseTerms((Termlike::hasVars), (s -> {
 ////                if (s instanceof Variable)
-////                    vars.add((Variable) s);
+////                    vars.addAt((Variable) s);
 ////                return true;
 ////            }), null);
 //    }

@@ -48,7 +48,7 @@ public class Unification {
 	 * Adds a variable to this unification.
 	 * 
 	 * @param Variable
-	 *            the variable to add to this unification
+	 *            the variable to addAt to this unification
 	 * 
 	 * @return this unification
 	 */

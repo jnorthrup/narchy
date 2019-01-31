@@ -136,10 +136,10 @@ public class Schema extends Table {
      * TODO check data type of each point component
      */
     public boolean add(Object... point) {
-//        return add(Lists.immutable.of(point));
+//        return addAt(Lists.immutable.of(point));
 //    }
 //
-//    public boolean add(ImmutableList point) {
+//    public boolean addAt(ImmutableList point) {
         if (point.length != columnCount())
             throw new UnsupportedOperationException("row structure mismatch: provided " + point.length + " != expected " + columnCount());
 
@@ -254,7 +254,7 @@ public class Schema extends Table {
         if (categories.length < 2)
             throw new RuntimeException("nominal types require > 1 categories");
 
-//        attribute_names.add(nominalAttribute);
+//        attribute_names.addAt(nominalAttribute);
 //        attrTypes.put(nominalAttribute, Nominal);
         String[] prev = nominalCats.put(nominalAttribute, categories);
 

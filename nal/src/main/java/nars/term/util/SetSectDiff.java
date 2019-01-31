@@ -12,7 +12,7 @@ import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
 import static nars.term.atom.Bool.True;
 
-/** NAL2/NAL3 set, intersection and difference functions */
+/** NAL2/NAL3 setAt, intersection and difference functions */
 public class SetSectDiff {
 
     public static Term intersect(Op o, Term... t ) {
@@ -152,7 +152,7 @@ public class SetSectDiff {
 //                                break; //last one, dont need to check
 //                            roots = new UnifiedSet<>(t.length-1 - i);
 //                        }
-//                        if (!roots.add(x.root())) {
+//                        if (!roots.addAt(x.root())) {
 //                            //repeat detected
 //                            return false;
 //                        }
@@ -202,11 +202,11 @@ public class SetSectDiff {
 ////        if (o1 == intersection) {
 ////            UnifiedSet<Term> args = new UnifiedSet<>();
 ////
-////            ((Iterable<Term>) term1).forEach(args::add);
+////            ((Iterable<Term>) term1).forEach(args::addAt);
 ////            if (o2 == intersection)
-////                ((Iterable<Term>) term2).forEach(args::add);
+////                ((Iterable<Term>) term2).forEach(args::addAt);
 ////            else
-////                args.add(term2);
+////                args.addAt(term2);
 ////
 ////            int aaa = args.size();
 ////            if (aaa == 1)
@@ -277,8 +277,8 @@ public class SetSectDiff {
 //
 //
 //                Op set = op == Op.DIFFe ? Op.SETe : Op.SETi;
-//                if ((o0 == set && o1 == set)) {
-//                    return differenceSet(set, et0, et1);
+//                if ((o0 == set && o1 == setAt)) {
+//                    return differenceSet(setAt, et0, et1);
 //                } else {
 //                    return differenceSect(op, et0, et1);
 //                }

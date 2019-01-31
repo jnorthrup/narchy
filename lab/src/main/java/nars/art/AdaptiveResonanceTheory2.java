@@ -314,7 +314,7 @@ public class AdaptiveResonanceTheory2
                * */
         int skip;
         /**
-                * Input parameter vigilance (-v) together with alpha (ART for real numbers input) or beta (ART 1) set up a similarity threshold. 
+                * Input parameter vigilance (-v) together with alpha (ART for real numbers input) or beta (ART 1) set up a similarity threshold.
                 * This threshold influence a minimum similarity under which an example Ek will be accepted by prototype. The higher value 
                 * the higher number of clusters. It has a range [0,1]. The default is 0.1.
                 * */
@@ -326,7 +326,7 @@ public class AdaptiveResonanceTheory2
                 * */
         float theta = 0.00001f;
         /** 
-                * Input parameter alpha (-a)  is used by real value ART algorithms. Together with vigilance set up a similarity threshold. 
+                * Input parameter alpha (-a)  is used by real value ART algorithms. Together with vigilance set up a similarity threshold.
                 * This threshold influences a minimum similarity which is necessary for the example Ek to be accepted by the prototype. 
                 * The range: [0,1/sqrt(dim)] where dim is a number of dimensions. The default is 1/sqrt(dim) * 1/2
                 * */
@@ -345,7 +345,7 @@ public class AdaptiveResonanceTheory2
                 **/
         int distance;
         /** 
-                * Input parameter power (-p) it is used only for Minkowski distance in art_distance. It set up the power for Minkowski 
+                * Input parameter power (-p) it is used only for Minkowski distance in art_distance. It set up the power for Minkowski
                 * distance measure. The default is 3. Minkowski with the power 1 is Manhattan distance. Minkowski with power 2 is 
                 * Euclidean distance
                 * */

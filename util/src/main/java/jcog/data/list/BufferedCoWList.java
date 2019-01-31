@@ -22,14 +22,14 @@
 //    }
 //
 //    @Override
-//    public boolean add(X o) {
-//        q.add(PrimitiveTuples.pair(o, true));
+//    public boolean addAt(X o) {
+//        q.addAt(PrimitiveTuples.pair(o, true));
 //        return true;
 //    }
 //
 //    @Override
 //    public boolean remove(Object o) {
-//        q.add(PrimitiveTuples.pair((X)o, false));
+//        q.addAt(PrimitiveTuples.pair((X)o, false));
 //        return true;
 //    }
 //

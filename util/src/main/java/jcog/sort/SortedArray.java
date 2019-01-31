@@ -80,7 +80,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         }
 
 //        Object x = ITEM.getAcquire(l, b);
-//        ITEM.set(l, b, ITEM.getAndSetAcquire(l, a, x));
+//        ITEM.setAt(l, b, ITEM.getAndSetAcquire(l, a, x));
     }
 
 
@@ -270,7 +270,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //                    while (i >= left && pCmp.floatValueOf(ITEM.get(c,i)) < swapV) {
 //                        swap(c, i + 1, i--);
 //                    }
-//                    ITEM.set(c, i+1, swap);
+//                    ITEM.setAt(c, i+1, swap);
 //                }
 //                if (stack_pointer != -1) {
 //                    right = stack[stack_pointer--];
@@ -316,7 +316,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //                }
 //
 //
-//                ITEM.set(c,left+1, ITEM.getAndSet(c,j,temp));
+//                ITEM.setAt(c,left+1, ITEM.getAndSet(c,j,temp));
 //
 //                int a, b;
 //                if (right - i + 1 >= j - left) {
@@ -389,13 +389,13 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //            if (totalOffset > 0) {
 //                size--;
 //                for (int i = index; i < size; i++) {
-//                    ITEM.set(items, i, ITEM.getAcquire(items, i+1));
+//                    ITEM.setAt(items, i, ITEM.getAcquire(items, i+1));
 //                }
 //                for (int i = size; i < items.length; i++) {
-//                    ITEM.set(items, i, null);
+//                    ITEM.setAt(items, i, null);
 //                }
 //                //System.arraycopy(items, index + 1, items, index, totalOffset);
-//                //ITEM.set(items, SIZE.decrementAndGet(this), null);
+//                //ITEM.setAt(items, SIZE.decrementAndGet(this), null);
 //            }
 //            return previous;
         }

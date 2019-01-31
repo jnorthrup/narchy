@@ -3,3 +3,8 @@
   ((X-->A) && (Y-->A)), A     |- (((X-->A)&&(Y-->A))-->A), (Belief:StructuralDeduction)
 (--(X-->A) && (Y-->A)), A   |- ((--(X-->A)&&(Y-->A))-->A), (Belief:StructuralDeduction)
 (--(X-->A) && --(Y-->A)), A |- ((--(X-->A)&&--(Y-->A))-->A), (Belief:StructuralDeduction)
+
+
+//TODO
+//((x && a) <-> (x && b)) => (a <-> b)
+//((x && a) <-> (x && b)) => ((a <-> b)&&x)

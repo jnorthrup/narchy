@@ -55,7 +55,7 @@ public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
         }
     }
 
-    /** add a handler */
+    /** addAt a handler */
     public void on(int keyCode, @Nullable FloatProcedure ifPressed, @Nullable FloatProcedure ifReleased) {
         pending.add((k)->{
             if (ifPressed != null) {

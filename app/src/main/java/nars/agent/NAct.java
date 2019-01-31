@@ -271,8 +271,8 @@ public interface NAct {
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh) {
 
         boolean freqOrExp =
-                true;
-                //false;
+                //true;
+                false;
 
         float[] lr = new float[]{0f, 0f};
 
@@ -328,12 +328,12 @@ public interface NAct {
         for (GoalActionConcept x : new GoalActionConcept[]{LA, RA}) {
 //            float freq = 0.5f;
 //            float conf = 0.05f; //less than curiosity
-//            x.goals().tables.add(new EternalTable(1));
-//            x.goals().tableFirst(EternalTable.class).add(
+//            x.goals().tables.addAt(new EternalTable(1));
+//            x.goals().tableFirst(EternalTable.class).addAt(
 //                    Remember.the(new NALTask(x.target(), GOAL,
 //                            $.t(freq, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
-//            x.beliefs().tables.add(new EternalTable(1));
-//            x.beliefs().tableFirst(EternalTable.class).add(
+//            x.beliefs().tables.addAt(new EternalTable(1));
+//            x.beliefs().tableFirst(EternalTable.class).addAt(
 //                    Remember.the(new NALTask(x.target(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 
@@ -376,13 +376,13 @@ public interface NAct {
         //n.confDefault(BELIEF)/4;
         //BeliefTables xb = (BeliefTables) x.beliefs();
         //BeliefTables xg = (BeliefTables) x.goals();
-        //xg.tables.add(new EternalTable(1));
-//            xg.tableFirst(EternalTable.class).add(
+        //xg.tables.addAt(new EternalTable(1));
+//            xg.tableFirst(EternalTable.class).addAt(
 //                    Remember.the(new NALTask(x.target(), GOAL,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
 
-//            xb.tables.add(new EternalTable(1));
-//            xb.tableFirst(EternalTable.class).add(
+//            xb.tables.addAt(new EternalTable(1));
+//            xb.tableFirst(EternalTable.class).addAt(
 //                    Remember.the(new NALTask(x.target(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
         //}

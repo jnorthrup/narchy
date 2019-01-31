@@ -111,7 +111,7 @@ public class Branch<X> extends AbstractNode<X> {
     /**
      * Adds a data entry to one of the child nodes of this branch
      *
-     * @param x      data entry to add
+     * @param x      data entry to addAt
      * @param parent
      * @param model
      * @param added

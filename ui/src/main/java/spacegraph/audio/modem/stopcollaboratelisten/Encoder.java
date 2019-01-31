@@ -108,7 +108,7 @@ public class Encoder implements Constants {
                     continue;
                 }
 
-                //add a sinusoid of getFrequency(j), amplitude kAmplitude and duration kDuration
+                //addAt a sinusoid of getFrequency(j), amplitude kAmplitude and duration kDuration
                 double innerMultiplier = getFrequency((j * kBitsPerByte) + k)
                         * (1 / kSamplingFrequency) * 2 * Math.PI;
                 for (int l = 0; l < signal.length; l++) {
@@ -125,7 +125,7 @@ public class Encoder implements Constants {
      */
     private static byte[] getSOSSequence() {
         double[] signal = new double[kSamplesPerDuration];
-        //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
+        //addAt a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
         double innerMultiplier = Constants.kSOSFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
         for (int l = 0; l < signal.length; l++) {
             signal[l] = /*kAmplitude **/ Math.cos(innerMultiplier * l);
@@ -138,7 +138,7 @@ public class Encoder implements Constants {
      */
     private static byte[] getHailSequence() {
         double[] signal = new double[kSamplesPerDuration];
-        //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
+        //addAt a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
         double innerMultiplier = Constants.kHailFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
         for (int l = 0; l < signal.length; l++) {
             signal[l] = /*kAmplitude **/ Math.cos(innerMultiplier * l);

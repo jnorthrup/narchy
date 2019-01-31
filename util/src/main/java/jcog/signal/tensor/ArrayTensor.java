@@ -11,7 +11,7 @@ import static java.lang.System.arraycopy;
 /**
  * float tensor - see: https:
  */
-public class ArrayTensor extends AbstractArrayTensor
+public class ArrayTensor extends AbstractShapedTensor
         /* source, getters, suppliers */
         /* target, setters, consumers */ {
 
@@ -28,7 +28,12 @@ public class ArrayTensor extends AbstractArrayTensor
     }
 
 
-    public ArrayTensor(int... shape) {
+    /** 1D */
+    public ArrayTensor(int length) {
+        this(new int[] { length } );
+    }
+
+    public ArrayTensor(int[] shape) {
         super(shape);
         this.data = new float[super.volume()];
     }
@@ -64,7 +69,7 @@ public class ArrayTensor extends AbstractArrayTensor
 
 
     @Override
-    public void set(float newValue, int linearCell) {
+    public void setAt(float newValue, int linearCell) {
         data[linearCell] = newValue;
     }
 
@@ -79,7 +84,7 @@ public class ArrayTensor extends AbstractArrayTensor
     }
 
     @Override
-    public void add(float x, int linearCell) {
+    public void addAt(float x, int linearCell) {
         data[linearCell] += x;
     }
 

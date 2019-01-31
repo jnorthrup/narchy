@@ -28,7 +28,7 @@ class MathTest {
         t.input("((&&,({$x} --> i),({$y} --> i)) ==> ({($x,$y),($y,$x)} --> j)).");
         t.run(100);
 
-        t.input("(({(#x,#y)} --> j) ==> ({add(#x,#y)} --> i)).");
+        t.input("(({(#x,#y)} --> j) ==> ({addAt(#x,#y)} --> i)).");
         t.run(100);
 
         

@@ -40,7 +40,7 @@ public interface TaskSeries<T extends Task> {
 //                Object[] ii = inner.items;
 //                int i;
 //                for (i = 0; i < l; i++)
-//                    d.add((Task) ii[i]);
+//                    d.addAt((Task) ii[i]);
 //
 //                return d;
 //            }

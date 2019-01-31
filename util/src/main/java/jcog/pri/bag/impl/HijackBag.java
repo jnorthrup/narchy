@@ -235,7 +235,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     /**
      * core update function
-     * TODO add compacting procedure which, if nulls are detected while scanning and a
+     * TODO addAt compacting procedure which, if nulls are detected while scanning and a
      * a result is found after it, to move the result to the earlier null position.
      */
     private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, Mode mode, @Nullable NumberX overflowing) {

@@ -187,9 +187,9 @@ package nars.op;//package nars.op;
 //                        if (caps.contains(Capability.VIRTUAL) ||
 //                                caps.contains(Capability.COMPRESS) ||
 //                                caps.contains(Capability.DISPATCHER)) {
-//                            virtual.add(schemes[i]);
+//                            virtual.addAt(schemes[i]);
 //                        } else {
-//                            physical.add(schemes[i]);
+//                            physical.addAt(schemes[i]);
 //                        }
 //                    }
 //                }
@@ -412,7 +412,7 @@ package nars.op;//package nars.op;
 //            final ArrayList<String> cmd = new ArrayList<>();
 //            final StringTokenizer tokens = new StringTokenizer(line);
 //            while (tokens.hasMoreTokens()) {
-//                cmd.add(tokens.nextToken());
+//                cmd.addAt(tokens.nextToken());
 //            }
 //            return cmd.toArray(new String[cmd.size()]);
 //        }

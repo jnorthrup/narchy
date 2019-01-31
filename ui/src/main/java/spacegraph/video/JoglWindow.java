@@ -498,7 +498,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                                 d.display();
                         }
                     } finally {
-//                        waiting.set(false);
+//                        waiting.setAt(false);
                         ready();
                     }
                 }

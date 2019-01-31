@@ -12,7 +12,7 @@ public class ScalarTensor extends ArrayTensor {
     }
 
     @Override public float[] snapshot() {
-        set(f.asFloat(), 0);
+        setAt(f.asFloat(), 0);
         return super.snapshot();
     }
 }

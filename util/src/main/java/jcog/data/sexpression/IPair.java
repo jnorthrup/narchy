@@ -6,10 +6,10 @@ package jcog.data.sexpression;
  */
 public interface IPair extends IPaired {
 
-	/** @return the value which was actually set, or null if nothing changed */
+	/** @return the value which was actually setAt, or null if nothing changed */
 	Object setFirst(Object first);
 
-	/** @return the value which was actually set, or null if nothing changed */
+	/** @return the value which was actually setAt, or null if nothing changed */
 	Object setRest(Object rest);
 
 	/**

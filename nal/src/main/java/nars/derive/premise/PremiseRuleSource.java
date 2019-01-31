@@ -248,7 +248,7 @@ public class PremiseRuleSource extends ProxyTerm {
 //                    neq(constraints, XX, YY);
 //                    match(X, new TermMatch.Is(CONJ));
 //
-//                    constraints.add(new SubOfConstraint(XX, YY, EventsAny, 1));
+//                    constraints.addAt(new SubOfConstraint(XX, YY, EventsAny, 1));
 //                    break;
 
                 //case "eventsOfNeg":
@@ -338,10 +338,10 @@ public class PremiseRuleSource extends ProxyTerm {
                             concPunc = c -> c; //default
                             break;
 //                        case "\"*\"":
-//                            pre.add(new TaskBeliefOp(PROD, true, false));
+//                            pre.addAt(new TaskBeliefOp(PROD, true, false));
 //                            break;
 //                        case "\"&&\"":
-//                            pre.add(new TaskBeliefOp(CONJ, true, false));
+//                            pre.addAt(new TaskBeliefOp(CONJ, true, false));
 //                            break;
 
 
@@ -536,7 +536,7 @@ public class PremiseRuleSource extends ProxyTerm {
 //        constraints.forEach(cc -> {
 //            PREDICATE<Derivation> p = cc.preFilter(taskPattern, beliefPattern);
 //            if (p != null) {
-//                pre.add(p);
+//                pre.addAt(p);
 //            }
 //        });
         List<RelationConstraint> mirrors = new FasterList(4);
@@ -651,8 +651,8 @@ public class PremiseRuleSource extends ProxyTerm {
 
         Function<PreDerivation, Term> rr = depth == 0 ? r : r.path(pp);
 //        int ts = t.structure() & (~Op.VAR_PATTERN.bit);
-//        pre.add(new TermMatchPred<>(new TermMatch.Is(to),  rr));
-//        pre.add(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
+//        pre.addAt(new TermMatchPred<>(new TermMatch.Is(to),  rr));
+//        pre.addAt(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
         pre.add(new TermMatchPred<>(TermMatch.IsHas.get(t, depth), rr));
 
         int n = t.subs();
@@ -756,10 +756,10 @@ public class PremiseRuleSource extends ProxyTerm {
         pre.add(new TermMatchPred<>(m, isOrIsnt, true, TaskOrBelief(taskOrBelief).path(path)));
 //        if (path.length == 0) {
 //            //root
-//            pre.add(new TermMatchPred<>(m, isOrIsnt, true, TaskOrBelief(taskOrBelief)));
+//            pre.addAt(new TermMatchPred<>(m, isOrIsnt, true, TaskOrBelief(taskOrBelief)));
 //        } else {
 //            //subterm
-//            pre.add(new TermMatchPred.Subterm(path, m, isOrIsnt, TaskOrBelief(taskOrBelief)));
+//            pre.addAt(new TermMatchPred.Subterm(path, m, isOrIsnt, TaskOrBelief(taskOrBelief)));
 //        }
     }
 
@@ -839,11 +839,11 @@ public class PremiseRuleSource extends ProxyTerm {
 
 //    void subsMin(Term X, int min) {
 //        if (taskPattern.equals(X)) {
-//            pre.add(new SubsMin.SubsMinProto(true, min));
+//            pre.addAt(new SubsMin.SubsMinProto(true, min));
 //        } else if (beliefPattern.equals(X)) {
-//            pre.add(new SubsMin.SubsMinProto(false, min));
+//            pre.addAt(new SubsMin.SubsMinProto(false, min));
 //        } else {
-//            constraints.add(new SubsMin(X, min));
+//            constraints.addAt(new SubsMin(X, min));
 //        }
 //
 //        //TODO
@@ -865,7 +865,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     private void neqRoot(Variable x, Variable y) {
         match(x, new TermMatch.EqualsRoot(y), false);
-        //constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
+        //constraints.addAt(new NotEqualConstraint.NotEqualRootConstraint(x, y));
     }
 
     public static Term pp(@Nullable byte[] b) {

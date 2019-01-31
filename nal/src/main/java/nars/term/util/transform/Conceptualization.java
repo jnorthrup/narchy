@@ -82,9 +82,9 @@ public class Conceptualization {
 
 //                for (Term yyy : yy) {
 //                    if (yyy.unneg().op() == CONJ) {
-//                        yyy.subterms().forEach(z -> t.add(z));
+//                        yyy.subterms().forEach(z -> t.addAt(z));
 //                    } else {
-//                        t.add(yyy);
+//                        t.addAt(yyy);
 //                    }
 //                }
                 if (t.size() == 1 && yy.subs() != 1) {

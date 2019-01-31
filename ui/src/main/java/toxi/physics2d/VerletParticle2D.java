@@ -389,7 +389,7 @@ public class VerletParticle2D extends Vec2D {
 
 
 //    public VerletParticle2D setPreviousPosition(Vec2D p) {
-//        prev.set(p);
+//        prev.setAt(p);
 //        return this;
 //    }
 

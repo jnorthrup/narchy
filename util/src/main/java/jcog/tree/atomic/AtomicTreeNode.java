@@ -46,7 +46,7 @@ public abstract class AtomicTreeNode<T extends AtomicTreeNode<T>> {
             if (curParent == parent)
                 return; //same parent
             
-            throw new UnsupportedOperationException(this + " parent already set: " + this.parent.get());
+            throw new UnsupportedOperationException(this + " parent already setAt: " + this.parent.get());
         }
         parent.children.add(this);
     }

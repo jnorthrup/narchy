@@ -28,7 +28,7 @@ public class Springing extends Container {
 //    PropChangeListener       _pcl = pce -> childPropChange(pce);
     
 /**
- * Override to add layout info.
+ * Override to addAt layout info.
  */
 public void addChild(Surface aChild, int anIndex)
 {
@@ -115,7 +115,7 @@ protected void layoutChild(Surface aChild, float newPW, float newPH)
 //    float sw = (lms? x1 : 0) + (ws? w1 : 0) + (rms? oldPW - (x1 + w1) : 0), dw = newPW - oldPW;
 //    float sh = (tms? y1 : 0) + (hs? h1 : 0) + (bms? oldPH - (y1 + h1) : 0), dh = newPH - oldPH;
 //
-//    // Calculate new bounds and set
+//    // Calculate new bounds and setAt
 //    float x2 = (!lms || sw==0)? x1 : (x1 + dw*x1/sw);
 //    float y2 = (!tms || sh==0)? y1 : (y1 + dh*y1/sh);
 //    float w2 = (!ws || sw==0)? w1 : (w1 + dw*w1/sw);

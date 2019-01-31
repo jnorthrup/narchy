@@ -190,7 +190,7 @@ public class RowVars {
     
     /** ***************************************************************
      * Recurse through the formula looking for row variables.  If found,
-     * add it to a map that has row variables as keys and a set of 
+     * addAt it to a map that has row variables as keys and a set of
      * predicate names as values. 
      */
     private static HashMap<String,HashSet<String>> getRowVarRelations(Formula f) {

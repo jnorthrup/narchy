@@ -77,7 +77,7 @@ public class PJLibraryNew extends OOLibrary {
         "new_object(ClassName,Args,Id):- !, java_object_std(ClassName, Args, Id).\n" +
 		"Obj <- What :- java_call1(Obj,What,Res), Res \\== false.\n" +
 		"Obj <- What returns Res :- java_call1(Obj,What,Res).\n" +
-        "java_call1('.'(C,F), set(X), Res):-lookup_field(C, F, Field), java_access(C, F, Field, set(X), Res).\n" +
+        "java_call1('.'(C,F), setAt(X), Res):-lookup_field(C, F, Field), java_access(C, F, Field, setAt(X), Res).\n" +
         "java_call1('.'(C,F), get(X), Res):-lookup_field(C, F, Field), java_access(C, F, Field, get(X), Res).\n" +
         "java_call1(Obj, What, Res):-java_call2(Obj, What, Res).\n" +
         "java_call2(Obj, What, Res):-lookup_method(Obj, What, Meth), not prolog_method(Meth), !, java_method_call(Obj, Meth, What, Res, false, false).\n" +
@@ -85,10 +85,10 @@ public class PJLibraryNew extends OOLibrary {
         "prolog_call_rest(Obj, Meth, What, Res):-is_iterable(Meth), !, java_method_call(Obj, Meth, What, R2, true, true), R2 <- iterator returns I, next(I, E), marshal(E, Res).\n" +
         "prolog_call_rest(Obj, Meth, What, Res):-!, java_method_call(Obj, Meth, What, R2, true, false), marshal(R2, Res).\n" +
         "java_access(C, F, Field, get(X), Res):-prolog_field(Field), !, java_get(C, F, Y), marshal(Y, X).\n" +
-        "java_access(C, F, Field, set(X), Res):-prolog_field(Field), !, unmarshal(X, Y), java_set(C, F, Y).\n" +
+        "java_access(C, F, Field, setAt(X), Res):-prolog_field(Field), !, unmarshal(X, Y), java_set(C, F, Y).\n" +
         "java_access(C, F, Field, get(X), Res):-java_get(C, F, X).\n" +
-        "java_access(C, F, Field, set(X), Res):-java_set(C, F, X).\n" +
-		"java_array_set(Array,Index,Object):-           class('java.lang.reflect.Array') <- set(Array as 'java.lang.Object',Index,Object as 'java.lang.Object'),!.\n" +
+        "java_access(C, F, Field, setAt(X), Res):-java_set(C, F, X).\n" +
+		"java_array_set(Array,Index,Object):-           class('java.lang.reflect.Array') <- setAt(Array as 'java.lang.Object',Index,Object as 'java.lang.Object'),!.\n" +
 		"java_array_set(Array,Index,Object):-			java_array_set_primitive(Array,Index,Object).\n"+
 		"java_array_get(Array,Index,Object):-           class('java.lang.reflect.Array') <- get(Array as 'java.lang.Object',Index) returns Object,!.\n" +
 		"java_array_get(Array,Index,Object):-       java_array_get_primitive(Array,Index,Object).\n"+

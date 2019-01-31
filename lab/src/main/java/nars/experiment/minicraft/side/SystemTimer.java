@@ -5,7 +5,7 @@ import jcog.Util;
 
 /**
  * A wrapper class that provides timing methods. This class
- * provides us with a central location where we can add
+ * provides us with a central location where we can addAt
  * our current timing implementation. Initially, we're going to
  * rely on the GAGE timer. (@see http:
  *

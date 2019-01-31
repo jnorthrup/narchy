@@ -14,9 +14,9 @@ public class PrologToNALTest {
 
     @Test public void testRuleImpl() throws InvalidTheoryException, IOException, URISyntaxException {
 
-        String expected = "add(0,?X,?X) , (add($X,$Y,$Z)==>add(s($X),$Y,s($Z))) , (add(s(s(0)),s(s(0)),$R)==>goal($R))";
+        String expected = "addAt(0,?X,?X) , (addAt($X,$Y,$Z)==>addAt(s($X),$Y,s($Z))) , (addAt(s(s(0)),s(s(0)),$R)==>goal($R))";
         Iterable<alice.tuprolog.Term> input = Theory.resource(
-            "../../../resources/prolog/add.pl"
+            "../../../resources/prolog/addAt.pl"
         );
         assertTranslated(expected, input);
     }

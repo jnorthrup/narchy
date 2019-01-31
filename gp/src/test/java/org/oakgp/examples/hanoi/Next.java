@@ -37,7 +37,7 @@ class Next implements Fn {
 
     /**
      * @param arguments   the first argument is a {@code TowersOfHanoi} representing a game state and the second argument is a {@code Pole}
-     * @param assignments the values assigned to each of member of the variable set
+     * @param assignments the values assigned to each of member of the variable setAt
      * @return the ID of the upper (i.e. top) disc of the specified pole, or {code 0} if there are no discs on the pole
      */
     @Override

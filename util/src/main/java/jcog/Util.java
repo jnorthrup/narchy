@@ -1567,14 +1567,6 @@ public enum Util {
         return Math.max(Math.min(f, max), min);
     }
 
-    public static int clampI(float i, int min, int max) {
-        return clamp(Math.round(i), min, max);
-    }
-
-    public static long clampI(double i, int min, int max) {
-        return clamp(Math.round(i), min, max);
-    }
-
     public static int clamp(int i, int min, int max) {
         assert (min <= max);
         if (i < min) i = min;

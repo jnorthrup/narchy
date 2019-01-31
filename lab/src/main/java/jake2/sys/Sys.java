@@ -89,8 +89,8 @@ public final class Sys extends Defines {
      * Match the pattern findpattern against the filename.
      * 
      * In the pattern string, `*' matches any sequence of characters, `?'
-     * matches any character, [SET] matches any character in the specified set,
-     * [!SET] matches any character not in the specified set. A set is composed
+     * matches any character, [SET] matches any character in the specified setAt,
+     * [!SET] matches any character not in the specified setAt. A set is composed
      * of characters or ranges; a range looks like character hyphen character
      * (as in 0-9 or A-Z). [0-9a-zA-Z_] is the set of characters allowed in C
      * identifiers. Any other character in the pattern must be matched exactly.

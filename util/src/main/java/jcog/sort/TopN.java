@@ -1,5 +1,6 @@
 package jcog.sort;
 
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.pool.MetalPool;
 import jcog.decide.Roulette;
@@ -51,14 +52,18 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     public TopN<X> rank(FloatRank<X> rank, int capacity) {
         this.rank = rank;
-        this.capacity = capacity;
+        setCapacity(capacity);
+        return this;
+    }
+
+    public void setCapacity(int capacity) {
 
         if (capacity <= 0)
             throw new ArrayIndexOutOfBoundsException("capacity must be > 0");
         if (!(items.length >= capacity))
             throw new ArrayIndexOutOfBoundsException("insufficient item capcacity");
 
-        return this;
+        this.capacity = capacity;
     }
 
     @Override
@@ -191,7 +196,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 //        int toRemove = size - belowIndex;
 //        Set<X> removed = new HashSet();
 //        for (int i = 0; i < toRemove; i++) {
-//            removed.add(removeLast());
+//            removed.addAt(removeLast());
 //        }
 //        return removed;
 //    }
@@ -211,8 +216,16 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
                 return null;
             case 1:
                 return get(0);
+            case 2: {
+                X x = get(0), y = get(1);
+                float rx = rank.rank(x), ry = rank.rank(y);
+                if (Util.equals(rx, ry, Float.MIN_NORMAL))
+                    return rng.nextBoolean() ? x : y;
+                else
+                    return rng.nextFloat() <= (rx/(rx+ry)) ? x : y;
+            }
             default:
-                return get(Roulette.selectRoulette(n, i -> rank.rank(get(i), NEGATIVE_INFINITY), rng));
+                return get(Roulette.selectRoulette(n, i -> rank.rank(get(i)), rng));
         }
     }
 
@@ -301,4 +314,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         pool.get().put(t);
     }
 
+    public int capacityMax() {
+        return items.length;
+    }
 }

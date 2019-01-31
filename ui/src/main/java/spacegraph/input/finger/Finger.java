@@ -425,7 +425,7 @@ abstract public class Finger {
             Surface s = touching();
             if (s!=null) {
                 //color HASH
-                //color.set()
+                //color.setAt()
             }
             return s;
         }

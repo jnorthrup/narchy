@@ -64,7 +64,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
                 Term[] xa = Functor.funcArgsArray(x);
                 if (xa.length == 2 && xa[1].op() == INT && xa[0].op().var) {
                     if (y.op() == INT) {
-                        //"equal(add(#x,a),b)"
+                        //"equal(addAt(#x,a),b)"
                         return e.is(xa[0], Int.the(((Int) y).id - ((Int) xa[1]).id)) ? True : Null;
                     }
                 }

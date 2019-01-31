@@ -6,6 +6,7 @@ import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
+import org.eclipse.collections.impl.iterator.ImmutableEmptyLongIterator;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -24,7 +25,7 @@ public abstract class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     /**
-     * List semantics are changed in this overridden method. this is just an alias for the add(long, X) method
+     * List semantics are changed in this overridden method. this is just an alias for the addAt(long, X) method
      */
     @Override
     public void add(int when, X t) {
@@ -156,30 +157,36 @@ public abstract class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public LongIterator longIterator() {
-        return new InternalLongIterator(when, size());
+        int s = size();
+        switch (s) {
+            case 0:  return ImmutableEmptyLongIterator.INSTANCE;
+            //case 1:  //TODO return LongIterator
+            default:
+                return new InternalLongIterator(when, s);
+        }
     }
 
     public long when(int i) {
         return when[i];
     }
 
-    static class InternalLongIterator implements MutableLongIterator {
+    static final class InternalLongIterator implements MutableLongIterator {
 
         private final long[] data;
         /**
          * Index of element to be returned by subsequent call to next.
          */
-        private int currentIndex;
-        private int lastIndex;
+        private int index;
+        private int size;
 
         public InternalLongIterator(long[] data, int size) {
             this.data = data;
-            this.lastIndex = size;
+            this.size = size;
         }
 
         @Override
         public boolean hasNext() {
-            return this.currentIndex != lastIndex;
+            return this.index < size;
         }
 
         @Override
@@ -187,9 +194,7 @@ public abstract class LongObjectArraySet<X> extends FasterList<X> {
             if (!this.hasNext())
                 throw new NoSuchElementException();
 
-            long next = data[this.currentIndex];
-            this.lastIndex = this.currentIndex++;
-            return next;
+            return data[this.index++];
         }
 
         @Override

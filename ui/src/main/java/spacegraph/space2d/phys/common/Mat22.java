@@ -270,7 +270,7 @@ public class Mat22 implements Serializable {
      */
     public final Mat22 mul(final Mat22 R) {
         /*
-         * Mat22 C = new Mat22();C.set(this.mul(R.ex), this.mul(R.ey));return C;
+         * Mat22 C = new Mat22();C.setAt(this.mul(R.ex), this.mul(R.ey));return C;
          */
         final Mat22 C = new Mat22();
         C.ex.x = ex.x * R.ex.x + ey.x * R.ex.y;
@@ -316,7 +316,7 @@ public class Mat22 implements Serializable {
     public final Mat22 mulTrans(final Mat22 B) {
         /*
          * Vec2 c1 = new Vec2(Vec2.dot(this.ex, B.ex), Vec2.dot(this.ey, B.ex)); Vec2 c2 = new
-         * Vec2(Vec2.dot(this.ex, B.ey), Vec2.dot(this.ey, B.ey)); Mat22 C = new Mat22(); C.set(c1, c2);
+         * Vec2(Vec2.dot(this.ex, B.ey), Vec2.dot(this.ey, B.ey)); Mat22 C = new Mat22(); C.setAt(c1, c2);
          * return C;
          */
         final Mat22 C = new Mat22();

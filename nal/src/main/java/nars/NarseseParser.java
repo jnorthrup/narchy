@@ -153,7 +153,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         sequence(
                                 TRUTH_VALUE_MARK, 
 
-                                truth.set(new DefaultTruth((float) pop() ))
+                                truth.setAt(new DefaultTruth((float) pop() ))
                         )*/
 
         );
@@ -162,9 +162,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 //    public Rule TruthTenseSeparator(char defaultChar, Var<Tense> tense) {
 //        return firstOf(
 //                defaultChar,
-//                sequence('|', tense.set(Tense.Present)),
-//                sequence('\\', tense.set(Tense.Past)),
-//                sequence('/', tense.set(Tense.Future))
+//                sequence('|', tense.setAt(Tense.Present)),
+//                sequence('\\', tense.setAt(Tense.Past)),
+//                sequence('/', tense.setAt(Tense.Future))
 //        );
 //    }
 

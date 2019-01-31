@@ -23,7 +23,7 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
     private static final long serialVersionUID = -7413250161201811238L;
 
     /**
-     * Constructs a new empty set
+     * Constructs a new empty setAt
      */
     public ArrayUnenforcedSet() {
         super();
@@ -32,7 +32,7 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
     /**
      * Constructs a set containing the elements of the specified collection.
      *
-     * @param c the collection whose elements are to be placed into this set
+     * @param c the collection whose elements are to be placed into this setAt
      * @throws NullPointerException if the specified collection is null
      */
     public ArrayUnenforcedSet(Collection<? extends X> c) {

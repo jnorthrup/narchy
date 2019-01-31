@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
-    note: assumes that no calls to DDList.add() will be made during iteration,
+    note: assumes that no calls to DDList.addAt() will be made during iteration,
     so it is probably only safe in non-concurrent cases
 */
 public class DDListIterator<E> implements Iterator<E> {

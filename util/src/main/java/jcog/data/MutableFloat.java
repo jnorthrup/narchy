@@ -85,7 +85,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
     /**
      * Sets the value.
      *
-     * @param value  the value to set
+     * @param value  the value to setAt
      */
     public void set(final float value) {
         this.value = value;
@@ -94,7 +94,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
     /**
      * Sets the value from any Number instance.
      *
-     * @param value  the value to set, not null
+     * @param value  the value to setAt, not null
      * @throws NullPointerException if the object is null
      */
     public final void set(final Number value) {
@@ -193,7 +193,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
     /**
      * Adds a value to the value of this instance.
      *
-     * @param operand  the value to add, not null
+     * @param operand  the value to addAt, not null
      * @since Commons Lang 2.2
      */
     public void add(final float operand) {
@@ -203,7 +203,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
     /**
      * Adds a value to the value of this instance.
      *
-     * @param operand  the value to add, not null
+     * @param operand  the value to addAt, not null
      * @throws NullPointerException if the object is null
      * @since Commons Lang 2.2
      */
@@ -217,7 +217,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
      * immediately after the addition operation. This method is not thread safe.
      *
-     * @param operand the quantity to add, not null
+     * @param operand the quantity to addAt, not null
      * @return the value associated with this instance after adding the operand
      * @since 3.5
      */
@@ -230,7 +230,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
      * immediately after the addition operation. This method is not thread safe.
      *
-     * @param operand the quantity to add, not null
+     * @param operand the quantity to addAt, not null
      * @throws NullPointerException if {@code operand} is null
      * @return the value associated with this instance after adding the operand
      * @since 3.5
@@ -244,7 +244,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
      * immediately prior to the addition operation. This method is not thread safe.
      *
-     * @param operand the quantity to add, not null
+     * @param operand the quantity to addAt, not null
      * @return the value associated with this instance immediately before the operand was added
      * @since 3.5
      */
@@ -258,7 +258,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
      * immediately prior to the addition operation. This method is not thread safe.
      *
-     * @param operand the quantity to add, not null
+     * @param operand the quantity to addAt, not null
      * @throws NullPointerException if {@code operand} is null
      * @return the value associated with this instance immediately before the operand was added
      * @since 3.5
@@ -390,7 +390,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
 //            return x;
 //        } else {
 //
-//            set(0f);
+//            setAt(0f);
 //            return v;
 //        }
 //    }

@@ -2,7 +2,7 @@ package jcog.signal.tensor;
 
 import com.google.common.util.concurrent.AtomicDoubleArray;
 
-public class AtomicDoubleArrayTensor extends AbstractArrayTensor {
+public class AtomicDoubleArrayTensor extends AbstractShapedTensor {
 
     private final AtomicDoubleArray data;
 
@@ -24,12 +24,12 @@ public class AtomicDoubleArrayTensor extends AbstractArrayTensor {
     }
 
     @Override
-    public void set(float newValue, int linearCell) {
+    public void setAt(float newValue, int linearCell) {
         data.set(linearCell, newValue);
     }
 
     @Override
-    public void add(float x, int linearCell) {
+    public void addAt(float x, int linearCell) {
         data.addAndGet(linearCell, x);
     }
 }

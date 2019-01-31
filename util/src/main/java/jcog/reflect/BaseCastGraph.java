@@ -1219,14 +1219,14 @@ public class BaseCastGraph extends TypeCastGraph {
         Character[] Ca = new Character[]{};
 
         // TODO use proj text
-//        set( String.class, ba.getClass(), String2byteArr );
+//        setAt( String.class, ba.getClass(), String2byteArr );
         // TODO use proj text
-//        set( ba.getClass(), String.class, byteArr2String );
+//        setAt( ba.getClass(), String.class, byteArr2String );
 
         // TODO use proj text
-//        set( Ba.getClass(), String.class, ByteArr2String );
+//        setAt( Ba.getClass(), String.class, ByteArr2String );
         // TODO use proj text
-//        set( String.class, Ba.getClass(), String2ByteArr );
+//        setAt( String.class, Ba.getClass(), String2ByteArr );
 
         set(ca.getClass(), String.class, charArr2String);
         set(Ca.getClass(), String.class, CharArr2String);
@@ -1244,36 +1244,36 @@ public class BaseCastGraph extends TypeCastGraph {
         set(Date.class, String.class, Date2String);
         set(String.class, Date.class, String2Date);
 
-//        set( Clob.class, String.class, Clob2String );
-//        set( NClob.class, String.class, NClob2String );
+//        setAt( Clob.class, String.class, Clob2String );
+//        setAt( NClob.class, String.class, NClob2String );
 //
-//        set( java.net.URL.class, String.class, URL2String );
-//        set( String.class, java.net.URL.class, String2URL );
+//        setAt( java.net.URL.class, String.class, URL2String );
+//        setAt( String.class, java.net.URL.class, String2URL );
 //
-//        set( java.net.URI.class, String.class, URI2String );
-//        set( String.class, java.net.URI.class, String2URI );
+//        setAt( java.net.URI.class, String.class, URI2String );
+//        setAt( String.class, java.net.URI.class, String2URI );
 //
-//        set( java.io.File.class, String.class, JavaIoFile2String );
-//        set( String.class, java.io.File.class, String2JavaIoFile );
+//        setAt( java.io.File.class, String.class, JavaIoFile2String );
+//        setAt( String.class, java.io.File.class, String2JavaIoFile );
 //
-//        set( java.io.File.class, java.net.URI.class, JavaIoFile2URI );
-//        set( java.io.File.class, java.net.URL.class, JavaIoFile2URL );
+//        setAt( java.io.File.class, java.net.URI.class, JavaIoFile2URI );
+//        setAt( java.io.File.class, java.net.URL.class, JavaIoFile2URL );
 
         // TODO export to spi
-//        set( xyz.cofe.fs.File.class, String.class, XyzCofeFile2String );
-//        set( String.class, xyz.cofe.fs.File.class, String2XyzCofeFile );
+//        setAt( xyz.cofe.fs.File.class, String.class, XyzCofeFile2String );
+//        setAt( String.class, xyz.cofe.fs.File.class, String2XyzCofeFile );
 
-//        set( Charset.class, String.class, Charset2String );
-//        set( String.class, Charset.class, String2Charset );
+//        setAt( Charset.class, String.class, Charset2String );
+//        setAt( String.class, Charset.class, String2Charset );
 //
-//        set( xyz.cofe.io.File.class, String.class, CofeIOFile2String );
-//        set( String.class, xyz.cofe.io.File.class, String2CofeIOFile );
+//        setAt( xyz.cofe.io.File.class, String.class, CofeIOFile2String );
+//        setAt( String.class, xyz.cofe.io.File.class, String2CofeIOFile );
 //
-//        set( xyz.cofe.io.File.class, java.nio.file.Path.class, CofeIOFile2Path );
-//        set( java.nio.file.Path.class, xyz.cofe.io.File.class, Path2CofeIOFile );
+//        setAt( xyz.cofe.io.File.class, java.nio.file.Path.class, CofeIOFile2Path );
+//        setAt( java.nio.file.Path.class, xyz.cofe.io.File.class, Path2CofeIOFile );
 //
-//        set( xyz.cofe.io.File.class, java.io.File.class, CofeIOFile2File );
-//        set( java.io.File.class, xyz.cofe.io.File.class, JavaFile2CofeIOFile );
+//        setAt( xyz.cofe.io.File.class, java.io.File.class, CofeIOFile2File );
+//        setAt( java.io.File.class, xyz.cofe.io.File.class, JavaFile2CofeIOFile );
     }
 
 //    /**

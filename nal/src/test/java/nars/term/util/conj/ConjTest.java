@@ -41,7 +41,7 @@ public class ConjTest {
 
     @Test
     void conjWTFF() {
-        Conj x = new Conj();
+        ConjBuilder x = new Conj();
         x.add(ETERNAL, $$("a:x"));
         x.add(0, $$("a:y"));
         assertEq("((x-->a)&|(y-->a))", x.term());
@@ -112,7 +112,7 @@ public class ConjTest {
 
     @Test
     void testSimpleEternalsNeg() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(ETERNAL, x);
         c.add(ETERNAL, y.neg());
         assertEquals("((--,y)&&x)", c.term().toString());
@@ -147,7 +147,7 @@ public class ConjTest {
 
     @Test
     void testSimpleEventsNeg() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(1, x);
         c.add(2, y.neg());
         assertEquals("(x &&+1 (--,y))", c.term().toString());
@@ -155,7 +155,7 @@ public class ConjTest {
 
     @Test
     void testEventContradiction() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(1, x);
         assertFalse(c.add(1, x.neg()));
         assertEquals(False, c.term());
@@ -163,7 +163,7 @@ public class ConjTest {
 
     @Test
     void testEventContradictionAmongNonContradictions() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(1, x);
         c.add(1, y);
         c.add(1, z);
@@ -173,7 +173,7 @@ public class ConjTest {
 
     @Test
     void testEventContradictionAmongNonContradictionsRoaring() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(ETERNAL, $$("(&&,a,b,c,d,e,f,g,h)"));
         assertEquals(8, c.eventCount(ETERNAL));
         boolean added = c.add(1, a.neg());
@@ -204,7 +204,7 @@ public class ConjTest {
 
     @Test
     void testEventContradictionWithEternal() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(ETERNAL, x);
         boolean added = c.add(1, x.neg());
         assertFalse(added);
@@ -213,7 +213,7 @@ public class ConjTest {
 
     @Test
     void testEventNonContradictionWithEternal() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(ETERNAL, x);
         boolean added = c.add(1, y);
         assertTrue(added);
@@ -222,7 +222,7 @@ public class ConjTest {
 
     @Test
     void testEventNonContradictionWithEternal2() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(ETERNAL, x);
         c.add(1, y);
         c.add(2, z);
@@ -353,7 +353,7 @@ public class ConjTest {
         assertEq("((x&|y) &&+1 w)", "((x && y) &&+1 w)");
         assertEq("(w &&+1 (x&|y))", "(w &&+1 (x && y))");
         assertEq("((a&|b) &&+1 (x&|y))", "((a && b) &&+1 (x && y))");
-        assertEq("((a&|b) &&+1 (c&|d))", Conj.sequence($$("(a&&b)"), 0, $$("(c&&d)"), 1));
+        assertEq("((a&|b) &&+1 (c&|d))", ConjSeq.sequence($$("(a&&b)"), 0, $$("(c&&d)"), 1));
     }
 
     @Test void eteConjInParallelShouldBeParallel() {
@@ -371,7 +371,7 @@ public class ConjTest {
 
         String y = "(a&|b)";
 
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(ETERNAL, $$("(a&&b)"));
         c.add(ETERNAL, $$("(a&|b)"));
         assertEquals(y, c.term().toString());
@@ -917,55 +917,55 @@ public class ConjTest {
 
     @Test
     void testEmptyConjResultTerm() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         assertEquals(Bool.True, c.term());
     }
 
     @Test
     void testEmptyConjTrueEternal() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(ETERNAL, Bool.True);
         assertEquals(Bool.True, c.term());
     }
 
     @Test
     void testEmptyConjTrueTemporal() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(0, Bool.True);
         assertEquals(Bool.True, c.term());
     }
 
     @Test
     void testEmptyConjFalseEternal() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(ETERNAL, False);
         assertEquals(False, c.term());
     }
 
     @Test
     void testEmptyConjFalseTemporal() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(0, False);
         assertEquals(False, c.term());
     }
 
     @Test
     void testEmptyConjFalseEternalShortCircuit() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(ETERNAL, $$("x"));
         boolean addedFalse = c.add(ETERNAL, False);
         assertFalse(addedFalse);
-        //boolean addedAfterFalse = c.add($$("y"), ETERNAL);
+        //boolean addedAfterFalse = c.addAt($$("y"), ETERNAL);
         assertEquals(False, c.term());
     }
 
     @Test
     void testEmptyConjFalseTemporalShortCircuit() {
-        Conj c = new Conj();
+        ConjBuilder c = new Conj();
         c.add(0, $$("x"));
         boolean addedFalse = c.add(0, False);
         assertFalse(addedFalse);
-        //boolean addedAfterFalse = c.add($$("y"), 0);
+        //boolean addedAfterFalse = c.addAt($$("y"), 0);
         assertEquals(False, c.term());
     }
 
@@ -1799,7 +1799,7 @@ public class ConjTest {
         */
         Term a = $.$("(a &&+5 (--,a))");
         Term b = $.$("((b &&+5 (--,b)) &&+5 (--,c))");
-        assertEq("((a &&+5 ((--,a)&|b)) &&+5 ((--,b) &&+5 (--,c)))", Conj.sequence(a, 0, b, 5));
+        assertEq("((a &&+5 ((--,a)&|b)) &&+5 ((--,b) &&+5 (--,c)))", ConjSeq.sequence(a, 0, b, 5));
     }
 
     @Test
@@ -2191,7 +2191,7 @@ public class ConjTest {
         assertEq(False, CONJ.the(DTERNAL, x, y));
 
         //construction method 2
-        Conj xy = new Conj();
+        ConjBuilder xy = new Conj();
         assertTrue(xy.add(ETERNAL, x));
         assertFalse(xy.add(ETERNAL, y));
         assertEquals(False, xy.term());
@@ -2210,7 +2210,7 @@ public class ConjTest {
 
         {
             //construction method 2:
-            Conj c = new Conj();
+            ConjBuilder c = new Conj();
             c.add(ETERNAL, $$("(--,((--,y)&|x))"));
             c.add(ETERNAL, $$("x"));
             assertEq("(x&&y)", c.term());
@@ -2379,7 +2379,7 @@ public class ConjTest {
     void testConjDistributeEteParallel1() {
         Term x = $$("((&|,_2(_1),_4(_3),_6(_5))&&(--,(_6(#1)&|_6(#2))))");
         {
-            Conj c = Conj.from(x);
+            ConjBuilder c = Conj.from(x);
             assertEq(x, c.term());
             assertEquals(2, c.eventCount(ETERNAL));
         }
@@ -2476,7 +2476,7 @@ public class ConjTest {
                 return events.get(0).getTwo();
         }
 
-        Conj ce = new Conj(eventsSize);
+        ConjBuilder ce = new Conj(eventsSize);
 
         for (LongObjectPair<Term> o : events) {
             if (!ce.add(o.getOne(), o.getTwo())) {

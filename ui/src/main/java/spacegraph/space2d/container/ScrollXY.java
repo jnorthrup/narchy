@@ -63,9 +63,9 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
         scrollable.update(this);
         if (viewMin == null)
-            throw new NullPointerException("view min set by " + scrollable);
+            throw new NullPointerException("view min setAt by " + scrollable);
         if (viewMax == null)
-            throw new NullPointerException("view max set by " + scrollable);
+            throw new NullPointerException("view max setAt by " + scrollable);
         if (view == null)
             view = RectFloat.WH(viewMax.x, viewMax.y); //TODO max reasonable limit
 

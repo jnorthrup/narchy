@@ -56,7 +56,7 @@ class Poly2TriUtils {
 		typedef list<Monopoly>                          Monopolys; 
 		typedef vector<unsigned int>                    Triangle;
 		typedef list<Triangle>                          Triangles;
-		typedef map<unsigned int, set<unsigned int> >   AdjEdgeMap;
+		typedef map<unsigned int, setAt<unsigned int> >   AdjEdgeMap;
 	 */
 
     

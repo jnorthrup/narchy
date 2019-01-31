@@ -824,7 +824,7 @@ public enum $ {
 
 
     public static Term diff(Term a, Term b) {
-        //throw new TODO("use set/sect methods");
+        //throw new TODO("use setAt/sect methods");
         Op aop = a.op();
         if (aop ==b.op()) {
             if (aop == SETi) {

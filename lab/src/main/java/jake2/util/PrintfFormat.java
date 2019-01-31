@@ -1133,10 +1133,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the number of digits
+		 * The precision, if setAt, is the number of digits
 		 * to appear after the radix character.  Padding is
 		 * with trailing 0s.
 		 */
@@ -1387,10 +1387,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear after the radix character.
 		 * Padding is with trailing 0s.
 		 *
@@ -1912,10 +1912,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear after the radix character.
 		 * Padding is with trailing 0s.
 		 * @param x the double to format.
@@ -2036,10 +2036,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear.  Padding is with leading 0s.
 		 * @param x the short to format.
 		 * @return the formatted String.
@@ -2065,10 +2065,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear.  Padding is with leading 0s.
 		 * @param x the long to format.
 		 * @return the formatted String.
@@ -2094,10 +2094,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear.  Padding is with leading 0s.
 		 * @param x the int to format.
 		 * @return the formatted String.
@@ -2200,10 +2200,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear.  Padding is with leading 0s.
 		 * @param x the short to format.
 		 * @return the formatted String.
@@ -2273,10 +2273,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear.  Padding is with leading 0s.
 		 * @param x the long to format.
 		 * @return the formatted String.
@@ -2375,10 +2375,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear.  Padding is with leading 0s.
 		 * @param x the int to format.
 		 * @return the formatted String.
@@ -2520,10 +2520,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear.  Padding is with leading 0s.
 		 * @param x the short to format.
 		 * @return the formatted String.
@@ -2568,10 +2568,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear.  Padding is with leading 0s.
 		 * @param x the long to format.
 		 * @return the formatted String.
@@ -2664,10 +2664,10 @@ public class PrintfFormat {
 		 *
 		 * The field width is treated as the minimum number
 		 * of characters to be printed.  The default is to
-		 * add no padding.  Padding is with blanks by
+		 * addAt no padding.  Padding is with blanks by
 		 * default.
 		 *
-		 * The precision, if set, is the minimum number of
+		 * The precision, if setAt, is the minimum number of
 		 * digits to appear.  Padding is with leading 0s.
 		 * @param x the int to format.
 		 * @return the formatted String.
@@ -2779,7 +2779,7 @@ public class PrintfFormat {
 		 * of characters to be printed.  Padding is with
 		 * blanks by default.  The default width is 1.
 		 *
-		 * The precision, if set, is ignored.
+		 * The precision, if setAt, is ignored.
 		 * @param x the char to format.
 		 * @return the formatted String.
 		 */
@@ -2816,7 +2816,7 @@ public class PrintfFormat {
 		 * input and the precision.  Padding is with blanks
 		 * by default.
 		 *
-		 * The precision, if set, specifies the maximum
+		 * The precision, if setAt, specifies the maximum
 		 * number of characters to be printed from the
 		 * string.  A null digit string is treated
 		 * as a 0.  The default is not to set a maximum
@@ -3145,7 +3145,7 @@ public class PrintfFormat {
 		private int fieldWidth;
 		/**
 		 * Flag indicating whether or not the field width
-		 * has been set.
+		 * has been setAt.
 		 */
 		private boolean fieldWidthSet;
 		/**
@@ -3166,7 +3166,7 @@ public class PrintfFormat {
 		private boolean variablePrecision;
 		/**
 		 * Flag indicating whether or not the precision has
-		 * been set.
+		 * been setAt.
 		 */
 		private boolean precisionSet;
 		/*

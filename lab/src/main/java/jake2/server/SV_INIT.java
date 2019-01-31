@@ -312,7 +312,7 @@ public class SV_INIT {
 
         if (Cvar.VariableValue("coop") != 0
                 && Cvar.VariableValue("deathmatch") != 0) {
-            Com.Printf("Deathmatch and Coop both set, disabling Coop\n");
+            Com.Printf("Deathmatch and Coop both setAt, disabling Coop\n");
             Cvar.FullSet("coop", "0", Defines.CVAR_SERVERINFO
                     | Defines.CVAR_LATCH);
         }

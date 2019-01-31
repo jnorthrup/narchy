@@ -242,7 +242,7 @@
 //
 //                decoder = matcher(x -> x.decode);
 //                encoder = matcher(x -> x.encode);
-//                busy.set(false);
+//                busy.setAt(false);
 //
 //            }
 //        });
@@ -378,7 +378,7 @@
 //                ii = 0;
 //                termPos.clear();
 //                try {
-//                    IO.mapSubTerms(b, (o, depth, p) -> termPos.add(p));
+//                    IO.mapSubTerms(b, (o, depth, p) -> termPos.addAt(p));
 //                } catch (IOException e) {
 //                    e.printStackTrace();
 //                } catch (Exception e) {

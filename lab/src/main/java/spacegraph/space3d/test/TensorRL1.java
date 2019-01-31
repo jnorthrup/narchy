@@ -73,7 +73,7 @@
 //
 //            NAgent a = env.apply(n);
 //
-//            a.curiosity.set(0f);
+//            a.curiosity.setAt(0f);
 //
 //            n.startFPS(25f);
 //
@@ -101,7 +101,7 @@
 //                }
 //            };
 //
-//            set(
+//            setAt(
 //                    new LabeledPane(a.getClass().getSimpleName(), new AutoSurface<>(a)),
 //                    new LabeledPane("sense", sensePort),
 //                    new LabeledPane("reward", rewardPort),
@@ -159,7 +159,7 @@
 //                    out(a);
 //                }
 //            };
-//            set(bmp/*.state(Widget.META)*/, outPort);
+//            setAt(bmp/*.state(Widget.META)*/, outPort);
 //        }
 //    }
 //
@@ -178,7 +178,7 @@
 //                                    lerpVector.data
 //                            )),
 //                            new LabeledPane("lerp", new XYSlider().on((x, y) -> {
-//                                lerpRate.set(x);
+//                                lerpRate.setAt(x);
 //                            })),
 //                            new LabeledPane("out", new Port() {
 //                                @Override
@@ -219,7 +219,7 @@
 //                }
 //
 //                if (resetView) {
-//                    view.set(
+//                    view.setAt(
 //                            new Gridding(
 //                                    new LabeledPane(agent.getClass().getSimpleName(),
 //                                            new AutoSurface<>(agent)),
@@ -268,7 +268,7 @@
 //            }).content(new Scale(actionLabel, 0.5f));
 //
 //
-//            set(
+//            setAt(
 //                    new AutoSurface<>(config),
 //
 //                    new LabeledPane("reward", REWARD = new Port().on((i) -> {
@@ -316,7 +316,7 @@
 //
 //        protected synchronized void reset(int inputs) {
 //            Autoencoder ae = this.ae = new Autoencoder(inputs, config.outputs.intValue(), rng);
-//            view.set(
+//            view.setAt(
 //                    new AutoUpdateMatrixView(ae.x),
 //                    new Gridding(
 //                            new AutoUpdateMatrixView(ae.hbias),
@@ -335,7 +335,7 @@
 //
 //            reset(1);
 //
-//            set(
+//            setAt(
 //                    new LabeledPane("in", new Port((float[] x) -> {
 //
 //                        if (ae.x.length != x.length || ae.outputs() != config.outputs.intValue()) {

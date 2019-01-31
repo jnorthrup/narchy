@@ -397,7 +397,7 @@ import static nars.time.Tense.ETERNAL;
 
         if (o != end) {
             if (start == ETERNAL && o != ETERNAL)
-                throw new RuntimeException("can not set end time for eternal task");
+                throw new RuntimeException("can not setAt end time for eternal task");
             if (o < start)
                 throw new RuntimeException("end must be equal to or greater than start");
 

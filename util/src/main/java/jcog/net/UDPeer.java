@@ -364,9 +364,9 @@ public class UDPeer extends UDP {
 //
 //    }
 
-//    protected void tellSome(HashMapTagSet set) {
+//    protected void tellSome(HashMapTagSet setAt) {
 //        tellSome(new Msg(ATTN.id, DEFAULT_ATTN_TTL, me, null,
-//                set.toBytes()), 1f, false);
+//                setAt.toBytes()), 1f, false);
 //    }
 
     @Override
@@ -558,18 +558,18 @@ public class UDPeer extends UDP {
 
 
 //    public void can(String tag, float pri) {
-//        if (can.add(tag, pri))
-//            canChanged.set(true);
+//        if (can.addAt(tag, pri))
+//            canChanged.setAt(true);
 //    }
 //
 //    public void need(String tag, float pri) {
-//        if (need.add(tag, pri))
-//            needChanged.set(true);
+//        if (need.addAt(tag, pri))
+//            needChanged.setAt(true);
 //    }
 //
 //    public void need(HashMapTagSet tag, float pri) {
-//        if (need.add(tag, pri))
-//            needChanged.set(true);
+//        if (need.addAt(tag, pri))
+//            needChanged.setAt(true);
 //    }
 
     public enum Command {

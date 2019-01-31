@@ -95,7 +95,7 @@ public class ChoicePointStore {
 //        ArrayList<ChoicePointContext> l = new ArrayList<>();
 //        ChoicePointContext t = pointer;
 //        while (t != null) {
-//            l.add(t);
+//            l.addAt(t);
 //            t = t.prevChoicePointContext;
 //        }
 //        return l;

@@ -61,7 +61,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 
 		/*float m = getMargin();
 
-		implicitShapeDimensions.add(-m, -m, -m);*/
+		implicitShapeDimensions.addAt(-m, -m, -m);*/
 	}
 
 	public void setSize(float w, float h, float d) {

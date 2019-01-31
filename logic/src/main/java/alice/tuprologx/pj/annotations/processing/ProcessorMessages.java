@@ -41,7 +41,7 @@ public interface ProcessorMessages {
     
     String ERR_BAD_ITEM_IN_MAPPING = "'link' refers to a non-existent Prolog method argument";
     
-    String ERR_THROW_MISSING = "Exception 'alice.tuprologx.j2p.engine.NoSolutionException' not declared to be thrown while 'exceptionOnFailure' attribute set";
+    String ERR_THROW_MISSING = "Exception 'alice.tuprologx.j2p.engine.NoSolutionException' not declared to be thrown while 'exceptionOnFailure' attribute setAt";
     
     String ERR_RETURN_TYPE_REQUIRED = "Return type doesn not match with the specified argument annotations";
     

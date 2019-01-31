@@ -191,7 +191,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 ////                boolean mustTest = false;
 ////                for (int i = 0, stampLength = stamp.length; i < stampLength; i++) {
 ////                    long ss = stamp[i];
-////                    if (!e.add(ss)) {
+////                    if (!e.addAt(ss)) {
 ////                        //collision: test previous results pair-wise
 ////                        mustTest = true;
 ////                    }

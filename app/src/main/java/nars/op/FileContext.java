@@ -198,8 +198,8 @@ public class FileContext extends NARService {
         //FileSys c = new FileSys(Paths.get("/tmp"), n);
         //FileSys c = new FileSys("/home/me/n/docs/nal/sumo", n);
 
-        n.input("$1.0 (add($cpu,$file) ==> ({$file}-->$cpu)).");
-        n.input("$1.0 (add(#cpu,file($directory,$filename)) ==> ({$filename}-->$directory)).");
+        n.input("$1.0 (addAt($cpu,$file) ==> ({$file}-->$cpu)).");
+        n.input("$1.0 (addAt(#cpu,file($directory,$filename)) ==> ({$filename}-->$directory)).");
 
         n.startFPS(8f);
 

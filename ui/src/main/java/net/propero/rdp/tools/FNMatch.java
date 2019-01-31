@@ -226,7 +226,7 @@ class FNMatch {
     }
 
     /**
-     * If flags has its FNM_CASEFOLD bit set, then returns the lowercase of c;
+     * If flags has its FNM_CASEFOLD bit setAt, then returns the lowercase of c;
      * otherwise returns c.
      *
      * @param c     A character to fold.

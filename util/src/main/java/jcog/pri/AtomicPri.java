@@ -99,7 +99,7 @@ public abstract class AtomicPri implements ScalarValue {
     /** set */
     @Override public float pri(float p) {
         PRI.INT.set(this, floatToIntBits(post().valueOf(p)));
-        //INT.set(this, floatToIntBits(v(p)));
+        //INT.setAt(this, floatToIntBits(v(p)));
         return p;
     }
 

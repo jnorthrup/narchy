@@ -719,7 +719,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             Segment s2;
             if (segs.compareAndSet(index, null, s2 = new Segment())) {
             //if (segs.weakCompareAndset(index, null, s2 = new Segment())) {
-                //segs.set(index, s2);
+                //segs.setAt(index, s2);
                 return s2;
             }
         }
@@ -1553,11 +1553,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     /**
      * Returns a {@link Set} view of the keys contained in this map.
      * The set is backed by the map, so changes to the map are
-     * reflected in the set, and vice-versa.  The set supports element
+     * reflected in the setAt, and vice-versa.  The set supports element
      * removal, which removes the corresponding mapping from this map,
      * via the {@code Iterator.remove}, {@code Set.remove},
      * {@code removeAll}, {@code retainAll}, and {@code clear}
-     * operations.  It does not support the {@code add} or
+     * operations.  It does not support the {@code addAt} or
      * {@code addAll} operations.
      * <p>
      * <p>The view's {@code iterator} is a "weakly consistent" iterator
@@ -1580,7 +1580,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * mapping from this map, via the {@code Iterator.remove},
      * {@code Collection.remove}, {@code removeAll},
      * {@code retainAll}, and {@code clear} operations.  It does not
-     * support the {@code add} or {@code addAll} operations.
+     * support the {@code addAt} or {@code addAll} operations.
      * <p>
      * <p>The view's {@code iterator} is a "weakly consistent" iterator
      * that will never throw {@link ConcurrentModificationException},
@@ -1597,11 +1597,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     /**
      * Returns a {@link Set} view of the mappings contained in this map.
      * The set is backed by the map, so changes to the map are
-     * reflected in the set, and vice-versa.  The set supports element
+     * reflected in the setAt, and vice-versa.  The set supports element
      * removal, which removes the corresponding mapping from the map,
      * via the {@code Iterator.remove}, {@code Set.remove},
      * {@code removeAll}, {@code retainAll}, and {@code clear}
-     * operations.  It does not support the {@code add} or
+     * operations.  It does not support the {@code addAt} or
      * {@code addAll} operations.
      * <p>
      * <p>The view's {@code iterator} is a "weakly consistent" iterator
@@ -1689,7 +1689,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
          * @param strength     the strength of elements
          * @param equivalence  the Equivalence to use
          * @param expectedSize an estimate of the number of elements
-         *                     that will be held in the set. If no estimate is known, zero
+         *                     that will be held in the setAt. If no estimate is known, zero
          *                     is an acceptable value.
          */
         public KeySet(Strength strength,
@@ -1702,7 +1702,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         /**
          * Returns an element equivalent to the given element with
-         * respect to this set's Equivalence, if such an element
+         * respect to this setAt's Equivalence, if such an element
          * exists, else adds and returns the given element.
          *
          * @param e the element
@@ -1716,7 +1716,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         /**
          * Returns {@code true} if this set contains an
          * element equivalent to the given element with respect
-         * to this set's Equivalence.
+         * to this setAt's Equivalence.
          *
          * @param o element whose presence in this set is to be tested
          * @return {@code true} if this set contains the specified element
@@ -1728,10 +1728,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         /**
          * Returns a <i>weakly consistent iterator</i> over the
-         * elements in this set, that may reflect some, all or none of
+         * elements in this setAt, that may reflect some, all or none of
          * the changes made to the set after the iterator was created.
          *
-         * @return an Iterator over the elements in this set
+         * @return an Iterator over the elements in this setAt
          */
         @Override
         public Iterator<K> iterator() {
@@ -1741,9 +1741,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         /**
          * Adds the specified element to this set if there is not
          * already an element equivalent to the given element with
-         * respect to this set's Equivalence.
+         * respect to this setAt's Equivalence.
          *
-         * @param e element to be added to this set
+         * @param e element to be added to this setAt
          * @return {@code true} if this set did not already contain
          * the specified element
          */
@@ -1754,9 +1754,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         /**
          * Removes an element equivalent to the given element with
-         * respect to this set's Equivalence, if one is present.
+         * respect to this setAt's Equivalence, if one is present.
          *
-         * @param o object to be removed from this set, if present
+         * @param o object to be removed from this setAt, if present
          * @return {@code true} if the set contained the specified element
          */
         @Override
@@ -1785,7 +1785,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         }
 
         /**
-         * Removes all of the elements from this set.
+         * Removes all of the elements from this setAt.
          */
         @Override
         public void clear() {
@@ -1794,7 +1794,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         /**
          * Returns the sum of the hash codes of each element, as
-         * computed by this set's Equivalence.
+         * computed by this setAt's Equivalence.
          *
          * @return the hash code
          */

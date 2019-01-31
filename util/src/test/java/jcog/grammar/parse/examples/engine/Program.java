@@ -43,7 +43,7 @@ public class Program implements AxiomSource {
 	 * Adds an axiom to this program.
 	 * 
 	 * @param Axiom
-	 *            the axiom to add.
+	 *            the axiom to addAt.
 	 */
 	public void addAxiom(Axiom a) {
 		axioms.add(a);

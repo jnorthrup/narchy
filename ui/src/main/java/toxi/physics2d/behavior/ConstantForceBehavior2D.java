@@ -75,7 +75,7 @@ public class ConstantForceBehavior2D<V extends Vec2D> implements ParticleBehavio
 
     /**
      * @param force
-     *            the force to set
+     *            the force to setAt
      */
     public void setForce(V force) {
         this.force = force;

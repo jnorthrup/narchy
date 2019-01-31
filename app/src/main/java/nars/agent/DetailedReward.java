@@ -67,7 +67,7 @@ public class DetailedReward extends Reward {
 
         throw new TODO();
 //        {
-//             //TODO add these to On/Off
+//             //TODO addAt these to On/Off
 //            agent.//alwaysWant/*Eternally*/
 //                    alwaysWantEternally
 //                    (concept.components.get(0).target, nar.confDefault(GOAL) * 0.75f );

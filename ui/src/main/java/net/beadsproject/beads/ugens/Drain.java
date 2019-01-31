@@ -10,7 +10,7 @@ import java.util.LinkedList;
  * Drain mixes grains of audio. Inspired by FTM's Gabor Drain. Send chunks of windowed audio data
  * and it will play them, mix them and dispose of them when done. Drain may not be very efficient
  * in the sense that you may be allocating large arrays of floats. This is left to the user
- * to work out. Call {@link #add(float[][])} to add a new bit of audio data. Beware that the float
+ * to work out. Call {@link #add(float[][])} to addAt a new bit of audio data. Beware that the float
  * will then be in use for a while as the audio data gets accessed and spat out.
  */
 public class Drain extends UGen {

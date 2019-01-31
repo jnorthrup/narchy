@@ -151,7 +151,7 @@ public enum Op {
 
 
     /**
-     * intensional set
+     * intensional setAt
      */
     SETi("[", true, 2, Args.GTEOne) {
         @Override
@@ -166,7 +166,7 @@ public enum Op {
     },
 
     /**
-     * extensional set
+     * extensional setAt
      */
     SETe("{", true, 2, Args.GTEOne) {
         @Override
@@ -325,6 +325,7 @@ public enum Op {
 
 
 
+    /** re-initialized in Param */
     public static TermBuilder terms = HeapTermBuilder.the;
 
 

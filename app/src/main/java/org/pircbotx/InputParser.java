@@ -291,7 +291,7 @@ public class InputParser implements Closeable {
 				return stringParts;
 			}
 		}
-		//No more spaces, add last part of line
+		//No more spaces, addAt last part of line
 		stringParts.add(trimmedInput.substring(pos));
 		return stringParts;
 	}
@@ -651,7 +651,7 @@ public class InputParser implements Closeable {
 		//Motd is starting, reset the StringBuilder
 		motdBuilder = new StringBuilder(); else if (code == RPL_MOTD) 
 		//Example: 372 PircBotX :- Welcome to wolfe.freenode.net in Manchester, England, Uk!  Thanks to
-		//This is part of the MOTD, add a new line
+		//This is part of the MOTD, addAt a new line
 		motdBuilder.append((parsedResponse.get(1).substring(1)).trim()).append("\n"); else if (code == RPL_ENDOFMOTD) {
 			//Example: PircBotX :End of /MOTD command.
 			//End of MOTD, clean it and dispatch MotdEvent
@@ -770,7 +770,7 @@ public class InputParser implements Closeable {
 				user = bot.getUserChannelDao().createUser(new UserHostmask(bot, nick)); else user = bot.getUserChannelDao().getUser(nick);
 				Channel chan = bot.getUserChannelDao().getChannel(parsedResponse.get(2));
 				bot.getUserChannelDao().addUserToChannel(user, chan);
-				//Now that the user is created, add them to the appropiate levels
+				//Now that the user is created, addAt them to the appropiate levels
 				for (UserLevel curLevel : levels) {
 					bot.getUserChannelDao().addUserToLevel(curLevel, user, chan);
 				}
@@ -785,7 +785,7 @@ public class InputParser implements Closeable {
 	}
 
 	/**
-	 * Called when the mode of a channel is set. We process this in order to
+	 * Called when the mode of a channel is setAt. We process this in order to
 	 * call the appropriate onOp, onDeop, etc method before finally calling the
 	 * override-able onMode method.
 	 * <p>
@@ -793,7 +793,7 @@ public class InputParser implements Closeable {
 	 * javadoc generated documentation.
 	 *
 	 * @param target The channel or nick that the mode operation applies to.
-	 * @param mode The mode that has been set.
+	 * @param mode The mode that has been setAt.
 	 */
 	public void processMode(UserHostmask userHostmask, User user, String target, String mode) {
 		if (configuration.getChannelPrefixes().indexOf(target.charAt(0)) >= 0) {

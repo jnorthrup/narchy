@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collections;
 
-/* This class uses the private static "defineClass0" method found in Proxy to add the class into the ClassLoader: 
+/* This class uses the private static "defineClass0" method found in Proxy to addAt the class into the ClassLoader:
  * an exception is raised if the class already exists in that class loader. 
  * Another approach could be to use a new ClassLoader -- see the Dynamic In-memory Compilation article for an 
  * example of how to do that.

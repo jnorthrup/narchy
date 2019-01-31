@@ -194,12 +194,12 @@ public final class MethodFinder {
 
                     if (!memberIsMoreSpecific(member, moreSpecificMember)) {
                         /*
-                         * Can't be more specific than the whole set. Bail out,
+                         * Can't be more specific than the whole setAt. Bail out,
                          * and mark whether member is less specific than the
                          * member under consideration. If it is less specific,
-                         * it need not be added to the ambiguity set. This is no
+                         * it need not be added to the ambiguity setAt. This is no
                          * guarantee of not getting added to the ambiguity
-                         * set...we're just not clever enough yet to make that
+                         * setAt...we're just not clever enough yet to make that
                          * assessment.
                          */
 

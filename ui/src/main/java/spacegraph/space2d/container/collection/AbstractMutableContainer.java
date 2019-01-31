@@ -21,7 +21,7 @@ public abstract class AbstractMutableContainer extends Container {
 
 
     public boolean attachChild(Surface s) {
-        return false;  //by default dont support external add
+        return false;  //by default dont support external addAt
     }
 
     public boolean detachChild(Surface s) {

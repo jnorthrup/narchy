@@ -1,6 +1,6 @@
 //package nars.derive;
 //
-//import jcog.data.set.ArrayHashSet;
+//import jcog.data.setAt.ArrayHashSet;
 //import jcog.pri.bag.Bag;
 //import nars.NAR;
 //import nars.Task;
@@ -49,7 +49,7 @@
 //            public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {
 //
 //                tl.sample(rng, max /*Math.min(max, tl.size())*/, x -> {
-//                    if (x != null) buffer.add(x);
+//                    if (x != null) buffer.addAt(x);
 //                });
 //
 //                return buffer;
@@ -78,7 +78,7 @@
 //        @Override
 //        public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {
 //            c.tasklinks().sample(rng, max, x -> {
-//                if (x!=null) buffer.add(x);
+//                if (x!=null) buffer.addAt(x);
 //            });
 //            return buffer;
 //        }
@@ -134,7 +134,7 @@
 //            @Override
 //            public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {
 //                c.tasklinks().sample(rng, max, x -> {
-//                    if (x != null) buffer.add(x);
+//                    if (x != null) buffer.addAt(x);
 //                });
 //                return buffer;
 //            }

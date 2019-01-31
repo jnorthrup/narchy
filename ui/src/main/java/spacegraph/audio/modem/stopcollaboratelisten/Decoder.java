@@ -221,7 +221,7 @@ public class Decoder implements Constants {
 		
 		System.out.println("trigTableforFrequency calculating for " + frequency);
 		
-		trigTablesFreq.add(Integer.valueOf(frequency));
+		trigTablesFreq.addAt(Integer.valueOf(frequency));
 		
 		int samplesPerCycle = (int) (kSamplingFrequency / frequency);
 		
@@ -237,8 +237,8 @@ public class Decoder implements Constants {
 			rowSin[i] = Math.sin(i * u);
 		}
 		
-		trigTablesCos.add(rowCos);
-		trigTablesSin.add(rowSin);
+		trigTablesCos.addAt(rowCos);
+		trigTablesSin.addAt(rowSin);
 		
 		return t;
 	}

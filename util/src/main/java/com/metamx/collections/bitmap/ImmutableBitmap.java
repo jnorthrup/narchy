@@ -43,10 +43,10 @@ public interface ImmutableBitmap {
     boolean isEmpty();
 
     /**
-     * Returns true if the bit at position value is set
+     * Returns true if the bit at position value is setAt
      *
      * @param value the position to check
-     * @return true if bit is set
+     * @return true if bit is setAt
      */
     boolean get(int value);
 

@@ -53,7 +53,7 @@ import java.util.ResourceBundle;
  * to the standard error and getopt() returns a '?'.  The value of the
  * invalid option encountered is stored in the instance variable optopt
  * which can be retrieved using the getOptopt() method.  To suppress
- * the printing of error messages for this or any other error, set
+ * the printing of error messages for this or any other error, setAt
  * the value of the opterr instance variable to false using the
  * setOpterr() method.
  * <p>

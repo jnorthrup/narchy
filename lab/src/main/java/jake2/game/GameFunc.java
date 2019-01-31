@@ -242,7 +242,7 @@ public class GameFunc {
      * "speed" overrides default 200. "accel" overrides default 500 "lip"
      * overrides default 8 pixel lip
      * 
-     * If the "height" key is set, that will determine the amount the plat
+     * If the "height" key is setAt, that will determine the amount the plat
      * moves, instead of being implicitly determoveinfoned by the model's
      * height.
      * 
@@ -330,8 +330,8 @@ public class GameFunc {
      * 
      * "message" is printed when the door is touched if it is a trigger door and
      * it hasn't been fired yet "angle" determines the opening direction
-     * "targetname" if set, no touch field will be spawned and a remote button
-     * or trigger field activates the door. "health" if set, door must be shot
+     * "targetname" if setAt, no touch field will be spawned and a remote button
+     * or trigger field activates the door. "health" if setAt, door must be shot
      * open "speed" movement speed (100 default) "wait" wait before returning (3
      * default, -1 = never return) "lip" lip remaining at end of move (8
      * default) "dmg" damage to inflict when blocked (2 default) "sounds" 1)
@@ -1000,7 +1000,7 @@ public class GameFunc {
      * matching targetname will be used "speed" override the default 40 speed
      * "wait" override the default 1 second wait (-1 = never return) "lip"
      * override the default 4 pixel lip remaining at end of move "health" if
-     * set, the button must be killed instead of touched "sounds" 1) silent 2)
+     * setAt, the button must be killed instead of touched "sounds" 1) silent 2)
      * steam metal 3) wooden clunk 4) metallic click 5) in-out
      */
 
@@ -1587,8 +1587,8 @@ public class GameFunc {
      * 
      * "message" is printed when the door is touched if it is a trigger door and
      * it hasn't been fired yet "angle" determines the opening direction
-     * "targetname" if set, no touch field will be spawned and a remote button
-     * or trigger field activates the door. "health" if set, door must be shot
+     * "targetname" if setAt, no touch field will be spawned and a remote button
+     * or trigger field activates the door. "health" if setAt, door must be shot
      * open "speed" movement speed (100 default) "wait" wait before returning (3
      * default, -1 = never return) "dmg" damage to inflict when blocked (2
      * default) "sounds" 1) silent 2) light 3) medium 4) heavy
@@ -1617,7 +1617,7 @@ public class GameFunc {
 
             if (0 == GameBase.st.distance) {
                 game_import_t.dprintf(ent.classname + " at "
-                        + Lib.vtos(ent.s.origin) + " with no distance set\n");
+                        + Lib.vtos(ent.s.origin) + " with no distance setAt\n");
                 GameBase.st.distance = 90;
             }
 

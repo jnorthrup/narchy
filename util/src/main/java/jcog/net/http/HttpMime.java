@@ -53,7 +53,7 @@ class HttpMime {
         mime.put("conf", "text/plain; charset=UTF-8");
         mime.put("csv", "text/csv; charset=UTF-8");
         mime.put("ini", "text/plain; charset=UTF-8");
-        mime.put("set", "text/plain; charset=UTF-8");
+        mime.put("setAt", "text/plain; charset=UTF-8");
         mime.put("text", "text/plain; charset=UTF-8");
         mime.put("txt", "text/plain; charset=UTF-8");
         mime.put("yaml", "text/x-yaml; charset=UTF-8");

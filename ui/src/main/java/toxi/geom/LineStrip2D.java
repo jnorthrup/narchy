@@ -297,7 +297,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
 
     /**
      * @param vertices
-     *            the vertices to set
+     *            the vertices to setAt
      */
     public void setVertices(List<Vec2D> vertices) {
         this.vertices = vertices;

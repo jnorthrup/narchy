@@ -7,7 +7,9 @@ import nars.Op;
 import nars.subterm.AnonVector;
 import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.cache.Intermed;
 import nars.term.util.cache.Intermed.InternedCompoundByComponents;
@@ -63,7 +65,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
         subterms = newOpCache("subterms",
-                (InternedSubterms x) -> theSubterms(x.subs), cacheSizePerOp * 2);
+                (InternedSubterms x) -> theSubterms(resolve(x.subs)), cacheSizePerOp * 2);
         anonSubterms = newOpCache("anonSubterms",
                 (InternedSubterms x) -> new AnonVector(x.subs), cacheSizePerOp);
 
@@ -80,12 +82,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
             ByteHijackMemoize<Intermed.InternedCompoundByComponents, Term> c;
             if (o == CONJ) {
                 c = newOpCache("conj",
-                        (InternedCompoundByComponents j) -> super.conj(true, j.dt, resolve(j.subs())), cacheSizePerOp);
+                        (InternedCompoundByComponents j) -> super.conj(true, j.dt, j.subs()), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {
                 c = newOpCache(o.str,
-                        (InternedCompoundByComponents x) -> theCompound(ops[x.op], x.dt, resolve(x.subs()), x.key), s);
+                        (InternedCompoundByComponents x) -> theCompound(ops[x.op], x.dt, x.subs(), x.key), s);
             }
             terms[i] = c;
         }
@@ -165,28 +167,31 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return subsInterned(subterms, u);
     }
 
-    public Subterms theSubterms(Term... t) {
-        return super.theSubterms(false, resolve(t));
-    }
+    private Subterms theSubterms(Term... t) { return super.theSubterms(false, t); }
 
 
     private Term[] resolve(Term[] t) {
         if (!deep)
             return t;
+        Term px = null;
         for (int i = 0, tLength = t.length; i < tLength; i++) {
             Term x = t[i];
-            Term y = resolve(x);
-            if (y != null && y != x && y.equals(x))
+            Term y = (i == 0 || x!=px) ?
+                    resolve(x) :
+                    t[i-1] /* re-use previous if identical */;
+            if (y != x && y.equals(x))
                 t[i] = y;
+            px = x;
         }
         return t;
     }
 
-    @Nullable
     private Term resolve(Term x) {
+        if (x instanceof Atomic)
+            return x;
         int v = x.volume();
         if (v <= 1 || v > volInternedMax) {
-            return null;
+            return x;
         } else {
             Op xo = x.op();
             boolean negate;
@@ -204,7 +209,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 if (y != null)
                     return negate ? y.neg() : y;
             }
-            return null;
+            return x;
         }
     }
 
@@ -287,8 +292,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private Term _statement(Intermed.InternedCompoundByComponents c) {
-        Term[] s = resolve(c.subs());
+        Term[] s = c.subs();
         return super.statement(Op.ops[c.op], c.dt, s[0], s[1]);
+    }
+
+    /** compound1 does not traverse the subterms interning pathway so an explicit resolution step for the only argument is applied here */
+    @Override protected Compound compound1(Op o, Term x) {
+        return super.compound1(o, resolve(x));
     }
 
     @Override
@@ -298,9 +308,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             u = Conj.preSort(dt, u);
 
         if (u.length > 1 && internableRoot(CONJ, dt, u)) {
-            if (u.length > 1) {
-                return terms[CONJ.id].apply(new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u));
-            }
+            return terms[CONJ.id].apply(new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u));
         }
 
         return super.conj(true, dt, u);

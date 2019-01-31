@@ -180,7 +180,7 @@ public interface Space<T> extends Nodelike<T> {
 
         return stream().iterator();
 //        List<T> snapshot = new FasterList(s);
-//        forEach(snapshot::add);
+//        forEach(snapshot::addAt);
 //        return snapshot.iterator();
     }
 

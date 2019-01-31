@@ -77,7 +77,7 @@ public class Premise implements Comparable<Premise> {
      * patham9 project-eternalize
      * patham9 depending on 4 cases
      * patham9 https:
-     * sseehh__ ok ill add that in a bit
+     * sseehh__ ok ill addAt that in a bit
      * patham9 you need  project-eternalize-to
      * sseehh__ btw i disabled immediate eternalization entirely
      * patham9 so https:
@@ -218,7 +218,7 @@ public class Premise implements Comparable<Premise> {
                 if (answered!=null) {
                     if (answered.conf() >= d.confMin) {
 
-//                        d.add(answered); //TODO determine if inputting here is really only useful if revised or dynamic
+//                        d.addAt(answered); //TODO determine if inputting here is really only useful if revised or dynamic
 
 //                        n.input(answered);
 

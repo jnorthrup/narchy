@@ -40,7 +40,7 @@ public class TypeCastTest2 {
     
 
 
-    // TODO add test methods here.
+    // TODO addAt test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
     // @Test
@@ -76,11 +76,11 @@ public class TypeCastTest2 {
             // lp2.forEach( p2 -> {
             for( Path<Class,Function> p2 : lp2 ){
                 List<Function> path = new LinkedList<Function>();
-                //p1.forEach( e1 -> { path.add(e1.getEdge()); } );
+                //p1.forEach( e1 -> { path.addAt(e1.getEdge()); } );
                 for( Edge<Class,Function> e1 : p1.fetch(0, p1.nodeCount()) ){
                     path.add(e1.getEdge());
                 }
-                //p2.forEach( e2 -> { path.add(e2.getEdge()); } );
+                //p2.forEach( e2 -> { path.addAt(e2.getEdge()); } );
                 for( Edge<Class,Function> e2 : p2.fetch(0, p2.nodeCount()) ){
                     path.add(e2.getEdge());
                 }

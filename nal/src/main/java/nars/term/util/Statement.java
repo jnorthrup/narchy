@@ -5,9 +5,10 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjDiff;
+import nars.term.util.conj.ConjSeq;
 import nars.time.Tense;
 
 import java.util.function.Predicate;
@@ -68,12 +69,12 @@ public class Statement {
                 case IMPL: {
                     Term newSubj, inner = predicate.sub(0);
                     if (dt == DTERNAL || dt == XTERNAL) {
-                        newSubj = HeapTermBuilder.the.conj(dt, subject, inner);
+                        newSubj = CONJ.the(dt, subject, inner);
                     } else {
                         if (dt == XTERNAL || dt == DTERNAL) {
                             newSubj = CONJ.the(dt, subject, inner);
                         } else {
-                            newSubj = Conj.sequence(subject, 0, inner, subject.eventRange() + dt);
+                            newSubj = ConjSeq.sequence(subject, 0, inner, subject.eventRange() + dt);
                         }
                     }
                     return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
@@ -117,9 +118,9 @@ public class Statement {
 
 //                    //test for validity by creating the hypothetical conjunction analog of the implication
 //                    Conj x = new Conj();
-//                    if (!x.add(so, subject))
+//                    if (!x.addAt(so, subject))
 //                        throw new WTF();
-//                    if (!x.add(po, predicate))
+//                    if (!x.addAt(po, predicate))
 //                        return False;
 //                    Term cx = x.target();
 //                    if (cx instanceof Bool)
@@ -127,7 +128,7 @@ public class Statement {
 
                     //subtract any common subject components from predicate
                     boolean subjNeg = subject.op() == NEG;
-                    Conj newPredConj = ConjDiff.the(predicate, po, subject.negIf(subjNeg), so, subjNeg);
+                    ConjBuilder newPredConj = ConjDiff.the(predicate, po, subject.negIf(subjNeg), so, subjNeg);
                     Term newPred = newPredConj.term();
 
 
@@ -216,7 +217,7 @@ public class Statement {
         }
 
         //return builder.compound(op, dt, subject, predicate);
-        Term t = HeapTermBuilder.the.theCompound(op, dt, subject, predicate);
+        Term t = Op.terms.theCompound(op, dt, subject, predicate);
 
         //if (Param.DEBUG) {
         //test image normalization

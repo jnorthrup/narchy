@@ -26,7 +26,7 @@ public abstract class LevelObject implements Comparator<LevelObject> {
 	public boolean isStripStart;
 	public int flagOr;
 	
-	/** The score to add object is triggered */
+	/** The score to addAt object is triggered */
 	public int score;
 	
 	/** The bounce factor  */

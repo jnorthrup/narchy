@@ -45,7 +45,7 @@ public class AuventArray extends Auvent {
     /**
      * Adds a new Bead to the list of receivers.
      *
-     * @param bead Bead to add.
+     * @param bead Bead to addAt.
      */
     public void add(Auvent bead) {
         beads.add(bead);

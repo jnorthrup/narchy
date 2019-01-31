@@ -120,7 +120,7 @@ public class Opjects extends DefaultTermizer {
 
     /**
      * set of operators in probing mode which are kept here for batched execution
-     * should be a set.   using ConcurrentFastIteratingHashMap instead of the Set because it has newer code updates
+     * should be a setAt.   using ConcurrentFastIteratingHashMap instead of the Set because it has newer code updates
      */
     final ConcurrentFastIteratingHashSet<MethodExec> probing =
             new ConcurrentFastIteratingHashSet<>(new MethodExec[0]);

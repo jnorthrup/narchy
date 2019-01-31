@@ -259,7 +259,7 @@ public abstract class Tuple3b implements java.io.Serializable, Cloneable {
 	/**
 	 * Set <i>x</i>, the first value.
 	 * 
-	 * @param x the first value to set. 
+	 * @param x the first value to setAt.
 	 * 
 	 * @since vecmath 1.5
 	 */
@@ -283,7 +283,7 @@ public abstract class Tuple3b implements java.io.Serializable, Cloneable {
 	/**
 	 * Set <i>y</i>, the second value.
 	 * 
-	 * @param y the second value to set.
+	 * @param y the second value to setAt.
 	 * 
 	 * @since vecmath 1.5
 	 */
@@ -306,7 +306,7 @@ public abstract class Tuple3b implements java.io.Serializable, Cloneable {
 	/**
 	 * Set <i>z</i>, the third value.
 	 * 
-	 * @param z the third value to set.
+	 * @param z the third value to setAt.
 	 * 
 	 * @since vecmath 1.5
 	 */

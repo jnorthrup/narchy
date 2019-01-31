@@ -53,7 +53,7 @@ public interface ReadonlyVec2D {
      * Add vector v and returns result as new vector.
      * 
      * @param v
-     *            vector to add
+     *            vector to addAt
      * @return result as new vector
      */
     Vec2D add(ReadonlyVec2D v);

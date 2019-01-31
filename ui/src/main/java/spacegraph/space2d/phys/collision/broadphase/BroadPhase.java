@@ -53,7 +53,7 @@ public interface BroadPhase {
     void drawTree(DebugDraw argDraw);
 
     /**
-     * Update the pairs. This results in pair callbacks. This can only add pairs.
+     * Update the pairs. This results in pair callbacks. This can only addAt pairs.
      *
      * @param callback
      */

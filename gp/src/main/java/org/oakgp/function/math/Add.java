@@ -123,8 +123,8 @@ public final class Add extends ArithmeticOperator {
             Node d = yy.secondArg();
 
 //            return new FunctionNode(numberUtils.subtract,
-//                    new FunctionNode(numberUtils.add, a, c),
-//                    new FunctionNode(numberUtils.add, b, d)
+//                    new FunctionNode(numberUtils.addAt, a, c),
+//                    new FunctionNode(numberUtils.addAt, b, d)
 //            );
 
             if (a.compareTo(c) > 0) {

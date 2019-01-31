@@ -34,7 +34,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     public ConcurrentFastIteratingHashMap(Y[] emptyArray) {
         this.emptyArray = emptyArray;
         this.list = new FastCoWList<>((x)->Arrays.copyOf(emptyArray, x));
-        //lists.set(this.list = this.emptyArray = emptyArray);
+        //lists.setAt(this.list = this.emptyArray = emptyArray);
     }
 
     /**

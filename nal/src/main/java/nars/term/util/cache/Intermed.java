@@ -36,6 +36,7 @@ public class Intermed extends ByteKey.ByteKeyExternal  {
 
         public abstract Term[] subs();
 
+
     }
 
     public static final class InternedCompoundByComponentsArray extends InternedCompoundByComponents {

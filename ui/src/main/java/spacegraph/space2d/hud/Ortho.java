@@ -403,7 +403,7 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 //        float pmx = finger.posPixel.x, pmy = finger.posPixel.y;
 //        float wmx = +cam.x + (-0.5f * w() + pmx) / scale.x;
 //        float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
-//        fingerPos.set(wmx, wmy);
+//        fingerPos.setAt(wmx, wmy);
 //
 //        return finger.touching();
 //    }
@@ -474,8 +474,8 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 
 
 //            @Override
-//            public void set(float x, float y, float z) {
-//                super.set(camX(x), camY(y), camZ(z));
+//            public void setAt(float x, float y, float z) {
+//                super.setAt(camX(x), camY(y), camZ(z));
 //            }
 
         @Override

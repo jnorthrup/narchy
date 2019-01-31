@@ -425,7 +425,7 @@ public class GameSpawn {
      * 
      * Chain together all entities with a matching team field.
      * 
-     * All but the first will have the FL_TEAMSLAVE flag set. All but the last
+     * All but the first will have the FL_TEAMSLAVE flag setAt. All but the last
      * will have the teamchain field set to the next one.
      */
 

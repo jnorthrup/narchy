@@ -18,7 +18,7 @@
 //    public static void main(String[] args) {
 //
 //        NAR n = NARS.tmp(4);
-//        n.termVolumeMax.set(14);
+//        n.termVolumeMax.setAt(14);
 //
 //
 //

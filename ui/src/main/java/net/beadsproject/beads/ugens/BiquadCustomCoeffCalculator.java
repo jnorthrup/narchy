@@ -12,7 +12,7 @@ package net.beadsproject.beads.ugens;
  * <p>
  * An instance of such a custom class should override
  * {@link #calcCoeffs(float, float, float)} to define the coefficient
- * calculation algorithm. The floats a0, a1, a2, b0, b1, and b2 should be set
+ * calculation algorithm. The floats a0, a1, a2, b0, b1, and b2 should be setAt
  * according to the input parameters freq, q, and gain, as well as the useful
  * class variables {@link #sampFreq} and {@link #two_pi_over_sf}.
  * </p>

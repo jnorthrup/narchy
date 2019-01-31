@@ -221,13 +221,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //            if (!temporalTasks.isEmpty()) {
 //
 //                TruthPolation t = Param.truth(start, end, dur);
-//                temporalTasks.forEachItem(t::add);
+//                temporalTasks.forEachItem(t::addAt);
 //
 //                if (eternal != null && !eternal.isEmpty()) {
 //                    LongSet temporalStamp = t.filterCyclic();
 //                    Task ee = eternal.select(ete -> !Stamp.overlapsAny(temporalStamp, ete.stamp()));
 //                    if (ee != null) {
-//                        t.add(ee);
+//                        t.addAt(ee);
 //                    }
 //                } else if (t.size() > 1) {
 //                    t.filterCyclic();
@@ -902,7 +902,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                float ee = TruthFunctions.eternalize(e);
 //                float ce = w2cSafe(ee);
 //                if (ce > Param.TRUTH_EPSILON) {
-//                    ete.add(input.freq(), ce);
+//                    ete.addAt(input.freq(), ce);
 //                }
 //            }
 //        }
@@ -950,7 +950,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        }
 //
 //        /**
-//         * TODO add a Random argument so it can decide randomly whether to scan the left or right zone first.
+//         * TODO addAt a Random argument so it can decide randomly whether to scan the left or right zone first.
 //         * order matters because the quality limit may terminate it.
 //         * however maybe the quality can be specified in terms that are compared
 //         * only after the pair has been scanned making the order irrelevant.
@@ -971,7 +971,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                otherwise limit by the Leaf capacity */
 //            if ((!eternal && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (eternal && s <= Answer.TASK_LIMIT)) {
 //                table.forEach /*forEachOptimistic*/(this::accept);
-//                //TODO this might be faster to add directly then sort the results after
+//                //TODO this might be faster to addAt directly then sort the results after
 //                //eliminating need for the Cache map
 //                return this;
 //            }
@@ -1040,16 +1040,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                }
 //
 //                for (int cLayer = 0;
-//                     cLayer < confDivisions && !(done = !continueScan(ll.set(leftStart, rightEnd)));
+//                     cLayer < confDivisions && !(done = !continueScan(ll.setAt(leftStart, rightEnd)));
 //                     cLayer++, cMax -= cDelta, cMin -= cDelta) {
 //
 //
 //                    TimeRange lll;
 //                    if (!leftComplete) {
 //                        if (confDivisions > 1)
-//                            ((TimeConfRange) ll).set(leftStart, leftMid, cMin, cMax);
+//                            ((TimeConfRange) ll).setAt(leftStart, leftMid, cMin, cMax);
 //                        else
-//                            ll.set(leftStart, leftMid);
+//                            ll.setAt(leftStart, leftMid);
 //
 //                        lll = ll;
 //                    } else {
@@ -1059,9 +1059,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                    TimeRange rrr;
 //                    if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd)) {
 //                        if (confDivisions > 1)
-//                            ((TimeConfRange) rr).set(rightMid, rightEnd, cMin, cMax);
+//                            ((TimeConfRange) rr).setAt(rightMid, rightEnd, cMin, cMax);
 //                        else
-//                            rr.set(rightMid, rightEnd);
+//                            rr.setAt(rightMid, rightEnd);
 //                        rrr = rr;
 //                    } else {
 //                        rrr = null;

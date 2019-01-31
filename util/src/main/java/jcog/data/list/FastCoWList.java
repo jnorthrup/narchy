@@ -289,7 +289,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     /**
-     * directly set
+     * directly setAt
      */
     public void set(X[] newValues) {
 

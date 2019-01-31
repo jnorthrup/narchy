@@ -57,7 +57,7 @@ public class NAL3Test extends NALTest {
     }
 
 
-    @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 0.9f /* TODO 1f should produce no output, add special test case */})
+    @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 0.9f /* TODO 1f should produce no output, addAt special test case */})
     @ParameterizedTest
     void compound_decomposition_two_premises_Negative_DiffIntensional(float freq) {
         String known = "<robin --> swimmer>";
@@ -73,7 +73,7 @@ public class NAL3Test extends NALTest {
         test.mustNotOutput(cycles, "((mammal-swimmer)-->mammal)", BELIEF, 0, 1, 0, 1, ETERNAL);
     }
 
-    @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 0.9f /* TODO 1f should produce no output, add special test case */})
+    @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 0.9f /* TODO 1f should produce no output, addAt special test case */})
     @ParameterizedTest
     void compound_decomposition_two_premises_Negative_DiffExtensional(float freq) {
         String known = "<b-->x>";

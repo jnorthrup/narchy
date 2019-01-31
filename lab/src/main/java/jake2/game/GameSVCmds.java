@@ -38,7 +38,7 @@ public class GameSVCmds {
      * PACKET FILTERING
      * 
      * 
-     * You can add or remove addresses from the filter list with:
+     * You can addAt or remove addresses from the filter list with:
      * 
      * addip <ip> removeip <ip>
      * 
@@ -255,7 +255,7 @@ public class GameSVCmds {
         }
 
         try {
-            f.writeChars("set filterban " + (int) GameBase.filterban.value
+            f.writeChars("setAt filterban " + (int) GameBase.filterban.value
                     + '\n');
 
             for (i = 0; i < numipfilters; i++) {

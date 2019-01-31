@@ -25,8 +25,8 @@ import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Introduction;
-import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
+import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.term.Term;
@@ -292,7 +292,7 @@ abstract public class NAgentX extends NAgent {
 
 //                if (a instanceof NAgentX) {
 //                    NAgent m = metavisor(a);
-//                    m.pri.set(0.1f);
+//                    m.pri.setAt(0.1f);
 //                    window(NARui.agent(m), 400, 400);
 //                }
         //new AgentControlFeedback(a);
@@ -348,7 +348,7 @@ abstract public class NAgentX extends NAgent {
         );
 
         n.confMin.set(0.01f);
-        //n.freqResolution.set(0.03f);
+        //n.freqResolution.setAt(0.03f);
         n.termVolumeMax.set(28);
 
         ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
@@ -403,18 +403,18 @@ abstract public class NAgentX extends NAgent {
                 //  "induction.goal.nal"
         ));
         bd.timing = new ActionTiming(n);
-        //bd.termLinksPerTaskLink.set(2);
-        //bd.premisesPerConcept.set(4);
+        //bd.termLinksPerTaskLink.setAt(2);
+        //bd.premisesPerConcept.setAt(4);
 
-        //new STMLinkage(n, 1);
+        new STMLinkage(n, 1);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
                 Task::isInput,
                 //t->true,
-                16, 256);
-        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
-                t->!t.isInput(),
-                4, 16);
+                32, 256);
+//        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
+//                t->!t.isInput(),
+//                4, 16);
 //        {
 //
 //            SpaceGraph.window(
@@ -433,7 +433,7 @@ abstract public class NAgentX extends NAgent {
 
 
 //        new Inperience.Believe(16, n);
-        new Inperience.Want(16, n);
+//        new Inperience.Want(16, n);
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
 

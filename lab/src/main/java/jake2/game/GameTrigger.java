@@ -212,7 +212,7 @@ public class GameTrigger {
 
     public static void SP_trigger_gravity(edict_t self) {
         if (GameBase.st.gravity == null) {
-            game_import_t.dprintf("trigger_gravity without gravity set at "
+            game_import_t.dprintf("trigger_gravity without gravity setAt at "
                     + Lib.vtos(self.s.origin) + '\n');
             GameUtil.G_FreeEdict(self);
             return;
@@ -288,7 +288,7 @@ public class GameTrigger {
     /**
      * QUAKED trigger_multiple (.5 .5 .5) ? MONSTER NOT_PLAYER TRIGGERED
      * Variable sized repeatable trigger. Must be targeted at one or more
-     * entities. If "delay" is set, the trigger waits some time after activating
+     * entities. If "delay" is setAt, the trigger waits some time after activating
      * before firing. "wait" : Seconds between triggerings. (.2 default) sounds
      * 1) secret 2) beep beep 3) large switch 4) set "message" to text string
      */
@@ -402,7 +402,7 @@ public class GameTrigger {
      * QUAKED trigger_counter (.5 .5 .5) ? nomessage Acts as an intermediary for
      * an action that takes multiple inputs.
      * 
-     * If nomessage is not set, t will print "1 more.. " etc when triggered and
+     * If nomessage is not setAt, t will print "1 more.. " etc when triggered and
      * "sequence complete" when finished.
      * 
      * After the counter has been triggered "count" times (default 2), it will

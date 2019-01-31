@@ -37,7 +37,7 @@ public class AttNode extends AtomicTreeNode<AttNode> {
 //        float childrenDemand = childDemand(nar);
 //        float totalDemand = myDemand + childrenDemand;
 //        //float demandNet = Math.max(0, totalDemand - supply.pri());
-//        this.demand.set(totalDemand);
+//        this.demand.setAt(totalDemand);
 //
 //    // AUTO SUPPLY
 //        childrenStream().forEach(c -> c.pri.pri(c.demand.floatValue()));

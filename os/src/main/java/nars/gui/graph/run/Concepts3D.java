@@ -31,7 +31,7 @@ public class Concepts3D extends DynamicConceptSpace {
         SpaceGraphPhys3D sg = show(1400, 1000, false);
 
 
-//        sg.add(new SubOrtho(grid(
+//        sg.addAt(new SubOrtho(grid(
 //                new ObjectSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
 //                new ObjectSurface<>(vis)
 //        )).posWindow(0.5f, 0.1f, 1f, 0.2f));
@@ -73,7 +73,7 @@ public class Concepts3D extends DynamicConceptSpace {
                     }
 
                 }));
-//        sg.add(new SubOrtho(grid(
+//        sg.addAt(new SubOrtho(grid(
 //                inputPanel,
 //                NARui.top(nar)
 //        )).posWindow(0.5f, 0.95f, 1f, 0.1f));
@@ -82,7 +82,7 @@ public class Concepts3D extends DynamicConceptSpace {
 
 //
 //
-//        sg.add(new SubOrtho(
+//        sg.addAt(new SubOrtho(
 //                inputPanel
 //        ).posWindow(0, 0.8f, 0.2f, 0.6f));
 

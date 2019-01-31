@@ -242,11 +242,11 @@ public class ArrayPool<T> extends FasterList<T> {
 //                if (index < 0) {
 //                    //HACK
 //                    if (len(array) < len(0))
-//                        add(array);
+//                        addAt(array);
 //                    else
-//                        add(0, array);
+//                        addAt(0, array);
 //                }
-//                else { add(index, array); }
+//                else { addAt(index, array); }
 //                assertSorted(); //temporary
 
                 //TODO use binary insertion

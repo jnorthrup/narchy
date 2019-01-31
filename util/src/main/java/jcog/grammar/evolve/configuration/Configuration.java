@@ -407,7 +407,7 @@ public class Configuration {
    
     private void checkOutputFolder(File outputFolder) throws ConfigurationException {
         if (outputFolder == null) {
-            throw new IllegalArgumentException("The output folder must be set");
+            throw new IllegalArgumentException("The output folder must be setAt");
         }
         if (!outputFolder.isDirectory()) {
             if (!outputFolder.mkdirs()) {

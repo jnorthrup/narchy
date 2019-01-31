@@ -1836,8 +1836,8 @@ public class Formula implements Comparable, Serializable {
     /** ***************************************************************
      * Makes implicit quantification explicit.
      *
-     * @param query controls whether to add universal or existential
-     * quantification.  If true, add existential.
+     * @param query controls whether to addAt universal or existential
+     * quantification.  If true, addAt existential.
      *
      * @result the formula as a String, with explicit quantification
      */
@@ -1871,7 +1871,7 @@ public class Formula implements Comparable, Serializable {
      * @param kb - The KB used to compute variable arity relations.
      * @param relationMap is a Map of String keys and values where
      *                    the key is the renamed relation and the
-     *                    value is the original name.  This is set
+     *                    value is the original name.  This is setAt
      *                    as a side effect of this method.
      * @return A new version of the Formula in which every
      * VariableArityRelation has been renamed to include a numeric

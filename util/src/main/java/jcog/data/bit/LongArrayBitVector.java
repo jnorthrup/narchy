@@ -44,7 +44,7 @@ import java.util.Arrays;
  * {@link #asLongSet()} provides access in setwise form.
  * 
  * <p>When enlarging the underlying array (e.g., for {@link #append(long, int)} operations or
- * add operations on the {@linkplain #asLongBigList(int) big list view}), or when
+ * addAt operations on the {@linkplain #asLongBigList(int) big list view}), or when
  * invoking {@link #ensureCapacity(long)}, this class calls
  * {@link LongArrays#grow(long[], int, int)}, which could enlarge the array more than
  * expected. On the contrary, {@link #length(long)} (and the corresponding method in the
@@ -171,7 +171,7 @@ public class LongArrayBitVector extends AbstractBitVector implements Cloneable, 
 	
 	/** Creates a new bit vector with given bits. 
 	 * 
-	 * @param bit a list of bits that will be set in the newly created bit vector. 
+	 * @param bit a list of bits that will be set in the newly created bit vector.
 	 */
 	public static LongArrayBitVector of( int... bit ) {
 		LongArrayBitVector bitVector = new LongArrayBitVector( bit.length );

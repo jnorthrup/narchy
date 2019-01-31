@@ -76,7 +76,7 @@ public class MutableDouble extends Number implements Comparable {
    * Sets the value.
    * 
    * @param value
-   *          the value to set
+   *          the value to setAt
    */
   public void setValue(double value) {
     this.value = value;
@@ -181,7 +181,7 @@ public class MutableDouble extends Number implements Comparable {
    * Adds a value.
    * 
    * @param operand
-   *          the value to add
+   *          the value to addAt
    * 
    * @since Commons Lang 2.2
    */
@@ -193,7 +193,7 @@ public class MutableDouble extends Number implements Comparable {
    * Adds a value.
    * 
    * @param operand
-   *          the value to add
+   *          the value to addAt
    * @throws NullPointerException
    *           if the object is null
    * 
@@ -207,7 +207,7 @@ public class MutableDouble extends Number implements Comparable {
    * Subtracts a value.
    * 
    * @param operand
-   *          the value to add
+   *          the value to addAt
    * 
    * @since Commons Lang 2.2
    */
@@ -219,7 +219,7 @@ public class MutableDouble extends Number implements Comparable {
    * Subtracts a value.
    * 
    * @param operand
-   *          the value to add
+   *          the value to addAt
    * @throws NullPointerException
    *           if the object is null
    * 

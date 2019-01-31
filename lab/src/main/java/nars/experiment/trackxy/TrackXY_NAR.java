@@ -107,10 +107,10 @@ public class TrackXY_NAR extends NAgentX {
         //actionTriState();
 
 //        {
-//            curiosity.enable.set(false);
+//            curiosity.enable.setAt(false);
 //            GraphEdit w = new GraphEdit(RectFloat.X0Y0WH(0, 0, 256, 256));
 //
-//            w.add(new KeyboardChip.ArrowKeysChip() {
+//            w.addAt(new KeyboardChip.ArrowKeysChip() {
 //                @Override
 //                protected void keyLeft() {
 //                    long now = nar.time();
@@ -127,7 +127,7 @@ public class TrackXY_NAR extends NAgentX {
 //        }
 
 //        if (alwaysTrain) {
-//            curiosity.enable.set(false);
+//            curiosity.enable.setAt(false);
 //            onFrame(x -> {
 //                track.act();
 //            });
@@ -192,7 +192,7 @@ public class TrackXY_NAR extends NAgentX {
 //                    //HaiQ::new,
 //
 //                    false);
-//            a.curiosity.enable.set(false);
+//            a.curiosity.enable.setAt(false);
 //
 //            window(new Gridding(
 //                Stream.of(((HaiQ) (rlb.agent)).q,((HaiQ) (rlb.agent)).et).map(
@@ -253,8 +253,8 @@ public class TrackXY_NAR extends NAgentX {
             window.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
             window.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
 
-            //window.add(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
-//            window.add(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
+            //window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
+//            window.addAt(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 
             if (a.cam != null) {
                 window.add(Splitting.column(new VectorSensorView(a.cam, n) {
@@ -291,8 +291,8 @@ public class TrackXY_NAR extends NAgentX {
 //            }
 //        });
 
-//        n.beliefConfDefault.set(0.5f);
-//        n.goalConfDefault.set(0.5f);
+//        n.beliefConfDefault.setAt(0.5f);
+//        n.goalConfDefault.setAt(0.5f);
 
 
         n.goalPriDefault.set(0.5f);
@@ -301,11 +301,11 @@ public class TrackXY_NAR extends NAgentX {
         n.questPriDefault.set(0.05f);
 
 
-//        n.freqResolution.set(0.1f);
-//        n.confResolution.set(0.05f);
+//        n.freqResolution.setAt(0.1f);
+//        n.confResolution.setAt(0.05f);
 
 
-        //n.freqResolution.set(0.04f);
+        //n.freqResolution.setAt(0.04f);
 
         n.termVolumeMax.set(volMax);
         n.timeResolution.set(Math.max(1, durMS));

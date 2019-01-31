@@ -72,9 +72,9 @@
 //
 //
 //
-//            n.freqResolution.set(0.02f);
-//            n.confResolution.set(0.02f);
-//            n.termVolumeMax.set(12);
+//            n.freqResolution.setAt(0.02f);
+//            n.confResolution.setAt(0.02f);
+//            n.termVolumeMax.setAt(12);
 //
 //
 //
@@ -190,7 +190,7 @@
 //
 //
 //            n.time.dur(32);
-//            exp.agent.curiosity.set(0.1f);
+//            exp.agent.curiosity.setAt(0.1f);
 //
 //
 //
@@ -234,9 +234,9 @@
 //            List<Plot2D> plots = $.newArrayList();
 //            for (FloatSupplier t : concepts) {
 //                Plot2D p = new Plot2D(plotHistory, Plot2D.Line);
-//                p.add(t.toString(), t::asFloat, 0f, 1f);
-//                grid.add(p);
-//                plots.add(p);
+//                p.addAt(t.toString(), t::asFloat, 0f, 1f);
+//                grid.addAt(p);
+//                plots.addAt(p);
 //            }
 //            grid.layout();
 //
@@ -286,7 +286,7 @@
 //
 //
 //
-//            agent.curiosity.set(
+//            agent.curiosity.setAt(
 //                    0.05f
 //
 //            );
@@ -431,7 +431,7 @@
 //
 //
 //                        ) {
-//                    current.add(x);
+//                    current.addAt(x);
 //                }
 //            });
 //
@@ -461,7 +461,7 @@
 //                    } else {
 //                        if (a.curiosity.floatValue() > 0)
 //                            System.err.println("TRAINING FINISHED - DISABLING CURIOSITY");
-//                        a.curiosity.set(0f);
+//                        a.curiosity.setAt(0f);
 //                    }
 //                } else {
 //

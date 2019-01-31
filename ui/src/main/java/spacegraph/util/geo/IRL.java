@@ -87,7 +87,7 @@ public class IRL {
                     });
                     osm.ready = true;
 //                    osm.nodes.forEachValue(n->{
-//                        index.add(n);
+//                        index.addAt(n);
 //                    });
                 } catch (Exception e) {
                     e.printStackTrace();

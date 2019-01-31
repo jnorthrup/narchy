@@ -7,11 +7,12 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INT;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.*;
 
 public enum MathFunc { ;
 
@@ -19,7 +20,7 @@ public enum MathFunc { ;
 
 
     public final static Functor add =
-            new ArithmeticCommutiveBinaryBidiFunctor("add") {
+            new ArithmeticCommutiveBinaryBidiFunctor("addAt") {
 
                 @Override
                 @Nullable protected Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
@@ -86,7 +87,37 @@ public enum MathFunc { ;
                 }
             };
 
-            
+    /** TODO abstract CommutiveBooleanBidiFunctor */
+    public static class XOR extends Functor.InlineCommutiveBinaryBidiFunctor implements The {
+
+        public static final XOR the = new XOR();
+
+        private XOR() {
+            super("xor");
+        }
+
+        @Override
+        protected Term compute(Evaluation e, Term x, Term y) {
+            if (x instanceof Bool && y instanceof Bool && x!=Null && y!=Null) {
+                return x!=y ? True : False;
+            }
+            return null;
+        }
+
+        @Override
+        protected Term computeFromXY(Evaluation e, Term x, Term y, Term xy) {
+            return null;
+        }
+
+        @Override
+        protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
+            if (y instanceof Bool && xy instanceof Bool && y!=Null && xy!=null) {
+                //TODO assert that if x is not a Bool, it will evaluate to True or False according to xy
+            }
+            return null;
+        }
+    }
+
 
     abstract static class ArithmeticCommutiveBinaryBidiFunctor extends Functor.InlineCommutiveBinaryBidiFunctor implements The /* THE */ {
 

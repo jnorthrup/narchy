@@ -64,7 +64,7 @@ public class AutoBuilder<X, Y> {
 //                    if (test.test(x)) {
 //                        Y y = (Y) builder.apply(x);
 //                        if (y != null)
-//                            built.add(pair(x,y));
+//                            built.addAt(pair(x,y));
 //                    }
 //                });
 //            }

@@ -307,7 +307,7 @@ public class NAL5Test extends NALTest {
 
 //    @Test
 //    void compound_decomposition_subj_posneg() {
-//        test.nar.termVolumeMax.set(9);
+//        test.nar.termVolumeMax.setAt(9);
 //        test.believe("((b && --c)==>a)", 1.0f, 0.9f)
 //                .mustBelieve(cycles, "(b==>a)", 1.00f, 0.81f)
 //                .mustBelieve(cycles, "(--c==>a)", 1.00f, 0.81f);
@@ -315,7 +315,7 @@ public class NAL5Test extends NALTest {
 //
 //    @Test
 //    void compound_decomposition_pred_posneg() {
-//        test.nar.termVolumeMax.set(9);
+//        test.nar.termVolumeMax.setAt(9);
 //        test.believe("(a==>(b && --c))", 1.0f, 0.9f)
 //                .mustBelieve(cycles, "(a==>b)", 1.00f, 0.81f)
 //                .mustBelieve(cycles, "(a==>c)", 0.00f, 0.81f);
@@ -803,7 +803,7 @@ public class NAL5Test extends NALTest {
 //    @Test
 //    void conditional_induction0NegInner() {
 //        TestNAR tester = test;
-//        test.nar.termVolumeMax.set(9);
+//        test.nar.termVolumeMax.setAt(9);
 //        tester.believe("((x&&a) ==> c)");
 //        tester.believe("(--(x&&b) ==> c)");
 //        tester.mustBelieve(cycles, "(a ==> --b)", 1.00f, 0.45f);

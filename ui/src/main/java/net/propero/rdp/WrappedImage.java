@@ -116,10 +116,10 @@ public class WrappedImage {
      * Apply a given array of colour values to an area of pixels in the image,
      * do not convert for colour model
      *
-     * @param x      x-coordinate for left of area to set
-     * @param y      y-coordinate for top of area to set
-     * @param cx     width of area to set
-     * @param cy     height of area to set
+     * @param x      x-coordinate for left of area to setAt
+     * @param y      y-coordinate for top of area to setAt
+     * @param cx     width of area to setAt
+     * @param cy     height of area to setAt
      * @param data   array of pixel colour values to apply to area
      * @param offset offset to pixel data in data
      * @param w      width of a line in data (measured in pixels)

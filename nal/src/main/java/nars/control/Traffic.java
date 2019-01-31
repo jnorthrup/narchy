@@ -4,7 +4,7 @@ import jcog.Texts;
 import jcog.data.atomic.AtomicFloat;
 
 /** concurrent traffic accumulator;
- *  concurrent updates (ie. add) but expects a synchronous commit
+ *  concurrent updates (ie. addAt) but expects a synchronous commit
  *  to sample after each cycle.
  *
  *  the AtomicFloat which this subclasses holds the accumulating value

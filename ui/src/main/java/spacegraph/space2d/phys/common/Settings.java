@@ -236,7 +236,7 @@ public class Settings {
 
 
     /**
-     * Friction mixing law. Feel free to customize this. TODO djm: add customization
+     * Friction mixing law. Feel free to customize this. TODO djm: addAt customization
      *
      * @param friction1
      * @param friction2
@@ -247,7 +247,7 @@ public class Settings {
     }
 
     /**
-     * Restitution mixing law. Feel free to customize this. TODO djm: add customization
+     * Restitution mixing law. Feel free to customize this. TODO djm: addAt customization
      *
      * @param restitution1
      * @param restitution2

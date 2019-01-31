@@ -16,7 +16,7 @@ import java.util.function.Function;
 /**
  * this reads joystick events using the jstest command, which is available in most linux distributions
  * <p>
- * TODO add calibration as a set of limits cached in GamePad, which it can resolve the raw data to
+ * TODO addAt calibration as a set of limits cached in GamePad, which it can resolve the raw data to
  * using a method like:
  * gamePad1.calibrate(event1) -> CalibratedGameInputEvent
  * <p>

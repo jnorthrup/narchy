@@ -1079,7 +1079,7 @@ public class Orders {
      * @param polyline PolyLineOrder object in which to store order description
      * @param present  Flags defining information available in packet
      * @param delta    True if each set of coordinates is described relative to
-     *                 previous set
+     *                 previous setAt
      */
     private void processPolyLine(RdpPacket_Localised data,
                                  PolyLineOrder polyline, int present, boolean delta) {

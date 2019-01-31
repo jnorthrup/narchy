@@ -71,11 +71,11 @@ import java.util.stream.Stream;
  * getAttributeName(), getAttributeType(), getAttributeData().</p>
  *
  * <p>Alternative, you can construct an empty ArffFile object, and then use setComment(),
- * defineAttribute(), add() to fill in the data and then save to a file with save(), or
+ * defineAttribute(), addAt() to fill in the data and then save to a file with save(), or
  * to a string with write().</p>
  *
  * <p>The first comment in an ArffFile is extracted and made available through the *Comment()
- * accessors. Usually, this comment contains some interesting information about the data set.</p>
+ * accessors. Usually, this comment contains some interesting information about the data setAt.</p>
  *
  * <p>Currently, the class only supports numerical, string and nominal attributes. It also does
  * not support sparse storage (yet).</p>
@@ -372,7 +372,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
     }
 
 //    /**
-//     * Generate a string which describes the data set.
+//     * Generate a string which describes the data setAt.
 //     */
 //    public StringBuilder describe() {
 //        StringBuilder s = new StringBuilder();
@@ -550,7 +550,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 //            int k = 0;
 //            for (int c : columns)
 //                r[k++] = ((Number) exp.get(c)).floatValue();
-//            data.add(r);
+//            data.addAt(r);
 //        }
 //
 //        return data;

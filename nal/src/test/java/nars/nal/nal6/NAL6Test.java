@@ -26,7 +26,7 @@ public class NAL6Test extends NALTest {
     protected NAR nar() {
         NAR n = NARS.tmp(6);
         n.termVolumeMax.set(18);
-        //n.freqResolution.set(0.1f);
+        //n.freqResolution.setAt(0.1f);
         n.confMin.set(0.3f);
         return n;
     }
@@ -577,7 +577,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification() {
-//        test.nar.termVolumeMax.set(10);
+//        test.nar.termVolumeMax.setAt(10);
         TestNAR tester = test;
         ////there is a lock which is opened by all keys
         tester.believe("(((#1 --> lock) && ($2 --> key)) ==> open($2, #1))", 1.00f, 0.90f);
@@ -587,7 +587,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification_neg() {
-//        test.nar.termVolumeMax.set(10);
+//        test.nar.termVolumeMax.setAt(10);
 
         TestNAR tester = test;
         ////there is a lock which is opened by all non-keys
@@ -1273,7 +1273,7 @@ public class NAL6Test extends NALTest {
         ;
     }
 //    @Test void testMutexConjImplBeliefInduction() {
-//        test.nar.termVolumeMax.set(12);
+//        test.nar.termVolumeMax.setAt(12);
 //        test
 //                .believe("((x && --y) ==> z)")
 //                .believe("((--x && y) ==> z)")
@@ -1364,7 +1364,7 @@ public class NAL6Test extends NALTest {
     }
 
 //    @Test void testMutexSwapPos() {
-//        test.nar.termVolumeMax.set(14);
+//        test.nar.termVolumeMax.setAt(14);
 //        test
 //                .believe("--(x && y)")
 //                .believe("its(x,a)")

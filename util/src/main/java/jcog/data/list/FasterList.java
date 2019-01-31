@@ -514,7 +514,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     /**
-     * slow: use a set
+     * slow: use a setAt
      */
     public final boolean addIfNotPresent(@Nullable X x) {
         if (!contains(x)) {

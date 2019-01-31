@@ -127,8 +127,8 @@ public final class Subtract extends ArithmeticOperator {
                 }
                 // (a+d) - (b + c) = (+ a ( - d ( + b c )
 //                return new FunctionNode(numberUtils.subtract,
-//                        new FunctionNode(numberUtils.add, a, d),
-//                        new FunctionNode(numberUtils.add, b, c));
+//                        new FunctionNode(numberUtils.addAt, a, d),
+//                        new FunctionNode(numberUtils.addAt, b, c));
                 return new FnNode(numberUtils.add, a,
                         new FnNode(numberUtils.subtract, d,
                                 new FnNode(numberUtils.add, b, c)

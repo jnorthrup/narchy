@@ -592,7 +592,7 @@ public class Reflect {
                     else if (length == 0 && name.startsWith("is")) {
                         return map.get(property(name.substring(2)));
                     }
-                    else if (length == 1 && name.startsWith("set")) {
+                    else if (length == 1 && name.startsWith("setAt")) {
                         map.put(property(name.substring(3)), args[0]);
                         return null;
                     }

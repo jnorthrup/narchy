@@ -73,7 +73,7 @@ public class TheoJansen {
 //            RevoluteJointDef jj = new RevoluteJointDef(chassis, b);
 //            jj.referenceAngle = (float) (Math.PI);
 //            jj.enableMotor = true;
-//            jj.localAnchorB.set(b.getWorldPoint(new v2(-gun.barrelLength/4f, 0)));
+//            jj.localAnchorB.setAt(b.getWorldPoint(new v2(-gun.barrelLength/4f, 0)));
 //            jj.collideConnected = false;
 //            turretJoint = (RevoluteJoint) world.addJoint(jj);
 //            turretJoint.setMotorSpeed(1f);

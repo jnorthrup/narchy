@@ -3366,7 +3366,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the first matrix element in the first row.
      *
-     * @param m00 The m00 to set.
+     * @param m00 The m00 to setAt.
      * @since vecmath 1.5
      */
     public final void setM00(float m00) {
@@ -3386,7 +3386,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the second matrix element in the first row.
      *
-     * @param m01 The m01 to set.
+     * @param m01 The m01 to setAt.
      * @since vecmath 1.5
      */
     public final void setM01(float m01) {
@@ -3406,7 +3406,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the third matrix element in the first row.
      *
-     * @param m02 The m02 to set.
+     * @param m02 The m02 to setAt.
      * @since vecmath 1.5
      */
     public final void setM02(float m02) {
@@ -3426,7 +3426,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set first matrix element in the second row.
      *
-     * @param m10 The m10 to set.
+     * @param m10 The m10 to setAt.
      * @since vecmath 1.5
      */
     public final void setM10(float m10) {
@@ -3446,7 +3446,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the second matrix element in the second row.
      *
-     * @param m11 The m11 to set.
+     * @param m11 The m11 to setAt.
      * @since vecmath 1.5
      */
     public final void setM11(float m11) {
@@ -3466,7 +3466,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the third matrix element in the second row.
      *
-     * @param m12 The m12 to set.
+     * @param m12 The m12 to setAt.
      * @since vecmath 1.5
      */
     public final void setM12(float m12) {
@@ -3486,7 +3486,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the first matrix element in the third row.
      *
-     * @param m20 The m20 to set.
+     * @param m20 The m20 to setAt.
      * @since vecmath 1.5
      */
     public final void setM20(float m20) {
@@ -3506,7 +3506,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the second matrix element in the third row.
      *
-     * @param m21 The m21 to set.
+     * @param m21 The m21 to setAt.
      * @since vecmath 1.5
      */
     public final void setM21(float m21) {
@@ -3526,7 +3526,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the third matrix element in the third row.
      *
-     * @param m22 The m22 to set.
+     * @param m22 The m22 to setAt.
      * @since vecmath 1.5
      */
     public final void setM22(float m22) {
@@ -3546,7 +3546,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the fourth element of the first row.
      *
-     * @param m03 The m03 to set.
+     * @param m03 The m03 to setAt.
      * @since vecmath 1.5
      */
     public final void setM03(float m03) {
@@ -3566,7 +3566,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the fourth element of the second row.
      *
-     * @param m13 The m13 to set.
+     * @param m13 The m13 to setAt.
      * @since vecmath 1.5
      */
     public final void setM13(float m13) {
@@ -3586,7 +3586,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the fourth element of the third row.
      *
-     * @param m23 The m23 to set.
+     * @param m23 The m23 to setAt.
      * @since vecmath 1.5
      */
     public final void setM23(float m23) {
@@ -3606,7 +3606,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the first element of the fourth row.
      *
-     * @param m30 The m30 to set.
+     * @param m30 The m30 to setAt.
      * @since vecmath 1.5
      */
     public final void setM30(float m30) {
@@ -3626,7 +3626,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the second element of the fourth row.
      *
-     * @param m31 The m31 to set.
+     * @param m31 The m31 to setAt.
      * @since vecmath 1.5
      */
     public final void setM31(float m31) {
@@ -3646,7 +3646,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the third element of the fourth row.
      *
-     * @param m32 The m32 to set.
+     * @param m32 The m32 to setAt.
      * @since vecmath 1.5
      */
     public final void setM32(float m32) {
@@ -3666,7 +3666,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     /**
      * Set the fourth element of the fourth row.
      *
-     * @param m33 The m33 to set.
+     * @param m33 The m33 to setAt.
      * @since vecmath 1.5
      */
     public final void setM33(float m33) {

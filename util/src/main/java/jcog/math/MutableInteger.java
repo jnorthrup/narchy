@@ -70,7 +70,7 @@ public class MutableInteger extends Number implements Comparable, IntSupplier {
     /**
      * Sets the value.
      *
-     * @param value the value to set
+     * @param value the value to setAt
      */
     public void set(int value) {
         int v = this.value;
@@ -96,7 +96,7 @@ public class MutableInteger extends Number implements Comparable, IntSupplier {
     /**
      * Sets the value from any Number instance.
      *
-     * @param value the value to set
+     * @param value the value to setAt
      * @throws NullPointerException if the object is null
      * @throws ClassCastException   if the type is not a {@link Number}
      */

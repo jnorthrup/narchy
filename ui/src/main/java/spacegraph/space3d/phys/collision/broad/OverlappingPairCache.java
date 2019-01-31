@@ -26,7 +26,7 @@ package spacegraph.space3d.phys.collision.broad;
 import jcog.data.list.FasterList;
 
 /**
- * OverlappingPairCache provides an interface for overlapping pair management (add,
+ * OverlappingPairCache provides an interface for overlapping pair management (addAt,
  * remove, storage), used by the {@link Broadphase} broadphases.
  *
  * @author jezek2

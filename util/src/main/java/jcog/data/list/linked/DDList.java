@@ -85,7 +85,7 @@ public class DDList<E> implements Iterable<E> {
         return size;
     }
 
-    /** add the raw item to the list, will be bagged */
+    /** addAt the raw item to the list, will be bagged */
     public DD<E> add(E item) {
         if (item == null) throw new RuntimeException("Bag requires non-null items");
         DD<E> d = pool.get(item, id);
@@ -125,8 +125,8 @@ public class DDList<E> implements Iterable<E> {
 
     public DD<E> add(DD<E> x) {
 
-        if (x == null) throw new RuntimeException("attempt to add null element");
-        if (x.owner()!=getID()) throw new RuntimeException("add of item already owned by level " + x.owner());
+        if (x == null) throw new RuntimeException("attempt to addAt null element");
+        if (x.owner()!=getID()) throw new RuntimeException("addAt of item already owned by level " + x.owner());
 
         DD<E> last = post.prev;
         x.next = post;

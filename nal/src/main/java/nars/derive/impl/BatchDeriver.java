@@ -1,7 +1,7 @@
 package nars.derive.impl;
 
+import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.pri.bag.Bag;
 import jcog.sort.TopN;
@@ -141,7 +141,9 @@ public class BatchDeriver extends Deriver {
             }
 
             if (b != null) {
-                premises.add(new Premise(task, b));
+                Premise p = new Premise(task, b);
+  //              System.out.println("  premise: " + p);
+                premises.add(p);
             }
 
             return true;
@@ -151,7 +153,10 @@ public class BatchDeriver extends Deriver {
     }
 
     /** acts as a virtual tasklink bag associated with an atom concept allowing it to otherwise act as a junction between tasklinking compounds which share it */
-    private static Term atomTangentRanked(Term src, Term tt, TopN<TaskLink> match, Derivation d, Iterable<TaskLink> tasklinks) {
+    private static Term atomTangentRanked(Term src, Term tt, TopN<TaskLink> match, Derivation d, Bag<TaskLink,TaskLink> tasklinks) {
+
+        //heuristic
+        match.setCapacity(Util.clamp(tasklinks.size()/2, 1, match.capacityMax()));
 
         tasklinks.forEach((x)->{
             float xp = x.priElseZero();
@@ -170,23 +175,23 @@ public class BatchDeriver extends Deriver {
             return null;
     }
 
-    private static Term atomTangentRandom(Term tt, Term src, Derivation d, Bag<TaskLink, TaskLink> tasklinks) {
-        Term b;//TODO use Rank and sample
-        ArrayHashSet<Term> atomMatches = d.atomMatches;
-        tasklinks.forEach(t -> {
-            Term bb = atomTangent(tt, src, t);
-            if (bb!=null)
-                atomMatches.add(bb);
-        });
-
-        if (!atomMatches.isEmpty()) {
-            b = atomMatches.get(d.random);
-            atomMatches.clear();
-        } else {
-            b = src;
-        }
-        return b;
-    }
+//    private static Term atomTangentRandom(Term tt, Term src, Derivation d, Bag<TaskLink, TaskLink> tasklinks) {
+//        Term b;//TODO use Rank and sample
+//        ArrayHashSet<Term> atomMatches = d.atomMatches;
+//        tasklinks.forEach(t -> {
+//            Term bb = atomTangent(tt, src, t);
+//            if (bb!=null)
+//                atomMatches.add(bb);
+//        });
+//
+//        if (!atomMatches.isEmpty()) {
+//            b = atomMatches.get(d.random);
+//            atomMatches.clear();
+//        } else {
+//            b = src;
+//        }
+//        return b;
+//    }
 
     @Nullable
     static private Term atomTangent(Term tt, Term src, TaskLink t) {

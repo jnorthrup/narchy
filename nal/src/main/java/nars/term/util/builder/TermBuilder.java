@@ -12,9 +12,9 @@ import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.util.Statement;
-import nars.term.util.TermException;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjCommutive;
+import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.CompoundNormalization;
 import nars.time.Tense;
 import nars.unify.ellipsis.EllipsisMatch;
@@ -23,8 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.TreeSet;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -156,23 +154,19 @@ public abstract class TermBuilder {
                 case CONJ:
                     break; //skip below
                 default:
-                    return new CachedUnitCompound(o, x);
+                    return compound1(o, x);
             }
         }
 
+        return compoundN(o, dt, t, key);
+    }
 
-        //String before = (Arrays.toString(t)); //HACK TEMPORARY
+    protected Compound compoundN(Op o, int dt, Term[] t, @Nullable DynBytes key) {
+        return CachedCompound.newCompound(o, dt, subterms(o, t, dt, key));
+    }
 
-        Subterms subs = subterms(o, t, dt, key);
-
-        //String after = (Arrays.toString(t)); //HACK TEMPORARY
-
-        Term y = CachedCompound.newCompound(o, dt, subs);
-
-//        if (!before.equals(after))
-//            System.out.println("\t" + Arrays.toString(t)); //HACK TEMPORARY
-
-        return y;
+    protected Compound compound1(Op o, Term x) {
+        return new CachedUnitCompound(o, x);
     }
 
     protected Subterms subterms(Op o, Term[] t, int dt, @Nullable DynBytes key) {
@@ -205,114 +199,37 @@ public abstract class TermBuilder {
         return conj(false, dt, u);
     }
 
-    public Term conj(boolean preSorted, final int dt, Term... u) {
+    protected final Term conj(boolean preSorted, final int dt, Term... u) {
 
         if (!preSorted)
             u = Conj.preSort(dt, u);
 
         switch (u.length) {
-
             case 0:
                 return Bool.True;
 
             case 1:
                 Term only = u[0];
-                if (only instanceof EllipsisMatch) {
-
+                if (only instanceof EllipsisMatch)
                     return conj(dt, only.arrayShared());
-                } else {
-
+                else
                     return only instanceof Ellipsislike ?
                             HeapTermBuilder.the.theCompound(CONJ, dt, only)
                             :
                             only;
-                }
-
         }
-
-
-
-
 
         switch (dt) {
             case DTERNAL:
-            case 0: {
-
+            case 0:
                 return ConjCommutive.theSorted(dt, u);
-            }
 
             case XTERNAL:
-                int ul = u.length;
-                switch (ul) {
-                    case 0:
-                        return Bool.True;
+                return ConjCommutive.theXternal(u);
 
-                    case 1:
-                        return u[0];
+            default:
+                return ConjSeq.theSequence(dt, u);
 
-                    default: {
-                        if (ul == 2) {
-                            //special case: simple arity=2
-                            if (!u[0].equals(u[1])) { // && !unfoldableInneralXternalConj(u[0]) && !unfoldableInneralXternalConj(u[1])) {
-                                return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, sorted(u));
-                            } else
-                                return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, u[0], u[0]); //repeat
-                        } else {
-
-                            TreeSet<Term> uux = new TreeSet();
-                            Collections.addAll(uux, u);
-
-                            if (uux.size() == 1) {
-                                Term only = uux.first();
-                                return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, only, only); //repeat
-                            } else {
-                                return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, sorted(uux));
-                            }
-                        }
-                    }
-
-
-//                    case 2: {
-//
-//
-//                        Term a = u[0];
-//                        if (a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
-//                            Term b = u[1];
-//
-//                            int va = a.volume();
-//                            int vb = b.volume();
-//
-//                            if (va > vb) {
-//                                Term[] aa = a.subterms().arrayShared();
-//                                int va0 = aa[0].volume();
-//                                int va1 = aa[1].volume();
-//                                int vamin = Math.min(va0, va1);
-//
-//
-//                                if ((va - vamin) > (vb + vamin)) {
-//                                    int min = va0 <= va1 ? 0 : 1;
-//
-//                                    Term[] xu = {CONJ.the(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]};
-//                                    Arrays.sort(xu);
-//                                    return compound(CONJ, XTERNAL, xu);
-//                                }
-//                            }
-//
-//                        }
-//                        break;
-//                    }
-//
-                }
-
-
-            default: {
-                if (u.length != 2)
-                    throw new TermException("temporal conjunction with n!=2 subterms");
-
-                return (dt >= 0) ?
-                        Conj.sequence(u[0], 0, u[1], +dt + u[0].eventRange()) :
-                        Conj.sequence(u[1], 0, u[0], -dt + u[1].eventRange());
-            }
         }
 
     }

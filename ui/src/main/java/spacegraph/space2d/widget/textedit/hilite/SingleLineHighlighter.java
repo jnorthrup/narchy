@@ -86,7 +86,7 @@ public class SingleLineHighlighter {
 //                for(SyntaxRule r:rules)
 //                    disp_line=r.apply(disp_line); //entails a ton of line copying
 //                disp_line.updatePixelKnowledge(jpc_connector, getStandardLayout());
-//                displayLines.set(line, disp_line);
+//                displayLines.setAt(line, disp_line);
 ////            }
 //        } else {
 //            displayLines = new ArrayList<>(getLineCount());
@@ -95,7 +95,7 @@ public class SingleLineHighlighter {
 //                for(SyntaxRule r:rules)
 //                    disp_line=r.apply(disp_line); //entails a ton of line copying
 //                disp_line.updatePixelKnowledge(jpc_connector, getStandardLayout());
-//                displayLines.add(disp_line);
+//                displayLines.addAt(disp_line);
 //            }
 //        }
 //        jpc_connector.repaint(); //usually not required, but sometimes(and in not easily detectable situations) it is.

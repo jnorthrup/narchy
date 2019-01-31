@@ -178,7 +178,7 @@ public class Trie<S, T> implements Map<S, T> {
     /**
      * Adds a new TrieNode to the given node with the given sequence subset.
      *
-     * @param node        The node to add to; the parent of the created node.
+     * @param node        The node to addAt to; the parent of the created node.
      * @param value       The value of the node.
      * @param query       The sequence that was put.
      * @param queryOffset The offset into that sequence where the node (subset sequence)

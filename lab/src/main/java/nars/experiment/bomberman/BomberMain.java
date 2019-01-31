@@ -41,7 +41,7 @@ public class BomberMain extends JFrame {
      * Constructs the main frame.
      */
     public BomberMain() {
-        /** add window event handler */
+        /** addAt window event handler */
         addWindowListener(new WindowAdapter() {
             /**
              * Handles window closing events.
@@ -54,7 +54,7 @@ public class BomberMain extends JFrame {
             }
         });
 
-        /** add keyboard event handler */
+        /** addAt keyboard event handler */
         addKeyListener(new KeyAdapter() {
             /**
              * Handles key pressed events.
@@ -80,7 +80,7 @@ public class BomberMain extends JFrame {
         setTitle("Bomberman 1.0 by Sammy Leong");
 
 
-        /** create and add the menu to the frame */
+        /** create and addAt the menu to the frame */
         getContentPane().add(menu = new BomberMenu(this));
 
         /** set the window so that the user can't resize it */

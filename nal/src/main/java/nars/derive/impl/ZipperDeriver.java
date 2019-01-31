@@ -1,6 +1,6 @@
 //package nars.derive.impl;
 //
-//import jcog.data.set.ArrayHashSet;
+//import jcog.data.setAt.ArrayHashSet;
 //import jcog.math.IntRange;
 //import nars.Task;
 //import nars.concept.Concept;
@@ -83,7 +83,7 @@
 //                            Term b = beliefTerms.get();
 //                            if (b != null) {
 //                                if (derived == 0)
-//                                    d.tasksFired.add(task);
+//                                    d.tasksFired.addAt(task);
 //                                new Premise(task, b).derive(d, matchTTL, deriveTTL);
 //                                derived++;
 //                            }

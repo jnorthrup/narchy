@@ -156,7 +156,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 //        if (x instanceof Surface) {
 //            Surface sx = (Surface) x;
 //            if (sx.parent == null) {
-//                target.add(new LabeledPane(yLabel, sx));
+//                target.addAt(new LabeledPane(yLabel, sx));
 //            }
 //            return;
 //        }
@@ -165,14 +165,14 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 //        //TODO rewrite these as pluggable onClass handlers
 //
 //        if (x instanceof Services) {
-//            target.add(new AutoServices((Services) x));
+//            target.addAt(new AutoServices((Services) x));
 //            return;
 //        }
 //
 //        if (x instanceof Collection) {
 //            Surface cx = collectElements((Iterable) x, depth + 1);
 //            if (cx != null) {
-//                target.add(new LabeledPane(yLabel, cx));
+//                target.addAt(new LabeledPane(yLabel, cx));
 //            }
 //        }
 //
@@ -271,7 +271,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 //                    String label = s.toString();
 //
 //
-//                    l.add(
+//                    l.addAt(
 //                            new PushButton(IconBuilder.simpleBuilder.apply(s)).click(() -> SpaceGraph.window(
 //                                    new LabeledPane(label, new ObjectSurface(s)),
 //                                    500, 500))
@@ -283,13 +283,13 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 //
 //            });
 //
-//            set(new ObjectMetaFrame(x, new Gridding(l)));
+//            setAt(new ObjectMetaFrame(x, new Gridding(l)));
 //        }
 //    }
 
 
     /*private boolean addService(Service<?> x) {
-        return add(x);
+        return addAt(x);
     }*/
 
 }

@@ -55,7 +55,7 @@ public abstract class GImpactShape extends ConcaveShape {
 	 * Performs refit operation.<p>
 	 * Updates the entire Box set of this shape.<p>
 	 * 
-	 * postUpdate() must be called for attemps to calculating the box set, else this function
+	 * postUpdate() must be called for attemps to calculating the box setAt, else this function
 	 * will does nothing.<p>
 	 * 
 	 * if m_needs_update == true, then it calls calcLocalAABB();
@@ -70,7 +70,7 @@ public abstract class GImpactShape extends ConcaveShape {
 
 	/**
 	 * If the Bounding box is not updated, then this class attemps to calculate it.<p>
-     * Calls updateBound() for update the box set.
+     * Calls updateBound() for update the box setAt.
      */
 	@Override
 	public void getAabb(Transform t, v3 aabbMin, v3 aabbMax) {
@@ -81,7 +81,7 @@ public abstract class GImpactShape extends ConcaveShape {
 	}
 
 	/**
-	 * Tells to this object that is needed to refit the box set.
+	 * Tells to this object that is needed to refit the box setAt.
 	 */
     void postUpdate() {
 		needs_update = true;
@@ -101,7 +101,7 @@ public abstract class GImpactShape extends ConcaveShape {
 	}
 
 	/**
-	 * You must call updateBound() for update the box set.
+	 * You must call updateBound() for update the box setAt.
 	 */
 	@Override
 	public void setLocalScaling(v3 scaling) {
@@ -228,7 +228,7 @@ public abstract class GImpactShape extends ConcaveShape {
 
 	/**
 	 * Sets the children transform.<p>
-	 * You must call updateBound() for update the box set.
+	 * You must call updateBound() for update the box setAt.
 	 */
 	public abstract void setChildTransform(int index, Transform transform);
 

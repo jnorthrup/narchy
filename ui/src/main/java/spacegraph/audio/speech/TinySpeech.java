@@ -135,7 +135,7 @@ public class TinySpeech {
                     x *= CutLevel((float) (Math.sin((PI * s) / sl) * 5), 1)*10f;
                     buf[thisBufPos++] = buf[thisBufPos]/2+x;
 //                    buf[thisBufPos++] = buf[thisBufPos]/2+x;
-                    //buf.add(z);
+                    //buf.addAt(z);
 
 //                    if (buf[thisBufPos - 1] < minBuf) minBuf = buf[thisBufPos - 1];
 //                    if (buf[thisBufPos - 1] > maxBuf) maxBuf = buf[thisBufPos - 1];

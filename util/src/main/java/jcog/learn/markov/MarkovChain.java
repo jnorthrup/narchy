@@ -276,7 +276,7 @@ public class MarkovChain<T> {
          * or create an edge to that node if we didn't
          * already have one.
          *
-         * @param n node to add more weight to
+         * @param n node to addAt more weight to
          * @return the node that was learned
          */
         public Chain<T> learn(final Chain<T> n, float strength) {

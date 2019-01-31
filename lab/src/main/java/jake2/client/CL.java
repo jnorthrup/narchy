@@ -328,7 +328,7 @@ public final class CL {
         public void execute() {
 
             if (Globals.rcon_client_password.string.length() == 0) {
-                Com.Printf("You must set 'rcon_password' before\nissuing an rcon command.\n");
+                Com.Printf("You must setAt 'rcon_password' before\nissuing an rcon command.\n");
                 return;
             }
 
@@ -358,7 +358,7 @@ public final class CL {
                 to = Globals.cls.netchan.remote_address;
             else {
                 if (Globals.rcon_address.string.length() == 0) {
-                    Com.Printf("You must either be connected,\nor set the 'rcon_address' cvar\nto issue rcon commands\n");
+                    Com.Printf("You must either be connected,\nor setAt the 'rcon_address' cvar\nto issue rcon commands\n");
                     return;
                 }
                 NET.StringToAdr(Globals.rcon_address.string, to);

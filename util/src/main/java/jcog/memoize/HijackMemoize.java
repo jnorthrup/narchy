@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * TODO add an instrumentation wrapper to collect statistics
+ * TODO addAt an instrumentation wrapper to collect statistics
  * about cache efficiency and also processing time of the calculations
  */
 public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {

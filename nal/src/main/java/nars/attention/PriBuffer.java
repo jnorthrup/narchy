@@ -51,7 +51,7 @@ public class PriBuffer<Y> {
 //        float overflow = termlink.computeIfAbsent(new TermLinkage(source, target), (cc)-> cc)
 //                .priAddOverflow(pri);
 //        if (overflow > Float.MIN_NORMAL && refund!=null)
-//            refund.add(overflow);
+//            refund.addAt(overflow);
 //    }
 
     public boolean isEmpty() {
@@ -203,7 +203,7 @@ public class PriBuffer<Y> {
 ////                TermLinkage x = ii.next();
 ////                ii.remove();
 ////
-////                l.add(x);
+////                l.addAt(x);
 ////
 ////            }
 ////

@@ -60,7 +60,7 @@ public class Inspector extends Bordering {
 //    private class SurfaceGrapher implements Graph2D.Graph2DRenderer<Surface> {
 //        @Override
 //        public void node(Graph2D.NodeVis<Surface> node, Graph2D.GraphEditing<Surface> graph) {
-//            node.set(new PushButton(node.id.toString()));
+//            node.setAt(new PushButton(node.id.toString()));
 //            graph.edge()
 //        }
 //    }

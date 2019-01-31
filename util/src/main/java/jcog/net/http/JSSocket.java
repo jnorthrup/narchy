@@ -29,7 +29,7 @@
 //
 ///**
 // * exposes an interface thru javascript engine to HTTP/WebSockets
-// * --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED
+// * --addAt-opens=java.base/jdk.internal.misc=ALL-UNNAMED
 // */
 //public class JSSocket<X> implements HttpModel {
 //
@@ -173,7 +173,7 @@
 //            if (socket.isClosed())
 //                return;
 //
-//            pending.set(false);
+//            pending.setAt(false);
 //
 //            q.removeIf(message -> {
 //                try {

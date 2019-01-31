@@ -1441,12 +1441,12 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
      * <ul>
      * <li>
      * An inexact match which ends evenly at the boundary between a node and its children (the rest of the key
-     * not matching any children at all). In this case if we we wanted to add nodes to the tree to represent the
-     * rest of the key, we could simply add child nodes to the node found.
+     * not matching any children at all). In this case if we we wanted to addAt nodes to the tree to represent the
+     * rest of the key, we could simply addAt child nodes to the node found.
      * </li>
      * <li>
      * An inexact match which ends in the middle of a the characters for an edge stored in a node (the key
-     * matching only the first few characters of the edge). In this case if we we wanted to add nodes to the
+     * matching only the first few characters of the edge). In this case if we we wanted to addAt nodes to the
      * tree to represent the rest of the key, we would have to split the node (let's call this node found: NF):
      * <ol>
      * <li>

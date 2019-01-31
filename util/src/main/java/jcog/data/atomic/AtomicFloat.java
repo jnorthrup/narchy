@@ -6,7 +6,7 @@ import jcog.util.FloatConsumer;
 
 /**
  * https:
- * warning: do not call int get() or set(int), and
+ * warning: do not call int get() or setAt(int), and
  * mostly all other of the superclass methods
  * since this will invoke the superclass's final methods
  * that i cant override and stub out
@@ -104,7 +104,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
     /**
      * Sets the value from any Number instance.
      *
-     * @param value the value to set, not null
+     * @param value the value to setAt, not null
      * @throws NullPointerException if the object is null
      */
     public final void set(final Number value) {

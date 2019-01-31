@@ -15,7 +15,7 @@
 //import nars.task.ITask;
 //import nars.time.clock.RealTime;
 //import org.apache.commons.lang3.mutable.MutableLong;
-//import org.eclipse.collections.api.set.primitive.LongSet;
+//import org.eclipse.collections.api.setAt.primitive.LongSet;
 //import org.eclipse.collections.impl.factory.primitive.LongSets;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@
 //                    long lastSleepCycle = ll.get();
 //                    if (lastSleepCycle != now) {
 //                        Util.sleepNS(idleTimePerCycle);
-//                        ll.set(now);
+//                        ll.setAt(now);
 //                    }
 //                    return true;
 //                }
@@ -123,7 +123,7 @@
 //        TIME = nar.time();
 //        double throttle = nar.loop.throttle.floatValue();
 //        double cycleNS = ((RealTime) nar.time).durSeconds() * 1.0E9;
-//        cpu.cycleTimeNS.set(Math.round(cycleNS));
+//        cpu.cycleTimeNS.setAt(Math.round(cycleNS));
 //
 //        //TODO better idle calculation in each thread / worker
 //        idleTimePerCycle = Math.round(Util.clamp(nar.loop.periodNS() * (1 - throttle), 0, cycleNS));
@@ -186,7 +186,7 @@
 //                });
 //                long threadID = t.getId();
 //                synchronized (activeThreads) {
-//                    activeThreads.add(t);
+//                    activeThreads.addAt(t);
 //                    activeThreadIds = LongSets.mutable.ofAll(activeThreadIds).with(threadID).toImmutable();
 //                    rebuild();
 //                }
@@ -267,7 +267,7 @@
 //                    if (x instanceof Causable) {
 //                        Causable c = (Causable) x;
 //                        if (xa.getTwo())
-//                            add(c);
+//                            addAt(c);
 //                        else
 //                            remove(c);
 //                    }
@@ -278,14 +278,14 @@
 //
 //            );
 //
-//            n.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
+//            n.services().filter(x -> x instanceof Causable).forEach(x -> addAt((Causable) x));
 //
 //        }
 //    }
 //
 //    public static final Logger logger = LoggerFactory.getLogger(MixMultiExec.class);
 //
-//    protected void add(Causable c) {
+//    protected void addAt(Causable c) {
 //        //TODO check unique
 //        logger.info("work {}", c);
 //        new InstrumentedWork<>(new MyAbstractWork(c));

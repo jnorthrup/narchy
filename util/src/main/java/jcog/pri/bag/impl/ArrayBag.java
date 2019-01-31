@@ -132,7 +132,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
     /**
-     * returns true unless failed to add during 'add' operation or becomes empty
+     * returns true unless failed to addAt during 'addAt' operation or becomes empty
      * call within synchronized
      *
      * @return List of trash items

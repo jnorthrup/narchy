@@ -32,7 +32,7 @@
 //import xyz.cofe.collection.map.BasicEventMap;
 //import xyz.cofe.collection.map.EventMap;
 //import xyz.cofe.collection.map.EventMapAdapter;
-//import xyz.cofe.collection.set.ClassSet;
+//import xyz.cofe.collection.setAt.ClassSet;
 //
 ///**
 // * Карта выполняющая доступ к дочерним узлам дерева, на основании типа узлов.
@@ -164,7 +164,7 @@
 //        Map<Class, NodesExtracter> map = getExtractersMap();
 //        for( Map.Entry<Class,NodesExtracter> e : map.entrySet() ){
 //            Class ce = e.getKey();
-//            if( ce!=null )cset.add(ce);
+//            if( ce!=null )cset.addAt(ce);
 //        }
 //    }
 //

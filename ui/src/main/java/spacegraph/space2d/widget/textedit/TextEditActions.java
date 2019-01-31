@@ -16,7 +16,7 @@ public class TextEditActions {
     private final Map<String, Action> actionMap = new HashMap<>(128);
 
     public TextEditActions() {
-//        add(new ExitNavyAction());
+//        addAt(new ExitNavyAction());
 
         add(new NoopAction());
         add(new TypeAction());
@@ -45,7 +45,7 @@ public class TextEditActions {
 
 
 
-//        add(new FullScreenAction());
+//        addAt(new FullScreenAction());
     }
 
     private void add(Action action) {

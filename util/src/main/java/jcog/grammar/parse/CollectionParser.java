@@ -48,7 +48,7 @@ public abstract class CollectionParser extends Parser {
 	 * Adds a parser to the collection.
 	 * 
 	 * @param Parser
-	 *            the parser to add
+	 *            the parser to addAt
 	 * 
 	 * @return this
 	 */

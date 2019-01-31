@@ -842,7 +842,7 @@ public final class SloppyMath {
 	 * in this module.
 	 * 
 	 * @param args
-	 *            Either none, and the log add rountines are tested, or the
+	 *            Either none, and the log addAt rountines are tested, or the
 	 *            following 4 arguments: k (cell), n (total), r (row), m (col)
 	 */
   public static void main(String[] args) {

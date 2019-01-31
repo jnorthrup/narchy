@@ -233,14 +233,14 @@ public class VerletPhysics2D {
     }
 
     /**
-     * @param index the index to set
+     * @param index the index to setAt
      */
     public void setIndex(SpatialIndex<VerletParticle2D> index) {
         this.index = index;
     }
 
     /**
-     * @param maxIterations the numIterations to set
+     * @param maxIterations the numIterations to setAt
      */
     public void setMaxIterations(int maxIterations) {
         this.maxIterations = maxIterations;

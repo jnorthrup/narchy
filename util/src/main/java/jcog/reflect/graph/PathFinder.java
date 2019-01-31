@@ -90,7 +90,7 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
         for (Edge<N, E> e : next) {
             Path<N, E> bp = createPath(/*direction*/);
 
-            //bp = bp.add(e);
+            //bp = bp.addAt(e);
             bp = bp.start(start);
             bp = bp.join(GraphTools.secondNode(e, direction), e.getEdge());
             paths.add(bp);

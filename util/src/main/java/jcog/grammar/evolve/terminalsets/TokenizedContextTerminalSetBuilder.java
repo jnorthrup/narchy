@@ -33,10 +33,10 @@ import org.eclipse.collections.impl.set.mutable.primitive.CharHashSet;
 import java.util.*;
 
 /**
- * Initialize terminal set from examples (tokens, ranges) and add significant tokens to the terminal set.
+ * Initialize terminal set from examples (tokens, ranges) and addAt significant tokens to the terminal setAt.
  * It uses two separate algorithms for tokens on matches and umathces.
  * This terminalset builder always adds character classes \d \w.
- * As usual, it adds terminal sets to the predefined set in configuration file. 
+ * As usual, it adds terminal sets to the predefined set in configuration file.
  * The configuration file should contain a list of constant with predefined separators.
  * Accepts these configuration population builder parameters:
  * "tokenThreashold","discardWtokens","tokenUnmatchThreashold"

@@ -12,7 +12,7 @@ public abstract class PlanarBitmap2D extends ArrayTensor implements Bitmap2D {
     }
 
     public PlanarBitmap2D(int w, int h, int channels) {
-        super(w, h, channels);
+        super(new int[] { w, h, channels });
         //resize(w, h, bitplanes); //TODO ResizeableArrayTensor
     }
 

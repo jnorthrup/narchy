@@ -120,7 +120,7 @@ public class GuitarString extends KarplusStrongString {
 //                resonatedSample,
 //                highPassSmoothingFactor
 //        );
-//        buffer.set(i,resonatedSamplePostHighPass);
+//        buffer.setAt(i,resonatedSamplePostHighPass);
 ////        System.out.println(f0 + " " + resonatedSample + " " + resonatedSamplePostHighPass);
 //        lastInput = resonatedSample;
 //        lastOutput = resonatedSamplePostHighPass;

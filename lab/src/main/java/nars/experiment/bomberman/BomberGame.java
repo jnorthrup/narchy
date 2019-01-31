@@ -116,7 +116,7 @@ public class BomberGame extends JPanel
         setBounds(0, 0, 17 << BomberMain.shiftCount, 17 << BomberMain.shiftCount);
         /** set it to opaque */
         setOpaque(false);
-        /** add it to the top layer */
+        /** addAt it to the top layer */
         main.getLayeredPane().add(this, 0);
     }
 

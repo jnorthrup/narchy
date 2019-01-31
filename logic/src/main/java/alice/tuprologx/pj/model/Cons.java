@@ -54,7 +54,7 @@ public class Cons<H extends Term<?>, R extends Compound<?>> extends Compound<Con
                     Object o = pdesc.getReadMethod().invoke(po);
                     Atom propertyName = new Atom(pdesc.getName());
                     Term<?> propertyValue = Term.fromJava(o);
-                    termArr.add(new Cons<Atom,Cons<Term<?>,Nil>>("_property",new Term<?>[] {propertyName, propertyValue}));
+                    termArr.addAt(new Cons<Atom,Cons<Term<?>,Nil>>("_property",new Term<?>[] {propertyName, propertyValue}));
                 }
             }
             _theName = binfo.getBeanDescriptor().getBeanClass().getName();            

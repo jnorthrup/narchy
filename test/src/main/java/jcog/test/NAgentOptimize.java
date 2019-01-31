@@ -49,15 +49,15 @@ public class NAgentOptimize {
                 .var("termVolMax", 3, 16, 2,
                         (NAR n, int i) -> n.termVolumeMax.set(i))
 //                .var("ttlMax", 6, 20, 3,
-//                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+//                        (NAR n, int i) -> n.deriveBranchTTL.setAt(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
-//                .var("conceptActivation", 0, 1f, 0.1f, (NAR n, float f) -> n.conceptActivation.set(f))
-//                .var("taskLinkActivation", 0, 1f, 0.1f, (NAR n, float f) -> n.taskLinkActivation.set(f))
+//                .var("conceptActivation", 0, 1f, 0.1f, (NAR n, float f) -> n.conceptActivation.setAt(f))
+//                .var("taskLinkActivation", 0, 1f, 0.1f, (NAR n, float f) -> n.taskLinkActivation.setAt(f))
 //                .var("memoryDuration", 0, 8f, 0.25f,
-//                        (NAR n, float f) -> n.memoryDuration.set(f))
+//                        (NAR n, float f) -> n.memoryDuration.setAt(f))
 //                .var("beliefPriDefault", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.beliefPriDefault.set(f))
+//                        (NAR n, float f) -> n.beliefPriDefault.setAt(f))
                 .var("questionPriDefault", 0, 1f, 0.1f,
                         (NAR n, float f) -> {
                             n.questionPriDefault.set(f);
@@ -69,11 +69,11 @@ public class NAgentOptimize {
 //                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
-//                                        relGrowthExponent.set(f)))
+//                                        relGrowthExponent.setAt(f)))
 //                .var("derivationScale", 0.5f, 2f, 0.1f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
-//                                        scale.set(f)))
+//                                        scale.setAt(f)))
 
 //        l.varAuto(new Lab.DiscoveryFilter() {
 //

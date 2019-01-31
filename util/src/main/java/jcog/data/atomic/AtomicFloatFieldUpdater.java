@@ -44,7 +44,7 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     public void add(X x, float add) {
 
-        //INT.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
+        //INT.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + addAt));
 
         int prev;
         int next;
@@ -59,7 +59,7 @@ public final class AtomicFloatFieldUpdater<X>  {
 //        int i;
 //        do {
 //            i = updater.get(x);
-//        } while (!updater.compareAndSet(x, i, Float.floatToIntBits(intBitsToFloat(i) +add)));
+//        } while (!updater.compareAndSet(x, i, Float.floatToIntBits(intBitsToFloat(i) +addAt)));
     }
 
     private float updateGet(X x, IntUnaryOperator y) {

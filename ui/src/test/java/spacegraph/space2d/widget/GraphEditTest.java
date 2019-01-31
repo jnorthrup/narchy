@@ -39,11 +39,11 @@ public class GraphEditTest {
 //            Wall w = newWallWindow();
 //
 //
-//            w.add(new PushButton("X")).pos(RectFloat.XYXY(10, 10, 20, 20));
-//            w.add(new PushButton("Y")).pos(RectFloat.XYXY(50, 10, 200, 200));
-//            w.add(new PushButton("Z")).pos(RectFloat.XYXY(100, 10, 200, 200));
+//            w.addAt(new PushButton("X")).pos(RectFloat.XYXY(10, 10, 20, 20));
+//            w.addAt(new PushButton("Y")).pos(RectFloat.XYXY(50, 10, 200, 200));
+//            w.addAt(new PushButton("Z")).pos(RectFloat.XYXY(100, 10, 200, 200));
 //
-//            //Windo ww = w.add(new PushButton("Y"), 200, 300f);
+//            //Windo ww = w.addAt(new PushButton("Y"), 200, 300f);
 //            //System.out.println(ww);
 //
 //        }
@@ -181,7 +181,7 @@ public class GraphEditTest {
                             busy.set(false);
                         }
                     } else {
-                        //pending.set(true);
+                        //pending.setAt(true);
                     }
                 });
                 g.add(
@@ -229,13 +229,13 @@ public class GraphEditTest {
 //                    super.starting();
 //
 //                    FloatRangePort f = new FloatRangePort(50f, 1, 100);
-//                    Windo x = add(new LabeledPane("ms", f));
+//                    Windo x = addAt(new LabeledPane("ms", f));
 //                    x.pos(100, 100, 400, 400);
-//                    Windo xPlus = sprout(x, new PushButton("+").click(() -> f.f.add(0.1f)), 0.15f);
+//                    Windo xPlus = sprout(x, new PushButton("+").click(() -> f.f.addAt(0.1f)), 0.15f);
 //                    Windo xMinus = sprout(x, new PushButton("-").click(() -> f.f.subtract(0.1f)), 0.15f);
 //
 //                    Gridding tick = new PulseChip();
-//                    add(tick).pos(0, 0, 200, 200);
+//                    addAt(tick).pos(0, 0, 200, 200);
 //
 //                    {
 //
@@ -260,15 +260,15 @@ public class GraphEditTest {
 //                                Draw.rect(bounds, gl);
 //                            }
 //                        };
-//                        add(inverter).pos(70, 70, 140, 140);
+//                        addAt(inverter).pos(70, 70, 140, 140);
 //
-//                        //add(new SwitchChip(4)).pos(170, 170, 240, 240);
-//                        add(new FunctionSelectChip<>(
+//                        //addAt(new SwitchChip(4)).pos(170, 170, 240, 240);
+//                        addAt(new FunctionSelectChip<>(
 //                                Double.class, Double.class,
 //                                Map.of("sin", Math::sin, "cos", Math::cos))).pos(170, 170, 240, 240);
 //                    }
 //
-//                    //add(LabeledPort.generic()).pos(10, 10, 50, 50);
+//                    //addAt(LabeledPort.generic()).pos(10, 10, 50, 50);
 //                }
 //            };
 //            SpaceGraph.window(g, 1000, 1000);

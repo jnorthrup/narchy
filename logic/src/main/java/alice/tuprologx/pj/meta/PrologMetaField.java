@@ -56,7 +56,7 @@ public class PrologMetaField {
         if (pname.isEmpty())
             pname = fname;
         _template = new Theory(pname + "(X):-this(Z), Z."+ fname + " <- get(X).\n" +
-                             pname + " := V:-this(Z), Z."+ fname + " <- set(V).\n");
+                             pname + " := V:-this(Z), Z."+ fname + " <- setAt(V).\n");
     }
 
     public Theory getTheory() {

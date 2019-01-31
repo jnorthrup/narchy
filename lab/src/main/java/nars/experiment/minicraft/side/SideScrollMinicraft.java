@@ -65,7 +65,7 @@ public class SideScrollMinicraft {
 
     /**
      * Start a fresh game, this should clear out any old data and
-     * create a new set.
+     * create a new setAt.
      */
     public void startGame(boolean load, int width) {
         inMenu = false;

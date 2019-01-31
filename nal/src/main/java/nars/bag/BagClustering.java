@@ -148,7 +148,7 @@ public class BagClustering<X> {
         if (s > 0) {
             bag.commit(bag.forget(forgetRate));
 
-//            net.alpha.set(0.8f / s);
+//            net.alpha.setAt(0.8f / s);
             float lambdaFactor = 1f;
             net.setLambdaPeriod((int) Math.ceil(s * lambdaFactor));
             for (int i = 0; i < learningIterations; i++)

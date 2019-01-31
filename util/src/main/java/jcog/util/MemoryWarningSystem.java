@@ -43,7 +43,7 @@ import java.util.Collection;
  * Because each listener will shrink memory in an independent way, the result of
  * invoking all of them will perhaps lead to an overzealous cleanup of useful
  * cached information. In the future, it would be a good idea to architect some 
- * sort of cooperation of such cleanup code. Perhaps a desired threshold could be set
+ * sort of cooperation of such cleanup code. Perhaps a desired threshold could be setAt
  * and each listener invoked iteratively to perform "a little bit of cleanup" as many
  * times as needed to reach that threshold.  
  * </p>

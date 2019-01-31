@@ -88,7 +88,7 @@ public class Cvar extends Globals {
     }
 
     static void Init() {
-        Cmd.AddCommand("set", Set_f);
+        Cmd.AddCommand("setAt", Set_f);
         Cmd.AddCommand("cvarlist", List_f);
     }
 
@@ -147,7 +147,7 @@ public class Cvar extends Globals {
     }
     
     /**
-     * Gereric set function, sets the value of the variable, with forcing its even possible to 
+     * Gereric set function, sets the value of the variable, with forcing its even possible to
      * override the variables write protection. 
      */
     static cvar_t Set2(String var_name, String value, boolean force) {
@@ -230,7 +230,7 @@ public class Cvar extends Globals {
 
             c = Cmd.Argc();
             if (c != 3 && c != 4) {
-                Com.Printf("usage: set <variable> <value> [u / s]\n");
+                Com.Printf("usage: setAt <variable> <value> [u / s]\n");
                 return;
             }
 
@@ -390,7 +390,7 @@ public class Cvar extends Globals {
     
     /**
      * Appends lines containing \"set vaqriable value\" for all variables
-     * with the archive flag set true. 
+     * with the archive flag set true.
      */
 
     public static void WriteVariables(String path) {
@@ -410,7 +410,7 @@ public class Cvar extends Globals {
         }
         for (var = cvar_vars; var != null; var = var.next) {
             if ((var.flags & CVAR_ARCHIVE) != 0) {
-                buffer = "set " + var.name + " \"" + var.string + "\"\n";
+                buffer = "setAt " + var.name + " \"" + var.string + "\"\n";
                 try {
                     f.writeBytes(buffer);
                 } catch (IOException e) {

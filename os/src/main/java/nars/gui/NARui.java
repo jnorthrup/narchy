@@ -412,8 +412,8 @@ public class NARui {
                             .add("Dex+0", () -> a.dexterity()/*, 0f, 1f*/),
                         a::onFrame, Plot2D::update),
 
-//                        .add("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
-//                        .add("Dex+4", () -> a.dexterity(a.now() + 4 * a.nar().dur())), a),
+//                        .addAt("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
+//                        .addAt("Dex+4", () -> a.dexterity(a.now() + 4 * a.nar().dur())), a),
                 "reward", () -> NARui.beliefCharts(rewards, a.nar()),
                 "actions", () -> NARui.beliefCharts(actions, a.nar())
         ));
@@ -521,9 +521,9 @@ public class NARui {
 //                                        );
 //                                        EdgeDirected3D fd = new EdgeDirected3D();
 //                                        s.dyn.addBroadConstraint(fd);
-//                                        fd.condense.set(fd.condense.get() * 8);
+//                                        fd.condense.setAt(fd.condense.get() * 8);
 //
-//                                        s.add(new SubOrtho(
+//                                        s.addAt(new SubOrtho(
 //
 //                                                grid(new ObjectSurface<>(fd), new ObjectSurface<>(sg.vis))) {
 //

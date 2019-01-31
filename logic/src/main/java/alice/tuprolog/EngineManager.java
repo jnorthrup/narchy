@@ -192,7 +192,7 @@ public class EngineManager implements java.io.Serializable {
         
 		/*int pid = er.getPid();
 		synchronized (threads) {
-			threads.set(null);
+			threads.setAt(null);
 		}*/
     }
 

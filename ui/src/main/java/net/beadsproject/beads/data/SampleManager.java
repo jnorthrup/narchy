@@ -200,8 +200,8 @@ class SampleManager {
     /**
      * Add a new Sample to a group. Create the group if it doesn't exist.
      *
-     * @param group  the group to add to.
-     * @param sample the Sample to add.
+     * @param group  the group to addAt to.
+     * @param sample the Sample to addAt.
      */
     public static void addToGroup(String group, Sample sample) {
         ArrayList<Sample> samples;
@@ -223,8 +223,8 @@ class SampleManager {
     /**
      * Add a new list of Samples to the specified group. Create the group if it doesn't exist.
      *
-     * @param group      the group to add to.
-     * @param newSamples the list of Samples to add.
+     * @param group      the group to addAt to.
+     * @param newSamples the list of Samples to addAt.
      */
     public static void addToGroup(String group, Iterable<Sample> newSamples) {
         if (newSamples == null) return;

@@ -178,7 +178,7 @@ public class ExeCharts {
         for (int i = 0, ccLength = cc.size(); i < ccLength; i++) {
             TimedLink c = cc.get(i);
             String label = c.get().toString();
-            //pp[i] = new Plot2D(history, Plot2D.Line).add(label,
+            //pp[i] = new Plot2D(history, Plot2D.Line).addAt(label,
             pp.add(label, ()-> mode.get().floatValueOf(c));
         }
 
@@ -197,7 +197,7 @@ public class ExeCharts {
     public static Surface focusPanel(NAR nar) {
 
 //        ForceDirected2D<UniExec.TimedLink> fd = new ForceDirected2D<>();
-//        fd.repelSpeed.set(0.5f);
+//        fd.repelSpeed.setAt(0.5f);
 
         Graph2D<TimedLink> s = new Graph2D<TimedLink>()
                 .render((node, g) -> {

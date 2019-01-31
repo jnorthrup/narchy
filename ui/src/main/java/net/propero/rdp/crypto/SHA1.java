@@ -155,7 +155,7 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
      *
      * @param data   The data to be added.
      * @param offset The start of the data in the array.
-     * @param length The amount of data to add.
+     * @param length The amount of data to addAt.
      */
     @Override
     protected void engineTransform(byte[] in) {

@@ -76,14 +76,14 @@
 //    Using the {@link TextRenderer TextRenderer} is simple. Add a
 //    "<code>TextRenderer renderer;</code>" field to your {@link
 //    com.jogamp.opengl.GLEventListener GLEventListener}. In your {@link
-//    com.jogamp.opengl.GLEventListener#init init} method, add:
+//    com.jogamp.opengl.GLEventListener#init init} method, addAt:
 //
 //    <PRE>
 //    renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 36));
 //    </PRE>
 //
 //    <P> In the {@link com.jogamp.opengl.GLEventListener#display display} method of your
-//    {@link com.jogamp.opengl.GLEventListener GLEventListener}, add:
+//    {@link com.jogamp.opengl.GLEventListener GLEventListener}, addAt:
 //    <PRE>
 //    renderer.beginRendering(drawable.getWidth(), drawable.getHeight());
 //    // optionally set the color
@@ -752,7 +752,7 @@
 //            if (data.used()) {
 //                data.clearUsed();
 //            } else {
-//                deadRects.add(rect);
+//                deadRects.addAt(rect);
 //            }
 //        });
 //
@@ -830,7 +830,7 @@
 //                            (int) bbox.getHeight(),
 //                            new TextData(curStr, origin, origBBox, -1));
 //
-//            packer.add(rect);
+//            packer.addAt(rect);
 //            stringLocations.put(curStr, rect);
 //
 //            // Re-fetch the Graphics2D in case the addition of the rectangle
@@ -897,7 +897,7 @@
 ////        final GLCanvas dbgCanvas = new GLCanvas(new GLCapabilities(gl.getGLProfile()));
 ////        dbgCanvas.setSharedContext(GLContext.getCurrent());
 ////        dbgCanvas.addGLEventListener(new DebugListener(gl, dbgFrame));
-////        dbgFrame.add(dbgCanvas);
+////        dbgFrame.addAt(dbgCanvas);
 ////
 ////        final FPSAnimator anim = new FPSAnimator(dbgCanvas, 10);
 ////        dbgFrame.addWindowListener(new WindowAdapter() {
@@ -1524,7 +1524,7 @@
 //            final Rect rect = new Rect(0, 0, (int) bbox.getWidth(),
 //                                 (int) bbox.getHeight(),
 //                                 new TextData(null, origin, origBBox, unicodeID));
-//            packer.add(rect);
+//            packer.addAt(rect);
 //            glyphRectForTextureMapping = rect;
 //            final Graphics2D g = getGraphics2D();
 //            // OK, should now have an (x, y) for this rectangle; rasterize
@@ -1602,7 +1602,7 @@
 //            final boolean complex = (fullRunGlyphVector.getLayoutFlags() != 0);
 //            if (complex || DISABLE_GLYPH_CACHE) {
 //                // Punt to the robust version of the renderer
-//                glyphsOutput.add(new Glyph(inString.toString(), false));
+//                glyphsOutput.addAt(new Glyph(inString.toString(), false));
 //                return glyphsOutput;
 //            }
 //
@@ -1617,7 +1617,7 @@
 //                }
 //                final Glyph glyph = getGlyph(inString, metrics, i);
 //                if (glyph != null) {
-//                    glyphsOutput.add(glyph);
+//                    glyphsOutput.addAt(glyph);
 //                    i++;
 //                } else {
 //                    // Assemble a run of characters that don't fit in
@@ -1627,7 +1627,7 @@
 //                           getGlyph(inString, fullRunGlyphVector.getGlyphMetrics(i), i) == null) {
 //                        buf.append(inString.charAt(i++));
 //                    }
-//                    glyphsOutput.add(new Glyph(buf.toString(),
+//                    glyphsOutput.addAt(new Glyph(buf.toString(),
 //                                               // Any more glyphs after this run?
 //                                               i < lengthInGlyphs));
 //                }

@@ -202,7 +202,7 @@ public class Spline2D {
      * Overrides the current control points with the given list.
      * 
      * @param plist
-     *            the pointList to set
+     *            the pointList to setAt
      * @return itself
      */
     public Spline2D setPointList(Iterable<Vec2D> plist) {

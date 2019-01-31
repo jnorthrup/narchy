@@ -260,7 +260,7 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
 //                    if (results == null) {
 //                        results = new ArrayList<>();
 //                    }
-//                    results.add(value);
+//                    results.addAt(value);
 //                }
 //            } else if (type == Type.BRANCH) {
 //                PointQuadtree[] children = new PointQuadtree[] {

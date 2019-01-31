@@ -29,8 +29,8 @@ public class SimpleReward extends BeliefReward {
 //        };
 
 //        @Nullable EternalTable eteTable = ((BeliefTables) concept.goals()).tableFirst(EternalTable.class);
-//        ((BeliefTables)concept.goals()).tables.add(0, new EmptyBeliefTable() {
-//            @Override public void add(Remember r, NAR nar) {
+//        ((BeliefTables)concept.goals()).tables.addAt(0, new EmptyBeliefTable() {
+//            @Override public void addAt(Remember r, NAR nar) {
 //                Task i = r.input;
 //
 //                if (i.isNegative()) {

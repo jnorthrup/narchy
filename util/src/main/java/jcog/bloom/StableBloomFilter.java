@@ -38,7 +38,7 @@ public class StableBloomFilter<E> extends MetalBloomFilter<E> implements Countin
     }
 
     /**
-     * if the element isnt contained, add it. return true if added, false if already present.
+     * if the element isnt contained, addAt it. return true if added, false if already present.
      */
     public boolean addIfMissing(E element) {
         return addIfMissing(element, 1);

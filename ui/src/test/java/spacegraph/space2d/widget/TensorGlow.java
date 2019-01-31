@@ -77,7 +77,7 @@
 ////            p.W.setParticleDamping(0.1f);
 ////
 ////            CircleShape shape = new CircleShape();
-////            shape.center.set(0, 10);
+////            shape.center.setAt(0, 10);
 ////            shape.radius = 2f;
 ////            ParticleGroupDef pd = new ParticleGroupDef();
 ////            pd.flags = ParticleType.
@@ -116,7 +116,7 @@
 //
 //            FloatPort reward = new FloatPort();
 //
-//            Windo trackWin = p.add(new Bordering(trackView).set(Bordering.S, state, 0.05f).set(Bordering.E, reward, 0.05f));
+//            Windo trackWin = p.addAt(new Bordering(trackView).setAt(Bordering.S, state, 0.05f).setAt(Bordering.E, reward, 0.05f));
 //            trackWin.pos(500, 500, 600, 600);
 //
 //            p.sprout(trackWin, new BoolPort(z->{ if (z) track.control(-1, 0); }), 0.25f);
@@ -129,11 +129,11 @@
 //        {
 //
 //            //lerpVector.update();
-//            p.add(new NoiseVectorChip()).pos(100, 100, 200, 200);
+//            p.addAt(new NoiseVectorChip()).pos(100, 100, 200, 200);
 //
 //        }
 //
-//        //p.add(new TogglePort()).pos(200, 200, 300, 300);
+//        //p.addAt(new TogglePort()).pos(200, 200, 300, 300);
 //
 //        IntPort outs;
 //        Gridding hw = new Gridding(
@@ -150,12 +150,12 @@
 //                        new PaintUpdateMatrixView(q.et)
 //                )
 //        );
-//        hw.add(new LabeledPane("input", new TypedPort<>(float[].class, (i) -> {
+//        hw.addAt(new LabeledPane("input", new TypedPort<>(float[].class, (i) -> {
 //            System.arraycopy(i, 0, in, 0, i.length);
 //        })));
-//        hw.add(new LabeledPane("act", outs = new IntPort()));
+//        hw.addAt(new LabeledPane("act", outs = new IntPort()));
 //
-//        p.add(hw).pos(350, 350, 500, 500);
+//        p.addAt(hw).pos(350, 350, 500, 500);
 //
 //        Loop.of(() -> {
 //
@@ -168,7 +168,7 @@
 //        }).setFPS(25);
 //
 //        SwitchChip outDemultiplexer = new SwitchChip (4);
-//        p.add(outDemultiplexer).pos(450, 450, 510, 510);
+//        p.addAt(outDemultiplexer).pos(450, 450, 510, 510);
 //    }
 //
 //

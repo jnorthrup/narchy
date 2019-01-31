@@ -92,9 +92,9 @@ public class PatrickTests extends NALTest {
 
         tt.confTolerance(0.5f);
 
-//        tt.nar.freqResolution.set(0.25f);
-//        tt.nar.confResolution.set(0.02f);
-//        tt.nar.confMin.set(0.02f);
+//        tt.nar.freqResolution.setAt(0.25f);
+//        tt.nar.confResolution.setAt(0.02f);
+//        tt.nar.confMin.setAt(0.02f);
 
 //        tt.logDebug();
 
@@ -139,7 +139,7 @@ public class PatrickTests extends NALTest {
         tt.confTolerance(0.9f);
 
         tt.nar.freqResolution.set(0.1f);
-//        tt.nar.confResolution.set(0.05f);
+//        tt.nar.confResolution.setAt(0.05f);
 
 
         tt.nar.time.dur(100);

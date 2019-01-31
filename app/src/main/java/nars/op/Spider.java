@@ -1,7 +1,7 @@
 //package nars.op;
 //
-//import jcog.data.set.ArrayHashRing;
-//import jcog.data.set.ArrayHashSet;
+//import jcog.data.setAt.ArrayHashRing;
+//import jcog.data.setAt.ArrayHashSet;
 //import jcog.pri.Pri;
 //import jcog.pri.bag.Bag;
 //import jcog.pri.bag.Sampler;
@@ -58,7 +58,7 @@
 //
 //    public Spider(NAR n, Iterable<Termed> initialRoots) {
 //        super(n);
-//        initialRoots.forEach((z) -> roots.add(z.term()));
+//        initialRoots.forEach((z) -> roots.addAt(z.term()));
 //
 //        actions.setCapacity(32);
 //
@@ -109,9 +109,9 @@
 //
 //    public boolean go(Concept c, boolean ifNotVisited) {
 //        if (!ifNotVisited) {
-//            visited.add(c.term());
+//            visited.addAt(c.term());
 //        } else {
-//            if (!visited.add(c.term()))
+//            if (!visited.addAt(c.term()))
 //                return false;
 //        }
 //        at = c;
@@ -146,7 +146,7 @@
 //
 //    protected boolean tryGo(Term t) {
 //        if (t != null && t.op().conceptualizable) {
-//            if (visited.add(t)) {
+//            if (visited.addAt(t)) {
 //
 //                Concept d = nar.concept(t); //ualize?
 //                if (d != null) {

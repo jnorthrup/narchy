@@ -160,7 +160,7 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
         int s = size;
         /*
          if (s == n - 1) {
-         throw new IllegalStateException("Cannot add element."
+         throw new IllegalStateException("Cannot addAt element."
          + " CircularArrayList is filled to capacity.");
          }
          if (i < 0 || i > s) {

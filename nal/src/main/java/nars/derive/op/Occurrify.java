@@ -13,7 +13,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Event;
 import nars.time.Tense;
@@ -380,18 +380,18 @@ public class Occurrify extends TimeGraph {
 
     //    final BiConsumer<Term, Compound> negRequire = (sub, sup) -> {
 //        Op so = sub.op();
-//        if (so == NEG) nextNeg.add(sub.unneg());
+//        if (so == NEG) nextNeg.addAt(sub.unneg());
 //        else if (sup == null || ((so == IMPL || so == CONJ)))
-//            nextPos.add(sub); //dont add the inner positive unneg'd target of a negation unless conj (ie. disj)
+//            nextPos.addAt(sub); //dont addAt the inner positive unneg'd target of a negation unless conj (ie. disj)
 //
 ////        if (so == IMPL) {
 ////            Term a = sub.sub(0);
-////            if (a.op() == NEG) nextNeg.add(a);
+////            if (a.op() == NEG) nextNeg.addAt(a);
 ////                //else if (i.op()==CONJ) { /*recurse? */ }
-////            else nextPos.add(a);
+////            else nextPos.addAt(a);
 ////
 ////            Term b = sub.sub(1);
-////            nextPos.add(b);
+////            nextPos.addAt(b);
 ////        }
 //    };
 //
@@ -399,7 +399,7 @@ public class Occurrify extends TimeGraph {
 //        Op so = sub.op();
 //        if (so == NEG) nextNeg.remove(sub.unneg());
 //        else if (sup == null || ((so == IMPL || so == CONJ)))
-//            nextPos.remove(sub); //dont add the inner positive unneg'd target of a negation unless conj (ie. disj)
+//            nextPos.remove(sub); //dont addAt the inner positive unneg'd target of a negation unless conj (ie. disj)
 ////
 ////        if (so == IMPL) {
 ////            Term a = sub.sub(0);
@@ -456,7 +456,7 @@ public class Occurrify extends TimeGraph {
 
     private int ttl = 0;
 
-    /** called after solution.add */
+    /** called after solution.addAt */
     private boolean eachSolution(Event solution) {
         return (ttl-- > 0);
     }
@@ -581,11 +581,11 @@ public class Occurrify extends TimeGraph {
 //                Absolute a = ((Absolute) e);
 //                //if (Longerval.contains...)
 //                if (a.containedIn(min, max))
-//                    contained.add(ei);
+//                    contained.addAt(ei);
 //                if (a.intersectsWith(min, max))
-//                    intersect.add(ei);
+//                    intersect.addAt(ei);
 //                else
-//                    outside.add(ei);
+//                    outside.addAt(ei);
 //            }
 //        }
 //
@@ -935,9 +935,9 @@ public class Occurrify extends TimeGraph {
                     Term y;
                     long earlyStart = Math.min(tTime, bTime);
                     if (tTime == earlyStart)
-                        y = Conj.sequence(tt, 0, bb, /*Tense.dither*/(bTime - tTime)/*, d.nar)*/);
+                        y = ConjSeq.sequence(tt, 0, bb, /*Tense.dither*/(bTime - tTime)/*, d.nar)*/);
                     else
-                        y = Conj.sequence(bb, 0, tt, /*Tense.dither*/(tTime - bTime)/*, d.nar)*/);
+                        y = ConjSeq.sequence(bb, 0, tt, /*Tense.dither*/(tTime - bTime)/*, d.nar)*/);
 
                     long range = Math.max(Math.min(d._task.range(), d._belief.range()) - 1, 0);
                     return pair(y, new long[]{earlyStart, earlyStart + range});

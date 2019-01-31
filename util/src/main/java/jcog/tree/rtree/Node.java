@@ -72,7 +72,7 @@ public interface Node<X> extends Nodelike<X> {
 
     /**
      * Add t to the index
-     *  @param x      - value to add to index
+     *  @param x      - value to addAt to index
      * @param parent - the callee which is the parent of this instance.
      *                  if parent is null, indicates it is in the 'merge attempt' stage
      *                  if parent is non-null, in the 'insertion attempt' stage

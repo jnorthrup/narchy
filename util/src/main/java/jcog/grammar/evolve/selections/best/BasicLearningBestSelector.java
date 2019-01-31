@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 
 /**
  * Picks one individual per job (the best one using the evolution fitness); then it evaluates their performance
- * on the learning set. The individual with the best performance is promoted as the best one.. 
+ * on the learning setAt. The individual with the best performance is promoted as the best one..
  * 
  * @author MaleLabTs
  */

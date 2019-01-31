@@ -136,7 +136,7 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
         } else {
             for (Entry<String, Object> stringObjectEntry : properties.entrySet()) {
                 
-                String methodName = "set" + (stringObjectEntry.getKey()).substring(0, 1).toUpperCase()
+                String methodName = "setAt" + (stringObjectEntry.getKey()).substring(0, 1).toUpperCase()
                         + (stringObjectEntry.getKey()).substring(1);
                 
                 Object theArg = stringObjectEntry.getValue();

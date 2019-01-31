@@ -42,7 +42,7 @@ public class SetWrapper<E> implements Set<E> {
      */
     public SetWrapper(Set<E> set) {
         if (set == null) {
-            throw new IllegalArgumentException("set == null");
+            throw new IllegalArgumentException("setAt == null");
         }
         this.delegate = set;
     }

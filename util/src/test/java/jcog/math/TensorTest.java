@@ -14,8 +14,8 @@ class TensorTest {
     @Test
     void testVector() {
         ArrayTensor t = new ArrayTensor(2);
-        t.set(0.1f, 0);
-        t.set(0.2f, 1);
+        t.setAt(0.1f, 0);
+        t.setAt(0.2f, 1);
         assertEquals(0, t.index(0));
 
 
@@ -24,7 +24,7 @@ class TensorTest {
 
     @Test
     void testMatrix() {
-        ArrayTensor t = new ArrayTensor(2, 2);
+        ArrayTensor t = new ArrayTensor(new int[] { 2, 2 });
         t.set(0.5f, 0, 0);
         t.set(0.25f, 1, 0);
         t.set(0.5f, 1, 1);
@@ -58,9 +58,9 @@ class TensorTest {
     @Test
     void test1DTensorChain() {
         ArrayTensor a = new ArrayTensor(4);
-        a.set(1, 2);
+        a.setAt(1, 2);
         ArrayTensor b = new ArrayTensor(2);
-        b.set(2, 0);
+        b.setAt(2, 0);
         Tensor ab = TensorChain.get(a, b);
         assertEquals(1, ab.shape().length);
         assertEquals(6, ab.shape()[0]);

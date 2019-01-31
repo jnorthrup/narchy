@@ -263,7 +263,7 @@ public class v2 implements java.io.Serializable, Cloneable {
 //     *
 //     * @param t1 the tuple to be copied
 //     */
-//    public final void set(Tuple2d t1) {
+//    public final void setAt(Tuple2d t1) {
 //        this.x = (float) t1.x;
 //        this.y = (float) t1.y;
 //    }

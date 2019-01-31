@@ -426,7 +426,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //            /*@NotNull*/
 //            Term s = ss.sub(i);
 //            if (inStructure == -1 || ((s.structure() & inStructure) > 0)) {
-//                r |= (addOrRemoved) ? t.add(s) : t.remove(s);
+//                r |= (addOrRemoved) ? t.addAt(s) : t.remove(s);
 //                if (!addOrRemoved && r)
 //                    return true;
 //            }
@@ -742,7 +742,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //                Term xxx = xx.get(i);
 //                if (u.constant(xxx)) {
 //                    if (xConst == null) xConst = new UnifiedSet(xxs-i);
-//                    xConst.add(xxx);
+//                    xConst.addAt(xxx);
 //                }
 //            }
 //            if (xConst!=null) {
@@ -751,7 +751,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //                    Term yyy = yy.get(i);
 //                    if (u.constant(yyy)) {
 //                        if (yConst == null) yConst = new UnifiedSet(xxs-i);
-//                        yConst.add(yyy);
+//                        yConst.addAt(yyy);
 //                    }
 //                }
 //                if (yConst!=null) {
@@ -909,7 +909,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             }
         }
 
-        assert(c <= size): "bitset has extra bits set beyond the range of subterms";
+        assert(c <= size): "bitset has extra bits setAt beyond the range of subterms";
 
         int newSize = includeOrExclude ? c : size - c;
         Term[] t = new Term[newSize];

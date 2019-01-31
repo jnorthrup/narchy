@@ -8,7 +8,7 @@ public class ParticleContact {
      */
     public int indexA, indexB;
     /**
-     * The logical sum of the particle behaviors that have been set.
+     * The logical sum of the particle behaviors that have been setAt.
      */
     public int flags;
     /**

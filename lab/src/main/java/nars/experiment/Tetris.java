@@ -72,10 +72,19 @@ public class Tetris extends NAgentX {
                 n);
 
 
-        reward(new BeliefReward($$("(tetris(#x1,#y) &| tetris(#x2,#y))"), this));
-        reward(new BeliefReward($$("--(tetris(#x1,#y) &| --tetris(#x2,#y))"), this));
-        reward(new BeliefReward($$("(&|,tetris(#x1,#y),tetris(#x2,#y),add(#x1,1,#x2))"), this));
+
+        //if a pixel is on, pixels above it should be off
         reward(new BeliefReward($$("(&|,tetris(#x,#yl),--tetris(#x,#yh),cmp(#yl,#yh,-1))"), this));
+
+        //if a pixel is on, pixels below it should be on
+        reward(new BeliefReward($$("(&|,tetris(#x,#yh),tetris(#x,#yl),cmp(#yl,#yh,-1))"), this));
+
+        //pixels on same row should be the same color TODO
+        //reward(new BeliefReward($$("--xor(tetris(#x1,#y), tetris(#x2,#y))"), this));
+
+//        //pixels left or right from each other should both be on
+//        reward(new BeliefReward($$("(&|,tetris(#x1,#y),tetris(#x2,#y),addAt(#x1,1,#x2))"), this));
+
 
         state = opjects ?
                 actionsReflect() :
@@ -142,7 +151,7 @@ public class Tetris extends NAgentX {
 
 
         NAgentX.runRT(n -> {
-            //n.freqResolution.set(0.02f);
+            //n.freqResolution.setAt(0.02f);
 
 
             //new Abbreviation(n, ("z"), 4, 5,  8);
@@ -182,7 +191,7 @@ public class Tetris extends NAgentX {
 
         Opjects oo = new Opjects(nar);
         oo.exeThresh.set(0.51f);
-//        oo.pri.set(ScalarValue.EPSILON);
+//        oo.pri.setAt(ScalarValue.EPSILON);
 
         Opjects.methodExclusions.add("toVector");
 

@@ -64,7 +64,7 @@ public class InterpolatingMicrosphere {
 
     /**
      * Create an unitialiazed sphere.
-     * Sub-classes are responsible for calling the {@code add(float[]) add}
+     * Sub-classes are responsible for calling the {@code addAt(float[]) addAt}
      * method in order to initialize all the sphere's facets.
      *
      * @param dimension       Dimension of the data space.

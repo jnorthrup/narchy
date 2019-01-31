@@ -150,7 +150,7 @@ public class Berlekamp implements Settings {
             for (j = 0; j < i; j++)
                 tmp1[j] = 0;
 
-            /* add into partial product */
+            /* addAt into partial product */
             for (j = 0; j < (Settings.kMaxDeg * 2); j++)
                 dst[j] ^= tmp1[j];
         }
@@ -265,7 +265,7 @@ public class Berlekamp implements Settings {
         int r, i, j, err;
 
         /*
-         * If you want to take advantage of erasure correction, be sure to set
+         * If you want to take advantage of erasure correction, be sure to setAt
          * NErasures and ErasureLocs[] with the locations of erasures.
          */
         NErasures = nerasures;

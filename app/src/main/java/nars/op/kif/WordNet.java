@@ -1372,7 +1372,7 @@ public class WordNet {
      * the relevant word definitions and SUMO mappings.
      *
      * @param word is the word the user is asking to search for.
-     * @param type is whether the word is a noun or verb (we need to add
+     * @param type is whether the word is a noun or verb (we need to addAt
      * capability for adjectives and adverbs.
      * @param
      */

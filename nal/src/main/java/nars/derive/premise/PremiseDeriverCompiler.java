@@ -327,7 +327,7 @@ public enum PremiseDeriverCompiler {
 //                                if ((taskOrBelief && tb.resolve==TaskTerm) || (!taskOrBelief && tb.resolve==BeliefTerm)) {
 //                                    PREDICATE acw = ac.without(tb);
 //                                    if (null == cases.putIfAbsent((TermMatch.Is)m, acw)) {
-//                                        removed.add(p);
+//                                        removed.addAt(p);
 //                                    }
 //                                }
 //                            }
@@ -355,7 +355,7 @@ public enum PremiseDeriverCompiler {
 //
 //                });
 //                bb.removeAll(removed);
-//                bb.add(new SWITCH<>(taskOrBelief, caseMap));
+//                bb.addAt(new SWITCH<>(taskOrBelief, caseMap));
 //            }
 //        }
 //

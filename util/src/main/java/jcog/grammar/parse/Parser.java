@@ -147,7 +147,7 @@ public abstract class Parser {
 
 	/**
 	 * Given a set (well, a <code>Vector</code>, really) of assemblies, this
-	 * method matches this parser against all of them, and returns a new set
+	 * method matches this parser against all of them, and returns a new setAt
 	 * (also really a <code>Vector</code>) of the assemblies that result from
 	 * the matches.
 	 * <p>

@@ -119,7 +119,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
                 ed    clear to end of screen (P*)
                 el    clear to end of line (P)
                 el1   Clear to begining of line
-                enacs enable alterate char set
+                enacs enable alterate char setAt
                 home  home cursor (if no cup)
                 ht    tab to next 8-space hardware tab stop
                 hts   set a tab in every row, current columns
@@ -149,7 +149,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
                 rc    restore cursor to position of last save_cursor
                 rev   turn on reverse video mode
                 ri    scroll text down (P)
-                rmacs end alternate character set
+                rmacs end alternate character setAt
                 rmam  turn off automatic margins
                 rmkx  leave 'keybroad_transmit' mode
                 rmso  exit standout mode

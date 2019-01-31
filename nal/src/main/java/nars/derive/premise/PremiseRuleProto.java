@@ -52,25 +52,25 @@ public class PremiseRuleProto extends PremiseRuleSource {
         );
 
 //        if (taskPattern.equals(beliefPattern) || taskPattern.containsRecursively(beliefPattern)) {
-//            post.add(new UnifyTerm.NextUnify(0, taskPattern));
+//            post.addAt(new UnifyTerm.NextUnify(0, taskPattern));
 //
 //            byte[] beliefInTask = Terms.pathConstant(taskPattern, beliefPattern);
 //            if (beliefInTask!=null) {
 //                //this should be a PRE filter
 //                //probably wont work
-//                post.add(new AbstractPred<Derivation>() {
+//                post.addAt(new AbstractPred<Derivation>() {
 //                    @Override
 //                    public boolean test(Derivation derivation) {
 //                        return derivation.taskTerm.sub(beliefInTask).equals(derivation.beliefTerm);
 //                    }
 //                });
 //            } else {
-//                post.add(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc)); //<--- if possible, replace with subterm equality test
+//                post.addAt(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc)); //<--- if possible, replace with subterm equality test
 //            }
 //
 //        } else if (beliefPattern.containsRecursively(taskPattern)) {
-//            post.add(new UnifyTerm.NextUnify(0, taskPattern));   //<--- if possible, replace with subterm equality test
-//            post.add(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc));
+//            post.addAt(new UnifyTerm.NextUnify(0, taskPattern));   //<--- if possible, replace with subterm equality test
+//            post.addAt(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc));
 //        } else {
 
         //smaller one first

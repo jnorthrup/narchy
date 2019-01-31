@@ -43,7 +43,7 @@
 //    }
 //
 //    public final void setCapacity(int newCapacity) {
-//        capacity.set(newCapacity);
+//        capacity.setAt(newCapacity);
 //    }
 //
 //    /**

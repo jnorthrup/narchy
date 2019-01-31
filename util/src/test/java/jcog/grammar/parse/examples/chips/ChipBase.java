@@ -20,7 +20,7 @@ public class ChipBase {
 	/**
 	 * Adds a chip to the database.
 	 *
-	 * @param Chip the chip to add
+	 * @param Chip the chip to addAt
 	 */
 	private static void add(Chip c) {
 		chip.put(c.getChipID(), c);
@@ -29,7 +29,7 @@ public class ChipBase {
 	/**
 	 * Adds a customer to the database.
 	 *
-	 * @param Customer the customer to add
+	 * @param Customer the customer to addAt
 	 */
 	private static void add(Customer c) {
 		customer.put(c.getCustomerID(), c);
@@ -38,7 +38,7 @@ public class ChipBase {
 	/**
 	 * Adds an order to the database.
 	 *
-	 * @param Order the order to add
+	 * @param Order the order to addAt
 	 */
 	private static void add(Order o) {
 		order.add(o);

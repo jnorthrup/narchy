@@ -59,7 +59,7 @@ public class TemporalOneShotPseudoMetric implements BiConsumer<ActiveQuestionTas
 
         float lowPri = 0.01f, hiPri = 0.9f;
         nar.beliefPriDefault.set(hiPri);
-        //nar.questionPriDefault.set(hiPri);
+        //nar.questionPriDefault.setAt(hiPri);
 
         // one shot learned knowledge
         long lightningAt = nar.time();

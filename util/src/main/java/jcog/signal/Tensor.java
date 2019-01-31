@@ -129,12 +129,12 @@ public interface Tensor  {
         return f;
     }
 
-    default void set(float newValue, int linearCell) {
+    default void setAt(float newValue, int linearCell) {
         throw new UnsupportedOperationException("read-only");
     }
 
     default void set(float newValue, int... cell) {
-        set(newValue, index(cell));
+        setAt(newValue, index(cell));
     }
 
 

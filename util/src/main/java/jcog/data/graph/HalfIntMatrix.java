@@ -127,7 +127,7 @@ class HalfIntMatrix {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see de.parsemis.utils.IntMatrix#set(int, int, int)
+	 * @see de.parsemis.utils.IntMatrix#setAt(int, int, int)
 	 */
 	public void set(final int row, final int col, final int value) {
 		assert row >= 0 && col >= 0 && row < size && col < size : "row/col out of bounds: "

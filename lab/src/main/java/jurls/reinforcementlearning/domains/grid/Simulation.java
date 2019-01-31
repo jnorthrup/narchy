@@ -38,7 +38,7 @@ public class Simulation {
     the world together and runs them for as long as the 
     world dictates.
 
-    To profile BECCA's performance with world, manually set
+    To profile BECCA's performance with world, manually setAt
     profile_flag in the top level script environment to True.
 
     */

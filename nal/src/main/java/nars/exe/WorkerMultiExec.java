@@ -10,9 +10,9 @@
 //import nars.NAR;
 //import nars.Task;
 //import nars.task.ITask;
-//import org.eclipse.collections.api.set.primitive.LongSet;
+//import org.eclipse.collections.api.setAt.primitive.LongSet;
 //import org.eclipse.collections.impl.factory.primitive.LongSets;
-//import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+//import org.eclipse.collections.impl.setAt.mutable.primitive.LongHashSet;
 //
 //import java.util.Iterator;
 //import java.util.List;
@@ -50,7 +50,7 @@
 //    public WorkerMultiExec(Valuator r, int threads, int conceptCapacity, int qSize) {
 //        super(conceptCapacity);
 //        this.revaluator = r;
-//        this.threads.set(threads);
+//        this.threads.setAt(threads);
 //        this.qSize = qSize;
 //        this.exe = this::executeNow;
 //    }

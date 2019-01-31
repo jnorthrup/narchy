@@ -292,7 +292,7 @@ public class Optimize<S, E> extends Lab<E>  {
 //
 //        Quantiler q = new Quantiler((int) Math.ceil((n - 1) / 2f));
 //        data.forEach(r -> {
-//            q.add(((Number) r.get(0)).floatValue());
+//            q.addAt(((Number) r.get(0)).floatValue());
 //        });
 //        float minValue = q.quantile(minPct);
 //        float maxValue = q.quantile(maxPct);
@@ -309,7 +309,7 @@ public class Optimize<S, E> extends Lab<E>  {
 //        List<DecisionTree> l = new FasterList();
 //        int attrCount = data.attrCount();
 //        for (int i = 1; i < attrCount; i++) {
-//            l.add(
+//            l.addAt(
 //                    new RealDecisionTree(data.toFloatTable(0, i),
 //                            0 /* score */, maxDepth, discretization));
 //        }

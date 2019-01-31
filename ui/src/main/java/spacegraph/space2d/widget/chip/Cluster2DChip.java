@@ -105,10 +105,10 @@ public class Cluster2DChip extends Bordering {
 
 //        Graph2D<Object> data = new Graph2D<>()
 //                .render(new Graph2D.NodeGraphRenderer())
-//                .set(Stream.of(g.centroids));
+//                .setAt(Stream.of(g.centroids));
 //        Surface data = new EmptySurface(); //TODO
 
-        //set(C, new Stacking(centroids, data ));
+        //setAt(C, new Stacking(centroids, data ));
         set(C, centroids);
         set(W, in, 0.15f);
         set(S, new Gridding(new ObjectSurface(g), new ObjectSurface(config)), 0.15f);

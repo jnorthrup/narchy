@@ -56,7 +56,7 @@ public class AttBranch extends AttNode {
 ////        final float[] dev = {0};
 ////
 ////        concepts(n).forEach(c -> {
-////            pp.add(n.concepts.pri(c, 0));
+////            pp.addAt(n.concepts.pri(c, 0));
 ////        });
 ////        if (pp.isEmpty())
 ////            return 0;

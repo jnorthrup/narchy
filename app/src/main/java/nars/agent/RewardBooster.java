@@ -15,7 +15,7 @@
 //import nars.task.UnevaluatedTask;
 //import nars.term.Term;
 //import nars.truth.Truth;
-//import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+//import org.eclipse.collections.impl.setAt.mutable.UnifiedSet;
 //
 //import java.util.Iterator;
 //import java.util.Random;
@@ -78,7 +78,7 @@
 //                    if (x == reward || !(x instanceof TaskConcept) || x instanceof ActionConcept) continue;
 //                    if (!x.op().goalable) continue;
 //
-//                    if (!sampled.add(x.term()))
+//                    if (!sampled.addAt(x.term()))
 //                        continue;
 //
 //                    Task tx = n.answer(x, BELIEF, start, end);

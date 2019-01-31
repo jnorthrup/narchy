@@ -238,8 +238,8 @@ public class Arithmeticize {
 
 //                } else if (b < a) {
 //
-//                    maybe(eqMods, b).add(pair(
-//                            Int.the(a), v-> $.func(MathFunc.add, v, $.the(a - b))
+//                    maybe(eqMods, b).addAt(pair(
+//                            Int.the(a), v-> $.func(MathFunc.addAt, v, $.the(a - b))
 //                    ));
                 }
 

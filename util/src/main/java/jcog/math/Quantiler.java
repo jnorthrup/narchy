@@ -89,7 +89,7 @@ public class Quantiler {
     }
 
     /**
-     * Batch update. This method is called by add() or quantile().
+     * Batch update. This method is called by addAt() or quantile().
      */
     private void update() {
         int jd = 0, jq = 1, iq;

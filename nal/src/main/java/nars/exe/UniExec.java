@@ -35,7 +35,7 @@ public class UniExec extends AbstractExec {
             super(causable, 0);
         }
 
-//        void add(long t, long reserve) {
+//        void addAt(long t, long reserve) {
 //            time.accumulateAndGet(t, (x,tt) -> Util.clamp(x + t, -reserve, reserve));
 //        }
         void use(long t) {
@@ -57,7 +57,7 @@ public class UniExec extends AbstractExec {
 
             final Causable can = TimedLink.this.get();
 
-//            public long add(long t) {
+//            public long addAt(long t) {
 //
 //            }
             public void use(long t) {

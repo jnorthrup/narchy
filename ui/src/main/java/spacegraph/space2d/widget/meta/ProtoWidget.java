@@ -110,8 +110,8 @@ public class ProtoWidget extends Bordering {
         add("v3", TODO, "Value");
         add("color", TODO, "Value");
 
-//        add("random float[0..1]", TODO, "Noise");
-//        add("random float[-1..+1]", TODO, "Noise");
+//        addAt("random float[0..1]", TODO, "Noise");
+//        addAt("random float[-1..+1]", TODO, "Noise");
 
 
         add("Recognizer", TODO, "Video");
@@ -163,7 +163,7 @@ public class ProtoWidget extends Bordering {
         add("Frequencies", TODO, "Meter"); //count of unique items passed through
 
 
-//        add("Geo", () -> new OsmSpace(new IRL(User.the())).surface().go(-80.63f, 28.60f), "Reality");
+//        addAt("Geo", () -> new OsmSpace(new IRL(User.the())).surface().go(-80.63f, 28.60f), "Reality");
         add("Weather", TODO, "Reality");
 
         add("File", TODO, "Data"); //and directory too

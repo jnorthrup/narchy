@@ -138,7 +138,7 @@
 ////                    int y = nar.random().nextInt(h);
 ////                    Term c = id(Int.the(x), Int.the(y));
 ////                    clear();
-////                    add(c);
+////                    addAt(c);
 ////                    concepts = 1;
 ////                    return super.concepts(nar, conceptualize);
 ////

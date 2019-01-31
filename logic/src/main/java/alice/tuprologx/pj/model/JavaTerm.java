@@ -62,7 +62,7 @@ public class JavaTerm<O> extends Compound<JavaTerm<O>> {
                     Object o = pdesc.getReadMethod().invoke(po);
                     Atom propertyName = new Atom(pdesc.getName());
                     Term<?> propertyValue = (o != null) ? Term.fromJava(o) : new Var(((String)propertyName.toJava()).toUpperCase());
-                    termArr.add(new Compound2<Atom,Term<?>>("_property",propertyName, propertyValue));
+                    termArr.addAt(new Compound2<Atom,Term<?>>("_property",propertyName, propertyValue));
                 }
             }
             System.out.println(termArr);

@@ -97,7 +97,7 @@
 //
 //				Point3D_F64 center = new Point3D_F64();
 //				SePointOps_F64.transform(targetToCamera, center, center);
-//				path.add(center);
+//				path.addAt(center);
 //
 //				for (Point3D_F64 p : path) {
 //					viewer.addPoint(p.x, p.y, p.z, 0x00FF00);

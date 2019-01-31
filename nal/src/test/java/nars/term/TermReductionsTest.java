@@ -7,7 +7,7 @@ import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.SetSectDiff;
-import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjSeq;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -512,10 +512,10 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testImplCommonSubterms3() {
 
-        assertEq(Bool.True, "((x(intValue,(),0)&&x(set,0))==>x(intValue,(),0))");
-        assertEq("x(set,0)", "((x(intValue,(),0)==>x(intValue,(),0)) && x(set,0))");
-        assertEq("((x(set,0)==>x(intValue,(),0))&&x(intValue,(),0))",
-                "((x(set,0)==>x(intValue,(),0)) && x(intValue,(),0))");
+        assertEq(Bool.True, "((x(intValue,(),0)&&x(setAt,0))==>x(intValue,(),0))");
+        assertEq("x(setAt,0)", "((x(intValue,(),0)==>x(intValue,(),0)) && x(setAt,0))");
+        assertEq("((x(setAt,0)==>x(intValue,(),0))&&x(intValue,(),0))",
+                "((x(setAt,0)==>x(intValue,(),0)) && x(intValue,(),0))");
 
     }
 
@@ -693,7 +693,7 @@ public class TermReductionsTest extends NarseseTest {
                 "((((a,b) ==>+1 (b,c)) &&+4 c) &&+1 d)",
                 x.toString());
 
-        Term x2 = Conj.sequence(a, 0, b, 4);
+        Term x2 = ConjSeq.sequence(a, 0, b, 4);
         assertEquals(x, x2);
     }
 

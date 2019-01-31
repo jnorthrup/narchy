@@ -61,7 +61,7 @@ public class Level {
 	
 	/**
 	 * Adds the specified level object to the level.
-	 * @param obj the object to add
+	 * @param obj the object to addAt
 	 */
 	public void add(LevelObject obj) {
 		levelObjects.add(obj);
@@ -615,7 +615,7 @@ public class Level {
 			g.dispose();
 			ImageIcon icon = new ImageIcon(img);
 			JLabel lbl = new JLabel(icon);
-			frame.getContentPane().add(lbl, BorderLayout.CENTER);
+			frame.getContentPane().addAt(lbl, BorderLayout.CENTER);
 			frame.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();

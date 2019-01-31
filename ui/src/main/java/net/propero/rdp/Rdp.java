@@ -236,7 +236,7 @@ public class Rdp {
     }
 
     /**
-     * Process a general capability set
+     * Process a general capability setAt
      *
      * @param data Packet containing capability set data at current read position
      */
@@ -251,7 +251,7 @@ public class Rdp {
     }
 
     /**
-     * Process a bitmap capability set
+     * Process a bitmap capability setAt
      *
      * @param data Packet containing capability set data at current read position
      */

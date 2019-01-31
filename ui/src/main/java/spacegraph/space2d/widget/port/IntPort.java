@@ -8,7 +8,7 @@ import java.util.function.IntConsumer;
 
 import static spacegraph.space2d.container.grid.Gridding.col;
 
-/** TODO add both text and spinner methods */
+/** TODO addAt both text and spinner methods */
 public class IntPort extends EditablePort<Integer> {
 
     final AtomicInteger value = new AtomicInteger();

@@ -184,7 +184,7 @@ public final class Evolution {
     }
 
     /**
-     * Provides the option to set a random number generator, or to skip that option and instead configure the primitive set.
+     * Provides the option to set a random number generator, or to skip that option and instead configure the primitive setAt.
      * <p>
      * If you do not explicitly specify a random number generator then the {@code RunBuilder} will default to using {@link StdRandom}. Unless you
      * have a specific requirement about how random numbers are generated then the default random number generator will be sufficient.
@@ -562,7 +562,7 @@ public final class Evolution {
         @SuppressWarnings("unchecked")
         private ProcessRunnerImpl(List<Predicate<Ranking>> terminators) {
             if (terminators.isEmpty()) {
-                throw new IllegalStateException("No termination criteria set");
+                throw new IllegalStateException("No termination criteria setAt");
             } else if (terminators.size() == 1) {
                 terminator = terminators.get(0);
             } else {

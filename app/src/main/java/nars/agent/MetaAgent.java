@@ -139,10 +139,10 @@ public class MetaAgent {
         );
 
 //        m.actionUnipolar($.func("forget", a.id), (f)->{
-//            nar.memoryDuration.set(Util.lerp(f, 0.5f, 0.99f));
+//            nar.memoryDuration.setAt(Util.lerp(f, 0.5f, 0.99f));
 //        });
 //        m.actionUnipolar($.func("awake", a.id), (f)->{
-//            nar.conceptActivation.set(Util.lerp(f, 0.1f, 0.99f));
+//            nar.conceptActivation.setAt(Util.lerp(f, 0.1f, 0.99f));
 //        });
         m.senseNumber($.func("busy", a.id), new FloatNormalized(() ->
                 (float) Math.log(1 + m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
@@ -165,7 +165,7 @@ public class MetaAgent {
 //
 //                m.actionUnipolar($.func("aware", target), (p) -> {
 //                    FloatRange pp = s.pri();
-//                    pp.set(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
+//                    pp.setAt(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
 //                });
 //
 //            }
@@ -175,25 +175,25 @@ public class MetaAgent {
 //            if (d == d) {
 //                //deep incrases both duration and max target volume
 //                this.nar.time.dur(Util.lerp(d * d, 20, 120));
-//                this.nar.termVolumeMax.set(Util.lerp(d, 30, 60));
+//                this.nar.termVolumeMax.setAt(Util.lerp(d, 30, 60));
 //            }
 //            return d;
 //        });
 
 //        actionUnipolar($.inh(this.nar.self(), $.the("awake")), (a)->{
 //            if (a == a) {
-//                this.nar.activateConceptRate.set(Util.lerp(a, 0.2f, 1f));
+//                this.nar.activateConceptRate.setAt(Util.lerp(a, 0.2f, 1f));
 //            }
 //            return a;
 //        });
 
 //        actionUnipolar($.prop(nar.self(), $.the("focus")), (a)->{
-//            nar.forgetRate.set(Util.lerp(a, 0.9f, 0.8f)); //inverse forget rate
+//            nar.forgetRate.setAt(Util.lerp(a, 0.9f, 0.8f)); //inverse forget rate
 //            return a;
 //        });
 
 //        m.actionUnipolar($.func("curious", a.id), (cur) -> {
-//            a.curiosity.set(lerp(cur, 0.01f, 0.25f));
+//            a.curiosity.setAt(lerp(cur, 0.01f, 0.25f));
 //        });//.resolution(0.05f);
 
 

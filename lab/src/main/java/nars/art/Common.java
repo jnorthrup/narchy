@@ -45,7 +45,7 @@ public enum Common
              * find a particular instance(example Ek) or prototype in a sequence
              * and give as a result the index of instance(prototype) in the sequence
              * item means instance or prototype.
-             * If must_find is set up as true and the example (item) has not been found -- write error 
+             * If must_find is set up as true and the example (item) has not been found -- write error
              * message and stop the program.
              * It is used by ART 1, ART 2A and ART 2A-C algorithms
              **/

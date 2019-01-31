@@ -57,7 +57,7 @@ import spacegraph.space2d.phys.dynamics.Body2D;
  * rather than the center of mass because:<br/>
  * <ul>
  * <li>you might not know where the center of mass will be.</li>
- * <li>if you add/remove shapes from a body and recompute the mass, the joints will be broken.</li>
+ * <li>if you addAt/remove shapes from a body and recompute the mass, the joints will be broken.</li>
  * </ul>
  */
 public class RevoluteJointDef extends JointDef {

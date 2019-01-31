@@ -168,7 +168,7 @@ abstract public class MultiExec extends UniExec {
             });
         }
 //        cpu.forEach((s) -> {
-//            s.add( Math.max(1, Math.round(cycleTimeNS * s.priElseZero()/pSum[0])), cycleTimeNS );
+//            s.addAt( Math.max(1, Math.round(cycleTimeNS * s.priElseZero()/pSum[0])), cycleTimeNS );
 //        });
 
     }

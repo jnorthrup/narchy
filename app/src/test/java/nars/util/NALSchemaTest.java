@@ -76,11 +76,11 @@ public class NALSchemaTest {
 //        Collection<Row> validationPoints = new FasterList(validationSetSize);
 //        for (int i= 0; i < validationSetSize; i++) {
 //            Row randomPoint = data.remove(rng);
-//            validationPointsActual.add(randomPoint);
+//            validationPointsActual.addAt(randomPoint);
 //
 //            MutableList randomPointErased = randomPoint.toList();
-//            randomPointErased.set(randomPointErased.size()-1, "?class");
-//            validationPoints.add(randomPointErased.toImmutable());
+//            randomPointErased.setAt(randomPointErased.size()-1, "?class");
+//            validationPoints.addAt(randomPointErased.toImmutable());
 //        }
 //
 //        ARFF validation = dataset.clone(validationPoints);
@@ -265,7 +265,7 @@ public class NALSchemaTest {
             "%    --- This is perhaps the best known database to be found in the pattern\n" +
             "%        recognition literature.  Fisher's paper is a classic in the field\n" +
             "%        and is referenced frequently to this day.  (See Duda & Hart, for\n" +
-            "%        example.)  The data set contains 3 classes of 50 instances each,\n" +
+            "%        example.)  The data setAt contains 3 classes of 50 instances each,\n" +
             "%        where each class refers to a type of iris plant.  One class is\n" +
             "%        linearly separable from the other 2; the latter are NOT linearly\n" +
             "%        separable from each other.\n" +

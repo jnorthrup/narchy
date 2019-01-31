@@ -124,7 +124,7 @@ public class MetalLongSet extends LongOpenHashSet  {
 //    }
 //
 //    /**
-//     * The number of integers in this set.
+//     * The number of integers in this setAt.
 //     */
 //    public final int size() {
 //        return size;
@@ -185,7 +185,7 @@ public class MetalLongSet extends LongOpenHashSet  {
 //        return size() > 0 && find(key, false) >= 0;
 //    }
 //
-//    public final boolean add(long x) {
+//    public final boolean addAt(long x) {
 //        if (x == emptyVal)
 //            throw new UnsupportedOperationException();
 //        int i = find(x, true);
@@ -206,7 +206,7 @@ public class MetalLongSet extends LongOpenHashSet  {
 //    }
 //
 //    /**
-//     * Puts this integer (key) in the set, and returns the slot index it was added to.
+//     * Puts this integer (key) in the setAt, and returns the slot index it was added to.
 //     * It rehashes if adding it would make the set more than 75% full.
 //     */
 //    private int put(int s, long key) {
@@ -268,7 +268,7 @@ public class MetalLongSet extends LongOpenHashSet  {
 //
 //    public void addAll(long[] x) {
 //        for (long i : x)
-//            add(i);
+//            addAt(i);
 //    }
 //
 //

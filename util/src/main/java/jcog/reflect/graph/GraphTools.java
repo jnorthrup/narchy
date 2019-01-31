@@ -219,13 +219,13 @@ public class GraphTools {
 //            = TreeWalkItreator.createIterable(start, walker, TreeWalkType.ByLevel);
 //
 //        LinkedHashSet<N> visitedNodes = new LinkedHashSet<N>();
-////        visitedNodes.add(start);
+////        visitedNodes.addAt(start);
 //
 //        int maxLevel = 0;
 //        for( TreeWalk<N> tw : twIter ){
 //            N n = tw.currentNode();
 //            if( visitedNodes.contains(n) )return -1;
-//            visitedNodes.add(n);
+//            visitedNodes.addAt(n);
 //
 //            int level = Math.abs(tw.currentLevel() - tw.startLevel());
 //            if( level > maxLevel ) maxLevel = level;
@@ -245,12 +245,12 @@ public class GraphTools {
 //                if( !reverseOrder ){
 //                    for( Edge<N,E> edge : gr.edgesOfNodeA(from) ){
 //                        BasicPair<N,E> e = new BasicPair<>( edge.getNodeB(), edge.getEdge() );
-//                        list.add(e);
+//                        list.addAt(e);
 //                    }
 //                }else{
 //                    for( Edge<N,E> edge : gr.edgesOfNodeB(from) ){
 //                        BasicPair<N,E> e = new BasicPair<>( edge.getNodeA(), edge.getEdge() );
-//                        list.add(e);
+//                        list.addAt(e);
 //                    }
 //                }
 //                return list;

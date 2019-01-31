@@ -43,7 +43,7 @@ public class TestTimeGraphVis extends SimpleGraph3D<Event> {
         SpaceGraphPhys3D sg = cs.show(1400, 1000, true);
 
 
-//        sg.add(new SubOrtho(grid(
+//        sg.addAt(new SubOrtho(grid(
 //
 //                new ObjectSurface<>(cs.vis)
 //        )).posWindow(0, 0, 1f, 0.2f));

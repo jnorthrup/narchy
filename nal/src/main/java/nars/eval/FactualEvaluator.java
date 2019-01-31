@@ -204,7 +204,7 @@ public class FactualEvaluator extends Evaluator {
                             //ifs.get(k).forEach(v->{
                             Term vv = u.transform(y.sub(0));
                             if (vv.op().conceptualizable) {
-                                //facts.add($.func("ifThen", vv, k));
+                                //facts.addAt($.func("ifThen", vv, k));
                                 //facts.put(vv, True);
                                 nodeOrAdd(x).add(vv);
                                 matches.add(vv);
@@ -217,7 +217,7 @@ public class FactualEvaluator extends Evaluator {
 
                         Node nx = nodeOrAdd(x);
                         if (y.equals(x)) {
-                            nx.add(Bool.True); //if x==y add True ?
+                            nx.add(Bool.True); //if x==y addAt True ?
                         } else if (y.equalsNeg(x)) {
                             nx.add(Bool.False);
                         } else {
@@ -302,7 +302,7 @@ public class FactualEvaluator extends Evaluator {
 ////                ifs.get(k).forEach(v->{
 ////                    Term vv = u.transform(v);
 ////                    if (vv.op().conceptualizable) {
-////                        //facts.add($.func("ifThen", vv, k));
+////                        //facts.addAt($.func("ifThen", vv, k));
 ////                        facts.put(k, vv);
 ////                    }
 ////                });

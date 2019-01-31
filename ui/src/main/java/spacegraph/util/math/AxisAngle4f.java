@@ -571,7 +571,7 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
      * Set the axis angle, in radians.<br>
      * An axis angle is a rotation angle about the vector (x,y,z).
      *
-     * @param angle The angle to set, in radians.
+     * @param angle The angle to setAt, in radians.
      * @since vecmath 1.5
      */
     public final void setAngle(float angle) {

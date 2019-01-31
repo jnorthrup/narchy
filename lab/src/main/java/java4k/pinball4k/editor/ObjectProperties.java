@@ -8,7 +8,7 @@ public class ObjectProperties {
 	/** Is object collidable or not */
 	public boolean collidable = true;
 	
-	/** The score to add object is triggered */
+	/** The score to addAt object is triggered */
 	public int score;
 	
 	/** The bounce factor  */

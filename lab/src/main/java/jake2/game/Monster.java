@@ -213,10 +213,10 @@ public class Monster {
              * for (int n = 0; n < Game.globals.num_edicts; n++) { edict_t ent =
              * GameBase.g_edicts[n]; Com.Printf( "|%4i | %25s
              * |%8.2f|%8.2f|%8.2f||%8.2f|%8.2f|%8.2f||%8.2f|%8.2f|%8.2f|\n", new
-             * Vargs().add(n).add(ent.classname).
-             * add(ent.s.origin[0]).add(ent.s.origin[1]).add(ent.s.origin[2])
-             * .add(ent.mins[0]).add(ent.mins[1]).add(ent.mins[2])
-             * .add(ent.maxs[0]).add(ent.maxs[1]).add(ent.maxs[2])); }
+             * Vargs().addAt(n).addAt(ent.classname).
+             * addAt(ent.s.origin[0]).addAt(ent.s.origin[1]).addAt(ent.s.origin[2])
+             * .addAt(ent.mins[0]).addAt(ent.mins[1]).addAt(ent.mins[2])
+             * .addAt(ent.maxs[0]).addAt(ent.maxs[1]).addAt(ent.maxs[2])); }
              * sleep(10); }
              */
 

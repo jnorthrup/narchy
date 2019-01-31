@@ -566,7 +566,7 @@ public class LevelPanel extends JComponent implements MouseListener
 	
 	/**
 	 * Sets the new edit state.
-	 * @param newState the state to set
+	 * @param newState the state to setAt
 	 */
 	public void setState(State newState) {
 		currentState = newState;

@@ -127,7 +127,7 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
      * Adds a new vertex to the polygon (builder pattern).
      * 
      * @param p
-     *            vertex point to add
+     *            vertex point to addAt
      * @return itself
      */
     public Polygon2D add(Vec2D p) {

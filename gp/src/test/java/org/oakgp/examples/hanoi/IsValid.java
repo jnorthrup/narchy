@@ -37,7 +37,7 @@ class IsValid implements Fn {
 
     /**
      * @param arguments   the first argument is a {@code TowersOfHanoi} representing a game state and the second argument is a {@code Move}
-     * @param assignments the values assigned to each of member of the variable set
+     * @param assignments the values assigned to each of member of the variable setAt
      * @return {@code true} if the specified move is a valid move for the specified game state, else {@code false}
      */
     @Override

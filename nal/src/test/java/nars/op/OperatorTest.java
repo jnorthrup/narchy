@@ -137,7 +137,7 @@ class OperatorTest {
         NAR n = NARS.tmp();
         
         n.input("(slice((a,b,c),2)).");
-        n.input("assertEquals(c, slice((a,b,c),add(1,1)));");
+        n.input("assertEquals(c, slice((a,b,c),addAt(1,1)));");
         n.input("assertEquals((a,b), slice((a,b,c),(0,2)));");
 
         

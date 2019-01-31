@@ -62,7 +62,7 @@ public class PrologSolution<Q extends Term<?>, S extends Term<?>> /*implements I
 //        List<alice.tuprolog.Var> retValue = _solveInfo.getBindingVars();
 //        Vector<Term<?>> bindings = new Vector<>();
 //        for (alice.tuprolog.Term t : retValue) {
-//            bindings.add(Term.unmarshal(t));
+//            bindings.addAt(Term.unmarshal(t));
 //        }
 //        return bindings;
 //    }

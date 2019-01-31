@@ -91,7 +91,7 @@ public final class NodeSimplifier {
                     return output;
             }
             
-//            if (!output.equals(previous) /*&& !s.add(output)*/) {
+//            if (!output.equals(previous) /*&& !s.addAt(output)*/) {
 //                return output;
 //            }
             

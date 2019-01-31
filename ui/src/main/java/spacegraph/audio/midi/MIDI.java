@@ -38,9 +38,9 @@ class MIDI {
                 }
 
                 /*if (device instanceof Synthesizer) {
-                    synthInfos.add((Synthesizer) ii);
+                    synthInfos.addAt((Synthesizer) ii);
                 } else if (device instanceof MidiDevice) {
-                    midis.add((MidiDevice) ii);
+                    midis.addAt((MidiDevice) ii);
                 }*/
             } catch (MidiUnavailableException e) {
 

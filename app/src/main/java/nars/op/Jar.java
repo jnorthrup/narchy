@@ -39,10 +39,10 @@ package nars.op;//package nars.op;
 //    @Override
 //    protected void addDefaultLoader() {
 //        synchronized (loaders) {
-//            loaders.add(getSystemLoader());
-//            //loaders.add(parentLoader);
-//            loaders.add(getCurrentLoader());
-//            loaders.add(getThreadLoader());
+//            loaders.addAt(getSystemLoader());
+//            //loaders.addAt(parentLoader);
+//            loaders.addAt(getCurrentLoader());
+//            loaders.addAt(getThreadLoader());
 //            Collections.sort(loaders);
 //        }
 //    }
@@ -61,10 +61,10 @@ package nars.op;//package nars.op;
 //
 //        //addDefaultLoader();
 //
-////        add(new URL("http://myserver.com/myjar.jar"));
-////        add(new FileInputStream("myotherjar.jar"));
-////        add("myclassfolder/");
-////        add("myjarlib/"); //Recursively load all jar files in the folder/sub-folder(s)
+////        addAt(new URL("http://myserver.com/myjar.jar"));
+////        addAt(new FileInputStream("myotherjar.jar"));
+////        addAt("myclassfolder/");
+////        addAt("myjarlib/"); //Recursively load all jar files in the folder/sub-folder(s)
 //
 //
 //

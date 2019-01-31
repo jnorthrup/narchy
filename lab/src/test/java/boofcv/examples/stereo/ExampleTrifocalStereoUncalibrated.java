@@ -544,7 +544,7 @@ public class ExampleTrifocalStereoUncalibrated extends Bordering {
                         minDisparity, maxDisparity, 6, 6,
                         30, 3, 0.05, GrayS16.class);
 
-        // Apply the Laplacian across the image to add extra resistance to changes in lighting or camera gain
+        // Apply the Laplacian across the image to addAt extra resistance to changes in lighting or camera gain
         GrayS16 derivLeft = new GrayS16(width, height);
         GrayS16 derivRight = new GrayS16(width, height);
         LaplacianEdge.process(rectifiedLeft, derivLeft);
@@ -641,7 +641,7 @@ public class ExampleTrifocalStereoUncalibrated extends Bordering {
 //			n_to_p.compute(n.p1.x, n.p1.y, p.p1);
 //			n_to_p.compute(n.p2.x, n.p2.y, p.p2);
 //
-//			pixels.add(p);
+//			pixels.addAt(p);
 //		}
 //
 ////		// display the results

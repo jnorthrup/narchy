@@ -130,10 +130,10 @@
 //        LinkedHashSet set = new LinkedHashSet();
 //        for( Set<Path<N,E>> s : paths.values() ){
 //            if( s!=null ){
-//                set.addAll(s);
+//                setAt.addAll(s);
 //            }
 //        }
-//        return set;
+//        return setAt;
 //    }
 //
 //    @Override
@@ -155,7 +155,7 @@
 //                    roots = new LinkedHashSet<>();
 //                    paths.put(lastNode, roots);
 //                }
-//                roots.add(path);
+//                roots.addAt(path);
 //
 //                int nc = path.nodeCount();
 //                if( nc>1 ){

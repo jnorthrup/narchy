@@ -172,7 +172,7 @@ public abstract class AbstractTask implements ITask, Prioritizable {
 ////                ITask p = t.next(n);
 ////                if (p!=null) {
 ////                    if (next == null) next = new FasterList(1);
-////                    next.add(p);
+////                    next.addAt(p);
 ////                }
 //            }
 //            return null;

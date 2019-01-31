@@ -177,7 +177,7 @@ public class ConjMatch {
                             continue; //fail
 
 
-                        //s.xy.forEach(d.xy::set);
+                        //s.xy.forEach(d.xy::setAt);
 
 
                         Term z;

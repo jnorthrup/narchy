@@ -73,7 +73,7 @@ public class SideCraft extends NAgentX {
         float mSpeed = 45f;
         actionBipolar($("cra(mouse,X)"), (v) -> {
             int x = craft.screenMousePos.x;
-            int xx = Util.clampI(x + v * mSpeed, 0, camBuffer.getWidth() - 1);
+            int xx = Util.clamp(Math.round(x + v * mSpeed), 0, camBuffer.getWidth() - 1);
 
             craft.screenMousePos.x = xx;
             return v;
@@ -81,7 +81,7 @@ public class SideCraft extends NAgentX {
         });
         actionBipolar($("cra(mouse,Y)"), (v) -> {
             int y = craft.screenMousePos.y;
-            int yy = Util.clampI(y + v * mSpeed, 0, camBuffer.getHeight() - 1);
+            int yy = Util.clamp(Math.round(y + v * mSpeed), 0, camBuffer.getHeight() - 1);
             craft.screenMousePos.y = yy;
             return v;
         });

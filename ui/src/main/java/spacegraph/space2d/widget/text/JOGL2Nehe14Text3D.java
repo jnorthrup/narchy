@@ -49,7 +49,7 @@
 ////
 ////        // Create the top-level container frame
 ////        final JFrame frame = new JFrame(); // Swing's JFrame or AWT's Frame
-////        frame.getContentPane().add(canvas);
+////        frame.getContentPane().addAt(canvas);
 ////        frame.addWindowListener(new WindowAdapter() {
 ////            @Override
 ////            public void windowClosing(WindowEvent e) {

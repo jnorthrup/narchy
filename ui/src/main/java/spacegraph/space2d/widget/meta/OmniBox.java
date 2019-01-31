@@ -168,7 +168,7 @@ public class OmniBox extends Widget {
 //                    return;
 //
 //                target.clear();
-//                sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).sorted().map(PushButton::new).forEach(target::add);
+//                sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).sorted().map(PushButton::new).forEach(target::addAt);
 //            });
 //        }
 //

@@ -36,7 +36,7 @@ public class SymbolRootNode extends SymbolNode {
 	 * Add the given string as a symbol.
 	 * 
 	 * @param String
-	 *            the character sequence to add
+	 *            the character sequence to addAt
 	 */
 	public void add(String s) {
 		char c = s.charAt(0);

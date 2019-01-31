@@ -102,7 +102,7 @@ public class Audio implements Runnable {
             FloatControl volumeControl = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
             volumeControl.setValue(volumeControl.getMaximum());
         } catch (IllegalArgumentException ignored) {
-            System.out.println("Failed to set the sound volume");
+            System.out.println("Failed to setAt the sound volume");
         }
 
         this.mixer = new SoundMixer(polyphony);

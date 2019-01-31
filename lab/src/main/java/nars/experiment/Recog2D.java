@@ -131,7 +131,7 @@ public class Recog2D extends NAgentX {
 
         Gridding g = new Gridding(
 
-//                p = new Plot2D(history, Plot2D.Line).add("Reward", () ->
+//                p = new Plot2D(history, Plot2D.Line).addAt("Reward", () ->
 //                        reward
 //
 //                ),

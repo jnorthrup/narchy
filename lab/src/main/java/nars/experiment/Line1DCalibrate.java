@@ -29,7 +29,7 @@
 //
 //
 //        n.time.dur(1);
-//        n.termVolumeMax.set(16);
+//        n.termVolumeMax.setAt(16);
 //
 //
 //
@@ -85,12 +85,12 @@
 //            }
 //        });
 //
-//        a.speed.set(yResolution);
+//        a.speed.setAt(yResolution);
 //
 //
 //
 //        a.in.resolution(yResolution);
-//        a.curiosity.set(
+//        a.curiosity.setAt(
 //                0.1f
 //
 //        );
@@ -165,9 +165,9 @@
 //        List<Plot2D> plots = $.newArrayList();
 //        for (FloatSupplier t : concepts) {
 //            Plot2D p = new Plot2D(plotHistory, Plot2D.Line);
-//            p.add(t.toString(), t::asFloat, 0f, 1f);
-//            grid.add(p);
-//            plots.add(p);
+//            p.addAt(t.toString(), t::asFloat, 0f, 1f);
+//            grid.addAt(p);
+//            plots.addAt(p);
 //        }
 //        grid.layout();
 //

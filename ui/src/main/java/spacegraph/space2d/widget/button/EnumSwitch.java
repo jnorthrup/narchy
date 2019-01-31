@@ -34,7 +34,7 @@ public class EnumSwitch {
 //            CheckBox tb = new CheckBox(e.name());
 //            tb.on((c, enabled) -> {
 //                if (enabled)
-//                    x.set(e);
+//                    x.setAt(e);
 //            });
 //            return tb;
 //        }).toArray(ToggleButton[]::new);

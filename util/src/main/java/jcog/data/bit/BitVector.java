@@ -33,7 +33,7 @@ import java.util.RandomAccess;
  * <P>Operation of a bit vector are partially of boolean nature 
  * (e.g., logical operations between vectors),
  * partially of language-theoretical nature (e.g., concatenation), and 
- * partially of set-theoretical nature (e.g., asking which bits are set to one). 
+ * partially of setAt-theoretical nature (e.g., asking which bits are set to one).
  * To accomodate all these points of view, this interface extends  
  * {@link it.unimi.dsi.fastutil.booleans.BooleanList}, but also provides an
  * {@link #asLongSet()} method that exposes a {@link java.util.BitSet}-like view
@@ -50,7 +50,7 @@ import java.util.RandomAccess;
  * <P>The only <i>caveat</i> is that sometimes the standard interface naming clashes slightly
  * with standard usage: for instance, {@link #clear(long)} will <em>not</em> set to zero
  * all bits (use {@link #fill(int) fill(0)} for that purpose), but rather will set the
- * vector length to zero. Also, {@link #add(long, int)} will not add logically a value at
+ * vector length to zero. Also, {@link #add(long, int)} will not addAt logically a value at
  * the specified index, but rather will insert a new bit with the specified value at the specified
  * position.
  * 
@@ -290,7 +290,7 @@ public interface BitVector extends RandomAccess {
 	
 	/** Counts the number of bits set to true in this bit vector.
 	 *
-	 * @return the number of bits set to true in this bit vector. 
+	 * @return the number of bits set to true in this bit vector.
 	 */
 	long count();
 	
@@ -317,25 +317,25 @@ public interface BitVector extends RandomAccess {
 
 	/** Returns the position of the first bit set in this vector.
 	 *
-	 * @return the first bit set, or -1 for a vector of zeroes. 
+	 * @return the first bit setAt, or -1 for a vector of zeroes.
 	 */
 	long firstOne();
 
 	/** Returns the position of the last bit set in this vector.
 	 *
-	 * @return the last bit set, or -1 for a vector of zeroes. 
+	 * @return the last bit setAt, or -1 for a vector of zeroes.
 	 */
 	long lastOne();
 
 	/** Returns the position of the first bit set after the given position.
 	 *
-	 * @return the first bit set after position <code>index</code> (inclusive), or -1 if no such bit exists. 
+	 * @return the first bit set after position <code>index</code> (inclusive), or -1 if no such bit exists.
 	 */
 	long nextOne(long index);
 
 	/** Returns the position of the first bit set before or at the given position.
 	 *
-	 * @return the first bit set before or at the given position, or -1 if no such bit exists. 
+	 * @return the first bit set before or at the given position, or -1 if no such bit exists.
 	 */
 	long previousOne(long index);
 
@@ -428,7 +428,7 @@ public interface BitVector extends RandomAccess {
 	 * (int)( ( h &gt;&gt;&gt; 32 ) ^ h );
 	 * </pre>
 	 * 
-	 * <p>The last value is the hash code of the bit vector. This hashing is based on shift-add-xor hashing
+	 * <p>The last value is the hash code of the bit vector. This hashing is based on shift-addAt-xor hashing
 	 * (M.V. Ramakrishna and Justin Zobel, &ldquo;Performance in practice of string hashing functions&rdquo;, 
 	 * <i>Proc. of the Fifth International Conference on Database Systems for Advanced Applications</i>, 1997, pages 215&minus;223).
 	 * 

@@ -80,7 +80,7 @@ public class SurfaceRender {
 //            return this; //unchanged
 //        else
 //            return new SurfaceRender(pw, ph, dtMS)
-//                    .set(scaleX * scale, scaleY * scale,
+//                    .setAt(scaleX * scale, scaleY * scale,
 //                        (x1 + x2)/2 + offset.x, (y1 + y2)/2 + offset.y);
 //    }
 

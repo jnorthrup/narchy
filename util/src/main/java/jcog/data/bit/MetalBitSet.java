@@ -101,7 +101,7 @@ abstract public class MetalBitSet {
     }
 
 
-    /** TODO implement better bulk set(start,end,v) impl */
+    /** TODO implement better bulk setAt(start,end,v) impl */
     public static class LongArrayBitSet extends MetalBitSet {
         long[] data;
 

@@ -149,7 +149,7 @@
 //    public <T> RunnableWeakReference<T> onWeakGC(final T key, final SweepAction<T> behavior) {
 //        ensureAlive(key);
 //        RunnableWeakReference<T> w = new RunnableWeakReference<>(key, behavior);
-//        handlers.add(w);
+//        handlers.addAt(w);
 //        return w;
 //    }
 //
@@ -160,7 +160,7 @@
 //    public <T> RunnableWeakReference<T> onWeakGC(final T key, final Runnable behavior) {
 //        ensureAlive(key);
 //        RunnableWeakReference<T> w = new RunnableWeakReference<>(key, behavior);
-//        handlers.add(w);
+//        handlers.addAt(w);
 //        return w;
 //    }
 //
@@ -171,7 +171,7 @@
 //    public <K, V> ConsumingWeakReference<V> onWeakGC(K key, final V val, final Consumer<K> keyConsumer) {
 //        ensureAlive(val);
 //        ConsumingWeakReference<V> w = new ConsumingWeakReference<>(key, val, keyConsumer);
-//        handlers.add(w);
+//        handlers.addAt(w);
 //        return w;
 //    }
 //
@@ -185,7 +185,7 @@
 //    public RunnablePhantomReference onGC(final Object key, final Runnable behavior) {
 //        ensureAlive(key);
 //        RunnablePhantomReference reference = new RunnablePhantomReference(key, behavior);
-//        handlers.add(reference);
+//        handlers.addAt(reference);
 //        return reference;
 //    }
 //
@@ -435,7 +435,7 @@
 //        final AtomicBoolean stop = new AtomicBoolean(false);
 //        Consumer<Object> handler = (v) -> {
 //            System.out.println("onGC action run! " + v);
-//            stop.set(true);
+//            stop.setAt(true);
 //        };
 //
 //        Object key = new Object();
@@ -446,7 +446,7 @@
 //        for (int i = 0; !stop.get(); i++) {
 //            key = new ArrayList<Integer>(i);
 //            for (int k = 0; k < i; k++) {
-//                ((Collection) key).add(k);
+//                ((Collection) key).addAt(k);
 //            }
 //            Thread.yield();
 //        }

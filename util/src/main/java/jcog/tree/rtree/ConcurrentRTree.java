@@ -70,9 +70,9 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     }
 
     /**
-     * Blocking locked add
+     * Blocking locked addAt
      *
-     * @param t - entry to add
+     * @param t - entry to addAt
      */
     @Override
     public boolean add(T t) {
@@ -81,7 +81,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
 
     /**
-     * prefer this instead of add() in multithread environments, because it elides what might ordinarily involve a lock wait
+     * prefer this instead of addAt() in multithread environments, because it elides what might ordinarily involve a lock wait
      */
     @Override
     public void addAsync(T t) {

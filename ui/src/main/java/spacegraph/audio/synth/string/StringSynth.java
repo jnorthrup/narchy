@@ -28,7 +28,7 @@ public class StringSynth {
 //        addKeyListener(this);
 //
 //        JFrame f = new JFrame();
-//        f.getContentPane().add(this);
+//        f.getContentPane().addAt(this);
 //        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 //        f.pack();
 //        f.setVisible(true);

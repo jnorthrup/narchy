@@ -43,7 +43,7 @@
 //            this.out = new Port();
 //
 ////            this.themChart = new BagChart<>(peer.them);
-////            set(
+////            setAt(
 ////                new Gridding(
 ////                        new Label(peer.name()),
 ////                        new LabeledPane("I", in),
@@ -112,7 +112,7 @@
 //        public MessageChip() {
 //            super();
 //            split(0.1f);
-//            set(new TextEdit(t), out);
+//            setAt(new TextEdit(t), out);
 //        }
 //    }
 //

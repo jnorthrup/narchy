@@ -122,7 +122,7 @@
 //     * @param z the z coordinate
 //     * @param w the w coordinate
 //     */
-//    public final void set(int x, int y, int z, int w) {
+//    public final void setAt(int x, int y, int z, int w) {
 //	this.x = x;
 //	this.y = y;
 //	this.z = z;
@@ -135,7 +135,7 @@
 //     * array of length 4.
 //     * @param t the array of length 4 containing x, y, z, and w in order.
 //     */
-//    public final void set(int[] t) {
+//    public final void setAt(int[] t) {
 //	this.x = t[0];
 //	this.y = t[1];
 //	this.z = t[2];
@@ -147,7 +147,7 @@
 //     * Sets the value of this tuple to the value of tuple t1.
 //     * @param t1 the tuple to be copied
 //     */
-//    public final void set(Tuple4i t1) {
+//    public final void setAt(Tuple4i t1) {
 //	this.x = t1.x;
 //	this.y = t1.y;
 //	this.z = t1.z;
@@ -184,7 +184,7 @@
 //     * @param t1 the first tuple
 //     * @param t2 the second tuple
 //     */
-//    public final void add(Tuple4i t1, Tuple4i t2) {
+//    public final void addAt(Tuple4i t1, Tuple4i t2) {
 //	this.x = t1.x + t2.x;
 //	this.y = t1.y + t2.y;
 //	this.z = t1.z + t2.z;
@@ -196,7 +196,7 @@
 //     * Sets the value of this tuple to the sum of itself and t1.
 //     * @param t1 the other tuple
 //     */
-//    public final void add(Tuple4i t1) {
+//    public final void addAt(Tuple4i t1) {
 //	this.x += t1.x;
 //	this.y += t1.y;
 //	this.z += t1.z;

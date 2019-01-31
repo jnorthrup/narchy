@@ -238,7 +238,7 @@ public class PatternMatcher {
                         if (parsedToken == PARSED_TOKEN_CHAR_SET_START ||
                             parsedToken == PARSED_TOKEN_CHAR_SET_INVERSE_START) {
                             throw new IllegalArgumentException(
-                                    "You must define characters in a set.");
+                                    "You must define characters in a setAt.");
                         }
                         sParsedPatternScratch[it++] = PARSED_TOKEN_CHAR_SET_STOP;
                         inSet = false;

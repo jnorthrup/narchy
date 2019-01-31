@@ -78,7 +78,7 @@ abstract public class StreamDecoder implements Runnable {
 
 
         int durationsToRead = Constants.kDurationsPerHail;
-        int deletedSamples = 0;
+        int skipped = 0;
 
         double[] startSignals = new double[Constants.kBitsPerByte * Constants.kBytesPerDuration];
         boolean notEnoughSamples;
@@ -104,7 +104,7 @@ abstract public class StreamDecoder implements Runnable {
                 byte[] decoded = Decoder.decode(startSignals, samples);
                 try {
                     buffer.delete(samples.length);
-                    deletedSamples += samples.length;
+                    skipped += samples.length;
                     out.write(decoded);
 
                     //System.out.println("decoded " + decoded.length + " bytes");
@@ -160,7 +160,7 @@ abstract public class StreamDecoder implements Runnable {
                     && ((hailIndex > -1 && sosIndex < hailIndex) || hailIndex == -1)) {
                 try {
                     buffer.delete(Constants.kSamplesPerDuration * durationsToRead);
-                    deletedSamples += Constants.kSamplesPerDuration * durationsToRead;
+                    skipped += Constants.kSamplesPerDuration * durationsToRead;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -188,7 +188,7 @@ abstract public class StreamDecoder implements Runnable {
                     buffer.delete(shiftAmount);
                 } catch (IOException e) {
                 }
-                deletedSamples += shiftAmount;
+                skipped += shiftAmount;
 
                 durationsToRead = Constants.kDurationsPerHail;
                 notEnoughSamples = true;
@@ -227,7 +227,7 @@ abstract public class StreamDecoder implements Runnable {
 	      */
 
                     buffer.delete(hailIndex + (Constants.kSamplesPerDuration * Constants.kDurationsPerHail));
-                    deletedSamples += hailIndex + (Constants.kSamplesPerDuration * Constants.kDurationsPerHail);
+                    skipped += hailIndex + (Constants.kSamplesPerDuration * Constants.kDurationsPerHail);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -247,7 +247,7 @@ abstract public class StreamDecoder implements Runnable {
 
                 try {
                     buffer.delete(Constants.kSamplesPerDuration);
-                    deletedSamples += Constants.kSamplesPerDuration;
+                    skipped += Constants.kSamplesPerDuration;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

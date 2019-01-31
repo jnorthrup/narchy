@@ -44,7 +44,7 @@
 //
 //            synchronizer = new BaseMusic_DigitalSignalSynchronizer(fps);
 //
-//            synchronizer.add(analyzer = new BaseMusic_ScopeAndSpectrumAnalyzer());
+//            synchronizer.addAt(analyzer = new BaseMusic_ScopeAndSpectrumAnalyzer());
 //
 //            synchronizer.start((AudioSource)(src.source));
 //
@@ -101,7 +101,7 @@
 //            final Tex tex = new Tex();
 //
 //            {
-//                set(tex.view());
+//                setAt(tex.view());
 //            }
 //
 //

@@ -312,7 +312,7 @@
 //            {
 //                List result = listClass.newInstance();
 //    //            addTo(src, result);
-//                for(T o : src)result.add(o);
+//                for(T o : src)result.addAt(o);
 //                return result;
 //            } catch (InstantiationException ex) {
 //                Logger.getLogger(TypesUtil.class.getName()).log(Level.SEVERE, null, ex);
@@ -473,7 +473,7 @@
 //            List<ValueController> _vc = new ArrayList<ValueController>();
 //            for( Field f : fieldsOf(cls) ){
 //                FieldController fc = new FieldController(owner, f);
-//                _vc.add( fc );
+//                _vc.addAt( fc );
 //            }
 //            return  _vc;
 //        }
@@ -878,7 +878,7 @@
 //                if( tvc!=null ){
 //                    try {
 //                        Object odata = tvc.convertToValue(tdata.get(fname));
-//                        field.set(obj, odata);
+//                        field.setAt(obj, odata);
 //                    } catch (Throwable ex) {
 //                        Logger.getLogger(TypesUtil.class.getName()).log(Level.SEVERE, null, ex);
 //                    }

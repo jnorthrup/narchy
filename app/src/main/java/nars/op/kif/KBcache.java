@@ -238,7 +238,7 @@ public class KBcache implements Serializable {
                 + rel + " " + parent + " " + child);
         	return false;
         }
-        if (debug) System.out.println("INFO in KBcache.childOfP(): child set contains " + child + " : " + childSet.contains(child));
+        if (debug) System.out.println("INFO in KBcache.childOfP(): child setAt contains " + child + " : " + childSet.contains(child));
         return childSet.contains(child);
     }
 
@@ -1130,7 +1130,7 @@ public class KBcache implements Serializable {
     }
 
     /** ***************************************************************
-     * Compile the set of transitive relations that are between instances  
+     * Compile the set of transitive relations that are between instances
      */
     public void buildInstTransRels() {
         

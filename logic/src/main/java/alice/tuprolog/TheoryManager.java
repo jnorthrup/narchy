@@ -244,7 +244,7 @@ public class TheoryManager {
     /**
      * Consults a theory.
      *
-     * @param theory        theory to add
+     * @param theory        theory to addAt
      * @param dynamicTheory if it is true, then the clauses are marked as dynamic
      * @param libName       if it not null, then the clauses are marked to belong to the specified library
      */
@@ -361,7 +361,7 @@ public class TheoryManager {
     }
 
     /**
-     * add a goal eventually defined by last parsed theory.
+     * addAt a goal eventually defined by last parsed theory.
      */
     public /*synchronized*/ void addStartGoal(Struct g) {
         startGoalStack.push(g);

@@ -57,21 +57,21 @@ public class TypeCastTest {
 //        
 //        TypeCastGraph tcast = new TypeCastGraph();
 //        
-//        tcast.set(Integer.class, int.class, new Convertor<Object, Object>() {
+//        tcast.setAt(Integer.class, int.class, new Convertor<Object, Object>() {
 //            @Override
 //            public Object convert(Object from) {
 //                return (int)((Integer)from);
 //            }
 //        });
 //
-//        tcast.set(int.class, Integer.class, new Convertor<Object, Object>() {
+//        tcast.setAt(int.class, Integer.class, new Convertor<Object, Object>() {
 //            @Override
 //            public Object convert(Object from) {
 //                return (Integer)from;
 //            }
 //        });
 //
-//        tcast.set(Integer.class, String.class, new Convertor<Object, Object>() {
+//        tcast.setAt(Integer.class, String.class, new Convertor<Object, Object>() {
 //            @Override
 //            public Object convert(Object from) {
 //                return ((Integer)from).toString();
@@ -102,7 +102,7 @@ public class TypeCastTest {
 //        
 //        TypeCastGraph tcast = new TypeCastGraph();
 //        
-//        tcast.set(Interface1.class, Interface2.class, new Convertor<Object, Object>() {
+//        tcast.setAt(Interface1.class, Interface2.class, new Convertor<Object, Object>() {
 //            @Override
 //            public Object convert(Object from) {
 //                return null;

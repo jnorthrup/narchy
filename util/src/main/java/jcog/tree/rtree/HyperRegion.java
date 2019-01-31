@@ -34,7 +34,7 @@ public interface HyperRegion {
      * Calculate the resulting mbr when combining param HyperRect with this HyperRect
      * use custom implementations of mbr(HyperRect[]) when possible, it is potentially more efficient
      *
-     * @param r - mbr to add
+     * @param r - mbr to addAt
      * @return new HyperRect representing mbr of both HyperRects combined
      */
     HyperRegion mbr(HyperRegion r);

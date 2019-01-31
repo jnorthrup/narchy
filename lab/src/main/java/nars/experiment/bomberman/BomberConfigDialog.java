@@ -66,12 +66,12 @@ public class BomberConfigDialog extends JDialog
         JPanel helpPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         /** setup the border */
         helpPanel.setBorder(BorderFactory.createEtchedBorder());
-        /** add a label to it */
+        /** addAt a label to it */
         helpPanel.add(new JLabel("Click on the buttons to edit the keys.",
                 JLabel.CENTER));
-        /** add the help panel to the north side of the dialog */
+        /** addAt the help panel to the north side of the dialog */
         getContentPane().add(helpPanel, "North");
-        /** add the key setup panels to the center */
+        /** addAt the key setup panels to the center */
         getContentPane().add(centerPanel, "Center");
         /** create the panel to hold the buttons */
         JPanel buttonsP = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -84,7 +84,7 @@ public class BomberConfigDialog extends JDialog
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(this);
         buttonsP.add(closeButton);
-        /** add the buttons panel to the south side of the dialog */
+        /** addAt the buttons panel to the south side of the dialog */
         getContentPane().add(buttonsP, "South");
 
         /** set the dialog so user can't resize it */
@@ -139,15 +139,15 @@ public class BomberConfigDialog extends JDialog
                     buttons[pn][i].setText("Bomb");
                     break;
             }
-            /** add action handler to the button */
+            /** addAt action handler to the button */
             buttons[pn][i].addActionListener(this);
             /** setup the text field from data */
             fields[i].setText(KeyEvent.getKeyText(keys[pn][i]));
             /** user can't edit the text field */
             fields[i].setEditable(false);
-            /** add the button to the left side */
+            /** addAt the button to the left side */
             left.add(buttons[pn][i]);
-            /** add the text field to the right side */
+            /** addAt the text field to the right side */
             right.add(fields[i]);
         }
 
@@ -156,10 +156,10 @@ public class BomberConfigDialog extends JDialog
         /** set the border */
         p.setBorder(BorderFactory.createTitledBorder(BorderFactory.
                 createEtchedBorder(), "Player " + (pn + 1) + " Keys Configuration"));
-        /** add the buttons and the keys to the panel */
+        /** addAt the buttons and the keys to the panel */
         p.add(left);
         p.add(right);
-        /** add the panel to the master panel */
+        /** addAt the panel to the master panel */
         m.add(p);
     }
 
@@ -225,7 +225,7 @@ public class BomberConfigDialog extends JDialog
             /** setup pointer to point to itself */
             me = this;
 
-            /** add keyboard event handler */
+            /** addAt keyboard event handler */
             addKeyListener(new KeyAdapter() {
                 /**
                  * Handles key pressed events.

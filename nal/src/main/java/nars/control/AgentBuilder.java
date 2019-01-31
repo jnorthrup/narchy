@@ -21,7 +21,7 @@ public class AgentBuilder {
     private final IntIntToObjectFunc<Agent> a;
     float durations = 1f;
 
-    /** whether to add an extra NOP action */
+    /** whether to addAt an extra NOP action */
     private final static boolean NOP_ACTION = true;
 
     public AgentBuilder(IntIntToObjectFunc<Agent> a, FloatSupplier reward) {
