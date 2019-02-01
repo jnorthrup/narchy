@@ -43,19 +43,20 @@ public class Memoizers {
             m.print();
     }
 
-    public final <X,Y> Function<X,Y> memoize(Function<X,Y> computation) {
-        return memoize(computation.toString(), computation);
-    }
-
-    @Deprecated public <X,Y> Function<X,Y> memoize(String id, Function<X,Y> computation) {
-
-        return memoize(id, DEFAULT_MEMOIZE_CAPACITY, computation);
-    }
+//    public final <X,Y> Function<X,Y> memoize(Function<X,Y> computation) {
+//        return memoize(computation.toString(), computation);
+//    }
+//
+//    @Deprecated public <X,Y> Function<X,Y> memoize(String id, Function<X,Y> computation) {
+//        return memoize(id, DEFAULT_MEMOIZE_CAPACITY, computation);
+//    }
 
     public <X,B extends ByteKey,Y> Function<X,Y> memoize(String id, Function<X,B> byter, Function<B,Y> computation, int capacity) {
-        Function<B, Y> b = add(id, new ByteHijackMemoize<>(computation, capacity, 3, false));
-        return (x) -> b.apply(byter.apply(x));
+        Function<B, Y> b = add(id, memoizeByte(computation, capacity));
+        return x -> b.apply(byter.apply(x));
     }
+
+
 
     /** registers a new memoizer with a default memoization implementation */
     public <X,Y> Function<X,Y> memoize(String id, int capacity, Function<X,Y> computation) {
@@ -79,7 +80,12 @@ public class Memoizers {
 
     /** provides default memoizer implementation */
     private <X, Y> Memoize<X,Y> memoizer(Function<X, Y> computation, int capacity) {
-        return new HijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES);
+        //return new HijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES);
+        return new CollisionMemoize<>(capacity, computation);
+    }
+    private <X extends ByteKey, Y> Memoize<X, Y> memoizeByte(Function<X, Y> computation, int capacity) {
+        return new ByteHijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES, false);
+        //return CollisionMemoize.get(capacity, computation);
     }
 
     private static class MemoizationStatistics {
