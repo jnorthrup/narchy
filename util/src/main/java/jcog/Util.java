@@ -1576,6 +1576,10 @@ public enum Util {
 
     public static long clamp(long i, long min, long max) {
         assert (min <= max);
+        return clampSafe(i, min, max);
+    }
+
+    public static long clampSafe(long i, long min, long max) {
         if (i < min) i = min;
         if (i > max) i = max;
         return i;

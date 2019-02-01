@@ -49,7 +49,7 @@ public class UniExec extends AbstractExec {
         public MyTimedLink my() { return new MyTimedLink(); }
 
         /** thread-local view */
-        public class MyTimedLink {
+        final class MyTimedLink {
 
             /** allocated time for execution;
              * may be negative when excessive time consumed */
@@ -70,7 +70,7 @@ public class UniExec extends AbstractExec {
             }
 
             public void add(long t, long min, long max) {
-                time = Util.clamp(time + t, min, max);
+                time = Util.clampSafe((time + t), min, max);
             }
 
             public Causable causable() {

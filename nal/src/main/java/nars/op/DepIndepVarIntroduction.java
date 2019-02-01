@@ -1,6 +1,5 @@
 package nars.op;
 
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.memoize.Memoizers;
@@ -38,7 +37,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     /**
      * sum by complexity if passes include filter
      */
-    private static final ToIntFunction<Term> depIndepFilter = t ->
+    static final ToIntFunction<Term> depIndepFilter = t ->
         (t.op().var) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
 
     /** if no variables are present in the target target, use the normalized variable which can help ensure avoidance of a need for full compound normalization */
@@ -81,10 +80,10 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     @Override protected Term choose(Term[] x, Random rng) {
         IntToFloatFunction curve =
-                n -> 1f / Util.cube(x[n].volume());
+                //n -> 1f / Util.cube(x[n].volume());
                 //n -> 1f / Util.sqr(x[n].volume());
-                //n -> 1f / x[n].volume();
-        return x[Roulette.selectRoulette(x.length, curve, rng)];
+                n -> 1f / x[n].volume();
+        return x[Roulette.selectRouletteCached(x.length, curve, rng)];
     }
 
     @Nullable

@@ -344,15 +344,14 @@ abstract public class MultiExec extends UniExec {
 
             private void play(long playTime) {
 
+                n = cpu.size();
+                if (n == 0)
+                    return;
 
                 long now = nar.time();
-                if (now >= lastScheduled + nar.dur()) {
+                if (now > lastScheduled) {
 
                     lastScheduled = now;
-
-                    n = cpu.size();
-                    if (n == 0)
-                        return;
 
                     int granularity = 2;
                     maxExe = playTime / (granularity);
@@ -364,6 +363,8 @@ abstract public class MultiExec extends UniExec {
                         play = new TimedLink.MyTimedLink[n];
                         for (int i = 0; i < n; i++)
                             play[i] = cpu.get(i).my();
+
+                        ArrayUtils.shuffle(play, rng); //each worker gets unique order
                     }
 
 
@@ -374,14 +375,14 @@ abstract public class MultiExec extends UniExec {
                             maxTime = m.time;
                     }
 
-                    float overspend = 2;
+                    float overspend = 1.5f;
                     long shift = maxTime < 0 ? 1 - maxTime : 0;
                     for (TimedLink.MyTimedLink m : play) {
-                        m.add(Math.max(1, Math.round(shift + (playTime * overspend) * m.pri())), -playTime / 2, playTime / 2);
+                        m.add(Math.max(1, Math.round(shift + (playTime * overspend) * m.pri())),
+                                -playTime / 2, playTime / 2);
                     }
 
 
-                    ArrayUtils.shuffle(play, rng);
 
                 }
 
@@ -424,7 +425,7 @@ abstract public class MultiExec extends UniExec {
                         }
                     }
 
-                } while (queueSafe() && (until > after));
+                } while ((until > after) && queueSafe());
 
             }
 

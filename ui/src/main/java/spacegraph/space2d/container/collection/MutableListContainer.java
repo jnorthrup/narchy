@@ -44,10 +44,10 @@ public class MutableListContainer extends AbstractMutableContainer {
     }
 
 
-    protected Surface get(int index) {
+    public Surface get(int index) {
         return children.get(index);
     }
-    protected Surface remove(int index) {
+    public Surface remove(int index) {
         return children.remove(index);
     }
 

@@ -23,7 +23,7 @@ public class Memoizers {
     /** static instance */
     public static final Memoizers the = new Memoizers();
 
-//    public static final int DEFAULT_HIJACK_REPROBES = 3;
+    public static final int DEFAULT_HIJACK_REPROBES = 3;
     public static final int DEFAULT_MEMOIZE_CAPACITY;
     static {
         //1gb -> 32k
@@ -80,11 +80,15 @@ public class Memoizers {
     /** provides default memoizer implementation */
     private <X, Y> Memoize<X,Y> memoizer(Function<X, Y> computation, int capacity) {
         //return new HijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES);
+
         return new CollisionMemoize<>(capacity, computation);
     }
 
     public <X extends ByteKey.ByteKeyExternal, Y> Function<X, Y> memoizeByte(String id, int capacity, Function<X, Y> computation) {
-        //return new ByteHijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES, false);
+//        ByteHijackMemoize<X, Y> c = new ByteHijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES, false);
+//        add(id, c);
+//        return c;
+
         CollisionMemoize<X, ByteKey.ByteKeyInternal<Y>> c = CollisionMemoize.byteKey(capacity, computation);
         add(id, c);
         return (x)->c.apply(x).get();

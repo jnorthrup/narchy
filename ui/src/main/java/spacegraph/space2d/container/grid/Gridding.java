@@ -154,7 +154,7 @@ public class Gridding extends MutableListContainer {
 
     }
 
-    private void layoutGrid(Surface[] children, int nx, int ny, float margin) {
+    protected void layoutGrid(Surface[] children, int nx, int ny, float margin) {
         int i = 0;
 
         float hm = margin/2f;
@@ -184,7 +184,7 @@ public class Gridding extends MutableListContainer {
             for (int x = 0; x < nx; x++) {
                 
 
-                Surface c = children[i++];
+                Surface c = children[layoutIndex(i++)];
 
                 float x1 = px * W;
                 c.pos(X+x1, Y+y1, X+x1+dxc*W, Y+y1+dyc*H);
@@ -198,6 +198,10 @@ public class Gridding extends MutableListContainer {
             if (i >= n) break;
 
         }
+    }
+
+    protected int layoutIndex(int i) {
+        return i;
     }
 
     public static Gridding grid(Iterable<? extends Surface> content) {

@@ -8,7 +8,9 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.concept.sensor.AbstractSensor;
+import nars.gui.BagSpectrogram;
 import nars.gui.sensor.VectorSensorView;
+import nars.index.concept.AbstractConceptIndex;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
@@ -52,6 +54,7 @@ public class Arkancide extends NAgentX {
 
             //n.timeResolution.setAt(25); //50fps resolution
 
+            window(new BagSpectrogram(((AbstractConceptIndex)n.concepts).active, 16, n), 500, 500);
 
             return new Arkancide(n, cam, numeric);
 

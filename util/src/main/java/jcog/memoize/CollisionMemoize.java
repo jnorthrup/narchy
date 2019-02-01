@@ -68,7 +68,9 @@ public class CollisionMemoize<X,Y> extends AbstractMemoize<X,Y> {
 
     @Override
     public Y apply(X x) {
-        Y y = cache.getAggressive(x);
+        Y y =
+                //cache.getAggressive(x);
+                cache.get(x);
         return y;
     }
 }

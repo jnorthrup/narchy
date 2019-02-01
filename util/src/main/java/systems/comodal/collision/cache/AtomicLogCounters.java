@@ -36,7 +36,7 @@ public final class AtomicLogCounters {
         final int[] thresholds = new int[MAX_COUNT];
         thresholds[0] = THRESHOLD_GRANULARITY;
         for (int i = 1; i < MAX_COUNT; i++) {
-            thresholds[i] = (int) Math.ceil(((float)(THRESHOLD_GRANULARITY-1)) / ((long) i << pow2LogFactor));
+            thresholds[i] = (int) Math.round(((double)(THRESHOLD_GRANULARITY-1)) / ((long) (i << pow2LogFactor)));
         }
         return new AtomicLogCounters(counters, initialCount, thresholds);
     }
@@ -86,9 +86,8 @@ public final class AtomicLogCounters {
         if (count == MAX_COUNT) {
             return;
         }
-        int expected;
         while (count <= initialCount) {
-            expected = witness;
+            int expected = witness;
             witness = (int) COUNTERS
                     .compareAndExchange(counters, index, (byte) expected, (byte) (count + 1));
             if (expected == witness || (count = witness & MAX_COUNT) == MAX_COUNT) {
@@ -99,7 +98,7 @@ public final class AtomicLogCounters {
             return;
 
         for (; ; ) {
-            expected = witness;
+            int expected = witness;
             witness = (int) COUNTERS
                     .compareAndExchange(counters, index, (byte) expected, (byte) (count + 1));
             if (expected == witness || (count = witness & MAX_COUNT) == MAX_COUNT) {

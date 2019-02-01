@@ -22,11 +22,23 @@ public enum Roulette {
      * Returns the selected index based on the weights(probabilities)
      */
     public static int selectRoulette(int weightCount, IntToFloatFunction weight, Random rng) {
-
         assert (weightCount > 0);
+
+        if (weightCount == 1)
+            return 0;
+
         return selectRoulette(weightCount, weight, Util.sumIfPositive(weightCount, weight), rng);
     }
 
+    public static int selectRouletteCached(int weightCount, IntToFloatFunction weight, Random rng) {
+        if (weightCount == 1)
+            return 0;
+
+        float[] w = new float[weightCount];
+        for (int i = 0; i < weightCount; i++)
+            w[i] = weight.valueOf(i);
+        return selectRoulette(weightCount, i->w[i], rng);
+    }
 
     /**
      * faster if the sum is already known

@@ -4,10 +4,15 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.term.Term;
+import nars.term.Terms;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.TreeSet;
 
+import static nars.$.$$;
+import static nars.op.DepIndepVarIntroduction.depIndepFilter;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -29,8 +34,15 @@ class DepIndepVarIntroductionTest {
 
     @Test
     void testIntroduceIndepVar2() {
+        String x = "((a-->(x,#1))=|>(b-->(x,#1)))";
+        Term input = $$(x);
+        @Nullable Term[] r = Terms.nextRepeat(input.subterms(), depIndepFilter, 2);
+        assertEquals(2, r.length);
+        assertEq("x", r[0]);
+        assertEq("(x,#1)", r[1]);
+
         assertEquals("[((a-->($_v,#1))=|>(b-->($_v,#1))), ((a-->$_v)=|>(b-->$_v))]",
-                introduce("((a-->(x,#1))=|>(b-->(x,#1)))", 16).toString());
+                introduce(x, 8).toString());
     }
 
     @Test
@@ -57,7 +69,7 @@ class DepIndepVarIntroductionTest {
     private TreeSet<Term> introduce(String term, int iterations) {
         TreeSet<Term> s = new TreeSet();
         for (int i = 0; i < iterations; i++) {
-            Term u = $.func("varIntro", $.$$(term).normalize()).eval(n);
+            Term u = $.func("varIntro", $$(term).normalize()).eval(n);
             if (u!=null)
                 s.add(u);
         }
