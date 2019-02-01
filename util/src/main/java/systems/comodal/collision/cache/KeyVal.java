@@ -1,7 +1,5 @@
 package systems.comodal.collision.cache;
 
-import java.util.Objects;
-
 final class KeyVal<K, V> {
 
     final K key;
@@ -9,7 +7,7 @@ final class KeyVal<K, V> {
 
     KeyVal(final K key, final V val) {
         this.key = key;
-        this.val = Objects.requireNonNull(val);
+        this.val = val; //Objects.requireNonNull(val);
     }
 
     /**

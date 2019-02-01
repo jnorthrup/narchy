@@ -88,7 +88,7 @@ abstract public class Finger {
 
             if (f != null /*&& (what = f.touching()) != null*/) {
 
-                idle.lazySet(false);
+                idle.set(false);
 
                 if (f.clickedNow(button, what)) {
 

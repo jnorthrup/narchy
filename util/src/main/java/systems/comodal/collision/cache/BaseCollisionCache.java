@@ -83,21 +83,21 @@ abstract class BaseCollisionCache<K, L, V> implements LoadingCollisionCache<K, L
      */
     @Override
     @SuppressWarnings("unchecked")
-    public final V get(final K key, final Function<K, V> loadAndMap) {
+    public final V get(final K key, final Function<K, V> f) {
         final int hash = hashCoder.applyAsInt(key) & mask;
         final V[] collisions = getBucket.apply(hash);
         final int counterOffset = hash << maxCollisionsShift;
         for (int index = 0; ; ) {
             final V collision = (V) COLLISIONS.getOpaque(collisions, index);
             if (collision == null) {
-                return checkDecayAndSwap(counterOffset, collisions, key, loadAndMap);
+                return checkDecayAndSwap(counterOffset, collisions, key, f);
             }
             if (isValForKey.test(key, collision)) {
                 counters.increment(counterOffset + index);
                 return collision;
             }
             if (++index == collisions.length) {
-                return checkDecayAndProbSwap(counterOffset, collisions, key, loadAndMap);
+                return checkDecayAndProbSwap(counterOffset, collisions, key, f);
             }
         }
     }

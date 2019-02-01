@@ -5,7 +5,8 @@ import jcog.Util;
 import jcog.data.list.FasterIntArrayList;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
-import jcog.memoize.HijackMemoize;
+import jcog.memoize.CollisionMemoize;
+import jcog.memoize.Memoize;
 import jcog.memoize.Memoizers;
 import nars.*;
 import nars.eval.Evaluation;
@@ -189,9 +190,7 @@ public class Arithmeticize {
 
     static final Function<IntArrayListCached,ArithmeticOp[]> cached;
     static {
-        HijackMemoize<IntArrayListCached,ArithmeticOp[]>
-                modsCache = new HijackMemoize<>(Arithmeticize::_mods, 8 * 1092, 3);
-        cached = Memoizers.the.add(Arithmeticize.class.getSimpleName() + "_mods", modsCache);
+        cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods", 8*1092, Arithmeticize::_mods);
     }
 
     static ArithmeticOp[] mods(IntHashSet ii) {

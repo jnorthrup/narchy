@@ -8,6 +8,8 @@ import jcog.data.list.FasterList;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.math.FloatRange;
+import jcog.memoize.CaffeineMemoize;
+import jcog.memoize.Memoize;
 import jcog.memoize.SoftMemoize;
 import jcog.util.ArrayUtils;
 import nars.*;
@@ -161,28 +163,33 @@ public class Opjects extends DefaultTermizer {
 
     protected final ConsumerX<ITask> in;
 
-    private final SoftMemoize<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle> methodCache = new SoftMemoize<>((x) -> {
+    private final Memoize<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle> methodCache =
+            CaffeineMemoize.build(
+            //new SoftMemoize<>(
+        x -> {
 
-        Class c = x.getOne().getOne();
-        Term methodTerm = x.getOne().getTwo();
-        List<Class<?>> types = x.getTwo();
+            Class c = x.getOne().getOne();
+            Term methodTerm = x.getOne().getTwo();
+            List<Class<?>> types = x.getTwo();
 
-        String mName = methodTerm.toString();
-        Class<?>[] cc = types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
-        Method m = findMethod(c, mName, cc);
-        if (m == null || !methodEvokable(m))
+            String mName = methodTerm.toString();
+            Class<?>[] cc = types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
+            Method m = findMethod(c, mName, cc);
+            if (m == null || !methodEvokable(m))
+                return null;
+
+            m.setAccessible(true);
+            try {
+                MethodHandle mh = MethodHandles.lookup().unreflect(m);
+                return mh;
+
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
             return null;
-
-        m.setAccessible(true);
-        try {
-            MethodHandle mh = MethodHandles.lookup().unreflect(m);
-            return mh;
-
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }, 512, STRONG, SOFT);
+        },
+    -1 /* soft */, false);
+    //, 512, STRONG, SOFT);
 
 
     /**
@@ -455,7 +462,7 @@ public class Opjects extends DefaultTermizer {
          * been running which may cause it to be ignored once it becomes available.
          * maybe use a central runCache to make this easier
          */
-        final SoftMemoize<Term, Runnable> runCache;
+        final Memoize<Term, Runnable> runCache;
 
 
         public MethodExec(String _methodName) {
@@ -463,7 +470,7 @@ public class Opjects extends DefaultTermizer {
 
             this.methodName = $.the(_methodName);
 
-            runCache = new SoftMemoize<>((term) -> {
+            runCache = CaffeineMemoize.build(term -> {
                 Subterms args = validArgs(Operator.args(term));
                 if (args == null)
                     return null;
@@ -515,7 +522,8 @@ public class Opjects extends DefaultTermizer {
 
                 };
 
-            }, 512, STRONG, SOFT);
+            }, -1, false);
+            //, 512, STRONG, SOFT);
         }
 
         @Override

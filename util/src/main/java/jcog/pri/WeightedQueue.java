@@ -41,8 +41,8 @@ import java.util.concurrent.TimeUnit;
  * into the queue at a time.
  *
  * If the weight of an object changes after it is added you are going to have a bad time. Checking weight should be
- * cheap so memoize expensive to compute weights. If weight throws that can also result in leaked permits so it's
- * always a good idea to memoize weight so it doesn't throw.
+ * cheap so memoizeByte expensive to compute weights. If weight throws that can also result in leaked permits so it's
+ * always a good idea to memoizeByte weight so it doesn't throw.
  *
  * In the interests of not writing unit tests for methods no one uses there is a lot of UnsupportedOperationException.
  * If you need them then add them and add proper unit tests to WeightedQueueTest. "Good" tests. 100% coverage including

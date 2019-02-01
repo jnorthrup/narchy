@@ -14,14 +14,15 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 
 @State(Scope.Benchmark)
-@Threads(32)
+@Threads(Threads.MAX)
 @BenchmarkMode(Mode.Throughput)
-@OutputTimeUnit(TimeUnit.MICROSECONDS)
-@Warmup(iterations = 10)
-@Measurement(iterations = 10)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@Warmup(iterations = 1, time = 1)
+@Measurement(iterations = 1, time = 2)
+@Fork(1)
 public class LoadStaticZipfBenchmark {
 
-  static final int SIZE = 1 << 20;
+  static final int SIZE = 1 << 12;
   static final int MASK = SIZE - 1;
   static final int ITEMS = SIZE / 3;
   private static final int CAPACITY = 1 << 17;
@@ -36,6 +37,7 @@ public class LoadStaticZipfBenchmark {
       "Cache2k",
       "Caffeine",
       "Collision",
+      "Collision_Packed",
       "Collision_Aggressive"
   })
   private BenchmarkFunctionFactory cacheType;
@@ -166,6 +168,15 @@ public class LoadStaticZipfBenchmark {
       public Function<Long, Long> create() {
         final CollisionCache<Long, Long> cache = startCollision()
             .buildSparse(5.0);
+        System.out.println(cache);
+        return key -> cache.get(key, LOADER);
+      }
+    },
+    Collision_Packed {
+      @Override
+      public Function<Long, Long> create() {
+        final CollisionCache<Long, Long> cache = startCollision()
+                .buildPacked();
         System.out.println(cache);
         return key -> cache.get(key, LOADER);
       }

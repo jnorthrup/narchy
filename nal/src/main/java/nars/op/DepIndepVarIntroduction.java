@@ -68,7 +68,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     public static final int MEMOIZE_CAPACITY = 32 * 1024;
 
-    private final static Function<Subterms,Term[]> select = Memoizers.the.memoize(
+    private final static Function<Subterms,Term[]> select = Memoizers.the.memoizeByte(
             DepIndepVarIntroduction.class.getSimpleName() + "_select",
             Intermed.SubtermsKey::new,
             DepIndepVarIntroduction::_select, MEMOIZE_CAPACITY);

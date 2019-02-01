@@ -113,7 +113,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             return new Cause[newCapacity];
         }
     };
-    protected final Random random;
+
+    protected final Supplier<Random> random;
 
     /**
      * atomic for thread-safe schizophrenia
@@ -133,7 +134,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final TaskBuffer input;
 
 
-    public NAR(ConceptIndex concepts, Exec exe, Attention attn, Time time, Random rng, ConceptBuilder conceptBuilder) {
+    public NAR(ConceptIndex concepts, Exec exe, Attention attn, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
 
         this.random = rng;
 
@@ -716,7 +717,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     @Override
     public final Random random() {
-        return random;
+        return random.get();
     }
 
     @Nullable
@@ -1558,7 +1559,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 switch (tcl) {
                     case 0:
                         //shared one-element cause
-                        assert (uniqueCause[0] == ci);
+                        //assert (uniqueCause[0] == ci);
                         t.cause(uniqueCause);
                         break;
                     case 1:

@@ -78,7 +78,7 @@ public class Factorize {
         return CONJ.the(x.dt(), y);
     }
 
-    static final Function<Subterms,Term[]> factorize = Memoizers.the.memoize(
+    static final Function<Subterms,Term[]> factorize = Memoizers.the.memoizeByte(
             Factorize.class.getSimpleName() + "_factorize",
             Intermed.SubtermsKey::new,
             Factorize::_factorize, 32 * 1024);

@@ -2,7 +2,6 @@ package nars.term.util.builder;
 
 import jcog.data.byt.DynBytes;
 import jcog.memoize.Memoizers;
-import jcog.memoize.byt.ByteHijackMemoize;
 import nars.Op;
 import nars.subterm.AnonVector;
 import nars.subterm.SortedSubterms;
@@ -46,8 +45,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final boolean deep;
     protected final int volInternedMax;
 
-    final ByteHijackMemoize<InternedSubterms, Subterms> subterms, anonSubterms;
-    final ByteHijackMemoize<InternedCompoundByComponents, Term>[] terms;
+    final Function<InternedSubterms, Subterms> subterms, anonSubterms;
+    final Function<InternedCompoundByComponents, Term>[] terms;
 
     private final String id;
 
@@ -61,7 +60,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         this.deep = deep;
         this.volInternedMax = volInternedMax;
         Op[] ops = values();
-        terms = new ByteHijackMemoize[ops.length];
+        terms = new Function[ops.length];
 
 
         subterms = newOpCache("subterms",
@@ -69,7 +68,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         anonSubterms = newOpCache("anonSubterms",
                 (InternedSubterms x) -> new AnonVector(x.subs), cacheSizePerOp);
 
-        ByteHijackMemoize statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
+        Function statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
 
         for (int i = 0; i < ops.length; i++) {
             Op o = ops[i];
@@ -79,7 +78,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             //TODO use multiple PROD slices to decrease contention
 
-            ByteHijackMemoize<Intermed.InternedCompoundByComponents, Term> c;
+            Function<Intermed.InternedCompoundByComponents, Term> c;
             if (o == CONJ) {
                 c = newOpCache("conj",
                         (InternedCompoundByComponents j) -> super.conj(true, j.dt, j.subs()), cacheSizePerOp);
@@ -96,10 +95,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    protected <I extends Intermed, Y> ByteHijackMemoize<I, Y> newOpCache(String name, Function<I, Y> f, int capacity) {
-        ByteHijackMemoize h = new ByteHijackMemoize(f, capacity, 3, false);
-        Memoizers.the.add(id + '_' + InterningTermBuilder.class.getSimpleName() + '_' + name, h);
-        return h;
+    protected <I extends Intermed, Y> Function<I, Y> newOpCache(String name, Function<I, Y> f, int capacity) {
+        return Memoizers.the.memoizeByte(
+                id + '_' + InterningTermBuilder.class.getSimpleName() + '_' + name,
+                capacity, f);
     }
 
     @Override
@@ -119,7 +118,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return terms[x.op].apply(x);
     }
 
-    private Subterms subsInterned(ByteHijackMemoize<InternedSubterms, Subterms> m, Term[] t) {
+    private Subterms subsInterned(Function<InternedSubterms, Subterms> m, Term[] t) {
         return m.apply(new InternedSubterms(t));
     }
 

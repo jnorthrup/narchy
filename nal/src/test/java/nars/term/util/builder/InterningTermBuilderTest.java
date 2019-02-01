@@ -1,8 +1,5 @@
 package nars.term.util.builder;
 
-import com.google.common.collect.Iterators;
-import jcog.memoize.byt.ByteHijackMemoize;
-import jcog.pri.PriProxy;
 import nars.IO;
 import nars.Op;
 import nars.subterm.MappedSubterms;
@@ -30,10 +27,10 @@ class InterningTermBuilderTest {
         Term pab = t.compound(PROD, a, b);
         assertEquals( "(a,b)", pab.toString());
 
-        ByteHijackMemoize<Intermed.InternedCompoundByComponents, Term> prodCache = t.terms[PROD.id];
+//        Function<Intermed.InternedCompoundByComponents, Term> prodCache = (HijackMemoize<Intermed.InternedCompoundByComponents, Term>) t.terms[PROD.id];
 
-        PriProxy<Intermed.InternedCompoundByComponents, Term> pabEntry = Iterators.get(prodCache.iterator(), 0);
-        assertEquals(pab, pabEntry.get());
+//        PriProxy<Intermed.InternedCompoundByComponents, Term> pabEntry = Iterators.get(prodCache.iterator(), 0);
+//        assertEquals(pab, pabEntry.get());
         Term pabSame = t.compound(PROD, a, b);
         assertSame(pab, pabSame);
 

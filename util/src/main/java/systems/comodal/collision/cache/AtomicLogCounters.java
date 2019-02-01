@@ -2,6 +2,7 @@ package systems.comodal.collision.cache;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -17,10 +18,12 @@ public final class AtomicLogCounters {
 
     private final byte[] counters;
     private final byte initialCount;
-    private final double[] thresholds;
+
+    static final int THRESHOLD_GRANULARITY = Integer.MAX_VALUE;
+    private final int[] thresholds;
 
     private AtomicLogCounters(final byte[] counters, final int initialCount,
-                              final double[] thresholds) {
+                              final int[] thresholds) {
         this.counters = counters;
         this.initialCount = (byte) initialCount;
         this.thresholds = thresholds;
@@ -30,10 +33,10 @@ public final class AtomicLogCounters {
                                            final int maxCounterVal) {
         final int pow2LogFactor = calcLogFactorShift(maxCounterVal);
         final byte[] counters = new byte[numCounters];
-        final double[] thresholds = new double[MAX_COUNT];
-        thresholds[0] = 1.0;
+        final int[] thresholds = new int[MAX_COUNT];
+        thresholds[0] = THRESHOLD_GRANULARITY;
         for (int i = 1; i < MAX_COUNT; i++) {
-            thresholds[i] = 1.0 / ((long) i << pow2LogFactor);
+            thresholds[i] = (int) Math.ceil(((float)(THRESHOLD_GRANULARITY-1)) / ((long) i << pow2LogFactor));
         }
         return new AtomicLogCounters(counters, initialCount, thresholds);
     }
@@ -92,9 +95,9 @@ public final class AtomicLogCounters {
                 return;
             }
         }
-        if (thresholds[count] < ThreadLocalRandom.current().nextFloat()) {
+        if (thresholds[count] < (rng().nextInt() & THRESHOLD_GRANULARITY))
             return;
-        }
+
         for (; ; ) {
             expected = witness;
             witness = (int) COUNTERS
@@ -103,6 +106,10 @@ public final class AtomicLogCounters {
                 return;
             }
         }
+    }
+
+    private Random rng() {
+        return ThreadLocalRandom.current();
     }
 
     /**

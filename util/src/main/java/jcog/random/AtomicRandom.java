@@ -1,15 +1,24 @@
 package jcog.random;
 
-import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
-
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.Random;
 
-/** base class for Random implementations that apply a busy spin wait to ensure updates to state are atomic */
+/** base class for Random implementations that apply a busy spin wait to ensure updates to state are atomic.
+ * this doesnt seem to perform good at all.  not recommended
+ * */
 abstract public class AtomicRandom extends Random {
-    private static final MetalAtomicIntegerFieldUpdater<AtomicRandom> BUSY =
-            new MetalAtomicIntegerFieldUpdater(AtomicRandom.class, "busy");
 
-    private volatile int busy = 0;
+    private static final VarHandle BUSY;
+    static {
+        try {
+            BUSY = MethodHandles.lookup().findVarHandle(AtomicRandom.class, "busy", int.class);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    private volatile int busy;
 
     public AtomicRandom() {
         super();
@@ -40,11 +49,11 @@ abstract public class AtomicRandom extends Random {
     }
 
     private void exit() {
-        BUSY.lazySet(this,0);
+        BUSY.set(this, 0);
     }
 
     private void enter() {
-        while (!BUSY.weakCompareAndSet(this, 0, 1))
+        while (!BUSY.compareAndSet(this, 0, 1))
             Thread.onSpinWait();
     }
 

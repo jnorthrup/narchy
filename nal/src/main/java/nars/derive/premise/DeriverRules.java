@@ -4,12 +4,12 @@ import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
 import jcog.memoize.Memoizers;
-import jcog.memoize.byt.ByteHijackMemoize;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.term.control.PREDICATE;
 
 import java.io.PrintStream;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -28,7 +28,7 @@ public class DeriverRules {
     /**
      * TODO move this to a 'CachingDeriver' subclass
      */
-    public final ByteHijackMemoize<PremiseKey, short[]> whats;
+    public final Function<PremiseKey, short[]> whats;
 
     /**
      * repertoire
@@ -45,13 +45,13 @@ public class DeriverRules {
 
         this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.cause)).toArray(Cause[]::new);
 
-        this.whats = new ByteHijackMemoize<>(this::can, 128 * 1024, 3, false);
+
 
 //            @Override
 //            public float value(PremiseKey premiseKey, short[] shorts) {
 //                return premiseKey.pri;
 //            }
-        Memoizers.the.add(this + "_what", whats);
+        this.whats = Memoizers.the.memoize(this + "_what", 128 * 1024, this::can);
     }
 
     private short[] can(PremiseKey k) {

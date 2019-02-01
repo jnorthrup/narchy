@@ -13,23 +13,25 @@ import java.util.stream.IntStream;
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
-@Fork(0)
+@Threads(Threads.MAX)
+@Fork(1)
 @Warmup(iterations = 1, time = 1)
-@Measurement(iterations = 2, time = 1)
+@Measurement(iterations = 2, time = 2)
 public class GetPutBenchmark {
 
   private static final int SIZE =
           //16;
-          256;
-          //1024;
+          //256;
+          1024;
           //(2 << 14);
   private static final int MASK = SIZE - 1;
   private static final int ITEMS = SIZE / 3;
   @Param({
-      "Hijack",
-      "Cache2k",
-      "Caffeine",
       "Collision",
+      "Hijack",
+//      "Cache2k",
+//      "Caffeine"
+
   })
   private CacheFactory cacheType;
   private GetPutCache<Long, Boolean> cache;

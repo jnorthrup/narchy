@@ -1,7 +1,6 @@
 package nars;
 
 import jcog.data.list.FasterList;
-import jcog.random.XoRoShiRo128PlusRandom;
 import nars.attention.impl.DefaultAttention;
 import nars.concept.Concept;
 import nars.concept.util.ConceptAllocator;
@@ -25,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -38,7 +38,7 @@ public class NARS {
     public final NAR get() {
         NAR n = new NAR(index.get(), exec.get(),
                 new DefaultAttention(),
-                time, rng.get(), conceptBuilder.get());
+                time, rng, conceptBuilder.get());
         step.forEach(x -> x.accept(n));
         n.synch();
         return n;
@@ -148,8 +148,7 @@ public class NARS {
 
         exec = () -> new UniExec();
 
-        rng = () ->
-                new XoRoShiRo128PlusRandom(1);
+        rng = ThreadLocalRandom::current;
 
 //        attention(()->new ActiveConcepts(96));
 
@@ -235,7 +234,7 @@ public class NARS {
         NARS d = new DefaultNAR(level, true)
                 .time(new RealTime.CS().durFPS(25f));
 
-        d.rng = ()->new XoRoShiRo128PlusRandom(System.nanoTime());
+        d.rng = ThreadLocalRandom::current;
 
         return d.get();
     }

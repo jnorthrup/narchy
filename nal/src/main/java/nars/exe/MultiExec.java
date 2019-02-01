@@ -397,7 +397,7 @@ abstract public class MultiExec extends UniExec {
                     if (!sleeping.get(c.scheduledID)) {
 
                         boolean singleton = c.singleton();
-                        if (!singleton || c.busy.weakCompareAndSetAcquire(false, true)) {
+                        if (!singleton || c.busy.compareAndSet(false, true)) {
 //                            try {
 
                             long runtimeNS = Math.min(s.time, maxExe);
@@ -419,7 +419,7 @@ abstract public class MultiExec extends UniExec {
 
 //                            } finally {
                             if (singleton)
-                                c.busy.setRelease(false);
+                                c.busy.set(false);
 //                            }
                         }
                     }

@@ -1,12 +1,11 @@
 package jcog.memoize;
 
-import jcog.memoize.byt.ByteHijackMemoize;
 import jcog.memoize.byt.ByteKey;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
-/** manager for multiple (pre-registered) memoize instances, each with its own key/value type.
+/** manager for multiple (pre-registered) memoizeByte instances, each with its own key/value type.
  *
  *  TODO each separate memoizer can be managed centrally
  *      * memory consumption
@@ -24,7 +23,7 @@ public class Memoizers {
     /** static instance */
     public static final Memoizers the = new Memoizers();
 
-    public static final int DEFAULT_HIJACK_REPROBES = 3;
+//    public static final int DEFAULT_HIJACK_REPROBES = 3;
     public static final int DEFAULT_MEMOIZE_CAPACITY;
     static {
         //1gb -> 32k
@@ -43,17 +42,17 @@ public class Memoizers {
             m.print();
     }
 
-//    public final <X,Y> Function<X,Y> memoize(Function<X,Y> computation) {
-//        return memoize(computation.toString(), computation);
+//    public final <X,Y> Function<X,Y> memoizeByte(Function<X,Y> computation) {
+//        return memoizeByte(computation.toString(), computation);
 //    }
 //
-//    @Deprecated public <X,Y> Function<X,Y> memoize(String id, Function<X,Y> computation) {
-//        return memoize(id, DEFAULT_MEMOIZE_CAPACITY, computation);
+//    @Deprecated public <X,Y> Function<X,Y> memoizeByte(String id, Function<X,Y> computation) {
+//        return memoizeByte(id, DEFAULT_MEMOIZE_CAPACITY, computation);
 //    }
 
-    public <X,B extends ByteKey,Y> Function<X,Y> memoize(String id, Function<X,B> byter, Function<B,Y> computation, int capacity) {
-        Function<B, Y> b = add(id, memoizeByte(computation, capacity));
-        return x -> b.apply(byter.apply(x));
+    public <X,B extends ByteKey.ByteKeyExternal,Y> Function<X,Y> memoizeByte(String id, Function<X,B> byter, Function<B,Y> computation, int capacity) {
+        Function<B, Y> c = memoizeByte(id, capacity, computation::apply);
+        return (X x) -> c.apply(byter.apply(x));
     }
 
 
@@ -83,9 +82,12 @@ public class Memoizers {
         //return new HijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES);
         return new CollisionMemoize<>(capacity, computation);
     }
-    private <X extends ByteKey, Y> Memoize<X, Y> memoizeByte(Function<X, Y> computation, int capacity) {
-        return new ByteHijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES, false);
-        //return CollisionMemoize.get(capacity, computation);
+
+    public <X extends ByteKey.ByteKeyExternal, Y> Function<X, Y> memoizeByte(String id, int capacity, Function<X, Y> computation) {
+        //return new ByteHijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES, false);
+        CollisionMemoize<X, ByteKey.ByteKeyInternal<Y>> c = CollisionMemoize.byteKey(capacity, computation);
+        add(id, c);
+        return (x)->c.apply(x).get();
     }
 
     private static class MemoizationStatistics {

@@ -1,37 +1,29 @@
 package systems.comodal.collision.benchmarks;
 
+import org.openjdk.jmh.annotations.*;
+
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.IntStream;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Threads;
-import org.openjdk.jmh.annotations.Warmup;
 
 @State(Scope.Benchmark)
-@Threads(32)
+@Threads(Threads.MAX)
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 1)
-@Measurement(iterations = 10)
+@Warmup(iterations = 1, time = 1)
+@Measurement(iterations = 1, time = 2)
+@Fork(1)
 public class LoadMovingZipfBenchmark {
 
   private final Long[] keys = new Long[LoadStaticZipfBenchmark.SIZE];
   private final ScrambledZipfGenerator generator = new ScrambledZipfGenerator(
       LoadStaticZipfBenchmark.ITEMS);
   @Param({
-      "Cache2k",
-      "Caffeine",
-      "Collision",
-      "Collision_Aggressive"
+          "Cache2k",
+          "Caffeine",
+          "Collision",
+          "Collision_Packed",
+          "Collision_Aggressive"
   })
   private LoadStaticZipfBenchmark.BenchmarkFunctionFactory cacheType;
   private Function<Long, Long> benchmarkFunction;

@@ -183,7 +183,7 @@ final class Memoizer0 implements InvocationHandler {
             final String s2 = b2.getSimpleName();
             if (s1.equals(s2))
                 return s1 + ":direct";
-            return s1 + ":memoize";
+            return s1 + ":memoizeByte";
         }
 
         /**

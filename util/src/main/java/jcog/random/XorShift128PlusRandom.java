@@ -44,7 +44,7 @@ import java.util.Random;
  * @see Random
  * @see XorShift128PlusRandomGenerator
  */
-public class XorShift128PlusRandom extends AtomicRandom {
+public class XorShift128PlusRandom extends Random {
 
     /**
      * 2<sup>-53</sup>.
@@ -58,7 +58,7 @@ public class XorShift128PlusRandom extends AtomicRandom {
     /**
      * The internal state of the algorithm.
      */
-    private volatile long s0, s1;
+    private long s0, s1;
 
 
     /**
@@ -75,7 +75,7 @@ public class XorShift128PlusRandom extends AtomicRandom {
     }
 
     @Override
-    protected long _nextLong() {
+    public long nextLong() {
         long s1 = s0;
         long s0 = this.s1;
         this.s0 = s0;
@@ -153,7 +153,7 @@ public class XorShift128PlusRandom extends AtomicRandom {
      * @param seed a nonzero seed for this generator (if zero, the generator will be seeded with {@link Long#MIN_VALUE}).
      */
     @Override
-    protected void _setSeed(long seed) {
+    public void setSeed(long seed) {
         s0 = SplitMix64Random.murmurHash3(seed == 0 ? Long.MIN_VALUE : seed);
         s1 = SplitMix64Random.murmurHash3(s0);
     }

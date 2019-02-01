@@ -9,6 +9,7 @@ import jcog.exe.Exe;
 import jcog.io.bzip2.BZip2InputStream;
 import jcog.io.tar.TarEntry;
 import jcog.io.tar.TarInputStream;
+import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
 import jcog.memoize.SoftMemoize;
 import jcog.tree.rtree.rect.RectFloat;
@@ -50,7 +51,9 @@ public class ImageTexture extends Tex {
     }
 
     /** pair(gl context, texture name) */
-    private static final Memoize<Pair<GLContext,String>, TextureData> textureCache = new SoftMemoize<>((cu) -> {
+    private static final Memoize<Pair<GLContext,String>, TextureData> textureCache =
+            //new SoftMemoize<>(cu -> {
+            CaffeineMemoize.build(cu -> {
         try {
             String u = cu.getTwo();
             GLProfile profile = cu.getOne().getGL().getGLProfile();
@@ -71,7 +74,8 @@ public class ImageTexture extends Tex {
         } catch (IOException e) {
             return null;
         }
-    }, 1024, STRONG);
+    }//, 1024, STRONG);
+    , -1, false);
 
 
 
