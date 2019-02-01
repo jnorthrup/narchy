@@ -1,6 +1,7 @@
 package jcog.memoize;
 
 import jcog.memoize.byt.ByteKey;
+import systems.comodal.collision.cache.CollisionBuilder;
 import systems.comodal.collision.cache.CollisionCache;
 
 import java.util.function.Function;
@@ -16,20 +17,30 @@ public class CollisionMemoize<X,Y> extends AbstractMemoize<X,Y> {
     public static <B extends ByteKey.ByteKeyExternal,Y> CollisionMemoize<B, ByteKey.ByteKeyInternal<Y>> byteKey(int capacity, Function<B,Y> f) {
 
 
-        return new CollisionMemoize(CollisionCache
+        CollisionBuilder ccc = CollisionCache
                 .<ByteKey.ByteKeyInternal>withCapacity(capacity)
 //                .<Key, byte[]>setLoader(
 //                        guid -> loadFromDisk(guid),
 //                        (guid, loaded) -> deserialize(loaded))
-                .setValueType(ByteKey.ByteKeyInternal.class)
-                .setIsValForKey((B k, ByteKey.ByteKeyInternal y) -> k.equals(y))
-                .setLoader(f, (B k, Y y) -> k.internal(y, 0.5f))
+                .setValueType(ByteKey.ByteKeyInternal.class);
+
+        return new CollisionMemoize<B, ByteKey.ByteKeyInternal<Y>>(ccc
+                .setIsValForKey(Object::equals)
+                .setLoader(f, (k, y) -> ((B)k).internal(y, 0.5f))
                 .setLazyInitBuckets(true)
                 .setHashCoder(Object::hashCode)
-                //.buildPacked()
-                .buildSparse()
+                //.setStrictCapacity(true)
+                .buildPacked()
+                //.buildSparse()
 
-        );
+        ) {
+            @Override
+            public ByteKey.ByteKeyInternal<Y> apply(B x) {
+                ByteKey.ByteKeyInternal<Y> y = super.apply(x);
+                x.close();
+                return y;
+            }
+        };
 
     }
 
@@ -39,8 +50,9 @@ public class CollisionMemoize<X,Y> extends AbstractMemoize<X,Y> {
                 .setLoader(f)
                 .setLazyInitBuckets(true)
                 .setHashCoder(Object::hashCode)
-                //.buildPacked()
-                .buildSparse()
+                //.setStrictCapacity(true)
+                .buildPacked()
+                //.buildSparse()
                 );
     }
 
@@ -56,6 +68,7 @@ public class CollisionMemoize<X,Y> extends AbstractMemoize<X,Y> {
 
     @Override
     public Y apply(X x) {
-        return cache.get(x);
+        Y y = cache.getAggressive(x);
+        return y;
     }
 }

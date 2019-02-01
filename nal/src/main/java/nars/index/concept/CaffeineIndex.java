@@ -1,13 +1,13 @@
 package nars.index.concept;
 
 import com.github.benmanes.caffeine.cache.*;
-import jcog.exe.Exe;
+import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
+import nars.control.DurService;
 import nars.term.Term;
 import nars.term.Termed;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -20,6 +20,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
 
     private final Cache<Term, Termed> concepts;
     private final boolean weightDynamic;
+    private DurService cleanup;
 
     public static CaffeineIndex soft() {
         return new CaffeineIndex(Caffeine.newBuilder().softValues(), false);
@@ -114,15 +115,16 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
     }
 
 
-
-
-
-
+    @Override
+    public void start(NAR nar) {
+        super.start(nar);
+        cleanup = DurService.on(nar, concepts::cleanUp);
+    }
 
 
 
     @Override
-    public @NotNull String summary() {
+    public String summary() {
         
         String s = concepts.estimatedSize() + " concepts, ";
 
@@ -149,13 +151,13 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
     @Override
     public final void execute(Runnable command) {
 //        if (nar == null) {
-//            command.run();
+            command.run();
 //            return;
 //        }
 //
 //
 //        nar.exe.execute(command);
-        Exe.invoke(command);
+//        Exe.invoke(command);
     }
 
 

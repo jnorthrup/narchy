@@ -13,7 +13,7 @@ import static systems.comodal.collision.cache.AtomicLogCounters.MAX_COUNT;
 final class PackedCollisionCache<K, L, V> extends BaseCollisionCache<K, L, V> {
 
     PackedCollisionCache(
-            final Class<V> valueType,
+            final Class<? extends V> valueType,
             final int maxCollisionsShift,
             final V[][] hashTable,
             final IntFunction<V[]> getBucket,

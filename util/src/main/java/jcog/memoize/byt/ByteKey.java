@@ -111,6 +111,10 @@ abstract public class ByteKey extends UnitPri {
             hash = key.hashCode();
         }
 
+        public final void close() {
+            key.close();
+        }
+
         @Override
         public int hashCode() {
             return hash;

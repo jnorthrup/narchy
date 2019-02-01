@@ -21,16 +21,15 @@ public class GetPutBenchmark {
 
   private static final int SIZE =
           //16;
-          //256;
-          1024;
+          256;
+          //1024;
           //(2 << 14);
   private static final int MASK = SIZE - 1;
-  private static final int ITEMS = SIZE / 3;
   @Param({
       "Collision",
       "Hijack",
-//      "Cache2k",
-//      "Caffeine"
+      "Cache2k",
+      "Caffeine"
 
   })
   private CacheFactory cacheType;
@@ -40,15 +39,26 @@ public class GetPutBenchmark {
   @Setup
   public void setup() {
     keys = new Long[SIZE];
+
+    int uniqueKeys = SIZE;
+
     final int capacity = SIZE / 2;
+
     cache = cacheType.create(capacity);
-    final ScrambledZipfGenerator generator = new ScrambledZipfGenerator(ITEMS);
-    IntStream.range(0, keys.length).parallel().forEach(i -> {
+    final ScrambledZipfGenerator generator = new ScrambledZipfGenerator(uniqueKeys);
+    IntStream.range(0, uniqueKeys).parallel().forEach(i -> {
       final Long key = generator.nextValue();
       keys[i] = key;
       cache.put(key, Boolean.TRUE);
     });
   }
+  @TearDown
+  public void stop() {
+    System.out.println(cache);
+    if (cacheType == CacheFactory.Hijack)
+      System.out.println( cache.summary() );
+  }
+
 
   @Benchmark
   @Group("readOnly")
@@ -68,14 +78,14 @@ public class GetPutBenchmark {
   @Group("readWrite")
 //  @GroupThreads(5)
   public Boolean readWriteGet(LoadStaticZipfBenchmark.ThreadState threadState) {
-    return cache.get(keys[threadState.index++ & MASK]);
+    return readOnlyGet(threadState);
   }
 
   @Benchmark
   @Group("readWrite")
 //  @GroupThreads(5)
   public Boolean readWritePut(LoadStaticZipfBenchmark.ThreadState threadState) {
-    return cache.put(keys[threadState.index++ & MASK], Boolean.TRUE);
+    return writeOnlyPut(threadState);
   }
 
   public enum CacheFactory {
@@ -170,8 +180,14 @@ public class GetPutBenchmark {
           public V put(final K key, final V val) {
             return cache.apply(key);
           }
+
+          @Override
+          public String summary() {
+            return cache.summary();
+          }
         };
       }
+
     }
 
     ;
@@ -184,5 +200,9 @@ public class GetPutBenchmark {
     V get(final K key);
 
     V put(final K key, final V val);
+
+    default String summary() {
+      return "";
+    }
   }
 }

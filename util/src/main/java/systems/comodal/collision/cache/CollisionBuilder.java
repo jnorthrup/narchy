@@ -23,7 +23,7 @@ public final class CollisionBuilder<V> {
     static final VarHandle BUCKETS = MethodHandles.arrayElementVarHandle(Object[][].class);
     private final int capacity;
     private boolean strictCapacity = false;
-    private Class<V> valueType;
+    private Class<? extends V> valueType;
     private int bucketSize = 0;
     private int initCount = 5;
     private int maxCounterVal = 1_048_576;
@@ -258,11 +258,11 @@ public final class CollisionBuilder<V> {
         return this;
     }
 
-    public Class<V> getValueType() {
+    public Class<? extends V> getValueType() {
         return valueType;
     }
 
-    public CollisionBuilder<V> setValueType(final Class<V> valueType) {
+    public CollisionBuilder<V> setValueType(final Class<? extends V> valueType) {
         this.valueType = valueType;
         return this;
     }
@@ -459,7 +459,7 @@ public final class CollisionBuilder<V> {
             return this;
         }
 
-        public Class<V> getValueType() {
+        public Class<? extends V> getValueType() {
             return delegate.getValueType();
         }
 
@@ -590,7 +590,7 @@ public final class CollisionBuilder<V> {
             return this;
         }
 
-        public Class<V> getValueType() {
+        public Class<? extends  V> getValueType() {
             return delegate.getValueType();
         }
 

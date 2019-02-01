@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
-public class ByteHijackMemoize<X extends ByteKey,Y> extends HijackMemoize<X,Y> {
+public class ByteHijackMemoize<X extends ByteKey.ByteKeyExternal,Y> extends HijackMemoize<X,Y> {
 
     public ByteHijackMemoize(Function<X, Y> f, int capacity, int reprobes, boolean soft) {
         super(f, capacity, reprobes, soft);
@@ -15,25 +15,21 @@ public class ByteHijackMemoize<X extends ByteKey,Y> extends HijackMemoize<X,Y> {
 
     @Override
     public final PriProxy computation(X x, Y y) {
-        return ((ByteKey.ByteKeyExternal) x).internal(y, value(x, y));
+        return x.internal(y, value(x, y));
     }
 
     @Override
     public final PriProxy<X, Y> put(X x, Y y) {
         PriProxy<X, Y> xy = super.put(x, y);
-        close(x);
+        x.close();
         return xy;
     }
 
     @Override
     public final @Nullable Y apply(X x) {
         Y y = super.apply(x);
-        close(x);
+        x.close();
         return y;
-    }
-
-    private void close(X x) {
-        ((ByteKey.ByteKeyExternal)x).key.close();
     }
 
 

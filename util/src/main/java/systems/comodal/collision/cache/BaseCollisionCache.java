@@ -24,12 +24,12 @@ abstract class BaseCollisionCache<K, L, V> implements LoadingCollisionCache<K, L
     final AtomicLogCounters counters;
     final ToIntFunction<K> hashCoder;
     final BiPredicate<K, V> isValForKey;
-    private final Class<V> valueType;
+    private final Class<? extends V> valueType;
     private final Function<K, L> loader;
     private final BiFunction<K, L, V> mapper;
     private final Function<K, V> loadAndMap;
 
-    BaseCollisionCache(final Class<V> valueType,
+    BaseCollisionCache(final Class<? extends V> valueType,
                        final int maxCollisionsShift,
                        final V[][] hashTable,
                        final IntFunction<V[]> getBucket,

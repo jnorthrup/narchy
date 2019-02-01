@@ -20,7 +20,7 @@ final class SparseCollisionCache<K, L, V> extends BaseCollisionCache<K, L, V> {
 
     SparseCollisionCache(
             final int capacity, final boolean strictCapacity,
-            final Class<V> valueType,
+            final Class<? extends V> valueType,
             final int maxCollisionsShift,
             final V[][] hashTable,
             final IntFunction<V[]> getBucket,

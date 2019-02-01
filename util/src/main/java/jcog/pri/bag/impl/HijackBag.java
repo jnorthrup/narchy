@@ -275,7 +275,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             probing:
             for (int i = start, probe = reprobes; probe > 0; probe--) {
 
-                V p = map.getAcquire(i);
+                V p = map.get(i);
                       //  map.get(i);
 
                 if (p != null && keyEquals(k, kHash, p)) {
@@ -291,7 +291,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                             } else {
                                 float priBefore = pri(p);
                                 V next = merge(p, incoming, overflowing);
-                                if (next != null && (next == p || map.weakCompareAndSetRelease(i, p, next))) {
+                                if (next != null && (next == p || map.compareAndSet(i, p, next))) {
                                     if (next != p) {
                                         toRemove = p;
                                         toAdd = next;
@@ -302,7 +302,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                             break;
 
                         case REMOVE:
-                            if (map.weakCompareAndSetRelease(i, p, null)) {
+                            if (map.compareAndSet(i, p, null)) {
                                 toReturn = toRemove = p;
                             }
                             break;
@@ -319,11 +319,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 int victim = -1, j = 0;
                 float victimPri = Float.POSITIVE_INFINITY;
                 for (int i = start; j < reprobes; j++) {
-                    V mi = map.getAcquire(i);
+                    V mi = map.get(i);
 
                     float mp;
                     if (mi == null || ((mp = pri(mi)) != mp)) {
-                        if (map.weakCompareAndSetRelease(i, mi, incoming)) {
+                        if (map.compareAndSet(i, mi, incoming)) {
                             toReturn = toAdd = incoming; /** became empty or deleted, take the slot */
                             break;
                         } else {
@@ -341,13 +341,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 if (toReturn == null) {
                     assert (victim != -1);
 
-                    V existing = map.getAcquire(victim); //map.get(victim);
+                    V existing = map.get(victim); //map.get(victim);
                     if (existing == null) {
                         //acquired new empty cell
                         toReturn = toAdd = incoming;
 
                     } else {
-                        if (replace(incomingPri, existing) && map.weakCompareAndSetRelease(victim, existing, incoming)) {
+                        if (replace(incomingPri, existing) && map.compareAndSet(victim, existing, incoming)) {
                             //acquired
                             toRemove = existing;
                             toReturn = toAdd = incoming;
