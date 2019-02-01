@@ -313,9 +313,14 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
         return TestPlan.from(discoverRoot(discoveryRequest, "discovery"));
     }
 
+    @Override
+    public void execute(TestPlan testPlan, TestExecutionListener... listeners) {
+
+    }
 
     @Override
-    public void execute(LauncherDiscoveryRequest discoveryRequest, TestExecutionListener... listeners) {
+    public void execute(LauncherDiscoveryRequest launcherDiscoveryRequest, TestExecutionListener... listeners) {
+
     }
 
     private Collection<TestDescriptor> discoverRoot(LauncherDiscoveryRequest discoveryRequest, String phase) {

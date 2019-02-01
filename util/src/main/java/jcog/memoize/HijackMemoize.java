@@ -87,7 +87,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         return null;
     }
 
-    public PriProxy<X, Y> put(X x, Y y) {
+    protected PriProxy<X, Y> put(X x, Y y) {
         return bag.put(computation(x, y));
     }
 

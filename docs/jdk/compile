@@ -5,13 +5,16 @@
 
 
 #  TOOLCHAIN=clang
-CXX="/usr/bin/g++-9" CC="/usr/bin/gcc-9" BUILD_CC="/usr/bin/gcc-9" BUILD_CXX="/usr/bin/g++-9" JDK="/home/me/jdk11official" ./configure \
+CXX="/usr/bin/g++-9" CC="/usr/bin/gcc-9" BUILD_CC="/usr/bin/gcc-9" BUILD_CXX="/usr/bin/g++-9" JDK="/home/me/jdk-12" ./configure \
     --with-toolchain-type="gcc" \
-	--with-boot-jdk="/home/me/jdk11official" --disable-hotspot-gtest \
+	--with-boot-jdk="/home/me/jdk-12" \
+	--disable-hotspot-gtest \
 	--disable-warnings-as-errors \
 	--enable-ccache \
 	--with-extra-cflags="-Ofast -march=native -w" \
-	--without-jtreg
-
-
+	--with-extra-cxxflags="-Ofast -march=native -w" \
+	--without-jtreg \
+    --enable-full-docs=no \
+    --with-native-debug-symbols=none
+    
 time make jdk
