@@ -20,7 +20,7 @@ public enum MathFunc { ;
 
 
     public final static Functor add =
-            new ArithmeticCommutiveBinaryBidiFunctor("addAt") {
+            new ArithmeticCommutiveBinaryBidiFunctor("add") {
 
                 @Override
                 @Nullable protected Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {

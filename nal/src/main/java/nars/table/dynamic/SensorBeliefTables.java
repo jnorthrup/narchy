@@ -78,7 +78,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         if (x!=null) {
             SeriesBeliefTable.SeriesRemember y = x.input(c);
-            y.remember(new MyTaskLink());
+            y.remember(remember(y));
             return y;
         }
 
@@ -188,31 +188,41 @@ public class SensorBeliefTables extends BeliefTables {
         this.res = res;
     }
 
-    private class MyTaskLink extends AbstractTask {
-//        private final TaskConcept c;
 
-        Task lastActivated = null;
-        public MyTaskLink() {
-//            this.c = c;
-        }
+
+    private Task prev = null, next = null;
+
+    private final AbstractTask myTaskLink = new AbstractTask() {
+
+        final static float SIGNAL_PRI_FACTOR_SAME_TASK_BEING_STRETCHED = 0.5f;
 
         @Override
         public ITask next(NAR n) {
-            Task lastTask = series.series.last();
-            if (lastTask!=null) {
-                float p = lastTask.pri();
-                if (p == p) {
-                    series.tasklink.pri(p);
+            Task next = SensorBeliefTables.this.next, prev = SensorBeliefTables.this.prev;
+            if (next == null)
+                return null; //?
 
-                    TaskLink.link(series.tasklink, n);
+            //decrease tasklink priority if the same task or if similar truth
 
-                    if (lastActivated!=lastTask) {
-//                        n.activate(c, p);
-                        lastActivated = lastTask;
-                    } //else: reactivate?
+            float p = next.priElseZero();
+            if (p == p) {
+                if (prev!=null && (prev==next || Math.abs(next.start()-prev.end()) < Param.SIGNAL_LATCH_DUR * n.dur())) {
+
+                    if (prev == next || prev.truth().equalsIn(next.truth(), n))
+                        p *= SIGNAL_PRI_FACTOR_SAME_TASK_BEING_STRETCHED;
+                    //TODO else { ... //difference in truth: surprisingness
                 }
+                series.tasklink.pri(p);
+                TaskLink.link(series.tasklink, n);
             }
             return null;
         }
+    };
+    private ITask remember(SeriesBeliefTable.SeriesRemember y) {
+        //if (y==prev)
+        prev = next;
+        next = y.input;
+
+        return myTaskLink;
     }
 }

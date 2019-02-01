@@ -158,8 +158,8 @@ public abstract class Param {
     public static boolean DEBUG_ENSURE_DITHERED_DT = false;
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.max;
-            //PriMerge.plus;
+            //PriMerge.max;
+            PriMerge.plus;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 

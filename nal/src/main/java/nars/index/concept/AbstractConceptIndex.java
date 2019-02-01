@@ -3,6 +3,7 @@ package nars.index.concept;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.PriBuffer;
+import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
@@ -21,6 +22,8 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static jcog.pri.op.PriMerge.plus;
+
 /** implements a multi-level cache using a Concept Bag as a sample-able short-target memory */
 abstract public class AbstractConceptIndex extends ConceptIndex {
 
@@ -29,7 +32,8 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
     public Bag<TaskLink, TaskLink> active = Bag.EMPTY;
 
-    @Deprecated public final FloatRange activationRate = new FloatRange(1f,1, 1);
+    /** tasklink activation */
+    @Deprecated public final FloatRange activationRate = new FloatRange(1f, Param.tasklinkMerge == plus ? ScalarValue.EPSILON : 1, 1);
 
     public final FloatRange forgetRate = new FloatRange(0.9f, 0f, 1f /* 2f */);
 

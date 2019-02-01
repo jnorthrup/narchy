@@ -14,6 +14,7 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
+import spacegraph.video.Draw;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -24,6 +25,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
 
 public class Arkancide extends NAgentX {
@@ -54,7 +56,6 @@ public class Arkancide extends NAgentX {
 
             //n.timeResolution.setAt(25); //50fps resolution
 
-            window(new BagSpectrogram(((AbstractConceptIndex)n.concepts).active, 16, n), 500, 500);
 
             return new Arkancide(n, cam, numeric);
 

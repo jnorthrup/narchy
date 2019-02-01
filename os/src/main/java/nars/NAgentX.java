@@ -19,6 +19,7 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Valuator;
+import nars.gui.BagSpectrogram;
 import nars.gui.NARui;
 import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
@@ -36,6 +37,7 @@ import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.video.Draw;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -46,7 +48,8 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
-import static nars.Op.BELIEF;
+import static nars.Op.*;
+import static nars.Op.QUEST;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -141,6 +144,8 @@ abstract public class NAgentX extends NAgent {
 
 
             window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
+
+
 
 
             new RLBooster(a,
@@ -292,6 +297,23 @@ abstract public class NAgentX extends NAgent {
 
         window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
 
+        window(new BagSpectrogram<>(((AbstractConceptIndex)n.concepts).active, 128, n)
+                .color(x -> {
+                    float h;
+                    switch (x.punc()) {
+                        case BELIEF: h = 0; break;
+                        case QUESTION: h = 0.25f; break;
+                        case GOAL: h = 0.5f; break;
+                        case QUEST: h = 0.75f; break;
+                        default:
+                            return Draw.rgbInt(0.5f, 0.5f, 0.5f);
+                    }
+
+                    return Draw.colorHSB(h, 0.75f, 0.25f + 0.75f * x.priElseZero());
+
+                }), 500, 500);
+
+
 //                if (a instanceof NAgentX) {
 //                    NAgent m = metavisor(a);
 //                    m.pri.setAt(0.1f);
@@ -356,10 +378,14 @@ abstract public class NAgentX extends NAgent {
         ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
-        n.beliefPriDefault.set(0.25f);
-        n.goalPriDefault.set(0.5f);
-        n.questionPriDefault.set(0.05f);
-        n.questPriDefault.set(0.05f);
+        float p =
+                //1;
+                0.01f;
+        
+        n.beliefPriDefault.set(0.25f * p);
+        n.goalPriDefault.set(0.5f * p);
+        n.questionPriDefault.set(0.05f * p);
+        n.questPriDefault.set(0.05f * p);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
