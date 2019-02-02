@@ -106,11 +106,12 @@ class DynamicConjTest {
 
 
         Truth tAfter = n.beliefTruth($("(a:x &| a:y)"), now + 2);
-        assertTrue(tAfter.isNegative());
+        assertNotNull(tAfter);
+        assertTrue(tAfter.isPositive());
         //assertTrue($.t(0.19f, 0.88f).equalsIn(tAfter, n), () -> tAfter.toString());
 
         Truth tLater = n.beliefTruth($("(a:x &| a:y)"), now + 5);
-        assertTrue(tLater.isNegative());
+        assertTrue(tLater.isPositive() == tAfter.isPositive());
         assertTrue(tLater.conf() < tAfter.conf());
         //assertTrue($.t(0.19f, 0.79f).equalsIn(tLater, n), () -> tLater.toString());
     }
@@ -128,7 +129,8 @@ class DynamicConjTest {
 
         Term xye = $("(&&,x,y,e)");
         Task atZero = n.belief(xye, 0);
-        assertEquals(0, atZero.start());
+
+    assertEquals(0, atZero.start());
 
         Task atOne = n.belief(xye, 1);
         Task atEte = n.belief(xye, ETERNAL);
@@ -142,7 +144,7 @@ class DynamicConjTest {
 
         assertEquals(0.73f, atZero.conf(), 0.01f);
         assertEquals(0.73f, atEte.conf(), 0.01f);
-        assertEquals(0.60f, atOne.conf(), 0.05f);
+        assertEquals(0.57f, atOne.conf(), 0.05f);
     }
 
     @Test

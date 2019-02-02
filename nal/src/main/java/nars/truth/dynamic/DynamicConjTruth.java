@@ -91,7 +91,10 @@ public class DynamicConjTruth {
             } else {
                 //??subterm refrences a specific point as a result of event time within the target. so start/end range gets collapsed at this point
                 long range = (end - start);
-                sub = (when, event) -> each.accept(event, when, when + range);
+                if (range != 0)
+                    sub = (when, event) -> each.accept(event, when, when + range);
+                else
+                    sub = (when, event) -> each.accept(event, when, when);
             }
 
             return conj.eventsWhile(sub, start,

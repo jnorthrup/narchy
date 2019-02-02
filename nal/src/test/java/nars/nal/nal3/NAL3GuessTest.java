@@ -7,6 +7,8 @@ import nars.test.TestNAR;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.QUESTION;
+
 @Disabled
 public class NAL3GuessTest extends NALTest {
 
@@ -14,9 +16,18 @@ public class NAL3GuessTest extends NALTest {
 
     @Override protected NAR nar() {
         NAR n= NARS.tmp(3);
-        n.termVolumeMax.set(7);
+        n.termVolumeMax.set(9);
         return n;
     }
+
+    @Test
+    void questionDecomposition1() {
+        test
+                .ask("(swan --> bird)")
+                .believe("((swan|swimmer) --> bird)")
+                .mustOutput(cycles, "(swimmer --> bird)", QUESTION);
+    }
+
 
     @Test
     void composition_on_both_sides_of_a_statement() {

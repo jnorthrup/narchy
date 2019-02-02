@@ -1,6 +1,7 @@
 package nars.truth.dynamic;
 
 import jcog.Paper;
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
@@ -21,6 +22,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.time.Tense.XTERNAL;
 import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 
 /**
@@ -77,17 +79,19 @@ public class DynTaskify extends DynEvi {
 
         long s, e;
 
-        int eternals = d.count(Task::isEternal);
-        if (eternals == d.size()) {
+        long earliest;
+        long latest = d.maxValue(Stamp::end);
+        if (latest == ETERNAL) {
+            //all are eternal
             s = e = ETERNAL;
+            earliest = ETERNAL;
         } else {
-            long earliest;
-            if (eternals == 0) {
-                earliest = d.minValue(Stamp::start);
-            } else {
-                earliest = d.minValue(t -> t.start() != ETERNAL ? t.start() : TIMELESS);
-            }
-            long latest = d.maxValue(Stamp::end);
+
+            earliest = d.minValue(t -> {
+                long ts = t.start();
+                return ts != ETERNAL ? ts : TIMELESS;
+            });
+
 
 //                //trim
 //                if (a.time.start!=ETERNAL && Longerval.intersects(s, e, a.time.start, a.time.end)) {
@@ -108,6 +112,12 @@ public class DynTaskify extends DynEvi {
                 e = latest;
             }
 
+            long ss = a.time.start;
+            if (ss !=ETERNAL && ss !=XTERNAL) {
+                long ee = a.time.end;
+                s = Util.clampSafe(s, ss, ee);
+                e = Util.clampSafe(e, ss, ee);
+            }
         }
 
 
@@ -120,14 +130,18 @@ public class DynTaskify extends DynEvi {
             return null;
         }
 
-        if (model!=ConjIntersection) {
-            for (int i = 0, dSize = d.size(); i < dSize; i++) {
-                Task x = d.get(i);
-                if (x.start() != s || x.end() != e) {
-                    d.setFast(i, Task.project(x, s, e, a.nar));
-                }
+
+        for (int i = 0, dSize = d.size(); i < dSize; i++) {
+            Task x = d.get(i);
+            long shift = model != ConjIntersection || s == ETERNAL || earliest == ETERNAL || x.isEternal() ? 0 : x.start()-earliest;
+            if (x.start() != s+shift || x.end() != e+shift) {
+                Task tt = Task.project(x, s, e, a.nar);
+                if (tt == null)
+                    return null;
+                d.setFast(i, tt);
             }
         }
+
 
         Truth t = model.truth(d, nar);
         //t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
@@ -154,9 +168,11 @@ public class DynTaskify extends DynEvi {
 
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
         Task bt = //forceProjection ?
-                //table.answer(subStart, subEnd, subTerm, filter, nar);
-                table.match(subStart, subEnd, subTerm, filter, nar);
+                table.answer(subStart, subEnd, subTerm, filter, nar);
+                //table.match(subStart, subEnd, subTerm, filter, nar);
                 //table.sample(subStart, subEnd, subTerm, filter, nar);
+
+
         if (bt == null || !model.acceptComponent(template, bt.term(), bt))
             return false;
 

@@ -60,6 +60,10 @@ public class IntermpolationTest {
 //        assertEquals(0.2f, a54, 0.001f);
     }
 
+    @Test void testSimilarConj() {
+        assertTrue(Float.isFinite(dtDiff("(&&,a,b,c)","((b&|c)&&a)")));
+    }
+
     @Test
     void testConjSequence1() {
 

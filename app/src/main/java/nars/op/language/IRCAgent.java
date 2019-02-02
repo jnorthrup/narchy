@@ -1,6 +1,5 @@
 package nars.op.language;
 
-import jcog.Util;
 import nars.NAR;
 import nars.NARS;
 import nars.Param;
@@ -217,12 +216,12 @@ public class IRCAgent extends IRC {
 
         float durFPS = 1f;
         NAR n = new NARS.DefaultNAR(8, true)
-                .exe(new MultiExec.WorkerExec(new Valuator.DefaultValuator(0.5f),2))
+                .exe(new MultiExec.WorkerExec(new Valuator.DefaultValuator(0.5f),4))
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
         new ConjClustering(n, BELIEF, 4, 16);
 
-        n.termVolumeMax.set(20);
+        n.termVolumeMax.set(24);
 
 
 
@@ -331,10 +330,11 @@ public class IRCAgent extends IRC {
 
         n.log();
 
-        while (true) {
-            n.run(2000);
-            Util.sleepMS(10);
-        }
+        n.startFPS(4f);
+//        while (true) {
+//            n.run(2000);
+//            Util.sleepMS(10);
+//        }
 
 
 

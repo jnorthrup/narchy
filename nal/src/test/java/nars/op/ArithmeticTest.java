@@ -28,16 +28,16 @@ class ArithmeticTest {
     void testAddSolve() throws Narsese.NarseseException {
 
         n.log();
-        n.believe("(addAt(1,$x,3)==>its($x))");
+        n.believe("(add(1,$x,3)==>its($x))");
         n.run(2);
         //TODO
     }
 
     @Test
     void testAdd() {
-        assertEval(Int.the(2), "addAt(1,1)");
-        assertEval(Int.the(1), "addAt(2,-1)");
-        assertEval($.varDep(1), "addAt(#1,0)");
+        assertEval(Int.the(2), "add(1,1)");
+        assertEval(Int.the(1), "add(2,-1)");
+        assertEval($.varDep(1), "add(#1,0)");
     }
 
 
@@ -45,9 +45,9 @@ class ArithmeticTest {
     @Test
     void testAddCommutive() throws Narsese.NarseseException {
 
-        String fwd = $.$("addAt(#x,1)").eval(n).toString();
-        String rev = $.$("addAt(1,#x)").eval(n).toString();
-        assertEquals("addAt(#1,1)", fwd);
+        String fwd = $.$("add(#x,1)").eval(n).toString();
+        String rev = $.$("add(1,#x)").eval(n).toString();
+        assertEquals("add(#1,1)", fwd);
         assertEquals(fwd, rev);
 
     }
@@ -55,8 +55,8 @@ class ArithmeticTest {
     @Test
     void testAddMulIdentity() {
 
-        assertEval($.varDep(1), "addAt(#1,0)");
-        assertEval($.varDep(1), "addAt(0,#1)");
+        assertEval($.varDep(1), "add(#1,0)");
+        assertEval($.varDep(1), "add(0,#1)");
         assertEval(Int.the(0), "mul(x,0)");
         assertEval($$("x"), "mul(x,1)");
         assertEval($.varDep(1), "mul(1,#1)");
@@ -69,27 +69,27 @@ class ArithmeticTest {
     @Test
     void test1() throws Narsese.NarseseException {
         assertEquals(
-                "((#1,addAt(#1,1))&&equal(#1,2))",
+                "((#1,add(#1,1))&&equal(#1,2))",
                 Arithmeticize.apply($.$("(2,3)"), true, rng).toString());
     }
 
     @Test
     void test2() {
         assertEquals(
-                "(x(#1,addAt(#1,1))&&equal(#1,2))",
+                "(x(#1,add(#1,1))&&equal(#1,2))",
                 Arithmeticize.apply($.$$("x(2,3)"), true, rng).toString());
     }
     @Test
     void test2b() {
         assertEquals(
-                "(x(#1,addAt(#1,1))&|equal(#1,2))",
+                "(x(#1,add(#1,1))&|equal(#1,2))",
                 Arithmeticize.apply($.$$("x(2,3)"), false, rng).toString());
 
     }
 
     @Test
     void testContradictionResultsInFalse() {
-        assertEval(Null, "(addAt(1,1,#2) && addAt(#2,1,1))");
+        assertEval(Null, "(add(1,1,#2) && add(#2,1,1))");
     }
 
     static void assertEval(Term out, String in) {
@@ -100,7 +100,7 @@ class ArithmeticTest {
 
     @Test
     void testEqBackSubstitution() throws Narsese.NarseseException {
-        assertSolves("(&&,(#1,addAt(#2,1)),equal(#2,3),(#1,#2))", "((#1,4)&&(#1,3))");
+        assertSolves("(&&,(#1,add(#2,1)),equal(#2,3),(#1,#2))", "((#1,4)&&(#1,3))");
 
     }
 
@@ -112,7 +112,7 @@ class ArithmeticTest {
 
     @Test
     void testSimBackSubstitution2() throws Narsese.NarseseException {
-        assertSolves("(&&,(#1,addAt(#2,1)),(#1,#2),equal(#2,3))", "((#1,3)&&(#1,4))");
+        assertSolves("(&&,(#1,add(#2,1)),(#1,#2),equal(#2,3))", "((#1,3)&&(#1,4))");
     }
 
     static void assertSolves(String q, String a) throws Narsese.NarseseException {
@@ -129,22 +129,22 @@ class ArithmeticTest {
     }
 
     @Test public void testEqualSolutionAddInverse() {
-        assertEval($$("x(0)"), "(x(#1) && equal(addAt(#1,1),1))");
+        assertEval($$("x(0)"), "(x(#1) && equal(add(#1,1),1))");
     }
 
     @Test public void testEqualSolutionComplex() {
         /*
 
-        (&&,(--,(g(addAt(#1,1),0,(0,addAt(addAt(#1,1),9)))&&equal(addAt(#1,1),1))),(--,chronic(addAt(#1,1))),(--,addAt(#1,1)),(--,down))
+        (&&,(--,(g(add(#1,1),0,(0,add(add(#1,1),9)))&&equal(add(#1,1),1))),(--,chronic(add(#1,1))),(--,add(#1,1)),(--,down))
 
-        "equal(addAt(#1,1),1)" ===> (1 == 1+x) ===> (0 == x)
+        "equal(add(#1,1),1)" ===> (1 == 1+x) ===> (0 == x)
 
         drastic simplification:
-            (&&,(--,(g(addAt(#1,1),0,(0,addAt(#1,10))&&equal(#1, 0)),(--,chronic(addAt(#1,1))),(--,addAt(#1,1)),(--,down))
-            etc (&&,(--,(g(addAt(#1,1),0,(0,10)),(--,chronic(1)),(--,0),(--,down))
+            (&&,(--,(g(add(#1,1),0,(0,add(#1,10))&&equal(#1, 0)),(--,chronic(add(#1,1))),(--,add(#1,1)),(--,down))
+            etc (&&,(--,(g(add(#1,1),0,(0,10)),(--,chronic(1)),(--,0),(--,down))
          */
 
-        String t = "(&&,(--,(g(addAt(#1,1),0,(0,addAt(addAt(#1,1),9)))&&equal(addAt(#1,1),1))),(--,c(addAt(#1,1))),(--,addAt(#1,1)),(--,down))";
+        String t = "(&&,(--,(g(add(#1,1),0,(0,add(add(#1,1),9)))&&equal(add(#1,1),1))),(--,c(add(#1,1))),(--,add(#1,1)),(--,down))";
 
         assertEval($$("(&&,(--,g(1,0,(0,10))),(--,c(1)),(--,down),(--,1))"), t);
     }
@@ -180,8 +180,8 @@ class ArithmeticTest {
         TermTest.assertEq("cmp(1,2,-1)", $$("cmp(1,2,#x)").eval(n));
         TermTest.assertEq("cmp(#1,2,#2)", $$("cmp(#1,2,#x)").eval(n));
 
-        assertArithmetic("(f(1)==>f(2))", "[((f(#1)==>f(#2))&&cmp(#1,#2,-1)), ((f(#1)==>f(addAt(#1,1)))&&equal(#1,1))]");
-        assertArithmetic("(f(2)==>f(1))", "[((f(#1)==>f(#2))&&cmp(#2,#1,-1)), ((f(addAt(#1,1))==>f(#1))&&equal(#1,1))]");
+        assertArithmetic("(f(1)==>f(2))", "[((f(#1)==>f(#2))&&cmp(#1,#2,-1)), ((f(#1)==>f(add(#1,1)))&&equal(#1,1))]");
+        assertArithmetic("(f(2)==>f(1))", "[((f(#1)==>f(#2))&&cmp(#2,#1,-1)), ((f(add(#1,1))==>f(#1))&&equal(#1,1))]");
     }
     @Test
     void testComparatorOrdering() {
@@ -207,8 +207,8 @@ class ArithmeticTest {
 
     @Test void testNonConjArithmeticize() {
         assertArithmetic("x(1,1)", "[x(1,1)]"); //nothing to do
-        assertArithmetic("x(1,2)", "[(cmp(#1,#2,-1)&&x(#1,#2)), (x(#1,addAt(#1,1))&&equal(#1,1))]");
-        assertArithmetic("((1~2)-->x)", "[(((#1~addAt(#1,1))-->x)&&equal(#1,1)), (((#2~#1)-->x)&&cmp(#2,#1,-1))]");
+        assertArithmetic("x(1,2)", "[(cmp(#1,#2,-1)&&x(#1,#2)), (x(#1,add(#1,1))&&equal(#1,1))]");
+        assertArithmetic("((1~2)-->x)", "[(((#1~add(#1,1))-->x)&&equal(#1,1)), (((#2~#1)-->x)&&cmp(#2,#1,-1))]");
         //assertArithmetic("(((1,1)~(2,3))-->x)", "4 of them");
     }
 

@@ -22,7 +22,7 @@ import static nars.time.Tense.ETERNAL;
 class NAL8EternalMixTest extends NALTest {
 
     public static final LongPredicate ZERO = t -> t >= 0;
-    private final int cycles = 50;
+    private final int cycles = 250;
 
     @BeforeEach
     void setTolerance() {
@@ -640,15 +640,24 @@ class NAL8EternalMixTest extends NALTest {
                 .mustGoal(cycles * 2, "c:a", 1f, 0.81f, 0)
                 .mustGoal(cycles * 2, "z:x", 0f, 0.81f, 0);
     }
+    @Test
+    void testStrongUnificationDeductionPP() {
 
+        test
+                .input("(Y ==>+1 x).")
+                .input("Y. |")
+                .mustBelieve(cycles, "x", 1f, 0.81f, 1)
+                .mustNotOutput(cycles, "x", BELIEF, (t)->t!=1)
+        ;
+    }
     @Test
     void testStrongUnificationDeductionPN() {
 
         test
-                .input("((--,Y) ==>+1 x).")
-                .input("(--,Y). :|:")
+                .input("(--Y ==>+1 x).")
+                .input("--Y. |")
                 .mustBelieve(cycles, "x", 1f, 0.81f, 1)
-                .mustNotOutput(cycles, "x", BELIEF, ETERNAL)
+                .mustNotOutput(cycles, "x", BELIEF, (t)->t!=1)
         ;
     }
 

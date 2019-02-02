@@ -271,11 +271,11 @@ public final class Answer implements AutoCloseable {
                 }
             }
 
-            if (forceProject && t != null) {
+            if (forceProject && t != null && !t.isEternal()) { //dont bother sub-projecting eternal here.
                 long ss = time.start;
                 if (ss != ETERNAL) { //dont eternalize here
                     long ee = time.end;
-                    if (t.isEternal() || !t.containedBy(ss, ee)) {
+                    if (/*t.isEternal() || */!t.containedBy(ss, ee)) {
                         t = Task.project(t, ss, ee, true, ditherTruth, false, nar);
                     }
                 }
@@ -299,10 +299,17 @@ public final class Answer implements AutoCloseable {
         try {
 
             //quick case: 1 item, and it's eternal => its truth
-            Task zeroth;
-            if (tasks.size()==1 && (zeroth = tasks.get(0).x).isEternal()) {
-                Truth trEte = zeroth.truth();
-                return (trEte.evi() < eviMin()) ? null : trEte;
+
+            int s = tasks.size();
+            if (s == 0)
+                return null;
+
+            if (s == 1) {
+                Task only = tasks.get(0).x;
+                if (only.isEternal() || (only.start()==time.start && only.end()==time.end)) {
+                    Truth trEte = only.truth();
+                    return (trEte.evi() < eviMin()) ? null : trEte;
+                }
             }
 
             TruthPolation p = truthpolation();

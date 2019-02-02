@@ -33,7 +33,7 @@ public class NAgentOptimize {
 
         Lab<NAR> l = new Lab<>(() -> {
             NAR n = NARS.tmp();
-            n.random().setSeed(System.nanoTime());
+            n.random();
 
             /* defaults TODO "learn" these from the experiments and reapply them in future experiments */
             n.termVolumeMax.set(4);

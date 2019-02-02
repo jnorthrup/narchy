@@ -64,9 +64,9 @@ public class Vocalization extends NARService {
 
 
 
-        if (when < nar.time() - nar.dur() * durationsPerWord) {
-            return;
-        }
+//        if (when < nar.time() - nar.dur() * durationsPerWord) {
+//            return;
+//        }
 
         TruthAccumulator ta;
         synchronized (vocalize) {

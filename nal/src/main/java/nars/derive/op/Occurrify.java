@@ -335,15 +335,20 @@ public class Occurrify extends TimeGraph {
         this.decomposeEvents = decomposeEvents;
 
         final Term taskTerm = d.retransform(d.taskTerm);
-        Event taskEvent = (taskStart != TIMELESS) ?
-                know(taskTerm, taskStart, taskEnd) :
-                know(taskTerm);
-
         Term beliefTerm;
         if (d.beliefTerm.equals(d.taskTerm))
             beliefTerm = taskTerm;
         else
             beliefTerm = d.retransform(d.beliefTerm);
+
+        //auto-neg first
+        if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
+            setAutoNeg(pattern, taskTerm, beliefTerm);
+        }
+
+        Event taskEvent = (taskStart != TIMELESS) ?
+                know(taskTerm, taskStart, taskEnd) :
+                know(taskTerm);
 
         if (beliefTerm.op().eventable) {
 
@@ -355,9 +360,7 @@ public class Occurrify extends TimeGraph {
         }
 
 
-        if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
-            setAutoNeg(pattern, taskTerm, beliefTerm);
-        }
+
 
 
         //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either

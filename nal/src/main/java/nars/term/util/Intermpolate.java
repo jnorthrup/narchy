@@ -6,7 +6,6 @@ import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.util.conj.Conj;
 import nars.term.util.conj.Conjterpolate;
 import nars.time.Tense;
 
@@ -184,9 +183,9 @@ public enum Intermpolate {;
         if (!a.equalsRoot(b))
             return Float.POSITIVE_INFINITY;
 
-        Op ao = a.op(), bo = b.op();
-        if (ao != bo)
-            return Float.POSITIVE_INFINITY;
+//        Op ao = a.op(), bo = b.op();
+//        if (ao != bo)
+//            return Float.POSITIVE_INFINITY;
 
         Subterms aa = a.subterms(), bb = b.subterms();
 //        if (!aa.equalsRoot(bb))
@@ -198,15 +197,16 @@ public enum Intermpolate {;
 
         float dSubterms = 0;
         if (!aa.equals(bb)) {
-
+            Op ao = a.op();
             if (ao == CONJ) {
                 if (a.dt()==XTERNAL || b.dt()==XTERNAL)
                     return 0;
-                if ((Conj.isSeq(a) || Conj.isSeq(b))) {
+                if (aa.hasAny(CONJ) || bb.hasAny(CONJ)) { // sub-conj of any type, include &| which is not a sequence:
+                //if ((Conj.isSeq(a) || Conj.isSeq(b))) {
                     //estimate difference
                     int ar = a.eventRange(), br = b.eventRange();
                     int av = a.volume(), bv = b.volume();
-                    return (1 + av + bv) / 2 * (1 + Math.abs(av - bv)) * ((1 + Math.abs(ar - br))); //heuristic
+                    return (1 + av + bv) / 2f * (1 + Math.abs(av - bv)) * ((1 + Math.abs(ar - br))); //heuristic
 
                 }
             }

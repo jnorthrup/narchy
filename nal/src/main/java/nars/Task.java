@@ -408,12 +408,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     }
 
 
-    static Task project(Task t, long start, long end, NAR n) {
+    @Nullable static Task project(Task t, long start, long end, NAR n) {
         return project(t, start, end, false, false, false, n);
     }
 
 
-    static Task project(Task t, long start, long end, boolean trimIfIntersects, boolean ditherTruth, boolean negated, NAR n) {
+    @Nullable static Task project(Task t, long start, long end, boolean trimIfIntersects, boolean ditherTruth, boolean negated, NAR n) {
         if (!negated && t.start()==start && t.end()==end || (t.isBeliefOrGoal() && t.isEternal()))
             return t;
 

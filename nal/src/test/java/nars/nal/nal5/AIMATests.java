@@ -22,7 +22,7 @@ class AIMATests {
     @ValueSource(doubles = {0.01, 0.05, 0.1, 0.25, 0.5})
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
-        n.random().setSeed(1);
+        n.random();
 
         n.termVolumeMax.set(5);
         n.freqResolution.set((float) truthRes);
@@ -46,7 +46,7 @@ class AIMATests {
     void testWeaponsDomain() throws Narsese.NarseseException {
 
         final NAR n = NARS.tmp(6);
-        n.random().setSeed(1);
+        n.random();
 
         n.freqResolution.set(0.25f);
         n.confResolution.set(0.04f);

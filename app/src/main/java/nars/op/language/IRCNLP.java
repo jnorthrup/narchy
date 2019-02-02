@@ -1,12 +1,14 @@
 
 package nars.op.language;
 
-import jcog.Util;
 import nars.*;
 import nars.bag.leak.TaskLeak;
-import nars.exe.MultiExec;
-import nars.exe.Valuator;
+import nars.derive.Derivers;
+import nars.derive.impl.BatchDeriver;
+import nars.derive.timing.ActionTiming;
+import nars.exe.UniExec;
 import nars.op.language.util.IRC;
+import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.clock.RealTime;
 import nars.truth.Truth;
@@ -179,13 +181,24 @@ public class IRCNLP extends IRC {
         //NAR n = NARS.realtime(durFPS).get();
         //new MatrixDeriver(Derivers.nal(n, 0, 8), n);
         NAR n = new NARS.DefaultNAR(8, true)
-                .exe(new MultiExec.WorkerExec(new Valuator.DefaultValuator(0.5f),2))
+                .exe(
+                        //new MultiExec.WorkerExec(new Valuator.DefaultValuator(0.5f),4)
+                        new UniExec()
+                )
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
         n.freqResolution.set(0.1f);
-        n.confResolution.set(0.05f);
+        n.confResolution.set(0.02f);
 
         n.termVolumeMax.set(32);
+
+        BatchDeriver d = new BatchDeriver(Derivers.nal(n, 1, 8));
+        d.timing = new ActionTiming(n);
+
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
+                Task::isInput,
+                //t->true,
+                32, 256);
 
         /*@NotNull Default n = new Default(new Default.DefaultTermIndex(4096),
             new RealTime.DS(true),
@@ -226,19 +239,19 @@ public class IRCNLP extends IRC {
         n.onTask(t -> {
 
 
-            Term tt = t.term();
             long taskTime = t.mid();
             if (taskTime != ETERNAL) {
                 if (t.isGoal() && t.isPositive()) { //t.isBeliefOrGoal() /* BOTH */) {
-                    long now = n.time();
-                    int dur = n.dur();
-                    if (taskTime >= now - dur) {
+                    //long now = n.time();
+                    //int dur = n.dur();
+                    //if (taskTime >= now - dur) {
+                    Term tt = t.term();
                         if (tt.op() == INH && HEAR.equals(tt.sub(1))) {
-                            if (tt.subIs(0, PROD) && tt.sub(0).subIs(0, Op.ATOM)) {
+                            if (tt.subIs(0, PROD) && tt.sub(0).sub(0).op().taskable) {
                                 bot.speak(tt.sub(0).sub(0), taskTime, t.truth());
                             }
                         }
-                    }
+                    //}
                 }
             }
         }, GOAL);
@@ -249,20 +262,21 @@ public class IRCNLP extends IRC {
         //NARHear.readURL(n);
         //NARHear.readURL(n, "http://w3c.org");
 
-        n.logPriMin(System.out, 0.9f);
+        //n.logPriMin(System.out, 0.9f);
+        n.log();
 
 
 
+        n.startFPS(5f);
+//        n.loop.throttle.set(0.5f);
 
-        //n.startFPS(50f);
-
-        while (true) {
-          n.run(1000);
-          Util.sleepMS(10);
-        }
+//        while (true) {
+//          n.run(1000);
+//          Util.sleepMS(10);
+//        }
 
 
-        //Thread.currentThread().setDaemon(true);
+        Thread.currentThread().setDaemon(true);
     }
 
 
@@ -272,7 +286,7 @@ public class IRCNLP extends IRC {
 
 
     String s = "";
-    int minSendLength = 24;
+    int minSendLength = 1;
 
     protected float send(Term o) {
         Runnable r = null;
@@ -282,7 +296,7 @@ public class IRCNLP extends IRC {
             this.s += w;
             if (!punctuation)
                 s += " ";
-            if ((!s.isEmpty() && punctuation) || this.s.length() > minSendLength) {
+            if ((!s.isEmpty() && punctuation) || this.s.length() >= minSendLength) {
 
                 r = IRCNLP.this.send(channels, this.s.trim());
                 this.s = "";

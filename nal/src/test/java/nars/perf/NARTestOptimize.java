@@ -43,7 +43,7 @@ class NARTestOptimize {
 
             Lab<NAR> l = new Lab<>(() -> {
                 NAR n = NARS.tmp();
-                n.random().setSeed(System.nanoTime());
+                n.random();
                 return n;
             })
 //                .var("attnCapacity", 4, 128, 8,

@@ -81,7 +81,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
 
     /**
-     * prefer this instead of addAt() in multithread environments, because it elides what might ordinarily involve a lock wait
+     * prefer this instead of add() in multithread environments, because it elides what might ordinarily involve a lock wait
      */
     @Override
     public void addAsync(T t) {
