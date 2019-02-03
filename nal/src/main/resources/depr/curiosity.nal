@@ -4,8 +4,8 @@
 
 
 //curiosity
-G, B, task("@")  |- B, (Goal:Curiosity, Punctuation:Goal, Time:Task)
-G, B, task("@")  |- (polarize(B,belief)==>G), (Belief:Curiosity, Punctuation:Goal, Time:Task)
+G, B, task("@")  |- B, (Goal:Curiosity, Punctuation:Goal)
+G, B, task("@")  |- (polarize(B,belief)==>G), (Belief:Curiosity, Punctuation:Goal)
 //G, B, task("@")  |- (polarize(G,task) && polarize(B,belief)), (Goal:Curiosity, Punctuation:Goal, Time:Relative)
 
 

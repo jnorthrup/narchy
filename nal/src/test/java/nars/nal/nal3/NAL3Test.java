@@ -1,17 +1,23 @@
 package nars.nal.nal3;
 
 
+import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Param;
+import nars.subterm.util.SubtermCondition;
+import nars.term.Term;
 import nars.test.NALTest;
 import nars.test.TestNAR;
+import nars.unify.constraint.SubOfConstraint;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NAL3Test extends NALTest {
 
@@ -212,7 +218,6 @@ public class NAL3Test extends NALTest {
                 .believe("--(x-->(RealNumber&ComplexNumber))")
                 .believe("(x-->RealNumber)")
                 .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.81f);
-        ;
 
     }
 
@@ -224,7 +229,6 @@ public class NAL3Test extends NALTest {
                 .believe("--(x-->ComplexNumber)")
                 .believe("(x-->RealNumber)")
                 .mustBelieve(cycles, "(x-->(RealNumber~ComplexNumber))", 1f, 0.81f);
-        ;
 
     }
 
@@ -309,6 +313,37 @@ public class NAL3Test extends NALTest {
                 .quest("x:a")
                 .mustQuest(cycles*2, "x:(a|b)")
                 .mustGoal(cycles*2, "x:(a|b)", 1f, 0.81f)
+        ;
+    }
+    @Test void testDecomposeWTF() {
+        /* wrong:
+        $.05 (0-->x). 1 %1.0;.54% {419: 1;2;3©} (S --> M), X, is(S,"|"), subOf(S,X)   |-         (X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+            $.09 (((2-1)|(--,0))-->x). 1 %1.0;.60% {127: 1;2;3} (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neq(S,P) |- ((polarizeTask(P) | polarizeBelief(S)) --> M), (Belief:IntersectionDepolarized)
+            $.19 ((2-1)-->x). 1⋈2 %1.0;.76% {84: 2;3}
+         */
+        String ii = "(((2-1)|(--,0))-->x)";
+        Term iii = $$(ii);
+        assertEquals("((2-1),(--,0))", iii.sub(0).subterms().toString());
+        assertEquals(ii, iii.toString());
+
+        Term cn = $$("((_2-_1)|(--,_3))");
+        Term cp = $$("((_2-_1)|_3)");
+        Term xp = $$("_3");
+        Term xn = $$("(--,_3)");
+        assertFalse(cn.contains(xp));
+        assertFalse(cp.contains(xn));
+        assertTrue(cn.contains(xn));
+        assertTrue(cp.contains(xp));
+
+        assertTrue(
+            new SubOfConstraint($.varDep(1), $.varDep(2), SubtermCondition.Subterm)
+                .invalid(cn, (Term) xp)
+        );
+        test.termVolMax(9);
+        test.believe(ii)
+            .mustBelieve(cycles, "(0-->x)", 0, 0.81f)
+            .mustNotOutput(cycles, "(0-->x)", BELIEF, 0.5f, 1f, 0, 0.99f, (t)->true)
+
         ;
     }
 }

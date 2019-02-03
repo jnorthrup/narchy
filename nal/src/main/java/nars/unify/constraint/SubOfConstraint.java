@@ -35,6 +35,7 @@ public class SubOfConstraint extends RelationConstraint {
                 (polarityCompare != 0 ? (polarityCompare == -1 ? "(-)" : "(+)") : "(+|-)"), x, y
         );
 
+        assert(!x.equals(y));
 
         this.forward = !reverse;
         this.containment = contains;

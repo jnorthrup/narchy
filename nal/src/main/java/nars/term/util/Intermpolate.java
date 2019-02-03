@@ -1,6 +1,7 @@
 package nars.term.util;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Op;
@@ -239,7 +240,8 @@ public enum Intermpolate {;
                 boolean ad = adt == DTERNAL, bd = bdt == DTERNAL;
                 if (!ad && !bd) {
                     float range = 1 + Math.abs(adt) + Math.abs(bdt);
-                    assert (range > 0);
+                    if (range <= 0)
+                        throw new WTF();
                     dDT = Math.abs(adt - bdt) / (range);
                 } else {
                     //dDT = 0.5f; //one is dternal the other is not, record at least some difference (half time unit)

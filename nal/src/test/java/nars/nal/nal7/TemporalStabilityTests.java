@@ -2,7 +2,6 @@ package nars.nal.nal7;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
 import org.eclipse.collections.api.set.primitive.IntSet;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
@@ -119,15 +118,12 @@ public class TemporalStabilityTests {
 
     @Test
     void testTemporalStabilityAtoms() {
-        NAR t = NARS.tmp();
-        Param.DEBUG = true; t.log();
-        new T1(atomizer, 1, 3).test(CYCLES, t);
+        new T1(atomizer, 1, 3).test(CYCLES, NARS.tmp());
     }
 
     @Test
     void testTemporalStabilityProd() {
-        NAR t = NARS.tmp();
-        new T1(productor, 1, 2, 5).test(CYCLES, t);
+        new T1(productor, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
     @Test
     void testTemporalStabilityBiProd() {

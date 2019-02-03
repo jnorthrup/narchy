@@ -1,5 +1,6 @@
 package jcog.memoize;
 
+import jcog.memoize.byt.ByteHijackMemoize;
 import jcog.memoize.byt.ByteKey;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -85,13 +86,13 @@ public class Memoizers {
     }
 
     public <X extends ByteKey.ByteKeyExternal, Y> Function<X, Y> memoizeByte(String id, int capacity, Function<X, Y> computation) {
-//        ByteHijackMemoize<X, Y> c = new ByteHijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES, false);
-//        add(id, c);
-//        return c;
-
-        CollisionMemoize<X, ByteKey.ByteKeyInternal<Y>> c = CollisionMemoize.byteKey(capacity, computation);
+        ByteHijackMemoize<X, Y> c = new ByteHijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES, false);
         add(id, c);
-        return (x)->c.apply(x).get();
+        return c;
+
+//        CollisionMemoize<X, ByteKey.ByteKeyInternal<Y>> c = CollisionMemoize.byteKey(capacity, computation);
+//        add(id, c);
+//        return (x)->c.apply(x).get();
     }
 
     private static class MemoizationStatistics {

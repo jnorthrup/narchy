@@ -45,12 +45,6 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
     }
 
 
-//    @Override
-//    public Term concept(Compound x) {
-//        if (!x.the())
-//            return super.concept(x);
-//        return concept.apply(InternedCompound.get(PROD, x));
-//    }
 
     @Override
     public Term root(Compound x) {
@@ -69,8 +63,5 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
         return x.volume() < volInternedMax && x.the();
     }
 
-    //    private Term _root(InternedCompound i) {
-//        return ;
-//    }
 
 }

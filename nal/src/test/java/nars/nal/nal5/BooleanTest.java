@@ -212,9 +212,8 @@ class BooleanTest {
 
     static void testSATRandom(boolean beliefOrGoal) {
         NAR n = NARS.tmp();
-//        n.log();
 
-
+        n.termVolumeMax.set(10);
 
         int s = 9, c = 5000, cRemoveInputs = c/2;
         boolean temporal = true;
@@ -272,11 +271,10 @@ class BooleanTest {
         for (int i = 0; i < s; i++) {
             System.out.println(t[i] + " " + b[i] + " " + r[i]);
             int ii = i;
-            n.concept(t[i]).tasks().forEach(z -> {
-               if (beliefOrGoal ? z.isBelief() : z.isGoal()) {
-                   assertEquals(b[ii],z.isPositive(),()->z.proof());
-               }
-            });
+            n.concept(t[i])
+                .tasks()
+                .filter(z -> z.isBeliefOrGoal(beliefOrGoal))
+                .forEach(z -> assertEquals(b[ii], z.isPositive(), z::proof));
         }
 
 

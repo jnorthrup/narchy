@@ -137,7 +137,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
     class GeneralTaskLink extends PLinkHashCached<org.eclipse.collections.api.tuple.Pair<Term,Tasklike>> implements TaskLink {
 
         public GeneralTaskLink(Term source, Tasklike seed, float pri) {
-            super(Tuples.pair(source.concept(), seed), pri);
+            super(Tuples.pair(source.concept(), seed), Math.max(EPSILON, pri));
         }
 
         public GeneralTaskLink(Term source, Term t, byte punc, long when, float pri) {

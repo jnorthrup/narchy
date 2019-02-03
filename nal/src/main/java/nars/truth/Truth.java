@@ -167,10 +167,14 @@ public interface Truth extends Truthed {
 //    }
 
     static float freq(float f, float epsilon) {
+        if (!Float.isFinite(f))
+            throw new TruthException("non-finite freq", f);
         return Util.unitizeSafe(Util.round(f, epsilon));
     }
 
     static float conf(float c, float epsilon) {
+        if (!Float.isFinite(c))
+            throw new TruthException("non-finite conf", c);
 //        assert (c >= Param.TRUTH_EPSILON) : "invalid conf: " + c;
         return confSafe(c, epsilon);
     }

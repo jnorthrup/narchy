@@ -227,22 +227,15 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public boolean contains(Term t) {
-        return (!hasNegs() || t.op()!=NEG) ? ref.contains(t) : super.contains(t);
+        return (!hasNegs() && t.op()!=NEG) ? ref.contains(t) : super.contains(t);
     }
 
-    @Override
-    public boolean containsRecursively(Term x, boolean root, Predicate<Term> subTermOf) {
-        return (!hasNegs() || x.op()!=NEG) ? ref.containsRecursively(x, root, subTermOf) :
-                super.containsRecursively(x, root, subTermOf); //exhaustive
-    }
+//    @Override
+//    public boolean containsRecursively(Term x, boolean root, Predicate<Term> subTermOf) {
+//        return super.containsRecursively(x, root, subTermOf); //exhaustive
+//    }
 
-    @Override
-    public boolean has(int structuralVector, boolean anyOrAll) {
-        boolean x = ref.has(structuralVector, anyOrAll);
-        if (x || !hasNegs()) return true;
 
-        return super.has(structuralVector, anyOrAll);//exhaustive with NEG's
-    }
 
     /** optimized to avoid wrapping in Neg temporarily */
     @Override public final int subEventRange(int i) {

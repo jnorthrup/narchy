@@ -7,6 +7,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
 /**
  * BFS that descends through RTree visiting nodes and leaves in an order determined
@@ -41,25 +42,42 @@ public class HyperIterator<X> implements AutoCloseable {
 //                    }
 //            );
 
+    public static <X> void iterate(ConcurrentRTree<X> tree, FloatFunction<HyperRegion> rank, Consumer<HyperIterator<X>> with) {
+
+        try (HyperIterator<X> h = new HyperIterator<>(tree.model(), rank)) {
+            tree.read((t) -> {
+                h.start(t.root());
+                with.accept(h);
+            });
+        }
+
+    }
+
     public HyperIterator(RTree<X> tree, FloatFunction<HyperRegion> rank) {
         this(tree.model, tree.root(), rank);
     }
 
-    public HyperIterator(Spatialization<X> model, Node<X> start, FloatFunction<HyperRegion> rank) {
-        this.plan = TopN.pooled(pool, 256, (FloatFunction<?>)r -> rank.floatValueOf(
-                r instanceof HyperRegion ? ((HyperRegion)r) :
+    public HyperIterator(Spatialization<X> model, FloatFunction<HyperRegion> rank) {
+        this.plan = TopN.pooled(pool, 256, (FloatFunction<?>) r -> rank.floatValueOf(
+                r instanceof HyperRegion ? ((HyperRegion) r) :
                         (r instanceof Node ? ((Node<X>) r).bounds() :
-                                model.bounds((X)r))
-                ));
+                                model.bounds((X) r))
+        ));
+    }
 
+    public HyperIterator(Spatialization<X> model, Node<X> start, FloatFunction<HyperRegion> rank) {
+        this(model, rank);
+        start(start);
+    }
+
+    public void start(Node<X> start) {
         plan.addRanked(start);
     }
 
-    @Override public final void close() {
-
+    @Override
+    public final void close() {
         TopN.unpool(pool, plan);
     }
-
 
 
     /**
@@ -69,7 +87,7 @@ public class HyperIterator<X> implements AutoCloseable {
     private X find() {
 
         Object z;
-        while ((z = plan.popRanked())!=null) {
+        while ((z = plan.popRanked()) != null) {
             if (z instanceof Node) {
                 expand((Node<X>) z);
             } else {
@@ -150,8 +168,6 @@ public class HyperIterator<X> implements AutoCloseable {
 //            throw new NoSuchElementException();
 //        }
 //    };
-
-
 
 
 }

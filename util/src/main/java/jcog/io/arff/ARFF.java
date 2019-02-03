@@ -321,12 +321,12 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
                 
                 //String name = attrName(i);
                 ColumnType t = column(i).type();
-                if (t == DoubleColumnType.INSTANCE) {
+                if (t == DoubleColumnType.instance()) {
                     if (tokens[i] == null || tokens[i].equals("null"))
                         datum[i] = valueIfNull;
                     else
                         datum[i] = Double.parseDouble(tokens[i]);
-                } else if (t == StringColumnType.INSTANCE) {
+                } else if (t == StringColumnType.instance()) {
                     datum[i] = tokens[i];
                 } else {
 //                    if (!isNominalValueValid(name, tokens[i])) {

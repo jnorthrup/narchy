@@ -35,15 +35,15 @@ public final class PreciseTruth extends DiscreteTruth {
 
     private PreciseTruth(float freq, float conf, float evi) {
         super(freq, conf);
-//        if (evi < Param.TRUTH_MIN_EVI)
-//            throw new TruthException("evidence underflow", evi);
+        if (!Float.isFinite(evi))
+            throw new TruthException("non-finite evi", evi);
         this.e = evi;
         this.f = freq;
     }
 
     @Override
-    public Truth neg() {
-        return byEvi(1f - f, e);
+    public final Truth neg() {
+        return byEvi(1 - f, e);
     }
 
     @Override
@@ -55,7 +55,7 @@ public final class PreciseTruth extends DiscreteTruth {
     public final float evi() { return e; }
 
     @Override
-    public float conf() {
+    public final float conf() {
         return w2cSafe(e);
     }
 

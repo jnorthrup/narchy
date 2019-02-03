@@ -50,8 +50,8 @@
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question, Time:Task)
 
 //inverted condition question/quest
-    C, X, eventOf(C,X)     |- substitute(C,X,--X), (Punctuation:Ask, Time:Task)
-    C, X, eventOfNeg(C,X)  |- substitute(C,--X,X), (Punctuation:Ask, Time:Task)
+    C, X, eventOf(C,X)     |- substitute(C,X,--X), (Punctuation:Ask)
+    C, X, eventOfNeg(C,X)  |- substitute(C,--X,X), (Punctuation:Ask)
 
 
 

@@ -197,76 +197,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return super.isEmpty();
     }
 
-//    @Override
-//    public Truth truth(long start, long end, EternalTable eternal, Term template, int dur) {
-//
-//
-//        assert (end >= start);
-//
-//        int s = size();
-//        if (s > 0) {
-//
-//
-//            int maxTruths = TRUTHPOLATION_LIMIT;
-//
-//            int maxTries = (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY));
-//            maxTries = Math.min(s * 2 /* in case the same task is encountered twice HACK*/,
-//                    maxTries);
-//
-//            ExpandingScan temporalTasks = new ExpandingScan(maxTruths, maxTruths,
-//                    task(taskStrength(template, start, end, dur)),
-//                    maxTries)
-//                    .scan(this, start, end);
-//
-//            if (!temporalTasks.isEmpty()) {
-//
-//                TruthPolation t = Param.truth(start, end, dur);
-//                temporalTasks.forEachItem(t::addAt);
-//
-//                if (eternal != null && !eternal.isEmpty()) {
-//                    LongSet temporalStamp = t.filterCyclic();
-//                    Task ee = eternal.select(ete -> !Stamp.overlapsAny(temporalStamp, ete.stamp()));
-//                    if (ee != null) {
-//                        t.addAt(ee);
-//                    }
-//                } else if (t.size() > 1) {
-//                    t.filterCyclic();
-//                }
-//
-//                return t.truth();
-//            }
-//        }
-//
-//        return eternal != null ? eternal.strongestTruth() : null;
-//    }
-
-//    @Override
-//    public final Task match(long start, long end, @Nullable Term template, EternalTable eternals, NAR nar, Predicate<Task> filter) {
-//        int s = size();
-//        if (s > 0) {
-//            int dur = nar.dur();
-//            assert (end >= start);
-//
-//            Task t = match(start, end, template, nar, filter, dur);
-//            if (t != null) {
-//                if (eternals != null) {
-//                    ImmutableLongSet tStamp = Stamp.toSet(t);
-//                    Task e = eternals.select(x ->
-//                            (filter == null || filter.test(x)) &&
-//                                    !Stamp.overlapsAny(tStamp, x.stamp()));
-//                    if (e != null) {
-//                        return Revision.merge(nar, t, e);
-//                    } else {
-//                        return t;
-//                    }
-//                }
-//            }
-//        }
-//
-//        return eternals != null ? eternals.select(filter) : null;
-//    }
-
-    //abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
 
     @Override
     public void match(Answer a) {
@@ -275,70 +205,19 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (s == 0)
             return;
 
-        //@Nullable TaskRegion bounds = this.bounds();
-
-        Predicate<TaskRegion> each = (n) -> a.tryAccept((Task) n);
-
         if (s == 1) {
-            whileEach(each);
+            whileEach((Predicate<TaskRegion>) (n) -> a.tryAccept((Task) n));
             return;
         }
 
         FloatFunction timeDist = a.temporalDistanceFn();
 
-        read((tree) -> {
-            if (tree.root().size() == 0)
-                return; //became null while waiting for lock
-
-            try (HyperIterator<TaskRegion> ii = new HyperIterator<TaskRegion>(tree, timeDist)) {
-                while (ii.hasNext() && each.test(ii.next())) {
-                }
+        HyperIterator.iterate(this, timeDist, i->{
+            while (i.hasNext() && a.tryAccept((Task) i.next())) {
             }
         });
 
-
     }
-
-//    /**
-//     * TODO refactor as TimeRange method
-//     */
-//    private TimeRange expandLerpToTableBounds(TimeRange time, float lerpToTableExtents) {
-//        if (time.start != ETERNAL) { //not already fully expanded?
-//            long tableDur = tableDur();
-//            long initialRange = time.end - time.start;
-//            if (initialRange < tableDur) {
-//
-//
-//                long halfExpand = Util.lerp(lerpToTableExtents, (tableDur - initialRange), tableDur) / 2;
-//                if (halfExpand > 0) {
-//                    return new TimeRange(time.start - halfExpand, time.end + halfExpand);
-//                }
-//            }
-//
-//        }
-//        return time;
-//    }
-//
-//    /**
-//     * TODO refactor as TimeRange method
-//     */
-//    private TimeRange expandFactor(TimeRange time, double factor) {
-//        if (time.start != ETERNAL) { //not already fully expanded?
-//
-//            long initialRange = time.end - time.start;
-//            if (initialRange > 0) {
-//
-//
-//                //long halfExpand = Util.lerp(lerpToTableExtents, (tableDur - initialRange), tableDur) / 2;
-//                long halfExpand = Math.round(initialRange * factor) / 2;
-//                if (halfExpand > 0) {
-//                    return new TimeRange(time.start - halfExpand, time.end + halfExpand);
-//                }
-//            }
-//
-//        }
-//        return time;
-//    }
 
     @Override
     public void setTaskCapacity(int capacity) {

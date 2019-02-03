@@ -28,11 +28,7 @@ public class TaskLinkTask extends AbstractTask {
     @Override
     public ITask next(NAR n) {
 
-        float pri = task.pri();
-        if (pri!=pri)
-            return null;
 
-        pri = Math.max(EPSILON, pri);
 
         //full task pri to concept
         Termed cc = concept == null ? task : concept;
@@ -41,11 +37,14 @@ public class TaskLinkTask extends AbstractTask {
         if (c == null)
             return null;
 
+        float pri = task.pri();
+        if (pri!=pri)
+            return null;
+
         //2. tasklink
         TaskLink.link(
                 TaskLink.the(c.term(), task, generify(), eternalize(), pri, n),
                 n);
-
 
         //3. feel
         ((TaskConcept) c).value(task, n);

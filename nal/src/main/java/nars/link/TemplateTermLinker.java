@@ -244,7 +244,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
      * spread a tasklink to subconcepts of the concept that owns this linker
      */
     @Override
-    public void link(TaskLink tasklink, Task t, Derivation d) {
+    public void link(TaskLink tasklink, Task task, Derivation d) {
 
         Collection<Concept> subConcepts = subConcepts(d);
 
@@ -255,19 +255,20 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
 
         float pri =
-                t.priElseZero();
                 //tasklink.priElseZero();
-                //t.priElseZero() * tasklink.priElseZero();
+                //t.priElseZero();
+                //task.priElseZero() * tasklink.priElseZero();
+                Math.min(task.priElseZero(), tasklink.priElseZero());
 
         float pEach =
                 //TODO abstract priority transfer function here
                 pri; //no division
                 //pri/subConcepts.size(); //division
 
-        TaskLink tt = TaskLink.tasklink(Op.EmptyProduct, t, true, true, 0 /* pri will be set in each clone */, nar);
+        TaskLink template = TaskLink.tasklink(Op.EmptyProduct, task, true, true, 0 /* pri will be set in each clone */, nar);
         for (Concept c : subConcepts) {
             TaskLink.link(
-                    tt.clone(c.term(), pEach),
+                    template.clone(c.term(), pEach),
                     nar, null /* overflow*/);
         }
 

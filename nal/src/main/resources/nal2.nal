@@ -12,21 +12,21 @@
 
 //Set Composition
 
-    (C --> A), (C --> B), neqRCom(A,B),is(A,"{"),is(B,"{") |- (C --> union(A,B)), (Belief:Union, Time:Intersect)
-    (C --> A), (C --> B), neqRCom(A,B),is(A,"{"),is(B,"{") |- (C --> intersect(A,B)), (Belief:Intersection, Time:Intersect)
-    (C --> A), (C --> B), neqRCom(A,B),is(A,"{"),is(B,"{") |- (C --> differ(A,B)), (Belief:Difference, Time:Intersect)
+    (C --> A), (C --> B), neqRCom(A,B),is(A,"{"),is(B,"{") |- (C --> union(A,B)), (Belief:Union)
+    (C --> A), (C --> B), neqRCom(A,B),is(A,"{"),is(B,"{") |- (C --> intersect(A,B)), (Belief:Intersection)
+    (C --> A), (C --> B), neqRCom(A,B),is(A,"{"),is(B,"{") |- (C --> differ(A,B)), (Belief:Difference)
 
-    (C --> A), (C --> B), neqRCom(A,B),is(A,"["),is(B,"[") |- (C --> union(A,B)), (Belief:Intersection, Time:Intersect)
-    (C --> A), (C --> B), neqRCom(A,B),is(A,"["),is(B,"[") |- (C --> intersect(A,B)), (Belief:Union, Time:Intersect)
-    (C --> A), (C --> B), neqRCom(A,B),is(A,"["),is(B,"[") |- (C --> differ(A,B)), (Belief:Difference, Time:Intersect)
+    (C --> A), (C --> B), neqRCom(A,B),is(A,"["),is(B,"[") |- (C --> union(A,B)), (Belief:Intersection)
+    (C --> A), (C --> B), neqRCom(A,B),is(A,"["),is(B,"[") |- (C --> intersect(A,B)), (Belief:Union)
+    (C --> A), (C --> B), neqRCom(A,B),is(A,"["),is(B,"[") |- (C --> differ(A,B)), (Belief:Difference)
 
-    (A --> C), (B --> C), neqRCom(A,B),is(A,"{"),is(B,"{") |- (intersect(A,B) --> C), (Belief:Union, Time:Intersect)
-    (A --> C), (B --> C), neqRCom(A,B),is(A,"{"),is(B,"{") |- (union(A,B) --> C), (Belief:Intersection, Time:Intersect)
-    (A --> C), (B --> C), neqRCom(A,B),is(A,"{"),is(B,"{") |- (differ(A,B) --> C), (Belief:Difference, Time:Intersect)
+    (A --> C), (B --> C), neqRCom(A,B),is(A,"{"),is(B,"{") |- (intersect(A,B) --> C), (Belief:Union)
+    (A --> C), (B --> C), neqRCom(A,B),is(A,"{"),is(B,"{") |- (union(A,B) --> C), (Belief:Intersection)
+    (A --> C), (B --> C), neqRCom(A,B),is(A,"{"),is(B,"{") |- (differ(A,B) --> C), (Belief:Difference)
 
-    (A --> C), (B --> C), neqRCom(A,B),is(A,"["),is(B,"[") |- (union(A,B) --> C), (Belief:Union, Time:Intersect)
-    (A --> C), (B --> C), neqRCom(A,B),is(A,"["),is(B,"[") |- (intersect(A,B) --> C), (Belief:Intersection, Time:Intersect)
-    (A --> C), (B --> C), neqRCom(A,B),is(A,"["),is(B,"[") |- (differ(A,B) --> C), (Belief:Difference, Time:Intersect)
+    (A --> C), (B --> C), neqRCom(A,B),is(A,"["),is(B,"[") |- (union(A,B) --> C), (Belief:Union)
+    (A --> C), (B --> C), neqRCom(A,B),is(A,"["),is(B,"[") |- (intersect(A,B) --> C), (Belief:Intersection)
+    (A --> C), (B --> C), neqRCom(A,B),is(A,"["),is(B,"[") |- (differ(A,B) --> C), (Belief:Difference)
 
 //Set Goals
     //(A --> C), (B --> C), task("!"), neq(A,B),is(A,"{"),is(B,"{") |- (intersect(A,B) --> C), (Goal:Weak)
