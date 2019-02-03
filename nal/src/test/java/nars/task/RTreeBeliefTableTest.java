@@ -12,8 +12,8 @@ import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.table.temporal.TemporalBeliefTable;
+import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
-import nars.task.util.TimeConfRange;
 import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.term.Termed;
@@ -269,7 +269,7 @@ class RTreeBeliefTableTest {
         List<TaskRegion> seq = new FasterList(table.capacity());
         table.read(t->{
 
-            HyperIterator<TaskRegion> h = new HyperIterator(t, TimeConfRange.distanceFunction( new TimeRange(s, e)));
+            HyperIterator<TaskRegion> h = new HyperIterator(t, Answer.temporalDistanceFn( new TimeRange(s, e)));
             while (h.hasNext()) {
                 seq.add(h.next());
             }

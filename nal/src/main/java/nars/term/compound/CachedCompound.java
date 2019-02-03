@@ -102,11 +102,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         }
 
 
-        @Override
-        public final int subTimeOnly(Term event) {
-            return equals(event) ? 0 : DTERNAL;
-        }
-
     }
 
     public final static class SimpleCachedCompound extends UnnormalizedCachedCompound {

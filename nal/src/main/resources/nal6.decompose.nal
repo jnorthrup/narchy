@@ -9,7 +9,7 @@
 
     //free structural Conjunction/Disjunction decomposition
     C, X, eventOfPN(C,X), --isVar(X)                  |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
-      C, X, eventOfPN(C,X), --isVar(X)                |-   conjWithoutPN(C,X), (Punctuation:Ask)
+      C, X, eventOfPN(C,X), --isVar(X), task("?@")    |-   conjWithoutPN(C,X)
     C, X, eventOfPN(C,X), conjParallel(C), --isVar(X) |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
     //not right:

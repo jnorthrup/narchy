@@ -12,8 +12,8 @@ G, B, task("@")  |- (polarizeBelief(B) ==> G), (Punctuation:Question)
     (Z --> X), (Z --> (|,X,A..+)) |- (Z --> (|,X,A..+)), (Goal:DesireWeak)
 
 //general implication induction
-    (C ==> Z), X |- ((C && X) ==> Z), (Belief:Induction, Time:Intersect)
-    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN, Time:Intersect)
+    (C ==> Z), X |- ((C && X) ==> Z), (Belief:InductionPP)
+    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN)
 
 //X, (Y==>X), task("!") |- (Y &&   X), (Goal:Intersection)
 //X, (Y==>X), task("!") |- (Y && --X), (Goal:IntersectionNN)

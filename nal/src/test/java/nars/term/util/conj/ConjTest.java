@@ -1375,40 +1375,6 @@ public class ConjTest {
         assertEquals("( &&+- ,b,c,d)", x.root().toString());
     }
 
-    @Test
-    void testSubtermTimeRecursive() throws Narsese.NarseseException {
-        Compound c = $("(hold:t2 &&+1 (at:t1 &&+3 ((t1-->[opened]) &&+5 open(t1))))");
-        assertEquals("(((t2-->hold) &&+1 (t1-->at)) &&+3 ((t1-->[opened]) &&+5 open(t1)))", c.toString());
-        assertEquals(0, c.subTimeOnly($("hold:t2")));
-        assertEquals(1, c.subTimeOnly($("at:t1")));
-        assertEquals(4, c.subTimeOnly($("(t1-->[opened])")));
-        assertEquals(9, c.subTimeOnly($("open(t1)")));
-        assertEquals(9, c.eventRange());
-    }
-
-    @Test
-    void testSubtermTimeRepeat() throws Narsese.NarseseException {
-        Compound c = $("(((a &&+1 a) &&+2 a) &&+3 a)");
-        assertEquals(DTERNAL, c.subTimeOnly($$("a")));
-        assertArrayEquals(new int[]{0, 1, 3, 6}, c.subTimes($$("a")));
-        assertEquals(DTERNAL, c.subTimeOnly($$("b")));
-        assertEquals(null, c.subTimes($$("b")));
-    }
-
-    @Test
-    void testSubtermTimeRepeat2() throws Narsese.NarseseException {
-        Compound c = $("((a &&+1 (b&|c)) &&+1 (b&&d))");
-        assertArrayEquals(new int[]{1, 2}, c.subTimes($$("b")));
-    }
-
-    @Test
-    void testSubtermTimeNegAnon() throws Narsese.NarseseException {
-
-        String needle = "(--,noid(_0,#1))";
-        String haystack = "(&|,(--,noid(_0,#1)),(\"+\"-->(X-->noid)),noid(#1,#1))";
-        assertEquals(0, $(haystack).subTimeOnly($(needle)));
-        assertEquals(0, $(haystack).anon().subTimeOnly($(needle).anon()));
-    }
 
     @Test
     void testConjEarlyLate() throws Narsese.NarseseException {
@@ -1431,47 +1397,6 @@ public class ConjTest {
 
     }
 
-    @Test
-    void testSubtermTimeRecursiveWithNegativeCommutive() throws Narsese.NarseseException {
-        Compound b = $("(a &&+5 b)");
-        assertEquals(0, b.subTimeOnly(a));
-        assertEquals(5, b.subTimeOnly(ConjTest.b));
-
-        Compound c = $("(a &&-5 b)");
-        assertEquals(5, c.subTimeOnly(a));
-        assertEquals(0, c.subTimeOnly(ConjTest.b));
-
-        Compound d = $("(b &&-5 a)");
-        assertEquals(0, d.subTimeOnly(a));
-        assertEquals(5, d.subTimeOnly(ConjTest.b));
-
-
-    }
-
-    @Test
-    void testSubtermConjInConj() throws Narsese.NarseseException {
-        String g0 = "((x &&+1 y) &&+1 z)";
-        Compound g = $(g0);
-        assertEquals(g0, g.toString());
-        assertEquals(0, g.subTimeOnly($("x")));
-        assertEquals(1, g.subTimeOnly($("y")));
-        assertEquals(2, g.subTimeOnly($("z")));
-
-        Compound h = $("(z &&+1 (x &&+1 y))");
-        assertEquals(0, h.subTimeOnly($("z")));
-        assertEquals(1, h.subTimeOnly($("x")));
-        assertEquals(2, h.subTimeOnly($("y")));
-
-        Compound i = $("(y &&+1 (z &&+1 x))");
-        assertEquals(0, i.subTimeOnly($("y")));
-        assertEquals(1, i.subTimeOnly($("z")));
-        assertEquals(2, i.subTimeOnly($("x")));
-
-        Compound j = $("(x &&+1 (z &&+1 y))");
-        assertEquals(0, j.subTimeOnly($("x")));
-        assertEquals(1, j.subTimeOnly($("z")));
-        assertEquals(2, j.subTimeOnly($("y")));
-    }
 
     @Test
     void testDTRange() throws Narsese.NarseseException {
@@ -1820,7 +1745,6 @@ public class ConjTest {
         Term sub = $("cam(0,0)");
         assertTrue(sooper.contains(sub));
         assertTrue(!sooper.impossibleSubTerm(sub));
-        assertEquals(0, sooper.subTimeOnly(sub));
 
 
     }

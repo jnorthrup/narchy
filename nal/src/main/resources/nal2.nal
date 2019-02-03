@@ -8,9 +8,7 @@
 //nothing is more general than a property, so its similar
     ([S] <-> P),  P  |- ([S] --> P), (Belief:Identity)
 
-//single element unwrap (decomposition)
-    ({E} --> X),  X  |- (E --> X), (Belief:StructuralDeduction)
-    (X --> [I]),  X  |- (X --> I), (Belief:StructuralDeduction)
+
 
 //Set Composition
 

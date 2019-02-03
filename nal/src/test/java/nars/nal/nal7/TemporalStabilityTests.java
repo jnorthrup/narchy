@@ -2,6 +2,7 @@ package nars.nal.nal7;
 
 import nars.NAR;
 import nars.NARS;
+import nars.Param;
 import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
 import org.eclipse.collections.api.set.primitive.IntSet;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
@@ -74,10 +75,8 @@ public class TemporalStabilityTests {
         char c = (char) ('a' + j);
         return "(" + (c + "==>" + (c + "" + c)) + ")";
     };
-    private static final IntToObjectFunction<String> productor = (j) -> {
-        char c = (char) ('a' + j);
-        return "(" + c + ")";
-    };
+    private static final IntToObjectFunction<String> atomizer = (j) -> String.valueOf((char)('a' + j));
+    private static final IntToObjectFunction<String> productor = (j) -> "(" + atomizer.apply(j) + ")";
     private static final IntToObjectFunction<String> biproductor = (j) -> {
         char c = (char) ('a' + j);
         return "(" + c + "," + (c + "" + c) + ")";
@@ -117,9 +116,18 @@ public class TemporalStabilityTests {
     void testTemporalStabilityImpl() {
         new T1(implicator, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
+
+    @Test
+    void testTemporalStabilityAtoms() {
+        NAR t = NARS.tmp();
+        Param.DEBUG = true; t.log();
+        new T1(atomizer, 1, 3).test(CYCLES, t);
+    }
+
     @Test
     void testTemporalStabilityProd() {
-        new T1(productor, 1, 2, 5).test(CYCLES, NARS.tmp());
+        NAR t = NARS.tmp();
+        new T1(productor, 1, 2, 5).test(CYCLES, t);
     }
     @Test
     void testTemporalStabilityBiProd() {

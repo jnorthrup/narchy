@@ -82,6 +82,42 @@ public final class Answer implements AutoCloseable {
         return (x) -> a.test(x) && b.test(x);
     }
 
+    /** sorts nearest to the end of a list */
+    public FloatFunction<TaskRegion> temporalDistanceFn() {
+
+        TimeRange target;
+        if (time.start==ETERNAL)
+            target = new TimeRange(nar.time()); //prefer closer to the current time
+        else
+            target = time;
+
+        return temporalDistanceFn(target);
+
+    }
+
+
+    public static FloatFunction<TaskRegion> temporalDistanceFn(TimeRange target) {
+        long targetStart = target.start;
+        if (targetStart == ETERNAL) {
+            return x -> -(x instanceof Task ? TruthIntegration.evi((Task)x) : (x.confMax() * x.range()));
+        } else if (targetStart != target.end) {
+            //return b -> -(Util.mean(b.minTimeTo(a.start), b.minTimeTo(a.end))) -b.range()/tableDur;
+            //return b -> -(Util.mean(b.midTimeTo(a.start), b.minTimeTo(a.end))); // -b.range()/tableDur;
+            // -b.minTimeTo(a.start, a.end); // -b.range()/tableDur;
+            return x -> -target.minTimeTo(x);
+//            return b -> {
+//
+//                return a.minTimeTo(b);
+//long bs = b.start(), be = b.end();
+//                long abs = a.minTimeTo(bs);
+//                float r = -(bs!=be ? Util.mean(abs, a.minTimeTo(be)) : abs);
+//                return r; //TODO make sure that the long cast to float is ok
+//            };
+        } else {
+            return b -> -b.minTimeTo(targetStart); // -b.range()/tableDur;
+        }
+    }
+
     public FloatRank<Task> rank() {
         return rank;
     }
@@ -99,7 +135,7 @@ public final class Answer implements AutoCloseable {
         FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template);
 
         return new Answer(capacity, r, filter, nar)
-                .time(new TimeRangeFilter(start, end, true))
+                .time(TimeRangeFilter.the(start, end, true))
                 .template(template);
     }
 

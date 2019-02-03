@@ -102,7 +102,19 @@ public class DynTaskify extends DynEvi {
             if (model == ConjIntersection) {
                 //calculate the minimum range (ie. intersection of the ranges)
                 s = earliest;
-                e = earliest + (d.minValue(t -> t.isEternal() ? 1 : t.range()) - 1);
+                long range = (d.minValue(t -> t.isEternal() ? 1 : t.range()) - 1);
+
+                long ss = a.time.start;
+                if (ss != ETERNAL && ss != XTERNAL) {
+                    long ee = a.time.end;
+                    s = Util.clampSafe(s, ss, ee); //project sequence to when asked
+                }
+
+                if (s != ETERNAL) {
+                    e = s + range;
+                } else {
+                    e = ETERNAL;
+                }
 
             } else {
 
@@ -112,12 +124,6 @@ public class DynTaskify extends DynEvi {
                 e = latest;
             }
 
-            long ss = a.time.start;
-            if (ss !=ETERNAL && ss !=XTERNAL) {
-                long ee = a.time.end;
-                s = Util.clampSafe(s, ss, ee);
-                e = Util.clampSafe(e, ss, ee);
-            }
         }
 
 
@@ -131,11 +137,14 @@ public class DynTaskify extends DynEvi {
         }
 
 
+        boolean absolute = model != ConjIntersection || s == ETERNAL || earliest == ETERNAL;
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
             Task x = d.get(i);
-            long shift = model != ConjIntersection || s == ETERNAL || earliest == ETERNAL || x.isEternal() ? 0 : x.start()-earliest;
-            if (x.start() != s+shift || x.end() != e+shift) {
-                Task tt = Task.project(x, s, e, a.nar);
+            long shift = absolute || x.isEternal() ? 0 : x.start()-earliest;
+            long ss = s + shift;
+            long ee = e + shift;
+            if (x.start() != ss || x.end() != ee) {
+                Task tt = Task.project(x, ss, ee, a.nar);
                 if (tt == null)
                     return null;
                 d.setFast(i, tt);
@@ -168,8 +177,8 @@ public class DynTaskify extends DynEvi {
 
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
         Task bt = //forceProjection ?
-                table.answer(subStart, subEnd, subTerm, filter, nar);
-                //table.match(subStart, subEnd, subTerm, filter, nar);
+                //table.answer(subStart, subEnd, subTerm, filter, nar);
+                table.match(subStart, subEnd, subTerm, filter, nar);
                 //table.sample(subStart, subEnd, subTerm, filter, nar);
 
 

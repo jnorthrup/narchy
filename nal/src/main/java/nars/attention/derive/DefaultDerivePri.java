@@ -14,6 +14,7 @@ import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * TODO parameterize, modularize, refactor etc
+ * TODO belief decomposition gets less priority than a question activated decomposition
  */
 public class DefaultDerivePri implements DerivePri {
 

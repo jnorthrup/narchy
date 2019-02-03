@@ -105,6 +105,10 @@ class DynamicConjTest {
         }
 
 
+        Task tAfterTask = n.belief($("(a:x &| a:y)"), now + 2);
+        assertEquals(now + 2, tAfterTask.start());
+        assertEquals(now + 2, tAfterTask.end());
+
         Truth tAfter = n.beliefTruth($("(a:x &| a:y)"), now + 2);
         assertNotNull(tAfter);
         assertTrue(tAfter.isPositive());

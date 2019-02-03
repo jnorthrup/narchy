@@ -24,6 +24,10 @@ public class TimeRange implements HyperRegion, LongInterval {
         assert(t.length==2);
     }
 
+    public TimeRange(long w) {
+        this(w, w);
+    }
+
     public TimeRange(long s, long e) {
         set(s, e);
     }

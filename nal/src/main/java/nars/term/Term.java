@@ -385,24 +385,24 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return true;
     }
 
-    /**
-     * computes the occurrence times of an event within a compound.
-     * if equals or is the first event only, it will be [0]
-     * null if not contained or indeterminate (ex: XTERNAL)
-     */
-    @Nullable
-    @Deprecated default int[] subTimes(Term x) {
-        int t = subTimeOnly(x);
-        return t == DTERNAL ? null : new int[]{t};
-    }
-
-    /**
-     * returns the unique sub-event time of the given target,
-     * or DTERNAL if not present or there is not one unique time.
-     */
-    @Deprecated default int subTimeOnly(Term x) {
-        return equals(x) ? 0 : DTERNAL;
-    }
+//    /**
+//     * computes the occurrence times of an event within a compound.
+//     * if equals or is the first event only, it will be [0]
+//     * null if not contained or indeterminate (ex: XTERNAL)
+//     */
+//    @Nullable
+//    @Deprecated default int[] subTimes(Term x) {
+//        int t = subTimeOnly(x);
+//        return t == DTERNAL ? null : new int[]{t};
+//    }
+//
+//    /**
+//     * returns the unique sub-event time of the given target,
+//     * or DTERNAL if not present or there is not one unique time.
+//     */
+//    @Deprecated default int subTimeOnly(Term x) {
+//        return equals(x) ? 0 : DTERNAL;
+//    }
 
     /**
      * returns DTERNAL if not found

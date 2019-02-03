@@ -5,18 +5,19 @@
 
 ////composition on both sides of a statement:
 
-    ((&,X,A..+) --> (&,Y,A..+)), (X --> Y), task("?") |- ((&,X,A..+) --> (&,Y,A..+)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-    ((|,X,A..+) --> (|,Y,A..+)), (X --> Y), task("?") |- ((|,X,A..+) --> (|,Y,A..+)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+//    ((&,X,A..+) --> (&,Y,A..+)), (X --> Y), task("?") |- ((&,X,A..+) --> (&,Y,A..+)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+//    ((|,X,A..+) --> (|,Y,A..+)), (X --> Y), task("?") |- ((|,X,A..+) --> (|,Y,A..+)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
-    ((A - S) --> (B - S)), (A --> B), task("?") |- ((A-S) --> (B-S)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-    ((A ~ S) --> (B ~ S)), (A --> B), task("?") |- ((A~S) --> (B~S)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-    ((S - A) --> (S - B)), (B --> A), task("?") |- ((S-A) --> (S-B)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-    ((S ~ A) --> (S ~ B)), (B --> A), task("?") |- ((S~A) --> (S~B)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+//    ((A - S) --> (B - S)), (A --> B), task("?") |- ((A-S) --> (B-S)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+//    ((A ~ S) --> (B ~ S)), (A --> B), task("?") |- ((A~S) --> (B~S)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+//    ((S - A) --> (S - B)), (B --> A), task("?") |- ((S-A) --> (S-B)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+//    ((S ~ A) --> (S ~ B)), (B --> A), task("?") |- ((S~A) --> (S~B)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
 
 //intersection belief to diff question
     (W --> (A&B)), W, --is(A,"--"), --is(B,"--") |- (W --> (A-B)), (Punctuation:Ask, Time:Task)
     ((A|B) --> W), W, --is(A,"--"), --is(B,"--") |- ((A~B) --> W), (Punctuation:Ask, Time:Task)
+
         //(W --> (A|B)), W |- (W --> (A-B)), (Punctuation:Ask)
         //((A&B) --> W), W |- ((A~B) --> W), (Punctuation:Ask)
       //(A&B), A |- (A~B), (Punctuation:Ask)

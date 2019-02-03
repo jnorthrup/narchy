@@ -69,12 +69,12 @@ public interface Variable extends Atomic {
                 xOp = x.op();
                 //continue below
             } else {
-//                try {
+                try {
                     return x.unify(y, u);
-//                } catch (StackOverflowError e) {
-//                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy); //TEMPORARY
-//                    return false;
-//                }
+                } catch (StackOverflowError e) {
+                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy); //TEMPORARY
+                    return false;
+                }
             }
         }
 

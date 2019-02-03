@@ -27,7 +27,6 @@ import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.util.IntCoding;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
-import jcog.util.ArrayUtils;
 import nars.IO;
 import nars.Op;
 import nars.The;
@@ -44,7 +43,6 @@ import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -461,74 +459,74 @@ public interface Compound extends Term, IPair, Subterms {
 //
     }
 
-    @Deprecated default int subTimeOnly(Term event) {
-        int[] t = subTimes(event, 1);
-        if (t == null || t.length != 1) return DTERNAL;
-        return t[0];
-    }
+//    @Deprecated default int subTimeOnly(Term event) {
+//        int[] t = subTimes(event, 1);
+//        if (t == null || t.length != 1) return DTERNAL;
+//        return t[0];
+//    }
 
-    default int[] subTimes(Term event) {
-        return subTimes(event, Integer.MAX_VALUE);
-    }
+//    default int[] subTimes(Term event) {
+//        return subTimes(event, Integer.MAX_VALUE);
+//    }
 
-    /**
-     * TODO return XTERNAL not DTERNAL on missing, it is more appropriate
-     * expect the output array to be sorted
-     */
-    default int[] subTimes(Term event, int max) {
-        assert (max > 0);
-
-        if (equals(event))
-            return new int[]{0};
-
-        if (op() != CONJ || impossibleSubTerm(event))
-            return null;
-
-        //int dt = dt();
-        if (!Conj.isSeq(this)) {
-            int[] tt = null;
-            boolean needDedup = false;
-            for (Term x : subterms()) {
-                int[] ss = x.subTimes(event);
-                if (ss != null) {
-                    if (ss.length > max)
-                        return null;
-                    if (tt == null)
-                        tt = ss;
-                    else if (!Arrays.equals(ss, tt)) {
-                        int undupN = ss.length + tt.length;
-                        tt = ArrayUtils.addAll(ss, tt);
-                        needDedup = tt.length != undupN;
-                        if (!needDedup && tt.length > max)
-                            return null;
-                    }
-                }
-            }
-            if (needDedup) {
-                tt = ArrayUtils.removeDuplicates(tt);
-                if (tt.length > max)
-                    return null;
-            } else {
-                if (tt != null) {
-                    if (tt.length > max)
-                        return null;
-                    if (tt.length > 1)
-                        Arrays.sort(tt);
-                }
-            }
-            return tt;
-        } else {
-
-
-            int[][] found = new int[1][];
-            subTimesWhile(event, (when) -> {
-                found[0] = found[0] == null ? new int[]{when} : ArrayUtils.add(found[0], when);
-                return true;
-            });
-
-            return found[0];
-        }
-    }
+//    /**
+//     * TODO return XTERNAL not DTERNAL on missing, it is more appropriate
+//     * expect the output array to be sorted
+//     */
+//    default int[] subTimes(Term event, int max) {
+//        assert (max > 0);
+//
+//        if (equals(event))
+//            return new int[]{0};
+//
+//        if (op() != CONJ || impossibleSubTerm(event))
+//            return null;
+//
+//        //int dt = dt();
+//        if (!Conj.isSeq(this)) {
+//            int[] tt = null;
+//            boolean needDedup = false;
+//            for (Term x : subterms()) {
+//                int[] ss = x.subTimes(event);
+//                if (ss != null) {
+//                    if (ss.length > max)
+//                        return null;
+//                    if (tt == null)
+//                        tt = ss;
+//                    else if (!Arrays.equals(ss, tt)) {
+//                        int undupN = ss.length + tt.length;
+//                        tt = ArrayUtils.addAll(ss, tt);
+//                        needDedup = tt.length != undupN;
+//                        if (!needDedup && tt.length > max)
+//                            return null;
+//                    }
+//                }
+//            }
+//            if (needDedup) {
+//                tt = ArrayUtils.removeDuplicates(tt);
+//                if (tt.length > max)
+//                    return null;
+//            } else {
+//                if (tt != null) {
+//                    if (tt.length > max)
+//                        return null;
+//                    if (tt.length > 1)
+//                        Arrays.sort(tt);
+//                }
+//            }
+//            return tt;
+//        } else {
+//
+//
+//            int[][] found = new int[1][];
+//            subTimesWhile(event, (when) -> {
+//                found[0] = found[0] == null ? new int[]{when} : ArrayUtils.add(found[0], when);
+//                return true;
+//            });
+//
+//            return found[0];
+//        }
+//    }
 
 
     @Override

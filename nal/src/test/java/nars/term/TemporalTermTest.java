@@ -15,7 +15,6 @@ import static nars.$.$;
 import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
-import static nars.time.Tense.DTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -229,16 +228,6 @@ public class TemporalTermTest {
                 $("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+- (_1,_2))").dt(7).toString());
     }
 
-    @Test
-    void subtermTimeWithConjInImpl() throws Narsese.NarseseException {
-        Term t = $("(((a &&+5 b) &&+5 c) ==>-5 d)");
-        assertEquals(DTERNAL, t.subTimeOnly($("(a &&+5 b)")));
-        assertEquals(DTERNAL, t.subTimeOnly($("d")));
-        assertEquals(DTERNAL, t.subTimeOnly($("a")));
-        assertEquals(DTERNAL, t.subTimeOnly($("b")));
-        assertEquals(DTERNAL, t.subTimeOnly($("c")));
-        assertEquals(DTERNAL, t.subTimeOnly($("x")));
-    }
 
 
     @Test
@@ -318,29 +307,6 @@ public class TemporalTermTest {
         assertTrue(Task.taskConceptTerm(ss));
     }
 
-    @Test
-    void testSubtimeInDTERNAL() {
-        assertArrayEquals(new int[]{0},
-                $$("(x && y)").subTimes($$("x"))
-        );
-        assertNull(
-                $$("(x && y)").subTimes($$("a"))
-        );
-//        assertArrayEquals(new int[] { 0 },
-//                $$("((x &| y) && z)").subTimes($$("x"))
-//        );
-        assertArrayEquals(new int[]{0},
-                $$("((x &| y) && (w &| z))").subTimes($$("x"))
-        );
-        assertArrayEquals(new int[]{0},
-                $$("(((--,(_2(_1)&|_3(_1)))&|(--,(_3(_1)&|_4(_1)))) &&+125 _6(_1,_5))").subTimes($$("(_3(_1)&|_4(_1))").neg())
-        );
-        assertArrayEquals(new int[]{125},
-                $$("(z &&+125 ((--,(_2(_1)&|_3(_1)))&|(--,(_3(_1)&|_4(_1)))))").subTimes($$("(_3(_1)&|_4(_1))").neg())
-        );
-
-//        assertEquals(0, $$("((--,(_3(_1)&|_4(_1)))&&(_2(_1)&|_3(_1)))").subTimeFirst($$("")));
-    }
     @Test void testImplTransformMaintainsTiming() {
         assertEq(
                 "((_2-->_1) ==>+3 (_1-->_3))",
