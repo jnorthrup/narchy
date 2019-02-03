@@ -68,15 +68,15 @@ public class PrologImpl implements java.io.Serializable {
         out.writeObject(info);
     }
 
-    public void solveNext(ObjectInputStream in,ObjectOutputStream out) throws java.io.IOException {
-        try {
-            Solution info=core.solveNext();
-            out.writeObject(Boolean.TRUE);
-            out.writeObject(info);
-        } catch (NoMoreSolutionException ex){
-            out.writeObject(Boolean.FALSE);
-        }
-    }
+//    public void solveNext(ObjectInputStream in,ObjectOutputStream out) throws java.io.IOException {
+//        try {
+//            Solution info=core.solveNext();
+//            out.writeObject(Boolean.TRUE);
+//            out.writeObject(info);
+//        } catch (NoMoreSolutionException ex){
+//            out.writeObject(Boolean.FALSE);
+//        }
+//    }
 
     public void solveHalt(ObjectInputStream in,ObjectOutputStream out){
         core.solveHalt();

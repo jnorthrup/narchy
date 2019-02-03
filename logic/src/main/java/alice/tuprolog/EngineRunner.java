@@ -20,7 +20,7 @@ import static alice.tuprolog.PrologPrimitive.PREDICATE;
  * <p>
  * Core engine
  */
-public class EngineRunner implements java.io.Serializable, Runnable {
+public final class EngineRunner implements java.io.Serializable, Runnable {
     private Prolog mediator;
     private TheoryManager theories;
     private PrimitiveManager primitives;
@@ -35,7 +35,7 @@ public class EngineRunner implements java.io.Serializable, Runnable {
     private Term bagOfBag;
 
     public final int id;
-    private int pid;
+
     private boolean detached;
     private boolean solving;
     private Term query;
@@ -350,18 +350,20 @@ public class EngineRunner implements java.io.Serializable, Runnable {
 
     @Override
     public void run() {
+        if (id!=0)
+            EngineManager.threads.set(id);
+
         solving = true;
-        pid = (int) Thread.currentThread().getId();
 
         if (sinfo == null) {
             threadSolve();
         }
+
         try {
             while (hasOpenAlternatives())
                 if (next.get(countNext))
                     threadSolveNext();
         } catch (NoMoreSolutionException e) {
-
             e.printStackTrace();
         }
     }

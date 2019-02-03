@@ -281,8 +281,7 @@ public class TheoryManager {
     public void rebindPrimitives() {
         for (ClauseInfo d : dynamicDBase) {
             for (SubTree sge : d.body) {
-                Term t = (Term) sge;
-                primitiveManager.identify(t, PREDICATE);
+                primitiveManager.identify((Term) sge, PREDICATE);
             }
         }
     }

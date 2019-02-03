@@ -335,7 +335,8 @@ public class BasicLibrary extends Library {
                     "evaluable", arg1.term());
         NumberTerm val0n = (NumberTerm) val0;
         NumberTerm val1n = (NumberTerm) val1;
-        return val0n.isInteger() && val1n.isInteger() ? val0n.longValue() == val1n.longValue() : val0n.doubleValue() == val1n.doubleValue();
+        return val0n.equals(val1n);
+        //val0n.isInteger() && val1n.isInteger() ? val0n.longValue() == val1n.longValue() : val0n.doubleValue() == val1n.doubleValue();
     }
 
     public boolean expression_greater_than_2(Term arg0, Term arg1)
@@ -847,10 +848,10 @@ public class BasicLibrary extends Library {
             for(int i = 0; i<numBefore; i++)
             {
             	if (st2.charAt(i)==' ')
-            		st3=st2.substring(i+1, st2.length());
+            		st3=st2.substring(i+1);
             	else if (st2.charAt(i)=='\\' && (st2.charAt(i+1)=='n' || st2.charAt(i+1)=='t'))
             	{
-            		st3=st2.substring(i+2, st2.length());
+            		st3=st2.substring(i+2);
             		i++;
             	}
             	else if (st2.charAt(i)!='-' && st2.charAt(i)!='+')
@@ -860,7 +861,8 @@ public class BasicLibrary extends Library {
             {
             	for(int j = java.lang.Integer.parseInt(String.valueOf(iBetween.charAt(i))); j<java.lang.Integer.parseInt(String.valueOf(iBetween.charAt(i + 1))); j++)
             	{
-            		if (st2.charAt(j)!='.' && (st2.charAt(i)!='E' || (st2.charAt(i)!='E' && (st2.charAt(i+1)!='+' || st2.charAt(i+1)!='-'))) && (st2.charAt(i)!='e' || (st2.charAt(i)!='e' && (st2.charAt(i+1)!='+' || st2.charAt(i+1)!='-'))))
+                    char st2i = st2.charAt(i);
+                    if (st2.charAt(j)!='.' && (st2i !='E' || (st2i !='E' && (st2.charAt(i+1)!='+' || st2.charAt(i+1)!='-'))) && (st2i !='e' || (st2i !='e' && (st2.charAt(i+1)!='+' || st2.charAt(i+1)!='-'))))
             		{
             			st3="";
             		}

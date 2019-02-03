@@ -22,20 +22,20 @@ package alice.tuprolog;
  */
 class Flag implements java.io.Serializable {
 
-    private volatile Term value;
+    private Term value;
     private final Struct valueList;
 
     private final boolean modifiable;
-    private final String  libraryName;
-    
+    private final String libraryName;
+
     /**
      * Builds a Prolog flag
      *
-     * @param name is the name of the flag
-     * @param valueSet is the Prolog list of the possible values
-     * @param defValue is the default value
+     * @param name       is the name of the flag
+     * @param valueSet   is the Prolog list of the possible values
+     * @param defValue   is the default value
      * @param modifiable states if the flag is modifiable
-     * @param library is the library defining the flag
+     * @param library    is the library defining the flag
      */
     public Flag(Struct valueSet, Term defValue, boolean modifiable, String library) {
         this.valueList = valueSet;
@@ -44,27 +44,8 @@ class Flag implements java.io.Serializable {
         this.libraryName = library;
         this.value = defValue;
     }
-    
-
-    
-    
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     /**
      * Checks if a value is valid according to flag description
      *
@@ -72,7 +53,7 @@ class Flag implements java.io.Serializable {
      * @return flag validity
      */
     public boolean isValidValue(Term value) {
-        java.util.Iterator<? extends Term> it=valueList.listIterator();
+        java.util.Iterator<? extends Term> it = valueList.listIterator();
         while (it.hasNext()) {
             if (value.unifiable(it.next())) {
                 return true;
@@ -81,15 +62,16 @@ class Flag implements java.io.Serializable {
         return false;
     }
 
-    
+
     /**
-	 * Gets the list of flag possible values
-	 * @return  a Prolog list
-	 */
+     * Gets the list of flag possible values
+     *
+     * @return a Prolog list
+     */
     public Struct getValueList() {
         return valueList;
     }
-    
+
     /**
      * Sets the value of a flag
      *
@@ -104,29 +86,32 @@ class Flag implements java.io.Serializable {
             return false;
         }
     }
-    
+
     /**
-	 * Gets the current value of the flag
-	 * @return  flag current value
-	 */
+     * Gets the current value of the flag
+     *
+     * @return flag current value
+     */
     public Term getValue() {
         return value;
     }
-    
+
     /**
-	 * Checks if the value is modifiable
-	 * @return
-	 */
+     * Checks if the value is modifiable
+     *
+     * @return
+     */
     public boolean isModifiable() {
         return modifiable;
     }
-    
+
     /**
-	 * Gets the name of the library where the flag has been defined
-	 * @return  the library name
-	 */
+     * Gets the name of the library where the flag has been defined
+     *
+     * @return the library name
+     */
     public String getLibraryName() {
         return libraryName;
     }
-    
+
 }

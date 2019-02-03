@@ -3,17 +3,12 @@ package alice.tuprolog;
 import jcog.data.list.FasterList;
 
 import java.util.Iterator;
-import java.util.List;
 
 
 public final class SubGoalTree extends FasterList<SubTree> implements SubTree {
 
     public SubGoalTree() {
-        super();
-    }
-
-    public SubGoalTree(List<SubTree> terms) {
-        super(terms);
+        super(1);
     }
 
     public SubGoalTree addChild() {
@@ -27,12 +22,12 @@ public final class SubGoalTree extends FasterList<SubTree> implements SubTree {
     public final boolean isLeaf() { return false; }
 
     public String toString() {
-        String result = " [ ";
+        StringBuilder result = new StringBuilder(" [ ");
         Iterator<SubTree> i = iterator();
         if (i.hasNext())
-            result += i.next().toString();
+            result.append(i.next());
         while (i.hasNext()) {
-            result += " , " + i.next();
+            result.append(" , ").append(i.next());
         }
         return result + " ] ";
     }

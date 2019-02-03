@@ -69,15 +69,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
 
 
 
-    
-    /**
-     * Gets the actual term referred by this Term.
-     */
-    @Override
-    public final Term term() {
-        return this;
-    }
-    
+
     
 
     @Override
@@ -410,6 +402,10 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
             return Integer.compare(value, o.intValue());
         }
 
+        @Override
+        public final boolean equals(Object t) {
+            return t instanceof Term && isEqual((Term)t);
+        }
     }
 
     /**

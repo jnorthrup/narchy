@@ -18,7 +18,7 @@ public class EngineManager implements java.io.Serializable {
 
     private final AtomicInteger id = new AtomicInteger();
 
-    private static final ThreadLocal<Integer> threads = new ThreadLocal<>();
+    public static final ThreadLocal<Integer> threads = new ThreadLocal<>();
 
     private final ConcurrentHashMap<Integer, EngineRunner> runners
             = new ConcurrentHashMap<>();
@@ -47,13 +47,7 @@ public class EngineManager implements java.io.Serializable {
         if (goal instanceof Var)
             goal = goal.term();
 
-        EngineRunner er = new EngineRunner(id) {
-            @Override
-            public void run() {
-                threads.set(id);
-                super.run();
-            }
-        };
+        EngineRunner er = new EngineRunner(id);
         er.initialize(vm);
 
         if (!vm.unify(threadID, new NumberTerm.Int(id)))

@@ -328,13 +328,6 @@ public class Struct extends Term {
         
     }
 
-    @Override
-    public Term term() {
-        return this;
-    }
-
-    
-
     /**
      * Gets an argument inside this structure, given its name
      *
@@ -664,8 +657,10 @@ public class Struct extends Term {
      * </p>
      */
     public int listSize() {
+
         if (!isList())
             throw new UnsupportedOperationException("The structure " + this + " is not a list.");
+
         Struct t = this;
         int count = 0;
         while (!t.isEmptyList()) {

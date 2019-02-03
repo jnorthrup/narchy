@@ -55,10 +55,10 @@ public class PrologImpl extends UnicastRemoteObject
         return imp.hasOpenAlternatives();
     }
 
-    @Override
-    public Solution solveNext() throws NoMoreSolutionException {
-        return imp.solveNext();
-    }
+//    @Override
+//    public Solution solveNext() throws NoMoreSolutionException {
+//        return imp.solveNext();
+//    }
 
     @Override
     public void solveHalt() {

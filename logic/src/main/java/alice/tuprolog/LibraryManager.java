@@ -63,30 +63,27 @@ public class LibraryManager {
      */
     public synchronized Library loadClass(String className)
             throws InvalidLibraryException {
-        Library lib = null;
-        try {
-            lib = (Library) Class.forName(className).getConstructor().newInstance();
-            String name = lib.getName();
-            Library alib = getLibrary(name);
-            if (alib != null) {
-                if (prolog.isWarning()) {
-                    String msg = "library " + alib.getName()
-                            + " already loaded.";
-                    prolog.notifyWarning(new WarningEvent(prolog, msg));
-                }
-                return alib;
+
+        Library alib = getLibrary(className);
+        if (alib != null) {
+            if (prolog.isWarning()) {
+                prolog.notifyWarning(new WarningEvent(prolog,
+                        "library " + alib.getName() + " already loaded."));
             }
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (Exception ex) {
+            return alib;
+        }
+
+        try {
+            Library lib = null;
+            lib = (Library) Class.forName(className).getConstructor().newInstance();
+            bindLibrary(lib);
+            prolog.notifyLoadedLibrary(new LibraryEvent(prolog, className));
+            return lib;
+        } catch (Exception e) {
+//            e.printStackTrace();
+//        } catch (Exception ex) {
             throw new InvalidLibraryException(className, -1, -1);
         }
-        bindLibrary(lib);
-        LibraryEvent ev = new LibraryEvent(prolog, lib.getName());
-        prolog.notifyLoadedLibrary(ev);
-        return lib;
 
     }
 
@@ -281,7 +278,6 @@ public class LibraryManager {
                 theoryManager.consult(new Theory(th), false, name);
                 theoryManager.solveTheoryGoal();
             }
-
 
             theoryManager.rebindPrimitives();
 

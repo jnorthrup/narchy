@@ -34,7 +34,7 @@ public class Var extends Term {
     final static String ANY = "_";
     
     private String name;
-    private StringBuilder completeName;     /* Reviewed by Paolo Contessi: String -> StringBuilder */
+    private String completeName;     /* Reviewed by Paolo Contessi: String -> StringBuilder */
     public Term link;            /* link is used for unification process */
     protected long timestamp;        /* timestamp is used for fix vars order */
     private int id;            /* id of ExecCtx owners of this var util for renaming*/
@@ -51,14 +51,14 @@ public class Var extends Term {
      */
     public Var(String n) {
         link = null;
-        id = -1; 
+        id = -1;
         if (n.equals(ANY)) {
             name = null;
-            completeName = new StringBuilder(0);
+            completeName = "";
         } else if (Character.isUpperCase(n.charAt(0)) ||
                 (n.startsWith(ANY))) {
             name = n;
-            completeName = new StringBuilder(n);
+            completeName = name;
         } else {
             throw new InvalidTermException("Illegal variable name: " + n);
         }
@@ -72,7 +72,7 @@ public class Var extends Term {
      */
     public Var() {
         name = null;
-        completeName = new StringBuilder(0);
+        completeName = "";
         link = null;
         id = ORIGINAL;
         timestamp = 0;
@@ -89,7 +89,7 @@ public class Var extends Term {
      */
     private Var(String n, int id, int alias, long time) {
         name = n;
-        completeName = new StringBuilder(0);
+        completeName = "";
         timestamp = time;
         link = null;
         if (id < 0) id = ORIGINAL;
@@ -104,22 +104,20 @@ public class Var extends Term {
      * Rename variable (assign completeName)
      */
     void rename(int idExecCtx, int count) { /* Reviewed by Paolo Contessi: String -> StringBuilder */
-        id = idExecCtx;
-
-        StringBuilder completeName = this.completeName;
-        completeName.delete(0, completeName.length());
-
-        if (id > -1) {
-            
-
-            this.completeName = completeName
-                    .append(name).append("_e").append(id);
-        } else if (id == ORIGINAL) { 
-            this.completeName = completeName
-                    .append(name);
-        } else if (id == PROGRESSIVE) { 
-            this.completeName = completeName
-                    .append('_').append(count);
+        switch (id = idExecCtx) {
+            case ORIGINAL:
+                this.completeName = name;
+                break;
+            case PROGRESSIVE: {
+                StringBuilder c = new StringBuilder(4 /* estimate */);
+                this.completeName = c.append('_').append(count /* TODO higher radix */).toString();
+                break;
+            }
+            default: {
+                StringBuilder c = new StringBuilder(name.length() + 8 /* estimate */);
+                this.completeName = c.append(name).append("_e").append(idExecCtx).toString();
+                break;
+            }
         }
     }
 
@@ -151,34 +149,33 @@ public class Var extends Term {
      */
     @Override
     Term copy(Map<Var, Var> vMap, Map<Term, Var> substMap) {
-        Var v;
-        Object temp = vMap.get(this);
-        if (temp == null) {
-            v = new Var(null, Var.PROGRESSIVE, vMap.size(), timestamp);
-            vMap.put(this, v);
-        } else {
-            v = (Var) temp;
-        }
+        Var v = vMap.computeIfAbsent(this,
+            tis -> new Var(null, Var.PROGRESSIVE, vMap.size(), timestamp)
+        );
+
+
         Term t = term();
+
         if (t instanceof Var) {
-            Object tt;
+            Var tt;
             if (substMap == null) {
                 substMap = new IdentityHashMap<>();
                 tt = null;
             } else {
                 tt = substMap.get(t);
             }
+
             if (tt == null) {
                 substMap.put(t, v);
                 v.link = null;
             } else {
-                v.link = (tt != v) ? (Var) tt : null;
+                v.link = (tt != v) ? tt : null;
             }
-        }
-        if (t instanceof Struct) {
+        } else if (t instanceof Struct)
             v.link = t.copy(vMap, substMap);
-        }
-        if (t instanceof NumberTerm) v.link = t;
+        else if (t instanceof NumberTerm)
+            v.link = t;
+
         return v;
     }
 
@@ -188,7 +185,6 @@ public class Var extends Term {
      */
     static void free(Iterable<Var> varsUnified) {
         varsUnified.forEach(t -> t.link = null);
-        
     }
 
 
@@ -196,7 +192,7 @@ public class Var extends Term {
      * Gets the name of the variable
      */
     public String name() {
-        return name != null ? completeName.toString() : ANY;
+        return name != null ? completeName : ANY;
     }
 
     /**
@@ -214,7 +210,7 @@ public class Var extends Term {
      * for bound variable it is the bound term.
      */
     @Override
-    public Term term() {
+    public final Term term() {
         Term tt = this;
         Term t = link;
         while (t != null) {
@@ -482,7 +478,7 @@ public class Var extends Term {
     public String toString() {
         Term tt = term();
         if (name != null) {
-            return tt == this ? completeName.toString() : completeName + " / " + tt;
+            return tt == this ? completeName : completeName + " / " + tt;
         } else {
             return tt == this ? ANY + hashCode() : tt.toString();
         }
@@ -497,7 +493,7 @@ public class Var extends Term {
     public String toStringFlattened() {
         Term tt = term();
         if (name != null) {
-            return tt == this ? completeName.toString() : tt.toString();
+            return tt == this ? completeName : tt.toString();
         } else {
             return tt == this ? ANY + hashCode() : tt.toString();
         }

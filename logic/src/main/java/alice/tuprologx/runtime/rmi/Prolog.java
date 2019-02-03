@@ -27,7 +27,7 @@ public interface Prolog extends java.rmi.Remote {
 
     boolean   hasOpenAlternatives() throws java.rmi.RemoteException;
 
-    Solution solveNext() throws NoMoreSolutionException, java.rmi.RemoteException;
+//    Solution solveNext() throws NoMoreSolutionException, java.rmi.RemoteException;
 
     void solveHalt() throws java.rmi.RemoteException;
 

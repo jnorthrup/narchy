@@ -263,7 +263,7 @@ public class OOLibrary extends Library {
      * @throws JavaException, Exception
      */
     @SuppressWarnings("unchecked")
-	public <T> boolean new_lambda_3(Term interfaceName, Term implementation, Term id) {
+	public boolean new_lambda_3(Term interfaceName, Term implementation, Term id) {
 
 
 
@@ -1058,7 +1058,7 @@ public class OOLibrary extends Library {
      */
     
     private static String[] getStringArrayFromStruct(Struct list) {
-        String args[] = new String[list.listSize()];
+        String[] args = new String[list.listSize()];
         Iterator<? extends Term> it = list.listIterator();
         int count = 0;
         while (it.hasNext()) {
@@ -1328,25 +1328,25 @@ public class OOLibrary extends Library {
             return unify(id, new Var());
         }
         try {
-            if (Boolean.class.isInstance(obj)) {
+            if (obj instanceof Boolean) {
                 return unify(id, (Boolean) obj ? Term.TRUE : Term.FALSE);
-            } else if (Byte.class.isInstance(obj)) {
+            } else if (obj instanceof Byte) {
                 return unify(id, new NumberTerm.Int(((Byte) obj).intValue()));
-            } else if (Short.class.isInstance(obj)) {
+            } else if (obj instanceof Short) {
                 return unify(id, new NumberTerm.Int(((Short) obj).intValue()));
-            } else if (Integer.class.isInstance(obj)) {
+            } else if (obj instanceof Integer) {
                 return unify(id, new NumberTerm.Int((Integer) obj));
-            } else if (java.lang.Long.class.isInstance(obj)) {
+            } else if (obj instanceof Long) {
                 return unify(id, new NumberTerm.Long((Long) obj));
-            } else if (java.lang.Float.class.isInstance(obj)) {
+            } else if (obj instanceof Float) {
                 return unify(id, new NumberTerm.Float(
                         (Float) obj));
-            } else if (java.lang.Double.class.isInstance(obj)) {
+            } else if (obj instanceof Double) {
                 return unify(id, new NumberTerm.Double(
                         (Double) obj));
-            } else if (String.class.isInstance(obj)) {
+            } else if (obj instanceof String) {
                 return unify(id, new Struct((String) obj));
-            } else if (Character.class.isInstance(obj)) {
+            } else if (obj instanceof Character) {
                 return unify(id, new Struct(obj.toString()));
             } else {
                 return bindDynamicObject(id, obj);
@@ -1358,7 +1358,7 @@ public class OOLibrary extends Library {
     }
 
     private static Object[] getArrayFromList(Struct list) {
-        Object args[] = new Object[list.listSize()];
+        Object[] args = new Object[list.listSize()];
         Iterator<? extends Term> it = list.listIterator();
         int count = 0;
         while (it.hasNext()) {
@@ -1470,12 +1470,9 @@ public class OOLibrary extends Library {
     public Struct register(Object obj) {
     	
         synchronized (staticObjects) {
-            Object aKey = staticObjects_inverse.get(obj);
+            Struct aKey = staticObjects_inverse.get(obj);
             if (aKey != null) {
-                
-                
-                
-                return (Struct) aKey;
+                return aKey;
             } else {
                 Struct id = generateFreshId();
                 staticObjects.put(id.name(), obj);
@@ -1561,12 +1558,9 @@ public class OOLibrary extends Library {
 
         
         synchronized (currentObjects) {
-            Object aKey = currentObjects_inverse.get(obj);
+            Struct aKey = currentObjects_inverse.get(obj);
             if (aKey != null) {
-                
-                
-                
-                return (Struct) aKey;
+                return aKey;
             } else {
                 Struct id = generateFreshId();
                 currentObjects.put(id.name(), obj);
@@ -1622,12 +1616,9 @@ public class OOLibrary extends Library {
         }
         
         synchronized (currentObjects) {
-            Object aKey = currentObjects_inverse.get(obj);
+            Struct aKey = currentObjects_inverse.get(obj);
             if (aKey != null) {
-                
-                
-                
-                return unify(id, (Term) aKey);
+                return unify(id, aKey);
             } else {
                 
                 if (id instanceof Var) {

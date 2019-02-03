@@ -88,7 +88,9 @@ public abstract class Term implements Serializable, SubTree {
     /**
 	 * Gets the actual term referred by this Term. if the Term is a bound variable, the method gets the Term linked to the variable
 	 */
-    public abstract Term term();
+    @Deprecated public Term term() {
+        return this;
+    }
     
 
     private final static AtomicLong tick = new AtomicLong(0);

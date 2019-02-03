@@ -100,19 +100,19 @@ public class ClauseInfo {
      */
     public String toString(OperatorManager op) {
         int p;
-        if ((p = op.opPrio(":-", "xfx")) >= OperatorManager.OP_LOW) {
+        if ((p = op.opPrio(":-xfx")) >= OperatorManager.OP_LOW) {
             String st = indentPredicatesAsArgX(clause.sub(1), op, p);
             String head = clause.sub(0).toStringAsArgX(op, p);
             return st.equals("true") ? head + ".\n" : head + " :-\n\t" + st + ".\n";
         }
 
-        if ((p = op.opPrio(":-", "yfx")) >= OperatorManager.OP_LOW) {
+        if ((p = op.opPrio(":-yfx")) >= OperatorManager.OP_LOW) {
             String st = indentPredicatesAsArgX(clause.sub(1), op, p);
             String head = clause.sub(0).toStringAsArgY(op, p);
             return st.equals("true") ? head + ".\n" : head + " :-\n\t" + st + ".\n";
         }
 
-        if ((p = op.opPrio(":-", "xfy")) >= OperatorManager.OP_LOW) {
+        if ((p = op.opPrio(":-xfy")) >= OperatorManager.OP_LOW) {
             String st = indentPredicatesAsArgY(clause.sub(1), op, p);
             String head = clause.sub(0).toStringAsArgX(op, p);
             return st.equals("true") ? head + ".\n" : head + " :-\n\t" + st + ".\n";
@@ -221,7 +221,7 @@ public class ClauseInfo {
         if (t instanceof Struct) {
             Struct co = (Struct) t;
             if (co.name().equals(",")) {
-                int prio = op.opPrio(",", "xfy");
+                int prio = op.opPrio(",xfy");
                 StringBuilder sb = new StringBuilder(prio >= p ? "(" : "");
                 sb.append(co.sub(0).toStringAsArgX(op, prio));
                 sb.append(",\n\t");
@@ -242,7 +242,7 @@ public class ClauseInfo {
         if (t instanceof Struct) {
             Struct co = (Struct) t;
             if (co.name().equals(",")) {
-                int prio = op.opPrio(",", "xfy");
+                int prio = op.opPrio(",xfy");
                 StringBuilder sb = new StringBuilder(prio > p ? "(" : "");
                 sb.append(co.sub(0).toStringAsArgX(op, prio));
                 sb.append(",\n\t");

@@ -50,6 +50,7 @@ public class OperatorManager extends ConcurrentHashMap<String, Operator> /**/ {
     }
 
 
+
     /**
      * Creates a new operator. If the operator is already provided,
      * it replaces it with the new one
@@ -65,6 +66,10 @@ public class OperatorManager extends ConcurrentHashMap<String, Operator> /**/ {
      */
     public int opPrio(String name, String type) {
         Operator o = getOperator(name, type);
+        return (o == null) ? 0 : o.prio;
+    }
+    public int opPrio(String nametype) {
+        Operator o = get(nametype);
         return (o == null) ? 0 : o.prio;
     }
 

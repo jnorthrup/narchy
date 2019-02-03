@@ -69,10 +69,6 @@ public abstract class AbstractSocket extends Term{
 		return false;
 	}
 
-	@Override
-	public Term term() {
-		return this;
-	}
 
 
 	@Override

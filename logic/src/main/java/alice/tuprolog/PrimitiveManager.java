@@ -66,8 +66,7 @@ public class PrimitiveManager  {
 
         for (int type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
             Map<String, PrologPrimitive> table = table(type);
-            List<PrologPrimitive> pp = prims.get(type);
-            pp.forEach(p-> table.put(p.key, p));
+            prims.get(type).forEach(p-> table.put(p.key, p));
         }
     }
 
@@ -80,8 +79,7 @@ public class PrimitiveManager  {
 
         for (int type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
             Map<String, PrologPrimitive> table = table(type);
-            List<PrologPrimitive> pp = prims.get(type);
-            pp.forEach(p-> table.remove(p.key));
+            prims.get(type).forEach(p-> table.remove(p.key));
         }
     }
 
@@ -108,13 +106,13 @@ public class PrimitiveManager  {
      * @return term with the identified built-in directive
      * @parm term the term to be identified
      */
-    public Term identifyDirective(Term term) {
+    public Struct identifyDirective(Struct term) {
         identify(term, DIRECTIVE);
         return term;
     }
 
     public boolean evalAsDirective(Struct d) throws Throwable {
-        PrologPrimitive pd = ((Struct) identifyDirective(d)).getPrimitive();
+        PrologPrimitive pd = identifyDirective(d).getPrimitive();
         if (pd != null) {
             try {
                 pd.evalAsDirective(d);
@@ -128,28 +126,34 @@ public class PrimitiveManager  {
 
 
     public void identify(Term term, int typeOfPrimitive) {
-        term = term.term();
-        if (!(term instanceof Struct))
-            return;
+        if (term instanceof Var)
+            term = term.term();
 
-        Struct t = (Struct) term;
+        if (term instanceof Struct)
+            identify((Struct) term, typeOfPrimitive);
+    }
 
-        int arity = t.subs();
-        
+    public void identify(Struct t, int typeOfPrimitive) {
 
         final int primType = PRIMITIVE_PREDICATES.contains(t.name()) ? PREDICATE : FUNCTOR;
+        int arity = t.subs();
         for (int c = 0; c < arity; c++) {
             identify(t.sub(c), primType);
         }
 
-        
-        
-
-        t.setPrimitive(table(typeOfPrimitive).get(t.key()));
+        PrologPrimitive p = table(typeOfPrimitive).get(t.key());
+        if (p!=null)
+            t.setPrimitive(p);
     }
 
 
 
+//    public static class PrimitiveStruct extends Struct {
+//
+//        public PrimitiveStruct(String f) {
+//            super(f);
+//        }
+//    }
 
 
 
