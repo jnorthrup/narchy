@@ -52,8 +52,8 @@ class AIMATests {
         n.confResolution.set(0.04f);
         n.confMin.set(0.2f);
 
-        n.beliefPriDefault.set(0.5f);
-        n.questionPriDefault.set(0.05f);
+//        n.beliefPriDefault.set(0.5f);
+//        n.questionPriDefault.set(0.05f);
 
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 

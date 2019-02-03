@@ -12,7 +12,7 @@ import static jcog.data.atomic.AtomicFloatFieldUpdater.iNaN;
 public class Pri extends AtomicPri implements Prioritizable {
 
 
-    public Pri(Prioritized b) {
+    protected Pri(Prioritized b) {
         this(b.pri());
     }
 
@@ -28,7 +28,7 @@ public class Pri extends AtomicPri implements Prioritizable {
     /**
      * default: pri=0
      */
-    public Pri() {
+    protected Pri() {
         super();
         //no further initialization required;  the initial value is 0.0f
     }

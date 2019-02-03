@@ -2,7 +2,9 @@ package nars.index.concept;
 
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.pri.OverflowDistributor;
 import jcog.pri.PriBuffer;
+import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
@@ -62,8 +64,13 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
         active =
             new BufferedBag.SimplestBufferedBag<>( arrayBag(), //hijackBag()
-                new PriBuffer<>(Param.tasklinkMerge,
-                nar.exe.concurrent())
+                new PriBuffer<>(Param.tasklinkMerge, nar.exe.concurrent()) {
+                    @Override
+                    protected void merge(Prioritizable existing, TaskLink incoming, float pri, OverflowDistributor<TaskLink> overflow) {
+                        //super.merge(existing, incoming, pri, overflow);
+                        ((TaskLink)existing).merge(incoming, Param.tasklinkMerge);
+                    }
+                }
             );
 
         active.setCapacity(activeCapacity.intValue());
@@ -78,22 +85,22 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
     public void clear() {
         active.clear();
     }
-
-    @NotNull
-    public PriHijackBag<Term, Activate> hijackBag() {
-        return new PriHijackBag<>(Math.round(activeCapacity.intValue() * 1.5f /* estimate */), 4) {
-
-            @Override
-            public Term key(Activate value) {
-                return value.term();
-            }
-
-            @Override
-            protected PriMerge merge() {
-                return Param.tasklinkMerge;
-            }
-        };
-    }
+//
+//    @NotNull
+//    public PriHijackBag<Term, Activate> hijackBag() {
+//        return new PriHijackBag<>(Math.round(activeCapacity.intValue() * 1.5f /* estimate */), 4) {
+//
+//            @Override
+//            public Term key(Activate value) {
+//                return value.term();
+//            }
+//
+//            @Override
+//            protected PriMerge merge() {
+//                return Param.tasklinkMerge;
+//            }
+//        };
+//    }
 
     protected Bag<TaskLink, TaskLink> arrayBag() {
         return new ArrayBag<>(
@@ -107,6 +114,10 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
                 return value;
             }
 
+            @Override
+            protected float merge(TaskLink existing, TaskLink incoming) {
+                return existing.merge(incoming, Param.tasklinkMerge);
+            }
         };
     }
 

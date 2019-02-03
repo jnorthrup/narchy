@@ -51,7 +51,7 @@ public class DeriverRules {
 //            public float value(PremiseKey premiseKey, short[] shorts) {
 //                return premiseKey.pri;
 //            }
-        this.whats = Memoizers.the.memoize(this + "_what", 128 * 1024, this::can);
+        this.whats = Memoizers.the.memoizeByte(this + "_what", 128 * 1024, this::can);
     }
 
     private short[] can(PremiseKey k) {

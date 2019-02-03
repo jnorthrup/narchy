@@ -6,6 +6,7 @@ import jcog.data.pool.MetalPool;
 import jcog.decide.Roulette;
 import jcog.pri.Ranked;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -225,7 +226,12 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
                     return rng.nextFloat() <= (rx/(rx+ry)) ? x : y;
             }
             default:
-                return get(Roulette.selectRoulette(n, i -> rank.rank(get(i)), rng));
+                IntToFloatFunction select = i -> rank.rank(get(i));
+                return get( n < 8 ?
+                        Roulette.selectRouletteCached(n, select, rng)
+                        :
+                        Roulette.selectRoulette(n, select, rng)
+                );
         }
     }
 

@@ -46,7 +46,8 @@ public class Gradius extends NAgentX {
         g.updateMS =
                 //50; //20fps
                 //25; //40fps
-                5; //200fps
+                10; //100fps
+                //5; //200fps
         //10;
 
 

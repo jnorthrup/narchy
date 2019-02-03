@@ -300,7 +300,7 @@ abstract public class NAgentX extends NAgent {
         window(new BagSpectrogram<>(((AbstractConceptIndex)n.concepts).active, 128, n)
                 .color(x -> {
                     float h;
-                    switch (x.punc()) {
+                    switch (x.puncMax()) {
                         case BELIEF: h = 0; break;
                         case QUESTION: h = 0.25f; break;
                         case GOAL: h = 0.5f; break;

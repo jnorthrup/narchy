@@ -1,21 +1,30 @@
 package nars.link;
 
+import jcog.TODO;
+import jcog.Util;
 import jcog.data.MutableFloat;
-import jcog.pri.Deleteable;
+import jcog.decide.Roulette;
 import jcog.pri.OverflowDistributor;
-import jcog.pri.PLinkHashCached;
+import jcog.pri.UnitPri;
 import jcog.pri.UnitPrioritizable;
+import jcog.pri.Weight;
 import jcog.pri.bag.Bag;
+import jcog.pri.op.PriMerge;
+import jcog.signal.tensor.AtomicArrayTensor;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
+import nars.concept.Concept;
 import nars.index.concept.AbstractConceptIndex;
 import nars.task.Tasklike;
 import nars.term.Term;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Random;
 import java.util.function.Function;
 
+import static jcog.Util.assertFinite;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -24,7 +33,7 @@ import static nars.time.Tense.ETERNAL;
  * that can be used ot dynamically match a Task on demand.
  *
  * note: seems to be important for Tasklink to NOT implement Termed when use with common Map's with Termlinks */
-public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deleteable {
+public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
     /** dont use .apply() directly; use this */
     static Task task(TaskLink x, NAR n) {
@@ -38,8 +47,6 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
         return new TaskLink.GeneralTaskLink(src, Tasklike.seed(task, generify, eternalize, n), pri);
     }
 
-    /** creates a copy, with a specific priority */
-    TaskLink clone(Term src, float pri);
 
     /** concept term (source) where the link originates */
     Term source();
@@ -47,7 +54,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
     /** task term (target) of the task linked */
     Term target();
 
-    byte punc();
+    //byte punc();
+    float punc(byte punc);
 
     /** main tasklink constructor
      * @param generify  if the task's target contains temporal information, discarding this coalesces the link with other similar tasklinks (weaker, more generic).
@@ -69,7 +77,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
 //            return new DirectTaskLink(task, pri);
 //        } else {
 
-        return new GeneralTaskLink(src, Tasklike.seed(task, generify, eternalize, n), pri);
+        return new GeneralTaskLink(src, task.term()).pri(task.punc(), pri);
         //}
     }
 
@@ -97,6 +105,109 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
         } else {
             b.putAsync(x);
         }
+    }
+
+    /** sample punctuation by relative priority */
+    byte punc(Random rng);
+
+    default long when() {
+        return ETERNAL;
+    }
+
+    default Task apply(NAR n) {
+
+        Term t = target();
+
+        //choose punc
+        byte punc = punc(n.random());
+
+        Concept c =
+                //n.concept(t);
+                punc == BELIEF || punc == GOAL ? n.conceptualizeDynamic(t) : n.concept(t);
+
+        if (c != null) {
+
+            long start, end;
+            start = end = when();
+
+            return c.table(punc).
+                    sample
+                    //match
+                            (start, end, t, n);
+
+//            if (task!=null) {
+//                    byte punc = task.punc();
+//                    //dynamic question answering
+//                    Term taskTerm = task.target();
+//                    if ((punc==QUESTION || punc == QUEST) && !taskTerm.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
+//
+//                        BeliefTables aa = (BeliefTables) c.tableAnswering(punc);
+//                        /*@Nullable DynamicTaskTable aa = answers.tableFirst(DynamicTaskTable.class);
+//                        if (aa!=null)*/ {
+//
+//                            //match an answer emulating a virtual self-termlink being matched during premise formation
+//                            Task q = task;
+//                            Task a = aa.answer(q.start(), q.end(), taskTerm, null, n);
+//                            if (a != null) {
+//
+//
+//
+//                                //decrease tasklink too?
+//
+//                                q.onAnswered(a, n);
+//                                n.input(a);
+//                            }
+//                        }
+//                    }
+//            }
+        }
+//        } else {
+//            //TODO if target supports dynamic truth, then possibly conceptualize and then match as above?
+//
+//            //form a question/quest task for the missing concept
+//            byte punc;
+//            switch (this.punc) {
+//                case BELIEF:
+//                    punc = QUESTION;
+//                    break;
+//                case GOAL:
+//                    punc = QUEST;
+//                    break;
+//                case QUESTION:
+//                case QUEST:
+//                    punc = this.punc;
+//                    break;
+//                default:
+//                    throw new UnsupportedOperationException();
+//            }
+//
+//            task = new UnevaluatedTask(target, punc, null, n.time(), se[0], se[1], n.evidence());
+//            if (Param.DEBUG)
+//                task.log("Tasklinked");
+//            task.pri(link.priElseZero());
+
+//        }
+
+
+        //TEMPORARY
+//        if (task!=null && task.isInput() && !(task instanceof SignalTask)) {
+//            link.priMax(task.priElseZero()); //boost
+//        }
+
+        return null;
+
+    }
+
+    float merge(TaskLink incoming, PriMerge merge);
+
+    default byte puncMax() {
+        switch (Util.maxIndex(punc(BELIEF), punc(GOAL), punc(QUESTION), punc(QUEST))) {
+            case 0: return BELIEF;
+            case 1: return GOAL;
+            case 2: return QUESTION;
+            case 3: return QUEST;
+        }
+        return -1;
     }
 
 
@@ -129,52 +240,182 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
 //        }
 //    }
 
+    abstract class AbstractTaskLink extends UnitPri implements TaskLink {
+        private final Term source;
+        private final Term target;
+        private final int hash;
+
+        public AbstractTaskLink(Term source, Term target) {
+            this.source = source.concept();
+            this.target = target.concept();
+            this.hash = Util.hashCombine(source, target);
+        }
+
+        @Override
+        public final boolean equals(Object obj) {
+            return this==obj || (
+                    (hash == obj.hashCode())
+                            && source.equals(((AbstractTaskLink)obj).source)
+                            && target.equals(((AbstractTaskLink)obj).target)
+            );
+        }
+
+        @Override
+        public final int hashCode() {
+            return hash;
+        }
+
+        @Override public final Term source() {
+            return source;
+        }
+
+        @Override public final Term target() {
+            return target;
+        }
+    }
+
     /**
      * dynamically resolves a task.
      * serializable and doesnt maintain a direct reference to a task.
      * may delete itself if the target concept is not conceptualized.
      */
-    class GeneralTaskLink extends PLinkHashCached<org.eclipse.collections.api.tuple.Pair<Term,Tasklike>> implements TaskLink {
+    class GeneralTaskLink extends AbstractTaskLink {
 
-        public GeneralTaskLink(Term source, Tasklike seed, float pri) {
-            super(Tuples.pair(source.concept(), seed), Math.max(EPSILON, pri));
+        final AtomicArrayTensor punc = new AtomicArrayTensor(4);
+
+        public GeneralTaskLink(Term source, Term target) {
+            super(source, target);
         }
 
-        public GeneralTaskLink(Term source, Term t, byte punc, long when, float pri) {
+        public GeneralTaskLink(Term source, Tasklike seed, float pri) {
+            this(source, seed.target);
+            if (seed.when != ETERNAL) throw new TODO("non-eternal tasklink not supported yet");
+            pri(seed.punc, pri);
+        }
+
+        @Deprecated public GeneralTaskLink(Term source, Term t, byte punc, long when, float pri) {
             this(source, Tasklike.seed(t, punc, when), pri);
         }
 
         @Override
-        public TaskLink clone(Term src, float pri) {
-            return new GeneralTaskLink(src, id.getTwo(), pri);
+        public boolean delete() {
+            if (super.delete()) {
+                punc.fill(0);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public byte punc(Random rng) {
+            return p(Roulette.selectRouletteCached(4, punc::getAt, rng));
+        }
+
+        public final GeneralTaskLink pri(byte punc, float pri) {
+            return pri(punc, pri, Param.tasklinkMerge);
+        }
+
+        @Override
+        public synchronized /* HACK */ float merge(TaskLink incoming, PriMerge merge) {
+            float before = priElseZero();
+            if (incoming instanceof GeneralTaskLink) {
+                for (int i = 0; i < 4; i++) {
+                    float p = ((GeneralTaskLink) incoming).punc.getAt(i);
+                    if (Math.abs(p) > Float.MIN_NORMAL) {
+                        pri(p(i), p, merge);
+                    }
+                }
+            } else {
+                throw new TODO();
+            }
+            float after = priElseZero();
+            return after-before;
+        }
+
+        public GeneralTaskLink pri(byte punc, float pri, PriMerge merge) {
+            assertFinite(pri);
+            this.punc.update(pri, (prev,p)->{
+                Weight tmp = new Weight(prev);
+                merge.merge(tmp, p);
+                float n = tmp.pri;
+                if (n == n) {
+                    if (n > 1) n = 1;
+                    if (n < 0) n = 0;
+                }
+                return n;
+            }, (prev,next)->{
+                float delta = (next - prev)/4;
+                if (delta > Float.MIN_NORMAL)
+                    super.priAdd(delta);
+            },i(punc));
+
+            return this;
+        }
+
+        @Override
+        public float pri(float p) {
+            throw new TODO();
+        }
+
+        @Override
+        public void priAdd(float a) {
+            throw new TODO();
+        }
+
+        @Override
+        public float priMult(float a) {
+            assertFinite(a);
+            if (Util.equals(a, 1, Float.MIN_NORMAL))
+                return pri();
+
+            assert(a < 1);
+
+            return priUpdateAndGet((p, f)->{
+                float n;
+                if (p!=p) {
+                    n = 0;
+                } else {
+                    n = p * f;
+                    for (int i = 0; i < 4; i++)
+                        punc.update(f, (x,d)-> Util.unitize/*Safe*/(x * f), i);
+                }
+                return n;
+            }, a);
+        }
+
+        @Override
+        public float punc(byte punc) {
+            return this.punc.getAt(i(punc));
+        }
+
+        private static int i(byte p) {
+            switch (p) {
+                case BELIEF: return 0;
+                case QUESTION: return 1;
+                case GOAL: return 2;
+                case QUEST: return 3;
+                default:
+                    return -1;
+            }
+        }
+
+        private static byte p(int index) {
+            switch (index) {
+                case 0: return BELIEF;
+                case 1: return QUESTION;
+                case 2: return GOAL;
+                case 3: return QUEST;
+                default:
+                    return -1;
+            }
         }
 
         @Override
         public String toString() {
-            return toBudgetString() + ' ' + target() + ((char) punc()) + ':' + (when()!=ETERNAL ? when() : "ETE") + ":" + source();
-        }
-
-        @Override public Term source() {
-            return id.getOne();
-        }
-
-        @Override public Term target() {
-            return id.getTwo().target;
-        }
-
-        @Override public byte punc() {
-            return id.getTwo().punc;
-        }
-
-        public long when() {
-            return id.getTwo().when;
+            return toBudgetString() + ' ' + target() + (punc) + ":" + source();
         }
 
 
-        @Override
-        public Task apply(NAR n) {
-            return id.getTwo().get(n, this);
-        }
     }
 
 //    class DirectTaskLink extends PLinkUntilDeleted<Task> implements TaskLink {

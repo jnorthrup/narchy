@@ -265,10 +265,9 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
                 pri; //no division
                 //pri/subConcepts.size(); //division
 
-        TaskLink template = TaskLink.tasklink(Op.EmptyProduct, task, true, true, 0 /* pri will be set in each clone */, nar);
         for (Concept c : subConcepts) {
             TaskLink.link(
-                    template.clone(c.term(), pEach),
+                    TaskLink.tasklink(c.term(), task, true, true, pEach, nar),
                     nar, null /* overflow*/);
         }
 

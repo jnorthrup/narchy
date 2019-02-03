@@ -1352,6 +1352,7 @@ public enum Util {
         return y;
     }
 
+
     public static float max(float... x) {
         float y = Float.NEGATIVE_INFINITY;
         for (float f : x) {

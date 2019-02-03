@@ -1,7 +1,7 @@
 package jcog.pri;
 
 /** aka MutableNLink */
-public class Ranked<X> extends Weighted {
+public class Ranked<X> extends Weight {
     public X x;
 
     public Ranked() {

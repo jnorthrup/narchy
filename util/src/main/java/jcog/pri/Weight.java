@@ -1,14 +1,14 @@
 package jcog.pri;
 
 /** adjustable mutable weight value; non-atomic */
-public class Weighted implements Prioritizable {
+public class Weight implements Prioritizable {
     public float pri;
 
-    public Weighted() {
+    public Weight() {
 
     }
 
-    public Weighted(float initial) {
+    public Weight(float initial) {
         this.pri = initial;
     }
 

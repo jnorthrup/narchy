@@ -237,7 +237,8 @@ public class ConceptGraph2D extends Graph2D<Term> {
 //            if (c != null) {
 //                c.tasklinks().forEach(l -> {
 
-            byte punc = l.punc();
+            //TODO use punc distribution
+            byte punc = l.puncMax();
             switch (punc) {
                 case BELIEF: if (!belief) return; break;
                 case GOAL: if (!goal) return; break;

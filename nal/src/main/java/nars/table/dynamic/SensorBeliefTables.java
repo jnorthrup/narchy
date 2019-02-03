@@ -212,7 +212,7 @@ public class SensorBeliefTables extends BeliefTables {
                         p *= SIGNAL_PRI_FACTOR_SAME_TASK_BEING_STRETCHED;
                     //TODO else { ... //difference in truth: surprisingness
                 }
-                series.tasklink.pri(p);
+                series.tasklink.pri(next.punc(), p);
                 TaskLink.link(series.tasklink, n);
             }
             return null;

@@ -97,7 +97,6 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
             if (min <= ScalarValue.EPSILON  ||  (pri >= min || bag.contains(keyInternal(b)))) {
                 //Prioritizable b will need its pri set with the provided pri that may not match, having accumulated since its first insertion
                 Y y = valueInternal(b, pri);
-                y.pri(pri);
                 bag.putAsync(y);
             } else {
                 //System.out.println("ignored: " + c + " "+n4(pri));

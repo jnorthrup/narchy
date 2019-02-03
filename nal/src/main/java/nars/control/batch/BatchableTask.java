@@ -2,7 +2,7 @@ package nars.control.batch;
 
 import jcog.data.byt.DynBytes;
 import jcog.pri.Prioritizable;
-import jcog.pri.Weighted;
+import jcog.pri.Weight;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.task.ITask;
@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
 import static jcog.data.byt.RecycledDynBytes.tmpKey;
 import static nars.Op.COMMAND;
 
-public abstract class BatchableTask extends Weighted implements ITask, Prioritizable {
+public abstract class BatchableTask extends Weight implements ITask, Prioritizable {
 
     /** key cache */
     public byte[] key = null;
