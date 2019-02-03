@@ -35,12 +35,13 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
 public final class Answer implements AutoCloseable {
 
     public final static int BELIEF_MATCH_CAPACITY =
-            Math.max(1, Param.STAMP_CAPACITY / 2);
             //Param.STAMP_CAPACITY - 1;
+            //Math.max(1, Param.STAMP_CAPACITY / 2);
+            Math.max(1, (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
             //3;
 
 
-    public static final int BELIEF_SAMPLE_CAPACITY = 3; //Math.max(1, BELIEF_MATCH_CAPACITY / 2);
+    public static final int BELIEF_SAMPLE_CAPACITY = 2; //Math.max(1, BELIEF_MATCH_CAPACITY / 2);
     public static final int QUESTION_SAMPLE_CAPACITY = 1;
 
     private final FloatRank<Task> rank;
@@ -126,7 +127,6 @@ public final class Answer implements AutoCloseable {
     /**
      * for belief or goals (not questions / quests
      */
-    @Deprecated
     public static Answer relevance(boolean beliefOrQuestion, int capacity, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
         if (!beliefOrQuestion && capacity > 1)
@@ -135,11 +135,13 @@ public final class Answer implements AutoCloseable {
         FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template);
 
         return new Answer(capacity, r, filter, nar)
-                .time(TimeRangeFilter.the(start, end, true))
+                .time(start, end)
                 .template(template);
     }
 
-    public static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
+
+
+    static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
 
 
 
@@ -511,14 +513,17 @@ public final class Answer implements AutoCloseable {
     /** consume a limited 'tries' iteration. also applies the filter.
      *  a false return value should signal a stop to any iteration supplying results */
     public final boolean tryAccept(Task t) {
-        int remain = --triesRemain;
-        if (remain >= 0) {
-            if (filter == null || filter.test(t)) {
-                accept(t);
+        if (time.accept(t.start(), t.end())) {
+            int remain = --triesRemain;
+            if (remain >= 0) {
+                if (filter == null || filter.test(t)) {
+                    accept(t);
+                }
             }
+            return remain > 0;
+        } else {
+            return true;
         }
-
-        return remain > 0;
     }
 
     private void accept(Task task) {
@@ -538,8 +543,18 @@ public final class Answer implements AutoCloseable {
         return nar.random();
     }
 
+    public Answer time(long start, long end) {
+        return time(TimeRangeFilter.the(start, end,
+                TimeRangeFilter.Mode.Near
+                //start!=ETERNAL && dur == 0 ? TimeRangeFilter.Mode.Intersects : TimeRangeFilter.Mode.Near
+        ));
+    }
+
     public Answer dur(int dur) {
-        this.dur = dur;
+        if (this.dur!=dur) {
+            this.dur = dur;
+            //time(time.start, time.end); //update the time filter
+        }
         return this;
     }
 

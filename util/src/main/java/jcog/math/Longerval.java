@@ -178,7 +178,8 @@ public class Longerval implements LongInterval {
 		return a <= b ? b - a : -1;
 	}
 	public static boolean intersects(long x1, long y1, long x2, long y2) {
-		assert(x1!=ETERNAL && x1!=TIMELESS && x2!=ETERNAL && x2!=TIMELESS);
+		if (x1 == ETERNAL || x2 == ETERNAL) return true;
+		assert(x1!=TIMELESS && x2!=TIMELESS);
 		return max(x1, x2) <= min(y1, y2);
 	}
 

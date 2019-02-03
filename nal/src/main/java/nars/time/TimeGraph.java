@@ -1437,7 +1437,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             long thisEnd = end();
 
-            return Longerval.intersectLength(start, end, thisStart, thisEnd) >= 0 ?
+            return Longerval.intersects(start, end, thisStart, thisEnd) ?
                     Longerval.unionArray(start, end, thisStart, thisEnd) :
                     null;
         }

@@ -92,17 +92,17 @@ public class PatrickTests extends NALTest {
 
         tt.confTolerance(0.5f);
 
-//        tt.nar.freqResolution.setAt(0.25f);
+        tt.nar.freqResolution.set(0.25f);
 //        tt.nar.confResolution.setAt(0.02f);
 //        tt.nar.confMin.setAt(0.02f);
 
-//        tt.logDebug();
+        //tt.logDebug();
 
-        int dur = 100;
+        int dur = 2;
         tt.nar.time.dur(dur);
         tt.nar.termVolumeMax.set(19);
 
-        tt.nar.timeResolution.set(20);
+        tt.nar.timeResolution.set(5);
 
         tt.input(
                 "made_of(toothbrush,plastic).",
@@ -117,6 +117,10 @@ public class PatrickTests extends NALTest {
                 "(toothbrush --> [unscrews])! |"
 
         );
+
+//        test.nar.onTask(t->{
+//           System.out.println(t.proof());
+//        },GOAL);
 
         tt.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.2f,

@@ -1,14 +1,16 @@
 //Set Definition Unwrap
-    ({S} <-> {P}), {S} |- (S <-> P), (Belief:Identity)
-    ([S] <-> [P]), [S] |- (S <-> P), (Belief:Identity)
+    ({S} <-> {P}), {S} |- (S <-> P), (Belief:Identity, Goal:Identity)
+    ([S] <-> [P]), [S] |- (S <-> P), (Belief:Identity, Goal:Identity)
 
 //Nothing is more specific than a instance, so its similar
-    ({P} <-> S),  S  |- (S --> {P}), (Belief:Identity)
+    ({P} <-> S),  S  |- (S --> {P}), (Belief:Identity, Goal:Identity)
 
 //nothing is more general than a property, so its similar
-    ([S] <-> P),  P  |- ([S] --> P), (Belief:Identity)
+    ([S] <-> P),  P  |- ([S] --> P), (Belief:Identity, Goal:Identity)
 
-
+//single element set unwrap
+    ({E} --> X),  {E}  |- (E --> X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (X --> [I]),  [I]  |- (X --> I), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 //Set Composition
 

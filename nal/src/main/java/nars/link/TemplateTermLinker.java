@@ -255,10 +255,10 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
 
         float pri =
-                //tasklink.priElseZero();
-                //t.priElseZero();
+                //task.priElseZero();
+                tasklink.priElseZero();
                 //task.priElseZero() * tasklink.priElseZero();
-                Math.min(task.priElseZero(), tasklink.priElseZero());
+                //Math.min(task.priElseZero(), tasklink.priElseZero());
 
         float pEach =
                 //TODO abstract priority transfer function here

@@ -102,7 +102,7 @@ public class NAL2Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<Birdie <-> Tweety>", 0.9f, 0.9f);
         tester.ask("<{Birdie} <-> {Tweety}>");
-        tester.mustBelieve(cycles, "<{Birdie} <-> {Tweety}>", 0.9f, 0.9f);
+        tester.mustBelieve(cycles, "<{Birdie} <-> {Tweety}>", 0.9f, 0.73f /*0.9f*/);
 
     }
 
@@ -112,7 +112,7 @@ public class NAL2Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<bright <-> smart>", 0.9f, 0.9f);
         tester.ask("<[bright] --> [smart]>");
-        tester.mustBelieve(cycles, "<[bright] --> [smart]>", 0.9f, 0.9f);
+        tester.mustBelieve(cycles, "<[bright] --> [smart]>", 0.9f, 0.73f /*0.9f*/);
 
     }
 
@@ -126,7 +126,7 @@ public class NAL2Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<bright <-> smart>", 0.9f, 0.9f);
         tester.ask("<{bright} --> {smart}>");
-        tester.mustBelieve(cycles, "<{bright} --> {smart}>", 0.9f, 0.9f);
+        tester.mustBelieve(cycles, "<{bright} --> {smart}>", 0.9f, 0.73f /*0.9f*/);
 
     }
 

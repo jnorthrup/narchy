@@ -155,7 +155,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
             int center = (a + b) / 2;
 
-            boolean fullyDisjoint = Longerval.intersectLength(minT, maxT, s, e) == -1;
+            boolean fullyDisjoint = !Longerval.intersects(minT, maxT, s, e);
 
             int cap = this.cap;
             int r = 0, capacityRadius = cap / 2 + 1;

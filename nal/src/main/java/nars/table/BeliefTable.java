@@ -69,10 +69,6 @@ public interface BeliefTable extends TaskTable {
                 .match(this).truth();
     }
 
-
-
-
-
     default void print(/*@NotNull*/ PrintStream out) {
         this.forEachTask(t -> out.println(t + " " + Arrays.toString(t.stamp())));
     }

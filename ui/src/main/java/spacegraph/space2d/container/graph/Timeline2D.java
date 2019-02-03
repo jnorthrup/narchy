@@ -150,7 +150,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
         default boolean intersects(X x, long start, long end) {
             long[] r = range(x);
-            return Longerval.intersectLength(r[0], r[1], start, end) >= 0;
+            return Longerval.intersects(r[0], r[1], start, end);
         }
 
         default int compareStart(X x, X y) {
@@ -235,7 +235,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
         @Override
         public boolean intersects(SimpleEvent simpleEvent, long start, long end) {
-            return Longerval.intersectLength(simpleEvent.start, simpleEvent.end, start, end) >= 0;
+            return Longerval.intersects(simpleEvent.start, simpleEvent.end, start, end);
         }
 
         @Override
@@ -271,7 +271,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
         @Override
         public boolean intersects(SimpleEvent simpleEvent, long start, long end) {
-            return Longerval.intersectLength(simpleEvent.start, simpleEvent.end, start, end) >= 0;
+            return Longerval.intersects(simpleEvent.start, simpleEvent.end, start, end);
         }
 
         @Override

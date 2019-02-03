@@ -158,8 +158,8 @@ public abstract class Param {
     public static boolean DEBUG_ENSURE_DITHERED_DT = false;
 
     public static final PriMerge tasklinkMerge =
-            //PriMerge.max;
-            PriMerge.plus;
+            PriMerge.max;
+            //PriMerge.plus;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 
@@ -272,11 +272,11 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 2f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**
@@ -338,10 +338,10 @@ public abstract class Param {
             //10;
             //8;
             //7;
-            //6;
+            6;
             //5;
             //4;
-            3;
+            //3;
             //2;
             //1;
 

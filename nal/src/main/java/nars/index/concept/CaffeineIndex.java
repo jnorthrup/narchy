@@ -118,7 +118,10 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
     @Override
     public void start(NAR nar) {
         super.start(nar);
-        cleanup = DurService.on(nar, concepts::cleanUp);
+
+        cleanup =
+                null;
+                //DurService.on(nar, concepts::cleanUp);
     }
 
 

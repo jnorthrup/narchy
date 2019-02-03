@@ -32,9 +32,6 @@ abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T
     }
 
 
-
-
-
     public void compress() {
         int toRemove = (size()+1) - cap;
         while (toRemove-- > 0) {
@@ -44,11 +41,4 @@ abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T
         }
     }
 
-    public boolean contains(TimeRangeFilter time) {
-        long s = start();
-        if (s!=TIMELESS){
-            return time.containedBy(s, end());
-        }
-        return false;
-    }
 }
