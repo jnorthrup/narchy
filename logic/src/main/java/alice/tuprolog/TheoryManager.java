@@ -161,7 +161,7 @@ public class TheoryManager {
         if (ci.isEmpty())
             return null;
 
-        return ClauseStore.build(goal, ci, varsList);
+        return ClauseStore.match(goal, ci, varsList);
     }
 
     /**

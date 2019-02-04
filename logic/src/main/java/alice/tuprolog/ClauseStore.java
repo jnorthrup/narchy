@@ -25,18 +25,9 @@ public final class ClauseStore {
         this.vars = vars;
     }
 
-
-
-
-
-
-
-
-
-
-    public static ClauseStore build(Term goal, Deque<ClauseInfo> familyClauses, List<Var> vars) {
+    public static ClauseStore match(Term goal, Deque<ClauseInfo> familyClauses, @Nullable List<Var> vars) {
         ClauseStore clauseStore = new ClauseStore(goal, vars);
-        if (clauseStore.addCompatible(familyClauses))
+        if (clauseStore.match(familyClauses))
             return clauseStore;
         else
             return null;
@@ -57,7 +48,7 @@ public final class ClauseStore {
         if (clauses.isEmpty())
             this.clauses = null;
         else
-            haveAlternatives = true;
+            this.haveAlternatives = true;
 
         return clause;
     }
@@ -75,12 +66,11 @@ public final class ClauseStore {
      * @param compGoals
      * @return true if compatible or false otherwise.
      */
-    @Deprecated protected boolean existCompatibleClause() {
+    @Deprecated protected boolean unifiable() {
         int n = vars.size();
-
         List<Term> saveUnifications = n > 0 ? deunify(vars, new FasterList<>(n)) : null;
 
-        boolean found = unify(goal);
+        boolean found = unifiable(goal);
 
         if (n > 0)
             reunify(vars, saveUnifications, n);
@@ -88,14 +78,11 @@ public final class ClauseStore {
         return found;
     }
 
-    protected boolean addCompatible(Deque<ClauseInfo> d) {
-//        int n = vars.size();
-//        List<Term> saveUnifications = n > 0 ? deunify(vars, new FasterList<>(n)) : null;
+    protected boolean match(Deque<ClauseInfo> d) {
 
-        boolean found = unify(goal, d);
+        deunify(vars, null);
 
-//        if (n > 0)
-//            reunify(vars, saveUnifications, n);
+        boolean found = unifiable(goal, d);
 
         return found;
     }
@@ -111,7 +98,7 @@ public final class ClauseStore {
 
         for (Var v : varsToDeunify) {
             if (saveUnifications != null)
-                saveUnifications.add(v.link());
+                saveUnifications.add(v.link);
             v.link = null;
         }
         return saveUnifications;
@@ -148,7 +135,7 @@ public final class ClauseStore {
      *
      * @param goal
      */
-    @Deprecated private boolean unify(Term goal) {
+    @Deprecated private boolean unifiable(Term goal) {
         Deque<ClauseInfo> clauses = this.clauses;
         if (clauses == null)
             return false;
@@ -158,7 +145,7 @@ public final class ClauseStore {
         return false;
     }
 
-    private boolean unify(Term goal, Deque<ClauseInfo> other) {
+    private boolean unifiable(Term goal, Deque<ClauseInfo> other) {
         //TODO if (!goal.isGround() && clauses instanceof ClauseSet) { .. //fast constant lookup
         Deque<ClauseInfo> clauses = null;
         for (ClauseInfo ci : other) {
