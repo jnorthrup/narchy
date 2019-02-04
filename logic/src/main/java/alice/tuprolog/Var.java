@@ -17,6 +17,8 @@
  */
 package alice.tuprolog;
 
+import jcog.io.BinTxt;
+
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -37,7 +39,6 @@ public class Var extends Term {
     private String completeName;     /* Reviewed by Paolo Contessi: String -> StringBuilder */
     public Term link;            /* link is used for unification process */
     protected long timestamp;        /* timestamp is used for fix vars order */
-    private int id;            /* id of ExecCtx owners of this var util for renaming*/
 
 
     /**
@@ -51,7 +52,6 @@ public class Var extends Term {
      */
     public Var(String n) {
         link = null;
-        id = -1;
         if (n.equals(ANY)) {
             name = null;
             completeName = "";
@@ -74,7 +74,6 @@ public class Var extends Term {
         name = null;
         completeName = "";
         link = null;
-        id = ORIGINAL;
         timestamp = 0;
     }
 
@@ -87,13 +86,16 @@ public class Var extends Term {
      * @param alias code to discriminate external vars
      * @param time  is timestamp
      */
-    private Var(String n, int id, int alias, long time) {
+    private Var(String n, long time) {
         name = n;
-        completeName = "";
+        completeName = n;
         timestamp = time;
         link = null;
-        if (id < 0) id = ORIGINAL;
-        rename(id, alias);
+    }
+    private Var(String n, int id, int alias, long time) {
+        this(n, time);
+        if (id != ORIGINAL)
+            rename(id, alias);
     }
 
     /* Identify kind of renaming */
@@ -105,24 +107,31 @@ public class Var extends Term {
      */
     void rename(int idExecCtx, int count) { /* Reviewed by Paolo Contessi: String -> StringBuilder */
 
-        switch (id = idExecCtx) {
+        switch (idExecCtx) {
             case ORIGINAL:
                 this.completeName = name;
                 break;
             case PROGRESSIVE: {
-                StringBuilder c = new StringBuilder(4 /* estimate */);
-                this.completeName = c.append('_').append(count /* TODO higher radix */).toString();
+                int extra = idExecCtx < BinTxt.maxBase ? 1 : 2;
+                StringBuilder c = new StringBuilder(1 + extra /* estimate */);
+                c.append('_');
+                BinTxt.append(c, count, BinTxt.maxBase);
+                this.completeName = c.toString();
                 break;
             }
             default: {
                 StringBuilder c;
                 String name = this.name;
+                int extra = 1 + idExecCtx < BinTxt.maxBase ? 1 : 2;
                 if (name!=null) {
-                    c = new StringBuilder(name.length() + 8 /* estimate */).append(name);
+                    c = new StringBuilder(name.length() + extra /* estimate */).append(name);
                 } else {
-                    c = new StringBuilder(8);
+                    c = new StringBuilder(extra);
                 }
-                this.completeName = c.append("_e").append(idExecCtx).toString();
+                c.append('_');
+                //c.append(Integer.toString(idExecCtx, Character.MAX_RADIX));
+                BinTxt.append(c, idExecCtx, BinTxt.maxBase);
+                this.completeName = c.toString();
                 break;
             }
         }
@@ -141,7 +150,14 @@ public class Var extends Term {
     Term copy(Map<Var, Var> vMap, int idExecCtx) {
         Term tt = term();
         if (tt == this) {
-            return vMap.computeIfAbsent(this, k -> new Var(name, idExecCtx, 0, timestamp));
+            if (idExecCtx==ORIGINAL) {
+                vMap.putIfAbsent(this, this);
+                return this;
+            } else {
+                Var y = vMap.computeIfAbsent(this, k -> new Var(k.name, k.timestamp));
+                y.rename(idExecCtx, 0);
+                return y;
+            }
         } else {
             return tt.copy(vMap, idExecCtx);
         }
@@ -156,9 +172,8 @@ public class Var extends Term {
     @Override
     Term copy(Map<Var, Var> vMap, Map<Term, Var> substMap) {
         Var v = vMap.computeIfAbsent(this,
-            tis -> new Var(null, Var.PROGRESSIVE, vMap.size(), timestamp)
+            tis -> new Var(tis.name, Var.PROGRESSIVE, vMap.size(), tis.timestamp)
         );
-
 
         Term t = term();
 
@@ -205,7 +220,7 @@ public class Var extends Term {
      * Gets the name of the variable
      */
     public String getOriginalName() {
-        return name != null ? name : ANY + hashCode();
+        return name != null ? name : ANY + hashString();
     }
 
 
@@ -490,8 +505,13 @@ public class Var extends Term {
         if (name != null) {
             return tt == this ? completeName : completeName + " / " + tt;
         } else {
-            return tt == this ? ANY + hashCode() : tt.toString();
+            return tt == this ? ANY + hashString() : tt.toString();
         }
+    }
+
+    public final String hashString() {
+        //return Integer.toString(hashCode(), Character.MAX_RADIX);
+        return BinTxt.toString(hashCode(), 63);
     }
 
 
@@ -505,9 +525,10 @@ public class Var extends Term {
         if (name != null) {
             return tt == this ? completeName : tt.toString();
         } else {
-            return tt == this ? ANY + hashCode() : tt.toString();
+            return tt == this ? ANY + hashString() : tt.toString();
         }
     }
+
 
     /**/
 

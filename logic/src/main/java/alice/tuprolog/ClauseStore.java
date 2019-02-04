@@ -179,8 +179,8 @@ public final class ClauseStore {
             if (clauses == null) {
                 deunify(vars, null);
                  if (goal.unifiable(ci.head)) {
-                     if (clauses == null)
-                         clauses = new ArrayDeque<>(/* other.size() - 1 - i */);
+
+                     clauses = new ArrayDeque<>(/* other.size() - 1 - i */);
                      //start the unify queue beginning here
                      //TODO only need to store an iterator to continue
                  }

@@ -18,12 +18,14 @@
 package alice.tuprolog;
 
 import alice.util.Tools;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.function.Predicate;
 
 import static alice.tuprolog.PrologPrimitive.PREDICATE;
@@ -233,6 +235,7 @@ public class TheoryManager {
             }
         } catch (InvalidTermException e) {
             /*Castagna 06/2011*/
+
 
             throw new InvalidTheoryException(e.getMessage(), clause, e.line, e.pos);
             /**/

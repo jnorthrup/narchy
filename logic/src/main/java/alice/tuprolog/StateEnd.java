@@ -499,10 +499,11 @@ public class StateEnd extends State {
                 
                 for (int j = 0; j < vars.size(); j++) {
                     Var vv = vars.get(j);
-                    if (vv.getOriginalName().equals(bagVarName)) {
+                    String on = vv.getOriginalName();
+                    if (on.equals(bagVarName)) {
                         Var solVar = varValue2(goalSolution);
                         
-                        solVar.setName(vv.getOriginalName());
+                        solVar.setName(on);
                         solVar.rename(0, 0);
                         
                         vars.set(j, solVar);

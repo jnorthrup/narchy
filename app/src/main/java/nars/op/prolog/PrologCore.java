@@ -196,7 +196,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
         logger.info("solve {}", questionTerm);
 
-        solve(questionTerm, (answer) -> {
+        solveWhile(questionTerm, (answer) -> {
 
 
             switch (answer.result()) {

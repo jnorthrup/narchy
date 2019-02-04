@@ -1,7 +1,7 @@
-next_to(X,Y,List) :-
-    iright(X,Y,List).
-next_to(X,Y,List) :-
-    iright(Y,X,List).
+next_to(X,Y,List) :- iright(X,Y,List).
+
+next_to(X,Y,List) :- iright(Y,X,List).
+
 einstein(Houses,Fish_Owner) :-
     '='(Houses, [[house,norwegian,_,_,_,_],_,[house,_,_,_,milk,_],_,_]),
     member([house,brit,_,_,_,red],Houses),
@@ -19,6 +19,7 @@ einstein(Houses,Fish_Owner) :-
     member([house,german,_,rothmans,_,_],Houses),
     next_to([house,norwegian,_,_,_,_],[house,_,_,_,_,blue],Houses),
     member([house,Fish_Owner,fish,_,_,_],Houses).
+
 iright(L,R,[L,R|_]).
-iright(L,R,[_|Rest]) :-
-    iright(L,R,Rest).
+
+iright(L,R,[_|Rest]) :- iright(L,R,Rest).

@@ -353,22 +353,25 @@ public class Prolog {
         return sinfo;
     }
 
-    public Prolog solve(String g, Consumer<Solution> eachSolution) {
+    public final Prolog solve(String g, Consumer<Solution> eachSolution) {
         return solve(term(g), eachSolution);
+    }
+    public final Prolog solveWhile(String g, Predicate<Solution> eachSolution) {
+        return solveWhile(term(g), eachSolution);
     }
 
     public Prolog solve(Term g, Consumer<Solution> eachSolution) {
-        return solve(g, (x) -> {
+        return solveWhile(g, (x) -> {
             eachSolution.accept(x);
             return true;
         });
     }
 
-    public Prolog solve(Term g, Predicate<Solution> eachSolution) {
-        return solve(g, eachSolution, -1);
+    public Prolog solveWhile(Term g, Predicate<Solution> eachSolution) {
+        return solveWhile(g, eachSolution, -1);
     }
 
-    public Prolog solve(Term g, Predicate<Solution> eachSolution, long timeoutMS) {
+    public Prolog solveWhile(Term g, Predicate<Solution> eachSolution, long timeoutMS) {
 
         Solution next = null;
         do {

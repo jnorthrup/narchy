@@ -174,12 +174,12 @@ public abstract class Term implements Serializable, SubTree {
     
     /**
      * Try to unify two terms
-     * @param mediator have the reference of EngineManager
+     * @param p have the reference of EngineManager
      * @param t1 the term to unify
      * @return true if the term is unifiable with this one
      */
-    public final boolean unify(Prolog mediator, Term t1) {
-        EngineManager engine = mediator.engine;
+    public final boolean unify(Prolog p, Term t1) {
+        EngineManager engine = p.engine;
 
         long now = Term.now();
         resolveTerm(now);
@@ -198,19 +198,21 @@ public abstract class Term implements Serializable, SubTree {
                 int count = 0;
                 Engine env = engine.getEnv();
                 int id = (env ==null)? Var.PROGRESSIVE : env.nDemoSteps;
-                for(Var v:v1){
-                    v.rename(id,count);
-                    if(id>=0){
+                for (int i = 0, v1Size = v1.size(); i < v1Size; i++) {
+                    Var v = v1.get(i);
+                    v.rename(id, count);
+                    if (id >= 0) {
                         id++;
-                    }else{
+                    } else {
                         count++;
                     }
                 }
-                for(Var v:v2){
-                    v.rename(id,count);
-                    if(id>=0){
+                for (int i = 0, v2Size = v2.size(); i < v2Size; i++) {
+                    Var v = v2.get(i);
+                    v.rename(id, count);
+                    if (id >= 0) {
                         id++;
-                    }else{
+                    } else {
                         count++;
                     }
                 }
@@ -228,17 +230,18 @@ public abstract class Term implements Serializable, SubTree {
      * No unification is done.
      *
      * The test is done outside any demonstration context
-     * @param t the term to checked
+     * @param y the term to checked
      *
      * @return true if the term is unifiable with this one
      */
-    boolean unifiable(Term t) {
+    boolean unifiable(Term y) {
+
         long now = Term.now();
-        resolveTerm(now);
-        t.resolveTerm(now);
+          resolveTerm(now);
+        y.resolveTerm(now);
         List<Var> v1 = new FasterList<>();
         List<Var> v2 = new FasterList<>();
-        boolean ok = unify(v1,v2,t);
+        boolean ok = unify(v1,v2,y);
         Var.free(v1);
         Var.free(v2);
         return ok;

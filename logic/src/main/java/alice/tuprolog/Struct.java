@@ -17,6 +17,8 @@
  */
 package alice.tuprolog;
 
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+
 import java.util.*;
 
 /**
@@ -534,8 +536,8 @@ public class Struct extends Term {
 
     @Override
     public void resolveTerm() {
-        if (!resolved && subCount > 0)
-            resolveTerm(now());
+        if (resolvable())
+            resolveTerm(null, now());
     }
 
     /**
@@ -543,7 +545,18 @@ public class Struct extends Term {
      */
     @Override
     void resolveTerm(long count) {
-        resolveTerm(null, count);
+        if (resolvable())
+            resolveTerm(null, count);
+    }
+
+    private boolean resolvable() {
+        if (resolved)
+            return false;
+        if (subCount == 0 || isGround()) {
+            resolved = true;
+            return false;
+        }
+        return true;
     }
 
 
@@ -554,7 +567,7 @@ public class Struct extends Term {
      * @param count start timestamp for variables of this term
      * @return next timestamp for other terms
      */
-    void resolveTerm(LinkedList<Var> vl, final long count) {
+    private void resolveTerm(Map<String,Var> vl, final long count) {
 
 
         Term[] arg = this.subs;
@@ -572,27 +585,20 @@ public class Struct extends Term {
                 if (!t.isAnonymous()) {
 
                     Var found = null;
+                    String tName = t.name();
                     if (vl!=null && !vl.isEmpty()) {
-                        String tName = t.name();
-                        Iterator<Var> it = vl.iterator();
-                        while (it.hasNext()) {
-                            Var vn = it.next();
-                            if (tName.equals(vn.name())) {
-                                found = vn;
-                                break;
-                            }
-                        }
+                        found = vl.get(tName);
                     }
                     if (found != null) {
                         arg[c] = found;
                     } else {
-                        if (vl == null) vl = new LinkedList(); //construct to share recursively
-                        vl.add(t);
+                        if (vl == null) vl = new UnifiedMap(); //construct to share recursively
+                        vl.putIfAbsent(tName, t);
                     }
                 }
             } else if (term instanceof Struct) {
 
-                if (vl == null) vl = new LinkedList(); //construct to share recursively
+                if (vl == null) vl = new UnifiedMap(); //construct to share recursively
 
                 ((Struct) term).resolveTerm(vl, count);
             }

@@ -16,7 +16,7 @@ public class BinTxt {
 
         URIchars = x.toString().toCharArray();
     }
-    static final int maxBase = URIchars.length;
+    public static final int maxBase = URIchars.length;
 
     
 
