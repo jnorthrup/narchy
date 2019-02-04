@@ -3,7 +3,6 @@ package nars.exe;
 import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.Util;
-import jcog.data.bit.AtomicMetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
@@ -23,14 +22,15 @@ import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 
+import static java.lang.System.nanoTime;
 import static nars.time.Tense.ETERNAL;
 
 abstract public class MultiExec extends UniExec {
 
-    private static final float inputQueueSizeSafetyThreshold = 0.999f;
+    private static final float inputQueueSizeSafetyThreshold = 0.99f;
     private final Valuator valuator;
 
-    final AtomicMetalBitSet sleeping = new AtomicMetalBitSet();
+
 
     protected long idleTimePerCyclePerThread;
 
@@ -94,7 +94,7 @@ abstract public class MultiExec extends UniExec {
             idleTimePerCyclePerThread = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
-                input(new QueueLatencyMeasurement(System.nanoTime()));
+                input(new QueueLatencyMeasurement(nanoTime()));
             }
         }
     }
@@ -125,10 +125,8 @@ abstract public class MultiExec extends UniExec {
             Causable c = s.get();
 
             boolean sleeping = c.sleeping(now);
-            MultiExec.this.sleeping.set(c.scheduledID, sleeping);
-            if (sleeping) {
+            if (sleeping)
                 return;
-            }
 
             long tUsed = s.used();
             float v = tUsed > 0 ? (float)((c.value())/(tUsed/1.0e9)) : 0;
@@ -147,7 +145,7 @@ abstract public class MultiExec extends UniExec {
         if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
             cpu.forEach((s) -> {
                 Causable c = s.get();
-                if (MultiExec.this.sleeping.get(c.scheduledID)) {
+                if (c.sleeping()) {
                     s.pri(0);
                 } else {
                     float vNorm = Util.normalize(s.value, valMin[0], valMax[0]);
@@ -158,7 +156,7 @@ abstract public class MultiExec extends UniExec {
         } else {
             cpu.forEach((s) -> {
                 Causable c = s.get();
-                if (MultiExec.this.sleeping.get(c.scheduledID)) {
+                if (c.sleeping()) {
                     s.pri(0f);
                 } else {
                     float p = 0.5f;
@@ -275,15 +273,16 @@ abstract public class MultiExec extends UniExec {
             final SplitMix64Random rng;
             private long deadline;
 
-            private static final long minMaxExe = 10_000 /* 10uS */;
+//            private static final long minMaxExe = 10_000 /* 10uS */;
 
             int i = 0;
             long lastScheduled = ETERNAL;
             private int n;
             private long maxExe;
+            int granularity = 3;
 
             Worker() {
-                 rng = new SplitMix64Random((31L * System.identityHashCode(this)) + System.nanoTime());
+                 rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
             }
 
             @Override
@@ -298,10 +297,8 @@ abstract public class MultiExec extends UniExec {
                             nar.loop.periodNS();
 
                     long playTime = cycleTimeNS - workTime;
-                    if (playTime > 0) {
+                    if (playTime > 0)
                         play(playTime);
-                    }
-
 
                     sleep();
                 }
@@ -309,7 +306,7 @@ abstract public class MultiExec extends UniExec {
 
 
             private long work() {
-                long workStart = System.nanoTime();
+                long workStart = nanoTime();
 
                 float granularity =
                     Math.max(1, concurrency() + 1);
@@ -337,7 +334,7 @@ abstract public class MultiExec extends UniExec {
 
                 } while (!queueSafe());
 
-                long workEnd = System.nanoTime();
+                long workEnd = nanoTime();
 
                 return workEnd - workStart;
             }
@@ -350,93 +347,107 @@ abstract public class MultiExec extends UniExec {
 
                 long now = nar.time();
                 if (now > lastScheduled) {
-
-                    lastScheduled = now;
-
-                    int granularity = 2;
-                    maxExe = playTime / (granularity);
-                    if (maxExe < minMaxExe)
+                    if (scheduleDone(nar.loop.cycleTimeNS, now))
                         return;
-
-                    if (play.length != n) {
-                        //TODO more careful test for change
-                        play = new TimedLink.MyTimedLink[n];
-                        for (int i = 0; i < n; i++)
-                            play[i] = cpu.get(i).my();
-
-                        ArrayUtils.shuffle(play, rng); //each worker gets unique order
-                    }
-
-
-                    //schedule
-                    long maxTime = Long.MIN_VALUE;
-                    for (TimedLink.MyTimedLink m : play) {
-                        if (m.time > maxTime)
-                            maxTime = m.time;
-                    }
-
-                    float overspend = 1.5f;
-                    long shift = maxTime < 0 ? 1 - maxTime : 0;
-                    for (TimedLink.MyTimedLink m : play) {
-                        m.add(Math.max(1, Math.round(shift + (playTime * overspend) * m.pri())),
-                                -playTime / 2, playTime / 2);
-                    }
-
-
-
                 }
 
-                long start = System.nanoTime();
+                long start = nanoTime();
                 long until = start + playTime, after = start /* assigned for safety */;
+
+                int skip = 0;
                 do {
                     if (i == n) i = 0;
                     TimedLink.MyTimedLink s = play[i++];
+                    long sTime = s.time;
 
+                    Causable c = s.can;
 
-                    Causable c = s.causable();
+                    boolean playing = false;
+                    if (sTime <= 0 || c.sleeping()) {
 
-                    if (!sleeping.get(c.scheduledID)) {
+                    } else {
 
                         boolean singleton = c.singleton();
                         if (!singleton || c.busy.compareAndSet(false, true)) {
 //                            try {
 
-                            long runtimeNS = Math.min(s.time, maxExe);
+                            long before = nanoTime();
 
-                            long before = System.nanoTime();
-
-                            after = before; //safety
+                            long runtimeNS = Math.min(until - before, Math.min(sTime, maxExe));
 
                             if (runtimeNS > 0) {
-                                deadline = Math.min(until, before + runtimeNS);
+                                playing = true;
+                                deadline = before + runtimeNS;
                                 try {
                                     c.next(nar, this::deadline);
                                 } catch (Throwable t) {
                                     logger.error("{} {}", this, t);
+                                } finally {
+                                    if (singleton)
+                                        c.busy.set(false);
                                 }
-                                after = System.nanoTime();
+                                after = nanoTime();
                                 s.use(after - before);
                             }
 
-//                            } finally {
-                            if (singleton)
-                                c.busy.set(false);
-//                            }
+                        }
+                    }
+
+                    if (!playing) {
+                        if (++skip == n) {
+                            after = nanoTime(); //safety
+                            skip = 0;
+                        } else {
+                            continue;
                         }
                     }
 
                 } while ((until > after) && queueSafe());
+//                System.out.println(
+//                    this + "\tplaytime=" + Texts.timeStr(playTime) + " " +
+//                        Texts.n2((((double)(after - start))/playTime)*100) + "% used"
+//                );
+            }
 
+            private boolean scheduleDone(long cycleTimeNS, long now) {
+
+                lastScheduled = now;
+
+                maxExe = cycleTimeNS / (granularity);
+
+                if (play.length != n) {
+                    //TODO more careful test for change
+                    play = new TimedLink.MyTimedLink[n];
+                    for (int i = 0; i < n; i++)
+                        play[i] = cpu.get(i).my();
+
+                    ArrayUtils.shuffle(play, rng); //each worker gets unique order
+                }
+
+
+                //schedule
+                long maxTime = Long.MIN_VALUE;
+                for (TimedLink.MyTimedLink m : play) {
+                    if (m.time > maxTime)
+                        maxTime = m.time;
+                }
+
+                float overspend = 1.5f;
+                long shift = maxTime < 0 ? 1 - maxTime : 0;
+                for (TimedLink.MyTimedLink m : play) {
+                    m.add(Math.max(1, Math.round(shift + (cycleTimeNS * overspend) * m.pri())),
+                            -cycleTimeNS / 2, cycleTimeNS / 2);
+                }
+                return false;
             }
 
             private boolean deadline() {
-                return System.nanoTime() < deadline;
+                return nanoTime() < deadline;
             }
 
             void sleep() {
                 long i = WorkerExec.this.idleTimePerCyclePerThread;
                 if (i > 0) {
-
                     Util.sleepNSwhile(i, NapTime, WorkerExec.this::queueSafe);
                 }
             }
@@ -473,7 +484,7 @@ abstract public class MultiExec extends UniExec {
 
         @Override
         public ITask next(NAR n) {
-            long end = System.nanoTime();
+            long end = nanoTime();
             queueLatency(start, end, n);
             return null;
         }

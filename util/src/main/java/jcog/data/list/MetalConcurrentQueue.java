@@ -23,6 +23,7 @@ package jcog.data.list;
  */
 
 import com.conversantmedia.util.concurrent.ConcurrentQueue;
+import jcog.TODO;
 import jcog.Util;
 
 import java.util.Objects;
@@ -198,7 +199,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             // is there data for us to poll
             if (tail.getAcquire() > head) {
                 // check if we can update the sequence
-                if (headCursor.weakCompareAndSetAcquire(head, head + 1)) {
+                if (headCursor.weakCompareAndSetRelease(head, head + 1)) {
 
                     final X pollObj = getAndSet(i(head, cap), null);
 
@@ -268,14 +269,14 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             final int nToRead = Math.min((tail.getAcquire() - pollPos), maxElements);
             if (nToRead > 0) {
                 // if we still control the sequence, update and return
-                if(headCursor.weakCompareAndSetAcquire(pollPos,  pollPos+nToRead)) {
+                if(headCursor.weakCompareAndSetRelease(pollPos,  pollPos+nToRead)) {
                     int n = i(pollPos, cap);
                     for (int i = 0; i < nToRead; i++) {
                         x[i] = getAndSet(n, null);
                         if (++n == cap) n = 0;
                     }
 
-                    head.addAndGet(nToRead);
+                    head.setRelease(pollPos+nToRead);
                     return nToRead;
                 } else {
                     spin = progressiveYield(spin); // wait for access
@@ -367,40 +368,41 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
     @Override
     public final boolean isEmpty() {
-        return tail.getOpaque() == head.getOpaque();
+        return size()==0;
     }
 
     @Override
     public void clear() {
-        int spin = 0;
-        int cap = capacity();
-        for (; ; ) {
-            final int head = this.head.getAcquire();
-            if (headCursor.weakCompareAndSetAcquire(head, head + 1)) {
-            //if (headCursor.weakCompareAndSetAcquire(head, head + 1)) {
-                for (; ; ) {
-                    final int tail = this.tail.getAcquire();
-                    if (tailCursor.weakCompareAndSetAcquire(tail, tail + 1)) {
-                    //if (tailCursor.weakCompareAndSetVolatile(tail, tail + 1)) {
-
-                        // we just blocked all changes to the queue
-
-                        // remove leaked refs
-                        for (int i = 0; i < cap; i++)
-                            set(i, null);
-
-                        // advance head to same location as current end
-                        this.tail.incrementAndGet();
-                        this.head.addAndGet(tail - head + 1);
-                        headCursor.setRelease(tail + 1);
-
-                        return;
-                    }
-                    spin = progressiveYield(spin);
-                }
-            }
-            spin = progressiveYield(spin);
-        }
+        throw new TODO("review");
+//        int spin = 0;
+//        int cap = capacity();
+//        for (; ; ) {
+//            final int head = this.head.getAcquire();
+//            if (headCursor.weakCompareAndSetAcquire(head, head + 1)) {
+//            //if (headCursor.weakCompareAndSetAcquire(head, head + 1)) {
+//                for (; ; ) {
+//                    final int tail = this.tail.getAcquire();
+//                    if (tailCursor.weakCompareAndSetAcquire(tail, tail + 1)) {
+//                    //if (tailCursor.weakCompareAndSetVolatile(tail, tail + 1)) {
+//
+//                        // we just blocked all changes to the queue
+//
+//                        // remove leaked refs
+//                        for (int i = 0; i < cap; i++)
+//                            set(i, null);
+//
+//                        // advance head to same location as current end
+//                        this.tail.setRelease(tail+1);
+//                        this.head.addAndGet(tail - head + 1);
+//                        headCursor.setRelease(tail + 1);
+//
+//                        return;
+//                    }
+//                    spin = progressiveYield(spin);
+//                }
+//            }
+//            spin = progressiveYield(spin);
+//        }
     }
 
     @Override

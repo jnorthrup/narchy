@@ -27,12 +27,10 @@ abstract public class Causable extends NARService {
 
     public final Can can;
 
-    /** id set by the scheduler on registration */
-    @Deprecated public volatile int scheduledID = -1;
-
     final AtomicBoolean busy;
 
     private volatile long sleepUntil = TIMELESS;
+    private volatile boolean sleeping;
 
     @Deprecated
     protected Causable(NAR nar) {
@@ -83,14 +81,16 @@ abstract public class Causable extends NARService {
     }
 
     public boolean sleeping(long now) {
-        if (sleepUntil == TIMELESS)
-            return false;
         if (sleepUntil < now) {
             sleepUntil = TIMELESS;
-            return true;
+            return sleeping = true;
+        } else {
+            return sleeping = false;
         }
+    }
 
-        return true;
+    public boolean sleeping() {
+        return sleeping;
     }
 
 //    protected void sleepRemainderOfCycle() {

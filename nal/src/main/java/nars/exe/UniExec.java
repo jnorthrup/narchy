@@ -55,7 +55,7 @@ public class UniExec extends AbstractExec {
              * may be negative when excessive time consumed */
             public long time = 0;
 
-            final Causable can = TimedLink.this.get();
+            public final Causable can = TimedLink.this.get();
 
 //            public long addAt(long t) {
 //
@@ -73,9 +73,7 @@ public class UniExec extends AbstractExec {
                 time = Util.clampSafe((time + t), min, max);
             }
 
-            public Causable causable() {
-                return can;
-            }
+
         }
     }
 
