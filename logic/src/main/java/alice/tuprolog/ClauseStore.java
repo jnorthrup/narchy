@@ -18,44 +18,72 @@ public final class ClauseStore {
     @Nullable private Deque<ClauseInfo> clauses = null;
     private final Term goal;
     private final List<Var> vars;
-    private boolean haveAlternatives;
 
     private ClauseStore(Term goal, List<Var> vars) {
         this.goal = goal;
         this.vars = vars;
     }
 
-    public static ClauseStore match(Term goal, Deque<ClauseInfo> familyClauses, @Nullable List<Var> vars) {
-        ClauseStore clauseStore = new ClauseStore(goal, vars);
-        if (clauseStore.match(familyClauses))
-            return clauseStore;
-        else
-            return null;
+    @Nullable public static ClauseStore match(Term goal, Deque<ClauseInfo> familyClauses, @Nullable List<Var> vars) {
+        if (!familyClauses.isEmpty()) {
+            ClauseStore clauseStore = new ClauseStore(goal, vars);
+            if (clauseStore.matchFirst(familyClauses))
+                return clauseStore;
+        }
+
+        return null;
     }
 
 
     /**
      * Restituisce la clausola da caricare
      */
-    public ClauseInfo fetch() {
+    public ClauseInfo fetchNext(boolean pop, boolean save) {
         Deque<ClauseInfo> clauses = this.clauses;
-        if (clauses == null || clauses.isEmpty()) return null;
+        if (clauses == null)
+            return null;
 
-        deunify(vars, null);
+        int v = vars.size();
+        if (save && v==0) save = false;
 
-        ClauseInfo clause = this.clauses.removeFirst();
+        ClauseInfo clause = null;
+        while (!clauses.isEmpty()) {
 
-        if (clauses.isEmpty())
-            this.clauses = null;
-        else
-            this.haveAlternatives = true;
+            if (pop) {
+                clause = clauses.removeFirst();
+                if (clauses.isEmpty())
+                    this.clauses = null;
+            } else
+                clause = clauses.peekFirst();
+
+            List<Term> saveUnifications = deunify(vars, save ? new FasterList<>(v) : null);
+
+            boolean u = goal.unifiable(clause.head);
+
+            if (saveUnifications!=null)
+                reunify(vars, saveUnifications, v);
+
+            if (!u) {
+                clause = null;
+                if (!pop) {
+                    clauses.removeFirst(); //remove the un-unifiable entry since it wasnt popped already
+                    if (clauses.isEmpty()) {
+                        this.clauses = null;
+                        break;
+                    }
+                }
+            } else {
+                break; //got it
+            }
+
+        }
 
         return clause;
     }
 
 
     public boolean haveAlternatives() {
-        return haveAlternatives;
+        return clauses!=null && !clauses.isEmpty();
     }
 
 
@@ -66,23 +94,20 @@ public final class ClauseStore {
      * @param compGoals
      * @return true if compatible or false otherwise.
      */
-    @Deprecated protected boolean unifiable() {
-        int n = vars.size();
-        List<Term> saveUnifications = n > 0 ? deunify(vars, new FasterList<>(n)) : null;
+    protected boolean unifiesMore() {
 
-        boolean found = unifiable(goal);
+        //boolean found = unifiable(goal);
+        boolean found = fetchNext(false, true)!=null;
 
-        if (n > 0)
-            reunify(vars, saveUnifications, n);
 
         return found;
     }
 
-    protected boolean match(Deque<ClauseInfo> d) {
+    protected boolean matchFirst(Deque<ClauseInfo> d) {
 
         deunify(vars, null);
 
-        boolean found = unifiable(goal, d);
+        boolean found = unifiableFirst(goal, d);
 
         return found;
     }
@@ -128,31 +153,40 @@ public final class ClauseStore {
     }
 
 
-    /**
-     * Verify if a clause exists that is compatible with goal.
-     * As a side effect, clauses that are not compatible get
-     * discarded from the currently examined family.
-     *
-     * @param goal
-     */
-    @Deprecated private boolean unifiable(Term goal) {
-        Deque<ClauseInfo> clauses = this.clauses;
-        if (clauses == null)
-            return false;
-        for (ClauseInfo clause : clauses) {
-            if (goal.unifiable(clause.head)) return true;
-        }
-        return false;
-    }
+//    /**
+//     * Verify if a clause exists that is compatible with goal.
+//     * As a side effect, clauses that are not compatible get
+//     * discarded from the currently examined family.
+//     *
+//     * @param goal
+//     */
+//    @Deprecated private boolean unifiable(Term goal) {
+//        if (!this.goal.equals(goal))
+//            throw new WTF();
+//
+//        Deque<ClauseInfo> clauses = this.clauses;
+//        if (clauses == null)
+//            return false;
+//        for (ClauseInfo clause : clauses) {
+//            if (goal.unifiable(clause.head)) return true;
+//        }
+//        return false;
+//    }
 
-    private boolean unifiable(Term goal, Deque<ClauseInfo> other) {
-        //TODO if (!goal.isGround() && clauses instanceof ClauseSet) { .. //fast constant lookup
+    private boolean unifiableFirst(Term goal, Deque<ClauseInfo> matching) {
         Deque<ClauseInfo> clauses = null;
-        for (ClauseInfo ci : other) {
-            if (goal.unifiable(ci.head)) {
-                if (clauses == null)
-                    clauses = new ArrayDeque<>(4);
-                clauses.add(ci);
+        for (ClauseInfo ci : matching) {
+            if (clauses == null) {
+                deunify(vars, null);
+                 if (goal.unifiable(ci.head)) {
+                     if (clauses == null)
+                         clauses = new ArrayDeque<>(/* other.size() - 1 - i */);
+                     //start the unify queue beginning here
+                     //TODO only need to store an iterator to continue
+                 }
+            }
+            if (clauses!=null) {
+                clauses.add(ci); //queue for future test
             }
         }
         if (clauses == null) {
@@ -163,13 +197,18 @@ public final class ClauseStore {
         }
     }
 
+    public ClauseInfo fetchFirst() {
+        return this.clauses.removeFirst();
+    }
+
     public String toString() {
         return "clauses: " + clauses + '\n' +
                 "goal: " + goal + '\n' +
                 "vars: " + vars + '\n';
     }
-    
-    
+
+
+
     /*
      * Methods for spyListeners
      */

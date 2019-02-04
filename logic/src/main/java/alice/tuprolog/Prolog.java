@@ -21,9 +21,12 @@ import alice.tuprolog.event.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 
 /**
@@ -53,7 +56,7 @@ public class Prolog {
     /* exception activated ? */
     private boolean exception;
     /**/
-    private final CopyOnWriteArrayList<OutputListener> outputListeners;
+    final CopyOnWriteArrayList<OutputListener> outputListeners;
     /* listeners registrated for virtual machine internal events */
     private final CopyOnWriteArrayList<SpyListener> spyListeners;
 
@@ -63,19 +66,18 @@ public class Prolog {
 
     /*Castagna 06/2011*/
     /* listeners registrated for virtual machine state exception events */
-    @Deprecated
-    private final CopyOnWriteArrayList<ExceptionListener> exceptionListeners;
+    private final List<ExceptionListener> exceptionListeners;
     /**/
 
     /* listeners to theory events */
-    private final ArrayList<TheoryListener> theoryListeners;
+    private final List<TheoryListener> theoryListeners;
     /* listeners to library events */
-    private final ArrayList<LibraryListener> libraryListeners;
+    private final List<LibraryListener> libraryListeners;
     /* listeners to query events */
-    private final ArrayList<Consumer<QueryEvent>> queryListeners;
+    private final List<Consumer<QueryEvent>> queryListeners;
 
     /* path history for including documents */
-    private ArrayList<String> absolutePathList;
+    private List<String> absolutePathList;
     private boolean warning;
 
 
@@ -106,14 +108,7 @@ public class Prolog {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        try {
-            if (System.getProperty("java.vm.name").equals("IKVM.NET"))
-                addLibrary("OOLibrary.OOLibrary, OOLibrary");
-            else
-                addLibrary("alice.tuprolog.lib.OOLibrary");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+
     }
 
 
@@ -154,10 +149,10 @@ public class Prolog {
         /*Castagna 06/2011*/
         exception = true;
         /**/
-        theoryListeners = new ArrayList<>();
-        queryListeners = new ArrayList<>();
-        libraryListeners = new ArrayList<>();
-        absolutePathList = new ArrayList<>();
+        theoryListeners = new CopyOnWriteArrayList<>();
+        queryListeners = new CopyOnWriteArrayList<>();
+        libraryListeners = new CopyOnWriteArrayList<>();
+        absolutePathList = new CopyOnWriteArrayList<>();
         flags = new Flags();
         libs = new LibraryManager();
         ops = new OperatorManager();
@@ -300,6 +295,14 @@ public class Prolog {
         libs.load(lib);
     }
 
+    public void addLibrary(Class<? extends Library> lib) throws InvalidLibraryException {
+        try {
+            addLibrary(lib.getConstructor().newInstance());
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
      * Unloads a previously loaded library
@@ -345,7 +348,7 @@ public class Prolog {
 
         Solution sinfo = engine.solve(g);
 
-        notifyNewQueryResultAvailable(this, sinfo);
+        solution(this, sinfo);
 
         return sinfo;
     }
@@ -355,10 +358,17 @@ public class Prolog {
     }
 
     public Prolog solve(Term g, Consumer<Solution> eachSolution) {
+        return solve(g, (x) -> {
+            eachSolution.accept(x);
+            return true;
+        });
+    }
+
+    public Prolog solve(Term g, Predicate<Solution> eachSolution) {
         return solve(g, eachSolution, -1);
     }
 
-    public Prolog solve(Term g, Consumer<Solution> eachSolution, long timeoutMS) {
+    public Prolog solve(Term g, Predicate<Solution> eachSolution, long timeoutMS) {
 
         Solution next = null;
         do {
@@ -373,9 +383,10 @@ public class Prolog {
                     e.printStackTrace();
                 }
             }
-            notifyNewQueryResultAvailable(this, next);
-            eachSolution.accept(next);
-        } while (hasOpenAlternatives());
+
+            solution(this, next);
+
+        } while (eachSolution.test(next) && hasOpenAlternatives());
 
 
         return this;
@@ -410,7 +421,7 @@ public class Prolog {
     public Solution solveNext() throws NoMoreSolutionException {
         if (hasOpenAlternatives()) {
             Solution sinfo = engine.solveNext();
-            notifyNewQueryResultAvailable(this, sinfo);
+            solution(this, sinfo);
             return sinfo;
         } else
             throw new NoMoreSolutionException();
@@ -502,7 +513,7 @@ public class Prolog {
      *
      * @param state - true for enabling the notification of spy event
      */
-    public synchronized void setSpy(boolean state) {
+    public void setSpy(boolean state) {
         spy = state;
     }
 
@@ -532,7 +543,7 @@ public class Prolog {
      */
     protected void spy(State s, Engine e) {
 
-        if (spy && !spyListeners.isEmpty()) {
+        if (spy) {
             ExecutionContext ctx = e.currentContext;
             if (ctx != null) {
                 int i = 0;
@@ -568,36 +579,17 @@ public class Prolog {
      *
      * @param m the exception message
      */
-    public void exception(String m) {
-        if (exception) {
-            notifyException(new ExceptionEvent(this, m));
+    public void exception(Throwable e) {
+        if (exception && !exceptionListeners.isEmpty()) {
+            ExceptionEvent e1 = new ExceptionEvent(this, e);
+
+            for (ExceptionListener exceptionListener : exceptionListeners)
+                exceptionListener.onException(e1);
+
+            logger.error("{} {}", e1.getSource(), e1.getException());
         }
     }
-    /**/
 
-    /*Castagna 06/2011*/
-
-    /**
-     * Checks if exception information are notified
-     *
-     * @return true if the engine emits exception information
-     */
-    public synchronized boolean isException() {
-        return exception;
-    }
-    /**/
-
-    /*Castagna 06/2011*/
-
-    /**
-     * Switches on/off the notification of exception information events
-     *
-     * @param state - true for enabling exception information notification
-     */
-    public synchronized void setException(boolean state) {
-        exception = state;
-    }
-    /**/
 
     /**
      * Produces an output information event
@@ -607,15 +599,13 @@ public class Prolog {
     public void output(String m) {
 
         int outputListenersSize = outputListeners.size();
-        if (outputListenersSize == 0)
-            return;
-
-        OutputEvent e = new OutputEvent(this, m);
-        synchronized (outputListeners) {
+        if (outputListenersSize > 0) {
+            OutputEvent e = new OutputEvent(this, m);
             for (OutputListener outputListener : outputListeners) {
                 outputListener.onOutput(e);
             }
         }
+
     }
 
 
@@ -634,7 +624,7 @@ public class Prolog {
      *
      * @param l the listener
      */
-    public synchronized void addTheoryListener(TheoryListener l) {
+    public void addTheoryListener(TheoryListener l) {
         theoryListeners.add(l);
     }
 
@@ -643,7 +633,7 @@ public class Prolog {
      *
      * @param l the listener
      */
-    public synchronized void addLibraryListener(LibraryListener l) {
+    public void addLibraryListener(LibraryListener l) {
         libraryListeners.add(l);
     }
 
@@ -653,9 +643,7 @@ public class Prolog {
      * @param l the listener
      */
     public void addQueryListener(Consumer<QueryEvent> l) {
-        synchronized (queryListeners) {
-            queryListeners.add(l);
-        }
+        queryListeners.add(l);
     }
 
     /**
@@ -701,7 +689,7 @@ public class Prolog {
     /**
      * Removes all output event listeners
      */
-    public synchronized void removeAllOutputListeners() {
+    public void removeAllOutputListeners() {
         outputListeners.clear();
     }
 
@@ -710,7 +698,7 @@ public class Prolog {
      *
      * @param l the listener
      */
-    public synchronized void removeTheoryListener(TheoryListener l) {
+    public void removeTheoryListener(TheoryListener l) {
         theoryListeners.remove(l);
     }
 
@@ -719,7 +707,7 @@ public class Prolog {
      *
      * @param l the listener
      */
-    public synchronized void removeLibraryListener(LibraryListener l) {
+    public void removeLibraryListener(LibraryListener l) {
         libraryListeners.remove(l);
     }
 
@@ -729,9 +717,8 @@ public class Prolog {
      * @param l the listener
      */
     public void removeQueryListener(Consumer<QueryEvent> l) {
-        synchronized (queryListeners) {
-            queryListeners.remove(l);
-        }
+        queryListeners.remove(l);
+
     }
 
 
@@ -776,7 +763,7 @@ public class Prolog {
      *
      * @param l the listener
      */
-    public synchronized void removeExceptionListener(ExceptionListener l) {
+    public void removeExceptionListener(ExceptionListener l) {
         exceptionListeners.remove(l);
     }
     /**/
@@ -786,7 +773,7 @@ public class Prolog {
     /**
      * Removes all exception event listeners
      */
-    public synchronized void removeAllExceptionListeners() {
+    public void removeAllExceptionListeners() {
         exceptionListeners.clear();
     }
     /**/
@@ -805,18 +792,6 @@ public class Prolog {
 
     /*Castagna 06/2011*/
 
-    /**
-     * Notifies a exception information event
-     *
-     * @param e the event
-     */
-    protected void notifyException(ExceptionEvent e) {
-
-        for (ExceptionListener exceptionListener : exceptionListeners) {
-            exceptionListener.onException(e);
-        }
-        logger.error("{} {}", e.getSource(), e.getMsg());
-    }
     /**/
 
 
@@ -847,7 +822,7 @@ public class Prolog {
      *
      * @param e the event
      */
-    protected void notifyNewQueryResultAvailable(Prolog source, Solution info) {
+    protected void solution(Prolog source, Solution info) {
 
         int qls = queryListeners.size();
         if (qls > 0) {

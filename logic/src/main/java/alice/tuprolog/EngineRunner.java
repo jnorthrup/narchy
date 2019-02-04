@@ -8,8 +8,6 @@ import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList;
 
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,8 +20,11 @@ import static alice.tuprolog.PrologPrimitive.PREDICATE;
  * Core engine
  */
 public final class EngineRunner implements java.io.Serializable, Runnable {
-    private Prolog mediator;
-    private TheoryManager theories;
+
+    private Prolog prolog;
+
+    TheoryManager theories;
+
     private PrimitiveManager primitives;
     private LibraryManager libraryManager;
     private EngineManager engineManager;
@@ -97,7 +98,7 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
      * Config this Manager
      */
     EngineRunner initialize(Prolog vm) {
-        mediator = vm;
+        prolog = vm;
         theories = vm.theories;
         primitives = vm.prims;
         libraryManager = vm.libs;
@@ -114,18 +115,14 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
         return this;
     }
 
-    public boolean isSpy() {
-        return mediator.isSpy();
-    }
-
-    void spy(State action, Engine env) {
-        mediator.spy(action, env);
+    void on(State action, Engine env) {
+        prolog.spy(action, env);
     }
 
 
     /*Castagna 06/2011*/
-    void exception(String message) {
-        mediator.exception(message);
+    void exception(Throwable e) {
+        prolog.exception(e);
     }
     /**/
 
@@ -183,9 +180,9 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
 
             sinfo = new Solution(
                     query,
-                    result.getResultGoal(),
+                    result.goal,
                     result.endState,
-                    result.getResultVars()
+                    result.vars
             );
             if (this.sinfoSetOf != null)
                 sinfo.setSetOfSolution(sinfoSetOf);
@@ -241,9 +238,9 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
             defreeze();
             sinfo = new Solution(
                     env.query,
-                    result.getResultGoal(),
+                    result.goal,
                     result.endState,
-                    result.getResultVars()
+                    result.vars
             );
             if (this.sinfoSetOf != null)
                 sinfo.setSetOfSolution(sinfoSetOf);
@@ -293,18 +290,11 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
 
     private void defreeze() {
         last_env = env;
-        if (stackEnv.isEmpty()) return;
-        env = stackEnv.removeLast();
+        Engine last = stackEnv.poll();
+        if (last!=null)
+            env = last;
     }
 
-
-    /*
-     * Utility functions for Finite State Machine
-     */
-
-    private Deque<ClauseInfo> find(Term t) {
-        return theories.find(t);
-    }
 
     void identify(Term t) {
         primitives.identify(t, PREDICATE);
@@ -351,8 +341,8 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
 
     @Override
     public void run() {
-        if (id!=0)
-            EngineManager.threads.set(id);
+
+        EngineManager.threads.set(this);
 
         solving = true;
 
@@ -418,23 +408,23 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
 
 
     public boolean getMsg(Term t) {
-        msgs.get(t, mediator, this);
+        msgs.get(t, prolog, this);
         return true;
     }
 
 
     public boolean peekMsg(Term t) {
-        return msgs.peek(t, mediator);
+        return msgs.peek(t, prolog);
     }
 
 
     public boolean removeMsg(Term t) {
-        return msgs.remove(t, mediator);
+        return msgs.remove(t, prolog);
     }
 
 
     public boolean waitMsg(Term msg) {
-        msgs.wait(msg, mediator, this);
+        msgs.wait(msg, prolog, this);
         return true;
     }
 
@@ -518,7 +508,5 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
         return solve();
     }
 
-    public ClauseStore match(Struct goal, List<Var> varsList) {
-        return theories.match(goal, varsList);
-    }
+
 }

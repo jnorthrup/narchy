@@ -24,9 +24,9 @@ test(Map,N):-
 
 test(N):-
 	hashtable(Map),
-	class('java.lang.System') <- currentTimeMillis returns T0,
+	class('java.lang.System') <- nanoTime returns T0,
 	test(Map,N),
-	class('java.lang.System') <- currentTimeMillis returns T1,
+	class('java.lang.System') <- nanoTime returns T1,
 	DT is T1 - T0,
 	nl,write(DT),nl.
 

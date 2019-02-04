@@ -23,7 +23,6 @@ import com.google.common.io.Resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 
 import static alice.tuprolog.Parser.defaultOps;
@@ -87,8 +86,12 @@ public class Theory implements Iterable<Term>, Serializable {
         this.clauseList = clauseList;
     }
 
-    public static Theory resource(String classPath) throws IOException, URISyntaxException, InvalidTheoryException {
-        return new Theory(Resources.toString(Prolog.class.getResource(classPath).toURI().toURL(), java.nio.charset.Charset.defaultCharset()));
+    public static Theory resource(String classPath) throws IOException, InvalidTheoryException {
+        return resource(Prolog.class, classPath);
+    }
+
+    public static Theory resource(Class root, String classPath) throws IOException, InvalidTheoryException {
+        return new Theory(Resources.toString(Resources.getResource(root, classPath), java.nio.charset.Charset.defaultCharset()));
     }
 
     public Iterator<Term> iterator(OperatorManager ops) {

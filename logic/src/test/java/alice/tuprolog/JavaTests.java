@@ -1,15 +1,24 @@
 package alice.tuprolog;
 
+import alice.tuprolog.lib.OOLibrary;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class JavaTests {
+    static final Prolog p = new Prolog();
+    static {
+        try {
+            p.addLibrary(OOLibrary.class);
+        } catch (InvalidLibraryException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Test
     public void testHashTable() throws IOException, InvalidTheoryException, URISyntaxException {
-        Prolog p = new Prolog().input(
-            Theory.resource("../../../resources/hash_table.pl")
+        p.input(
+            Theory.resource(JavaTests.class, "hash_table.pl")
         );
 
 
@@ -24,8 +33,8 @@ public class JavaTests {
 
     @Test
     public void testPoints2() throws IOException, InvalidTheoryException, URISyntaxException {
-        Prolog p = new Prolog().input(
-            Theory.resource("../../../resources/points_test2.pl")
+        p.input(
+            Theory.resource(JavaTests.class, "points_test2.pl")
         );
 
 

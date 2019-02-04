@@ -10,7 +10,7 @@ public final class OneWayList<E> {
     public final E head;
     public final OneWayList<E> tail;
 
-    public OneWayList(E head, OneWayList<E> tail) {
+    public OneWayList(E head, @Nullable OneWayList<E> tail) {
         this.head = head;
         this.tail = tail;
     }
@@ -18,11 +18,9 @@ public final class OneWayList<E> {
     public static <T> OneWayList<T> the(T d) {
         return new OneWayList<>(d, null);
     }
+
     public static <T> OneWayList<T> add(@Nullable OneWayList<T> list, T x) {
-        if (list == null)
-            return the(x);
-        else
-            return new OneWayList<>(x, list);
+        return list == null ? the(x) : new OneWayList<>(x, list);
     }
 
     public static <T> OneWayList<T> get(Deque<T> d) {

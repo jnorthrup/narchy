@@ -3,9 +3,10 @@ package alice.tuprolog;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Consumer;
+
 public class TestGolog {
     
-    @Disabled
     @Test
     public void golog1() throws Exception {
 
@@ -19,11 +20,11 @@ public class TestGolog {
 
 
         p.addLibrary("alice.tuprolog.lib.EDCGLibrary");
-        p.input(Theory.resource("golog.pl"));
-        p.input(Theory.resource("golog.elevator.pl"));
+        p.input(Theory.resource(TestGolog.class, "golog.pl"));
+        p.input(Theory.resource(TestGolog.class, "golog.elevator.pl"));
 
 
-        p.solve(p.term("nextFloor(M,s0)."), System.out::println, 0);
+        p.solve(p.term("nextFloor(M,s0)."), (Consumer)System.out::println);
 
 
 

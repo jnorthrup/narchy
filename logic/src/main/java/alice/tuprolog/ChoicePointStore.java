@@ -58,7 +58,7 @@ public class ChoicePointStore {
     protected boolean existChoicePoint() {
         ChoicePointContext pointer = this.pointer;
         while (pointer!=null) {
-            if (pointer.compatibleGoals.unifiable())
+            if (pointer.compatibleGoals.unifiesMore())
                 return true;
             this.pointer = pointer = pointer.prevChoicePointContext;
         }

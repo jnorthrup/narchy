@@ -18,7 +18,7 @@ public class EngineManager implements java.io.Serializable {
 
     private final AtomicInteger id = new AtomicInteger();
 
-    public static final ThreadLocal<Integer> threads = new ThreadLocal<>();
+    public static final ThreadLocal<EngineRunner> threads = new ThreadLocal<>();
 
     private final ConcurrentHashMap<Integer, EngineRunner> runners
             = new ConcurrentHashMap<>();
@@ -34,6 +34,7 @@ public class EngineManager implements java.io.Serializable {
 
     public void initialize() {
         root.initialize(vm);
+        threads.set(root);
     }
 
     public boolean threadCreate(Term threadID, Term goal) {
@@ -228,12 +229,6 @@ public class EngineManager implements java.io.Serializable {
                     current.solveEnd();
                     return true;
                 });
-//                Enumeration<EngineRunner> ers = runners.elements();
-//                while (ers.hasMoreElements()) {
-//                    EngineRunner current = ers.nextElement();
-//                    current.solveEnd();
-//                }
-//                runners.clear();
 
                 queues.clear();
                 locks.clear();
@@ -277,9 +272,11 @@ public class EngineManager implements java.io.Serializable {
 
     public final EngineRunner runner() {
 
-        Integer id = threads.get();
+        return threads.get();
 
-        return id != null ? runner(id) : root;
+//        Integer id = threads.get();
+//
+//        return id != null ? runner(id) : root;
 
     }
 

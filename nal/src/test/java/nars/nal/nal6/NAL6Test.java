@@ -822,6 +822,19 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
+    void strong_unification_dep_indep_pre() {
+        test.believe("(#x --> y)")
+            .believe("(($x --> y) ==> ($x --> z))")
+            .mustBelieve(cycles, "(#x-->z)", 1f, 0.81f);
+    }
+    @Test
+    void strong_unification_dep_indep_post() {
+        test.believe("(#x --> z)")
+            .believe("(($x --> y) ==> ($x --> z))")
+            .mustBelieve(cycles, "(#x-->y)", 1f, 0.45f);
+    }
+
+    @Test
     void strong_unification_simple2() {
 
         TestNAR tester = test;
@@ -829,6 +842,7 @@ public class NAL6Test extends NALTest {
         tester.believe("<(x,y) --> pair>", 1.00f, 0.90f);
         tester.mustBelieve(cycles, "{x,y}", 1.00f, 0.81f);
     }
+
 
 
     @Test

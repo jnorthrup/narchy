@@ -1,20 +1,24 @@
 /*Castagna 06/2011*/
 package alice.tuprolog.event;
 
+import alice.tuprolog.JavaException;
+
 import java.util.EventObject;
 
-public class ExceptionEvent extends EventObject{
-	private static final long serialVersionUID = 1L;
-	private final String msg;
+public class ExceptionEvent extends EventObject {
 
-	public ExceptionEvent(Object source, String msg_) {
-		super(source);
-		msg=msg_;
-	}
+    public final Throwable exception;
 
-	public String getMsg(){
-		return msg;
-	}
+    public ExceptionEvent(Object source, Throwable e) {
+        super(source);
+        exception = e;
+    }
+
+    public String getException() {
+        return exception instanceof JavaException ?
+                ((JavaException)exception).getException().toString() :
+                exception.toString();
+    }
 
 }
 /**/

@@ -104,6 +104,7 @@ public class Var extends Term {
      * Rename variable (assign completeName)
      */
     void rename(int idExecCtx, int count) { /* Reviewed by Paolo Contessi: String -> StringBuilder */
+
         switch (id = idExecCtx) {
             case ORIGINAL:
                 this.completeName = name;
@@ -114,8 +115,14 @@ public class Var extends Term {
                 break;
             }
             default: {
-                StringBuilder c = new StringBuilder(name.length() + 8 /* estimate */);
-                this.completeName = c.append(name).append("_e").append(idExecCtx).toString();
+                StringBuilder c;
+                String name = this.name;
+                if (name!=null) {
+                    c = new StringBuilder(name.length() + 8 /* estimate */).append(name);
+                } else {
+                    c = new StringBuilder(8);
+                }
+                this.completeName = c.append("_e").append(idExecCtx).toString();
                 break;
             }
         }
@@ -134,7 +141,6 @@ public class Var extends Term {
     Term copy(Map<Var, Var> vMap, int idExecCtx) {
         Term tt = term();
         if (tt == this) {
-            
             return vMap.computeIfAbsent(this, k -> new Var(name, idExecCtx, 0, timestamp));
         } else {
             return tt.copy(vMap, idExecCtx);
@@ -332,7 +338,11 @@ public class Var extends Term {
 
     }
 
-    
+
+    @Override
+    public void resolveTerm() {
+        resolveTerm(now());
+    }
 
     /**
      * Resolve the occurence of variables in a Term

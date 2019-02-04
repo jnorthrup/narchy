@@ -1,25 +1,22 @@
 package alice.tuprolog;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import static alice.tuprolog.Theory.resource;
 
 public class TestEinsteinRiddle {
     
-    @Disabled
     @Test
-    public void einsteinsRiddle() throws IOException, URISyntaxException, InvalidTheoryException {
+    public void einsteinsRiddle() throws IOException, InvalidTheoryException {
 
         final boolean[] finished = {false};
 
         
         new Prolog()
-            .input(resource("einsteinsRiddle.pl"))
+            .input(resource(TestEinsteinRiddle.class, "einsteinsRiddle.pl"))
             .solve("einstein(_,X), write(X).", o -> {
                 System.out.println(o);
                 if (finished[0])

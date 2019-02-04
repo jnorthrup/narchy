@@ -17,10 +17,11 @@
  */
 package alice.tuprolog;
 
+import jcog.util.ArrayUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Deque;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
@@ -257,7 +258,11 @@ public final class BuiltIn extends Library {
     }
 
     private static String[] getStringArrayFromStruct(Struct list) {
-        String args[] = new String[list.listSize()];
+        int i = list.listSize();
+        if (i == 0)
+            return ArrayUtils.EMPTY_STRING_ARRAY;
+
+        String args[] = new String[i];
         Iterator<? extends Term> it = list.listIterator();
         int count = 0;
         while (it.hasNext()) {
@@ -470,11 +475,14 @@ public final class BuiltIn extends Library {
         if (/* !arg0 instanceof Struct || */!arg1.isList())
             throw PrologError.type_error(engineManager, 2, "list", arg1);
 
+        Struct list = (Struct) arg1;
         Iterable<ClauseInfo> l = theoryManager.find(arg0);
         for (ClauseInfo b : l) {
             if (Prolog.match(arg0, b.head)) {
                 b.clause.resolveTerm();
-                ((Struct) arg1).append(b.clause);
+                if (list == Struct.EmptyList)
+                    list = Struct.emptyListMutable();
+                list.append(b.clause);
             }
         }
         return true;

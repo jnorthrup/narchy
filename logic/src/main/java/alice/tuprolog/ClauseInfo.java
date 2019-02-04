@@ -155,9 +155,7 @@ public class ClauseInfo {
             if (s.isLeaf()) {
                 destination.add(((Term) s).copy(map, id));
             } else {
-                SubGoalTree src = (SubGoalTree) s;
-                SubGoalTree dest = destination.addChild();
-                bodyCopy(src, dest, map, id);
+                bodyCopy((SubGoalTree) s, destination.addChild(), map, id);
             }
         }
     }

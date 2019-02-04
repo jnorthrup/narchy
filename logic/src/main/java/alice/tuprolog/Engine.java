@@ -47,7 +47,6 @@ public class Engine {
 		this.nextState = manager.INIT;
 		this.query = query;
 		this.mustStop = false;
-		this.manager.getTheories();
 	}
 
 
@@ -68,9 +67,11 @@ public class Engine {
 	 */
 	StateEnd run() {
 
-
-
+		State nextState;
 		do {
+
+			nextState = this.nextState;
+
 			if (mustStop) {
 				nextState = manager.END_FALSE;
 				break;
@@ -78,15 +79,13 @@ public class Engine {
 
 			nextState.run(this);
 
-			if (manager.isSpy()) {
-				manager.spy(nextState, this);
-			}
-			
+			manager.on(nextState, this);
 
 		} while (!(nextState instanceof StateEnd));
+
 		nextState.run(this);
 
-		return (StateEnd)(nextState);
+		return (StateEnd)nextState;
 	}
 
 
@@ -98,9 +97,9 @@ public class Engine {
 		return query;
 	}
 
-	public int getNumDemoSteps() {
-		return nDemoSteps;
-	}
+//	public int getNumDemoSteps() {
+//		return nDemoSteps;
+//	}
 
 	public List<ExecutionContext> getExecutionStack() {
 		ArrayList<ExecutionContext> l = new ArrayList<>();

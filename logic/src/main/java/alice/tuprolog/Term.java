@@ -106,7 +106,9 @@ public abstract class Term implements Serializable, SubTree {
      * @param count new starting time count for resolving process
      * @return the new time count, after resolving process
      */
-    abstract void resolveTerm(long count);
+    void resolveTerm(long count) {
+
+    }
     
     
     /**
@@ -114,8 +116,8 @@ public abstract class Term implements Serializable, SubTree {
      * 
      * If the variables has been already resolved, no renaming is done.
      */
-    public final void resolveTerm() {
-        resolveTerm(now());
+    public void resolveTerm() {
+
     }
 
     
@@ -133,15 +135,18 @@ public abstract class Term implements Serializable, SubTree {
      * gets a copy of this term for the output
      */
     public Term copyResult(Collection<Var> goalVars, List<Var> resultVars) {
-        IdentityHashMap<Var,Var> originals = new IdentityHashMap<>(goalVars.size());
-        for (Var key: goalVars) {
-            Var clone;
-            if (!key.isAnonymous())
-                clone = new Var(key.getOriginalName());
-            else
-                clone = new Var();
-            originals.put(key,clone);
-            resultVars.add(clone);
+        int s = goalVars.size();
+        IdentityHashMap<Var,Var> originals = new IdentityHashMap<>(s);
+        if (s > 0) {
+            for (Var key : goalVars) {
+                Var clone;
+                if (!key.isAnonymous())
+                    clone = new Var(key.getOriginalName());
+                else
+                    clone = new Var();
+                originals.put(key, clone);
+                resultVars.add(clone);
+            }
         }
         return copy(originals, null /*new IdentityHashMap<>()*/);
     }
@@ -155,7 +160,10 @@ public abstract class Term implements Serializable, SubTree {
      * @param vMap
      * @param idExecCtx Execution Context identifier
      */
-    abstract Term copy(Map<Var, Var> vMap, int idExecCtx);
+    Term copy(Map<Var, Var> vMap, int idExecCtx) {
+        return this;
+    }
+
     
     /**
      * gets a copy for result.

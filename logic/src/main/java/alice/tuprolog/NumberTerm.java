@@ -119,16 +119,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
 //        return this;
 //    }
     
-    /**
-     * gets a copy (with renamed variables) of the term.
-     * <p>
-     * the list argument passed contains the list of variables to be renamed
-     * (if empty list then no renaming)
-     */
-    @Override
-    final Term copy(Map<Var, Var> vMap, int idExecCtx) {
-        return this;
-    }
+
     
     /**
      * gets a copy of the term.
@@ -138,12 +129,6 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
     @Override
     final Term copy(Map<Var, Var> vMap, Map<Term, Var> substMap) {
         return this;
-    }
-    
-    
-    @Override
-    final void resolveTerm(long count) {
-
     }
 
     

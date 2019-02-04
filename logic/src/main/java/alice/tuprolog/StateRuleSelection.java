@@ -42,47 +42,48 @@ public class StateRuleSelection extends State {
          * Individuo compatibleGoals e
          * stabilisco se derivo da Backtracking.
          */
-        ChoicePointContext alternative = e.currentAlternative;
+        final ChoicePointContext alternative = e.currentAlternative;
         e.currentAlternative = null;
         ClauseStore clauseStore;
         boolean fromBacktracking;
+        ClauseInfo clause;
         if (alternative == null) {
             /* from normal evaluation */
-            fromBacktracking = false;
-
 
             List<Var> varsList = new FasterList<>();
-            e.currentContext.trailingVars = new OneWayList<>(varsList, e.currentContext.trailingVars);
+            e.currentContext.trailingVars = OneWayList.add(e.currentContext.trailingVars, varsList);
 
             Struct goal = e.currentContext.currentGoal;
-            clauseStore = c.match(goal, varsList);
+            clauseStore = ClauseStore.match(goal, c.theories.find(goal), varsList);
             if (clauseStore == null) { //g.isEmpty() || (clauseStore = ClauseStore.build(goal, g, varsList))==null) {
                 e.nextState = c.BACKTRACK;
                 return;
             }
 
+            fromBacktracking = false;
+            clause = clauseStore.fetchFirst();
         } else {
-            fromBacktracking = true;
             clauseStore = alternative.compatibleGoals;
+            clause = clauseStore.fetchNext(true, false);  assert(clause!=null);
+            fromBacktracking = true;
         }
 
         /*-----------------------------------------------------
          * Scelgo una regola fra quelle potenzialmente compatibili.
          */
-        ClauseInfo clause = clauseStore.fetch();
+
 
         /*-----------------------------------------------------
          * Build ExecutionContext and ChoicePointContext
          */
         ExecutionContext ec = new ExecutionContext(e.nDemoSteps++);
-        ExecutionContext curCtx = e.currentContext;
         ec.clause = clause.clause;
 
 
         clause.copyTo(ec.getId(), ec);
 
 
-        ec.choicePointAfterCut = e.choicePointSelector.getPointer();
+
         if (alternative != null) {
             ChoicePointContext choicePoint = alternative;
             int depth = alternative.executionContext.depth;
@@ -105,19 +106,19 @@ public class StateRuleSelection extends State {
                 } else
                     break;
             }
+        } else {
+            ec.choicePointAfterCut = e.choicePointSelector.getPointer();
         }
 
+        ExecutionContext curCtx = e.currentContext;
         Struct curGoal = curCtx.currentGoal;
         List<Var> unifiedVars = e.currentContext.trailingVars.head;
         curGoal.unify(unifiedVars, unifiedVars, ec.headClause);
 
-        ec.haveAlternatives = clauseStore.haveAlternatives();
 
-
-        if (ec.haveAlternatives && !fromBacktracking) {
+        if ((ec.haveAlternatives = clauseStore.haveAlternatives()) && !fromBacktracking) {
             ChoicePointContext cpc = new ChoicePointContext();
             cpc.compatibleGoals = clauseStore;
-
             cpc.executionContext = curCtx;
             cpc.indexSubGoal = curCtx.goalsToEval.current();
             cpc.varsToDeunify = e.currentContext.trailingVars;

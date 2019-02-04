@@ -24,96 +24,67 @@ import java.util.concurrent.ConcurrentHashMap;
  * Customized HashMap for storing clauses in the TheoryManager
  *
  * @author ivar.orstavik@hist.no
- *
+ * <p>
  * Reviewed by Paolo Contessi
  */
 
-public class MutableClauseIndex extends ConcurrentHashMap<String,FamilyClausesList> implements ClauseIndex {
+public class MutableClauseIndex extends ConcurrentHashMap<String, FamilyClausesList> implements ClauseIndex {
 
-	@Override
-	public void add(String key, ClauseInfo d, boolean first) {
-		computeIfAbsent(key, (k)->new FamilyClausesList()).add(d, first);
-	}
+    @Override
+    public void add(String key, ClauseInfo d, boolean first) {
+        computeIfAbsent(key, (k) -> new FamilyClausesList()).add(d, first);
+    }
 
+    @Override
+    public FamilyClausesList remove(String key) {
+        return super.remove(key);
+    }
 
-
-
-
-
-
-
-/*	FamilyClausesList abolish(String key)
-	{
-		return remove(key);
-	}*/
-
-	@Override
-	public FamilyClausesList remove(String key) {
-		return super.remove(key);
-	}
-
-	@Override
-	public FamilyClausesList clauses(String key) {
-		return super.get(key);
-	}
+    @Override
+    public FamilyClausesList clauses(String key) {
+        return super.get(key);
+    }
 
 
+    @Override
+    public Iterator<ClauseInfo> iterator() {
+        return new CompleteIterator(this);
+    }
 
 
+    private static class CompleteIterator implements Iterator<ClauseInfo> {
+        final Iterator<FamilyClausesList> values;
+        Iterator<ClauseInfo> workingList;
 
 
+        public CompleteIterator(MutableClauseIndex clauseDatabase) {
 
 
+            values = clauseDatabase.values().iterator();
+        }
 
+        @Override
+        public boolean hasNext() {
+            while (true) {
+                if (workingList != null && workingList.hasNext())
+                    return true;
+                if (values.hasNext()) {
+                    workingList = values.next().iterator();
+                    continue;
+                }
+                return false;
+            }
+        }
 
+        @Override
+        public ClauseInfo next() {
+            return workingList.hasNext() ? workingList.next() : null;
+        }
 
-
-
-
-
-
-	@Override
-	public Iterator<ClauseInfo> iterator() {
-		return new CompleteIterator(this);
-	}
-
-
-
-
-
-	private static class CompleteIterator implements Iterator<ClauseInfo> {
-		final Iterator<FamilyClausesList> values;
-		Iterator<ClauseInfo> workingList;
-		
-
-		public CompleteIterator(MutableClauseIndex clauseDatabase) {
-			
-			
-			values = clauseDatabase.values().iterator();
-		}
-
-		@Override
-		public boolean hasNext() {
-			while (true) {
-				if (workingList != null && workingList.hasNext())
-					return true;
-				if (values.hasNext()) {
-					workingList = values.next().iterator();
-					continue;
-				}
-				return false;
-			}
-		}
-
-		@Override
-		public ClauseInfo next() {
-			return workingList.hasNext() ? workingList.next() : null;
-		}
-
-		@Override
-		public void remove() {
-			workingList.remove();
-		}
-	}
+        @Override
+        public void remove() {
+            workingList.remove();
+        }
+    }
 
 }

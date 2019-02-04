@@ -31,8 +31,8 @@ import java.util.StringTokenizer;
 public class StateEnd extends State {
 
     public final int endState;
-    private Struct goal;
-    private List<Var> vars;
+    Struct goal;
+    List<Var> vars;
     private int setOfCounter;
 
     /**
@@ -45,22 +45,10 @@ public class StateEnd extends State {
         endState = end;
     }
 
-    public Struct getResultGoal() {
-        return goal;
-    }
-
-    public List<Var> getResultVars() {
-        return vars;
-    }
-
-
     @Override
     void run(Engine e) {
         vars = new FasterList<>();
         goal = (Struct) e.startGoal.copyResult(e.goalVars, vars);
-
-
-
 
         if (this.endState == EngineRunner.TRUE || this.endState == EngineRunner.TRUE_CP)
             relinkVar(e);

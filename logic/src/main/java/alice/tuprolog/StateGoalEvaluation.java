@@ -54,7 +54,7 @@ public class StateGoalEvaluation extends State {
                     
                     e.currentContext.currentGoal = new Struct("throw", error.getError());
                     /*Castagna 06/2011*/
-                    e.manager.exception(error.toString());
+                    e.manager.exception(error);
 					/**/
                 } else if (t instanceof JavaException) {
                     
@@ -64,7 +64,7 @@ public class StateGoalEvaluation extends State {
                     
                     e.currentContext.currentGoal = new Struct("java_throw", exception.getException());
 					/*Castagna 06/2011*/
-                    e.manager.exception(exception.getException().toString());
+                    e.manager.exception(exception); //exception.getException());
 					/**/
 
                     

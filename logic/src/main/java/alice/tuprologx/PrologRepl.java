@@ -177,7 +177,8 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
     /*Castagna 06/2011*/  
 	@Override
     public void onException(ExceptionEvent e) {
-    	 System.out.println(e.getMsg());
+    	 System.out.println(e.getException());
+    	 e.exception.printStackTrace();
 	}
 	/**/
 	

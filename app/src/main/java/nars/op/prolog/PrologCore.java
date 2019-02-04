@@ -215,6 +215,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
                     break;
             }
+            return true;
         }, timeoutMS);
 
     }

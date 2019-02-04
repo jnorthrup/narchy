@@ -65,21 +65,9 @@ public abstract class AbstractSocket extends Term{
 
 	@Override
 	public boolean isEqual(Term t) {
-		
-		return false;
+		return t == this;
 	}
 
-
-
-	@Override
-	void resolveTerm(long count) {
-
-	}
-
-	@Override
-	Term copy(Map<Var, Var> vMap, int idExecCtx) {
-		return this;
-	}
 
 	@Override
 	Term copy(Map<Var, Var> vMap, Map<Term, Var> substMap) {

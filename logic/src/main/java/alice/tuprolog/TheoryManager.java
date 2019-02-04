@@ -154,16 +154,6 @@ public class TheoryManager {
     }
 
 
-    @Nullable
-    public ClauseStore match(Struct goal, List<Var> varsList) {
-
-        Deque<ClauseInfo> ci = find(goal);
-        if (ci.isEmpty())
-            return null;
-
-        return ClauseStore.match(goal, ci, varsList);
-    }
-
     /**
      * Returns a family of clauses with functor and arity equals
      * to the functor and arity of the term passed as a parameter
@@ -185,8 +175,8 @@ public class TheoryManager {
             }
         }
 
-        if (headt instanceof Var)
-            throw new RuntimeException();
+//        if (headt instanceof Var)
+//            throw new RuntimeException();
 
         return EMPTY_ARRAYDEQUE;
     }

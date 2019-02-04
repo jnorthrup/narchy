@@ -49,6 +49,10 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class OOLibrary extends Library {
 
+    public static final Struct STDERR = new Struct("stderr");
+    public static final Struct RUNTIME = new Struct("runtime");
+    public static final Struct CURRENT_THREAD = new Struct("current_thread");
+    public static final Struct STDOUT = new Struct("stdout");
     /**
      * java objects referenced by prolog terms (keys)
      */
@@ -93,7 +97,8 @@ public class OOLibrary extends Library {
 			dynamicLoader = new JavaDynamicClassLoader(new URL[] {}, getClass().getClassLoader());
 
     }
-    
+
+
     @Override
     public String getTheory() {
         return
@@ -163,15 +168,14 @@ public class OOLibrary extends Library {
      * beginning of demonstration
      */
     protected void preregisterObjects() {
-        try {
-            bindDynamicObject(new Struct("stdout"), System.out);
-            bindDynamicObject(new Struct("stderr"), System.err);
-            bindDynamicObject(new Struct("runtime"), Runtime.getRuntime());
-            bindDynamicObject(new Struct("current_thread"), Thread
-                    .currentThread());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+//        try {
+            bindDynamicObject(STDOUT, System.out);
+            bindDynamicObject(STDERR, System.err);
+            bindDynamicObject(RUNTIME, Runtime.getRuntime());
+            bindDynamicObject(CURRENT_THREAD, Thread.currentThread());
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
     }
 
      /**

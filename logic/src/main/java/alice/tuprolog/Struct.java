@@ -204,11 +204,6 @@ public class Struct extends Term {
         }
 
         @Override
-        public boolean isConstant() {
-            return true;
-        }
-
-        @Override
         public boolean isEmptyList() {
             return true;
         }
@@ -283,12 +278,6 @@ public class Struct extends Term {
         return s instanceof Var ? s.term() : s;
     }
 
-
-    
-
-
-    
-
     @Override
     public boolean isAtom() {
         return subCount == 0;
@@ -311,10 +300,11 @@ public class Struct extends Term {
 
     @Override
     public boolean isGround() {
-        Term[] a = this.subs;
-        for (int i = 0; i < subCount; i++) {
-            if (!a[i].isGround()) {
-                return false;
+        if (!isAtomic()) {
+            Term[] a = this.subs;
+            for (int i = 0; i < subCount; i++) {
+                if (!a[i].isGround())
+                    return false;
             }
         }
         return true;
@@ -460,12 +450,13 @@ public class Struct extends Term {
 
 
     public boolean isConstant() {
-        if (isAtomic()) return true;
-        for (Term x : subs) {
-            if (x instanceof Var)
-                return false;
-            if ((x instanceof Struct) && (!((Struct) x).isConstant()))
-                return false;
+        if (!isAtomic()) {
+            for (Term x : subs) {
+                if (x instanceof Var)
+                    return false;
+                if ((x instanceof Struct) && (!((Struct) x).isConstant()))
+                    return false;
+            }
         }
         return true;
     }
@@ -478,26 +469,27 @@ public class Struct extends Term {
     @Override
     Term copy(Map<Var, Var> vMap, int idExecCtx) {
 
-
         if (!(vMap instanceof IdentityHashMap) && isConstant())
             return this;
 
         final int arity = this.subCount;
-        Term[] targ = new Term[arity];
-        Term[] arg = this.subs;
+        Term[] xx=this.subs, yy = null;
 
         for (int c = 0; c < arity; c++) {
-            Term x = arg[c];
+            Term x = xx[c];
             Term y = x.copy(vMap, idExecCtx);
+            if (x!=y) {
+                if (yy == null)
+                     yy = xx.clone();
+            }
 
-
-
-            targ[c] = y;
+            if (yy!=null)
+                yy[c] = y;
         }
+        if (yy==null)
+            return this; //unchanged
 
-
-
-        Struct t = new Struct(name, targ);
+        Struct t = new Struct(name, yy);
         t.resolved = resolved;
         t.key = key;
         t.primitive = primitive;
@@ -540,13 +532,18 @@ public class Struct extends Term {
     }
 
 
+    @Override
+    public void resolveTerm() {
+        if (!resolved && subCount > 0)
+            resolveTerm(now());
+    }
+
     /**
      * resolve term
      */
     @Override
     void resolveTerm(long count) {
-        if (!resolved && subCount > 0)
-            resolveTerm(null, count);
+        resolveTerm(null, count);
     }
 
 

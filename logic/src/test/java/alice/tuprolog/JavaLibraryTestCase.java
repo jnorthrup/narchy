@@ -12,14 +12,16 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
+@Disabled /* TODO */
 public class JavaLibraryTestCase {
 	String theory;
-	Prolog prolog = new Prolog();
+
+	final Prolog prolog = new Prolog();
+	final OOLibrary lib = (OOLibrary) prolog.library("alice.tuprolog.lib.OOLibrary");
 	Solution info;
 	String result;
 	String paths;
-	
+
 	@Test
 	public void testGetPrimitives() {
 		Library library = new OOLibrary();
@@ -31,7 +33,7 @@ public class JavaLibraryTestCase {
 	}
 
 	@Test public void testAnonymousObjectRegistration() throws InvalidTheoryException, InvalidObjectIdException {
-		OOLibrary lib = (OOLibrary) prolog.library("alice.tuprolog.lib.OOLibrary");
+
 		String theory = "demo(X) :- X <- update. \n";
 		prolog.setTheory(new Theory(theory));
 		TestCounter counter = new TestCounter();
@@ -46,14 +48,14 @@ public class JavaLibraryTestCase {
 	}
 
 	@Test public void testDynamicObjectsRetrival() throws PrologException {
-		Prolog engine = new Prolog();
-		OOLibrary lib = (OOLibrary) engine.library("alice.tuprolog.lib.OOLibrary");
+
+
 		String theory = "demo(C) :- \n" +
 				"java_object('alice.tuprolog.TestCounter', [], C), \n" +
 				"C <- update, \n" +
 				"C <- update. \n";			
-		engine.setTheory(new Theory(theory));
-		Solution info = engine.solve("demo(Obj).");
+		prolog.setTheory(new Theory(theory));
+		Solution info = prolog.solve("demo(Obj).");
 		Struct id = (Struct) info.getVarValue("Obj");
 		TestCounter counter = (TestCounter) lib.getRegisteredDynamicObject(id);
 		assertEquals(2, counter.getValue());

@@ -34,8 +34,8 @@ public class JavaDynamicClassLoaderTestCase {
         assertEquals(2, loader.getURLs().length);
     }
 
-    @Disabled
     @Test
+    @Disabled
     public void LoadClassTest() throws
             IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
         JavaDynamicClassLoader loader = null;
@@ -78,8 +78,7 @@ public class JavaDynamicClassLoaderTestCase {
         });
     }
 
-    @Disabled
-    @Test
+    @Test @Disabled
     public void URLHandling() throws ClassNotFoundException, IOException {
         JavaDynamicClassLoader loader = null;
         URL url = new File(".").toURI().toURL();
