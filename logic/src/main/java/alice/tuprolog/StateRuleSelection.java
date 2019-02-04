@@ -20,7 +20,6 @@ package alice.tuprolog;
 import alice.util.OneWayList;
 import jcog.data.list.FasterList;
 
-import java.util.Deque;
 import java.util.List;
 
 /**
@@ -56,8 +55,8 @@ public class StateRuleSelection extends State {
             e.currentContext.trailingVars = new OneWayList<>(varsList, e.currentContext.trailingVars);
 
             Struct goal = e.currentContext.currentGoal;
-            Deque<ClauseInfo> g = c.find(goal);
-            if (g.isEmpty() || (clauseStore = ClauseStore.build(goal, varsList, g))==null) {
+            clauseStore = c.match(goal, varsList);
+            if (clauseStore == null) { //g.isEmpty() || (clauseStore = ClauseStore.build(goal, g, varsList))==null) {
                 e.nextState = c.BACKTRACK;
                 return;
             }
@@ -97,9 +96,10 @@ public class StateRuleSelection extends State {
                         choicePoint = choicePoint.prevChoicePointContext;
                     }
                     if (distance == 1 && choicePoint.prevChoicePointContext != null) {
-                        ec.choicePointAfterCut = choicePoint.prevChoicePointContext.prevChoicePointContext;
-                        currentGoal = choicePoint.prevChoicePointContext.executionContext.currentGoal;
-                        choicePoint = choicePoint.prevChoicePointContext;
+                        ChoicePointContext cppp = choicePoint.prevChoicePointContext;
+                        ec.choicePointAfterCut = cppp.prevChoicePointContext;
+                        currentGoal = cppp.executionContext.currentGoal;
+                        choicePoint = cppp;
                     } else
                         break;
                 } else

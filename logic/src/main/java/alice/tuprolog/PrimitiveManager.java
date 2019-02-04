@@ -61,12 +61,10 @@ public class PrimitiveManager  {
         if (!libs.add(src))
             throw new RuntimeException("already loaded: " + src);
 
-        Map<Integer, List<PrologPrimitive>> prims = src.primitives();
-
-
+        Map<Integer, List<PrologPrimitive>> sp = src.primitives();
         for (int type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
             Map<String, PrologPrimitive> table = table(type);
-            prims.get(type).forEach(p-> table.put(p.key, p));
+            sp.get(type).forEach(p-> table.put(p.key, p));
         }
     }
 
@@ -75,11 +73,10 @@ public class PrimitiveManager  {
         if (!libs.remove(src))
             throw new RuntimeException("not loaded: " + src);
 
-        Map<Integer, List<PrologPrimitive>> prims = src.primitives();
-
+        Map<Integer, List<PrologPrimitive>> sp = src.primitives();
         for (int type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
             Map<String, PrologPrimitive> table = table(type);
-            prims.get(type).forEach(p-> table.remove(p.key));
+            sp.get(type).forEach(p-> table.remove(p.key));
         }
     }
 
@@ -134,6 +131,8 @@ public class PrimitiveManager  {
     }
 
     public void identify(Struct t, int typeOfPrimitive) {
+        if (t.isPrimitive())
+            return; //assume already identified
 
         final int primType = PRIMITIVE_PREDICATES.contains(t.name()) ? PREDICATE : FUNCTOR;
         int arity = t.subs();

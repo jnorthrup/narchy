@@ -13,65 +13,31 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
- *
  * miscellaneous static services
- *
  */
 public class Tools {
 
-    
+
     /**
      * loads a text file and returns its
      * content as string
      */
     public static String loadText(String fileName) throws IOException {
-        
+
         try {
             return new String(ClassLoader.getSystemResourceAsStream(fileName).readAllBytes());
-        } catch (Exception ex){
+        } catch (Exception ex) {
+            try {
+                return new String(new FileInputStream(fileName).readAllBytes());
+            } catch (Exception ee) {
+                throw new IOException(ee);
+            }
         }
-        
-        try {
-            return new String(new FileInputStream(fileName).readAllBytes());
-        } catch (Exception ex){
-        }
-        throw new IOException("File not found.");
+
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    public static String removeApostrophes(String st){
-        return st.startsWith("'") && st.endsWith("'") ? st.substring(1, st.length() - 1) : st;
+    public static String removeApostrophes(String st) {
+        return st.charAt(0) == '\'' && st.endsWith("'") ? st.substring(1, st.length() - 1) : st;
     }
 }

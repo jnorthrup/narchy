@@ -1,9 +1,9 @@
 package alice.tuprolog;
 
-import alice.util.OneWayList;
 import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import java.util.ListIterator;
@@ -15,7 +15,7 @@ import java.util.ListIterator;
 public final class ClauseStore {
 
 
-    private OneWayList<ClauseInfo> clauses;
+    @Nullable private Deque<ClauseInfo> clauses = null;
     private final Term goal;
     private final List<Var> vars;
     private boolean haveAlternatives;
@@ -23,7 +23,6 @@ public final class ClauseStore {
     private ClauseStore(Term goal, List<Var> vars) {
         this.goal = goal;
         this.vars = vars;
-        clauses = null;
     }
 
 
@@ -35,12 +34,12 @@ public final class ClauseStore {
 
 
 
-    public static ClauseStore build(Term goal, List<Var> vars, Deque<ClauseInfo> familyClauses) {
+    public static ClauseStore build(Term goal, Deque<ClauseInfo> familyClauses, List<Var> vars) {
         ClauseStore clauseStore = new ClauseStore(goal, vars);
-        return (clauseStore.clauses = OneWayList.get(familyClauses)) == null ||
-                !clauseStore.existCompatibleClause() ? null
-                :
-                clauseStore;
+        if (clauseStore.addCompatible(familyClauses))
+            return clauseStore;
+        else
+            return null;
     }
 
 
@@ -48,14 +47,18 @@ public final class ClauseStore {
      * Restituisce la clausola da caricare
      */
     public ClauseInfo fetch() {
-        OneWayList<ClauseInfo> clauses = this.clauses;
-        if (clauses == null) return null;
+        Deque<ClauseInfo> clauses = this.clauses;
+        if (clauses == null || clauses.isEmpty()) return null;
+
         deunify(vars, null);
-        if (!checkCompatibility(goal))
-            return null;
-        ClauseInfo clause = this.clauses.head;
-        this.clauses = this.clauses.tail;
-        haveAlternatives = checkCompatibility(goal);
+
+        ClauseInfo clause = this.clauses.removeFirst();
+
+        if (clauses.isEmpty())
+            this.clauses = null;
+        else
+            haveAlternatives = true;
+
         return clause;
     }
 
@@ -72,12 +75,12 @@ public final class ClauseStore {
      * @param compGoals
      * @return true if compatible or false otherwise.
      */
-    protected boolean existCompatibleClause() {
+    @Deprecated protected boolean existCompatibleClause() {
         int n = vars.size();
 
         List<Term> saveUnifications = n > 0 ? deunify(vars, new FasterList<>(n)) : null;
 
-        boolean found = checkCompatibility(goal);
+        boolean found = unify(goal);
 
         if (n > 0)
             reunify(vars, saveUnifications, n);
@@ -85,6 +88,17 @@ public final class ClauseStore {
         return found;
     }
 
+    protected boolean addCompatible(Deque<ClauseInfo> d) {
+//        int n = vars.size();
+//        List<Term> saveUnifications = n > 0 ? deunify(vars, new FasterList<>(n)) : null;
+
+        boolean found = unify(goal, d);
+
+//        if (n > 0)
+//            reunify(vars, saveUnifications, n);
+
+        return found;
+    }
 
     /**
      * Salva le unificazioni delle variabili da deunificare
@@ -134,17 +148,33 @@ public final class ClauseStore {
      *
      * @param goal
      */
-    private boolean checkCompatibility(Term goal) {
-        OneWayList<ClauseInfo> clauses = this.clauses;
-        ClauseInfo clause;
-        while (clauses!=null) {
-            clause = clauses.head;
+    @Deprecated private boolean unify(Term goal) {
+        Deque<ClauseInfo> clauses = this.clauses;
+        if (clauses == null)
+            return false;
+        for (ClauseInfo clause : clauses) {
             if (goal.unifiable(clause.head)) return true;
-            this.clauses = clauses = this.clauses.tail;
         }
         return false;
     }
 
+    private boolean unify(Term goal, Deque<ClauseInfo> other) {
+        //TODO if (!goal.isGround() && clauses instanceof ClauseSet) { .. //fast constant lookup
+        Deque<ClauseInfo> clauses = null;
+        for (ClauseInfo ci : other) {
+            if (goal.unifiable(ci.head)) {
+                if (clauses == null)
+                    clauses = new ArrayDeque<>(4);
+                clauses.add(ci);
+            }
+        }
+        if (clauses == null) {
+            return false;
+        } else {
+            this.clauses = clauses;
+            return true;
+        }
+    }
 
     public String toString() {
         return "clauses: " + clauses + '\n' +

@@ -19,7 +19,6 @@ package alice.tuprolog;
 
 import alice.util.OneWayList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -46,26 +45,26 @@ public class ChoicePointContext {
      */
     
    
-    public ClauseStore getCompatibleGoals() {
-        return compatibleGoals;
-    }
-    
-    
-    public ExecutionContext getExecutionContext() {
-        return executionContext;
-    }
-    
-    public SubGoal getIndexBack() {
-        return indexSubGoal;
-    }
-    
-    public List<List<Var>> getVarsToDeunify() {
-        ArrayList<List<Var>> l = new ArrayList<>();
-        OneWayList<List<Var>> t = varsToDeunify;
-        while (t != null) {
-            l.add(t.head);
-            t = t.tail;
-        }
-        return l;
-    }
+//    public ClauseStore getCompatibleGoals() {
+//        return compatibleGoals;
+//    }
+//
+//
+//    public ExecutionContext getExecutionContext() {
+//        return executionContext;
+//    }
+//
+//    public SubGoal getIndexBack() {
+//        return indexSubGoal;
+//    }
+//
+//    public List<List<Var>> getVarsToDeunify() {
+//        ArrayList<List<Var>> l = new ArrayList<>();
+//        OneWayList<List<Var>> t = varsToDeunify;
+//        while (t != null) {
+//            l.add(t.head);
+//            t = t.tail;
+//        }
+//        return l;
+//    }
 }

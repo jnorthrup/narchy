@@ -15,10 +15,7 @@ import java.util.LinkedList;
  * @see LinkedList
  * @since 2.2
  */
-public class FamilyClausesList extends
-        
-        
-        ArrayDeque<ClauseInfo> {
+public class FamilyClausesList extends ArrayDeque<ClauseInfo> {
 
     private final FamilyClausesIndex<NumberTerm> numCompClausesIndex;
     private final FamilyClausesIndex<String> constantCompClausesIndex;

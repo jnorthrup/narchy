@@ -9,6 +9,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList;
 
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -301,7 +302,7 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
      * Utility functions for Finite State Machine
      */
 
-    Deque<ClauseInfo> find(Term t) {
+    private Deque<ClauseInfo> find(Term t) {
         return theories.find(t);
     }
 
@@ -515,5 +516,9 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
     public final synchronized Solution solve(Term query) {
         setGoal(query);
         return solve();
+    }
+
+    public ClauseStore match(Struct goal, List<Var> varsList) {
+        return theories.match(goal, varsList);
     }
 }

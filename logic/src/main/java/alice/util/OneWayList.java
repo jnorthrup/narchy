@@ -1,5 +1,7 @@
 package alice.util;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Deque;
 import java.util.Iterator;
 
@@ -13,24 +15,15 @@ public final class OneWayList<E> {
         this.tail = tail;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public static <T> OneWayList<T> the(T d) {
+        return new OneWayList<>(d, null);
+    }
+    public static <T> OneWayList<T> add(@Nullable OneWayList<T> list, T x) {
+        if (list == null)
+            return the(x);
+        else
+            return new OneWayList<>(x, list);
+    }
 
     public static <T> OneWayList<T> get(Deque<T> d) {
         int s = d.size();
@@ -38,67 +31,19 @@ public final class OneWayList<E> {
             case 0:
                 return null;
             case 1:
-                return new OneWayList<>(d.getFirst(), null);
+                return the(d.getFirst());
             case 2:
                 return new OneWayList<>(d.getFirst(), new OneWayList<>(d.getLast(), null));
             default:
                 Iterator<T> i = d.descendingIterator();
-                i.hasNext(); 
-                OneWayList<T> o = new OneWayList<>(i.next(), null); 
+                i.hasNext();
+                OneWayList<T> o = new OneWayList<>(i.next(), null);
                 while (i.hasNext()) {
-                    o = new OneWayList<>(i.next(), o); 
+                    o = new OneWayList<>(i.next(), o);
                 }
                 return o;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public String toString() {

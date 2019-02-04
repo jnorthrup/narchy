@@ -388,7 +388,6 @@ public class Prolog {
      * @return the result of the demonstration
      * @see Solution
      **/
-    @Deprecated
     public Solution solve(String st) throws MalformedGoalException {
         try {
             return solve(term(st));
@@ -826,7 +825,7 @@ public class Prolog {
      *
      * @param e the event
      */
-    protected void notifyLoadedLibrary(LibraryEvent e) {
+    protected void notifyLoadedLibrary(/* TODO Supplier< */ LibraryEvent e) {
         for (LibraryListener ll : libraryListeners) {
             ll.libraryLoaded(e);
         }

@@ -256,7 +256,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct culprit = (Struct) info.getTerm("Culprit");
 		assertTrue(culprit.isEqual(new Struct("text")));
 		Term message = info.getTerm("Message");
-		assertTrue(message.isEqual(new Struct("File not found.")));
+		assertFileNotFound(message);
 	}
 
 	
@@ -306,7 +306,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct culprit = (Struct) info.getTerm("Culprit");
 		assertTrue(culprit.isEqual(new Struct("text")));
 		Term message = info.getTerm("Message");
-		assertTrue(message.isEqual(new Struct("File not found.")));
+		assertFileNotFound(message);
 	}
 
 	
@@ -356,7 +356,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct culprit = (Struct) info.getTerm("Culprit");
 		assertTrue(culprit.isEqual(new Struct("text")));
 		Term message = info.getTerm("Message");
-		assertTrue(message.isEqual(new Struct("File not found.")));
+		assertFileNotFound(message);
 	}
 
 	
@@ -436,7 +436,11 @@ public class IOLibraryExceptionsTestCase {
 		Struct culprit = (Struct) info.getTerm("Culprit");
 		assertTrue(culprit.isEqual(new Struct("text")));
 		Term message = info.getTerm("Message");
-		assertTrue(message.isEqual(new Struct("File not found.")));
+		assertFileNotFound(message);
+	}
+
+	public void assertFileNotFound(Term message) {
+		assertTrue(message.toString().contains("FileNotFoundException"));
 	}
 
 }

@@ -18,14 +18,12 @@
 package alice.tuprolog;
 
 import alice.util.Tools;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.Iterator;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static alice.tuprolog.PrologPrimitive.PREDICATE;
@@ -56,9 +54,6 @@ public class TheoryManager {
     private final Prolog engine;
     private final PrimitiveManager primitiveManager;
     private final Deque<Term> startGoalStack;
-
-
-
 
 
     public TheoryManager(Prolog vm, ClauseIndex dynamics) {
@@ -111,15 +106,13 @@ public class TheoryManager {
         Struct clause = toClause(cl);
         Struct struct = ((Struct) clause.sub(0));
         Deque<ClauseInfo> family = dynamicDBase.clauses(struct.key());
-        
-
-		/*creo un nuovo clause database x memorizzare la teoria all'atto della retract 
-		 * questo lo faccio solo al primo giro della stessa retract 
-		 * (e riconosco questo in base all'id del contesto)
-		 * sara' la retract da questo db a restituire il risultato
-		 */
 
 
+        /*creo un nuovo clause database x memorizzare la teoria all'atto della retract
+         * questo lo faccio solo al primo giro della stessa retract
+         * (e riconosco questo in base all'id del contesto)
+         * sara' la retract da questo db a restituire il risultato
+         */
 
 
         if (family == null)
@@ -135,26 +128,6 @@ public class TheoryManager {
             }
             return false;
         });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         return removals[0];
@@ -180,6 +153,17 @@ public class TheoryManager {
         return true;
     }
 
+
+    @Nullable
+    public ClauseStore match(Struct goal, List<Var> varsList) {
+
+        Deque<ClauseInfo> ci = find(goal);
+        if (ci.isEmpty())
+            return null;
+
+        return ClauseStore.build(goal, ci, varsList);
+    }
+
     /**
      * Returns a family of clauses with functor and arity equals
      * to the functor and arity of the term passed as a parameter
@@ -190,7 +174,6 @@ public class TheoryManager {
     public /*synchronized*/ Deque<ClauseInfo> find(Term headt) {
 
         if (headt instanceof Struct) {
-            
             Struct s = (Struct) headt;
             Deque<ClauseInfo> list = dynamicDBase.predicates(s);
             if (list == null) {
@@ -202,16 +185,9 @@ public class TheoryManager {
             }
         }
 
-        if (headt instanceof Var) {
-            
-            
-            
-            
-            
-            
-            
+        if (headt instanceof Var)
             throw new RuntimeException();
-        }
+
         return EMPTY_ARRAYDEQUE;
     }
 
@@ -220,6 +196,7 @@ public class TheoryManager {
         public void addFirst(Object o) {
             throw new UnsupportedOperationException();
         }
+
         @Override
         public void addLast(Object o) {
             throw new UnsupportedOperationException();
@@ -251,24 +228,24 @@ public class TheoryManager {
     public /*synchronized*/ void consult(Theory theory, boolean dynamicTheory, String libName) throws InvalidTheoryException {
         startGoalStack.clear();
 
-		/*Castagna 06/2011*/
+        /*Castagna 06/2011*/
         int clause = 0;
-		/**/
-        
+        /**/
+
         try {
             for (Iterator<? extends Term> it = theory.iterator(engine.ops); it.hasNext(); ) {
-				/*Castagna 06/2011*/
+                /*Castagna 06/2011*/
                 clause++;
-				/**/
+                /**/
                 Struct d = (Struct) it.next();
                 if (!runDirective(d))
                     assertZ(d, dynamicTheory, libName, true);
             }
         } catch (InvalidTermException e) {
-			/*Castagna 06/2011*/
-            
+            /*Castagna 06/2011*/
+
             throw new InvalidTheoryException(e.getMessage(), clause, e.line, e.pos);
-			/**/
+            /**/
         }
 
 
@@ -301,7 +278,7 @@ public class TheoryManager {
             ClauseInfo d = allClauses.next();
             if (libName.equals(d.libName)) {
                 try {
-                    
+
                     allClauses.remove();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -330,8 +307,8 @@ public class TheoryManager {
     /**
      * Gets a clause from a generic Term
      */
-    private Struct toClause(Struct t) {        
-        
+    private Struct toClause(Struct t) {
+
         t = (Struct) Term.term(t.toString(), this.engine.ops);
         if (!t.isClause())
             t = new Struct(":-", t, TRUE);
@@ -354,7 +331,7 @@ public class TheoryManager {
                 engine.solve(s);
             } catch (Exception ex) {
                 Prolog.logger.error("solveTheoryGoal {}", ex);
-                
+
             }
         }
     }
@@ -395,6 +372,7 @@ public class TheoryManager {
             }
         return buffer.toString();
     }
+
 
 
 }

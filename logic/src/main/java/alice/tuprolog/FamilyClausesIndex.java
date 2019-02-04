@@ -1,7 +1,10 @@
 package alice.tuprolog;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Set;
 
 
 /**
@@ -11,22 +14,72 @@ import java.util.Deque;
  * @author Paolo Contessi
  * @since 2.2
  */
-class FamilyClausesIndex<K extends Comparable<? super K>>
-        extends RBTree<K, Deque<ClauseInfo>> {
+class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, FamilyClausesIndex.ClauseSet> {
 
-    private final Deque<ClauseInfo> varsClauses;
+    static class ClauseSet extends ArrayDeque<ClauseInfo> {
+
+        //@Deprecated @Nullable Deque<ClauseInfo> shared;
+//        public ClauseSet(Deque<ClauseInfo> shared) {
+//            this.shared = shared.isEmpty() ? null : shared;
+//        }
+
+        @Nullable
+        private Set<ClauseInfo> set = null;
+
+        public ClauseSet(int cap) {
+            super(cap);
+        }
+
+        @Override
+        public void addFirst(ClauseInfo clauseInfo) {
+            set = null;
+            super.addFirst(clauseInfo);
+        }
+
+        @Override
+        public void addLast(ClauseInfo clauseInfo) {
+            set = null;
+            super.addLast(clauseInfo);
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            set = null;
+            return super.remove(o);
+        }
+
+        @Override
+        public ClauseInfo pollFirst() {
+            set = null;
+            return super.pollFirst();
+        }
+
+        @Override
+        public ClauseInfo pollLast() {
+            set = null;
+            return super.pollLast();
+        }
+    }
+
+    private final ClauseSet shared;
 
     public FamilyClausesIndex(){
         super();
-        varsClauses = new ArrayDeque<>();
+        shared = new ClauseSet(16);
     }
 
-    private Node<K,Deque<ClauseInfo>> createNewNode(K key, ClauseInfo clause, boolean first){
-        Deque<ClauseInfo> list = new ArrayDeque<>(varsClauses);
+    private Node<K,ClauseSet> createNewNode(K key, ClauseInfo clause, boolean first){
+        int vs = shared.size();
+        ClauseSet list =
+                new ClauseSet(vs +1);
 
         if(first){
             list.addFirst(clause);
+            if (vs>0)
+                list.addAll(shared);
         } else {
+            if (vs>0)
+                list.addAll(shared);
             list.addLast(clause);
         }
         
@@ -44,9 +97,9 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
      */
     public void insertAsShared(ClauseInfo clause, boolean first){
         if(first){
-            varsClauses.addFirst(clause);
+            shared.addFirst(clause);
         } else {
-            varsClauses.addLast(clause);
+            shared.addLast(clause);
         }
 
         
@@ -57,11 +110,11 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
             } else {
                 
 
-                Deque<Node<K, Deque<ClauseInfo>>> buf = new ArrayDeque<>();
+                Deque<Node<K, ClauseSet>> buf = new ArrayDeque<>();
                 buf.add(root);
 
                 while (!buf.isEmpty()) {
-                    Node<K, Deque<ClauseInfo>> n = buf.removeFirst();
+                    Node<K, ClauseSet> n = buf.removeFirst();
 
                     setValue(clause, first, n);
 
@@ -77,7 +130,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
         }
     }
 
-    public void setValue(ClauseInfo clause, boolean first, Node<K, Deque<ClauseInfo>> n) {
+    private void setValue(ClauseInfo clause, boolean first, Node<K, ClauseSet> n) {
         if(first){
             n.value.addFirst(clause);
         } else {
@@ -95,12 +148,12 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
      * @param clause    The value to be binded to the given key
      * @param first     If the clause must be binded as first or last element
      */
-    public void insert(K key, ClauseInfo clause, boolean first){
-        Node<K, Deque<ClauseInfo>> insertedNode = null;
+    protected void insert(K key, ClauseInfo clause, boolean first){
+        Node<K, ClauseSet> insertedNode = null;
         if (root == null) {
             insertedNode = root = createNewNode(key, clause, first);
         } else {
-            Node<K,Deque<ClauseInfo>> n = root;
+            Node<K,ClauseSet> n = root;
             while (true) {
                 int compResult = key.compareTo(n.key);
                 if (compResult == 0) {
@@ -131,19 +184,19 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
     }
 
 
-    public void removeShared(ClauseInfo clause){
-        if(varsClauses.remove(clause)){
+    protected void removeShared(ClauseInfo clause){
+        if(shared.remove(clause)){
             if(root != null){
                 if (root.left == null && root.right == null) {
                     root.value.remove(clause);  
                 } else {
                     
 
-                    Deque<Node<K, Deque<ClauseInfo>>> buf = new ArrayDeque<>();
+                    Deque<Node<K, ClauseSet>> buf = new ArrayDeque<>();
                     buf.add(root);
 
                     while (!buf.isEmpty()) {
-                        Node<K, Deque<ClauseInfo>> n = buf.remove();
+                        Node<K, ClauseSet> n = buf.remove();
 
                         n.value.remove(clause);
 
@@ -169,7 +222,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
      * @return      The related clauses
      */
     public Deque<ClauseInfo> get(K key){
-        Deque<ClauseInfo> res = lookup(key);
-        return res != null ? res : varsClauses;
+        ClauseSet res = lookup(key);
+        return res != null ? res : shared;
     }
 }
