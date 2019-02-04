@@ -19,10 +19,7 @@ package alice.tuprolog;
 
 import jcog.io.BinTxt;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class represents a variable term.
@@ -122,11 +119,19 @@ public class Var extends Term {
             default: {
                 StringBuilder c;
                 String name = this.name;
-                int extra = 1 + idExecCtx < BinTxt.maxBase ? 1 : 2;
-                if (name!=null) {
-                    c = new StringBuilder(name.length() + extra /* estimate */).append(name);
+                int extra;
+                if (idExecCtx < BinTxt.maxBase) {
+                    extra = 1;
+                } else if (idExecCtx < BinTxt.maxBase*BinTxt.maxBase) {
+                    extra = 2;
                 } else {
-                    c = new StringBuilder(extra);
+                    extra = 3;
+                    //etc.
+                }
+                if (name!=null) {
+                    c = new StringBuilder(1 + name.length() + extra /* estimate */).append(name);
+                } else {
+                    c = new StringBuilder(1 + extra);
                 }
                 c.append('_');
                 //c.append(Integer.toString(idExecCtx, Character.MAX_RADIX));
@@ -328,24 +333,25 @@ public class Var extends Term {
      *
      * @param vl TODO
      */
-    private boolean occurCheck(List<Var> vl, Struct t) {
+    private boolean occurCheck(Collection<Var> vl, Struct t) {
 
         int arity = t.subs();
         for (int c = 0; c < arity; c++) {
-            Term at = t.subResolve(c);
+            Term x = t.subResolve(c);
+            if (this == x) {
+                return true;
+            }
 
-            if (at instanceof Struct) {
-                if (occurCheck(vl, (Struct) at)) {
+            if (x instanceof Struct) {
+                if (occurCheck(vl, (Struct) x)) {
                     return true;
                 }
-            } else if (at instanceof Var) {
-                Var v = (Var) at;
+            } else if (x instanceof Var) {
+                Var v = (Var) x;
                 if (v.link == null) {
                     vl.add(v);
                 }
-                if (this == v) {
-                    return true;
-                }
+
             }
         }
 
@@ -402,10 +408,10 @@ public class Var extends Term {
      * then it's success and a new link is created (retractable by a code)
      */
     @Override
-    boolean unify(List<Var> vl1, List<Var> vl2, Term t) {
+    boolean unify(Collection<Var> vl1, Collection<Var> vl2, Term t) {
         Term tt = term();
         if (tt == this) {
-            t = t.term();
+
             if (t instanceof Var) {
                 if (this == t) {
                     
@@ -421,6 +427,7 @@ public class Var extends Term {
                 if (occurCheck(vl2, (Struct) t)) {
                     return false;
                 }
+
             } else if (!(t instanceof NumberTerm) && !(t instanceof AbstractSocket)) {
                 return false;
             }

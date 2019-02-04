@@ -19,56 +19,48 @@ package alice.tuprolog;
 
 /**
  * @author Alex Benini
- *
  */
 public class StateGoalSelection extends State {
-    
-    
-    
+
+
     public StateGoalSelection(EngineRunner c) {
         this.c = c;
         stateName = "Call";
     }
-    
-    
+
+
     /* (non-Javadoc)
      * @see alice.tuprolog.AbstractRunState#doJob()
      */
     @Override
-    void run(Engine e) {
+    State run(Engine e) {
         Term curGoal = null;
         while (curGoal == null) {
             curGoal = e.currentContext.goalsToEval.fetch();
-            if (curGoal==null){
-                
+            if (curGoal == null) {
+
                 if (e.currentContext.fatherCtx == null) {
-                    
-                    e.nextState = (e.choicePointSelector.existChoicePoint())? c.END_TRUE_CP : c.END_TRUE;
-                    return;
+
+                    return e.choicePointSelector.existChoicePoint() ? c.END_TRUE_CP : c.END_TRUE;
                 }
-                
+
                 e.currentContext = e.currentContext.fatherCtx;
+
             } else {
-                
+
                 Term goal_app = curGoal.term();
-                if (!(goal_app instanceof Struct)) {
-                    e.nextState = c.END_FALSE;
-                    return;
-                }
-                
-                
-                
-                
-                
-                
+                if (!(goal_app instanceof Struct))
+                    return c.END_FALSE;
+
                 if (curGoal != goal_app)
                     curGoal = new Struct("call", goal_app);
-                
+
                 e.currentContext.currentGoal = (Struct) curGoal;
-                e.nextState = c.GOAL_EVALUATION;
-                return;
-            }            
+                return c.GOAL_EVALUATION;
+            }
         }
+
+        return null;
     }
-    
+
 }

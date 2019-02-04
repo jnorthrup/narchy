@@ -19,7 +19,7 @@ package alice.tuprolog;
 
 import alice.util.OneWayList;
 
-import java.util.List;
+import java.util.Collection;
 
 
 /**
@@ -35,8 +35,8 @@ public class ExecutionContext {
     Struct clause;
     Struct headClause;
     SubGoalStore goalsToEval;
-    OneWayList<List<Var>> trailingVars;
-    OneWayList<List<Var>> fatherVarsList;
+    OneWayList<Collection<Var>> trailingVars;
+    OneWayList<Collection<Var>> fatherVarsList;
     ChoicePointContext choicePointAfterCut;
     boolean haveAlternatives;
 

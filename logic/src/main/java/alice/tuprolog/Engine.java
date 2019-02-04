@@ -67,19 +67,24 @@ public class Engine {
 	 */
 	StateEnd run() {
 
-		State nextState;
+		State nextState = null;
 		do {
-
-			nextState = this.nextState;
 
 			if (mustStop) {
 				nextState = manager.END_FALSE;
 				break;
 			}
 
-			nextState.run(this);
+			State state = this.nextState;
 
-			manager.on(nextState, this);
+			nextState = state.run(this);
+
+			if (nextState == null)
+				nextState = this.nextState; //load in case HALTed from outside the loop
+			else
+				this.nextState = nextState;
+
+			manager.on(state, this);
 
 		} while (!(nextState instanceof StateEnd));
 

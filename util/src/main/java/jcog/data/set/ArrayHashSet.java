@@ -39,10 +39,10 @@ package jcog.data.set;
 
 import jcog.TODO;
 import jcog.data.list.FasterList;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Analogous to {@link java.util.LinkedHashSet}, but with an {@link java.util.ArrayList} instead of a {@link java.util.LinkedList},
@@ -57,7 +57,7 @@ import java.util.function.Consumer;
 public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
 
-    public final List<X> list;
+    public final FasterList<X> list;
     protected Set<X> set = emptySet();
 
 
@@ -69,35 +69,62 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         this(new FasterList<>(capacity));
     }
 
-    public ArrayHashSet(List<X> list) {
+    protected ArrayHashSet(FasterList<X> list) {
         this.list = list;
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        return set.equals(((ArrayHashSet)o).set);
+    /** unordered equality via set */
+    @Override public boolean equals(Object o) {
+        return this == o || set.equals(((ArrayHashSet)o).set);
     }
 
+    /** unordered equality via set */
     @Override
     public int hashCode() {
         return set.hashCode();
     }
 
-    public static <X> ArrayHashSet<X> of(X... x) {
-        ArrayHashSet a = new ArrayHashSet(x.length);
-        Collections.addAll(a, x);
-        return a;
-    }
 
     @Override
     public boolean addAll(Collection<? extends X> c) {
         //throw new TODO("optimized bulk addAt");
         boolean added = false;
-        for (X x : c) {
+        for (X x : c)
             added |= add(x);
-        }
         return added;
+    }
+
+    @Override
+    public boolean removeAll(Collection c) {
+        //throw new TODO("optimized bulk addAt");
+        boolean rem = false;
+        for (Object x : c)
+            rem |= remove(x);
+        return rem;
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return set.containsAll(c);
+    }
+
+    @Override
+    public boolean removeIf(Predicate<? super X> filter) {
+        switch(size()) {
+            case 0: return false;
+            case 1: if (filter.test(get(0))) {
+                clear();
+                return true;
+            } else return false;
+            default:
+                return super.removeIf(filter);
+        }
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        throw new TODO();
     }
 
     @Override
@@ -137,7 +164,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     public boolean add(X element) {
         switch (list.size()) {
             case 0:
-                set = newSet();
+                set = newSet(list.capacity());
                 set.add(element);
                 addedUnique(element);
                 return true;
@@ -155,9 +182,9 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         list.add(element);
     }
 
-    public Set<X> newSet() {
-        return new UnifiedSet<>(2);
-        //return new HashSet(2);
+    private Set<X> newSet(int cap) {
+        //return new UnifiedSet<>(3,0.99f);
+        return new HashSet(cap, 0.99f);
     }
 
     @Override

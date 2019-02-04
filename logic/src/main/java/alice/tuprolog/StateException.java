@@ -1,7 +1,7 @@
 package alice.tuprolog;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Matteo Iuliani
@@ -18,12 +18,13 @@ public class StateException extends State {
     }
 
     @Override
-    void run(Engine e) {
+    State run(Engine e) {
         String errorType = e.currentContext.currentGoal.name();
         if (errorType.equals("throw"))
             prologError(e);
         else
             javaException(e);
+        return null;
     }
 
     private void prologError(Engine e) {
@@ -47,9 +48,9 @@ public class StateException extends State {
                 
                 c.cut();
 
-                
-                
-                List<Var> unifiedVars = e.currentContext.trailingVars.head;
+
+
+                Collection<Var> unifiedVars = e.currentContext.trailingVars.head;
                 e.currentContext.currentGoal.sub(1).unify(unifiedVars,
                         unifiedVars, errorTerm);
 
@@ -118,9 +119,9 @@ public class StateException extends State {
                 
                 c.cut();
 
-                
-                
-                List<Var> unifiedVars = e.currentContext.trailingVars.head;
+
+
+                Collection<Var> unifiedVars = e.currentContext.trailingVars.head;
                 Term handlerTerm = javaUnify(e.currentContext.currentGoal
                         .sub(1), exceptionTerm, unifiedVars);
                 if (handlerTerm == null) {
@@ -221,7 +222,7 @@ public class StateException extends State {
 
     
     
-    private static Term javaUnify(Term arg1, Term exceptionTerm, List<Var> unifiedVars) {
+    private static Term javaUnify(Term arg1, Term exceptionTerm, Collection<Var> unifiedVars) {
         Struct list = (Struct) arg1;
         Iterator<? extends Term> it = list.listIterator();
         while (it.hasNext()) {

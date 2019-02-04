@@ -104,7 +104,7 @@ public interface Compound extends Term, IPair, Subterms {
     static StringBuilder toStringBuilder(Compound c) {
         StringBuilder sb = new StringBuilder(
                 ///* conservative estimate */ c.volume() * 2
-                32
+                64
         );
         try {
             c.appendTo(sb);

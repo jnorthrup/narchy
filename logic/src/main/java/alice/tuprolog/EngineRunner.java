@@ -21,7 +21,7 @@ import static alice.tuprolog.PrologPrimitive.PREDICATE;
  */
 public final class EngineRunner implements java.io.Serializable, Runnable {
 
-    private Prolog prolog;
+    Prolog prolog;
 
     TheoryManager theories;
 
@@ -120,11 +120,6 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
     }
 
 
-    /*Castagna 06/2011*/
-    void exception(Throwable e) {
-        prolog.exception(e);
-    }
-    /**/
 
     public void detach() {
         detached = true;

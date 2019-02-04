@@ -98,7 +98,7 @@ public class StructTestCase {
 	}
 	
 	@Test public void testListFromArgumentArray() {
-		assertEquals(Struct.emptyList(), new Struct(new Term[0]));
+		assertEquals(Struct.emptyList(), new Struct(Term.EmptyTermArray));
 		
 		Term[] args = new Term[2];
 		args[0] = new Struct("a");

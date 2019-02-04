@@ -464,28 +464,6 @@ public class Prolog {
         return engine.isHalted();
     }
 
-    /**
-     * Unifies two terms using current demonstration context.
-     *
-     * @param t0 first term to be unified
-     * @param t1 second term to be unified
-     * @return true if the unification was successful
-     */
-    public static boolean match(Term t0, Term t1) {
-        return t0.unifiable(t1);
-    }
-
-    /**
-     * Unifies two terms using current demonstration context.
-     *
-     * @param t0 first term to be unified
-     * @param t1 second term to be unified
-     * @return true if the unification was successful
-     */
-    public boolean unify(Term t0, Term t1) {
-        return t0.unify(this, t1);
-    }
-
 
     /**
      * Gets a term from a string, using the operators currently

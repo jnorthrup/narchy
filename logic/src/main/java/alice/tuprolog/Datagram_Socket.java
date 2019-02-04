@@ -2,7 +2,7 @@ package alice.tuprolog;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.List;
+import java.util.Collection;
 
 public class Datagram_Socket extends AbstractSocket {
 	private static final long serialVersionUID = 1L;
@@ -45,7 +45,7 @@ public class Datagram_Socket extends AbstractSocket {
 	}
 
 	@Override
-	boolean unify(List<Var> varsUnifiedArg1, List<Var> varsUnifiedArg2, Term t) {
+	boolean unify(Collection<Var> varsUnifiedArg1, Collection<Var> varsUnifiedArg2, Term t) {
 		t = t.term();
         if (t instanceof Var) {
             return t.unify(varsUnifiedArg1, varsUnifiedArg2, this);

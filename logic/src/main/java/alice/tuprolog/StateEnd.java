@@ -46,12 +46,14 @@ public class StateEnd extends State {
     }
 
     @Override
-    void run(Engine e) {
+    State run(Engine e) {
         vars = new FasterList<>();
         goal = (Struct) e.startGoal.copyResult(e.goalVars, vars);
 
         if (this.endState == EngineRunner.TRUE || this.endState == EngineRunner.TRUE_CP)
             relinkVar(e);
+
+        return null;
     }
 
     private static Term solve(Term a1, Object[] a, Term initGoalBag) {
@@ -165,9 +167,9 @@ public class StateEnd extends State {
                     
                     if (tgoal instanceof Struct) {
                         tgoal = ((Struct) tgoal).sub(1);
-                        
 
-                        if (p.unify(tgoal, ((Var) initBag).link())) { 
+
+                        if (tgoal.unify(p, ((Var) initBag).link())) {
                             
                             initGoalBag = tgoal;
                             find = true;
@@ -325,7 +327,7 @@ public class StateEnd extends State {
 
 
                 if (findSamePredicateIndicator) {
-                    if (!(find && p.unify(initGoalBag, initBag))) {
+                    if (!(find && initGoalBag.unify(p, initBag))) {
 
                         e.nextState = c.END_FALSE;
 

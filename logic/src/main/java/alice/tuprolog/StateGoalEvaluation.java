@@ -17,6 +17,8 @@
  */
 package alice.tuprolog;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * @author Alex Benini
  */
@@ -33,52 +35,50 @@ public class StateGoalEvaluation extends State {
      * @see alice.tuprolog.AbstractRunState#doJob()
      */
     @Override
-    void run(Engine e) {
+    State run(Engine e) {
+        State nextState;
         if (e.currentContext.currentGoal.isPrimitive()) {
             
             PrologPrimitive primitive = e.currentContext.currentGoal
                     .getPrimitive();
             try {
-                e.nextState = (primitive
-                        .evalAsPredicate(e.currentContext.currentGoal)) ?
+                nextState = primitive
+                        .evalAsPredicate(e.currentContext.currentGoal) ?
                         c.GOAL_SELECTION
                         : c.BACKTRACK;
             } catch (HaltException he) {
-                e.nextState = c.END_HALT;
+                nextState = c.END_HALT;
             } catch (Throwable t) {
+
+                if (t instanceof InvocationTargetException) {
+                    t = t.getCause();
+                }
 
                 if (t instanceof PrologError) {
                     
                     PrologError error = (PrologError) t;
                     
-                    
                     e.currentContext.currentGoal = new Struct("throw", error.getError());
-                    /*Castagna 06/2011*/
-                    e.manager.exception(error);
-					/**/
+                    e.manager.prolog.exception(error);
+
                 } else if (t instanceof JavaException) {
                     
                     JavaException exception = (JavaException) t;
 
-                    
-                    
                     e.currentContext.currentGoal = new Struct("java_throw", exception.getException());
-					/*Castagna 06/2011*/
-                    e.manager.exception(exception); //exception.getException());
-					/**/
+                    e.manager.prolog.exception(exception); //exception.getException());
 
-                    
-                    System.err.println(((JavaException) t).getException());
+                    //System.err.println(((JavaException) t).getException());
                 }
-
                 
-                e.nextState = c.EXCEPTION;
+                nextState = c.EXCEPTION;
             }
-            
             e.nDemoSteps++;
         } else {
-            e.nextState = c.RULE_SELECTION;
+            nextState = c.RULE_SELECTION;
         }
+
+        return nextState;
     }
 
 }

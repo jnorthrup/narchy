@@ -36,7 +36,7 @@ public class TermQueue {
         synchronized (queue) {
             Iterator<Term> it = queue.iterator();
             while (it.hasNext()) {
-                if (engine.unify(t, it.next())) {
+                if (t.unify(engine, it.next())) {
                     if (remove)
                         it.remove();
                     return true;

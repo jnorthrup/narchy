@@ -183,7 +183,7 @@ public class BinTxt {
 
     /** URIchars must be at least base length */
     public static String toString(long aNumber, int base) {
-        StringBuilder result = new StringBuilder(8);
+        StringBuilder result = new StringBuilder(4);
 
         append(result, aNumber, base);
 
@@ -204,12 +204,15 @@ public class BinTxt {
             v = -v;
         }
 
+        _append(target, v, base);
+    }
+
+    private static void _append(StringBuilder target, long v, int base) {
         int r = (int) (v % base);
 
         if (v - r != 0)
             append(target, (v - r) / base, base);
 
         target.append(URIchars[r]);
-
     }
 }

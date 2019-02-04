@@ -111,7 +111,7 @@ public abstract class Library implements Serializable {
      * is deployed and altered.
      */
     protected boolean unify(Term a0,Term a1) {
-        return engine.unify(a0,a1);
+        return a0.unify(engine, a1);
     }
 
 

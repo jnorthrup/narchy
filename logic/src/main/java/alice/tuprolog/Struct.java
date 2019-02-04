@@ -26,7 +26,6 @@ import java.util.*;
  * and atom term (considered as 0-arity compound).
  */
 public class Struct extends Term {
-    private static final long serialVersionUID = 1L;
 
     /**
      * name of the structure
@@ -36,10 +35,6 @@ public class Struct extends Term {
      * args array
      */
     private Term[] subs;
-    /**
-     * arity
-     */
-    private int subCount;
 
     /**
      * to speedup hash map operation
@@ -58,67 +53,21 @@ public class Struct extends Term {
      * Builds a Struct representing an atom
      */
     public Struct(String f) {
-        this(f, 0);
+        this(Term.EmptyTermArray, f);
+        resolved = true;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
      * Builds a compound, with an array of arguments
      */
     public Struct(String f, Term... argList) {
-        this(f, argList.length);
-        for (int i = 0; i < argList.length; i++)
-            if (argList[i] == null)
-                throw new InvalidTermException("Arguments of a Struct cannot be null");
-            else
-                subs[i] = argList[i];
+        this(argList/*.clone()*/, f);
+//        for (int i = 0; i < argList.length; i++)
+//            if (argList[i] == null)
+//                throw new InvalidTermException("Arguments of a Struct cannot be null");
+//            else
+//                subs[i] = argList[i];
     }
 
 
@@ -126,7 +75,7 @@ public class Struct extends Term {
      * Builds a structure representing an empty list
      */
     private Struct() {
-        this("[]", 0);
+        this(Term.EmptyTermArray, "[]");
         resolved = true;
     }
 
@@ -135,9 +84,7 @@ public class Struct extends Term {
      * Builds a list providing head and tail
      */
     public Struct(Term h, Term t) {
-        this(".", 2);
-        subs[0] = h;
-        subs[1] = t;
+        this(new Term[]{h, t}, ".");
     }
 
     /**
@@ -148,15 +95,14 @@ public class Struct extends Term {
     }
 
     private Struct(Term[] argList, int index) {
-        this(".", 2);
+        this(".", new Term[2]);
         if (index < argList.length) {
             subs[0] = argList[index];
             subs[1] = new Struct(argList, index + 1);
         } else {
-            
             name = "[]";
-            subCount = 0;
-            subs = null;
+            subs = EmptyTermArray;
+            resolved = true;
         }
     }
 
@@ -164,33 +110,25 @@ public class Struct extends Term {
      * Builds a compound, with a linked list of arguments
      */
     Struct(String f, List<Term> al) {
-        name = f;
-        if (!al.isEmpty()) {
-            this.subs = al.toArray(new Term[subCount = al.size()]);
-        } else {
-            this.subs = null;
-        }
-        key = name + '/' + subCount;
-        resolved = false;
+        this(al.toArray(Term.EmptyTermArray), f);
     }
 
-    private Struct(int arity_) {
-        subCount = arity_;
-        subs = new Term[subCount];
+    public Struct(String name_, int subs) {
+        this(subs > 0 ? new Term[subs] : Term.EmptyTermArray, name_);
     }
 
-    private Struct(String name_, int arity) {
+    private Struct(Term[] subs, String name_) {
         if (name_ == null)
             throw new InvalidTermException("The functor of a Struct cannot be null");
+
+        int arity = subs.length;
         if (name_.isEmpty() && arity > 0)
             throw new InvalidTermException("The functor of a non-atom Struct cannot be an empty string");
+
         name = name_;
         key = name + '/' + arity;
-        subCount = arity;
-        if (subCount > 0) {
-            subs = new Term[subCount];
-        }
-        resolved = false;
+        this.subs = subs;
+        resolved = arity == 0;
     }
 
 
@@ -241,7 +179,7 @@ public class Struct extends Term {
      * arity: Gets the number of elements of this structure
      */
     public final int subs() {
-        return subCount;
+        return subs.length;
     }
 
     /**
@@ -282,33 +220,34 @@ public class Struct extends Term {
 
     @Override
     public boolean isAtom() {
-        return subCount == 0;
+        return subs() == 0;
     }
 
     @Override
     public boolean isCompound() {
-        return subCount > 0;
+        return subs() > 0;
     }
 
     @Override
     public boolean isAtomic() {
-        return isAtom() || isEmptyList();
+        return subs() == 0;
     }
 
     @Override
     public boolean isList() {
-        return (subCount == 2 && name.equals(".") && subs[1].isList()) || isEmptyList();
+        return isEmptyList() || (subs() == 2 && name.equals(".") && subs[1].isList());
     }
 
     @Override
     public boolean isGround() {
         if (!isAtomic()) {
             Term[] a = this.subs;
-            for (int i = 0; i < subCount; i++) {
+            for (int i = 0; i < subs(); i++) {
                 if (!a[i].isGround())
                     return false;
             }
         }
+
         return true;
     }
 
@@ -316,8 +255,8 @@ public class Struct extends Term {
      * Check is this struct is clause or directive
      */
     public boolean isClause() {
-        return subCount > 1 && name.equals(":-") && subs[0].term() instanceof Struct;
-        
+        return subs() > 1 && name.equals(":-") && subs[0].term() instanceof Struct;
+
     }
 
     /**
@@ -327,10 +266,10 @@ public class Struct extends Term {
      * @return the argument or null if not found
      */
     public Struct sub(String name) {
-        if (subCount == 0) {
+        if (subs() == 0) {
             return null;
         }
-        for (int i = 0; i < subCount; i++) {
+        for (int i = 0; i < subs(); i++) {
             if (subs[i] instanceof Struct) {
                 Struct s = (Struct) subs[i];
                 if (s.name().equals(name)) {
@@ -338,7 +277,7 @@ public class Struct extends Term {
                 }
             }
         }
-        for (int i = 0; i < subCount; i++) {
+        for (int i = 0; i < subs(); i++) {
             if (subs[i] instanceof Struct) {
                 Struct s = (Struct) subs[i];
                 Struct sol = s.sub(name);
@@ -351,8 +290,6 @@ public class Struct extends Term {
     }
 
 
-    
-
     /**
      * Test if a term is greater than other
      */
@@ -363,17 +300,17 @@ public class Struct extends Term {
             return true;
         } else {
             Struct ts = (Struct) t;
-            int tarity = ts.subCount;
-            if (subCount > tarity) {
+            int tarity = ts.subs();
+            if (subs() > tarity) {
                 return true;
-            } else if (subCount == tarity) {
+            } else if (subs() == tarity) {
                 int nc = name.compareTo(ts.name);
                 if (nc > 0) {
                     return true;
                 } else if (nc == 0) {
                     Term[] bb = ts.subs;
                     if (this.subs != bb) {
-                        for (int c = 0; c < subCount; c++) {
+                        for (int c = 0; c < subs(); c++) {
                             Term a = this.subs[c];
                             Term b = bb[c];
                             if (a == b) continue;
@@ -397,16 +334,16 @@ public class Struct extends Term {
             return true;
         } else {
             Struct ts = (Struct) t;
-            int tarity = ts.subCount;
-            if (subCount > tarity) {
+            int tarity = ts.subs();
+            if (subs() > tarity) {
                 return true;
-            } else if (subCount == tarity) {
-                
+            } else if (subs() == tarity) {
+
                 if (name.compareTo(ts.name) > 0) {
                     return true;
                 } else if (name.compareTo(ts.name) == 0) {
-                    for (int c = 0; c < subCount; c++) {
-                        
+                    for (int c = 0; c < subs(); c++) {
+
                         if (subs[c].isGreaterRelink(ts.subs[c], vorder)) {
                             return true;
                         } else if (!subs[c].isEqual(ts.subs[c])) {
@@ -424,20 +361,23 @@ public class Struct extends Term {
      */
     @Override
     public boolean isEqual(Term t) {
+
+        if (t == this) return true;
+
         t = t.term();
 
         if (t == this) return true;
 
         if (t instanceof Struct) {
             Struct ts = (Struct) t;
-            if (subCount == ts.subCount && name.equals(ts.name)) { 
+            if (subs() == ts.subs() && name.equals(ts.name)) {
                 if (this.subs != ts.subs) {
-                    for (int c = 0; c < subCount; c++) {
+                    for (int c = 0; c < subs(); c++) {
                         if (!subs[c].equals(ts.subs[c])) {
                             return false;
                         }
                     }
-                    
+
                 }
                 return true;
             } else {
@@ -447,8 +387,6 @@ public class Struct extends Term {
             return false;
         }
     }
-
-    
 
 
     public boolean isConstant() {
@@ -474,21 +412,21 @@ public class Struct extends Term {
         if (!(vMap instanceof IdentityHashMap) && isConstant())
             return this;
 
-        final int arity = this.subCount;
-        Term[] xx=this.subs, yy = null;
+        final int arity = this.subs();
+        Term[] xx = this.subs, yy = null;
 
         for (int c = 0; c < arity; c++) {
             Term x = xx[c];
             Term y = x.copy(vMap, idExecCtx);
-            if (x!=y) {
+            if (x != y) {
                 if (yy == null)
-                     yy = xx.clone();
+                    yy = xx.clone();
             }
 
-            if (yy!=null)
+            if (yy != null)
                 yy[c] = y;
         }
-        if (yy==null)
+        if (yy == null)
             return this; //unchanged
 
         Struct t = new Struct(name, yy);
@@ -512,13 +450,13 @@ public class Struct extends Term {
         if (!(vMap instanceof IdentityHashMap) && isConstant())
             return this;
 
-        Struct t = new Struct(name, subCount);
+        Struct t = new Struct(name, new Term[subs()]);
         t.resolved = false;
         t.key = key;
         t.primitive = null;
         Term[] thatArg = t.subs;
         Term[] thisArg = this.subs;
-        final int arity = this.subCount;
+        final int arity = this.subs();
         if (substMap == null)
             substMap = new IdentityHashMap<>();
         for (int c = 0; c < arity; c++) {
@@ -552,7 +490,7 @@ public class Struct extends Term {
     private boolean resolvable() {
         if (resolved)
             return false;
-        if (subCount == 0 || isGround()) {
+        if (subs() == 0 || isGround()) {
             resolved = true;
             return false;
         }
@@ -567,11 +505,13 @@ public class Struct extends Term {
      * @param count start timestamp for variables of this term
      * @return next timestamp for other terms
      */
-    private void resolveTerm(Map<String,Var> vl, final long count) {
+    private void resolveTerm(Map<String, Var> vl, final long count) {
 
+        if (resolved)
+            return;
 
         Term[] arg = this.subs;
-        int arity = this.subCount;
+        int arity = this.subs();
         for (int c = 0; c < arity; c++) {
             Term term = arg[c];
             if (term == null)
@@ -586,7 +526,7 @@ public class Struct extends Term {
 
                     Var found = null;
                     String tName = t.name();
-                    if (vl!=null && !vl.isEmpty()) {
+                    if (vl != null && !vl.isEmpty()) {
                         found = vl.get(tName);
                     }
                     if (found != null) {
@@ -606,14 +546,13 @@ public class Struct extends Term {
         resolved = true;
     }
 
-    
 
     /**
      * Is this structure an empty list?
      */
     @Override
     public boolean isEmptyList() {
-        return subCount == 0 && name.equals("[]");
+        return subs() == 0 && name.equals("[]");
     }
 
     /**
@@ -687,7 +626,6 @@ public class Struct extends Term {
         return new StructIterator(this);
     }
 
-    
 
     /**
      * Gets a list Struct representation, with the functor as first element.
@@ -695,7 +633,7 @@ public class Struct extends Term {
     Struct toList() {
         Struct t = emptyList();
         Term[] arg = this.subs;
-        for (int c = subCount - 1; c >= 0; c--) {
+        for (int c = subs() - 1; c >= 0; c--) {
             t = new Struct(arg[c].term(), t);
         }
         return new Struct(new Struct(name), t);
@@ -730,8 +668,7 @@ public class Struct extends Term {
      */
     public void append(Term t) {
         if (isEmptyList()) {
-            subCount = 2;
-            subs = new Term[] { t, emptyListMutable() };
+            subs = new Term[]{t, emptyListMutable()};
             name = ".";
             key = "./2"; /* Added by Paolo Contessi */
         } else if (subs[1].isList()) {
@@ -742,59 +679,45 @@ public class Struct extends Term {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-    
-
     /**
      * Try to unify two terms
      *
-     * @param t   the term to unify
+     * @param y   the term to unify
      * @param vl1 list of variables unified
      * @param vl2 list of variables unified
      * @return true if the term is unifiable with this one
      */
     @Override
-    boolean unify(List<Var> vl1, List<Var> vl2, Term t) {
-        if (this == t) return true;
+    boolean unify(Collection<Var> vl1, Collection<Var> vl2, Term y) {
 
-        t = t.term(); 
+        if (this == y) return true;
 
-        if (this == t) return true;
+        y = y.term();
 
-        if (t instanceof Struct) {
-            Struct ts = (Struct) t;
-            final int arity = this.subCount;
-            if (arity == ts.subCount && name.equals(ts.name)) {
-                Term[] arg = this.subs;
-                Term[] tsarg = ts.subs;
+        if (this == y) return true;
+
+        if (y instanceof Struct) {
+            Struct yy = (Struct) y;
+            final int arity = this.subs();
+            if (arity == yy.subs() && name.equals(yy.name)) {
+                Term[] xarg = this.subs;
+                Term[] yarg = yy.subs;
                 for (int c = 0; c < arity; c++) {
-                    if (c > 0 && arg[c]==arg[c-1] && tsarg[c]==tsarg[c-1])
+                    if (c > 0 && xarg[c] == xarg[c - 1] && yarg[c] == yarg[c - 1])
                         continue; //repeat term, skip
 
-                    if (!arg[c].unify(vl1, vl2, tsarg[c]))
+                    if (!xarg[c].unify(vl1, vl2, yarg[c]))
                         return false;
 
                 }
                 return true;
             }
-        } else if (t instanceof Var) {
-            return t.unify(vl2, vl1, this);
+        } else if (y instanceof Var) {
+            return y.unify(vl2, vl1, this);
         }
         return false;
     }
 
-
-    
 
     /**
      * Set primitive behaviour associated at structure
@@ -818,7 +741,6 @@ public class Struct extends Term {
         return primitive != null;
     }
 
-    
 
     /**
      * Gets the string representation of this structure
@@ -830,21 +752,21 @@ public class Struct extends Term {
 
         switch (name) {
             case "[]":
-                if (subCount == 0) return "[]"; 
+                if (subs() == 0) return "[]";
                 break;
             case ".":
-                if (subCount == 2) return '[' + toString0() + ']';
+                if (subs() == 2) return '[' + toString0() + ']';
                 break;
             case "{}":
                 return '{' + toString0_bracket() + '}';
         }
         String s = (Parser.isAtom(name) ? name : '\'' + name + '\'');
-        if (subCount > 0) {
+        if (subs() > 0) {
             s = s + '(';
-            for (int c = 1; c < subCount; c++) {
+            for (int c = 1; c < subs(); c++) {
                 s = s + (!(subs[c - 1] instanceof Var) ? subs[c - 1].toString() : ((Var) subs[c - 1]).toStringFlattened()) + ',';
             }
-            s = s + (!(subs[subCount - 1] instanceof Var) ? subs[subCount - 1].toString() : ((Var) subs[subCount - 1]).toStringFlattened()) + ')';
+            s = s + (!(subs[subs() - 1] instanceof Var) ? subs[subs() - 1].toString() : ((Var) subs[subs() - 1]).toStringFlattened()) + ')';
         }
         return s;
     }
@@ -866,12 +788,12 @@ public class Struct extends Term {
     }
 
     private String toString0_bracket() {
-        if (subCount == 0) {
+        if (subs() == 0) {
             return "";
-        } else if (subCount == 1 && !((subs[0] instanceof Struct) && ((Struct) subs[0]).name().equals(","))) {
+        } else if (subs() == 1 && !((subs[0] instanceof Struct) && ((Struct) subs[0]).name().equals(","))) {
             return subs[0].term().toString();
         } else {
-            
+
             Term head = ((Struct) subs[0]).subResolve(0);
             Term tail = ((Struct) subs[0]).subResolve(1);
             StringBuilder buf = new StringBuilder(head.toString());
@@ -882,7 +804,7 @@ public class Struct extends Term {
             }
             buf.append(',').append(tail);
             return buf.toString();
-            
+
         }
     }
 
@@ -903,14 +825,14 @@ public class Struct extends Term {
     @Override
     String toStringAsArg(OperatorManager op, int prio, boolean x) {
 
-        if (name.equals(".") && subCount == 2) {
+        if (name.equals(".") && subs() == 2) {
             return subs[0].isEmptyList() ? "[]" : '[' + toStringAsList(op) + ']';
         } else if (name.equals("{}")) {
             return ('{' + toString0_bracket() + '}');
         }
 
         int p = 0;
-        if (subCount == 2) {
+        if (subs() == 2) {
             if ((p = op.opPrio(name, "xfx")) >= OperatorManager.OP_LOW) {
                 return (
                         ((x ? p >= prio : p > prio) ? "(" : "") +
@@ -934,12 +856,12 @@ public class Struct extends Term {
                         subs[1].toStringAsArgY(op, p) +
                         ((x ? p >= prio : p > prio) ? ")" : "") : ((x ? p >= prio : p > prio) ? "(" : "") +
                         subs[0].toStringAsArgX(op, p) +
-                        
+
                         ',' +
                         subs[1].toStringAsArgY(op, p) +
                         ((x ? p >= prio : p > prio) ? ")" : "");
             }
-        } else if (subCount == 1) {
+        } else if (subs() == 1) {
             if ((p = op.opPrio(name, "fx")) >= OperatorManager.OP_LOW) {
                 return (
                         ((x ? p >= prio : p > prio) ? "(" : "") +
@@ -970,21 +892,21 @@ public class Struct extends Term {
             }
         }
         String v = (Parser.isAtom(name) ? name : '\'' + name + '\'');
-        if (subCount == 0) {
+        if (subs() == 0) {
             return v;
         }
         v = v + '(';
-        for (p = 1; p < subCount; p++) {
+        for (p = 1; p < subs(); p++) {
             v = v + subs[p - 1].toStringAsArgY(op, 0) + ',';
         }
-        v = v + subs[subCount - 1].toStringAsArgY(op, 0);
+        v = v + subs[subs() - 1].toStringAsArgY(op, 0);
         v = v + ')';
         return v;
     }
 
     @Override
     public Term iteratedGoalTerm() {
-        return ((subCount == 2) && name.equals("^")) ?
+        return ((subs() == 2) && name.equals("^")) ?
                 subResolve(1).iteratedGoalTerm() : super.iteratedGoalTerm();
     }
 
@@ -1011,9 +933,8 @@ public class Struct extends Term {
         public Term next() {
             if (list.isEmptyList())
                 throw new NoSuchElementException();
-            
-            
-            
+
+
             Term head = list.subResolve(0);
             list = (Struct) list.subResolve(1);
             return head;

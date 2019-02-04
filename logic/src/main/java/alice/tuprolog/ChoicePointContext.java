@@ -19,7 +19,7 @@ package alice.tuprolog;
 
 import alice.util.OneWayList;
 
-import java.util.List;
+import java.util.Collection;
 
 
 /**
@@ -31,7 +31,7 @@ public class ChoicePointContext {
     ExecutionContext executionContext;
     ChoicePointContext prevChoicePointContext;
     SubGoal indexSubGoal;
-    OneWayList<List<Var>> varsToDeunify;
+    OneWayList<Collection<Var>> varsToDeunify;
     
     
     public String toString(){

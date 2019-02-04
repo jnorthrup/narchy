@@ -478,7 +478,7 @@ public final class BuiltIn extends Library {
         Struct list = (Struct) arg1;
         Iterable<ClauseInfo> l = theoryManager.find(arg0);
         for (ClauseInfo b : l) {
-            if (Prolog.match(arg0, b.head)) {
+            if (arg0.unifiable(b.head)) {
                 b.clause.resolveTerm();
                 if (list == Struct.EmptyList)
                     list = Struct.emptyListMutable();

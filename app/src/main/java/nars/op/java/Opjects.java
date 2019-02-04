@@ -10,7 +10,6 @@ import jcog.data.map.CustomConcurrentHashMap;
 import jcog.math.FloatRange;
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
-import jcog.memoize.SoftMemoize;
 import jcog.util.ArrayUtils;
 import nars.*;
 import nars.concept.Concept;
@@ -180,7 +179,9 @@ public class Opjects extends DefaultTermizer {
 
             m.setAccessible(true);
             try {
-                MethodHandle mh = MethodHandles.lookup().unreflect(m);
+                MethodHandle mh = MethodHandles.lookup()
+                        .unreflect(m)
+                        .asSpreader(Object[].class, m.getParameterCount());
                 return mh;
 
             } catch (IllegalAccessException e) {
@@ -512,13 +513,15 @@ public class Opjects extends DefaultTermizer {
                     flag.set(true);
 
                     try {
-                        mh.invokeWithArguments(instanceAndArgs);
-                        evoked(methodName, instance, instanceAndArgs);
+                        //mh.invokeWithArguments(instanceAndArgs);
+                        mh.invokeExact(instanceAndArgs);
                     } catch (Throwable throwable) {
                         logger.error("{} execution {}", term, throwable);
                     } finally {
                         flag.set(false);
                     }
+
+                    evoked(methodName, instance, instanceAndArgs);
 
                 };
 

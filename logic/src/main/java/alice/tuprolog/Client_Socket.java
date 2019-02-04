@@ -2,7 +2,7 @@ package alice.tuprolog;
 
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.List;
+import java.util.Collection;
 
 
 public class Client_Socket extends AbstractSocket {
@@ -30,7 +30,7 @@ public class Client_Socket extends AbstractSocket {
 	
 	
 	@Override
-	boolean unify(List<Var> varsUnifiedArg1, List<Var> varsUnifiedArg2, Term t) {
+	boolean unify(Collection<Var> varsUnifiedArg1, Collection<Var> varsUnifiedArg2, Term t) {
 		t = t.term();
         if (t instanceof Var) {
             return t.unify(varsUnifiedArg1, varsUnifiedArg2, this);

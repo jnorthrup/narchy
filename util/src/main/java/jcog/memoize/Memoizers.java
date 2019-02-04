@@ -80,9 +80,9 @@ public class Memoizers {
 
     /** provides default memoizer implementation */
     private <X, Y> Memoize<X,Y> memoizer(Function<X, Y> computation, int capacity) {
-        //return new HijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES);
+        return new HijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES);
 
-        return new CollisionMemoize<>(capacity, computation);
+        //return new CollisionMemoize<>(capacity, computation);
     }
 
     public <X extends ByteKey.ByteKeyExternal, Y> Function<X, Y> memoizeByte(String id, int capacity, Function<X, Y> computation) {

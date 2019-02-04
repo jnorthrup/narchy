@@ -66,9 +66,9 @@ public class PrologPrimitive {
         try {
             m.setAccessible(true);
             if (Modifier.isStatic(m.getModifiers()))
-                mh = LOOKUP.unreflect(m);
+                mh = LOOKUP.unreflect(m).asSpreader(Object[].class, m.getParameterCount());
             else
-                mh = LOOKUP.unreflect(m).bindTo(source);
+                mh = LOOKUP.unreflect(m).bindTo(source).asSpreader(Object[].class, m.getParameterCount());
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +91,8 @@ public class PrologPrimitive {
         }
         
         try {
-            mh.invokeWithArguments(primitive_args);
+            //mh.invokeWithArguments(primitive_args);
+            mh.invokeExact(primitive_args);
         } catch (Throwable throwable) {
             throw throwable.getCause();
         }
@@ -107,15 +108,12 @@ public class PrologPrimitive {
         for (int i=0; i<primitive_args.length; i++) {
             primitive_args[i] = g.sub(i);
         }
-        try {
+
         	
-            return (boolean)mh.invokeWithArguments(primitive_args);
-            
-        } catch (InvocationTargetException e) {
-            
-            throw 
-                    (e.getCause());
-        }
+            //return (boolean)mh.invokeWithArguments(primitive_args);
+            return (boolean)mh.invokeExact(primitive_args);
+
+
     }
 
 
@@ -130,8 +128,8 @@ public class PrologPrimitive {
                 primitive_args[i] = g.subResolve(i);
             }
 
-            return (Term)mh.invokeWithArguments(primitive_args);
-            
+            //return (Term)mh.invokeWithArguments(primitive_args);
+            return (Term)mh.invokeExact(primitive_args);
 
 
 

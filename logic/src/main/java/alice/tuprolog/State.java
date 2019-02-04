@@ -17,6 +17,8 @@
  */
 package alice.tuprolog;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * @author Alex Benini
  *
@@ -26,8 +28,9 @@ abstract class State {
     
     protected EngineRunner c;
     protected String stateName;
-    
-    abstract void run(Engine e);
+
+    /** returning null means remain in the same state */
+    @Nullable abstract State run(Engine e);
     
     public String toString() {
         return stateName;

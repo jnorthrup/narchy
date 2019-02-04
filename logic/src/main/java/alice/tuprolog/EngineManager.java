@@ -51,7 +51,7 @@ public class EngineManager implements java.io.Serializable {
         EngineRunner er = new EngineRunner(id);
         er.initialize(vm);
 
-        if (!vm.unify(threadID, new NumberTerm.Int(id)))
+        if (!threadID.unify(vm, new NumberTerm.Int(id)))
             return false;
 
         er.setGoal(goal);

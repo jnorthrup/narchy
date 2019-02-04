@@ -15,7 +15,8 @@ import java.util.ListIterator;
 public final class ClauseStore {
 
 
-    @Nullable private Deque<ClauseInfo> clauses = null;
+    @Nullable
+    private Deque<ClauseInfo> clauses = null;
     private final Term goal;
     private final List<Var> vars;
 
@@ -24,7 +25,8 @@ public final class ClauseStore {
         this.vars = vars;
     }
 
-    @Nullable public static ClauseStore match(Term goal, Deque<ClauseInfo> familyClauses, @Nullable List<Var> vars) {
+    @Nullable
+    public static ClauseStore match(Term goal, Deque<ClauseInfo> familyClauses, @Nullable List<Var> vars) {
         if (!familyClauses.isEmpty()) {
             ClauseStore clauseStore = new ClauseStore(goal, vars);
             if (clauseStore.matchFirst(familyClauses))
@@ -44,7 +46,7 @@ public final class ClauseStore {
             return null;
 
         int v = vars.size();
-        if (save && v==0) save = false;
+        if (save && v == 0) save = false;
 
         ClauseInfo clause = null;
         while (!clauses.isEmpty()) {
@@ -60,7 +62,7 @@ public final class ClauseStore {
 
             boolean u = goal.unifiable(clause.head);
 
-            if (saveUnifications!=null)
+            if (saveUnifications != null)
                 reunify(vars, saveUnifications, v);
 
             if (!u) {
@@ -83,7 +85,7 @@ public final class ClauseStore {
 
 
     public boolean haveAlternatives() {
-        return clauses!=null && !clauses.isEmpty();
+        return clauses != null && !clauses.isEmpty();
     }
 
 
@@ -97,7 +99,7 @@ public final class ClauseStore {
     protected boolean unifiesMore() {
 
         //boolean found = unifiable(goal);
-        boolean found = fetchNext(false, true)!=null;
+        boolean found = fetchNext(false, true) != null;
 
 
         return found;
@@ -139,7 +141,7 @@ public final class ClauseStore {
     private static void reunify(List<Var> varsToReunify, List<Term> saveUnifications, int size) {
 
         if (varsToReunify instanceof FasterList && saveUnifications instanceof FasterList) {
-            for (int i = size-1, j = i; i >= 0;) {
+            for (int i = size - 1, j = i; i >= 0; ) {
                 varsToReunify.get(i--).setLink(saveUnifications.get(j--));
             }
         } else {
@@ -178,14 +180,14 @@ public final class ClauseStore {
         for (ClauseInfo ci : matching) {
             if (clauses == null) {
                 deunify(vars, null);
-                 if (goal.unifiable(ci.head)) {
+                if (goal.unifiable(ci.head)) {
 
-                     clauses = new ArrayDeque<>(/* other.size() - 1 - i */);
-                     //start the unify queue beginning here
-                     //TODO only need to store an iterator to continue
-                 }
+                    clauses = new ArrayDeque<>(/* other.size() - 1 - i */);
+                    //start the unify queue beginning here
+                    //TODO only need to store an iterator to continue
+                }
             }
-            if (clauses!=null) {
+            if (clauses != null) {
                 clauses.add(ci); //queue for future test
             }
         }
@@ -212,24 +214,6 @@ public final class ClauseStore {
     /*
      * Methods for spyListeners
      */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

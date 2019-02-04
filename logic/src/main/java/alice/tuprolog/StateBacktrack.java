@@ -19,7 +19,7 @@ package alice.tuprolog;
 
 import alice.util.OneWayList;
 
-import java.util.List;
+import java.util.Collection;
 
 
 /**
@@ -40,34 +40,28 @@ public class StateBacktrack extends State {
      * @see alice.tuprolog.AbstractRunState#doJob()
      */
     @Override
-    void run(Engine e) {
+    State run(Engine e) {
         ChoicePointContext curChoice = e.choicePointSelector.fetch();
         
-        if (curChoice == null) {
-            e.nextState = c.END_FALSE;
-            
-            
-            
-            
-            return;
-        }
+        if (curChoice == null)
+            return c.END_FALSE;
+
         e.currentAlternative = curChoice;
         
         
         e.currentContext = curChoice.executionContext;
         Term curGoal = e.currentContext.goalsToEval.backTo(curChoice.indexSubGoal).term();
-        if (!(curGoal instanceof Struct)) {
-            e.nextState = c.END_FALSE;
-            return;
-        }
+        if (!(curGoal instanceof Struct))
+            return c.END_FALSE;
+
         e.currentContext.currentGoal = (Struct) curGoal;
         
         
         
         ExecutionContext curCtx = e.currentContext;
-        OneWayList<List<Var>> pointer = curCtx.trailingVars;
-        OneWayList<List<Var>> stopDeunify = curChoice.varsToDeunify;
-        List<Var> varsToDeunify = stopDeunify.head;
+        OneWayList<Collection<Var>> pointer = curCtx.trailingVars;
+        OneWayList<Collection<Var>> stopDeunify = curChoice.varsToDeunify;
+        Collection<Var> varsToDeunify = stopDeunify.head;
         Var.free(varsToDeunify);
         varsToDeunify.clear();
         
@@ -86,16 +80,15 @@ public class StateBacktrack extends State {
             Term prevGoal = curGoal;
             curCtx = curCtx.fatherCtx;
             curGoal = curCtx.goalsToEval.backTo(fatherIndex).term();
-            if (!(curGoal instanceof Struct) || prevGoal == curGoal) {
-                e.nextState = c.END_FALSE;
-                return;
-            }
+            if (!(curGoal instanceof Struct) || prevGoal == curGoal)
+                return c.END_FALSE;
+
             curCtx.currentGoal = (Struct)curGoal;
             pointer = curCtx.trailingVars;
         } while (true);
         
         
-        e.nextState = c.GOAL_EVALUATION;
+        return c.GOAL_EVALUATION;
     }
     
 }

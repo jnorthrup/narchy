@@ -2,7 +2,6 @@ package nars.derive.op;
 
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
-import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import nars.Op;
 import nars.Param;
@@ -533,12 +532,12 @@ public class Occurrify extends TimeGraph {
                     if (xternal.get(i))
                         solutions.list.set(i, null);
 
-                ((FasterList) solutions.list).removeNulls(); //HACK doesnt remove from the ArrayHashSet's Set
+                solutions.list.removeNulls(); //HACK doesnt remove from the ArrayHashSet's Set
                 ss = solutions.list.size();
             }
             if (ss > 1) {
 
-                int occurrenceSolved = ((FasterList) solutions.list).count(t -> t instanceof Absolute);
+                int occurrenceSolved = solutions.list.count(t -> t instanceof Absolute);
                 if (occurrenceSolved > 0 && occurrenceSolved < ss) {
                     if (solutions.removeIf(t -> t instanceof Relative))
                         ss = solutions.size();

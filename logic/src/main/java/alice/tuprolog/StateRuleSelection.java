@@ -20,6 +20,7 @@ package alice.tuprolog;
 import alice.util.OneWayList;
 import jcog.data.list.FasterList;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public class StateRuleSelection extends State {
      * @see alice.tuprolog.AbstractRunState#doJob()
      */
     @Override
-    void run(Engine e) {
+    State run(Engine e) {
         /*----------------------------------------------------
          * Individuo compatibleGoals e
          * stabilisco se derivo da Backtracking.
@@ -56,8 +57,7 @@ public class StateRuleSelection extends State {
             Struct goal = e.currentContext.currentGoal;
             clauseStore = ClauseStore.match(goal, c.theories.find(goal), varsList);
             if (clauseStore == null) { //g.isEmpty() || (clauseStore = ClauseStore.build(goal, g, varsList))==null) {
-                e.nextState = c.BACKTRACK;
-                return;
+                return c.BACKTRACK;
             }
 
             fromBacktracking = false;
@@ -112,7 +112,7 @@ public class StateRuleSelection extends State {
 
         ExecutionContext curCtx = e.currentContext;
         Struct curGoal = curCtx.currentGoal;
-        List<Var> unifiedVars = e.currentContext.trailingVars.head;
+        Collection<Var> unifiedVars = e.currentContext.trailingVars.head;
         curGoal.unify(unifiedVars, unifiedVars, ec.headClause);
 
 
@@ -132,7 +132,7 @@ public class StateRuleSelection extends State {
         ec.tailCallOptimize(e);
         ec.saveParentState();
         e.currentContext = ec;
-        e.nextState = c.GOAL_SELECTION;
+        return c.GOAL_SELECTION;
     }
 
 }

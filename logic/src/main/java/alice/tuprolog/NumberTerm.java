@@ -18,7 +18,7 @@
 package alice.tuprolog;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -131,6 +131,14 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
         return this;
     }
 
+    /**
+     * Tries to unify a term with the provided term argument.
+     * This service is to be used in demonstration context.
+     */
+    @Override
+    final boolean unify(Collection<Var> vl1, Collection<Var> vl2, Term t) {
+        return t instanceof Var ? t.unify(vl2, vl1, this) : isEqual(t);
+    }
     
 //    void restoreVariables() {}
 
@@ -234,21 +242,6 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
             return t instanceof NumberTerm && value == ((NumberTerm) t).longValue();
         }
 
-        /**
-         * Tries to unify a term with the provided term argument.
-         * This service is to be used in demonstration context.
-         */
-        @Override
-        boolean unify(List<Var> vl1, List<Var> vl2, Term t) {
-            t = t.term();
-            if (t instanceof Var) {
-                return t.unify(vl1, vl2, this);
-            } else if (t instanceof NumberTerm && ((NumberTerm) t).isInteger()) {
-                return value == ((NumberTerm) t).longValue();
-            } else {
-                return false;
-            }
-        }
 
         public String toString() {
             return java.lang.Long.toString(value);
@@ -366,14 +359,6 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
                 return false;
         }
 
-        /**
-         * Tries to unify a term with the provided term argument.
-         * This service is to be used in demonstration context.
-         */
-        @Override
-        boolean unify(List<Var> vl1, List<Var> vl2, Term t) {
-            return (t instanceof Var) ? t.unify(vl2, vl1, this) : isEqual(t);
-        }
 
         public String toString() {
             return Integer.toString(value);
@@ -387,10 +372,6 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
             return Integer.compare(value, o.intValue());
         }
 
-        @Override
-        public final boolean equals(Object t) {
-            return t instanceof Term && isEqual((Term)t);
-        }
     }
 
     /**
@@ -491,14 +472,6 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
             return t instanceof NumberTerm && value == ((NumberTerm) t).floatValue();
         }
 
-        /**
-         * Tries to unify a term with the provided term argument.
-         * This service is to be used in demonstration context.
-         */
-        @Override
-        boolean unify(List<Var> vl1, List<Var> vl2, Term t) {
-            return t instanceof Var ? t.unify(vl2, vl1, this) : isEqual(t);
-        }
 
         public String toString() {
             return java.lang.Float.toString(value);
@@ -520,7 +493,6 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
      *
      */
     public static class Double extends NumberTerm {
-        private static final long serialVersionUID = 1L;
         private final double value;
 
         public Double(double v) {
@@ -615,21 +587,6 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
             }
         }
 
-        /**
-         * Tries to unify a term with the provided term argument.
-         * This service is to be used in demonstration context.
-         */
-        @Override
-        boolean unify(List<Var> vl1, List<Var> vl2, Term t) {
-            t = t.term();
-            if (t instanceof Var) {
-                return t.unify(vl2, vl1, this);
-            } else if (t instanceof NumberTerm && ((NumberTerm) t).isReal()) {
-                return value == ((NumberTerm) t).doubleValue();
-            } else {
-                return false;
-            }
-        }
 
         public String toString() {
             return java.lang.Double.toString(value);
