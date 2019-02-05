@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Deque;
 
 
-public interface ClauseIndex extends  /*Map<String,FamilyClausesList>,*/ Iterable<ClauseInfo> {
+public interface ClauseIndex extends Iterable<ClauseInfo> {
 
     FamilyClausesList clauses(String key);
     FamilyClausesList remove(String key);

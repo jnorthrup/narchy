@@ -84,6 +84,6 @@ public class FreqVectorSensor extends VectorSensor {
 
     @Override
     public Iterator<Signal> iterator() {
-        return ArrayIterator.get(component);
+        return ArrayIterator.iterator(component);
     }
 }

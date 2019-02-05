@@ -191,7 +191,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
 
     public Iterator<Y> valueIterator() {
-        return ArrayIterator.get(valueArray());
+        return ArrayIterator.iterator(valueArray());
     }
 
 

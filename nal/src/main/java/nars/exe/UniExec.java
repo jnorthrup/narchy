@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  */
 public class UniExec extends AbstractExec {
 
-    static final int inputQueueCapacityPerThread = 1024;
+    static final int inputQueueCapacityPerThread = 128;
 
     final MetalConcurrentQueue in;
 

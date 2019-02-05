@@ -14,6 +14,7 @@ import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -93,16 +94,10 @@ public class DynTaskify extends DynEvi {
             });
 
 
-//                //trim
-//                if (a.time.start!=ETERNAL && Longerval.intersects(s, e, a.time.start, a.time.end)) {
-//                    s = Math.max(a.time.start, s);
-//                    if (a.time.end != ETERNAL)
-//                        e = Math.min(a.time.end, e);
-//                }
             if (model == ConjIntersection) {
                 //calculate the minimum range (ie. intersection of the ranges)
                 s = earliest;
-                long range = (d.minValue(t -> t.isEternal() ? 1 : t.range()) - 1);
+                long range = (d.minValue(t -> t.isEternal() ? 0 : t.range()-1));
 
                 long ss = a.time.start;
                 if (ss != ETERNAL && ss != XTERNAL) {
@@ -118,10 +113,13 @@ public class DynTaskify extends DynEvi {
 
             } else {
 
-                //TODO calculate ideal start, end range and projection for each task
-                //according to requested range (if not ETERNAL) and the loss in confidence caused by having to project the components
-                s = earliest;
-                e = latest;
+                long[] u = Tense.merge(d);
+                if (u == null)
+                    return null;
+
+                s = u[0];
+                e = u[1];
+
             }
 
         }

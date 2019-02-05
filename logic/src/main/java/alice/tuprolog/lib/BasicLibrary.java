@@ -978,14 +978,10 @@ public class BasicLibrary extends PrologLib {
                 + "'@>='(X,Y):- not term_less_than(X,Y).\n"
                 + "'@=<'(X,Y):- not term_greater_than(X,Y).\n"
 
-                + "'#='(X,Y):- number(X),number(Y),term_equality(X,Y).\n"
-                + "'#\\='(X,Y):- number(X),number(Y),not term_equality(X,Y).\n"
-
-                +
                 //
                 // meta-predicates
                 //
-                "'=..'(T, [T]) :- atomic(T), !. \n                                                          "
+                +"'=..'(T, [T]) :- atomic(T), !. \n                                                          "
                 + "'=..'(T,L)  :- compound(T),!, '$tolist'(T,L). \n                                                          "
                 + "'=..'(T,L)  :- nonvar(L), catch('$fromlist'(T,L),Error,false). \n                                                          "
                 

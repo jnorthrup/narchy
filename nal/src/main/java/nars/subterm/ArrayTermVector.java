@@ -134,7 +134,7 @@ public class ArrayTermVector extends TermVector {
 
     @Override
     public final Iterator<Term> iterator() {
-        return ArrayIterator.get(terms);
+        return ArrayIterator.iterator(terms);
     }
 
     @Override

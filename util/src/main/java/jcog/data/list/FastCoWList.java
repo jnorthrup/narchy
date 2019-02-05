@@ -92,7 +92,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
     //@Override
     public Iterator<X> iterator() {
-        return ArrayIterator.get(array());
+        return ArrayIterator.iterator(array());
     }
 
 

@@ -1283,6 +1283,19 @@ public enum Util {
             y = Math.min(y, value.applyAsLong(x));
         return y;
     }
+    public static <X> long max(ToLongFunction<X> value, X... xx) {
+        long y = Long.MIN_VALUE;
+        for (X x : xx)
+            y = Math.max(y, value.applyAsLong(x));
+        return y;
+    }
+
+    public static <X> long max(ToLongFunction<X> value, Iterable<X> xx) {
+        long y = Long.MIN_VALUE;
+        for (X x : xx)
+            y = Math.max(y, value.applyAsLong(x));
+        return y;
+    }
 
     public static <X> long min(ToLongFunction<X> value, Iterable<X> xx) {
         long y = Long.MAX_VALUE;

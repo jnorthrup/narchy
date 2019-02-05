@@ -124,7 +124,7 @@ public class BiSubterm extends TermVector {
 
     @Override
     public Iterator<Term> iterator() {
-        return ArrayIterator.get(x, y);
+        return ArrayIterator.iterator(x, y);
     }
 
     @Override

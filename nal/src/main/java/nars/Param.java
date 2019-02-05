@@ -189,7 +189,7 @@ public abstract class Param {
     public static final float REMEMBER_REPEAT_THRESH_DURS = 2f;
 
     /** restrains revision's ability to stretch evidence across time:
-     * as a factor of the sum of the ranges of the tasks involved in the revision */
+     * as a factor of the maximum of the ranges of the tasks involved in the revision */
     public static final float TASK_REVISION_STRETCH_LIMIT_PROPORTION = 1;
 
     /**
@@ -275,7 +275,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 2f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)

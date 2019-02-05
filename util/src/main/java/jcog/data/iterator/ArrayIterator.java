@@ -52,7 +52,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         return new ArrayIterator(array);
     }
 
-    public static <E> Iterator<E> get(E... e) {
+    public static <E> Iterator<E> iterator(E... e) {
         if (e == null)
             return Collections.emptyIterator();
         else

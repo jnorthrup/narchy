@@ -2,11 +2,15 @@ package nars.time;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.iterator.ArrayIterator;
 import jcog.math.LongInterval;
+import jcog.math.Longerval;
 import nars.NAR;
+import nars.Param;
 import nars.task.util.TaskRegion;
 import nars.util.Timed;
+import org.jetbrains.annotations.Nullable;
+
+import static java.lang.Long.MAX_VALUE;
 
 
 /**
@@ -148,38 +152,69 @@ public enum Tense {
         return dt; 
     }
 
-    public static long[] union(TaskRegion... tt) {
+//    public static long[] union(TaskRegion... tt) {
+//        switch (tt.length) {
+//            case 0: throw new UnsupportedOperationException();
+//            case 1: return new long[] { tt[0].start(), tt[0].end() };
+//            //TODO will work if it handles eternal
+//            case 2:
+//                long as = tt[0].start();
+//                long bs = tt[1].start();
+//                if (as != ETERNAL && bs != ETERNAL) {
+//                    return new long[]{Math.min(as, bs), Math.max(tt[0].end(), tt[1].end())};
+//                }
+//
+//        }
+//        return union(ArrayIterator.iterable(tt));
+//    }
 
-        if (tt.length == 1) {
-            return new long[] { tt[0].start(), tt[0].end() };
-        } else if (tt.length == 0) {
-            throw new UnsupportedOperationException();
-        } else {
-            return union(ArrayIterator.iterable(tt));
-        }
-    }
-
-    public static long[] union(Iterable<? extends TaskRegion> tt) {
-        long start = Long.MAX_VALUE;
-        long end = Long.MIN_VALUE;
+    public static long[] union(Iterable<? extends TaskRegion> t) {
+        long start = MAX_VALUE, end = Long.MIN_VALUE;
         
-        for (TaskRegion x : tt) {
-            if (x == null)
-                continue;
+        for (TaskRegion x : t) {
+//            if (x == null) continue;
             long xs = x.start();
-            if (xs == ETERNAL)
-                continue;
-            start = Math.min(xs, start);
+            if (xs != ETERNAL) {
+                start = Math.min(xs, start);
+                end = Math.max(x.end(), end);
+            }
+        }
 
-            long xe = x.end();
-            end = Math.max(xe, end);
-        }
-        if (start == Long.MAX_VALUE) {
-            
+        if (start == MAX_VALUE)
             start = end = ETERNAL;
-        }
+
         return new long[] { start, end };
     }
+
+    @Nullable private static long[] intersect(Iterable<? extends TaskRegion> t) {
+        long start = MAX_VALUE, end = Long.MIN_VALUE;
+
+        for (TaskRegion x : t) {
+
+            long xs = x.start();
+            if (xs != ETERNAL) {
+                long xe = x.end();
+                if (start==MAX_VALUE) {
+                    //first
+                    start = xs;
+                    end = xe;
+                } else {
+                    @Nullable Longerval l = Longerval.intersection(start, end, xs, xe);
+                    if (l==null)
+                        return null;
+
+                    start = Math.max(xs, start);
+                    end = Math.min(xe, end);
+                }
+            }
+        }
+
+        if (start == MAX_VALUE)
+            start = end = ETERNAL;
+
+        return new long[] { start, end };
+    }
+
 
     public static boolean dtSpecial(int dt) {
         switch (dt) {
@@ -203,6 +238,28 @@ public enum Tense {
             throw new WTF(occ + " can not be DT");
         return (int)occ;
     }
+
+    /** computes an ideal range of time for a merge or revision of tasks.
+     * assumes that at least one of the items is non-eternal.
+     * */
+    @Nullable
+    public static long[] merge(Iterable<? extends TaskRegion> tasks) {
+        long[] u = Tense.union(tasks);
+        long unionRange = u[1] - u[0];
+        if (unionRange > Param.TASK_REVISION_STRETCH_LIMIT_PROPORTION * Util.max(t -> t.start()==ETERNAL ?  0 : t.range(), tasks)) {
+
+            //too sparse: settle for intersection if exists
+
+            u = Tense.intersect(tasks);
+
+        }
+
+        //TODO handle cases where mix of union/intersect is valid
+
+        return u;
+    }
+
+
 
 //    public static long[] intersection(TaskRegion[] t) {
 //        //HACK

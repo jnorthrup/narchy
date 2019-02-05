@@ -26,6 +26,7 @@ import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Introduction;
+import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
@@ -49,7 +50,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.*;
-import static nars.Op.QUEST;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -219,6 +219,7 @@ abstract public class NAgentX extends NAgent {
 //                                128 * 1024
 //                                //96 * 1024
                                 64 * 1024
+                                //32 * 1024
 ////                                //16 * 1024
                                 , c -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
 
@@ -383,7 +384,7 @@ abstract public class NAgentX extends NAgent {
                 0.01f;
         
         n.beliefPriDefault.set(0.25f * p);
-        n.goalPriDefault.set(0.5f * p);
+        n.goalPriDefault.set(8f * p);
         n.questionPriDefault.set(0.05f * p);
         n.questPriDefault.set(0.05f * p);
 
@@ -431,8 +432,12 @@ abstract public class NAgentX extends NAgent {
                 //  "induction.goal.nal"
         ));
         bd.timing = new ActionTiming(n);
-        //bd.termLinksPerTaskLink.setAt(2);
-        //bd.premisesPerConcept.setAt(4);
+
+
+        BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8,
+                "relation_introduction.nal"
+        ));
+
 
         new STMLinkage(n, 1);
 
@@ -460,8 +465,8 @@ abstract public class NAgentX extends NAgent {
         //Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 
-//        new Inperience.Believe(16, n);
-//        new Inperience.Want(16, n);
+        new Inperience.Believe(16, n);
+        new Inperience.Want(16, n);
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
 

@@ -39,7 +39,9 @@ abstract public class MultiExec extends UniExec {
 
     static private final float queueLatencyMeasurementProbability = 0.05f;
 
-    private float explorationRate = 0.1f;
+    private float explorationRate = 0.2f;
+
+    int granularity = 4;
 
     MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
@@ -272,7 +274,7 @@ abstract public class MultiExec extends UniExec {
             long lastScheduled = ETERNAL;
             private int n;
             private long maxExe;
-            int granularity = 2;
+
 
             Worker() {
                  rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());

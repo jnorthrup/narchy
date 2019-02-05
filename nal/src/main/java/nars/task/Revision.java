@@ -1,6 +1,6 @@
 package nars.task;
 
-import jcog.Util;
+import jcog.data.iterator.ArrayIterator;
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
 import nars.Param;
@@ -13,8 +13,6 @@ import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.ToLongFunction;
 
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
@@ -106,14 +104,9 @@ public enum Revision {;
 
         assert (tasks.length > 1);
 
-        long[] u = Tense.union(tasks);
-        long unionRange = u[1] - u[0];
-        if (unionRange > Param.TASK_REVISION_STRETCH_LIMIT_PROPORTION *
-                Util.sum((ToLongFunction<TaskRegion>) TaskRegion::range, tasks)) {
-            //too sparse
+        long[] u = Tense.merge(ArrayIterator.iterable(tasks));
+        if (u == null)
             return null;
-        }
-
 
         TruthPolation T = Param.truth(u[0], u[1], 0).add(tasks);
 
