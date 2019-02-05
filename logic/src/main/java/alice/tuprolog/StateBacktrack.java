@@ -30,7 +30,7 @@ public class StateBacktrack extends State {
     
 
     
-    public StateBacktrack(EngineRunner c) {
+    public StateBacktrack(PrologRun c) {
         this.c = c;
         stateName = "Back";
     }

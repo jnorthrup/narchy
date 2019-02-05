@@ -25,7 +25,7 @@ package alice.tuprolog;
 public class StateInit extends State {
     
     
-    public StateInit(EngineRunner c) {
+    public StateInit(PrologRun c) {
         this.c = c;
         stateName = "Goal";
     }

@@ -61,10 +61,10 @@ public class Parser {
 		}
 	}
 
-	public static final OperatorManager defaultOps = new DefaultOps();
+	public static final PrologOperators defaultOps = new DefaultOps();
 
 	private final Tokenizer tokenizer;
-	private OperatorManager ops = defaultOps;
+	private PrologOperators ops = defaultOps;
 	/*Castagna 06/2011*/
 	private final HashMap<Term, Integer> offsetsMap;
 	private int tokenStart;
@@ -85,7 +85,7 @@ public class Parser {
 	 * creating a Parser specifing how to handle operators
 	 * and what text to parse
 	 */	
-	public Parser(String theoryText, OperatorManager op, HashMap<Term, Integer> mapping) {
+	public Parser(String theoryText, PrologOperators op, HashMap<Term, Integer> mapping) {
 		this(theoryText, mapping);		 
 		if (op != null)		 
 			ops = op;
@@ -96,7 +96,7 @@ public class Parser {
 	 * creating a Parser specifing how to handle operators
 	 * and what text to parse
 	 */
-	public Parser(String theoryText, OperatorManager op) {
+	public Parser(String theoryText, PrologOperators op) {
 		this(theoryText, op, null);
 	}
 	
@@ -180,7 +180,7 @@ public class Parser {
 	 * Static service to get a term from its string representation,
 	 * providing a specific operator manager
 	 */
-	public static Term parseSingleTerm(String st, OperatorManager op) throws InvalidTermException {
+	public static Term parseSingleTerm(String st, PrologOperators op) throws InvalidTermException {
 		try {
 			Parser p = new Parser(st, op);
 			Token t = p.tokenizer.readToken();
@@ -203,7 +203,7 @@ public class Parser {
 	
 
 	private Term expr(boolean commaIsEndMarker) throws InvalidTermException, IOException {
-		return exprA(OperatorManager.OP_HIGH, commaIsEndMarker).result;
+		return exprA(PrologOperators.OP_HIGH, commaIsEndMarker).result;
 	}
 
 	private IdentifiedTerm exprA(int maxPriority, boolean commaIsEndMarker) throws InvalidTermException, IOException {
@@ -226,7 +226,7 @@ public class Parser {
 			if (YFX < leftSide.priority || YFX > maxPriority) YFX = -1;
 
 			
-			if (YFX >= YF && YFX >= OperatorManager.OP_LOW){
+			if (YFX >= YF && YFX >= PrologOperators.OP_LOW){
 				IdentifiedTerm ta = exprA(YFX-1, commaIsEndMarker);
 				if (ta != null) {
 					/*Castagna 06/2011*/
@@ -237,7 +237,7 @@ public class Parser {
 				}
 			}
 			
-			if (YF >= OperatorManager.OP_LOW) {
+			if (YF >= PrologOperators.OP_LOW) {
 				/*Castagna 06/2011*/
 				
 				 leftSide = identifyTerm(YF, new Struct(t.seq, leftSide.result), tokenStart);
@@ -264,9 +264,9 @@ public class Parser {
 
 			
 			
-			if (XFX > maxPriority || XFX < OperatorManager.OP_LOW) XFX = -1;
-			if (XFY > maxPriority || XFY < OperatorManager.OP_LOW) XFY = -1;
-			if (XF > maxPriority || XF < OperatorManager.OP_LOW) XF = -1;
+			if (XFX > maxPriority || XFX < PrologOperators.OP_LOW) XFX = -1;
+			if (XFY > maxPriority || XFY < PrologOperators.OP_LOW) XFY = -1;
+			if (XF > maxPriority || XF < PrologOperators.OP_LOW) XF = -1;
 
 			
 			boolean haveAttemptedXFX = false;
@@ -354,7 +354,7 @@ public class Parser {
 
 			
 			boolean haveAttemptedFX = false;
-			if (FX >= FY && FX >= OperatorManager.OP_LOW){
+			if (FX >= FY && FX >= PrologOperators.OP_LOW){
 				IdentifiedTerm found = exprA(FX-1, commaIsEndMarker);    
 				if (found != null)
 					/*Castagna 06/2011*/
@@ -365,7 +365,7 @@ public class Parser {
 					haveAttemptedFX = true;
 			}
 			
-			if (FY >= OperatorManager.OP_LOW) {
+			if (FY >= PrologOperators.OP_LOW) {
 				IdentifiedTerm found = exprA(FY, commaIsEndMarker); 
 				if (found != null)
 					/*Castagna 06/2011*/
@@ -374,7 +374,7 @@ public class Parser {
 				/**/
 			}
 			
-			if (!haveAttemptedFX && FX >= OperatorManager.OP_LOW) {
+			if (!haveAttemptedFX && FX >= PrologOperators.OP_LOW) {
 				IdentifiedTerm found = exprA(FX-1, commaIsEndMarker);    
 				if (found != null)
 					/*Castagna 06/2011*/

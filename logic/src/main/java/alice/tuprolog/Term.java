@@ -17,7 +17,6 @@
  */
 package alice.tuprolog;
 
-import alice.util.OneWayList;
 import jcog.data.set.ArrayHashSet;
 
 import java.io.Serializable;
@@ -231,10 +230,10 @@ public abstract class Term implements Serializable, SubTree {
         boolean ok = unify(v1, v2, y);
 
         if (ok) {
-            ExecutionContext ec = engine.getCurrentContext();
-            if (ec != null) {
-                ec.trailingVars = new OneWayList<>(v1, ec.trailingVars);
-            }
+//            ExecutionContext ec = engine.getCurrentContext();
+//            if (ec != null) {
+//                ec.trailingVars = new OneWayList<>(v1, ec.trailingVars);
+//            }
 
             int count = 0;
             Engine env = engine.getEnv();
@@ -332,7 +331,7 @@ public abstract class Term implements Serializable, SubTree {
      * @return the term represented by the string
      * @throws InvalidTermException if the string does not represent a valid term
      */
-    public static Term term(String st, OperatorManager op) {
+    public static Term term(String st, PrologOperators op) {
         return Parser.parseSingleTerm(st, op);
     }
 
@@ -350,7 +349,7 @@ public abstract class Term implements Serializable, SubTree {
      * Gets the string representation of this term
      * as an X argument of an operator, considering the associative property.
      */
-    String toStringAsArgX(OperatorManager op, int prio) {
+    String toStringAsArgX(PrologOperators op, int prio) {
         return toStringAsArg(op, prio, true);
     }
 
@@ -358,7 +357,7 @@ public abstract class Term implements Serializable, SubTree {
      * Gets the string representation of this term
      * as an Y argument of an operator, considering the associative property.
      */
-    String toStringAsArgY(OperatorManager op, int prio) {
+    String toStringAsArgY(PrologOperators op, int prio) {
         return toStringAsArg(op, prio, false);
     }
 
@@ -369,7 +368,7 @@ public abstract class Term implements Serializable, SubTree {
      * If the boolean argument is true, then the term must be considered
      * as X arg, otherwise as Y arg (referring to prolog associative rules)
      */
-    String toStringAsArg(OperatorManager op, int prio, boolean x) {
+    String toStringAsArg(PrologOperators op, int prio, boolean x) {
         return toString();
     }
 

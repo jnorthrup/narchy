@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see Operator
  */
 @SuppressWarnings("serial")
-public class OperatorManager extends ConcurrentHashMap<String, Operator> /**/ {
+public class PrologOperators extends ConcurrentHashMap<String, Operator> /**/ {
 
     /**
      * lowest operator priority
@@ -37,7 +37,7 @@ public class OperatorManager extends ConcurrentHashMap<String, Operator> /**/ {
      */
     public static final int OP_HIGH = 1200;
 
-    public OperatorManager() {
+    public PrologOperators() {
         super(128, 0.9f);
     }
 

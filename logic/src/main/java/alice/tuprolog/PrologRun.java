@@ -19,14 +19,14 @@ import static alice.tuprolog.PrologPrimitive.PREDICATE;
  * <p>
  * Core engine
  */
-public final class EngineRunner implements java.io.Serializable, Runnable {
+public class PrologRun implements java.io.Serializable, Runnable {
 
     Prolog prolog;
 
-    TheoryManager theories;
+    Theories theories;
 
-    private PrimitiveManager primitives;
-    private LibraryManager libraryManager;
+    private PrologPrimitives prims;
+    private Libraries libs;
 
 
     private boolean relinkVar;
@@ -77,7 +77,7 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
     public static final int TRUE_CP = 2;
 
 
-    public EngineRunner(int id) {
+    public PrologRun(int id) {
         /* Istanzio gli stati */
         INIT = new StateInit(this);
         GOAL_EVALUATION = new StateGoalEvaluation(this);
@@ -97,11 +97,11 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
     /**
      * Config this Manager
      */
-    EngineRunner initialize(Prolog vm) {
+    public PrologRun initialize(Prolog vm) {
         prolog = vm;
         theories = vm.theories;
-        primitives = vm.prims;
-        libraryManager = vm.libs;
+        prims = vm.prims;
+        libs = vm.libs;
 
         detached = false;
         solving = false;
@@ -163,8 +163,8 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
         try {
             query.resolveTerm();
 
-            libraryManager.onSolveBegin(query);
-            primitives.identify(query, PREDICATE);
+            libs.onSolveBegin(query);
+            prims.identify(query, PREDICATE);
 
 
             freeze();
@@ -254,7 +254,7 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
      */
     public void solveHalt() {
         env.mustStop();
-        libraryManager.onSolveHalt();
+        libs.onSolveHalt();
     }
 
     /**
@@ -263,7 +263,7 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
     public void solveEnd() {
 
 
-        libraryManager.onSolveEnd();
+        libs.onSolveEnd();
     }
 
 
@@ -291,7 +291,7 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
 
 
     void identify(Term t) {
-        primitives.identify(t, PREDICATE);
+        prims.identify(t, PREDICATE);
     }
 
 
@@ -305,9 +305,9 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
     }
 
 
-    ExecutionContext getCurrentContext() {
-        return (env == null) ? null : env.currentContext;
-    }
+//    ExecutionContext getCurrentContext() {
+//        return (env == null) ? null : env.currentContext;
+//    }
 
 
     /**
@@ -316,7 +316,7 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
      *
      * @return true if open alternatives are present
      */
-    boolean hasOpenAlternatives() {
+    public boolean hasOpenAlternatives() {
         if (sinfo == null) return false;
         return sinfo.hasOpenAlternatives();
     }
@@ -336,7 +336,6 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
     @Override
     public void run() {
 
-        Prolog.threads.set(this);
 
         solving = true;
 
@@ -427,7 +426,7 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
         return msgs.size();
     }
 
-    TheoryManager getTheories() {
+    Theories getTheories() {
         return theories;
     }
 

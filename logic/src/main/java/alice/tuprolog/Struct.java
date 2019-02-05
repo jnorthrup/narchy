@@ -809,7 +809,7 @@ public class Struct extends Term {
         }
     }
 
-    private String toStringAsList(OperatorManager op) {
+    private String toStringAsList(PrologOperators op) {
         Term h = subs[0];
         Term t = subs[1].term();
         if (t.isList()) {
@@ -824,7 +824,7 @@ public class Struct extends Term {
     }
 
     @Override
-    String toStringAsArg(OperatorManager op, int prio, boolean x) {
+    String toStringAsArg(PrologOperators op, int prio, boolean x) {
 
         if (name.equals(".") && subs() == 2) {
             return subs[0].isEmptyList() ? "[]" : '[' + toStringAsList(op) + ']';
@@ -834,7 +834,7 @@ public class Struct extends Term {
 
         int p = 0;
         if (subs() == 2) {
-            if ((p = op.opPrio(name, "xfx")) >= OperatorManager.OP_LOW) {
+            if ((p = op.opPrio(name, "xfx")) >= PrologOperators.OP_LOW) {
                 return (
                         ((x ? p >= prio : p > prio) ? "(" : "") +
                                 subs[0].toStringAsArgX(op, p) +
@@ -842,7 +842,7 @@ public class Struct extends Term {
                                 subs[1].toStringAsArgX(op, p) +
                                 ((x ? p >= prio : p > prio) ? ")" : ""));
             }
-            if ((p = op.opPrio(name, "yfx")) >= OperatorManager.OP_LOW) {
+            if ((p = op.opPrio(name, "yfx")) >= PrologOperators.OP_LOW) {
                 return (
                         ((x ? p >= prio : p > prio) ? "(" : "") +
                                 subs[0].toStringAsArgY(op, p) +
@@ -850,7 +850,7 @@ public class Struct extends Term {
                                 subs[1].toStringAsArgX(op, p) +
                                 ((x ? p >= prio : p > prio) ? ")" : ""));
             }
-            if ((p = op.opPrio(name, "xfy")) >= OperatorManager.OP_LOW) {
+            if ((p = op.opPrio(name, "xfy")) >= PrologOperators.OP_LOW) {
                 return !name.equals(",") ? ((x ? p >= prio : p > prio) ? "(" : "") +
                         subs[0].toStringAsArgX(op, p) +
                         ' ' + name + ' ' +
@@ -863,28 +863,28 @@ public class Struct extends Term {
                         ((x ? p >= prio : p > prio) ? ")" : "");
             }
         } else if (subs() == 1) {
-            if ((p = op.opPrio(name, "fx")) >= OperatorManager.OP_LOW) {
+            if ((p = op.opPrio(name, "fx")) >= PrologOperators.OP_LOW) {
                 return (
                         ((x ? p >= prio : p > prio) ? "(" : "") +
                                 name + ' ' +
                                 subs[0].toStringAsArgX(op, p) +
                                 ((x ? p >= prio : p > prio) ? ")" : ""));
             }
-            if ((p = op.opPrio(name, "fy")) >= OperatorManager.OP_LOW) {
+            if ((p = op.opPrio(name, "fy")) >= PrologOperators.OP_LOW) {
                 return (
                         ((x ? p >= prio : p > prio) ? "(" : "") +
                                 name + ' ' +
                                 subs[0].toStringAsArgY(op, p) +
                                 ((x ? p >= prio : p > prio) ? ")" : ""));
             }
-            if ((p = op.opPrio(name, "xf")) >= OperatorManager.OP_LOW) {
+            if ((p = op.opPrio(name, "xf")) >= PrologOperators.OP_LOW) {
                 return (
                         ((x ? p >= prio : p > prio) ? "(" : "") +
                                 subs[0].toStringAsArgX(op, p) +
                                 ' ' + name + ' ' +
                                 ((x ? p >= prio : p > prio) ? ")" : ""));
             }
-            if ((p = op.opPrio(name, "yf")) >= OperatorManager.OP_LOW) {
+            if ((p = op.opPrio(name, "yf")) >= PrologOperators.OP_LOW) {
                 return (
                         ((x ? p >= prio : p > prio) ? "(" : "") +
                                 subs[0].toStringAsArgY(op, p) +

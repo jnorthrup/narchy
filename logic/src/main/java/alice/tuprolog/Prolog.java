@@ -18,75 +18,62 @@
 package alice.tuprolog;
 
 import alice.tuprolog.event.*;
+import alice.tuprolog.lib.BasicLibrary;
+import alice.tuprolog.lib.IOLibrary;
+import alice.tuprolog.lib.ISOLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 
 /**
- * The Prolog class represents a tuProlog engine.
+ * Prolog engine
  */
-public class Prolog extends EngineManager {
+public class Prolog {
 
-    public static final ThreadLocal<EngineRunner> threads = new ThreadLocal<>();
-    /*  manager of current theory */
-    public final TheoryManager theories;
-    /*  component managing primitive  */
-    public final PrimitiveManager prims;
-    /* component managing operators */
-    public final OperatorManager ops;
-    /* component managing flags */
+
+    public final Theories theories;
+
+    public final PrologPrimitives prims;
+
+    public final PrologOperators ops;
+
     public final Flags flags;
-    /* component managing libraries */
-    public final LibraryManager libs;
-    public final ConcurrentHashMap<String, TermQueue> queues = new ConcurrentHashMap<>();
-    protected final EngineRunner root = new EngineRunner(0);
-    protected final AtomicInteger id = new AtomicInteger();
-    protected final ConcurrentHashMap<Integer, EngineRunner> runners = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, ReentrantLock> locks = new ConcurrentHashMap<>();
 
-    /*  spying activated ?  */
-    private boolean spy;
+    public final Libraries libs;
+
+    protected final PrologRun root = new PrologRun(0);
 
 
     /* listeners registrated for virtual machine output events */
-    /*Castagna 06/2011*/
-    /* exception activated ? */
-    private boolean exception;
-    /**/
-    final CopyOnWriteArrayList<OutputListener> outputListeners;
+    final List<OutputListener> onOut = new CopyOnWriteArrayList<>();
     /* listeners registrated for virtual machine internal events */
-    private final CopyOnWriteArrayList<SpyListener> spyListeners;
+    private final List<SpyListener> onSpy = new CopyOnWriteArrayList<>();
+    /* listeners registrated for virtual machine state exception events */
+    private final List<ExceptionListener> onException = new CopyOnWriteArrayList<>();
+    /* listeners to theory events */
+    private final List<TheoryListener> onTheory = new CopyOnWriteArrayList<>();
 
     /* listeners registrated for virtual machine state change events */
-
-    public final static Logger logger = LoggerFactory.getLogger(Prolog.class);
-
-    /*Castagna 06/2011*/
-    /* listeners registrated for virtual machine state exception events */
-    private final List<ExceptionListener> exceptionListeners;
-    /**/
-
-    /* listeners to theory events */
-    private final List<TheoryListener> theoryListeners;
     /* listeners to library events */
-    private final List<LibraryListener> libraryListeners;
+    private final List<LibraryListener> onLibrary = new CopyOnWriteArrayList<>();
     /* listeners to query events */
-    private final List<Consumer<QueryEvent>> queryListeners;
-
+    private final List<Consumer<QueryEvent>> onQuery = new CopyOnWriteArrayList<>();
+    /*  spying activated ?  */
+    private boolean spy;
+    /* exception activated ? */
+    private boolean exception;
+    private boolean warning;
     /* path history for including documents */
     private List<String> absolutePathList;
-    private boolean warning;
 
+    public final static Logger logger = LoggerFactory.getLogger(Prolog.class);
 
     public Prolog() {
         this(new MutableClauseIndex());
@@ -100,22 +87,14 @@ public class Prolog extends EngineManager {
      */
     public Prolog(ClauseIndex dynamics) {
         this(false, dynamics);
-        try {
-            addLibrary("alice.tuprolog.lib.BasicLibrary");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        try {
-            addLibrary("alice.tuprolog.lib.ISOLibrary");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        try {
-            addLibrary("alice.tuprolog.lib.IOLibrary");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
 
+        try {
+            addLibrary(BasicLibrary.class);
+            addLibrary(ISOLibrary.class);
+            addLibrary(IOLibrary.class);
+        } catch (InvalidLibraryException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 
@@ -147,34 +126,32 @@ public class Prolog extends EngineManager {
     private Prolog(boolean spy, ClauseIndex dynamics) {
         super();
 
-        outputListeners = new CopyOnWriteArrayList<>();
-        spyListeners = new CopyOnWriteArrayList<>();
-        /*Castagna 06/2011*/
-        exceptionListeners = new CopyOnWriteArrayList<>();
-        /**/
+
+        
         this.spy = spy;
 
-        /*Castagna 06/2011*/
+        
         exception = true;
-        /**/
-        theoryListeners = new CopyOnWriteArrayList<>();
-        queryListeners = new CopyOnWriteArrayList<>();
-        libraryListeners = new CopyOnWriteArrayList<>();
+        
+
         absolutePathList = new CopyOnWriteArrayList<>();
         flags = new Flags();
-        libs = new LibraryManager();
-        ops = new OperatorManager();
-        prims = new PrimitiveManager();
 
-        theories = new TheoryManager(this, dynamics);
+        libs = new Libraries();
+        ops = new PrologOperators();
+        prims = new PrologPrimitives();
+        theories = new Theories(this, dynamics);
+
         libs.start(this);
         prims.start(this);
 
         root.initialize(this);
-        threads.set(root);
 
     }
 
+    public static void warn(String s) {
+        logger.warn(s);
+    }
 
     /**
      * Gets the last Element of the path list
@@ -190,21 +167,6 @@ public class Prolog extends EngineManager {
         return directory;
     }
 
-
-    /**
-     * Sets a new theory
-     *
-     * @param th is the new theory
-     * @throws InvalidTheoryException if the new theory is not valid
-     * @see Theory
-     */
-    public Prolog setTheory(Theory th) throws InvalidTheoryException {
-        theories.clear();
-        input(th);
-        return this;
-    }
-
-
     /**
      * Adds (appends) a theory
      *
@@ -215,10 +177,10 @@ public class Prolog extends EngineManager {
     public Prolog input(Theory th) throws InvalidTheoryException {
 
         Consumer<Theory> ifSuccessful;
-        if (!theoryListeners.isEmpty()) {
+        if (!onTheory.isEmpty()) {
             Theory oldTh = getTheory();
             ifSuccessful = (newTheory) -> {
-                for (TheoryListener tl : theoryListeners) {
+                for (TheoryListener tl : onTheory) {
                     tl.theoryChanged(new TheoryEvent(this, oldTh, newTheory));
                 }
             };
@@ -249,6 +211,18 @@ public class Prolog extends EngineManager {
         }
     }
 
+    /**
+     * Sets a new theory
+     *
+     * @param th is the new theory
+     * @throws InvalidTheoryException if the new theory is not valid
+     * @see Theory
+     */
+    public Prolog setTheory(Theory th) throws InvalidTheoryException {
+        theories.clear();
+        input(th);
+        return this;
+    }
 
     /**
      * Clears current theory
@@ -260,7 +234,6 @@ public class Prolog extends EngineManager {
 
         }
     }
-
 
     /**
      * Loads a library.
@@ -291,7 +264,6 @@ public class Prolog extends EngineManager {
         return libs.loadClass(className, paths);
     }
 
-
     /**
      * Loads a specific instance of a library
      * <p>
@@ -313,7 +285,6 @@ public class Prolog extends EngineManager {
         }
     }
 
-
     /**
      * Unloads a previously loaded library
      *
@@ -323,7 +294,6 @@ public class Prolog extends EngineManager {
     public void removeLibrary(String name) throws InvalidLibraryException {
         libs.unload(name);
     }
-
 
     /**
      * Gets the reference to a loaded library
@@ -336,7 +306,6 @@ public class Prolog extends EngineManager {
         return libs.getLibrary(name);
     }
 
-
     /**
      * Gets the list of the operators currently defined
      *
@@ -345,7 +314,6 @@ public class Prolog extends EngineManager {
     public Iterable<Operator> operators() {
         return ops.operators();
     }
-
 
     /**
      * Solves a query
@@ -368,6 +336,7 @@ public class Prolog extends EngineManager {
     public final Prolog solve(String g, Consumer<Solution> eachSolution) {
         return solve(term(g), eachSolution);
     }
+
     public final Prolog solveWhile(String g, Predicate<Solution> eachSolution) {
         return solveWhile(term(g), eachSolution);
     }
@@ -460,9 +429,6 @@ public class Prolog extends EngineManager {
         solveEnd();
     }
 
-
-
-
     /**
      * Checks if the demonstration process was stopped by an halt command.
      *
@@ -471,7 +437,6 @@ public class Prolog extends EngineManager {
     public boolean isHalted() {
         return runner().isHalted();
     }
-
 
     /**
      * Gets a term from a string, using the operators currently
@@ -493,17 +458,7 @@ public class Prolog extends EngineManager {
      * @return the string representing the term
      */
     public String toString(Term term) {
-        return (term.toStringAsArgY(ops, OperatorManager.OP_HIGH));
-    }
-
-
-    /**
-     * Switches on/off the notification of spy information events
-     *
-     * @param state - true for enabling the notification of spy event
-     */
-    public void setSpy(boolean state) {
-        spy = state;
+        return (term.toStringAsArgY(ops, PrologOperators.OP_HIGH));
     }
 
     /**
@@ -515,6 +470,14 @@ public class Prolog extends EngineManager {
         return spy;
     }
 
+    /**
+     * Switches on/off the notification of spy information events
+     *
+     * @param state - true for enabling the notification of spy event
+     */
+    public void setSpy(boolean state) {
+        spy = state;
+    }
 
     /**
      * Notifies a spy information event
@@ -546,39 +509,21 @@ public class Prolog extends EngineManager {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*Castagna 06/2011*/
-
     /**
      * Notifies a exception information event
      *
      * @param m the exception message
      */
     public void exception(Throwable e) {
-        if (exception && !exceptionListeners.isEmpty()) {
+        if (exception && !onException.isEmpty()) {
             ExceptionEvent e1 = new ExceptionEvent(this, e);
 
-            for (ExceptionListener exceptionListener : exceptionListeners)
+            for (ExceptionListener exceptionListener : onException)
                 exceptionListener.onException(e1);
 
             logger.error("{} {}", e1.getSource(), e1.getException());
         }
     }
-
 
     /**
      * Produces an output information event
@@ -587,16 +532,15 @@ public class Prolog extends EngineManager {
      */
     public void output(String m) {
 
-        int outputListenersSize = outputListeners.size();
+        int outputListenersSize = onOut.size();
         if (outputListenersSize > 0) {
             OutputEvent e = new OutputEvent(this, m);
-            for (OutputListener outputListener : outputListeners) {
+            for (OutputListener outputListener : onOut) {
                 outputListener.onOutput(e);
             }
         }
 
     }
-
 
     /**
      * Adds a listener to ouput events
@@ -604,9 +548,8 @@ public class Prolog extends EngineManager {
      * @param l the listener
      */
     public void addOutputListener(OutputListener l) {
-        outputListeners.add(l);
+        onOut.add(l);
     }
-
 
     /**
      * Adds a listener to theory events
@@ -614,7 +557,7 @@ public class Prolog extends EngineManager {
      * @param l the listener
      */
     public void addTheoryListener(TheoryListener l) {
-        theoryListeners.add(l);
+        onTheory.add(l);
     }
 
     /**
@@ -623,7 +566,7 @@ public class Prolog extends EngineManager {
      * @param l the listener
      */
     public void addLibraryListener(LibraryListener l) {
-        libraryListeners.add(l);
+        onLibrary.add(l);
     }
 
     /**
@@ -632,7 +575,7 @@ public class Prolog extends EngineManager {
      * @param l the listener
      */
     public void addQueryListener(Consumer<QueryEvent> l) {
-        queryListeners.add(l);
+        onQuery.add(l);
     }
 
     /**
@@ -642,29 +585,17 @@ public class Prolog extends EngineManager {
      */
     public void addSpyListener(SpyListener l) {
         spy = true;
-        spyListeners.add(l);
+        onSpy.add(l);
     }
-
-
-
-
-
-
-
-
-
-
-    /*Castagna 06/2011*/
-
+    
     /**
      * Adds a listener to exception events
      *
      * @param l the listener
      */
     public void addExceptionListener(ExceptionListener l) {
-        exceptionListeners.add(l);
+        onException.add(l);
     }
-    /**/
 
     /**
      * Removes a listener to ouput events
@@ -672,14 +603,14 @@ public class Prolog extends EngineManager {
      * @param l the listener
      */
     public void removeOutputListener(OutputListener l) {
-        outputListeners.remove(l);
+        onOut.remove(l);
     }
 
     /**
      * Removes all output event listeners
      */
     public void removeAllOutputListeners() {
-        outputListeners.clear();
+        onOut.clear();
     }
 
     /**
@@ -688,7 +619,7 @@ public class Prolog extends EngineManager {
      * @param l the listener
      */
     public void removeTheoryListener(TheoryListener l) {
-        theoryListeners.remove(l);
+        onTheory.remove(l);
     }
 
     /**
@@ -697,7 +628,7 @@ public class Prolog extends EngineManager {
      * @param l the listener
      */
     public void removeLibraryListener(LibraryListener l) {
-        libraryListeners.remove(l);
+        onLibrary.remove(l);
     }
 
     /**
@@ -706,10 +637,9 @@ public class Prolog extends EngineManager {
      * @param l the listener
      */
     public void removeQueryListener(Consumer<QueryEvent> l) {
-        queryListeners.remove(l);
+        onQuery.remove(l);
 
     }
-
 
     /**
      * Removes a listener to spy events
@@ -717,16 +647,8 @@ public class Prolog extends EngineManager {
      * @param l the listener
      */
     public synchronized void removeSpyListener(SpyListener l) {
-        spyListeners.remove(l);
-        spy = !(spyListeners.isEmpty());
-    }
-
-    /**
-     * Removes all spy event listeners
-     */
-    public synchronized void removeAllSpyListeners() {
-        spy = false;
-        spyListeners.clear();
+        onSpy.remove(l);
+        spy = !(onSpy.isEmpty());
     }
 
 
@@ -748,25 +670,28 @@ public class Prolog extends EngineManager {
     /* Castagna 06/2011*/
 
     /**
+     * Removes all spy event listeners
+     */
+    public synchronized void removeAllSpyListeners() {
+        spy = false;
+        onSpy.clear();
+    }
+    
+    /**
      * Removes a listener to exception events
      *
      * @param l the listener
      */
     public void removeExceptionListener(ExceptionListener l) {
-        exceptionListeners.remove(l);
+        onException.remove(l);
     }
-    /**/
-
-    /*Castagna 06/2011*/
-
+    
     /**
      * Removes all exception event listeners
      */
     public void removeAllExceptionListeners() {
-        exceptionListeners.clear();
+        onException.clear();
     }
-    /**/
-
 
     /**
      * Notifies a spy information event
@@ -774,15 +699,10 @@ public class Prolog extends EngineManager {
      * @param e the event
      */
     private void notifySpy(SpyEvent e) {
-        for (SpyListener spyListener : spyListeners) {
+        for (SpyListener spyListener : onSpy) {
             spyListener.onSpy(e);
         }
     }
-
-    /*Castagna 06/2011*/
-
-    /**/
-
 
     /**
      * Notifies a library loaded event
@@ -790,7 +710,7 @@ public class Prolog extends EngineManager {
      * @param e the event
      */
     protected void notifyLoadedLibrary(/* TODO Supplier< */ LibraryEvent e) {
-        for (LibraryListener ll : libraryListeners) {
+        for (LibraryListener ll : onLibrary) {
             ll.libraryLoaded(e);
         }
     }
@@ -801,7 +721,7 @@ public class Prolog extends EngineManager {
      * @param e the event
      */
     protected void notifyUnloadedLibrary(LibraryEvent e) {
-        for (LibraryListener ll : libraryListeners) {
+        for (LibraryListener ll : onLibrary) {
             ll.libraryUnloaded(e);
         }
     }
@@ -813,17 +733,16 @@ public class Prolog extends EngineManager {
      */
     protected void solution(Prolog source, Solution info) {
 
-        int qls = queryListeners.size();
+        int qls = onQuery.size();
         if (qls > 0) {
             QueryEvent e = new QueryEvent(source, info);
             for (int i = 0, queryListenersSize = qls; i < queryListenersSize; i++) {
-                queryListeners.get(i).accept(e);
+                onQuery.get(i).accept(e);
             }
         }
 
 
     }
-
 
     /**
      * Append a new path to directory list
@@ -841,14 +760,6 @@ public class Prolog extends EngineManager {
         }
     }
 
-    /**
-     * Reset directory list
-     */
-    public void resetDirectoryList(String path) {
-        absolutePathList = new ArrayList<>();
-        absolutePathList.add(path);
-    }
-
 //    public Term termSolve(String st) {
 //        try {
 //            Parser p = new Parser(st, ops);
@@ -859,6 +770,14 @@ public class Prolog extends EngineManager {
 //        }
 //    }
 
+    /**
+     * Reset directory list
+     */
+    public void resetDirectoryList(String path) {
+        absolutePathList = new ArrayList<>();
+        absolutePathList.add(path);
+    }
+
     public boolean isTrue(String s) {
         return isTrue(term(s));
     }
@@ -868,12 +787,12 @@ public class Prolog extends EngineManager {
         return r.isSuccess();
     }
 
-    public static void warn(String s) {
-        logger.warn(s);
-    }
-
     public boolean isWarning() {
         return warning;
+    }
+
+    public void setWarning(boolean b) {
+        this.warning = b;
     }
 
     public void notifyWarning(WarningEvent warningEvent) {
@@ -881,95 +800,8 @@ public class Prolog extends EngineManager {
             logger.warn("warning {}", warningEvent);
     }
 
-    public void setWarning(boolean b) {
-        this.warning = b;
-    }
-
-    public boolean threadCreate(Term threadID, Term goal) {
-
-        if (goal == null)
-            return false;
-
-        int id = this.id.incrementAndGet();
-
-        if (goal instanceof Var)
-            goal = goal.term();
-
-        Prolog vm = this;
-
-        EngineRunner er = new EngineRunner(id);
-        er.initialize(vm);
-
-        if (!threadID.unify(vm, new NumberTerm.Int(id)))
-            return false;
-
-        er.setGoal(goal);
-
-
-        runners.put(id, er);
-
-
-        Thread t = new Thread(er);
-
-
-        t.start();
-        return true;
-    }
-
-
-    public Solution join(int id) {
-        EngineRunner er = runner(id);
-        if (er == null || er.isDetached()) return null;
-        /*toSPY
-         * System.out.println("Thread id "+runnerId()+" - prelevo la soluzione (join)");*/
-        Solution solution = er.read();
-        /*toSPY
-         * System.out.println("Soluzione: "+solution);*/
-        removeRunner(id);
-        return solution;
-    }
-
-    public Solution read(int id) {
-        EngineRunner er = runner(id);
-        if (er == null || er.isDetached()) return null;
-        /*toSPY
-         * System.out.println("Thread id "+runnerId()+" - prelevo la soluzione (read) del thread di id: "+er.getId());
-         */
-        /*toSPY
-         * System.out.println("Soluzione: "+solution);
-         */
-        return er.read();
-    }
-
-    public boolean hasNext(int id) {
-        EngineRunner er = runner(id);
-        return !(er == null || er.isDetached()) && er.hasOpenAlternatives();
-    }
-
-    public boolean nextSolution(int id) {
-        EngineRunner er = runner(id);
-        /*toSPY
-         * System.out.println("Thread id "+runnerId()+" - next_solution: risveglio il thread di id: "+er.getId());
-         */
-        return !(er == null || er.isDetached()) && er.nextSolution();
-    }
-
-    public void detach(int id) {
-        EngineRunner er = runner(id);
-        if (er != null)
-            er.detach();
-    }
-
-    private void removeRunner(int id) {
-        runners.remove(id);
-    }
-
-    void cut() {
+    final void cut() {
         runner().cut();
-    }
-
-    ExecutionContext getCurrentContext() {
-        return runner().getCurrentContext();
     }
 
     public boolean hasOpenAlternatives() {
@@ -980,107 +812,9 @@ public class Prolog extends EngineManager {
         runner().pushSubGoal(goals);
     }
 
-    /**
-     * @return L'EngineRunner associato al thread di id specificato.
-     */
-
-    public EngineRunner runner(int id) {
-
-
-        return runners.get(id);
-
-
-    }
-
-    public final EngineRunner runner() {
-
-        return threads.get();
-
-//        Integer id = threads.get();
-//
-//        return id != null ? runner(id) : root;
-
-    }
-
-    public boolean createQueue(String name) {
-
-        queues.computeIfAbsent(name, (n) -> new TermQueue());
-
-        return true;
-    }
-
-    public void destroyQueue(String name) {
-
-        queues.remove(name);
-
-    }
-
-    public int queueSize(int id) {
-        return runner(id).msgQSize();
-    }
-
-    public int queueSize(String name) {
-        TermQueue q = queues.get(name);
-        return q == null ? -1 : q.size();
-    }
-
-    public ReentrantLock createLock(String name) {
-        return locks.computeIfAbsent(name, (n) -> new ReentrantLock());
-    }
-
-    public boolean destroyLock(String name) {
-        return locks.remove(name)!=null;
-    }
-
-    public void mutexLock(String name) {
-        //while (true) {
-        ReentrantLock mutex = createLock(name);
-
-        mutex.lock();
-        /*toSPY
-         * System.out.println("Thread id "+runnerId()+ " - mi sono impossessato del lock");
-         */
-    }
-
-    public boolean mutexTryLock(String name) {
-        ReentrantLock mutex = locks.get(name);
-        return mutex != null && mutex.tryLock();
-        /*toSPY
-         * System.out.println("Thread id "+runnerId()+ " - provo ad impossessarmi del lock");
-         */
-    }
-
-    public boolean mutexUnlock(String name) {
-        ReentrantLock mutex = locks.get(name);
-        if (mutex == null) return false;
-        try {
-            mutex.unlock();
-            /*toSPY
-             * System.out.println("Thread id "+runnerId()+ " - Ho liberato il lock");
-             */
-            return true;
-        } catch (IllegalMonitorStateException e) {
-            return false;
-        }
-    }
-
-    public boolean isLocked(String name) {
-        ReentrantLock mutex = locks.get(name);
-        return mutex != null && mutex.isLocked();
-    }
-
-    public void unlockAll() {
-
-        locks.forEach((k, mutex) -> {
-            boolean unlocked = false;
-            while (!unlocked) {
-                try {
-                    mutex.unlock();
-                } catch (IllegalMonitorStateException e) {
-                    unlocked = true;
-                }
-            }
-        });
+    public final PrologRun runner() {
+        //return threads.get();
+        return root;
     }
 
     Engine getEnv() {

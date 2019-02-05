@@ -35,10 +35,10 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
      * possible values returned by step functions
      * and used as eval state flags
      */
-    static final int HALT    = EngineRunner.HALT;
-    static final int FALSE   = EngineRunner.FALSE;
-    static final int TRUE    = EngineRunner.TRUE;
-    static final int TRUE_CP = EngineRunner.TRUE_CP;
+    static final int HALT    = PrologRun.HALT;
+    static final int FALSE   = PrologRun.FALSE;
+    static final int TRUE    = PrologRun.TRUE;
+    static final int TRUE_CP = PrologRun.TRUE_CP;
     
     private int     endState;
     private final boolean isSuccess;
@@ -203,7 +203,7 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
             return st.toString().trim();
         } else {
         	/*Castagna 06/2011*/
-            return endState == EngineRunner.HALT ? Term.HALT : Term.NO;
+            return endState == PrologRun.HALT ? Term.HALT : Term.NO;
         }
     }
 

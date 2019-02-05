@@ -39,10 +39,10 @@ public class Engine {
 	ChoicePointContext currentAlternative;
 	ChoicePointStore choicePointSelector;
 	boolean mustStop;
-	final EngineRunner run;
+	final PrologRun run;
 
 
-	public Engine(EngineRunner run, Term query) {
+	public Engine(PrologRun run, Term query) {
 		this.run = run;
 		this.nextState = run.INIT;
 		this.query = query;

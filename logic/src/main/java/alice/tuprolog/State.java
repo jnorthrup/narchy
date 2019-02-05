@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  */
 abstract class State {
     
-    protected EngineRunner c;
+    protected PrologRun c;
     protected String stateName;
 
     /** returning null means remain in the same state */

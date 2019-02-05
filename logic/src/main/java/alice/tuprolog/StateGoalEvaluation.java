@@ -24,7 +24,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class StateGoalEvaluation extends State {
 
-    public StateGoalEvaluation(EngineRunner c) {
+    public StateGoalEvaluation(PrologRun c) {
         this.c = c;
         stateName = "Eval";
     }

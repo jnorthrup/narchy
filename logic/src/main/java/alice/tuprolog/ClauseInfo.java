@@ -98,21 +98,21 @@ public class ClauseInfo {
      * recognizing operators stored by
      * the operator manager
      */
-    public String toString(OperatorManager op) {
+    public String toString(PrologOperators op) {
         int p;
-        if ((p = op.opPrio(":-xfx")) >= OperatorManager.OP_LOW) {
+        if ((p = op.opPrio(":-xfx")) >= PrologOperators.OP_LOW) {
             String st = indentPredicatesAsArgX(clause.sub(1), op, p);
             String head = clause.sub(0).toStringAsArgX(op, p);
             return st.equals("true") ? head + ".\n" : head + " :-\n\t" + st + ".\n";
         }
 
-        if ((p = op.opPrio(":-yfx")) >= OperatorManager.OP_LOW) {
+        if ((p = op.opPrio(":-yfx")) >= PrologOperators.OP_LOW) {
             String st = indentPredicatesAsArgX(clause.sub(1), op, p);
             String head = clause.sub(0).toStringAsArgY(op, p);
             return st.equals("true") ? head + ".\n" : head + " :-\n\t" + st + ".\n";
         }
 
-        if ((p = op.opPrio(":-xfy")) >= OperatorManager.OP_LOW) {
+        if ((p = op.opPrio(":-xfy")) >= PrologOperators.OP_LOW) {
             String st = indentPredicatesAsArgY(clause.sub(1), op, p);
             String head = clause.sub(0).toStringAsArgX(op, p);
             return st.equals("true") ? head + ".\n" : head + " :-\n\t" + st + ".\n";
@@ -215,7 +215,7 @@ public class ClauseInfo {
         }
     }*/
 
-    static private String indentPredicatesAsArgX(Term t, OperatorManager op, int p) {
+    static private String indentPredicatesAsArgX(Term t, PrologOperators op, int p) {
         if (t instanceof Struct) {
             Struct co = (Struct) t;
             if (co.name().equals(",")) {
@@ -236,7 +236,7 @@ public class ClauseInfo {
         }
     }
 
-    static private String indentPredicatesAsArgY(Term t, OperatorManager op, int p) {
+    static private String indentPredicatesAsArgY(Term t, PrologOperators op, int p) {
         if (t instanceof Struct) {
             Struct co = (Struct) t;
             if (co.name().equals(",")) {

@@ -19,15 +19,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * @author Alex Benini
  */
-public class LibraryManager {
+public class Libraries {
 
     /* dynamically loaded built-in libraries */
     private final List<Library> currentLibraries;
 
     /*  */
     private Prolog prolog;
-    private TheoryManager theoryManager;
-    private PrimitiveManager primitiveManager;
+    private Theories theories;
+    private PrologPrimitives prims;
     private final HashMap<String, URL> externalLibraries = new HashMap<>();
 
     /**
@@ -38,7 +38,7 @@ public class LibraryManager {
      */
     private String optimizedDirectory;
 
-    LibraryManager() {
+    Libraries() {
         currentLibraries = new CopyOnWriteArrayList<>();
     }
 
@@ -47,8 +47,8 @@ public class LibraryManager {
      */
     void start(Prolog vm) {
         prolog = vm;
-        theoryManager = vm.theories;
-        primitiveManager = vm.prims;
+        theories = vm.theories;
+        prims = vm.prims;
     }
 
     /**
@@ -241,7 +241,7 @@ public class LibraryManager {
         boolean found = currentLibraries.removeIf(lib -> {
             if (lib.getName().equals(name)) {
                 lib.dismiss();
-                primitiveManager.stop(lib);
+                prims.stop(lib);
                 return true;
             }
             return false;
@@ -252,8 +252,8 @@ public class LibraryManager {
 
         externalLibraries.remove(name);
 
-        theoryManager.removeLibraryTheory(name);
-        theoryManager.rebindPrimitives();
+        theories.removeLibraryTheory(name);
+        theories.rebindPrimitives();
 
         prolog.notifyUnloadedLibrary(new LibraryEvent(prolog, name));
     }
@@ -271,15 +271,15 @@ public class LibraryManager {
             lib.setProlog(prolog);
             currentLibraries.add(lib);
 
-            primitiveManager.start(lib);
+            prims.start(lib);
 
             String th = lib.getTheory();
             if (th != null) {
-                theoryManager.consult(new Theory(th), false, name);
-                theoryManager.solveTheoryGoal();
+                theories.consult(new Theory(th), false, name);
+                theories.solveTheoryGoal();
             }
 
-            theoryManager.rebindPrimitives();
+            theories.rebindPrimitives();
 
             return lib;
         } catch (InvalidTheoryException ex) {

@@ -12,7 +12,7 @@ public class StateException extends State {
     final Term javaCatchTerm = Term
             .term("java_catch(Goal, List, Finally)");
 
-    public StateException(EngineRunner c) {
+    public StateException(PrologRun c) {
         this.c = c;
         stateName = "Exception";
     }

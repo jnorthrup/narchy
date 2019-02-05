@@ -34,20 +34,20 @@ import static alice.tuprolog.PrologPrimitive.PREDICATE;
  */
 
 public final class BuiltIn extends Library {
-    private final TheoryManager theoryManager;
-    private final LibraryManager libraryManager;
+    private final Theories theories;
+    private final Libraries libs;
     private final Flags flags;
-    private final PrimitiveManager primitiveManager;
-    private final OperatorManager operatorManager;
+    private final PrologPrimitives prims;
+    private final PrologOperators ops;
 
     public BuiltIn(Prolog p) {
         super();
         setProlog(p);
-        theoryManager = p.theories;
-        libraryManager = p.libs;
+        theories = p.theories;
+        libs = p.libs;
         flags = p.flags;
-        primitiveManager = p.prims;
-        operatorManager = p.ops;
+        prims = p.prims;
+        ops = p.ops;
     }
 
     /**
@@ -112,7 +112,7 @@ public final class BuiltIn extends Library {
                     }
                 }
             }
-            theoryManager.assertA(ss, true, null, false);
+            theories.assertA(ss, true, null, false);
             return true;
         }
         if (arg0 instanceof Var)
@@ -137,7 +137,7 @@ public final class BuiltIn extends Library {
                     }
                 }
             }
-            theoryManager.assertZ(ss, true, null, false);
+            theories.assertZ(ss, true, null, false);
             return true;
         }
         if (arg0 instanceof Var)
@@ -160,7 +160,7 @@ public final class BuiltIn extends Library {
         boolean sClause = sarg0.isClause();
 
 
-        if (theoryManager.retract(sarg0, c -> unify(!sClause ? new Struct(":-", arg0, new Struct("true")) : sarg0, c.clause)
+        if (theories.retract(sarg0, c -> unify(!sClause ? new Struct(":-", arg0, new Struct("true")) : sarg0, c.clause)
         ) > 0) {
             return true;
         }
@@ -178,7 +178,7 @@ public final class BuiltIn extends Library {
         if (((Struct) arg0).sub(0).toString().equals("abolish"))
             throw PrologError.permission_error(prolog, "modify", "static_procedure", arg0, new Struct(""));
 
-        return theoryManager.abolish((Struct) arg0);
+        return theories.abolish((Struct) arg0);
     }
 
     /*Castagna 06/2011*/
@@ -217,7 +217,7 @@ public final class BuiltIn extends Library {
                 throw PrologError.type_error(prolog, 1, "atom", arg0);
         }
         try {
-            libraryManager.loadClass(((Struct) arg0).name());
+            libs.loadClass(((Struct) arg0).name());
             return true;
         } catch (Exception ex) {
             throw PrologError.existence_error(prolog, 1, "class", arg0,
@@ -245,7 +245,7 @@ public final class BuiltIn extends Library {
             String[] paths = getStringArrayFromStruct((Struct) arg1);
             if (paths == null || paths.length == 0)
                 throw PrologError.existence_error(prolog, 2, "paths", arg1, new Struct("Invalid paths' list."));
-            libraryManager.loadClass(((Struct) arg0).name(), paths);
+            libs.loadClass(((Struct) arg0).name(), paths);
             return true;
 
         } catch (Exception ex) {
@@ -281,7 +281,7 @@ public final class BuiltIn extends Library {
                 throw PrologError.type_error(prolog, 1, "atom", arg0);
         }
         try {
-            libraryManager.unload(((Struct) arg0).name());
+            libs.unload(((Struct) arg0).name());
             return true;
         } catch (Exception ex) {
             throw PrologError.existence_error(prolog, 1, "class", arg0,
@@ -473,7 +473,7 @@ public final class BuiltIn extends Library {
             throw PrologError.type_error(prolog, 2, "list", arg1);
 
         Struct list = (Struct) arg1;
-        Iterable<ClauseInfo> l = theoryManager.find(arg0);
+        Iterable<ClauseInfo> l = theories.find(arg0);
         for (ClauseInfo b : l) {
             if (arg0.unifiable(b.head)) {
                 b.clause.resolveTerm();
@@ -548,7 +548,7 @@ public final class BuiltIn extends Library {
             throw PrologError.type_error(prolog, 3, "atom_or_atom_list",
                     arg2);
         int priority = ((NumberTerm.Int) arg0).intValue();
-        if (priority < OperatorManager.OP_LOW || priority > OperatorManager.OP_HIGH)
+        if (priority < PrologOperators.OP_LOW || priority > PrologOperators.OP_HIGH)
             throw PrologError.domain_error(prolog, 1, "operator_priority", arg0);
         String specifier = ((Struct) arg1).name();
 
@@ -563,10 +563,10 @@ public final class BuiltIn extends Library {
             for (Iterator<? extends Term> operators = ((Struct) arg2).listIterator(); operators
                     .hasNext(); ) {
                 Struct operator = (Struct) operators.next();
-                operatorManager.opNew(operator.name(), specifier, priority);
+                ops.opNew(operator.name(), specifier, priority);
             }
         } else
-            operatorManager.opNew(((Struct) arg2).name(), specifier, priority);
+            ops.opNew(((Struct) arg2).name(), specifier, priority);
         return true;
     }
 
@@ -598,15 +598,15 @@ public final class BuiltIn extends Library {
     public void initialization_1(Term goal) {
         goal = goal.term();
         if (goal instanceof Struct) {
-            primitiveManager.identify(goal, PREDICATE);
-            theoryManager.addStartGoal((Struct) goal);
+            prims.identify(goal, PREDICATE);
+            theories.addStartGoal((Struct) goal);
         }
     }
 
     public void $load_library_1(Term lib) throws InvalidLibraryException {
         lib = lib.term();
         if (lib.isAtomic())
-            libraryManager.loadClass(((Struct) lib).name());
+            libs.loadClass(((Struct) lib).name());
     }
 
     public void include_1(Term theory) throws

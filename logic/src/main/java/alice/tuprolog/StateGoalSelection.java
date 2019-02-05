@@ -23,7 +23,7 @@ package alice.tuprolog;
 public class StateGoalSelection extends State {
 
 
-    public StateGoalSelection(EngineRunner c) {
+    public StateGoalSelection(PrologRun c) {
         this.c = c;
         stateName = "Call";
     }

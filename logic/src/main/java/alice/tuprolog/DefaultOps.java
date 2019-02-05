@@ -22,7 +22,7 @@ package alice.tuprolog;
  *  some standard operators defined
  *
  */
-class DefaultOps extends OperatorManager {
+class DefaultOps extends PrologOperators {
 	private static final long serialVersionUID = 1L;
     public DefaultOps() {
         opNew(":-", "xfx", 1200);

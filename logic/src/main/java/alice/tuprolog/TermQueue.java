@@ -8,11 +8,11 @@ public class TermQueue {
 
     private final LinkedList<Term> queue = new LinkedList<>();
 
-    public boolean get(Term t, Prolog engine, EngineRunner er) {
+    public boolean get(Term t, Prolog engine, PrologRun er) {
         return searchLoop(t, engine, true, true, er);
     }
 
-    private boolean searchLoop(Term t, Prolog engine, boolean block, boolean remove, EngineRunner er) {
+    private boolean searchLoop(Term t, Prolog engine, boolean block, boolean remove, PrologRun er) {
         synchronized (queue) {
             boolean found;
             do {
@@ -59,7 +59,7 @@ public class TermQueue {
         }
     }
 
-    public boolean wait(Term t, Prolog engine, EngineRunner er) {
+    public boolean wait(Term t, Prolog engine, PrologRun er) {
         return searchLoop(t, engine, true, false, er);
     }
 

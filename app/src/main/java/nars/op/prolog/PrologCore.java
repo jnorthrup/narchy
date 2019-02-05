@@ -200,14 +200,14 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
             switch (answer.result()) {
-                case EngineRunner.TRUE:
-                case EngineRunner.TRUE_CP:
+                case PrologRun.TRUE:
+                case PrologRun.TRUE_CP:
 
 
                     answer(question, answer);
 
                     break;
-                case EngineRunner.FALSE:
+                case PrologRun.FALSE:
 
 
                     break;

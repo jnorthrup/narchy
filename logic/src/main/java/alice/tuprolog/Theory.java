@@ -94,7 +94,7 @@ public class Theory implements Iterable<Term>, Serializable {
         return new Theory(Resources.toString(Resources.getResource(root, classPath), java.nio.charset.Charset.defaultCharset()));
     }
 
-    public Iterator<Term> iterator(OperatorManager ops) {
+    public Iterator<Term> iterator(PrologOperators ops) {
         return isTextual() ? new Parser(theory, ops).iterator() : clauseList.listIterator();
     }
 

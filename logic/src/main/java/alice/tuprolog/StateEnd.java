@@ -40,7 +40,7 @@ public class StateEnd extends State {
      *
      * @param end Terminal state of computation
      */
-    public StateEnd(EngineRunner c, int end) {
+    public StateEnd(PrologRun c, int end) {
         this.c = c;
         endState = end;
     }
@@ -52,7 +52,7 @@ public class StateEnd extends State {
             vars = new FasterList<>(gv);
             goal = (Struct) e.startGoal.copyResult(e.goalVars, vars);
 
-            if ((this.endState == EngineRunner.TRUE || this.endState == EngineRunner.TRUE_CP) &&
+            if ((this.endState == PrologRun.TRUE || this.endState == PrologRun.TRUE_CP) &&
                     (e.run.prolog.relinkVar()))
                 relinkVar(e);
 
@@ -325,8 +325,8 @@ public class StateEnd extends State {
 
                     e.nextState = c.END_FALSE;
 
-                    EngineRunner engineRunner = pParent.runner();
-                    String ss = engineRunner.sinfo != null ? engineRunner.sinfo.setOfSolution : null;
+                    PrologRun prologRun = pParent.runner();
+                    String ss = prologRun.sinfo != null ? prologRun.sinfo.setOfSolution : null;
                     String s = ss != null ? ss + "\n\nfalse." : "null\n\nfalse.";
                     pParent.endFalse(s);
 
@@ -696,11 +696,11 @@ public class StateEnd extends State {
 
     public String toString() {
         switch (endState) {
-            case EngineRunner.FALSE:
+            case PrologRun.FALSE:
                 return "FALSE";
-            case EngineRunner.TRUE:
+            case PrologRun.TRUE:
                 return "TRUE";
-            case EngineRunner.TRUE_CP:
+            case PrologRun.TRUE_CP:
                 return "TRUE_CP";
             default:
                 return "HALT";

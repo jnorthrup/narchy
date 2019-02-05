@@ -8,7 +8,7 @@ import java.util.Deque;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TheoryManagerTestCase {
+public class TheoriesTestCase {
 
     final Prolog engine = new Prolog();
 
@@ -25,7 +25,7 @@ public class TheoryManagerTestCase {
 
         String theory = "test(A, B) :- A is 1+2, B is 2+3.";
         engine.setTheory(new Theory(theory));
-        TheoryManager manager = engine.theories;
+        Theories manager = engine.theories;
         Struct testTerm = new Struct("test", new Struct("a"), new Struct("b"));
         Deque<ClauseInfo> testClauses = manager.find(testTerm);
         assertEquals(1, testClauses.size());
@@ -78,7 +78,7 @@ public class TheoryManagerTestCase {
     @Disabled
     @Test
     public void testRetract() throws InvalidTheoryException, MalformedGoalException {
-        assert(engine.outputListeners.isEmpty());
+        assert(engine.onOut.isEmpty());
         TestOutputListener listener = new TestOutputListener();
         engine.addOutputListener(listener);
         engine.setTheory(new Theory("insect(ant). insect(bee)."));

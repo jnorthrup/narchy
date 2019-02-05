@@ -29,7 +29,7 @@ import java.util.List;
 public class StateRuleSelection extends State {
 
 
-    public StateRuleSelection(EngineRunner c) {
+    public StateRuleSelection(PrologRun c) {
         this.c = c;
         stateName = "Init";
     }

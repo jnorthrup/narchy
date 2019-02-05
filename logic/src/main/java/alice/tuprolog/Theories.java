@@ -47,23 +47,23 @@ import static alice.tuprolog.PrologPrimitive.PREDICATE;
  * @author ivar.orstavik@hist.no
  * @see Theory
  */
-public class TheoryManager {
+public class Theories {
 
     public static final Struct TRUE = new Struct("true");
     private final ClauseIndex dynamicDBase;
     private final MutableClauseIndex staticDBase;
 
     private final Prolog engine;
-    private final PrimitiveManager primitiveManager;
+    private final PrologPrimitives prims;
     private final Deque<Term> startGoalStack;
 
 
-    public TheoryManager(Prolog vm, ClauseIndex dynamics) {
+    public Theories(Prolog vm, ClauseIndex dynamics) {
         engine = vm;
         dynamicDBase = dynamics;
         staticDBase = new MutableClauseIndex();
 
-        primitiveManager = engine.prims;
+        prims = engine.prims;
         startGoalStack = new ArrayDeque<>(32);
     }
 
@@ -251,7 +251,7 @@ public class TheoryManager {
     public void rebindPrimitives() {
         for (ClauseInfo d : dynamicDBase) {
             for (SubTree sge : d.body) {
-                primitiveManager.identify((Term) sge, PREDICATE);
+                prims.identify((Term) sge, PREDICATE);
             }
         }
     }
@@ -286,7 +286,7 @@ public class TheoryManager {
                 ((c.subs() == 1) && ":-".equals(c.name()) && (c.subResolve(0) instanceof Struct))) {
             Struct dir = (Struct) c.subResolve(0);
             try {
-                if (!primitiveManager.evalAsDirective(dir))
+                if (!prims.evalAsDirective(dir))
                     Prolog.warn("The directive " + dir.key() + " is unknown.");
             } catch (Throwable t) {
                 Prolog.warn("An exception has been thrown during the execution of the " +
@@ -305,7 +305,7 @@ public class TheoryManager {
         t = (Struct) Term.term(t.toString(), this.engine.ops);
         if (!t.isClause())
             t = new Struct(":-", t, TRUE);
-        primitiveManager.identify(t, PREDICATE);
+        prims.identify(t, PREDICATE);
         return t;
     }
 

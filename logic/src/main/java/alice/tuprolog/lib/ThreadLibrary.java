@@ -8,26 +8,40 @@ package alice.tuprolog.lib;
 import alice.tuprolog.*;
 
 import java.util.LinkedHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class ThreadLibrary extends Library {
-	private static final long serialVersionUID = 1L;
+
+	protected final AtomicInteger id = new AtomicInteger();
+
+	public final ConcurrentHashMap<Integer, PrologRun> runners = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, ReentrantLock> locks = new ConcurrentHashMap<>();
+	public final ConcurrentHashMap<String, TermQueue> queues = new ConcurrentHashMap<>();
+	public static final ThreadLocal<PrologRun> threads = new ThreadLocal<>();
 
 	@Override
 	public void setProlog(Prolog p) {
         prolog = p;
+		threads.set(p.runner());
 	}
 	
 	
 	public boolean thread_id_1 (Term t) {
-		int id = prolog.runner().getId();
+		int id = runner().getId();
         unify(t,new NumberTerm.Int(id));
 		return true;
 	}
-	
-	
+
+	private PrologRun runner() {
+		return threads.get(); //prolog.runner();
+	}
+
+
 	public boolean thread_create_2 (Term id, Term goal){
-		return prolog.threadCreate(id, goal);
+		return threadCreate(id, goal);
 	}
 	
 	/*Aspetta la terminazione del thread di identificatore id e ne raccoglie il risultato, 
@@ -37,7 +51,7 @@ public class ThreadLibrary extends Library {
 		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(prolog, 1,
                     "integer", id);
-		Solution res = prolog.join(((NumberTerm.Int)id).intValue());
+		Solution res = join(((NumberTerm.Int)id).intValue());
 		if (res == null) return false;
 		Term status;
 		try {
@@ -53,13 +67,25 @@ public class ThreadLibrary extends Library {
 		}
 		return true;
 	}
-		
+
+	public Solution read(int id) {
+		PrologRun er = runner(id);
+		if (er == null || er.isDetached()) return null;
+		/*toSPY
+		 * System.out.println("Thread id "+runnerId()+" - prelevo la soluzione (read) del thread di id: "+er.getId());
+		 */
+		/*toSPY
+		 * System.out.println("Soluzione: "+solution);
+		 */
+		return er.read();
+	}
+
 	public boolean thread_read_2(Term id, Term result) throws PrologError{
 		id=id.term();
 		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(prolog, 1,
                     "integer", id);
-		Solution res= prolog.read( ((NumberTerm.Int)id).intValue());
+		Solution res= read( ((NumberTerm.Int)id).intValue());
 		if (res==null) return false;
 		Term status;
 		try {
@@ -81,24 +107,37 @@ public class ThreadLibrary extends Library {
 		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(prolog, 1,
                     "integer", id);
-		return prolog.hasNext(((NumberTerm.Int)id).intValue());
+		return hasNext(((NumberTerm.Int)id).intValue());
 	}
-	
-	
+
+	public boolean hasNext(int id) {
+		PrologRun er = runner(id);
+		return !(er == null || er.isDetached()) && er.hasOpenAlternatives();
+	}
+
 	public boolean thread_next_sol_1(Term id) throws PrologError{
 		id=id.term();
 		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(prolog, 1,
                     "integer", id);
-		return prolog.nextSolution(((NumberTerm.Int)id).intValue());
+		return nextSolution(((NumberTerm.Int)id).intValue());
 	}
-	
+
+	public boolean nextSolution(int id) {
+		PrologRun er = runner(id);
+		/*toSPY
+		 * System.out.println("Thread id "+runnerId()+" - next_solution: risveglio il thread di id: "+er.getId());
+		 */
+		return !(er == null || er.isDetached()) && er.nextSolution();
+	}
+
+
 	public boolean thread_detach_1 (Term id) throws PrologError{
 		id=id.term();
 		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(prolog, 1,
                     "integer", id);
-		prolog.detach(((NumberTerm.Int)id).intValue());
+		detach(((NumberTerm.Int)id).intValue());
 		return true;
 	}
 	
@@ -172,7 +211,7 @@ public class ThreadLibrary extends Library {
 		if (!q.isAtom() || !q.isAtomic())
 			throw PrologError.type_error(prolog, 1,
                     "atom or atomic", q);
-		return prolog.createQueue(q.toString());
+		return createQueue(q.toString());
 	}
 	
 	public boolean msg_queue_destroy_1 (Term q) throws PrologError{
@@ -180,20 +219,103 @@ public class ThreadLibrary extends Library {
 		if (!q.isAtom() || !q.isAtomic())
 			throw PrologError.type_error(prolog, 1,
                     "atom or atomic", q);
-		prolog.destroyQueue(q.toString());
+		destroyQueue(q.toString());
 		return true;
 	}
-	
+
+	public boolean createQueue(String name) {
+
+		queues.computeIfAbsent(name, (n) -> new TermQueue());
+
+		return true;
+	}
+
+	public void destroyQueue(String name) {
+
+		queues.remove(name);
+
+	}
+
+
+	public ReentrantLock createLock(String name) {
+		return locks.computeIfAbsent(name, (n) -> new ReentrantLock());
+	}
+
+	public boolean destroyLock(String name) {
+		return locks.remove(name)!=null;
+	}
+
+	public void mutexLock(String name) {
+		//while (true) {
+		ReentrantLock mutex = createLock(name);
+
+		mutex.lock();
+		/*toSPY
+		 * System.out.println("Thread id "+runnerId()+ " - mi sono impossessato del lock");
+		 */
+	}
+
+	public boolean mutexTryLock(String name) {
+		ReentrantLock mutex = locks.get(name);
+		return mutex != null && mutex.tryLock();
+		/*toSPY
+		 * System.out.println("Thread id "+runnerId()+ " - provo ad impossessarmi del lock");
+		 */
+	}
+
+	public boolean mutexUnlock(String name) {
+		ReentrantLock mutex = locks.get(name);
+		if (mutex == null) return false;
+		try {
+			mutex.unlock();
+			/*toSPY
+			 * System.out.println("Thread id "+runnerId()+ " - Ho liberato il lock");
+			 */
+			return true;
+		} catch (IllegalMonitorStateException e) {
+			return false;
+		}
+	}
+
+	public boolean isLocked(String name) {
+		ReentrantLock mutex = locks.get(name);
+		return mutex != null && mutex.isLocked();
+	}
+
+	public void unlockAll() {
+
+		locks.forEach((k, mutex) -> {
+			boolean unlocked = false;
+			while (!unlocked) {
+				try {
+					mutex.unlock();
+				} catch (IllegalMonitorStateException e) {
+					unlocked = true;
+				}
+			}
+		});
+	}
+
+
+	public int queueSize(int id) {
+		return runner(id).msgQSize();
+	}
+
+	public int queueSize(String name) {
+		TermQueue q = queues.get(name);
+		return q == null ? -1 : q.size();
+	}
+
 	public boolean msg_queue_size_2(Term id, Term n) throws PrologError{
 		id=id.term();
 		int size;
 		if (id instanceof NumberTerm.Int)
-			size= prolog.queueSize(((NumberTerm.Int)id).intValue());
+			size= queueSize(((NumberTerm.Int)id).intValue());
 		else{
 			if (!id.isAtomic() || !id.isAtom())
 				throw PrologError.type_error(prolog, 1,
 	                    "atom, atomic or integer", id);
-			size= prolog.queueSize(id.toString());
+			size= queueSize(id.toString());
 		}
 		if (size<0) return false;
 		return unify(n, new NumberTerm.Int(size));
@@ -204,7 +326,7 @@ public class ThreadLibrary extends Library {
 		if (!mutex.isAtomic() || !mutex.isAtom())
 			throw PrologError.type_error(prolog, 1,
                     "atom or atomic", mutex);
-		prolog.createLock(mutex.toString());
+		createLock(mutex.toString());
 		return true;
 	}
 	
@@ -213,7 +335,7 @@ public class ThreadLibrary extends Library {
 		if (!mutex.isAtomic() || !mutex.isAtom())
 			throw PrologError.type_error(prolog, 1,
                     "atom or atomic", mutex);
-		return prolog.destroyLock(mutex.toString());
+		return destroyLock(mutex.toString());
 	}
 	
 	public boolean mutex_lock_1(Term mutex) throws PrologError{
@@ -221,7 +343,7 @@ public class ThreadLibrary extends Library {
 		if (!mutex.isAtomic() || !mutex.isAtom())
 			throw PrologError.type_error(prolog, 1,
                     "atom or atomic", mutex);
-		prolog.mutexLock(mutex.toString());
+		mutexLock(mutex.toString());
 		return true;
 	}
 	
@@ -230,7 +352,7 @@ public class ThreadLibrary extends Library {
 		if (!mutex.isAtomic() || !mutex.isAtom())
 			throw PrologError.type_error(prolog, 1,
                     "atom or atomic", mutex);
-		return prolog.mutexTryLock(mutex.toString());
+		return mutexTryLock(mutex.toString());
 	}
 	
 	public boolean mutex_unlock_1(Term mutex) throws PrologError{
@@ -238,7 +360,7 @@ public class ThreadLibrary extends Library {
 		if (!mutex.isAtomic() || !mutex.isAtom())
 			throw PrologError.type_error(prolog, 1,
                     "atom or atomic", mutex);
-		return prolog.mutexUnlock(mutex.toString());
+		return mutexUnlock(mutex.toString());
 	}
 	
 	public boolean mutex_isLocked_1(Term mutex) throws PrologError{
@@ -246,11 +368,11 @@ public class ThreadLibrary extends Library {
 		if (!mutex.isAtomic() || !mutex.isAtom())
 			throw PrologError.type_error(prolog, 1,
                     "atom or atomic", mutex);
-		return prolog.isLocked(mutex.toString());
+		return isLocked(mutex.toString());
 	}
 	
 	public boolean mutex_unlock_all_0(){
-		prolog.unlockAll();
+		unlockAll();
 		return true;
 	}
 	
@@ -273,14 +395,14 @@ public class ThreadLibrary extends Library {
 
 
 	public boolean getMsg(String name, Term msg) {
-		EngineRunner er = prolog.runner();
+		PrologRun er = runner();
 		if (er == null) return false;
-		TermQueue queue = prolog.queues.get(name);
+		TermQueue queue = queues.get(name);
 		if (queue == null) return false;
 		return queue.get(msg, prolog, er);
 	}
 	public boolean sendMsg(int dest, Term msg) {
-		EngineRunner er = prolog.runner(dest);
+		PrologRun er = runner(dest);
 		if (er == null) return false;
 		Term msgcopy = msg.copy(new LinkedHashMap<>(), 0);
 		er.sendMsg(msgcopy);
@@ -288,7 +410,7 @@ public class ThreadLibrary extends Library {
 	}
 
 	public boolean sendMsg(String name, Term msg) {
-		TermQueue queue = prolog.queues.get(name);
+		TermQueue queue = queues.get(name);
 		if (queue == null) return false;
 		Term msgcopy = msg.copy(new LinkedHashMap<>(), 0);
 		queue.store(msgcopy);
@@ -296,48 +418,111 @@ public class ThreadLibrary extends Library {
 	}
 
 	public boolean getMsg(int id, Term msg) {
-		EngineRunner er = prolog.runner(id);
+		PrologRun er = runner(id);
 		if (er == null) return false;
 		return er.getMsg(msg);
 	}
 
 
 	public boolean waitMsg(int id, Term msg) {
-		EngineRunner er = prolog.runner(id);
+		PrologRun er = runner(id);
 		if (er == null) return false;
 		return er.waitMsg(msg);
 	}
 
 	public boolean waitMsg(String name, Term msg) {
-		EngineRunner er = prolog.runner();
+		PrologRun er = runner();
 		if (er == null) return false;
-		TermQueue queue = prolog.queues.get(name);
+		TermQueue queue = queues.get(name);
 		if (queue == null) return false;
 		return queue.wait(msg, prolog, er);
 	}
 
 	public boolean peekMsg(int id, Term msg) {
-		EngineRunner er = prolog.runner(id);
+		PrologRun er = runner(id);
 		if (er == null) return false;
 		return er.peekMsg(msg);
 	}
 
 	public boolean peekMsg(String name, Term msg) {
-		TermQueue queue = prolog.queues.get(name);
+		TermQueue queue = queues.get(name);
 		if (queue == null) return false;
 		return queue.peek(msg, prolog);
 	}
 
 	public boolean removeMsg(String name, Term msg) {
-		TermQueue queue = prolog.queues.get(name);
+		TermQueue queue = queues.get(name);
 		if (queue == null) return false;
 		return queue.remove(msg, prolog);
 	}
 
 	public boolean removeMsg(int id, Term msg) {
-		EngineRunner er = prolog.runner(id);
+		PrologRun er = runner(id);
 		if (er == null) return false;
 		return er.removeMsg(msg);
 	}
+
+	/**
+	 * @return L'EngineRunner associato al thread di id specificato.
+	 */
+
+	public PrologRun runner(int id) {
+		return runners.get(id);
+	}
+	
+	
+	public Solution join(int id) {
+		PrologRun er = runner(id);
+		if (er == null || er.isDetached()) return null;
+		/*toSPY
+		 * System.out.println("Thread id "+runnerId()+" - prelevo la soluzione (join)");*/
+		Solution solution = er.read();
+		/*toSPY
+		 * System.out.println("Soluzione: "+solution);*/
+		runners.remove(id);
+		return solution;
+	}
+
+	public void detach(int id) {
+		PrologRun er = runner(id);
+		if (er != null)
+			er.detach();
+	}
+
+	public boolean threadCreate(Term threadID, Term goal) {
+
+		if (goal == null)
+			return false;
+
+		int id = this.id.incrementAndGet();
+
+		if (goal instanceof Var)
+			goal = goal.term();
+
+		PrologRun er = new PrologRun(id) {
+			@Override
+			public void run() {
+				threads.set(this);
+				super.run();
+			}
+		};
+		er.initialize(this.prolog);
+
+		if (!threadID.unify(this.prolog, new NumberTerm.Int(id)))
+			return false;
+
+		er.setGoal(goal);
+
+
+		runners.put(id, er);
+
+
+
+		Thread t = new Thread(er);
+
+		t.start();
+		return true;
+	}
+
 
 }

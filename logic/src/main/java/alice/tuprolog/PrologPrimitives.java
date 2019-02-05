@@ -33,7 +33,7 @@ import static alice.tuprolog.PrologPrimitive.*;
  *
  * @author Alex Benini
  */
-public class PrimitiveManager  {
+public class PrologPrimitives {
 
     private static final Set<String> PRIMITIVE_PREDICATES = Set.of(",", "':-'", ":-");
     private final Set<Library> libs;
@@ -41,7 +41,7 @@ public class PrimitiveManager  {
     private final Map<String, PrologPrimitive> predicates;
     private final Map<String, PrologPrimitive> functors;
 
-    public PrimitiveManager() {
+    public PrologPrimitives() {
         libs = 
                 new CopyOnWriteArraySet<>();
         directives = 
