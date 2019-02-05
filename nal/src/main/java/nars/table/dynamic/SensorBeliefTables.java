@@ -206,7 +206,7 @@ public class SensorBeliefTables extends BeliefTables {
 
             float p = next.priElseZero();
             if (p == p) {
-                if (prev!=null && (prev==next || Math.abs(next.start()-prev.end()) < Param.SIGNAL_LATCH_DUR * n.dur())) {
+                if (prev!=null && (prev==next || Math.abs(next.start()-prev.end()) < Param.SIGNAL_LATCH_LiMIT_DURS * n.dur())) {
 
                     if (prev == next || prev.truth().equalsIn(next.truth(), n))
                         p *= SIGNAL_PRI_FACTOR_SAME_TASK_BEING_STRETCHED;

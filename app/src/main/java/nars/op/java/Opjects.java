@@ -282,7 +282,7 @@ public class Opjects extends DefaultTermizer {
                 value = null;
             }
 
-            boolean evokedOrInvoked = evoking.get().get();
+            boolean evokedOrInvoked = evoking.get().getOpaque();
 
             NALTask feedback;
             if (isVoid || evokedOrInvoked) {
@@ -472,6 +472,7 @@ public class Opjects extends DefaultTermizer {
             this.methodName = $.the(_methodName);
 
             runCache = CaffeineMemoize.build(term -> {
+
                 Subterms args = validArgs(Operator.args(term));
                 if (args == null)
                     return null;
@@ -499,9 +500,7 @@ public class Opjects extends DefaultTermizer {
                 }
 
 
-                Class c = instance.getClass();
-
-                Pair<Pair<Class, Term>, List<Class<?>>> key = pair(pair(c, methodName), types);
+                Pair<Pair<Class, Term>, List<Class<?>>> key = pair(pair(instance.getClass(), methodName), types);
                 MethodHandle mh = methodCache.apply(key);
                 if (mh == null) {
                     return null;
@@ -710,13 +709,13 @@ public class Opjects extends DefaultTermizer {
 
         int a = args.subs();
         switch (a) {
+
             case 1:
                 return args;
+
             case 2: {
                 Op o1 = args.sub(1).op();
                 if (validParamTerm(o1)) {
-
-
                     return args;
                 }
                 break;
@@ -725,9 +724,11 @@ public class Opjects extends DefaultTermizer {
             case 3: {
 
                 Op o1 = args.sub(1).op();
-                Op o2 = args.sub(2).op();
-                if (validParamTerm(o1) && o2 == VAR_DEP)
-                    return args;
+                if (validParamTerm(o1)) {
+                    Op o2 = args.sub(2).op();
+                    if (o2 == VAR_DEP)
+                        return args;
+                }
                 break;
             }
         }
@@ -735,19 +736,20 @@ public class Opjects extends DefaultTermizer {
         return null;
     }
 
+    final static int VALID_PARAM_TERM = Op.or(ATOM, INT, VAR_DEP, PROD, BOOL);
     private boolean validParamTerm(Op o1) {
-        return o1 == VAR_DEP || o1 == PROD || (o1.atomic && !o1.var);
+        return o1.isAny(VALID_PARAM_TERM);
     }
 
 
     protected boolean validMethod(Method m) {
         if (methodExclusions.contains(m.getName()))
             return false;
+        else {
+            int mm = m.getModifiers();
 
-        int mm = m.getModifiers();
-        if (!Modifier.isPublic(mm))
-            return false;
-        return !Modifier.isStatic(mm);
+            return Modifier.isPublic(mm) && !Modifier.isStatic(mm);
+        }
     }
 
 

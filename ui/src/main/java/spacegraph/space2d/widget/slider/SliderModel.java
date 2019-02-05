@@ -2,7 +2,6 @@ package spacegraph.space2d.widget.slider;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.exe.Exe;
 import jcog.math.v2;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -112,7 +111,9 @@ public class SliderModel extends Surface {
 
     protected void onChanged() {
         if (change != null) {
-            Exe.invokeLater(this::_onChanged);
+            //TODO if async
+            //Exe.invoke(this::_onChanged);
+            _onChanged();
         }
     }
 

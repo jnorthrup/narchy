@@ -188,17 +188,20 @@ public abstract class Param {
     /** novelty threshold: >=0; higher values decrease the rate at which repeated tasks can be reactivated */
     public static final float REMEMBER_REPEAT_THRESH_DURS = 2f;
 
+    /** restrains revision's ability to stretch evidence across time:
+     * as a factor of the sum of the ranges of the tasks involved in the revision */
+    public static final float TASK_REVISION_STRETCH_LIMIT_PROPORTION = 1;
 
     /**
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
      */
-    public final static float SIGNAL_STRETCH_DUR = 8;
+    public final static float SIGNAL_STRETCH_LIMIT_DURS = 8;
 
     /** maximum time between signal updates to stretch an equivalently-truthed data point across.
      * stretches perception across some amount of lag
      * */
-    public final static float SIGNAL_LATCH_DUR =
+    public final static float SIGNAL_LATCH_LiMIT_DURS =
             //0.5f;
             //1f;
             //1.5f;
@@ -262,7 +265,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(4, 1, 32);
 
@@ -272,11 +275,11 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 3f;
+    public static final float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 3;
 
 
     /**
@@ -336,9 +339,9 @@ public abstract class Param {
             //16;
             //12;
             //10;
-            //8;
+            8;
             //7;
-            6;
+            //6;
             //5;
             //4;
             //3;

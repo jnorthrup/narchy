@@ -384,7 +384,7 @@ public final class Answer implements AutoCloseable {
         if (tp.size() == 1)
             return root;
 
-        tp.refocus();
+        tp.refocus(nar);
 
         @Nullable Truth tt = truth(tp);
         if (tt == null)

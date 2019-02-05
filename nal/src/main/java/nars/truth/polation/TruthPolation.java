@@ -133,7 +133,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             return only(provideStamp);
         }
 
-        validate();
+        validate(null);
         if ((s = size()) < minResults)
             return null;
 
@@ -448,19 +448,24 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      * adjust start/end to better fit the (remaining) task components and minimize temporalizing truth dilution.
      * if the start/end has changed, then evidence for each will need recalculated
      *  */
-    public void refocus() {
-        if (isEmpty())
+    public void refocus(NAR nar) {
+        if (size()<2)
             return;
 
         long[] union = Tense.union(Iterables.transform(this, (TaskComponent x)->x.task));
         if (union[0] == ETERNAL)
             return; //eternal
+
+        int dtDither = nar.dtDither();
         if (start==ETERNAL) {
-            //override eternal range
+            //override eternal range with the calculated union
         } else {
             union[0] = Math.min(end, Math.max(start, union[0]));
             union[1] = Math.max(start, Math.min(end, union[1]));
         }
+
+        union[0] = Tense.dither(union[0], dtDither);
+        union[1] = Tense.dither(union[1], dtDither);
         if (union[0]!=start || union[1]!=end) {
             invalidateEvi();
             start = union[0];
@@ -468,16 +473,16 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         }
     }
 
-    protected void validate() {
-        if (start == ETERNAL)
-            refocus();
+    protected void validate(@Nullable NAR nar) {
+        if (nar!=null && start == ETERNAL)
+            refocus(nar);
+
         removeIf(x -> update(x, Float.MIN_NORMAL) == null);
     }
 
 
     private void invalidateEvi() {
-        for (TaskComponent x : this)
-            x.invalidate();
+        forEach(TaskComponent::invalidate);
     }
 
 

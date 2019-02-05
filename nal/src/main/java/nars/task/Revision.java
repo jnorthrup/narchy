@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.Util;
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
 import nars.Param;
@@ -13,12 +14,14 @@ import nars.truth.Truthed;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.ToLongFunction;
+
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
  * Truth/Task Revision & Projection (Revection)
  */
-public enum Revision { ;
+public enum Revision {;
 
     @Nullable
     public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
@@ -80,7 +83,9 @@ public enum Revision { ;
 //    }
 
 
-    /** 2-ary merge with quick overlap filter */
+    /**
+     * 2-ary merge with quick overlap filter
+     */
     public static Task merge(TaskRegion x, TaskRegion y, NAR nar) {
 
         return Stamp.overlaps((Task) x, (Task) y) ? null : merge(nar, x, y);
@@ -89,17 +94,26 @@ public enum Revision { ;
 
 
     /**
+     * assumes none of the tasks are eternal
+     * <p>
      * warning: output task will have zero priority and input tasks will not be affected
      * this is so a merge construction can be attempted without actually being budgeted
-     *
+     * <p>
      * also cause merge is deferred in the same way
      */
     @Nullable
     private static Task merge(NAR nar, TaskRegion... tasks) {
 
-        assert(tasks.length > 1);
+        assert (tasks.length > 1);
 
         long[] u = Tense.union(tasks);
+        long unionRange = u[1] - u[0];
+        if (unionRange > Param.TASK_REVISION_STRETCH_LIMIT_PROPORTION *
+                Util.sum((ToLongFunction<TaskRegion>) TaskRegion::range, tasks)) {
+            //too sparse
+            return null;
+        }
+
 
         TruthPolation T = Param.truth(u[0], u[1], 0).add(tasks);
 
@@ -110,26 +124,24 @@ public enum Revision { ;
         if (T.size() == 1)
             return null; //fail
 
-        T.refocus();
+        T.refocus(nar);
 
         Truth truth = T.truth(nar, c2wSafe(nar.confMin.floatValue()));
         if (truth == null)
             return null;
-
 
         Truth cTruth = truth.dithered(nar);
         if (cTruth == null)
             return null;
 
         byte punc = T.punc();
-        return Task.tryTask(T.term, punc, cTruth, (c, tr) -> {
-            int dith = nar.dtDither();
-            return new UnevaluatedTask(c, punc,
-                    tr,
-                    nar.time(), Tense.dither(T.start(), dith), Tense.dither(T.end(), dith),
-                    Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
-            );
-        });
+        return Task.tryTask(T.term, punc, cTruth, (c, tr) ->
+                new UnevaluatedTask(c, punc,
+                        tr,
+                        nar.time(), T.start(), T.end(),
+                        Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
+                )
+        );
     }
 
 

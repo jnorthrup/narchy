@@ -38,7 +38,7 @@ class DynamicTruthBeliefTableTest {
         n.input("x. +1");
         n.input("y. +2");
         n.run(1);
-        TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink(Op.EmptyProduct, $$("(x && y)"), BELIEF, 1, 1f);
+        TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink(Op.EmptyProduct, $$("(x && y)"), BELIEF, ETERNAL, 1f);
         Set<Task> tasks = new HashSet();
         for (int i = 0; i < 100; i++)
             tasks.add(tl.apply(n));

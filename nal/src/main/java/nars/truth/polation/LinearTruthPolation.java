@@ -52,7 +52,7 @@ public class LinearTruthPolation extends TruthPolation {
 //            end = Util.clamp(E, start, end);
 //        }
 
-        validate();
+        validate(nar);
 
         float eviFactor = 1f;
         if (nar != null) {

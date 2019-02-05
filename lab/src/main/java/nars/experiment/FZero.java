@@ -8,7 +8,6 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.agent.BeliefReward;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
@@ -228,7 +227,7 @@ public class FZero extends NAgentX {
 
         });
 
-        reward(new BeliefReward($$("((#w-->fz) &| ((#x~#y)-->ang)))"), this));
+        //reward(new BeliefReward($$("((#w-->fz) &| ((#x~#y)-->ang)))"), this));
         //reward(new BeliefReward($$("((#x-->ang) &| --(#y-->ang))"), this));
 
 //        rewardNormalized("safety", 0, 1, ()->{

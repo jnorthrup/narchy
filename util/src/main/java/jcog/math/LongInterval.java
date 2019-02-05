@@ -29,6 +29,7 @@ public interface LongInterval {
         return 1 + (end() - s);
     }
 
+
     /**
      * finds the nearest point within the provided interval relative to some point in this interval
      */

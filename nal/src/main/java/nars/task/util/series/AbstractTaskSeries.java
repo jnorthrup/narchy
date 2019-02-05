@@ -2,10 +2,7 @@ package nars.task.util.series;
 
 import nars.Param;
 import nars.Task;
-import nars.task.util.TimeRangeFilter;
 import org.jetbrains.annotations.Nullable;
-
-import static nars.time.Tense.TIMELESS;
 
 abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T> {
 
@@ -25,10 +22,10 @@ abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T
      * maximum durations a steady signal can grow for
      */
     public float latchDurs() {
-        return Param.SIGNAL_LATCH_DUR;
+        return Param.SIGNAL_LATCH_LiMIT_DURS;
     }
     public float stretchDurs() {
-        return Param.SIGNAL_STRETCH_DUR;
+        return Param.SIGNAL_STRETCH_LIMIT_DURS;
     }
 
 
