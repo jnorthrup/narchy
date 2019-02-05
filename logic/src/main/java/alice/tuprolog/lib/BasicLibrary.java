@@ -921,9 +921,12 @@ public class BasicLibrary extends PrologLib {
                 + ":- op(  700, xfx,  '\\='). \n"
                 + ":- op(  700, xfx,  '=='). \n"
                 + ":- op(  700, xfx,  '\\=='). \n"
-                +
-                
-                ":- op(  700, xfx,  '@>'). \n"
+
+                //arithmetic equality http://www.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202
+                + ":- op(  700, xfx,  '#='). \n"
+                + ":- op(  700, xfx,  '#\\='). \n"
+
+                + ":- op(  700, xfx,  '@>'). \n"
                 + ":- op(  700, xfx,  '@<'). \n"
                 + ":- op(  700, xfx,  '@=<'). \n"
                 + ":- op(  700, xfx,  '@>='). \n"
@@ -974,6 +977,10 @@ public class BasicLibrary extends PrologLib {
                 + "'@<'(X,Y):- term_less_than(X,Y).\n"
                 + "'@>='(X,Y):- not term_less_than(X,Y).\n"
                 + "'@=<'(X,Y):- not term_greater_than(X,Y).\n"
+
+                + "'#='(X,Y):- number(X),number(Y),term_equality(X,Y).\n"
+                + "'#\\='(X,Y):- number(X),number(Y),not term_equality(X,Y).\n"
+
                 +
                 //
                 // meta-predicates

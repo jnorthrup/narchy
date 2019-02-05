@@ -21,11 +21,15 @@ import alice.tuprolog.event.*;
 import alice.tuprolog.lib.BasicLibrary;
 import alice.tuprolog.lib.IOLibrary;
 import alice.tuprolog.lib.ISOLibrary;
+import com.google.common.collect.Lists;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -884,4 +888,75 @@ public class Prolog {
         setBagOFvarSet(null);
         setBagOFbag(null);
     }
+
+    public Solution run(String goal) {
+        return run(null, goal);
+    }
+
+    /**
+     * if called directly, Starts agent execution in current thread
+     */
+    public Solution run(@Nullable String theoryText, String goalText){
+        try {
+
+            if (theoryText!=null) {
+                setTheory(
+                        new Theory(theoryText)
+                );
+            }
+
+            if (goalText!=null){
+                return solve(goalText);
+            }
+        } catch (Exception ex){
+            System.err.println("invalid theory or goal.");
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Term> solutionList(String goal) {
+        return Lists.newArrayList( solutionIterator(goal) );
+    }
+
+    public Iterator<Term> solutionIterator(String goal) {
+
+
+        try {
+
+            return new Iterator<>() {
+
+                final Solution s = run(goal);
+
+                public Term next = s.getSolutionOrNull();
+
+                @Override
+                public boolean hasNext() {
+
+                    return hasOpenAlternatives();
+                    //return next != null;
+                }
+
+                @Override
+                public Term next() {
+                    Term next = this.next;
+
+                    try {
+                        this.next = solveNext().getSolutionOrNull();
+                    } catch (NoMoreSolutionException e) {
+                        this.next = null;
+                    }
+                    return next;
+                }
+            };
+        } catch (Exception e) {
+            return Collections.emptyIterator();
+        }
+    }
+
+
+
+
+
+
 }

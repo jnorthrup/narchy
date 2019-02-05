@@ -18,11 +18,6 @@
 package alice.tuprolog;
 
 import alice.tuprolog.event.OutputListener;
-import com.google.common.collect.Lists;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Provides a prolog virtual machine embedded in a separate thread.
@@ -96,97 +91,10 @@ public class PrologAgent extends Prolog {
         return t;
     }
 
-    public Solution run(String goal) {
-        this.goalText = goal;
-        return run();
-    }
-
-    public List<Term> solutions(String goal) {
-        return Lists.newArrayList( iterate(goal) );
-    }
-
-    public Iterator<Term> iterate(String goal) {
-
-
-        try {
-
-            return new Iterator<>() {
-
-                final Solution s = run(goal);
-
-                public Term next = s.getSolution();
-
-                @Override
-                public boolean hasNext() {
-
-                    return next != null;
-                }
-
-                @Override
-                public Term next() {
-                    Term next = this.next;
-
-                    try {
-                        this.next = hasOpenAlternatives() ? solveNext().getSolution() : null;
-                    } catch (NoMoreSolutionException | NoSolutionException e) {
-                        this.next = null;
-                    }
-                    return next;
-                }
-            };
-        } catch (Exception e) {
-            return Collections.emptyIterator();
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * if called directly, Starts agent execution in current thread
-     */
     public Solution run(){
-        try {
-
-            if (theoryText!=null) {
-                setTheory(
-                        new Theory(theoryText)
-                );
-            }
-
-            if (goalText!=null){
-                return solve(goalText);
-            }
-        } catch (Exception ex){
-            System.err.println("invalid theory or goal.");
-            ex.printStackTrace();
-        }
-        return null;
+        return run(theoryText, goalText);
     }
+
 
 
 

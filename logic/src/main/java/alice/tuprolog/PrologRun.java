@@ -443,7 +443,7 @@ public class PrologRun implements java.io.Serializable, Runnable {
         this.sinfoSetOf = null;
     }
 
-    public final synchronized Solution solve(Term query) {
+    public final Solution solve(Term query) {
         setGoal(query);
         return solve();
     }

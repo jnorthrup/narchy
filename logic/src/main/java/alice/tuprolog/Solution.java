@@ -127,13 +127,19 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
      *             solution
      */
     public Term  getSolution() throws NoSolutionException {
-        if (isSuccess){
+        if (isSuccess)
             return goal;
-        } else {
+        else
             throw new NoSolutionException();
-        }
+
     }
-    
+
+    public Term getSolutionOrNull() {
+        if (isSuccess)
+            return goal;
+        else
+            return null;
+    }
     
     /**
      * Gets the list of the variables in the solution.
@@ -211,6 +217,7 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
     public int result() {
         return endState;
     }
+
 
 
 }
