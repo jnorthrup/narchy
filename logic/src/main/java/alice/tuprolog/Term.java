@@ -148,19 +148,18 @@ public abstract class Term implements Serializable, SubTree {
      */
     public Term copyResult(Collection<Var> goalVars, List<Var> resultVars) {
         int s = goalVars.size();
-        IdentityHashMap<Var, Var> originals = new IdentityHashMap<>(s);
+        Map<Var, Var> originals;
         if (s > 0) {
+            originals = new IdentityHashMap<>(s);
             for (Var key : goalVars) {
-                Var clone;
-                if (!key.isAnonymous())
-                    clone = new Var(key.getOriginalName());
-                else
-                    clone = new Var();
+                Var clone = !key.isAnonymous() ? new Var(key.getOriginalName()) : new Var();
                 originals.put(key, clone);
                 resultVars.add(clone);
             }
-        }
-        return copy(originals, null /*new IdentityHashMap<>()*/);
+        } else
+            originals = Map.of();
+
+        return copy(originals, null);
     }
 
 

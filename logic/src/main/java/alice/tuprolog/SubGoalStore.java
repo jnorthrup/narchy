@@ -7,7 +7,6 @@ public class SubGoalStore {
     private SubGoalTree commaStruct;
     private int index;
     private SubGoal curSGId;
-//    private boolean fetched;
 
     public SubGoalStore(SubGoalTree subTrees) {
         index = 0;
@@ -87,12 +86,6 @@ public class SubGoalStore {
         return goals;
     }
 
-//    public int getIndexNextSubGoal() {
-//        return index;
-//    }
-//    public boolean getFetched(){
-//        return fetched;
-//    }
     public SubGoal getCurSGId() {
         return curSGId;
     }

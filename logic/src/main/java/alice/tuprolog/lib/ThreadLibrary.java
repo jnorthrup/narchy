@@ -298,7 +298,7 @@ public class ThreadLibrary extends Library {
 
 
 	public int queueSize(int id) {
-		return runner(id).msgQSize();
+		return runner(id).msgs.size();
 	}
 
 	public int queueSize(String name) {
@@ -402,10 +402,10 @@ public class ThreadLibrary extends Library {
 		return queue.get(msg, prolog, er);
 	}
 	public boolean sendMsg(int dest, Term msg) {
-		PrologRun er = runner(dest);
+		ThreadedPrologRun er = runner(dest);
 		if (er == null) return false;
 		Term msgcopy = msg.copy(new LinkedHashMap<>(), 0);
-		er.sendMsg(msgcopy);
+		er.msgs.store(msgcopy);
 		return true;
 	}
 
@@ -418,16 +418,18 @@ public class ThreadLibrary extends Library {
 	}
 
 	public boolean getMsg(int id, Term msg) {
-		PrologRun er = runner(id);
+		ThreadedPrologRun er = runner(id);
 		if (er == null) return false;
-		return er.getMsg(msg);
+		er.msgs.get(msg, prolog, er);
+		return true;
 	}
 
 
 	public boolean waitMsg(int id, Term msg) {
-		PrologRun er = runner(id);
+		ThreadedPrologRun er = runner(id);
 		if (er == null) return false;
-		return er.waitMsg(msg);
+		er.msgs.wait(msg, prolog, er);
+		return true;
 	}
 
 	public boolean waitMsg(String name, Term msg) {
@@ -439,9 +441,9 @@ public class ThreadLibrary extends Library {
 	}
 
 	public boolean peekMsg(int id, Term msg) {
-		PrologRun er = runner(id);
+		ThreadedPrologRun er = runner(id);
 		if (er == null) return false;
-		return er.peekMsg(msg);
+		return er.msgs.peek(msg, prolog);
 	}
 
 	public boolean peekMsg(String name, Term msg) {
@@ -457,17 +459,17 @@ public class ThreadLibrary extends Library {
 	}
 
 	public boolean removeMsg(int id, Term msg) {
-		PrologRun er = runner(id);
+		ThreadedPrologRun er = runner(id);
 		if (er == null) return false;
-		return er.removeMsg(msg);
+		return er.msgs.remove(msg, prolog);
 	}
 
 	/**
 	 * @return L'EngineRunner associato al thread di id specificato.
 	 */
 
-	public PrologRun runner(int id) {
-		return runners.get(id);
+	public ThreadedPrologRun runner(int id) {
+		return (ThreadedPrologRun) runners.get(id);
 	}
 	
 	
@@ -499,7 +501,7 @@ public class ThreadLibrary extends Library {
 		if (goal instanceof Var)
 			goal = goal.term();
 
-		PrologRun er = new PrologRun(id) {
+		ThreadedPrologRun er = new ThreadedPrologRun(id) {
 			@Override
 			public void run() {
 				threads.set(this);
@@ -524,5 +526,13 @@ public class ThreadLibrary extends Library {
 		return true;
 	}
 
+	public static class ThreadedPrologRun extends PrologRun {
+		public final TermQueue msgs;
+
+		public ThreadedPrologRun(int id) {
+			super(id);
+			msgs = new TermQueue();
+		}
+	}
 
 }

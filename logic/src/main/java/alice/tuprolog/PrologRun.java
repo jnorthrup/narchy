@@ -21,6 +21,8 @@ import static alice.tuprolog.PrologPrimitive.PREDICATE;
  */
 public class PrologRun implements java.io.Serializable, Runnable {
 
+
+
     Prolog prolog;
 
     Theories theories;
@@ -41,7 +43,6 @@ public class PrologRun implements java.io.Serializable, Runnable {
     private boolean detached;
     private boolean solving;
     private Term query;
-    private TermQueue msgs;
     private BooleanArrayList next;
     private int countNext;
     private Lock lockVar;
@@ -106,7 +107,6 @@ public class PrologRun implements java.io.Serializable, Runnable {
         detached = false;
         solving = false;
         sinfo = null;
-        msgs = new TermQueue();
         next = new BooleanArrayList();
         countNext = 0;
         lockVar = new ReentrantLock();
@@ -394,41 +394,6 @@ public class PrologRun implements java.io.Serializable, Runnable {
         solving = solved;
     }
 
-
-    public void sendMsg(Term t) {
-        msgs.store(t);
-    }
-
-
-    public boolean getMsg(Term t) {
-        msgs.get(t, prolog, this);
-        return true;
-    }
-
-
-    public boolean peekMsg(Term t) {
-        return msgs.peek(t, prolog);
-    }
-
-
-    public boolean removeMsg(Term t) {
-        return msgs.remove(t, prolog);
-    }
-
-
-    public boolean waitMsg(Term msg) {
-        msgs.wait(msg, prolog, this);
-        return true;
-    }
-
-
-    public int msgQSize() {
-        return msgs.size();
-    }
-
-    Theories getTheories() {
-        return theories;
-    }
 
     public boolean getRelinkVar() {
         return this.relinkVar;
