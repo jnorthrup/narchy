@@ -22,7 +22,7 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
 
 	private static final long serialVersionUID = 1L;
 /**An anonymous singleton instance building a tree out of a list of ExecutionContexts. */
-  static final ToTree<List<ExecutionContext>> contexts2tree= new ToTree<List<ExecutionContext>>() {
+  static final ToTree<List<PrologContext>> contexts2tree= new ToTree<List<PrologContext>>() {
     /**
      * Constructs a tree using the information given in SpyEvents. Every entry
      * in the provided list is supposed to have a clause and some subgoals, one
@@ -33,19 +33,19 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
      * is therefore used.
      */
     @Override
-    public Node makeTreeFrom(List<ExecutionContext> eclist) {
+    public Node makeTreeFrom(List<PrologContext> eclist) {
         return TermFrame.term2tree.makeTreeFrom(makeTermFroms(eclist));
     }
 
     private ArrayList<Term> elementi;
 
 
-    public Term makeTermFroms(List<ExecutionContext> eclist) {
+    public Term makeTermFroms(List<PrologContext> eclist) {
         int levels = eclist.size();
         if (levels < 1) return null;
         Term bottom = null;
         for (int i = 0; i < levels; i++) {
-            ExecutionContext ec = eclist.get(i);
+            PrologContext ec = eclist.get(i);
             Term c = ec.getClause();
             if (c instanceof Struct) {
                 Struct s = (Struct) c;
@@ -97,7 +97,7 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
   final JTextArea results;
   final JButton next;
   int steps;
-  final Tree<List<ExecutionContext>> tree;
+  final Tree<List<PrologContext>> tree;
 
   /** Creates the main window for spying a prolog goal finding process.
    * @param theory for the prolog engine.
@@ -198,7 +198,7 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
    */
   @Override
   public synchronized void onSpy(SpyEvent e){
-    Engine engine=e.getSnapshot();
+    PrologSolve engine=e.getSnapshot();
     if(engine==null || !"Call".equals(engine.getNextStateName())) return;
     if(--steps>0) return;
     tree.setStructure(engine.getExecutionStack());

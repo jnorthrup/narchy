@@ -26,8 +26,7 @@ package alice.tuprolog;
  *
  *
  */
-@Deprecated public class NoMoreSolutionException extends PrologException {
-	private static final long serialVersionUID = 1L;
+public class NoMoreSolutionException extends PrologException {
 
 	@Override
 	public synchronized Throwable fillInStackTrace() {

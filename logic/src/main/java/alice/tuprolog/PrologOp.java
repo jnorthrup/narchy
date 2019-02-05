@@ -23,7 +23,7 @@ import java.io.Serializable;
  * a type, and a  priority.
  *
  */
-final public class Operator implements Serializable {
+final public class PrologOp implements Serializable {
 	private static final long serialVersionUID = 1L;
     /**
 	 * operator name
@@ -40,7 +40,7 @@ final public class Operator implements Serializable {
 	 */
     public final int prio;
     
-/*Castagna 06/2011*/public/**/ Operator(String name_,String type_,int prio_) {
+/*Castagna 06/2011*/public/**/ PrologOp(String name_, String type_, int prio_) {
         name = name_;
         type = type_;
         prio = prio_;

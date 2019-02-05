@@ -22,36 +22,31 @@ package alice.tuprolog;
  *
  * Initial state of demostration
  */
-public class StateInit extends State {
+public enum StateInit { ;
+
+    public static final State the = new State("Goal") {
+        @Override
+        State run(PrologSolve e) {
+            e.prepareGoal();
+
+            /* Initialize first executionContext */
+            PrologContext eCtx = new PrologContext(0);
+            eCtx.goalsToEval = new SubGoalStore(ClauseInfo.extractBody(e.startGoal));
+            eCtx.clause = (Struct)e.query;
+            eCtx.depth = 0;
+            eCtx.fatherCtx = null;
+            eCtx.haveAlternatives = false;
+
+            /* Initialize VM environment */
+            e.initialize(eCtx);
+
+
+            /* Set the future state */
+            return e.run.GOAL_SELECTION;
+        }
+
+    };
+
     
-    
-    public StateInit(PrologRun c) {
-        this.c = c;
-        stateName = "Goal";
-    }
-    
-    
-    /* (non-Javadoc)
-     * @see alice.tuprolog.AbstractRunState#doJob()
-     */
-    @Override
-    State run(Engine e) {
-        e.prepareGoal();
-        
-        /* Initialize first executionContext */
-        ExecutionContext eCtx = new ExecutionContext(0);
-        eCtx.goalsToEval = new SubGoalStore(ClauseInfo.extractBody(e.startGoal));
-        eCtx.clause = (Struct)e.query;
-        eCtx.depth = 0;
-        eCtx.fatherCtx = null;
-       	eCtx.haveAlternatives = false;
-        
-        /* Initialize VM environment */
-        e.initialize(eCtx);
-        
-        
-        /* Set the future state */
-        return c.GOAL_SELECTION;
-    }
-    
+
 }

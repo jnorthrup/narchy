@@ -40,13 +40,12 @@ public class StateEnd extends State {
      *
      * @param end Terminal state of computation
      */
-    public StateEnd(PrologRun c, int end) {
-        this.c = c;
+    public StateEnd(int end) {
         endState = end;
     }
 
     @Override
-    State run(Engine e) {
+    State run(PrologSolve e) {
         int gv = e.goalVars.size();
         if (gv > 0) {
             vars = new FasterList<>(gv);
@@ -121,7 +120,7 @@ public class StateEnd extends State {
     }
 
 
-    private void relinkVar(Engine e) {
+    private void relinkVar(PrologSolve e) {
         Prolog pParent = e.run.prolog;
 
 
@@ -323,9 +322,9 @@ public class StateEnd extends State {
 
                 if (!(find && initGoalBag.unify(p, initBag))) {
 
-                    e.nextState = c.END_FALSE;
+                    e.nextState = PrologRun.END_FALSE;
 
-                    PrologRun prologRun = pParent.runner();
+                    PrologRun prologRun = pParent.run;
                     String ss = prologRun.sinfo != null ? prologRun.sinfo.setOfSolution : null;
                     String s = ss != null ? ss + "\n\nfalse." : "null\n\nfalse.";
                     pParent.endFalse(s);

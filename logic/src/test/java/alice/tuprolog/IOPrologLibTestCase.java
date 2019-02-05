@@ -9,15 +9,15 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class IOLibraryTestCase {
+public class IOPrologLibTestCase {
 	
 	@Test public void testGetPrimitives() {
-		Library library = new IOLibrary();
-		Map<Integer, List<PrologPrimitive>> primitives = library.primitives();
+		PrologLib prologLib = new IOLibrary();
+		Map<Integer, List<PrologPrim>> primitives = prologLib.primitives();
 		assertEquals(3, primitives.size());
-		assertEquals(0, primitives.get(PrologPrimitive.DIRECTIVE).size());
-		assertTrue(primitives.get(PrologPrimitive.PREDICATE).size() > 0);
-		assertEquals(0, primitives.get(PrologPrimitive.FUNCTOR).size());
+		assertEquals(0, primitives.get(PrologPrim.DIRECTIVE).size());
+		assertTrue(primitives.get(PrologPrim.PREDICATE).size() > 0);
+		assertEquals(0, primitives.get(PrologPrim.FUNCTOR).size());
 	}
 	
 	@Test

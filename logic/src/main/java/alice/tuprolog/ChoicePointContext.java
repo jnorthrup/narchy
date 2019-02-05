@@ -28,7 +28,7 @@ import java.util.Collection;
 public class ChoicePointContext {
     
     ClauseStore compatibleGoals;
-    ExecutionContext executionContext;
+    PrologContext executionContext;
     ChoicePointContext prevChoicePointContext;
     SubGoal indexSubGoal;
     OneWayList<Collection<Var>> varsToDeunify;

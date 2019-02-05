@@ -17,7 +17,7 @@ import java.util.*;
  * 
  */
 
-public class ISOIOLibrary extends Library{
+public class ISOIOLibrary extends PrologLib {
 	private static final long serialVersionUID = 1L;
     protected static final int files = 1000; 
     protected final Hashtable<InputStream, Hashtable<String, Term>> inputStreams = new Hashtable<>(files);
@@ -750,8 +750,8 @@ public class ISOIOLibrary extends Library{
                 if(value == -1){
                     return unify(arg, Term.term(-1 +""));
                 }
-            Character c = (char) value;
-            return unify(arg,new Struct(c.toString()));
+            char c = (char) value;
+            return unify(arg,new Struct(Character.toString(c)));
         }catch(IOException ioe){
                 ioe.printStackTrace();
                 throw PrologError.system_error(new Struct("An I/O error has occurred"));
@@ -933,8 +933,8 @@ public class ISOIOLibrary extends Library{
                     return unify(in_char, Term.term(-1 +""));
                 }
 
-            Character c = (char) value;
-            return unify(in_char,Term.term(c.toString()));
+            char c = (char) value;
+            return unify(in_char,Term.term(Character.toString(c)));
         }catch(IOException ioe){
                 ioe.printStackTrace();
                 throw PrologError.system_error(new Struct("An I/O error has occurred."));
@@ -1167,7 +1167,7 @@ public class ISOIOLibrary extends Library{
                     
             }
 
-            Byte b = reader.readByte();
+            byte b = reader.readByte();
 
             i2++; 
             element.put("position",new NumberTerm.Int(i2));
@@ -1183,7 +1183,7 @@ public class ISOIOLibrary extends Library{
             
             
             inputStreams.put(stream, element); 
-            return unify(in_byte,Term.term(b.toString()));
+            return unify(in_byte,Term.term(Byte.toString(b)));
         }
         catch(IOException ioe){
             element.put("end_of_stream", new Struct("past"));
@@ -1657,10 +1657,10 @@ public class ISOIOLibrary extends Library{
             return !ignore_ops ? '[' + list + ']' : list;
         }
                 
-        Iterable<Operator> operatorList = prolog.operators();
+        Iterable<PrologOp> operatorList = prolog.operators();
         String operator = "";
         int flagOp = 0;
-        for(Operator op : operatorList){
+        for(PrologOp op : operatorList){
             if(op.name.equals(term.name())){
                 operator = op.name;
                 flagOp = 1;
@@ -1685,7 +1685,7 @@ public class ISOIOLibrary extends Library{
                         NumberTerm.Int argNumber = (NumberTerm.Int)term.sub(i);
                         int res = argNumber.intValue() % 26;
                         int div = argNumber.intValue()/26;
-                        Character ch = 'A';
+                        char ch = 'A';
                         int num = (ch+res);
                         result = new String(Character.toChars(num));
                         if(div != 0){
@@ -1875,10 +1875,10 @@ public class ISOIOLibrary extends Library{
         if(flag == 1)
             return;
 
-        Library library = prolog.library("alice.tuprolog.lib.IOLibrary");
-        if(library == null){
+        PrologLib prologLib = prolog.library("alice.tuprolog.lib.IOLibrary");
+        if(prologLib == null){
             try {
-                library = prolog.addLibrary("alice.tuprolog.lib.IOLibrary");
+                prologLib = prolog.addLibrary("alice.tuprolog.lib.IOLibrary");
             } catch (InvalidLibraryException e) {
                 
                 e.printStackTrace();
@@ -1886,7 +1886,7 @@ public class ISOIOLibrary extends Library{
             }
         }
         
-        IOLib = (IOLibrary)library;
+        IOLib = (IOLibrary) prologLib;
         inputStream = IOLib.inputStream;
         outputStream = IOLib.outputStream;
         inputStreamName = IOLib.inputStreamName;

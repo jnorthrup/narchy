@@ -19,10 +19,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * @author Alex Benini
  */
-public class Libraries {
+public class PrologLibraries {
 
     /* dynamically loaded built-in libraries */
-    private final List<Library> currentLibraries;
+    private final List<PrologLib> currentLibraries;
 
     /*  */
     private Prolog prolog;
@@ -38,7 +38,7 @@ public class Libraries {
      */
     private String optimizedDirectory;
 
-    Libraries() {
+    PrologLibraries() {
         currentLibraries = new CopyOnWriteArrayList<>();
     }
 
@@ -61,10 +61,10 @@ public class Libraries {
      * @return the reference to the Library just loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public synchronized Library loadClass(String className)
+    public synchronized PrologLib loadClass(String className)
             throws InvalidLibraryException {
 
-        Library alib = getLibrary(className);
+        PrologLib alib = getLibrary(className);
         if (alib != null) {
             if (prolog.isWarning()) {
                 prolog.notifyWarning(new WarningEvent(prolog,
@@ -74,8 +74,8 @@ public class Libraries {
         }
 
         try {
-            Library lib = null;
-            lib = (Library) Class.forName(className).getConstructor().newInstance();
+            PrologLib lib = null;
+            lib = (PrologLib) Class.forName(className).getConstructor().newInstance();
             bindLibrary(lib);
             prolog.notifyLoadedLibrary(new LibraryEvent(prolog, className));
             return lib;
@@ -98,8 +98,8 @@ public class Libraries {
      * @return the reference to the Library just loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public synchronized Library loadClass(String className, String... paths) throws InvalidLibraryException {
-        Library lib = null;
+    public synchronized PrologLib loadClass(String className, String... paths) throws InvalidLibraryException {
+        PrologLib lib = null;
 
         try {
             /**
@@ -137,8 +137,8 @@ public class Libraries {
                  */
                 loader = (ClassLoader) Class.forName("dalvik.system.DexClassLoader")
                         .getConstructor(String.class, String.class, String.class, ClassLoader.class)
-                        .newInstance(dexPath, this.getOptimizedDirectory(), null, getClass().getClassLoader());
-                lib = (Library) Class.forName(className, true, loader).getConstructor().newInstance();
+                        .newInstance(dexPath, optimizedDirectory, null, getClass().getClassLoader());
+                lib = (PrologLib) Class.forName(className, true, loader).getConstructor().newInstance();
             } else {
                 URL[] urls = new URL[paths.length];
 
@@ -153,14 +153,14 @@ public class Libraries {
                 if (!System.getProperty("java.vm.name").equals("IKVM.NET")) {
                     loader = URLClassLoader.newInstance(urls, getClass()
                             .getClassLoader());
-                    lib = (Library) Class.forName(className, true, loader).getConstructor().newInstance();
+                    lib = (PrologLib) Class.forName(className, true, loader).getConstructor().newInstance();
                 }
 
 
             }
 
             String name = lib.getName();
-            Library alib = getLibrary(name);
+            PrologLib alib = getLibrary(name);
             if (alib != null) {
                 if (prolog.isWarning()) {
                     String msg = "library " + alib.getName()
@@ -169,9 +169,7 @@ public class Libraries {
                 }
                 return alib;
             }
-        }catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        }catch (NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         } catch (Exception ex) {
             throw new InvalidLibraryException(className, -1, -1);
@@ -214,10 +212,10 @@ public class Libraries {
      * @param lib the (Java class) name of the library to be loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public synchronized void load(Library lib)
+    public synchronized void load(PrologLib lib)
             throws InvalidLibraryException {
         String name = lib.getName();
-        Library alib = getLibrary(name);
+        PrologLib alib = getLibrary(name);
         if (alib != null) {
             if (prolog.isWarning()) {
                 String msg = "library " + alib.getName() + " already loaded.";
@@ -265,7 +263,7 @@ public class Libraries {
      * @return the reference to the Library just loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    private Library bindLibrary(Library lib) throws InvalidLibraryException {
+    private PrologLib bindLibrary(PrologLib lib) throws InvalidLibraryException {
         try {
             String name = lib.getName();
             lib.setProlog(prolog);
@@ -300,8 +298,8 @@ public class Libraries {
      * @return the reference to the library loaded, null if the library is not
      * found
      */
-    public Library getLibrary(String name) {
-        for (Library alib : currentLibraries) {
+    public PrologLib getLibrary(String name) {
+        for (PrologLib alib : currentLibraries) {
             if (alib.getName().equals(name)) {
                 return alib;
             }
@@ -310,17 +308,17 @@ public class Libraries {
     }
 
     public void onSolveBegin(Term g) {
-        for (Library alib : currentLibraries) {
+        for (PrologLib alib : currentLibraries) {
             alib.onSolveBegin(g);
         }
     }
 
     public void onSolveHalt() {
-        currentLibraries.forEach(Library::onSolveHalt);
+        currentLibraries.forEach(PrologLib::onSolveHalt);
     }
 
     public void onSolveEnd() {
-        currentLibraries.forEach(Library::onSolveEnd);
+        currentLibraries.forEach(PrologLib::onSolveEnd);
     }
 
     public URL getExternalLibraryURL(String name) {
@@ -347,10 +345,6 @@ public class Libraries {
 
     public void setOptimizedDirectory(String optimizedDirectory) {
         this.optimizedDirectory = optimizedDirectory;
-    }
-
-    public String getOptimizedDirectory() {
-        return optimizedDirectory;
     }
 
 }

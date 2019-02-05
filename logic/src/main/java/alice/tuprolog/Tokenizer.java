@@ -661,4 +661,55 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
             svala = s;
         }
     }
+
+    /**
+     * This class represents a token read by the prolog term tokenizer
+     *
+     *
+     *
+     */
+    static class Token implements Serializable {
+
+        public final String seq;
+
+        public final int type;
+
+        public Token(String seq_,int type_) {
+            seq = seq_;
+            type = type_;
+        }
+
+        public int getType() {
+            return(type & TYPEMASK);
+        }
+
+        /**
+         * attribute could be EOF or ERROR
+         */
+        public int getAttribute() {
+            return type & ATTRMASK;
+        }
+
+        public boolean isOperator(boolean commaIsEndMarker) {
+            if (commaIsEndMarker && ",".equals(seq))
+                return false;
+            return getAttribute() == OPERATOR;
+        }
+
+        public boolean isFunctor() {
+            return getAttribute() == FUNCTOR;
+        }
+
+        public boolean isNumber() {
+            return type == INTEGER || type == FLOAT;
+        }
+
+        boolean isEOF() {
+            return getAttribute() == EOF;
+        }
+
+        boolean isType(int type) {
+            return getType() == type;
+        }
+    }
 }

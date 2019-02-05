@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static alice.tuprolog.PrologPrimitive.FUNCTOR;
+import static alice.tuprolog.PrologPrim.FUNCTOR;
 
 
 /**
@@ -47,7 +47,7 @@ import static alice.tuprolog.PrologPrimitive.FUNCTOR;
  * </ul>
  * <p>
  */
-public abstract class Library implements Serializable {
+public abstract class PrologLib implements Serializable {
 
 
     /**
@@ -60,7 +60,7 @@ public abstract class Library implements Serializable {
 	 */
     private final String[][] synonyms;
     
-    public Library(){
+    public PrologLib(){
         synonyms = buildSynonyms();
     }
     
@@ -133,7 +133,7 @@ public abstract class Library implements Serializable {
             if (!primitive && term != t) {
                 prolog.prims.identify(t, FUNCTOR);
             } else if (primitive) {
-                PrologPrimitive bt = t.getPrimitive();
+                PrologPrim bt = t.getPrimitive();
                 if ((bt.type == FUNCTOR)) 
                     return bt.evalAsFunctor(t);
             }
@@ -168,13 +168,13 @@ public abstract class Library implements Serializable {
     /**
      * gets the list of predicates defined in the library
      */
-    public Map<Integer,List<PrologPrimitive>> primitives() {
+    public Map<Integer,List<PrologPrim>> primitives() {
         try {
             java.lang.reflect.Method[] mlist = this.getClass().getMethods();
-            Map<Integer,List<PrologPrimitive>> mapPrimitives = new HashMap<>();
-            mapPrimitives.put(PrologPrimitive.DIRECTIVE, new FasterList<>());
+            Map<Integer,List<PrologPrim>> mapPrimitives = new HashMap<>();
+            mapPrimitives.put(PrologPrim.DIRECTIVE, new FasterList<>());
             mapPrimitives.put(FUNCTOR, new FasterList<>());
-            mapPrimitives.put(PrologPrimitive.PREDICATE, new FasterList<>());
+            mapPrimitives.put(PrologPrim.PREDICATE, new FasterList<>());
 
 
             for (Method aMlist : mlist) {
@@ -187,13 +187,13 @@ public abstract class Library implements Serializable {
                 int type;
                 switch (returnTypeName) {
                     case "boolean":
-                        type = PrologPrimitive.PREDICATE;
+                        type = PrologPrim.PREDICATE;
                         break;
                     case "alice.tuprolog.Term":
                         type = FUNCTOR;
                         break;
                     case "void":
-                        type = PrologPrimitive.DIRECTIVE;
+                        type = PrologPrim.DIRECTIVE;
                         break;
                     default:
                         continue;
@@ -215,7 +215,7 @@ public abstract class Library implements Serializable {
                             if (valid) {
                                 String rawName = name.substring(0, index);
                                 String key = rawName + '/' + arity;
-                                PrologPrimitive prim = new PrologPrimitive(type, key, this, aMlist, arity);
+                                PrologPrim prim = new PrologPrim(type, key, this, aMlist, arity);
                                 mapPrimitives.get(type).add(prim);
 
 
@@ -224,7 +224,7 @@ public abstract class Library implements Serializable {
                                     for (String[] map : synonyms) {
                                         if (map[1].equals(rawName) && map[2].equals(stringFormat[type])) {
                                             key = map[0] + '/' + arity;
-                                            prim = new PrologPrimitive(type, key, this, aMlist, arity);
+                                            prim = new PrologPrim(type, key, this, aMlist, arity);
                                             mapPrimitives.get(type).add(prim);
                                         }
                                     }

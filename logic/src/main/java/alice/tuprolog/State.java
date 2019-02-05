@@ -26,11 +26,18 @@ import org.jetbrains.annotations.Nullable;
  */
 abstract class State {
     
-    protected PrologRun c;
+    @Deprecated protected PrologRun c;
     protected String stateName;
 
+    @Deprecated protected State() {
+
+    }
+    protected State(String name) {
+        this.stateName = name;
+    }
+
     /** returning null means remain in the same state */
-    @Nullable abstract State run(Engine e);
+    @Nullable abstract State run(PrologSolve e);
     
     public String toString() {
         return stateName;

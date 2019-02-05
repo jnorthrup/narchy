@@ -35,19 +35,19 @@ public class StateGoalEvaluation extends State {
      * @see alice.tuprolog.AbstractRunState#doJob()
      */
     @Override
-    State run(Engine e) {
+    State run(PrologSolve e) {
         State nextState;
         if (e.currentContext.currentGoal.isPrimitive()) {
             
-            PrologPrimitive primitive = e.currentContext.currentGoal
+            PrologPrim primitive = e.currentContext.currentGoal
                     .getPrimitive();
             try {
                 nextState = primitive
                         .evalAsPredicate(e.currentContext.currentGoal) ?
                         c.GOAL_SELECTION
-                        : c.BACKTRACK;
+                        : PrologRun.BACKTRACK;
             } catch (HaltException he) {
-                nextState = c.END_HALT;
+                nextState = PrologRun.END_HALT;
             } catch (Throwable t) {
 
                 if (t instanceof InvocationTargetException) {

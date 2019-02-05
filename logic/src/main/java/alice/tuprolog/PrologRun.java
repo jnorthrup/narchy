@@ -12,7 +12,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static alice.tuprolog.PrologPrimitive.PREDICATE;
+import static alice.tuprolog.PrologPrim.PREDICATE;
 
 /**
  * @author Alex Benini
@@ -22,14 +22,9 @@ import static alice.tuprolog.PrologPrimitive.PREDICATE;
 public class PrologRun implements java.io.Serializable, Runnable {
 
 
+    PrologSolve solve;
 
     Prolog prolog;
-
-    Theories theories;
-
-    private PrologPrimitives prims;
-    private Libraries libs;
-
 
     private boolean relinkVar;
     private List<Term> bagOFres;
@@ -50,48 +45,44 @@ public class PrologRun implements java.io.Serializable, Runnable {
     private final Object semaphore = new Object();
 
     /* Current environment */
-    Engine env;
     /* Last environment used */
-    private Engine last_env;
+    private PrologSolve last_env;
     /* Stack environments of nidicate solving */
-    private final FasterList<Engine> stackEnv = new FasterList<>();
+    private final FasterList<PrologSolve> stackEnv = new FasterList<>();
     protected Solution sinfo;
     private String sinfoSetOf;
 
     /**
      * States
      */
-    final State INIT;
+    public static final State INIT = StateInit.the;
     final State GOAL_EVALUATION;
     final State EXCEPTION;
     final State RULE_SELECTION;
     final State GOAL_SELECTION;
-    final State BACKTRACK;
-    final State END_FALSE;
-    final State END_TRUE;
-    final State END_TRUE_CP;
-    final State END_HALT;
+    public static final State BACKTRACK = StateBacktrack.the;
+
 
     public static final int HALT = -1;
     public static final int FALSE = 0;
     public static final int TRUE = 1;
     public static final int TRUE_CP = 2;
 
+    public static final State END_FALSE = new StateEnd(FALSE);
+    public static final State END_TRUE = new StateEnd(TRUE);
+    public static final State END_TRUE_CP = new StateEnd(TRUE_CP);
+    public static final State END_HALT = new StateEnd(HALT);
+
+
 
     public PrologRun(int id) {
-        /* Istanzio gli stati */
-        INIT = new StateInit(this);
+        this.id = id;
+
         GOAL_EVALUATION = new StateGoalEvaluation(this);
         EXCEPTION = new StateException(this);
         RULE_SELECTION = new StateRuleSelection(this);
         GOAL_SELECTION = new StateGoalSelection(this);
-        BACKTRACK = new StateBacktrack(this);
-        END_FALSE = new StateEnd(this, FALSE);
-        END_TRUE = new StateEnd(this, TRUE);
-        END_TRUE_CP = new StateEnd(this, TRUE_CP);
-        END_HALT = new StateEnd(this, HALT);
 
-        this.id = id;
     }
 
 
@@ -100,9 +91,6 @@ public class PrologRun implements java.io.Serializable, Runnable {
      */
     public PrologRun initialize(Prolog vm) {
         prolog = vm;
-        theories = vm.theories;
-        prims = vm.prims;
-        libs = vm.libs;
 
         detached = false;
         solving = false;
@@ -114,7 +102,7 @@ public class PrologRun implements java.io.Serializable, Runnable {
         return this;
     }
 
-    void on(State action, Engine env) {
+    void on(State action, PrologSolve env) {
         prolog.spy(action, env);
     }
 
@@ -163,13 +151,14 @@ public class PrologRun implements java.io.Serializable, Runnable {
         try {
             query.resolveTerm();
 
-            libs.onSolveBegin(query);
-            prims.identify(query, PREDICATE);
+            prolog.libs.onSolveBegin(query);
+            prolog.prims.identify(query, PREDICATE);
 
 
             freeze();
-            env = new Engine(this, query);
-            StateEnd result = env.run();
+
+            StateEnd result = (solve = new PrologSolve(this, query)).run();
+
             defreeze();
 
             sinfo = new Solution(
@@ -227,11 +216,11 @@ public class PrologRun implements java.io.Serializable, Runnable {
     public Solution solveNext() throws NoMoreSolutionException {
         if (hasOpenAlternatives()) {
             refreeze();
-            env.nextState = BACKTRACK;
-            StateEnd result = env.run();
+            solve.nextState = BACKTRACK;
+            StateEnd result = solve.run();
             defreeze();
             sinfo = new Solution(
-                    env.query,
+                    solve.query,
                     result.goal,
                     result.endState,
                     result.vars
@@ -253,8 +242,8 @@ public class PrologRun implements java.io.Serializable, Runnable {
      * Halts current solve computation
      */
     public void solveHalt() {
-        env.mustStop();
-        libs.onSolveHalt();
+        solve.mustStop();
+        prolog.libs.onSolveHalt();
     }
 
     /**
@@ -263,45 +252,45 @@ public class PrologRun implements java.io.Serializable, Runnable {
     public void solveEnd() {
 
 
-        libs.onSolveEnd();
+        prolog.libs.onSolveEnd();
     }
 
 
     private void freeze() {
-        if (env == null)
+        if (solve == null)
             return;
 
-        if (!stackEnv.isEmpty() && stackEnv.getLast() == env)
+        if (!stackEnv.isEmpty() && stackEnv.getLast() == solve)
             return;
 
-        stackEnv.add(env);
+        stackEnv.add(solve);
     }
 
     private void refreeze() {
         freeze();
-        env = last_env;
+        solve = last_env;
     }
 
     private void defreeze() {
-        last_env = env;
-        Engine last = stackEnv.poll();
+        last_env = solve;
+        PrologSolve last = stackEnv.poll();
         if (last!=null)
-            env = last;
+            solve = last;
     }
 
 
     void identify(Term t) {
-        prims.identify(t, PREDICATE);
+        prolog.prims.identify(t, PREDICATE);
     }
 
 
     void pushSubGoal(SubGoalTree goals) {
-        env.currentContext.goalsToEval.pushSubGoal(goals);
+        solve.currentContext.goalsToEval.pushSubGoal(goals);
     }
 
 
     void cut() {
-        env.choicePointSelector.cut(env.currentContext.choicePointAfterCut);
+        solve.choicePointSelector.cut(solve.currentContext.choicePointAfterCut);
     }
 
 

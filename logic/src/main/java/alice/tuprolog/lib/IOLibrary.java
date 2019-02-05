@@ -27,7 +27,7 @@ import java.util.Random;
  * <p>
  * Library/Theory Dependency: BasicLibrary
  */
-public class IOLibrary extends Library {
+public class IOLibrary extends PrologLib {
     /**
      * Added the variable consoleExecution and graphicExecution
      */

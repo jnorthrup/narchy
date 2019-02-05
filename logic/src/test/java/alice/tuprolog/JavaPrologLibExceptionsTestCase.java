@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *         Test del funzionamento delle eccezioni lanciate dai predicati della
  *         JavaLibrary
  */
-public class JavaLibraryExceptionsTestCase {
+public class JavaPrologLibExceptionsTestCase {
 	static final Prolog engine = new Prolog();
 	static {
 		try {

@@ -17,14 +17,14 @@
  */
 package alice.tuprolog.lib;
 
-import alice.tuprolog.Library;
+import alice.tuprolog.PrologLib;
 import alice.tuprolog.Theory;
 
 /**
  * Library built from Prolog theory.
  * 
  */
-public class TheoryLibrary extends Library {
+public class TheoryLibrary extends PrologLib {
     private final Theory th;
     private final String name;
     

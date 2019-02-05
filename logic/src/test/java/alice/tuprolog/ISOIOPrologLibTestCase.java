@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @Disabled
-public class ISOIOLibraryTestCase {
+public class ISOIOPrologLibTestCase {
 
 	static Prolog engine;
 	String theory;

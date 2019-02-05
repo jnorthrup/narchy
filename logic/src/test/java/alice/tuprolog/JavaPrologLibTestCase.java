@@ -13,7 +13,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled /* TODO */
-public class JavaLibraryTestCase {
+public class JavaPrologLibTestCase {
 	String theory;
 
 	final Prolog prolog = new Prolog();
@@ -24,12 +24,12 @@ public class JavaLibraryTestCase {
 
 	@Test
 	public void testGetPrimitives() {
-		Library library = new OOLibrary();
-		Map<Integer, List<PrologPrimitive>> primitives = library.primitives();
+		PrologLib prologLib = new OOLibrary();
+		Map<Integer, List<PrologPrim>> primitives = prologLib.primitives();
 		assertEquals(3, primitives.size());
-		assertEquals(0, primitives.get(PrologPrimitive.DIRECTIVE).size());
-		assertTrue(primitives.get(PrologPrimitive.PREDICATE).size() > 0);
-		assertEquals(0, primitives.get(PrologPrimitive.FUNCTOR).size());
+		assertEquals(0, primitives.get(PrologPrim.DIRECTIVE).size());
+		assertTrue(primitives.get(PrologPrim.PREDICATE).size() > 0);
+		assertEquals(0, primitives.get(PrologPrim.FUNCTOR).size());
 	}
 
 	@Test public void testAnonymousObjectRegistration() throws InvalidTheoryException, InvalidObjectIdException {

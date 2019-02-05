@@ -20,7 +20,7 @@
  */
 package alice.tuprolog;
 
-public class StringLibrary extends Library {
+public class StringLibrary extends PrologLib {
 	private static final long serialVersionUID = 1L;
 
 	public boolean to_lower_case_2(Term arg0, Term arg1){

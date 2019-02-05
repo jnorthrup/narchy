@@ -22,10 +22,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This class manages Prolog operators.
  *
- * @see Operator
+ * @see PrologOp
  */
 @SuppressWarnings("serial")
-public class PrologOperators extends ConcurrentHashMap<String, Operator> /**/ {
+public class PrologOperators extends ConcurrentHashMap<String, PrologOp> /**/ {
 
     /**
      * lowest operator priority
@@ -41,14 +41,13 @@ public class PrologOperators extends ConcurrentHashMap<String, Operator> /**/ {
         super(128, 0.9f);
     }
 
-    public void addOperator(Operator op) {
+    public void addOperator(PrologOp op) {
         put(op.name + op.type, op);
     }
 
-    public Operator getOperator(String name, String type) {
+    public PrologOp getOperator(String name, String type) {
         return get(name + type);
     }
-
 
 
     /**
@@ -56,7 +55,7 @@ public class PrologOperators extends ConcurrentHashMap<String, Operator> /**/ {
      * it replaces it with the new one
      */
     public void opNew(String name, String type, int prio) {
-        final Operator op = new Operator(name, type, prio);
+        final PrologOp op = new PrologOp(name, type, prio);
         if (prio >= OP_LOW && prio <= OP_HIGH)
             addOperator(op);
     }
@@ -65,25 +64,14 @@ public class PrologOperators extends ConcurrentHashMap<String, Operator> /**/ {
      * Returns the priority of an operator (0 if the operator is not defined).
      */
     public int opPrio(String name, String type) {
-        Operator o = getOperator(name, type);
+        PrologOp o = getOperator(name, type);
         return (o == null) ? 0 : o.prio;
     }
+
     public int opPrio(String nametype) {
-        Operator o = get(nametype);
+        PrologOp o = get(nametype);
         return (o == null) ? 0 : o.prio;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -91,22 +79,63 @@ public class PrologOperators extends ConcurrentHashMap<String, Operator> /**/ {
      *
      * @return the list of the operators
      */
-    public Iterable<Operator> operators() {
-        return values(); 
+    public Iterable<PrologOp> operators() {
+        return values();
     }
 
 
-/*Castagna 06/2011*/     
-    /* Francesco Fabbri		 
-     * 16/05/2011		 
-     * Clone operation added		 
+    /**
+     *  This class defines an operator manager with
+     *  some standard operators defined
+     *
      */
+    static class DefaultOps extends PrologOperators {
+        public DefaultOps() {
+            opNew(":-", "xfx", 1200);
+            opNew("-->", "xfx", 1200);
+            opNew(":-", "fx", 1200);
+            opNew("?-", "fx", 1200);
+            opNew(";", "xfy", 1100);
+            opNew("->", "xfy", 1050);
+            opNew(",", "xfy", 1000);
+            opNew("\\+", "fy", 900);
+            opNew("not", "fy", 900);
+            opNew("=", "xfx", 700);
+            opNew("\\=", "xfx", 700);
+            opNew("==", "xfx", 700);
+            opNew("\\==", "xfx", 700);
 
 
+            opNew("@>", "xfx", 700);
+            opNew("@<", "xfx", 700);
+            opNew("@=<", "xfx", 700);
+            opNew("@>=", "xfx", 700);
+            opNew("=:=", "xfx", 700);
+            opNew("=\\=", "xfx", 700);
+            opNew(">", "xfx", 700);
+            opNew("<", "xfx", 700);
+            opNew("=<", "xfx", 700);
+            opNew(">=", "xfx", 700);
+            opNew("is", "xfx", 700);
+            opNew("=..", "xfx", 700);
 
 
+            opNew("+", "yfx", 500);
+            opNew("-", "yfx", 500);
+            opNew("/\\", "yfx", 500);
+            opNew("\\/", "yfx", 500);
+            opNew("*", "yfx", 400);
+            opNew("/", "yfx", 400);
+            opNew("//", "yfx", 400);
+            opNew(">>", "yfx", 400);
+            opNew("<<", "yfx", 400);
+            opNew("rem", "yfx", 400);
+            opNew("mod", "yfx", 400);
+            opNew("**", "xfx", 200);
+            opNew("^", "xfy", 200);
+            opNew("\\", "fx", 200);
+            opNew("-", "fy", 200);
+        }
 
-
-/**/
-
+    }
 }

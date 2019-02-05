@@ -51,7 +51,6 @@ import java.util.regex.Pattern;
  * op(type,n) ::= atom | { symbol }+
  */
 public class Parser {
-	private static final long serialVersionUID = 1L;
 	private static class IdentifiedTerm {
 		private final int priority;
 		private final Term result;
@@ -61,7 +60,7 @@ public class Parser {
 		}
 	}
 
-	public static final PrologOperators defaultOps = new DefaultOps();
+	public static final PrologOperators defaultOps = new PrologOperators.DefaultOps();
 
 	private final Tokenizer tokenizer;
 	private PrologOperators ops = defaultOps;
@@ -135,7 +134,7 @@ public class Parser {
 	 */
 	public Term nextTerm(boolean endNeeded) {
 		try {
-			Token t = tokenizer.readToken();
+			Tokenizer.Token t = tokenizer.readToken();
 			if (t.isEOF())
 				return null;
 
@@ -183,7 +182,7 @@ public class Parser {
 	public static Term parseSingleTerm(String st, PrologOperators op) throws InvalidTermException {
 		try {
 			Parser p = new Parser(st, op);
-			Token t = p.tokenizer.readToken();
+			Tokenizer.Token t = p.tokenizer.readToken();
 			if (t.isEOF())
 	            throw new InvalidTermException("Term starts with EOF");
 
@@ -213,7 +212,7 @@ public class Parser {
 			
 
 		
-		Token t = tokenizer.readToken();
+		Tokenizer.Token t = tokenizer.readToken();
 		for (; t.isOperator(commaIsEndMarker); t = tokenizer.readToken()) {
 
 			int YFX = ops.opPrio(t.seq, "yfx");
@@ -256,7 +255,7 @@ public class Parser {
 		IdentifiedTerm left = parseLeftSide(commaIsEndMarker, maxPriority);
 
 		
-		Token operator = tokenizer.readToken();
+		Tokenizer.Token operator = tokenizer.readToken();
 		for (; operator.isOperator(commaIsEndMarker); operator = tokenizer.readToken()) {
 			int XFX = ops.opPrio(operator.seq, "xfx");
 			int XFY = ops.opPrio(operator.seq, "xfy");
@@ -331,13 +330,13 @@ public class Parser {
 	 */
 	private IdentifiedTerm parseLeftSide(boolean commaIsEndMarker, int maxPriority) throws InvalidTermException, IOException {
 		
-		Token f = tokenizer.readToken();
+		Tokenizer.Token f = tokenizer.readToken();
 		if (f.isOperator(commaIsEndMarker)) {
 			int FX = ops.opPrio(f.seq, "fx");
 			int FY = ops.opPrio(f.seq, "fy");
 
 			if (f.seq.equals("-")) {
-				Token t = tokenizer.readToken();
+				Tokenizer.Token t = tokenizer.readToken();
 				if (t.isNumber())
 					/*Michele Castagna 06/2011*/
 					
@@ -399,7 +398,7 @@ public class Parser {
 	 *              '(' exprA(1200) ')'
 	 */
 	private Term expr0() throws InvalidTermException, IOException {
-		Token t1 = tokenizer.readToken();
+		Tokenizer.Token t1 = tokenizer.readToken();
 
 		/*Castagna 06/2011*/
 		/*
@@ -446,11 +445,11 @@ public class Parser {
 			/**/
 
 			String functor = t1.seq;
-			Token t2 = tokenizer.readToken();   
+			Tokenizer.Token t2 = tokenizer.readToken();
 			if (!t2.isType(Tokenizer.LPAR))
 				throw new InvalidTermException("Something identified as functor misses its first left parenthesis");
 			LinkedList<Term> a = expr0_arglist();     
-			Token t3 = tokenizer.readToken();
+			Tokenizer.Token t3 = tokenizer.readToken();
 			if (t3.isType(Tokenizer.RPAR))      
 			/*Castagna 06/2011*/
 			{
@@ -481,7 +480,7 @@ public class Parser {
 		}
 
 		if (t1.isType(Tokenizer.LBRA)) {
-			Token t2 = tokenizer.readToken();
+			Tokenizer.Token t2 = tokenizer.readToken();
 			if (t2.isType(Tokenizer.RBRA))
 				return Struct.emptyList();
 
@@ -498,7 +497,7 @@ public class Parser {
 		}
 
 		if (t1.isType(Tokenizer.LBRA2)) {
-			Token t2 = tokenizer.readToken();
+			Tokenizer.Token t2 = tokenizer.readToken();
 			if (t2.isType(Tokenizer.RBRA2))
 			/*Castagna 06/2011*/
 			{
@@ -537,7 +536,7 @@ public class Parser {
 	
 	private Term expr0_list() throws InvalidTermException, IOException {
 		Term head = expr(true);
-		Token t = tokenizer.readToken();
+		Tokenizer.Token t = tokenizer.readToken();
 		if (",".equals(t.seq))
 			return new Struct(head, expr0_list());
 		if ("|".equals(t.seq))
@@ -558,7 +557,7 @@ public class Parser {
 	
 	private LinkedList<Term> expr0_arglist() throws InvalidTermException, IOException {
 		Term head = expr(true);
-		Token t = tokenizer.readToken();
+		Tokenizer.Token t = tokenizer.readToken();
 		if (",".equals(t.seq)) {
 			LinkedList<Term> l = expr0_arglist();
 			l.addFirst(head);

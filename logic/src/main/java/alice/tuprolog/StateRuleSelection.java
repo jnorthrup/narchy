@@ -38,7 +38,7 @@ public class StateRuleSelection extends State {
      * @see alice.tuprolog.AbstractRunState#doJob()
      */
     @Override
-    State run(Engine e) {
+    State run(PrologSolve e) {
         /*----------------------------------------------------
          * Individuo compatibleGoals e
          * stabilisco se derivo da Backtracking.
@@ -55,9 +55,9 @@ public class StateRuleSelection extends State {
             e.currentContext.trailingVars = OneWayList.add(e.currentContext.trailingVars, varsList);
 
             Struct goal = e.currentContext.currentGoal;
-            clauseStore = ClauseStore.match(goal, c.theories.find(goal), varsList);
+            clauseStore = ClauseStore.match(goal, c.prolog.theories.find(goal), varsList);
             if (clauseStore == null) { //g.isEmpty() || (clauseStore = ClauseStore.build(goal, g, varsList))==null) {
-                return c.BACKTRACK;
+                return PrologRun.BACKTRACK;
             }
 
             fromBacktracking = false;
@@ -76,7 +76,7 @@ public class StateRuleSelection extends State {
         /*-----------------------------------------------------
          * Build ExecutionContext and ChoicePointContext
          */
-        ExecutionContext ec = new ExecutionContext(e.nDemoSteps++);
+        PrologContext ec = new PrologContext(e.nDemoSteps++);
         ec.clause = clause.clause;
 
 
@@ -110,7 +110,7 @@ public class StateRuleSelection extends State {
             ec.choicePointAfterCut = e.choicePointSelector.getPointer();
         }
 
-        ExecutionContext curCtx = e.currentContext;
+        PrologContext curCtx = e.currentContext;
         Struct curGoal = curCtx.currentGoal;
         Collection<Var> unifiedVars = e.currentContext.trailingVars.head;
         curGoal.unify(unifiedVars, unifiedVars, ec.headClause);

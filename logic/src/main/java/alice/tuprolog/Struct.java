@@ -43,7 +43,7 @@ public class Struct extends Term {
     /**
      * primitive behaviour
      */
-    private transient PrologPrimitive primitive;
+    private transient PrologPrim primitive;
     /**
      * it indicates if the term is resolved
      */
@@ -442,12 +442,11 @@ public class Struct extends Term {
      * Gets a copy of this structure
      *
      * @param vMap     is needed for register occurence of same variables
-     * @param substMap
      */
     @Override
     Term copy(Map<Var, Var> vMap, Map<Term, Var> substMap) {
 
-        if (!(vMap instanceof IdentityHashMap) && isConstant())
+        if (!(vMap instanceof IdentityHashMap) && isGround())
             return this;
 
         Struct t = new Struct(name, new Term[subs()]);
@@ -457,15 +456,19 @@ public class Struct extends Term {
         Term[] thatArg = t.subs;
         Term[] thisArg = this.subs;
         final int arity = this.subs();
-        if (substMap == null)
-            substMap = new IdentityHashMap<>();
+
         for (int c = 0; c < arity; c++) {
-            Term tc = thisArg[c];
+            Term xc = thisArg[c];
             Term yc;
-            if (tc instanceof Var || (tc instanceof Struct && (!((Struct) tc).isConstant())))
-                yc = tc.copy(vMap, substMap);
-            else
-                yc = tc;
+            if (xc instanceof Var || (xc instanceof Struct && (!((Struct) xc).isConstant()))) {
+
+                if (substMap == null)
+                    substMap = new IdentityHashMap<>();
+
+                yc = xc.copy(vMap, substMap);
+            } else
+                yc = xc;
+
             thatArg[c] = yc;
         }
         return t;
@@ -723,14 +726,14 @@ public class Struct extends Term {
     /**
      * Set primitive behaviour associated at structure
      */
-    void setPrimitive(PrologPrimitive b) {
+    void setPrimitive(PrologPrim b) {
         primitive = b;
     }
 
     /**
      * Get primitive behaviour associated at structure
      */
-    public PrologPrimitive getPrimitive() {
+    public PrologPrim getPrimitive() {
         return primitive;
     }
 

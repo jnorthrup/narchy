@@ -1,10 +1,7 @@
 package alice.tuprolog;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Set;
 
 
 /**
@@ -14,64 +11,64 @@ import java.util.Set;
  * @author Paolo Contessi
  * @since 2.2
  */
-class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, FamilyClausesIndex.ClauseSet> {
+class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Deque<ClauseInfo>> {
 
-    static class ClauseSet extends ArrayDeque<ClauseInfo> {
-
-        //@Deprecated @Nullable Deque<ClauseInfo> shared;
-//        public ClauseSet(Deque<ClauseInfo> shared) {
-//            this.shared = shared.isEmpty() ? null : shared;
+//    static class Deque<ClauseInfo> extends ArrayDeque<ClauseInfo> {
+//
+//        //@Deprecated @Nullable Deque<ClauseInfo> shared;
+////        public Deque<ClauseInfo>(Deque<ClauseInfo> shared) {
+////            this.shared = shared.isEmpty() ? null : shared;
+////        }
+//
+////        @Nullable
+////        private Set<ClauseInfo> set = null;
+//
+//        public Deque<ClauseInfo>(int cap) {
+//            super(cap);
 //        }
+//
+//        @Override
+//        public void addFirst(ClauseInfo clauseInfo) {
+////            set = null;
+//            super.addFirst(clauseInfo);
+//        }
+//
+//        @Override
+//        public void addLast(ClauseInfo clauseInfo) {
+////            set = null;
+//            super.addLast(clauseInfo);
+//        }
+//
+//        @Override
+//        public boolean remove(Object o) {
+////            set = null;
+//            return super.remove(o);
+//        }
+//
+//        @Override
+//        public ClauseInfo pollFirst() {
+////            set = null;
+//            return super.pollFirst();
+//        }
+//
+//        @Override
+//        public ClauseInfo pollLast() {
+////            set = null;
+//            return super.pollLast();
+//        }
+//    }
 
-        @Nullable
-        private Set<ClauseInfo> set = null;
-
-        public ClauseSet(int cap) {
-            super(cap);
-        }
-
-        @Override
-        public void addFirst(ClauseInfo clauseInfo) {
-            set = null;
-            super.addFirst(clauseInfo);
-        }
-
-        @Override
-        public void addLast(ClauseInfo clauseInfo) {
-            set = null;
-            super.addLast(clauseInfo);
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            set = null;
-            return super.remove(o);
-        }
-
-        @Override
-        public ClauseInfo pollFirst() {
-            set = null;
-            return super.pollFirst();
-        }
-
-        @Override
-        public ClauseInfo pollLast() {
-            set = null;
-            return super.pollLast();
-        }
-    }
-
-    private final ClauseSet shared;
+    private final Deque<ClauseInfo> shared;
 
     public FamilyClausesIndex(){
         super();
-        shared = new ClauseSet(16);
+        shared = new ArrayDeque<ClauseInfo>();
     }
 
-    private Node<K,ClauseSet> createNewNode(K key, ClauseInfo clause, boolean first){
+    private Node<K,Deque<ClauseInfo>> createNewNode(K key, ClauseInfo clause, boolean first){
         int vs = shared.size();
-        ClauseSet list =
-                new ClauseSet(vs +1);
+        Deque<ClauseInfo> list =
+                new ArrayDeque<ClauseInfo>(vs +1);
 
         if(first){
             list.addFirst(clause);
@@ -110,11 +107,11 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Fami
             } else {
                 
 
-                Deque<Node<K, ClauseSet>> buf = new ArrayDeque<>();
+                Deque<Node<K, Deque<ClauseInfo>>> buf = new ArrayDeque<>();
                 buf.add(root);
 
                 while (!buf.isEmpty()) {
-                    Node<K, ClauseSet> n = buf.removeFirst();
+                    Node<K, Deque<ClauseInfo>> n = buf.removeFirst();
 
                     setValue(clause, first, n);
 
@@ -130,7 +127,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Fami
         }
     }
 
-    private void setValue(ClauseInfo clause, boolean first, Node<K, ClauseSet> n) {
+    private void setValue(ClauseInfo clause, boolean first, Node<K, Deque<ClauseInfo>> n) {
         if(first){
             n.value.addFirst(clause);
         } else {
@@ -149,11 +146,11 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Fami
      * @param first     If the clause must be binded as first or last element
      */
     protected void insert(K key, ClauseInfo clause, boolean first){
-        Node<K, ClauseSet> insertedNode = null;
+        Node<K, Deque<ClauseInfo>> insertedNode = null;
         if (root == null) {
             insertedNode = root = createNewNode(key, clause, first);
         } else {
-            Node<K,ClauseSet> n = root;
+            Node<K,Deque<ClauseInfo>> n = root;
             while (true) {
                 int compResult = key.compareTo(n.key);
                 if (compResult == 0) {
@@ -192,11 +189,11 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Fami
                 } else {
                     
 
-                    Deque<Node<K, ClauseSet>> buf = new ArrayDeque<>();
+                    Deque<Node<K, Deque<ClauseInfo>>> buf = new ArrayDeque<>();
                     buf.add(root);
 
                     while (!buf.isEmpty()) {
-                        Node<K, ClauseSet> n = buf.remove();
+                        Node<K, Deque<ClauseInfo>> n = buf.remove();
 
                         n.value.remove(clause);
 
@@ -222,7 +219,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Fami
      * @return      The related clauses
      */
     public Deque<ClauseInfo> get(K key){
-        ClauseSet res = lookup(key);
+        Deque<ClauseInfo> res = lookup(key);
         return res != null ? res : shared;
     }
 }

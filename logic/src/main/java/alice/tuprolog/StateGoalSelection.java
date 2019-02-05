@@ -33,7 +33,7 @@ public class StateGoalSelection extends State {
      * @see alice.tuprolog.AbstractRunState#doJob()
      */
     @Override
-    State run(Engine e) {
+    State run(PrologSolve e) {
         Term curGoal = null;
         while (curGoal == null) {
             curGoal = e.currentContext.goalsToEval.fetch();
@@ -41,7 +41,7 @@ public class StateGoalSelection extends State {
 
                 if (e.currentContext.fatherCtx == null) {
 
-                    return e.choicePointSelector.existChoicePoint() ? c.END_TRUE_CP : c.END_TRUE;
+                    return e.choicePointSelector.existChoicePoint() ? PrologRun.END_TRUE_CP : PrologRun.END_TRUE;
                 }
 
                 e.currentContext = e.currentContext.fatherCtx;
@@ -50,7 +50,7 @@ public class StateGoalSelection extends State {
 
                 Term goal_app = curGoal.term();
                 if (!(goal_app instanceof Struct))
-                    return c.END_FALSE;
+                    return PrologRun.END_FALSE;
 
                 if (curGoal != goal_app)
                     curGoal = new Struct("call", goal_app);

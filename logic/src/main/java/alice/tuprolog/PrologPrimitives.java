@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import static alice.tuprolog.PrologPrimitive.*;
+import static alice.tuprolog.PrologPrim.*;
 
 
 /**
@@ -36,20 +36,16 @@ import static alice.tuprolog.PrologPrimitive.*;
 public class PrologPrimitives {
 
     private static final Set<String> PRIMITIVE_PREDICATES = Set.of(",", "':-'", ":-");
-    private final Set<Library> libs;
-    private final Map<String, PrologPrimitive> directives;
-    private final Map<String, PrologPrimitive> predicates;
-    private final Map<String, PrologPrimitive> functors;
+    private final Set<PrologLib> libs;
+    private final Map<String, PrologPrim> directives;
+    private final Map<String, PrologPrim> predicates;
+    private final Map<String, PrologPrim> functors;
 
     public PrologPrimitives() {
-        libs = 
-                new CopyOnWriteArraySet<>();
-        directives = 
-                new ConcurrentHashMap();
-        predicates = 
-                new ConcurrentHashMap();
-        functors = 
-                new ConcurrentHashMap();
+        libs = new CopyOnWriteArraySet<>();
+        directives = new ConcurrentHashMap();
+        predicates = new ConcurrentHashMap();
+        functors = new ConcurrentHashMap();
     }
 
 
@@ -57,32 +53,32 @@ public class PrologPrimitives {
         start(new BuiltIn(prolog));
     }
 
-    void start(Library src) {
+    void start(PrologLib src) {
         if (!libs.add(src))
             throw new RuntimeException("already loaded: " + src);
 
-        Map<Integer, List<PrologPrimitive>> sp = src.primitives();
+        Map<Integer, List<PrologPrim>> sp = src.primitives();
         for (int type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
-            Map<String, PrologPrimitive> table = table(type);
+            Map<String, PrologPrim> table = table(type);
             sp.get(type).forEach(p-> table.put(p.key, p));
         }
     }
 
 
-    void stop(Library src) {
+    void stop(PrologLib src) {
         if (!libs.remove(src))
             throw new RuntimeException("not loaded: " + src);
 
-        Map<Integer, List<PrologPrimitive>> sp = src.primitives();
+        Map<Integer, List<PrologPrim>> sp = src.primitives();
         for (int type : new int[] { DIRECTIVE, PREDICATE, FUNCTOR }) {
-            Map<String, PrologPrimitive> table = table(type);
+            Map<String, PrologPrim> table = table(type);
             sp.get(type).forEach(p-> table.remove(p.key));
         }
     }
 
 
-    private Map<String, PrologPrimitive> table(int type) {
-        Map<String, PrologPrimitive> table;
+    private Map<String, PrologPrim> table(int type) {
+        Map<String, PrologPrim> table;
         switch (type) {
             case DIRECTIVE: table = directives; break;
             case PREDICATE: table = predicates; break;
@@ -109,7 +105,7 @@ public class PrologPrimitives {
     }
 
     public boolean evalAsDirective(Struct d) throws Throwable {
-        PrologPrimitive pd = identifyDirective(d).getPrimitive();
+        PrologPrim pd = identifyDirective(d).getPrimitive();
         if (pd != null) {
             try {
                 pd.evalAsDirective(d);
@@ -140,7 +136,7 @@ public class PrologPrimitives {
             identify(t.sub(c), primType);
         }
 
-        PrologPrimitive p = table(typeOfPrimitive).get(t.key());
+        PrologPrim p = table(typeOfPrimitive).get(t.key());
         if (p!=null)
             t.setPrimitive(p);
     }

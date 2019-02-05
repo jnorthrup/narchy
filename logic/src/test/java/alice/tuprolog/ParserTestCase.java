@@ -71,7 +71,7 @@ public class ParserTestCase {
 	
 	@Test public void testDotOperator() throws InvalidTermException {
 		String s = "class('java.lang.Integer').'MAX_VALUE'";
-		DefaultOps om = new DefaultOps();
+		PrologOperators.DefaultOps om = new PrologOperators.DefaultOps();
 		om.opNew(".", "xfx", 600);
 		Parser p = new Parser(s, om);
 		Struct result = new Struct(".", new Struct("class", new Struct("java.lang.Integer")),
@@ -81,7 +81,7 @@ public class ParserTestCase {
 	
 	@Test public void testBracketedOperatorAsTerm() throws InvalidTermException {
 		String s = "u (b1) b2 (b3)";
-		DefaultOps om = new DefaultOps();
+		PrologOperators.DefaultOps om = new PrologOperators.DefaultOps();
 		om.opNew("u", "fx", 200);
 		om.opNew("b1", "yfx", 400);
 		om.opNew("b2", "yfx", 500);
@@ -93,7 +93,7 @@ public class ParserTestCase {
 	
 	@Test public void testBracketedOperatorAsTerm2() throws InvalidTermException {
 		String s = "(u) b1 (b2) b3 a";
-		DefaultOps om = new DefaultOps();
+		PrologOperators.DefaultOps om = new PrologOperators.DefaultOps();
 		om.opNew("u", "fx", 200);
 		om.opNew("b1", "yfx", 400);
 		om.opNew("b2", "yfx", 500);

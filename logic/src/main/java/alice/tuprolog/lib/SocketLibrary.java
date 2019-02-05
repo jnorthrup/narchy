@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  *
  */
 
-public class SocketLibrary extends Library {
+public class SocketLibrary extends PrologLib {
 	private static final long serialVersionUID = 1L;
 	private final String addrRegex;
 	private final LinkedList<ThreadReader> readers;			

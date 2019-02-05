@@ -10,6 +10,7 @@
 package alice.tuprologx.pj.engine;
 
 
+import alice.tuprolog.PrologLib;
 import alice.tuprolog.Solution;
 import alice.tuprologx.pj.model.Term;
 import alice.tuprologx.pj.model.Theory;
@@ -134,9 +135,9 @@ public class PJProlog /*extends alice.tuprolog.Prolog*/ {
         }        
      }
      
-     public void loadLibrary(alice.tuprolog.Library library) {
+     public void loadLibrary(PrologLib prologLib) {
          try {
-            engine.addLibrary(library);
+            engine.addLibrary(prologLib);
          }
          catch (Exception e) {
              throw new UnsupportedOperationException(e);

@@ -23,14 +23,15 @@ import java.util.Collection;
 
 
 /**
+ * Execution Context / Frame
  * @author Alex Benini
  */
-public class ExecutionContext {
+public class PrologContext {
 
     private final int id;
     int depth;
     Struct currentGoal;
-    ExecutionContext fatherCtx;
+    PrologContext fatherCtx;
     SubGoal fatherGoalId;
     Struct clause;
     Struct headClause;
@@ -40,7 +41,7 @@ public class ExecutionContext {
     ChoicePointContext choicePointAfterCut;
     boolean haveAlternatives;
 
-    ExecutionContext(int id) {
+    PrologContext(int id) {
         this.id = id;
     }
 
@@ -113,9 +114,9 @@ public class ExecutionContext {
      * got TAIL RECURSION OPTIMIZATION!
      */
 
-    void tailCallOptimize(Engine e) {
+    void tailCallOptimize(PrologSolve e) {
 
-        ExecutionContext ctx = e.currentContext;
+        PrologContext ctx = e.currentContext;
         if (!haveAlternatives) {
             SubGoalStore ge = ctx.goalsToEval;
             if (ge.getCurSGId() == null && !ge.haveSubGoals()) {

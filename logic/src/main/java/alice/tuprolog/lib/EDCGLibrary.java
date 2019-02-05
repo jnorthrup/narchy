@@ -17,7 +17,10 @@
  */
 package alice.tuprolog.lib;
 
-import alice.tuprolog.*;
+import alice.tuprolog.PrologError;
+import alice.tuprolog.PrologLib;
+import alice.tuprolog.Term;
+import alice.tuprolog.Var;
 
 /**
  * Library for managing DCGs.
@@ -27,7 +30,7 @@ import alice.tuprolog.*;
  * 
  * 
  */
-public class EDCGLibrary extends Library {
+public class EDCGLibrary extends PrologLib {
 	private static final long serialVersionUID = 1L;
 
     @Override

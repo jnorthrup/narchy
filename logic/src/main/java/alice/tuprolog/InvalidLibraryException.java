@@ -20,7 +20,7 @@ package alice.tuprolog;
 /**
  * This exception means that a not valid tuProlog library has been specified.
  *
- * @see Library
+ * @see PrologLib
  */
 public class InvalidLibraryException extends PrologException {
 	private static final long serialVersionUID = 1L;

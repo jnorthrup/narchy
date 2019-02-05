@@ -26,69 +26,65 @@ import java.util.Collection;
  * @author Alex Benini
  *
  */
-public class StateBacktrack extends State {
+public enum StateBacktrack  { ;
+
+    public static final State the = new State("Back") {
+
+        @Override
+        State run(PrologSolve e) {
+            ChoicePointContext curChoice = e.choicePointSelector.fetch();
+
+            if (curChoice == null)
+                return PrologRun.END_FALSE;
+
+            e.currentAlternative = curChoice;
+
+
+            e.currentContext = curChoice.executionContext;
+            Term curGoal = e.currentContext.goalsToEval.backTo(curChoice.indexSubGoal).term();
+            if (!(curGoal instanceof Struct))
+                return PrologRun.END_FALSE;
+
+            e.currentContext.currentGoal = (Struct) curGoal;
+
+
+
+            PrologContext curCtx = e.currentContext;
+            OneWayList<Collection<Var>> pointer = curCtx.trailingVars;
+            OneWayList<Collection<Var>> stopDeunify = curChoice.varsToDeunify;
+            Collection<Var> varsToDeunify = stopDeunify.head;
+            Var.free(varsToDeunify);
+            varsToDeunify.clear();
+
+            do {
+
+                while (pointer != stopDeunify) {
+                    Var.free(pointer.head);
+                    pointer = pointer.tail;
+                }
+                curCtx.trailingVars = pointer;
+                if (curCtx.fatherCtx == null)
+                    break;
+                stopDeunify = curCtx.fatherVarsList;
+                SubGoal fatherIndex = curCtx.fatherGoalId;
+
+                Term prevGoal = curGoal;
+                curCtx = curCtx.fatherCtx;
+                curGoal = curCtx.goalsToEval.backTo(fatherIndex).term();
+                if (!(curGoal instanceof Struct) || prevGoal == curGoal)
+                    return PrologRun.END_FALSE;
+
+                curCtx.currentGoal = (Struct)curGoal;
+                pointer = curCtx.trailingVars;
+            } while (true);
+
+
+            return e.run.GOAL_EVALUATION;
+        }
+
+    };
+    
     
 
-    
-    public StateBacktrack(PrologRun c) {
-        this.c = c;
-        stateName = "Back";
-    }
-    
-    
-    /* (non-Javadoc)
-     * @see alice.tuprolog.AbstractRunState#doJob()
-     */
-    @Override
-    State run(Engine e) {
-        ChoicePointContext curChoice = e.choicePointSelector.fetch();
-        
-        if (curChoice == null)
-            return c.END_FALSE;
 
-        e.currentAlternative = curChoice;
-        
-        
-        e.currentContext = curChoice.executionContext;
-        Term curGoal = e.currentContext.goalsToEval.backTo(curChoice.indexSubGoal).term();
-        if (!(curGoal instanceof Struct))
-            return c.END_FALSE;
-
-        e.currentContext.currentGoal = (Struct) curGoal;
-        
-        
-        
-        ExecutionContext curCtx = e.currentContext;
-        OneWayList<Collection<Var>> pointer = curCtx.trailingVars;
-        OneWayList<Collection<Var>> stopDeunify = curChoice.varsToDeunify;
-        Collection<Var> varsToDeunify = stopDeunify.head;
-        Var.free(varsToDeunify);
-        varsToDeunify.clear();
-        
-        do {
-            
-            while (pointer != stopDeunify) {
-                Var.free(pointer.head);
-                pointer = pointer.tail;
-            }
-            curCtx.trailingVars = pointer;
-            if (curCtx.fatherCtx == null)
-                break;
-            stopDeunify = curCtx.fatherVarsList;
-            SubGoal fatherIndex = curCtx.fatherGoalId;
-
-            Term prevGoal = curGoal;
-            curCtx = curCtx.fatherCtx;
-            curGoal = curCtx.goalsToEval.backTo(fatherIndex).term();
-            if (!(curGoal instanceof Struct) || prevGoal == curGoal)
-                return c.END_FALSE;
-
-            curCtx.currentGoal = (Struct)curGoal;
-            pointer = curCtx.trailingVars;
-        } while (true);
-        
-        
-        return c.GOAL_EVALUATION;
-    }
-    
 }

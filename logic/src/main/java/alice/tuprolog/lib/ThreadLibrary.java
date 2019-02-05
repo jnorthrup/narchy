@@ -7,13 +7,15 @@ package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 
-public class ThreadLibrary extends Library {
+public class ThreadLibrary extends PrologLib {
 
 	protected final AtomicInteger id = new AtomicInteger();
 
@@ -25,7 +27,7 @@ public class ThreadLibrary extends Library {
 	@Override
 	public void setProlog(Prolog p) {
         prolog = p;
-		threads.set(p.runner());
+		threads.set(p.run);
 	}
 	
 	
@@ -35,7 +37,7 @@ public class ThreadLibrary extends Library {
 		return true;
 	}
 
-	private PrologRun runner() {
+	private static PrologRun runner() {
 		return threads.get(); //prolog.runner();
 	}
 
@@ -501,13 +503,7 @@ public class ThreadLibrary extends Library {
 		if (goal instanceof Var)
 			goal = goal.term();
 
-		ThreadedPrologRun er = new ThreadedPrologRun(id) {
-			@Override
-			public void run() {
-				threads.set(this);
-				super.run();
-			}
-		};
+		ThreadedPrologRun er = new ThreadedPrologRun(id);
 		er.initialize(this.prolog);
 
 		if (!threadID.unify(this.prolog, new NumberTerm.Int(id)))
@@ -533,6 +529,95 @@ public class ThreadLibrary extends Library {
 			super(id);
 			msgs = new TermQueue();
 		}
+		@Override
+		public void run() {
+			threads.set(this);
+			super.run();
+		}
 	}
 
+	public static class TermQueue {
+
+		private final LinkedList<Term> queue = new LinkedList<>();
+
+		public boolean get(Term t, Prolog engine, PrologRun er) {
+			return searchLoop(t, engine, true, true, er);
+		}
+
+		private boolean searchLoop(Term t, Prolog engine, boolean block, boolean remove, PrologRun er) {
+			synchronized (queue) {
+				boolean found;
+				do {
+					found = search(t, engine, remove);
+					if (found)
+						return true;
+
+					er.setSolving(false);
+					try {
+						queue.wait();
+					} catch (InterruptedException e) {
+						break;
+					}
+				} while (block);
+				return false;
+			}
+		}
+
+
+		private boolean search(Term t, Prolog engine, boolean remove) {
+			synchronized (queue) {
+				Iterator<Term> it = queue.iterator();
+				while (it.hasNext()) {
+					if (t.unify(engine, it.next())) {
+						if (remove)
+							it.remove();
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+
+
+		public boolean peek(Term t, Prolog engine) {
+			synchronized (queue) {
+				return search(t, engine, false);
+			}
+		}
+
+		public boolean remove(Term t, Prolog engine) {
+			synchronized (queue) {
+				return search(t, engine, true);
+			}
+		}
+
+		public boolean wait(Term t, Prolog engine, PrologRun er) {
+			return searchLoop(t, engine, true, false, er);
+		}
+
+		public void store(Term t) {
+			synchronized (queue) {
+				queue.addLast(t);
+				queue.notifyAll();
+			}
+		}
+
+		public int size() {
+			synchronized (queue) {
+				return queue.size();
+			}
+		}
+
+		public void clear() {
+			synchronized (queue) {
+				queue.clear();
+			}
+		}
+
+		public boolean isEmpty() {
+			synchronized (queue) {
+				return queue.isEmpty();
+			}
+		}
+	}
 }

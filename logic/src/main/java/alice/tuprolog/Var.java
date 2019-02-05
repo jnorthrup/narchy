@@ -19,7 +19,10 @@ package alice.tuprolog;
 
 import jcog.io.BinTxt;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * This class represents a variable term.

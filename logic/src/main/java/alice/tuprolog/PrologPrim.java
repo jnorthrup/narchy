@@ -30,12 +30,12 @@ import java.lang.reflect.Modifier;
  *
  * @see Struct
  */
-public class PrologPrimitive {
+public class PrologPrim {
     
     public final static int DIRECTIVE  = 0;
     public final static int PREDICATE  = 1;
     public final static int FUNCTOR    = 2;
-    public static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
     public final int type;
     /**
@@ -45,7 +45,7 @@ public class PrologPrimitive {
     /**
 	 * lib object where the builtin is defined
 	 */
-    public final Library source;
+    public final PrologLib source;
     public final int arity;
     /**
 	 * for optimization purposes
@@ -55,7 +55,7 @@ public class PrologPrimitive {
     private final MethodHandle mh;
 
 
-    public PrologPrimitive(int type, String key, Library lib, Method m, int arity) throws NoSuchMethodException {
+    public PrologPrim(int type, String key, PrologLib lib, Method m, int arity) throws NoSuchMethodException {
         if (m==null) {
             throw new NoSuchMethodException();
         }

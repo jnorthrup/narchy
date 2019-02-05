@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * @author Alex Benini
  */
-public class Engine {
+public class PrologSolve {
 
 	
 	State  nextState;
@@ -34,7 +34,7 @@ public class Engine {
 	Struct startGoal;
 	Collection<Var> goalVars;
 	int    nDemoSteps;
-	ExecutionContext currentContext; 
+	PrologContext currentContext;
 	
 	ChoicePointContext currentAlternative;
 	ChoicePointStore choicePointSelector;
@@ -42,9 +42,9 @@ public class Engine {
 	final PrologRun run;
 
 
-	public Engine(PrologRun run, Term query) {
+	public PrologSolve(PrologRun run, Term query) {
 		this.run = run;
-		this.nextState = run.INIT;
+		this.nextState = PrologRun.INIT;
 		this.query = query;
 		this.mustStop = false;
 	}
@@ -67,11 +67,11 @@ public class Engine {
 	 */
 	StateEnd run() {
 
-		State nextState = null;
+		State nextState;
 		do {
 
 			if (mustStop) {
-				nextState = run.END_FALSE;
+				nextState = PrologRun.END_FALSE;
 				break;
 			}
 
@@ -106,9 +106,9 @@ public class Engine {
 //		return nDemoSteps;
 //	}
 
-	public List<ExecutionContext> getExecutionStack() {
-		ArrayList<ExecutionContext> l = new ArrayList<>();
-		ExecutionContext t = currentContext;
+	public List<PrologContext> getExecutionStack() {
+		ArrayList<PrologContext> l = new ArrayList<>();
+		PrologContext t = currentContext;
 		while (t != null) {
 			l.add(t);
 			t = t.fatherCtx;
@@ -128,7 +128,7 @@ public class Engine {
 		
 		
 
-	void initialize(ExecutionContext eCtx) {
+	void initialize(PrologContext eCtx) {
 		currentContext = eCtx;
 		choicePointSelector = new ChoicePointStore();
 		nDemoSteps = 1;
@@ -140,4 +140,106 @@ public class Engine {
 		return nextState.stateName;
 	}
 
+	public static class ChoicePointStore {
+
+
+		private ChoicePointContext pointer;
+
+		public ChoicePointStore() {
+			pointer = null;
+		}
+
+		public void add(ChoicePointContext cpc) {
+			if (pointer != null) {
+				cpc.prevChoicePointContext = pointer;
+			}
+			pointer = cpc;
+		}
+
+		public void cut(ChoicePointContext pointerAfterCut) {
+			pointer = pointerAfterCut;
+		}
+
+		/**
+		 * Return the correct choice-point
+		 */
+		public ChoicePointContext fetch() {
+			return (existChoicePoint()) ? pointer : null;
+		}
+
+		/**
+		 * Return the actual choice-point store
+		 * @return
+		 */
+		public ChoicePointContext getPointer() {
+			return pointer;
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		/**
+		 * Check if a choice point exists in the store.
+		 * As a side effect, removes choice points which have been already used and are now empty.
+		 * @return
+		 */
+		protected boolean existChoicePoint() {
+			ChoicePointContext pointer = this.pointer;
+			while (pointer!=null) {
+				if (pointer.compatibleGoals.unifiesMore())
+					return true;
+				this.pointer = pointer = pointer.prevChoicePointContext;
+			}
+			return false;
+		}
+
+
+		/**
+		 * Removes choice points which have been already used and are now empty.
+		 */
+		protected void removeUnusedChoicePoints() {
+
+			existChoicePoint();
+		}
+
+		/**
+		 * Cut at defined depth (toDepth)
+		 */
+
+
+
+
+
+
+		public String toString(){
+			return pointer + "\n";
+		}
+
+		/*
+		 * Methods for spyListeners
+		 */
+
+	//    public List<ChoicePointContext> getChoicePoints() {
+	//        ArrayList<ChoicePointContext> l = new ArrayList<>();
+	//        ChoicePointContext t = pointer;
+	//        while (t != null) {
+	//            l.addAt(t);
+	//            t = t.prevChoicePointContext;
+	//        }
+	//        return l;
+	//    }
+
+	}
 }

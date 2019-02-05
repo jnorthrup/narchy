@@ -18,7 +18,7 @@ public class StateException extends State {
     }
 
     @Override
-    State run(Engine e) {
+    State run(PrologSolve e) {
         String errorType = e.currentContext.currentGoal.name();
         if (errorType.equals("throw"))
             prologError(e);
@@ -27,13 +27,13 @@ public class StateException extends State {
         return null;
     }
 
-    private void prologError(Engine e) {
+    private void prologError(PrologSolve e) {
         Term errorTerm = e.currentContext.currentGoal.sub(0);
         e.currentContext = e.currentContext.fatherCtx;
         if (e.currentContext == null) {
             
             
-            e.nextState = c.END_HALT;
+            e.nextState = PrologRun.END_HALT;
             return;
         }
         while (true) {
@@ -63,7 +63,7 @@ public class StateException extends State {
                 Term handlerTerm = e.currentContext.currentGoal.sub(2);
                 Term curHandlerTerm = handlerTerm.term();
                 if (!(curHandlerTerm instanceof Struct)) {
-                    e.nextState = c.END_FALSE;
+                    e.nextState = PrologRun.END_FALSE;
                     return;
                 }
                 
@@ -89,21 +89,21 @@ public class StateException extends State {
                 if (e.currentContext == null) {
                     
                     
-                    e.nextState = c.END_HALT;
+                    e.nextState = PrologRun.END_HALT;
                     return;
                 }
             }
         }
     }
 
-    private void javaException(Engine e) {
+    private void javaException(PrologSolve e) {
         Struct cg = e.currentContext.currentGoal;
         Term exceptionTerm = cg.subs() > 0 ? cg.sub(0) : null;
         e.currentContext = e.currentContext.fatherCtx;
         if (e.currentContext == null) {
             
             
-            e.nextState = c.END_HALT;
+            e.nextState = PrologRun.END_HALT;
             return;
         }
         while (true) {
@@ -125,7 +125,7 @@ public class StateException extends State {
                 Term handlerTerm = javaUnify(e.currentContext.currentGoal
                         .sub(1), exceptionTerm, unifiedVars);
                 if (handlerTerm == null) {
-                    e.nextState = c.END_FALSE;
+                    e.nextState = PrologRun.END_FALSE;
                     return;
                 }
 
@@ -136,7 +136,7 @@ public class StateException extends State {
                 
                 Term curHandlerTerm = handlerTerm.term();
                 if (!(curHandlerTerm instanceof Struct)) {
-                    e.nextState = c.END_FALSE;
+                    e.nextState = PrologRun.END_FALSE;
                     return;
                 }
                 Term finallyTerm = e.currentContext.currentGoal.sub(2);
@@ -149,11 +149,11 @@ public class StateException extends State {
                         isFinally = false;
                     else {
                         
-                        e.nextState = c.END_FALSE;
+                        e.nextState = PrologRun.END_FALSE;
                         return;
                     }
                 } else if (!(curFinallyTerm instanceof Struct)) {
-                    e.nextState = c.END_FALSE;
+                    e.nextState = PrologRun.END_FALSE;
                     return;
                 }
                 
@@ -188,7 +188,7 @@ public class StateException extends State {
                 if (e.currentContext == null) {
                     
                     
-                    e.nextState = c.END_HALT;
+                    e.nextState = PrologRun.END_HALT;
                     return;
                 }
             }

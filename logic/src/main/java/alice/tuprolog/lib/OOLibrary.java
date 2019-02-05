@@ -47,7 +47,7 @@ import java.util.*;
  * Library/Theory Dependency: BasicLibrary
  */
 @SuppressWarnings("serial")
-public class OOLibrary extends Library {
+public class OOLibrary extends PrologLib {
 
     public static final Struct STDERR = new Struct("stderr");
     public static final Struct RUNTIME = new Struct("runtime");

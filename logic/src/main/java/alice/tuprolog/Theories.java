@@ -28,7 +28,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-import static alice.tuprolog.PrologPrimitive.PREDICATE;
+import static alice.tuprolog.PrologPrim.PREDICATE;
 
 /**
  * This class defines the Theory Manager who manages the clauses/theory often referred to as the Prolog database.

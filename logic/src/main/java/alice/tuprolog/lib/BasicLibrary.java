@@ -30,7 +30,7 @@ import java.util.List;
  * 
  * 
  */
-public class BasicLibrary extends Library {
+public class BasicLibrary extends PrologLib {
 	private static final long serialVersionUID = 1L;
     public BasicLibrary() {
     }
@@ -145,7 +145,7 @@ public class BasicLibrary extends Library {
     public boolean get_operators_list_1(Term argument) {
         Term arg = argument.term();
         Struct list = Struct.emptyList();
-        for (Operator o : prolog.operators()) {
+        for (PrologOp o : prolog.operators()) {
             list = new Struct(new Struct("op", new NumberTerm.Int(o.prio),
                     new Struct(o.type), new Struct(o.name)), list);
         }
@@ -154,7 +154,7 @@ public class BasicLibrary extends Library {
 
     /**
      * spawns a separate prolog agent providing it a theory text
-     * 
+     *
      * @throws PrologError
      */
     public boolean agent_1(Term th) throws PrologError {
@@ -176,7 +176,7 @@ public class BasicLibrary extends Library {
 
     /**
      * spawns a separate prolog agent providing it a theory text and a goal
-     * 
+     *
      * @throws PrologError
      */
     public boolean agent_2(Term th, Term g) throws PrologError {

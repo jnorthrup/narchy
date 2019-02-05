@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LibraryTestCase {
+public class PrologLibTestCase {
 	
 	@Test
 	public void testLibraryFunctor() throws PrologException {

@@ -28,7 +28,7 @@ import alice.tuprolog.*;
  * 
  * 
  */
-public class ISOLibrary extends Library {
+public class ISOLibrary extends PrologLib {
 	private static final long serialVersionUID = 1L;
     public ISOLibrary() {
     }

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Eleonora Cau
  *
  */
-public class ThreadLibraryTestCase {
+public class ThreadPrologLibTestCase {
 	
 	Prolog engine = new Prolog();
 	String theory;

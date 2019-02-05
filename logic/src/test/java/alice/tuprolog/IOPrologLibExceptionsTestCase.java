@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *         Test del funzionamento delle eccezioni lanciate dai predicati della
  *         IOLibrary
  */
-public class IOLibraryExceptionsTestCase {
+public class IOPrologLibExceptionsTestCase {
 
 	
 	@Test

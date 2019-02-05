@@ -46,9 +46,9 @@ public class Prolog {
 
     public final Flags flags;
 
-    public final Libraries libs;
+    public final PrologLibraries libs;
 
-    protected final PrologRun root = new PrologRun(0);
+    public final PrologRun run = new PrologRun(0);
 
 
     /* listeners registrated for virtual machine output events */
@@ -137,7 +137,7 @@ public class Prolog {
         absolutePathList = new CopyOnWriteArrayList<>();
         flags = new Flags();
 
-        libs = new Libraries();
+        libs = new PrologLibraries();
         ops = new PrologOperators();
         prims = new PrologPrimitives();
         theories = new Theories(this, dynamics);
@@ -145,7 +145,7 @@ public class Prolog {
         libs.start(this);
         prims.start(this);
 
-        root.initialize(this);
+        run.initialize(this);
 
     }
 
@@ -245,7 +245,7 @@ public class Prolog {
      * @return the reference to the Library just loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public Library addLibrary(String className) throws InvalidLibraryException {
+    public PrologLib addLibrary(String className) throws InvalidLibraryException {
         return libs.loadClass(className);
     }
 
@@ -260,7 +260,7 @@ public class Prolog {
      * @return the reference to the Library just loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public Library addLibrary(String className, String... paths) throws InvalidLibraryException {
+    public PrologLib addLibrary(String className, String... paths) throws InvalidLibraryException {
         return libs.loadClass(className, paths);
     }
 
@@ -273,11 +273,11 @@ public class Prolog {
      * @param lib the (Java class) name of the library to be loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public void addLibrary(Library lib) throws InvalidLibraryException {
+    public void addLibrary(PrologLib lib) throws InvalidLibraryException {
         libs.load(lib);
     }
 
-    public void addLibrary(Class<? extends Library> lib) throws InvalidLibraryException {
+    public void addLibrary(Class<? extends PrologLib> lib) throws InvalidLibraryException {
         try {
             addLibrary(lib.getConstructor().newInstance());
         } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
@@ -302,7 +302,7 @@ public class Prolog {
      * @return the reference to the library loaded, null if the library is
      * not found
      */
-    public Library library(String name) {
+    public PrologLib library(String name) {
         return libs.getLibrary(name);
     }
 
@@ -311,7 +311,7 @@ public class Prolog {
      *
      * @return the list of the operators
      */
-    public Iterable<Operator> operators() {
+    public Iterable<PrologOp> operators() {
         return ops.operators();
     }
 
@@ -326,7 +326,7 @@ public class Prolog {
 
         this.clearSinfoSetOf();
 
-        Solution sinfo = root.solve(g);
+        Solution sinfo = run.solve(g);
 
         solution(this, sinfo);
 
@@ -405,8 +405,8 @@ public class Prolog {
     public Solution solveNext() throws NoMoreSolutionException {
         if (hasOpenAlternatives()) {
             Solution result;
-            synchronized (root) {
-                result = root.solveNext();
+            synchronized (run) {
+                result = run.solveNext();
             }
             Solution sinfo = result;
             solution(this, sinfo);
@@ -419,14 +419,14 @@ public class Prolog {
      * Halts current solve computation
      */
     public void solveHalt() {
-        solveHalt();
+        run.solveHalt();
     }
 
     /**
      * Accepts current solution
      */
     public void solveEnd() {
-        solveEnd();
+        run.solveEnd();
     }
 
     /**
@@ -435,7 +435,7 @@ public class Prolog {
      * @return true if the demonstration was stopped
      */
     public boolean isHalted() {
-        return runner().isHalted();
+        return run.isHalted();
     }
 
     /**
@@ -483,7 +483,7 @@ public class Prolog {
      * Notifies a spy information event
      */
     protected void spy(String s) {
-        if (spy) {
+        if (spy && !onSpy.isEmpty()) {
             notifySpy(new SpyEvent(this, s));
         }
     }
@@ -493,10 +493,10 @@ public class Prolog {
      *
      * @param s TODO
      */
-    protected void spy(State s, Engine e) {
+    protected void spy(State s, PrologSolve e) {
 
         if (spy) {
-            ExecutionContext ctx = e.currentContext;
+            PrologContext ctx = e.currentContext;
             if (ctx != null) {
                 int i = 0;
                 String g = "-";
@@ -801,84 +801,79 @@ public class Prolog {
     }
 
     final void cut() {
-        runner().cut();
+        run.cut();
     }
 
     public boolean hasOpenAlternatives() {
-        return runner().hasOpenAlternatives();
+        return run.hasOpenAlternatives();
     }
 
     void pushSubGoal(SubGoalTree goals) {
-        runner().pushSubGoal(goals);
+        run.pushSubGoal(goals);
     }
 
-    public final PrologRun runner() {
-        //return threads.get();
-        return root;
-    }
-
-    Engine getEnv() {
-        return runner().env;
+    PrologSolve getEnv() {
+        return run.solve;
     }
 
     public void identify(Term t) {
-        runner().identify(t);
+        run.identify(t);
     }
 
     public boolean relinkVar() {
-        return this.runner().getRelinkVar();
+        return run.getRelinkVar();
     }
 
     public void relinkVar(boolean b) {
-        this.runner().setRelinkVar(b);
+        run.setRelinkVar(b);
     }
 
     public List<Term> getBagOFres() {
-        return this.runner().getBagOFres();
+        return run.getBagOFres();
     }
 
     public void setBagOFres(List<Term> l) {
-        this.runner().setBagOFres(l);
+        run.setBagOFres(l);
     }
 
     public List<String> getBagOFresString() {
-        return this.runner().getBagOFresString();
+        return run.getBagOFresString();
     }
 
     public void setBagOFresString(List<String> l) {
-        this.runner().setBagOFresString(l);
+        run.setBagOFresString(l);
     }
 
     public Term getBagOFvarSet() {
-        return this.runner().getBagOFvarSet();
+        return run.getBagOFvarSet();
     }
 
     public void setBagOFvarSet(Term l) {
-        this.runner().setBagOFvarSet(l);
+        run.setBagOFvarSet(l);
     }
 
     public Term getBagOFgoal() {
-        return this.runner().getBagOFgoal();
+        return run.getBagOFgoal();
     }
 
     public void setBagOFgoal(Term l) {
-        this.runner().setBagOFgoal(l);
+        run.setBagOFgoal(l);
     }
 
     public Term getBagOFbag() {
-        return this.runner().getBagOFBag();
+        return run.getBagOFBag();
     }
 
     public void setBagOFbag(Term l) {
-        this.runner().setBagOFBag(l);
+        run.setBagOFBag(l);
     }
 
     public void setSetOfSolution(String s) {
-        this.runner().setSetOfSolution(s);
+        run.setSetOfSolution(s);
     }
 
     public void clearSinfoSetOf() {
-        this.runner().clearSinfoSetOf();
+        run.clearSinfoSetOf();
     }
 
     public void endFalse(String s) {

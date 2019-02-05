@@ -138,7 +138,7 @@ public class ClauseInfo {
      *
      * @param idExecCtx Current ExecutionContext id
      */
-    void copyTo(int idExecCtx, ExecutionContext target) {
+    void copyTo(int idExecCtx, PrologContext target) {
         IdentityHashMap<Var, Var> v = new IdentityHashMap<>();
 
         Struct headCopy = (Struct) head.copy(v, idExecCtx);

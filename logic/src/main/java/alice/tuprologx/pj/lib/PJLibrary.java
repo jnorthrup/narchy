@@ -46,7 +46,7 @@ import java.util.*;
  *
  */
 @SuppressWarnings("serial")
-public class PJLibrary extends Library {
+public class PJLibrary extends PrologLib {
 	
 	/**
 	 * java objects referenced by prolog terms (keys)

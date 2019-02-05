@@ -235,7 +235,7 @@ public abstract class Term implements Serializable, SubTree {
 //            }
 
             int count = 0;
-            Engine env = engine.getEnv();
+            PrologSolve env = engine.getEnv();
             int id = (env == null) ? Var.PROGRESSIVE : env.nDemoSteps;
             for (Var v : v1) {
                 v.rename(id, count);

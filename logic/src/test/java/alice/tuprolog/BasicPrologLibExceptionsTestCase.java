@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *         Test del funzionamento delle eccezioni lanciate dai predicati della
  *         BasicLibrary
  */
-public class BasicLibraryExceptionsTestCase {
+public class BasicPrologLibExceptionsTestCase {
 
 	
 	@Test

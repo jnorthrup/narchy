@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
-import static alice.tuprolog.PrologPrimitive.PREDICATE;
+import static alice.tuprolog.PrologPrim.PREDICATE;
 
 /**
  * Library of built-in predicates
@@ -33,9 +33,9 @@ import static alice.tuprolog.PrologPrimitive.PREDICATE;
  * @author Alex Benini
  */
 
-public final class BuiltIn extends Library {
+public final class BuiltIn extends PrologLib {
     private final Theories theories;
-    private final Libraries libs;
+    private final PrologLibraries libs;
     private final Flags flags;
     private final PrologPrimitives prims;
     private final PrologOperators ops;
