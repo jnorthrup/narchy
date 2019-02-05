@@ -24,7 +24,10 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -32,8 +35,9 @@ import java.util.function.Predicate;
 /**
  * The Prolog class represents a tuProlog engine.
  */
-public class Prolog {
+public class Prolog extends EngineManager {
 
+    public static final ThreadLocal<EngineRunner> threads = new ThreadLocal<>();
     /*  manager of current theory */
     public final TheoryManager theories;
     /*  component managing primitive  */
@@ -44,8 +48,11 @@ public class Prolog {
     public final Flags flags;
     /* component managing libraries */
     public final LibraryManager libs;
-    /* component managing engine */
-    public final EngineManager engine;
+    public final ConcurrentHashMap<String, TermQueue> queues = new ConcurrentHashMap<>();
+    protected final EngineRunner root = new EngineRunner(0);
+    protected final AtomicInteger id = new AtomicInteger();
+    protected final ConcurrentHashMap<Integer, EngineRunner> runners = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ReentrantLock> locks = new ConcurrentHashMap<>();
 
     /*  spying activated ?  */
     private boolean spy;
@@ -138,6 +145,7 @@ public class Prolog {
      * @param spy spying activated
      */
     private Prolog(boolean spy, ClauseIndex dynamics) {
+        super();
 
         outputListeners = new CopyOnWriteArrayList<>();
         spyListeners = new CopyOnWriteArrayList<>();
@@ -157,12 +165,14 @@ public class Prolog {
         libs = new LibraryManager();
         ops = new OperatorManager();
         prims = new PrimitiveManager();
-        engine = new EngineManager(this);
 
         theories = new TheoryManager(this, dynamics);
         libs.start(this);
         prims.start(this);
-        engine.initialize();
+
+        root.initialize(this);
+        threads.set(root);
+
     }
 
 
@@ -346,7 +356,9 @@ public class Prolog {
      **/
     public Solution solve(Term g) {
 
-        Solution sinfo = engine.solve(g);
+        this.clearSinfoSetOf();
+
+        Solution sinfo = root.solve(g);
 
         solution(this, sinfo);
 
@@ -376,12 +388,12 @@ public class Prolog {
         Solution next = null;
         do {
             if (next == null) {
-                next = engine.solve(g);
+                next = solve(g);
                 if (next == null)
                     break;
             } else {
                 try {
-                    next = engine.solveNext( /* TODO subdivide input time */);
+                    next = solveNext( /* TODO subdivide input time */);
                 } catch (NoMoreSolutionException e) {
                     e.printStackTrace();
                 }
@@ -423,7 +435,11 @@ public class Prolog {
      **/
     public Solution solveNext() throws NoMoreSolutionException {
         if (hasOpenAlternatives()) {
-            Solution sinfo = engine.solveNext();
+            Solution result;
+            synchronized (root) {
+                result = root.solveNext();
+            }
+            Solution sinfo = result;
             solution(this, sinfo);
             return sinfo;
         } else
@@ -434,26 +450,18 @@ public class Prolog {
      * Halts current solve computation
      */
     public void solveHalt() {
-        engine.solveHalt();
+        solveHalt();
     }
 
     /**
      * Accepts current solution
      */
     public void solveEnd() {
-        engine.solveEnd();
+        solveEnd();
     }
 
 
-    /**
-     * Asks for the presence of open alternatives to be explored
-     * in current demostration process.
-     *
-     * @return true if open alternatives are present
-     */
-    public boolean hasOpenAlternatives() {
-        return engine.hasOpenAlternatives();
-    }
+
 
     /**
      * Checks if the demonstration process was stopped by an halt command.
@@ -461,7 +469,7 @@ public class Prolog {
      * @return true if the demonstration was stopped
      */
     public boolean isHalted() {
-        return engine.isHalted();
+        return runner().isHalted();
     }
 
 
@@ -841,15 +849,15 @@ public class Prolog {
         absolutePathList.add(path);
     }
 
-    public Term termSolve(String st) {
-        try {
-            Parser p = new Parser(st, ops);
-            return p.nextTerm(true);
-        } catch (InvalidTermException e) {
-
-            return Term.term("null");
-        }
-    }
+//    public Term termSolve(String st) {
+//        try {
+//            Parser p = new Parser(st, ops);
+//            return p.nextTerm(true);
+//        } catch (InvalidTermException e) {
+//
+//            return Term.term("null");
+//        }
+//    }
 
     public boolean isTrue(String s) {
         return isTrue(term(s));
@@ -875,5 +883,276 @@ public class Prolog {
 
     public void setWarning(boolean b) {
         this.warning = b;
+    }
+
+    public boolean threadCreate(Term threadID, Term goal) {
+
+        if (goal == null)
+            return false;
+
+        int id = this.id.incrementAndGet();
+
+        if (goal instanceof Var)
+            goal = goal.term();
+
+        Prolog vm = this;
+
+        EngineRunner er = new EngineRunner(id);
+        er.initialize(vm);
+
+        if (!threadID.unify(vm, new NumberTerm.Int(id)))
+            return false;
+
+        er.setGoal(goal);
+
+
+        runners.put(id, er);
+
+
+        Thread t = new Thread(er);
+
+
+        t.start();
+        return true;
+    }
+
+
+    public Solution join(int id) {
+        EngineRunner er = runner(id);
+        if (er == null || er.isDetached()) return null;
+        /*toSPY
+         * System.out.println("Thread id "+runnerId()+" - prelevo la soluzione (join)");*/
+        Solution solution = er.read();
+        /*toSPY
+         * System.out.println("Soluzione: "+solution);*/
+        removeRunner(id);
+        return solution;
+    }
+
+    public Solution read(int id) {
+        EngineRunner er = runner(id);
+        if (er == null || er.isDetached()) return null;
+        /*toSPY
+         * System.out.println("Thread id "+runnerId()+" - prelevo la soluzione (read) del thread di id: "+er.getId());
+         */
+        /*toSPY
+         * System.out.println("Soluzione: "+solution);
+         */
+        return er.read();
+    }
+
+    public boolean hasNext(int id) {
+        EngineRunner er = runner(id);
+        return !(er == null || er.isDetached()) && er.hasOpenAlternatives();
+    }
+
+    public boolean nextSolution(int id) {
+        EngineRunner er = runner(id);
+        /*toSPY
+         * System.out.println("Thread id "+runnerId()+" - next_solution: risveglio il thread di id: "+er.getId());
+         */
+        return !(er == null || er.isDetached()) && er.nextSolution();
+    }
+
+    public void detach(int id) {
+        EngineRunner er = runner(id);
+        if (er != null)
+            er.detach();
+    }
+
+    private void removeRunner(int id) {
+        runners.remove(id);
+    }
+
+    void cut() {
+        runner().cut();
+    }
+
+    ExecutionContext getCurrentContext() {
+        return runner().getCurrentContext();
+    }
+
+    public boolean hasOpenAlternatives() {
+        return runner().hasOpenAlternatives();
+    }
+
+    void pushSubGoal(SubGoalTree goals) {
+        runner().pushSubGoal(goals);
+    }
+
+    /**
+     * @return L'EngineRunner associato al thread di id specificato.
+     */
+
+    public EngineRunner runner(int id) {
+
+
+        return runners.get(id);
+
+
+    }
+
+    public final EngineRunner runner() {
+
+        return threads.get();
+
+//        Integer id = threads.get();
+//
+//        return id != null ? runner(id) : root;
+
+    }
+
+    public boolean createQueue(String name) {
+
+        queues.computeIfAbsent(name, (n) -> new TermQueue());
+
+        return true;
+    }
+
+    public void destroyQueue(String name) {
+
+        queues.remove(name);
+
+    }
+
+    public int queueSize(int id) {
+        return runner(id).msgQSize();
+    }
+
+    public int queueSize(String name) {
+        TermQueue q = queues.get(name);
+        return q == null ? -1 : q.size();
+    }
+
+    public ReentrantLock createLock(String name) {
+        return locks.computeIfAbsent(name, (n) -> new ReentrantLock());
+    }
+
+    public boolean destroyLock(String name) {
+        return locks.remove(name)!=null;
+    }
+
+    public void mutexLock(String name) {
+        //while (true) {
+        ReentrantLock mutex = createLock(name);
+
+        mutex.lock();
+        /*toSPY
+         * System.out.println("Thread id "+runnerId()+ " - mi sono impossessato del lock");
+         */
+    }
+
+    public boolean mutexTryLock(String name) {
+        ReentrantLock mutex = locks.get(name);
+        return mutex != null && mutex.tryLock();
+        /*toSPY
+         * System.out.println("Thread id "+runnerId()+ " - provo ad impossessarmi del lock");
+         */
+    }
+
+    public boolean mutexUnlock(String name) {
+        ReentrantLock mutex = locks.get(name);
+        if (mutex == null) return false;
+        try {
+            mutex.unlock();
+            /*toSPY
+             * System.out.println("Thread id "+runnerId()+ " - Ho liberato il lock");
+             */
+            return true;
+        } catch (IllegalMonitorStateException e) {
+            return false;
+        }
+    }
+
+    public boolean isLocked(String name) {
+        ReentrantLock mutex = locks.get(name);
+        return mutex != null && mutex.isLocked();
+    }
+
+    public void unlockAll() {
+
+        locks.forEach((k, mutex) -> {
+            boolean unlocked = false;
+            while (!unlocked) {
+                try {
+                    mutex.unlock();
+                } catch (IllegalMonitorStateException e) {
+                    unlocked = true;
+                }
+            }
+        });
+    }
+
+    Engine getEnv() {
+        return runner().env;
+    }
+
+    public void identify(Term t) {
+        runner().identify(t);
+    }
+
+    public boolean relinkVar() {
+        return this.runner().getRelinkVar();
+    }
+
+    public void relinkVar(boolean b) {
+        this.runner().setRelinkVar(b);
+    }
+
+    public List<Term> getBagOFres() {
+        return this.runner().getBagOFres();
+    }
+
+    public void setBagOFres(List<Term> l) {
+        this.runner().setBagOFres(l);
+    }
+
+    public List<String> getBagOFresString() {
+        return this.runner().getBagOFresString();
+    }
+
+    public void setBagOFresString(List<String> l) {
+        this.runner().setBagOFresString(l);
+    }
+
+    public Term getBagOFvarSet() {
+        return this.runner().getBagOFvarSet();
+    }
+
+    public void setBagOFvarSet(Term l) {
+        this.runner().setBagOFvarSet(l);
+    }
+
+    public Term getBagOFgoal() {
+        return this.runner().getBagOFgoal();
+    }
+
+    public void setBagOFgoal(Term l) {
+        this.runner().setBagOFgoal(l);
+    }
+
+    public Term getBagOFbag() {
+        return this.runner().getBagOFBag();
+    }
+
+    public void setBagOFbag(Term l) {
+        this.runner().setBagOFBag(l);
+    }
+
+    public void setSetOfSolution(String s) {
+        this.runner().setSetOfSolution(s);
+    }
+
+    public void clearSinfoSetOf() {
+        this.runner().clearSinfoSetOf();
+    }
+
+    public void endFalse(String s) {
+        setSetOfSolution(s);
+        relinkVar(false);
+        setBagOFres(null);
+        setBagOFgoal(null);
+        setBagOFvarSet(null);
+        setBagOFbag(null);
     }
 }

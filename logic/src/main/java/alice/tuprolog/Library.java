@@ -53,7 +53,7 @@ public abstract class Library implements Serializable {
     /**
 	 * (current) prolog core which loaded this library
 	 */
-    protected Prolog engine = null;
+    protected Prolog prolog = null;
     
     /**
 	 * operator mapping
@@ -100,8 +100,8 @@ public abstract class Library implements Serializable {
     /**
 	 * @param en
 	 */
-    public void setEngine(Prolog en) {	
-        engine = en;
+    public void setProlog(Prolog en) {
+        prolog = en;
     }
     
     /**
@@ -111,7 +111,7 @@ public abstract class Library implements Serializable {
      * is deployed and altered.
      */
     protected boolean unify(Term a0,Term a1) {
-        return a0.unify(engine, a1);
+        return a0.unify(prolog, a1);
     }
 
 
@@ -131,7 +131,7 @@ public abstract class Library implements Serializable {
             final Struct t = (Struct) val;
             boolean primitive = t.isPrimitive();
             if (!primitive && term != t) {
-                engine.prims.identify(t, FUNCTOR); 
+                prolog.prims.identify(t, FUNCTOR);
             } else if (primitive) {
                 PrologPrimitive bt = t.getPrimitive();
                 if ((bt.type == FUNCTOR)) 
@@ -298,7 +298,7 @@ public abstract class Library implements Serializable {
 
     protected void not_var(Term arg, int argIth) throws PrologError {
         if (arg.term() instanceof Var) {
-            throw PrologError.instantiation_error(engine, argIth);
+            throw PrologError.instantiation_error(prolog, argIth);
         }
     }
     

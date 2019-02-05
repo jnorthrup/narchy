@@ -46,8 +46,11 @@ public class HyperIterator<X> implements AutoCloseable {
 
         try (HyperIterator<X> h = new HyperIterator<>(tree.model(), rank)) {
             tree.read((t) -> {
-                h.start(t.root());
-                with.accept(h);
+                Node<X> r = t.root();
+                if (r!=null) {
+                    h.start(r);
+                    with.accept(h);
+                }
             });
         }
 

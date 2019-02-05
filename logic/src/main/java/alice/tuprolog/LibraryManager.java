@@ -268,7 +268,7 @@ public class LibraryManager {
     private Library bindLibrary(Library lib) throws InvalidLibraryException {
         try {
             String name = lib.getName();
-            lib.setEngine(prolog);
+            lib.setProlog(prolog);
             currentLibraries.add(lib);
 
             primitiveManager.start(lib);

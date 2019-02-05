@@ -1,5 +1,7 @@
 package jcog.math;
 
+import jcog.WTF;
+
 /** pair of 64-bit signed long integers representing an interval.
  *  a special 'ETERNAL' value represents (-infinity,+infinity)
  *
@@ -205,6 +207,8 @@ public interface LongInterval {
     }
 
     default long minTimeTo(LongInterval b) {
+        if (b == null)
+            throw new WTF(); //TEMPORARY
         return minTimeTo(b.start(), b.end());
     }
 

@@ -59,14 +59,14 @@ public class StateGoalEvaluation extends State {
                     PrologError error = (PrologError) t;
                     
                     e.currentContext.currentGoal = new Struct("throw", error.getError());
-                    e.manager.prolog.exception(error);
+                    e.run.prolog.exception(error);
 
                 } else if (t instanceof JavaException) {
                     
                     JavaException exception = (JavaException) t;
 
                     e.currentContext.currentGoal = new Struct("java_throw", exception.getException());
-                    e.manager.prolog.exception(exception); //exception.getException());
+                    e.run.prolog.exception(exception); //exception.getException());
 
                     //System.err.println(((JavaException) t).getException());
                 }

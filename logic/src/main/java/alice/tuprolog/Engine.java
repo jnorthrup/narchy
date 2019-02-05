@@ -39,12 +39,12 @@ public class Engine {
 	ChoicePointContext currentAlternative;
 	ChoicePointStore choicePointSelector;
 	boolean mustStop;
-	final EngineRunner manager;
+	final EngineRunner run;
 
 
-	public Engine(EngineRunner manager, Term query) {
-		this.manager = manager;        
-		this.nextState = manager.INIT;
+	public Engine(EngineRunner run, Term query) {
+		this.run = run;
+		this.nextState = run.INIT;
 		this.query = query;
 		this.mustStop = false;
 	}
@@ -71,7 +71,7 @@ public class Engine {
 		do {
 
 			if (mustStop) {
-				nextState = manager.END_FALSE;
+				nextState = run.END_FALSE;
 				break;
 			}
 
@@ -84,7 +84,7 @@ public class Engine {
 			else
 				this.nextState = nextState;
 
-			manager.on(state, this);
+			run.on(state, this);
 
 		} while (!(nextState instanceof StateEnd));
 

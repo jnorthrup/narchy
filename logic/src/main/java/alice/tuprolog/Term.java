@@ -174,7 +174,7 @@ public abstract class Term implements Serializable, SubTree {
      * @param vMap
      * @param idExecCtx Execution Context identifier
      */
-    Term copy(Map<Var, Var> vMap, int idExecCtx) {
+    public Term copy(Map<Var, Var> vMap, int idExecCtx) {
         return this;
     }
 
@@ -211,7 +211,7 @@ public abstract class Term implements Serializable, SubTree {
 
 
 
-        EngineManager engine = p.engine;
+        Prolog engine = p;
 
         long now = Term.now();
         resolveTerm(now);

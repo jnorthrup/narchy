@@ -36,9 +36,9 @@ public class ISOLibrary extends Library {
     public boolean atom_length_2(Term arg0, Term len) throws PrologError {
         arg0 = arg0.term();
         if (arg0 instanceof Var)
-            throw PrologError.instantiation_error(engine.engine, 1);
+            throw PrologError.instantiation_error(prolog, 1);
         if (!arg0.isAtomic())
-            throw PrologError.type_error(engine.engine, 1, "atom",
+            throw PrologError.type_error(prolog, 1, "atom",
                     arg0);
         Struct atom = (Struct) arg0;
         return unify(len, new NumberTerm.Int(atom.name().length()));
@@ -49,7 +49,7 @@ public class ISOLibrary extends Library {
         arg1 = arg1.term();
         if (arg0 instanceof Var) {
             if (!arg1.isList()) {
-                throw PrologError.type_error(engine.engine, 2,
+                throw PrologError.type_error(prolog, 2,
                         "list", arg1);
             }
             Struct list = (Struct) arg1;
@@ -77,7 +77,7 @@ public class ISOLibrary extends Library {
             return unify(arg0, new Struct(st));
         } else {
             if (!arg0.isAtomic()) {
-                throw PrologError.type_error(engine.engine, 1,
+                throw PrologError.type_error(prolog, 1,
                         "atom", arg0);
             }
             String st = ((Struct) arg0).name();
@@ -105,17 +105,17 @@ public class ISOLibrary extends Library {
                 if (st.length() <= 1)
                     return unify(arg1, new NumberTerm.Int(st.charAt(0)));
                 else
-                    throw PrologError.type_error(engine.engine, 1,
+                    throw PrologError.type_error(prolog, 1,
                             "character", arg0);
             } else
-                throw PrologError.type_error(engine.engine, 1,
+                throw PrologError.type_error(prolog, 1,
                         "character", arg0);
         } else if ((arg1 instanceof NumberTerm.Int)
                 || (arg1 instanceof NumberTerm.Long)) {
             char c = (char) ((NumberTerm) arg1).intValue();
             return unify(arg0, new Struct(String.valueOf(c)));
         } else
-            throw PrologError.type_error(engine.engine, 2,
+            throw PrologError.type_error(prolog, 2,
                     "integer", arg1);
     }
 
@@ -459,7 +459,7 @@ public class ISOLibrary extends Library {
             throws PrologError {
         arg0 = arg0.term();
         if (!arg0.isAtomic())
-            throw PrologError.type_error(engine.engine, 1, "atom", arg0);
+            throw PrologError.type_error(prolog, 1, "atom", arg0);
         return true;
     }
 

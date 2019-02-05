@@ -152,7 +152,7 @@ public class Var extends Term {
      * then the variable in the list is returned.
      */
     @Override
-    Term copy(Map<Var, Var> vMap, int idExecCtx) {
+    public Term copy(Map<Var, Var> vMap, int idExecCtx) {
         Term tt = term();
         if (tt == this) {
             if (idExecCtx==ORIGINAL) {
@@ -247,6 +247,7 @@ public class Var extends Term {
                 break;
             }
         }
+
         return tt;
     }
 

@@ -39,6 +39,8 @@ abstract public class MultiExec extends UniExec {
 
     static private final float queueLatencyMeasurementProbability = 0.05f;
 
+    private float explorationRate = 0.1f;
+
     MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
         this.valuator = valuator;
@@ -141,33 +143,24 @@ abstract public class MultiExec extends UniExec {
         float valRange = valMax[0] - valMin[0];
 
 
-        final double[] pSum = {0};
         if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
+            float exp = explorationRate * valRange;
             cpu.forEach((s) -> {
                 Causable c = s.get();
                 if (c.sleeping()) {
                     s.pri(0);
                 } else {
-                    float vNorm = Util.normalize(s.value, valMin[0], valMax[0]);
+                    float vNorm = Util.normalize(s.value, valMin[0] - exp, valMax[0]);
                     s.pri(vNorm);
-                    pSum[0] += vNorm;
                 }
             });
         } else {
+            //FLAT
+            float p = 1f/n;
             cpu.forEach((s) -> {
-                Causable c = s.get();
-                if (c.sleeping()) {
-                    s.pri(0f);
-                } else {
-                    float p = 0.5f;
-                    s.pri(p);
-                    pSum[0] += p;
-                }
+                s.pri(p);
             });
         }
-//        cpu.forEach((s) -> {
-//            s.addAt( Math.max(1, Math.round(cycleTimeNS * s.priElseZero()/pSum[0])), cycleTimeNS );
-//        });
 
     }
 
@@ -279,7 +272,7 @@ abstract public class MultiExec extends UniExec {
             long lastScheduled = ETERNAL;
             private int n;
             private long maxExe;
-            int granularity = 3;
+            int granularity = 2;
 
             Worker() {
                  rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
@@ -426,17 +419,17 @@ abstract public class MultiExec extends UniExec {
 
 
                 //schedule
-                long maxTime = Long.MIN_VALUE;
-                for (TimedLink.MyTimedLink m : play) {
+                //TODO Util.max((TimedLink.MyTimedLink m) -> m.time, play);
+                long maxTime =  Long.MIN_VALUE;
+                for (TimedLink.MyTimedLink m : play)
                     if (m.time > maxTime)
                         maxTime = m.time;
-                }
 
-                float overspend = 1.5f;
+                float spendRate = 1f;
                 long shift = maxTime < 0 ? 1 - maxTime : 0;
                 for (TimedLink.MyTimedLink m : play) {
-                    m.add(Math.max(1, Math.round(shift + (cycleTimeNS * overspend) * m.pri())),
-                            -cycleTimeNS / 2, cycleTimeNS / 2);
+                    int t = Math.round(shift + (cycleTimeNS * spendRate) * m.pri());
+                    m.add(Math.max(1, t), -cycleTimeNS, cycleTimeNS);
                 }
                 return false;
             }

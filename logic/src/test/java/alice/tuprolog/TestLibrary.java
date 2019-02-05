@@ -35,7 +35,7 @@ public class TestLibrary extends StringLibrary {
 	}
 	
 	public boolean println_1(Term arg0){
-		engine.output(arg0.toString());
+		prolog.output(arg0.toString());
 		return true;
 	}
 	

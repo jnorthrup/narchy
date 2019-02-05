@@ -7,7 +7,7 @@ package alice.tuprolog;
 import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -27,11 +27,11 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
 
     private PrimitiveManager primitives;
     private LibraryManager libraryManager;
-    private EngineManager engineManager;
+
 
     private boolean relinkVar;
-    private ArrayList<Term> bagOFres;
-    private ArrayList<String> bagOFresString;
+    private List<Term> bagOFres;
+    private List<String> bagOFresString;
     private Term bagOFvarSet;
     private Term bagOfgoal;
     private Term bagOfBag;
@@ -102,7 +102,6 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
         theories = vm.theories;
         primitives = vm.prims;
         libraryManager = vm.libs;
-        engineManager = vm.engine;
 
         detached = false;
         solving = false;
@@ -337,7 +336,7 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
     @Override
     public void run() {
 
-        EngineManager.threads.set(this);
+        Prolog.threads.set(this);
 
         solving = true;
 
@@ -440,19 +439,19 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
         this.relinkVar = b;
     }
 
-    public ArrayList<Term> getBagOFres() {
+    public List<Term> getBagOFres() {
         return this.bagOFres;
     }
 
-    public void setBagOFres(ArrayList<Term> l) {
+    public void setBagOFres(List<Term> l) {
         this.bagOFres = l;
     }
 
-    public ArrayList<String> getBagOFresString() {
+    public List<String> getBagOFresString() {
         return this.bagOFresString;
     }
 
-    public void setBagOFresString(ArrayList<String> l) {
+    public void setBagOFresString(List<String> l) {
         this.bagOFresString = l;
     }
 
@@ -480,13 +479,6 @@ public final class EngineRunner implements java.io.Serializable, Runnable {
         this.bagOfBag = l;
     }
 
-    public EngineManager getEngineMan() {
-        return this.engineManager;
-    }
-
-    public String getSetOfSolution() {
-        return sinfo != null ? sinfo.getSetOfSolution() : null;
-    }
 
     public void setSetOfSolution(String s) {
         if (sinfo != null)

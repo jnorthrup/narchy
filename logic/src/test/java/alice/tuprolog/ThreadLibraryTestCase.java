@@ -1,6 +1,6 @@
 package alice.tuprolog;
 
-import org.junit.jupiter.api.BeforeEach;
+import alice.tuprolog.lib.ThreadLibrary;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,14 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ThreadLibraryTestCase {
 	
-	Prolog engine;
+	Prolog engine = new Prolog();
 	String theory;
 	
-	@BeforeEach
-	public void before() {
+	{
 		try {
-			engine = new Prolog();
-			engine.addLibrary("alice.tuprolog.lib.ThreadLibrary");
+			engine.addLibrary(ThreadLibrary.class);
 		} catch (InvalidLibraryException e) {
 			e.printStackTrace();
 		}

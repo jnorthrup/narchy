@@ -46,7 +46,7 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
     public final Term query;
     public final Struct goal;
     public final List<Var>   bindings;
-    private String setOfSolution;
+    String setOfSolution;
     
     
     /**
@@ -114,10 +114,7 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
     public Term getQuery() {
         return query;
     }
-    
-    public String getSetOfSolution() {
-        return setOfSolution;
-    }
+
     public void setSetOfSolution(String s) {
         setOfSolution=s;
     }

@@ -181,7 +181,8 @@ public class Opjects extends DefaultTermizer {
             try {
                 MethodHandle mh = MethodHandles.lookup()
                         .unreflect(m)
-                        .asSpreader(Object[].class, m.getParameterCount());
+                        .asFixedArity()
+                ;
                 return mh;
 
             } catch (IllegalAccessException e) {
@@ -512,8 +513,8 @@ public class Opjects extends DefaultTermizer {
                     flag.set(true);
 
                     try {
-                        //mh.invokeWithArguments(instanceAndArgs);
-                        mh.invokeExact(instanceAndArgs);
+                        mh.invokeWithArguments(instanceAndArgs);
+                        //mh.bindTo(instance).asSpreader(Object[].class, instanceAndArgs.length-1).invokeExact(ArrayUtils.subarray(instanceAndArgs,1, instanceAndArgs.length));
                     } catch (Throwable throwable) {
                         logger.error("{} execution {}", term, throwable);
                     } finally {

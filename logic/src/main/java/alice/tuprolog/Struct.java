@@ -407,7 +407,7 @@ public class Struct extends Term {
      * @param vMap is needed for register occurence of same variables
      */
     @Override
-    Term copy(Map<Var, Var> vMap, int idExecCtx) {
+    public Term copy(Map<Var, Var> vMap, int idExecCtx) {
 
         if (!(vMap instanceof IdentityHashMap) && isConstant())
             return this;
@@ -633,6 +633,7 @@ public class Struct extends Term {
     Struct toList() {
         Struct t = emptyList();
         Term[] arg = this.subs;
+
         for (int c = subs() - 1; c >= 0; c--) {
             t = new Struct(arg[c].term(), t);
         }
