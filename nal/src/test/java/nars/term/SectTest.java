@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.SECTi;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** intersection / diff terms */
@@ -41,9 +42,9 @@ public class SectTest {
     @Test
     void testSectConceptualization() {
 
-        TermTest.assertEq("((a==>b)&x)", "((a==>b) & x)");
-        TermTest.assertEq("((a ==>+1 b)&x)", "((a==>+1 b) & x)");
-        TermTest.assertEq("((a ==>+- b)&x)", $$("((a==>+1 b) & x)").concept());
+        assertEq("((a==>b)&x)", "((a==>b) & x)");
+        assertEq("((a ==>+1 b)&x)", "((a==>+1 b) & x)");
+        assertEq("((a ==>+- b)&x)", $$("((a==>+1 b) & x)").concept());
 
 
 //        TermTest.assertEq(Bool.Null, "((a==>+1 b) & (a ==>+2 b))");
@@ -57,7 +58,7 @@ public class SectTest {
 
     @Test
     void testDiffConceptualization() {
-        TermTest.assertEq("((a ==>+1 b)~(a ==>+2 b))", "((a==>+1 b)~(a ==>+2 b))");
+        assertEq("((a ==>+1 b)~(a ==>+2 b))", "((a==>+1 b)~(a ==>+2 b))");
 
 
         //TermTest.assertEq("((--,(c ==>+2 d))&(a ==>+1 b))", "((X &&+837 Y)~(--,(Y &&+1424 X)))");
@@ -67,4 +68,17 @@ public class SectTest {
         assertEquals(t, t);
     }
 
+    @Test void testTooComplexSectDiff() {
+        assertEq("", "(a --> --(x-y))");
+
+
+        Term n3a = $$("(&,(--,(x-y)),(--,y),x)");
+
+        Term n3b = $$("(&, (--,(x-y)), (--,y), x)");
+        Term n2 = $$("(&, (--,(&,(--,(x-y)),(--,y),x)), (--,(x-y)), (--,y), x)");
+        Term n1 = $$("(y-(&,(--,(&,(--,(x-y)),(--,y),x)),(--,(x-y)),(--,y),x))");
+
+        Term n = $$("(a-->(y-(&,(--,(&,(--,(x-y)),(--,y),x)),(--,(x-y)),(--,y),x)))");
+
+    }
 }

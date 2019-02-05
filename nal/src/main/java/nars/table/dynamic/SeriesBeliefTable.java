@@ -153,6 +153,12 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         series.push(nextT);
     }
 
+    public final long start() {
+        return series.start();
+    }
+    public final long end() {
+        return series.end();
+    }
 
 
     /**

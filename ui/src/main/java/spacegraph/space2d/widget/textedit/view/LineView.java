@@ -131,9 +131,9 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
         //return width;
     }
 
-    public void draw(GL2 gl, int x1, int x2, float y) {
+    public void draw(GL2 gl, int x1, int x2, float dx, float dy) {
         gl.glPushMatrix();
-        gl.glTranslatef(position.x - x1, y, position.z);
+        gl.glTranslatef(position.x - x1 + dx, dy, position.z);
         if (scale!=null)
             gl.glScalef(scale.x, scale.y, scale.z);
         gl.glColor4f(color.x, color.y, color.z, color.w);

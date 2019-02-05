@@ -1,15 +1,17 @@
 package nars.table.dynamic;
 
+import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.math.Longerval;
+import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
-import nars.concept.util.ConceptBuilder;
 import nars.control.op.Remember;
 import nars.link.TaskLink;
 import nars.table.BeliefTables;
-import nars.table.temporal.TemporalBeliefTable;
+import nars.table.temporal.RTreeBeliefTable;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.util.series.AbstractTaskSeries;
@@ -18,32 +20,33 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.time.Tense.TIMELESS;
+
 /**
  * special belief tables implementation
  * dynamically computes matching truths and tasks according to
  * a lossy 1-D wave updated directly by a signal input
+ *
  */
 public class SensorBeliefTables extends BeliefTables {
 
-    public final SensorBeliefTable series;
+    public final MySensorBeliefTable series;
 
     public FloatRange res;
 
-    public SensorBeliefTables(Term term, boolean beliefOrGoal, ConceptBuilder b) {
-        this(term.normalize(), beliefOrGoal, b.newTemporalTable(term.normalize(), beliefOrGoal));
-    }
-
-    SensorBeliefTables(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
+    public SensorBeliefTables(Term c, boolean beliefOrGoal) {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
-                t,
                 //new ConcurrentSkiplistTaskSeries<>( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
                 new RingBufferTaskSeries<>( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
     }
 
-    SensorBeliefTables(Term term, boolean beliefOrGoal, TemporalBeliefTable t, AbstractTaskSeries<SeriesBeliefTable.SeriesTask> s) {
-        super(new SensorBeliefTable(term, beliefOrGoal, s), t);
-        this.series = tableFirst(SensorBeliefTable.class);
+    SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<SeriesBeliefTable.SeriesTask> s) {
+        super(new MySensorBeliefTable(term, beliefOrGoal, s));
+
+        this.series = tableFirst(MySensorBeliefTable.class);
+
+        tables.add(new MyRTreeBeliefTable());
     }
 
     @Override
@@ -224,5 +227,57 @@ public class SensorBeliefTables extends BeliefTables {
         next = y.input;
 
         return myTaskLink;
+    }
+
+    private static final class MySensorBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.SeriesTask> {
+
+        private MySensorBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<SeriesBeliefTable.SeriesTask> s) {
+            super(c, beliefOrGoal, s);
+        }
+
+        @Override
+        public void add(Remember r, NAR n) {
+
+            Task x = r.input;
+
+            if (x.isEternal() || x instanceof SeriesTask)
+                return; //already owned, or was owned
+
+            if (Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS) {
+                Task y = absorbNonSignal(x, start(), end()) ? null : x;
+                if (y == null) {
+                    r.reject();
+                } else if (y != x) {
+                    r.input = y; //assume same concept
+                }
+            }
+
+        }
+    }
+
+    /**
+     * adjusted compression task value to exclude regions where the series belief table is defined.
+     * allows regions outside of this more importance (ex: future)
+     */
+    private final class MyRTreeBeliefTable extends RTreeBeliefTable {
+
+        @Override protected FloatRank<Task> taskSurviveValue(Task input, int dur, long now) {
+            FloatRank<Task> base = super.taskSurviveValue(input, dur, now);
+            return (t, min) -> {
+                float v = base.rank(t, min);
+                if (v == v && v > min) {
+                    long ss = series.start(), se = series.end();
+                    if (ss!=TIMELESS && se!=TIMELESS) {
+                        long l = Longerval.intersectLength(t.start(), t.end(), ss, se);
+                        if (l > 0) {
+                            //discount the rank in proportion to how much of the task overlaps with the series
+                            float overlap = Util.unitizeSafe(l / ((float) t.range()));
+                            v *= (1-overlap);
+                        }
+                    }
+                }
+                return v;
+            };
+        }
     }
 }

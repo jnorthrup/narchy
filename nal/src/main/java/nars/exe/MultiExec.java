@@ -39,9 +39,9 @@ abstract public class MultiExec extends UniExec {
 
     static private final float queueLatencyMeasurementProbability = 0.05f;
 
-    private float explorationRate = 0.2f;
+    private float explorationRate = 0.1f;
 
-    int granularity = 4;
+    int granularity = 2;
 
     MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);

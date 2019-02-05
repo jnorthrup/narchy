@@ -60,8 +60,8 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     private Signal(Term term, byte punc, FloatSupplier signal, TermLinker linker, NAR n) {
         super(term,
-                punc == BELIEF ? new SensorBeliefTables(term, true, n.conceptBuilder) : n.conceptBuilder.newTable(term, true),
-                punc == GOAL ? new SensorBeliefTables(term, false, n.conceptBuilder) : n.conceptBuilder.newTable(term, false),
+                punc == BELIEF ? new SensorBeliefTables(term, true) : n.conceptBuilder.newTable(term, true),
+                punc == GOAL ? new SensorBeliefTables(term, false) : n.conceptBuilder.newTable(term, false),
                 linker,
                 n.conceptBuilder);
 

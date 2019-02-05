@@ -27,7 +27,7 @@ public class TextEditView implements BufferListener {
         //float charAspect = 1.4f;
         float charsWide = v.w;
         float charsHigh = v.h;
-        float dx = 0, dy = 0;
+        float dx = 0;
         float vx = v.x, vy = v.y, vw = v.w, vh = v.h;
 
         g.glPushMatrix();
@@ -44,10 +44,12 @@ public class TextEditView implements BufferListener {
         if (cursor)
             this.cursor.draw(g);
 
+        float ox = x1 - vx;
         for (int y = y1; y < y2; y++) {
             LineView line = lines.getSafe(y);
-            if (line!=null)
-                line.draw(g, x1, x2, y1 - y);
+            if (line!=null) {
+                line.draw(g, x1, x2, ox, y1 - y);
+            }
         }
 
         g.glPopMatrix();

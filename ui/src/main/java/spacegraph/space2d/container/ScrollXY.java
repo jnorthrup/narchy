@@ -225,7 +225,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         return view(RectFloat.X0Y0WH(x, y, w, h));
     }
 
-    protected synchronized void scroll(float x, float y, float w, float h) {
+    protected /*synchronized*/ void scroll(float x, float y, float w, float h) {
 
         float x1, x2, y1, y2;
 

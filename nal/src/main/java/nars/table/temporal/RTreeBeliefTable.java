@@ -18,6 +18,7 @@ import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -296,18 +297,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         FloatRank<Task> taskStrength = null;
         FloatRank<TaskRegion> leafRegionWeakness = null;
-        int dur, e = 0, cap;
+        int e = 0, cap;
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
                 long now = nar.time();
-                dur =
-                        nar.dur();
-                //Math.max(1, Tense.occToDT(tableDur()/2));
-                taskStrength = taskStrengthWithFutureBoost(now, now - dur * 2,
-                        input.isBelief() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
-                        now,
-                        dur
-                );
+                taskStrength = taskSurviveValue(input, nar.dur(), now);
                 leafRegionWeakness = regionWeakness(now, input.isBeliefOrGoal() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
             }
             if (!compress(treeRW, e == 0 ? input : null /** only limit by inputRegion on first iter */,
@@ -319,6 +313,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
         return true;
+    }
+
+    /** decides the value of keeping a task, used in compression decision */
+    protected FloatRank<Task> taskSurviveValue(Task input, int dur, long now) {
+        return taskStrengthWithFutureBoost(now, now - dur,
+                input.isBelief() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
+                now,
+                dur
+        );
     }
 
     /**

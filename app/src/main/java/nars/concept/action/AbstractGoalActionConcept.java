@@ -63,7 +63,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     protected AbstractGoalActionConcept(Term term, BeliefTable goals, NAR n) {
-        super(term, new SensorBeliefTables(term, true, n.conceptBuilder),
+        super(term, new SensorBeliefTables(term, true),
                 new BeliefTables(goals),
                 n);
 
