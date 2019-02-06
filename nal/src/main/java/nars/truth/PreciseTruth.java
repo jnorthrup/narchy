@@ -1,5 +1,7 @@
 package nars.truth;
 
+import nars.Param;
+
 import static nars.truth.func.TruthFunctions.c2wSafe;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
@@ -30,6 +32,13 @@ public final class PreciseTruth extends DiscreteTruth {
 
     /** use with caution, if you are calculating a precise evi and a dithered conf, they should correspond */
     protected static PreciseTruth byFreqConfEvi(float freq, float conf, float evi) {
+
+        if (conf >= Param.TRUTH_CONF_MAX || evi>=Param.TRUTH_EVI_MAX) {
+            //upper limit on truth
+            conf = Param.TRUTH_CONF_MAX;
+            evi = Param.TRUTH_EVI_MAX;
+        }
+
         return new PreciseTruth(freq, conf, evi);
     }
 

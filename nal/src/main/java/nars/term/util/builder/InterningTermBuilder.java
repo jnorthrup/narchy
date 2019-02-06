@@ -197,7 +197,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
             if (!internNegs) {
                 negate = xo == NEG;
                 if (negate) {
-                    x = x.unneg();
+                    Term xx = x.unneg();
+                    if (xx instanceof Atomic)
+                        return x; //HACK do this earlier
+                    x = xx;
                     xo = x.op();
                 }
             } else {

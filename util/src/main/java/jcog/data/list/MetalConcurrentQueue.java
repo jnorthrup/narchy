@@ -23,7 +23,6 @@ package jcog.data.list;
  */
 
 import com.conversantmedia.util.concurrent.ConcurrentQueue;
-import jcog.TODO;
 import jcog.Util;
 
 import java.util.Objects;
@@ -373,7 +372,9 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
     @Override
     public void clear() {
-        throw new TODO("review");
+        clear((x) -> {}, -1);
+
+        //throw new TODO("review");
 //        int spin = 0;
 //        int cap = capacity();
 //        for (; ; ) {

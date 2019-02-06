@@ -80,6 +80,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * for what it has learned, or any other task.
  * <p>
  * TODO option to record stack traces
+ * TODO the results need to be buffered each cycle to avoid inputting multiple boolean-returning tasks that contradict each other
  */
 @Paper
 @Skill({"Metaprogramming", "Reinforcement_learning"})

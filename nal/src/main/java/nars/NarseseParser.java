@@ -225,6 +225,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         ),
 
+                        seq(NEG.str, Term(), push(($.the(pop())).neg())),
 
                         seq(oper, Function()),
 
@@ -252,6 +253,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         ),
 
+
                         seq(oper, temporal, ColonReverseInheritance()),
 
                         NumberAtom(),
@@ -261,7 +263,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         Variable(),
 
 
-                        seq(NEG.str, Term(), push(($.the(pop())).neg())),
 
 
                         seq(OLD_STATEMENT_OPENER,

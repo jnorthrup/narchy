@@ -202,22 +202,24 @@ class BooleanTest {
 
     }
 
-    @Test void testSATRandomBelief() {
-        testSATRandom(true);
+
+    @Test void testSATRandomBeliefEternal() {
+        testSATRandom(true, false);
+    }
+    @Test void testSATRandomBeliefTemporal() {
+        testSATRandom(true, true);
     }
 
-    @Test void testSATRandomGoal() {
-        testSATRandom(false);
-    }
+    @Test void testSATRandomGoalEternal() { testSATRandom(false, false);    }
+    @Test void testSATRandomGoalTemporal() { testSATRandom(false, true);    }
 
-    static void testSATRandom(boolean beliefOrGoal) {
+    static void testSATRandom(boolean beliefOrGoal, boolean temporalOrEternal) {
         NAR n = NARS.tmp();
 
-        n.log();
         n.termVolumeMax.set(11);
 
-        int s = 5, c = 2000, cRemoveInputs = c/2;
-        boolean temporal = true;
+        int s = 4, c = 1000, cRemoveInputs = c*3/4;
+
         int d = 1;
 
         IntFunction<Term> termizer =
@@ -235,12 +237,12 @@ class BooleanTest {
         for (int i = 0; i < s; i++) {
             b[i] = n.random().nextBoolean();
             Term what = (t[i] = termizer.apply(i)).negIf(!b[i]);
-            Tense when = temporal ? Tense.Present : Tense.Eternal;
+            Tense when = temporalOrEternal ? Tense.Present : Tense.Eternal;
             if (beliefOrGoal)
                 inputs.add( n.believe(what, when, 1f, 0.9f) );
             else
                 inputs.add( n.want(what, when, 1f, 0.9f) );
-            if (temporal)
+            if (temporalOrEternal)
                 n.run(1); //stagger input
         }
         for (int i = 0; i < c; i++) {
@@ -260,9 +262,14 @@ class BooleanTest {
 
             if (i >= cRemoveInputs) {
                 for (int j = 0; j < s; j++) {
-                    long when = temporal ? n.time() : ETERNAL;
+                    long when = temporalOrEternal ? n.time() : ETERNAL;
                     Truth tj = beliefOrGoal ? n.beliefTruth(t[j], when) : n.goalTruth(t[j], when);
-                    assertNotNull(tj);
+
+                    if (i == c-1) {
+                        //last cycle:
+                        assertNotNull(tj);
+                    }
+
                     if (tj != null) {
                         r[j] = tj;
                         assertEquals(b[j], r[j].isPositive());
@@ -282,3 +289,4 @@ class BooleanTest {
 
     }
 }
+

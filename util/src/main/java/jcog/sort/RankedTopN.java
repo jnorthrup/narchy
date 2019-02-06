@@ -31,7 +31,7 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
 
     /** call this on start */
     public TopN<Ranked<X>> ranking(FloatRank<X> rank, int capacity) {
-        r = rr.get();
+        this.r = rr.get();
         return super.rank((Ranked<X> r, float min) -> {
             float p = r.pri;
             if (p == p)

@@ -770,7 +770,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
             float eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
 
-            if (eve > Param.TRUTH_MIN_EVI) {
+            if (eve > Param.TRUTH_EVI_MIN) {
                 return PreciseTruth.byEvi(
                         freq() /* TODO interpolate frequency wave */,
                         eve);

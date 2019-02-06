@@ -10,7 +10,6 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 
 import static jcog.data.byt.RecycledDynBytes.tmpKey;
-import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 
 /** interned terms and subterms implementations */
@@ -29,7 +28,6 @@ public class Intermed extends ByteKey.ByteKeyExternal  {
 
         public InternedCompoundByComponents(Op o, int dt) {
             super();
-            assert(o!=NEG);
             this.op = o.id; this.dt = dt;
             write(o, dt);
         }

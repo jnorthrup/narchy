@@ -644,30 +644,30 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * const/variable phase version
      */
-    default boolean unifyLinear(Subterms s, /*@NotNull*/ Unify u) {
+    default boolean unifyLinear(Subterms y, /*@NotNull*/ Unify u) {
         int n = subs();
         if (n == 1) {
-            return sub(0).unify(s.sub(0), u);
+            return sub(0).unify(y.sub(0), u);
         } else if (n == 2) {
-            Term x = sub(0), y = sub(1);
-            Term a = s.sub(0), b = s.sub(1);
-            boolean cx = u.vars(x), cy = u.vars(y);
+            Term x0 = sub(0), x1 = sub(1);
+            Term y0 = y.sub(0), y1 = y.sub(1);
+            boolean cx = u.vars(x0), cy = u.vars(x1);
             boolean forward;
             if (cx == cy) {
                 if (!cx) {
-                    boolean dx = u.constant(a), dy = u.constant(b);
+                    boolean dx = !u.vars(y0), dy = !u.vars(y1);
                     if (dx && dy)
-                        forward = a.volume() <= b.volume();
+                        forward = y0.volume() <= y1.volume();
                     else
                         forward = dx;
                 } else
-                    forward = x.volume() <= y.volume();
+                    forward = x0.volume() <= x1.volume();
             } else {
                 forward = cx;
             }
             return forward ?
-                    x.unify(a, u) && y.unify(b, u) :
-                    y.unify(b, u) && x.unify(a, u);
+                    x0.unify(y0, u) && x1.unify(y1, u) :
+                    x1.unify(y1, u) && x0.unify(y0, u);
         }
 
 
@@ -675,7 +675,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int dynPairs = 0;
         for (int i = 0; i < n; i++) {
             Term xi = sub(i);
-            Term yi = s.sub(i);
+            Term yi = y.sub(i);
 
             if (xi == yi)
                 continue;

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NarseseTest {
 
 
-    public static @NotNull <T extends Term> T term(@NotNull String s) throws Narsese.NarseseException {
+    public static <T extends Term> T term(@NotNull String s) throws Narsese.NarseseException {
         
         return (T) Narsese.term(s);
     }

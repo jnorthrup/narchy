@@ -55,8 +55,6 @@ public abstract class Unify extends Versioning implements Subst {
     /** bits of the unifiable variables; variables not unifiable are tested for equality only */
     public int varBits;
 
-    /** bits of the unifiable variables + the temporal compounds, indicating unification can not rely on equality for fast failure */
-    public int nonConstantBits;
 
     public Random random;
 
@@ -68,6 +66,9 @@ public abstract class Unify extends Versioning implements Subst {
     public int dtTolerance = 0;
 
     public boolean commonVariables = true;
+
+    /** recursion limiter HACK */
+    public int varDepth = 0;
 
     private FasterList<ConstrainedVersionedTerm> constrained = new FasterList();
 
@@ -100,7 +101,6 @@ public abstract class Unify extends Versioning implements Subst {
 
     public void setVarBits(int varBits) {
         this.varBits = varBits;
-        this.nonConstantBits = varBits | Op.Temporal;
     }
 
     /**
@@ -182,6 +182,7 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public final boolean unify(Term x, Term y, boolean finish) {
 
+        varDepth = 0;
 //        if (!(ttl > 0))
 //            throw new WTF("likely needs some TTL");
 
@@ -223,6 +224,7 @@ public abstract class Unify extends Versioning implements Subst {
 
         super.clear();
 
+        varDepth = 0;
         termutes.clear();
 
         if (!constrained.isEmpty()) {
@@ -260,18 +262,12 @@ public abstract class Unify extends Versioning implements Subst {
         return xy.set(x, y);
     }
 
-    /**
-     * whether is constant with respect to the current matched variable type
-     */
-    public final boolean constant(Termlike x) {
-        return !x.hasAny(nonConstantBits);
-    }
     public final boolean vars(Termlike x) {
-        return !x.hasAny(varBits);
+        return x.hasAny(varBits);
     }
 
 
-    public void constrain(UnifyConstraint m) {
+    public final void constrain(UnifyConstraint m) {
         Variable target = m.x;
         ConstrainedVersionedTerm targetVersioned = (ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target);
         targetVersioned.constrain(m);
@@ -280,12 +276,12 @@ public abstract class Unify extends Versioning implements Subst {
 
 
     /** xdt and ydt must both not equal either XTERNAL or DTERNAL */
-    public boolean unifyDT(int xdt, int ydt) {
+    public final boolean unifyDT(int xdt, int ydt) {
         //assert(xdt!=DTERNAL && xdt!=XTERNAL && ydt!=DTERNAL && ydt!=XTERNAL);
         return Math.abs(xdt - ydt) < dtTolerance;
     }
 
-    public Term tryResolve(Term x) {
+    public final Term tryResolve(Term x) {
         Op o = x.op();
         boolean neg = o == NEG;
         Term xx;
@@ -335,9 +331,11 @@ public abstract class Unify extends Versioning implements Subst {
 
         @Override
         protected int match(Term prevValue, Term nextValue) {
+            if (prevValue.equals(nextValue))
+                return 0;
 
             if (prevValue.unify(nextValue, (Unify) context)) {
-                if (prevValue!=nextValue && nextValue.hasAny(Op.Temporal)) {
+                if (nextValue.hasAny(Op.Temporal)) {
                     //prefer more specific temporal matches, etc?
                     if (prevValue.hasXternal() && !nextValue.hasXternal()) {
                         return +1;

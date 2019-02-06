@@ -455,7 +455,7 @@ public class PatternIndex extends MapConceptIndex {
             }
 
             private static boolean include(Term x, List<Term> xFixed, SortedSet<Term> yFree, Unify u) {
-                return u.constant(x) ? yFree.remove(x) : xFixed.add(x);
+                return !u.vars(x) ? yFree.remove(x) : xFixed.add(x);
             }
 
         }

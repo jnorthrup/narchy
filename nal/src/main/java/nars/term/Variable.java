@@ -3,6 +3,7 @@ package nars.term;
 import jcog.Paper;
 import jcog.Skill;
 import nars.Op;
+import nars.Param;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.unify.Unify;
@@ -69,11 +70,17 @@ public interface Variable extends Atomic {
                 xOp = x.op();
                 //continue below
             } else {
-                try {
-                    return x.unify(y, u);
-                } catch (StackOverflowError e) {
-                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy); //TEMPORARY
+                if (u.varDepth < Param.UNIFY_VAR_DEPTH_LIMIT) {
+                    u.varDepth++;
+                    boolean result = x.unify(y, u);
+                    u.varDepth--;
+                    return result;
+                } else {
                     return false;
+                    //                } catch (StackOverflowError e) {
+                    //                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy); //TEMPORARY
+                    //                    return false;
+                    //                }
                 }
             }
         }
@@ -163,42 +170,9 @@ public interface Variable extends Atomic {
 //                    return false; //cycle
         a = (nars.term.Variable) x;
         b = y;
-//            } else if (yMatches) {
-////                if (y.containsRecursively(x))
-////                    return false; //cycle
-//                a = (Variable) y;
-//                b = x;
-//            } else {
-//                return false;
-//            }
-
-        //            Op ao = a.op();
-        //if (ao !=VAR_PATTERN) {
-        //TODO total ordering to prevent something like #1 = x(%1)
-        //                int mask;
-        //                switch (ao) {
-        //                    case VAR_DEP: mask = Op.or(VAR_PATTERN, VAR_QUERY, VAR_INDEP); break;
-        //                    case VAR_INDEP: mask = Op.or(VAR_PATTERN, VAR_QUERY); break;
-        //                    case VAR_QUERY: mask = Op.or(VAR_PATTERN); break;
-        //                    default:
-        //                        throw new UnsupportedOperationException();
-        //                }
-//        if (b instanceof Compound) {
-//            int mask = VAR_PATTERN.bit;
-//            if (b.hasAny(mask))
-//                return false;
-//        }
-        //}
 
         return u.putXY(a, b);
-//        } else {
-//            try {
-//                return x.unify(y, u);
-//            } catch (StackOverflowError e) {
-//                System.err.println("unify stack overflow: " + x + " -> " + y);
-//                return false;
-//            }
-//        }
+
 
     }
 

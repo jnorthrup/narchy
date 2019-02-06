@@ -50,6 +50,7 @@ public class UniVersioned<X> implements Versioned<X> {
     public final boolean set(X next) {
         X prev = value;
         if (prev!=null) {
+
             int m = match(prev, next);
             if (m >= 0) {
                 if (m == +1)

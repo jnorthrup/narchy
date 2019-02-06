@@ -19,11 +19,13 @@ import nars.truth.polation.TruthPolation;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
  * NAR Parameters
  */
 public abstract class Param {
+
 
 
 
@@ -193,7 +195,7 @@ public abstract class Param {
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
-    public static long TASK_RANGE_LIMIT = 1_000_000;
+    public static long TASK_RANGE_LIMIT = (1L << 61) /* estimate */;
 
     /**
      * maximum time (in durations) that a signal task can stretch the same value
@@ -222,7 +224,8 @@ public abstract class Param {
     /** whether timegraph should not return solutions with volume significantly less than the input's */
     public static final boolean TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS = false;
 
-
+    /** max variable unification recursion depth as a naive cyclic filter */
+    public static final int UNIFY_VAR_DEPTH_LIMIT = 4;
 
 
     /** (unsafe) true should theoreticaly be faster,
@@ -268,7 +271,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(4, 1, 32);
 
@@ -282,7 +285,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 3;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**
@@ -514,8 +517,9 @@ public abstract class Param {
      * internal granularity which truth components are rounded to
      */
     public static final float TRUTH_EPSILON = 0.01f;
-    public static final float TRUTH_MAX_CONF = 1f - TRUTH_EPSILON;
-    public static final float TRUTH_MIN_EVI =
+    public static final float TRUTH_CONF_MAX = 1f - TRUTH_EPSILON;
+    public static final float TRUTH_EVI_MAX = c2wSafe(Param.TRUTH_CONF_MAX);
+    public static final float TRUTH_EVI_MIN =
                         //c2wSafe(TRUTH_EPSILON);
                         //ScalarValue.EPSILON;
                         Float.MIN_NORMAL;
@@ -530,7 +534,7 @@ public abstract class Param {
     /**
      * truth confidence threshold necessary to form tasks
      */
-    public final FloatRange confMin = new FloatRange(TRUTH_EPSILON, TRUTH_EPSILON, TRUTH_MAX_CONF);
+    public final FloatRange confMin = new FloatRange(TRUTH_EPSILON, TRUTH_EPSILON, TRUTH_CONF_MAX);
 
     /**
      * global truth frequency resolution by which reasoning is dithered

@@ -39,8 +39,9 @@ public class IntermpolationTest {
 
     @Test
     void testDTDiffSame() {
-        assertEquals(0f, dtDiff("(x ==>+5 y)", "(x ==>+5 y)"), 0.001f);
+        assertEquals(0f, dtDiff("(x ==>+5 y)", "(x ==>+5 y)"));
     }
+
     @Test
     void testDTDiffVariety() {
         assertEquals(0f, dtDiff("(x ==>+5 y)", "(x ==>+- y)"), 0.01f);
@@ -52,12 +53,9 @@ public class IntermpolationTest {
 
     @Test
     void testDTImpl1() {
-
         float a52 = dtDiff("(x ==>+5 y)", "(x ==>+2 y)");
         float a54 = dtDiff("(x ==>+5 y)", "(x ==>+4 y)");
         assertTrue(a52 > a54);
-//        assertEquals(0.6f, a52, 0.001f);
-//        assertEquals(0.2f, a54, 0.001f);
     }
 
     @Test void testSimilarConj() {
@@ -66,23 +64,16 @@ public class IntermpolationTest {
 
     @Test
     void testConjSequence1() {
-
         float a52 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+2 y) &&+1 z)");
         float a54 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+4 y) &&+1 z)");
         assertTrue(a52 > a54);
-//        assertEquals(0.3, a52, 0.01f);
-//        assertEquals(0.1f, a54, 0.001f);
     }
 
     @Test
     void testDTImplEmbeddedConj() {
-
-
         float a = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+1 y) ==>+2 z)");
         float b = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+2 y) ==>+1 z)");
         assertTrue(a > b);
-//        assertEquals(0.5f, a, 0.1f);
-//        assertEquals(0.25f, b, 0.1f);
     }
 
     @Test
@@ -136,15 +127,22 @@ public class IntermpolationTest {
     void testIntermpolationImplSubjOppositeOrder() throws Narsese.NarseseException {
         Compound a = $.$("((x &&+2 y) ==> z)");
         Compound b = $.$("((y &&+2 x) ==> z)");
-        RevisionTest.permuteChoose(a, b, "[((x&&y)==>z)]");
+        RevisionTest.permuteChoose(a, b, "[((y &&+2 x)==>z), ((y &&+1 x)==>z), ((x&|y)==>z), ((x &&+1 y)==>z), ((x &&+2 y)==>z)]");
     }
 
     @Test
     void testIntermpolationImplSubjOppositeOrder2() throws Narsese.NarseseException {
-        Compound a = $.$("((x &&+2 y) ==>+1 z)");
-        Compound b = $.$("((y &&+2 x) ==>+1 z)");
-        RevisionTest.permuteChoose(a, b, "[((x&|y) ==>+1 z)]");
+        Compound a = $.$("((x &&+1 y) ==>+1 z)");
+        Compound b = $.$("((y &&+1 x) ==>+1 z)");
+        RevisionTest.permuteChoose(a, b, "[((y &&+1 x) ==>+1 z), ((x&|y) ==>+1 z), ((x &&+1 y) ==>+1 z)]");
     }
+    @Test
+    void testIntermpolationImplDirectionMismatch() throws Narsese.NarseseException {
+        Compound a = $.$("(a ==>+1 b)");
+        Compound b = $.$("(a ==>-1 b))");
+        RevisionTest.permuteChoose(a, b, "[(a ==>-1 b), (a=|>b), (a ==>+1 b)]");
+    }
+
 
     @Test
     void testIntermpolationImplSubjImbalance() throws Narsese.NarseseException {
@@ -229,12 +227,7 @@ public class IntermpolationTest {
 
     }
 
-    @Test
-    void testIntermpolationImplDirectionMismatch() throws Narsese.NarseseException {
-        Compound a = $.$("(a ==>+1 b)");
-        Compound b = $.$("(a ==>-1 b))");
-        RevisionTest.permuteChoose(a, b, "[(a==>b)]");
-    }
+
 
     @Test
     void testImplSimple() throws Narsese.NarseseException {

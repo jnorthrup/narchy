@@ -89,7 +89,7 @@ class QuestionTest {
 
         IntFunction<NAR> narProvider = (seed) -> {
             NAR d = NARS.tmp(1);
-            d.random().setSeed(seed);
+            //d.random().setSeed(seed);
             d.termVolumeMax.set(8);
             d.freqResolution.set(0.1f);
             return d;
@@ -114,7 +114,7 @@ class QuestionTest {
             return t;
         };
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1 /* seed doesnt do anything right now 10 */; i++) {
             int seed = i + 1;
 
             TestNAR withQuestion = testProvider.apply(seed, 0);

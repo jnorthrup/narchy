@@ -46,9 +46,11 @@ public class NALTask extends UnitPri implements Task {
     public NALTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
         super();
 
-        if (start!=ETERNAL && end-start > Param.TASK_RANGE_LIMIT) {
+//        if ((punc==BELIEF || punc==GOAL) && truth.conf() > 0.96)
+//            throw new WTF(); //TEMPORARY
+
+        if (start!=ETERNAL && end-start > Param.TASK_RANGE_LIMIT)
             throw new TaskException(term, "excessive range: " + (end-start));
-        }
 
         if (!term.op().taskable)
             throw new TaskException(term, "invalid target: " + term);

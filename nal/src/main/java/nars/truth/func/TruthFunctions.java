@@ -275,16 +275,16 @@ public final class TruthFunctions {
 
 
     public static float c2w(float c) {
-        if (!Float.isFinite(c))
-            throw new Truth.TruthException("non-finite confidence", c);
-
         if (c < Param.TRUTH_EPSILON)
             throw new Truth.TruthException("confidence underflow", c);
 
-        if (c > Param.TRUTH_MAX_CONF) {
-            //throw new Truth.TruthException("confidence overflow", c);
-            c = Param.TRUTH_MAX_CONF;
+        if (c > Param.TRUTH_CONF_MAX) {
+            throw new Truth.TruthException("confidence overflow", c);
+            //c = Param.TRUTH_CONF_MAX;
         }
+
+        if (!Float.isFinite(c))
+            throw new Truth.TruthException("non-finite confidence", c);
 
         return c2wSafe(c);
     }
@@ -317,7 +317,7 @@ public final class TruthFunctions {
      * @return The corresponding confidence, in [0, 1)
      */
     public static float w2c(float w) {
-        if (w < Param.TRUTH_MIN_EVI)
+        if (w < Param.TRUTH_EVI_MIN)
             throw new Truth.TruthException("insufficient evidence", w);
         if (!Float.isFinite(w))
             throw new Truth.TruthException("non-finite evidence", w);

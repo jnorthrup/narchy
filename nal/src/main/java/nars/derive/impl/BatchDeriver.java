@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-    public final IntRange tasklinksPerIteration = new IntRange(2, 1, 32);
+    public final IntRange tasklinksPerIteration = new IntRange(4, 1, 32);
 
 
 //    /**

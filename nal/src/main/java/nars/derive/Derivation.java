@@ -337,7 +337,7 @@ public class Derivation extends PreDerivation {
                 if (Param.eternalizeInDerivation.test(nextBelief.op())) {
                     this.beliefTruthProjectedToTask = Truth.stronger(
                             beliefTruthProjectedToTask,
-                            beliefTruthRaw.eternalized(1, Param.TRUTH_MIN_EVI, null /* dont dither */)
+                            beliefTruthRaw.eternalized(1, Param.TRUTH_EVI_MIN, null /* dont dither */)
                     );
                 }
             }
