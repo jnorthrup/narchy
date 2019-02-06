@@ -740,7 +740,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Nullable
     public final Truth truth(Termed concept, byte punc, long start, long end) {
         @Nullable BeliefTable table = truths(concept, punc);
-        return table != null ? table.truth(start, end, concept instanceof Term ? ((Term)concept) : null, this) : null;
+        return table != null ? table.truth(start, end, concept instanceof Term ? ((Term)concept) : null, null, this) : null;
     }
 
     @Nullable

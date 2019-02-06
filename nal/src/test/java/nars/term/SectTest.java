@@ -71,7 +71,12 @@ public class SectTest {
     @Test void testTooComplexSectDiff() {
         assertEq("", "(a --> --(x-y))");
 
-
+        /*
+                           x-y  =            x*(1-y)
+                        --(x-y) =         1-(x*(1-y))
+                  (&,x,--(x-y)) =     x * (1-x*(1-y))
+                (&,--y,--(x-y)) = (1-y) * (1-x*(1-y))
+         */
         Term n3a = $$("(&,(--,(x-y)),(--,y),x)");
 
         Term n3b = $$("(&, (--,(x-y)), (--,y), x)");

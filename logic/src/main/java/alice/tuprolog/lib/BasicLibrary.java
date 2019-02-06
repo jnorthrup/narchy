@@ -31,7 +31,6 @@ import java.util.List;
  * 
  */
 public class BasicLibrary extends PrologLib {
-	private static final long serialVersionUID = 1L;
     public BasicLibrary() {
     }
 
@@ -921,10 +920,6 @@ public class BasicLibrary extends PrologLib {
                 + ":- op(  700, xfx,  '\\='). \n"
                 + ":- op(  700, xfx,  '=='). \n"
                 + ":- op(  700, xfx,  '\\=='). \n"
-
-                //arithmetic equality http://www.swi-prolog.org/pldoc/doc_for?object=%23%3D%20/%202
-                + ":- op(  700, xfx,  '#='). \n"
-                + ":- op(  700, xfx,  '#\\='). \n"
 
                 + ":- op(  700, xfx,  '@>'). \n"
                 + ":- op(  700, xfx,  '@<'). \n"

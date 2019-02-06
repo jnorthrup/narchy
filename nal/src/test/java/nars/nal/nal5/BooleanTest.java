@@ -213,9 +213,10 @@ class BooleanTest {
     static void testSATRandom(boolean beliefOrGoal) {
         NAR n = NARS.tmp();
 
-        n.termVolumeMax.set(10);
+        n.log();
+        n.termVolumeMax.set(11);
 
-        int s = 9, c = 5000, cRemoveInputs = c/2;
+        int s = 5, c = 2000, cRemoveInputs = c/2;
         boolean temporal = true;
         int d = 1;
 
@@ -261,6 +262,7 @@ class BooleanTest {
                 for (int j = 0; j < s; j++) {
                     long when = temporal ? n.time() : ETERNAL;
                     Truth tj = beliefOrGoal ? n.beliefTruth(t[j], when) : n.goalTruth(t[j], when);
+                    assertNotNull(tj);
                     if (tj != null) {
                         r[j] = tj;
                         assertEquals(b[j], r[j].isPositive());

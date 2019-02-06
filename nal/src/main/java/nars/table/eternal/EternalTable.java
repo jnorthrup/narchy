@@ -410,11 +410,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         return false;
     }
 
-    @Override
-    public final Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
-        return truth();
-    }
-
 
     /**
      * try to insert but dont delete the input task if it wasn't inserted (but delete a displaced if it was)

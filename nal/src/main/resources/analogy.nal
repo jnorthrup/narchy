@@ -6,7 +6,7 @@
   X, (X <-> Y)                        |- Y, (Belief:Analogy, Goal:Desire)
    X, (X <-> Y), task("?@")            |- Y
     X, (X <-> Y)                         |-  --Y, (Goal:DesireWeakPN)
-  X, (--X <-> Y)                      |- Y, (Belief:AnalogyN, Goal:DesireN)
+  X, (--X <-> Y)                      |- Y, (Belief:AnalogyN, Goal:DesireWeakN)
    X, (--X <-> Y), task("?@")            |- Y
     X, (--X <-> Y)                       |-  --Y, (Goal:DesireWeakNN)
 

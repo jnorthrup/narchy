@@ -17,6 +17,8 @@ import java.util.function.Predicate;
 /**
  * A model storing, ranking, and projecting beliefs or goals (tasks with TruthValue).
  * It should iterate in top-down order (highest ranking first)
+ *
+ * TODO make an abstract class not interface
  */
 public interface BeliefTable extends TaskTable {
 
@@ -44,19 +46,16 @@ public interface BeliefTable extends TaskTable {
 
 
     default Truth truth(long when, NAR nar) {
-        return truth(when, when, null, nar);
+        return truth(when, when, null, null, nar);
     }
 
     default Truth truth(long start, long end, NAR nar) {
-        return truth(start, end, null, nar);
+        return truth(start, end, null, null, nar);
     }
 
-    default Truth truth(long start, long end, @Nullable Term template, NAR n) {
-        return truth(start, end, template, null, n);
-    }
 
     default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
-        return truth(start, end, template, filter, Answer.BELIEF_MATCH_CAPACITY, 0, n);
+        return truth(start, end, template, filter, Answer.BELIEF_MATCH_CAPACITY, n.dur(), n);
     }
 
     /** precision = max # of tasks to include in the sample */

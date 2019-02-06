@@ -33,14 +33,12 @@ class SensorBeliefTablesTest {
         SensorBeliefTables xb = (SensorBeliefTables) x.beliefs();
 
         step(n, xb);
-        assertEquals(1, xb.series.size());
         assertEquals(1, xb.size());
 
         xx.set(0.5f);
         step(n, xb);
         step(n, xb);
 
-        assertEquals(2, xb.series.size());
         assertEquals(2, xb.size());
 
         {
