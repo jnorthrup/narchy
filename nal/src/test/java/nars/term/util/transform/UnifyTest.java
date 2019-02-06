@@ -52,11 +52,11 @@ public class UnifyTest {
     }
 
 
-    static private void test(/**/ Op type, String s1, String s2, boolean shouldSub) {
+    static private void test(/**/ Op type, String s1, String s2, boolean shouldUnify) {
         for (int seed : new int[]{1, 2, 3, 4}) {
             try {
-                test(seed, type, s1, s2, shouldSub, false, false);
-                test(seed, type, s1, s2, shouldSub, true, true);
+                test(seed, type, s1, s2, shouldUnify, false, false);
+                test(seed, type, s1, s2, shouldUnify, true, true);
             } catch (Narsese.NarseseException e) {
                 throw new RuntimeException(e);
             }
@@ -810,6 +810,32 @@ public class UnifyTest {
                 "((--,%1) ==>+- %2)",
                 "((--,(_1&&_2))==>_3)",
                 true);
+    }
+    @Test void testConjInConjConstantFail() {
+        test(Op.VAR_PATTERN,
+            "((_1&|_2) &&+5 ((--,_1)&|(--,_2)))",
+            "(_1 &&+5 ((--,_1)&|_2))",
+            false);
+
+        assertFalse(
+            $$("((_1 &&+5 ((--,_1)&|_2)) &&+5 (((--,_2)&|_3) &&+5 (--,_3)))")
+                .unify($$("(_1 &&+5 ((--,_1)&|_2))"), new UnifyAny())
+        );
+    }
+    @Test
+    void testConjInConj() {
+        test(Op.VAR_PATTERN,
+                "((_2(_1,%1) &&+- _3(%1)) &&+1 _4(%1))",
+                "((_2(_1,_1) &| _3(_1)) &&+- _4(_1))",
+                true);
+    }
+
+    @Test
+    void implConjInConjFail() {
+        test(Op.VAR_PATTERN,
+                "((_2(_1,%1)&|_3(%1)) &&+1 _4(%1))",
+                "(_2(_1,_1) &&+- _4(_1))",
+                false);
     }
 
     /*

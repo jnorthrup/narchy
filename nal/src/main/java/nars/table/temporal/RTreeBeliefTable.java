@@ -28,11 +28,13 @@ import java.util.stream.Stream;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
-    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 1.5f;
-    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 2f;
+    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF =
+            1f;
+            //1.5f;
+    private static final float PRESENT_AND_FUTURE_BOOST_GOAL =
+            1f;
+            //2f;
 
-
-    private static final int MIN_TASKS_PER_LEAF = 2;
     private static final int MAX_TASKS_PER_LEAF = 4;
     private static final Split SPLIT = AxialSplitLeaf.the;
 

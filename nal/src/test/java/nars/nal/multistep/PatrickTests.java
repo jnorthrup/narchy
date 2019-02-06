@@ -88,19 +88,15 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
 
 
-        int cycles = 8000;
+        int cycles = 3000;
 
         tt.confTolerance(0.5f);
 
-        tt.nar.freqResolution.set(0.25f);
-//        tt.nar.confResolution.setAt(0.02f);
-//        tt.nar.confMin.setAt(0.02f);
+        tt.nar.freqResolution.set(0.1f);
+//        tt.nar.confResolution.set(0.02f);
 
-        //tt.logDebug();
-
-        int dur = 2;
-        tt.nar.time.dur(dur);
-        tt.nar.termVolumeMax.set(19);
+        tt.nar.time.dur(100);
+        tt.nar.termVolumeMax.set(18);
 
         tt.nar.timeResolution.set(5);
 
@@ -138,17 +134,17 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
 
 
-        int cycles = 9000;
+        int cycles = 3000;
 
         tt.confTolerance(0.9f);
 
-        tt.nar.freqResolution.set(0.1f);
+        tt.nar.freqResolution.set(0.25f);
 //        tt.nar.confResolution.setAt(0.05f);
 
 
         tt.nar.time.dur(100);
         tt.nar.termVolumeMax.set(14);
-        tt.nar.timeResolution.set(10);
+        tt.nar.timeResolution.set(5);
 
         tt.input(
                 "made_of(toothbrush,plastic).",
@@ -158,7 +154,7 @@ public class PatrickTests extends NALTest {
                 "(pliable:$1 =|> molten:$1).",
                 "( (pliable:$1 &| reshape($1)) ==>+10 hard:$1).",
                 "(hard:$1 =|> unscrews:$1).",
-                "$1.0 unscrews:toothbrush! |"
+                "unscrews:toothbrush! |"
         );
 
         tt.mustGoal(cycles, "hot:toothbrush", 1f, 0.5f, (t) -> t >= 0);

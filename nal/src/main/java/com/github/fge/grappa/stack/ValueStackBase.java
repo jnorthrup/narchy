@@ -18,7 +18,6 @@ package com.github.fge.grappa.stack;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
@@ -75,14 +74,14 @@ public abstract class ValueStackBase<V>
      */
     protected abstract void doPush(int down, V value);
 
-//    @Nonnull
+//    
     @Override
     public final V pop()
     {
         return pop(0);
     }
 
-//    @Nonnull
+//    
     @Override
     public final V pop(final int down)
     {
@@ -91,14 +90,14 @@ public abstract class ValueStackBase<V>
         return doPop(down);
     }
 
-    @Nonnull
+    
     @Override
     public final <T extends V> T popAs(final Class<T> type)
     {
         return type.cast(pop(0));
     }
 
-    @Nonnull
+    
     @Override
     public final <T extends V> T popAs(final Class<T> type, final int down)
     {
@@ -115,14 +114,14 @@ public abstract class ValueStackBase<V>
      */
     protected abstract V doPop(int down);
 
-    @Nonnull
+    
     @Override
     public final V peek()
     {
         return peek(0);
     }
 
-    @Nonnull
+    
     @Override
     public final V peek(final int down)
     {
@@ -131,14 +130,14 @@ public abstract class ValueStackBase<V>
         return doPeek(down);
     }
 
-    @Nonnull
+    
     @Override
     public final <T extends V> T peekAs(final Class<T> type)
     {
         return type.cast(peek(0));
     }
 
-    @Nonnull
+    
     @Override
     public final <T extends V> T peekAs(final Class<T> type, final int down)
     {
@@ -156,7 +155,7 @@ public abstract class ValueStackBase<V>
     protected abstract V doPeek(final int down);
 
     @Override
-    public final void poke(@Nonnull final V value)
+    public final void poke( final V value)
     {
         poke(0, value);
     }

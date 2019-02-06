@@ -35,16 +35,6 @@ public class BatchDeriver extends Deriver {
     public final IntRange tasklinksPerIteration = new IntRange(4, 1, 32);
 
 
-//    /**
-//     * how many premises to keep per concept; should be <= Hypothetical count
-//     */
-//    public final IntRange premisesPerLink = new IntRange(1, 1, 8);
-
-//    /** what % premises to actually try deriving */
-//    public final FloatRange premiseElitism = new FloatRange(0.5f, 0, 1f);
-
-
-
     public BatchDeriver(PremiseDeriverRuleSet rules) {
         this(rules, rules.nar);
     }

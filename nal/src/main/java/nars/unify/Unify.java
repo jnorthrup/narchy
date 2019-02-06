@@ -266,6 +266,10 @@ public abstract class Unify extends Versioning implements Subst {
         return x.hasAny(varBits);
     }
 
+    public final boolean varsOrTemporal(Termlike x) {
+        return x.hasAny(varBits | Op.Temporal);
+    }
+
 
     public final void constrain(UnifyConstraint m) {
         Variable target = m.x;

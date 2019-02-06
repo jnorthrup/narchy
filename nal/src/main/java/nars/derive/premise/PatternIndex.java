@@ -24,6 +24,7 @@ import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -340,7 +341,7 @@ public class PatternIndex extends MapConceptIndex {
 //                @Nullable Versioned<MatchConstraint> uc = u.constraints(ellipsis);
 
                 //xFixed is effectively sorte unless eMatch!=nulld
-                List<Term> xFixed = new FasterList(0);
+                List<Term> xMatch = new FasterList(0);
 
                 SortedSet<Term> yFree =
                         //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
@@ -362,7 +363,7 @@ public class PatternIndex extends MapConceptIndex {
                             ellipsis = null;
                             if (x instanceof EllipsisMatch) {
                                 for (Term ex : x.subterms()) {
-                                    if (!include(ex, xFixed, yFree, u))
+                                    if (!include(ex, xMatch, yFree, u))
                                         return false;
                                 }
                             }
@@ -370,12 +371,12 @@ public class PatternIndex extends MapConceptIndex {
                         continue;
                     }
 
-                    if (!include(x, xFixed, yFree, u))
+                    if (!include(x, xMatch, yFree, u))
                         return false;
                 }
 
 
-                final int xs = xFixed.size();
+                final int xs = xMatch.size();
 
                 int ys = yFree.size();
 
@@ -390,9 +391,9 @@ public class PatternIndex extends MapConceptIndex {
                     if (xs !=ys)
                         return false;
                     if (xs > 1)
-                        return SETe.the(xFixed).unify(SETe.the(yFree), u);
+                        return SETe.the(xMatch).unify(SETe.the(yFree), u);
                     else if (xs == 1)
-                        return xFixed.get(0).unify(yFree.first(), u);
+                        return xMatch.get(0).unify(yFree.first(), u);
                     else
                         return true;
                 }
@@ -403,7 +404,7 @@ public class PatternIndex extends MapConceptIndex {
                 if (xs >= 1 && ys > 0) {
                     //test matches against the one constant target
                     for (int ixs = 0; ixs < xs; ixs++) {
-                        Term ix = xFixed.get(ixs);
+                        Term ix = xMatch.get(ixs);
 
                         //TODO requires more work
 //                        if ((ixsStruct & varBits)!=0) {
@@ -442,10 +443,10 @@ public class PatternIndex extends MapConceptIndex {
 
                     case 1:
                         //no matches possible but need one
-                        return ys >= 1 && Choose1.choose1(ellipsis, xFixed, yFree, u);
+                        return ys >= 1 && Choose1.choose1(ellipsis, xMatch, yFree, u);
 
                     case 2:
-                        return ys >= 2 && Choose2.choose2(ellipsis, xFixed, yFree, u);
+                        return ys >= 2 && Choose2.choose2(ellipsis, xMatch, yFree, u);
 
                     default:
                         throw new RuntimeException("unimpl: " + xs + " arity combination unimplemented");
@@ -454,8 +455,28 @@ public class PatternIndex extends MapConceptIndex {
 
             }
 
-            private static boolean include(Term x, List<Term> xFixed, SortedSet<Term> yFree, Unify u) {
-                return !u.vars(x) ? yFree.remove(x) : xFixed.add(x);
+            private static boolean include(Term x, List<Term> xMatch, SortedSet<Term> yFree, Unify u) {
+                if (!u.vars(x)) {
+                    boolean rem = yFree.remove(x);
+                    if (rem)
+                        return true;
+
+                    if (x.hasAny(Op.Temporal)) {
+                        for (Iterator<Term> iterator = yFree.iterator(); iterator.hasNext(); ) {
+                            Term y = iterator.next();
+                            if (!u.vars(y)) {
+                                //at this point volume, structure, etc can be compared
+                                if (x.unify(y, u)) {
+                                    iterator.remove();
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                return xMatch.add(x);
             }
 
         }

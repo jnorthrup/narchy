@@ -207,8 +207,6 @@ public interface LongInterval {
     }
 
     default long minTimeTo(LongInterval b) {
-        if (b == null)
-            throw new WTF(); //TEMPORARY
         return minTimeTo(b.start(), b.end());
     }
 

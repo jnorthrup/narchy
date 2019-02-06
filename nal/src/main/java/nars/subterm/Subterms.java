@@ -818,8 +818,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
             //no variables:
             //cheap constant case invariant tests
 
-            //differing constant structure
-            if (XS != YS/* || xx.volume()!=yy.volume()*/)
+            //differing constant structure (excluding CONJ)
+            if (XS != YS || ((XS & Op.CONJ.bit) == 0) && xx.volume()!=yy.volume())
                 return false;
 
             if (((XS & Op.Temporal) == 0) /*&& ((YS & Op.Temporal) == 0)*/ && !xx.equals(yy))

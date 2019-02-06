@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 600;
+    private static final int cycles = 800;
 
     @BeforeEach
     void setup() {
@@ -1057,7 +1057,7 @@ public class NAL6Test extends NALTest {
     void recursionSmall() {
 
         test.nar.termVolumeMax.set(10);
-        test.nar.freqResolution.set(0.1f);
+        test.nar.freqResolution.set(0.25f);
         test
                 .believe("num:x", 1.0f, 0.9f)
                 .believe("( num:$1 ==> num($1) )", 1.0f, 0.9f)
