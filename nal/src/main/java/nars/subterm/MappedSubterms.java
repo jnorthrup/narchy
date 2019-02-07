@@ -160,7 +160,7 @@ abstract public class MappedSubterms extends ProxySubterms {
 
 
         @Override
-        protected final boolean hasNegs() {
+        protected final boolean hasNeg() {
             return negs>0;
         }
 
@@ -211,7 +211,7 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
-        return !hasNegs() ?
+        return !hasNeg() ?
                 ref.recurseTerms(inSuperCompound, whileTrue, parent)
                 :
                 super.recurseTerms(inSuperCompound, whileTrue, parent);
@@ -219,7 +219,7 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent) {
-        return !hasNegs() ?
+        return !hasNeg() ?
                 ref.recurseTerms(aSuperCompoundMust, whileTrue, parent)
                 :
                 super.recurseTerms(aSuperCompoundMust, whileTrue, parent);
@@ -227,7 +227,7 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public boolean contains(Term t) {
-        return (!hasNegs() && t.op()!=NEG) ? ref.contains(t) : super.contains(t);
+        return (!hasNeg() && t.op()!=NEG) ? ref.contains(t) : super.contains(t);
     }
 
 //    @Override
@@ -236,6 +236,10 @@ abstract public class MappedSubterms extends ProxySubterms {
 //    }
 
 
+    @Override
+    public int height() {
+        return (hasNeg() ? 1 : 0) + ref.height();
+    }
 
     /** optimized to avoid wrapping in Neg temporarily */
     @Override public final int subEventRange(int i) {
@@ -251,7 +255,7 @@ abstract public class MappedSubterms extends ProxySubterms {
     @Override
     public final int structure() {
         int s = ref.structure();
-        if (hasNegs())
+        if (hasNeg())
             s |= NEG.bit;
         return s;
     }
@@ -259,7 +263,7 @@ abstract public class MappedSubterms extends ProxySubterms {
     @Override
     public final int structureSurface() {
         int s = ref.structureSurface();
-        if (hasNegs())
+        if (hasNeg())
             s |= NEG.bit;
         return s;
     }
@@ -283,7 +287,7 @@ abstract public class MappedSubterms extends ProxySubterms {
         this.normalizedKnown = this.normalized = true;
     }
 
-    protected boolean hasNegs() {
+    protected boolean hasNeg() {
         int s = subs();
         for (int i = 0; i < s; i++)
             if (subMap(i) < 0)

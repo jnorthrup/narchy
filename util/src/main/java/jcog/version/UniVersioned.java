@@ -1,7 +1,5 @@
 package jcog.version;
 
-import jcog.TODO;
-
 /** supports only one state and refuses change if a value is held */
 public class UniVersioned<X> implements Versioned<X> {
 
@@ -19,12 +17,16 @@ public class UniVersioned<X> implements Versioned<X> {
     }
 
     @Override
-    public void force(X x) {
+    public final boolean replace(X x) {
         if (value==null) {
-            if (!context.add(this)); //add callback so it can be erased
-                throw new TODO();
+            return set(x);
+        } else {
+            if (valid(x)) {
+                value = x;
+                return true;
+            } else
+                return false;
         }
-        value = x;
     }
 
     @Override

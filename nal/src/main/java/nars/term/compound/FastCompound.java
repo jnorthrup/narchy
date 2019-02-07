@@ -411,6 +411,11 @@ abstract public class FastCompound implements Compound /* The */ {
         }
 
         @Override
+        public String toString() {
+            return Subterms.toString(this);
+        }
+
+        @Override
         public int size() {
             return subs();
         }

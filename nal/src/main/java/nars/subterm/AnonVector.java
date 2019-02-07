@@ -37,7 +37,7 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
     public AnonVector(Term... s) {
         super(s);
 
-        boolean hasNeg = anyNeg();
+        boolean hasNeg = hasNeg();
 
         short[] t = subterms = new short[s.length];
         for (int i = 0, sLength = s.length; i < sLength; i++) {
@@ -88,6 +88,11 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
             prev = next;
         }
         return false;
+    }
+
+    @Override
+    public int height() {
+        return hasNeg() ? 3 : 2;
     }
 
     @Override
@@ -275,7 +280,7 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
     @Override
     public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
         if (x.op() == NEG) {
-            if (anyNeg()) {
+            if (hasNeg()) {
                 Term tt = x.unneg();
                 if (tt instanceof AnonID) {
                     return indexOf((AnonID) tt, true) != -1;
@@ -303,7 +308,7 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
         return false;
     }
 
-    private boolean anyNeg() {
+    private boolean hasNeg() {
         return (structure & NEG.bit) != 0;
     }
 

@@ -136,6 +136,7 @@ public enum TermTest { ;
         Assertions.assertEquals(x.toString(), y.toString());
         Assertions.assertEquals(x.hashCode(), y.hashCode());
         Assertions.assertEquals(x.volume(), y.volume());
+        Assertions.assertEquals(x.height(), y.height());
         Assertions.assertEquals(x.complexity(), y.complexity());
         Assertions.assertEquals(x.voluplexity(), y.voluplexity());
         Assertions.assertEquals(x.structure(), y.structure());

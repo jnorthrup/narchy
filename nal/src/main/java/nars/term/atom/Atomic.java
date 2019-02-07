@@ -179,15 +179,6 @@ public interface Atomic extends Term {
             }
         }
 
-        
-        if (l > 1 /* already handled single digit cases in the above switch */ && Character.isDigit(id.charAt(0))) {
-            
-            int i = Texts.i(id, MIN_VALUE);
-            if (i != MIN_VALUE)
-                return Int.the(i); 
-        }
-
-
         switch (id) {
             case "true":
                 return Bool.True;
@@ -195,17 +186,23 @@ public interface Atomic extends Term {
                 return Bool.False;
             case "null":
                 return Bool.Null;
-            default:
-                if (isQuoteNecessary(id))
+            default: {
+                if (isQuoteNecessary(id, l)) {
+
+                    if (l > 1 /* already handled single digit cases in the above switch */ && Character.isDigit(id.charAt(0))) {
+
+                        int i = Texts.i(id, MIN_VALUE);
+                        if (i != MIN_VALUE)
+                            return Int.the(i);
+                    }
+
                     return $.quote(id);
-                else
+                } else
                     return new Atom(id);
+            }
         }
 
-
     }
-
-
 
     @Override
     String toString();
@@ -293,12 +290,6 @@ public interface Atomic extends Term {
         return true;
     }
 
-//    @Override
-//    default boolean impossibleSubTermOrEquality(Term target) {
-//        return !equals(target);
-//    }
-
-
     @Override
     default boolean impossibleSubStructure(int structure) { return true; }
 
@@ -357,13 +348,12 @@ public interface Atomic extends Term {
 
     /**
      * determines if the string is invalid as an unquoted target according to the characters present
+     * assumes len > 0
      */
-    static boolean isQuoteNecessary(CharSequence t) {
-        int len = t.length();
+    private static boolean isQuoteNecessary(CharSequence t, int len) {
 
-        if (len > 1 && (t.charAt(0) == '\"') && (t.charAt(len - 1) == '\"'))
-            return false; 
-
+        if ((t.charAt(0) == '\"') && (t.charAt(len - 1) == '\"'))
+            return false;
 
         for (int i = 0; i < len; i++) {
             if (!Atom.isValidAtomChar(t.charAt(i)))
@@ -380,5 +370,8 @@ public interface Atomic extends Term {
                (x.hashCode() == y.hashCode()) &&
                Arrays.equals(x.bytes(), ((Atomic)y).bytes()));
     }
-    
+
+    default int height() { return 1; }
+
+
 }

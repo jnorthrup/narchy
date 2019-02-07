@@ -60,7 +60,7 @@ class SetFuncTest {
         assertEquals(
                 Set.of($$("(sort((3,2),quote,(2,3))&&add(1,2,3))")),
                 Evaluation.eval(
-                    $$("(&&,addAt(1,#x,#a),sort((#a,2),quote,(2,3)))"), n));
+                    $$("(&&,add(1,#x,#a),sort((#a,2),quote,(2,3)))"), n));
     }
 
 

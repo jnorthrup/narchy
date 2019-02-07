@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 650;
+    private final int cycles = 450;
 
     @Override
     protected NAR nar() {
@@ -85,10 +85,12 @@ public class NAL5Test extends NALTest {
     void depVarUniqueness() {
 
         test
+        .termVolMax(10)
         .believe("f(x,#1)")
         .believe("f(y,#1)")
         //both forms
         .mustBelieve(cycles, "(f(x,#1) ==> f(y,#2))", 1.00f, 0.45f)
+        .mustBelieve(cycles, "(f(y,#1) ==> f(x,#2))", 1.00f, 0.45f)
         .mustBelieve(cycles, "(f(x,#1) ==> f(y,#1))", 1.00f, 0.45f)
         ;
 
@@ -705,13 +707,22 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_abduction2() {
-        test.nar.confMin.set(0.4);
+        test.nar.confMin.set(0.3);
+        test.termVolMax(5);
         test
         .believe("((x && y) ==> z)")
         .believe("(y ==> z)")
         .mustBelieve(cycles, "x", 1.00f, 0.45f);
     }
-
+    @Test
+    void conditional_abduction2_depvar() {
+        test.nar.confMin.set(0.3);
+        test.termVolMax(5);
+        test
+                .believe("((x && y) ==> #1)")
+                .believe("(y ==> #1)")
+                .mustBelieve(cycles, "x", 1.00f, 0.45f);
+    }
 
     @Test
     void conditional_induction0Simple() {
@@ -727,8 +738,8 @@ public class NAL5Test extends NALTest {
     void conditional_induction0SimpleDepVar() {
         test
         .termVolMax(6)
-        .believe("((&&,x1,#1) ==> c)")
-        .believe("((&&,y1,#1) ==> c)")
+        .believe("((x1 && #1) ==> c)")
+        .believe("((y1 && #1) ==> c)")
         .mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f)
         .mustBelieve(cycles, "(y1 ==> x1)", 1.00f, 0.45f);
     }

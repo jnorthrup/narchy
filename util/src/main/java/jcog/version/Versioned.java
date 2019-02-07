@@ -7,6 +7,9 @@ public interface Versioned<X> {
 
     void pop();
 
-    /** forcefully sets the value, bypassing any checks or constraints that setAt(x) otherwise applies */
-    void force(X y);
+    /**
+     * replaces the existing value (or invokes ordinary set(x) if none),
+     * an implementation can refuse the new value, indicated by return value
+     */
+    boolean replace(X y);
 }

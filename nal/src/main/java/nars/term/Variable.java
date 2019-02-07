@@ -88,7 +88,7 @@ public interface Variable extends Atomic {
 
 
         if (y instanceof Variable && x instanceof Variable && !(y instanceof EllipsisMatch) && u.commonVariables) {
-            if (xOp == y.op()) {
+            //if (xOp == y.op()) {
                 Variable Y = (Variable) y;
                 Variable X = (Variable) x;
 
@@ -96,19 +96,20 @@ public interface Variable extends Atomic {
                 //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
                 Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
                 if (u.putXY(X, common) && u.putXY(Y, common)) {
-                    //map any appearances of X or Y in already-assigned variables
-//                    if (u.xy.size() > 2) {
-//                        u.xy.replaceAll((var, val) -> {
-//                            if (var.equals(X) || var.equals(Y) || !val.hasAny(X.op()))
-//                                return val; //unchanged
-//                            else
-//                                return val.replace(X, common).replace(Y, common);
-//                        });
-//                    }
-                    return true;
+                    //rewrite any appearances of X or Y in already-assigned variables
+                    if (u.xy.size() > 2) {
+                        return u.xy.tryReplaceAll((var, val) -> {
+                            if (var.equals(X) || var.equals(Y) || !val.hasAny(X.op()))
+                                return val; //unchanged
+                            else
+                                return val.replace(X, common).replace(Y, common);
+                        });
+                    } else {
+                        return true; //only the common variable components were asisgned
+                    }
                 }
                 return false;
-            }
+            //}
         }
 
 

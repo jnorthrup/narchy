@@ -651,11 +651,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         } else if (n == 2) {
             Term x0 = sub(0), x1 = sub(1);
             Term y0 = y.sub(0), y1 = y.sub(1);
-            boolean cx = u.vars(x0), cy = u.vars(x1);
+            boolean cx = u.var(x0), cy = u.var(x1);
             boolean forward;
             if (cx == cy) {
                 if (!cx) {
-                    boolean dx = !u.vars(y0), dy = !u.vars(y1);
+                    boolean dx = !u.var(y0), dy = !u.var(y1);
                     if (dx && dy)
                         forward = y0.volume() <= y1.volume();
                     else
@@ -680,7 +680,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (xi == yi)
                 continue;
 
-            boolean now = (i == n - 1) || ((u.vars(xi) && u.vars(yi)));
+            boolean now = (i == n - 1) || ((u.var(xi) && u.var(yi)));
 
             if (now) {
 

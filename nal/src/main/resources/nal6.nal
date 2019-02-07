@@ -252,12 +252,14 @@
        (Z ==> (&&,X,A..+)), (--Z ==> (&&,--X,A..+)) |- ((Z ==> X) && (--Z ==> --X)), (Belief:AbductionPB)
 
 
+    //conditional induction
     ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
       (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
 
+
     //Conditional Abduction via Multi-conditional Syllogism
-    ((&&,B,A..+) ==> X), (E ==> Y), --isVar(X), --isVar(Y)       |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
-    (C ==> X), (E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)   |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
+    ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
       //TODO check (--C ==> X), (--E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)    |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
 
         (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) &&   M) ==> Z), (Belief:InductionPB)
@@ -278,6 +280,7 @@
   //chain:
   (&&,(X<->Y),A..+), (Y<->Z)         |- substitute((&&,A..+),X,Z,strict), (Belief:Analogy, Goal:Analogy)
   (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,strict),Y,Z,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
 
 
 // Mutex induction

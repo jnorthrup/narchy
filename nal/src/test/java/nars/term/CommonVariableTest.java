@@ -2,8 +2,10 @@ package nars.term;
 
 import nars.$;
 import nars.term.var.CommonVariable;
+import nars.unify.UnifyAny;
 import org.junit.jupiter.api.Test;
 
+import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -53,7 +55,13 @@ class CommonVariableTest {
         
         assertEquals("####1#2##3##2#", CommonVariable.common( c123, p2).toString());
 
+    }
 
-
+    @Test void testUnifyCommonVar() {
+        UnifyAny u = new UnifyAny();
+        assertTrue(
+                $$("x($1,#1)").unify($$("x(#1,$1)"), u)
+        );
+        System.out.println(u);
     }
 }

@@ -44,11 +44,28 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
                if (x!=null) {
                    Y y = function.apply(v, x);
                    if (x != y) {
-                       val.force(y);
+                       val.replace(y);
                    }
                }
            }
         });
+    }
+
+    public boolean tryReplaceAll(BiFunction<? super X, ? super Y, ? extends Y> function) {
+        final boolean[] ok = {true};
+        map.forEach((v,val)->{
+            if (ok[0] && val!=null) {
+                Y x = val.get();
+                if (x!=null) {
+                    Y y = function.apply(v, x);
+                    if (x != y) {
+                        if (!val.replace(y))
+                            ok[0] = false;
+                    }
+                }
+            }
+        });
+        return ok[0];
     }
 
     @Nullable
@@ -130,8 +147,8 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         throw new UnsupportedOperationException("use force(k,v)");
     }
 
-    public final void force(X key, Y value) {
-        getOrCreateIfAbsent(key).force(value);
+    public final boolean force(X key, Y value) {
+        return getOrCreateIfAbsent(key).replace(value);
     }
 
     public final boolean set(X key, Y value) {

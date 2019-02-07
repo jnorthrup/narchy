@@ -1290,6 +1290,13 @@ public enum Util {
         return y;
     }
 
+    public static <X> int max(ToIntFunction<X> value, X... xx) {
+        int y = Integer.MIN_VALUE;
+        for (X x : xx)
+            y = Math.max(y, value.applyAsInt(x));
+        return y;
+    }
+
     public static <X> long max(ToLongFunction<X> value, Iterable<X> xx) {
         long y = Long.MIN_VALUE;
         for (X x : xx)

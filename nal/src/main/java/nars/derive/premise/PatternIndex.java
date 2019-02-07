@@ -331,7 +331,7 @@ public class PatternIndex extends MapConceptIndex {
              */
             @Override
             protected boolean matchEllipsis(Term Y, Unify u) {
-                if (Y.op().temporal && (dt != XTERNAL) && !Y.isCommutative())
+                if ((dt != XTERNAL) && Y.op().temporal && !Y.isCommutative())
                     throw new TODO();
 
 
@@ -354,25 +354,28 @@ public class PatternIndex extends MapConceptIndex {
                 Ellipsis ellipsis = this.ellipsis;
                 for (int k = 0; k < s; k++) {
 
-
                     Term xk = xx.sub(k);
-                    Term x = u.tryResolve(xk);
+                    Term xxk = u.tryResolve(xk);
 
                     if (xk.equals(ellipsis)) {
-                        if (!x.equals(xk)) {
-                            ellipsis = null;
-                            if (x instanceof EllipsisMatch) {
-                                for (Term ex : x.subterms()) {
-                                    if (!include(ex, xMatch, yFree, u))
-                                        return false;
-                                }
+                        if (xxk.equals(xk))
+                            continue; //unassigned ellipsis
+
+                        ellipsis = null;
+                        if (xxk instanceof EllipsisMatch) {
+                            for (Term ex : xxk.subterms()) {
+                                if (!include(ex, xMatch, yFree, u))
+                                    return false;
                             }
+                            continue;
                         }
-                        continue;
+                        //else it is ellipsis that matched a single term, continue below:
+
                     }
 
-                    if (!include(x, xMatch, yFree, u))
+                    if (!include(xxk, xMatch, yFree, u))
                         return false;
+
                 }
 
 
@@ -388,14 +391,16 @@ public class PatternIndex extends MapConceptIndex {
                         return false;
                 } else {
                     //ellipsis matched already
-                    if (xs !=ys)
+                    if (xs == ys) {
+                        if (xs > 1)
+                            return SETe.the(xMatch).unify(SETe.the(yFree), u);
+                        else if (xs == 1)
+                            return xMatch.get(0).unify(yFree.first(), u);
+                        else
+                            return true;
+                    } else {
                         return false;
-                    if (xs > 1)
-                        return SETe.the(xMatch).unify(SETe.the(yFree), u);
-                    else if (xs == 1)
-                        return xMatch.get(0).unify(yFree.first(), u);
-                    else
-                        return true;
+                    }
                 }
 
 
@@ -405,6 +410,7 @@ public class PatternIndex extends MapConceptIndex {
                     //test matches against the one constant target
                     for (int ixs = 0; ixs < xs; ixs++) {
                         Term ix = xMatch.get(ixs);
+                        if (u.var(ix)) continue;
 
                         //TODO requires more work
 //                        if ((ixsStruct & varBits)!=0) {
@@ -456,7 +462,7 @@ public class PatternIndex extends MapConceptIndex {
             }
 
             private static boolean include(Term x, List<Term> xMatch, SortedSet<Term> yFree, Unify u) {
-                if (!u.vars(x)) {
+                if (!u.var(x)) {
                     boolean rem = yFree.remove(x);
                     if (rem)
                         return true;
@@ -464,7 +470,7 @@ public class PatternIndex extends MapConceptIndex {
                     if (x.hasAny(Op.Temporal)) {
                         for (Iterator<Term> iterator = yFree.iterator(); iterator.hasNext(); ) {
                             Term y = iterator.next();
-                            if (!u.vars(y)) {
+                            if (!u.var(y)) {
                                 //at this point volume, structure, etc can be compared
                                 if (x.unify(y, u)) {
                                     iterator.remove();

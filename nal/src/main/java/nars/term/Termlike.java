@@ -48,6 +48,12 @@ public interface Termlike {
      */
     int subs();
 
+    /** recursion height; atomic=1, compound>1 */
+    default int height() {
+        if (subs() == 0) return 1;
+        else return 1 + max(Term::height);
+    }
+
     /**
      * syntactic volume = 1 + total volume of terms = complexity of subterms - # variable instances
      */
@@ -65,15 +71,19 @@ public interface Termlike {
 
       /** only 1-layer (shallow, non-recursive) */
     default int sum(ToIntFunction<Term> value) {
-        int x = 0;
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            x += value.applyAsInt(sub(i));
-
-        return x;
+//        int x = 0;
+//        int s = subs();
+//        for (int i = 0; i < s; i++)
+//            x += value.applyAsInt(sub(i));
+//
+//        return x;
+        return intifyShallow((x,t) -> x + value.applyAsInt(t), 0);
     }
 
-
+    /** only 1-layer (shallow, non-recursive) */
+    default int max(ToIntFunction<Term> value) {
+        return intifyShallow((x,t) -> Math.max(value.applyAsInt(t),x), Integer.MIN_VALUE);
+    }
 
 
     /** recursive, visits only 1 layer deep, and not the current if compound */

@@ -1,6 +1,5 @@
 package jcog.version;
 
-import jcog.TODO;
 import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,13 +30,13 @@ public class MultiVersioned<X> extends FasterList<X> implements Versioned<X> {
     }
 
     @Override
-    public void force(X y) {
+    public boolean replace(X y) {
         if (size==0) {
-            addWithoutResize(y);
-            if (!context.add(this))
-                throw new TODO("context overflow");
-        } else
+            return set(y);
+        } else {
             replaceLast(y);
+            return true;
+        }
     }
 
     /**

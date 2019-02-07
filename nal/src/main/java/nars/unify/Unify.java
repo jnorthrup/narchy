@@ -262,7 +262,7 @@ public abstract class Unify extends Versioning implements Subst {
         return xy.set(x, y);
     }
 
-    public final boolean vars(Termlike x) {
+    public final boolean var(Termlike x) {
         return x.hasAny(varBits);
     }
 

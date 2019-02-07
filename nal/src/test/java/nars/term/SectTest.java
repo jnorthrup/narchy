@@ -69,7 +69,7 @@ public class SectTest {
     }
 
     @Test void testTooComplexSectDiff() {
-        assertEq("", "(a --> --(x-y))");
+//        assertEq("", "(a --> --(x-y))");
 
         /*
                            x-y  =            x*(1-y)

@@ -72,7 +72,8 @@ class VersioningTest {
         assertFalse(b);
         assertEquals("{x=a}", m.toString());
 
-        m.force("x", "c");
+        boolean ok = m.force("x", "c");
+        assertTrue(ok);
         assertEquals("{x=c}", m.toString());
 
         w.pop();

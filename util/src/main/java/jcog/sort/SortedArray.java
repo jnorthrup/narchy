@@ -68,12 +68,12 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     protected static int grow(int oldSize) {
-        return 1 + (int)(oldSize * GROWTH_RATE);
+        return 1 + (int) (oldSize * GROWTH_RATE);
 
     }
 
     private static void swap(Object[] l, int a, int b) {
-        if (a!=b) {
+        if (a != b) {
             Object x = l[b];
             l[b] = l[a];
             l[a] = x;
@@ -170,88 +170,92 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public void sort(ToIntFunction<X> x, int from, int to) {
         from = Math.max(0, from);
-        to = Math.max(from, Math.min(size-1, to));
-        if (from==to)
+        to = Math.max(from, Math.min(size - 1, to));
+        if (from == to)
             return;
-        int[] stack = new int[to-from+1 /*sortSize(to - from)*/ /* estimate */];
+        int[] stack = new int[to - from + 1 /*sortSize(to - from)*/ /* estimate */];
         qsort(stack, items, from /*dirtyStart - 1*/, to, x);
     }
 
     private static void qsort(int[] stack, Object[] c, int left, int right, ToIntFunction pCmp) {
         int stack_pointer = -1;
-        int cLenMin1 = c.length - 1;
         final int SCAN_THRESH = 4;
-        while (true) {
-            int i, j;
-            if (right - left <= SCAN_THRESH) {
-                for (j = left + 1; j <= right; j++) {
-                    Object swap = c[j];
-                    i = j - 1;
-                    int swapV = pCmp.applyAsInt(swap);
-                    while (i >= left && pCmp.applyAsInt(c[i]) < swapV) {
-                        swap(c, i + 1, i--);
-                    }
-                    c[i + 1] = swap;
-                }
-                if (stack_pointer != -1) {
-                    right = stack[stack_pointer--];
-                    left = stack[stack_pointer--];
-                } else {
+        while (right - left > SCAN_THRESH) {
+            int median = (left + right) / 2;
+            int i = left + 1;
+            int j = right;
+
+            swap(c, i, median);
+
+            int cl = pCmp.applyAsInt(c[left]), cr = pCmp.applyAsInt(c[right]);
+            int ci;
+            if (cl < cr) {
+                swap(c, right, left);
+                int x = cr;
+                cr = cl;
+                cl = x;
+                ci = i == left ? cr : (i == right ? cl : pCmp.applyAsInt(c[i]));
+            } else {
+                ci = i == left ? cl : (i == right ? cr : pCmp.applyAsInt(c[i]));
+            }
+
+            if (ci < cr) {
+                swap(c, right, i);
+                ci = cr;
+            }
+            if (cl < ci) {
+                swap(c, i, left);
+            }
+
+            Object temp = c[i];
+            int tempV = pCmp.applyAsInt(temp);
+
+            while (true) {
+                while (i < c.length - 1 && pCmp.applyAsInt(c[++i]) > tempV) ;
+                while (j > 0 && /* <- that added */ pCmp.applyAsInt(c[--j]) < tempV) ;
+                if (j < i) {
                     break;
                 }
+                swap(c, j, i);
+            }
+
+            c[left + 1] = c[j];
+            c[j] = temp;
+
+            int a, b;
+            if (right - i + 1 >= j - left) {
+                a = i;
+                b = right;
+                right = j - 1;
             } else {
+                a = left;
+                b = j - 1;
+                left = i;
+            }
 
-                int median = (left + right) / 2;
-                i = left + 1;
-                j = right;
+            stack[++stack_pointer] = a;
+            stack[++stack_pointer] = b;
+        }
 
-                swap(c, i, median);
+        qsortBubble(pCmp, c, left, right, stack, stack_pointer);
+    }
 
-                int cl = pCmp.applyAsInt(c[left]);
-                int cr = pCmp.applyAsInt(c[right]);
-                if (cl < cr) {
-                    swap(c, right, left);
-                    int x = cr;
-                    cr = cl;
-                    cl = x;
+    private static void qsortBubble(ToIntFunction pCmp, Object[] c, int left, int right, int[] stack, int stack_pointer) {
+        while (true) {
+            for (int j = left + 1; j <= right; j++) {
+                int i = j - 1;
+                Object swap = c[j];
+                int swapV = pCmp.applyAsInt(swap);
+                while (i >= left && pCmp.applyAsInt(c[i]) < swapV) {
+                    swap(c, i + 1, i--);
                 }
-                int ci = pCmp.applyAsInt(c[i]);
-                if (ci < cr) {
-                    swap(c, right, i);
-                    ci = cr;
-                }
-                if (cl < ci) {
-                    swap(c, i, left);
-                }
-
-                Object temp = c[i];
-                int tempV = pCmp.applyAsInt(temp);
-
-                while (true) {
-                    while (i < cLenMin1 && pCmp.applyAsInt(c[++i]) > tempV) ;
-                    while (j > 0 && /* <- that added */ pCmp.applyAsInt(c[--j]) < tempV) ;
-                    if (j < i) {
-                        break;
-                    }
-                    swap(c, j, i);
-                }
-
-                c[left + 1] = c[j];
-                c[j] = temp;
-
-                int a, b;
-                if (right - i + 1 >= j - left) {
-                    a = i;
-                    b = right;
-                    right = j - 1;
-                } else {
-                    a = left;
-                    b = j - 1;
-                    left = i;
-                }
-
-                stack[++stack_pointer] = a;
-                stack[++stack_pointer] = b;
+                c[i + 1] = swap;
+            }
+            if (stack_pointer != -1) {
+                right = stack[stack_pointer--];
+                left = stack[stack_pointer--];
+            } else {
+                return;
             }
         }
     }
@@ -336,7 +340,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //    }
 
 
-    /** TODO find exact requirements */
+    /**
+     * TODO find exact requirements
+     */
     static int sortSize(int size) {
         if (size < 16)
             return 4;
@@ -438,7 +444,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public int add(X element, float elementRank, FloatFunction<X> cmp) {
         int s = size;
-        assert(elementRank==elementRank);
+        assert (elementRank == elementRank);
 
         final int index = find(element, elementRank, cmp, false, true);
 
@@ -451,7 +457,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     private int insert(X element, int index, int size) {
-        assert(index!=-1);
+        assert (index != -1);
         if (index == size) {
             return addEnd(element);
         } else {
@@ -481,12 +487,12 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                 return -1;
             }
         }
-        l[SIZE.incrementAndGet(this)-1] = e;
+        l[SIZE.incrementAndGet(this) - 1] = e;
         return s;
     }
 
     protected X[] resize(int newLen) {
-        assert(newLen >= size);
+        assert (newLen >= size);
         return this.items = copyOfArray(items, newLen);
 //        X[] newList = newArray(newLen);
 //        System.arraycopy(items, 0, newList, 0, size);
@@ -500,7 +506,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         boolean adding;
         if (list.length == oldSize) {
             if (!grows()) {
-                rejectExisting(list[oldSize-1]); //pop
+                rejectExisting(list[oldSize - 1]); //pop
                 adding = false;
             } else {
                 int newCapacity = grow(oldSize);
@@ -584,15 +590,15 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         }
 
         if (reinsert) {
-            int next = find(null, cur , cmp, true, true);
-            if (next == index ) {
+            int next = find(null, cur, cmp, true, true);
+            if (next == index) {
                 //in the correct pos
             } else if (next == index - 1) {
                 if (index >= 1)
                     swap(l, index, index - 1);
             } else if (next == index + 1) {
 
-                if (index < size()-1)
+                if (index < size() - 1)
                     swap(l, index, index + 1);
 
             } else {
@@ -626,13 +632,14 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         return find(element, Float.NaN, cmp, eqByIdentity, false);
     }
+
     public int indexOf(float rank, FloatFunction<X> cmp) {
         return find(null, rank, cmp, false, true);
     }
 
     private int find(final X element, float elementRank /* can be NaN for forFind */, FloatFunction<X> cmp, boolean eqByIdentity, boolean forInsertionOrFind) {
         int s = size;
-        if (s==0)
+        if (s == 0)
             return forInsertionOrFind ? 0 : -1;
 
         int left = 0, right = s;
@@ -679,12 +686,12 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                 left = nextLeft;
                 right = nextRight;
             }
-        } while (right-left>=1);
+        } while (right - left >= 1);
 
         if (forInsertionOrFind)
             return right;
         else {
-            if (element!=null && exhaustiveFind())
+            if (element != null && exhaustiveFind())
                 return indexOfExhaustive(element, eqByIdentity);
             else
                 return -1;
@@ -696,7 +703,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return (element == ii) || (!eqByIdentity && element.equals(ii));
     }
 
-    /** needs to be true if the rank of items is known to be stable.  then binary indexOf lookup does not need to perform an exhaustive search if not found by rank */
+    /**
+     * needs to be true if the rank of items is known to be stable.  then binary indexOf lookup does not need to perform an exhaustive search if not found by rank
+     */
     protected boolean exhaustiveFind() {
         return true;
     }
@@ -733,7 +742,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public final X last() {
         int size = this.size;
         if (size == 0) return null;
-        return items[size-1];
+        return items[size - 1];
 //        X[] ll = items;
 //        int i = Math.min(ll.length - 1, size - 1);
         //return (X) ITEM.getOpaque(ll, i);
@@ -748,7 +757,10 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public final void forEach(int n, Consumer<? super X> action) {
-        whileEach(n, x -> { action.accept(x); return true; } );
+        whileEach(n, x -> {
+            action.accept(x);
+            return true;
+        });
     }
 
     public final boolean whileEach(Predicate<? super X> action) {
@@ -772,7 +784,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public final void removeRange(int start, int _end, Consumer<? super X> action) {
         int end = (_end == -1) ? size : Math.min(size, _end);
-        if (start<end) {
+        if (start < end) {
             X[] l = items;
             for (int i = start; i < end; i++)
                 action.accept(l[i]);
