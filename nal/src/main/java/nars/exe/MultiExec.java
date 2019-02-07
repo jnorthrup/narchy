@@ -32,7 +32,7 @@ abstract public class MultiExec extends UniExec {
 
 
 
-    protected long idleTimePerCyclePerThread;
+    protected long threadWorkTimePerCycle, threadIdleTimePerCycle;
 
     /** global sleep nap period */
     private static final long NapTime = 2 * 1000 * 1000; //on the order of ~1ms
@@ -87,15 +87,16 @@ abstract public class MultiExec extends UniExec {
 
 
     private void updateTiming() {
-        double cycleNS = nar.loop.periodNS();
+        long cycleNS = nar.loop.periodNS();
         if(cycleNS < 0) {
             //paused
-            idleTimePerCyclePerThread = NapTime;
+            threadIdleTimePerCycle = NapTime;
         } else {
             double throttle = nar.loop.throttle.floatValue();
 
             //TODO better idle calculation in each thread / worker
-            idleTimePerCyclePerThread = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
+            threadIdleTimePerCycle = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
+            threadWorkTimePerCycle = cycleNS - threadIdleTimePerCycle;
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
                 input(new QueueLatencyMeasurement(nanoTime()));
@@ -287,11 +288,7 @@ abstract public class MultiExec extends UniExec {
 
                     long workTime = work();
 
-                    long cycleTimeNS =
-                            //cpu.cycleTimeNS.longValue();
-                            nar.loop.periodNS();
-
-                    long playTime = cycleTimeNS - workTime;
+                    long playTime = threadWorkTimePerCycle - workTime;
                     if (playTime > 0)
                         play(playTime);
 
@@ -342,7 +339,7 @@ abstract public class MultiExec extends UniExec {
 
                 long now = nar.time();
                 if (now > lastScheduled) {
-                    if (scheduleDone(nar.loop.cycleTimeNS, now))
+                    if (scheduleDone(threadWorkTimePerCycle, now))
                         return;
                 }
 
@@ -390,10 +387,9 @@ abstract public class MultiExec extends UniExec {
 
                     if (!playing) {
                         if (++skip == n) {
-                            after = nanoTime(); //safety
-                            skip = 0;
-                        } else {
-                            continue;
+//                            after = nanoTime(); //safety
+//                            skip = 0;
+                            break; //reschedule
                         }
                     }
 
@@ -404,11 +400,11 @@ abstract public class MultiExec extends UniExec {
 //                );
             }
 
-            private boolean scheduleDone(long cycleTimeNS, long now) {
+            private boolean scheduleDone(long workTimeNS, long now) {
 
                 lastScheduled = now;
 
-                maxExe = cycleTimeNS / (granularity);
+                maxExe = workTimeNS / (granularity);
 
                 if (play.length != n) {
                     //TODO more careful test for change
@@ -430,8 +426,8 @@ abstract public class MultiExec extends UniExec {
                 float spendRate = 1f;
                 long shift = maxTime < 0 ? 1 - maxTime : 0;
                 for (TimedLink.MyTimedLink m : play) {
-                    int t = Math.round(shift + (cycleTimeNS * spendRate) * m.pri());
-                    m.add(Math.max(1, t), -cycleTimeNS, cycleTimeNS);
+                    int t = Math.round(shift + (workTimeNS * spendRate) * m.pri());
+                    m.add(Math.max(1, t), -workTimeNS, workTimeNS);
                 }
                 return false;
             }
@@ -441,7 +437,7 @@ abstract public class MultiExec extends UniExec {
             }
 
             void sleep() {
-                long i = WorkerExec.this.idleTimePerCyclePerThread;
+                long i = WorkerExec.this.threadIdleTimePerCycle;
                 if (i > 0) {
                     Util.sleepNSwhile(i, NapTime, WorkerExec.this::queueSafe);
                 }
@@ -487,7 +483,7 @@ abstract public class MultiExec extends UniExec {
         /** measure queue latency "ping" */
         static void queueLatency(long start, long end, NAR n) {
             long latencyNS = end - start;
-            double cycles = latencyNS / ((double)(n.loop.cycleTimeNS / n.exe.concurrency()));
+            double cycles = latencyNS / ((double)(n.loop.periodNS() / n.exe.concurrency()));
             if (cycles > 0.5) {
                 logger.info("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(cycles));
             }

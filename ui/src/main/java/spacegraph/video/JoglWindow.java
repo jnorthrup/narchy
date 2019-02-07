@@ -516,9 +516,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                         if (window.isVisible()) {
 
 
-                            long cycleTimeNS =
-                                    //updater.cycleTimeNS;
-                                    renderer.loop.cycleTimeNS;
+                            long cycleTimeNS = renderer.loop.periodNS();
                             dtS = (float) (cycleTimeNS / 1.0E9);
 
                             onUpdate.emit(JoglWindow.this);

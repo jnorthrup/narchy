@@ -15,10 +15,10 @@ abstract public class InstrumentedLoop extends Loop {
      * in seconds
      */
     public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength);
-    public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength); 
+    public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength);
 
-    public long cycleTimeNS = 0;
-    public double cycleTimeS = 0;
+    private long cycleTimeNS = 0;
+    private double cycleTimeS = 0;
 
     protected volatile long last;
     protected long beforeIteration;

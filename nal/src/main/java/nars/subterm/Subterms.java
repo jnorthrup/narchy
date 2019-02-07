@@ -1168,7 +1168,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 EllipsisMatch ee = (EllipsisMatch) yi;
                 if (ee.subs()==0) {
                     if (s == 1)
-                        return null; //void term
+                        return EmptySubterms;
                     else
                         continue; //no effect
                 }
