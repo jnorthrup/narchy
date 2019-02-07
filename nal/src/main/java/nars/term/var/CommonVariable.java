@@ -3,6 +3,7 @@ package nars.term.var;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.unify.Unify;
 
 public final class CommonVariable extends UnnormalizedVariable {
 
@@ -10,6 +11,29 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     CommonVariable(/*@NotNull*/ Op type, Variable x, Variable y) {
         super(type, String.valueOf(type.ch) + x + y + type.ch /* include trailing so that if a common variable gets re-commonalized, it wont become confused with repeats in an adjacent variable */);
+    }
+
+    public static boolean unify(Variable X, Variable Y, Unify u) {
+        //if (xOp == y.op()) {
+
+        //same op: common variable
+        //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
+        Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
+        if (u.putXY(X, common) && u.putXY(Y, common)) {
+            //rewrite any appearances of X or Y in already-assigned variables
+            if (u.xy.size() > 2) {
+                return u.xy.tryReplaceAll((var, val) -> {
+                    if (var.equals(X) || var.equals(Y) || !val.hasAny(X.op()))
+                        return val; //unchanged
+                    else
+                        return val.replace(X, common).replace(Y, common);
+                });
+            } else {
+                return true; //only the common variable components were asisgned
+            }
+        }
+        return false;
+        //}
     }
 
     @Override

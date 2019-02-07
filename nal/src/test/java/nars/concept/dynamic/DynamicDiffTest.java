@@ -69,11 +69,13 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
     void testEviDilution() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("c:x", 0.75f, 0.50f, 0, 0);
-        n.believe("c:y", 0.25f, 0.50f, 2, 2);
-        n.believe("c:z", 0.25f, 0.50f, 4, 4);
+        n.believe("c:y", 0.25f, 0.50f, 1, 1);
+        n.believe("c:z", 0.25f, 0.50f, 2, 2);
 
-        Task a = n.answerBelief($$("c:(x~y)"), 0, 4);
-        Task b = n.answerBelief($$("c:(x~z)"), 0, 4);
+        Task a = n.answerBelief($$("c:(x~y)"), 0, 1);
+        assertNotNull(a);
+        Task b = n.answerBelief($$("c:(x~z)"), 0, 2);
+        assertNotNull(b);
         assertEquals(b.freq(), a.freq());
         assertTrue(b.conf() < a.conf());
         assertTrue(b.pri() < a.pri());

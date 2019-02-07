@@ -1,6 +1,5 @@
 package nars.derive;
 
-import nars.Op;
 import nars.term.Term;
 import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +9,7 @@ public class UnifyPremise extends UnifySubst {
     private Term beliefTerm, beliefTermUnified;
 
     public UnifyPremise() {
-        super(Premise.var == Op.VAR_QUERY.bit ? Op.VAR_QUERY : null, null);
+        super(Premise.var, null);
     }
 
 

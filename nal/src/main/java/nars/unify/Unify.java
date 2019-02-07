@@ -86,6 +86,7 @@ public abstract class Unify extends Versioning implements Subst {
         this(type == null ? Op.Variable : type.bit, random, stackMax);
     }
 
+
     protected Unify(int varBits, Random random, int stackMax) {
         this(varBits, random, stackMax, new TermHashMap<>());
     }

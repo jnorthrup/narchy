@@ -16,6 +16,10 @@ abstract public class UnifySubst extends Unify {
 
     private Term input;
 
+    public UnifySubst(int varType, Random rng) {
+        super(varType, rng, Param.UnificationStackMax);
+    }
+
     public UnifySubst(Op varType, Random rng) {
         super(varType, rng, Param.UnificationStackMax);
     }

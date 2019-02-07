@@ -339,7 +339,7 @@ public class PatrickTests extends NALTest {
             .input("x:a. |")
             .input("x:b. |")
             .inputAt(3, "c! |")
-            .mustOutput(4500, "pick(x)", GOAL, 1f, 1f, 0.05f, 0.81f,
+            .mustOutput(500, "pick(x)", GOAL, 1f, 1f, 0.05f, 0.81f,
                     (t)->t>=1)
             ;
     }

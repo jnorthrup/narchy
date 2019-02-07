@@ -1056,7 +1056,7 @@ public class NAL6Test extends NALTest {
     @Test
     void recursionSmall() {
 
-        test.nar.termVolumeMax.set(10);
+        test.nar.termVolumeMax.set(11);
         test.nar.freqResolution.set(0.25f);
         test
                 .believe("num:x", 1.0f, 0.9f)

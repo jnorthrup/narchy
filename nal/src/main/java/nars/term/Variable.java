@@ -3,11 +3,9 @@ package nars.term;
 import jcog.Paper;
 import jcog.Skill;
 import nars.Op;
-import nars.Param;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.unify.Unify;
-import nars.unify.ellipsis.EllipsisMatch;
 
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
@@ -61,89 +59,60 @@ public interface Variable extends Atomic {
 //            if (y.containsRecursively(this))
 //                return false; //cycle caught
         }
+
         Term x = u.resolve(this);
         if (!x.equals(this)) {
             if (x.equals(y))
                 return true;
 
-            if (x instanceof Variable && u.matchType(x.op())) {
-                xOp = x.op();
-                //continue below
-            } else {
-                if (u.varDepth < Param.UNIFY_VAR_DEPTH_LIMIT) {
-                    u.varDepth++;
+            if (!(x instanceof Variable) || !u.matchType(x.op())) {
+//                if (u.varDepth < Param.UNIFY_VAR_DEPTH_LIMIT) {
+//                    u.varDepth++;
                     boolean result = x.unify(y, u);
-                    u.varDepth--;
+//                    u.varDepth--;
                     return result;
-                } else {
-                    return false;
+//                } else {
+//                    return false;
                     //                } catch (StackOverflowError e) {
                     //                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy); //TEMPORARY
                     //                    return false;
                     //                }
+                } else {
+                    //continue below
                 }
-            }
         }
 
-
-
-        if (y instanceof Variable && x instanceof Variable && !(y instanceof EllipsisMatch) && u.commonVariables) {
-            //if (xOp == y.op()) {
-                Variable Y = (Variable) y;
-                Variable X = (Variable) x;
-
-                //same op: common variable
-                //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
-                Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
-                if (u.putXY(X, common) && u.putXY(Y, common)) {
-                    //rewrite any appearances of X or Y in already-assigned variables
-                    if (u.xy.size() > 2) {
-                        return u.xy.tryReplaceAll((var, val) -> {
-                            if (var.equals(X) || var.equals(Y) || !val.hasAny(X.op()))
-                                return val; //unchanged
-                            else
-                                return val.replace(X, common).replace(Y, common);
-                        });
-                    } else {
-                        return true; //only the common variable components were asisgned
-                    }
-                }
-                return false;
-            //}
+        if (y instanceof Variable && x instanceof Variable && u.commonVariables && u.matchType(y.op())) {
+            return CommonVariable.unify((Variable)x, (Variable)y, u);
         }
-
-
 
 //        if (y instanceof EllipsisMatch && xOp != VAR_PATTERN)
 //            return false;
 
-        boolean yMatches;
 
-
-        if (y instanceof Variable) {
-            Op yOp = y.op();
-
-            yMatches = ((xOp == yOp) || u.matchType(yOp));
-
-            if (yMatches) {
-                Variable X = (Variable) x;
-                Variable Y = (Variable) y;
-
-                //choose by id, establishing a deterministic chain of variable command
-                //return (xOp.id > yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
-
-                //int before = u.size();
-                boolean ok = (xOp.id > yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
-                if (ok) {
-                    return true;
-                } else {
-                    //u.revert(before);
-                    return //(xOp.id < yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
-                            false;
-                }
-
-            }
-        }
+//        if (y instanceof Variable) {
+//            Op yOp = y.op();
+//
+//            boolean yMatches = /*((xOp == yOp) || */u.matchType(yOp);
+//
+//            if (yMatches) {
+//                Variable X = (Variable) x, Y = (Variable) y;
+//
+//                //choose by id, establishing a deterministic chain of variable command
+//                //return (xOp.id > yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
+//
+//                //int before = u.size();
+//                boolean ok = (xOp.id > yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
+//                if (ok) {
+//                    return true;
+//                } else {
+//                    //u.revert(before);
+//                    return //(xOp.id < yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
+//                            false;
+//                }
+//
+//            }
+//        }
 
 
 //        //negation mobius strip
@@ -163,16 +132,7 @@ public interface Variable extends Atomic {
 //            }
 //        }
 
-
-        Variable a;
-        Term b;
-//            if (xMatches) {
-//                if (x.containsRecursively(y))
-//                    return false; //cycle
-        a = (nars.term.Variable) x;
-        b = y;
-
-        return u.putXY(a, b);
+        return u.putXY((Variable)x, y);
 
 
     }

@@ -57,11 +57,13 @@ class CommonVariableTest {
 
     }
 
-    @Test void testUnifyCommonVar() {
+    @Test void testUnifyCommonVar_DepIndep() {
         UnifyAny u = new UnifyAny();
         assertTrue(
                 $$("x($1,#1)").unify($$("x(#1,$1)"), u)
         );
+        assertEquals("{$1=$$1#1$, #1=$$1#1$, #2=$$2#2$, $2=$$2#2$}$0", u.toString());
         System.out.println(u);
     }
+    //TODO dep/query
 }
