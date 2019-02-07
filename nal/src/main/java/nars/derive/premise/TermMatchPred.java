@@ -52,7 +52,7 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
     }
 
     @Override
-    public boolean test(X x) {
+    public final boolean test(X x) {
         Term y = resolve.apply(x);
         return y!=null && ((exactOrSuper ? match.test(y) : match.testSuper(y)) == trueOrFalse);
     }

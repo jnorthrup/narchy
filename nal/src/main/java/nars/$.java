@@ -213,6 +213,9 @@ public enum $ {
      */
     @NotNull
     public static Term p(List<Term> l, int from, int to) {
+        if (from == to)
+            return Op.EmptyProduct;
+
         Term[] x = new Term[to - from];
 
         for (int j = 0, i = from; i < to; i++)
@@ -222,21 +225,19 @@ public enum $ {
     }
 
     public static Term p(String... t) {
-        return $.p((Term[]) $.the(t));
+        return t.length == 0 ? Op.EmptyProduct : $.p((Term[]) $.the(t));
     }
 
     public static Term p(int... t) {
-        return $.p((Term[]) $.the(t));
-    }
-
-    public static Term pFast(int... t) {
-        return $.pFast((Term[]) $.the(t));
+        return t.length == 0 ? Op.EmptyProduct : $.p((Term[]) $.the(t));
     }
 
     /**
      * encodes a boolean bitvector as an Int target, or if larger than 31 bits, as an Atom string
      */
     public static Term p(boolean... t) {
+        if (t.length == 0) return Op.EmptyProduct;
+
         if (t.length < 31) {
             int b = 0;
             for (int i = 0; i < t.length; i++) {

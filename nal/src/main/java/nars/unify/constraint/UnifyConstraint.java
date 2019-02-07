@@ -21,8 +21,6 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
-import static nars.derive.premise.PremiseRuleSource.pp;
-
 
 /** must be stateless */
 public abstract class UnifyConstraint extends AbstractPred<Derivation> {
@@ -135,31 +133,45 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
         private static final BiFunction<Term, Term, Term> TASK = (t, b) -> t;
         private static final BiFunction<Term, Term, Term> BELIEF = (t, b) -> b;
 
-        ConstraintAsPredicate(RelationConstraint m, byte[] xInTask, byte[] xInBelief, byte[] yInTask, byte[] yInBelief) {
-            super($.p(m.ref /*target()*/, $.p(pp(xInTask), pp(xInBelief), pp(yInTask), pp(yInBelief))));
+        private ConstraintAsPredicate(Term id, RelationConstraint m, BiFunction<Term,Term,Term> extractX, BiFunction<Term,Term,Term> extractY, float cost) {
+            super(id);
             this.constraint = m;
+            this.cost = cost;
+            this.extractX = extractX;
+            this.extractY = extractY;
+        }
 
-            float cost = m.cost();
+        public static ConstraintAsPredicate the(RelationConstraint m, byte[] xInTask, byte[] xInBelief, byte[] yInTask, byte[] yInBelief) {
+
+
             int costPath = 0;
 
-
+            final BiFunction<Term,Term,Term> extractX, extractY;
+            Term extractXterm, extractYterm;
             if (xInTask!=null && (xInBelief == null || xInTask.length < xInBelief.length)) {
                 extractX = xInTask.length == 0 ? TASK : (t, b) -> t.subPath(xInTask);
+                extractXterm = $.p($.p(xInTask), Derivation.Task);
                 costPath += xInTask.length;
             } else {
                 extractX = xInBelief.length == 0 ? BELIEF : (t, b) -> b.subPath(xInBelief);
+                extractXterm = $.p($.p(xInBelief), Derivation.Belief);
                 costPath += xInBelief.length;
             }
 
             if (yInTask!=null && (yInBelief == null || yInTask.length < yInBelief.length)) {
                 extractY = yInTask.length == 0 ? TASK : (t, b) -> t.subPath(yInTask);
+                extractYterm = $.p($.p(yInTask), Derivation.Task);
                 costPath += yInTask.length;
             } else {
                 extractY = yInBelief.length == 0 ? BELIEF : (t, b) -> b.subPath(yInBelief);
+                extractYterm = $.p($.p(yInBelief), Derivation.Belief);
                 costPath += yInBelief.length;
             }
 
-            this.cost = cost + costPath * 0.001f;
+            return new ConstraintAsPredicate(
+                    $.p(m.ref, $.p(extractXterm, extractYterm)),
+                    m, extractX, extractY, m.cost() + costPath * 0.01f);
+
         }
 
         @Override

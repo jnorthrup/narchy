@@ -252,7 +252,7 @@ public class PatternIndex extends MapConceptIndex {
                     if (x instanceof Ellipsis) {
                         int available = ysize - yi;
 
-                        Term xResolved = u.tryResolve(x);
+                        Term xResolved = u.resolvePosNeg(x);
                         if (xResolved == x) {
 
 
@@ -346,7 +346,7 @@ public class PatternIndex extends MapConceptIndex {
                 SortedSet<Term> yFree =
                         //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
                         //y.toSetSorted();
-                        y.toSetSorted(u::tryResolve);
+                        y.toSetSorted(u::resolvePosNeg);
 
                 Subterms xx = subterms();
                 int s = xx.subs();
@@ -356,7 +356,7 @@ public class PatternIndex extends MapConceptIndex {
                 for (int k = 0; k < s; k++) {
 
                     Term xk = xx.sub(k);
-                    Term xxk = u.tryResolve(xk);
+                    Term xxk = u.resolvePosNeg(xk);
 
                     if (xk.equals(ellipsis)) {
                         if (xxk.equals(xk))

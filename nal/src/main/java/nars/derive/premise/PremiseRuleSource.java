@@ -36,8 +36,10 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -557,8 +559,8 @@ public class PremiseRuleSource extends ProxyTerm {
             }
             return false;
         });
-        constraints.addAll(mirrors);
 
+        constraints.addAll(mirrors);
 
         if (taskPunc == null)
             throw new UnsupportedOperationException("no taskPunc specified");
@@ -579,8 +581,6 @@ public class PremiseRuleSource extends ProxyTerm {
 
         int rules = pre.size();
         PREDICATE[] PRE = pre.toArray(new PREDICATE[rules + 1 /* extra to be filled in later stage */]);
-        //ArrayUtils.sort(PRE, 0, rules - 1, (x) -> -x.cost());
-
 
         Arrays.sort(PRE, 0, rules, sortByCostIncreasing);
 
@@ -592,69 +592,19 @@ public class PremiseRuleSource extends ProxyTerm {
 //        for (int i = 0, preLength = PRE.length; i < preLength; i++) {
 //            PRE[i] = INDEX.intern(PRE[i]);
 //        }
-        Term concPattern = transformConclusion(postcon[0]);
-        this.termify = new Termify(this.concPattern = concPattern, truthify, time);
+
+        this.termify = new Termify(this.concPattern = conclusion(postcon[0]), truthify, time);
 
         this.constraintSet = CONSTRAINTS.toSet();
 
     }
 
-    private Term transformConclusion(Term x0) {
+    private Term conclusion(Term x) {
 
-        Term x = PatternIndex.patternify(x0);
-
-        Term y = x;
-
-        if (!y.unneg().op().var) {
-
-            y = ConcTransform.transform(y);
-
-            //decide when inline "paste" (macro substitution) of the premise task or belief terms is allowed.
-            boolean taskPastable = false, beliefPastable = false;
-
-//            boolean taskEqY = taskPattern.equals(y);
-//            boolean beliefEqualY = beliefPattern.equals(y);
-
-            boolean taskObviouslyNotPastable = taskPattern.op().var;
-            boolean beliefObviouslyNotPastable = beliefPattern.op().var;
-            boolean taskTemporal = taskPattern.hasAny(Temporal);
-            boolean beliefTemporal = beliefPattern.hasAny(Temporal);
-
-            boolean atMostOneTemporal = !(taskTemporal && beliefTemporal);
-
-            if (!taskObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
-                taskPastable = true;
-            if (!beliefObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
-                beliefPastable = true;
-
-            Term yT, yB;
-            Term y0 = y;
-            if (beliefPattern.volume() <= taskPattern.volume()) {
-                //subst task first
-                yT = taskPastable ? y0.replace(taskPattern, Derivation.TaskTerm) : y0;
-                yB = beliefPastable ? yT.replace(beliefPattern, Derivation.BeliefTerm) : yT;
-                y = yB;
-            } else {
-                //subst belief first
-                yB = beliefPastable ? y0.replace(beliefPattern, Derivation.BeliefTerm) : y0;
-                yT = taskPastable ? yB.replace(taskPattern, Derivation.TaskTerm) : yB;
-                y = yT;
-            }
-
-//            boolean taskPasted = y0 != y1;
-//            if (!taskObviouslyNotPastable && !taskPasted && !y.replace(taskPattern, Derivation.TaskTerm).equals(y))
-//                System.out.println("task paste possible: " + y + " -> " + y0);
-//
-//            boolean beliefPasted = y1 != y2;
-//            if (!beliefObviouslyNotPastable && !beliefPasted && !y.replace(beliefPattern, Derivation.BeliefTerm).equals(y))
-//                System.out.println("belf paste possible: " + y + " -> " + y0);
-
-
-            if(y0!=y) {
-//                System.out.println(y + " -> " + y0);
-            }
-
-        }
+        if (!x.unneg().op().var)
+            return conclusionOptimize( ConcTransform.transform( PatternIndex.patternify(x)) );
+         else
+            return x;
 
 //        if (y.hasVars()) {
 //            Set<Term> eventables = new HashSet();
@@ -672,23 +622,72 @@ public class PremiseRuleSource extends ProxyTerm {
 //                eventables.forEach(e -> match(e, TermMatch.Eventable.the));
 //            }
 //        }
+    }
+
+    private Term conclusionOptimize(Term y) {
+        //decide when inline "paste" (macro substitution) of the premise task or belief terms is allowed.
+        boolean taskPastable = false, beliefPastable = false;
+
+//            boolean taskEqY = taskPattern.equals(y);
+//            boolean beliefEqualY = beliefPattern.equals(y);
+
+        boolean taskObviouslyNotPastable = taskPattern.op().var;
+        boolean beliefObviouslyNotPastable = beliefPattern.op().var;
+        boolean taskTemporal = taskPattern.hasAny(Temporal);
+        boolean beliefTemporal = beliefPattern.hasAny(Temporal);
+
+        boolean atMostOneTemporal = !(taskTemporal && beliefTemporal);
+
+        if (!taskObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
+            taskPastable = true;
+        if (!beliefObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
+            beliefPastable = true;
+
+        Term yT, yB;
+        Term y0 = y;
+        if (beliefPattern.volume() <= taskPattern.volume()) {
+            //subst task first
+            yT = taskPastable ? y0.replace(taskPattern, Derivation.TaskTerm) : y0;
+            yB = beliefPastable ? yT.replace(beliefPattern, Derivation.BeliefTerm) : yT;
+            y = yB;
+        } else {
+            //subst belief first
+            yB = beliefPastable ? y0.replace(beliefPattern, Derivation.BeliefTerm) : y0;
+            yT = taskPastable ? yB.replace(taskPattern, Derivation.TaskTerm) : yB;
+            y = yT;
+        }
+
+//            boolean taskPasted = y0 != y1;
+//            if (!taskObviouslyNotPastable && !taskPasted && !y.replace(taskPattern, Derivation.TaskTerm).equals(y))
+//                System.out.println("task paste possible: " + y + " -> " + y0);
+//
+//            boolean beliefPasted = y1 != y2;
+//            if (!beliefObviouslyNotPastable && !beliefPasted && !y.replace(beliefPattern, Derivation.BeliefTerm).equals(y))
+//                System.out.println("belf paste possible: " + y + " -> " + y0);
+
+
+        if(y0!=y) {
+//                System.out.println(y + " -> " + y0);
+        }
         return y;
     }
 
     private void tryGuard(RootTermAccessor r, Term root) {
-        tryGuard(r, root, new ByteArrayList(2));
+        tryGuard(r, root,
+                new ByteArrayList(2));
     }
 
     private void tryGuard(RootTermAccessor r, Term root, ByteArrayList p) {
 
-        byte[] pp = p.toByteArray();
+
+
+        byte[] pp = p.toByteArray(); //HACK
         int depth = pp.length;
-        Term t = depth == 0 ? root : root.subPath(pp);
+        Term t = p.isEmpty()? root : root.subPath(pp);
 
         Op to = t.op();
         if (to == Op.VAR_PATTERN)
             return;
-
 
         Function<PreDerivation, Term> rr = depth == 0 ? r : r.path(pp);
 //        int ts = t.structure() & (~Op.VAR_PATTERN.bit);

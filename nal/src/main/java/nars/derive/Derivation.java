@@ -512,7 +512,7 @@ public class Derivation extends PreDerivation {
 
 
         if (atomic instanceof Variable) {
-            Term y = resolve(atomic);
+            Term y = resolve((Variable)atomic);
             if (y != null)
                 return y;
         }

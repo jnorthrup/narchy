@@ -65,7 +65,7 @@ abstract public class RelationConstraint extends UnifyConstraint {
             byte[] yInTask = Terms.pathConstant(taskPattern, y);
             byte[] yInBelief = Terms.pathConstant(beliefPattern, y);
             if ((yInTask != null || yInBelief != null)) {
-                return new ConstraintAsPredicate(this, xInTask, xInBelief, yInTask, yInBelief);
+                return ConstraintAsPredicate.the(this, xInTask, xInBelief, yInTask, yInBelief);
             }
         }
 

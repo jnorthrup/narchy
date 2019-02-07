@@ -67,8 +67,9 @@ public abstract class Unify extends Versioning implements Subst {
 
     public boolean commonVariables = true;
 
-//    /** recursion limiter HACK */
-//    public int varDepth = 0;
+    /** recursion limiter HACK
+     * TODO use a real stack of arbitrarily length for detecting cycles */
+    public int varDepth = 0;
 
     private FasterList<ConstrainedVersionedTerm> constrained = new FasterList();
 
@@ -183,7 +184,7 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public final boolean unify(Term x, Term y, boolean finish) {
 
-//        varDepth = 0;
+        varDepth = 0;
 //        if (!(ttl > 0))
 //            throw new WTF("likely needs some TTL");
 
@@ -225,7 +226,7 @@ public abstract class Unify extends Versioning implements Subst {
 
         super.clear();
 
-//        varDepth = 0;
+        varDepth = 0;
         termutes.clear();
 
         if (!constrained.isEmpty()) {
@@ -286,7 +287,7 @@ public abstract class Unify extends Versioning implements Subst {
         return Math.abs(xdt - ydt) < dtTolerance;
     }
 
-    public final Term tryResolve(Term x) {
+    public final Term resolvePosNeg(Term x) {
         Op o = x.op();
         boolean neg = o == NEG;
         Term xx;
