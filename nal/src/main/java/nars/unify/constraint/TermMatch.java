@@ -84,37 +84,35 @@ abstract public class TermMatch {
             return sx.subterms().hasAny(struct);
         }
     }
-    /**
-     * is the op one of the true bits of the provide vector ("is any")
-     */
-    public static class Eventable extends TermMatch {
 
-
-        public static final Eventable the = new Eventable();
-
-        private Eventable() {
-            super();
-        }
-
-        @Override
-        public float cost() {
-            return 0.035f;
-        }
-
-        @Override
-        public boolean test(Term x) {
-            return x.unneg().op().eventable;
-        }
-
-        @Override
-        public boolean testSuper(Term sx) {
-            return true; ///TODO
-        }
-
-        @Nullable @Override public Term param() {
-            return null;
-        }
-    }
+//    public static class Eventable extends TermMatch {
+//
+//
+//        public static final Eventable the = new Eventable();
+//
+//        private Eventable() {
+//            super();
+//        }
+//
+//        @Override
+//        public float cost() {
+//            return 0.035f;
+//        }
+//
+//        @Override
+//        public boolean test(Term x) {
+//            return x.unneg().op().eventable;
+//        }
+//
+//        @Override
+//        public boolean testSuper(Term sx) {
+//            return true; ///TODO
+//        }
+//
+//        @Nullable @Override public Term param() {
+//            return null;
+//        }
+//    }
 
     public static class IsUnneg extends Is {
 

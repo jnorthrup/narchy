@@ -5,24 +5,23 @@ import java.util.concurrent.atomic.AtomicLongArray;
 
 /** striping via 64bit (pair of 32bit codes) global exclusion locking via busy spin
  *  on a linear probed atomic array of fixed size */
-public class Treadmill64 extends AtomicLongArray implements SpinMutex {
+public class Treadmill64 implements SpinMutex {
 
+    final AtomicLongArray buf;
+    final int size, offset;
     private final AtomicInteger mod = new AtomicInteger(0);
 
-    public Treadmill64() {
-        this(Runtime.getRuntime().availableProcessors());
-    }
 
     /** extra space for additional usage */
-    public Treadmill64(int slots) {
-        super(slots);
+    public Treadmill64(AtomicLongArray buf, int size, int offset) {
+        this.buf = buf;
+        this.size = size;
+        this.offset = offset;
     }
 
     @Override
     public int start(long hash) {
         if (hash == 0) hash = 1; //skip 0
-
-        final int slots = length();
 
         restart: while (true) {
 
@@ -31,22 +30,21 @@ public class Treadmill64 extends AtomicLongArray implements SpinMutex {
             /** optimistic pre-scan determined free slot */
             int jProlly = -1;
 
-            for (int i = slots-1; i >= 0; i--) {
-                //long v = getOpaque(i);
-                long v = getAcquire(i);
+            for (int i = offset; i < size+offset; i++) {
+                long v = buf.getOpaque(i);
                 if (v == hash) {
                     Thread.onSpinWait();
                     continue restart;  //collision
                 } else if (v == 0 && jProlly == -1)
-                    jProlly = i; //empty cell candidate
+                    jProlly = i; //first empty cell candidate
             }
 
-            if (mod.compareAndExchangeRelease(now, now+1)==now) { //TODO separate into modIn and modOut?
-                if (jProlly != -1 && compareAndExchangeRelease(jProlly, 0, hash)==0)
+            if (mod.weakCompareAndSetRelease(now, now+1)) { //TODO separate into modIn and modOut?
+                if (jProlly != -1 && buf.weakCompareAndSetVolatile(jProlly, 0, hash))
                     return jProlly;
 
-                for (int j = 0; j < slots; j++)
-                    if (j!=jProlly && compareAndExchangeRelease(j, 0, hash)==0)
+                for (int j = offset; j < offset+size; j++)
+                    if (j!=jProlly && buf.weakCompareAndSetVolatile(j, 0, hash))
                         return j;
             }
 
@@ -56,7 +54,7 @@ public class Treadmill64 extends AtomicLongArray implements SpinMutex {
 
     @Override
     public final void end(int slot) {
-        set(slot, 0);
+        buf.set(slot, 0);
     }
 
 

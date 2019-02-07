@@ -15,8 +15,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
+ *
+ * a wrapper of HijackBag
+ * adds a condition to decrease the priority of a cell which does not get replaced.  this gradually erodes the priority of existing cells and the rate this occurrs determines the aggregate lifespan of entries in the cache.  they can also be prioritized differently on insert, so in a memoization situation it can be helpful to increase the priority of a more expensive work item so it is more likely to replace a less expensive or less used existing entry.
+ *
  * TODO add an instrumentation wrapper to collect statistics
  * about cache efficiency and also processing time of the calculations
+ *
+ *
  */
 public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
@@ -233,13 +239,15 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
             return value.x();
         }
 
+
+
         @Override
-        protected boolean replace(float incomingPri, PriProxy<X, Y> existing) {
-            if (super.replace(incomingPri, existing)) {
+        protected boolean replace(float incomingPri, PriProxy<X, Y> existingValue, float existingPri) {
+            if (super.replace(incomingPri, existingValue, existingPri)) {
                 return true;
             } else {
                 //remains, gradually weaken
-                existing.priSub(CACHE_REJECT_CUT);
+                existingValue.priSub(CACHE_REJECT_CUT);
                 return false;
             }
         }

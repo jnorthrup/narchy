@@ -3,6 +3,7 @@ package jcog.pri.bag.impl;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
@@ -27,12 +28,21 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.lang.Float.NEGATIVE_INFINITY;
 import static jcog.pri.bag.impl.HijackBag.Mode.*;
 
 /**
  * unsorted priority queue with stochastic replacement policy
  * <p>
  * it uses a AtomicReferenceArray<> to hold the data but Unsafe CAS operations might perform better (i couldnt get them to work like NBHM does).  this is necessary when an index is chosen for replacement that it makes certain it was replacing the element it thought it was (that it hadnt been inter-hijacked by another thread etc).  on an insert i issue a ticket to the thread and store this in a small ConcurrentHashMap<X,Integer>.  this spins in a busy putIfAbsent loop until it can claim the ticket for the object being inserted. this is to prevent the case where two threads try to insert the same object and end-up puttnig two copies in adjacent hash indices.  this should be rare so the putIfAbsent should usually work on the first try.  when it exits the update critical section it removes the key,value ticket freeing it for another thread.  any onAdded and onRemoved subclass event handling happen outside of this critical section, and all cases seem to be covered.
+ *
+ *
+ * although its called Bag (because of its use in other parts of this project) think of it like a sawed-off non-blocking hashmap with prioritized cells that compete with each other on insert. the way it works is like a probing hashtable but there is no guarantee something will be inserted.
+ *
+ * first a spinlock is acquired to ensure that only one thread is inserting or removing per hash id at any given time.  i use a global atomic long array to combine each HijackBag's instance with the current item's hash to get a ticket that can ensure this condition.
+ *
+ * an insertion can happen in a given cell range defined by the 'reprobes' parameter.  usually a number like 3 or 4 is ok but it can be arbitrarily long, but generally much less than the total bag capacity.  the hash computes the starting cell and then reprobe numer of cells forward, modulo capacity and these are the potential cells that a get/put/remove works with.   a get and remove only need to find the first cell with equivalent key.  put is the most complicated operation: first it must see if a cell exists and if so then an overridable merge operation is possible.  otherwise, while doing the initial pass, it chooses a victim based on the weakest priority of the cells it encounters, preferring a null cell to all others (NEGATIVE_INFINITY).  but if it chooses a non-null cell as a victim then a replacement test is applied to see if the new insertion can replace the existing. this can be decided by a random number generator in proportion to the relative priorities of the competing cells.
+ *
  */
 @Paper
 @Skill("Concurrent_computing")
@@ -175,7 +185,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             forEachActive(this, prev[0], (b) -> {
                 if (put(b) == null)
-                    _onRemoved(b);
+                    onRemove(b);
             });
 
             commit(null);
@@ -190,7 +200,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         SIZE.set(this, 0);
         mass = 0;
         if (x != null) {
-            forEachActive(this, x, this::_onRemoved);
+            forEachActive(this, x, this::onRemove);
         }
 
     }
@@ -249,7 +259,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         final int kHash = hash(k);
 
         float incomingPri;
-        if (mode == Mode.PUT) {
+        if (mode == PUT) {
             if ((incomingPri = pri(incoming)) != incomingPri)
                 return null;
             pressurize(incomingPri);
@@ -271,92 +281,104 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         try {
 
-
-            probing:
-            for (int i = start, probe = reprobes; probe > 0; probe--) {
-
-                V p = map.get(i);
-                      //  map.get(i);
-
-                if (p != null && keyEquals(k, kHash, p)) {
-                    switch (mode) {
-
-                        case GET:
+            switch (mode) {
+                case GET:
+                    for (int i = start, j = reprobes; j > 0; j--) {
+                        V p = map.get(i);
+                        if (p != null && keyEquals(k, kHash, p)) {
                             return p;
-
-
-                        case PUT:
-                            if (p == incoming) {
-                                toReturn = p;
-                            } else {
-                                float priBefore = pri(p);
-                                V next = merge(p, incoming, overflowing);
-                                if (next != null && (next == p || map.compareAndSet(i, p, next))) {
-                                    if (next != p) {
-                                        toRemove = p;
-                                        toAdd = next;
-                                    }
-                                    toReturn = next;
-                                }
-                            }
-                            break;
-
-                        case REMOVE:
+                        }
+                    }
+                    return null; //not found
+                case REMOVE:
+                    for (int i = start, j = reprobes; j > 0; j--) {
+                        V p = map.get(i);
+                        if (p != null && keyEquals(k, kHash, p)) {
                             if (map.compareAndSet(i, p, null)) {
                                 toReturn = toRemove = p;
+                                break;
                             }
-                            break;
+                            //else: this actually shouldnt happen if access to the hashes has been correctly restricted by the mutex
+                        }
                     }
+                    break;
+                case PUT:
 
-                    break probing;
-                }
+                    int victimWeakest = -1;
+                    float victimPri = Float.POSITIVE_INFINITY;
+                    V victimValue = null;
 
-                if (++i == c) i = 0;
-            }
+                    for (int i = start, j = reprobes; j > 0; j--) {
 
-            if (mode == PUT && toReturn == null) {
-
-                int victim = -1, j = 0;
-                float victimPri = Float.POSITIVE_INFINITY;
-                for (int i = start; j < reprobes; j++) {
-                    V mi = map.get(i);
-
-                    float mp;
-                    if (mi == null || ((mp = pri(mi)) != mp)) {
-                        if (map.compareAndSet(i, mi, incoming)) {
-                            toReturn = toAdd = incoming; /** became empty or deleted, take the slot */
+                        V v = map.get(i);
+                        if (v == null) {
+                            if (victimPri > NEGATIVE_INFINITY) {
+                                victimWeakest = i;
+                                victimPri = NEGATIVE_INFINITY;
+                                victimValue = null;
+                            }
+                        } else if (v == incoming) {
+                            toReturn = v; //identical match
                             break;
+                        } else if (keyEquals(k, kHash, v)) {
+
+                            V next = merge(v, incoming, overflowing);
+                            assert (next != null);
+                            if (next != v) {
+                                V prev = map.getAndSet(i, next);
+                                //boolean updated = map.compareAndSet(i, v, next);
+                                //assert(prev == v);
+                                if (prev!=v) {
+                                    //throw new WTF("expected: " + v + " got " + prev);
+                                    //the previous value likely got hijacked by another thread
+                                    //restart
+                                    i = 0;
+                                    continue;
+                                }
+                            }
+
+                            toReturn = next;
+                            //DONT CONSIDER MERGE AS ADD/REMOVE
+//                            if (next != v) {
+//                                toRemove = v;
+//                                toAdd = next;
+//                            }
+                            break;
+
                         } else {
-                            continue; //retry the slot since it had changed
+                            if (victimPri > NEGATIVE_INFINITY) {
+                                float pp;
+                                if ((pp = priElseNegInfinity(v)) < victimPri) {
+                                    victimWeakest = i;
+                                    victimPri = pp;
+                                    victimValue = v;
+                                }
+                            }
+                        }
+
+                        if (++i == c) i = 0;
+                    }
+
+
+                    if (toReturn==null) {
+
+                        //ATTEMPT HIJACK
+
+                        //assert(victimWeakest!=-1);
+
+                        if (victimValue == null || replace(incomingPri, victimValue, victimPri)) {
+                            if (map.compareAndSet(victimWeakest, victimValue, incoming)) {
+                                //acquired
+                                toRemove = victimValue;
+                                toReturn = toAdd = incoming;
+                            }
                         }
                     }
-                    if (mp < victimPri) {
-                        victim = i;
-                        victimPri = mp;
-                    }
-                    if (++i == c) i = 0;
-                }
 
-
-                if (toReturn == null) {
-                    assert (victim != -1);
-
-                    V existing = map.get(victim); //map.get(victim);
-                    if (existing == null) {
-                        //acquired new empty cell
-                        toReturn = toAdd = incoming;
-
-                    } else {
-                        if (replace(incomingPri, existing) && map.compareAndSet(victim, existing, incoming)) {
-                            //acquired
-                            toRemove = existing;
-                            toReturn = toAdd = incoming;
-                        }
-                    }
-
-                }
+                    break;
 
             }
+
 
         } catch (Throwable t) {
 
@@ -377,7 +399,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             if (attemptRegrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ : size /* size which has been increased by the insertion */)) {
 
                 if (toRemove != null) {
-                    update(key(toRemove), toRemove, Mode.PUT, null);
+                    update(key(toRemove), toRemove, PUT, null);
                     toRemove = null;
                 }
             }
@@ -385,12 +407,20 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         if (toRemove != null) {
             if (map == this.map) {
-                _onRemoved(toRemove);
+                onRemove(toRemove);
             }
         }
 
 
         return toReturn;
+    }
+
+    private float priElseNegInfinity(V x) {
+        float p = pri(x);
+        if (p==p)
+            return p;
+        else
+            return NEGATIVE_INFINITY;
     }
 
     protected boolean keyEquals(Object k, int kHash, V p) {
@@ -426,6 +456,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     protected abstract V merge(V existing, V incoming, NumberX overflowing);
 
     /**
+     * HIJACK test
      * true if the incoming priority is sufficient to replace the existing value
      * can override in subclasses for custom replacement policy.
      * <p>
@@ -434,25 +465,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      * returns incomingPower, possibly reduced by the fight with the existing.
      * or NaN if the incoming wins
      */
-    protected boolean replace(float incomingPri, V existing) {
-        float existingPri = pri(existing);
-        if (existingPri != existingPri) {
-            return true; //became deleted
-        } else {
-            return replace(incomingPri, existingPri);
-//                priAdd(existing, -incomingPri / reprobes);
-//                return Float.NaN;
-//            } else {
-//                return Math.max((float) 0, incomingPri - existingPri / reprobes);
-//            }
-        }
+    protected boolean replace(float incoming, V existingValue, float existing) {
+        return hijackFair(incoming, existing);
     }
 
     abstract public void priAdd(V entry, float amount);
-
-    private boolean replace(float incoming, float existing) {
-        return hijackFair(incoming, existing);
-    }
 
     @Nullable
     @Override
@@ -678,7 +695,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             if (this.map == map) {
                 if (updateSize)
                     SIZE.getAndDecrement(this);
-                _onRemoved(v);
+                onRemove(v);
             }
         }
     }
@@ -774,7 +791,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         float mass = 0;
         float min = Float.POSITIVE_INFINITY;
-        float max = Float.NEGATIVE_INFINITY;
+        float max = NEGATIVE_INFINITY;
 
         int count = 0;
 
@@ -842,10 +859,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             }
         }
         return false;
-    }
-
-    private void _onRemoved(V x) {
-        onRemove(x);
     }
 
 

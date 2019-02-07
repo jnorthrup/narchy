@@ -2,21 +2,17 @@ package nars.perf;
 
 import nars.NAR;
 import nars.NARS;
-import nars.subterm.Subterms;
-import nars.term.Term;
 import nars.test.impl.DeductiveMeshTest;
 import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.RunnerException;
 
-import java.util.function.Function;
-
-import static nars.perf.JmhBenchmark.perf;
+import static nars.perf.NARBenchmarks.perf;
 
 @State(Scope.Thread)
 @AuxCounters(AuxCounters.Type.EVENTS)
 @Disabled
-public class NARBenchmark {
+public class MultistepBenchmarks {
 
 
     @Param("8000")
@@ -32,7 +28,7 @@ public class NARBenchmark {
     private NAR n;
 
     public static void main(String[] args) throws RunnerException {
-        perf(NARBenchmark.class, (o) -> {
+        perf(MultistepBenchmarks.class, (o) -> {
             o.warmupIterations(1);
             o.measurementIterations(2);
 
@@ -43,7 +39,7 @@ public class NARBenchmark {
 
     @Setup
     public void start() {
-        Function<Term[], Subterms> h = null;
+//        Function<Term[], Subterms> h = null;
 
 
         n = NARS.tmp();

@@ -23,12 +23,14 @@ abstract public class ByteKey extends UnitPri {
     public final boolean equals(Object o) {
         ByteKey that = (ByteKey) o;
         if (hashCode() == that.hashCode()) {
-            int l = length();
-            if (that.length() == l) {
-                return Arrays.equals(array(), 0, l, that.array(), 0, l);
-            }
+            return equalsBytes(that);
         }
         return false;
+    }
+
+    protected final boolean equalsBytes(ByteKey that) {
+        int l = length();
+        return that.length() == l && Arrays.equals(array(), 0, l, that.array(), 0, l);
     }
 
 
@@ -65,7 +67,7 @@ abstract public class ByteKey extends UnitPri {
 
         @Override
         public boolean xEquals(Object y, int kHash) {
-            return equals(y);
+            return hash == kHash && equalsBytes((ByteKey)y);
         }
 
         @Override

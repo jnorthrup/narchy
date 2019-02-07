@@ -192,12 +192,12 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
         }
     }
 
-    public static final UnifyConstraint[] EMPTY_UNIFY_CONSTRAINTS = new UnifyConstraint[0];
+    public static final UnifyConstraint[] EmptyUnifyConstraints = new UnifyConstraint[0];
 
 
     public static UnifyConstraint[] the(Set<UnifyConstraint> c) {
         if (c.size() < 2)
-            return c.toArray(EMPTY_UNIFY_CONSTRAINTS);
+            return c.toArray(EmptyUnifyConstraints);
         else
             return CompoundConstraint.the(c.stream()).toArray(UnifyConstraint[]::new);
     }

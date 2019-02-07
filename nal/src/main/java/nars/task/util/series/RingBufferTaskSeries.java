@@ -159,13 +159,18 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
             int cap = this.cap;
             int r = 0, capacityRadius = cap / 2 + 1;
-            T u, v;
             int supplied = 0;
             long suppliedMin = Long.MAX_VALUE, suppliedMax = Long.MIN_VALUE;
+
+            int h = q.head();
+
             do {
 
-                int yi = center + r;
-                v = q.peek(yi);
+
+
+
+                int vv = center + r;
+                T v = q.getOpaque((h + vv) % cap);
                 if (v!=null && (!exactRange || v.intersects(minT, maxT))) {
                     if (!whle.test(v))
                         return false;
@@ -177,11 +182,10 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
                 r++;
 
-                int ui = center - r;
-                {
-                    int uui = ui; if (uui < 0) uui += cap; //HACK prevent negative value
-                    u = q.peek(uui);
-                }
+
+
+                int uu = center - r; if (uu < 0) uu += cap; //HACK prevent negative value
+                T u = q.getOpaque((h + uu) % cap);
                 if (u!=null && (!exactRange || u.intersects(minT, maxT))) {
                     if (!whle.test(u))
                         return false;
@@ -193,7 +197,10 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 if (!exactRange && supplied > 0 && (fullyDisjoint || ((suppliedMin <= minT) && (suppliedMax >= maxT))))
                     break; //early exit heuristic
 
-            } while ((u!=null || v!=null) && r <= capacityRadius);
+                if (u == null && v == null)
+                    break;
+
+            } while (r <= capacityRadius);
 
         } else {
 

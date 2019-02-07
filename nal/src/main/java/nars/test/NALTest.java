@@ -89,6 +89,7 @@ public abstract class NALTest {
 
         test.nar.stop();
 
+        test = null;
 
     }
 

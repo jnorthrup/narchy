@@ -7,6 +7,7 @@ import nars.$;
 import nars.Narsese;
 import nars.Op;
 import nars.concept.Operator;
+import nars.derive.Derivation;
 import nars.derive.filter.CommutativeConstantPreFilter;
 import nars.derive.filter.DoublePremiseRequired;
 import nars.derive.filter.UnifyPreFilter;
@@ -26,7 +27,6 @@ import nars.term.util.transform.TermTransform;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
-import nars.unify.ellipsis.Ellipsislike;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.set.ImmutableSet;
@@ -114,7 +114,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
 
-        Term concPattern = transformConclusion(postcon[0]);
+
 
         ByteToByteFunction concPunc = null;
         boolean concBelief = false, concQuestion = false, concGoal = false, concQuest = false;
@@ -592,45 +592,85 @@ public class PremiseRuleSource extends ProxyTerm {
 //        for (int i = 0, preLength = PRE.length; i < preLength; i++) {
 //            PRE[i] = INDEX.intern(PRE[i]);
 //        }
+        Term concPattern = transformConclusion(postcon[0]);
         this.termify = new Termify(this.concPattern = concPattern, truthify, time);
 
         this.constraintSet = CONSTRAINTS.toSet();
 
     }
 
-    private Term transformConclusion(Term x) {
+    private Term transformConclusion(Term x0) {
 
-        Term px = PatternIndex.patternify(x);
+        Term x = PatternIndex.patternify(x0);
 
-        Term y;
-        //macro substitution
-//        if (px.equals(taskPattern))
-//            y = Derivation.TaskTerm;
-//        else if (px.equals(beliefPattern))
-//            y = Derivation.BeliefTerm;
-//        else {
-        {
-            y = ConcTransform.transform(px);
-//                    .replace(taskPattern, Derivation.TaskTerm)
-//                    .replace(beliefPattern, Derivation.BeliefTerm));
+        Term y = x;
 
-            if (y.hasVars()) {
-                Set<Term> eventables = new HashSet();
-                y.recurseTerms(Compound::hasVars, (sub, sper) -> {
-                    sub = sub.unneg();
-                    if (sper != null && sub instanceof Variable && !(sub instanceof Ellipsislike)) {
-                        Op spo = sper.op();
-                        if (spo == IMPL || spo == CONJ) {
-                            eventables.add(sub);
-                        }
-                    }
-                    return true;
-                }, null);
-                if (!eventables.isEmpty()) {
-                    eventables.forEach(e -> match(e, TermMatch.Eventable.the));
-                }
+        if (!y.unneg().op().var) {
+
+            y = ConcTransform.transform(y);
+
+            //decide when inline "paste" (macro substitution) of the premise task or belief terms is allowed.
+            boolean taskPastable = false, beliefPastable = false;
+
+//            boolean taskEqY = taskPattern.equals(y);
+//            boolean beliefEqualY = beliefPattern.equals(y);
+
+            boolean taskObviouslyNotPastable = taskPattern.op().var;
+            boolean beliefObviouslyNotPastable = beliefPattern.op().var;
+            boolean taskTemporal = taskPattern.hasAny(Temporal);
+            boolean beliefTemporal = beliefPattern.hasAny(Temporal);
+
+            boolean atMostOneTemporal = !(taskTemporal && beliefTemporal);
+
+            if (!taskObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
+                taskPastable = true;
+            if (!beliefObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
+                beliefPastable = true;
+
+            Term y0 = y, y1, y2;
+            if (taskPastable)
+                y1 = y0.replace(taskPattern, Derivation.TaskTerm);
+            else
+                y1 = y0;
+
+            if (beliefPastable)
+                y2 = y1.replace(beliefPattern, Derivation.BeliefTerm);
+            else
+                y2 = y1;
+
+            y = y2;
+
+//            boolean taskPasted = y0 != y1;
+//            if (!taskObviouslyNotPastable && !taskPasted && !y.replace(taskPattern, Derivation.TaskTerm).equals(y))
+//                System.out.println("task paste possible: " + y + " -> " + y0);
+//
+//            boolean beliefPasted = y1 != y2;
+//            if (!beliefObviouslyNotPastable && !beliefPasted && !y.replace(beliefPattern, Derivation.BeliefTerm).equals(y))
+//                System.out.println("belf paste possible: " + y + " -> " + y0);
+
+
+            if(y0!=y) {
+//                System.out.println(y + " -> " + y0);
             }
+
         }
+
+//        if (y.hasVars()) {
+//            Set<Term> eventables = new HashSet();
+//            y.recurseTerms(Compound::hasVars, (sub, sper) -> {
+//                sub = sub.unneg();
+//                if (sper != null && sub instanceof Variable && !(sub instanceof Ellipsislike)) {
+//                    Op spo = sper.op();
+//                    if (spo == IMPL || spo == CONJ) {
+//                        eventables.add(sub);
+//                    }
+//                }
+//                return true;
+//            }, null);
+//            if (!eventables.isEmpty()) {
+//                eventables.forEach(e -> match(e, TermMatch.Eventable.the));
+//            }
+//        }
         return y;
     }
 
@@ -678,7 +718,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     private static UnifyConstraint[] theInterned(MutableSet<UnifyConstraint> constraints) {
         if (constraints.isEmpty())
-            return UnifyConstraint.EMPTY_UNIFY_CONSTRAINTS;
+            return UnifyConstraint.EmptyUnifyConstraints;
 
         UnifyConstraint[] mc = UnifyConstraint.the(constraints);
         for (int i = 0, mcLength = mc.length; i < mcLength; i++)

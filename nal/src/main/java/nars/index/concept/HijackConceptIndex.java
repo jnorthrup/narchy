@@ -68,16 +68,12 @@ public class HijackConceptIndex extends AbstractConceptIndex {
                 return false;
             }
 
-
             @Override
-            protected boolean replace(float incomingPri, PLink<Termed> existing) {
-
-                boolean existingPermanent = existing.get() instanceof PermanentConcept;
-                if (existingPermanent) {
+            protected boolean replace(float incoming, PLink<Termed> existing, float existingPri) {
+                if (existing.get() instanceof PermanentConcept)
                     return false;
-                }
-
-                return super.replace(incomingPri, existing);
+                else
+                    return super.replace(incoming, existing, existingPri);
             }
 
             @Override

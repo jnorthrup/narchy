@@ -16,11 +16,11 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
     private final Function<InternedCompoundTransform, Term> root;
 
     public MemoizingTermBuilder() {
-        this(UUID.randomUUID().toString(), deepDefault, maxInternedVolumeDefault, DEFAULT_SIZE);
+        this(UUID.randomUUID().toString(), deepDefault, volMaxDefault, sizeDefault);
     }
 
     public MemoizingTermBuilder(String id, boolean deep, int volInternedMax, int cacheSizePerOp) {
-        super(id, deep, volInternedMax, cacheSizePerOp);
+        super(id, cacheSizePerOp, volInternedMax, deep);
 
 
         root = newOpCache("root", j -> super.root((Compound) j.term), cacheSizePerOp);

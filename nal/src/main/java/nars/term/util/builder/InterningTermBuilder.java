@@ -30,8 +30,8 @@ import static nars.time.Tense.dtSpecial;
 public class InterningTermBuilder extends HeapTermBuilder {
 
 
-    protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int maxInternedVolumeDefault = 28;
+    protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
+    protected static final int volMaxDefault = 28;
     protected static final boolean deepDefault = true;
 
     /**
@@ -52,10 +52,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     public InterningTermBuilder() {
-        this(UUID.randomUUID().toString(), deepDefault, maxInternedVolumeDefault, DEFAULT_SIZE);
+        this(sizeDefault, volMaxDefault);
     }
 
-    public InterningTermBuilder(String id, boolean deep, int volInternedMax, int cacheSizePerOp) {
+    public InterningTermBuilder(int size, int volMax) {
+        this(UUID.randomUUID().toString(), size, volMax, deepDefault);
+    }
+
+    public InterningTermBuilder(String id, int cacheSizePerOp, int volInternedMax, boolean deep) {
         this.id = id;
         this.deep = deep;
         this.volInternedMax = volInternedMax;

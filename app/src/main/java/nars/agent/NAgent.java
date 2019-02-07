@@ -358,8 +358,8 @@ public class NAgent extends NARService implements NSense, NAct {
      * default reward target builder from String
      */
     protected Term rewardTerm(String reward) {
-        return $.func($$(reward), id);
-        //return $.inh(id, $$(reward));
+        //return $.func($$(reward), id);
+        return $.inh(id, $$(reward));
     }
 
     public Reward rewardNormalized(String reward, float min, float max, FloatSupplier rewardFunc) {

@@ -1,4 +1,4 @@
-package nars.perf;
+package nars.perf.util;
 
 import jcog.Texts;
 import jcog.Util;
@@ -83,43 +83,9 @@ public class StackProfiler2 implements InternalProfiler {
     public StackProfiler2() throws ProfilerException {
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         try {
 
-            
+
             MutableSet<String> exc = Sets.mutable.of("java.", "jdk.", "javax.", "sun.",
                     "sunw.", "com.sun.", "org.openjdk.jmh.", "com.intellij.rt.");
 
@@ -170,8 +136,9 @@ public class StackProfiler2 implements InternalProfiler {
             ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();
             while (!Thread.interrupted()) {
                 measure(threadBean.dumpAllThreads(false, false));
-                /*if (!*/Util.sleepMS(periodMsec);//)
-                    //break;
+                /*if (!*/
+                Util.sleepMS(periodMsec);//)
+                //break;
             }
         }
 
@@ -181,7 +148,7 @@ public class StackProfiler2 implements InternalProfiler {
             info:
             for (ThreadInfo info : infos) {
 
-                
+
                 switch (info.getThreadName()) {
                     case "Finalizer":
                     case "Signal Dispatcher":
@@ -189,13 +156,9 @@ public class StackProfiler2 implements InternalProfiler {
                     case "main":
                     case "Sampling Thread":
                     case "Attach Listener":
-                        continue info; 
+                        continue info;
 
                 }
-
-
-                
-                
 
 
                 StackRecord lines = new StackRecord(stackLines);
@@ -204,26 +167,6 @@ public class StackProfiler2 implements InternalProfiler {
                         .limit(stackLines)
                         .forEach(lines::add)
                 ;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
                 if (!lines.isEmpty()) {
@@ -283,7 +226,7 @@ public class StackProfiler2 implements InternalProfiler {
         public boolean equals(Object o) {
 
             if (this == o) return true;
-            StackRecord r = (StackRecord)o;
+            StackRecord r = (StackRecord) o;
             return hash == r.hash && super.equals(r);
         }
 
@@ -346,22 +289,21 @@ public class StackProfiler2 implements InternalProfiler {
         }
 
 
-
         String toString(final Map<Thread.State, HashBag<StackRecord>> stacks) {
 
             int top = 32;
 
-            StringBuilder sb = new StringBuilder(16*1024);
+            StringBuilder sb = new StringBuilder(16 * 1024);
 
             stacks.entrySet().forEach(e -> {
                 HashBag<StackRecord> cc = e.getValue();
                 MutableList<ObjectIntPair<StackRecord>> dd = cc.topOccurrences(top);
 
                 Thread.State state = e.getKey();
-                float totalHundredths = cc.size()/100f;
+                float totalHundredths = cc.size() / 100f;
                 sb.append(state).append(" (").append(totalHundredths + " recorded)\n");
                 dd.forEach(x -> {
-                    sb.append('\t').append( Texts.n4(x.getTwo()/totalHundredths) ).append("%\t").append(x.getOne()).append('\n');
+                    sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n');
                 });
 
                 sb.append("\n");
@@ -370,74 +312,14 @@ public class StackProfiler2 implements InternalProfiler {
             return sb.toString();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
 
         private String toString(HashBag<Pair<String, IntObjectPair<String>>> calleeSum) {
-            StringBuilder sb = new StringBuilder(16*1024).append("CALlEES\n");
+            StringBuilder sb = new StringBuilder(16 * 1024).append("CALlEES\n");
 
-            float totalHundredths = calleeSum.size()/100f;
+            float totalHundredths = calleeSum.size() / 100f;
             calleeSum.topOccurrences(topCallees).forEach((x) -> {
-                sb.append('\t').append( Texts.n4(x.getTwo()/totalHundredths) ).append("%\t").append(x.getOne()).append('\n');
+                sb.append('\t').append(Texts.n4(x.getTwo() / totalHundredths)).append("%\t").append(x.getOne()).append('\n');
             });
 
             return sb.toString();
@@ -454,7 +336,7 @@ public class StackProfiler2 implements InternalProfiler {
             for (StackResult r : results) {
                 r.calleeSum.forEach((key, value) -> {
                     HashBag<StackRecord> sumSet = calleeSum.computeIfAbsent(key, (x) -> new HashBag<>());
-                    value.forEachWithOccurrences((x,o)->{
+                    value.forEachWithOccurrences((x, o) -> {
                         sumSet.addOccurrences(x, o);
                         calledSum.addOccurrences(x.getFirst(), o);
                     });

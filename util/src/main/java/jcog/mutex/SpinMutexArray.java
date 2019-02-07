@@ -3,6 +3,8 @@ package jcog.mutex;
 
 import jcog.Util;
 
+import java.util.concurrent.atomic.AtomicLongArray;
+
 /** contains 2 sub-treadmills
  * TODO parameterize the bit which it checks adjustable so these can be chained arbitrarily */
 public final class SpinMutexArray implements SpinMutex {
@@ -10,7 +12,7 @@ public final class SpinMutexArray implements SpinMutex {
     private final SpinMutex[] mutex;
 
     public SpinMutexArray() {
-        this(Runtime.getRuntime().availableProcessors()*8, 2 /* x8 bytes each, less than a 64 byte cache line */ );
+        this(Runtime.getRuntime().availableProcessors()*4, 2 );
     }
 
     public SpinMutexArray(int stripes, int stripeWidth) {
@@ -18,14 +20,16 @@ public final class SpinMutexArray implements SpinMutex {
         assert(stripes < (1 << 15));
         assert(stripeWidth < (1 << 15));
         mutex = new SpinMutex[stripes];
+
+        AtomicLongArray buf = new AtomicLongArray(stripes * stripeWidth);
         for (int i  = 0; i < stripes; i++)
-            mutex[i] = new Treadmill64(stripeWidth);
+            mutex[i] = new Treadmill64(buf, stripeWidth, i*stripeWidth);
     }
 
 
     @Override
     public int start(long hash) {
-        int s = (int) ((hash & (~(1 << 31))) % mutex.length);
+        int s = (Long.hashCode(hash) & (~(1 << 31))) % mutex.length;
         return mutex[s].start(hash) | (s << 16);
     }
 

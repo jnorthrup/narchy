@@ -10,3 +10,6 @@
    //          #R[(A --> C) ({A} --> D) |- ((* A {A}) --> (* C D)) :post (:t/intersection)]
    //         #R[(A --> [C]) (B --> C) |- ((* A B) --> (* [C] C)) :post (:t/intersection)]
    //         #R[(A --> C) (B --> [C]) |- ((* A B) --> (* C [C])) :post (:t/intersection)]
+
+   ((A-->X) && (B-->X)), X, neq(A,B)        |- (polarize(((A-->X) && (B-->X)), task)-->X), (Belief:StructuralDeductionDepolarized)
+   ((A<->X) && (B<->X)), X, neq(A,B)        |- (polarize(((A<->X) && (B<->X)), task)<->X), (Belief:StructuralDeductionDepolarized)

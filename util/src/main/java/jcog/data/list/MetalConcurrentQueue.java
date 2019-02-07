@@ -29,7 +29,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -67,43 +66,60 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
 
     public void forEach(Consumer<? super X> each) {
-        int s = size();
-        X next;
-        int i = 0;
-        while (s-- > 0) {
-            next = peek(i++);
-            if (next != null)
-                each.accept(next);
+
+
+
+        int h = head();
+        int s = tail() - h;
+        if (s > 0) {
+            int c = capacity();
+            h = h % c;
+            do {
+                X next = getOpaque(h);
+                if (next != null)
+                    each.accept(next);
+
+                if (++h == c) h = 0; //wrap
+            } while (--s > 0);
         }
     }
 
-    public boolean whileEach(Predicate<? super X> each, int start, int end) {
-
-        if (end == start) return true;
-
-        //TODO detect if this.head moved while iteratnig
-
-        int s = size();
-        if (end > start) {
-            start = Math.max(0, start);
-            end = Math.min(end, s);
-            for (int i = start; i < end; i++) {
-                X x = peek(i);
-                if (x != null)
-                    if (!each.test(x)) return false;
-            }
-        } else {
-            start = Math.min(start, s - 1);
-            end = Math.max(0, end);
-            for (int i = start; i >= end; i--) {
-                X x = peek(i);
-                if (x != null)
-                    if (!each.test(x)) return false;
-            }
-        }
-
-        return true;
+    public int tail() {
+        return tail.getOpaque();
     }
+
+    public final int head() {
+        return head.getOpaque();
+    }
+
+
+//    public boolean whileEach(Predicate<? super X> each, int start, int end) {
+//
+//        if (end == start) return true;
+//
+//        //TODO detect if this.head moved while iteratnig
+//
+//        int s = size();
+//        if (end > start) {
+//            start = Math.max(0, start);
+//            end = Math.min(end, s);
+//            for (int i = start; i < end; i++) {
+//                X x = peek(i);
+//                if (x != null)
+//                    if (!each.test(x)) return false;
+//            }
+//        } else {
+//            start = Math.min(start, s - 1);
+//            end = Math.max(0, end);
+//            for (int i = start; i >= end; i--) {
+//                X x = peek(i);
+//                if (x != null)
+//                    if (!each.test(x)) return false;
+//            }
+//        }
+//
+//        return true;
+//    }
 
 
     /**
@@ -150,10 +166,10 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             if (head.getAcquire() > queueStart) {
                 // does the sequence still have the expected
                 // value
-                if (tailCursor.weakCompareAndSetRelease(tailSeq, tailSeq + 1)) {
+                if (tailCursor.compareAndSet(tailSeq, tailSeq + 1)) {
 
                     // tailSeq is valid and got access without contention
-                    setRelease(i(tailSeq, cap), x);
+                    set(i(tailSeq, cap), x);
 
                     tail.setRelease(tailSeq + 1);
 
@@ -184,7 +200,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
      */
     static int progressiveYield(final int n) {
         Util.pauseNextIterative(n);
-        return n;
+        return n + 1;
     }
 
     @Override
@@ -198,7 +214,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             // is there data for us to poll
             if (tail.getAcquire() > head) {
                 // check if we can update the sequence
-                if (headCursor.weakCompareAndSetRelease(head, head + 1)) {
+                if (headCursor.compareAndSet(head, head + 1)) {
 
                     final X pollObj = getAndSet(i(head, cap), null);
 
@@ -223,7 +239,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
     }
 
     public final X peek(int delta) {
-        return getOpaque(i(head.getOpaque() + delta) );
+        return getOpaque(i(head() + delta) );
     }
 
     /** oldest element */
@@ -268,7 +284,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             final int nToRead = Math.min((tail.getAcquire() - pollPos), maxElements);
             if (nToRead > 0) {
                 // if we still control the sequence, update and return
-                if(headCursor.weakCompareAndSetRelease(pollPos,  pollPos+nToRead)) {
+                if(headCursor.compareAndSet(pollPos,  pollPos+nToRead)) {
                     int n = i(pollPos, cap);
                     for (int i = 0; i < nToRead; i++) {
                         x[i] = getAndSet(n, null);
@@ -357,7 +373,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         // note these values can roll from positive to
         // negative, this is properly handled since
         // it is a difference
-        return Math.max((tail.getOpaque() - head.getOpaque()), 0);
+        return Math.max((tail() - head()), 0);
     }
 
     @Override
@@ -413,8 +429,9 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             int cap = capacity();
 
             //TODO use fast iteration method
+            int h = head();
             for (int i = 0; i < s; i++) {
-                final int slot = (i(head.getOpaque() + i, cap));
+                final int slot = (i(h + i, cap));
                 X b = getOpaque(slot);
                 if (b != null && b.equals(o)) return true;
             }

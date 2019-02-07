@@ -55,7 +55,13 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
     @Override
     public final void match(Answer t) {
-        series.whileEach(t.time.start, t.time.end, false, t::tryAccept);
+        long s = t.time.start, e;
+        if (t.time.start == ETERNAL) {
+            s = e = t.nar.time();
+        } else {
+            e = t.time.end;
+        }
+        series.whileEach(s, e, false, t::tryAccept);
     }
 
 

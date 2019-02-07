@@ -147,7 +147,7 @@ public interface TruthFunc {
         }
 
         @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, NAR m, float minConf) {
-            return o.apply(T.negIf(T.isNegative()), B.negIf(B.isNegative()), m, minConf);
+            return o.apply(T.negIf(T.isNegative()), B!=null ? B.negIf(B.isNegative()) : null, m, minConf);
         }
 
         @Override public final String toString() {
