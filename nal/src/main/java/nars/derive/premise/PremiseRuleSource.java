@@ -627,18 +627,19 @@ public class PremiseRuleSource extends ProxyTerm {
             if (!beliefObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
                 beliefPastable = true;
 
-            Term y0 = y, y1, y2;
-            if (taskPastable)
-                y1 = y0.replace(taskPattern, Derivation.TaskTerm);
-            else
-                y1 = y0;
-
-            if (beliefPastable)
-                y2 = y1.replace(beliefPattern, Derivation.BeliefTerm);
-            else
-                y2 = y1;
-
-            y = y2;
+            Term yT, yB;
+            Term y0 = y;
+            if (beliefPattern.volume() <= taskPattern.volume()) {
+                //subst task first
+                yT = taskPastable ? y0.replace(taskPattern, Derivation.TaskTerm) : y0;
+                yB = beliefPastable ? yT.replace(beliefPattern, Derivation.BeliefTerm) : yT;
+                y = yB;
+            } else {
+                //subst belief first
+                yB = beliefPastable ? y0.replace(beliefPattern, Derivation.BeliefTerm) : y0;
+                yT = taskPastable ? yB.replace(taskPattern, Derivation.TaskTerm) : yB;
+                y = yT;
+            }
 
 //            boolean taskPasted = y0 != y1;
 //            if (!taskObviouslyNotPastable && !taskPasted && !y.replace(taskPattern, Derivation.TaskTerm).equals(y))
