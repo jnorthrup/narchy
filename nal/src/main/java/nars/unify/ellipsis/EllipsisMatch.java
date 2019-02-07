@@ -20,8 +20,12 @@ public final class EllipsisMatch extends LightCompound {
 
     public static final Op EllipsisOp = PROD;
 
-    public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptyTermArray);
+    public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptySubterms);
 
+
+    private EllipsisMatch(Subterms t) {
+        super(EllipsisOp.id, t);
+    }
 
     private EllipsisMatch(Term[] t) {
         super(EllipsisOp.id, t /*new DisposableTermList(t)*/);

@@ -1166,6 +1166,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (yi instanceof EllipsisMatch) {
 
                 EllipsisMatch ee = (EllipsisMatch) yi;
+                if (ee.subs()==0) {
+                    if (s == 1)
+                        return null; //void term
+                    else
+                        continue; //no effect
+                }
 
                 if (s == 1) {
                     //it is only this ellipsis match so inline it by transforming directly and returning it (tail-call)

@@ -519,9 +519,9 @@ public class Derivation extends PreDerivation {
 
         if (atomic instanceof Atom) {
             if (atomic == TaskTerm) {
-                return taskTerm;
+                return transform(taskTerm);
             } else if (atomic == BeliefTerm) {
-                return beliefTerm;
+                return transform(beliefTerm);
             }
 
             Termed f = derivationFunctors.apply(atomic);
