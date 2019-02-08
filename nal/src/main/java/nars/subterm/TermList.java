@@ -4,6 +4,7 @@ import jcog.data.list.FasterList;
 import nars.Op;
 import nars.term.Term;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import static nars.Op.CONJ;
@@ -48,7 +49,12 @@ public class TermList extends FasterList<Term> implements Subterms {
         return false;
     }
 
-
+    public void ensureExtraCapacityExact(int num) {
+        int l = this.items.length;
+        int oldCapacity = l, minCapacity = l + num;
+        if (minCapacity > oldCapacity)
+            this.items = Arrays.copyOf(items, minCapacity);
+    }
 
      @Override
     public TermList toList() {

@@ -25,17 +25,21 @@ import java.util.Random;
  * UNTESTED
  */
 public class Conjterpolate extends Conj {
-//    private final Random rng;
-//
-//    float addProb;
+    private final int dither;
+
+
+    @Override
+    public boolean add(long at, Term x) {
+        return super.add(Tense.dither(at,dither), x);
+    }
 
     /**
      * proportion of a vs. b, ie: (a/(a+b))
      */
-
     public Conjterpolate(Term a, Term b, float aProp, NAR nar) {
         super();
 
+        this.dither = nar.dtDither();
 
         FasterList<LongObjectPair<Term>> aa = a.eventList();
         FasterList<LongObjectPair<Term>> bb = b.eventList();

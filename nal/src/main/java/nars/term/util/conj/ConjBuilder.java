@@ -5,6 +5,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.*;
@@ -26,6 +27,18 @@ public interface ConjBuilder {
                         addEvent(at, x)
         ;
     }
+    default boolean addAll(Iterable<LongObjectPair<Term>> x) {
+        for (LongObjectPair<Term> xx : x) {
+            if (!add(xx))
+                return false;
+        }
+        return true;
+    }
+
+    default boolean add(LongObjectPair<Term> whenWhat) {
+        return add(whenWhat.getOne(), whenWhat.getTwo());
+    }
+
 
     /** for internal use only */
     boolean addEvent(long at, Term x);

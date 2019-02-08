@@ -193,7 +193,9 @@ public abstract class Param {
      * as a factor of the maximum of the ranges of the tasks involved in the revision */
     public static final float TASK_REVISION_STRETCH_LIMIT_PROPORTION =
             //1;
-            1.5f;
+            ////1.5f;
+            1.618f; //goldenratio
+            //2;
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
@@ -218,7 +220,7 @@ public abstract class Param {
 
 
     /** may cause unwanted "sticky" event conflation */
-    public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = false;
+    public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
 
     /** if false, keeps intersecting timegraph events separate.  if true, it merges them to one event. may cause unwanted "sticky" event conflation */
     public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = false;
@@ -242,33 +244,6 @@ public abstract class Param {
         //return new FocusingLinearTruthPolation(start, end, dur);
     }
 
-//    /**
-//     * provides a start,end pair of time points for the current focus given the current time and duration
-//     */
-//    public final long[] timeFocus() {
-//        return timeFocus(time());
-//    }
-//
-//    public final long[] timeFocus(long when) {
-//        return timeFocus(when, dur());
-//    }
-//
-//    //TODO void timeFocus(when, dur, long[] store)
-//
-//    public final long[] timeFocus(long when, float dur) {
-//        if (when == ETERNAL)
-//            return new long[]{ETERNAL, ETERNAL};
-//
-//        if (when == XTERNAL) {
-//            throw new RuntimeException();
-//        }
-//
-//        int f = Math.round(dur * timeFocus.floatValue());
-//        int ditherCycles = dtDither();
-//        long from = Tense.dither(when - f, ditherCycles);
-//        long to = Tense.dither(when + f, ditherCycles);
-//        return new long[]{from, to};
-//    }
 
     /**
      * TTL = 'time to live'
@@ -287,7 +262,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
 
 
     /**

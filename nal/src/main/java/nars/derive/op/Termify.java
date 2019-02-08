@@ -76,6 +76,7 @@ public final class Termify extends AbstractPred<Derivation> {
 //        }
 
         boolean o = Occurrify.occurrify(x, truth, time, d);
+
 //        if (o) {
 //            if (d.concOcc[0]!=ETERNAL && d.concOcc[0] == d.concOcc[1]) {
 //                if ((d.taskStart != ETERNAL && d._task.range() > 1) && (d._belief != null && !d._belief.isEternal() && d._belief.range() > 1)) {

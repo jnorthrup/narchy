@@ -992,17 +992,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return added( ConjBuilder.super.add(at, x) );
     }
 
-    public boolean addAll(Iterable<LongObjectPair<Term>> x) {
-        for (LongObjectPair<Term> xx : x) {
-            if (!add(xx))
-                return false;
-        }
-        return true;
-    }
-
-    public boolean add(LongObjectPair<Term> whenWhat) {
-        return add(whenWhat.getOne(), whenWhat.getTwo());
-    }
 
 
 

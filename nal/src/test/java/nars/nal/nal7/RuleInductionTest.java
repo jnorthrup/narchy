@@ -28,37 +28,18 @@ class RuleInductionTest {
     void test1() {
         int dur = 3;
         int loops = 10;
-        int period = 5;
+        int period = 3;
         int dutyPeriod = 1;
 
         NAR n = NARS.shell();
-        n.termVolumeMax.set(
-            
-            8
-        );
+        n.termVolumeMax.set(8);
 
         BatchDeriver d = new BatchDeriver(new PremiseDeriverRuleSet(n,
-            
-        "B, A, --is(A,\"==>\"),--is(B,\"==>\")                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:TaskRelative)"
-            
 
-            
-            
-        ), n) {
+                "B, A, --is(A,\"==>\"),--is(B,\"==>\"), neq(A,B) |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Sequence)"
 
 
-
-
-
-
-
-
-
-
-
-
-
-        };
+        ), n);
         new STMLinkage(n, 1);
 
         d.tasklinksPerIteration.set(2);
@@ -76,16 +57,16 @@ class RuleInductionTest {
         Histogram aConjB_dt = new Histogram(4);
 
         n.onTask(t -> {
-           if (!t.isInput() && t.term().root().equals(aConjB_root)) {
-               long start = t.start();
-               int dt = Math.abs(t.dt()); 
+            if (!t.isInput() && t.term().root().equals(aConjB_root)) {
+                long start = t.start();
+                int dt = Math.abs(t.dt());
 
-               aConjB_dt.recordValue(dt);
+                aConjB_dt.recordValue(dt);
 
-               assertEquals(start, t.end());
-               assertNotEquals(ETERNAL, start);
-               assertNotEquals(DTERNAL, dt);
-           }
+                assertEquals(start, t.end());
+                assertNotEquals(ETERNAL, start);
+                assertNotEquals(DTERNAL, dt);
+            }
         });
 
         PairedStatsAccumulator aImpB_exp = new PairedStatsAccumulator();
@@ -94,28 +75,25 @@ class RuleInductionTest {
 
             n.believe("a", Tense.Present, 1, 0.9f);
             if (i > 0) {
-                
-                
+
+
             }
             n.run(dutyPeriod);
             n.believe("b", Tense.Present, 1, 0.9f);
-            n.run(period-dutyPeriod); 
+            n.run(period - dutyPeriod);
 
             long now = n.time();
 
             System.out.println("\n" + now);
             aConjB_exp.add(now, observe(n, aConjB, now));
-            
+
         }
 
-        
 
         {
             System.out.println("<" + aConjB + " @ " + n.time() + ">");
             System.out.println("expectation vs. time: \t" + aConjB_exp.yStats());
             System.out.println("\tslope=" + aConjB_exp.leastSquaresFit().slope());
-
-
 
 
             System.out.println("dt:");
@@ -126,30 +104,23 @@ class RuleInductionTest {
 
         double aConjB_pearsonCorrelationCoeff = aConjB_exp.pearsonsCorrelationCoefficient();
         assertTrue(aConjB_pearsonCorrelationCoeff > 0.4f,
-                ()->aConjB + " confidence increases smoothly: correlation quality=" + aConjB_pearsonCorrelationCoeff); 
-        assertTrue(aConjB_exp.leastSquaresFit().slope() > 0, ()->aConjB + " confidence increases");
+                () -> aConjB + " confidence increases smoothly: correlation quality=" + aConjB_pearsonCorrelationCoeff);
+        assertTrue(aConjB_exp.leastSquaresFit().slope() > 0, () -> aConjB + " confidence increases");
 
-        
-        
-        
 
     }
 
 
     private static float observe(NAR n, Term x, long now) {
         Task nb = n.belief(x, now);
-        Truth xTruth = nb!=null ? nb.truth(now, n.dur()) : null;
+        Truth xTruth = nb != null ? nb.truth(now, n.dur()) : null;
 
         System.out.println(x + "\t" + xTruth);
         n.conceptualize(x).beliefs().print();
         System.out.println();
 
-        
 
-
-
-
-        return xTruth!=null ? xTruth.expectation() : 0;
+        return xTruth != null ? xTruth.expectation() : 0;
     }
 }
 

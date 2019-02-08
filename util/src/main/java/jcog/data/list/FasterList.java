@@ -92,7 +92,8 @@ public class FasterList<X> extends FastList<X> {
 
     static private int sizePlusFiftyPercent(int oldSize) {
         int result = oldSize + (oldSize / 2) + 1;
-        return result < oldSize ? (Integer.MAX_VALUE - 8) : result;
+        return result;
+        //return result < oldSize ? (Integer.MAX_VALUE - 8) : result;
     }
 
     @Override
@@ -465,38 +466,17 @@ public class FasterList<X> extends FastList<X> {
         return size;
     }
 
-    public void ensureExtraCapacityExact(int num) {
-        int l = this.items.length;
-        int oldCapacity = l;
-        int minCapacity = l + num;
-        if (minCapacity > oldCapacity) {
-            this.items = (X[]) (
-                    (l == 0) ?
-                            newArray(Math.max(num, INITIAL_SIZE_IF_GROWING_FROM_EMPTY))
-                            :
-                            this.copyItemsWithNewCapacity(minCapacity)
-            );
-        }
-    }
+
 
     public void ensureCapacityForAdditional(int num) {
         X[] ii = this.items;
-        int s = this.size, l = ii.length;
-        if (l < (s + num)) {
-            this.items = (X[]) (
-                    (l == 0) ?
+        int s = this.size + num, l = ii.length;
+        if (l < s) {
+            this.items = (X[]) ((l == 0) ?
                             newArray(Math.max(num, INITIAL_SIZE_IF_GROWING_FROM_EMPTY))
                             :
-                            this.copyItemsWithNewCapacity(sizePlusFiftyPercent(s + num))
-            );
+                            Arrays.copyOf(items, sizePlusFiftyPercent(s)));
         }
-    }
-
-    protected Object[] copyItemsWithNewCapacity(int newCapacity) {
-//        Object[] newItems = newArray(newCapacity);
-//        System.arraycopy(this.items, 0, newItems, 0, Math.min(this.size, newCapacity));
-//        return newItems;
-        return items != null ? Arrays.copyOf(items, newCapacity) : newArray(newCapacity);
     }
 
     protected Object[] newArray(int newCapacity) {
@@ -508,9 +488,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public final boolean addIfNotNull(@Nullable X x) {
-        if (x != null)
-            return add(x);
-        return false;
+        return x != null && add(x);
     }
 
     /**
