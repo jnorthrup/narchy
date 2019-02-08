@@ -82,7 +82,7 @@ public enum Image {;
 
     public static Term imageNormalize(Term x) {
 
-        if (!(x instanceof Compound))
+        if (!(x instanceof Compound) || !x.hasAll(ImageBits))
             return x;
 
         Op xo = x.op();
@@ -95,7 +95,7 @@ public enum Image {;
                 return y.neg();
         }
 
-        if (xo !=INH || !x.hasAll(ImageBits))
+        if (xo !=INH)
             return x;
 
         Term y = normalize((Compound) x);

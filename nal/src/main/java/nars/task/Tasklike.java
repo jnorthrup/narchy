@@ -2,14 +2,12 @@ package nars.task;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.Task;
-import nars.concept.Concept;
 import nars.term.Term;
 import nars.time.Tense;
 
-import static nars.Op.*;
+import static nars.Op.NEG;
 import static nars.time.Tense.ETERNAL;
 
 /**

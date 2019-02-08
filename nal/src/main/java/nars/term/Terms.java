@@ -366,39 +366,43 @@ public enum Terms {
         return true;
     }
 
-    public static boolean possiblyUnifiable(Term x, Term y, boolean strict, int varExcluded) {
+    public static boolean possiblyUnifiable(Term x, Term y, boolean strict, int var) {
 
         boolean xEqY = x.equals(y);
-        if (xEqY) {
+        if (xEqY)
             return !strict;
-        }
 
         Op xo = x.op(), yo = y.op();
 
-        if ((xo.bit & ~varExcluded) == 0)
-            return true; //unifies, allow
+        int konst = ~var;
+        if ((xo.bit & konst) == 0)
+            return true; //variable, allow
 
-        if ((yo.bit & ~varExcluded) == 0)
-            return true; //unifies, allow
+        if ((yo.bit & konst) == 0)
+            return true; //variable, allow
 
         if (xo != yo)
             return false;
 
-//        x = Image.imageNormalize(x);
-//        y = Image.imageNormalize(y);
+        int xs = x.structure();
+        int ys = y.structure();
+        if (((xs & var)==0) && ((ys&var)==0)) //no variables
+            return false;
+
+        //TODO Conj Xternal allow
 
         Subterms xx = x.subterms(), yy = y.subterms();
         int xxs = xx.subs();
         if (xxs != yy.subs())
             return false;
 
-        if (!Subterms.possiblyUnifiable(xx, yy, varExcluded))
+        if (!Subterms.possiblyUnifiable(xx, yy, var))
             return false;
 
         if (!xo.commutative) {
             for (int i = 0; i < xxs; i++) {
                 Term x0 = xx.sub(i), y0 = yy.sub(i);
-                if (!possiblyUnifiable(x0, y0, false, varExcluded))
+                if (!possiblyUnifiable(x0, y0, false, var))
                     return false;
             }
         }

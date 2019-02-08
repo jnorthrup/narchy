@@ -9,15 +9,10 @@ import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
-import jcog.pri.bag.impl.hijack.PriHijackBag;
-import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Param;
-import nars.link.Activate;
 import nars.link.TaskLink;
-import nars.term.Term;
 import nars.term.Termed;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Random;

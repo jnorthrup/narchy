@@ -10,9 +10,8 @@ import nars.concept.Operator;
 import nars.derive.Derivation;
 import nars.derive.filter.CommutativeConstantPreFilter;
 import nars.derive.filter.DoublePremiseRequired;
-import nars.derive.filter.UnifyPreFilter;
+import nars.derive.filter.Unifiable;
 import nars.derive.op.*;
-import nars.op.UniSubst;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.term.Variable;
@@ -78,9 +77,9 @@ public class PremiseRuleSource extends ProxyTerm {
     protected final Term beliefTruth;
     protected final Term goalTruth;
 
-    protected final Term taskPattern;
-    protected final Term beliefPattern;
-    protected final Term concPattern;
+    public final Term taskPattern;
+    public final Term beliefPattern;
+    public final Term concPattern;
 
 
     private static final PatternIndex INDEX = new PatternIndex();
@@ -113,9 +112,6 @@ public class PremiseRuleSource extends ProxyTerm {
         if (beliefPattern.op() == Op.ATOM) {
             throw new RuntimeException("belief target must contain no atoms: " + beliefPattern);
         }
-
-
-
 
 
         ByteToByteFunction concPunc = null;
@@ -353,7 +349,7 @@ public class PremiseRuleSource extends ProxyTerm {
                     break;
 
                 case "hasBelief":
-                    pre.add(new DoublePremiseRequired(true,true,true));
+                    pre.add(new DoublePremiseRequired(true, true, true));
                     break;
 
                 default:
@@ -443,8 +439,6 @@ public class PremiseRuleSource extends ProxyTerm {
             }
 
         }
-
-
 
 
         TruthFunc beliefTruthOp = NALTruth.get(beliefTruth);
@@ -579,6 +573,15 @@ public class PremiseRuleSource extends ProxyTerm {
         this.CONSTRAINTS = Sets.immutable.of(theInterned(constraints));
 
 
+        this.termify = new Termify(this.concPattern = conclusion(postcon[0]), truthify, time);
+
+
+        this.PRE = preconditions();
+        this.constraintSet = CONSTRAINTS.toSet();
+
+    }
+
+    private PREDICATE[] preconditions() {
         int rules = pre.size();
         PREDICATE[] PRE = pre.toArray(new PREDICATE[rules + 1 /* extra to be filled in later stage */]);
 
@@ -586,24 +589,21 @@ public class PremiseRuleSource extends ProxyTerm {
 
         assert (PRE[PRE.length - 1] == null);
         assert rules <= 1 || (PRE[0].cost() <= PRE[rules - 2].cost()); //increasing cost
-        this.PRE = PRE;
+
 
         //not working yet:
 //        for (int i = 0, preLength = PRE.length; i < preLength; i++) {
 //            PRE[i] = INDEX.intern(PRE[i]);
 //        }
 
-        this.termify = new Termify(this.concPattern = conclusion(postcon[0]), truthify, time);
-
-        this.constraintSet = CONSTRAINTS.toSet();
-
+        return PRE;
     }
 
     private Term conclusion(Term x) {
 
         if (!x.unneg().op().var)
-            return conclusionOptimize( ConcTransform.transform( PatternIndex.patternify(x)) );
-         else
+            return conclusionOptimize(ConcTransform.transform(PatternIndex.patternify(x)));
+        else
             return x;
 
 //        if (y.hasVars()) {
@@ -666,7 +666,7 @@ public class PremiseRuleSource extends ProxyTerm {
 //                System.out.println("belf paste possible: " + y + " -> " + y0);
 
 
-        if(y0!=y) {
+        if (y0 != y) {
 //                System.out.println(y + " -> " + y0);
         }
         return y;
@@ -680,10 +680,9 @@ public class PremiseRuleSource extends ProxyTerm {
     private void tryGuard(RootTermAccessor r, Term root, ByteArrayList p) {
 
 
-
         byte[] pp = p.toByteArray(); //HACK
         int depth = pp.length;
-        Term t = p.isEmpty()? root : root.subPath(pp);
+        Term t = p.isEmpty() ? root : root.subPath(pp);
 
         Op to = t.op();
         if (to == Op.VAR_PATTERN)
@@ -857,22 +856,22 @@ public class PremiseRuleSource extends ProxyTerm {
         match(x, (pathInTask, pathInBelief) -> {
 
 
-            if (pathInTask != null)
-                match(true, pathInTask, m, trueOrFalse);
-            if (pathInBelief != null)
-                match(false, pathInBelief, m, trueOrFalse);
+                    if (pathInTask != null)
+                        match(true, pathInTask, m, trueOrFalse);
+                    if (pathInBelief != null)
+                        match(false, pathInBelief, m, trueOrFalse);
 
-        }, (inTask, inBelief) -> {
+                }, (inTask, inBelief) -> {
 
-            if (trueOrFalse /*|| m instanceof TermMatch.TermMatchEliminatesFalseSuper*/) { //positive only (absence of evidence / evidence of absence)
-                if (inTask)
-                    matchSuper(true, m, trueOrFalse);
-                if (inBelief)
-                    matchSuper(false, m, trueOrFalse);
-            }
+                    if (trueOrFalse /*|| m instanceof TermMatch.TermMatchEliminatesFalseSuper*/) { //positive only (absence of evidence / evidence of absence)
+                        if (inTask)
+                            matchSuper(true, m, trueOrFalse);
+                        if (inBelief)
+                            matchSuper(false, m, trueOrFalse);
+                    }
 
-            constraints.add(m.constraint((Variable) x, trueOrFalse));
-        }
+                    constraints.add(m.constraint((Variable) x, trueOrFalse));
+                }
         );
     }
 
@@ -894,7 +893,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     private void neq(Set<UnifyConstraint> constraints, Variable x, Term y) {
 
-        if (y.op()==NEG && y.unneg() instanceof Variable) {
+        if (y.op() == NEG && y.unneg() instanceof Variable) {
             constraints.add(new NotEqualConstraint.EqualNegConstraint(x, (Variable) (y.unneg())).neg());
         } else if (y instanceof Variable) {
             constraints.add(new NotEqualConstraint(x, (Variable) y));
@@ -909,7 +908,7 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
     public static Term pp(@Nullable byte[] b) {
-        return b == null ? Op.EmptyProduct : $.p(b);
+        return b == null ? $.the(-1) /* null */ : $.p(b);
     }
 
 
@@ -997,29 +996,14 @@ public class PremiseRuleSource extends ProxyTerm {
         }
     }
 
-
+    /** conclusion post-processing */
     private final TermTransform ConcTransform = new TermTransform() {
         @Override
-        public Term transformCompound(Compound x) {
-            //subIfUnify prefilter
-            Term concFunc = Functor.func(x);
-            if (concFunc.equals(UniSubst.unisubst)) {
+        public Term transformCompound(Compound c) {
 
-                Subterms a = Operator.args(x);
+            c = Unifiable.transform(c, PremiseRuleSource.this, pre);
 
-                int varBits = (a.contains(UniSubst.DEP_VAR)) ? VAR_DEP.bit : (VAR_INDEP.bit | VAR_DEP.bit);
-
-                boolean strict = a.contains(UniSubst.STRICT);
-
-                UnifyPreFilter.tryAdd(a.sub(1), a.sub(2),
-                        taskPattern, beliefPattern,
-                        varBits, strict, pre);
-
-                //TODO compile to 1-arg unisubst
-            }
-
-
-            return TermTransform.super.transformCompound(x);
+            return TermTransform.super.transformCompound(c);
         }
     };
 }

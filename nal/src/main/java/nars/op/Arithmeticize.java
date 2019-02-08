@@ -5,8 +5,6 @@ import jcog.Util;
 import jcog.data.list.FasterIntArrayList;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
-import jcog.memoize.CollisionMemoize;
-import jcog.memoize.Memoize;
 import jcog.memoize.Memoizers;
 import nars.*;
 import nars.eval.Evaluation;

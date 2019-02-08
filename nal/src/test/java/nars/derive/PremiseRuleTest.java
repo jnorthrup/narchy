@@ -199,7 +199,8 @@ class PremiseRuleTest {
                 "X,Y |- unisubst(what,X,Y), (Belief:Intersection)"));
 
         d.printRecursive();
-        assertTrue(d.what.toString().contains("unifyPreFilter(")); //TODO this and other cases
+        String s = d.what.toString();
+        assertTrue(s.contains("unifiable("), ()->s); //TODO this and other cases
     }
 
     @Test

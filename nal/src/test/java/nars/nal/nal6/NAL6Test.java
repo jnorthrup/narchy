@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 800;
+    private static final int cycles = 400;
 
     @BeforeEach
     void setup() {
@@ -554,6 +554,7 @@ public class NAL6Test extends NALTest {
         //tester.mustBelieve(cycles, "(lock:$1 ==> (key:#2 && open(#2,$1)))", 1.00f, 0.45f);
 
     }
+
     @Test
     void second_level_variable_unificationNoImgAndAsPreconditionAllIndep() {
         test.nar.termVolumeMax.set(15);
