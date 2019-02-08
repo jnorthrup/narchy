@@ -145,6 +145,7 @@ abstract public class JoglSpace {
     /* render context */
     public final SurfaceRender rendering = new SurfaceRender();
 
+
     private void renderOrthos(int dtMS) {
 
         int facialsSize = layers.size();
@@ -154,6 +155,8 @@ abstract public class JoglSpace {
 
 
             int w = io.window.getWidth(), h = io.window.getHeight();
+            rendering.restart(w, h, dtMS);
+
             gl.glViewport(0, 0, w, h);
             gl.glMatrixMode(GL_PROJECTION);
             gl.glLoadIdentity();
@@ -168,15 +171,10 @@ abstract public class JoglSpace {
             gl.glDisable(GL2.GL_DEPTH_TEST);
 
 
-            rendering.restart(w, h, dtMS);
             for (Surface/*Root*/ l : layers) {
-
-                if (l instanceof Ortho) {
-                    ((Ortho)l).compile(rendering);
-                }
-
                 l.render(gl, rendering);
             }
+
 
             gl.glEnable(GL2.GL_DEPTH_TEST);
         }
@@ -304,6 +302,19 @@ abstract public class JoglSpace {
             renderVolume(dtMS);
 
             renderOrthos(dtMS);
+        }
+
+        @Override
+        protected void update(int dtMS) {
+            int w = io.window.getWidth(), h = io.window.getHeight();
+            rendering.clear();
+            rendering.restart(w, h);
+            for (Surface/*Root*/ l : layers) {
+                if (l instanceof Ortho) {
+                    ((Ortho) l).compile(rendering);
+                }
+            }
+            //System.out.println(rendering);
         }
 
         @Override

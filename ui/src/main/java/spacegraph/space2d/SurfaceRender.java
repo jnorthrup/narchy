@@ -19,11 +19,11 @@ public class SurfaceRender {
     public float pw, ph;
     /** ms since last update */
     public int dtMS;
-    public long renderStartNS;
+    public long restartNS;
 
     public float scaleX, scaleY;
     public float x1, x2, y1, y2;
-
+    transient float w, h;
 
     public SurfaceRender() {
 
@@ -32,32 +32,33 @@ public class SurfaceRender {
 
 
     /** encodes the rendering sequence */
-    public void on(BiConsumer<GL2, SurfaceRender> renderable) {
+    public final void on(BiConsumer<GL2, SurfaceRender> renderable) {
         main.add(renderable);
     }
-
 
     public void clear() {
         main.clear();
     }
 
-    public void render(GL2 gl) {
-        main.forEach(rr -> rr.accept(gl, this));
+    public final void render(GL2 gl) {
+        main.forEachWith((rr,ggl) -> rr.accept(ggl, this), gl);
     }
 
-    public void render(Ortho.Camera cam, v2 scale, Surface root) {
-        clear();
+    public void compile(Ortho.Camera cam, v2 scale, Surface root) {
         set(cam, scale);
         root.recompile(this);
     }
 
-
-    public SurfaceRender restart(float pw, float ph, int dtMS) {
+    public SurfaceRender restart(float pw, float ph) {
         this.pw = pw;
         this.ph = ph;
-        this.dtMS = dtMS;
-        this.renderStartNS = System.nanoTime();
+        this.restartNS = System.nanoTime();
         return this;
+    }
+
+    public SurfaceRender restart(float pw, float ph, int dtMS) {
+        this.dtMS = dtMS;
+        return restart(pw, ph);
     }
 
 //    public void clone(float scale, v2 offset, Consumer<SurfaceRender> run, GL2 gl) {
@@ -91,12 +92,14 @@ public class SurfaceRender {
     public SurfaceRender set(float scalex, float scaley, float cx, float cy) {
         this.scaleX = scalex;
         this.scaleY = scaley;
-        float sxh = 0.5f * pw / scalex;
+        float sxw = 0.5f * pw / scalex;
         float syh = 0.5f * ph / scaley;
-        this.x1 = cx - sxh;
-        this.x2 = cx + sxh;
+        this.x1 = cx - sxw;
+        this.x2 = cx + sxw;
         this.y1 = cy - syh;
         this.y2 = cy + syh;
+        w = x2-x1;
+        h = y2-y1;
         return this;
     }
 
@@ -112,7 +115,8 @@ public class SurfaceRender {
 //            return false;
 //        if (r.h < pixelScaleY)
 //            return false;
-        return !(r.right() < x1) && !(r.left() > x2) && !(r.bottom() < y1) && !(r.top() > y2);
+        boolean v = r.intersectsX1Y1X2Y2(x1, y1, x2, y2);
+        return v;
     }
 
     /** percentage of screen visible */
@@ -130,9 +134,12 @@ public class SurfaceRender {
         return !(bounds.w * scaleX < minPixelsToBeVisible) && !(bounds.h * scaleY < minPixelsToBeVisible);
     }
 
+    @Override
+    public String toString() {
+        return scaleX + "x" + scaleY + " " + main.size() + " renderables";
+    }
 
-
-//    /** adapts the world coordinates to a new virtual local coordinate system */
+    //    /** adapts the world coordinates to a new virtual local coordinate system */
 //    public SurfaceRender virtual(RectFloat xywh) {
 //
 //

@@ -74,7 +74,7 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
 
         }
 
-        super.addWithoutResizeCheck(o);
+        super.addWithoutResizeTest(o);
         return true;
     }
 

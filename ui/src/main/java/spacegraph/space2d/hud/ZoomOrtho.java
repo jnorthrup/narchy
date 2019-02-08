@@ -117,7 +117,7 @@ public class ZoomOrtho extends Ortho {
     }
 
     private MutableListContainer hud() {
-        return (MutableListContainer) ((Ortho) space.layers.get(3)).the();
+        return (MutableListContainer) ((space.layers).get(3)); //HACK
     }
 
     private final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {

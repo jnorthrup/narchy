@@ -183,11 +183,10 @@ public class MutableListContainer extends AbstractMutableContainer {
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        children.forEach((c) -> {
-            if (c != null) {
-                o.accept(c);
-            }
-        });
+        children.forEachWith((c, oo) -> {
+            if (c != null)
+                oo.accept(c);
+        }, o);
     }
 
     @Override

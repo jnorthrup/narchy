@@ -21,10 +21,6 @@ public class BagSpectrogram<X> extends Bordering implements BitmapMatrixView.Vie
     private int s;
     private final Gridding views = new Gridding(Gridding.HORIZONTAL) {
 
-        {
-            margin = 0;
-        }
-
         @Override
         protected int layoutIndex(int i) {
             return (i + offset) % view.length;
@@ -36,7 +32,7 @@ public class BagSpectrogram<X> extends Bordering implements BitmapMatrixView.Vie
 //                return new EmptySurface(); //HACK
 //            return v;
 //        }
-    };
+    }.margin(0);
     final FasterList<X> items = new FasterList();
 
     public BagSpectrogram(Bag<?,X> x, int history, NAR nar) {
@@ -49,16 +45,13 @@ public class BagSpectrogram<X> extends Bordering implements BitmapMatrixView.Vie
 
         set(S, new DurSurface(menu, nar) {
 
-
-
             @Override
             protected void update() {
                 int cap = x.capacity();
                 if (view == null || view[0]==null || view[0].h!= cap) { //TODO if history changes
                     view = new BitmapMatrixView[history];
                     for (int i = 0; i < history; i++) {
-                        view[i] = new BitmapMatrixView(1, cap, BagSpectrogram.this);
-
+                        view[i] = new BitmapMatrixView(1, cap, BagSpectrogram.this).cellTouch(false);
                     }
                     views.set(view);
                 }
@@ -79,11 +72,8 @@ public class BagSpectrogram<X> extends Bordering implements BitmapMatrixView.Vie
     }
 
     @Override
-    public int update(int x, int y) {
-        if (x == 0 && y < s) {
-            return color(items.get(y));
-        }
-        return 0;
+    public final int update(int x, int y) {
+        return (x == 0 && y < s) ? color(items.get(y)) : 0;
     }
 
     /** return RGB integer */
@@ -92,7 +82,7 @@ public class BagSpectrogram<X> extends Bordering implements BitmapMatrixView.Vie
             (X x) -> Draw.colorHSB( Math.abs(x.hashCode() % 1000) / 1000.0f, 0.5f, 0.5f);
 
     /** return RGB integer */
-    public BagSpectrogram<X> color(ToIntFunction<X> colorFn) {
+    public final BagSpectrogram<X> color(ToIntFunction<X> colorFn) {
         this.colorFn = colorFn;
         return this;
     }

@@ -173,30 +173,32 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
 
     @Override
-    public boolean contains(final HyperRegion r) {
+    public final boolean contains(final HyperRegion r) {
         if (this == r) return true;
-        final RectFloat r2 = (RectFloat) r;
-
-        return x <= r2.x &&
-                x + w >= r2.x + r2.w &&
-                y <= r2.y &&
-                y + h >= r2.y + r2.h;
+        final RectFloat R = (RectFloat) r;
+        return contains(R.x, R.y, R.w, R.h);
+    }
+    @Override
+    public final boolean intersects(final HyperRegion r) {
+        if (this == r) return true;
+        final RectFloat R = (RectFloat) r;
+        return intersects(R.x, R.y, R.w, R.h);
     }
 
-    @Override
-    public boolean intersects(final HyperRegion r) {
-        if (this == r) return true;
-        final RectFloat r2 = (RectFloat) r;
-
-        return !((x > r2.x + r2.w) || (r2.x > x + w) ||
-                (y > r2.y + r2.h) || (r2.y > y + h));
+    public final boolean contains(float rx, float ry, float rw, float rh) {
+        return (x <= rx) && (x + w >= rx + rw) && (y <= ry) && (y + h >= (ry + rh));
+    }
+    public final boolean intersects(float rx, float ry, float rw, float rh) {
+        return (Math.max(rx, x) <= Math.min(rx+rw, x+w)) && (Math.max(ry, y) <= Math.min(ry+rh, y+h));
+    }
+    public final boolean intersectsX1Y1X2Y2(float x1, float y1, float x2, float y2) {
+        //Longerval.intersects() = return max(x1, x2) <= min(y1, y2);
+        return (Math.max(x1, x) <= Math.min(x2, x+w)) && (Math.max(y1, y) <= Math.min(y2, y+h));
     }
 
     @Override
     public double cost() {
-        final float dx = w;
-        final float dy = h;
-        return Math.abs(dx * dy);
+        return Math.abs(w * h);
     }
 
 

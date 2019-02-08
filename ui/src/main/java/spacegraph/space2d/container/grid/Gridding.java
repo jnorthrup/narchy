@@ -261,4 +261,8 @@ public class Gridding extends MutableListContainer {
         aspect(PHI);
     }
 
+    public Gridding margin(int i) {
+        this.margin = i;
+        return this;
+    }
 }

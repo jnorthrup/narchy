@@ -38,6 +38,7 @@ public class BitmapMatrixView extends Surface {
     protected final Point2i touchPixel = new Point2i();
     private BufferedImage buf;
     private int[] pix;
+    private boolean cellTouch = true;
 
     /** the implementation must implement BitmapPainter */
     protected BitmapMatrixView(int w, int h) {
@@ -146,7 +147,7 @@ public class BitmapMatrixView extends Surface {
 
     @Override
     public Surface finger(Finger finger) {
-        if (updateTouch(finger))
+        if (cellTouch && updateTouch(finger))
             return this;
         return null;
     }
@@ -181,7 +182,7 @@ public class BitmapMatrixView extends Surface {
         bmp.paint(gl, bounds);
 
         /* paint cursor hilited cell */
-        if (touchPixel != null) {
+        if (cellTouch) {
             float w = w() / this.w, h = h() / this.h;
             float x = x(), y = y();
             gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
@@ -215,6 +216,10 @@ public class BitmapMatrixView extends Surface {
      * must call this to re-generate texture so it will display
      */
     public final boolean update() {
+
+        if (!showing())
+            return false;
+
         if (buf == null) {
             if (w == 0 || h == 0) return false;
 
@@ -222,8 +227,6 @@ public class BitmapMatrixView extends Surface {
             this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
         }
 
-        if (!showing())
-            return false;
 
         view.update(buf, pix);
 
@@ -277,4 +280,8 @@ public class BitmapMatrixView extends Surface {
         }
     }
 
+    public BitmapMatrixView cellTouch(boolean cellTouch) {
+        this.cellTouch = cellTouch;
+        return this;
+    }
 }

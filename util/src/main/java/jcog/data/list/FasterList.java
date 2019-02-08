@@ -456,13 +456,13 @@ public class FasterList<X> extends FastList<X> {
     @Override
     public boolean add(X newItem) {
         ensureCapacityForAdditional(1);
-        addWithoutResizeCheck(newItem);
+        addWithoutResizeTest(newItem);
         return true;
     }
 
     public int addAndGetSize(X newItem) {
         ensureCapacityForAdditional(1);
-        addWithoutResizeCheck(newItem);
+        addWithoutResizeTest(newItem);
         return size;
     }
 
@@ -598,7 +598,7 @@ public class FasterList<X> extends FastList<X> {
     /**
      * dangerous unless you know the array has enough capacity
      */
-    public void addWithoutResizeCheck(X x) {
+    public final void addWithoutResizeTest(X x) {
         this.items[this.size++] = x;
     }
 

@@ -96,7 +96,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
 
     public <S extends Surface> S pos(RectFloat next) {
-        BOUNDS.set(this, next);
+        BOUNDS.lazySet(this, next);
 //        if (bounds.area() < ScalarValue.EPSILON)
 //            throw new WTF();
         return (S) this;
@@ -218,7 +218,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
 
 
     /** prepares the rendering procedures in the rendering context */
-    public final void recompile(SurfaceRender r) {
+    public void recompile(SurfaceRender r) {
         if (showing = (visible() && (!clipBounds || r.visible(bounds)))) {
             compile(r);
         }
@@ -229,13 +229,9 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
     @Deprecated public final void render(GL2 gl, SurfaceRender r) {
-
         if (showing = (visible() && (!clipBounds || r.visible(bounds)))) {
             paint(gl, r);
-            //render = (g)->
         }
-        //else System.out.println(this + " invisible because: visible=" + visible() + (clipBounds ? " clip=" + clipBounds : ""));
-
     }
 
 

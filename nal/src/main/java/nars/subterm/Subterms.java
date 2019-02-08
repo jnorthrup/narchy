@@ -1191,7 +1191,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 }
 
                 if (y != null)
-                    y.addWithoutResizeCheck(yi);
+                    y.addWithoutResizeTest(yi);
 
             }
         }
@@ -1220,7 +1220,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 else
                     return null;
             } else {
-                out.addWithoutResizeCheck(k);
+                out.addWithoutResizeTest(k);
             }
         }
         return out;

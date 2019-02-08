@@ -2,6 +2,7 @@ package nars.derive.premise;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoizers;
 import jcog.tree.perfect.TrieNode;
 import nars.Op;
@@ -30,16 +31,14 @@ import java.util.function.Function;
 public enum PremiseDeriverCompiler {
     ;
 
-    private static final IntToFloatFunction throttleFlat =
-            (int choice) -> 1f;
-
-
 
     public static DeriverRules the(Set<PremiseRuleProto> r) {
         return the.apply(r);
     }
 
-    private static final Function<Set<PremiseRuleProto>, DeriverRules> the = Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
+    private static final Function<Set<PremiseRuleProto>, DeriverRules> the =
+            //Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
+            CaffeineMemoize.build(PremiseDeriverCompiler::_the, 64, false);
 
     private static DeriverRules _the(Set<PremiseRuleProto> r) {
         assert (!r.isEmpty());

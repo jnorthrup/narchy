@@ -11,8 +11,6 @@ import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
 import jcog.util.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import spacegraph.UI;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.font.HersheyFont;
@@ -36,7 +34,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
     final Topic<JoglWindow> onUpdate = new ListTopic<>();
-    private static final Logger logger = LoggerFactory.getLogger(JoglWindow.class);
+//    private static final Logger logger = LoggerFactory.getLogger(JoglWindow.class);
 
 
     //    /**
@@ -521,6 +519,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                             onUpdate.emit(JoglWindow.this);
 
+
+                            JoglWindow.this.update((int) Math.round(cycleTimeNS/1_000_000.0));
+
                             Threading.invokeOnOpenGLThread(false, this::render);
                         } else {
                             stop();
@@ -584,6 +585,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             return !loop.isRunning();
         }
 
+
+    }
+
+    protected void update(int dtMS) {
 
     }
 

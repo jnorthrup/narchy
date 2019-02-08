@@ -300,17 +300,22 @@ abstract public class NAgentX extends NAgent {
 
         window(new BagSpectrogram<>(((AbstractConceptIndex)n.concepts).active, 128, n)
                 .color(x -> {
-                    float h;
-                    switch (x.puncMax()) {
-                        case BELIEF: h = 0; break;
-                        case QUESTION: h = 0.25f; break;
-                        case GOAL: h = 0.5f; break;
-                        case QUEST: h = 0.75f; break;
-                        default:
-                            return Draw.rgbInt(0.5f, 0.5f, 0.5f);
-                    }
+                    float r = x.punc(BELIEF);
+                    float g = x.punc(GOAL);
+                    float b = (x.punc(QUESTION) + x.punc(QUEST))/2;
+                    return Draw.rgbInt(r, g, b);
 
-                    return Draw.colorHSB(h, 0.75f, 0.25f + 0.75f * x.priElseZero());
+//                    float h;
+//                    switch (x.puncMax()) {
+//                        case BELIEF: h = 0; break;
+//                        case QUESTION: h = 0.25f; break;
+//                        case GOAL: h = 0.5f; break;
+//                        case QUEST: h = 0.75f; break;
+//                        default:
+//                            return Draw.rgbInt(0.5f, 0.5f, 0.5f);
+//                    }
+//
+//                    return Draw.colorHSB(h, 0.75f, 0.25f + 0.75f * x.priElseZero());
 
                 }), 500, 500);
 

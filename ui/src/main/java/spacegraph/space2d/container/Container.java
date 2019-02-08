@@ -91,27 +91,17 @@ abstract public class Container extends Surface {
             doLayout(r.dtMS);
         }
 
-        r.on(this::doPaint);
+        r.on(this::paintIt); //TODO if transparent this doesnt need rendered
 
         forEach(c -> c.recompile(r));
+
+        r.on(this::paintAbove); //TODO if transparent this doesnt need rendered
     }
 
     @Override
-    protected final void paint(GL2 gl, SurfaceRender r) {
-
-        doPaint(gl, r);
+    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
     }
-
-
-    private void doPaint(GL2 gl, SurfaceRender r) {
-
-        paintIt(gl, r);
-
-        paintAbove(gl, r);
-
-    }
-
 
     protected boolean prePaint(SurfaceRender r) {
         return true;

@@ -128,12 +128,11 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
         float s = zoom * Math.max(w(), h());
 
-        render.render(cam, scale.set(s, s), surface);
+        render.compile(cam, scale.set(s, s), surface);
     }
 
     @Override
-    protected void paintIt(GL2 gl, SurfaceRender r) {
-
+    public void paint(GL2 gl, SurfaceRender r) {
         //gl.glLoadIdentity();
 
         gl.glPushMatrix();
