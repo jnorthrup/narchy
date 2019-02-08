@@ -18,7 +18,6 @@ import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -39,7 +38,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private static final Split SPLIT = AxialSplitLeaf.the;
 
 
-    private static final int RejectInput = 0, EvictWeakest = 1, MergeInputClosest = 2, MergeLeaf = 3;
+    private static final int RejectInput = 0, EvictWeakest = 1, MergeLeaf = 2/*, MergeInputClosest = 3*/;
 
     protected int capacity;
 
@@ -53,7 +52,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing
      * an encountered deleted task.
      */
-    private static boolean findEvictable(Space<TaskRegion> tree, Node<TaskRegion> next, @Nullable Top<TaskRegion> closest, Top<Task> weakest, Consumer<Leaf<TaskRegion>> mergeableLeaf) {
+    private static boolean findEvictable(Space<TaskRegion> tree, Node<TaskRegion> next, /*@Nullable Top<TaskRegion> closest, */Top<Task> weakest, Consumer<Leaf<TaskRegion>> mergeableLeaf) {
         if (next instanceof Leaf) {
 
             Leaf l = (Leaf) next;
@@ -70,8 +69,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
                 weakest.accept(x);
 
-                if (closest != null)
-                    closest.accept(x);
+//                if (closest != null)
+//                    closest.accept(x);
             }
 
             if (l.size >= 2)
@@ -83,7 +82,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             Node[] bd = b.data;
             for (int i = 0, dataLength = b.size; i < dataLength; i++) {
                 Node bb = bd[i];
-                if (!findEvictable(tree, bb, closest, weakest, mergeableLeaf))
+                if (!findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf))
                     return false;
             }
         }
@@ -352,24 +351,24 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         Top<Task> weakest = new Top<>(weakestTask);
 
-        Top<TaskRegion> closest = input != null ? new Top<>(Answer.mergeability(input)) : null;
+//        Top<TaskRegion> closest = input != null ? new Top<>(Answer.mergeability(input)) : null;
 
 
-        if (!findEvictable(tree, tree.root(), closest, weakest, mergeableLeaf))
+        if (!findEvictable(tree, tree.root(), /*closest, */weakest, mergeableLeaf))
             return true;
 
 
         //assert (tree.size() >= cap);
 
 
-        return mergeOrDelete(tree, input, closest, weakest, mergeableLeaf, taskStrength, remember, nar);
+        return mergeOrDelete(tree, input, /*closest, */weakest, mergeableLeaf, taskStrength, remember, nar);
 
 
     }
 
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
                                          @Nullable Task I /* input */,
-                                         @Nullable Top<TaskRegion> closest,
+//                                         @Nullable Top<TaskRegion> closest,
                                          Top<Task> weakest,
                                          Top<Leaf<TaskRegion>> mergeableLeaf,
                                          FloatRank<Task> taskStrength,
@@ -377,18 +376,18 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                                          NAR nar) {
 
 
-        Task A, B, W, AB, IC, C;
+        Task A, B, W, AB/*, C, IC*/;
 
-        if (I != null && closest != null && closest.the != null) {
-            C = (Task) closest.the;
-            assert (!C.equals(I));
-            IC = revise(I, C, nar);
-            if (IC != null && (IC.equals(I) || IC.equals(C)))
-                IC = null;
-        } else {
-            IC = null;
-            C = null;
-        }
+//        if (I != null && closest != null && closest.the != null) {
+//            C = (Task) closest.the;
+//            assert (!C.equals(I));
+//            IC = revise(I, C, nar);
+//            if (IC != null && (IC.equals(I) || IC.equals(C)))
+//                IC = null;
+//        } else {
+//            IC = null;
+//            C = null;
+//        }
 
 
         if (!mergeableLeaf.isEmpty()) {
@@ -432,12 +431,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         float inputStrength = I != null ? taskStrength.floatValueOf(I) : 0;
         value[EvictWeakest] =
                 inputStrength - taskStrength.floatValueOf(W);
-        value[MergeInputClosest] =
-                IC != null ? (
-                        +taskStrength.floatValueOf(IC)
-                                - taskStrength.floatValueOf(C)
-                )
-                        : Float.NEGATIVE_INFINITY;
+//        value[MergeInputClosest] =
+//                IC != null ? (
+//                        +taskStrength.floatValueOf(IC)
+//                                - taskStrength.floatValueOf(C)
+//                )
+//                        : Float.NEGATIVE_INFINITY;
 
         if (B == null) {
             AB = null;
@@ -481,16 +480,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             break;
 
 
-            case MergeInputClosest: {
-                if (treeRW.remove(I) && treeRW.remove(C)) {
-                    if (treeRW.add(IC)) {
-                        TemporalBeliefTable.fundMerge(IC, r, I, C);
-                    } //else: possibly already contained the merger
-
-                    return true;
-                }
-            }
-            break;
+//            case MergeInputClosest: {
+//                if (treeRW.remove(I) && treeRW.remove(C)) {
+//                    if (treeRW.add(IC)) {
+//                        TemporalBeliefTable.fundMerge(IC, r, I, C);
+//                    } //else: possibly already contained the merger
+//
+//                    return true;
+//                }
+//            }
+//            break;
 
             case MergeLeaf: {
                 if (treeRW.remove(A) && treeRW.remove(B)) {
