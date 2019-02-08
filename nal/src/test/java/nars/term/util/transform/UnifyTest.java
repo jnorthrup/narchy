@@ -813,15 +813,22 @@ public class UnifyTest {
     }
     @Test void testConjInConjConstantFail() {
         test(Op.VAR_PATTERN,
-            "((_1&|_2) &&+5 ((--,_1)&|(--,_2)))",
-            "(_1 &&+5 ((--,_1)&|_2))",
-            false);
-
-        assertFalse(
-            $$("((_1 &&+5 ((--,_1)&|_2)) &&+5 (((--,_2)&|_3) &&+5 (--,_3)))")
-                .unify($$("(_1 &&+5 ((--,_1)&|_2))"), new UnifyAny())
-        );
+                "((_1&|_2) &&+5 ((--,_1)&|(--,_2)))",
+                "(_1 &&+5 ((--,_1)&|_2))",
+                false);
     }
+    @Test void testConjInConjConstantFail2() {
+        for (int a : new int[] { 5 }) {
+            for (int b : new int[]{0, 5}) {
+                Term x = $$("((_1 &&+5 ((--,_1)&|_2)) &&+5 (((--,_2)&|_3) &&+" + a + " (--,_3)))");
+                Term y = $$("(_1 &&+" + b + " ((--,_1)&|_2))");
+                UnifyAny u = new UnifyAny();
+                boolean r = x.unify(y, u);
+                assertFalse(r, ()->x + " " + y);
+            }
+        }
+    }
+
     @Test
     void testConjInConj() {
         test(Op.VAR_PATTERN,

@@ -8,6 +8,7 @@ import nars.term.util.Image;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INH;
+import static nars.time.Tense.XTERNAL;
 
 /** procedure for Compound target Normalization */
 public final class CompoundNormalization extends VariableNormalization {
@@ -38,8 +39,8 @@ public final class CompoundNormalization extends VariableNormalization {
         if (hasImg && x!=root && x.op()==INH) {
             Term y = Image.normalize(x);
             if (x!=y) {
-                if (!(y instanceof Compound))
-                    return y;
+//                if (!(y instanceof Compound))
+//                    return Null; //wtf
                 x = (Compound) y;
                 hasImg = x.hasAll(Image.ImageBits); //check if image bits remain
             }
@@ -50,7 +51,7 @@ public final class CompoundNormalization extends VariableNormalization {
 
 //                }
         }
-        return hasImg || x.hasVars() ? x.transform(this) : x;
+        return hasImg || x.hasVars() ? super.transformCompound(x, null, XTERNAL) : x;
     }
 
 

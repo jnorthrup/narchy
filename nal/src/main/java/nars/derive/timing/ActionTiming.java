@@ -5,8 +5,8 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.term.Term;
-import nars.time.Tense;
 
+import java.util.Random;
 import java.util.function.BiFunction;
 
 public class ActionTiming implements BiFunction<Task, Term, long[]> {
@@ -22,22 +22,19 @@ public class ActionTiming implements BiFunction<Task, Term, long[]> {
     @Override
     public long[] apply(Task task, Term term) {
 
-
-        long start, end;
         long now = nar.time();
         int dur = nar.dur();
-        long then = now + Math.round(((nar.random().nextFloat()-0.5f)*2f * horizonDurs.floatValue()) * dur);
-//        if (task.endsBefore(now)) {
-//        if (!task.isEternal()) {
-        start = Tense.dither(then - dur, nar); // + Math.round( ( nar.random().nextDouble() * horizonDurs.floatValue() ) * nar.dur() );
+        Random rng = nar.random();
 
-        end = Tense.dither(then + dur, nar);
-                    //Math.round(widthDurs.doubleValue()*nar.dur());
+        long then = Math.round(now + rng.nextGaussian() * horizonDurs.floatValue() * dur);
+        //long then = now + Math.round(((rng.nextFloat()-0.5f)*2f * horizonDurs.floatValue()) * dur);
 
-//        } else {
-//            start = task.start();
-//            end = task.end();
-//        }
+        long start, end;
+        start = (then - dur);
+        //start = Tense.dither(start, nar);
+        end = (then + dur);
+        //end = Tense.dither(end, nar);
+
         return new long[] { start, end };
     }
 }

@@ -259,10 +259,9 @@ public interface Compound extends Term, IPair, Subterms {
 
         Subterms xx = subterms(), yy = y.subterms();
 
-
-        int xs;
-        if ((xs = xx.subs()) != yy.subs())
-            return false;
+        int xs = xx.subs();
+        if (xs == 1)
+            return xx.sub(0).unify(yy.sub(0), u);
 
         Op o = op();
 
@@ -275,31 +274,34 @@ public interface Compound extends Term, IPair, Subterms {
                 if (unifyXternal(x, y, xx, yy))
                     return true;
             }
+//            if (xdt!=XTERNAL && ydt!=XTERNAL && xs!=yy.subs() && !x.hasXternal() && !y.hasXternal())
+//                return false; //arity mismatch
+        } else {
+//            if (xs != yy.subs())
+//                return false;
         }
 
+        if (xs != yy.subs())
+            return false;
 
         if (!Subterms.possiblyUnifiable(xx, yy, u))
             return false;
 
-
-        if (xs == 1)
-            return xx.sub(0).unify(yy.sub(0), u);
-
         if (o.temporal) {
             int xdt = x.dt(), ydt = y.dt();
-            if (xdt != ydt) {
-                boolean xSpecific = (xdt != XTERNAL && xdt != DTERNAL);
-                if (xSpecific) {
-                    boolean ySpecific = (ydt != XTERNAL && ydt != DTERNAL);
-                    if (ySpecific) {
-                        if (!u.unifyDT(xdt, ydt))
-                            return false;
-                    }
-                }
-            }
+            boolean xSpecific = (xdt != XTERNAL && xdt != DTERNAL);
+            boolean ySpecific = (ydt != XTERNAL && ydt != DTERNAL);
+
+            if (xdt != ydt && xSpecific && ySpecific && !u.unifyDT(xdt, ydt))
+                return false;
+
+            if (o == CONJ && xSpecific && ySpecific)
+                return (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
+
+
 
             //compound equality would have been true if non-temporal
-            if (xx.equals(yy))
+            if (xdt!=ydt && xx.equals(yy))
                 return true;
 
             if (!u.var(xx) && !u.var(yy)) {
@@ -309,20 +311,12 @@ public interface Compound extends Term, IPair, Subterms {
             }
         }
 
-
-        boolean result;
         if (o.commutative /* subs>1 */) {
-//            if (o == CONJ && !dtSpecial(xdt)) {
-//                //assert(xs==2);
-//                result = (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
-//            } else {
-                result = xx.unifyCommute(yy, u);
-//            }
+            return xx.unifyCommute(yy, u);
         } else { //TODO if temporal, compare in the correct order
-            result = xx.unifyLinear(yy, u);
+            return xx.unifyLinear(yy, u);
         }
 
-        return result;
 //            if (result) {
 //                if (xSpecific^ySpecific && u instanceof Derivation) {
 //                    //one is not specified.  specify via substitution
@@ -759,55 +753,9 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     default Term transform(TermTransform f) {
-        return transform(f, null, XTERNAL);
+        return f.transformCompound(this);
     }
 
-    default Term transform(TermTransform f, Op newOp, int newDT) {
-        boolean sameOpAndDT = newOp == null;
-        Op xop = this.op();
-
-
-        Op targetOp = sameOpAndDT ? xop : newOp;
-        Subterms xx = this.subterms(), yy;
-
-        //try {
-        yy = xx.transformSubs(f, targetOp);
-
-//        } catch (StackOverflowError e) {
-//            System.err.println("TermTransform stack overflow: " + this + " " + xx + " " + targetOp);
-//        }
-
-        if (yy == null)
-            return Bool.Null;
-
-        int thisDT = this.dt();
-        if (yy == xx && (sameOpAndDT || (xop == targetOp && thisDT == newDT)))
-            return this; //no change
-
-        if (targetOp == CONJ) {
-            if (yy == Op.FalseSubterm)
-                return Bool.False;
-            if (yy.subs() == 0)
-                return Bool.True;
-        }
-
-        if (sameOpAndDT) {
-            newDT = thisDT;
-
-            //apply any shifts caused by range changes
-            if (yy!=xx && targetOp.temporal && newDT!=DTERNAL && newDT!=XTERNAL && xx.subs()==2 && yy.subs() == 2) {
-
-                int subjRangeBefore = xx.subEventRange(0);
-                int predRangeBefore = xx.subEventRange(1);
-                int subjRangeAfter = yy.subEventRange(0);
-                int predRangeAfter = yy.subEventRange(1);
-                newDT += (subjRangeBefore - subjRangeAfter) + (predRangeBefore - predRangeAfter);
-
-            }
-        }
-
-        return f.transformedCompound(this, targetOp, newDT, xx, yy);
-    }
 
     default Term eventFirst() {
         if (Conj.isSeq(this)) {

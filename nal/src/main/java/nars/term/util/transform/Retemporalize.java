@@ -38,7 +38,7 @@ public abstract class Retemporalize extends TermTransform.NegObliviousTermTransf
             if (n == xdt)
                 return super.transformNonNegCompound(x); //fast fail if dt doesnt change
             else {
-                return x.transform(this, xo, n);
+                return transformCompound(x, xo, n);
             }
         }
     }

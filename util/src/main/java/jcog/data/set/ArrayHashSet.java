@@ -184,8 +184,12 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     }
 
     private Set<X> newSet(int cap) {
-        return new UnifiedSet<>(3,0.99f);
+        return new UnifiedSet<>(cap,0.99f);
         //return new HashSet(cap, 0.99f);
+    }
+    private void clearSet() {
+        set.clear();
+        //set = emptySet();
     }
 
     @Override
@@ -223,11 +227,11 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
             s--;
             list.remove(o);
 
-            switch (s) {
-                case 0:
-                    set = emptySet();
-                    break;
-            }
+//            switch (s) {
+//                case 0:
+//                    set = emptySet();
+//                    break;
+//            }
         }
 
         return removed;
@@ -237,11 +241,8 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     @Override
     public void clear() {
 
-//        if (!list.isEmpty()) {
-        list.clear();
-        set = emptySet();
-        //setAt.clear();
-//        }
+        if (list.clearIfChanged())
+            clearSet();
 
     }
 
@@ -334,9 +335,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
         @Override
         public void set(X element) {
-            if (element.equals(lastElementProvided)) {
-
-            } else {
+            if (!element.equals(lastElementProvided)) {
                 if (set.contains(element)) {
 
                     throw new IllegalArgumentException("Cannot setAt already-present element in a different position in ArrayHashSet.");

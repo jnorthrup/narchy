@@ -129,7 +129,7 @@ public class PatternIndex extends MapConceptIndex {
         protected Term transformNonNegCompound(Compound x) {
             /** process completely to resolve built-in functors,
              * to override VariableNormalization's override */
-            return x.transform(this, x.op(), x.dt());
+            return transformCompound(x, x.op(), x.dt());
         }
 
 

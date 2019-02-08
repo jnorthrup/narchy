@@ -131,7 +131,7 @@ class ImageTest {
     }
     @Test void testRecursiveUnwrapping() {
         //assertEquals(
-                //"reaction(acid,base)",
+        //"reaction(acid,base)",
         Term a1 = $$("(((chemical,reaction),base)-->acid)");
 
         Term a2Bad = Image.imageExt(a1, $$("reaction"));
@@ -142,7 +142,7 @@ class ImageTest {
 
         Term a3Bad = Image.imageInt(a2, $$("reaction"));
         assertEquals(Null, a3Bad);
-//
+
         Term a3 = Image.imageExt(a2, $$("reaction"));
         assertEquals("(reaction-->((acid,/,base),chemical,/))", a3.toString());
 

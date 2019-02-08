@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
@@ -718,6 +719,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
     private static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
 
         int n = xx.size();
+        if (yy.size()!=n) {
+            throw new WTF();
+        }
 
         for (int i = 0; i < n; ) {
             Term xi = xx.get(i);
@@ -729,12 +733,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
             }
         }
 
-        int xxs = xx.size(); assert (xxs == yy.size());
+        int xxs = xx.size();
         if (xxs == 0)
             return +1; //all eliminated
 
 
-        if (possiblyUnifiable(xx, yy, u.varBits)) {
+        if (xxs == n || possiblyUnifiable(xx, yy, u.varBits)) {
 //            if (xxs == 1)
 //                return 0; //one subterm remaining, direct match will be tested by callee
 //            Set<Term> xConst = null;
@@ -790,12 +794,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //                    int xs = xx.structure();
 //                    if (!u.constant(xs) || !u.constant(yy)) {
 //                        if (Terms.commonStructureTest(xs, yy, u)) {
-                    if (xx==this || xx.subs()==subs()) {
-                        //no change
-                        u.termutes.add(new CommutivePermutations(this, y)); //use the original subs
-                    } else {
+//                    if (xx==this || xx.subs()==subs()) {
+//                        //no change
+//                        u.termutes.add(new CommutivePermutations(this, y)); //use the original subs
+//                    } else {
                         u.termutes.add(new CommutivePermutations(xx, yy));
-                    }
+//                    }
                     return true;
                 }
             }
@@ -831,10 +835,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //                    (((YS & CONJ.bit) == 0) || !yy.hasXternal())
 //            )
 //                return false;
-
-
-
-            return true; //done
         }
 
         return true;
@@ -845,6 +845,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        int ys = yy.structureConstant(varBits);
 //        return (xs & ys) != 0; //any constant subterm commonality
     }
+
 
     static boolean possiblyUnifiable(Subterms xx, Subterms yy, Unify u) {
         return possiblyUnifiable(xx, yy, u.varBits);

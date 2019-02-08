@@ -44,7 +44,10 @@ public class PoleCart extends NAgentX {
         //int instances = 2; int threadsEach = 1;
         int instances = 1; int threadsEach = 4;
         for (int i = 0; i < instances; i++)
-            runRTNet((n)->new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n),
+            runRTNet((n)->new PoleCart(
+                    instances > 1 ?
+                            $.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
+                            $.the(PoleCart.class.getSimpleName()), n),
                     threadsEach, fps, fps, 8);
     }
 

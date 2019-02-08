@@ -14,6 +14,8 @@ import nars.term.var.UnnormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * I = input target type, T = transformable subterm type
@@ -50,7 +52,54 @@ public interface TermTransform {
      * transform pathway for compounds
      */
     default Term transformCompound(Compound x) {
-        return x.transform(this);
+        return transformCompound(x, null, XTERNAL);
+    }
+    default Term transformCompound(Compound x, Op newOp, int newDT) {
+
+        boolean sameOpAndDT = newOp == null;
+        Op xop = x.op();
+
+
+        Op targetOp = sameOpAndDT ? xop : newOp;
+        Subterms xx = x.subterms(), yy;
+
+        //try {
+        yy = xx.transformSubs(this, targetOp);
+
+//        } catch (StackOverflowError e) {
+//            System.err.println("TermTransform stack overflow: " + this + " " + xx + " " + targetOp);
+//        }
+
+        if (yy == null)
+            return Bool.Null;
+
+        int thisDT = x.dt();
+        if (yy == xx && (sameOpAndDT || (xop == targetOp && thisDT == newDT)))
+            return x; //no change
+
+        if (targetOp == CONJ) {
+            if (yy == Op.FalseSubterm)
+                return Bool.False;
+            if (yy.subs() == 0)
+                return Bool.True;
+        }
+
+        if (sameOpAndDT) {
+            newDT = thisDT;
+
+            //apply any shifts caused by range changes
+            if (yy!=xx && targetOp.temporal && newDT!=DTERNAL && newDT!=XTERNAL && xx.subs()==2 && yy.subs() == 2) {
+
+                int subjRangeBefore = xx.subEventRange(0);
+                int predRangeBefore = xx.subEventRange(1);
+                int subjRangeAfter = yy.subEventRange(0);
+                int predRangeAfter = yy.subEventRange(1);
+                newDT += (subjRangeBefore - subjRangeAfter) + (predRangeBefore - predRangeAfter);
+
+            }
+        }
+
+        return transformedCompound(x, targetOp, newDT, xx, yy);
     }
 
 

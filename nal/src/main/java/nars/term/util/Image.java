@@ -82,25 +82,21 @@ public enum Image {;
 
     public static Term imageNormalize(Term x) {
 
-        if (!(x instanceof Compound) || !x.hasAll(ImageBits))
-            return x;
-
-        Op xo = x.op();
-        if (xo ==NEG) {
-            Term u = x.unneg();
-            Term y = imageNormalize(u);
-            if (y==u)
-                return x; //unchanged
-            else
-                return y.neg();
+        if (x instanceof Compound && x.hasAll(ImageBits)) {
+            Op xo = x.op();
+            if (xo == NEG) {
+                Term u = x.unneg();
+                if (u instanceof Compound && u.op() == INH) {
+                    Term y = normalize((Compound)u);
+                    if (!y.equals(u))
+                        return y.neg();
+                }
+            } else if (xo == INH) {
+                return normalize((Compound) x);
+            }
         }
 
-        if (xo !=INH)
-            return x;
-
-        Term y = normalize((Compound) x);
-
-        return y;
+        return x;
     }
 
 
@@ -159,22 +155,20 @@ public enum Image {;
         if (normalizable) {
 
 
-            Term u;
+            Term subj, pred;
             if (isInt) {
 
-                u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p)));
+                subj = ss.sub(0);
+                pred = PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p));
 
             } else {
 
-                u = INH.the(PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
+                subj = PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s));
+                pred = pp.sub(0);
 
             }
 
-            if (u instanceof Bool)
-                return u; //WTF
-
-
-            return Image.imageNormalize(u);//.negIf(negated);
+            return imageNormalize(INH.the(subj, pred));
         }
 
         return x;
