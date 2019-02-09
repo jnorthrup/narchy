@@ -21,8 +21,6 @@ import java.lang.ref.SoftReference;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static nars.time.Tense.ETERNAL;
-
 public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLink> {
 
     private final FloatSupplier forgetRate;
@@ -59,23 +57,40 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
     }
 
 
+
+
+    /**
+     * acts as a virtual tasklink bag associated with an atom concept allowing it to otherwise act as a junction between tasklinking compounds which share it
+     */
+    @Nullable
+    public Term atomTangent(NodeConcept src, TaskLink except, long now, int minUpdateCycles, Random rng) {
+        Reference<TangentConcepts> matchRef = src.meta(id);
+        TangentConcepts match = matchRef != null ? matchRef.get() : null;
+        if (match == null) {
+            match = new TangentConcepts(now, minUpdateCycles);
+            src.meta(id, new SoftReference<>(match));
+        }
+
+        return match.sample((Atomic) src.term, this, except, now, minUpdateCycles, rng);
+    }
+
+
+
     private static final AtomicInteger ids = new AtomicInteger(0);
 
-    public final String id = /*TaskLinkBag.class.getSimpleName() */ "T" + ids.incrementAndGet();
+    /** each tasklink will have a unique id, allowing Atom concepts to store TangentConcepts instances from multiple TaskLink bags, either from the same or different NAR */
+    private final String id = /*TaskLinkBag.class.getSimpleName() */ "T" + ids.incrementAndGet();
 
+    private static final class TangentConcepts {
 
-    private static class TangentConcepts {
-
-        final static int minUpdateCycles = 1;
-
-        private /*volatile*/ long updated = ETERNAL;
+        private volatile long updated;
         @Nullable private volatile TaskLink[] links;
 
-        public TangentConcepts(long now) {
+        public TangentConcepts(long now, int minUpdateCycles) {
             this.updated = now - minUpdateCycles;
         }
 
-        public boolean refresh(Atomic x, TaskLinkBag bag, long now) {
+        public boolean refresh(Atomic x, TaskLinkBag bag, long now, int minUpdateCycles) {
             if (now - updated >= minUpdateCycles) {
 
                 TopN<TaskLink> match = null;
@@ -88,7 +103,7 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
                         if (y != null) {
                             if (match == null) {
                                 //TODO pool
-                                int cap = Math.max(2, (int) Math.ceil(Math.sqrt(bag.size()))); //heuristic
+                                int cap = Math.max(3, (int) Math.ceil(Math.sqrt(bag.size()))); //heuristic
                                 match = new TopN<>(new TaskLink[cap], TaskLink::priElseZero);
                             }
                             match.add(t);
@@ -104,7 +119,7 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
             return links != null;
         }
 
-        public Term sample(Atomic srcTerm, TaskLink except, Random rng) {
+        public Term sample(TaskLink except, Random rng) {
             TaskLink l;
             TaskLink[] ll = links;
             if (ll == null)
@@ -112,15 +127,16 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
             else {
                 switch (ll.length) {
                     case 0:
-                        l = except;
+                        l = except; //only option (rare)
                         break;
                     case 1:
-                        l = ll[0];
+                        l = ll[0]; //only option
                         break;
                     case 2:
                         TaskLink a = ll[0], b = ll[1];
-                        l = a.equals(except) ? b : a;
+                        l = a.equals(except) ? b : a; //choose the one which is not 'except'
                         break;
+                    //TODO optimized case 3
                     default:
                         l = ll[Roulette.selectRouletteCached(ll.length, (int i) -> {
                             TaskLink t = ll[i];
@@ -133,45 +149,27 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
                 }
             }
 
-            return l != null ? l.other(srcTerm) : null;
-
-
+            return l != null ? l.target() : null;
         }
 
-        public Term sample(Atomic srcTerm, TaskLinkBag taskLinks, TaskLink except, long now, Random rng) {
-            return refresh(srcTerm, taskLinks, now) ? sample(srcTerm, except, rng) : null;
-        }
-    }
-
-    /**
-     * acts as a virtual tasklink bag associated with an atom concept allowing it to otherwise act as a junction between tasklinking compounds which share it
-     */
-    @Nullable
-    public Term atomTangent(NodeConcept src, TaskLink except, long now, Random rng) {
-        Reference<TangentConcepts> matchRef = src.meta(id);
-        TangentConcepts match = matchRef != null ? matchRef.get() : null;
-        if (match == null) {
-            match = new TangentConcepts(now);
-            src.meta(id, new SoftReference<>(match));
+        public Term sample(Atomic srcTerm, TaskLinkBag taskLinks, TaskLink except, long now, int minUpdateCycles, Random rng) {
+            return refresh(srcTerm, taskLinks, now, minUpdateCycles) ?
+                    sample(except, rng) : null;
         }
 
-        return match.sample((Atomic) src.term, this, except, now, rng);
-    }
-
-
-    @Nullable
-    static private Term atomOther(Term include, TaskLink t) {
-        Term tSrc = t.source();
-        if (include.equals(tSrc)) {
-            Term y = t.target();
-            return y; //!t.isSelf() ? y : null;
-        }
+        @Nullable
+        static private Term atomOther(Term include, TaskLink t) {
+            Term tSrc = t.source();
+            if (include.equals(tSrc)) {
+                Term y = t.target();
+                return y; //!t.isSelf() ? y : null;
+            }
 //        if (include.equals(t.target())) {
 //            Term y = tSrc;
 //            return y; //!t.isSelf() ? y : null;
 //        }
-        return null;
+            return null;
+        }
     }
-
 
 }
