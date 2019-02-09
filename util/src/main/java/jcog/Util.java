@@ -145,9 +145,6 @@ public enum Util {
         ));
     }
 
-    public static int hash(byte[] bytes) {
-        return hash(bytes, 0, bytes.length);
-    }
 
     public static int hash(long[] longs) {
         return Long.hashCode(_hashFn.hashLongs(longs));
@@ -161,6 +158,13 @@ public enum Util {
         long hash = _hashFn.hashBytes(bytes, from, to - from);
         return Long.hashCode(hash);
     }
+    public static int hash(byte[] bytes) {
+        //return hash(bytes, 0, bytes.length);
+        long hash = _hashFn.hashBytes(bytes);
+        return Long.hashCode(hash);
+
+    }
+
 
 //    /**
 //     * untested custom byte[] hash function
@@ -190,13 +194,13 @@ public enum Util {
     }
 
 
-    public static long hash64(byte[] bytes) {
-        return hash64(bytes, 0, bytes.length);
-    }
-
-    public static long hash64(byte[] bytes, int from, int to) {
-        return Util.hashELF(bytes, 1, from, to);
-    }
+//    public static long hash64(byte[] bytes) {
+//        return hash64(bytes, 0, bytes.length);
+//    }
+//
+//    public static long hash64(byte[] bytes, int from, int to) {
+//        return Util.hashELF(bytes, 1, from, to);
+//    }
 
     public static void assertNotNull(Object test, String varName) {
         if (test == null) {
@@ -482,71 +486,71 @@ public enum Util {
 
     }
 
-    /**
-     * custom designed to preserve some alpha numeric natural ordering
-     */
-    public static int hashByteString(byte[] str) {
-        switch (str.length) {
-            case 0:
-                return 0;
-            case 1:
-                return str[0];
-            case 2:
-                return str[0] << 8 | str[1];
-            case 3:
-                return str[0] << 16 | str[1] << 8 | str[2];
-            case 4:
-                return str[0] << 24 | str[1] << 16 | str[2] << 8 | str[3];
-            default:
-                return Long.hashCode(hashELF(str, 0));
-        }
-
-    }
-
-    public static long hashELF(byte[] str, long seed) {
-
-        long hash = seed;
-
-
-        for (byte aStr : str) {
-            hash = (hash << 4) + aStr;
-
-            long x;
-            if ((x = hash & 0xF0000000L) != 0) {
-                hash ^= (x >> 24);
-            }
-            hash &= ~x;
-        }
-
-        return hash;
-    }
-
-    public static long hashELF(byte[] str, long seed, int start, int end) {
-
-        long hash = seed;
-
-        for (int i = start; i < end; i++) {
-            hash = (hash << 4) + str[i];
-
-            long x;
-            if ((x = hash & 0xF0000000L) != 0) {
-                hash ^= (x >> 24);
-            }
-            hash &= ~x;
-        }
-
-        return hash;
-    }
-
-    /**
-     * http:
-     */
-    public static int hashROT(Object... x) {
-        long h = 2166136261L;
-        for (Object o : x)
-            h = (h << 4) ^ (h >> 28) ^ o.hashCode();
-        return (int) h;
-    }
+//    /**
+//     * custom designed to preserve some alpha numeric natural ordering
+//     */
+//    public static int hashByteString(byte[] str) {
+//        switch (str.length) {
+//            case 0:
+//                return 0;
+//            case 1:
+//                return str[0];
+//            case 2:
+//                return str[0] << 8 | str[1];
+//            case 3:
+//                return str[0] << 16 | str[1] << 8 | str[2];
+//            case 4:
+//                return str[0] << 24 | str[1] << 16 | str[2] << 8 | str[3];
+//            default:
+//                return Long.hashCode(hashELF(str, 0));
+//        }
+//
+//    }
+//
+//    public static long hashELF(byte[] str, long seed) {
+//
+//        long hash = seed;
+//
+//
+//        for (byte aStr : str) {
+//            hash = (hash << 4) + aStr;
+//
+//            long x;
+//            if ((x = hash & 0xF0000000L) != 0) {
+//                hash ^= (x >> 24);
+//            }
+//            hash &= ~x;
+//        }
+//
+//        return hash;
+//    }
+//
+//    public static long hashELF(byte[] str, long seed, int start, int end) {
+//
+//        long hash = seed;
+//
+//        for (int i = start; i < end; i++) {
+//            hash = (hash << 4) + str[i];
+//
+//            long x;
+//            if ((x = hash & 0xF0000000L) != 0) {
+//                hash ^= (x >> 24);
+//            }
+//            hash &= ~x;
+//        }
+//
+//        return hash;
+//    }
+//
+//    /**
+//     * http:
+//     */
+//    public static int hashROT(Object... x) {
+//        long h = 2166136261L;
+//        for (Object o : x)
+//            h = (h << 4) ^ (h >> 28) ^ o.hashCode();
+//        return (int) h;
+//    }
 
     /**
      * returns the next index

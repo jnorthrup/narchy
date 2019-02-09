@@ -19,7 +19,8 @@ public abstract class AbstractAtomic implements Atomic {
 
     protected AbstractAtomic(byte[] raw) {
         this.bytesCached = raw;
-        this.hash = Util.hashByteString(raw);
+        this.hash = //Util.hashByteString(raw);
+                    Util.hash(raw);
     }
 
     AbstractAtomic(Op op, String s) {

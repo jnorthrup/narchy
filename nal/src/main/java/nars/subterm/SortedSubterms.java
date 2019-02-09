@@ -42,10 +42,8 @@ public class SortedSubterms {
         }
 
         Term[] xx = x.clone();
-        boolean hasNeg = false;
         for (int j = 0; j < xx.length; j++) {
             if (xx[j].op()==NEG) {
-                hasNeg = true;
                 xx[j] = xx[j].unneg();
             }
         }

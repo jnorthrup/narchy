@@ -147,6 +147,22 @@ abstract public class MappedSubterms extends ProxySubterms {
         }
     }
 
+    /** @see AnonVector.appendTo */
+    @Override
+    public void appendTo(ByteArrayDataOutput out) {
+
+        int s = subs();
+        out.writeByte(s);
+        for (int i = 0; i < s; i++) {
+            int x = subMap(i);
+            if (x < 0) {
+                out.writeByte(Op.NEG.id);
+                x = (byte) -x;
+            }
+            mapTerm(x).appendTo(out);
+        }
+    }
+
     private static final class ArrayMappedSubterms extends HashCachedMappedSubterms {
         /** TODO even more compact 2-bit, 3-bit etc representations */
         final byte[] map;
@@ -181,14 +197,14 @@ abstract public class MappedSubterms extends ProxySubterms {
         /** @see AnonVector.appendTo */
         @Override
         public void appendTo(ByteArrayDataOutput out) {
-            byte[] ss = map;
-            out.writeByte(ss.length);
-            for (byte s : ss) {
-                if (s < 0) {
+            byte[] xx = map;
+            out.writeByte(xx.length);
+            for (byte x : xx) {
+                if (x < 0) {
                     out.writeByte(Op.NEG.id);
-                    s = (byte) -s;
+                    x = (byte) -x;
                 }
-                ref.sub(s-1).appendTo(out);
+                ref.sub(x-1).appendTo(out);
             }
         }
 
@@ -255,7 +271,7 @@ abstract public class MappedSubterms extends ProxySubterms {
         int xy = subMap(i);
         if (xy < 0)
             return 0;
-        return mapToSub(xy).eventRange();
+        return mapTerm(xy).eventRange();
     }
 
     @Override
@@ -356,10 +372,10 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public Term sub(int i) {
-        return mapToSub(subMap(i));
+        return mapTerm(subMap(i));
     }
 
-    private Term mapToSub(int xy) {
+    private Term mapTerm(int xy) {
         boolean neg = (xy < 0);
         if (neg) xy = -xy;
         Term y  = ref.sub(xy-1);

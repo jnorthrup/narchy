@@ -3,7 +3,6 @@ package nars.term.var;
 import nars.$;
 import nars.IO;
 import nars.Op;
-import nars.The;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.AbstractAtomic;
@@ -11,7 +10,7 @@ import nars.term.atom.AbstractAtomic;
 /**
  * Unnormalized, labeled variable
  */
-public class UnnormalizedVariable extends AbstractAtomic implements Variable, The {
+public class UnnormalizedVariable extends AbstractAtomic implements Variable/*, The*/ {
 
     private final Op type;
 
