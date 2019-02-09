@@ -8,13 +8,10 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.concept.sensor.AbstractSensor;
-import nars.gui.BagSpectrogram;
 import nars.gui.sensor.VectorSensorView;
-import nars.index.concept.AbstractConceptIndex;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
-import spacegraph.video.Draw;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -25,7 +22,6 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
 
 public class Arkancide extends NAgentX {

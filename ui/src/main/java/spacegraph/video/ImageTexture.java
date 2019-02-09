@@ -11,7 +11,6 @@ import jcog.io.tar.TarEntry;
 import jcog.io.tar.TarInputStream;
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
-import jcog.memoize.SoftMemoize;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
@@ -24,8 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static jcog.data.map.CustomConcurrentHashMap.STRONG;
 
 public class ImageTexture extends Tex {
 

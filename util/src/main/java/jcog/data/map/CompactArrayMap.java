@@ -2,6 +2,8 @@ package jcog.data.map;
 
 import jcog.TODO;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Function;
@@ -11,6 +13,8 @@ import java.util.function.Function;
 public class CompactArrayMap<K, V> {
 
     private final static AtomicReferenceFieldUpdater<CompactArrayMap, Object[]> ITEMS = AtomicReferenceFieldUpdater.newUpdater(CompactArrayMap.class, Object[].class, "items");
+    private static final VarHandle AA = MethodHandles.arrayElementVarHandle(Object[].class);
+
     volatile Object[] items = null;
 
     public CompactArrayMap() {
@@ -33,7 +37,7 @@ public class CompactArrayMap<K, V> {
     }
 
     public V get(Object key) {
-        Object[] a = items;
+        Object[] a = ITEMS.get(this);
         if (a != null) {
             int s = a.length;
             for (int i = 0; i < s; ) {
@@ -49,7 +53,7 @@ public class CompactArrayMap<K, V> {
     }
 
     public int size() {
-        Object[] i = this.items;
+        Object[] i = ITEMS.get(this);
         return i.length / 2;
     }
 
@@ -57,27 +61,27 @@ public class CompactArrayMap<K, V> {
      * returns previous value, or null if none - like Map.put
      */
     public V put(K key, V value) {
-        synchronized (this) {
-            Object[] a = items;
+        Object[] existing = new Object[1];
+        ITEMS.accumulateAndGet(this, new Object[]{key, value}, (a, incoming) -> {
             if (a == null) {
-                this.items = new Object[]{key, value};
+                return incoming;
             } else {
                 int s = a.length;
-                for (int i = 0; i < s; ) {
-                    if (keyEquals(a[i], key)) {
-                        Object e = a[i + 1];
-                        a[i + 1] = value;
-                        return (V) e;
+                Object k = incoming[0];
+                for (int i = 0; i < s; i += 2) {
+                    if (keyEquals(k, AA.get(a, i, a[i]))) {
+                        existing[0] = AA.getAndSet(a, i + 1, incoming[1]);
+                        return a;
                     }
-                    i += 2;
                 }
-                a = Arrays.copyOf(a, s + 2);
-                a[s++] = key;
-                a[s] = value;
-                this.items = a;
+                Object[] b = Arrays.copyOf(a, s + 2);
+                existing[0] = -1;
+                b[s++] = k;
+                b[s] = incoming[1];
+                return b;
             }
-        }
-        return null;
+        });
+        return (V) existing[0];
     }
 
     public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
@@ -110,7 +114,7 @@ public class CompactArrayMap<K, V> {
 
 
     public void clear() {
-        items = null;
+        ITEMS.lazySet(this, null);
     }
 
     public void clearExcept(K key) {

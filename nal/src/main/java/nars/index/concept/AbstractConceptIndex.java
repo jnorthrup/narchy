@@ -5,10 +5,10 @@ import jcog.math.IntRange;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
-import nars.link.TaskLinkBag;
 import nars.NAR;
 import nars.Param;
 import nars.link.TaskLink;
+import nars.link.TaskLinkBag;
 import nars.term.Termed;
 
 import java.util.HashMap;

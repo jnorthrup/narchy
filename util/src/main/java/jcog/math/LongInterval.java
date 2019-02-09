@@ -1,7 +1,5 @@
 package jcog.math;
 
-import jcog.WTF;
-
 /** pair of 64-bit signed long integers representing an interval.
  *  a special 'ETERNAL' value represents (-infinity,+infinity)
  *

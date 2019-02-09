@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.*;
 
 import static java.lang.System.Logger.Level.INFO;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static systems.comodal.collision.cache.AtomicLogCounters.MAX_COUNT;
