@@ -64,7 +64,7 @@ public class HijackConceptIndex extends AbstractConceptIndex {
             }
 
             @Override
-            protected boolean attemptRegrowForSize(int s) {
+            protected boolean regrowForSize(int s) {
                 return false;
             }
 

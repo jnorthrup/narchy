@@ -1,10 +1,10 @@
 package jcog.sort;
 
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.pool.MetalPool;
 import jcog.decide.Roulette;
 import jcog.pri.Ranked;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 import static java.lang.Float.NEGATIVE_INFINITY;
 
@@ -22,6 +23,13 @@ import static java.lang.Float.NEGATIVE_INFINITY;
  */
 public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunction<X> {
 
+
+    public final static TopN Empty = new TopN(ArrayUtils.EMPTY_OBJECT_ARRAY, (x,min)->Float.NaN) {
+        @Override
+        public void setCapacity(int capacity) {
+
+        }
+    };
 
     public FloatRank<X> rank;
     private float min;
@@ -206,33 +214,41 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         return size() >= capacity();
     }
 
+    /** 0 < thresh <= 1 */
+    private boolean isFull(float thresh) {
+        return (size() >= capacity() * thresh);
+    }
+
+    @Nullable
+    public X getRoulette(Random rng) {
+        return getRoulette(rng, rank);
+    }
+
+    /** note: this assumes the ranking function operates in a range >= 0 so that by choosing a roulette weight 0 it should be skipped
+     *  and not surprise the roulette like a value of NEGATIVE_INFINITY or NaN *will*. */
+    @Nullable public X getRoulette(Random rng, Predicate<X> filter) {
+        return getRoulette(rng, (X x, float min)->{
+            if (!filter.test(x))
+                return 0;
+            return rank.rank(x);
+        });
+    }
+
     /**
      * roulette select
      */
     @Nullable
-    public X getRoulette(Random rng) {
+    public X getRoulette(Random rng, FloatRank<X> rank) {
         int n = size();
-        switch (n) {
-            case 0:
-                return null;
-            case 1:
-                return get(0);
-            case 2: {
-                X x = get(0), y = get(1);
-                float rx = rank.rank(x), ry = rank.rank(y);
-                if (Util.equals(rx, ry, Float.MIN_NORMAL))
-                    return rng.nextBoolean() ? x : y;
-                else
-                    return rng.nextFloat() <= (rx/(rx+ry)) ? x : y;
-            }
-            default:
+        if (n == 0)
+            return null;
                 IntToFloatFunction select = i -> rank.rank(get(i));
-                return get( n < 8 ?
-                        Roulette.selectRouletteCached(n, select, rng)
-                        :
-                        Roulette.selectRoulette(n, select, rng)
+                return get( //n < 8 ?
+                        Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
+                       // :
+                       // Roulette.selectRoulette(n, select, rng)
                 );
-        }
+
     }
 
     public final float minValueIfFull() {
@@ -320,7 +336,12 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         pool.get().put(t);
     }
 
-    public int capacityMax() {
-        return items.length;
+    public void compact(float thresh) {
+        if (!isFull(thresh)) {
+            items = Arrays.copyOf(items, size());
+            capacity = items.length;
+        }
     }
+
+
 }

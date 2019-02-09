@@ -31,13 +31,24 @@ public enum Roulette {
     }
 
     public static int selectRouletteCached(int weightCount, IntToFloatFunction weight, Random rng) {
+
         if (weightCount == 1)
             return 0;
+        else if (weightCount == 2) {
 
-        float[] w = new float[weightCount];
-        for (int i = 0; i < weightCount; i++)
-            w[i] = weight.valueOf(i);
-        return selectRoulette(weightCount, i->w[i], rng);
+            float rx = weight.valueOf(0), ry = weight.valueOf(1);
+            if (Util.equals(rx, ry, Float.MIN_NORMAL))
+                return rng.nextBoolean() ? 0 : 1;
+            else
+                return rng.nextFloat() <= (rx / (rx + ry)) ? 0 : 1;
+
+        } else {
+
+            float[] w = new float[weightCount];
+            for (int i = 0; i < weightCount; i++)
+                w[i] = weight.valueOf(i);
+            return selectRoulette(weightCount, i -> w[i], rng);
+        }
     }
 
     /**
@@ -55,9 +66,11 @@ public enum Roulette {
         int i;
         boolean dir;
         if (distanceFactor <= 0.5f) {
-            dir = true; i = 0; //count up
+            dir = true;
+            i = 0; //count up
         } else {
-            dir = false; i = count-1; //count down
+            dir = false;
+            i = count - 1; //count down
             distanceFactor = 1 - distanceFactor;
         }
 

@@ -3,7 +3,6 @@ package jcog.pri.bag.impl;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
@@ -140,6 +139,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             }
         }
     }
+    private static <Y> void updateEach(AtomicReferenceArray<Y> map, Function<Y,Y> update) {
+        for (int c = map.length(), j = 0; j < c; j++) {
+            map.updateAndGet(j, (vv)->vv!=null ? update.apply(vv):null);
+        }
+    }
 
     public static <Y> void forEach(AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
         for (int c = map.length(), j = -1; ++j < c; ) {
@@ -195,20 +199,31 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public void clear() {
-        AtomicReferenceArray<V> x = reset(reprobes);
+        AtomicReferenceArray<V> m = map;
+        AtomicReferenceArray<V> x = shrinkForCapacity(m.length()) ? reset(reprobes) : m;
         PRESSURE.zero(this);
         SIZE.set(this, 0);
         mass = 0;
         if (x != null) {
-            forEachActive(this, x, this::onRemove);
+            if (x!=m)
+                forEachActive(this, x, this::onRemove);
+            else
+                updateEach(x, (V v)->{
+                    onRemove(v);
+                    return null;
+                });
         }
 
+    }
+
+    protected boolean shrinkForCapacity(int length) {
+        return true;
     }
 
     @Nullable
     private AtomicReferenceArray<V> reset(int space) {
 
-        if (!SIZE.compareAndSet(this, 0, 0)) {
+        if (SIZE.getAndSet(this, 0)!=0) {
             AtomicReferenceArray<V> newMap = new AtomicReferenceArray<>(space);
 
             AtomicReferenceArray<V> prevMap = MAP.getAndSet(this, newMap);
@@ -216,9 +231,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             commit();
 
             return prevMap;
+        } else {
+            return null; //remains empty
         }
-
-        return null;
     }
 
     /**
@@ -396,7 +411,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         if (toAdd != null) {
             _onAdded(toAdd);
 
-            if (attemptRegrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ : size /* size which has been increased by the insertion */)) {
+            if (regrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ : size /* size which has been increased by the insertion */)) {
 
                 if (toRemove != null) {
                     update(key(toRemove), toRemove, PUT, null);
@@ -843,7 +858,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     }
 
-    protected boolean attemptRegrowForSize(int s) {
+    protected boolean regrowForSize(int s) {
 
         int sp = space();
         int cp = capacity();

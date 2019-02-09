@@ -2,7 +2,7 @@ package nars.derive.premise;
 
 import com.google.common.base.Splitter;
 import jcog.data.set.ArrayUnenforcedSet;
-import jcog.memoize.Memoizers;
+import jcog.memoize.CaffeineMemoize;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 
@@ -32,9 +32,8 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
         parsed.distinct().map(x -> new PremiseRuleProto(x, nar)).forEach(super::add);
     }
 
-    private final static Function<String, Collection<PremiseRuleSource>> ruleCache = Memoizers.the.memoize(
-            PremiseDeriverRuleSet.class.getSimpleName() + "_rule", 32,
-            (String n) -> {
+    private final static Function<String, Collection<PremiseRuleSource>> ruleCache =
+            CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
 
@@ -50,7 +49,7 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
         }
         return (PremiseRuleSource.parse(load(bb)).collect(Collectors.toSet()));
 
-    });
+    }, 32, false);
 
 
     public static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {

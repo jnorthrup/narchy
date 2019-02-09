@@ -20,6 +20,7 @@ import nars.term.util.Image;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
+import nars.term.util.transform.VariableTransform;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import org.eclipse.collections.api.set.ImmutableSet;
@@ -232,7 +233,7 @@ abstract public class Inperience extends TaskLeakTransform {
 
         private Term reifyQuestion(Term x, byte punc, NAR nar) {
             x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-            x = x.hasAny(VAR_QUERY) ? TermTransform.queryToDepVar.transform(x) : x;
+            x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.transform(x) : x;
             if (x instanceof Bool) return Bool.Null;
 
             x = Image.imageNormalize(x);

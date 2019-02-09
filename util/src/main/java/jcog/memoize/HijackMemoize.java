@@ -1,7 +1,6 @@
 package jcog.memoize;
 
 import jcog.Texts;
-import jcog.WTF;
 import jcog.data.NumberX;
 import jcog.pri.PriProxy;
 import jcog.pri.ScalarValue;
@@ -79,7 +78,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
                 exists.priAdd(CACHE_HIT_BOOST);
                 return e;
             } else
-                throw new WTF();
+                throw new NullPointerException();
         }
         return null;
     }
@@ -215,7 +214,12 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         }
 
         @Override
-        protected boolean attemptRegrowForSize(int s) {
+        protected boolean shrinkForCapacity(int length) {
+            return false; //maintain capacity
+        }
+
+        @Override
+        protected boolean regrowForSize(int size) {
             return false;
         }
 

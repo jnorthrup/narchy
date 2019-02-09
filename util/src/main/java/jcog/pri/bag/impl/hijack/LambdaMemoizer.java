@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.memoize.Memoize;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -31,21 +32,28 @@ public class LambdaMemoizer {
     @NotNull
     public static <V> Function<Object[], V> memoize(MemoizeBuilder<V> m, Method method) {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
+        try {
+            MethodHandle h = lookup.unreflect(method)
+                    .asSpreader(Object[].class, method.getParameterCount());
 
-        int methodID = serial.getAndIncrement();
+            int methodID = serial.getAndIncrement();
 
-        Function<ArgKey, V> compute = x -> {
-            try {
-                return (V) lookup.unreflect(method)
-                    .asSpreader(Object[].class, method.getParameterCount()).invoke(x.args);
-            } catch (Throwable throwable) {
-                throw new RuntimeException(throwable);
-            }
-        };
+            Function<ArgKey, V> compute = x -> {
+                try {
+                    return (V)(h.invoke(x.args));
+                } catch (Throwable throwable) {
+                    throw new RuntimeException(throwable);
+                }
+            };
 
-        final Memoize<ArgKey, V> memoizedCalls = m.apply(compute);
+            final Memoize<ArgKey, V> memoizedCalls = m.apply(compute);
 
-        return args -> memoizedCalls.apply(new ArgKey(methodID, args));
+            return args -> memoizedCalls.apply(new ArgKey(methodID, args));
+
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**

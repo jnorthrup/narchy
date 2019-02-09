@@ -104,6 +104,15 @@ abstract public class MappedSubterms extends ProxySubterms {
         }
     }
 
+
+    /** TODO */
+    abstract static class NegatedSubterms extends HashCachedMappedSubterms {
+
+        protected NegatedSubterms(Subterms base) {
+            super(base);
+        }
+    }
+
     private static final class ReversedSubterms extends HashCachedMappedSubterms {
 
         /** cached */

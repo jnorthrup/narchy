@@ -216,7 +216,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
-        public final Bag<ITask, ITask> tasks = new BufferedBag.SimplestBufferedBag<>(
+        public final Bag<ITask, ITask> tasks = new BufferedBag.SimpleBufferedBag<>(
                 new PriArrayBag<ITask>(PriMerge.max,
                         new HashMap()
                         //new UnifiedMap()

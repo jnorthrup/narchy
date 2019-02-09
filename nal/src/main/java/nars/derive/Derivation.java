@@ -74,7 +74,7 @@ public class Derivation extends PreDerivation {
         //new SortedList<>(256);
 
 //    @Deprecated public final ArrayHashSet<Term> atomMatches = new ArrayHashSet();
-    @Deprecated public TopN<TaskLink> atomTangent = new TopN<>(new TaskLink[64], (FloatFunction<TaskLink>) ScalarValue::pri);
+//    @Deprecated public TopN<TaskLink> atomTangent = new TopN<>(new TaskLink[64], (FloatFunction<TaskLink>) ScalarValue::pri);
 
     public final AnonWithVarShift anon;
 

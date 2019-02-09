@@ -1,6 +1,5 @@
 package nars.term.util.transform;
 
-import jcog.Texts;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
@@ -10,7 +9,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
-import nars.term.var.UnnormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -173,23 +171,7 @@ public interface TermTransform {
     default Term the(Op op, int dt, Term[] subterms) {
         return op.the(dt, subterms);
     }
-    /**
-     * change all query variables to dep vars by use of Op.imdex
-     */
-    TermTransform queryToDepVar = variableTransform(VAR_QUERY, VAR_DEP);
-    TermTransform indepToDepVar = variableTransform(VAR_INDEP, VAR_DEP);
 
-    private static TermTransform variableTransform(Op from, Op to) {
-        return new TermTransform() {
-            @Override
-            public Term transformAtomic(Atomic atomic) {
-                if (atomic.op() != from)
-                    return atomic;
-                else
-                    return new UnnormalizedVariable(to, Texts.quote(atomic.toString()));
-            }
-        };
-    }
 
 
 

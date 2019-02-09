@@ -2,6 +2,7 @@ package nars.link;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.MutableFloat;
 import jcog.decide.Roulette;
 import jcog.pri.OverflowDistributor;
@@ -18,6 +19,7 @@ import nars.concept.Concept;
 import nars.index.concept.AbstractConceptIndex;
 import nars.task.Tasklike;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -209,6 +211,20 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
         }
         return -1;
     }
+
+    default boolean isSelf() {
+        return source().equals(target());
+    }
+
+    default Term other(Atomic x) {
+        if (source().equals(x)) {
+            return target();
+        } else if (!Param.DEBUG || target().equals(x)) {
+            return source();
+        }
+        throw new WTF();
+    }
+
 
 
 //    /** special tasklink for signals which can stretch and so their target time would not correspond well while changing */

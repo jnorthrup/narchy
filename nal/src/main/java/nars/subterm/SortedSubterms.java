@@ -1,6 +1,5 @@
 package nars.subterm;
 
-import jcog.Util;
 import nars.Op;
 import nars.term.Neg;
 import nars.term.Term;
@@ -42,23 +41,24 @@ public class SortedSubterms {
                 break;
         }
 
-        Term[] xx = x;
-        if (Util.or((Term xxx) -> xxx.op()==NEG, xx)) {
-            xx = xx.clone(); //HACK TODO avoid double clones
-            for (int j = 0; j < xx.length; j++)
-                if (xx[j].op()==NEG)
-                    xx[j] = xx[j].unneg();
+        Term[] xx = x.clone();
+        boolean hasNeg = false;
+        for (int j = 0; j < xx.length; j++) {
+            if (xx[j].op()==NEG) {
+                hasNeg = true;
+                xx[j] = xx[j].unneg();
+            }
         }
 
         if (dedup)
             xx = Terms.sorted(xx);
         else {
-            xx = x==xx ? x.clone() : xx;
             Arrays.sort(xx);
         }
+
         if (Arrays.equals(xx, x)) {
-            //already sorted
-            return b.apply(xx);
+            //already sorted and has no negatives
+            return b.apply(x);
         } else {
             //TODO if (xx.length == 1) return RepeatedSubterms.the(xx[0],x.length);
             return MappedSubterms.the(x, b.apply(xx), xx);

@@ -2,13 +2,10 @@ package nars.index.concept;
 
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
-import jcog.pri.OverflowDistributor;
-import jcog.pri.PriBuffer;
-import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.BufferedBag;
+import nars.link.TaskLinkBag;
 import nars.NAR;
 import nars.Param;
 import nars.link.TaskLink;
@@ -27,7 +24,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
     /** short target memory, TODO abstract and remove */
     //public Bag<Term, Activate> active = Bag.EMPTY;
 
-    public Bag<TaskLink, TaskLink> active = Bag.EMPTY;
+    public TaskLinkBag active = null;
 
     /** tasklink activation */
     @Deprecated public final FloatRange activationRate = new FloatRange(1f, Param.tasklinkMerge == plus ? ScalarValue.EPSILON : 1, 1);
@@ -38,7 +35,9 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
     public final IntRange activeCapacity = new IntRange(256, 0, 2024) {
         @Override
         protected void changed() {
-            active.setCapacity(intValue());
+            TaskLinkBag a = AbstractConceptIndex.this.active;
+            if (a !=null)
+                a.setCapacity(intValue());
         }
     };
 
@@ -57,21 +56,11 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
         super.start(nar);
 
 
-        active =
-            new BufferedBag.SimplestBufferedBag<>( arrayBag(), //hijackBag()
-                new PriBuffer<>(Param.tasklinkMerge, nar.exe.concurrent()) {
-                    @Override
-                    protected void merge(Prioritizable existing, TaskLink incoming, float pri, OverflowDistributor<TaskLink> overflow) {
-                        //super.merge(existing, incoming, pri, overflow);
-                        ((TaskLink)existing).merge(incoming, Param.tasklinkMerge);
-                    }
-                }
-            );
+        active = new TaskLinkBag( arrayBag() /*hijackBag()*/, forgetRate, nar.exe.concurrent());
 
         active.setCapacity(activeCapacity.intValue());
 
-
-        nar.onCycle(this::updateConcepts);
+        nar.onCycle(active::forget);
         //DurService.on(nar, n->updateConcepts());
 
     }
@@ -118,9 +107,6 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
 
 
-    private void updateConcepts() {
-        active.commit(nar.attn.forgetting.forget(active, 1f, forgetRate.floatValue()));
-    }
 
     @Override
     public void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {

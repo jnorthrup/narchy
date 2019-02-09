@@ -128,13 +128,4 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
 
     }
 
-    public static class SimplestBufferedBag<Y extends Prioritizable> extends SimpleBufferedBag<Y,Y> {
-        public SimplestBufferedBag(Bag<Y, Y> activates, PriBuffer<Y> conceptPriBuffer) {
-            super(activates, conceptPriBuffer);
-        }
-        @Override
-        protected final Y keyInternal(Y c) {
-            return c;
-        }
-    }
 }
