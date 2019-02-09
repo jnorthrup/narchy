@@ -259,7 +259,7 @@ public class NALTask extends UnitPri implements Task {
         }
 
         @Override
-        public <X> X meta(String key, Function<String, Object> valueIfAbsent) {
+        public <X> X meta(String key, Function<String, X> valueIfAbsent) {
             CompactArrayMap<String, Object> m = this.meta;
             return m != null ? (X) m.computeIfAbsent(key, valueIfAbsent) : null;
         }

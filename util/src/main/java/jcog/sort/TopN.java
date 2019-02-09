@@ -43,7 +43,6 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     /**
      * try to use the FloatRank if a scoring function can be interrupted
      */
-    @Deprecated
     public TopN(X[] target, FloatFunction<X> rank) {
         this(target, FloatRank.the(rank));
     }
@@ -61,7 +60,10 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     public TopN<X> rank(FloatRank<X> rank, int capacity) {
         this.rank = rank;
-        setCapacity(capacity);
+        if (capacity > 0)
+            setCapacity(capacity);
+        else
+            this.capacity = 0; //HACK
         return this;
     }
 
@@ -337,11 +339,26 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
     public void compact(float thresh) {
-        if (!isFull(thresh)) {
-            items = Arrays.copyOf(items, size());
-            capacity = items.length;
+        int s = size();
+        if (s == 0) {
+            items = null;
+            capacity = 0;
+        } else {
+            if (!isFull(thresh)) {
+                items = Arrays.copyOf(items, s);
+                capacity = s;
+            }
         }
     }
 
 
+    /** creates a copy of the array, trimmed */
+    public X[] toArray() {
+        return Arrays.copyOf(items, size());
+    }
+
+    @Nullable public X[] toArrayOrNullIfEmpty() {
+        int s = size();
+        return s > 0 ? Arrays.copyOf(items, s) : null;
+    }
 }

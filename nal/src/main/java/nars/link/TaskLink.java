@@ -37,6 +37,8 @@ import static nars.time.Tense.ETERNAL;
  * note: seems to be important for Tasklink to NOT implement Termed when use with common Map's with Termlinks */
 public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
+    TaskLink[] EmptyTaskLinkArray = new TaskLink[0];
+
     /** dont use .apply() directly; use this */
     static Task task(TaskLink x, NAR n) {
         Task y = x.apply(n);

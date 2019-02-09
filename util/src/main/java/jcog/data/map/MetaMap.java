@@ -11,5 +11,5 @@ public interface MetaMap {
     <X> X meta(String key, Object value);
 
     /** Map.computeIfAbsent */
-    <X> X meta(String key, Function<String, Object> valueIfAbsent);
+    <X> X meta(String key, Function<String, X> valueIfAbsent);
 }

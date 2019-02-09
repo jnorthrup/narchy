@@ -6,6 +6,7 @@ import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.NodeConcept;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.Premise;
@@ -17,7 +18,7 @@ import nars.link.TaskLink;
 import nars.link.TermLinker;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Atomic;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Random;
@@ -120,7 +121,11 @@ public class BatchDeriver extends Deriver {
                 }
             } else if (src.op().conceptualizable) {
                 //scan active tasklinks for a match to the atom
-                b = ((AbstractConceptIndex)nar.concepts).active.atomTangent((Atomic)src, tasklink, d.random);
+                @Nullable Concept cc = nar.conceptualize(src);
+                if (cc!=null)
+                    b = ((AbstractConceptIndex)nar.concepts).active.atomTangent((NodeConcept) cc, tasklink, d.time, d.random);
+                else
+                    b = src;
             } else {
                 b = src; //variable, int, etc.. ?
             }

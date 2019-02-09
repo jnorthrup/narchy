@@ -1,25 +1,29 @@
 package nars.link;
 
+import jcog.decide.Roulette;
 import jcog.math.FloatSupplier;
-import jcog.memoize.HijackMemoize;
 import jcog.pri.OverflowDistributor;
 import jcog.pri.PriBuffer;
 import jcog.pri.Prioritizable;
-import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.op.PriMerge;
 import jcog.sort.TopN;
 import nars.NAR;
 import nars.Param;
+import nars.concept.NodeConcept;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink,TaskLink> {
+import static nars.time.Tense.ETERNAL;
+
+public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLink> {
 
     private final FloatSupplier forgetRate;
 
@@ -37,10 +41,7 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink,TaskLink
 
         commit(nar.attn.forgetting.forget(this, 1f, forgetRate.asFloat()));
 
-        tangentAtoms.clear();
-
     }
-
 
 
     private static class TaskLinkBuffer extends PriBuffer<TaskLink> {
@@ -57,59 +58,104 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink,TaskLink
         }
     }
 
-    /** tangent ranking cache; cleared on each update
-     *  TODO store a sampler, not an entire TopN<TaskLink>
-     * */
-    private final HijackMemoize<Atomic,TopN<TaskLink>> tangentAtoms = new HijackMemoize<Atomic,TopN<TaskLink>>((Atomic x)->{
-        TopN<TaskLink> match = null;
 
-        for (TaskLink t : this) {
-            if (t == null) continue; //HACK
-            float xp = t.priElseZero();
-            if (match == null || xp > match.minValueIfFull()) {
-                Term y = atomOther(x, t);
-                if (y != null) {
-                    if (match==null) {
-                        //TODO pool
-                        int cap = Math.max(3, (int) Math.ceil(Math.sqrt(capacity()))); //heuristic
-                        match = new TopN<>(new TaskLink[cap], (FloatFunction<TaskLink>) ScalarValue::pri);
-                        match.setCapacity(cap);
+    private static final AtomicInteger ids = new AtomicInteger(0);
+
+    public final String id = /*TaskLinkBag.class.getSimpleName() */ "T" + ids.incrementAndGet();
+
+
+    private static class TangentConcepts {
+
+        final static int minUpdateCycles = 1;
+
+        private /*volatile*/ long updated = ETERNAL;
+        @Nullable private volatile TaskLink[] links;
+
+        public TangentConcepts(long now) {
+            this.updated = now - minUpdateCycles;
+        }
+
+        public boolean refresh(Atomic x, TaskLinkBag bag, long now) {
+            if (now - updated >= minUpdateCycles) {
+
+                TopN<TaskLink> match = null;
+
+                for (TaskLink t : bag) {
+                    if (t == null) continue; //HACK
+                    float xp = t.priElseZero();
+                    if (match == null || xp > match.minValueIfFull()) {
+                        Term y = atomOther(x, t);
+                        if (y != null) {
+                            if (match == null) {
+                                //TODO pool
+                                int cap = Math.max(2, (int) Math.ceil(Math.sqrt(bag.size()))); //heuristic
+                                match = new TopN<>(new TaskLink[cap], TaskLink::priElseZero);
+                            }
+                            match.add(t);
+                        }
                     }
-                    match.add(t);
+                }
+
+                links = match!=null ? match.toArrayOrNullIfEmpty() : null;
+                updated = now;
+
+            }
+
+            return links != null;
+        }
+
+        public Term sample(Atomic srcTerm, TaskLink except, Random rng) {
+            TaskLink l;
+            TaskLink[] ll = links;
+            if (ll == null)
+                l = except;
+            else {
+                switch (ll.length) {
+                    case 0:
+                        l = except;
+                        break;
+                    case 1:
+                        l = ll[0];
+                        break;
+                    case 2:
+                        TaskLink a = ll[0], b = ll[1];
+                        l = a.equals(except) ? b : a;
+                        break;
+                    default:
+                        l = ll[Roulette.selectRouletteCached(ll.length, (int i) -> {
+                            TaskLink t = ll[i];
+                            if (t.equals(except))
+                                return 0f;
+                            else
+                                return t.priElseZero();
+                        }, rng)];
+                        break;
                 }
             }
+
+            return l != null ? l.other(srcTerm) : null;
+
+
         }
 
-        if(match!=null) {
-            match.compact(0.75f);
-            return match;
-        } else
-            return TopN.Empty;
-    }, 96, 3);
+        public Term sample(Atomic srcTerm, TaskLinkBag taskLinks, TaskLink except, long now, Random rng) {
+            return refresh(srcTerm, taskLinks, now) ? sample(srcTerm, except, rng) : null;
+        }
+    }
 
-
-
-    /** acts as a virtual tasklink bag associated with an atom concept allowing it to otherwise act as a junction between tasklinking compounds which share it */
-    @Nullable public Term atomTangent(Atomic src, TaskLink except, Random rng) {
-        TopN<TaskLink> match = tangentAtoms.apply(src);
-        TaskLink l;
-        switch (match.size()) {
-            case 0:
-                l = except;
-                break;
-            case 1:
-                l = match.get(0);
-                break;
-            case 2:
-                TaskLink a = match.get(0), b = match.get(1);
-                l = a.equals(except) ? b : a;
-                break;
-            default:
-                l = match.getRoulette(rng, (t) -> !t.equals(except));
-                break;
+    /**
+     * acts as a virtual tasklink bag associated with an atom concept allowing it to otherwise act as a junction between tasklinking compounds which share it
+     */
+    @Nullable
+    public Term atomTangent(NodeConcept src, TaskLink except, long now, Random rng) {
+        Reference<TangentConcepts> matchRef = src.meta(id);
+        TangentConcepts match = matchRef != null ? matchRef.get() : null;
+        if (match == null) {
+            match = new TangentConcepts(now);
+            src.meta(id, new SoftReference<>(match));
         }
 
-        return l!=null ? l.other(src) : null;
+        return match.sample((Atomic) src.term, this, except, now, rng);
     }
 
 

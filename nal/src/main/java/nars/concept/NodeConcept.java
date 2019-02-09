@@ -106,7 +106,7 @@ public class NodeConcept implements Concept {
     }
 
     @Override
-    public <X> X meta(String key, Function<String,Object> valueIfAbsent) {
+    public <X> X meta(String key, Function<String,X> valueIfAbsent) {
         return (X) meta.computeIfAbsent(key, valueIfAbsent);
     }
 
