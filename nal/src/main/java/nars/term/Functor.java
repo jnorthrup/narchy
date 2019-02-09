@@ -543,7 +543,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     
                     Term XY = compute(e, x, y);
                     if (XY == null)
-                        throw new NullPointerException(); //TEMPORARY
+                        return null;
                     //assert(XY!=null): "functor " + this + " " + x + "," + y + ", " + xy + " -> compute=null";
 
                     if (XY.equals(xy)) {
