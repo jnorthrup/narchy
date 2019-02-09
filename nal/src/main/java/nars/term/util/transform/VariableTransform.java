@@ -4,7 +4,6 @@ import jcog.Texts;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.anon.AnonID;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
@@ -41,7 +40,7 @@ public abstract class VariableTransform extends TermTransform.NegObliviousTermTr
 
             @Override
             public Term transformAtomic(Atomic atomic) {
-                if (atomic instanceof Variable && atomic.op() != from)
+                if (!(atomic instanceof nars.term.Variable) || atomic.op() != from)
                     return atomic;
                 else
                     return v;
@@ -53,7 +52,7 @@ public abstract class VariableTransform extends TermTransform.NegObliviousTermTr
         return new TermTransform() {
             @Override
             public Term transformAtomic(Atomic atomic) {
-                if (atomic instanceof nars.term.Variable && atomic.op() != from)
+                if (!(atomic instanceof nars.term.Variable) || atomic.op() != from)
                     return atomic;
                 else
                     return new UnnormalizedVariable(to, to.ch + Texts.quote(atomic.toString()));

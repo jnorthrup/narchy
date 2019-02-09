@@ -4,12 +4,13 @@ import com.google.common.collect.Iterators;
 import jcog.TODO;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static java.util.Collections.emptyIterator;
 
 /** TODO optionally skip nulls */
 public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
@@ -34,6 +35,22 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         //throw new NoSuchElementException();
     }
 
+    /** TODO test, may need a pre-buffering stategy to absolutely contain any Null's */
+    public static class ArrayIteratorNonNull<X> extends ArrayIterator<X> {
+
+        public ArrayIteratorNonNull(X[] array) {
+            super(array);
+        }
+
+        @Override
+        public X next() {
+            X x = super.next();
+            assert(x!=null);
+            while (hasNext() && array[index]==null)
+                index++; //skip past any next null's
+            return x;
+        }
+    }
 
     @Override
     public void remove() {
@@ -54,7 +71,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
     public static <E> Iterator<E> iterator(E... e) {
         if (e == null)
-            return Collections.emptyIterator();
+            return emptyIterator();
         else
             return ArrayIterator.get(e, e.length);
     }
@@ -79,7 +96,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     public static <E> Iterator<E> get(E[] e, int size) {
         switch (size) {
             case 0:
-                return Collections.emptyIterator();
+                return emptyIterator();
             case 1:
                 return Iterators.singletonIterator(e[0]);
             default:
@@ -89,6 +106,20 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         }
     }
 
+    public static <E> Iterator<E> getNonNull(E[] e, int size) {
+        switch (size) {
+            case 0:
+                return emptyIterator();
+            case 1:
+                E ee = e[0];
+                return ee!=null ? Iterators.singletonIterator(ee) : emptyIterator();
+            default:
+                if (size == e.length) return
+                        new ArrayIterator(e);
+                else
+                        throw new TODO(); //new PartialArrayIterator(e, size);
+        }
+    }
 
     public static <X> Stream<X> stream(X[] list) {
         return stream(list, list.length);

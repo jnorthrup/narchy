@@ -28,7 +28,7 @@ public class PriBuffer<Y> {
             //new ConcurrentHashMapUnsafe<>(512);
             //new java.util.concurrent.ConcurrentHashMap(512);
 
-    private final PriMerge merge;
+    public final PriMerge merge;
 
     public PriBuffer(PriMerge merge) {
         this(merge, new java.util.concurrent.ConcurrentHashMap(512));

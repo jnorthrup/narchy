@@ -34,10 +34,11 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink,TaskLink
     }
 
     public void forget(NAR nar) {
-        //invalidate the tangent cache
-        tangentAtoms.clear();
 
         commit(nar.attn.forgetting.forget(this, 1f, forgetRate.asFloat()));
+
+        tangentAtoms.clear();
+
     }
 
 
@@ -52,7 +53,7 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink,TaskLink
         protected void merge(Prioritizable existing, TaskLink incoming, float pri, OverflowDistributor<
                 TaskLink> overflow) {
             //super.merge(existing, incoming, pri, overflow);
-            ((TaskLink) existing).merge(incoming, Param.tasklinkMerge);
+            ((TaskLink) existing).merge(incoming, merge);
         }
     }
 
@@ -63,9 +64,10 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink,TaskLink
         TopN<TaskLink> match = null;
 
         for (TaskLink t : this) {
+            if (t == null) continue; //HACK
             float xp = t.priElseZero();
             if (match == null || xp > match.minValueIfFull()) {
-                Term y = atomTangent(x, t);
+                Term y = atomOther(x, t);
                 if (y != null) {
                     if (match==null) {
                         //TODO pool
@@ -112,16 +114,16 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink,TaskLink
 
 
     @Nullable
-    static private Term atomTangent(Term include, TaskLink t) {
+    static private Term atomOther(Term include, TaskLink t) {
         Term tSrc = t.source();
         if (include.equals(tSrc)) {
             Term y = t.target();
             return y; //!t.isSelf() ? y : null;
         }
-        if (include.equals(t.target())) {
-            Term y = tSrc;
-            return y; //!t.isSelf() ? y : null;
-        }
+//        if (include.equals(t.target())) {
+//            Term y = tSrc;
+//            return y; //!t.isSelf() ? y : null;
+//        }
         return null;
     }
 

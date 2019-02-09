@@ -96,6 +96,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         }
     }
 
+
     /**
      * returns whether the capacity has changed
      */

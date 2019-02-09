@@ -543,8 +543,8 @@ public abstract class Param {
 
         //inverse linear decay
         int falloffDurs =
-                1;
-                //2; //nyquist
+                //1;
+                2; //nyquist
                 //4;
                 //dur;
                 //8;
