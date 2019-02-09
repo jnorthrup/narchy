@@ -1,6 +1,7 @@
 package jcog.data.map;
 
 import jcog.TODO;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -9,7 +10,12 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Function;
 
 
-/** TODO more extensive use of the Atomic field updater */
+/** compact thread-safe atomic Map implemented as an array of key,value pairs
+ *  items are, by default, unsorted so access is sequential O(n) so this is
+ *  limited to small size.
+ *
+ *  TODO make a key-sorted impl for faster access
+ * */
 public class CompactArrayMap<K, V> {
 
     private final static AtomicReferenceFieldUpdater<CompactArrayMap, Object[]> ITEMS = AtomicReferenceFieldUpdater.newUpdater(CompactArrayMap.class, Object[].class, "items");
@@ -24,7 +30,8 @@ public class CompactArrayMap<K, V> {
         this(new Object[]{initialKey, initialValue});
     }
 
-    public CompactArrayMap(Object[] initial) {
+    public CompactArrayMap(@Nullable Object[] initial) {
+        assert(initial == null || initial.length%2==0);
         this.items = initial;
     }
 
@@ -53,35 +60,64 @@ public class CompactArrayMap<K, V> {
     }
 
     public int size() {
-        Object[] i = ITEMS.get(this);
-        return i.length / 2;
+        Object[] o = ITEMS.get(this);
+        return o != null ? o.length / 2 : 0;
     }
 
     /**
      * returns previous value, or null if none - like Map.put
+     * interpets value==null as removal
      */
-    public V put(K key, V value) {
-        Object[] existing = new Object[1];
-        ITEMS.accumulateAndGet(this, new Object[]{key, value}, (a, incoming) -> {
+    public V put(Object key, V value) {
+        Object[] returned = new Object[1];
+        ITEMS.accumulateAndGet(this, new Object[]{key, value}, (a, kv) -> {
             if (a == null) {
-                return incoming;
+                return kv;
             } else {
                 int s = a.length;
-                Object k = incoming[0];
+
+                Object k = kv[0], v = kv[1];
+                int found = -1;
                 for (int i = 0; i < s; i += 2) {
-                    if (keyEquals(k, AA.get(a, i, a[i]))) {
-                        existing[0] = AA.getAndSet(a, i + 1, incoming[1]);
+                    if (keyEquals(k, a[i])) {
+                        found = i+1;
+                        break;
+                    }
+                }
+
+                if (found!=-1) {
+                    returned[0] = a[found];
+                    if (v != null) {
+                        a[found] = v;
+                        return a;
+                    } else {
+                        if (a.length == 2) {
+                            return null; //map emptied
+                        } else {
+                            Object[] b = Arrays.copyOf(a, a.length-2);
+                            if (found-1 < a.length-2) {
+                                //TODO test
+                                System.arraycopy(a, found+1, b, found-1, a.length - (found-1) - 2);
+                            }
+                            return b;
+                        }
+                    }
+                } else {
+                    if (v!=null) {
+                        Object[] b = Arrays.copyOf(a, s + 2);
+                        returned[0] = -1;
+                        b[s++] = k;
+                        b[s] = v;
+                        return b;
+                    } else {
+                        //tried to remove key which isnt presented; no effect
                         return a;
                     }
                 }
-                Object[] b = Arrays.copyOf(a, s + 2);
-                existing[0] = -1;
-                b[s++] = k;
-                b[s] = incoming[1];
-                return b;
+
             }
         });
-        return (V) existing[0];
+        return (V) returned[0];
     }
 
     public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
@@ -94,39 +130,32 @@ public class CompactArrayMap<K, V> {
         return v;
     }
 
-
-    public boolean remove(Object object) {
-        throw new UnsupportedOperationException("use removeKey");
-    }
-
-    public V removeKey(Object key) {
-        throw new TODO();
-
-
+    public V remove(Object key) {
+        return put(key, null);
     }
 
     /**
      * override for alternate equality test
      */
-    boolean keyEquals(Object a, Object b) {
+    protected boolean keyEquals(Object a, Object b) {
         return a.equals(b);
     }
 
-
     public void clear() {
-        ITEMS.lazySet(this, null);
-    }
-
-    public void clearExcept(K key) {
-
-        V exist = get(key);
-        clear();
-        if (exist != null)
-            put(key, exist);
-
+        ITEMS.set(this, null);
     }
 
     public Object[] clearPut(K key, V value) {
         return ITEMS.getAndSet(this, new Object[]{key, value});
     }
+
+//    public void clearExcept(K key) {
+//
+//        V exist = get(key);
+//        clear();
+//        if (exist != null)
+//            put(key, exist);
+//
+//    }
+
 }
