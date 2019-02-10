@@ -17,30 +17,22 @@ public interface TraveLog {
     boolean hasVisited(Node n);
 
 
-    
+    final class IntHashTraveLog extends IntHashSet implements TraveLog {
 
-    class IntHashTraveLog implements TraveLog {
-
-        final IntHashSet visit = new IntHashSet(8);
-
-        @Override
-        public void clear() {
-            visit.clear();
-        }
 
         @Override
         public boolean visit(Node n) {
-            return visit.add(((NodeGraph.AbstractNode)n).serial);
+            return add(((NodeGraph.AbstractNode)n).serial);
         }
 
         @Override
         public void unvisit(Node n) {
-            visit.remove(((NodeGraph.AbstractNode)n).serial);
+            remove(((NodeGraph.AbstractNode)n).serial);
         }
 
         @Override
         public boolean hasVisited(Node n) {
-            return visit.contains(((NodeGraph.AbstractNode)n).serial);
+            return contains(((NodeGraph.AbstractNode)n).serial);
         }
 
     }

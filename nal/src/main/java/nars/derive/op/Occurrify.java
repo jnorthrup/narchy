@@ -470,7 +470,7 @@ public class Occurrify extends TimeGraph {
 
     private ArrayHashSet<Event> solutions(Term pattern) {
 
-        ttl = Param.TEMPORAL_SOLVER_ITERATIONS;
+        ttl = Param.TIMEGRAPH_ITERATIONS;
         patternVolume = pattern.volume();
 
         solve(pattern,  /* take everything */ this::eachSolution);

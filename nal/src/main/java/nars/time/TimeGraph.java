@@ -1184,10 +1184,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     /* solve xternal occurring at the root of a compound (without any internal xternal remaining) */
     private boolean solveDtAndOccTop(Term x, Predicate<Event> each) {
-        if (!termsEvent(x)) return true;
+        if (!validPotentialSolution(x)) return true;
 
         if (x.dt() == XTERNAL) {
-            return solveDT(x, y -> !termsEvent(y.id) || solveOccurrence(y, each));
+            return solveDT(x, y -> !validPotentialSolution(y.id) || solveOccurrence(y, each));
         } else {
             //dont solve if more specific dt solved further in previous solveDT call
             return solveOccurrence(x, each);

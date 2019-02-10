@@ -3,12 +3,14 @@ package nars.table.dynamic;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.Longerval;
+import jcog.pri.ScalarValue;
 import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.control.op.Remember;
+import nars.index.concept.AbstractConceptIndex;
 import nars.link.TaskLink;
 import nars.table.BeliefTables;
 import nars.table.temporal.RTreeBeliefTable;
@@ -215,8 +217,14 @@ public class SensorBeliefTables extends BeliefTables {
                         p *= SIGNAL_PRI_FACTOR_SAME_TASK_BEING_STRETCHED;
                     //TODO else { ... //difference in truth: surprisingness
                 }
+
+                //float before = series.tasklink.priElseZero();
                 series.tasklink.priMax(next.punc(), p);
+                //float after = series.tasklink.priElseZero();
                 TaskLink.link(series.tasklink, n);
+//                if (after - before > ScalarValue.EPSILON)
+//                    ((AbstractConceptIndex)n.concepts).active.bag.pressurize(after-before); //HACK
+
             }
             return null;
         }

@@ -46,7 +46,6 @@ abstract public class Search<N, E> {
 
     private void stop() {
         at = null;
-        log.clear();
         path = null;
     }
 

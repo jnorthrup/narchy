@@ -82,6 +82,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
             MutableFloat o = new MutableFloat();
 
             TaskLink yy = b.put(x, o);
+
             if (o.floatValue() > EPSILON) {
                 overflow.overflow(b, o.floatValue(),
                     (yy != null) ?
@@ -293,7 +294,15 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
         public GeneralTaskLink(Term source, Term target, long when, byte punc, float pri) {
             this(source, target);
             if (when != ETERNAL) throw new TODO("non-eternal tasklink not supported yet");
-            pri(punc, pri);
+            if (pri>0)
+                pri(punc, pri);
+        }
+
+        private void assertAccurate() {
+            if (Param.DEBUG) {
+                if (!Util.equals(priElseZero(), punc.sumValues() / 4f, ScalarValue.EPSILON * 2))
+                    throw new WTF();
+            }
         }
 
         @Override
@@ -338,6 +347,9 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
         public GeneralTaskLink pri(byte punc, float pri, PriMerge merge) {
             assertFinite(pri);
+
+            assertAccurate();
+
             this.punc.update(pri, (prev,p)->{
                 Weight tmp = new Weight(prev);
                 merge.merge(tmp, p);
@@ -345,13 +357,17 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
                 if (n == n) {
                     if (n > 1) n = 1;
                     if (n < 0) n = 0;
-                }
-                return n;
+                    return n;
+                } else
+                    return 0;
+
             }, (prev,next)->{
                 float delta = (next - prev)/4;
-                if (delta > Float.MIN_NORMAL)
+                if (Math.abs(delta) > Float.MIN_NORMAL)
                     super.priAdd(delta);
             },i(punc));
+
+            assertAccurate();
 
             return this;
         }
@@ -372,37 +388,51 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
             if (Util.equals(a, 1, Float.MIN_NORMAL))
                 return pri();
 
+            assertAccurate();
+
             assert(a < 1);
 
-            return priUpdateAndGet((p, f)->{
+            float y = priUpdateAndGet((p, aa)->{
                 if (p!=p) {
+                    punc.fill(0);
                     return p; //stay deleted
                 } else {
                     float newSum = 0;
                     for (int i = 0; i < 4; i++)
-                        newSum += punc.update(f, (x,ff)-> Util.unitize/*Safe*/(x * ff), i);
-                    return newSum;
+                        newSum += punc.update(aa, (x,aaa)-> Util.unitize/*Safe*/(x * aaa), i);
+                    return newSum/4;
                 }
             }, a);
+
+            assertAccurate();
+
+            return y;
         }
 
         @Override public float pri(FloatFloatToFloatFunction update, float _x) {
-            return super.pri((prev, x)->{
+            float y = super.pri((prev, x)->{
                 float next = update.apply(prev, x);
                 if (next==next) {
-                    if (prev!=prev) prev = 0;
-                    float delta = (next - prev)/4;
-                    if (Math.abs(delta) > Float.MIN_NORMAL) {
-                        float newSum = 0;
-                        for (int i = 0; i < 4; i++)
-                            newSum += punc.addAt(delta, i);
-                        return newSum;
+                    if (prev!=prev) {
+                        punc.fill(next/4);
                     } else {
-                        return prev;
+                        float delta = (next - prev) / 4;
+                        if (Math.abs(delta) > Float.MIN_NORMAL) {
+                            float newSum = 0;
+                            for (int i = 0; i < 4; i++)
+                                newSum += punc.addAt(delta, i);
+                            return newSum/4;
+                        }
                     }
+                } else {
+                    punc.fill(0);
                 }
                 return next;
             },_x);
+
+            assertAccurate();
+
+            return y;
         }
 
         @Override
