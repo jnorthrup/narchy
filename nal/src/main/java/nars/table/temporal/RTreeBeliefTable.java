@@ -158,13 +158,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         float pastDiscount = 1f - (presentAndFutureBoost - 1f);
         return (Task x, float min) -> {
             float evi = x.evi(now, dur, min);
-            if (evi < min)
-                return Float.NaN;
+//            if (evi < min)
+//                return Float.NaN;
             long e = x.end();
             return (e < futureThresh ? pastDiscount : 1f) *
                     //x.evi(now, dur) * (1 + (e-s)/2f)/*x.range()*/;
-                    //evi;
-                    evi * (e - x.start() + 1)/*x.range()*/;
+                    evi;
+                    //evi * (e - x.start() + 1)/*x.range()*/;
         };
 
         //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));
@@ -299,10 +299,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         FloatRank<Task> taskStrength = null;
         FloatRank<TaskRegion> leafRegionWeakness = null;
         int e = 0, cap;
+        int dur = nar.dur();
+        long now = nar.time();
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
-                long now = nar.time();
-                taskStrength = taskSurviveValue(input, nar.dur(), now);
+                taskStrength = taskSurviveValue(input, dur, now);
                 leafRegionWeakness = regionWeakness(now, input.isBeliefOrGoal() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
             }
             if (!compress(treeRW, e == 0 ? input : null /** only limit by inputRegion on first iter */,
