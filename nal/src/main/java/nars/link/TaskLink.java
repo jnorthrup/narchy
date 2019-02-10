@@ -5,19 +5,16 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.data.MutableFloat;
 import jcog.decide.Roulette;
-import jcog.pri.OverflowDistributor;
-import jcog.pri.UnitPri;
-import jcog.pri.UnitPrioritizable;
-import jcog.pri.Weight;
+import jcog.pri.*;
 import jcog.pri.bag.Bag;
 import jcog.pri.op.PriMerge;
 import jcog.signal.tensor.AtomicArrayTensor;
+import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.index.concept.AbstractConceptIndex;
-import nars.task.Tasklike;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
@@ -47,9 +44,6 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
         return y;
     }
 
-    static GeneralTaskLink the(Term src, Task task, boolean generify, boolean eternalize, float pri, NAR n) {
-        return new TaskLink.GeneralTaskLink(src, Tasklike.seed(task, generify, eternalize, n), pri);
-    }
 
 
     /** concept term (source) where the link originates */
@@ -61,18 +55,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
     //byte punc();
     float punc(byte punc);
 
-    /** main tasklink constructor
-     * @param generify  if the task's target contains temporal information, discarding this coalesces the link with other similar tasklinks (weaker, more generic).
-     *                   otherwise a unique tasklink is created
-     *
-     *      if concept only, then tasklinks are created for the concept() of the target.  this has consequences for temporal
-     *      terms such that unique and specific temporal data is not preserved in the tasklink, thereby reducing
-     *      the demand on tasklinks.
-     *
-     *      otherwise non-concept for temporal includes more temporal precision at the cost of more links.
-     *
-     * */
-    static TaskLink tasklink(Term src, Task task, boolean generify, boolean eternalize, float pri, NAR n) {
+    /** main tasklink constructor  */
+    static TaskLink tasklink(Term src, Task task, float pri) {
 
         //assert(task.target().volume() < n.termVolumeMax.intValue());
 
@@ -227,6 +211,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
         throw new WTF();
     }
 
+    void priMax(byte punc, float p);
 
 
 //    /** special tasklink for signals which can stretch and so their target time would not correspond well while changing */
@@ -305,14 +290,10 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
             super(source, target);
         }
 
-        public GeneralTaskLink(Term source, Tasklike seed, float pri) {
-            this(source, seed.target);
-            if (seed.when != ETERNAL) throw new TODO("non-eternal tasklink not supported yet");
-            pri(seed.punc, pri);
-        }
-
-        @Deprecated public GeneralTaskLink(Term source, Term t, byte punc, long when, float pri) {
-            this(source, Tasklike.seed(t, punc, when), pri);
+        public GeneralTaskLink(Term source, Term target, long when, byte punc, float pri) {
+            this(source, target);
+            if (when != ETERNAL) throw new TODO("non-eternal tasklink not supported yet");
+            pri(punc, pri);
         }
 
         @Override
@@ -331,6 +312,11 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
         public final GeneralTaskLink pri(byte punc, float pri) {
             return pri(punc, pri, Param.tasklinkMerge);
+        }
+
+        @Override
+        public void priMax(byte punc, float max) {
+            pri(punc, max, PriMerge.max);
         }
 
         @Override
@@ -389,16 +375,34 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
             assert(a < 1);
 
             return priUpdateAndGet((p, f)->{
-                float n;
                 if (p!=p) {
-                    n = 0;
+                    return p; //stay deleted
                 } else {
-                    n = p * f;
+                    float newSum = 0;
                     for (int i = 0; i < 4; i++)
-                        punc.update(f, (x,d)-> Util.unitize/*Safe*/(x * f), i);
+                        newSum += punc.update(f, (x,ff)-> Util.unitize/*Safe*/(x * ff), i);
+                    return newSum;
                 }
-                return n;
             }, a);
+        }
+
+        @Override public float pri(FloatFloatToFloatFunction update, float _x) {
+            return super.pri((prev, x)->{
+                float next = update.apply(prev, x);
+                if (next==next) {
+                    if (prev!=prev) prev = 0;
+                    float delta = (next - prev)/4;
+                    if (Math.abs(delta) > Float.MIN_NORMAL) {
+                        float newSum = 0;
+                        for (int i = 0; i < 4; i++)
+                            newSum += punc.addAt(delta, i);
+                        return newSum;
+                    } else {
+                        return prev;
+                    }
+                }
+                return next;
+            },_x);
         }
 
         @Override

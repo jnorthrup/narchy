@@ -264,7 +264,7 @@ public class PatternIndex extends MapConceptIndex {
                                 return ellipsis.unify(EllipsisMatch.matched(Y, yi, yi + available), u);
 
                             } else {
-                                //TODO ellipsis is in the center
+                                //TODO ellipsis is in the center or beginning
                                 throw new TODO();
                             }
                         } else {

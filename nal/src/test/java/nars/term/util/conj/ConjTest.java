@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.roaringbitmap.RoaringBitmap;
 
+import java.util.List;
 import java.util.Random;
 
 import static nars.$.*;
@@ -255,7 +256,7 @@ public class ConjTest {
         FasterList<LongObjectPair<Term>> x = newRandomEvents(variety, start, end);
 
         Term y = conj(x.clone());
-        FasterList<LongObjectPair<Term>> z = y.eventList();
+        List<LongObjectPair<Term>> z = y.eventList();
 
 
         //System.out.println(x + "\t" + y + "\t" + z);

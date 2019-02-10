@@ -8,6 +8,7 @@ import nars.term.Terms;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.TreeSet;
 
 import static nars.$.$$;
@@ -38,8 +39,10 @@ class DepIndepVarIntroductionTest {
         Term input = $$(x);
         @Nullable Term[] r = Terms.nextRepeat(input.subterms(), depIndepFilter, 2);
         assertEquals(2, r.length);
-        assertEq("x", r[0]);
-        assertEq("(x,#1)", r[1]);
+        Arrays.sort(r);
+        assertEq("(x,#1)", r[0]);
+        assertEq("x", r[1]);
+
 
         assertEquals("[((a-->($_v,#1))=|>(b-->($_v,#1))), ((a-->$_v)=|>(b-->$_v))]",
                 introduce(x, 8).toString());

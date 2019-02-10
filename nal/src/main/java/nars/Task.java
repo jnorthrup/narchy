@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import jcog.pri.UnitPrioritizable;
-import nars.control.Perceive;
+import nars.control.op.Perceive;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.task.*;
@@ -854,60 +854,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     }
 
     default ITask next(NAR n) {
-
-        Term x = term();
-
-        List<ITask> yy = new FasterList(1);
-
-        final int[] tried = {0};
-
-        if (Evaluation.canEval(x)) {
-
-            int volMax = n.termVolumeMax.intValue();
-
-            final int[] forked = {0};
-
-            Predicate<Term> each = (y) -> {
-
-                tried[0]++;
-
-                if (y == Bool.Null)
-                    return true; //continue TODO maybe limit these
-
-                if (Perceive.tryPerceive(this, y, yy, n)) {
-                    forked[0]++;
-                }
-
-                return (forked[0] < Param.TASK_EVAL_FORK_LIMIT) && (tried[0] < Param.TASK_EVAL_TRY_LIMIT);
-            };
-            new Perceive.TaskEvaluation(each).evalTry(n.evaluator, x);
-
-        } else {
-            if (!Perceive.tryPerceive(this, x, yy, n))
-                return null;
-        }
-
-        int yys = yy.size();
-        switch (yys) {
-            case 0:
-                return null;
-            case 1:
-                return yy.get(0);
-            case 2:
-                if (yy.get(0).equals(yy.get(1)))
-                    return yy.get(0);
-                break;
-        }
-
-        //test for deduplication
-        java.util.Set<ITask> yyy = new HashSet(yys);
-        yyy.addAll(yy);
-        int yyys = yyy.size();
-        if (yyys==1)
-            return yy.get(0);
-        else
-            return AbstractTask.of(yyys ==yys ? /*the original list */ yy : /* the deduplicated set */ yyy);
-
+        return Perceive.perceive(this, n);
     }
 
 

@@ -29,7 +29,7 @@ public class AtomicDoubleArrayTensor extends AbstractShapedTensor {
     }
 
     @Override
-    public void addAt(float x, int linearCell) {
-        data.addAndGet(linearCell, x);
+    public float addAt(float x, int linearCell) {
+        return (float) data.addAndGet(linearCell, x);
     }
 }

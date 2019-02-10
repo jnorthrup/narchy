@@ -690,8 +690,8 @@ public class RevisionTest {
 
         Task a2 = n.believe(x, 1, 1f);
         Task b = n.believe(x, 2, 1f);
-        Task c = n.believe(x, 4, 1f);
-        Task d = n.believe(x, 8, 1f);
+        Task c = n.believe(x, 3, 1f);
+//        Task d = n.believe(x, 8, 1f);
         Task aa = Revision.merge(a, a2, n);
         p(aa);
         assertTrue(aa.conf() > a.conf());
@@ -701,9 +701,9 @@ public class RevisionTest {
         Task ac = Revision.merge(a, c, n);
         p(ac);
         assertTrue(ac.conf() < ab.conf(), ()->ac + " must have less conf than " + ab);
-        Task ad = Revision.merge(a, d, n);
-        p(ad);
-        assertTrue(ad.conf() < ac.conf());
+//        Task ad = Revision.merge(a, d, n);
+//        p(ad);
+//        assertTrue(ad.conf() < ac.conf());
     }
 
     private static void p(Task aa) {

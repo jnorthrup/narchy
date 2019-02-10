@@ -30,22 +30,24 @@ public class AtomicArrayTensor extends AbstractVector {
     }
 
     /** @see jcog.data.atomic.AtomicFloatFieldUpdater */
-    @Override public final void addAt(float x, int linearCell) {
+    @Override public final float addAt(float x, int linearCell) {
         if (Math.abs(x) < Float.MIN_NORMAL)
-            return; //no effect
+            return 0; //no effect
 
+        float nextFloat;
         int prev, next;
         do {
             prev = data.getAcquire(linearCell);
-            next = floatToIntBits(intBitsToFloat(prev) + x); //next = floatToIntBits(f.apply(intBitsToFloat(prev), y));
+            next = floatToIntBits(nextFloat = (intBitsToFloat(prev) + x)); //next = floatToIntBits(f.apply(intBitsToFloat(prev), y));
         } while (prev!=next && data.compareAndExchangeRelease(linearCell, prev, next)!=prev);
+        return nextFloat;
     }
 
-    public final void update(float arg, FloatFloatToFloatFunction x, int linearCell) {
-        update(arg, x, null, linearCell);
+    public final float update(float arg, FloatFloatToFloatFunction x, int linearCell) {
+        return update(arg, x, null, linearCell);
     }
 
-    public final void update(float arg, FloatFloatToFloatFunction x, @Nullable FloatFloatProcedure delta, int linearCell) {
+    public final float update(float arg, FloatFloatToFloatFunction x, @Nullable FloatFloatProcedure delta, int linearCell) {
         int prevI, nextI;
         float prev, next;
 
@@ -58,6 +60,8 @@ public class AtomicArrayTensor extends AbstractVector {
 
         if (delta!=null)
             delta.value(prev, next);
+
+        return next;
     }
 
     @Override

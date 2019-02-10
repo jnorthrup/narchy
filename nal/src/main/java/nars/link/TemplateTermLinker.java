@@ -267,7 +267,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
         for (Concept c : subConcepts) {
             TaskLink.link(
-                    TaskLink.tasklink(c.term(), task, true, true, pEach, nar),
+                    TaskLink.tasklink(c.term(), task, pEach),
                     nar, null /* overflow*/);
         }
 

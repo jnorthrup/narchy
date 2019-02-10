@@ -437,7 +437,7 @@ public class NARio extends NAgentX {
             return x;
 
 
-        }, fps);
+        }, -1, fps, fps);
 
 
     }

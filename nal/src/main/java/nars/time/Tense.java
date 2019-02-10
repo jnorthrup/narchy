@@ -5,8 +5,10 @@ import jcog.WTF;
 import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import nars.NAR;
+import nars.Op;
 import nars.Param;
 import nars.task.util.TaskRegion;
+import nars.term.Term;
 import nars.util.Timed;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,17 +123,22 @@ public enum Tense {
         return dither(t, nar.dtDither());
     }
 
-    /** modifies the input array */
+
+    /** modifies the input array, and returns it */
     public static long[] dither(long[] t, NAR nar) {
+        return dither(t, nar.dtDither());
+    }
+
+    /** modifies the input array, and returns it */
+    public static long[] dither(long[] t, int dt) {
         long s = t[0];
         if (s == ETERNAL) {
             assert(t[1] == ETERNAL);
             return t;
         }
 
-        int d = nar.dtDither();
-        t[0] = dither(s, d);
-        t[1] = dither(t[1], d);
+        t[0] = dither(s, dt);
+        t[1] = dither(t[1], dt);
         return t;
     }
 
@@ -259,6 +266,41 @@ public enum Tense {
         return u;
     }
 
+    public static void assertDithered(TaskRegion x, int d) {
+        if (d < 1)
+            throw new WTF("dtDither < 1");
+
+        long s = x.start();
+        long e = x.end();
+        if (s != ETERNAL) {
+            if (s == TIMELESS)
+                throw WTF.WTF(x + " has start=TIMELESS");
+
+            if (d > 1) {
+                if (Tense.dither(s, d) != s)
+                    throw WTF.WTF(x + " has non-dithered start occurrence");
+
+                if (e != s && Tense.dither(e, d) != e)
+                    throw WTF.WTF(x + " has non-dithered end occurrence");
+            }
+        } else {
+            if (e!=ETERNAL)
+                throw WTF.WTF(x + " start=ETERNAL but end!=ETERNAL");
+        }
+    }
+
+    public static void assertDithered(Term t, int d) {
+        if (d > 1 && t.hasAny(Op.Temporal)) {
+            t.recurseTerms((Term z) -> z.hasAny(Op.Temporal), xx -> {
+                int zdt = xx.dt();
+                if (!Tense.dtSpecial(zdt)) {
+                    if (zdt != Tense.dither(zdt, d))
+                        throw WTF.WTF(t + " contains non-dithered DT in subterm " + xx);
+                }
+                return true;
+            }, null);
+        }
+    }
 
 
 //    public static long[] intersection(TaskRegion[] t) {

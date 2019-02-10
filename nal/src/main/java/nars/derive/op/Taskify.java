@@ -10,6 +10,7 @@ import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -38,12 +39,15 @@ public class Taskify extends AbstractPred<Derivation> {
     }
 
     static boolean valid(Term x, byte punc) {
-        if (x == null)
+        if (x == null || x instanceof Bool)
             return false;
         x = x.unneg();
-        return x.op().taskable &&
+        if (!(x.op().taskable &&
                !x.hasAny(Op.VAR_PATTERN) &&
-               ((punc != BELIEF && punc != GOAL) || (!x.hasVarQuery()));
+               ((punc != BELIEF && punc != GOAL) || (!x.hasVarQuery()))))
+            return false;
+
+        return true;
     }
 
     protected static boolean spam(Derivation d, int cost) {
@@ -119,7 +123,7 @@ public class Taskify extends AbstractPred<Derivation> {
             assert (e >= s) : "task has reversed occurrence: " + s + ".." + e;
 
             //dither time
-            int dither = d.ditherTime;
+            int dither = d.ditherDT;
             S = Tense.dither(s, dither);
             E = Tense.dither(e, dither);
 

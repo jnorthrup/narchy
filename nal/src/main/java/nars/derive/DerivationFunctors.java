@@ -46,7 +46,7 @@ public enum DerivationFunctors {
                 SetFunc.unionSect,
                 SetFunc.differ,
                 SetFunc.intersect,
-                Equal.the,
+                Equal.the, Equal.cmp,
                 (Functor) nar.concept("unneg"),
                 (Functor) nar.concept("negateEvents"),
                 //(Functor) nar.concept("eventOf"),

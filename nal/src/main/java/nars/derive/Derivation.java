@@ -187,7 +187,7 @@ public class Derivation extends PreDerivation {
     public transient boolean temporal, temporalTerms;
 
     public transient TruthFunc truthFunction;
-    public transient int ditherTime;
+    public transient int ditherDT;
 
     public Deriver deriver;
     public final DynBytes tmpPremiseKey = new DynBytes(256);
@@ -545,7 +545,7 @@ public class Derivation extends PreDerivation {
             this.time = now;
 
             this.dur = nar.dur();
-            this.ditherTime = nar.dtDither();
+            this.ditherDT = nar.dtDither();
 
             uniSubst.u.dtTolerance = unifyPremise.dtTolerance = this.dtTolerance =
                     //Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
@@ -639,17 +639,14 @@ public class Derivation extends PreDerivation {
         Term y = x;
 
         if (y.hasAny(VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit)) {
-            //y = transform(y);
             y = y.replace(xy);
         }
 
-        y =
-                    y.replace(retransform); //retransforms only
+        if (!retransform.isEmpty())
+            y =  y.replace(retransform); //retransforms only
                     //x.replace(xy).replace(retransform); //avoid functor eval
                     //transform(x).replace(retransform);
                     //x.replace(retransform);
-
-
 
         if (y!=x && !y.op().eventable)
             return x; //dont bother

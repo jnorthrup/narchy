@@ -33,6 +33,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import static jcog.WTF.WTF;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
@@ -87,7 +88,13 @@ public interface Truth extends Truthed {
             return (DiscreteTruth) truth;
     }
 
-
+    static void assertDithered(@Nullable Truth t, NAR n) {
+        if (t != null) {
+            Truth d = t.dithered(n);
+            if (!t.equals(d))
+                throw WTF("not dithered");
+        }
+    }
 
 
     class TruthException extends RuntimeException {

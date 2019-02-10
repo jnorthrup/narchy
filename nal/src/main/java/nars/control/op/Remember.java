@@ -2,7 +2,6 @@ package nars.control.op;
 
 import jcog.data.list.FasterList;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
@@ -21,9 +20,6 @@ import nars.truth.Truth;
 import nars.truth.dynamic.DynEvi;
 import org.jetbrains.annotations.Nullable;
 
-import static jcog.WTF.WTF;
-import static nars.time.Tense.ETERNAL;
-
 /**
  * conceptualize and attempt to insert/merge a task to belief table.
  * depending on the status of the insertion, activate links
@@ -37,86 +33,57 @@ public class Remember extends AbstractTask {
     public TaskConcept concept;
 
 
-//    static final Logger logger = LoggerFactory.getLogger(Remember.class);
-
     @Nullable
-    public static Remember the(Task input, NAR n) {
+    public static Remember the(Task x, NAR n) {
 
-        assert (!input.isCommand());
+        assert (!x.isCommand());
 
-        assert (input.op().taskable);
+        assert (x.op().taskable);
 
-        boolean isInput = input.isInput();
+        boolean isInput = x.isInput();
         if (Param.VOLMAX_RESTRICTS || (Param.VOLMAX_RESTRICTS_INPUT && isInput)) {
-            int termVol = input.term().volume();
+            int termVol = x.term().volume();
             int maxVol = n.termVolumeMax.intValue();
             if (termVol > maxVol)
-                throw new TaskException(input, "target exceeds volume maximum: " + termVol + " > " + maxVol);
+                throw new TaskException(x, "target exceeds volume maximum: " + termVol + " > " + maxVol);
         }
 
-        if ((!isInput || input instanceof TaskProxy) && input.isBeliefOrGoal() && input.conf() < n.confMin.floatValue()) {
+        if ((!isInput || x instanceof TaskProxy) && x.isBeliefOrGoal() && x.conf() < n.confMin.floatValue()) {
             if (Param.DEBUG)
-                throw new TaskException(input, "insufficient evidence for non-input Task");
+                throw new TaskException(x, "insufficient evidence for non-input Task");
             else
                 return null;
         }
 
 
-        //verify dithering
         if (Param.DEBUG_ENSURE_DITHERED_TRUTH) {
-            if (!isInput) {
-                Truth t = input.truth();
-                if (t != null) {
-                    Truth d = t.dithered(n);
-                    if (!t.equals(d))
-                        throw WTF("not dithered");
-                }
-            }
+            Truth.assertDithered(x.truth(), n);
         }
+
         if (Param.DEBUG_ENSURE_DITHERED_DT || Param.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
-            int d = n.timeResolution.intValue();
-            if (d > 1) {
-                if (Param.DEBUG_ENSURE_DITHERED_DT) {
-                    Term x = input.term();
-                    if (x.hasAny(Op.Temporal)) {
-                        x.recurseTerms((Term z) -> z.hasAny(Op.Temporal), xx -> {
-                            int zdt = xx.dt();
-                            if (!Tense.dtSpecial(zdt)) {
-                                if (zdt != Tense.dither(zdt, d))
-                                    throw WTF(input + " contains non-dithered DT in subterm " + xx);
-                            }
-                            return true;
-                        }, null);
-                    }
-                }
-                if (Param.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
-                    long s = input.start();
-                    if (s != ETERNAL) {
-                        if (Tense.dither(s, d) != s)
-                            throw WTF(input + " has non-dithered start occurrence");
-                        long e = input.end();
-                        if (e != s && Tense.dither(e, d) != e)
-                            throw WTF(input + " has non-dithered end occurrence");
-                    }
-                }
+            int d = n.dtDither();
+            if (Param.DEBUG_ENSURE_DITHERED_DT) {
+                Tense.assertDithered(x.term(), d);
+            }
+            if (Param.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
+                Tense.assertDithered(x, d);
             }
         }
 
-
-        Concept c = n.conceptualize(input);
+        Concept c = n.conceptualize(x);
         if (c != null) {
             if (!(c instanceof TaskConcept)) {
                 if (Param.DEBUG || isInput)
-                    throw new TaskException(input, c + " is not a TaskConcept: " + c.getClass());
+                    throw new TaskException(x, c + " is not a TaskConcept: " + c.getClass());
                 else
                     return null;
             }
 
-            return new Remember(input, (TaskConcept) c);
+            return new Remember(x, (TaskConcept) c);
         } else {
             if (Param.DEBUG) {
                 if (isInput)
-                    throw new TaskException(input, "not conceptualized");
+                    throw new TaskException(x, "not conceptualized");
             }
             return null;
         }

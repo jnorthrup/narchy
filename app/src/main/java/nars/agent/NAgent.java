@@ -505,10 +505,6 @@ public class NAgent extends NARService implements NSense, NAct {
                         //(Math.max(now, frameTrigger.next(now)), d);
                         Math.max(now, frameTrigger.next(now));
 
-//            int ditherDT = nar.dtDither();
-//            now = Tense.dither(now, ditherDT);
-//            next = Tense.dither(next, ditherDT);
-//            prev = Tense.dither(prev, ditherDT);
 
             this.now = now;
             this.next = next;

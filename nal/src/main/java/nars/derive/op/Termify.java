@@ -2,11 +2,13 @@ package nars.derive.op;
 
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 
 import static nars.Op.NEG;
+import static nars.time.Tense.assertDithered;
 
 /**
  * Derivation target construction step of the derivation process that produces a derived task
@@ -55,11 +57,6 @@ public final class Termify extends AbstractPred<Derivation> {
 //            //transform again to apply any assignments unified by second-layer unification to other parts of the compound not in the unification functor
 //            x = x.replace(d.uniSubst.u.xy);
 //        }
-
-        if (x.volume() - (x.op()==NEG ? 1 : 0) > d.termVolMax) {
-            d.nar.emotion.deriveFailVolLimit.increment();
-            return false;
-        }
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
             //Term c1e = c1;
             d.nar.emotion.deriveFailEval.increment(/*() ->
@@ -67,6 +64,14 @@ public final class Termify extends AbstractPred<Derivation> {
             */);
             return false;
         }
+
+        if (x.volume() - (x.op()==NEG ? 1 : 0) > d.termVolMax) {
+            d.nar.emotion.deriveFailVolLimit.increment();
+            return false;
+        }
+
+
+
 
 
 //        if (c1.op() == NEG) {
@@ -76,6 +81,12 @@ public final class Termify extends AbstractPred<Derivation> {
 //        }
 
         boolean o = Occurrify.occurrify(x, truth, time, d);
+
+        if (o) {
+            if (Param.DEBUG_ENSURE_DITHERED_DT)
+                assertDithered(d.concTerm, d.ditherDT);
+        }
+
 
 //        if (o) {
 //            if (d.concOcc[0]!=ETERNAL && d.concOcc[0] == d.concOcc[1]) {

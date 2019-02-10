@@ -7,6 +7,7 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +23,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
     }
 
     public static Term the(Term x, Term y) {
-        return $.func(the, x, y);
+        return $.func(the, x.compareTo(y) <= 0 ? new Term[] { x, y } : new Term[] { y, x });
     }
 
     @Override
@@ -120,6 +121,17 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
         return xy == True ? y : null;
     }
 
+    public static Term cmp(Term a, Term b, int c) {
+        if (a.compareTo(b) > 0) {
+            c *= -1;
+            Term x = a;
+            a = b;
+            b = x;
+        }
+
+        return $.func(cmp, a, b, Int.the(c));
+    }
+
     /**
      * general purpose comparator: cmp(x, y, x.compareTo(y))
      */
@@ -130,49 +142,64 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
         @Override
         protected Term apply3(Evaluation e, Term x, Term y, Term xy) {
             Op xyo = xy.op();
-            if (xyo==INT && xy.equals(zero)) {
-                if (x.op() == INT && y.op().var) {
-                    return e.is(y, x) ? True : Null;
-                } else if (x.op().var && y.op()==INT) {
+
+            boolean xVar = x instanceof Variable;
+            boolean yVar = y instanceof Variable;
+
+            if (xy.equals(zero)) {
+
+                if ((!xVar && !yVar) || (xVar && yVar)) {
+                    if (x.equals(y)) {
+                        return True; //obvious
+                    } else {
+                        return Equal.the(x, y);
+                    }
+                } else if (xVar) {
                     return e.is(x, y) ? True : Null;
+                } else if (yVar) {
+                    return e.is(y, x) ? True : Null;
                 }
             }
+
+            if (xVar && yVar)
+                return null; //nothing to do
 
             if (!x.hasVars() && !y.hasVars()) {
+
                 int c = x.compareTo(y);
 
-                if (x.op() == INT && y.op() == INT && xy.op()==INT) {
-                    return (Integer.compare(((Int) x).id, ((Int) y).id) == ((Int) xy).id) ? True : False;
-                }
-
-                if (c == 0) {
-
-                    if (!xy.op().var && !xy.equals(zero))
-                        return False; //incorrect value
+                if (xyo == INT) {
+                    if (c != ((Int) xy).id)
+                        return False;
                     else {
-                        return e.is(xy, zero) ? True : Null;
-                    }
-                } else if (c > 0) {
-
-                    //TODO needs eval context to be remapped
-//                    //swap argument order
-//                    Term s = x;
-//                    x = y;
-//                    y = s;
-//
-//                    if (xyo == INT) {
-//                        int xyi = -((Int) xy).id;
-//                        if (x.op() == INT && y.op() == INT) {
-//                            return (Integer.compare(((Int) x).id, ((Int) y).id) == xyi) ? True : False;
+//                        if (c > 0) {
+//                            //just in case
+//                            if (!e.is($.func(cmp, x, y, xy), reverse(x, y, c)))
+//                                return Null;
 //                        }
-//                        xy = Int.the(xyi);
-//                    } else if (!xyo.var) {
-//                        xy = $.varDep("cmp_tmp"); //erase constant, forcing recompute
-//                    }
-//                    return $.func(Equal.cmp, x, y, xy);
+                        return True;
+                    }
+                } else if (!xy.hasVars())
+                    return Null; //some nonsense non-integer constant
+
+                if (xyo.var) {
+                    if (e.is(xy, Int.the(c))) {
+                        if (c > 0) {
+                            return reverse(x, y, c);
+                        } else {
+                            return null;
+                        }
+                    } else {
+                        return Null; //conflict with the correct value
+                    }
                 }
             }
+
             return super.apply3(e, x, y, xy);
+        }
+
+        private Term reverse(Term x, Term y, int c) {
+            return $.func(cmp, y, x, Int.the(-c));
         }
 
         @Override

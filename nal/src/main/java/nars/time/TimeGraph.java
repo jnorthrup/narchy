@@ -153,8 +153,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             if (start!=ETERNAL) {
                 //optional dithering
-                start = occ(start);
-                end = occ(end);
+                start = eventOcc(start);
+                end = eventOcc(end);
             }
 
             if (add) {
@@ -654,9 +654,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         break;
                 }
 
-                int idt = occToDT(dt);
-
-                return solveDT(x, start, idt, dur, path, dir, each);
+                return solveDT(x, start, occToDT(dt), dur, path, dir, each);
             }
         });
 
@@ -794,8 +792,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     private static long durMerge(Event a, Event b) {
         if (a instanceof Absolute && b instanceof Absolute) {
-            long ad = a.dur();
-            long bd = b.dur();
+            long ad = a.dur(), bd = b.dur();
             return (a.id.op() == IMPL || b.id.op() == IMPL) ?
                     Math.max(ad, bd) //implications are like temporal pointers, not events.  so they shouldnt shrink duration
                     :
@@ -872,13 +869,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
 
-    /**
-     * override to filter dt (ex: dither)
-     */
-    public int dt(int dt) {
-        return dt;
-    }
 
+    /** dt computation for term construction */
     protected int occToDT(long x) {
         assert (x != TIMELESS);
         int idt;
@@ -890,21 +882,18 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     /**
-     * override to filter occ (ex: dither)
+     * internal time representation, override to filter occ (ex: dither)
      */
-    public long occ(long when) {
+    public long eventOcc(long when) {
         return when;
     }
 
-
-
-
     /**
-     * preprocess the dt used to construct a new target.
-     * ex: dithering
+     * construct a new target.
+     * expects 'dt' to be the final value (already dithered)
      */
     @Deprecated
-    protected Term dt(Term x, boolean dir, int dt) {
+    private Term dt(Term x, boolean dir, int dt) {
 
         assert (dt != XTERNAL);
 

@@ -84,8 +84,8 @@ public class ArrayTensor extends AbstractShapedTensor
     }
 
     @Override
-    public void addAt(float x, int linearCell) {
-        data[linearCell] += x;
+    public float addAt(float x, int linearCell) {
+        return (data[linearCell] += x);
     }
 
     @Override

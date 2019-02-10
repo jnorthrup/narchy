@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 import static jcog.math.LongInterval.TIMELESS;
 import static nars.Op.CONJ;
-import static nars.task.Tasklike.seed;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -44,8 +43,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         super(c, beliefOrGoal);
         this.series = s;
 
-        tasklink = new TaskLink.GeneralTaskLink(c, seed(term, punc(), ETERNAL), 0);
-
+        tasklink = new TaskLink.GeneralTaskLink(c, c, ETERNAL, punc(), 0);
     }
 
     @Override

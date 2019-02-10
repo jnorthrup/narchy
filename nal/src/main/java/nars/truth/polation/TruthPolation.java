@@ -452,24 +452,25 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         if (size()<2)
             return;
 
-        long[] union = Tense.union(Iterables.transform(this, (TaskComponent x)->x.task));
-        if (union[0] == ETERNAL)
+        long[] se = Tense.union(Iterables.transform(this, (TaskComponent x)->x.task));
+        if (se[0] == ETERNAL)
             return; //eternal
 
-        int dtDither = nar.dtDither();
         if (start==ETERNAL) {
             //override eternal range with the calculated union
         } else {
-            union[0] = Math.min(end, Math.max(start, union[0]));
-            union[1] = Math.max(start, Math.min(end, union[1]));
+            se[0] = Math.min(end, Math.max(start, se[0]));
+            se[1] = Math.max(start, Math.min(end, se[1]));
         }
 
-        union[0] = Tense.dither(union[0], dtDither);
-        union[1] = Tense.dither(union[1], dtDither);
-        if (union[0]!=start || union[1]!=end) {
+        int dtDither = nar.dtDither();
+        if (dtDither > 1) {
+            Tense.dither(se, dtDither);
+        }
+        if (se[0]!=start || se[1]!=end) {
             invalidateEvi();
-            start = union[0];
-            end = union[1];
+            start = se[0];
+            end = se[1];
         }
     }
 

@@ -210,7 +210,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             } else {
                 negate = false;
             }
-            if (x.the() && internableRoot(xo, x.dt())) {
+            if (internableRoot(xo, x.dt()) && x.the()) {
                 Term y = terms[xo.id].apply(new Intermed.InternedCompoundByComponentsSubs(x));
                 if (y != null)
                     return negate ? y.neg() : y;

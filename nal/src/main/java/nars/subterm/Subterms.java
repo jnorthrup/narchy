@@ -1169,9 +1169,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 EllipsisMatch ee = (EllipsisMatch) yi;
                 if (ee.subs()==0) {
                     if (s == 1)
-                        return EmptySubterms;
-                    else
-                        continue; //no effect
+                        return EmptySubterms; //the empty ellipsis is the only subterm
                 }
 
                 if (s == 1) {

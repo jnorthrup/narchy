@@ -66,6 +66,10 @@ public class Evaluation {
         }
     }
 
+    protected Evaluation() {
+        this.each = (Predicate<Term>)this;
+    }
+
     public Evaluation(Predicate<Term> each) {
         this.each = each;
     }
@@ -133,7 +137,7 @@ public class Evaluation {
     /**
      * fails fast if no known functors apply
      */
-    public boolean evalTry(Evaluator e, Term x) {
+    public boolean evalTry(Term x, Evaluator e) {
         ArrayHashSet<Term> d = e.discover(x, this);
         if ((d == null || d.isEmpty())  && (termutator == null || termutator.isEmpty())) {
             each.test(x);
@@ -160,11 +164,11 @@ public class Evaluation {
             //iterate until stable
             main: do {
                 prev = y;
-                vStart = now();
                 mutStart = termutators();
                 tried = 0;
                 Iterator<Term> ii = operations.iterator();
                 while (ii.hasNext()) {
+                    vStart = now();
 
                     Term a = ii.next();
 
@@ -215,13 +219,13 @@ public class Evaluation {
 
                         z = func.apply(this, args);
                         if (z == Null) {
-                            ii.remove();
+                            ii.remove(); //CUT
                             y = Null;
                             break main;
                         }
                         substAdded = now() != vStart;
                         mutAdded = mutStart != termutators();
-                        if ((z == null && (substAdded || mutAdded)) || (z instanceof Bool)) {
+                        if ((z == null && (substAdded || mutAdded)) || (z!=null && z!=a)) { //(z instanceof Bool)) {
                             removeEntry = true;
                         }
 
@@ -240,16 +244,15 @@ public class Evaluation {
 
 
                         Term y0 = y;
-                        if (z != null)
+                        if (z != null) {
                             y = y.replace(a, z);
+                        }
 
-                        if (y!=y0 && !y.op().conceptualizable) break main;
-
-                        if (substAdded) {
+                        if (substAdded && y.op().conceptualizable) {
                             y = y.replace(subst);
                         }
 
-                        if (y!=y0 && !y.op().conceptualizable) break main;
+                        if (!y.op().conceptualizable) break main;
 
 //                        if (y0!=y) {
 //                            operations = e.discover(y, this);
@@ -328,7 +331,7 @@ public class Evaluation {
     }
 
     private int now() {
-        return v != null ? v.size() : -1;
+        return v != null ? v.size() : 0;
     }
 
     /**

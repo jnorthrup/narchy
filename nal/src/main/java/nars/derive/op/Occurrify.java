@@ -270,26 +270,15 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    @Override
-    public int dt(int dt) {
-        return Tense.dither(dt, d.ditherTime);
-    }
 
     @Override
-    public long occ(long when) {
-        return Tense.dither(when, d.ditherTime);
+    public long eventOcc(long when) {
+        if (Param.TIMEGRAPH_DITHER_EVENTS)
+            return Tense.dither(when, d.ditherDT);
+        else
+            return when;
     }
 
-    //    @Override
-//    @Deprecated
-//    protected Term dt(Term x, boolean dir, int dt) {
-//        int ddt = dt(dt);
-//        Term y = super.dt(x, dir, ddt);
-//        if (ddt != dt && !Param.ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS && (y.op() != x.op())) {
-//            y = super.dt(x, dir, dt);
-//        }
-//        return y;
-//    }
 
     @Override
     protected Random random() {
@@ -465,11 +454,15 @@ public class Occurrify extends TimeGraph {
 
 
     @Override protected boolean validPotentialSolution(Term y) {
-        return super.validPotentialSolution(y) &&
+        if(!y.op().taskable)
+            return false;
+
+        int v = y.volume();
+        return v < d.termVolMax && super.validPotentialSolution(y) &&
                 (
                     !Param.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS
                     ||
-                    y.volume() >=
+                    v >=
                             //patternVolume - 1 /* tolerance for only one less negation (ie. an outermost one) */
                             patternVolume / 2 /* tolerate partial degeneracy*/
                 );
@@ -483,6 +476,11 @@ public class Occurrify extends TimeGraph {
         solve(pattern,  /* take everything */ this::eachSolution);
 
         return solutions;
+    }
+
+    @Override
+    protected int occToDT(long x) {
+        return Tense.dither(super.occToDT(x), d.ditherDT);
     }
 
     private Term solveDT(Term pattern, ArrayHashSet<Event> solutions) {
@@ -927,24 +925,33 @@ public class Occurrify extends TimeGraph {
 
                 long tTime = d.taskStart, bTime = d.beliefStart;
 
+                Term y;
+                long[] occ;
                 if (tTime == ETERNAL && bTime == ETERNAL) {
-                    return pair(CONJ.the(DTERNAL, tt, bb), new long[]{ETERNAL, ETERNAL});
+                    y = CONJ.the(DTERNAL, tt, bb);
+                    occ = new long[]{ETERNAL, ETERNAL};
                 } else if (tTime == ETERNAL) {
-                    return pair(CONJ.the(DTERNAL, tt, bb), new long[]{bTime, d.beliefEnd});
+                    y = CONJ.the(DTERNAL, tt, bb);
+                    occ = new long[]{bTime, d.beliefEnd};
                 }else  if (bTime == ETERNAL) {
-                    return pair(CONJ.the(DTERNAL, tt, bb), new long[]{tTime, d.taskEnd});
+                    y = CONJ.the(DTERNAL, tt, bb);
+                    occ = new long[]{tTime, d.taskEnd};
                 } else {
-                    Term y;
-                    long earlyStart = Math.min(tTime, bTime);
-                    if (tTime == earlyStart)
-                        y = ConjSeq.sequence(tt, 0, bb, /*Tense.dither*/(bTime - tTime)/*, d.nar)*/);
-                    else
-                        y = ConjSeq.sequence(bb, 0, tt, /*Tense.dither*/(tTime - bTime)/*, d.nar)*/);
 
+                    long earlyStart = Math.min(tTime, bTime);
+
+                    int ditherDT = d.ditherDT;
+                    if (tTime == earlyStart)
+                        y = ConjSeq.sequence(tt, 0, bb, Tense.dither(bTime - tTime, ditherDT));
+                    else
+                        y = ConjSeq.sequence(bb, 0, tt, Tense.dither(tTime - bTime, ditherDT));
+
+                    //dont dither occ[] here, since it will be done in Taskify
                     long range = Math.max(Math.min(d._task.range(), d._belief.range()) - 1, 0);
-                    return pair(y, new long[]{earlyStart, earlyStart + range});
+                    occ = new long[]{earlyStart, earlyStart + range};
                 }
 
+                return pair(y, occ);
 
 //                Term i = x.sub(0), j = x.sub(1);
 //                Term tt;

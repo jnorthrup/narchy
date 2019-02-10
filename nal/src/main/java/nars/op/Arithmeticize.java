@@ -10,7 +10,6 @@ import nars.*;
 import nars.eval.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.Variable;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
@@ -300,9 +299,12 @@ public class Arithmeticize {
                 yy = yy.replace(s0, s1);
             }
 
+            if (baseTerm.equals(A))
+                return null;
+
             Term equality =
                     //SIM.the(baseTerm, V);
-                    $.func(Equal.the, Terms.sorted(baseTerm, A));
+                    Equal.the(baseTerm, A);
 
             Term y = CONJ.the(equality, cdt, yy);
 
@@ -325,7 +327,7 @@ public class Arithmeticize {
             //TODO anon
             Int aaa = Int.the(a), bbb = Int.the(b);
             Term xx = x.replace(Map.of(aaa, A, bbb, B));
-            return CONJ.the(cdt, xx, $.func(Equal.cmp, A, B, $.the(-1)));
+            return CONJ.the(cdt, xx, Equal.cmp(A, B, -1));
         }
     }
 }

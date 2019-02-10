@@ -5,15 +5,13 @@
 package nars.derive;
 
 import com.netflix.servo.monitor.Counter;
-import nars.Emotion;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
+import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -313,7 +311,11 @@ public class Premise implements Comparable<Premise> {
     }
 
     private long[] timeFocus(Term beliefTerm, Derivation d) {
-        return d.deriver.timing.apply(task, beliefTerm);
+        long[] l = d.deriver.timing.apply(task, beliefTerm);
+        if (Param.PREMISE_FOCUS_TIME_DITHER && l[0]!=ETERNAL) {
+            Tense.dither(l, d.ditherDT);
+        }
+        return l;
     }
 
 //    private void linkVariable(boolean unifiedBelief, NAR n, Concept beliefConcept) {

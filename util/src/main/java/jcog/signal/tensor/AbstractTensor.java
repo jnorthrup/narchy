@@ -35,5 +35,5 @@ public abstract class AbstractTensor implements Tensor, TensorFrom, TensorTo, Se
         setAt(newValue, index(cell));
     }
 
-    abstract public void addAt(float x, int linearCell);
+    abstract public float addAt(float x, int linearCell);
 }

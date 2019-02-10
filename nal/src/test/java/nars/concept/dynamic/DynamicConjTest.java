@@ -148,7 +148,7 @@ class DynamicConjTest {
 
         assertEquals(0.73f, atZero.conf(), 0.01f);
         assertEquals(0.73f, atEte.conf(), 0.01f);
-        assertEquals(0.57f, atOne.conf(), 0.05f);
+        assertEquals(0.57f, atOne.conf(), 0.15f);
     }
 
     @Test

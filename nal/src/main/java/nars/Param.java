@@ -60,8 +60,11 @@ public abstract class Param {
 
 
 
+    public static final boolean PREMISE_FOCUS_TIME_DITHER = true;
+
+
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = false;
-//    public static final boolean INPUT_PREMISE_ANSWER_BELIEF = false;
+
 
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = true;
 
@@ -220,13 +223,16 @@ public abstract class Param {
 
 
     /** may cause unwanted "sticky" event conflation */
-    public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
+    public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = false;
 
     /** if false, keeps intersecting timegraph events separate.  if true, it merges them to one event. may cause unwanted "sticky" event conflation */
     public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = false;
 
     /** whether timegraph should not return solutions with volume significantly less than the input's */
     public static final boolean TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS = false;
+
+    /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
+    public static final boolean TIMEGRAPH_DITHER_EVENTS = false;
 
     /** max variable unification recursion depth as a naive cyclic filter */
     public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 8;

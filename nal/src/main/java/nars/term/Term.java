@@ -559,35 +559,30 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
 
-    default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither) {
-        return eventList(offset, dtDither, true, false);
-    }
-
-    /**
-     * sorted by time; decomposes inner parallel conj
-     * TODO make sorting optional
-     */
-    default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither, boolean decomposeParallel, boolean decomposeEternal) {
-        FasterList<LongObjectPair<Term>> events = new FasterList(2);
-        eventsWhile((w, t) -> {
-            events.add(PrimitiveTuples.pair(
-                    (dtDither > 1) ? Tense.dither(w, dtDither) : w,
-                    t));
-            return true;
-        }, offset, decomposeParallel, decomposeEternal, false);
-//        if (events.size() > 1) {
-//            events.sortThisByLong(LongObjectPair::getOne);
-//        }
-        return events;
-    }
-
     /**
      * event list, sorted by time
      * sorted by time; decomposes inner parallel conj
      * @deprecated use LazyConj.events
      */
     @Deprecated default FasterList<LongObjectPair<Term>> eventList() {
-        return eventList(0, 1);
+        return eventList(0, true, false);
+    }
+
+    /**
+     * sorted by time; decomposes inner parallel conj
+     * TODO make sorting optional
+     */
+    default FasterList<LongObjectPair<Term>> eventList(long offset, boolean decomposeParallel, boolean decomposeEternal) {
+        if (op()==CONJ) {
+            FasterList<LongObjectPair<Term>> events = new FasterList(2);
+            eventsWhile((w, t) -> {
+                events.add(PrimitiveTuples.pair(w, t));
+                return true;
+            }, offset, decomposeParallel, decomposeEternal, false);
+            return events;
+        } else {
+            return (FasterList)new FasterList<>(1).with(PrimitiveTuples.pair(offset, this));
+        }
     }
 
 
@@ -596,36 +591,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
                                 boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal) {
         return each.accept(offset, this);
     }
-
-//    /** recursively visits all conj and impl sub-conditions */
-//    default boolean conditionsWhile(Predicate<Term> each) {
-//
-//        if (hasAny(Op.Conditional))
-//            return each.test(this);  //short-cut, just this
-//
-//        return eventsWhile((w, what) -> {
-//            if (!each.test(what))
-//                return false;
-//
-//            what = what.unneg();
-//
-//            if (what.op()==IMPL) {
-//                if (!each.test(what.sub(0)))
-//                    return false;
-//                if (!each.test(what.sub(1)))
-//                    return false;
-//            }
-//
-//            return true;
-//        }, 0,true, true, true, 0);
-//    }
-
-//    default void conditionsEach(Consumer<Term> each) {
-//        conditionsWhile((e)->{
-//            each.accept(e);
-//            return true;
-//        });
-//    }
 
     default void printRecursive() {
         printRecursive(System.out);

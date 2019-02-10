@@ -110,7 +110,7 @@ public class Evaluator extends DirectTermTransform {
 
         //iterating at the top level is effectively DFS; a BFS solution is also possible
         for (Term x : queries) {
-            e.evalTry(this, x);
+            e.evalTry(x, this);
         }
         return e;
     }

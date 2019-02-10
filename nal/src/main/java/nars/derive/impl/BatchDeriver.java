@@ -123,7 +123,7 @@ public class BatchDeriver extends Deriver {
                 //scan active tasklinks for a match to the atom
                 @Nullable Concept cc = nar.concept(src);
                 if (cc!=null)
-                    b = ((AbstractConceptIndex)nar.concepts).active.atomTangent((NodeConcept) cc, tasklink, d.time, d.ditherTime, d.random);
+                    b = ((AbstractConceptIndex)nar.concepts).active.atomTangent((NodeConcept) cc, tasklink, d.time, d.ditherDT, d.random);
                 else
                     b = src;
             } else {

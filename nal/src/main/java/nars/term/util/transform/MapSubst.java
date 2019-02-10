@@ -20,22 +20,17 @@ abstract public class MapSubst implements Subst {
                 return x;
             case 1: {
                 Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
-                //return x.replace(e.getKey(), e.getValue());
-                //return new MapSubst1(e.getKey(), e.getValue()).transform(x);
-                Term src = e.getKey();
-                Term target = e.getValue();
-                if (src.equals(target))
-                    return x; //no change
+                Term src = e.getKey(), target = e.getValue();
                 if (x.equals(src))
                     return target;
-                if (x.impossibleSubTerm(src))
+                else if (src.equals(target) || x.impossibleSubTerm(src))
                     return x; //no change
-                return replace(src, target).transform(x);
+                else
+                    return replace(src, target).transform(x);
             }
             case 2: {
                 Iterator<? extends Map.Entry<? extends Term, Term>> ii = m.entrySet().iterator();
-                Map.Entry<? extends Term, Term> e1 = ii.next();
-                Map.Entry<? extends Term, Term> e2 = ii.next();
+                Map.Entry<? extends Term, Term> e1 = ii.next(), e2 = ii.next();
                 return new MapSubst2(e1, e2).transform(x);
             }
             default:

@@ -227,7 +227,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
         long[] evi = evi(n);
 
-        SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, evi);
+        SignalTask curiosity = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);
         attnCuri.ensure(curiosity, attn.elementPri());
         return curiosity;
     }
