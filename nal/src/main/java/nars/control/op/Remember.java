@@ -26,11 +26,12 @@ import org.jetbrains.annotations.Nullable;
  * in some proportion of the input task's priority.
  */
 public class Remember extends AbstractTask {
+
     public Task input;
 
-    public FasterList<ITask> remembered = null;
+    private FasterList<ITask> remembered = null;
 
-    public TaskConcept concept;
+    private transient TaskConcept concept;
 
 
     @Nullable
@@ -41,18 +42,22 @@ public class Remember extends AbstractTask {
         assert (x.op().taskable);
 
         boolean isInput = x.isInput();
+        Term xTerm = x.term();
+
         if (Param.VOLMAX_RESTRICTS || (Param.VOLMAX_RESTRICTS_INPUT && isInput)) {
-            int termVol = x.term().volume();
+            int termVol = xTerm.volume();
             int maxVol = n.termVolumeMax.intValue();
             if (termVol > maxVol)
                 throw new TaskException(x, "target exceeds volume maximum: " + termVol + " > " + maxVol);
         }
 
-        if ((!isInput || x instanceof TaskProxy) && x.isBeliefOrGoal() && x.conf() < n.confMin.floatValue()) {
-            if (Param.DEBUG)
-                throw new TaskException(x, "insufficient evidence for non-input Task");
-            else
-                return null;
+        if (x.isBeliefOrGoal() && x.conf() < n.confMin.floatValue()) {
+            if (!(x instanceof TaskProxy)) {
+                if (Param.DEBUG)
+                    throw new TaskException(x, "insufficient evidence for non-input Task");
+                else
+                    return null;
+            }
         }
 
 
@@ -62,18 +67,20 @@ public class Remember extends AbstractTask {
 
         if (Param.DEBUG_ENSURE_DITHERED_DT || Param.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
             int d = n.dtDither();
-            if (Param.DEBUG_ENSURE_DITHERED_DT) {
-                Tense.assertDithered(x.term(), d);
-            }
-            if (Param.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
-                Tense.assertDithered(x, d);
+            if(d > 1) {
+                if (Param.DEBUG_ENSURE_DITHERED_DT) {
+                    Tense.assertDithered(xTerm, d);
+                }
+                if (Param.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
+                    Tense.assertDithered(x, d);
+                }
             }
         }
 
         Concept c = n.conceptualize(x);
         if (c != null) {
             if (!(c instanceof TaskConcept)) {
-                if (Param.DEBUG || isInput)
+                if (isInput || Param.DEBUG)
                     throw new TaskException(x, c + " is not a TaskConcept: " + c.getClass());
                 else
                     return null;
@@ -81,9 +88,10 @@ public class Remember extends AbstractTask {
 
             return new Remember(x, (TaskConcept) c);
         } else {
-            if (Param.DEBUG) {
-                if (isInput)
-                    throw new TaskException(x, "not conceptualized");
+            if (isInput) {
+                //if (Param.DEBUG) {
+                    throw new TaskException(x, "input not conceptualized");
+                //}
             }
             return null;
         }
@@ -98,8 +106,8 @@ public class Remember extends AbstractTask {
      * concept must correspond to the input task
      */
     public void setInput(Task input, @Nullable TaskConcept c) {
+        this.input = input;
         if (c != null) {
-            this.input = input;
             this.concept = c;
         }
     }

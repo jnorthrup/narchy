@@ -62,30 +62,32 @@ public class PatternIndex extends MapConceptIndex {
     @Override
     public Term get(/*@NotNull*/ Term x, boolean createIfMissing) {
         //return x.target();
-        if (x.op() == NEG)
-            return get(x.unneg(), createIfMissing).neg();
+        Op xop = x.op();
+        if (xop == NEG) {
+            Term u = x.unneg();
+            Term v = get(u, createIfMissing);
+            return v == u ? x : v.neg();
+        }
 
-        if (!x.op().conceptualizable)
+        if (!xop.conceptualizable)
             return x;
 
-
-        Termed y = concepts.get(x);
-        if (y == null) {
-            if (nar != null && x.op() == ATOM) {
-
-                Termed xx = nar.concept(x);
-                if (xx != null) {
-                    concepts.put(xx.term(), xx);
-                    return (Term) xx;
-                }
-            }
-
-            Term yy = patternify(x);
-            concepts.put(yy, yy);
-            return yy;
-        } else {
+        Termed y = intern.get(x);
+        if (y != null) {
             return (Term) y;
         }
+        if (nar != null && xop == ATOM) {
+
+            Termed xx = nar.concept(x);
+            if (xx != null) {
+                intern.put(xx.term(), xx);
+                return (Term) xx;
+            }
+        }
+
+        Term yy = patternify(x);
+        intern.put(yy, yy);
+        return yy;
     }
 
     public static Term patternify(Term x) {
@@ -383,12 +385,14 @@ public class PatternIndex extends MapConceptIndex {
                 int xs = xMatch.size();
                 int ys = yFree.size();
 
-                if (ellipsis==null) {
+                if (ellipsis == null) {
                     //ellipsis assigned already; match the remainder as usual
                     if (xs == ys) {
                         switch (xs) {
-                            case 0: return true;
-                            case 1: return xMatch.getFirst().unify(yFree.first(), u);
+                            case 0:
+                                return true;
+                            case 1:
+                                return xMatch.getFirst().unify(yFree.first(), u);
                             default:
                                 xMatch.sortThis();
                                 return xMatch.unifyCommute(new TermList(yFree), u);

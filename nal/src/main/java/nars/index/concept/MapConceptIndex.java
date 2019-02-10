@@ -12,15 +12,15 @@ import java.util.stream.Stream;
 /** additionally caches subterm vectors */
 public class MapConceptIndex extends MaplikeConceptIndex {
 
-    protected final Map<Term,Termed> concepts;
+    protected final Map<Term,Termed> intern;
 
     public MapConceptIndex(Map<Term, Termed> map) {
         super();
-        this.concepts = map;
+        this.intern = map;
     }
 
     @Override public Stream<Termed> stream() {
-        return concepts.values().stream();
+        return intern.values().stream();
     }
 
 
@@ -28,42 +28,42 @@ public class MapConceptIndex extends MaplikeConceptIndex {
     @Override
     public Termed get(Term x, boolean createIfMissing) {
         if (createIfMissing) {
-            return concepts.compute(x, nar.conceptBuilder);
+            return intern.compute(x, nar.conceptBuilder);
         } else {
-            return concepts.get(x);
+            return intern.get(x);
         }
     }
 
     @Override
     public String summary() {
-        return concepts.size() + " concepts";
+        return intern.size() + " concepts";
     }
 
 
     @Override
     public Termed remove(Term entry) {
-        return concepts.remove(entry);
+        return intern.remove(entry);
     }
 
     @Override
     public void set(@NotNull Term src, @NotNull Termed target) {
-        concepts.merge(src, target, setOrReplaceNonPermanent);
+        intern.merge(src, target, setOrReplaceNonPermanent);
     }
 
     @Override
     public void clear() {
         super.clear();
-        concepts.clear();
+        intern.clear();
     }
 
     @Override
     public void forEach(@NotNull Consumer<? super Termed> c) {
-        concepts.forEach((k, v)-> c.accept(v));
+        intern.forEach((k, v)-> c.accept(v));
     }
 
     @Override
     public int size() {
-        return concepts.size() /* + atoms.size? */;
+        return intern.size() /* + atoms.size? */;
     }
 
 

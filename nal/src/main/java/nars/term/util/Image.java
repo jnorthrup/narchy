@@ -245,7 +245,7 @@ public enum Image {;
                 transformedInput.setCyclic(true);
 
             Term image = this.term;
-            r.setInput(transformedInput, (TaskConcept)nar.concept(image));
+            r.setInput(transformedInput, (TaskConcept)nar.conceptualizeDynamic(image));
 
             table.add(r, nar);
 

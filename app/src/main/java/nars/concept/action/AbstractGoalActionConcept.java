@@ -1,5 +1,6 @@
 package nars.concept.action;
 
+import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -159,6 +160,12 @@ public class AbstractGoalActionConcept extends ActionConcept {
         Curiosity.CuriosityInjection curiosityInject = null;
         if (actionCuri!=null) {
             curiosityInject = Curiosity.CuriosityInjection.Override;
+
+            float confMin = n.confMin.floatValue();
+            if(actionCuri.conf() < confMin) {
+                //boost sub-threshold confidence to minimum
+                actionCuri = $.t(actionCuri.freq(), confMin);
+            }
 
             Truth curiDithered = actionCuri.dither(
                     Math.max(n.freqResolution.floatValue(),resolution().floatValue()),

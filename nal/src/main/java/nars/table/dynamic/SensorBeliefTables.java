@@ -3,14 +3,12 @@ package nars.table.dynamic;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.Longerval;
-import jcog.pri.ScalarValue;
 import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.control.op.Remember;
-import nars.index.concept.AbstractConceptIndex;
 import nars.link.TaskLink;
 import nars.table.BeliefTables;
 import nars.table.temporal.RTreeBeliefTable;
@@ -19,6 +17,7 @@ import nars.task.ITask;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,25 +94,6 @@ public class SensorBeliefTables extends BeliefTables {
 
     long[] eviShared = null;
 
-    protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar) {
-        long[] evi;
-
-        if (Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME) {
-            if (eviShared == null)
-                eviShared = nar.evidence();
-            evi = eviShared;
-        } else {
-            evi = nar.evidence(); //unique
-        }
-
-
-        return new SeriesBeliefTable.SeriesTask(
-                term,
-                punc,
-                next,
-                nextStart, nextEnd,
-                evi);
-    }
 
 
     private SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, NAR nar) {
@@ -126,16 +106,16 @@ public class SensorBeliefTables extends BeliefTables {
 
             int dur = nar.dur();
 
-            double gapDurs = ((double)(nextStart - lastEnd)) / dur;
-            if (gapDurs <= series.series.latchDurs()) {
+            long gapCycles = (nextStart - lastEnd);
+            if (gapCycles <= series.series.latchDurs() * dur) {
 
                 if (next!=null) {
-                    double stretchDurs = ((double) (nextEnd - lastStart)) / dur;
-                    if ((stretchDurs <= series.series.stretchDurs())) {
+                    long stretchCycles = (nextEnd - lastStart);
+                    if (stretchCycles <= series.series.stretchDurs() * dur) {
                         Truth lastEnds = last.truth(lastEnd, 0);
                         if (lastEnds!=null && lastEnds.equals(next)) {
                             //stretch
-                            last.setEnd(nextEnd);
+                            end(last, nextEnd, nar);
                             return last;
                         }
                     }
@@ -146,10 +126,10 @@ public class SensorBeliefTables extends BeliefTables {
                 if (next == null) {
                     //guess that the signal stopped midway between (starting) now and the end of the last
                     long midGap = Math.min(nextStart-1, lastEnd + dur/2);
-                    last.setEnd(midGap);
+                    end(last, midGap, nar);
                 } else {
                     //stretch the previous to the current starting point for the new task
-                    last.setEnd(nextStart-1);
+                    end(last, nextStart-1, nar);
                 }
 
             }
@@ -165,6 +145,32 @@ public class SensorBeliefTables extends BeliefTables {
 
     }
 
+    protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAR nar) {
+        long[] evi;
+
+        if (Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME) {
+            if (eviShared == null)
+                eviShared = nar.evidence();
+            evi = eviShared;
+        } else {
+            evi = nar.evidence(); //unique
+        }
+
+        if (Param.SIGNAL_TASK_OCC_DITHER) {
+            int dither = nar.dtDither();
+            s = Tense.dither(s, dither);
+            e = Tense.dither(e, dither);
+        }
+
+        return new SeriesBeliefTable.SeriesTask(term, punc, next, s, e, evi);
+    }
+
+    static private void end(SeriesBeliefTable.SeriesTask s, long e, NAR nar) {
+        if (Param.SIGNAL_TASK_OCC_DITHER) {
+            e = Tense.dither(e, nar);
+        }
+        s.setEnd(e);
+    }
 
 
 //    @Override
@@ -251,7 +257,7 @@ public class SensorBeliefTables extends BeliefTables {
             if (x.isEternal() || x instanceof SeriesTask)
                 return; //already owned, or was owned
 
-            if (Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS) {
+            if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
                 Task y = absorbNonSignal(x, start(), end()) ? null : x;
                 if (y == null) {
                     r.reject();

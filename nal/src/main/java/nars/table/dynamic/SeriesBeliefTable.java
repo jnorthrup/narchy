@@ -91,7 +91,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
 
     public void clean(List<BeliefTable> tables) {
-        if (!Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS)
+        if (!Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 
         assert(beliefOrGoal);
@@ -195,6 +195,8 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
             if (x instanceof SeriesTask) {
                 //TODO also involve Term?
                 Task xx = (Task) x;
+                if (hashCode()!=x.hashCode())
+                    return false;
                 if (stamp()[0] == xx.stamp()[0] && start() == xx.start() && term().equals(xx.term()))
                     return true;
             }
@@ -209,11 +211,6 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         public long end() {
             return e;
         }
-
-        //        @Override
-//        public ITask inputSubTask(Task ignored, NAR n) {
-//            throw new UnsupportedOperationException("use input(concept) for internal storage procedure");
-//        }
 
         /**
          * passive insertion subtask only

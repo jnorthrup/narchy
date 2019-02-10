@@ -52,7 +52,8 @@ public abstract class Param {
             //Conceptualization.FlattenAndDeduplicateAndUnnegateConj //untested
             ;
 
-    public static final boolean FILTER_SIGNAL_TABLE_TEMPORAL_TASKS = true;
+    public static final boolean SIGNAL_TASK_OCC_DITHER = true;
+    public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS = true;
 
 
 
@@ -232,7 +233,7 @@ public abstract class Param {
     public static final boolean TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS = false;
 
     /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
-    public static final boolean TIMEGRAPH_DITHER_EVENTS = false;
+    public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
 
     /** max variable unification recursion depth as a naive cyclic filter */
     public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 8;
@@ -254,7 +255,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(4, 1, 32);
 
@@ -264,7 +265,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 1f;
+    public static final float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)
