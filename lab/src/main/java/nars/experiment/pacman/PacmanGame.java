@@ -269,15 +269,16 @@ public class PacmanGame {
 
             if (maze.dotCount != previousDotCount) {
 
+
+
+                previousDotCount = maze.dotCount;
+                score += 1;
+
                 if (maze.dotCount == 0) {
 
                     win();
 
                 }
-
-                previousDotCount = maze.dotCount;
-                score += 1;
-
             }
 
             if (keys[0]) player.turn(Maze.Direction.left);

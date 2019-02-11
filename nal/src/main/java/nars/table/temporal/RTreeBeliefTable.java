@@ -24,6 +24,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.lang.Float.NEGATIVE_INFINITY;
+
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
     private static final float PRESENT_AND_FUTURE_BOOST_BELIEF =
@@ -33,11 +35,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             1f;
             //2f;
 
-    private static final int MAX_TASKS_PER_LEAF = 4;
+    private static final int MAX_TASKS_PER_LEAF = 3;
     private static final Split SPLIT = AxialSplitLeaf.the;
 
 
-    private static final int RejectInput = 0, EvictWeakest = 1, MergeLeaf = 2/*, MergeInputClosest = 3*/;
+    private static final int EvictWeakest = 0, MergeLeaf = 1;
 
     protected int capacity;
 
@@ -148,34 +150,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        };
 //    }
 
-    static private FloatRank<Task> taskStrengthWithFutureBoost(long now, long futureThresh, float presentAndFutureBoost, int dur) {
-        float pastDiscount = 1f - (presentAndFutureBoost - 1f);
-        return (Task x, float min) -> {
-            float evi =
-                //x.evi(now, dur, min);
-                x.evi(); //avg
-
-            long e = x.end();
-            long range = (1 + e - x.start());
-            float adjRange = range/(1f + x.maxTimeTo(now)); //proportional to max time distance. so it can't constantly grow and maintain same strength
-            return (e < futureThresh ? pastDiscount : 1f) *
-                    //evi * range;
-                    //evi;
-                    //x.evi(now, dur) * (1 + (e-s)/2f)/*x.range()*/;
-                    //evi * x.originality();
-                    //evi * x.originality() * range;
-                    evi * x.originality() * (adjRange);
-        };
-
-        //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));
-        ///w2cSafe(TruthIntegration.evi(x));
-        //w2cSafe(TruthIntegration.evi(x)) / (1 + x.midTimeTo(now)/((float)dur));
-        //w2cSafe(x.evi(now, dur));
-        //(x.evi(now, dur)) * x.range();
-        //w2cSafe(x.evi(now, dur)) * (float)Math.log(x.range());
-//        };
-    }
-
 
     @Override
     @Deprecated
@@ -263,7 +237,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         /** inserted but not necessarily kept */
         write(treeRW -> {
             if (treeRW.add(input)) {
-                ensureCapacity(treeRW, input, r, n);
+                ensureCapacity(treeRW, input.isBelief() /* else Goal*/, r, n);
             }
         });
 
@@ -293,20 +267,20 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    private boolean ensureCapacity(Space<TaskRegion> treeRW, /*@Nullable*/ Task input, Remember remember, NAR
+    private boolean ensureCapacity(Space<TaskRegion> treeRW, boolean beliefOrGoal, Remember remember, NAR
             nar) {
 
-        FloatRank<Task> taskStrength = null;
+        FloatFunction<Task> taskStrength = null;
         FloatRank<TaskRegion> leafRegionWeakness = null;
         int e = 0, cap;
         int dur = nar.dur();
         long now = nar.time();
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
-                taskStrength = taskSurviveValue(input, dur, now);
-                leafRegionWeakness = regionWeakness(now, input.isBeliefOrGoal() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
+                taskStrength = taskSurviveValue(beliefOrGoal, dur, now);
+                leafRegionWeakness = regionWeakness(now, beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
             }
-            if (!compress(treeRW, e == 0 ? input : null /** only limit by inputRegion on first iter */,
+            if (!compress(treeRW,  /** only limit by inputRegion on first iter */
                     taskStrength, leafRegionWeakness,
                     remember, nar))
                 return false;
@@ -318,9 +292,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     /** decides the value of keeping a task, used in compression decision */
-    protected FloatRank<Task> taskSurviveValue(Task input, int dur, long now) {
-        return taskStrengthWithFutureBoost(now, now - dur,
-                input.isBelief() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
+    protected FloatFunction<Task> taskSurviveValue(boolean beliefOrGoal, int dur, long now) {
+        return Answer.taskStrengthWithFutureBoost(now, now - dur,
+                beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
                 dur
         );
     }
@@ -329,9 +303,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private static boolean compress(Space<TaskRegion> tree, @Nullable Task
-            input, FloatRank<Task> taskStrength, FloatRank<TaskRegion> leafRegionWeakness, Remember
-                                            remember, NAR nar) {
+    private static boolean compress(Space<TaskRegion> tree, FloatFunction<Task> taskStrength, FloatRank<TaskRegion> leafRegionWeakness, Remember
+            remember, NAR nar) {
 
 
         FloatRank<Leaf<TaskRegion>> leafWeakness =
@@ -339,15 +312,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         Top<Leaf<TaskRegion>> mergeableLeaf = new Top<>(leafWeakness);
 
-        FloatRank<Task> weakestTask = input == null ?
-                (t, min) -> -taskStrength.rank(t, min)
-                :
-                (t, min) -> (input != t) /*!input.equals(t)*/ ? -taskStrength.rank(t, min) : Float.NaN;
+        FloatRank<Task> weakestTask = (t, min) -> -taskStrength.floatValueOf(t);
 
-//                (float) (-1 * Param.evi(taskStrength.floatValueOf((Task) t),
-//                        //t.midTimeTo(now)
-//                         t.maxTimeTo(now)
-//                        , perceptDur));
 
         Top<Task> weakest = new Top<>(weakestTask);
 
@@ -361,17 +327,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         //assert (tree.size() >= cap);
 
 
-        return mergeOrDelete(tree, input, /*closest, */weakest, mergeableLeaf, taskStrength, remember, nar);
+        return mergeOrDelete(tree, weakest, mergeableLeaf, taskStrength, remember, nar);
 
 
     }
 
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
-                                         @Nullable Task I /* input */,
-//                                         @Nullable Top<TaskRegion> closest,
                                          Top<Task> weakest,
                                          Top<Leaf<TaskRegion>> mergeableLeaf,
-                                         FloatRank<Task> taskStrength,
+                                         FloatFunction<Task> taskStrength,
                                          Remember r,
                                          NAR nar) {
 
@@ -420,25 +384,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
 
-        float[] value = new float[4];
-        value[RejectInput] =
-                I != null ? 0 : Float.NEGATIVE_INFINITY;
-
-
-        float inputStrength = I != null ? taskStrength.floatValueOf(I) : 0;
+        float[] value = new float[2];
 
         W = //(weakest != null && weakest.the != null) ? weakest.the : A; //not valid due to mergeability heuristic not necessarily the same as weakness
                 //(weakest != null ? weakest.the : null);
             weakest.the;
-        if (W==I) {
-            value[EvictWeakest] = Float.NEGATIVE_INFINITY;
-        } else {
             //assert(I == null || W == null || !I.equals(W));
 //        if (W == null)
 //            return false;
-            value[EvictWeakest] =
-                    inputStrength - taskStrength.floatValueOf(W);
-        }
+        value[EvictWeakest] =
+                -taskStrength.floatValueOf(W);
 
 //        value[MergeInputClosest] =
 //                IC != null ? (
@@ -449,14 +404,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         if (B == null) {
             AB = null;
-            value[MergeLeaf] = Float.NEGATIVE_INFINITY;
+            value[MergeLeaf] = NEGATIVE_INFINITY;
         } else {
             AB = revise(A, B, nar);
             if (AB == null || (AB.equals(A) || AB.equals(B))) {
-                value[MergeLeaf] = Float.NEGATIVE_INFINITY;
+                value[MergeLeaf] = NEGATIVE_INFINITY;
             } else {
                 value[MergeLeaf] =
-                        +inputStrength
                                 + taskStrength.floatValueOf(AB)
                                 - taskStrength.floatValueOf(A)
                                 - taskStrength.floatValueOf(B)
@@ -467,7 +421,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         int best = Util.maxIndex(value);
 
-        if (value[best] == Float.NEGATIVE_INFINITY)
+        if (value[best] == NEGATIVE_INFINITY)
             return false;
 
         switch (best) {
@@ -475,14 +429,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             case EvictWeakest: {
                 if (treeRW.remove(W)) {
                     r.forget(W);
-                    return true;
-                }
-            }
-            break;
-
-            case RejectInput: {
-                if (treeRW.remove(I)) {
-                    r.forget(I);
                     return true;
                 }
             }

@@ -7,15 +7,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+import static java.awt.RenderingHints.*;
+
 public class PacComponent extends JComponent {
 
     /**
      *
      */
-    private static final long serialVersionUID = -7718122113054979140L;
     PacmanGame game;
     int size;
-    ArrayList<Splash> splashText;
+    java.util.List<Splash> splashText;
+
+    static final Font _font = new Font("Arial", Font.BOLD, 1);
 
     public PacComponent(PacmanGame g) {
 
@@ -41,6 +44,9 @@ public class PacComponent extends JComponent {
 
 
         Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC);
         g2d.setColor(Color.black);
         g2d.fill(g2d.getClip());
 
@@ -177,25 +183,21 @@ public class PacComponent extends JComponent {
             }
 
         g2d.setColor(Color.white);
-        g2d.setFont(new Font("Arial", Font.BOLD, (int) (size * 1.4)));
+        g2d.setFont(_font.deriveFont((int) (size * 1.4)));
         g2d.drawString(game.text, getWidth() / 2 - g2d.getFontMetrics().stringWidth(game.text) / 2, getHeight() / 2);
 
         g2d.setClip(clip);
 
 
         g2d.setColor(Color.white);
-        g2d.setFont(new Font("Arial", Font.BOLD, (int) (size * 0.7)));
+        g2d.setFont(_font.deriveFont((int) (size * 0.7f)));
         Rectangle r = getTileBounds(0, game.maze.height + 1, offset);
 
 
         for (SplashModel s : game.splashes) {
-
             this.new Splash(s.text, s.x, s.y, s.color);
             game.splashes.remove(s);
-
         }
-
-        ArrayList<Integer> toRemove = new ArrayList<>();
 
         for (int i = 0; i < this.splashText.size(); i++) {
 
@@ -207,14 +209,10 @@ public class PacComponent extends JComponent {
             s.update();
 
             if (s.time <= 0)
-                toRemove.add(i);
+                splashText.remove(i);
         }
 
-        for (Integer i : toRemove) {
 
-            this.splashText.remove(i);
-
-        }
 
 
     }
@@ -234,7 +232,8 @@ public class PacComponent extends JComponent {
         String text;
         double x, y;
         int time;
-        Font font;
+        final Font font;
+
         Color color;
 
         public SplashModel(String text, double x, double y, int size, Color color) {
@@ -243,7 +242,7 @@ public class PacComponent extends JComponent {
             this.time = TIME;
             this.x = x;
             this.y = y;
-            this.font = new Font("Arial", Font.BOLD, size);
+            this.font = _font.deriveFont(size);
             this.color = color;
 
         }

@@ -24,7 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static spacegraph.SpaceGraph.window;
 
-public class Arkancide extends NAgentX {
+/** NARkanoid */
+public class ArkaNAR extends NAgentX {
 
     static boolean numeric = true;
     static boolean cam = true;
@@ -53,7 +54,7 @@ public class Arkancide extends NAgentX {
             //n.timeResolution.setAt(25); //50fps resolution
 
 
-            return new Arkancide(n, cam, numeric);
+            return new ArkaNAR(n, cam, numeric);
 
         }, 20);
 
@@ -61,11 +62,11 @@ public class Arkancide extends NAgentX {
     }
 
 
-    public Arkancide(NAR nar) {
+    public ArkaNAR(NAR nar) {
         this(nar, cam, numeric);
     }
 
-    public Arkancide(NAR nar, boolean cam, boolean numeric) {
+    public ArkaNAR(NAR nar, boolean cam, boolean numeric) {
         super("noid", nar);
 
 

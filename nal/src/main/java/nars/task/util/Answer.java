@@ -25,6 +25,7 @@ import java.util.Random;
 import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 
+import static jcog.math.SloppyMath.max;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.c2wSafe;
@@ -81,6 +82,35 @@ public final class Answer implements AutoCloseable {
         if (a == null) return b;
         if (b == null) return a;
         return (x) -> a.test(x) && b.test(x);
+    }
+
+    public static FloatFunction<Task> taskStrengthWithFutureBoost(long now, long futureThresh, float presentAndFutureBoost, int dur) {
+        float pastDiscount = 1f - (presentAndFutureBoost - 1f);
+        return (Task x) -> {
+            float evi =
+                //x.evi(now, dur, min);
+                x.evi(); //avg
+
+            long e = x.end();
+            long range = (e - x.start());
+            float adjRange = (1+range)/(1f + max(0,(x.maxTimeTo(now) - range/2f))); //proportional to max time distance. so it can't constantly grow and maintain same strength
+            return (e < futureThresh ? pastDiscount : 1f) *
+                    //evi * range;
+                    //evi;
+                    //x.evi(now, dur) * (1 + (e-s)/2f)/*x.range()*/;
+                    //evi * x.originality();
+                    //evi * x.originality() * range;
+                    evi * (adjRange);
+                      //* x.originality()
+        };
+
+        //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));
+        ///w2cSafe(TruthIntegration.evi(x));
+        //w2cSafe(TruthIntegration.evi(x)) / (1 + x.midTimeTo(now)/((float)dur));
+        //w2cSafe(x.evi(now, dur));
+        //(x.evi(now, dur)) * x.range();
+        //w2cSafe(x.evi(now, dur)) * (float)Math.log(x.range());
+//        };
     }
 
     /** sorts nearest to the end of a list */

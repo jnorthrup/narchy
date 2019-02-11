@@ -42,7 +42,7 @@ public class Pacman extends NAgentX {
             VectorSensorView v = new VectorSensorView(c, this);
 //            onFrame(v::update);
             gg.add(v/*.withControls()*/);
-            c.resolution(0.1f);
+            c.resolution(0.05f);
         }
         window(gg, 900, 300);
 
@@ -79,6 +79,7 @@ public class Pacman extends NAgentX {
         });
 
 
+        //TODO multiple reward signals: eat, alive, dist->ghost (cheat)
         reward(()->{
             g.update();
 

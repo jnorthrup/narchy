@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
-import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -21,6 +20,7 @@ import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.TIMELESS;
@@ -275,11 +275,11 @@ public class SensorBeliefTables extends BeliefTables {
      */
     private final class MyRTreeBeliefTable extends RTreeBeliefTable {
 
-        @Override protected FloatRank<Task> taskSurviveValue(Task input, int dur, long now) {
-            FloatRank<Task> base = super.taskSurviveValue(input, dur, now);
-            return (t, min) -> {
-                float v = base.rank(t, min);
-                if (v == v && v > min) {
+        @Override protected FloatFunction<Task> taskSurviveValue(boolean beliefOrGoal, int dur, long now) {
+            FloatFunction<Task> base = super.taskSurviveValue(beliefOrGoal, dur, now);
+            return (t) -> {
+                float v = base.floatValueOf(t);
+                if (v == v) {
                     long ss = series.start(), se = series.end();
                     if (ss!=TIMELESS && se!=TIMELESS) {
                         long l = Longerval.intersectLength(t.start(), t.end(), ss, se);

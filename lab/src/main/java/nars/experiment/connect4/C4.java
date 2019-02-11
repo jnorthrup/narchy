@@ -35,11 +35,11 @@ public class C4 {
         private final int opponent;
 
         public NARPlayer(int whoAmI, ConnectFour.ConnectFourState game) {
-            NAR n = NARchy.core();
+            NAR n = NARchy.core(2);
             ((RealTime) n.time).durFPS(10f);
 
-            n.beliefPriDefault.set(0.5f);
-            n.goalPriDefault.set(0.75f);
+//            n.beliefPriDefault.set(0.5f);
+//            n.goalPriDefault.set(0.75f);
             this.n = n;
 
             Deriver.derivers(n).forEach(d -> ((BatchDeriver) d).tasklinksPerIteration.set(4));
