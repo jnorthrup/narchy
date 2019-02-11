@@ -284,7 +284,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
         int n = concepts;
         if (n == 0)
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
 
         Collection<Concept> firedConcepts = d.firedConcepts;
         firedConcepts.clear();

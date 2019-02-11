@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 import static nars.Op.NEG;
 
 /** assumes that each items in the base subterm are utilized exactly once in the structure, containment, etc.
- * a relaxed variation of this can be created without this assumption
+ * a relaxed variation of this can be created without this assumption (vars() etc will need calculated, not ref.___ shortcut)
  * TODO separate into 2 abstract subclasses: Direct and Negating
  * ShuffledSubterms will inherit from Direct, otherwise generally use Negating
  * */
@@ -264,6 +264,11 @@ abstract public class MappedSubterms extends ProxySubterms {
     @Override
     public int height() {
         return (hasNeg() ? 1 : 0) + ref.height();
+    }
+
+    @Override
+    public final boolean hasXternal() {
+        return ref.hasXternal();
     }
 
     /** optimized to avoid wrapping in Neg temporarily */

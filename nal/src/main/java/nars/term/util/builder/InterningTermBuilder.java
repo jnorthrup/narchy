@@ -122,7 +122,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return terms[x.op].apply(x);
     }
 
-    private Subterms subsInterned(Function<InternedSubterms, Subterms> m, Term[] t) {
+    private static Subterms subsInterned(Function<InternedSubterms, Subterms> m, Term[] t) {
         return m.apply(new InternedSubterms(t));
     }
 
@@ -227,7 +227,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return i;
     }
 
-    protected boolean internableRoot(Op op, int dt) {
+    protected static boolean internableRoot(Op op, int dt) {
         return !op.atomic && (internNegs || op != NEG)
                 //&& Tense.dtSpecial(dt)
                 ;

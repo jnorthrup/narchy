@@ -24,7 +24,7 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
     }
 
     @Nullable
-    protected final Truth apply(DynEvi l, NAR nar, boolean negComponents, boolean negResult) {
+    private static Truth apply(DynEvi l, NAR nar, boolean negComponents, boolean negResult) {
         Truth y = null;
         for (TaskRegion li : l) {
             Truth x = (((Task) li)).truth();

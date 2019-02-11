@@ -61,7 +61,7 @@ public abstract class TermBuilder {
         return subterms(s.toArray(Op.EmptyTermArray));
     }
 
-    public static Subterms theSubterms(boolean tryAnon, Term... t) {
+    public Subterms theSubterms(boolean tryAnon, Term... t) {
         final int tLength = t.length;
         if (tLength == 0)
             return Op.EmptySubterms;

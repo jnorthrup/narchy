@@ -96,17 +96,10 @@ public class Evaluator extends DirectTermTransform {
 
     @Nullable
     public Evaluation eval(Predicate<Term> each, boolean includeTrues, boolean includeFalses, Term... queries) {
-        Evaluation e = new Evaluation(each) {
-            @Override
-            protected Term boolTrue(Term x) {
-                return includeTrues ? super.boolTrue(x) : Null;
-            }
 
-            @Override
-            protected Term boolFalse(Term x) {
-                return includeFalses ? super.boolFalse(x) : Null;
-            }
-        };
+        assert(queries.length > 0);
+
+        Evaluation e = new EvaluationTrueFalseFiltered(each, includeTrues, includeFalses);
 
         //iterating at the top level is effectively DFS; a BFS solution is also possible
         for (Term x : queries) {
@@ -118,5 +111,25 @@ public class Evaluator extends DirectTermTransform {
     public void print() {
 
 
+    }
+
+    private static final class EvaluationTrueFalseFiltered extends Evaluation {
+        private final boolean includeTrues, includeFalses;
+
+        public EvaluationTrueFalseFiltered(Predicate<Term> each, boolean includeTrues, boolean includeFalses) {
+            super(each);
+            this.includeTrues = includeTrues;
+            this.includeFalses = includeFalses;
+        }
+
+        @Override
+        protected Term boolTrue(Term x) {
+            return includeTrues ? super.boolTrue(x) : Null;
+        }
+
+        @Override
+        protected Term boolFalse(Term x) {
+            return includeFalses ? super.boolFalse(x) : Null;
+        }
     }
 }

@@ -1,6 +1,8 @@
 package spacegraph.space2d.widget.textedit;
 
 import com.jogamp.opengl.GL2;
+import jcog.event.ListTopic;
+import jcog.event.Topic;
 import jcog.math.v2;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -8,15 +10,13 @@ import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.unit.UnitContainer;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 
 public class TextEdit extends ScrollXY<TextEditModel>  {
 
+    public final Topic<TextEdit> onChange = new ListTopic();
     public final MyTextEditModel model;
-
-
-
-
 
     @Deprecated public TextEdit() {
         this(16, 3);
@@ -35,7 +35,10 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
         model.painter = (gl,r)->{
             model.paint(content.bounds, view(), model.focused, gl);
         };
-        model.onChange = this::updateScroll;
+        model.onChange = ()->{
+            updateScroll();
+            this.onChange.emit(this);
+        };
 
         model.actions = TextEditActions.DEFAULT_ACTIONS;
         model.keys = TextEditActions.DEFAULT_KEYS;
@@ -86,8 +89,21 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
         model.buffer().insert(text);
     }
 
-    public void text(String text) {
+    public TextEdit text(String text) {
+        boolean wasEmpty = model.buffer().isEmpty();
         model.buffer().set(text);
+        if (wasEmpty) {
+            viewAll();
+        }
+        return this;
+    }
+
+    /** TODO add reasonable limits (too many lines to display etc) */
+    private void viewAll() {
+        int w = model.buffer().width()+1;
+        int h = model.buffer().height();
+        viewMax(new v2(Math.max(viewMax.x, w), Math.max(viewMax.y, h)));
+        view(w, h);
     }
 
     public String text() {
@@ -95,11 +111,16 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
     }
 
     protected void updateScroll() {
-        viewMax(new v2(model.buffer.width(), model.buffer.height()));
+        viewMax(new v2(Math.max(viewMax.x, model.buffer.width()), Math.max(viewMax.y, model.buffer.height())));
     }
 
     public TextEdit focus() {
         model.focus();
+        return this;
+    }
+
+    public TextEdit onChange(Consumer<TextEdit> e) {
+        onChange.on(e);
         return this;
     }
 

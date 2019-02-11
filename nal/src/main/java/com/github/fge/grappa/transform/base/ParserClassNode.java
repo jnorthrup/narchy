@@ -22,12 +22,16 @@
 
 package com.github.fge.grappa.transform.base;
 
+import jcog.data.list.FasterList;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 public final class ParserClassNode
     extends ClassNode
@@ -35,9 +39,8 @@ public final class ParserClassNode
 
     private final Class<?> parentClass;
     private final Type parentType;
-    private final List<MethodNode> constructors = new ArrayList<>();
-    private final Map<String, RuleMethod> ruleMethods
-        = new TreeMap<>();
+    private final List<MethodNode> constructors = new FasterList<>();
+    private final Map<String, RuleMethod> ruleMethods = new TreeMap<>();
     private byte[] classCode;
     private Class<?> extendedClass;
 

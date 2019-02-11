@@ -33,6 +33,9 @@ public class BufferLine implements Comparable<BufferLine> {
     }
 
     public String toLineString() {
+        if (length()==0)
+            return "";
+
         StringBuilder buf = new StringBuilder();
         for (BufferChar bc : chars) {
             buf.append(bc.getChar());

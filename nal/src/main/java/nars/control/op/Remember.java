@@ -32,6 +32,7 @@ public class Remember extends AbstractTask {
     private FasterList<ITask> remembered = null;
 
     private transient TaskConcept concept;
+    public boolean done = false;
 
 
     @Nullable
@@ -107,9 +108,8 @@ public class Remember extends AbstractTask {
      */
     public void setInput(Task input, @Nullable TaskConcept c) {
         this.input = input;
-        if (c != null) {
-            this.concept = c;
-        }
+        this.concept = c;
+        this.done = false;
     }
 
     @Override
@@ -208,13 +208,17 @@ public class Remember extends AbstractTask {
         if (input == x) {
             input = null;
             concept = null;
+            done = true;
         }
     }
 
     public void remember(ITask x) {
+        if (x == input)
+            done = true;
+
         if (this.remembered == null) {
             remembered = new FasterList<>(2);
-            remembered.add(x);
+            remembered.addWithoutResizeTest(x);
         } else {
             add(x, this.remembered);
         }
@@ -267,6 +271,7 @@ public class Remember extends AbstractTask {
             this.input = null;
         }
 
+        done = true;
     }
 
     /**
@@ -333,7 +338,8 @@ public class Remember extends AbstractTask {
 
 
     public final boolean done() {
-        return input == null || (remembered != null && remembered.containsInstance(input));
+        //return input == null || (remembered != null && remembered.containsInstance(input));
+        return done;
     }
 
 }

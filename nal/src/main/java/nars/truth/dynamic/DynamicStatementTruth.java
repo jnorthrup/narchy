@@ -404,11 +404,7 @@ public class DynamicStatementTruth {
 
         @Override
         public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            return components(superterm, start, end, each, superterm.sub(0).unneg());
-        }
-
-        protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term subj) {
-            return decomposeImplConj(superterm, start, end, each, superterm.sub(1), subj, true, true);
+            return decomposeImplConj(superterm, start, end, each, superterm.sub(1), superterm.sub(0).unneg(), true, true);
         }
 
         @Override

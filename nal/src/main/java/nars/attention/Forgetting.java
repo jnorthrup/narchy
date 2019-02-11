@@ -42,7 +42,7 @@ abstract public class Forgetting {
 
     }
 
-    protected final float depressurize(Bag b, float temperature) {
+    static protected float depressurize(Bag b, float temperature) {
         return b.depressurizePct(temperature);
     }
 

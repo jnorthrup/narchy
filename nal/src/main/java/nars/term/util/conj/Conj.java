@@ -1097,8 +1097,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
             //quick test for exact absorb/contradict
             if (b[0] != 0) {
-                for (int i = 0; i < b.length; i++) {
-                    byte bi = b[i];
+                for (byte bi : b) {
                     if (bi == 0)
                         break;
                     if (id == -bi)
@@ -1352,7 +1351,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         commonEvents.forEach(e -> {
             ByteSet xx = x.eventSet(e);
             ByteSet yy = y.eventSet(e);
-            ByteSet common = xx.select(xxx -> yy.contains(xxx));
+            ByteSet common = xx.select(yy::contains);
             ByteSet contra = xx.select(xxx -> yy.contains((byte) -xxx));
             if (!common.isEmpty()) {
                 common.forEach(cc -> {

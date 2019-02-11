@@ -58,14 +58,6 @@ public class TaskLinkTask extends AbstractTask {
         return null;
     }
 
-    protected boolean generify() {
-        return true;
-    }
-
-    protected boolean eternalize() {
-        return true;
-    }
-
 
     @Override
     public String toString() {

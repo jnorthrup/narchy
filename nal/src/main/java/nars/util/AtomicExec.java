@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
@@ -47,7 +48,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     final static int ACTIVE_CAPACITY = 16;
     final ArrayBag<Term, PriReference<Term>> active = new PLinkArrayBag<>(PriMerge.max, ACTIVE_CAPACITY);
 
-    private DurService onCycle;
+    private final AtomicReference<DurService> onCycle = new AtomicReference(null);
 
     public AtomicExec(@Nullable BiConsumer<Term, Timed> exe, float exeThresh) {
         this(exe, new FloatRange(exeThresh, 0.5f, 1f));
@@ -148,19 +149,27 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     /**
      * operator goes into active probing mode
      */
-    protected synchronized void enable(NAR n) {
-        if (onCycle == null) {
-            onCycle = DurService.on(n, this::update);
+    protected void enable(NAR n) {
+        if (onCycle.getOpaque() == null) {
+            onCycle.updateAndGet((x)->{
+                if (x == null)
+                    return DurService.on(n, this::update);
+                else
+                    return x;
+            });
         }
     }
 
     /**
      * operator leaves active probing mode
      */
-    protected synchronized void disable() {
-        if (onCycle != null) {
-            onCycle.off();
-            onCycle = null;
+    protected void disable() {
+        if (onCycle.getOpaque() != null) {
+            onCycle.getAndUpdate((x)->{
+                if (x != null)
+                    x.off();
+                return null;
+            });
         }
     }
 

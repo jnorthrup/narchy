@@ -175,7 +175,7 @@ abstract public class Inperience extends TaskLeakTransform {
             return reifyBeliefOrGoal(t, Image.imageNormalize(tt), nar);
         }
 
-        @Deprecated protected Term reifyBeliefOrGoal(Task t, Term tt, NAR nar) {
+        @Deprecated private static Term reifyBeliefOrGoal(Task t, Term tt, NAR nar) {
             Concept c = nar.conceptualizeDynamic(tt.unneg());
             if (c == null)
                 return Bool.Null;
@@ -231,7 +231,7 @@ abstract public class Inperience extends TaskLeakTransform {
             return true;
         }
 
-        private Term reifyQuestion(Term x, byte punc, NAR nar) {
+        private static Term reifyQuestion(Term x, byte punc, NAR nar) {
             x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
             x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.transform(x) : x;
             if (x instanceof Bool) return Bool.Null;

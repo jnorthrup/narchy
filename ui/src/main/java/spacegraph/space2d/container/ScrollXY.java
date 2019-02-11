@@ -44,7 +44,8 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
      * current view, in local grid coordinate
      */
     private volatile RectFloat view;
-    private volatile v2 viewMin = new v2(0,0), viewMax = new v2(1,1);
+    private volatile v2 viewMin = new v2(0,0);
+    protected volatile v2 viewMax = new v2(1,1);
 
     private boolean autoHideScrollForSingleColumnOrRow = false;
 

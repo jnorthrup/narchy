@@ -98,7 +98,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
     }
 
     @Nullable
-    private Term pretest(Term x, Term y) {
+    private static Term pretest(Term x, Term y) {
         /** null != null, like NaN!=NaN .. it represents an unknokwn or invalid value.  who can know if it equals another one */
         if (x == Null || y == Null)
             return Null;

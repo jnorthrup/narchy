@@ -68,8 +68,7 @@ public final class ClassNodeInitializer
 
         // walk up the parser parent class chain
         ownerClass = classNode.getParentClass();
-        Closer closer = Closer.create();
-        try {
+        try (Closer closer = Closer.create()) {
             ClassReader reader;
             InputStream in;
             while (!Object.class.equals(ownerClass)) {
@@ -98,8 +97,6 @@ public final class ClassNodeInitializer
 
                 method.moveFlagsTo(overridingMethod);
             }
-        } finally {
-            closer.close();
         }
     }
 

@@ -97,7 +97,7 @@ public abstract class Valuator {
      * uses an RBM as an adaptive associative memory to learn and reinforce the co-occurrences of the causes
      * the RBM is an unsupervised network to learn and propagate co-occurring value between coherent Causes
      */
-    class RBMValuator extends DefaultValuator {
+    static class RBMValuator extends DefaultValuator {
 
         private final Random rng;
         double[] next;
@@ -162,7 +162,7 @@ public abstract class Valuator {
     /**
      * denoising autoencoder revaluator
      */
-    class AEValuator extends DefaultValuator {
+    static class AEValuator extends DefaultValuator {
 
         private final Random rng;
 

@@ -60,8 +60,8 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
             return ETERNAL;
         long min = Tense.TIMELESS;
         int n = size();
-        for (int i = 0; i < n; i++) {
-            long s = get(i).start();
+        for (Task task : this) {
+            long s = task.start();
             if (s != ETERNAL && s < min)
                 min = s;
         }

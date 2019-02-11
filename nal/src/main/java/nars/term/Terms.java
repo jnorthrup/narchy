@@ -138,9 +138,8 @@ public enum Terms {
 
     public static void printRecursive(Term x, int level, Consumer<String> c) {
 
-        StringBuilder line = new StringBuilder();
-        for (int i = 0; i < level; i++)
-            line.append("  ");
+        StringBuilder line = new StringBuilder(level*2 + 32);
+        line.append("  ".repeat(Math.max(0, level)));
 
         line.append(x);
 

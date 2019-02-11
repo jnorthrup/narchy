@@ -30,32 +30,40 @@ import static nars.time.Tense.ETERNAL;
  * the function of a tasklink is to be a prioritizable strategy for resolving a Task in a NAR.
  * this does not mean that it must reference a specific Task but certain properties of it
  * that can be used ot dynamically match a Task on demand.
- *
- * note: seems to be important for Tasklink to NOT implement Termed when use with common Map's with Termlinks */
-public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
+ * <p>
+ * note: seems to be important for Tasklink to NOT implement Termed when use with common Map's with Termlinks
+ */
+public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
     TaskLink[] EmptyTaskLinkArray = new TaskLink[0];
 
-    /** dont use .apply() directly; use this */
+    /**
+     * dont use .apply() directly; use this
+     */
     static Task task(TaskLink x, NAR n) {
         Task y = x.apply(n);
-        if(y == null)
+        if (y == null)
             x.delete();
         return y;
     }
 
 
-
-    /** concept term (source) where the link originates */
+    /**
+     * concept term (source) where the link originates
+     */
     Term source();
 
-    /** task term (target) of the task linked */
+    /**
+     * task term (target) of the task linked
+     */
     Term target();
 
     //byte punc();
     float punc(byte punc);
 
-    /** main tasklink constructor  */
+    /**
+     * main tasklink constructor
+     */
     static TaskLink tasklink(Term src, Task task, float pri) {
 
         //assert(task.target().volume() < n.termVolumeMax.intValue());
@@ -76,7 +84,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
     static void link(TaskLink x, NAR nar, @Nullable OverflowDistributor<Bag> overflow) {
 
-        Bag<TaskLink, TaskLink> b = ((AbstractConceptIndex)nar.concepts).active;
+        Bag<TaskLink, TaskLink> b = ((AbstractConceptIndex) nar.concepts).active;
 
         if (overflow != null) {
             MutableFloat o = new MutableFloat();
@@ -85,10 +93,10 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
             if (o.floatValue() > EPSILON) {
                 overflow.overflow(b, o.floatValue(),
-                    (yy != null) ?
-                        1f - yy.priElseZero()
-                        :
-                        1 //assume it needs as much as it can get
+                        (yy != null) ?
+                                1f - yy.priElseZero()
+                                :
+                                1 //assume it needs as much as it can get
                 );
             }
         } else {
@@ -96,7 +104,9 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
         }
     }
 
-    /** sample punctuation by relative priority */
+    /**
+     * sample punctuation by relative priority
+     */
     byte punc(Random rng);
 
     default long when() {
@@ -191,10 +201,14 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
     default byte puncMax() {
         switch (Util.maxIndex(punc(BELIEF), punc(GOAL), punc(QUESTION), punc(QUEST))) {
-            case 0: return BELIEF;
-            case 1: return GOAL;
-            case 2: return QUESTION;
-            case 3: return QUEST;
+            case 0:
+                return BELIEF;
+            case 1:
+                return GOAL;
+            case 2:
+                return QUESTION;
+            case 3:
+                return QUEST;
         }
         return -1;
     }
@@ -212,7 +226,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
         throw new WTF();
     }
 
-    void priMax(byte punc, float p);
+    /** returns the delta */
+    float priMax(byte punc, float p);
 
 
 //    /** special tasklink for signals which can stretch and so their target time would not correspond well while changing */
@@ -257,10 +272,10 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
         @Override
         public final boolean equals(Object obj) {
-            return this==obj || (
+            return this == obj || (
                     (hash == obj.hashCode())
-                            && source.equals(((AbstractTaskLink)obj).source)
-                            && target.equals(((AbstractTaskLink)obj).target)
+                            && source.equals(((AbstractTaskLink) obj).source)
+                            && target.equals(((AbstractTaskLink) obj).target)
             );
         }
 
@@ -269,11 +284,13 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
             return hash;
         }
 
-        @Override public final Term source() {
+        @Override
+        public final Term source() {
             return source;
         }
 
-        @Override public final Term target() {
+        @Override
+        public final Term target() {
             return target;
         }
     }
@@ -294,7 +311,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
         public GeneralTaskLink(Term source, Term target, long when, byte punc, float pri) {
             this(source, target);
             if (when != ETERNAL) throw new TODO("non-eternal tasklink not supported yet");
-            if (pri>0)
+            if (pri > 0)
                 pri(punc, pri);
         }
 
@@ -320,56 +337,93 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
         }
 
         public final GeneralTaskLink pri(byte punc, float pri) {
-            return pri(punc, pri, Param.tasklinkMerge);
+            return mergeComponent(punc, pri, Param.tasklinkMerge);
         }
 
         @Override
-        public void priMax(byte punc, float max) {
-            pri(punc, max, PriMerge.max);
+        public float priMax(byte punc, float max) {
+            return mergeComponent(punc, max, PriMerge.max, false);
         }
 
         @Override
-        public synchronized /* HACK */ float merge(TaskLink incoming, PriMerge merge) {
-            float before = priElseZero();
+        public /* HACK */ float merge(TaskLink incoming, PriMerge merge) {
             if (incoming instanceof GeneralTaskLink) {
+                float delta = 0;
                 for (int i = 0; i < 4; i++) {
                     float p = ((GeneralTaskLink) incoming).punc.getAt(i);
                     if (Math.abs(p) > Float.MIN_NORMAL) {
-                        pri(p(i), p, merge);
+                        delta += mergeComponent(p(i), p, merge, false);
                     }
                 }
+                return delta/4;
             } else {
                 throw new TODO();
             }
-            float after = priElseZero();
-            return after-before;
         }
 
-        public GeneralTaskLink pri(byte punc, float pri, PriMerge merge) {
-            assertFinite(pri);
+        public GeneralTaskLink mergeComponent(byte punc, float pri, PriMerge merge) {
 
-            assertAccurate();
-
-            this.punc.update(pri, (prev,p)->{
-                Weight tmp = new Weight(prev);
-                merge.merge(tmp, p);
-                float n = tmp.pri;
-                if (n == n) {
-                    if (n > 1) n = 1;
-                    if (n < 0) n = 0;
-                    return n;
-                } else
-                    return 0;
-
-            }, (prev,next)->{
-                float delta = (next - prev)/4;
-                if (Math.abs(delta) > Float.MIN_NORMAL)
-                    super.priAdd(delta);
-            },i(punc));
-
-            assertAccurate();
+            mergeComponent(punc, pri, merge, true);
 
             return this;
+        }
+
+        public float mergeComponent(byte punc, float pri, PriMerge merge, boolean valueOrDelta) {
+            assertFinite(pri);
+
+            //assertAccurate();
+
+            float y = this.punc.update(pri, mergeComponent(merge), (prev, next) -> {
+                float delta = (next - prev) / 4;
+                if (Math.abs(delta) > Float.MIN_NORMAL)
+                    super.priAdd(delta);
+            }, i(punc), valueOrDelta);
+
+            //assertAccurate();
+
+            return y;
+        }
+
+        private static FloatFloatToFloatFunction mergeComponent(PriMerge merge) {
+            if (merge == PriMerge.max) {
+                //optimized
+                return (existing, incoming) -> {
+                    if (existing != existing) return incoming;
+                    float next = Math.max(existing, incoming);
+                    if (next == next) {
+                        if (next > 1) next = 1;
+                        else if (next < 0) next = 0;
+                        return next;
+                    } else
+                        return 0;
+                };
+            } else if (merge == PriMerge.plus) {
+                //optimized
+                return (existing, incoming) -> {
+                    if (existing != existing) return incoming;
+                    float next = (existing + incoming);
+                    if (next == next) {
+                        if (next > 1) next = 1;
+                        else if (next < 0) next = 0;
+                        return next;
+                    } else
+                        return 0;
+                };
+            } else {
+                //generic
+                return (existing, incoming) -> {
+                    Weight tmp = new Weight(existing);
+                    merge.merge(tmp, incoming);
+                    float next = tmp.pri;
+                    if (next == next) {
+                        if (next > 1) next = 1;
+                        else if (next < 0) next = 0;
+                        return next;
+                    } else
+                        return 0;
+                };
+            }
+
         }
 
         @Override
@@ -388,47 +442,48 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
             if (Util.equals(a, 1, Float.MIN_NORMAL))
                 return pri();
 
-            assertAccurate();
+            //assertAccurate();
 
-            assert(a < 1);
+            assert (a < 1);
 
-            float y = priUpdateAndGet((p, aa)->{
-                if (p!=p) {
+            float y = priUpdateAndGet((p, aa) -> {
+                if (p != p) {
                     punc.fill(0);
                     return p; //stay deleted
                 } else {
                     float newSum = 0;
                     for (int i = 0; i < 4; i++)
-                        newSum += punc.update(aa, (x,aaa)-> Util.unitize/*Safe*/(x * aaa), i);
-                    return newSum/4;
+                        newSum += punc.update(aa, (x, aaa) -> Util.unitize/*Safe*/(x * aaa), i);
+                    return newSum / 4;
                 }
             }, a);
 
-            assertAccurate();
+            //assertAccurate();
 
             return y;
         }
 
-        @Override public float pri(FloatFloatToFloatFunction update, float _x) {
-            float y = super.pri((prev, x)->{
+        @Override
+        public float pri(FloatFloatToFloatFunction update, float _x) {
+            float y = super.pri((prev, x) -> {
                 float next = update.apply(prev, x);
-                if (next==next) {
-                    if (prev!=prev) {
-                        punc.fill(next/4);
+                if (next == next) {
+                    if (prev != prev) {
+                        punc.fill(next / 4);
                     } else {
                         float delta = (next - prev) / 4;
                         if (Math.abs(delta) > Float.MIN_NORMAL) {
                             float newSum = 0;
                             for (int i = 0; i < 4; i++)
                                 newSum += punc.addAt(delta, i);
-                            return newSum/4;
+                            return newSum / 4;
                         }
                     }
                 } else {
                     punc.fill(0);
                 }
                 return next;
-            },_x);
+            }, _x);
 
             assertAccurate();
 
@@ -442,10 +497,14 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
         private static int i(byte p) {
             switch (p) {
-                case BELIEF: return 0;
-                case QUESTION: return 1;
-                case GOAL: return 2;
-                case QUEST: return 3;
+                case BELIEF:
+                    return 0;
+                case QUESTION:
+                    return 1;
+                case GOAL:
+                    return 2;
+                case QUEST:
+                    return 3;
                 default:
                     return -1;
             }
@@ -453,10 +512,14 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
         private static byte p(int index) {
             switch (index) {
-                case 0: return BELIEF;
-                case 1: return QUESTION;
-                case 2: return GOAL;
-                case 3: return QUEST;
+                case 0:
+                    return BELIEF;
+                case 1:
+                    return QUESTION;
+                case 2:
+                    return GOAL;
+                case 3:
+                    return QUEST;
                 default:
                     return -1;
             }
@@ -464,7 +527,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
         @Override
         public String toString() {
-            return toBudgetString() + ' ' + target() + (punc) + ":" + source();
+            return toBudgetString() + ' ' + target() + (punc) + ':' + source();
         }
 
 

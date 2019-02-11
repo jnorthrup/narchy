@@ -170,8 +170,7 @@ public final class Answer implements AutoCloseable {
     public static FloatFunction<TaskRegion> mergeability(Task x) {
         LongPredicate xStamp = Stamp.toContainment(x);
 
-        long xStart = x.start();
-        long xEnd = x.end();
+        long xStart = x.start(), xEnd = x.end();
 
         FloatFunction<TaskRegion> f = (TaskRegion t) -> {
 

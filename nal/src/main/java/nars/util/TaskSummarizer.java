@@ -87,7 +87,7 @@ public class TaskSummarizer extends NARService implements Consumer<Task> {
 
         public void print(PrintStream out) {
             forEach((punc, num, o, volMean, priMean) ->
-                out.println(o.str + " " + ((char) punc) + " x " + num + ", volMean=" + n2(volMean) + " priMean=" + n2(priMean))
+                out.println(o.str + ' ' + ((char) punc) + " x " + num + ", volMean=" + n2(volMean) + " priMean=" + n2(priMean))
             );
         }
 

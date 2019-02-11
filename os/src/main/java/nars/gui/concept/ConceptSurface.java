@@ -4,7 +4,6 @@ import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.gui.DurSurface;
 import nars.gui.NARui;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -14,7 +13,6 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.HashMap;
@@ -36,26 +34,26 @@ public class ConceptSurface extends TabMenu {
     public static Map<String, Supplier<Surface>> conceptMenu(Term x, NAR n) {
         Map<String, Supplier<Surface>> m = Map.of(
                 x.toString(), () -> new VectorLabel(x.toString()),
-                "budget", () -> {
-
-                    Term xx = x.concept();
-                    Plot2D p = new Plot2D(64, Plot2D.Line)
-                            .add("pri", () -> n.concepts.pri(xx, 0));
-
-//                    CheckBox boost = new CheckBox("Boost");
-                    return DurSurface.get(//new Splitting<>(
-                            //boost,
-                            p
-                    //        , 0.8f)
-                    ,
-                    n, (nn) -> {
-                        p.update();
-//                        if (boost.on()) {
-//                            n.activate(xx, 1f);
-//                        }
-                    });
-                },
-                "beliefs", () -> NARui.beliefCharts(n, n.concept(x)),
+//                "budget", () -> {
+//
+//                    Term xx = x.concept();
+//                    Plot2D p = new Plot2D(64, Plot2D.Line)
+//                            .add("pri", () -> n.concepts.pri(xx, 0));
+//
+////                    CheckBox boost = new CheckBox("Boost");
+//                    return DurSurface.get(//new Splitting<>(
+//                            //boost,
+//                            p
+//                    //        , 0.8f)
+//                    ,
+//                    n, (nn) -> {
+//                        p.update();
+////                        if (boost.on()) {
+////                            n.activate(xx, 1f);
+////                        }
+//                    });
+//                },
+                "beliefs", () -> NARui.beliefCharts(n, n.conceptualizeDynamic(x)),
 //                        "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
 //                "tasklinks", () -> new LabeledPane("TaskLinks", new BagView(n.concept(x).tasklinks(), n)),
                 "goal", () -> {
@@ -87,7 +85,7 @@ public class ConceptSurface extends TabMenu {
                     );
                 }
         );
-        Concept c = n.concept(x);
+        Concept c = n.conceptualizeDynamic(x);
         if (c instanceof PermanentConcept) {
             m = new HashMap(m);
             m.put(c.getClass().getSimpleName(), ()->{

@@ -27,13 +27,13 @@ import com.github.fge.grappa.rules.Rule;
 import com.github.fge.grappa.transform.base.InstructionGraphNode;
 import com.github.fge.grappa.transform.base.RuleMethod;
 import com.google.common.base.Preconditions;
+import jcog.data.list.FasterList;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,7 +44,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
     public static final BasicValue[] EmptyBasicValues = new BasicValue[0];
     final String errorMessage;
     private final RuleMethod method;
-    private final List<Edge> additionalEdges = new ArrayList<>();
+    private final List<Edge> additionalEdges = new FasterList<>();
 
     public RuleMethodInterpreter(final RuleMethod method) {
         super(ASM7);

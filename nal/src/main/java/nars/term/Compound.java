@@ -572,7 +572,7 @@ public interface Compound extends Term, IPair, Subterms {
                     if (unfactor) {
                         Term factor = Conj.seqEternal(ss, eteComponents);
 
-                        boolean b = seq.eventsWhile((when, what) -> {
+                        return seq.eventsWhile((when, what) -> {
 
                             //int w = when == ETERNAL ? DTERNAL : 0;
                             int w = DTERNAL;
@@ -590,7 +590,6 @@ public interface Compound extends Term, IPair, Subterms {
 
                         }, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal);
 
-                        return b;
                     }
 
                 }
@@ -614,8 +613,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         if (decompose) {
 
-            Subterms tt = subterms();
-            int s = tt.subs();
+            Subterms ee = subterms();
 
             long t = offset;
 
@@ -631,15 +629,14 @@ public interface Compound extends Term, IPair, Subterms {
                 fwd = true;
             }
 
+            int s = ee.subs();
             for (int i = 0; i < s; i++) {
-                Term tti = tt.sub(fwd ? i : (s - 1) - i);
-                if (!tti.eventsWhile(each, t,
-                        decomposeConjParallel, decomposeConjDTernal, decomposeXternal
-                ))
+                Term ei = ee.sub(fwd ? i : (s - 1) - i);
+                if (!ei.eventsWhile(each, t, decomposeConjParallel, decomposeConjDTernal, decomposeXternal))
                     return false;
 
                 if (changeDT && i < s - 1)
-                    t += dt + tti.eventRange();
+                    t += dt + ei.eventRange();
             }
 
 
@@ -652,8 +649,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean hasXternal() {
-        return dt() == XTERNAL ||
-                subterms().hasXternal();
+        return dt() == XTERNAL || subterms().hasXternal();
     }
 
     @Override

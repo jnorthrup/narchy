@@ -23,7 +23,7 @@ public interface ScalarValue extends Prioritized {
     float EPSILONsqrt = (float)Math.sqrt(EPSILON);
 
     /** setter
-     *  @return value after setAt
+     *  @return value after set
      * */
     float pri(float p);
 
@@ -103,9 +103,9 @@ public interface ScalarValue extends Prioritized {
         priUpdate(priAddUpdateFunction, a);
     }
 
-    default float priAddAndGet(float a) {
-        return pri(priAddUpdateFunction, a);
-    }
+//    default float priAddAndGet(float a) {
+//        return pri(priAddUpdateFunction, a);
+//    }
 
     default void priSub(float toSubtract) {
         assert (toSubtract >= 0) : "trying to subtract negative priority: " + toSubtract;
@@ -113,6 +113,9 @@ public interface ScalarValue extends Prioritized {
         priAdd(-toSubtract);
     }
 
+    /**
+     *  @return value after set
+     * */
     default float priMult(float _y) {
         return pri(priMulUpdateFunction, _y);
     }

@@ -160,12 +160,8 @@ public class Emotion implements Meter {
     public String summary() {
 
 
-        StringBuilder sb = new StringBuilder()
-                .append(" hapy=").append(n4(happy()))
-                .append(" busy=").append(n4(busyVol.getSum()));
-
-
-        return sb.toString();
+        return " hapy=" + n4(happy()) +
+                " busy=" + n4(busyVol.getSum());
 
 
     }

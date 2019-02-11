@@ -388,8 +388,11 @@ public class ClassReader {
    *     #SKIP_CODE}, {@link #SKIP_DEBUG}, {@link #SKIP_FRAMES} or {@link #EXPAND_FRAMES}.
    */
   public void accept(final ClassVisitor classVisitor, final int parsingOptions) {
-    accept(classVisitor, new Attribute[0], parsingOptions);
+    accept(classVisitor, ATTRIBUTE_EMPTY, parsingOptions);
   }
+
+  static final Attribute[] ATTRIBUTE_EMPTY = new Attribute[0];
+
 
   /**
    * Makes the given visitor visit the JVMS ClassFile structure passed to the constructor of this
@@ -2436,7 +2439,7 @@ public class ClassReader {
    *     label in this array.
    * @return a non null Label, which must be equal to labels[bytecodeOffset].
    */
-  protected Label readLabel(final int bytecodeOffset, final Label[] labels) {
+  protected static Label readLabel(final int bytecodeOffset, final Label[] labels) {
     if (labels[bytecodeOffset] == null) {
       labels[bytecodeOffset] = new Label();
     }
@@ -2452,7 +2455,7 @@ public class ClassReader {
    * @param labels the already created labels, indexed by their offset.
    * @return a Label without the {@link Label#FLAG_DEBUG_ONLY} flag setAt.
    */
-  private Label createLabel(final int bytecodeOffset, final Label[] labels) {
+  private static Label createLabel(final int bytecodeOffset, final Label[] labels) {
     Label label = readLabel(bytecodeOffset, labels);
     label.flags &= ~Label.FLAG_DEBUG_ONLY;
     return label;
@@ -2466,7 +2469,7 @@ public class ClassReader {
    * @param bytecodeOffset a bytecode offset in a method.
    * @param labels the already created labels, indexed by their offset.
    */
-  private void createDebugLabel(final int bytecodeOffset, final Label[] labels) {
+  private static void createDebugLabel(final int bytecodeOffset, final Label[] labels) {
     if (labels[bytecodeOffset] == null) {
       readLabel(bytecodeOffset, labels).flags |= Label.FLAG_DEBUG_ONLY;
     }

@@ -165,8 +165,8 @@ public class Statement {
                             try {
                                 return statement(IMPL, dt, subject, newPred); //recurse
                             } catch (StackOverflowError e) {
-                                System.out.println("stack overflow: ==> " + subject + " " + dt + " " + newPred + "<" + predicate);
-                                throw new WTF("stack overflow: ==> " + subject + " " + dt + " " + newPred + "<" + predicate);
+                                System.out.println("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
+                                throw new WTF("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
                             }
                         }
 

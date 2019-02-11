@@ -133,7 +133,8 @@ public class NARui {
                                 ///causePanel(n),
                 "grp", () -> BagregateConceptGraph2D.get(n).widget(),
                 "svc", () -> new ServicesTable(n.services),
-                "cpt", () -> activeConceptsView(n)
+                "pri", () -> priView(n),
+                "cpt", () -> new ConceptBrowser(n)
         );
         HashMap<String, Supplier<Surface>> mm = new HashMap();
         mm.putAll(m);
@@ -155,7 +156,7 @@ public class NARui {
     }
 
     @NotNull
-    public static Surface activeConceptsView(NAR n) {
+    public static Surface priView(NAR n) {
 
         AbstractConceptIndex cc = (AbstractConceptIndex) n.concepts;
 

@@ -85,7 +85,7 @@ public class ConjMatch {
                         b = found.keyValuesView().getOnly();
                         break;
                     default:
-                        int mostMatched = found.maxBy(e->e.size()).size();
+                        int mostMatched = found.maxBy(List::size).size();
                         RichIterable<LongObjectPair<List<Term>>> best = found.keyValuesView().select(xx -> xx.getTwo().size() == mostMatched);
                         if (best.size() > 1) {
                             MutableList<LongObjectPair<List<Term>>> bb = best.toList();

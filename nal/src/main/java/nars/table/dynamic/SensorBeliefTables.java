@@ -3,12 +3,14 @@ package nars.table.dynamic;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.Longerval;
+import jcog.pri.ScalarValue;
 import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.control.op.Remember;
+import nars.index.concept.AbstractConceptIndex;
 import nars.link.TaskLink;
 import nars.table.BeliefTables;
 import nars.table.temporal.RTreeBeliefTable;
@@ -55,6 +57,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         if (r.input instanceof SeriesBeliefTable.SeriesTask) {
             r.input = null;
+            r.done = true;
             return;
         }
 
@@ -225,11 +228,11 @@ public class SensorBeliefTables extends BeliefTables {
                 }
 
                 //float before = series.tasklink.priElseZero();
-                series.tasklink.priMax(next.punc(), p);
+                float delta = series.tasklink.priMax(next.punc(), p);
                 //float after = series.tasklink.priElseZero();
                 TaskLink.link(series.tasklink, n);
-//                if (after - before > ScalarValue.EPSILON)
-//                    ((AbstractConceptIndex)n.concepts).active.bag.pressurize(after-before); //HACK
+                if (delta > ScalarValue.EPSILON)
+                    ((AbstractConceptIndex)n.concepts).active.bag.pressurize(delta); //HACK
 
             }
             return null;
@@ -258,11 +261,8 @@ public class SensorBeliefTables extends BeliefTables {
                 return; //already owned, or was owned
 
             if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
-                Task y = absorbNonSignal(x, start(), end()) ? null : x;
-                if (y == null) {
+                if (absorbNonSignal(x, start(), end())) {
                     r.reject();
-                } else if (y != x) {
-                    r.input = y; //assume same concept
                 }
             }
 

@@ -29,7 +29,7 @@ public class VerifyingTermBuilder extends TermBuilder {
             equals(aa, bb); //temporary for re-debugging
 //            Term aaa = a.compound(o, dt, u); //temporary for re-debugging
 //            Term bbb = b.compound(o, dt, u); //temporary for re-debugging
-            throw new WTF(o + " " + Arrays.toString(u) + " dt=" + dt + " inequal:\n" + aa + "\n" + bb);
+            throw new WTF(o + " " + Arrays.toString(u) + " dt=" + dt + " inequal:\n" + aa + '\n' + bb);
         }
         return aa;
     }
@@ -39,7 +39,7 @@ public class VerifyingTermBuilder extends TermBuilder {
         Subterms aa = a.subterms(inOp, u);
         Subterms bb = b.subterms(inOp, u);
         if (!equals(aa, bb))
-            throw new WTF(Arrays.toString(u) + (inOp != null ? " (inOp=" + inOp + ") " : "") + " inequal:\n" + aa + "\n" + bb);
+            throw new WTF(Arrays.toString(u) + (inOp != null ? " (inOp=" + inOp + ") " : "") + " inequal:\n" + aa + '\n' + bb);
         return aa;
     }
 

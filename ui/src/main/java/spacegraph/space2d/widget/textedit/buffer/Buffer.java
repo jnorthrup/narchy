@@ -23,9 +23,14 @@ public class Buffer {
         insert(value);
     }
 
+    public boolean isEmpty() {
+        return lines.isEmpty() || lines.size()==1 && lines.get(0).length()==0;
+    }
+
     public void clear() {
 
         synchronized (this) {
+
             int l = lines.size();
             if (l != 1 || lines.get(0).length() != 0) {
                 if (l > 0) {
@@ -94,23 +99,27 @@ public class Buffer {
     }
 
     public void insertChars(CharSequence string) {
-        synchronized (this) {
-            BufferLine line = currentLine();
-            int n = string.length();
-            int colStart = currentCursor.getCol();
-            for (int i = 0; i < n; i++) {
-                line.insertChar(colStart + i, string.charAt(i));
+        int n = string.length();
+        if (n > 0) {
+            synchronized (this) {
+                BufferLine line = currentLine();
+                int colStart = currentCursor.getCol();
+                for (int i = 0; i < n; i++) {
+                    line.insertChar(colStart + i, string.charAt(i));
+                }
+                currentCursor.incCol(n);
+                update();
             }
-            currentCursor.incCol(n);
-            observer.updateCursor(currentCursor);
         }
     }
 
     public void insertEnter() {
         synchronized (this) {
             BufferLine currentLine = currentLine();
-            BufferLine nextLine = new BufferLine();
+
             List<BufferChar> leaveChars = currentLine.insertEnter(currentCursor.getCol());
+
+            BufferLine nextLine = new BufferLine();
             lines.add(currentCursor.getRow() + 1, nextLine);
             update();
             observer.addLine(nextLine);
@@ -126,7 +135,7 @@ public class Buffer {
 
     /** width in columns */
     public int width() {
-        return lines.stream().mapToInt(l -> l.length()).max().orElse(0);
+        return lines.stream().mapToInt(BufferLine::length).max().orElse(0);
     }
 
     /** height in lines aka rows */
@@ -163,17 +172,24 @@ public class Buffer {
 
     public boolean textEquals(String s) {
         if (s.isEmpty()) {
-            return lines.isEmpty();
+            return isEmpty();
         } else {
-            //TODO optimize without necessarily constructing String
-            return text().equals(s);
+            if (lines.isEmpty())
+                return s.isEmpty();
+            else {
+                //TODO optimize without necessarily constructing String
+                return text().equals(s);
+            }
         }
     }
 
     public String text() {
-        //synchronized (this) {
-            return lines.stream().map(BufferLine::toLineString).collect(Collectors.joining("\n"));
-        //}
+        switch (lines.size()) {
+            case 0: return "";
+            case 1: return lines.get(0).toLineString();
+            default:
+                return lines.stream().map(BufferLine::toLineString).collect(Collectors.joining("\n"));
+        }
     }
 
     @Override
@@ -189,38 +205,45 @@ public class Buffer {
     }
 
     public void backspace() {
-        if (isBufferHead() && isLineHead()) {
-            return;
+        synchronized(this) {
+            if (!isBufferHead() || !isLineHead()) {
+                back();
+                delete();
+            }
         }
-        back();
-        delete();
     }
 
     public void delete() {
-        if (!isBufferLast() || !isLineLast()) {
-            if (!isLineLast()) {
-                currentLine().removeChar(currentCursor.getCol());
-            } else {
-                isLineLast();
-                if (!isBufferLast()) {
-                    BufferLine currentLine = currentLine();
-                    BufferLine removedLine = lines.remove(currentCursor.getRow() + 1);
-                    currentLine.join(removedLine);
-                    removedLine.getChars().forEach(c -> observer.moveChar(removedLine, currentLine, c));
-                    observer.removeLine(removedLine);
+        synchronized(this) {
+            if (!isEmpty() && (!isBufferLast() || !isLineLast())) {
+                if (!isLineLast()) {
+                    currentLine().removeChar(currentCursor.getCol());
+                } else {
+                    isLineLast();
+                    if (!isBufferLast()) {
+                        BufferLine currentLine = currentLine();
+                        BufferLine removedLine = lines.remove(currentCursor.getRow() + 1);
+                        currentLine.join(removedLine);
+                        removedLine.getChars().forEach(c -> observer.moveChar(removedLine, currentLine, c));
+                        observer.removeLine(removedLine);
+                    }
                 }
+                update();
             }
         }
     }
 
     public void head() {
-        currentCursor.setCol(0);
-        observer.updateCursor(currentCursor);
+        if (currentCursor.setCol(0))
+            observer.updateCursor(currentCursor);
     }
 
     public void last() {
-        currentCursor.setCol(currentLine().length());
-        observer.updateCursor(currentCursor);
+        last(true);
+    }
+    public void last(boolean update) {
+        if (currentCursor.setCol(currentLine().length()) && update)
+            observer.updateCursor(currentCursor);
     }
 
     public void back() {
@@ -230,10 +253,10 @@ public class Buffer {
             if (!isDocHead) {
                 last();
             }
-            return;
+        } else {
+            if (currentCursor.decCol(1))
+                observer.updateCursor(currentCursor);
         }
-        currentCursor.decCol(1);
-        observer.updateCursor(currentCursor);
     }
 
     public void forward() {
@@ -243,44 +266,43 @@ public class Buffer {
             if (!isDocLast) {
                 head();
             }
-            return;
+        } else {
+            if (currentCursor.incCol(1))
+                observer.updateCursor(currentCursor);
         }
-        currentCursor.incCol(1);
-        observer.updateCursor(currentCursor);
     }
 
     public void previous() {
-        if (isBufferHead()) {
-            return;
+        if (!isBufferHead()) {
+            if (currentCursor.decRow(1)) {
+                if (currentCursor.getCol() > currentLine().length()) {
+                    last(false);
+                }
+                observer.updateCursor(currentCursor);
+            }
         }
-        currentCursor.decRow(1);
-        if (currentCursor.getCol() > currentLine().length()) {
-            last();
-        }
-        observer.updateCursor(currentCursor);
     }
 
     public void next() {
-        if (isBufferLast()) {
-            return;
+        if (!isBufferLast()) {
+            if (currentCursor.incRow(1)) {
+                if (currentCursor.getCol() > currentLine().length()) {
+                    last(false);
+                }
+                observer.updateCursor(currentCursor);
+            }
+
         }
-        currentCursor.incRow(1);
-        if (currentCursor.getCol() > currentLine().length()) {
-            last();
-        }
-        observer.updateCursor(currentCursor);
     }
 
     public void bufferHead() {
-        currentCursor.setRow(0);
-        currentCursor.setCol(0);
-        observer.updateCursor(currentCursor);
+        if (currentCursor.setRow(0) || currentCursor.setCol(0))
+            observer.updateCursor(currentCursor);
     }
 
     public void bufferLast() {
-        currentCursor.setRow(lines.size() - 1);
-        currentCursor.setCol(currentLine().length());
-        observer.updateCursor(currentCursor);
+        if (currentCursor.setRow(lines.size() - 1) || currentCursor.setCol(currentLine().length()))
+            observer.updateCursor(currentCursor);
     }
 
     private boolean isBufferHead() {
@@ -347,5 +369,6 @@ public class Buffer {
             backspace();
         }
     }
+
 
 }

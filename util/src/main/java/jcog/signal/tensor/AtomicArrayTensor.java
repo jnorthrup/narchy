@@ -48,6 +48,10 @@ public class AtomicArrayTensor extends AbstractVector {
     }
 
     public final float update(float arg, FloatFloatToFloatFunction x, @Nullable FloatFloatProcedure delta, int linearCell) {
+        return update(arg, x, delta, linearCell, true);
+    }
+
+    public final float update(float arg, FloatFloatToFloatFunction x, @Nullable FloatFloatProcedure delta, int linearCell, boolean returnValueOrDelta) {
         int prevI, nextI;
         float prev, next;
 
@@ -61,7 +65,7 @@ public class AtomicArrayTensor extends AbstractVector {
         if (delta!=null)
             delta.value(prev, next);
 
-        return next;
+        return returnValueOrDelta ? next : (next-prev);
     }
 
     @Override

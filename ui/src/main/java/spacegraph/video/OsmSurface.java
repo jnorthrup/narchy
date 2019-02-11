@@ -23,8 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static jcog.Texts.n4;
-
 public class OsmSurface extends Surface {
 
 
@@ -120,7 +118,8 @@ public class OsmSurface extends Surface {
         x2 = ff[0];
         y2 = ff[1];
 
-        Draw.colorHash(gl, r.hashCode(), 0.5f);
+        gl.glLineWidth(4);
+        Draw.colorHash(gl, r.hashCode(), 0.75f);
         //Draw.rect(
         Draw.rectStroke(
                 x1, y1, x2-x1, y2-y1,
@@ -175,12 +174,12 @@ public class OsmSurface extends Surface {
 
                 renderProc.accept(gl);
 
-                /* debug */ {
-                    gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
-                    Draw.rectFrame(gl, b.cx(), b.cy(),
-                            b.w, b.h, 0.0001f);
-
-                }
+//                /* debug */ {
+//                    gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
+//                    Draw.rectFrame(gl, b.cx(), b.cy(),
+//                            b.w, b.h, 0.0001f);
+//
+//                }
 
             }
         }
@@ -262,19 +261,18 @@ public class OsmSurface extends Surface {
             //TODO unproject screen to world
 
             projection.unproject(wx, wy, wz, touch);
-            System.out.println(n4(wx,wy,wz) + " -> " + n4(touch));
+            //System.out.println(n4(wx,wy,wz) + " -> " + n4(touch));
 
 //            float[] untouch = new float[3];
 //            projection.project(touch[0], touch[1], touch[2], untouch, 0);
 //            System.out.println("  " + n4(untouch[0] - wx) + " " + n4(untouch[1] - wy));
 
-            float rad = 0.0004f;
-            HyperRectFloat cursor = HyperRectFloat.cube(touch, rad).scale(1,1,0);
+            float rad = 0.0000f;
+            HyperRectFloat cursor = HyperRectFloat.cube(touch, rad);
             index.index.intersectsWhile(cursor, (each)->{
                 if (each.tags!=null) {
                     //System.out.println(each.tags);
                     hilight.add(each);
-                    each.contains(cursor);
                 }
                 return true;
             });
