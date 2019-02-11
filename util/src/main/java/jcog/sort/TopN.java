@@ -24,7 +24,7 @@ import static java.lang.Float.NEGATIVE_INFINITY;
 public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunction<X> {
 
 
-    public final static TopN Empty = new TopN(ArrayUtils.EMPTY_OBJECT_ARRAY, (x,min)->Float.NaN) {
+    public final static TopN Empty = new TopN(ArrayUtils.EMPTY_OBJECT_ARRAY, (x, min) -> Float.NaN) {
         @Override
         public void setCapacity(int capacity) {
 
@@ -216,7 +216,9 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         return size() >= capacity();
     }
 
-    /** 0 < thresh <= 1 */
+    /**
+     * 0 < thresh <= 1
+     */
     private boolean isFull(float thresh) {
         return (size() >= capacity() * thresh);
     }
@@ -226,10 +228,13 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         return getRoulette(rng, rank);
     }
 
-    /** note: this assumes the ranking function operates in a range >= 0 so that by choosing a roulette weight 0 it should be skipped
-     *  and not surprise the roulette like a value of NEGATIVE_INFINITY or NaN *will*. */
-    @Nullable public X getRoulette(Random rng, Predicate<X> filter) {
-        return getRoulette(rng, (X x, float min)->{
+    /**
+     * note: this assumes the ranking function operates in a range >= 0 so that by choosing a roulette weight 0 it should be skipped
+     * and not surprise the roulette like a value of NEGATIVE_INFINITY or NaN *will*.
+     */
+    @Nullable
+    public X getRoulette(Random rng, Predicate<X> filter) {
+        return getRoulette(rng, (X x, float min) -> {
             if (!filter.test(x))
                 return 0;
             return rank.rank(x);
@@ -244,12 +249,12 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         int n = size();
         if (n == 0)
             return null;
-                IntToFloatFunction select = i -> rank.rank(get(i));
-                return get( //n < 8 ?
-                        Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
-                       // :
-                       // Roulette.selectRoulette(n, select, rng)
-                );
+        IntToFloatFunction select = i -> rank.rank(get(i));
+        return get( //n < 8 ?
+                Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
+                // :
+                // Roulette.selectRoulette(n, select, rng)
+        );
 
     }
 
@@ -352,13 +357,33 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
 
-    /** creates a copy of the array, trimmed */
+    /**
+     * creates a copy of the array, trimmed
+     */
     public X[] toArray() {
         return Arrays.copyOf(items, size());
     }
 
-    @Nullable public X[] toArrayOrNullIfEmpty() {
+    @Nullable
+    public X[] toArrayOrNullIfEmpty() {
         int s = size();
         return s > 0 ? Arrays.copyOf(items, s) : null;
+    }
+
+    @Nullable
+    public X[] toArrayIfSameSizeOrRecycleIfAtCapacity(@Nullable X[] x) {
+        int s = size();
+        int xl = x != null ? x.length : 0;
+        if (s == 0)
+            return null;
+        else if (xl == s) {
+            System.arraycopy(items, 0, x, 0, s);
+            return x;
+        } else {
+            if (items.length == s)
+                return items;
+            else
+                return Arrays.copyOf(items, s);
+        }
     }
 }

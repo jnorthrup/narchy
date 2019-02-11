@@ -87,7 +87,7 @@ public class Memoizers {
         //return new CollisionMemoize<>(capacity, computation);
     }
 
-    public <X extends ByteKey.ByteKeyExternal, Y> Function<X, Y> memoizeByte(String id, int capacity, Function<X, Y> computation) {
+    public <X extends ByteKey.ByteKeyExternal, Y> ByteHijackMemoize<X, Y> memoizeByte(String id, int capacity, Function<X, Y> computation) {
         ByteHijackMemoize<X, Y> c = new ByteHijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES, false);
         add(id, c);
         return c;

@@ -549,9 +549,10 @@ public abstract class Param {
         assert(dur > 0);
 
         //inverse linear decay
-        int falloffDurs =
+        float falloffDurs =
                 //1;
-                2; //nyquist
+                1.618f; //phi
+                //2; //nyquist
                 //4;
                 //dur;
                 //8;

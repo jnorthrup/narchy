@@ -23,8 +23,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import static nars.Op.NEG;
-import static nars.Op.VAR_PATTERN;
+import static nars.Op.*;
 
 
 /* recurses a pair of compound target tree's subterms
@@ -245,15 +244,24 @@ public abstract class Unify extends Versioning implements Subst {
 
 
     /**
-     * whether the op is assignable
+     * whether assignable variable terms
      */
     public final boolean var(Op var) {
         return ((this.varBits & var.bit) != 0);
     }
+
+    /** whether is or contains assignable variable terms */
+    public final boolean var(Termlike x) {
+        return x.hasAny(varBits);
+    }
+
+    /** allow common variable (tested for both types) */
     public final boolean varCommon(Op var) {
         return var!=VAR_PATTERN && var(var);
     }
+
     public final boolean varReverse(Op var) {
+        //return var!=VAR_PATTERN && var!=VAR_QUERY && var(var);
         return false;
     }
 
@@ -269,14 +277,6 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public final boolean putXY(final Variable x, Term y) {
         return xy.set(x, y);
-    }
-
-    public final boolean var(Termlike x) {
-        return x.hasAny(varBits);
-    }
-
-    public final boolean varsOrTemporal(Termlike x) {
-        return x.hasAny(varBits | Op.Temporal);
     }
 
 

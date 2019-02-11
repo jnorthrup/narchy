@@ -5,8 +5,6 @@ import jcog.data.byt.DynBytes;
 import jcog.memoize.byt.ByteKey;
 import nars.derive.Derivation;
 
-import static nars.Op.*;
-
 public class PremiseKey extends ByteKey.ByteKeyExternal {
 
     public static PremiseKey get(Derivation d) {
@@ -17,39 +15,35 @@ public class PremiseKey extends ByteKey.ByteKeyExternal {
     }
 
 
-    transient public Derivation derivation;
-
-
     protected PremiseKey(DynBytes b, Derivation d) {
         super(b);
-        this.derivation = d;
 
 
-        /** bits 0..1 */
-        byte taskPuncAndIfDouble;
-        {
-            switch (d.taskPunc) {
-                case BELIEF:
-                    taskPuncAndIfDouble = 0;
-                    break;
-                case GOAL:
-                    taskPuncAndIfDouble = 1;
-                    break;
-                case QUESTION:
-                    taskPuncAndIfDouble = 2;
-                    break;
-                case QUEST:
-                    taskPuncAndIfDouble = 3;
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-
-            /* bit 3 */
-            if (d.hasBeliefTruth())
-                taskPuncAndIfDouble |= 1 << 3;
-        }
-        b.writeByte(taskPuncAndIfDouble);
+//        /** bits 0..1 */
+//        byte taskPuncAndIfDouble;
+//        {
+//            switch (d.taskPunc) {
+//                case BELIEF:
+//                    taskPuncAndIfDouble = 0;
+//                    break;
+//                case GOAL:
+//                    taskPuncAndIfDouble = 1;
+//                    break;
+//                case QUESTION:
+//                    taskPuncAndIfDouble = 2;
+//                    break;
+//                case QUEST:
+//                    taskPuncAndIfDouble = 3;
+//                    break;
+//                default:
+//                    throw new UnsupportedOperationException();
+//            }
+//
+//            /* bit 3 */
+//            if (d.hasBeliefTruth())
+//                taskPuncAndIfDouble |= 1 << 3;
+//        }
+//        b.writeByte(taskPuncAndIfDouble);
 
 
         d.taskTerm.appendTo((ByteArrayDataOutput) b);

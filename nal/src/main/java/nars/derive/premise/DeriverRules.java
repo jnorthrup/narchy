@@ -4,12 +4,14 @@ import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
 import jcog.memoize.Memoizers;
+import jcog.memoize.byt.ByteHijackMemoize;
 import nars.control.Cause;
 import nars.derive.Derivation;
+import nars.link.TaskLink;
 import nars.term.control.PREDICATE;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -28,7 +30,37 @@ public class DeriverRules {
     /**
      * TODO move this to a 'CachingDeriver' subclass
      */
-    public final Function<PremiseKey, short[]> whats;
+    public final ByteHijackMemoize<PremiseKey, short[/*punc * singleOrDouble*/][/*conclusions*/]> whats;
+
+
+    public short[] can(Derivation d, short[][] can) {
+
+        byte punc = d.taskPunc;
+        boolean singleOrDouble = d.hasBeliefTruth();
+
+        int p = TaskLink.GeneralTaskLink.i(punc);
+        int s = singleOrDouble ? 0 : 1;
+        int ps = p * 2 + s;
+        short[] cps = can[ps];
+        if (cps != null)
+            return cps;
+
+
+        d.can.clear();
+
+        what.test(d);
+
+        return can[ps] = Util.toShort(d.can.toArray());
+    }
+
+    public boolean derivable(Derivation d) {
+        PremiseKey k = PremiseKey.get(d);
+        @Nullable short c[][] = whats.getIfPresent(k);
+        if (c == null)
+            whats.put(k, c = new short[4*2][]);
+
+        return (d.will = can(d, c)).length > 0;
+    }
 
     /**
      * repertoire
@@ -51,21 +83,9 @@ public class DeriverRules {
 //            public float value(PremiseKey premiseKey, short[] shorts) {
 //                return premiseKey.pri;
 //            }
-        this.whats = Memoizers.the.memoizeByte(this + "_what", 128 * 1024, this::can);
+        this.whats = Memoizers.the.memoizeByte(this + "_what", 128 * 1024, null);
     }
 
-    private short[] can(PremiseKey k) {
-
-        Derivation derivation  = k.derivation;
-
-        k.derivation = null;
-
-        derivation.can.clear();
-
-        what.test(derivation);
-
-        return Util.toShort( derivation.can.toArray() );
-    }
 
     /**
      * choice id to branch id mapping
@@ -178,8 +198,6 @@ public class DeriverRules {
     }
 
 
-    public boolean derivable(Derivation x) {
-        return (x.will = whats.apply(PremiseKey.get(x))).length > 0;
-    }
+
 
 }

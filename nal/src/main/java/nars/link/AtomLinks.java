@@ -6,11 +6,14 @@ import jcog.sort.TopN;
 import nars.concept.NodeConcept;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.Random;
+import java.util.Set;
 
 /** caches an array of tasklinks tangent to an atom */
 public final class AtomLinks {
@@ -42,27 +45,49 @@ public final class AtomLinks {
     public boolean refresh(Atomic x, Iterable<TaskLink> items, int itemCount, boolean in, boolean out, long now, int minUpdateCycles) {
         if (now - updated >= minUpdateCycles) {
 
-            TopN<TaskLink> match = null;
+            int cap = Math.max(4, (int) Math.ceil(Math.sqrt(itemCount))); //heuristic
+
+            Iterable<TaskLink> match = null;
 
             for (TaskLink t : items) {
                 if (t == null) continue; //HACK
                 float xp = t.priElseZero();
-                if (match == null || xp > match.minValueIfFull()) {
+                if (match == null || match instanceof Set || (match instanceof TopN && xp > ((TopN)match).minValueIfFull())) {
                     Term y = atomOther(x, t, in, out);
                     if (y != null) {
-                        if (match == null) {
-                            //TODO pool
-                            int cap = Math.max(3, (int) Math.ceil(Math.sqrt(itemCount))); //heuristic
-                            match = new TopN<>(new TaskLink[cap], TaskLink::priElseZero);
+
+                        if (match == null)
+                            match = new UnifiedSet<>(cap+1, 0.99f);
+
+                        if (match instanceof Set) {
+                            if (((Set)match).add(t)) {
+                                if (((Set)match).size() >= cap) {
+                                    //upgrade to TopN
+                                    TopN<TaskLink> mm = new TopN<>(new TaskLink[cap], (FloatFunction<TaskLink>) TaskLink::pri);
+                                    match.forEach(mm::add);
+                                    match = mm;
+                                }
+                            }
+                        } else if (match instanceof TopN) {
+                            ((TopN)match).add(t);
                         }
-                        match.add(t);
+
                     }
                 }
             }
+            if (match == null)
+                links = null;
+            else if (match instanceof Set) {
+                links = ((Set<TaskLink>) match).toArray(
+                            links!=null && links.length == ((Set)match).size() ?
+                                links /* recycle */
+                                :
+                                TaskLink.EmptyTaskLinkArray
+                        );
+            } else if (match instanceof TopN)
+                links = ((TopN<TaskLink>)match).toArrayIfSameSizeOrRecycleIfAtCapacity(links);
 
-            links = match!=null ? match.toArrayOrNullIfEmpty() : null;
             updated = now;
-
         }
 
         return links != null;

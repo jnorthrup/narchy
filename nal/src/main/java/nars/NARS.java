@@ -216,13 +216,6 @@ public class NARS {
     }
 
     /**
-     * single-thread, limited to NAL6 so it should be more compact than .tmp()
-     */
-    public static NAR tmpEternal() {
-        return new DefaultNAR(6, false).get();
-    }
-
-    /**
      * single thread but for multithread usage:
      * unbounded soft reference index
      */

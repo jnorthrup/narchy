@@ -495,7 +495,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             return this.punc.getAt(i(punc));
         }
 
-        private static int i(byte p) {
+        public static int i(byte p) {
             switch (p) {
                 case BELIEF:
                     return 0;
