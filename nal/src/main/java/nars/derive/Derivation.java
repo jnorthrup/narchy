@@ -191,7 +191,7 @@ public class Derivation extends PreDerivation {
     public transient int ditherDT;
 
     public Deriver deriver;
-    public final DynBytes tmpPremiseKey = new DynBytes(256);
+
 
     /** temporary storage buffer for recently activated concepts */
     @Deprecated public final Collection<Concept> firedConcepts = new FasterList<>(32);

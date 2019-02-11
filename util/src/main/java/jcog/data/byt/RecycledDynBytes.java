@@ -1,5 +1,6 @@
 package jcog.data.byt;
 
+import jcog.WTF;
 import jcog.data.pool.MetalPool;
 
 public class RecycledDynBytes extends DynBytes {
@@ -17,8 +18,9 @@ public class RecycledDynBytes extends DynBytes {
 
     public static RecycledDynBytes get() {
         MetalPool<RecycledDynBytes> pool = bytesPool.get();
+
         RecycledDynBytes r = pool.get();
-        r.clear();
+        assert(r.pool == null);
         r.pool = pool;
         return r;
     }
@@ -40,8 +42,12 @@ public class RecycledDynBytes extends DynBytes {
 
     @Override
     public void close() {
+        if (pool==null)
+            throw new WTF("already closed");
+
+        clear();
         pool.put(this);
-        //pool = null; //not necessary since threadlocal
+        pool = null; //not necessary since threadlocal
     }
 
 

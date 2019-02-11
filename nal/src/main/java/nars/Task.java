@@ -6,9 +6,11 @@ import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import jcog.pri.UnitPrioritizable;
 import nars.control.op.Perceive;
-import nars.eval.Evaluation;
 import nars.subterm.Subterms;
-import nars.task.*;
+import nars.task.DerivedTask;
+import nars.task.ITask;
+import nars.task.NALTask;
+import nars.task.UnevaluatedTask;
 import nars.task.proxy.SpecialNegatedTermTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
@@ -32,10 +34,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -513,7 +513,35 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
         return x;
     }
 
+    static int i(byte p) {
+        switch (p) {
+            case BELIEF:
+                return 0;
+            case QUESTION:
+                return 1;
+            case GOAL:
+                return 2;
+            case QUEST:
+                return 3;
+            default:
+                return -1;
+        }
+    }
 
+    static byte p(int index) {
+        switch (index) {
+            case 0:
+                return BELIEF;
+            case 1:
+                return QUESTION;
+            case 2:
+                return GOAL;
+            case 3:
+                return QUEST;
+            default:
+                return -1;
+        }
+    }
 
 
     @Override

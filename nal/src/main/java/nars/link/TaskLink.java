@@ -333,7 +333,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
         @Override
         public byte punc(Random rng) {
-            return p(Roulette.selectRouletteCached(4, punc::getAt, rng));
+            return Task.p(Roulette.selectRouletteCached(4, punc::getAt, rng));
         }
 
         public final GeneralTaskLink pri(byte punc, float pri) {
@@ -352,7 +352,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                 for (int i = 0; i < 4; i++) {
                     float p = ((GeneralTaskLink) incoming).punc.getAt(i);
                     if (Math.abs(p) > Float.MIN_NORMAL) {
-                        delta += mergeComponent(p(i), p, merge, false);
+                        delta += mergeComponent(Task.p(i), p, merge, false);
                     }
                 }
                 return delta/4;
@@ -377,7 +377,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                 float delta = (next - prev) / 4;
                 if (Math.abs(delta) > Float.MIN_NORMAL)
                     super.priAdd(delta);
-            }, i(punc), valueOrDelta);
+            }, Task.i(punc), valueOrDelta);
 
             //assertAccurate();
 
@@ -492,37 +492,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
         @Override
         public float punc(byte punc) {
-            return this.punc.getAt(i(punc));
-        }
-
-        public static int i(byte p) {
-            switch (p) {
-                case BELIEF:
-                    return 0;
-                case QUESTION:
-                    return 1;
-                case GOAL:
-                    return 2;
-                case QUEST:
-                    return 3;
-                default:
-                    return -1;
-            }
-        }
-
-        private static byte p(int index) {
-            switch (index) {
-                case 0:
-                    return BELIEF;
-                case 1:
-                    return QUESTION;
-                case 2:
-                    return GOAL;
-                case 3:
-                    return QUEST;
-                default:
-                    return -1;
-            }
+            return this.punc.getAt(Task.i(punc));
         }
 
         @Override

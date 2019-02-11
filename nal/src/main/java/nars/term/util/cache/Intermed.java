@@ -116,12 +116,16 @@ public class Intermed extends ByteKey.ByteKeyExternal  {
         //else assert(dt==DTERNAL): "can not store temporal dt on " + o;
     }
 
+    protected void write(Term x) {
+        x.appendTo((ByteArrayDataOutput)key);
+    }
+
     protected void write(Term[] subs) {
         int n = subs.length;
         //assert(n < Byte.MAX_VALUE);
         key.writeByte(n);
         for (Term s : subs)
-            s.appendTo((ByteArrayDataOutput) key);
+            write(s);
     }
 
     protected void write(Subterms subs) {

@@ -5,9 +5,9 @@ import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
+import nars.Task;
 import nars.control.Cause;
 import nars.derive.Derivation;
-import nars.link.TaskLink;
 import nars.term.control.PREDICATE;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,12 +21,12 @@ import java.util.stream.Stream;
 public class DeriverRules {
 
     public final PREDICATE<Derivation> what;
+
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
      */
+    /*@Stable*/ public final Cause[] causes;
 
-    /*@Stable*/
-    public final Cause[] causes;
     /**
      * TODO move this to a 'CachingDeriver' subclass
      */
@@ -38,13 +38,16 @@ public class DeriverRules {
         byte punc = d.taskPunc;
         boolean singleOrDouble = d.hasBeliefTruth();
 
-        int p = TaskLink.GeneralTaskLink.i(punc);
+        int p = Task.i(punc);
         int s = singleOrDouble ? 0 : 1;
         int ps = p * 2 + s;
         short[] cps = can[ps];
-        if (cps != null)
+        if (cps != null) {
+            whats.hit.incrementAndGet();
             return cps;
+        }
 
+        whats.miss.incrementAndGet();
 
         d.can.clear();
 
@@ -58,6 +61,8 @@ public class DeriverRules {
         @Nullable short c[][] = whats.getIfPresent(k);
         if (c == null)
             whats.put(k, c = new short[4*2][]);
+        else
+            k.close();
 
         return (d.will = can(d, c)).length > 0;
     }

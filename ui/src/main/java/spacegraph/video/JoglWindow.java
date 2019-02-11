@@ -52,7 +52,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     //    private float updateFPS = 32f;
     public float renderFPS = UI.FPS_default;
 
-    /** factor to decrease FPS of unfocused windows */
+    /**
+     * factor to decrease FPS of unfocused windows
+     */
     public float renderFPSUnfocusedRate = 0.5f;
 
 
@@ -226,7 +228,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowLostFocus(WindowEvent windowEvent) {
-        renderer.loop.setFPS( renderFPSUnfocusedRate * renderFPS );
+        renderer.loop.setFPS(renderFPSUnfocusedRate * renderFPS);
     }
 
     @Override
@@ -400,7 +402,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public void addKeyListener(KeyListener m) {
-        if (ArrayUtils.indexOf(window.getKeyListeners(), m)!=-1)
+        if (ArrayUtils.indexOf(window.getKeyListeners(), m) != -1)
             return;
         window.addKeyListener(m);
     }
@@ -457,7 +459,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         final InstrumentedLoop loop;
 
 
-
         GameAnimatorControl() {
             super();
 
@@ -468,66 +469,42 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             this.loop = new InstrumentedLoop() {
 
                 @Override
-                protected boolean async() {
-                    return true;
-                }
-
-                @Override
                 public String toString() {
                     return JoglWindow.this + ".render";
-                }
-
-                @Override
-                protected void starting() {
-
-                }
-
-//
-//                /** waiting to be rendered */
-//                final AtomicBoolean waiting = new AtomicBoolean();
-
-                private void render() {
-                    try {
-                        updateWindow();
-
-                        if (!drawables.isEmpty()) {
-                            GLAutoDrawable d = drawables.get(0);
-                            if (d != null)
-                                d.display();
-                        }
-                    } finally {
-//                        waiting.setAt(false);
-                        ready();
-                    }
                 }
 
                 @Override
                 public boolean next() {
 
                     if (window == null) {
-                        ready();
                         return false;
                     }
 
-                    //System.out.println(window + " " +window.isVisible());
-//                    if (waiting.compareAndSet(false, true)) {
-                        if (window.isVisible()) {
+                    if (window.isVisible()) {
 
+                        if (!drawables.isEmpty()) {
 
-                            long cycleTimeNS = renderer.loop.periodNS();
-                            dtS = (float) (cycleTimeNS / 1.0E9);
+                            GLAutoDrawable d = drawables.get(0);
+                            if (d != null) {
 
-                            onUpdate.emit(JoglWindow.this);
+                                long cycleTimeNS = renderer.loop.periodNS();
+                                dtS = (float) (cycleTimeNS / 1.0E9);
 
+                                onUpdate.emit(JoglWindow.this);
 
-                            JoglWindow.this.update((int) Math.round(cycleTimeNS/1_000_000.0));
+                                update((int) Math.round(cycleTimeNS / 1_000_000.0));
 
-                            Threading.invokeOnOpenGLThread(false, this::render);
-                        } else {
-                            stop();
-                            ready();
+                                d.flushGLRunnables();
+                                updateWindow();
+                                d.display();
+
+                            }
                         }
-//                    }
+
+                    } else {
+                        stop();
+                    }
+
 
                     return true;
                 }
