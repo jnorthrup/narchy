@@ -11,7 +11,6 @@ import nars.term.atom.Bool;
 import nars.term.util.TermException;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -19,22 +18,21 @@ import java.util.function.Supplier;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@Disabled
-public class NarseseTest {
+public abstract class NarseseTest {
 
 
     public static <T extends Term> T term(@NotNull String s) throws Narsese.NarseseException {
-        
+
         return (T) Narsese.term(s);
     }
 
     //HACK may need to split this into two functions, one which accepts bool result and others which only accept a thrown exception
     public static void assertInvalidTerms(@NotNull String... inputs) {
         for (String s : inputs) {
-            
+
             try {
                 Term e = term(s);
-                assertTrue(e instanceof Bool, ()->s + " should not be parseable but got: " + e);
+                assertTrue(e instanceof Bool, () -> s + " should not be parseable but got: " + e);
 
             } catch (Narsese.NarseseException | TermException e) {
                 assertTrue(true);
@@ -43,7 +41,7 @@ public class NarseseTest {
     }
 
 
-    void testProductABC(@NotNull Compound p) {
+    static void testProductABC(@NotNull Compound p) {
         assertEquals(3, p.subs(), p + " should have 3 sub-terms");
         assertEquals("a", p.sub(0).toString());
         assertEquals("b", p.sub(1).toString());
@@ -51,67 +49,17 @@ public class NarseseTest {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    void taskParses(@NotNull String s) throws Narsese.NarseseException {
+    static void taskParses(@NotNull String s) throws Narsese.NarseseException {
         Task t = task(s);
         assertNotNull(t);
 
 
-
-
-
-
-
-        
-        
     }
 
 
     static List<Task> tasks(@NotNull String s) throws Narsese.NarseseException {
-        
-        
+
+
         List<Task> l = $.newArrayList(1);
         Narsese.tasks(s, l, NARS.shell());
         return l;
@@ -125,7 +73,7 @@ public class NarseseTest {
         return l.get(0);
     }
 
-    void testTruth(String t, float freq, float conf) throws Narsese.NarseseException {
+    static void testTruth(String t, float freq, float conf) throws Narsese.NarseseException {
         String s = "a:b. " + t;
 
         Truth truth = task(s).truth();
@@ -133,28 +81,27 @@ public class NarseseTest {
         assertEquals(conf, truth.conf(), 0.001);
     }
 
-    public void assertInvalidTasks(@NotNull String... inputs) {
+    static public void assertInvalidTasks(@NotNull String... inputs) {
         for (String s : inputs) {
             assertThrows(Exception.class, () -> {
-                Task e = this.task(s);
+                Task e = task(s);
             });
         }
     }
 
 
-    public void assertInvalidTasks(Supplier<Task> s) {
+    static public void assertInvalidTasks(Supplier<Task> s) {
 
         try {
             s.get();
             fail("");
         } catch (TaskException good) {
-            assertTrue(true); 
+            assertTrue(true);
         } catch (Exception e) {
-            fail(e.toString()); 
+            fail(e.toString());
         }
 
     }
-
 
 
 }

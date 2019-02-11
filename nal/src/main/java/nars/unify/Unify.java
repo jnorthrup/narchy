@@ -24,6 +24,7 @@ import java.util.Random;
 import java.util.Set;
 
 import static nars.Op.NEG;
+import static nars.Op.VAR_PATTERN;
 
 
 /* recurses a pair of compound target tree's subterms
@@ -246,8 +247,14 @@ public abstract class Unify extends Versioning implements Subst {
     /**
      * whether the op is assignable
      */
-    public final boolean matchType(Op var) {
+    public final boolean var(Op var) {
         return ((this.varBits & var.bit) != 0);
+    }
+    public final boolean varCommon(Op var) {
+        return var!=VAR_PATTERN && var(var);
+    }
+    public final boolean varReverse(Op var) {
+        return false;
     }
 
     @Override
@@ -297,7 +304,7 @@ public abstract class Unify extends Versioning implements Subst {
         } else
             xx = x;
 
-        if (o.var && matchType(o)) {
+        if (o.var && var(o)) {
             Term y = resolve((Variable) xx);
             if (y != xx) {
                 return neg ? y.neg() : y;

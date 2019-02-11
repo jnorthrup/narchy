@@ -28,8 +28,7 @@ import nars.term.Variable;
 import nars.term.anon.AnonID;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.VAR_DEP;
-import static nars.Op.VAR_INDEP;
+import static nars.Op.*;
 
 /**
  * Normalized variable
@@ -45,7 +44,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
 
     static {
 
-        for (Op o: new Op[]{Op.VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, VAR_INDEP}) {
+        for (Op o: new Op[]{VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, VAR_INDEP}) {
             int t = opToVarIndex(o);
             for (byte i = 1; i < Param.MAX_INTERNED_VARS; i++) {
                 varCache[t][i] = vNew(o, i);
@@ -53,6 +52,26 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
         }
     }
 
+    private static int opToVarIndex(/*@NotNull*/ Op o) {
+        return opToVarIndex(o.id);
+    }
+
+    private static int opToVarIndex(/*@NotNull*/ byte oid) {
+        return oid - VAR_PATTERN.id /* lowest, most specific */;
+//        //TODO verify this is consistent with the variable's natural ordering
+//        switch (o) {
+//            case VAR_DEP:
+//                return 0;
+//            case VAR_INDEP:
+//                return 1;
+//            case VAR_QUERY:
+//                return 2;
+//            case VAR_PATTERN:
+//                return 3;
+//            default:
+//                throw new UnsupportedOperationException();
+//        }
+    }
 
     /*@Stable*/
     private final byte[] bytes;
@@ -70,7 +89,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
     public static Op typeIndex(char c) {
         switch (c) {
             case '%':
-                return Op.VAR_PATTERN;
+                return VAR_PATTERN;
             case '#':
                 return VAR_DEP;
             case '$':
@@ -81,26 +100,6 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
         throw new RuntimeException("invalid variable character");
     }
 
-    private static int opToVarIndex(/*@NotNull*/ Op o) {
-        return opToVarIndex(o.id);
-    }
-
-    private static int opToVarIndex(/*@NotNull*/ byte oid) {
-        return oid - VAR_INDEP.id /* lowest, most specific */;
-//        //TODO verify this is consistent with the variable's natural ordering
-//        switch (o) {
-//            case VAR_DEP:
-//                return 0;
-//            case VAR_INDEP:
-//                return 1;
-//            case VAR_QUERY:
-//                return 2;
-//            case VAR_PATTERN:
-//                return 3;
-//            default:
-//                throw new UnsupportedOperationException();
-//        }
-    }
 
     /**
      * TODO move this to TermBuilder

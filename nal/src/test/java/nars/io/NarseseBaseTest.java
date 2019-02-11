@@ -192,6 +192,7 @@ class NarseseBaseTest extends NarseseTest {
         assertEquals("(||,a,b)", $.$("(a || b)").toString());
     }
 
+
     @Test
     void testInfix2() throws Narsese.NarseseException {
         Compound t = term("(x & y)");
@@ -215,6 +216,10 @@ class NarseseBaseTest extends NarseseTest {
         assertEquals(Op.INH, c.sub(0).op()); 
     }
 
+    @Test void testInifix3() throws Narsese.NarseseException {
+        assertEquals("((a-b)|(--,x))", term("((a-b)|(--,x))").toString());
+        assertEquals("((_2-_1)|(--,_3))", term("((_2-_1)|(--,_3))").toString());
+    }
 
     @Test
     void testShortFloat() throws Narsese.NarseseException {
@@ -333,6 +338,11 @@ class NarseseBaseTest extends NarseseTest {
         Variable i = (Variable) x;
         assertEquals(prefix + "x", i.toString());
         return i;
+    }
+
+    @Test
+    void testQuotedVar() throws Narsese.NarseseException {
+        assertEquals("$\"x\"",  $.$("$\"x\"").toString());
     }
 
     @Test

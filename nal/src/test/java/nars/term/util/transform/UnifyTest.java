@@ -114,7 +114,7 @@ public class UnifyTest {
                 if (shouldSub) {
                     final int[] matched = {0};
                     this.xy.forEachVersioned((k, v) -> {
-                        if (matchType(k.op())) {
+                        if (var(k.op())) {
                             assertNotNull(v);
                             matched[0]++;
                         }

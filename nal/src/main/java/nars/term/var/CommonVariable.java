@@ -10,7 +10,24 @@ public final class CommonVariable extends UnnormalizedVariable {
 
 
     CommonVariable(/*@NotNull*/ Op type, Variable x, Variable y) {
-        super(type, String.valueOf(type.ch) + x + y + type.ch /* include trailing so that if a common variable gets re-commonalized, it wont become confused with repeats in an adjacent variable */);
+        super(type,
+                commonVariableKey(type, x, y) /* include trailing so that if a common variable gets re-commonalized, it wont become confused with repeats in an adjacent variable */);
+    }
+
+
+    private static String commonVariableKey(Op type, Variable x, Variable y) {
+        return String.valueOf(type.ch) + '\"' + filtercomponent(x) + filtercomponent(y) + '\"'; //HACK
+
+        //TODO
+//        byte[] xb = x.bytes();
+//        byte[] yb = y.bytes();
+//        byte[] b = new byte[xb.length + yb.length + 2];
+//        System.arraycopy(xb, 0, b, 1, xb.length);
+//        return b;
+    }
+
+    private static String filtercomponent(Variable x) {
+        return x.toString().replace('\"','_'); //HACK
     }
 
     public static boolean unify(Variable X, Variable Y, Unify u) {

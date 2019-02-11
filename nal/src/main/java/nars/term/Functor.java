@@ -12,7 +12,6 @@ import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.eval.Evaluation;
 import nars.link.TermLinker;
-import nars.op.Equal;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -27,6 +26,8 @@ import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.term.Terms.atomOrNull;
+import static nars.term.atom.Bool.False;
+import static nars.term.atom.Bool.True;
 
 /**
  * a functor is a target transform which immediately returns
@@ -403,13 +404,14 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     Term yActual = compute(x);
                     if (yActual == null)
                         return null;  
-                    else
-                        return Equal.the(y,yActual);
-//                        if (XY.equals(y)) {
-//                        return True;
-//                    } else {
-//                        return False;
-//                    }
+                    //else
+                        //return Equal.the(y,yActual);
+                        //return yActual;
+                    if (y.equals(yActual)) {
+                        return True;
+                    } else {
+                        return False;
+                    }
                 }
             }
         }
@@ -475,7 +477,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                     
                     Term XY = compute(x, param);
                     if (XY != null) {
-                        return XY.equals(y) ? Bool.True  : Bool.Null;
+                        return XY.equals(y) ? True  : Bool.Null;
                     } else {
                         return null;
                     }

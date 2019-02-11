@@ -67,8 +67,9 @@ public class Derivation extends PreDerivation {
 
 
     public final Collection<Premise> premiseBuffer =
-        new ArrayHashSet(256);
-        //new SortedList<>(256);
+        new ArrayHashSet();
+        //new LinkedHashSet();
+        //new SortedList<>();
 
 //    @Deprecated public final ArrayHashSet<Term> atomMatches = new ArrayHashSet();
 //    @Deprecated public TopN<TaskLink> atomTangent = new TopN<>(new TaskLink[64], (FloatFunction<TaskLink>) ScalarValue::pri);

@@ -206,13 +206,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 firstOf(
 
-                        QuotedAtom(),
-                        URIAtom(),
-
-
-                        Ellipsis(),
-
-
                         seq(SETe.str,
 
                                 MultiArgTerm(SETe, SET_EXT_CLOSER, false, false)
@@ -256,19 +249,24 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         seq(oper, temporal, ColonReverseInheritance()),
 
-                        NumberAtom(),
-
-                        AtomStr(),
-
-                        Variable(),
-
-
-
 
                         seq(OLD_STATEMENT_OPENER,
                                 MultiArgTerm(null, OLD_STATEMENT_CLOSER, false, true)
-                        )
+                        ),
 
+                        NumberAtom(),
+
+                        URIAtom(),
+
+                        Atom(),
+
+                        seq('_', push(Op.VarAuto)),
+                        seq('\\', push(Op.ImgInt)),
+                        seq('/', push(Op.ImgExt)),
+
+                        Ellipsis(),
+
+                        Variable()
 
                 ),
 
@@ -428,13 +426,19 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
 
+    public Rule Atom() {
+        return seq(AtomStr(), push(Atomic.the((String)pop())));
+    }
+
     /**
      * an atomic target, returns a String because the result may be used as a Variable name
      */
     public Rule AtomStr() {
-        return seq(
-                ValidAtomCharMatcher,
-                push(match())
+        return firstOf(
+                seq(testNot(dquote()),ValidAtomCharMatcher, push(match())),
+                seq(regex("\"[\\s\\S]+\"\"\""), push( '\"' + match()+'\"')),
+                seq(regex("\"(?:[^\"\\\\]|\\\\.)*\""), push('\"' + match()+'\"'))
+
         );
     }
 
@@ -488,23 +492,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
 
-    public Rule QuotedAtom() {
-        return sequence(
-                dquote(),
-                firstOf(
-
-                        seq(regex("\"\"[\\s\\S]+\"\"\""), push(Atomic.the('\"' + match()))),
-
-
-                        seq(
-
-                                regex("(?:[^\"\\\\]|\\\\.)*\""),
-                                push(Atomic.the('\"' + match())))
-                )
-        );
-    }
-
-
     public Rule Ellipsis() {
         return sequence(
                 Variable(), "..",
@@ -523,9 +510,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     Rule Variable() {
         return firstOf(
-                seq('_', push(Op.VarAuto)),
-                seq('\\', push(Op.ImgInt)),
-                seq('/', push(Op.ImgExt)),
                 seq(Op.VAR_INDEP.ch, Variable(VAR_INDEP)),
                 seq(Op.VAR_DEP.ch, Variable(VAR_DEP)),
                 seq(Op.VAR_QUERY.ch, Variable(VAR_QUERY)),
@@ -534,12 +518,10 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
     Rule Variable(Op varType) {
-        return
-                seq(
-                        //unnormalized
-                        AtomStr(),
-                        push($.v(varType, (String) pop()))
-                );
+        return seq(
+            AtomStr(),
+            push($.v(varType, (String) pop()))
+        );
     }
 
     

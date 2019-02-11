@@ -64,8 +64,8 @@ public class Premise implements Comparable<Premise> {
      * variable types unifiable in premise formation
      */
     final static int var =
-            Op.VAR_QUERY.bit | Op.VAR_DEP.bit
-            //Op.VAR_QUERY.bit
+            //Op.VAR_QUERY.bit | Op.VAR_DEP.bit
+            Op.VAR_QUERY.bit
             //Op.Variable //all
     ;
 
@@ -105,11 +105,11 @@ public class Premise implements Comparable<Premise> {
 
                         if (unifiedBeliefTerm != null) {
 
-
-                            if (!unifiedBeliefTerm.isNormalized() && d.random.nextBoolean())
+                            if (beliefTerm!=unifiedBeliefTerm && (!unifiedBeliefTerm.isNormalized() && d.random.nextBoolean())) {
                                 unifiedBeliefTerm = unifiedBeliefTerm.normalize();
+                                beliefTerm = unifiedBeliefTerm;
+                            }
 
-                            beliefTerm = unifiedBeliefTerm;
                             beliefConceptCanAnswerTaskConcept = true;
                         } else {
                             beliefConceptCanAnswerTaskConcept = false;

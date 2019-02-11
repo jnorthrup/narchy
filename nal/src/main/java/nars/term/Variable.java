@@ -49,13 +49,13 @@ public interface Variable extends Atomic {
             return true;
 
         Op xOp = op();
-        if (!u.matchType(xOp))
+        if (!u.var(xOp))
             return false;
 
         Term x = u.resolve(this);
         if (!x.equals(this)) {
             xOp = x.op();
-            if (!(x instanceof Variable) || !u.matchType(xOp)) {
+            if (!(x instanceof Variable) || !u.var(xOp)) {
                 if (u.varDepth < Param.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
                     u.varDepth++;
                     boolean result = x.unify(_y, u);
@@ -75,16 +75,19 @@ public interface Variable extends Atomic {
 
         Term y = u.resolvePosNeg(_y);
 
-        if (x instanceof Variable && u.matchType(xOp)) {
-            if (y instanceof Variable && u.commonVariables && u.matchType(y.op())) {
+        if (x instanceof Variable && u.varCommon(xOp)) {
+            if (y instanceof Variable && u.commonVariables && u.varCommon(y.op())) {
                 return CommonVariable.unify((Variable) x, (Variable) y, u);
             } else {
                 return u.putXY((Variable) x, y);
             }
-        } else if (y instanceof Variable && u.matchType(y.op())) {
-            return u.putXY((Variable) y, x); //reverse
+        } else if (y instanceof Variable && u.varReverse(y.op())) {
+            return u.putXY((Variable) y, x);
         } else {
-            return x.unify(y, u);
+            if (x instanceof Variable)
+                return u.putXY((Variable)x, y);
+            else
+                return x.unify(y, u);
         }
 
 

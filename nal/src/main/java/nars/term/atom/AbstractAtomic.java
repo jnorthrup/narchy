@@ -32,14 +32,14 @@ public abstract class AbstractAtomic implements Atomic {
     }
 
     protected static byte[] bytes(byte opID, String str) {
-        
-        
+        return bytes(opID, str.getBytes());
+    }
 
-        byte[] stringbytes = str.getBytes();
+    protected static byte[] bytes(byte opID, byte[] stringbytes) {
         int slen = stringbytes.length;
 
         byte[] sbytes = new byte[slen + 3];
-        sbytes[0] = opID; 
+        sbytes[0] = opID;
         sbytes[1] = (byte) (slen >> 8 & 0xff);
         sbytes[2] = (byte) (slen & 0xff);
         arraycopy(stringbytes, 0, sbytes, 3, slen);

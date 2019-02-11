@@ -25,9 +25,9 @@ class CommonVariableTest {
     void commonVariableTest1() {
         
         Variable p1p2 = CommonVariable.common(p1, p2);
-        assertEquals("##1#2#", p1p2.toString());
+        assertEquals("#\"#1#2\"", p1p2.toString());
         Variable p2p1 = CommonVariable.common(p2, p1);
-        assertEquals("##2#1#", p2p1.toString());
+        assertEquals("#\"#2#1\"", p2p1.toString());
     }
     @Test
     void testInvalid() {
@@ -50,10 +50,10 @@ class CommonVariableTest {
     @Test
     void CommonVariableOfCommonVariable() {
         Variable c123 = CommonVariable.common( c12,  p3);
-        assertEquals("###1#2##3# class nars.term.var.CommonVariable", (c123 + " " + c123.getClass()));
+        assertEquals("#\"#_#1#2_#3\" class nars.term.var.CommonVariable", (c123 + " " + c123.getClass()));
 
         
-        assertEquals("####1#2##3##2#", CommonVariable.common( c123, p2).toString());
+        assertEquals("#\"#_#_#1#2_#3_#2\"", CommonVariable.common( c123, p2).toString());
 
     }
 
@@ -62,7 +62,7 @@ class CommonVariableTest {
         assertTrue(
                 $$("x($1,#1)").unify($$("x(#1,$1)"), u)
         );
-        assertEquals("{$1=$$1#1$, #1=$$1#1$, #2=$$2#2$, $2=$$2#2$}$0", u.toString());
+        assertEquals("{$1=#\"#1$1\", #1=#\"#1$1\", #2=#\"#2$2\", $2=#\"#2$2\"}$0", u.toString());
         System.out.println(u);
     }
     //TODO dep/query

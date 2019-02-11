@@ -54,16 +54,19 @@ import java.util.function.Predicate;
  *            <p>
  *            from: https:
  * @author braz
+ *
+ * TODO configurable min,max capacity to determine when to free or just clear an internal collection
  */
 public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
 
+    private static final int DEFAULT_SET_CAPACITY = 4;
     public final FasterList<X> list;
     protected Set<X> set = emptySet();
 
 
     public ArrayHashSet() {
-        this(4);
+        this(DEFAULT_SET_CAPACITY);
     }
 
     public ArrayHashSet(int capacity) {
@@ -165,7 +168,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     public boolean add(X element) {
         switch (list.size()) {
             case 0:
-                set = newSet(list.capacity());
+                set = newSet(DEFAULT_SET_CAPACITY /*list.capacity()*/);
                 set.add(element);
                 addedUnique(element);
                 return true;
