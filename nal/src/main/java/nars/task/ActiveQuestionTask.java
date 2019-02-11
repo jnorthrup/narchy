@@ -10,6 +10,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -40,10 +41,9 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     final ArrayBag<Task, PriReference<Task>> answers;
     private Off onTask;
 
-    final Predicate<Term> preFilterTerm;
+    final Predicate<Term> test;
 
     private transient int ttl;
-    private transient Random random;
 
     /**
      * wrap an existing question task
@@ -59,6 +59,8 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     public ActiveQuestionTask(Term term, byte punc, long occ, int history, NAR nar,  BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
         super(term, punc, null, nar.time(), occ, occ, nar.evidence());
 
+        assert(punc==QUESTION || punc == QUEST);
+
         budget(nar);
 
         this.answers = newBag(history);
@@ -66,36 +68,44 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
         Op o = term.op();
         if (o.var) {
-            this.preFilterTerm = (tt) -> true; //anything
+            this.test = null; //anything
         } else {
-            this.preFilterTerm = (tt) -> tt.op()==o; //TODO better
+            if (term.hasVars())
+                this.test = t -> {
+                    if (t.op() == o && Subterms.possiblyUnifiable(term, t, Op.Variable)) {
+                        MySubUnify u = new MySubUnify(nar.random(), ttl); //TODO pool ThreadLocal
+                        u.unify(term(), t);
+                        if (u.match) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+            else
+                this.test = term::equals;
         }
     }
 
     @Override
     public ITask next(NAR nar) {
-        ITask next = super.next(nar);
-        this.random = nar.random();
-        this.ttl = nar.deriveBranchTTL.intValue();
-        this.onTask = nar.onTask(this, punc()==QUESTION ? BELIEF : /* quest */ GOAL);
-        return next;
+
+
+        synchronized (this) {
+            if (onTask!=null)
+                return null; //already processed and active
+            else {
+                ITask next = super.next(nar);
+                this.ttl = nar.deriveBranchTTL.intValue();
+                this.onTask = nar.onTask(this, punc() == QUESTION ? BELIEF : /* quest */ GOAL);
+                return next;
+            }
+        }
     }
 
     @Override
-    public void accept(Task t) {
-//        byte tp = t.punc();
-        //if (((punc == QUESTION && tp == BELIEF) || (punc == QUEST && tp == GOAL))) {
-        Term tt = t.term();
-        if (preFilterTerm.test(tt)) {
-            MySubUnify u = new MySubUnify(random, ttl); //TODO pool ThreadLocal
-            u.unify(term(), tt);
-            if (u.match) {
-                onAnswer(t);
-            }
-        }
-        //}
-
-        
+    public final void accept(Task t) {
+        if (test.test(t.term()))
+            onAnswer(t);
     }
 
 
@@ -129,7 +139,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
         }
     }
 
-    ArrayBag<Task, PriReference<Task>> newBag(int history) {
+    @Deprecated private ArrayBag<Task, PriReference<Task>> newBag(int history) {
         return new PLinkArrayBag<>(PriMerge.max, history) {
             @Override
             public void onAdd(PriReference<Task> t) {
@@ -147,7 +157,6 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     }
 
     protected Task onAnswer(Task answer) {
-        
         answers.putAsync(new PLink<>(answer, answer.priElseZero()));
         return answer;
     }
