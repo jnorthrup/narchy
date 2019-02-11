@@ -37,7 +37,7 @@ abstract public class AbstractExec extends Exec {
 
     @Override
     public boolean concurrent() {
-        return concurrency > 1;
+        return concurrencyMax > 1;
     }
 
     @Override

@@ -1,11 +1,8 @@
 package nars.table.dynamic;
 
 import jcog.Util;
-import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.TaskConcept;
-import nars.control.op.Remember;
 import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
@@ -212,41 +209,20 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
             return e;
         }
 
-        /**
-         * passive insertion subtask only
-         */
-
-        public SeriesRemember input(TaskConcept concept) {
-            //return new TaskLinkTaskAndEmit(this, priElseZero(), concept);
-            return new SeriesRemember(this, concept);
-        }
-
     }
 
-
-    public static final class SeriesRemember extends Remember {
-
-
-        private SeriesRemember(SeriesTask task, TaskConcept concept) {
-            super(task, concept);
-            remember(task);
-        }
-
-        @Override
-        protected boolean tasklink() {
-            return false; //tasklink add procedure is added manually in SensorBeliefTables
-        }
-
-//        @Override
-//        protected boolean taskevent() {
-//            return false;
+//
+//    public static final class SeriesRemember extends AbstractTask {
+//
+//        public Task input;
+//
+//        SeriesRemember(SeriesTask task, TaskConcept concept) {
+//            //super(task, concept);
+//            this.input = task;
 //        }
-
-        @Override
-        protected void add(NAR n) {
-            //DONT. just go straight to postprocessing
-        }
-    }
+//
+//
+//    }
 
 //    private class SeriesTaskLink extends TaskLink.GeneralTaskLink {
 //        public SeriesTaskLink() {

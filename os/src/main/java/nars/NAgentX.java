@@ -389,12 +389,12 @@ abstract public class NAgentX extends NAgent {
                 0.05f;
         
         n.beliefPriDefault.set(0.25f * p);
-        n.goalPriDefault.set(8f * p);
+        n.goalPriDefault.set(6f * p);
         n.questionPriDefault.set(0.05f * p);
         n.questPriDefault.set(0.05f * p);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.8f);
+        n.goalConfDefault.set(0.8f);
 
 
 //

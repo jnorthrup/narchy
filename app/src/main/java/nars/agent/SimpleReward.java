@@ -4,12 +4,10 @@ import jcog.math.FloatSupplier;
 import nars.attention.AttBranch;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SimpleReward extends BeliefReward {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleReward.class);
+//    private static final Logger logger = LoggerFactory.getLogger(SimpleReward.class);
     private final FloatSupplier rewardFunc;
 
 
@@ -69,8 +67,7 @@ public class SimpleReward extends BeliefReward {
         Signal concept = new Signal(id, () -> reward, /*linker, */nar()) {
             @Override
             protected AttBranch newAttn(Term term) {
-                AttBranch b = new AttBranch(term, this.components());
-                return b;
+                return new AttBranch(term, this.components());
             }
         };
         concept.attn.parent(attn);

@@ -6,7 +6,6 @@ import nars.NAR;
 import nars.attention.AttBranch;
 import nars.concept.NodeConcept;
 import nars.control.channel.CauseChannel;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.ITask;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -65,13 +64,9 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         };
 
         for (Signal s : this) {
-
-            SeriesBeliefTable.SeriesRemember r = s.update(last, now, truther, this.nar);
-
-            if (r != null) {
-                attn.ensure(r.input, attn.elementPri());
+            ITask r = s.update(last, now, truther, attn::elementPri, this.nar);
+            if (r != null)
                 in.input(r);
-            }
         }
     }
 

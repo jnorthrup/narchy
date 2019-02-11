@@ -10,7 +10,7 @@ import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.link.TermLinker;
 import nars.table.dynamic.SensorBeliefTables;
-import nars.table.dynamic.SeriesBeliefTable;
+import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -101,16 +101,15 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
     @Nullable
-    public SeriesBeliefTable.SeriesRemember update(long start, long end, FloatFloatToObjectFunction<Truth> truther, NAR n) {
+    public ITask update(long start, long end, FloatFloatToObjectFunction<Truth> truther, FloatSupplier pri, NAR n) {
 
         float prevValue = currentValue;
 
         float nextValue = currentValue = source.asFloat();
 
-
         return ((SensorBeliefTables) beliefs()).add(
                 nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
-                        start, end, this,  n);
+                        start, end, this, pri, n);
     }
 
 
@@ -126,10 +125,10 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     @Override
     public void sense(long prev, long now, NAR nar) {
 
-        SeriesBeliefTable.SeriesRemember r = update(prev, now,
-                (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar);
+        ITask r = update(prev, now,
+                (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), attn::elementPri, nar);
         if (r!=null)
-            attn.ensure(r.input, attn.elementPri());
+            nar.input(r);
     }
 
 

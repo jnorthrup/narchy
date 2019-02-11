@@ -235,7 +235,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         long[] evi = evi(n);
 
         SignalTask curiosity = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);
-        attnCuri.ensure(curiosity, attn.elementPri());
+        curiosity.priMax(attn.elementPri());
         return curiosity;
     }
 
@@ -251,15 +251,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return evi;
     }
 
-    @Nullable protected SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long last, long now, NAR nar) {
-
-        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, last, now,
-                this, nar);
-
-        if (r!=null)
-            attn.ensure(r.input, attn.elementPri());
-
-        return r;
+    @Nullable protected ITask feedback(@Nullable Truth f, long last, long now, NAR nar) {
+        return ((SensorBeliefTables) beliefs()).add(f, last, now, this, attn::elementPri, nar);
     }
 
 

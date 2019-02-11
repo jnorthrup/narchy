@@ -10,17 +10,17 @@ import java.util.function.IntFunction;
 public class RankedTopN<X> extends TopN<Ranked<X>> {
 
     /** source of ranked instances */
-    MetalPool<Ranked<X>> r = null;
+    MetalPool<Ranked> r = null;
 
-    static final ThreadLocal<MetalPool> rr = ThreadLocal.withInitial(()->new MetalPool() {
+    static final ThreadLocal<MetalPool<Ranked>> rr = ThreadLocal.withInitial(()->new MetalPool<>() {
         @Override
         public Ranked create() {
             return new Ranked();
         }
 
         @Override
-        public void put(Object i) {
-            ((Ranked)i).clear();
+        public void put(Ranked i) {
+            i.clear();
             super.put(i);
         }
     });
@@ -42,17 +42,19 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
     }
 
     @Override
-    public Ranked<X> pop() {
+    public final Ranked<X> pop() {
         throw new UnsupportedOperationException("Use popRanked()"); //HACK
     }
 
-    public X popRanked() {
+    public final X popRanked() {
         Ranked<X> p = super.pop();
-        if (p == null)
+        if (p != null) {
+            X x = p.x;
+            r.put(p);
+            return x;
+        } else {
             return null;
-        X x = p.x;
-        r.put(p);
-        return x;
+        }
     }
 
     public X[] itemsArray(IntFunction<X[]> arrayBuilder) {
@@ -60,9 +62,8 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
         return Util.map(i->i.x, arrayBuilder.apply(s), s, items);
     }
 
-    public boolean addRanked(X task) {
+    public final boolean addRanked(X task) {
         return add(r.get().set(task));
-
     }
 
     @Override

@@ -17,7 +17,7 @@ import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynEvi;
+import nars.truth.dynamic.DynamicTruthTask;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -28,15 +28,22 @@ import org.jetbrains.annotations.Nullable;
 public class Remember extends AbstractTask {
 
     public Task input;
+    /** TODO HACK */
+    @Deprecated private transient TaskConcept inputConcept;
+
 
     private FasterList<ITask> remembered = null;
 
-    private transient TaskConcept concept;
+
+    public final boolean store, link, notify;
     public boolean done = false;
 
 
-    @Nullable
-    public static Remember the(Task x, NAR n) {
+    @Nullable public static Remember the(Task x, NAR n) {
+        return the(x, true, true, true, n);
+    }
+
+    @Nullable public static Remember the(Task x, boolean store, boolean link, boolean notify, NAR n) {
 
         assert (!x.isCommand());
 
@@ -87,7 +94,7 @@ public class Remember extends AbstractTask {
                     return null;
             }
 
-            return new Remember(x, (TaskConcept) c);
+            return new Remember(x, store, link, notify, (TaskConcept) c);
         } else {
             if (isInput) {
                 //if (Param.DEBUG) {
@@ -98,7 +105,10 @@ public class Remember extends AbstractTask {
         }
     }
 
-    public Remember(Task input, TaskConcept c) {
+    public Remember(Task input, boolean store, boolean link, boolean notify, TaskConcept c) {
+        this.store = store;
+        this.link = link;
+        this.notify = notify;
         setInput(input, c);
     }
 
@@ -107,9 +117,11 @@ public class Remember extends AbstractTask {
      * concept must correspond to the input task
      */
     public void setInput(Task input, @Nullable TaskConcept c) {
-        this.input = input;
-        this.concept = c;
-        this.done = false;
+        if (this.input!=input) {
+            this.input = input;
+            this.inputConcept = c;
+            this.done = false;
+        }
     }
 
     @Override
@@ -120,60 +132,58 @@ public class Remember extends AbstractTask {
     @Override
     public ITask next(NAR n) {
 
-        add(n);
-
-        if (remembered != null && !remembered.isEmpty())
-            commit(n);
+        if (store) {
+            add(n);
+            if (remembered != null && !remembered.isEmpty())
+                commit(n);
+        } else {
+            commit(input, n);
+        }
 
         return null;
     }
 
     private void commit(NAR n) {
-        Term conceptTerm = concept != null ? concept.term() : null;
 
-        for (ITask r : remembered) {
-            if (r instanceof Task) {
-                commit(n, conceptTerm, (Task) r);
-            } else {
-                ITask.run(r, n);
-            }
+        for (ITask t : remembered) {
+            commit(t, n);
         }
 
         remembered = null;
     }
 
-    private void commit(NAR n, Term conceptTerm, Task r) {
-        Task rr = r;
+    private void commit(ITask t, NAR n) {
+        if (t instanceof Task) {
+            commit((Task) t, n);
+        } else {
+            ITask.run(t, n); //inline
+        }
+    }
 
-        if (tasklink()) {
-            Concept c = conceptTerm != null && conceptTerm.equals(rr.term().concept()) ? concept : null;
-            TaskLinkTask t = tasklink(rr, c);
-            if (t != null)
-                t.next(n);
+    private void commit(Task t, NAR n) {
+
+
+        if (link) {
+            Concept c = (this.inputConcept!=null) &&
+                    ((this.input==t) || (inputConcept.term().equals(t.term().concept()))) ? inputConcept : null;
+            tasklink(t, c).next(n);
         }
 
-        if (taskevent())
-            new TaskEvent(rr).next(n);
+        if (notify)
+            new TaskEvent(t).next(n);
     }
 
 
-    protected TaskLinkTask tasklink(Task rr, Concept c) {
-        return new TaskLinkTask(rr, c);
+    protected TaskLinkTask tasklink(Task t, Concept c) {
+        return new TaskLinkTask(t, c);
     }
 
-    protected boolean tasklink() {
-        return true;
-    }
-
-    protected boolean taskevent() {
-        return true;
-    }
 
     /**
      * attempt to insert into the concept's belief table
      */
     protected void add(NAR n) {
-        concept.add(this, n);
+        inputConcept.add(this, n);
     }
 
 
@@ -207,7 +217,7 @@ public class Remember extends AbstractTask {
 
         if (input == x) {
             input = null;
-            concept = null;
+            inputConcept = null;
             done = true;
         }
     }
@@ -302,7 +312,7 @@ public class Remember extends AbstractTask {
     @Nullable
     protected Task rememberMerged(Task prev, Task next) {
 
-        if (next instanceof DynEvi.DynamicTruthTask)
+        if (next instanceof DynamicTruthTask)
             return null;
         if (next instanceof ConjClustering.STMClusterTask)
             return null;

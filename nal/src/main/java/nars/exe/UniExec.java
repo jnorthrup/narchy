@@ -84,7 +84,7 @@ public class UniExec extends AbstractExec {
         this(1, 1);
     }
 
-    UniExec(int concurrency, int concurrencyMax) {
+    public UniExec(int concurrency, int concurrencyMax) {
         super(concurrency, concurrencyMax);
         in = new MetalConcurrentQueue(inputQueueCapacityPerThread * concurrencyMax());
     }

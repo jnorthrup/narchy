@@ -4,17 +4,14 @@ package jcog.pri;
 public class Weight implements Prioritizable {
     public float pri;
 
-    public Weight() {
-
-    }
 
     public Weight(float initial) {
-        this.pri = initial;
+        pri(initial);
     }
 
 
     protected void clear() {
-        pri = Float.NaN;
+        pri(Float.NaN);
     }
 
     @Override

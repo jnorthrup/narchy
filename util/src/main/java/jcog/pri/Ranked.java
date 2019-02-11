@@ -1,7 +1,7 @@
 package jcog.pri;
 
 /** aka MutableNLink */
-public class Ranked<X> extends Weight {
+public final class Ranked<X> extends Weight {
     public X x;
 
     public Ranked() {
@@ -10,7 +10,7 @@ public class Ranked<X> extends Weight {
 
     public Ranked(X x) {
         super(Float.NaN);
-        this.x = x;
+        set(x);
     }
 
     public Ranked<X> set(X x, float pri) {

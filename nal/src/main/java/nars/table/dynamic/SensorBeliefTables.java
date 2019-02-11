@@ -2,6 +2,7 @@ package nars.table.dynamic;
 
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
 import nars.NAR;
@@ -66,7 +67,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, NAR n) {
+    public ITask add(Truth value, long start, long end, TaskConcept c, FloatSupplier pri, NAR n) {
 
 
         if (value!=null) {
@@ -79,17 +80,14 @@ public class SensorBeliefTables extends BeliefTables {
         SeriesBeliefTable.SeriesTask x = add(value,
                 start, end,
                 series.term, series.punc(),
+                pri,
                 n);
 
-        series.clean(tables);
-
         if (x!=null) {
-            SeriesBeliefTable.SeriesRemember y = x.input(c);
-            y.remember(remember(y));
-            return y;
-        }
-
-        return null;
+            series.clean(tables);
+            return remember(x);
+        } else
+            return null;
     }
 
 
@@ -99,7 +97,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    private SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, NAR nar) {
+    private SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, FloatSupplier pri, NAR nar) {
 
         SeriesBeliefTable.SeriesTask nextT = null, last = series.series.last();
         if (last != null) {
@@ -142,6 +140,8 @@ public class SensorBeliefTables extends BeliefTables {
             nextT = newTask(term, punc, nextStart, nextEnd, next, nar);
             if (nextT != null)
                 series.add(nextT);
+
+            nextT.priMax(pri.asFloat());
         }
 
         return nextT;
@@ -204,7 +204,8 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    private Task prev = null, next = null;
+    private Task prev = null;
+    public Task next = null;
 
     private final AbstractTask myTaskLink = new AbstractTask() {
 
@@ -238,10 +239,10 @@ public class SensorBeliefTables extends BeliefTables {
             return null;
         }
     };
-    private ITask remember(SeriesBeliefTable.SeriesRemember y) {
+    private ITask remember(Task next) {
         //if (y==prev)
-        prev = next;
-        next = y.input;
+        this.prev = this.next;
+        this.next = next;
 
         return myTaskLink;
     }

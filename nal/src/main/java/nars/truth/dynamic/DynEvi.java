@@ -6,19 +6,15 @@ import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.task.NALTask;
-import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.util.Timed;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -59,7 +55,6 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
         if (allEternal())
             return ETERNAL;
         long min = Tense.TIMELESS;
-        int n = size();
         for (Task task : this) {
             long s = task.start();
             if (s != ETERNAL && s < min)
@@ -85,12 +80,6 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
                 Util.map(0, size(), short[][]::new, x -> get(x).cause()));
     }
 
-
-    /** temporary */
-    @Override public boolean add(@NotNull Task newItem) {
-        return super.add(newItem);
-    }
-
     @Override
     public @Nullable Task task() {
         throw new UnsupportedOperationException();
@@ -103,64 +92,12 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
     }
 
 
-    public Task task(Term content, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
-
-//        if (content == null) {
-//            throw new NullPointerException("template is null; missing information how to build");
-//            //return null;
-//        }
+    public final Task task(Term content, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
 
         if (content.op() == NEG) {
             content = content.unneg();
             t = t.neg();
         }
-
-//        long start, end;
-//        if (size() > 1) {
-//            if (op == CONJ) {
-//                long earliest = TIMELESS;
-//                long minRange = TIMELESS;
-//                boolean eternals = false;
-//                for (int i = 0, thisSize = size(); i < thisSize; i++) {
-//                    LongInterval ii = get(i);
-//                    long iis = ii.start();
-//                    if (iis != ETERNAL) {
-//                        earliest = Math.min(earliest, iis);
-//                        long tRange = ii.end() - iis;
-//                        minRange = (minRange != TIMELESS) ? Math.min(minRange, tRange) : tRange;
-//                    } else {
-//                        eternals = true;
-//                    }
-//                }
-//
-//
-//                if (eternals && earliest == TIMELESS) {
-//                    start = end = ETERNAL;
-//                } else {
-//                    assert (earliest != TIMELESS);
-//
-//                    if (minRange == TIMELESS)
-//                        minRange = 0;
-//
-//                    start = earliest;
-//                    end = (earliest + minRange);
-//                }
-//
-//
-//            } else {
-//                long[] u = Tense.union(this.array());
-//                start = u[0];
-//                end = u[1];
-//            }
-//
-//            start = Tense.dither(start, nar);
-//            end = Tense.dither(end, nar);
-//        } else {
-//
-//            LongInterval only = get(0);
-//            start = only.start();
-//            end = only.end();
-//        }
 
 
         @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
@@ -190,23 +127,7 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
     }
 
 
-    public static class DynamicTruthTask extends NALTask {
-
-        DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, Timed n, long start, long end, long[] stamp) throws TaskException {
-            super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, n.time(), start, end, stamp);
-
-            if (c.op() == NEG)
-                throw new UnsupportedOperationException(c + " has invalid task content op (NEG)");
-        }
-
-        @Override
-        public boolean isInput() {
-            return false;
-        }
-
-    }
-
-//    protected float pri(long start, long end) {
+    //    protected float pri(long start, long end) {
 //
 //        //TODO maybe instead of just range use evi integration
 //

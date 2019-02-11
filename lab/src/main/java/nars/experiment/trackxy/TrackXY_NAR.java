@@ -272,7 +272,7 @@ public class TrackXY_NAR extends NAgentX {
 
     static NAR newNAR() {
         NARS nb = new NARS.DefaultNAR(0, true)
-                .exe(new UniExec())
+                .exe(new UniExec(1, 2 /* force concurrent */))
                 .time(new RealTime.MS().dur(durMS))
                 //.time(new CycleTime().dur(dur))
                 .index(

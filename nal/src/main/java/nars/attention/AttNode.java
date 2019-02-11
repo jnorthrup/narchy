@@ -3,7 +3,6 @@ package nars.attention;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.pri.Pri;
-import jcog.pri.Prioritizable;
 import jcog.tree.atomic.AtomicTreeNode;
 import nars.$;
 import nars.NAR;
@@ -75,13 +74,13 @@ public class AttNode extends AtomicTreeNode<AttNode> {
         return childrenStream().map(x -> nar.concept(x.id)).filter(Objects::nonNull);
     }
 
-    static public void ensure(Prioritizable c, float pri) {
-        pri -= c.priElseZero();
-        if (pri > 0) {
-            //c.take(supply, pri, true, false); //RESTRICTED
-            c.priAdd(pri);
-        }
-    }
+//    static public void ensure(Prioritizable c, float pri) {
+//        pri -= c.priElseZero();
+//        if (pri > 0) {
+//            //c.take(supply, pri, true, false); //RESTRICTED
+//            c.priAdd(pri);
+//        }
+//    }
 
     public final float elementPri() {
         return pri.priElseZero();

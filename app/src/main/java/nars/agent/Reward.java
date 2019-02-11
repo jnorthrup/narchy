@@ -96,7 +96,7 @@ public abstract class Reward implements Termed, Iterable<Concept> {
             @Override
             public void update(float f) {
                 super.update(f);
-                ensure(t, elementPri());
+                t.priMax(elementPri());
                 in.input(t);
             }
 

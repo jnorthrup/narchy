@@ -216,12 +216,13 @@ public class DynTaskify extends DynEvi {
 
         return true;
     }
-    public boolean doesntOverlap(Task t) {
+
+    private boolean doesntOverlap(Task t) {
         return size ==0 ||
                 doesntOverlap(t.stamp());
     }
 
-    public boolean doesntOverlap(long[] stamp) {
+    private boolean doesntOverlap(long[] stamp) {
         MetalLongSet e = this.evi;
         if (e != null) {
             long[] s = stamp;
@@ -291,7 +292,6 @@ public class DynTaskify extends DynEvi {
     @Override
     public void clear() {
         super.clear();
-        if (evi!=null)
-            evi.clear();
+        evi = null;
     }
 }
