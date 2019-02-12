@@ -34,8 +34,10 @@ public interface TermTransform {
             @Nullable Term y = transformAtomic((Atomic) x);
             if (y == null || y == Bool.Null)
                 return false;
-            out.add(y);
-            return true;
+            else {
+                out.add(y);
+                return true;
+            }
         }
     }
 
@@ -112,13 +114,13 @@ public interface TermTransform {
 //    }
 
     default boolean transformCompound(Compound x, LazyCompound out) {
-        out.compound(x.op(), x.dt());
+        out.compoundStart(x.op(), x.dt());
         return transformSubterms(x.subterms(), out);
     }
 
     default boolean transformSubterms(Subterms x, LazyCompound out) {
         out.subs((byte)x.subs());
-        return x.AND(sub -> transform(sub, out));
+        return x.ANDwith(this::transform, out);
     }
 
     /** called after subterms transform has been applied */
@@ -185,6 +187,16 @@ public interface TermTransform {
     interface AbstractNegObliviousTermTransform extends TermTransform {
 
         @Override
+        default boolean transformCompound(Compound x, LazyCompound out) {
+            if(x.op()==NEG) {
+                out.negStart();
+                return transform(x.unneg(), out);
+            } else {
+                return TermTransform.super.transformCompound(x, out);
+            }
+        }
+
+        @Override
         @Nullable
         default Term transformCompound(Compound x) {
 
@@ -194,14 +206,9 @@ public interface TermTransform {
                 return yy == xx ? x : yy.neg();
 
             } else {
-                return transformNonNegCompound(x);
+                return TermTransform.super.transformCompound(x);
             }
 
-        }
-
-        /** default implementation */
-        default Term transformNonNegCompound(Compound x) {
-            return TermTransform.super.transformCompound(x);
         }
 
     }

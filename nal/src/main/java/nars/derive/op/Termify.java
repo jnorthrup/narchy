@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
+import nars.term.compound.LazyCompound;
 import nars.term.control.AbstractPred;
 
 import static nars.Op.NEG;
@@ -51,7 +52,25 @@ public final class Termify extends AbstractPred<Derivation> {
         d.retransform.clear();
 //        d.refinements.clear();
 
-        Term x = d.transform(pattern);
+        //Term xn = d.transform(pattern);
+        //Term x = xn;
+
+        //TEMPORARY
+        LazyCompound l = new LazyCompound.LazyEvalCompound();
+        boolean lValid = d.transform(pattern, l);
+        if (!lValid) {
+            d.nar.emotion.deriveFailEval.increment();
+            return false;
+        }
+//        }
+
+        Term xl = l.get();
+        Term x = xl;
+//        if (!xn.equals(xl))
+//            System.out.println(xn  + "\t" + xl);
+
+
+
 
 //        if (x!=Null && d.uniSubst.transformed()) {
 //            //transform again to apply any assignments unified by second-layer unification to other parts of the compound not in the unification functor

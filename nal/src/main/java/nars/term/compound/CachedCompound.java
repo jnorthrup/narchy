@@ -210,6 +210,11 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     }
 
     @Override
+    public int vars() {
+        return hasVars() ? super.vars() : 0;
+    }
+
+    @Override
     public final int varPattern() {
         return hasVarPattern() ? subterms().varPattern() : 0;
     }

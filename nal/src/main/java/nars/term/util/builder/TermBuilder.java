@@ -109,7 +109,19 @@ public abstract class TermBuilder {
 
             default: {
                 //TODO Param.SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME
-                return new ArrayTermVector(t);
+                boolean different = false;
+                for (int i = 1; i < t.length; i++) {
+                    if (t[i]!=t[i-1]) {
+                    //if (!t[i].equals(t[i-1])) {
+                        different = true;
+                        break;
+                    }
+                }
+                if (different) {
+                    return new ArrayTermVector(t);
+                } else {
+                    return new MappedSubterms.RepeatedSubterms<>(t[0], t.length);
+                }
             }
         }
     }

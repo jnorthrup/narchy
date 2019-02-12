@@ -1,5 +1,6 @@
 package nars.term.util.map;
 
+import jcog.TODO;
 import jcog.data.list.FasterList;
 import nars.term.Term;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -52,5 +53,15 @@ public class ByteAnonMap {
 
     public int termCount() {
         return idToTerm.size();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        throw new TODO();
+    }
+
+    @Override
+    public int hashCode() {
+        throw new TODO();
     }
 }

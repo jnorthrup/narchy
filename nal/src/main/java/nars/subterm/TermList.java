@@ -2,7 +2,10 @@ package nars.subterm;
 
 import jcog.data.list.FasterList;
 import nars.Op;
+import nars.Param;
 import nars.term.Term;
+import nars.term.util.TermException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -118,6 +121,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     /** finalization step on constructing a Subterm */
+    @Nullable
     public Subterms commit(Subterms src, Op superOp) {
         int ys = size();
 
@@ -145,6 +149,13 @@ public class TermList extends FasterList<Term> implements Subterms {
                 else
                     break; //finished at first non-null subterm
             }
+        }
+
+        if (volume() > Param.COMPOUND_VOLUME_MAX) {
+            if (Param.DEBUG) {
+                throw new TermException(this, "excessive complexity");
+            }
+            return null;
         }
 
         if (ys == 0)

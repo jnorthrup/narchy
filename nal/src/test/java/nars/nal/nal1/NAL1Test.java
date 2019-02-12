@@ -21,13 +21,13 @@ public class NAL1Test extends NALTest {
     void deduction() {
 
         test
-                .believe("<bird --> animal>")
+                .believe("(bird --> animal)")
                 /*.en("bird is a type of animal.")
                 .es("bird es un tipo de animal.")
                 .de("bird ist eine art des animal.");*/
-                .believe("<robin --> bird>")
+                .believe("(robin --> bird)")
 
-                .mustBelieve(cycles, "<robin --> animal>", 0.81f);
+                .mustBelieve(cycles, "(robin --> animal)", 0.81f);
     }
 
     @Test

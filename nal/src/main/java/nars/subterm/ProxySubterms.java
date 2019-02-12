@@ -1,8 +1,9 @@
 package nars.subterm;
 
 import nars.term.Term;
+import nars.term.Termlike;
 
-public class ProxySubterms<S extends Subterms> implements Subterms {
+public class ProxySubterms<S extends Termlike> implements Subterms {
 
     protected final S ref;
 

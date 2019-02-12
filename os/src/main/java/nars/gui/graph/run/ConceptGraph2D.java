@@ -49,10 +49,10 @@ public class ConceptGraph2D extends Graph2D<Term> {
         build(nn -> nn.set(
                 new Scale(
                         new PushButton(new VectorLabel(nn.id.toString())).click(() -> {
-                                    Term t = nn.id;
-                                    if (t != null)
-                                        NARui.conceptWindow(t, nar);
-                                }),
+                            Term t = nn.id;
+                            if (t != null)
+                                NARui.conceptWindow(t, nar);
+                        }),
                         0.8f
                 )
         ));
@@ -215,8 +215,8 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 return;
 
 
-            n.concepts.active().forEach(l->
-                    add(edit, cells, belief, goal, question, quest,  l)
+            n.concepts.active().forEach(l ->
+                    add(edit, belief, goal, question, quest, l)
             );
 
 
@@ -227,73 +227,67 @@ public class ConceptGraph2D extends Graph2D<Term> {
             //N/A
         }
 
-        public void add(GraphEditing<Term> graph, CellMap<Term, NodeVis<Term>> cells, boolean belief, boolean goal, boolean question, boolean quest, TaskLink l) {
+        public void add(GraphEditing<Term> graph, boolean belief, boolean goal, boolean question, boolean quest, TaskLink l) {
 
-//            NodeVis<Term> node = cells.get(l.source());
-//            if (node == null)
-//                return;
-//            if (t == null) return;
-//            Concept c = n.concept(t);
-//            if (c != null) {
-//                c.tasklinks().forEach(l -> {
+            float[] pp = new float[4];
+            pp[0] = belief ? l.punc(BELIEF) : 0;
+            pp[1] = goal ? l.punc(GOAL) : 0;
+            pp[2] = question ? l.punc(QUESTION) : 0;
+            pp[3] = quest ? l.punc(QUEST) : 0;
+            float pSum = (pp[0] + pp[1] + pp[2] + pp[3]);
+            if (pSum < ScalarValue.EPSILON)
+                return;
 
-            //TODO use punc distribution
-            byte punc = l.puncMax();
-            switch (punc) {
-                case BELIEF: if (!belief) return; break;
-                case GOAL: if (!goal) return; break;
-                case QUESTION: if (!question) return; break;
-                case QUEST: if (!quest) return; break;
-            }
 
-            Term targetTerm = l.target().concept();
-//                if (targetTerm.equals(sourceTerm.target()))
-//                    return; //ignore
+            Term targetTerm = l.target();//.concept();
 
             EdgeVis<Term> e = graph.edge(l.source().concept(), targetTerm);
             if (e != null) {
                 int r, g, b;
-            /*
-            https://www.colourlovers.com/palette/848743/(_%E2%80%9D_)
-            BELIEF   Red     189,21,80
-            QUESTION Orange  233,127,2
-            GOAL     Green   138,155,15
-            QUEST    Yellow  248,202,0
-            */
+                /*
+                https://www.colourlovers.com/palette/848743/(_%E2%80%9D_)
+                BELIEF   Red     189,21,80
+                QUESTION Orange  233,127,2
+                GOAL     Green   138,155,15
+                QUEST    Yellow  248,202,0
+                */
 
-                switch (punc) {
-                    case BELIEF:
-                        r = 189;
-                        g = 21;
-                        b = 80;
-                        break;
-                    case QUESTION:
-                        r = 233;
-                        g = 127;
-                        b = 2;
-                        break;
-                    case GOAL:
-                        r = 138;
-                        g = 155;
-                        b = 15;
-                        break;
-                    case QUEST:
-                        r = 248;
-                        g = 202;
-                        b = 0;
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
+                for (int i = 0; i < 4; i++) {
+                    float ppi = pp[i];
+                    if (ppi < ScalarValue.EPSILON)
+                        continue;
+
+                    switch (i) {
+                        case 0:
+                            r = 189;
+                            g = 21;
+                            b = 80;
+                            break;
+                        case 1:
+                            r = 138;
+                            g = 155;
+                            b = 15;
+                            break;
+                        case 2:
+                            r = 233;
+                            g = 127;
+                            b = 2;
+                            break;
+                        case 3:
+                            r = 248;
+                            g = 202;
+                            b = 0;
+                            break;
+                        default:
+                            throw new UnsupportedOperationException();
+                    }
+
+
+                    e//.colorLerp(0,0,0,COLOR_FADE_RATE).colorAdd
+                       .colorLerp
+                            (r / 256f, g / 256f, b / 256f, COLOR_UPDATE_RATE);
                 }
-
-                float p = l.priElseZero();
-                e.weightLerp(0.5f + 0.5f * p, WEIGHT_UPDATE_RATE);
-
-                e//.colorLerp(0,0,0,COLOR_FADE_RATE).colorAdd
-                        .colorLerp
-                                (r / 256f, g / 256f, b / 256f, COLOR_UPDATE_RATE);
-
-
+                e.weightLerp(0.5f + 0.5f * (pSum/4), WEIGHT_UPDATE_RATE);
             }
         }
     }

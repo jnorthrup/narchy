@@ -146,7 +146,10 @@ public class BiSubterm extends TermVector {
     }
 
 
-
+    @Override
+    public boolean contains(Term t) {
+        return t.equals(x) || (x!=y && t.equals(y));
+    }
 
     @Override
     public boolean containsRecursively(Term t, boolean root, Predicate<Term> subTermOf) {
@@ -156,7 +159,7 @@ public class BiSubterm extends TermVector {
     }
 
 
-    final public static class BiRepeat extends BiSubterm {
+    @Deprecated final public static class BiRepeat extends BiSubterm {
         public BiRepeat(Term x) {
             super(x,x);
         }
@@ -175,7 +178,6 @@ public class BiSubterm extends TermVector {
         public boolean OR(Predicate<Term> p) {
             return p.test(x);
         }
-
 
     }
 }

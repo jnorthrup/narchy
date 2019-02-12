@@ -851,12 +851,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return possiblyUnifiable(xx, yy, u.varBits);
     }
 
-    /**
-     * structure of the first layer (surface) only
-     */
-    default int structureSurface() {
-        return intifyShallow((s, x) -> s | x.opBit(), 0);
-    }
+
 
 
 //    default Term[] termsExcept(RoaringBitmap toRemove) {
@@ -1013,14 +1008,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return false;
     }
 
+    /** visits each, does not deduplciate or elide in case of repeat */
     default <X> boolean ANDwith(/*@NotNull*/ BiPredicate<Term,X> p, X param) {
         int s = subs();
-        Term prev = null;
         for (int i = 0; i < s; i++) {
-            Term next = sub(i);
-            if (prev!=next && !p.test(next, param))
+            Term ii = sub(i);
+            if (!p.test(ii, param))
                 return false;
-            prev = next;
         }
         return true;
     }
@@ -1057,7 +1051,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * must be overriden by any Compound subclasses
      */
-    default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
+    @Override default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
         return AND(s -> s.recurseTerms(inSuperCompound, whileTrue, parent));
     }
 
@@ -1145,7 +1139,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * providing a hint about the target operator the subterms is being constructed for
      * this allows certain fail-fast cases
      */
-    default Subterms transformSubs(TermTransform f, Op superOp) {
+    @Nullable default Subterms transformSubs(TermTransform f, Op superOp) {
 
         TermList y = null;
 
@@ -1225,7 +1219,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return out;
     }
 
-    default boolean these() {
+    @Override default boolean these() {
         return AND(Term::the);
     }
 

@@ -2,6 +2,7 @@ package nars.term;
 
 import nars.Op;
 
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 /**
@@ -62,4 +63,13 @@ public interface Termed extends Termlike {
         return term().hasXternal();
     }
 
+    @Override
+    default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
+        return term().recurseTerms(inSuperCompound, whileTrue, parent);
+    }
+
+    @Override
+    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent) {
+        return term().recurseTerms(aSuperCompoundMust, whileTrue, parent);
+    }
 }

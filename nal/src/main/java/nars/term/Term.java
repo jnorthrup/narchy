@@ -669,6 +669,11 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return this instanceof The;
     }
 
+    @Override
+    default boolean these() {
+        return the();
+    }
+
     default boolean equalsNeg(Term t) {
         if (this == t) {
             return false;

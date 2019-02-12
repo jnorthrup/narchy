@@ -1,10 +1,12 @@
 package nars.term;
 
+import jcog.TODO;
 import nars.Op;
 import nars.term.atom.Bool;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
@@ -102,9 +104,13 @@ public interface Termlike {
         return v;
     }
 
-    /**
-     * counts subterms matching the predicate
-     */
+    boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
+    boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent);
+
+
+        /**
+         * counts subterms matching the predicate
+         */
     default int subs(Predicate<Term> match) {
         return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
     }
@@ -379,6 +385,17 @@ public interface Termlike {
     }
 
 
+    /**
+     * structure of the first layer (surface) only
+     */
+    default int structureSurface() {
+        return intifyShallow((s, x) -> s | x.opBit(), 0);
+    }
+
+    /** immutable internability */
+    default boolean these() {
+        throw new TODO();
+    }
 
 }
 

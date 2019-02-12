@@ -4,6 +4,7 @@ import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class VariableNormalization extends VariableTransform {
     }
 
     public VariableNormalization(int size /* estimate */, int offset) {
-        this(new HashMap<>(size), offset);
+        this(new UnifiedMap<>(size), offset);
     }
 
 //    public VariableNormalization(/*@NotNull*/ Map<Variable, Variable> r) {

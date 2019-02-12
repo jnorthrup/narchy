@@ -1,11 +1,13 @@
 package nars.subterm.util;
 
+import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.anon.AnonID;
 import nars.term.util.Image;
+import nars.term.util.TermException;
 import nars.term.var.NormalizedVariable;
 
 /**
@@ -41,14 +43,20 @@ abstract public class TermMetadata implements Termlike {
 
     protected TermMetadata(SubtermMetadataCollector s) {
 
-        this.hash = s.hash;
-        this.structure = s.structure;
         int varTot =
                 (this.varPattern = s.varPattern) +
-                        (this.varQuery = s.varQuery) +
-                        (this.varDep = s.varDep) +
-                        (this.varIndep = s.varIndep);
+                (this.varQuery = s.varQuery) +
+                (this.varDep = s.varDep) +
+                (this.varIndep = s.varIndep);
+        if (this.varPattern < 0 || this.varQuery < 0 || this.varDep < 0 || this.varIndep < 0)
+            throw new TermException("variable overflow"); //excess variables, wrap-around to neg
+
         this.complexity = (short) ((this.volume = s.vol) - varTot);
+        if (this.volume > Param.COMPOUND_VOLUME_MAX)
+            throw new TermException("complexity overflow");
+
+        this.hash = s.hash;
+        this.structure = s.structure;
 
     }
 

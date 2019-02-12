@@ -18,9 +18,11 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.MIN_VALUE;
 import static nars.Op.NEG;
+import static nars.term.atom.Bool.Null;
 
 
 /**
@@ -150,7 +152,7 @@ public interface Atomic extends Term {
                 case Op.ImdexSym:
                     return Op.VarAuto;
                 case Op.NullSym:
-                    return Bool.Null;
+                    return Null;
 
                 case Op.imIntSym:
                     return Op.ImgInt;
@@ -185,7 +187,7 @@ public interface Atomic extends Term {
             case "false":
                 return Bool.False;
             case "null":
-                return Bool.Null;
+                return Null;
             default: {
                 if (isQuoteNecessary(id, l)) {
 
@@ -318,9 +320,6 @@ public interface Atomic extends Term {
     @Override
     default int complexity() { return 1; }
 
-    /**
-     * default volume = 1
-     */
     @Override
     default int volume() {
         return 1;
@@ -342,9 +341,25 @@ public interface Atomic extends Term {
     }
 
     @Override
+    default int structureSurface() {
+        return structure();
+    }
+
+    @Override
+    default Stream<Term> subStream() {
+        return Stream.empty();
+    }
+
+    @Override
+    default boolean these() {
+        return the();
+    }
+
+    @Override
     default boolean subIs(int i, Op o) {
         return false;
     }
+
 
     /**
      * determines if the string is invalid as an unquoted target according to the characters present

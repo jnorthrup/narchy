@@ -1,6 +1,8 @@
 package nars.term.compound;
 
+import jcog.data.byt.DynBytes;
 import nars.Op;
+import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -8,25 +10,41 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LazyCompoundTest {
 
+    private static final Term A = $$("a"), B = $$("b"), C = $$("c");
+
     @Test
     void testSimple() {
         assertEquals("(a,b)", new LazyCompound()
-                .compound(Op.PROD, $$("a"), $$("b")).get().toString());
+                .compound(Op.PROD, A, B).get().toString());
     }
-    
+    @Test
+    void testNeg() {
+        LazyCompound l0 = new LazyCompound().compound(Op.PROD, A, B, B);
+        LazyCompound l1 = new LazyCompound().compound(Op.PROD, A, B, B.neg());
+
+        DynBytes code = l1.code;
+        DynBytes code1 = l0.code;
+        assertEquals(code1.length()+1, code.length()); //only one additional byte for negation
+        assertEquals(l0.sub.termCount(), l1.sub.termCount());
+        assertEquals(l0.sub.termToId, l1.sub.termToId);
+
+        assertEquals("(a,b,(--,b))", l1.get().toString());
+        assertEquals("((--,a),(--,b))", new LazyCompound()
+                .compound(Op.PROD, A.neg(), B.neg()).get().toString());
+    }
     @Test
     void testTemporal() {
         assertEquals("(a==>b)", new LazyCompound()
-                .compound(Op.IMPL, $$("a"), $$("b")).get().toString());
+                .compound(Op.IMPL, A, B).get().toString());
 
         assertEquals("(a ==>+1 b)", new LazyCompound()
-                .compound(Op.IMPL, 1, $$("a"), $$("b")).get().toString());
+                .compound(Op.IMPL, 1, A, B).get().toString());
     }
     @Test
     void testCompoundInCompound() {
         assertEquals("(a,{b,c})", new LazyCompound()
-                .compound(Op.PROD, (byte)2).add($$("a"))
-                    .compound(Op.SETe, (byte)2).addAll($$("b"), $$("c"))
+                .compoundStart(Op.PROD).subs((byte)2).add(A)
+                    .compoundStart(Op.SETe).subs((byte)2).subs(B, C)
                         .get().toString());
     }
 }

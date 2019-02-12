@@ -26,15 +26,6 @@ public interface Subst extends TermTransform.AbstractNegObliviousTermTransform {
         return resolve(atomic);
     }
 
-    @Override
-    default Term transformNonNegCompound(Compound x) {
-        Term y = xy(x);
-        if (y==null || y==x) {
-            return AbstractNegObliviousTermTransform.super.transformNonNegCompound((Compound) x);
-        } else {
-            return transform(y);
-        }
-    }
 
 //    @Override @Nullable
 //    default Term transformCompound(Compound x) {

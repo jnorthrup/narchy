@@ -875,22 +875,6 @@ public class PremiseRuleSource extends ProxyTerm {
         );
     }
 
-
-//    void subsMin(Term X, int min) {
-//        if (taskPattern.equals(X)) {
-//            pre.addAt(new SubsMin.SubsMinProto(true, min));
-//        } else if (beliefPattern.equals(X)) {
-//            pre.addAt(new SubsMin.SubsMinProto(false, min));
-//        } else {
-//            constraints.addAt(new SubsMin(X, min));
-//        }
-//
-//        //TODO
-//        //filter(x, (pt, pb)->
-//
-//    }
-
-
     private void neq(Set<UnifyConstraint> constraints, Variable x, Term y) {
 
         if (y.op() == NEG && y.unneg() instanceof Variable) {

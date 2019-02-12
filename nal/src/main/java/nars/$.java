@@ -782,6 +782,11 @@ public enum $ {
                 if (tt.unneg() instanceof AnonID)
                     return new AnonVector(tt);
                 break;
+            case 2:
+                Term a = t[0], b = t[1];
+                if (a.unneg() instanceof AnonID && b.unneg() instanceof AnonID)
+                    return new AnonVector(a, b);
+                break;
         }
 //                return new UnitSubterm(tt);
 //            default:

@@ -211,7 +211,7 @@ public class MetaFrame extends Bordering implements HudHover {
     }
 
     private MutableListContainer hud() {
-        return (MutableListContainer) ((Ortho) parent(Ortho.class).space.layers.get(3)).the();
+        return (MutableListContainer) parent(Ortho.class).space.layers.get(3);
     }
 
 

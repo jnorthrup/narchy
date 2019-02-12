@@ -147,6 +147,11 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         return new ArrayBytes(bytes, start, end); //not window since this is mutable
     }
 
+    public final byte[] subBytes(int start, int end) {
+        assert(end!=start);
+        return Arrays.copyOfRange(bytes, start, end);
+    }
+
     @Override
     public final void write(int v) {
         writeByte(v);

@@ -255,9 +255,9 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
-    public final IntRange matchTTL = new IntRange(4, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
+    public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 4;
 
@@ -265,7 +265,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 2f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
@@ -327,9 +327,9 @@ public abstract class Param {
 
     public static final int TaskLinkSpreadDefault =
             //16;
-            //12;
+            12;
             //10;
-            8;
+            //8;
             //7;
             //6;
             //5;
@@ -340,7 +340,7 @@ public abstract class Param {
 
     /** termlink template layers depth. TODO this will be abstracted to more flexible weighted activation heuristic */
     @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH_min = 2;
-    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH = 3 /* 2..4 tested to work ok */;
+//    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH = 3 /* 2..4 tested to work ok */;
 
     /**
      * includes the host as layer 0, so if this returns 1 it will only include the host
