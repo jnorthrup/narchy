@@ -255,8 +255,8 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange subUnifyTTLMax = new IntRange( 6, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 4;
@@ -327,9 +327,9 @@ public abstract class Param {
 
     public static final int TaskLinkSpreadDefault =
             //16;
-            12;
+            //12;
             //10;
-            //8;
+            8;
             //7;
             //6;
             //5;
@@ -451,7 +451,7 @@ public abstract class Param {
     /**
      * limited because some subterm paths are stored as byte[]. to be safe, use 7-bits
      */
-    public static final int COMPOUND_SUBTERMS_MAX = 127;
+    public static final int SUBTERMS_MAX = 127;
 
 
     /**

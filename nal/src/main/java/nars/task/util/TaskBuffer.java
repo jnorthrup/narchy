@@ -413,7 +413,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         /** fast, imprecise sort.  for cache locality and concurrency purposes */
         static final Comparator<Task> sloppySorter = Comparator
-            .comparingInt((Task x) -> x.term().concept().hashCode())
+            .comparingInt((Task x) -> x.term()/*.concept()*/.hashCode())
             .thenComparing((Task x) -> -x.priElseZero());
 
 

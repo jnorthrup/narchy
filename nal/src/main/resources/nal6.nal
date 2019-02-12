@@ -1,17 +1,3 @@
-////strong unification
-//    (Y ==> X), Z, --is(Z,"==>")     |- unisubst(X,Y,Z), (Belief:Deduction)
-//    (Y ==> X), Z, --is(Z,"==>")     |- --unisubst(X,Y,Z), (Belief:DeductionNP)
-//    (--Y ==> X), Z, --is(Z,"==>")   |- unisubst(X,Y,Z), (Belief:DeductionPN)
-//    (--Y ==> X), Z, --is(Z,"==>")   |- --unisubst(X,Y,Z), (Belief:DeductionNN)
-//      (Y ==> X), Z, --is(Z,"==>")     |- unisubst(Y,X,Z), (Belief:Abduction)
-//      (Y ==> X), Z, --is(Z,"==>")     |- unisubst(Y,X,Z), (Belief:AbductionNN)
-//        (Y ==> X), Z, --is(Z,"==>"), task("?") |- unisubst(Y,X,Z), (Punctuation:Question)
-//        (Y ==> X), Z, --is(Z,"==>"), task("?") |- unisubst(X,Y,Z), (Punctuation:Question)
-//        (--Y ==> X), Z, --is(Z,"==>"), task("?") |- unisubst(X,Y,Z), (Punctuation:Question)
-//
-
-//    (X ==> Y), Z, notImpl(Z)     |- unisubst(X,Y,Z), (Belief:AbductionPB)
-
 
 
 // Conditional syllogism && Independent Variable Elimination
@@ -27,7 +13,7 @@
 
        //questions
         //B, (A ==> C), task("?"), --is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
-          B, (A ==> C), --is(A,"--"),task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
+          B, (A ==> C), task("?@"), --is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>"), hasBelief() |- unisubst(C,A,B)
 
 
     A, (--A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:PreN, Goal:PreWeakN)
@@ -38,7 +24,7 @@
 
         //questions
         //B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
-          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B))
+          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>"), hasBelief() |- unisubst(C,A,B))
 
     B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:PostWeak, Goal:Post)
        B, (  (&&,  C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:Deduction)
@@ -51,7 +37,7 @@
 
         //questions
         //B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,strict), (Punctuation:Question, Time:TaskMinusBeliefDT)
-          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
+          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>"), hasBelief() |- unisubst(C,A,B)
 
 
 
@@ -120,7 +106,7 @@
        //(--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPNX)
 
         //(S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-            (S ==> X), (  Y ==> P), eqPN(X,Y), task("?") |- (S ==> P), (Punctuation:Question)
+            (S ==> X), (Y ==> P), eqPN(X,Y), task("?"), hasBelief() |- (S ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
@@ -140,7 +126,7 @@
     (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction)
         (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
 
-                (X ==> S), (Y ==> P), eqPN(X,Y), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+                (X ==> S), (Y ==> P), eqPN(X,Y), task("?"), hasBelief() |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
     (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB)
@@ -152,7 +138,7 @@
     (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN)
     (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN)
 
-            (X ==> S), (P ==> Y), task("?"), eqPN(X,Y) |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+            (X ==> S), (P ==> Y), task("?"), eqPN(X,Y), hasBelief() |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
     //untested
@@ -190,8 +176,8 @@
         (P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
 //     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
 //     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionSym)
-        (P ==> M), (S ==> M), task("?"), neq(S,P) |- ((P && S) ==> M), (Punctuation:Question)
-        (P ==> M), (S ==> M), task("?"), neq(S,P) |- ((P || S) ==> M), (Punctuation:Question)
+        (P ==> M), (S ==> M), task("?"), neq(S,P), hasBelief() |- ((P && S) ==> M), (Punctuation:Question)
+        (P ==> M), (S ==> M), task("?"), neq(S,P), hasBelief() |- ((P || S) ==> M), (Punctuation:Question)
         //(P ==> M), (S ==> M), task("?") |- ((P || S) ==> M), (Punctuation:Question)
 
                 //...Also:VarIntro)
@@ -199,7 +185,7 @@
 
      (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized)
      (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
-        (M ==> P), (M ==> S), task("?"), neq(S,P) |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question)
+        (M ==> P), (M ==> S), task("?"), neq(S,P), hasBelief() |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question)
 
         //TODO question variations
         //((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
@@ -453,4 +439,18 @@
 //    S, (&|,(--,S),A_1..n) |- (&|,A_1..n), (Truth:DecomposeNegativeNegativeNegative)
 //    S, (&&,(--,S),A_1..n) |- (&&,A_1..n), (Truth:DecomposeNegativeNegativeNegative)
 //    S, (||,(--,S),A_1..n) |- (||,A_1..n), (Truth:DecomposePositivePositivePositive)
+
+////strong unification
+//    (Y ==> X), Z, --is(Z,"==>")     |- unisubst(X,Y,Z), (Belief:Deduction)
+//    (Y ==> X), Z, --is(Z,"==>")     |- --unisubst(X,Y,Z), (Belief:DeductionNP)
+//    (--Y ==> X), Z, --is(Z,"==>")   |- unisubst(X,Y,Z), (Belief:DeductionPN)
+//    (--Y ==> X), Z, --is(Z,"==>")   |- --unisubst(X,Y,Z), (Belief:DeductionNN)
+//      (Y ==> X), Z, --is(Z,"==>")     |- unisubst(Y,X,Z), (Belief:Abduction)
+//      (Y ==> X), Z, --is(Z,"==>")     |- unisubst(Y,X,Z), (Belief:AbductionNN)
+//        (Y ==> X), Z, --is(Z,"==>"), task("?") |- unisubst(Y,X,Z), (Punctuation:Question)
+//        (Y ==> X), Z, --is(Z,"==>"), task("?") |- unisubst(X,Y,Z), (Punctuation:Question)
+//        (--Y ==> X), Z, --is(Z,"==>"), task("?") |- unisubst(X,Y,Z), (Punctuation:Question)
+//
+
+//    (X ==> Y), Z, notImpl(Z)     |- unisubst(X,Y,Z), (Belief:AbductionPB)
 

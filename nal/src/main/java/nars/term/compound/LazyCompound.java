@@ -5,6 +5,7 @@ import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import nars.$;
 import nars.Op;
+import nars.Param;
 import nars.term.Functor;
 import nars.term.ProxyTerm;
 import nars.term.Term;
@@ -32,6 +33,8 @@ public class LazyCompound {
     final DynBytes code = new DynBytes(INITIAL_CODE_SIZE);
 
     final static int INITIAL_ANON_SIZE = 8;
+    private boolean changed;
+    public int extraSubs = 0;
 
     public LazyCompound() {
 
@@ -52,7 +55,7 @@ public class LazyCompound {
         return compoundStart(o, dt).subs((byte) n).subs(subs).compoundEnd(o);
     }
 
-    protected LazyCompound compoundEnd(Op o) {
+    public LazyCompound compoundEnd(Op o) {
         return this;
     }
 
@@ -68,8 +71,8 @@ public class LazyCompound {
 
         if (o.temporal)
             c.writeInt(dt);
-        else
-            assert (dt == DTERNAL);
+//        else
+//            assert (dt == DTERNAL);
 
         return this;
     }
@@ -170,6 +173,40 @@ public class LazyCompound {
         return t;
     }
 
+    public boolean changed() {
+        return changed;
+    }
+    public void setChanged(boolean c) {
+        changed = c;
+    }
+
+    public int pos() {
+        return code.len;
+    }
+
+    public void rewind(int pos) {
+        code.len = pos;
+    }
+
+    public void subsAdd(int n) {
+        extraSubs += n;
+    }
+
+    public void subsEnd(int subStart, int extraBefore) {
+        int extraNow = this.extraSubs;
+        if (extraNow != extraBefore) {
+
+            int delta = extraNow - extraBefore;
+            //TODO check # of subterms is valid
+            int newSubs = code.at(subStart-1) + delta;
+            if (newSubs < 0)
+                throw new WTF("subterm underflow");
+            if (newSubs > Param.SUBTERMS_MAX)
+                throw new WTF("subterm overflow");
+            code.set(subStart-1, (byte) newSubs);
+            this.extraSubs = extraBefore;
+        }
+    }
 
     /**
      * ability to lazily evaluate and rewrite functors
@@ -227,7 +264,7 @@ public class LazyCompound {
         }
 
         @Override
-        protected LazyCompound compoundEnd(Op o) {
+        public LazyCompound compoundEnd(Op o) {
             if (o==INH) {
                 //assert(inhStack!=null);
                 inhPop();
@@ -264,6 +301,15 @@ public class LazyCompound {
             return super.add(x);
         }
 
+        @Override
+        public void rewind(int pos) {
+            if (pos!=pos()) {
+                while (inhStack != null && !inhStack.isEmpty() && inhStack.getLast() >= pos)
+                    inhStack.removeAtIndex(inhStack.size() - 1);
+                super.rewind(pos);
+            }
+        }
+
         /**
          * deferred functor evaluation
          */
@@ -271,10 +317,9 @@ public class LazyCompound {
             DynBytes code1 = this.code;
             DynBytes c = code1;
             Eval e = new Eval(f, c.at(start + 1), c.subBytes(start + 2, end));
-            c.len = start - 2; //rewind to beginning of -->
-            inhPop();
-//            while (inhStack!=null && !inhStack.isEmpty() && inhStack.getLast() > c.len)
-//                inhStack.removeAtIndex(inhStack.size()-1);
+            rewind(start-2);
+            //inhPop();
+
             return e;
         }
 

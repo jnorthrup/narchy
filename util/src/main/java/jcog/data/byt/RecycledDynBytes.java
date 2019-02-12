@@ -3,7 +3,7 @@ package jcog.data.byt;
 import jcog.WTF;
 import jcog.data.pool.MetalPool;
 
-public class RecycledDynBytes extends DynBytes {
+public final class RecycledDynBytes extends DynBytes {
 
     private RecycledDynBytes(int bufferSize) {
         super(bufferSize);
@@ -20,7 +20,7 @@ public class RecycledDynBytes extends DynBytes {
         MetalPool<RecycledDynBytes> pool = bytesPool.get();
 
         RecycledDynBytes r = pool.get();
-        assert(r.pool == null);
+        //assert(r.pool == null);
         r.pool = pool;
         return r;
     }
@@ -42,12 +42,13 @@ public class RecycledDynBytes extends DynBytes {
 
     @Override
     public void close() {
-        if (pool==null)
+        MetalPool p = pool;
+        if (p==null)
             throw new WTF("already closed");
 
         clear();
-        pool.put(this);
-        pool = null; //not necessary since threadlocal
+        this.pool = null; //not necessary since threadlocal
+        p.put(this);
     }
 
 

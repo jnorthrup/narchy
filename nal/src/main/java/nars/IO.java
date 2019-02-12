@@ -273,7 +273,7 @@ public class IO {
     private static Term[] readTermContainer(DataInput in) throws IOException {
         int siz = in.readByte();
 
-        assert (siz < Param.COMPOUND_SUBTERMS_MAX);
+        assert (siz < Param.SUBTERMS_MAX);
 
         Term[] s = new Term[siz];
         for (int i = 0; i < siz; i++) {

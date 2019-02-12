@@ -11,6 +11,7 @@ import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.compound.CachedCompound;
 import nars.term.util.SetSectDiff;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
@@ -30,8 +31,7 @@ import java.util.function.Predicate;
 
 import static nars.term.Terms.sorted;
 import static nars.term.atom.Bool.Null;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -501,8 +501,18 @@ public enum Op {
             return x; //no change
 
         Op op = x.op();
+        assert(op.temporal);
 
-        Term[] xx = x.arrayShared();
+        Subterms xs = x.subterms();
+        if (baseDT!=XTERNAL && nextDT!=XTERNAL && dtSpecial(baseDT)==dtSpecial(nextDT)) {
+            if (!xs.hasAny(CONJ)) { //simple case
+
+                //fast transform non-concurrent -> non-concurrent
+
+                //return Op.compound(op, nextDT, xs);
+                return CachedCompound.newCompound(op, nextDT, xs);
+            }
+        }
 
 //        if (op == CONJ) {
 //            boolean baseConcurrent = Conj.concurrentInternal(baseDT);
@@ -557,7 +567,8 @@ public enum Op {
 //            }
 //        }
 
-        return op.the(nextDT, xx);
+
+        return op.the(nextDT, xs);
     }
 
 
@@ -785,6 +796,10 @@ public enum Op {
         return compound(this, dt, u);
     }
 
+    public static Term compound(Op o, int dt, Subterms u) {
+        return compound(o, dt, u.arrayShared());
+    }
+
     /**
      * direct constructor
      * no reductions or validations applied
@@ -819,9 +834,9 @@ public enum Op {
         static final IntIntPair One = pair(1, 1);
         static final IntIntPair Two = pair(2, 2);
 
-        static final IntIntPair GTEZero = pair(0, Param.COMPOUND_SUBTERMS_MAX);
-        static final IntIntPair GTEOne = pair(1, Param.COMPOUND_SUBTERMS_MAX);
-        static final IntIntPair GTETwo = pair(2, Param.COMPOUND_SUBTERMS_MAX);
+        static final IntIntPair GTEZero = pair(0, Param.SUBTERMS_MAX);
+        static final IntIntPair GTEOne = pair(1, Param.SUBTERMS_MAX);
+        static final IntIntPair GTETwo = pair(2, Param.SUBTERMS_MAX);
 
     }
 

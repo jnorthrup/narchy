@@ -496,4 +496,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     public int readZigZagInt() {
         return decodeZigZagInt(readVarEncodedUnsignedInt());
     }
+
+    public void set(int n, byte b) {
+        bytes[n] = b;
+    }
 }

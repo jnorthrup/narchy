@@ -50,10 +50,9 @@ public final class Termify extends AbstractPred<Derivation> {
         d.concTerm = null;
         d.concOcc = null;
         d.retransform.clear();
-//        d.refinements.clear();
 
-        //Term xn = d.transform(pattern);
-        //Term x = xn;
+//        Term xn = d.transform(pattern);
+//        Term x = xn;
 
         //TEMPORARY
         LazyCompound l = new LazyCompound.LazyEvalCompound();
@@ -62,20 +61,11 @@ public final class Termify extends AbstractPred<Derivation> {
             d.nar.emotion.deriveFailEval.increment();
             return false;
         }
-//        }
-
         Term xl = l.get();
         Term x = xl;
-//        if (!xn.equals(xl))
-//            System.out.println(xn  + "\t" + xl);
 
 
 
-
-//        if (x!=Null && d.uniSubst.transformed()) {
-//            //transform again to apply any assignments unified by second-layer unification to other parts of the compound not in the unification functor
-//            x = x.replace(d.uniSubst.u.xy);
-//        }
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
             //Term c1e = c1;
             d.nar.emotion.deriveFailEval.increment(/*() ->

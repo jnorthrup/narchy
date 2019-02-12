@@ -9,6 +9,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
+import nars.unify.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -22,20 +23,32 @@ public interface TermTransform {
 
     default Term transform(Term x) {
         return (x instanceof Compound) ?
-                transformCompound((Compound)x)
+                transformCompound((Compound) x)
                 :
-                transformAtomic((Atomic)x);
+                transformAtomic((Atomic) x);
     }
 
     default boolean transform(Term x, LazyCompound out) {
         if (x instanceof Compound) {
-            return transformCompound((Compound)x, out);
+            return transformCompound((Compound) x, out);
         } else {
             @Nullable Term y = transformAtomic((Atomic) x);
             if (y == null || y == Bool.Null)
                 return false;
             else {
-                out.add(y);
+                if (y instanceof EllipsisMatch) {
+                    int ys = y.subs();
+                    out.subsAdd(ys - 1);
+                    if (ys > 0) {
+                        if (!transformSubterms((EllipsisMatch) y, out))
+                            return false;
+                    }
+                    out.setChanged(true);
+                } else {
+                    out.add(y);
+                    if (y != x)
+                        out.setChanged(true);
+                }
                 return true;
             }
         }
@@ -54,6 +67,7 @@ public interface TermTransform {
     default Term transformCompound(Compound x) {
         return transformCompound(x, null, XTERNAL);
     }
+
     default Term transformCompound(Compound x, Op newOp, int newDT) {
 
         boolean sameOpAndDT = newOp == null;
@@ -88,7 +102,7 @@ public interface TermTransform {
             newDT = thisDT;
 
             //apply any shifts caused by range changes
-            if (yy!=xx && targetOp.temporal && newDT!=DTERNAL && newDT!=XTERNAL && xx.subs()==2 && yy.subs() == 2) {
+            if (yy != xx && targetOp.temporal && newDT != DTERNAL && newDT != XTERNAL && xx.subs() == 2 && yy.subs() == 2) {
 
                 int subjRangeBefore = xx.subEventRange(0);
                 int predRangeBefore = xx.subEventRange(1);
@@ -114,30 +128,63 @@ public interface TermTransform {
 //    }
 
     default boolean transformCompound(Compound x, LazyCompound out) {
-        out.compoundStart(x.op(), x.dt());
-        return transformSubterms(x.subterms(), out);
+        boolean c = out.changed();
+        int i = out.pos();
+
+        Op o = x.op();
+        if (o == NEG) {
+            out.negStart();
+            if (!transform(x.sub(0), out))
+                return false;
+        } else {
+            out.compoundStart(o, o.temporal ? x.dt() : DTERNAL);
+
+            Subterms s = x.subterms();
+            out.subs((byte) s.subs());
+            if (!transformSubterms(s, out))
+                return false;
+        }
+
+        //out.compoundEnd(o); //??
+
+        if (!c && !out.changed()) {
+            //remains same; rewind and paste as-is
+            out.rewind(i);
+            out.add(x);
+        }
+        return true;
     }
 
-    default boolean transformSubterms(Subterms x, LazyCompound out) {
-        out.subs((byte)x.subs());
-        return x.ANDwith(this::transform, out);
+    default boolean transformSubterms(Subterms s, LazyCompound out) {
+//        for (int i = 0; i < n; i++) {
+//            Term x = s.sub(n);
+//        }
+        int start = out.pos(), extraBefore = out.extraSubs;
+        if (s.ANDwith(this::transform, out)) {
+            out.subsEnd(start, extraBefore);
+            return true;
+        }
+        return false;
     }
 
-    /** called after subterms transform has been applied */
-    @Nullable default Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
+    /**
+     * called after subterms transform has been applied
+     */
+    @Nullable
+    default Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
         if (yy != xx) {
             Term[] a = yy instanceof TermList ? ((TermList) yy).arrayKeep() : yy.arrayShared();
-            if (op == INH && evalInline() && a[1] instanceof Functor.InlineFunctor && a[0].op()==PROD) {
+            if (op == INH && evalInline() && a[1] instanceof Functor.InlineFunctor && a[0].op() == PROD) {
                 Term v = ((Functor.InlineFunctor) a[1] /* pred */).applyInline(a[0] /* args */);
                 if (v != null)
                     return v;
             }
             return the(op, dt, a); //transformed subterms
-        } else  {
+        } else {
             //same subterms
             if (op == INH && evalInline()) {
                 Term p = xx.sub(1), s;
-                if (p instanceof Functor.InlineFunctor && (s = xx.sub(0)).op() == PROD){
+                if (p instanceof Functor.InlineFunctor && (s = xx.sub(0)).op() == PROD) {
                     Term v = ((Functor.InlineFunctor) p /* pred */).applyInline(s /* subj = args */);
                     if (v != null)
                         return v;
@@ -151,12 +198,14 @@ public interface TermTransform {
 
     }
 
-    /** enable for inline functor evaluation
-     * @param args*/
+    /**
+     * enable for inline functor evaluation
+     *
+     * @param args
+     */
     default boolean evalInline() {
         return false;
     }
-
 
 
     /**
@@ -165,7 +214,6 @@ public interface TermTransform {
 //    default Term the(Op op, int dt, TermList t) {
 //        return the(op, dt, (Subterms)t);
 //    }
-
     default Term the(Op op, int dt, Subterms t) {
         return the(op, dt, t.arrayShared());
     }
@@ -175,32 +223,26 @@ public interface TermTransform {
     }
 
 
-
-
-
-
-
-
-
-
-    /** HACK interface version */
+    /**
+     * HACK interface version
+     */
     interface AbstractNegObliviousTermTransform extends TermTransform {
 
-        @Override
-        default boolean transformCompound(Compound x, LazyCompound out) {
-            if(x.op()==NEG) {
-                out.negStart();
-                return transform(x.unneg(), out);
-            } else {
-                return TermTransform.super.transformCompound(x, out);
-            }
-        }
+//        @Override
+//        default boolean transformCompound(Compound x, LazyCompound out) {
+//            if (x.op() == NEG) {
+//                out.negStart();
+//                return transform(x.unneg(), out);
+//            } else {
+//                return TermTransform.super.transformCompound(x, out);
+//            }
+//        }
 
         @Override
         @Nullable
         default Term transformCompound(Compound x) {
 
-            if (x.op()==NEG) {
+            if (x.op() == NEG) {
                 Term xx = x.unneg();
                 Term yy = transform(xx);
                 return yy == xx ? x : yy.neg();
@@ -222,7 +264,7 @@ public interface TermTransform {
         @Nullable
         public final Term transformCompound(Compound x) {
 
-            if (x.op()==NEG) {
+            if (x.op() == NEG) {
                 Term xx = x.unneg();
                 Term yy = transform(xx);
                 return yy == xx ? x : yy.neg();
@@ -233,7 +275,9 @@ public interface TermTransform {
 
         }
 
-        /** default implementation */
+        /**
+         * default implementation
+         */
         protected Term transformNonNegCompound(Compound x) {
             return TermTransform.super.transformCompound(x);
         }
