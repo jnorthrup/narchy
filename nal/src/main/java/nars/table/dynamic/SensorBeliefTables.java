@@ -86,6 +86,8 @@ public class SensorBeliefTables extends BeliefTables {
             series.clean(tables);
             x.cause(new short[] { cause });
             remember(x, pri, n);
+        } else {
+            this.prev = null;
         }
     }
 

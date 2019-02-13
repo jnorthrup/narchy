@@ -47,8 +47,6 @@ public class PacmanGame {
     public PacmanGame() {
 
         updates = UPDATES;
-        maze = Maze.create(13, 13);
-        player = new Player(maze, maze.playerStart().x, maze.playerStart().y, playerSpeed);
         keys = new boolean[4];
         splashes = new CopyOnWriteArrayList<>();
         JFrame frame = new JFrame();
@@ -58,33 +56,28 @@ public class PacmanGame {
         frame.setResizable(false);
 
         frame.addKeyListener(new KeyListener() {
-
             @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
+            public void keyTyped(KeyEvent e) { }
             @Override
-            public void keyReleased(KeyEvent e) {
-
-                processRelease(e);
-
-            }
-
+            public void keyReleased(KeyEvent e) { processRelease(e); }
             @Override
             public void keyPressed(KeyEvent e) {
                 processPress(e);
             }
         });
 
+        restart();
+
         view = new PacComponent(this);
         frame.add(view);
         frame.pack();
 
-        restart();
 
     }
 
     public void restart() {
+        maze = Maze.create(13, 13);
+        player = new Player(maze, maze.playerStart().x, maze.playerStart().y, playerSpeed);
         resetGhosts();
         text = "";
         score = 0;

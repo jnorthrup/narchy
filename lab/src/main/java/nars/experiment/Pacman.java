@@ -1,11 +1,11 @@
 package nars.experiment;
 
-import jcog.Util;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.agent.FrameTrigger;
 import nars.experiment.pacman.PacmanGame;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
@@ -20,7 +20,7 @@ public class Pacman extends NAgentX {
     private final PacmanGame g;
 
     public Pacman(NAR nar) {
-        super("G", nar);
+        super("G", FrameTrigger.fps(40), nar);
 
         this.g = new PacmanGame();
 
@@ -86,12 +86,14 @@ public class Pacman extends NAgentX {
             int nextScore = g.score;
 
             float r = (nextScore - lastScore);
+            if(r == 0)
+                return Float.NaN;
 
 
             lastScore = nextScore;
-
-
-            return (Util.tanhFast(r) + 1)/2f;
+            if (r > 0) return +1;
+            else return 0;
+            //return (Util.tanhFast(r) + 1)/2f;
         });
     }
 
