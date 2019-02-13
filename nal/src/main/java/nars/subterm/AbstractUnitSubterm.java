@@ -80,6 +80,7 @@ abstract class AbstractUnitSubterm implements Subterms {
         return p.test(sub(), param);
     }
 
+
     @Override
     public final void forEachWith(ObjectIntProcedure<Term> t) {
         t.accept(sub(), 0);

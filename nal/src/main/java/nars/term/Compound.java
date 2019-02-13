@@ -441,7 +441,7 @@ public interface Compound extends Term, IPair, Subterms {
             return to;
         if (impossibleSubTerm(from))
             return this;
-      return MapSubst.replace(from,to).transform(this);
+      return MapSubst.replace(from,to).transformCompound(this);
 
 //
 //        Subterms oldSubs = subterms();

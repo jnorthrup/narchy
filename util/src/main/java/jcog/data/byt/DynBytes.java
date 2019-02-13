@@ -178,6 +178,10 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         this.len = s;
     }
 
+    public final void fillBytes(byte b, int from, int to) {
+        Arrays.fill(bytes, from, to, b);
+    }
+
     public final void fillBytes(byte b, int next) {
         int start = this.len;
         this.len += next;

@@ -109,12 +109,6 @@ public final class NotEqualConstraint extends RelationConstraint {
             return !x.equalsNeg(y);
         }
 
-//        @Override
-//        public boolean remainInAndWith(RelationConstraint c) {
-//            if (c instanceof NeqRootAndNotRecursiveSubtermOf)
-//                return false;
-//            return true;
-//        }
     }
 
     public static final class EqualPosOrNeg extends RelationConstraint {

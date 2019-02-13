@@ -3208,7 +3208,9 @@ public enum ArrayUtils {;
         return INDEX_NOT_FOUND;
     }
 
-    /** quick search for items by identity first */
+    /**
+     * quick search for items by identity first
+     */
     public static int indexOfIdentity(Object[] xx, Object y) {
         for (int i = 0; i < xx.length; i++) {
             if (y == xx[i])
@@ -5336,12 +5338,14 @@ public enum ArrayUtils {;
         newArray[newArray.length - 1] = element;
         return newArray;
     }
+
     public static short[] prepend(final short[] array, final short element) {
-        final short[] newArray = new short[array.length+1];
+        final short[] newArray = new short[array.length + 1];
         newArray[0] = element;
         System.arraycopy(array, 0, newArray, 1, array.length);
         return newArray;
     }
+
     /**
      * Returns a copy of the given array of size 1 greater than the argument.
      * The last value of the array is left to the default value.
@@ -7176,7 +7180,8 @@ public enum ArrayUtils {;
      * @since 3.0.1
      */
 
-    @Deprecated static Object removeAll(final Object array, final int... indices) {
+    @Deprecated
+    static Object removeAll(final Object array, final int... indices) {
         final int length = getLength(array);
         int diff = 0;
         final int[] clonedIndices = clone(indices);
@@ -7501,8 +7506,8 @@ public enum ArrayUtils {;
                 if (array[0] == element) return ArrayUtils.EMPTY_BYTE_ARRAY;
                 break;
             case 2:
-                if (array[0] == element) return new byte[] { array[1] };
-                if (array[1] == element) return new byte[] { array[0] };
+                if (array[0] == element) return new byte[]{array[1]};
+                if (array[1] == element) return new byte[]{array[0]};
                 break;
             default:
                 int index = indexOf(array, element);
@@ -8197,6 +8202,7 @@ public enum ArrayUtils {;
             swap(array, i - 1, random.nextInt(i), 1);
         }
     }
+
     public static void shuffle(Object[] array, Rand random) {
         for (int i = array.length; i > 1; i--) {
             swap(array, i - 1, random.nextInt(i), 1);
@@ -8895,4 +8901,24 @@ public enum ArrayUtils {;
         return removeAll(array, Arrays.copyOf(indices, count));
     }
 
+    public static int nextIndexOf(byte[] array, int startingAt, int endingAt, byte[] target, int targetFrom, int targetTo) {
+        int targetLen = targetTo - targetFrom;
+        assert(targetLen > 0);
+
+        if (endingAt - startingAt < targetLen)
+            return -1;
+
+        outer:
+        for (int i = startingAt; i < endingAt - targetLen + 1; i++) {
+            for (int j = 0; j < targetLen; j++) {
+                if (array[i + j] != target[targetFrom + j]) {
+                    continue outer;
+                }
+            }
+            return i;
+        }
+        return -1;
+
+
+    }
 }

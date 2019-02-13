@@ -4,8 +4,8 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.derive.Derivation;
+import nars.term.Compound;
 import nars.term.Term;
-import nars.term.compound.LazyCompound;
 import nars.term.control.AbstractPred;
 
 import static nars.Op.NEG;
@@ -51,20 +51,14 @@ public final class Termify extends AbstractPred<Derivation> {
         d.concOcc = null;
         d.retransform.clear();
 
-//        Term xn = d.transform(pattern);
-//        Term x = xn;
-
-        //TEMPORARY
-        LazyCompound l = new LazyCompound.LazyEvalCompound();
-        boolean lValid = d.transform(pattern, l);
-        if (!lValid) {
-            d.nar.emotion.deriveFailEval.increment();
-            return false;
+        Term x;
+        if (!Param.TERMIFY_TRANSFORM_LAZY) {
+            x = d.transform(pattern);
+        } else {
+            x = pattern instanceof Compound ?
+                    d.transformCompoundLazily((Compound)pattern) :
+                    d.transform(pattern);
         }
-        Term xl = l.get();
-        Term x = xl;
-
-
 
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
             //Term c1e = c1;

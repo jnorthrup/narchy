@@ -94,6 +94,9 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
 
 
         int pp = a.subs();
+        if (pp < 3)
+            return Null; //impossible
+
         for (int p = 3; p < pp; p++) {
             Term ai = a.sub(p);
             if (ai.equals(STRICT))

@@ -9,7 +9,6 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.SetSectDiff;
 import org.jetbrains.annotations.Nullable;
@@ -216,14 +215,14 @@ public class SetFunc {
         public Term applyInline(Subterms x) {
 
             Term a = x.sub(0);
-            if (a instanceof Variable)
-                return null;
+//            if (a instanceof Variable)
+//                return null;
             if (!validOp(a.op()))
                 return Null;
 
             Term b = x.sub(1);
-            if (b instanceof Variable)
-                return null;
+//            if (b instanceof Variable)
+//                return null;
             if (!validOp(b.op()))
                 return Null;
 

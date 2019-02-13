@@ -131,7 +131,7 @@
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
     (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB)
 
-            (S ==> X), (P ==> Y), task("?"), eqPN(X,Y) |- (S ==> P), (Punctuation:Question)
+            (S ==> X), (P ==> X), task("?") |- (S ==> P), (Punctuation:Question)
 
     (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:Exemplification)
     (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationN)

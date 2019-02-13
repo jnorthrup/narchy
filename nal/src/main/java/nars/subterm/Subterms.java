@@ -996,6 +996,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return false;
     }
 
+    /** warning: elides test for repeated subterm */
     default <X> boolean ORwith(/*@NotNull*/ BiPredicate<Term,X> p, X param) {
         int s = subs();
         Term prev = null;
@@ -1007,9 +1008,20 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
         return false;
     }
-
-    /** visits each, does not deduplciate or elide in case of repeat */
+    /** warning: elides test for repeated subterm */
     default <X> boolean ANDwith(/*@NotNull*/ BiPredicate<Term,X> p, X param) {
+        int s = subs();
+        Term prev = null;
+        for (int i = 0; i < s; i++) {
+            Term next = sub(i);
+            if (prev!=next && !p.test(next, param))
+                return false;
+            prev = next;
+        }
+        return true;
+    }
+    /** visits each, does not deduplciate or elide in case of repeat */
+    default <X> boolean ANDwithOrdered(/*@NotNull*/ BiPredicate<Term,X> p, X param) {
         int s = subs();
         for (int i = 0; i < s; i++) {
             Term ii = sub(i);

@@ -3,6 +3,7 @@ package nars.term.compound;
 import com.google.common.primitives.Ints;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
+import jcog.util.ArrayUtils;
 import nars.$;
 import nars.Op;
 import nars.Param;
@@ -92,8 +93,12 @@ public class LazyCompound {
             negStart();
             x = x.unneg();
         }
-        code.writeByte(MAX_CONTROL_CODES + sub().intern(x));
+        code.writeByte(MAX_CONTROL_CODES + intern(x));
         return this;
+    }
+
+    protected byte intern(Term x) {
+        return sub().intern(x);
     }
 
     public LazyCompound subs(Term... subs) {
@@ -119,56 +124,118 @@ public class LazyCompound {
         else {
             if (sub != null)
                 sub.readonly(); //optional
-            return getNext(c.arrayDirect(), new int[]{0});
+            return getNext(c.arrayDirect(), new int[]{0, c.len});
         }
     }
 
-    Term getNext(byte[] ii, int[] pos) {
-        byte ctl = ii[pos[0]++];
+    private Term getNext(byte[] ii, int[] range) {
+        int from;
+        byte ctl = ii[(from = range[0])];
+        //System.out.println("ctl=" + ctl + " @ " + from);
+        range[0]++;
+
         Term next;
         if (ctl < MAX_CONTROL_CODES) {
             Op op = Op.ops[ctl];
             if (op == NEG)
-                return getNext(ii, pos).neg();
+                next = getNext(ii, range).neg();
+            else {
 
 
-            if (op.atomic)
-                throw new WTF(); //alignment error or something
+                if (op.atomic)
+                    throw new WTF(); //alignment error or something
 
-            int dt;
-            if (op.temporal) {
-                int p = pos[0];
-                pos[0] += 4;
-                dt = Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
-            } else
-                dt = DTERNAL;
+                int dt;
+                if (op.temporal) {
+                    int p = range[0];
+                    range[0] += 4;
+                    dt = Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
+                } else
+                    dt = DTERNAL;
 
-            byte subterms = ii[pos[0]++];
-            Term[] s = getNext(subterms, ii, pos);
-            if (s == null)
-                return Null;
+                byte subterms = ii[range[0]++];
+                Term[] s = getNext(subterms, ii, range);
+                if (s == null)
+                    next = Null;
+                else {
 
-            next = op.the(dt, s);
+//            for (Term x : s)
+//                if (x == null)
+//                    throw new NullPointerException();
+
+                    next = op.the(dt, s);
+                    assert (next != null);
+                }
+            }
+
+
+
+            if (next != Null) {
+
+                int to = range[0];
+                int end = range[1];
+                int span = to - from;
+                if (end - to >= span) {
+                    //search for repeat occurrences of the start..end sequence after this
+                    int afterTo = to;
+                    byte n = 0;
+                    do {
+                        int match = ArrayUtils.nextIndexOf(ii, afterTo, end, ii, from, to);
+
+                        if (match != -1) {
+                            //System.out.println("repeat found");
+                            if (n == 0)
+                                n = (byte) (MAX_CONTROL_CODES + intern(next)); //intern for re-substitute
+                            code.set(match, n);
+
+                            code.fillBytes((byte) 0, match + 1, match + span); //zero padding, to be ignored
+                            afterTo = match + span;
+                        } else
+                            break;
+
+                    } while (afterTo < end);
+                }
+
+            }
+
         } else {
             next = next(ctl);
+            //skip zero padding suffix
+            while (range[0] < range[1] && code.at(range[0]) == 0) {
+                ++range[0];
+            }
         }
-        if (next == null) {
-            //throw new WTF();
-            return Null;
-        }
+
         return next;
+
+
     }
 
     protected Term next(byte ctl) {
-        return sub.interned((byte) (ctl - MAX_CONTROL_CODES));
+        Term n = sub.interned((byte) (ctl - MAX_CONTROL_CODES));
+        if (n == null)
+            throw new NullPointerException();
+        return n;
     }
 
     @Nullable
-    private Term[] getNext(byte n, byte[] ii, int[] pos) {
-        Term[] t = new Term[n];
-        for (int s = 0; s < n; s++) {
-            if ((t[s] = getNext(ii, pos)) == Null)
+    private Term[] getNext(byte n, byte[] ii, int[] range) {
+        Term[] t = null;
+        //System.out.println(range[0] + ".." + range[1]);
+        for (int i = 0; i < n; i++) {
+            Term y;
+            //System.out.println("\t" + s + "\t" + range[0] + ".." + range[1]);
+            if (range[0] >= range[1]) {
+                //throw new ArrayIndexOutOfBoundsException();
+                return Arrays.copyOfRange(t, 0, i); //hopefully this is becaues of an ellipsis that got inlined and had no effect
+            }
+            if ((y = getNext(ii, range)) == Null)
                 return null;
+            if (y == null)
+                throw new NullPointerException(); //WTF
+            if (t == null)
+                t = new Term[n];
+            t[i] = y;
         }
         return t;
     }
@@ -176,6 +243,7 @@ public class LazyCompound {
     public boolean changed() {
         return changed;
     }
+
     public void setChanged(boolean c) {
         changed = c;
     }
@@ -198,12 +266,12 @@ public class LazyCompound {
 
             int delta = extraNow - extraBefore;
             //TODO check # of subterms is valid
-            int newSubs = code.at(subStart-1) + delta;
+            int newSubs = code.at(subStart - 1) + delta;
             if (newSubs < 0)
                 throw new WTF("subterm underflow");
             if (newSubs > Param.SUBTERMS_MAX)
                 throw new WTF("subterm overflow");
-            code.set(subStart-1, (byte) newSubs);
+            code.set(subStart - 1, (byte) newSubs);
             this.extraSubs = extraBefore;
         }
     }
@@ -243,10 +311,13 @@ public class LazyCompound {
             }
 
             public Term eval(LazyCompound c) {
-                Term[] a = c.getNext(arity, args, new int[1]);
-                if (a == null)
+                Term[] a = c.getNext(arity, args, new int[]{0, args.length});
+                if (a == null) {
                     return Null;
-                return f.applyInline($.vFast(a));
+                } else {
+                    Term t = f.applyInline($.vFast(a));
+                    return t;
+                }
             }
         }
 
@@ -265,7 +336,7 @@ public class LazyCompound {
 
         @Override
         public LazyCompound compoundEnd(Op o) {
-            if (o==INH) {
+            if (o == INH) {
                 //assert(inhStack!=null);
                 inhPop();
             }
@@ -273,7 +344,7 @@ public class LazyCompound {
         }
 
         private void inhPop() {
-            inhStack.removeAtIndex(inhStack.size()-1);
+            inhStack.removeAtIndex(inhStack.size() - 1);
         }
 
         @Override
@@ -303,7 +374,7 @@ public class LazyCompound {
 
         @Override
         public void rewind(int pos) {
-            if (pos!=pos()) {
+            if (pos != pos()) {
                 while (inhStack != null && !inhStack.isEmpty() && inhStack.getLast() >= pos)
                     inhStack.removeAtIndex(inhStack.size() - 1);
                 super.rewind(pos);
@@ -317,7 +388,7 @@ public class LazyCompound {
             DynBytes code1 = this.code;
             DynBytes c = code1;
             Eval e = new Eval(f, c.at(start + 1), c.subBytes(start + 2, end));
-            rewind(start-2);
+            rewind(start - 2);
             //inhPop();
 
             return e;
@@ -327,8 +398,13 @@ public class LazyCompound {
         protected Term next(byte ctl) {
             Term t = super.next(ctl);
             if (t instanceof Eval) {
-                return ((Eval) t).eval(this);
+                Term n = ((Eval) t).eval(this);
+                if (n == null)
+                    throw new NullPointerException();
+                return n;
             }
+            if (t == null)
+                throw new NullPointerException();
             return t;
         }
 

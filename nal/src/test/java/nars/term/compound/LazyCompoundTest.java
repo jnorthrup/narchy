@@ -3,6 +3,8 @@ package nars.term.compound;
 import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.term.Term;
+import nars.term.atom.Atomic;
+import nars.term.util.transform.TermTransform;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -40,6 +42,32 @@ class LazyCompoundTest {
         assertEquals("(a ==>+1 b)", new LazyCompound()
                 .compound(Op.IMPL, 1, A, B).get().toString());
     }
+
+    static final TermTransform nullTransform = new TermTransform() {
+
+    };
+    static final TermTransform atomToCompoundTransform = new TermTransform() {
+
+        final Term cmp = $$("(x,y)");
+
+        @Override
+        public Term transformAtomic(Atomic atomic) {
+            return atomic.toString().equals("_1") ? cmp : atomic;
+        }
+    };
+
+    @Test
+    void testTransform1() {
+        String x = "((_1) ==>+- (_1))";
+        assertEquals(x, nullTransform.transformCompoundLazily($$(x)).toString());
+    }
+
+    @Test void testTransform2() {
+        String x = "((_1) ==>+- _1)";
+        assertEquals("(((x,y)) ==>+- (x,y))",
+                atomToCompoundTransform.transformCompoundLazily($$(x)).toString());
+    }
+
     @Test
     void testCompoundInCompound() {
         assertEquals("(a,{b,c})", new LazyCompound()

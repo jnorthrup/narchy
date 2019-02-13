@@ -13,6 +13,7 @@ import nars.unify.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -160,7 +161,7 @@ public interface TermTransform {
 //            Term x = s.sub(n);
 //        }
         int start = out.pos(), extraBefore = out.extraSubs;
-        if (s.ANDwith(this::transform, out)) {
+        if (s.ANDwithOrdered(this::transform, out)) {
             out.subsEnd(start, extraBefore);
             return true;
         }
@@ -254,6 +255,15 @@ public interface TermTransform {
         }
 
     }
+
+    default Term transformCompoundLazily(Compound x) {
+        LazyCompound l = new LazyCompound.LazyEvalCompound();
+        if (!transformCompound(x, l))
+            return Null;
+        else
+            return l.get();
+    }
+
 
     /**
      * operates transparently through negation subterms

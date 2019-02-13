@@ -18,9 +18,9 @@
 
 //conj/impl question reduction
 
-    (A ==> B), B, task("?"), hasBelief()      |- A, (Punctuation:Question)
-    (A ==> B), A, task("?"), hasBelief()      |- B, (Punctuation:Question)
-      (--A ==> B), A, task("?"), hasBelief()  |- B, (Punctuation:Question)
+    (A ==> B), B, task("?")             |- A, (Punctuation:Question)
+    (C ==> B), A, task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
+
 
 
 

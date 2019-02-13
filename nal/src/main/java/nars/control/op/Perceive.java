@@ -41,6 +41,8 @@ public enum Perceive { ;
         if (Evaluation.canEval(x)) {
 
             yy = new Perceive.TaskEvaluation(task, n).result;
+            if (yy==null)
+                return null;
 
         } else {
             yy = new FasterList(1);
