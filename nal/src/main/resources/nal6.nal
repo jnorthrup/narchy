@@ -13,7 +13,7 @@
 
        //questions
         //B, (A ==> C), task("?"), --is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
-          B, (A ==> C), task("?@"), --is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>"), hasBelief() |- unisubst(C,A,B)
+          B, (A ==> C), task("?@"), --is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
 
 
     A, (--A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:PreN, Goal:PreWeakN)
@@ -24,7 +24,7 @@
 
         //questions
         //B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
-          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>"), hasBelief() |- unisubst(C,A,B))
+          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B))
 
     B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:PostWeak, Goal:Post)
        B, (  (&&,  C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:Deduction)
@@ -37,7 +37,7 @@
 
         //questions
         //B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,strict), (Punctuation:Question, Time:TaskMinusBeliefDT)
-          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>"), hasBelief() |- unisubst(C,A,B)
+          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
 
 
 

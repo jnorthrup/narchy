@@ -31,7 +31,7 @@ public class FilteredScalar extends DemultiplexedScalarSensor {
 
         int j = 0;
         for (Pair<Term, FloatToFloatFunction> p : filters) {
-            filter[j++] = new Filter(p.getOne(), input, p.getTwo(), nar);
+            filter[j++] = new Filter(p.getOne(), in.id, input, p.getTwo(), nar);
         }
 
         for (Signal s : filter)
@@ -52,10 +52,10 @@ public class FilteredScalar extends DemultiplexedScalarSensor {
      * TODO use Scalar
      */
     @Deprecated
-    public static class Filter extends Signal {
+    private static class Filter extends Signal {
 
-        Filter(Term id, FloatSupplier input, FloatToFloatFunction f, NAR nar) {
-            super(id,
+        Filter(Term id, short cause, FloatSupplier input, FloatToFloatFunction f, NAR nar) {
+            super(id, cause,
                     () -> f.valueOf(input.asFloat()),
                     nar);
         }

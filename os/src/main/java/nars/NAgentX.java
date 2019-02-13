@@ -213,15 +213,15 @@ abstract public class NAgentX extends NAgent {
                 .time(clock)
                 .index(
 
-                        CaffeineIndex.soft()
+                        //CaffeineIndex.soft()
 
-//                        new CaffeineIndex(
+                        new CaffeineIndex(
 ////                                128 * 1024
 ////                                96 * 1024
-//                                //64 * 1024
+                                64 * 1024
 //                                //32 * 1024
 //////                                //16 * 1024
-//                                , c -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                                , c -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
 
 //                        new HijackConceptIndex(
 //
@@ -417,9 +417,9 @@ abstract public class NAgentX extends NAgent {
 //            }
 //        };
 
-        n.emotion.want(MetaGoal.PerceiveCmplx, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
+        n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        //n.emotion.want(MetaGoal.Believe, 0.01f);
+        n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.1f);
 
         n.emotion.want(MetaGoal.Action, +1f);

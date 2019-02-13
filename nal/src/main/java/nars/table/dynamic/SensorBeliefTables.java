@@ -208,7 +208,7 @@ public class SensorBeliefTables extends BeliefTables {
     /** priority of tasklink applied to a new or stretched existing sensor task */
     private float surprise(Task prev, Task next, NAR n) {
 
-        final float minSurprise = 0.25f;
+
 
 
         float p = pri.asFloat();
@@ -230,7 +230,7 @@ public class SensorBeliefTables extends BeliefTables {
 
             float deltaFreq = prev!=next? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
 
-            return p * Util.lerp(deltaFreq, minSurprise, 1);
+            return p * Util.lerp(deltaFreq, Param.SIGNAL_UNSURPRISING_FACTOR, 1);
         }
 
 

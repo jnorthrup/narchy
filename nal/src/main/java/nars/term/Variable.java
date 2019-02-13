@@ -77,18 +77,26 @@ public interface Variable extends Atomic {
         if (x.equals(y))
             return true;
 
+
         if (x instanceof Variable) {
-            if (y instanceof Variable && u.commonVariables && u.varCommon(xOp) && u.varCommon(y.op())) {
-                return CommonVariable.unify((Variable) x, (Variable) y, u);
-            } else {
-                return u.putXY((Variable) x, y);
+
+            Op yOp = y.op();
+
+            if (y instanceof Variable) {
+                if (u.commonVariables && u.varCommon(xOp) && u.varCommon(yOp))
+                    return CommonVariable.unify((Variable) x, (Variable) y, u);
+                else if (yOp.id < x.op().id && u.varReverse(yOp))
+                    return u.putXY((Variable)y, x);
             }
+
+            return u.putXY((Variable) x, y);
+
         } else if (y instanceof Variable && u.varReverse(y.op())) {
             return u.putXY((Variable) y, x);
         } else {
-            if (x instanceof Variable)
-                return u.putXY((Variable)x, y);
-            else
+//            if (x instanceof Variable)
+//                return u.putXY((Variable)x, y);
+//            else
                 return x.unify(y, u);
         }
 

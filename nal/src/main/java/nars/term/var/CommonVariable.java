@@ -19,9 +19,15 @@ public final class CommonVariable extends UnnormalizedVariable {
     private final SortedSet<Variable> vars;
 
     public static Variable common(Variable A, Variable B) {
-        Op op = A.op();
+        int cmp = A.compareTo(B);
+        assert(cmp!=0);
+        if (cmp > 0) {
+            Variable x = A;
+            A = B;
+            B = x;
+        }
 
-        //assert(A.compareTo(B) < 0);
+        Op op = A.op();
 
         if (!(A instanceof CommonVariable) && !(B instanceof CommonVariable)) {
             byte[] a = A.bytes();
@@ -78,21 +84,6 @@ public final class CommonVariable extends UnnormalizedVariable {
         return super.unify(y,  u);
     }
 
-    private static String commonVariableKey(Op type, Variable x, Variable y) {
-        return String.valueOf(type.ch) + '\"' + filtercomponent(x) + filtercomponent(y) + '\"'; //HACK
-
-        //TODO
-//        byte[] xb = x.bytes();
-//        byte[] yb = y.bytes();
-//        byte[] b = new byte[xb.length + yb.length + 2];
-//        System.arraycopy(xb, 0, b, 1, xb.length);
-//        return b;
-    }
-
-    private static String filtercomponent(Variable x) {
-        return x.toString().replace('\"','_'); //HACK
-    }
-
     public static boolean unify(Variable X, Variable Y, Unify u) {
         //if (xOp == y.op()) {
 
@@ -106,7 +97,7 @@ public final class CommonVariable extends UnnormalizedVariable {
 
         //same op: common variable
         //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
-        Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
+        Variable common = CommonVariable.common(X,Y);
         if (u.putXY(X, common) && u.putXY(Y, common)) {
             //rewrite any appearances of X or Y in already-assigned variables
 //            if (u.xy.size() > 2) {

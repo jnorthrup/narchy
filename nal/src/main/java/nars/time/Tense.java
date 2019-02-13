@@ -261,6 +261,8 @@ public enum Tense {
             if (i!=null)
                 return i;
 
+            if (!Param.TASK_REVISION_ALLOW_DILUTE_UNION)
+                return null;
             //else: resort to dilute union
         }
 
