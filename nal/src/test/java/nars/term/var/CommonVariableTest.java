@@ -1,6 +1,7 @@
-package nars.term;
+package nars.term.var;
 
 import nars.$;
+import nars.term.Variable;
 import nars.term.var.CommonVariable;
 import nars.unify.UnifyAny;
 import org.junit.jupiter.api.Test;

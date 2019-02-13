@@ -10,7 +10,6 @@ import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.link.TermLinker;
 import nars.table.dynamic.SensorBeliefTables;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -35,6 +34,7 @@ import static nars.Op.GOAL;
 public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, FloatSupplier, PermanentConcept {
 
     public final AttBranch attn;
+    final short cause;
 
     /**
      * update directly with next value
@@ -52,13 +52,17 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     private volatile float currentValue = Float.NaN;
 
     public Signal(Term term, FloatSupplier signal, NAR n) {
-        this(term, signal, n.conceptBuilder.termlinker(term), n);
-    }
-    public Signal(Term term, FloatSupplier signal, TermLinker linker, NAR n) {
-        this(term, BELIEF, signal, linker, n);
+        this(term, n.newCause(term).id, signal, n);
     }
 
-    private Signal(Term term, byte punc, FloatSupplier signal, TermLinker linker, NAR n) {
+    public Signal(Term term, short cause, FloatSupplier signal, NAR n) {
+        this(term, cause, signal, n.conceptBuilder.termlinker(term), n);
+    }
+    public Signal(Term term, short cause, FloatSupplier signal, TermLinker linker, NAR n) {
+        this(term, cause, BELIEF, signal, linker, n);
+    }
+
+    private Signal(Term term, short cause, byte punc, FloatSupplier signal, TermLinker linker, NAR n) {
         super(term,
                 punc == BELIEF ? new SensorBeliefTables(term, true) : n.conceptBuilder.newTable(term, true),
                 punc == GOAL ? new SensorBeliefTables(term, false) : n.conceptBuilder.newTable(term, false),
@@ -66,6 +70,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
                 n.conceptBuilder);
 
         this.source = signal;
+        this.cause = cause;
 
         this.attn = newAttn(term);
 
@@ -101,15 +106,15 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
     @Nullable
-    public ITask update(long start, long end, FloatFloatToObjectFunction<Truth> truther, FloatSupplier pri, NAR n) {
+    public void update(long start, long end, FloatFloatToObjectFunction<Truth> truther, FloatSupplier pri, short cause, NAR n) {
 
         float prevValue = currentValue;
 
         float nextValue = currentValue = source.asFloat();
 
-        return ((SensorBeliefTables) beliefs()).add(
+        ((SensorBeliefTables) beliefs()).add(
                 nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
-                        start, end, pri, n);
+                        start, end, pri, cause, n);
     }
 
 
@@ -124,11 +129,10 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     @Override
     public void sense(long prev, long now, NAR nar) {
-
-        ITask r = update(prev, now,
-                (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), attn::elementPri, nar);
-        if (r!=null)
-            nar.input(r);
+        update(prev, now,
+                (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)),
+                attn::elementPri,
+                cause, nar);
     }
 
 

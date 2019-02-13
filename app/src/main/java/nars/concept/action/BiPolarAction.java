@@ -7,8 +7,6 @@ import nars.agent.NSense;
 import nars.attention.AttBranch;
 import nars.attention.AttNode;
 import nars.concept.sensor.AbstractSensor;
-import nars.control.channel.ConsumerX;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.PreciseTruth;
@@ -27,11 +25,12 @@ import static nars.Op.PROD;
  * implements Sensor but actually manages Actions internally. */
 public class BiPolarAction extends AbstractSensor {
 
-    private final ConsumerX<ITask> feedback;
     private final Polarization model;
     private final FloatToFloatFunction motor;
 
     public final AttNode attn;
+    private final short cause;
+
 
     /** model for computing the net result from the current truth inputs */
     public interface Polarization {
@@ -57,12 +56,12 @@ public class BiPolarAction extends AbstractSensor {
     public BiPolarAction(Term pos, Term neg, Polarization model, FloatToFloatFunction motor, NAR nar) {
         super(PROD.the(pos, neg), nar);
 
-        feedback = nar.newChannel(id);
+        this.cause = nar.newCause(id).id;
 
         this.attn = new AttBranch(id, List.of(pos, neg));
 
-        this.pos = new MyAbstractGoalActionConcept(pos, nar);
-        this.neg = new MyAbstractGoalActionConcept(neg, nar);
+        this.pos = new AbstractGoalActionConcept(pos, nar);
+        this.neg = new AbstractGoalActionConcept(neg, nar);
 
 
 //                //TemplateTermLinker.of(neg),
@@ -155,11 +154,9 @@ public class BiPolarAction extends AbstractSensor {
             Pb = Nb = null;
         }
 
+        pos.feedback(Pb, prev, now, cause, nar);
+        neg.feedback(Nb, prev, now, cause, nar);
 
-
-        this.feedback.input(
-                pos.feedback(Pb, prev, now, nar), neg.feedback(Nb, prev, now, nar)
-        );
     }
 
 
@@ -292,14 +289,5 @@ public class BiPolarAction extends AbstractSensor {
 
     }
 
-    private class MyAbstractGoalActionConcept extends AbstractGoalActionConcept {
-        public MyAbstractGoalActionConcept(Term pos, NAR nar) {
-            super(pos, nar);
-        }
 
-        @Override
-        protected ConsumerX<ITask> newChannel(NAR n) {
-            return feedback;
-        }
-    }
 }

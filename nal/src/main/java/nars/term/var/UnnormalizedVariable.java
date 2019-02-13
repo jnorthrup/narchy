@@ -16,6 +16,11 @@ public class UnnormalizedVariable extends AbstractAtomic implements Variable/*, 
 
     @Override public int opX() { return Term.opX(op(), 10);    }
 
+    public UnnormalizedVariable(Op type, byte[] label) {
+        super(bytes(IO.SPECIAL_BYTE, label));
+        this.type = type;
+    }
+
     public UnnormalizedVariable(Op type, String label) {
         super(bytes(IO.SPECIAL_BYTE, label));
         this.type = type;

@@ -4,11 +4,10 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.attention.AttBranch;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityGoalTable;
 import nars.concept.action.curiosity.CuriosityTask;
-import nars.control.channel.ConsumerX;
+import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
@@ -25,7 +24,6 @@ import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.function.Predicate;
 
 import static nars.time.Tense.TIMELESS;
@@ -36,7 +34,6 @@ import static nars.truth.func.TruthFunctions.w2cSafe;
  * ActionConcept which is driven by Goals that are interpreted into feedback Beliefs
  */
 public class AbstractGoalActionConcept extends ActionConcept {
-    private final AttBranch attnCuri;
 
 //    private static final Logger logger = LoggerFactory.getLogger(AbstractGoalActionConcept.class);
 
@@ -53,7 +50,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
     /** latches the last non-null actionDex, used for echo/sustain */
     public @Nullable Truth lastActionDex;
 
-    protected final ConsumerX<ITask> in;
+    final short cause;
+
     private static final boolean shareCuriosityEvi = true;
 
     public AbstractGoalActionConcept(Term term,  NAR n) {
@@ -67,16 +65,14 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 new BeliefTables(goals),
                 n);
 
+        cause = n.newCause(term).id;
+
         ((BeliefTables)goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, Param.CURIOSITY_CAPACITY));
 
-        in = newChannel(n);
 
-        this.attnCuri = new AttBranch(term, List.of(term));
-        attnCuri.parent(attn);
-        attnCuri.boost.set(0.5f);
     }
 
-    protected ConsumerX<ITask> newChannel(NAR n) {
+    protected CauseChannel<ITask> newChannel(NAR n) {
         return n.newChannel(this);
     }
 
@@ -183,7 +179,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                     curiStart = Tense.dither(curiStart, n);
                     curiEnd = Tense.dither(curiEnd, n);
 
-                    in.input(
+                    n.input(
                             curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
                     );
                 }
@@ -235,6 +231,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         SignalTask curiosity = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);
         curiosity.priMax(attn.elementPri());
+        curiosity.cause(new short[] { cause });
         return curiosity;
     }
 
@@ -250,8 +247,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return evi;
     }
 
-    @Nullable protected ITask feedback(@Nullable Truth f, long last, long now, NAR nar) {
-        return ((SensorBeliefTables) beliefs()).add(f, last, now, attn::elementPri, nar);
+    protected void feedback(@Nullable Truth f, long last, long now, short cause, NAR nar) {
+        ((SensorBeliefTables) beliefs()).add(f, last, now, attn::elementPri, cause, nar);
     }
 
 

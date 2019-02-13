@@ -54,10 +54,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
                 goal
         );
 
-        in.input(
-            feedback(fb, prev + feedbackShift, now + feedbackShift, n)
-        );
-
+        feedback(fb, prev + feedbackShift, now + feedbackShift, cause, n);
     }
 
 

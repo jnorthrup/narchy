@@ -63,10 +63,9 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
             return c > min ? $.t(n, c) : null;
         };
 
+        short cause = in.id;
         for (Signal s : this) {
-            ITask r = s.update(last, now, truther, attn::elementPri, this.nar);
-            if (r != null)
-                in.input(r);
+            s.update(last, now, truther, attn::elementPri, cause, this.nar);
         }
     }
 

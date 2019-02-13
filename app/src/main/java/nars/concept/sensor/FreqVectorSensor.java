@@ -46,7 +46,7 @@ public class FreqVectorSensor extends VectorSensor {
         freqValue = new float[fftSize];
         for (int i= 0; i < components; i++) {
             int finalI = i;
-            component[i] = new Signal(termizer.apply(i), ()->componentValue[finalI], n);
+            component[i] = new Signal(termizer.apply(i), in.id, ()->componentValue[finalI], n);
             freqValue[i] = 0;
         }
 

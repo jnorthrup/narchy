@@ -7,7 +7,7 @@ import nars.Task;
 import nars.attention.AttBranch;
 import nars.attention.AttNode;
 import nars.concept.Concept;
-import nars.control.channel.ConsumerX;
+import nars.control.channel.CauseChannel;
 import nars.op.mental.Inperience;
 import nars.table.eternal.DefaultOnlyEternalTable;
 import nars.task.ITask;
@@ -32,7 +32,7 @@ public abstract class Reward implements Termed, Iterable<Concept> {
 
     protected transient volatile float reward = Float.NaN;
 
-    protected final ConsumerX<ITask> in;
+    protected final CauseChannel<ITask> in;
 
     final static boolean goalUnstamped = false;
 

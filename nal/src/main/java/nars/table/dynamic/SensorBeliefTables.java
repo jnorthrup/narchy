@@ -13,8 +13,6 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.link.TaskLink;
 import nars.table.BeliefTables;
 import nars.table.temporal.RTreeBeliefTable;
-import nars.task.AbstractTask;
-import nars.task.ITask;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
@@ -68,7 +66,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public ITask add(Truth value, long start, long end, FloatSupplier pri, NAR n) {
+    public void add(Truth value, long start, long end, FloatSupplier pri, short cause, NAR n) {
 
 
         if (value!=null) {
@@ -83,11 +81,12 @@ public class SensorBeliefTables extends BeliefTables {
                 series.term, series.punc(),
                 n);
 
+
         if (x!=null) {
             series.clean(tables);
-            return remember(x, pri);
-        } else
-            return null;
+            x.cause(new short[] { cause });
+            remember(x, pri, n);
+        }
     }
 
 
@@ -204,44 +203,12 @@ public class SensorBeliefTables extends BeliefTables {
 
 
     private Task prev = null;
-    public Task next = null;
 
-    private final AbstractTask myTaskLink = new AbstractTask() {
-
-
-        @Override
-        public ITask next(NAR n) {
-            Task next = SensorBeliefTables.this.next, prev = SensorBeliefTables.this.prev;
-            if (next == null)
-                return null; //?
-
-            //float before = series.tasklink.priElseZero();
-            float p = surprise(prev, next, n);
-            if (p!=p)
-                return null;
-
-            next.pri(p); //set the task's pri too
-            if (prev!=null && prev!=next)
-                prev.pri(0);
-
-            float delta = series.tasklink.priMax(next.punc(), p);
-
-            TaskLink.link(series.tasklink, n);
-
-            if (delta > ScalarValue.EPSILON)
-                ((AbstractConceptIndex)n.concepts).active.bag.pressurize(delta); //HACK
-
-            if (prev!=next)
-                n.eventTask.emit(next);
-
-            return null;
-        }
-    };
 
     /** priority of tasklink applied to a new or stretched existing sensor task */
     private float surprise(Task prev, Task next, NAR n) {
 
-        final float minSurprise = 0.1f;
+        final float minSurprise = 0.25f;
 
 
         float p = pri.asFloat();
@@ -261,7 +228,7 @@ public class SensorBeliefTables extends BeliefTables {
             return p; //assume novel
         } else {
 
-            float deltaFreq = Math.abs(prev.freq() - next.freq()); //TODO use a moving average or other anomaly/surprise detection
+            float deltaFreq = prev!=next? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
 
             return p * Util.lerp(deltaFreq, minSurprise, 1);
         }
@@ -269,13 +236,33 @@ public class SensorBeliefTables extends BeliefTables {
 
     }
 
-    private ITask remember(Task next, FloatSupplier pri) {
+    private void remember(Task next, FloatSupplier pri, NAR n) {
         //if (y==prev)
-        this.prev = this.next;
-        this.next = next;
+
+        Task prev = this.prev;
+        this.prev = next;
         this.pri = pri;
 
-        return myTaskLink;
+        if (next == null)
+            return; //?
+
+        //float before = series.tasklink.priElseZero();
+        float p = surprise(prev, next, n);
+        if (p!=p)
+            return;
+
+        next.priMax(p); //set the task's pri too
+
+        float delta = series.tasklink.priMax(next.punc(), p);
+
+        TaskLink.link(series.tasklink, n);
+
+        if (delta > ScalarValue.EPSILON)
+            ((AbstractConceptIndex)n.concepts).active.bag.pressurize(delta); //HACK
+
+        if (prev!=next)
+            n.eventTask.emit(next);
+
     }
 
     private static final class MySensorBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.SeriesTask> {

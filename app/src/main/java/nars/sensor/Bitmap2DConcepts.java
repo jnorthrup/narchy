@@ -50,6 +50,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
         this.pixelTerm = pixelTerm;
 
+        short cause = n.newCause(this).id;
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 
@@ -57,7 +59,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
                 FloatSupplier f = () -> src.brightness(xx, yy);
 
-                Signal sss = new Signal(pixelTerm.get(x, y), f, pixelLinker(xx, yy), n).setResolution(res);
+                Signal sss = new Signal(pixelTerm.get(x, y), cause, f, pixelLinker(xx, yy), n).setResolution(res);
 
                 matrix[x][y] = sss;
             }

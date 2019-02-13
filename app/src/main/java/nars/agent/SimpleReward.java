@@ -64,7 +64,7 @@ public class SimpleReward extends BeliefReward {
     }
 
     @Override protected Signal newConcept() {
-        Signal concept = new Signal(id, () -> reward, /*linker, */nar()) {
+        Signal concept = new Signal(id, in.id, () -> reward, /*linker, */nar()) {
             @Override
             protected AttBranch newAttn(Term term) {
                 return new AttBranch(term, this.components());

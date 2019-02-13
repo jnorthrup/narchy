@@ -74,9 +74,11 @@ public interface Variable extends Atomic {
         }
 
         Term y = u.resolvePosNeg(_y);
+        if (x.equals(y))
+            return true;
 
-        if (x instanceof Variable && u.varCommon(xOp)) {
-            if (y instanceof Variable && u.commonVariables && u.varCommon(y.op())) {
+        if (x instanceof Variable) {
+            if (y instanceof Variable && u.commonVariables && u.varCommon(xOp) && u.varCommon(y.op())) {
                 return CommonVariable.unify((Variable) x, (Variable) y, u);
             } else {
                 return u.putXY((Variable) x, y);
