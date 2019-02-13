@@ -16,10 +16,7 @@
 
 
 
-//conj/impl question reduction
 
-    (A ==> B), B, task("?")             |- A, (Punctuation:Question)
-    (C ==> B), A, task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
 
 
 

@@ -104,15 +104,15 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
 
     public final Term get(Term x) {
         if (x instanceof Compound) {
-            switch (map.termCount()) {
-                case 1:
-                    //optimized
-                    return x.replace(Anom.the(1), map.interned((byte)1));
-                default:
+//            switch (map.termCount()) {
+//                case 1:
+//                    //optimized
+//                    return x.replace(Anom.the(1), map.interned((byte)1));
+//                default:
                     putOrGet = false;
                     return transformCompound((Compound) x);
                     //return transformCompoundLazily((Compound)x);
-            }
+//            }
         } else {
             if (x instanceof Anom) {
                 return map.interned((byte) ((AnonID) x).anonID);

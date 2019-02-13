@@ -7,6 +7,8 @@
 
 //Inheritance to Similarity
     (S <-> P), (S --> P), task("?"), hasBelief() |- (S <-> P),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+
+
 //    (S <-> P), (S --> P), task("?") |- (--,(S <-> P)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
 ////inheritance transform

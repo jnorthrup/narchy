@@ -8,7 +8,6 @@ import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.TaskConcept;
 import nars.control.op.Remember;
 import nars.index.concept.AbstractConceptIndex;
 import nars.link.TaskLink;
@@ -24,6 +23,7 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import static java.lang.Float.NaN;
 import static nars.time.Tense.TIMELESS;
 
 /**
@@ -37,6 +37,7 @@ public class SensorBeliefTables extends BeliefTables {
     public final MySensorBeliefTable series;
 
     public FloatRange res;
+    private FloatSupplier pri;
 
     public SensorBeliefTables(Term c, boolean beliefOrGoal) {
         this(c, beliefOrGoal,
@@ -67,7 +68,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public ITask add(Truth value, long start, long end, TaskConcept c, FloatSupplier pri, NAR n) {
+    public ITask add(Truth value, long start, long end, FloatSupplier pri, NAR n) {
 
 
         if (value!=null) {
@@ -80,12 +81,11 @@ public class SensorBeliefTables extends BeliefTables {
         SeriesBeliefTable.SeriesTask x = add(value,
                 start, end,
                 series.term, series.punc(),
-                pri,
                 n);
 
         if (x!=null) {
             series.clean(tables);
-            return remember(x);
+            return remember(x, pri);
         } else
             return null;
     }
@@ -97,7 +97,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    private SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, FloatSupplier pri, NAR nar) {
+    private SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, NAR nar) {
 
         SeriesBeliefTable.SeriesTask nextT = null, last = series.series.last();
         if (last != null) {
@@ -141,7 +141,6 @@ public class SensorBeliefTables extends BeliefTables {
             if (nextT != null)
                 series.add(nextT);
 
-            nextT.priMax(pri.asFloat());
         }
 
         return nextT;
@@ -209,7 +208,6 @@ public class SensorBeliefTables extends BeliefTables {
 
     private final AbstractTask myTaskLink = new AbstractTask() {
 
-        final static float SIGNAL_PRI_FACTOR_SAME_TASK_BEING_STRETCHED = 0.5f;
 
         @Override
         public ITask next(NAR n) {
@@ -217,32 +215,65 @@ public class SensorBeliefTables extends BeliefTables {
             if (next == null)
                 return null; //?
 
-            //decrease tasklink priority if the same task or if similar truth
+            //float before = series.tasklink.priElseZero();
+            float p = surprise(prev, next, n);
+            if (p!=p)
+                return null;
 
-            float p = next.priElseZero();
-            if (p == p) {
-                if (prev!=null && (prev==next || Math.abs(next.start()-prev.end()) < Param.SIGNAL_LATCH_LiMIT_DURS * n.dur())) {
+            next.pri(p); //set the task's pri too
+            if (prev!=null && prev!=next)
+                prev.pri(0);
 
-                    if (prev == next || prev.truth().equalsIn(next.truth(), n))
-                        p *= SIGNAL_PRI_FACTOR_SAME_TASK_BEING_STRETCHED;
-                    //TODO else { ... //difference in truth: surprisingness
-                }
+            float delta = series.tasklink.priMax(next.punc(), p);
 
-                //float before = series.tasklink.priElseZero();
-                float delta = series.tasklink.priMax(next.punc(), p);
-                //float after = series.tasklink.priElseZero();
-                TaskLink.link(series.tasklink, n);
-                if (delta > ScalarValue.EPSILON)
-                    ((AbstractConceptIndex)n.concepts).active.bag.pressurize(delta); //HACK
+            TaskLink.link(series.tasklink, n);
 
-            }
+            if (delta > ScalarValue.EPSILON)
+                ((AbstractConceptIndex)n.concepts).active.bag.pressurize(delta); //HACK
+
+            if (prev!=next)
+                n.eventTask.emit(next);
+
             return null;
         }
     };
-    private ITask remember(Task next) {
+
+    /** priority of tasklink applied to a new or stretched existing sensor task */
+    private float surprise(Task prev, Task next, NAR n) {
+
+        final float minSurprise = 0.1f;
+
+
+        float p = pri.asFloat();
+        if (p != p)
+            return NaN;
+
+        boolean NEW = prev==null;
+
+        boolean stretched = !NEW && prev==next;
+
+        boolean latched = !NEW && !stretched &&
+                Math.abs(next.start() - prev.end()) < Param.SIGNAL_LATCH_LIMIT_DURS * n.dur();
+
+        //decrease tasklink priority if the same task or if similar truth
+
+        if (prev==null || (!stretched && !latched)) {
+            return p; //assume novel
+        } else {
+
+            float deltaFreq = Math.abs(prev.freq() - next.freq()); //TODO use a moving average or other anomaly/surprise detection
+
+            return p * Util.lerp(deltaFreq, minSurprise, 1);
+        }
+
+
+    }
+
+    private ITask remember(Task next, FloatSupplier pri) {
         //if (y==prev)
         this.prev = this.next;
         this.next = next;
+        this.pri = pri;
 
         return myTaskLink;
     }

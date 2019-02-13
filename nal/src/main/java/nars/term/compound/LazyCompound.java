@@ -6,11 +6,11 @@ import jcog.data.byt.DynBytes;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.Op;
-import nars.Param;
 import nars.term.Functor;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.util.map.ByteAnonMap;
+import nars.unify.ellipsis.EllipsisMatch;
 import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +35,6 @@ public class LazyCompound {
 
     final static int INITIAL_ANON_SIZE = 8;
     private boolean changed;
-    public int extraSubs = 0;
 
     public LazyCompound() {
 
@@ -98,6 +97,8 @@ public class LazyCompound {
     }
 
     protected byte intern(Term x) {
+        if (x == null || x==Null || x.op()==NEG)
+            throw new WTF();
         return sub().intern(x);
     }
 
@@ -165,38 +166,39 @@ public class LazyCompound {
 
                     next = op.the(dt, s);
                     assert (next != null);
+
+                    if (next != Null) {
+
+                        int to = range[0];
+                        int end = range[1];
+                        int span = to - from;
+                        if (end - to >= span) {
+                            //search for repeat occurrences of the start..end sequence after this
+                            int afterTo = to;
+                            byte n = 0;
+                            do {
+                                int match = ArrayUtils.nextIndexOf(ii, afterTo, end, ii, from, to);
+
+                                if (match != -1) {
+                                    //System.out.println("repeat found");
+                                    if (n == 0)
+                                        n = (byte) (MAX_CONTROL_CODES + intern(next)); //intern for re-substitute
+                                    code.set(match, n);
+
+                                    code.fillBytes((byte) 0, match + 1, match + span); //zero padding, to be ignored
+                                    afterTo = match + span;
+                                } else
+                                    break;
+
+                            } while (afterTo < end);
+                        }
+
+                    }
+
                 }
             }
 
 
-
-            if (next != Null) {
-
-                int to = range[0];
-                int end = range[1];
-                int span = to - from;
-                if (end - to >= span) {
-                    //search for repeat occurrences of the start..end sequence after this
-                    int afterTo = to;
-                    byte n = 0;
-                    do {
-                        int match = ArrayUtils.nextIndexOf(ii, afterTo, end, ii, from, to);
-
-                        if (match != -1) {
-                            //System.out.println("repeat found");
-                            if (n == 0)
-                                n = (byte) (MAX_CONTROL_CODES + intern(next)); //intern for re-substitute
-                            code.set(match, n);
-
-                            code.fillBytes((byte) 0, match + 1, match + span); //zero padding, to be ignored
-                            afterTo = match + span;
-                        } else
-                            break;
-
-                    } while (afterTo < end);
-                }
-
-            }
 
         } else {
             next = next(ctl);
@@ -226,8 +228,8 @@ public class LazyCompound {
             Term y;
             //System.out.println("\t" + s + "\t" + range[0] + ".." + range[1]);
             if (range[0] >= range[1]) {
-                //throw new ArrayIndexOutOfBoundsException();
-                return Arrays.copyOfRange(t, 0, i); //hopefully this is becaues of an ellipsis that got inlined and had no effect
+                throw new ArrayIndexOutOfBoundsException();
+                //return Arrays.copyOfRange(t, 0, i); //hopefully this is becaues of an ellipsis that got inlined and had no effect
             }
             if ((y = getNext(ii, range)) == Null)
                 return null;
@@ -235,7 +237,22 @@ public class LazyCompound {
                 throw new NullPointerException(); //WTF
             if (t == null)
                 t = new Term[n];
-            t[i] = y;
+
+            if (y instanceof EllipsisMatch) {
+                //expand
+                int yy = y.subs();
+                n += yy -1;
+                if (t.length!=n) {
+                    t = Arrays.copyOf(t, n);
+                }
+                if (yy > 0) {
+                    for (Term e : ((EllipsisMatch)y)) {
+                        t[i++] = e;
+                    }
+                }
+            } else {
+                t[i] = y;
+            }
         }
         return t;
     }
@@ -256,24 +273,7 @@ public class LazyCompound {
         code.len = pos;
     }
 
-    public void subsAdd(int n) {
-        extraSubs += n;
-    }
-
-    public void subsEnd(int subStart, int extraBefore) {
-        int extraNow = this.extraSubs;
-        if (extraNow != extraBefore) {
-
-            int delta = extraNow - extraBefore;
-            //TODO check # of subterms is valid
-            int newSubs = code.at(subStart - 1) + delta;
-            if (newSubs < 0)
-                throw new WTF("subterm underflow");
-            if (newSubs > Param.SUBTERMS_MAX)
-                throw new WTF("subterm overflow");
-            code.set(subStart - 1, (byte) newSubs);
-            this.extraSubs = extraBefore;
-        }
+    public void subsEnd() {
     }
 
     /**

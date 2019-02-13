@@ -22,7 +22,7 @@ abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T
      * maximum durations a steady signal can grow for
      */
     public float latchDurs() {
-        return Param.SIGNAL_LATCH_LiMIT_DURS;
+        return Param.SIGNAL_LATCH_LIMIT_DURS;
     }
     public float stretchDurs() {
         return Param.SIGNAL_STRETCH_LIMIT_DURS;

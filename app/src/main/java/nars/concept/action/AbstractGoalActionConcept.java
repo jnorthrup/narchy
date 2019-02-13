@@ -13,7 +13,6 @@ import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.table.temporal.TemporalBeliefTable;
@@ -252,7 +251,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Nullable protected ITask feedback(@Nullable Truth f, long last, long now, NAR nar) {
-        return ((SensorBeliefTables) beliefs()).add(f, last, now, this, attn::elementPri, nar);
+        return ((SensorBeliefTables) beliefs()).add(f, last, now, attn::elementPri, nar);
     }
 
 

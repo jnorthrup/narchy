@@ -109,7 +109,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
         return ((SensorBeliefTables) beliefs()).add(
                 nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
-                        start, end, this, pri, n);
+                        start, end, pri, n);
     }
 
 

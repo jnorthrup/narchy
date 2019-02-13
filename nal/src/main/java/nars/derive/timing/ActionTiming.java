@@ -26,8 +26,8 @@ public class ActionTiming implements BiFunction<Task, Term, long[]> {
         int dur = nar.dur();
         Random rng = nar.random();
 
-        //long then = Math.round(now + rng.nextGaussian() * horizonDurs.floatValue() * dur);
-        long then = now + Math.round(((rng.nextFloat()-0.5f)*2f * horizonDurs.floatValue()) * dur);
+        long then = Math.round(now + rng.nextGaussian() * horizonDurs.floatValue() * dur);
+        //long then = now + Math.round(((rng.nextFloat()-0.5f)*2f * horizonDurs.floatValue()) * dur);
 
         long start, end;
         start = (then - dur);

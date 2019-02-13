@@ -298,7 +298,8 @@ public interface NSense {
         a.addAction(pn.pos);
         a.addAction(pn.neg);
 
-//        a.addAttention(pn.attn, a.attnAction);
+        pn.attn.reparent(a.attnAction);
+
         pn.pos.attn.reparent(pn.attn);
         pn.neg.attn.reparent(pn.attn);
 
