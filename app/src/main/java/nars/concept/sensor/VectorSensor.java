@@ -3,7 +3,7 @@ package nars.concept.sensor;
 import com.google.common.collect.Iterables;
 import nars.$;
 import nars.NAR;
-import nars.attention.AttBranch;
+import nars.attention.AttnBranch;
 import nars.concept.NodeConcept;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
@@ -21,7 +21,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
     public final CauseChannel<ITask> in;
 
-    public final AttBranch attn;
+    public final AttnBranch attn;
 
 
     @Override
@@ -36,7 +36,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     protected VectorSensor(NAR nar) {
         super(nar);
 
-        attn = new AttBranch(this, this);
+        attn = new AttnBranch(this, this);
 
         this.in = newChannel(nar);
     }

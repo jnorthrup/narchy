@@ -110,8 +110,15 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
 //                    return x.replace(Anom.the(1), map.interned((byte)1));
 //                default:
                     putOrGet = false;
-                    return transformCompound((Compound) x);
-                    //return transformCompoundLazily((Compound)x);
+
+                    Term y0 = transformCompound((Compound) x);
+
+//                    Term y = transformCompoundLazily((Compound)x);
+//                    if (!y.equals(y0)) {
+//                        transformCompoundLazily((Compound)x);  throw new WTF(); //TEMPORARY
+//                    }
+//                    return y;
+                    return y0;
 //            }
         } else {
             if (x instanceof Anom) {
@@ -123,8 +130,13 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
 
     protected final Term putCompound(Compound x) {
         putOrGet = true;
-        return transformCompound(x);
-        //return transformCompoundLazily(x);
+//        Term x0 = transformCompound(x);
+        Term x1 = transformCompoundLazily(x);
+//        if (!x0.equals(x1)) {
+//            transformCompoundLazily((Compound)x);  throw new WTF(); //TEMPORARY
+//        }
+//        return x0;
+        return x1;
     }
 
     public void clear() {

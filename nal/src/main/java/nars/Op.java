@@ -11,7 +11,6 @@ import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.compound.CachedCompound;
 import nars.term.util.SetSectDiff;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
@@ -509,8 +508,8 @@ public enum Op {
 
                 //fast transform non-concurrent -> non-concurrent
 
-                //return Op.compound(op, nextDT, xs);
-                return CachedCompound.newCompound(op, nextDT, xs);
+                return Op.compound(op, nextDT, xs);
+                //return CachedCompound.newCompound(op, nextDT, xs);
             }
         }
 

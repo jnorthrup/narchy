@@ -9,6 +9,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
+import nars.unify.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -36,19 +37,16 @@ public interface TermTransform {
             if (y == null || y == Bool.Null)
                 return false;
             else {
-//                if (y instanceof EllipsisMatch) {
-//                    int ys = y.subs();
-//                    out.subsAdd(ys - 1);
-//                    if (ys > 0) {
-//                        if (!transformSubterms((EllipsisMatch) y, out))
-//                            return false;
-//                    }
-//                    out.setChanged(true);
-//                } else {
-                    out.add(y);
-                    if (y != x)
-                        out.setChanged(true);
-//                }
+                if (y instanceof EllipsisMatch) {
+                    Subterms s = y.subterms();
+                    Subterms s2 = s.transformSubs(this,null);
+                    if (s2!=s) {
+                        y = new EllipsisMatch(s2);
+                    }
+                }
+                out.add(y);
+                if (y != x)
+                    out.setChanged(true);
                 return true;
             }
         }
@@ -143,6 +141,8 @@ public interface TermTransform {
             out.subs((byte) s.subs());
             if (!transformSubterms(s, out))
                 return false;
+
+            out.compoundEnd(o);
         }
 
         //out.compoundEnd(o); //??

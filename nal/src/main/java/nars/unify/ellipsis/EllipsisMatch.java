@@ -1,5 +1,6 @@
 package nars.unify.ellipsis;
 
+import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
@@ -23,7 +24,7 @@ public final class EllipsisMatch extends LightCompound {
     public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptySubterms);
 
 
-    private EllipsisMatch(Subterms t) {
+    public EllipsisMatch(Subterms t) {
         super(EllipsisOp.id, t);
     }
 
@@ -79,20 +80,26 @@ public final class EllipsisMatch extends LightCompound {
     }
 
     public static Term matchedExcept(Subterms matched, byte... except) {
+
         int ll = matched.subs();
-        int ee = except.length;
-        Term[] t = new Term[ll - ee];
-        int j = 0;
-        main:
-        for (int i = 0; i < ll; i++) {
-            for (byte anExcept : except)
-                if (i == anExcept)
-                    continue main;
+        if (except.length == ll-1) {
+            //choose only the non-matched subterm
+            for (byte i = 0; i < ll; i++) {
+                if (ArrayUtils.indexOf(except, i)==-1)
+                    return matched.sub(i);
+            }
+            throw new NullPointerException();
 
-
-            t[j++] = matched.sub(i);
+        } else {
+            Term[] t = new Term[ll - except.length];
+            int j = 0;
+            for (byte i = 0; i < ll; i++) {
+                if (ArrayUtils.indexOf(except, i)==-1)
+                    t[j++] = matched.sub(i);
+            }
+            assert(j == t.length);
+            return matched(t);
         }
-        return matched(t);
     }
 
     @Nullable public static Term matchedExcept(int minArity,Term[] matched, byte... except) {

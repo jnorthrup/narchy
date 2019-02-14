@@ -83,21 +83,21 @@ public class NAL1GoalTest extends NALTest {
                 .mustBelieve(cycles, "(a<->c)", 1f, 0.81f)
         ;
     }
-    @Test
-    void similarityGoalUp() {
-        test
-                .input("(a-->c)!")
-                .input("(c-->a).")
-                .mustGoal(cycles, "(a<->c)", 1f, 0.45f)
-        ;
-    }
-    @Test
-    void similarityGoalDown() {
-        test
-                .input("(c-->a)!")
-                .input("(a-->c).")
-                .mustGoal(cycles, "(a<->c)", 1f, 0.45f)
-        ;
-    }
+//    @Test
+//    void similarityGoalUp() {
+//        test
+//                .input("(a-->c)!")
+//                .input("(c-->a).")
+//                .mustGoal(cycles, "(a<->c)", 1f, 0.45f)
+//        ;
+//    }
+//    @Test
+//    void similarityGoalDown() {
+//        test
+//                .input("(c-->a)!")
+//                .input("(a-->c).")
+//                .mustGoal(cycles, "(a<->c)", 1f, 0.45f)
+//        ;
+//    }
 
 }

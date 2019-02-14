@@ -8,6 +8,8 @@ import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.unify.Unify;
 
+import static nars.Op.NEG;
+
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
  * varible type, as well as serving as something like the "marker interfaces" of Atomic, Compound, ..
@@ -43,50 +45,37 @@ public interface Variable extends Atomic {
     @Override
     @Paper
     @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion"})
-    default boolean unify(Term _y, Unify u) {
+    default boolean unify(Term y, Unify u) {
 
-        if (equals(_y))
+        if (equals(y))
             return true;
 
-        Op xOp = op();
-        if (!u.var(xOp))
-            return false;
+        return unify(u.resolve(this), u.resolvePosNeg(y), u);
+    }
 
-        Term x = u.resolve(this);
-        if (!x.equals(this)) {
-            xOp = x.op();
-            if (!(x instanceof Variable) || !u.var(xOp)) {
-                if (u.varDepth < Param.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
-                    u.varDepth++;
-                    boolean result = x.unify(_y, u);
-                    u.varDepth--;
-                    return result;
-                } else {
-                    //recursion limit exceeded
-                    return false;
-                    //                } catch (StackOverflowError e) {
-                    //                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy); //TEMPORARY
-                    //                    return false;
-                    //                }
-                }
-//              else: continue below
-            }
-        }
-
-        Term y = u.resolvePosNeg(_y);
+    static boolean unify(Term x, Term y, Unify u) {
         if (x.equals(y))
             return true;
 
-
-        if (x instanceof Variable) {
+        Op xOp = x.op();
+        if (x instanceof Variable && u.var(xOp)) {
 
             Op yOp = y.op();
 
             if (y instanceof Variable) {
+
+                boolean xCommon = x instanceof CommonVariable;
+                boolean yCommon = y instanceof CommonVariable;
+                if (yCommon && !xCommon && ((CommonVariable) y).vars.contains(x))
+                    return true; //already contained
+
+                if (xCommon && !yCommon && ((CommonVariable) x).vars.contains(y))
+                    return true; //already contained
+
                 if (u.commonVariables && u.varCommon(xOp) && u.varCommon(yOp))
                     return CommonVariable.unify((Variable) x, (Variable) y, u);
-                else if (yOp.id < x.op().id && u.varReverse(yOp))
-                    return u.putXY((Variable)y, x);
+                else if (yOp.id < xOp.id && u.varReverse(yOp))
+                    return u.putXY((Variable) y, x);
             }
 
             return u.putXY((Variable) x, y);
@@ -94,13 +83,26 @@ public interface Variable extends Atomic {
         } else if (y instanceof Variable && u.varReverse(y.op())) {
             return u.putXY((Variable) y, x);
         } else {
+            if (x instanceof Variable)
+                return false; //a variable; but not unifiable
+            if (y.op()==NEG && y.unneg().equals(x))
+                return false;
+            if (x.op()==NEG && x.unneg().equals(y))
+                return false;
 //            if (x instanceof Variable)
 //                return u.putXY((Variable)x, y);
 //            else
-                return x.unify(y, u);
+//                return x.unify(y, u);
+
+            if (u.varDepth < Param.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
+                u.varDepth++;
+                boolean result = x.unify(y, u);
+                u.varDepth--;
+                return result;
+            } else
+                //recursion limit exceeded
+                return false;
         }
-
-
     }
 
 

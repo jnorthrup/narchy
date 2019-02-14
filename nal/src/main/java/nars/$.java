@@ -729,12 +729,12 @@ public enum $ {
 
     public static Term pFast(Subterms x) {
         if (x.subs() == 0) return Op.EmptyProduct;
-        return new LightCompound(PROD, x);
+        else return new LightCompound(PROD, x);
     }
 
     public static Term pFast(Term... x) {
         if (x.length == 0) return Op.EmptyProduct;
-        return new LightCompound(Op.PROD, x);
+        else return new LightCompound(Op.PROD, x);
         //return new LighterCompound(PROD, x);
     }
 
@@ -777,23 +777,31 @@ public enum $ {
         switch (t.length) {
             case 0:
                 return Op.EmptySubterms;
-            case 1:
-                Term tt = t[0];
-                if (tt.unneg() instanceof AnonID)
-                    return new AnonVector(tt);
+            case 1: {
+                Term a = t[0];
+                if (a.unneg() instanceof AnonID)
+                    return new AnonVector(a);
                 break;
-            case 2:
+            }
+            case 2: {
                 Term a = t[0], b = t[1];
                 if (a.unneg() instanceof AnonID && b.unneg() instanceof AnonID)
                     return new AnonVector(a, b);
                 break;
+            }
+            case 3: {
+                Term a = t[0], b = t[1], c = t[2];
+                if (a.unneg() instanceof AnonID && b.unneg() instanceof AnonID && c.unneg() instanceof AnonID)
+                    return new AnonVector(a, b, c);
+                break;
+            }
         }
 //                return new UnitSubterm(tt);
 //            default:
 //                if (t.length < 3)
 //                    return new ArrayTermVector(t);
 //                else
-                    return new TermList(t);
+        return new TermList(t);
         //}
 
 

@@ -173,10 +173,6 @@ public final class Answer implements AutoCloseable {
 
     static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
 
-
-
-
-
         FloatRank<Task> strength =
                 beliefOrQuestion ?
                         beliefStrength(start, end) : questionStrength(start, end);
@@ -233,17 +229,12 @@ public final class Answer implements AutoCloseable {
             float dtDiff = Intermpolate.dtDiff(template, x.term());
             if (!Float.isFinite(dtDiff))
                 return Float.NaN;
+
             float d = 1 / (1 + dtDiff);
             if (d < min)
                 return Float.NaN;
 
-            float r = strength.rank(x, min);
-            if (r!=r || r < min)
-                return Float.NaN;
-
-
-            float s = r * d;
-            return s;
+            return strength.rank(x, min) * d;
         };
     }
 
@@ -280,8 +271,9 @@ public final class Answer implements AutoCloseable {
 
     /** TODO use FloatRank min */
     public static FloatRank<Task> temporalTaskStrength(long start, long end) {
-        long dur = Math.max(1,(1 + (end-start))/2);
-        return (x,min) -> TruthIntegration.evi(x, start, end, dur /*1*/ /*0*/)
+        //long dur = Math.max(1,(1 + (end-start))/2);
+        //return (x,min) -> TruthIntegration.evi(x, start, end, dur /*1*/ /*0*/)
+        return (x,min) -> TruthIntegration.evi(x, start, end, 1)
                 //* x.originality()
                 ;
     }

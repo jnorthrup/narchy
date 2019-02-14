@@ -101,7 +101,7 @@ public abstract class Param {
 
     public static final boolean TERMIFY_TRANSFORM_LAZY = true;
 
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
     /** if ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION is true, then this is tested: */
     public static final Predicate<Op> eternalizeInDerivation = (o) -> {

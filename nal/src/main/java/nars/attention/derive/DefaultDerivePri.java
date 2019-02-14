@@ -111,17 +111,16 @@ public class DefaultDerivePri implements DerivePri {
                 eParentBelief = Float.NaN;
 
         } else {
-            int dur = d.dur;
 
             eDerived = TruthIntegration.evi(t);
 
             long ts = t.start(), te = t.end();
             eParentTask = d._task.isBeliefOrGoal() ?
-                    (d._task.isEternal() ? TruthIntegration.evi(d._task, ts, te, dur) : TruthIntegration.evi(d._task))
+                    (d._task.isEternal() ? TruthIntegration.evi(d._task, ts, te, 0) : TruthIntegration.evi(d._task))
                         : 0;
 
             if (!d.concSingle)
-                eParentBelief = d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, dur) : TruthIntegration.evi(d._belief);
+                eParentBelief = d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, 0) : TruthIntegration.evi(d._belief);
             else
                 eParentBelief = Float.NaN;
 

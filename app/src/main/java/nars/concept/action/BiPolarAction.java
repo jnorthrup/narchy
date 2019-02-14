@@ -4,7 +4,7 @@ import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.agent.NSense;
-import nars.attention.AttBranch;
+import nars.attention.AttnBranch;
 import nars.attention.AttNode;
 import nars.concept.sensor.AbstractSensor;
 import nars.term.Term;
@@ -58,7 +58,7 @@ public class BiPolarAction extends AbstractSensor {
 
         this.cause = nar.newCause(id).id;
 
-        this.attn = new AttBranch(id, List.of(pos, neg));
+        this.attn = new AttnBranch(id, List.of(pos, neg));
 
         this.pos = new AbstractGoalActionConcept(pos, nar);
         this.neg = new AbstractGoalActionConcept(neg, nar);

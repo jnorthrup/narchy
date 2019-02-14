@@ -1,12 +1,12 @@
 package nars.table.temporal;
 
-import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.sort.FloatRank;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.AxialSplitLeaf;
+import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
@@ -101,16 +101,17 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         return (TaskRegion r, float min) -> {
 
-            double y;
-            double timeDist =
-                    Math.log(1 + r.maxTimeTo(now)); //ensure that the number is small enough for when it gets returned as float
-            y = timeDist;
-            if (y < min) return Float.NaN;
+//            double y;
+//            double timeDist =
+//                    Math.log(1 + r.maxTimeTo(now)); //ensure that the number is small enough for when it gets returned as float
+//            y = timeDist;
+//            if (y < min) return Float.NaN;
+            float y = 1;
 
             //r.midTimeTo(when);
             //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
 
-            double conf = //(((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
+            float conf = //(((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
                     ((float) r.coord(2, false));
 
             y = y * (1 - conf);
@@ -119,7 +120,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (y < min)
                 return Float.NaN;
 
-            if (!r.endsAfter(now))
+            if (pastDiscount!=1 && !r.endsAfter(now))
                 y *= pastDiscount;
 
             return (float) y;
@@ -339,35 +340,52 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                                          Remember r,
                                          NAR nar) {
 
+        Task W = //(weakest != null && weakest.the != null) ? weakest.the : A; //not valid due to mergeability heuristic not necessarily the same as weakness
+                //(weakest != null ? weakest.the : null);
+            weakest.the;
+            //assert(I == null || W == null || !I.equals(W));
+//        if (W == null)
+//            return false;
+        float valueEvictWeakest = -taskStrength.floatValueOf(W);
 
-        Task A, B, W, AB/*, C, IC*/;
-
-//        if (I != null && closest != null && closest.the != null) {
-//            C = (Task) closest.the;
-//            assert (!C.equals(I));
-//            IC = revise(I, C, nar);
-//            if (IC != null && (IC.equals(I) || IC.equals(C)))
-//                IC = null;
-//        } else {
-//            IC = null;
-//            C = null;
-//        }
-
-
+        float valueMergeLeaf = NEGATIVE_INFINITY;
+        Task A, B, AB;
         if (!mergeableLeaf.isEmpty()) {
-            Leaf<TaskRegion> la = mergeableLeaf.the;
+            Leaf<TaskRegion> m = mergeableLeaf.the;
 
-            TaskRegion a, b;
-            if (la.size > 2) {
-                Top<Task> w = new Top<>(weakest.rank);
-                la.forEach(x -> w.accept((Task) x));
-                a = w.the;
-                Top<TaskRegion> mw = new Top<>(Answer.mergeability(w.the));
-                la.forEach(x -> { if (x!=a) { mw.accept( x); } });
-                b = mw.the;
-            } else if (la.size == 2) {
-                a = la.get(0);
-                b = la.get(1);
+            short n = m.size;
+            if (n > 2) {
+                Task[] mm = new Task[n];
+                for (int i = 0; i < n; i++) {
+                    Object mi = m.get(i);
+                    mm[i] = (Task) mi;
+                }
+                ArrayUtils.sort(mm, taskStrength::floatValueOf);
+
+                AB = tryMerge(mm[0], mm[1], nar);
+                if (AB!=null) { A = mm[0]; B = mm[1]; }
+                else {
+                    AB = tryMerge(mm[0], mm[2], nar);
+                    if (AB!=null) { A = mm[0]; B = mm[2]; }
+                    else {
+                        AB = tryMerge(mm[1], mm[2], nar);
+                        if (AB != null) { A = mm[1]; B = mm[2]; }
+                        else {
+                            A = B = null;
+                        }
+                    }
+                }
+
+//                Top<Task> w = new Top<>(weakest.rank);
+//                m.forEach(x -> w.accept((Task) x));
+//                a = w.the;
+//                Top<TaskRegion> mw = new Top<>(Answer.mergeability(w.the));
+//                m.forEach(x -> { if (x!=a) { mw.accept( x); } });
+//                b = mw.the;
+            } else if (n == 2) {
+                A = (Task) m.get(0);
+                B = (Task) m.get(1);
+                AB = tryMerge(A, B, nar);
             } else {
                 throw new UnsupportedOperationException("should not have chosen leaf with size < 2");
             }
@@ -376,90 +394,44 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                A = B = null; //HACK
 //            } else {
             //A or B may be 'I'
-                A = (Task) a;
-                B = (Task) b;
-//            }
-        } else {
-            A = B = null;
-        }
 
-
-        float[] value = new float[2];
-
-        W = //(weakest != null && weakest.the != null) ? weakest.the : A; //not valid due to mergeability heuristic not necessarily the same as weakness
-                //(weakest != null ? weakest.the : null);
-            weakest.the;
-            //assert(I == null || W == null || !I.equals(W));
-//        if (W == null)
-//            return false;
-        value[EvictWeakest] =
-                -taskStrength.floatValueOf(W);
-
-//        value[MergeInputClosest] =
-//                IC != null ? (
-//                        +taskStrength.floatValueOf(IC)
-//                                - taskStrength.floatValueOf(C)
-//                )
-//                        : Float.NEGATIVE_INFINITY;
-
-        if (B == null) {
-            AB = null;
-            value[MergeLeaf] = NEGATIVE_INFINITY;
-        } else {
-            AB = revise(A, B, nar);
-            if (AB == null || (AB.equals(A) || AB.equals(B))) {
-                value[MergeLeaf] = NEGATIVE_INFINITY;
-            } else {
-                value[MergeLeaf] =
-                                + taskStrength.floatValueOf(AB)
+            if (AB!=null) {
+                valueMergeLeaf =
+                        +taskStrength.floatValueOf(AB)
                                 - taskStrength.floatValueOf(A)
                                 - taskStrength.floatValueOf(B)
                 ;
             }
+
+        } else {
+            A = B = AB = null;
         }
 
-
-        int best = Util.maxIndex(value);
-
-        if (value[best] == NEGATIVE_INFINITY)
-            return false;
-
-        switch (best) {
-
-            case EvictWeakest: {
-                if (treeRW.remove(W)) {
-                    r.forget(W);
-                    return true;
-                }
+        if (valueMergeLeaf > valueEvictWeakest) {
+            //merge leaf
+            if (treeRW.remove(A) && treeRW.remove(B)) {
+                if (treeRW.add(AB)) {
+                    TemporalBeliefTable.fundMerge(AB, r, A, B);
+                } //else: possibly already contained the merger
+                return true;
             }
-            break;
-
-
-//            case MergeInputClosest: {
-//                if (treeRW.remove(I) && treeRW.remove(C)) {
-//                    if (treeRW.add(IC)) {
-//                        TemporalBeliefTable.fundMerge(IC, r, I, C);
-//                    } //else: possibly already contained the merger
-//
-//                    return true;
-//                }
-//            }
-//            break;
-
-            case MergeLeaf: {
-                if (treeRW.remove(A) && treeRW.remove(B)) {
-                    if (treeRW.add(AB)) {
-                        TemporalBeliefTable.fundMerge(AB, r, A, B);
-                    } //else: possibly already contained the merger
-                    return true;
-                }
+        } else {
+            //evict weakest
+            if (treeRW.remove(W)) {
+                r.forget(W);
+                return true;
             }
-            break;
-
         }
 
         throw new UnsupportedOperationException();
+    }
 
+    @Nullable private static Task tryMerge(Task A, Task B, NAR nar) {
+        Task AB = revise(A, B, nar);
+        if (AB != null && (!AB.equals(A) /*&& !AB.equals(B)*/))
+            return AB;
+        else
+            return null;
     }
 
     @Nullable

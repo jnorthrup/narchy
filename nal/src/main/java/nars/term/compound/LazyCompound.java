@@ -18,6 +18,7 @@ import java.util.Arrays;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.True;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -123,8 +124,8 @@ public class LazyCompound {
         if (code == null)
             return Null; //nothing
         else {
-            if (sub != null)
-                sub.readonly(); //optional
+//            if (sub != null)
+//                sub.readonly(); //optional
             return getNext(c.arrayDirect(), new int[]{0, c.len});
         }
     }
@@ -155,49 +156,58 @@ public class LazyCompound {
                     dt = DTERNAL;
 
                 byte subterms = ii[range[0]++];
-                Term[] s = getNext(subterms, ii, range);
-                if (s == null)
-                    next = Null;
-                else {
+                if (subterms == 0) {
+                    if (op == PROD)
+                        next = EmptyProduct;
+                    else if (op == CONJ)
+                        next = True;
+                    else {
+                        throw new WTF();
+                    }
+                } else {
+                    Term[] s = getNext(subterms, ii, range);
+                    if (s == null)
+                        next = Null;
+                    else {
 
 //            for (Term x : s)
 //                if (x == null)
 //                    throw new NullPointerException();
 
-                    next = op.the(dt, s);
-                    assert (next != null);
+                        next = op.the(dt, s);
+                        assert (next != null);
 
-                    if (next != Null) {
+                        if (next != Null) {
 
-                        int to = range[0];
-                        int end = range[1];
-                        int span = to - from;
-                        if (end - to >= span) {
-                            //search for repeat occurrences of the start..end sequence after this
-                            int afterTo = to;
-                            byte n = 0;
-                            do {
-                                int match = ArrayUtils.nextIndexOf(ii, afterTo, end, ii, from, to);
+                            int to = range[0];
+                            int end = range[1];
+                            int span = to - from;
+                            if (end - to >= span) {
+                                //search for repeat occurrences of the start..end sequence after this
+                                int afterTo = to;
+                                byte n = 0;
+                                do {
+                                    int match = ArrayUtils.nextIndexOf(ii, afterTo, end, ii, from, to);
 
-                                if (match != -1) {
-                                    //System.out.println("repeat found");
-                                    if (n == 0)
-                                        n = (byte) (MAX_CONTROL_CODES + intern(next)); //intern for re-substitute
-                                    code.set(match, n);
+                                    if (match != -1) {
+                                        //System.out.println("repeat found");
+                                        if (n == 0)
+                                            n = (byte) (MAX_CONTROL_CODES + intern(next)); //intern for re-substitute
+                                        code.set(match, n);
 
-                                    code.fillBytes((byte) 0, match + 1, match + span); //zero padding, to be ignored
-                                    afterTo = match + span;
-                                } else
-                                    break;
+                                        code.fillBytes((byte) 0, match + 1, match + span); //zero padding, to be ignored
+                                        afterTo = match + span;
+                                    } else
+                                        break;
 
-                            } while (afterTo < end);
+                                } while (afterTo < end);
+                            }
+
                         }
 
                     }
-
                 }
             }
-
 
 
         } else {
@@ -375,7 +385,7 @@ public class LazyCompound {
         @Override
         public void rewind(int pos) {
             if (pos != pos()) {
-                while (inhStack != null && !inhStack.isEmpty() && inhStack.getLast() >= pos)
+                while (inhStack != null && !inhStack.isEmpty() && inhStack.getLast() > pos)
                     inhStack.removeAtIndex(inhStack.size() - 1);
                 super.rewind(pos);
             }
@@ -385,9 +395,8 @@ public class LazyCompound {
          * deferred functor evaluation
          */
         private Eval evalLater(Functor.InlineFunctor f, int start, int end) {
-            DynBytes code1 = this.code;
-            DynBytes c = code1;
-            Eval e = new Eval(f, c.at(start + 1), c.subBytes(start + 2, end));
+            DynBytes c = code;
+            Eval e = new Eval(f, code.at(start + 1), c.subBytes(start + 2, end));
             rewind(start - 2);
             //inhPop();
 

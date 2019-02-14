@@ -4,7 +4,7 @@ import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.attention.AttBranch;
+import nars.attention.AttnBranch;
 import nars.attention.AttNode;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
@@ -91,7 +91,7 @@ public abstract class Reward implements Termed, Iterable<Concept> {
         );
 
         Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
-        AttNode a = new AttBranch(at, List.of(t)) {
+        AttNode a = new AttnBranch(at, List.of(t)) {
 
             @Override
             public void update(float f) {

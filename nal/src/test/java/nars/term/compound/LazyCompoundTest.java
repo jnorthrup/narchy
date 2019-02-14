@@ -75,4 +75,10 @@ class LazyCompoundTest {
                     .compoundStart(Op.SETe).subs((byte)2).subs(B, C)
                         .get().toString());
     }
+
+    @Test void testEmptyProd() {
+        String x = "x(intValue,(),3)";
+        assertEquals(x, nullTransform.transformCompoundLazily($$(x)).toString());
+
+    }
 }

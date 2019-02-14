@@ -16,7 +16,7 @@ import java.util.TreeSet;
 public final class CommonVariable extends UnnormalizedVariable {
 
 
-    private final SortedSet<Variable> vars;
+    public final SortedSet<Variable> vars;
 
     public static Variable common(Variable A, Variable B) {
         int cmp = A.compareTo(B);
@@ -75,25 +75,7 @@ public final class CommonVariable extends UnnormalizedVariable {
         return op() + vars.toString();
     }
 
-    @Override
-    public boolean unify(Term y, Unify u) {
-        if (y instanceof Variable) {
-            if (vars.contains(y))
-                return true; //already present
-        }
-        return super.unify(y,  u);
-    }
-
     public static boolean unify(Variable X, Variable Y, Unify u) {
-        //if (xOp == y.op()) {
-
-        if (Y instanceof CommonVariable) {
-            if (((CommonVariable)Y).vars.contains(X))
-                return true; //already contained
-        } else if (X instanceof CommonVariable) {
-            if (((CommonVariable)X).vars.contains(Y))
-                return true; //already contained
-        }
 
         //same op: common variable
         //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot

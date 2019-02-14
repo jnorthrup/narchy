@@ -1,7 +1,7 @@
 package nars.agent;
 
 import jcog.math.FloatSupplier;
-import nars.attention.AttBranch;
+import nars.attention.AttnBranch;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 
@@ -66,8 +66,8 @@ public class SimpleReward extends BeliefReward {
     @Override protected Signal newConcept() {
         Signal concept = new Signal(id, in.id, () -> reward, /*linker, */nar()) {
             @Override
-            protected AttBranch newAttn(Term term) {
-                return new AttBranch(term, this.components());
+            protected AttnBranch newAttn(Term term) {
+                return new AttnBranch(term, this.components());
             }
         };
         concept.attn.parent(attn);

@@ -77,7 +77,7 @@ public class UnifyTest {
         if (anon2) t2 = a.put(t2).normalize();
 
         Term t1;
-        if (type == Op.VAR_PATTERN) {
+        if (type == Op.VAR_PATTERN && s1.contains("%")) {
             t1 = Narsese.term(s1, false);
             //t1 = pattern(anon1 ? a.put(t1) : t1).normalize();
             t1 = pattern((anon1 ? a.put(t1) : t1).normalize());
@@ -834,6 +834,40 @@ public class UnifyTest {
         test(Op.VAR_PATTERN,
                 "((_2(_1,%1) &&+- _3(%1)) &&+1 _4(%1))",
                 "((_2(_1,_1) &| _3(_1)) &&+- _4(_1))",
+                true);
+    }
+
+    @Test
+    void testConSeqAgainstVarFwdRev() {
+
+        test(Op.VAR_DEP,
+                "(#1 &&+1 (x,y))",
+                "((a) &&+1 (x,y))",
+                true);
+
+        test(Op.VAR_DEP,
+                "((x,y) &&+1 #1)",
+                "((a) &&+1 (x,y))",
+                false);
+
+        test(Op.VAR_DEP,
+                "(#1 &&+- (x,y))",
+                "((a) &&+1 (x,y))",
+                true);
+
+        test(Op.VAR_DEP,
+                "((x,y) &&+1 #1)",
+                "((x,y) &&+1 (a))",
+                true);
+
+
+        test(Op.VAR_DEP,
+                "(#1 &&+1 (x,y))",
+                "((x,y) &&+1 (a))",
+                false);
+        test(Op.VAR_DEP,
+                "((x,y) &&+1 #1)",
+                "((x,y) &&+1 (a))",
                 true);
     }
 

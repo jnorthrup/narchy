@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * https://en.wikipedia.org/wiki/Average_absolute_deviation
  */
 @Paper
-public class AttBranch extends AttNode {
+public class AttnBranch extends AttNode {
 
     private final Iterable<? extends Termed> components;
 
@@ -34,7 +34,7 @@ public class AttBranch extends AttNode {
 
 //    float priMin = 0.01f;
 
-    public AttBranch(Object id, Iterable<? extends Termed> components) {
+    public AttnBranch(Object id, Iterable<? extends Termed> components) {
         super(id);
         this.components = components;
     }

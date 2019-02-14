@@ -2,7 +2,7 @@ package nars.derive.premise;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import jcog.data.list.FasterList;
-import jcog.data.map.CustomConcurrentHashMap;
+import jcog.memoize.CaffeineMemoize;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
@@ -39,12 +39,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
 import static nars.subterm.util.SubtermCondition.*;
 import static nars.term.control.PREDICATE.sortByCostIncreasing;
@@ -708,7 +708,8 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
     private static final Map<Term, UnifyConstraint> constra =
-            new CustomConcurrentHashMap<>(STRONG, EQUALS, WEAK, EQUALS, 1024);
+            new ConcurrentHashMap<>();
+            //new CustomConcurrentHashMap<>(STRONG, EQUALS, WEAK, EQUALS, 1024);
 
     private static UnifyConstraint intern(UnifyConstraint x) {
         UnifyConstraint y = constra.putIfAbsent(x.term(), x);

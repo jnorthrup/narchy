@@ -15,7 +15,7 @@ public class LightCompound extends SeparateSubtermsCompound implements AbstractL
 
 
     public LightCompound(Op o, Term... s) {
-        this(o, $.vFast(s));
+        this(o.id, s);
     }
 
     protected LightCompound(byte o, Term... s) {

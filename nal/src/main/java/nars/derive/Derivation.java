@@ -2,7 +2,6 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
@@ -342,6 +341,7 @@ public class Derivation extends PreDerivation {
 
             this._belief = beliefTruthRaw != null || beliefTruthProjectedToTask != null ? nextBelief : null;
         } else {
+            this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
             this.beliefStart = this.beliefEnd = TIMELESS;
             this._belief = null;
         }
@@ -349,18 +349,12 @@ public class Derivation extends PreDerivation {
         if (this._belief != null) {
 
             this.beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
-//            if (beliefTerm.op()==NEG)
-//                anon.putShift(this._beliefTerm = nextBelief.target(), taskTerm); //TEMPORARY
-            //this.belief = new SpecialTermTask(beliefTerm, nextBelief);
         } else {
 
             this.beliefTerm =
                     !(nextBeliefTerm instanceof Variable) ?
                         anon.putShift(this._beliefTerm = nextBeliefTerm, taskTerm) :
                         anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the target may be structural
-
-            //this.belief = null;
-            this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
         }
 
         if ((beliefTerm instanceof Bool) || ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op()!=_beliefTerm.op())))

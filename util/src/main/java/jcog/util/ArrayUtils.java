@@ -3516,17 +3516,14 @@ public enum ArrayUtils {;
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int indexOf(final byte[] array, final byte valueToFind, int startIndex, int endIndex) {
-        if (array == null) {
-            return INDEX_NOT_FOUND;
-        }
-        if (startIndex < 0) {
-            startIndex = 0;
-        }
-        for (int i = startIndex; i < endIndex; i++) {
-            if (valueToFind == array[i]) {
-                return i;
+//        if (array != null) {
+//            if (startIndex < 0)
+//                startIndex = 0;
+            for (int i = startIndex; i < endIndex; i++) {
+                if (valueToFind == array[i])
+                    return i;
             }
-        }
+//        }
         return INDEX_NOT_FOUND;
     }
 
