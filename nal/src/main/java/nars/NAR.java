@@ -149,7 +149,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         this.exe = exe;
 
 
-
         services = new Services<>(this, exe);
 
         this.conceptBuilder = conceptBuilder;
@@ -162,13 +161,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         on(this.attn);
 
 
-
         input =
-            //new TaskBuffer.DirectTaskBuffer(exe::input);
-            new TaskBuffer.BagTaskBuffer(512, 0.5f);
-            //new DerivedTasks.DerivedTasksMap(4096);
-            //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
-        onCycle(n-> input.commit(n.time(), exe));
+                //new TaskBuffer.DirectTaskBuffer(exe::input);
+                new TaskBuffer.BagTaskBuffer(512, 0.5f);
+        //new DerivedTasks.DerivedTasksMap(4096);
+        //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
+        onCycle(n -> input.commit(n.time(), exe));
 
         this.loop = new NARLoop(this);
         exe.start(this);
@@ -740,7 +738,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Nullable
     public final Truth truth(Termed concept, byte punc, long start, long end) {
         @Nullable BeliefTable table = truths(concept, punc);
-        return table != null ? table.truth(start, end, concept instanceof Term ? ((Term)concept) : null, null, this) : null;
+        return table != null ? table.truth(start, end, concept instanceof Term ? ((Term) concept) : null, null, this) : null;
     }
 
     @Nullable
@@ -902,7 +900,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
-
     @Override
     public String toString() {
         return self() + ":" + getClass().getSimpleName();
@@ -977,7 +974,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
-
     /**
      * tasks in concepts
      */
@@ -1038,10 +1034,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return concepts.concept(x, createIfMissing);
     }
 
-    @Deprecated public final Stream<Activate> conceptsActive() {
-        return concepts.active().map(x-> x.source()).distinct()
-                .map(x->concept(x))
-                .filter(Objects::nonNull).map(c -> new Activate(c,1)); //HACK
+    @Deprecated
+    public final Stream<Activate> conceptsActive() {
+        return concepts.active().map(x -> x.source()).distinct()
+                .map(x -> concept(x))
+                .filter(Objects::nonNull).map(c -> new Activate(c, 1)); //HACK
         //return Stream.empty();
         //return concepts.active();
     }
@@ -1216,7 +1213,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
                 try {
                     byte[] b = IO.taskToBytes(x, d);
-                    oo.write( b );
+                    oo.write(b);
                     wrote.increment();
                 } catch (IOException e) {
                     if (Param.DEBUG)
@@ -1328,7 +1325,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Task belief(Term c) {
         return belief(c, time());
     }
-
 
 
     @Nullable
@@ -1480,26 +1476,33 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Concept conceptualizeDynamic(Termed concept) {
 
         Concept x = concept(concept);
-        if (x == null) {
-            Term ct = concept.term();
+        if (x != null)
+            return x;
 
-            if (ct.volume() > termVolumeMax.intValue())
-                return null; //too complex
+        Term ct = concept.term();
 
-            if (ConceptBuilder.dynamicModel(ct) != null) {
-                //try conceptualizing the dynamic
-                //return conceptualize(concept);
+        if (ct.volume() > termVolumeMax.intValue())
+            return null; //too complex
+
+        if (ConceptBuilder.dynamicModel(ct) != null) {
+            //try conceptualizing the dynamic
+
+            if (Param.CONCEPTUALIZE_DYNAMIC_TRANSIENT) {
 
                 //create temporary dynamic concept
                 Concept c = conceptBuilder.construct(ct);
-                if (c!=null) {
-                    //flyweight start deleted and unallocated (in-capacit-ated) since it isnt actually in memory
-                    c.delete(this);
-                }
+                if (c != null)
+                    c.delete(this); //flyweight start deleted and unallocated (in-capacit-ated) since it isnt actually in memory
+
                 return c;
+            } else {
+                //permanent dynamic concept
+                return conceptualize(concept);
             }
+
         }
-        return x;
+
+        return null;
     }
 
     public final Task answerBelief(Term x, long when) {

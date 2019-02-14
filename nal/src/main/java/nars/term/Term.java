@@ -130,9 +130,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * true if there is at least some type of structure in common
      */
     static boolean commonStructure(Termlike x, Termlike y) {
-        int xStruct = x.structure();
-        int yStruct = y.structure();
-        return commonStructure(xStruct, yStruct);
+        return commonStructure(x.structure(), y.structure());
     }
 
     static boolean commonStructure(int xStruct, int yStruct) {

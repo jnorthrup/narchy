@@ -69,7 +69,7 @@ public abstract class Param {
 
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = true;
 
-
+    protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;
 
 
     /**
@@ -212,7 +212,7 @@ public abstract class Param {
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
      */
-    public final static float SIGNAL_STRETCH_LIMIT_DURS = 8;
+    public final static float SIGNAL_STRETCH_LIMIT_DURS = 16;
 
     /** maximum time between signal updates to stretch an equivalently-truthed data point across.
      * stretches perception across some amount of lag
@@ -555,8 +555,8 @@ public abstract class Param {
         //inverse linear decay
         float falloffDurs =
                 //1;
-                1.618f; //phi
-                //2; //nyquist
+                //1.618f; //phi
+                2; //nyquist
                 //4;
                 //dur;
                 //8;

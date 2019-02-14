@@ -269,7 +269,7 @@ public enum ConjCommutive {;
     }
 
     private static boolean absorbCompletelyByFirstLayer(Term co, Term x) {
-        return co.AND(cc -> absorb(cc, x));
+        return co.subterms().ANDwith(ConjCommutive::absorb, x);
     }
 
     /**
@@ -283,11 +283,8 @@ public enum ConjCommutive {;
         if (!Term.commonStructure(x, incoming))
             return false;
 
-        if (x.op() == CONJ) {
-            return x.OR(cc -> conflict(cc, incoming));
-        }
+        return x.op() == CONJ && x.subterms().ORwith(ConjCommutive::conflict, incoming);
 
-        return false;
     }
 
     /**
@@ -300,10 +297,7 @@ public enum ConjCommutive {;
 //        if (!x.containsRecursively(incoming))
 //            return false;
 
-        if (x.op() == CONJ)
-            return x.OR(cc -> absorb(cc, incoming));
-        else
-            return false;
+        return x.op() == CONJ && x.subterms().ORwith(ConjCommutive::absorb, incoming);
 
     }
 

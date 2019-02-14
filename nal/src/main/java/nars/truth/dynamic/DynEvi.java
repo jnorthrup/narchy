@@ -12,7 +12,6 @@ import nars.control.CauseMerge;
 import nars.task.NALTask;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
@@ -46,21 +45,18 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
         return new Task[newCapacity];
     }
 
-    private boolean allEternal() {
-        return allSatisfy(x -> x.start()==ETERNAL);
-    }
-
     @Override
     public long start() {
-        if (allEternal())
+
+        long start = longify((long m, Task t)->{
+            long s = t.start();
+            return s != ETERNAL && s < m ? s : m;
+        }, TIMELESS);
+
+        if (start == TIMELESS)
             return ETERNAL;
-        long min = Tense.TIMELESS;
-        for (Task task : this) {
-            long s = task.start();
-            if (s != ETERNAL && s < min)
-                min = s;
-        }
-        return min;
+        else
+            return start;
     }
 
     @Override

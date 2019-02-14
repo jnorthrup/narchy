@@ -267,6 +267,9 @@ public interface NAct {
 
     /**
      * TODO shared AttNode
+     * see: tristate buffer, tristable multivibrator
+     * http://www.freepatentsonline.com/4990796.html
+     * https://en.wikipedia.org/wiki/Three-state_logic
      */
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh) {
 
@@ -291,8 +294,11 @@ public interface NAct {
             boolean y = L.accept(x);
 //            if (x && !y) ll = t;
             lr[0] =
-                    ll;
+                    //ll;
+                    x ? ll : 0;
+                    //(x && y) ? ll : 0;
                     //y ? ll : 0;
+
 
             float feedback =
                     y ? 1 : 0;
@@ -312,7 +318,9 @@ public interface NAct {
             boolean x = (rr > t) && lr[0] <= t;// (rr - lr[0] > compareThresh);
             boolean y = R.accept(x);
 //            if (x && !y) rr = t;
-            lr[1] = rr;
+            lr[1] = //rr;
+                    x ? rr : 0;
+                    //(x && y) ? rr : 0;
                     //y ? rr : 0;
 
             float feedback =

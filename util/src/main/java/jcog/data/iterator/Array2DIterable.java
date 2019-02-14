@@ -14,7 +14,6 @@
 package jcog.data.iterator;
 
 import jcog.data.list.FasterList;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -29,7 +28,6 @@ import java.util.Iterator;
 public class Array2DIterable<X> implements Iterable<X> {
 
     private final X[][] array2D;
-    private final int pos = 0;
     public FasterList<X> order;
     
 
@@ -48,8 +46,6 @@ public class Array2DIterable<X> implements Iterable<X> {
         
     }
 
-
-    @NotNull
     @Override
     public Iterator<X> iterator() {
         return order.iterator();

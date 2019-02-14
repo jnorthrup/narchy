@@ -5,8 +5,10 @@ import jcog.util.ArrayUtils;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.LongObjectToLongFunction;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
+import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.utility.ArrayIterate;
@@ -267,6 +269,14 @@ public class FasterList<X> extends FastList<X> {
     public float meanValue(FloatFunction<? super X> function) {
         return (float) (sumOfFloat(function) / size());
     }
+
+    public final long longify(LongObjectToLongFunction<X> f, long l) {
+        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+            l = f.longValueOf(l, this.get(i));
+        }
+        return l;
+    }
+
 
     /**
      * reduce
@@ -830,6 +840,16 @@ public class FasterList<X> extends FastList<X> {
         items[size - 1] = y;
     }
 
+    @Override
+    public final <P> void forEachWith(Procedure2<? super X, ? super P> procedure, P parameter)
+    {
+        int s = this.size;
+        if (s > 0) {
+            X[] items = this.items;
+            for (int i = 0; i < s; i++)
+                procedure.value(items[i], parameter);
+        }
+    }
 
     /**
      * modified from MutableIterator

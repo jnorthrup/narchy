@@ -188,7 +188,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
 
     public void finish() {
 
-        for (final Edge edge : additionalEdges) {
+        additionalEdges.forEach(edge->{
             InstructionGraphNode node = getGraphNode(edge.from);
             if (node == null)
                 node = createNode(edge.from, null);
@@ -196,7 +196,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
             if (succ == null)
                 succ = createNode(edge.to, null);
             succ.addPredecessor(node);
-        }
+        });
     }
 
     private InstructionGraphNode getGraphNode(final AbstractInsnNode insn) {

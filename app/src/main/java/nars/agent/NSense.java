@@ -291,7 +291,7 @@ public interface NSense {
     }
     default BiPolarAction actionBipolarFrequencyDifferential(BooleanToObjectFunction<Term> s, boolean fair, FloatToFloatFunction motor) {
         BiPolarAction pn = new BiPolarAction(s,
-                new BiPolarAction.DefaultPolarization(fair, this),
+                new BiPolarAction.DefaultPolarization(fair),
                 motor, nar());
 
         NAgent a = (NAgent) this;

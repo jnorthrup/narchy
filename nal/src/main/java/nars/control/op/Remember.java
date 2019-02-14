@@ -133,9 +133,7 @@ public class Remember extends AbstractTask {
     public ITask next(NAR n) {
 
         if (store) {
-            add(n);
-            if (remembered != null && !remembered.isEmpty())
-                commit(n);
+            tryAddAndCommit(n);
         } else {
             commit(input, n);
         }
@@ -143,14 +141,7 @@ public class Remember extends AbstractTask {
         return null;
     }
 
-    private void commit(NAR n) {
 
-        for (ITask t : remembered) {
-            commit(t, n);
-        }
-
-        remembered = null;
-    }
 
     private void commit(ITask t, NAR n) {
         if (t instanceof Task) {
@@ -166,7 +157,7 @@ public class Remember extends AbstractTask {
         if (link) {
             Concept c = (this.inputConcept!=null) &&
                     ((this.input==t) || (inputConcept.term().equals(t.term().concept()))) ? inputConcept : null;
-            tasklink(t, c).next(n);
+            new TaskLinkTask(t, c).next(n);
         }
 
         if (notify)
@@ -174,37 +165,16 @@ public class Remember extends AbstractTask {
     }
 
 
-    protected TaskLinkTask tasklink(Task t, Concept c) {
-        return new TaskLinkTask(t, c);
-    }
-
-
     /**
      * attempt to insert into the concept's belief table
      */
-    protected void add(NAR n) {
+    private void tryAddAndCommit(NAR n) {
         inputConcept.add(this, n);
+        if (remembered != null && !remembered.isEmpty()) {
+            remembered.forEachWith(this::commit, n);
+            remembered = null;
+        }
     }
-
-
-    //TODO: private static final class ListTask extends FasterList<ITask> extends NativeTask {
-
-//    @Deprecated
-//    private static final class Commit extends AbstractTask {
-//
-//        FasterList<Task> forgotten, remembered;
-//
-//        public Commit(FasterList<Task> forgotten, FasterList<Task> remembered) {
-//            super();
-//            this.forgotten = forgotten;
-//            this.remembered = remembered;
-//        }
-//
-//        @Override
-//        public ITask next(NAR n) {
-//
-//        }
-//    }
 
 
     public void forget(Task x) {
@@ -273,12 +243,11 @@ public class Remember extends AbstractTask {
         }
         if (r != null)
             remember(r);
+        else
+            input = null;
 
         if (!identity && r == null) {
             forget(next);
-        } else {
-            //just disable further input
-            this.input = null;
         }
 
         done = true;

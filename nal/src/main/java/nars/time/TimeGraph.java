@@ -1225,6 +1225,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             }
         }
 
+
         Queue<Pair<List<BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>>>, Node<Event, nars.time.TimeSpan>>> q = new ArrayDeque<>(roots.size() /* estimate TODO find good sizing heuristic */);
 
 //        Iterable<Node<Event,TimeSpan>> rr = Iterables.transform(roots, r -> {
@@ -1503,25 +1504,24 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> exist = n.edges(true, true);
 
-            return Iterables.concat(exist, () -> {
-                Collection<Event> ee = byTerm.get(n.id().id);
-                if (!ee.isEmpty()) {
+            Collection<Event> ee = byTerm.get(n.id().id);
+            if (!ee.isEmpty()) {
 
-                    List<FromTo<Node<Event, TimeSpan>, TimeSpan>> dyn = null;
+                List<FromTo<Node<Event, TimeSpan>, TimeSpan>> dyn = null;
 
-                    for (Event x : ee) {
-                        Node<Event, TimeSpan> xx = node(x);
-                        if (xx != null && xx != n && !log.hasVisited(xx)) {
-                            if (dyn == null)
-                                dyn = new FasterList<>(1);
-                            dyn.add(new ImmutableDirectedEdge<>(n, TS_ZERO, xx));
-                        }
+                for (Event x : ee) {
+                    Node<Event, TimeSpan> xx = node(x);
+                    if (xx != null && xx != n && !log.hasVisited(xx)) {
+                        if (dyn == null)
+                            dyn = new FasterList<>(1);
+                        dyn.add(new ImmutableDirectedEdge<>(n, TS_ZERO, xx));
                     }
-                    if (dyn != null)
-                        return dyn.iterator();
                 }
-                return Collections.emptyIterator();
-            });
+                if (dyn != null)
+                    return Iterables.concat(exist, dyn);
+            }
+
+            return exist;
 
 
 //            Iterator<Event> x = ee.iterator();

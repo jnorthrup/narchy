@@ -66,8 +66,8 @@
       //G, C, is(C,"&&")                  |-              --conjBefore(C,  G),  (Goal:DesireWeakN)
 
     //conjunction belief and goal decomposition
-    C, X, is(C,"&&"), --isVar(X)                   |- conjAfter(C,  X), (Belief:DeductionPP,Goal:DeductionPP)
-    C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |- conjAfter(C,  --X), (Belief:DeductionPN,Goal:DeductionPN)
+    C, X, is(C,"&&"), --isVar(X)                   |- conjAfter(C,  X), (Belief:DeductionPP,Goal:DeductionRecursivePP)
+    C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |- conjAfter(C,  --X), (Belief:DeductionPN,Goal:DeductionRecursivePN)
 //      (C==>A), (X==>A), is(C,"&&"), --isVar(X)     |- (conjAfter(C,  X) ==> A), (Belief:Deduction)
 //      (C==>A), (X==>A), is(C,"&&"), --isVar(X)     |- (conjAfter(C,  X) ==> A), (Belief:DeductionNN)
       //(A==>C), (A==>X), is(C,"&&"), --isVar(X)     |- (A ==> conjAfter(C,  X)), (Belief:Deduction)

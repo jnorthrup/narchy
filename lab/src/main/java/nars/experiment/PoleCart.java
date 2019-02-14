@@ -169,8 +169,8 @@ public class PoleCart extends NAgentX {
         );
 
 
-        //initBipolar();
-        initUnipolar();
+        initBipolar();
+        //initUnipolar();
 
 
 //        SpaceGraph.window(NARui.beliefCharts(512,
@@ -302,7 +302,7 @@ public class PoleCart extends NAgentX {
     }
 
     public void initBipolar() {
-        final float SPEED = 3f;
+        final float SPEED = 1f;
         BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
             float a =
                     x * SPEED;

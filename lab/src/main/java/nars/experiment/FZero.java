@@ -135,8 +135,6 @@ public class FZero extends NAgentX {
 
         //initPushButtonTank();
 
-        initLeftRightPushButtonMutex();
-        //initToggleLeftRight();
 
 
 //        window(new Gridding(
@@ -144,10 +142,12 @@ public class FZero extends NAgentX {
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
 
+        //initLeftRightPushButtonMutex();
         //initTankContinuous();
+        //initToggleLeftRight();
 
-        //BiPolarAction A =
-            //initBipolarRotateRelative(false, 1f);
+        BiPolarAction A =
+            initBipolarRotateRelative(false, 0.25f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);

@@ -213,15 +213,15 @@ abstract public class NAgentX extends NAgent {
                 .time(clock)
                 .index(
 
-                        //CaffeineIndex.soft()
+                        CaffeineIndex.soft()
 
-                        new CaffeineIndex(
-////                                128 * 1024
-////                                96 * 1024
-                                64 * 1024
-//                                //32 * 1024
-//////                                //16 * 1024
-                                , c -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+//                        new CaffeineIndex(
+//////                                128 * 1024
+//////                                96 * 1024
+//                                64 * 1024
+////                                //32 * 1024
+////////                                //16 * 1024
+//                                , c -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
 
 //                        new HijackConceptIndex(
 //

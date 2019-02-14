@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import nars.NAR;
 
@@ -34,6 +35,10 @@ public interface ITask extends Prioritizable {
     static void run(Iterable<ITask> t, NAR nar) {
         for (ITask tt: t)
             run(tt, nar);
+    }
+
+    static void run(FasterList<ITask> t, NAR nar) {
+        t.forEachWith(ITask::run, nar);
     }
 
     /**
