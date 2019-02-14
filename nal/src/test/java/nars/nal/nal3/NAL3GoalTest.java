@@ -174,6 +174,7 @@ class NAL3GoalTest {
         @BeforeEach
         void setTolerance() {
             test.nar.time.dur(3);
+            test.termVolMax(10);
         }
 
         @Test

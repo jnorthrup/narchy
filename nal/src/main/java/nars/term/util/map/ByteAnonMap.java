@@ -25,14 +25,14 @@ public class ByteAnonMap {
     }
 
     public void clear() {
-        termToId.clear();
+        if (!termToId.isEmpty()) termToId.clear();
         idToTerm.clear();
     }
 
     /** put: returns in range 1..Byte.MAX_VALUE (does not issue 0) */
     private byte intern_(Term x) {
         int s = idToTerm.addAndGetSize(x);
-        assert (s < Byte.MAX_VALUE);
+        assert (s <= Byte.MAX_VALUE);
         return (byte) s;
     }
 

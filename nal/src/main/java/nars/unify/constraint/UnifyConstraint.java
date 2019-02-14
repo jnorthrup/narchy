@@ -3,6 +3,7 @@ package nars.unify.constraint;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.Param;
 import nars.derive.Derivation;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
@@ -175,14 +177,19 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
         }
 
         @Override
-        public boolean remainAndWith(PREDICATE[] p) {
-            for (PREDICATE pp : p) {
-                if (pp!=this && pp instanceof ConstraintAsPredicate)
-                    if (!constraint.remainInAndWith(((ConstraintAsPredicate)pp).constraint))
-                        return false;
+        public boolean reduceIn(FasterList<PREDICATE<PreDerivation>> p) {
+            boolean mod = false;
+            for (Iterator<PREDICATE<PreDerivation>> iterator = p.iterator(); iterator.hasNext(); ) {
+                PREDICATE pp = iterator.next();
+                if (pp != this && pp instanceof ConstraintAsPredicate)
+                    if (!constraint.remainInAndWith(((ConstraintAsPredicate) pp).constraint)) {
+                        iterator.remove();
+                        mod = true;
+                    }
             }
-            return true;
+            return mod;
         }
+
 
         @Override
         public boolean test(PreDerivation preDerivation) {

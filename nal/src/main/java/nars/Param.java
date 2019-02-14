@@ -60,6 +60,7 @@ public abstract class Param {
     public static final boolean SHUFFLE_TERMUTES = true; //this may be dangerous
 
 
+    public static final boolean DT_DITHER_LOGARITHMICALLY = false;
 
     public static final boolean PREMISE_FOCUS_TIME_DITHER = true;
 
@@ -212,7 +213,7 @@ public abstract class Param {
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
      */
-    public final static float SIGNAL_STRETCH_LIMIT_DURS = 16;
+    public final static float SIGNAL_STRETCH_LIMIT_DURS = 32;
 
     /** maximum time between signal updates to stretch an equivalently-truthed data point across.
      * stretches perception across some amount of lag
@@ -228,7 +229,7 @@ public abstract class Param {
 
 
     /** may cause unwanted "sticky" event conflation */
-    public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = false;
+    public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
 
     /** if false, keeps intersecting timegraph events separate.  if true, it merges them to one event. may cause unwanted "sticky" event conflation */
     public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = false;
@@ -259,7 +260,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -273,7 +274,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 2;
+    public static final int TIMEGRAPH_ITERATIONS = 3;
 
 
     /**
@@ -554,14 +555,14 @@ public abstract class Param {
 
         //inverse linear decay
         float falloffDurs =
-                //1;
+                1;
                 //1.618f; //phi
-                2; //nyquist
+                //2; //nyquist
                 //4;
                 //dur;
                 //8;
 
-        return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));
+        return evi / (1.0f + ((dt) / (falloffDurs * dur)));
 
 //        //eternal noise floor
 //        float ee = TruthFunctions.eternalize(evi);

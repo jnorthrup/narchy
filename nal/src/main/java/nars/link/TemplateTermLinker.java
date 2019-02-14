@@ -255,8 +255,8 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
 
         float pri =
-                //task.priElseZero();
-                tasklink.priElseZero();
+                task.priElseZero();
+                //tasklink.priPunc(task.punc());
                 //task.priElseZero() * tasklink.priElseZero();
                 //Math.min(task.priElseZero(), tasklink.priElseZero());
 

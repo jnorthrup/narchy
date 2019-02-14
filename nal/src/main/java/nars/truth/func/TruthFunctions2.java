@@ -134,29 +134,29 @@ public enum TruthFunctions2 {
     public static Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
         float cc = confCompose(belief, goal);
-        if (!strong)
-            cc = weak(cc);
+        if (cc >= minConf) {
 
-        float c = and(belief.freq(),
-                cc)
-        ;
+            if (!strong) {
+                cc = weak(cc);
+                if (cc < minConf)
+                    return null;
+            }
 
+            float c = and(belief.freq(), cc);
 
-//        if (!strong)
-//            c = weak(c);
+            if (c >= minConf) {
 
-        if (c >= minConf) {
+                //float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
+                //float f = Util.lerp(belief.freq(), 1-goal.freq(), goal.freq());
+                float f = goal.freq();
 
+                return $.t(f, c);
 
-            //float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
-            //float f = Util.lerp(belief.freq(), 1-goal.freq(), goal.freq());
-            float f = goal.freq();
+            }
 
-            return $.t(f, c);
-
-        } else {
-            return null;
         }
+        return null;
+
     }
 
     @Nullable
@@ -166,8 +166,7 @@ public enum TruthFunctions2 {
     }
 
 
-
-//    /**
+    //    /**
 //     * strong frequency and confidence the closer in frequency they are
 //     */
 //    public static Truth comparisonSymmetric(Truth t, Truth b, float minConf) {
@@ -183,8 +182,12 @@ public enum TruthFunctions2 {
         //return c * w2cSafe(1.0f);
     }
 
-    @Deprecated public static Truth weak(Truth t) {
-        return t!=null ? $.t(t.freq(), weak(t.conf())) : null;
+    @Deprecated
+    @Nullable public static Truth weak(@Nullable Truth t, float minConf) {
+        if (t == null)
+            return null;
+        float c = weak(t.conf());
+        return c >= minConf ? $.t(t.freq(), c) : null;
     }
 
     /**
@@ -201,37 +204,41 @@ public enum TruthFunctions2 {
     }
 
 
-    /** output polarity matches Y's polarity. X determines pre and post negations */
+    /**
+     * output polarity matches Y's polarity. X determines pre and post negations
+     */
     public static Truth decomposeDiff(Truth X, Truth Y, float minConf) {
         boolean xPos = X.isPositive();
         boolean yPos = Y.isPositive();
         Truth t = TruthFunctions.decompose(X, Y, xPos, yPos, yPos, minConf);
-        return t!=null ? t.negIf(xPos) : null;
+        return t != null ? t.negIf(xPos) : null;
     }
 
-    /**  X, (  X ==> Y) |- Y
+    /**
+     * X, (  X ==> Y) |- Y
      * --X, (--X ==> Y) |- Y
      * frequency determined by the impl
-     * */
+     */
     public static Truth pre(Truth X, Truth XimplY, boolean weak, float minConf) {
         float c = confCompose(X, XimplY);
-        if(c < minConf) return null;
+        if (c < minConf) return null;
         float cc = c *
                 X.freq(); //soft polarity match (inverse bleed through)
-                //Math.max(0, 2 * (X.freq()-0.5f)); //hard polarity match
+        //Math.max(0, 2 * (X.freq()-0.5f)); //hard polarity match
         if (weak)
             cc = weak(cc);
-        if(cc < minConf) return null;
+        if (cc < minConf) return null;
         return $.t(XimplY.freq(), cc);
     }
 
-    /**    Y, (X ==>   Y) |- X
-     *   --Y, (X ==> --Y) |- X
-     * */
+    /**
+     * Y, (X ==>   Y) |- X
+     * --Y, (X ==> --Y) |- X
+     */
     public static Truth post(Truth Y, Truth XimplY, boolean strong, float minConf) {
 
         float c = confCompose(Y, XimplY);
-        if(c < minConf) return null;
+        if (c < minConf) return null;
 
         //frequency alignment
         float yF = Y.freq();
@@ -241,7 +248,7 @@ public enum TruthFunctions2 {
         //polarized: -1..+1
         float yFp = 2 * (yF - 0.5f);
         float impFp = 2 * (impF - 0.5f);
-        float alignment = (((yFp * impFp) /*-1..+1*/)+1)/2;
+        float alignment = (((yFp * impFp) /*-1..+1*/) + 1) / 2;
         c *= alignment;
         f = alignment;
 
@@ -285,14 +292,19 @@ public enum TruthFunctions2 {
 //        }
 //        return $.t(f, c);
 //    }
-    /** freq: a,b; assumes they are of the same polarity */
+
+    /**
+     * freq: a,b; assumes they are of the same polarity
+     */
     static float intersectionSym(float a, float b) {
         if (a >= 0.5f) {
-            a = 2 * (a - 0.5f); b = 2 * (b - 0.5f);
-            return 0.5f + (a * b)/2;
+            a = 2 * (a - 0.5f);
+            b = 2 * (b - 0.5f);
+            return 0.5f + (a * b) / 2;
         } else {
-            a = 2 * (0.5f - a); b = 2 * (0.5f - b);
-            return 0.5f - (a * b)/2;
+            a = 2 * (0.5f - a);
+            b = 2 * (0.5f - b);
+            return 0.5f - (a * b) / 2;
         }
     }
 

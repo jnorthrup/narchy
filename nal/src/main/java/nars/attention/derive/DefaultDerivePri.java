@@ -32,7 +32,7 @@ public class DefaultDerivePri implements DerivePri {
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
-    public final FloatRange polarityImportance = new FloatRange(0.05f, 0f, 1f);
+    public final FloatRange polarityImportance = new FloatRange(0.01f, 0f, 1f);
 
     @Override
     public float pri(Task t, Derivation d) {
@@ -47,7 +47,7 @@ public class DefaultDerivePri implements DerivePri {
             factor *= factorEvi(t, d);
             factor *= factorPolarity(t.freq());
         } else {
-            factor *= factor; //re-apply for single-premise case
+            factor *= factor; //re-apply for question case
         }
 
         float parent = d.parentPri();
@@ -60,22 +60,22 @@ public class DefaultDerivePri implements DerivePri {
         return pri;
     }
 
-    float factorComplexityAbsolute(Task t, Derivation d) {
-        int max = d.termVolMax + 1;
-
-        float weight = Math.min(1, t.voluplexity() / max);
-        //float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
-        //float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
-        //return Util.lerp(simplicityImportance.floatValue(), 1f, f);
-        return Util.lerp(simplicityImportance.floatValue(), 1f, 1-weight);
-    }
-
-    float factorComplexityRelative2(Task t, Derivation d) {
-        float inc = (t.voluplexity() - d.parentVoluplexitySum /2 /* avg */);
-        if (inc <= 0) return 1f;
-        float f = 1f / (1f + inc);
-        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
-    }
+//    float factorComplexityAbsolute(Task t, Derivation d) {
+//        int max = d.termVolMax + 1;
+//
+//        float weight = Math.min(1, t.voluplexity() / max);
+//        //float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
+//        //float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
+//        //return Util.lerp(simplicityImportance.floatValue(), 1f, f);
+//        return Util.lerp(simplicityImportance.floatValue(), 1f, 1-weight);
+//    }
+//
+//    float factorComplexityRelative2(Task t, Derivation d) {
+//        float inc = (t.voluplexity() - d.parentVoluplexitySum /2 /* avg */);
+//        if (inc <= 0) return 1f;
+//        float f = 1f / (1f + inc);
+//        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
+//    }
 
     float factorComplexityRelative(Task t, Derivation d) {
         float pCompl = d.parentVoluplexitySum;

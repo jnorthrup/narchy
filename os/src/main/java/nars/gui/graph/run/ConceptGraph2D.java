@@ -230,10 +230,10 @@ public class ConceptGraph2D extends Graph2D<Term> {
         public void add(GraphEditing<Term> graph, boolean belief, boolean goal, boolean question, boolean quest, TaskLink l) {
 
             float[] pp = new float[4];
-            pp[0] = belief ? l.punc(BELIEF) : 0;
-            pp[1] = goal ? l.punc(GOAL) : 0;
-            pp[2] = question ? l.punc(QUESTION) : 0;
-            pp[3] = quest ? l.punc(QUEST) : 0;
+            pp[0] = belief ? l.priPunc(BELIEF) : 0;
+            pp[1] = goal ? l.priPunc(GOAL) : 0;
+            pp[2] = question ? l.priPunc(QUESTION) : 0;
+            pp[3] = quest ? l.priPunc(QUEST) : 0;
             float pSum = (pp[0] + pp[1] + pp[2] + pp[3]);
             if (pSum < ScalarValue.EPSILON)
                 return;

@@ -1,8 +1,9 @@
 package nars.derive.premise;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.memoize.CaffeineMemoize;
+import jcog.util.ArrayUtils;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
@@ -692,7 +693,7 @@ public class PremiseRuleSource extends ProxyTerm {
 //        int ts = t.structure() & (~Op.VAR_PATTERN.bit);
 //        pre.addAt(new TermMatchPred<>(new TermMatch.Is(to),  rr));
 //        pre.addAt(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
-        pre.add(new TermMatchPred<>(TermMatch.IsHas.get(t, depth), rr));
+        pre.add(new TermMatchPred<>(TermMatch.IsHas.get(t, depth), rr, depth));
 
         int n = t.subs();
         if (!to.commutative || n == 1) {
@@ -788,19 +789,12 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
     private void matchSuper(boolean taskOrBelief, TermMatch m, boolean trueOrFalse) {
-        pre.add(new TermMatchPred<>(m, trueOrFalse, false, TaskOrBelief(taskOrBelief)));
+        pre.add(new TermMatchPred<>(m, trueOrFalse, false, taskOrBelief, ArrayUtils.EMPTY_BYTE_ARRAY));
     }
 
 
     private void match(boolean taskOrBelief, byte[] path, TermMatch m, boolean isOrIsnt) {
-        pre.add(new TermMatchPred<>(m, isOrIsnt, true, TaskOrBelief(taskOrBelief).path(path)));
-//        if (path.length == 0) {
-//            //root
-//            pre.addAt(new TermMatchPred<>(m, isOrIsnt, true, TaskOrBelief(taskOrBelief)));
-//        } else {
-//            //subterm
-//            pre.addAt(new TermMatchPred.Subterm(path, m, isOrIsnt, TaskOrBelief(taskOrBelief)));
-//        }
+        pre.add(new TermMatchPred<>(m, isOrIsnt, true, taskOrBelief, path));
     }
 
 
@@ -897,10 +891,6 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
 
-    private static RootTermAccessor TaskOrBelief(boolean taskOrBelief) {
-        return taskOrBelief ? TaskTerm : BeliefTerm;
-    }
-
     final static RootTermAccessor TaskTerm = new RootTermAccessor("taskTerm") {
         @Override
         public Term apply(PreDerivation d) {
@@ -976,8 +966,40 @@ public class PremiseRuleSource extends ProxyTerm {
         }
 
         public Function<PreDerivation, Term> path(byte... path) {
-            return (path.length == 0) ? this :
-                    d -> apply(d).subPath(path);
+            return (path.length == 0) ? this : new SubRootTermAccessor(path);
+        }
+
+        private class SubRootTermAccessor implements Function<PreDerivation, Term> {
+
+            private final byte[] path;
+            private final int hash;
+
+            public SubRootTermAccessor(byte... path) {
+                this.path = path;
+                this.hash = Util.hashCombine(id, Util.hash(path));
+            }
+
+            @Override
+            public int hashCode() {
+                return hash;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (this == obj) return true;
+                if (!(obj instanceof SubRootTermAccessor)) return false;
+                SubRootTermAccessor s = (SubRootTermAccessor)obj;
+                return hash == s.hash && id.equals(s.id()) && Arrays.equals(path, s.path);
+            }
+
+            private String id() {
+                return id;
+            }
+
+            @Override
+            public Term apply(PreDerivation d) {
+                return RootTermAccessor.this.apply(d).subPath(path);
+            }
         }
     }
 

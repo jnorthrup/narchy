@@ -91,16 +91,25 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 //                if (!a.tryAccept(t))
 //                    break;
 //            }
-            float[] w = new float[s];
-            MutableRoulette r = new MutableRoulette(w, (c) -> 0, a.nar.random());
-            Task nextTask = null;
-            do {
-                int c = r.next();
-                if (c < 0)
-                    break;
-                nextTask = get(c);
-            } while (a.tryAccept(nextTask));
-        
+        switch (s) {
+            case 0:
+                return;
+            case 1:
+                a.tryAccept(get(0));
+                return;
+            default:
+                float[] w = new float[s];
+                MutableRoulette r = new MutableRoulette(w, (c) -> 0, a.random());
+                Task nextTask = null;
+                do {
+                    int c = r.next();
+                    if (c < 0)
+                        break;
+                    nextTask = get(c);
+                } while (a.tryAccept(nextTask));
+                break;
+        }
+
     }
 
     public void setTaskCapacity(int c) {
@@ -193,7 +202,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
         if (incoming instanceof TaskProxy) {
-            incoming = ((TaskProxy)incoming).the();
+            incoming = ((TaskProxy) incoming).the();
         }
 
         int r = add(incoming, this);
@@ -400,7 +409,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         int cap = capacity();
         if (cap == 0) {
             if (input.isInput())
-                throw new RuntimeException("input task rejected by " + EternalTable.class +  " with 0 capacity): " + input);
+                throw new RuntimeException("input task rejected by " + EternalTable.class + " with 0 capacity): " + input);
             r.forget(input);
             return true;
         }

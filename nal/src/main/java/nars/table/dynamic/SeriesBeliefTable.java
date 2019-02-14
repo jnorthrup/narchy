@@ -3,7 +3,6 @@ package nars.table.dynamic;
 import jcog.Util;
 import nars.Param;
 import nars.Task;
-import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
@@ -208,27 +207,5 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
     }
 
-//
-//    public static final class SeriesRemember extends AbstractTask {
-//
-//        public Task input;
-//
-//        SeriesRemember(SeriesTask task, TaskConcept concept) {
-//            //super(task, concept);
-//            this.input = task;
-//        }
-//
-//
-//    }
 
-//    private class SeriesTaskLink extends TaskLink.GeneralTaskLink {
-//        public SeriesTaskLink() {
-//            super(seed(SeriesBeliefTable.this.target, SeriesBeliefTable.this.punc(), Tense.ETERNAL), 0);
-//        }
-//
-//        @Override
-//        public TaskLink clone(float pri) {
-//            return new GeneralTaskLink(tasklinkPtr, pri);
-//        }
-//    }
 }

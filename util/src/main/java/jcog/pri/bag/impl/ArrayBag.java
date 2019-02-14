@@ -722,8 +722,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     @Override
     public final void clear() {
-
-        popBatch(size(), null);
+        popBatch(size(), ScalarValue::delete);
         MASS.zero(this);
         depressurizePct(1);
     }

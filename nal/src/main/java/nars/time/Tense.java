@@ -90,15 +90,7 @@ public enum Tense {
         }
     }
 
-    public static long dither(double t, int dither) {
-        if (dither > 1) {
-            if (t == ETERNAL) return ETERNAL;
-            else if (t == TIMELESS) return TIMELESS;
-            else return Math.round(Util.round(t, dither)); 
-        } else {
-            return Math.round(t);
-        }
-    }
+
 
     public static long dither(long t, int dither) {
         if (dither > 1) {
@@ -108,11 +100,23 @@ public enum Tense {
 //                    throw new WTF("maybe you meant ETERNAL or TIMELESS");
             //}
             if (t == ETERNAL) return ETERNAL;
+            else if (t == 0) return 0;
             else if (t == TIMELESS) return TIMELESS;
-            else return Util.round(t, dither); 
+            else return _dither(t, false, dither);
         } else {
             return t;
         }
+    }
+
+    /** internal dither procedure */
+    static long _dither(long t, boolean relative, int dither) {
+        //return Util.round(t, dither);
+
+        if (relative && Param.DT_DITHER_LOGARITHMICALLY && t > dither*dither) {
+            //logarithmic dithering
+            long r = (long) Util.round(Math.pow(dither, Util.round(Math.log( t )/Math.log((double)dither), 1f/dither)), dither);
+            return r;
+        } else return Util.round(t, dither);
     }
 
     public static int dither(int dt, NAR nar) {
@@ -152,8 +156,7 @@ public enum Tense {
                 case 0:
                     return 0;
                 default:
-                    
-                    return Util.round(dt, dither);
+                    return (int) _dither(dt, true, dither);
         }
 
         return dt; 

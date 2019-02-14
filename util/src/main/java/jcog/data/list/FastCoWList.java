@@ -169,7 +169,23 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     public final X[] array() {
-        return copy.updateAndGet(this);
+        //modified updateAndGet: //return copy.updateAndGet(this);
+        X[] prev = copy.getOpaque();
+        return prev != null ? prev : commit(prev);
+    }
+
+    private X[] commit(X[] prev) {
+        X[] next = null;
+        boolean haveNext = false;
+        while(true) {
+            if (!haveNext)
+                next = apply(prev);
+
+            if (copy.weakCompareAndSetVolatile(prev, next))
+                return next;
+
+            haveNext = prev == (prev = copy.get());
+        }
     }
 
     @Override

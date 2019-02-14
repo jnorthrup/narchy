@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.MutableFloat;
+import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.pri.*;
 import jcog.pri.bag.Bag;
@@ -14,8 +15,11 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.NodeConcept;
+import nars.derive.Derivation;
 import nars.index.concept.AbstractConceptIndex;
 import nars.task.NALTask;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +54,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
     Term target();
 
     //byte punc();
-    float punc(byte punc);
+    float priPunc(byte punc);
 
     /**
      * main tasklink constructor
@@ -98,14 +102,14 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
     /**
      * sample punctuation by relative priority
      */
-    byte punc(Random rng);
+    byte priPunc(Random rng);
 
     default long when() {
         return ETERNAL;
     }
 
     default Task apply(NAR n) {
-        return apply(n, punc(n.random()));
+        return apply(n, priPunc(n.random()));
     }
 
     @Nullable
@@ -133,7 +137,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                 if (!beliefOrGoal) {
                     //form question
                     y = new NALTask(x, punc, null, n.time(), start, end, new long[] { n.time.nextStamp() });
-                    y.pri(punc(punc));
+                    y.pri(priPunc(punc));
                 } else {
                     delete(punc); //TODO try another punc?
                 }
@@ -208,7 +212,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
     float merge(TaskLink incoming, PriMerge merge);
 
     default byte puncMax() {
-        switch (Util.maxIndex(punc(BELIEF), punc(GOAL), punc(QUESTION), punc(QUEST))) {
+        switch (Util.maxIndex(priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST))) {
             case 0:
                 return BELIEF;
             case 1:
@@ -236,6 +240,43 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
     /** returns the delta */
     float priMax(byte punc, float p);
+
+    @Nullable default Term term(Task task, Derivation d) {
+        Term tt = target();
+        Term src = source();
+
+        Term b;
+        NAR nar = d.nar;
+        if (src instanceof Compound) {
+            Concept cc = nar.concept(src);
+            if (cc != null) {
+                TermLinker linker = cc.linker();
+
+                linker.link(this, task, d);
+
+                Random rng = d.random;
+                if (cc.term().equals(tt) && ((!(linker instanceof FasterList) ||
+                        rng.nextInt(((FasterList) linker).size()+1)==0)))
+                    b = src;  //HACK
+                else
+                    b = linker.sample(rng); //TODO for atoms
+
+            } else {
+                b = src;
+            }
+        } else if (src.op().conceptualizable) {
+            //scan active tasklinks for a match to the atom
+            @Nullable Concept cc = nar.concept(src);
+            if (cc!=null)
+                b = ((AbstractConceptIndex)nar.concepts).active.atomTangent((NodeConcept) cc, this, d.time, d.ditherDT, d.random);
+            else
+                b = src;
+        } else {
+            b = src; //variable, int, etc.. ?
+        }
+        return b;
+
+    }
 
 
 //    /** special tasklink for signals which can stretch and so their target time would not correspond well while changing */
@@ -345,15 +386,17 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         }
 
         @Override
-        public byte punc(Random rng) {
+        public byte priPunc(Random rng) {
             return Task.p(Roulette.selectRouletteCached(4, punc::getAt, rng));
         }
 
         public final GeneralTaskLink priMerge(byte punc, float pri) {
             return mergeComponent(punc, pri, Param.tasklinkMerge);
         }
-        public final GeneralTaskLink priSet(byte punc, float pri) {
-            return mergeComponent(punc, pri, PriMerge.replace);
+
+        /** returns delta */
+        public float priSet(byte punc, float pri) {
+            return mergeComponent(punc, pri, PriMerge.replace, false);
         }
 
         @Override
@@ -507,7 +550,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         }
 
         @Override
-        public float punc(byte punc) {
+        public float priPunc(byte punc) {
             return this.punc.getAt(Task.i(punc));
         }
 

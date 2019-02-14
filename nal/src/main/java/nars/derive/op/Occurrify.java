@@ -140,9 +140,9 @@ public class Occurrify extends TimeGraph {
         if (!d.concSingle && (d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
             {
                 //immediate shift
-                long range = occ[1] - occ[0];
-                occ[0] = d.taskStart;
-                occ[1] = occ[0] + range;
+//                long range = occ[1] - occ[0];
+//                occ[0] = d.taskStart;
+//                occ[1] = occ[0] + range;
             }
         }
 
@@ -404,7 +404,7 @@ public class Occurrify extends TimeGraph {
 //    };
     final BiConsumer<Term, Compound> getPosNeg = (sub, sup) -> {
         Op so = sup != null ? sup.op() : null;
-        if (so == null || so == IMPL || so == CONJ)
+        if (so!=NEG && (so == null || so == IMPL || so == CONJ))
             ((sub.op() == NEG) ? nextNeg : nextPos).add(sub.unneg());
         if (so==NEG && sub.op()==IMPL)
             nextNeg.add(sub.sub(1)); //negate predicate (virtual)
@@ -424,10 +424,14 @@ public class Occurrify extends TimeGraph {
 //            beliefTerm.recurseTerms(negProvide);
 //            //beliefTerm.recurseTerms(negRequire);
 //        }
+
         pattern.recurseTerms(getPosNeg);
+
         taskTerm.recurseTerms(getPosNeg);
+
         if (!beliefTerm.equals(taskTerm))
             beliefTerm.recurseTerms(getPosNeg);
+
         if (!nextPos.isEmpty() || !nextNeg.isEmpty()) {
             //nextPos.symmetricDifferenceInto(nextNeg, autoNeg /* should be clear */);
             nextPos.intersectInto(nextNeg, autoNeg /* should be clear */);
@@ -646,7 +650,17 @@ public class Occurrify extends TimeGraph {
         Default() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveOccDT(x, d.occ.reset(true, true, x, true));
+
+                boolean neg = (x.op()==NEG); //HACK
+                if (neg)
+                    x = x.unneg();
+
+                Pair<Term, long[]> p = solveOccDT(x, d.occ.reset(true, true, x, true));
+                if (neg && p!=null) {
+                    p = pair(x.neg(), p.getTwo());
+                }
+
+                return p;
             }
 
             @Override

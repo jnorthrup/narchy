@@ -351,7 +351,7 @@ public class TrackXY_NAR extends NAgentX {
 
             //n.log();
 
-            Param.DEBUG = true;
+            //Param.DEBUG = true;
             n.onTask(tt -> {
 //                if (tt instanceof DerivedTask && tt.isGoal()) {
 //                    //if (n.concept(tt) instanceof ActionConcept)

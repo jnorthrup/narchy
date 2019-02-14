@@ -300,9 +300,9 @@ abstract public class NAgentX extends NAgent {
 
         window(new BagSpectrogram<>(((AbstractConceptIndex)n.concepts).active, 128, n)
                 .color(x -> {
-                    float r = x.punc(BELIEF);
-                    float g = x.punc(GOAL);
-                    float b = (x.punc(QUESTION) + x.punc(QUEST))/2;
+                    float r = x.priPunc(BELIEF);
+                    float g = x.priPunc(GOAL);
+                    float b = (x.priPunc(QUESTION) + x.priPunc(QUEST))/2;
                     return Draw.rgbInt(r, g, b);
 
 //                    float h;
@@ -379,22 +379,29 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.setAt(0.03f);
-        n.termVolumeMax.set(28);
+        n.termVolumeMax.set(22);
 
-        ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
+        ((AbstractConceptIndex)n.concepts).activeCapacity.set(256);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
         float p =
                 //1;
-                0.01f;
+                0.25f;
         
-        n.beliefPriDefault.set(0.25f * p);
-        n.goalPriDefault.set(16f * p);
-        n.questionPriDefault.set(0.05f * p);
-        n.questPriDefault.set(0.05f * p);
+        n.beliefPriDefault.set(1f * p);
+        n.goalPriDefault.set(1f * p);
+        n.questionPriDefault.set(0.1f * p);
+        n.questPriDefault.set(0.1f * p);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.8f);
+        n.goalConfDefault.set(0.8f);
+
+        //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
+
+        n.emotion.want(MetaGoal.Believe, 0.02f);
+        n.emotion.want(MetaGoal.Desire, 0.02f);
+
+        n.emotion.want(MetaGoal.Action, +1f);
 
 
 //
@@ -416,13 +423,6 @@ abstract public class NAgentX extends NAgent {
 //                };
 //            }
 //        };
-
-        n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
-
-        n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.1f);
-
-        n.emotion.want(MetaGoal.Action, +1f);
 
         //n.emotion.want(MetaGoal.Answer, 0f);
     }

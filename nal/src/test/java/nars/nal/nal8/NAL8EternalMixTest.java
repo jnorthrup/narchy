@@ -660,13 +660,22 @@ class NAL8EternalMixTest extends NALTest {
                 .mustNotOutput(cycles, "x", BELIEF, (t)->t!=1)
         ;
     }
+    @Test
+    void testStrongUnificationAbductionPP() {
+
+        test
+                .input("(X ==>+1 Y).")
+                .input("Y. |")
+                .mustBelieve(cycles, "X", 1f, 0.45f, -1);
+    }
 
     @Test
     void testStrongUnificationAbductionPN() {
 
         test
+                .logDebug()
                 .input("(--X ==>+1 Y).")
-                .input("Y. :|:")
+                .input("Y. |")
                 .mustBelieve(cycles, "X", 0f, 0.45f, -1);
     }
 

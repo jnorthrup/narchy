@@ -21,8 +21,10 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
+
 import static java.lang.Float.NaN;
-import static nars.Op.*;
+import static nars.Op.ATOM;
 import static nars.time.Tense.TIMELESS;
 
 /**
@@ -62,7 +64,14 @@ public class SensorBeliefTables extends BeliefTables {
     protected TaskLink.GeneralTaskLink newTaskLink(Term term) {
         Term src = term;
         Term tgt = term;
-        //Op.IMPL.the($.varDep(1), XTERNAL, c).concept(); //TEMPORARY
+
+        //TEMPORARY
+        Set<Term> atoms = term.subterms().recurseSubtermsToSet(ATOM);
+        if (atoms.size() == 1) {
+            //unique atom
+            src = atoms.iterator().next();
+        }
+
         return new TaskLink.GeneralTaskLink(src, tgt);
     }
 
@@ -273,11 +282,12 @@ public class SensorBeliefTables extends BeliefTables {
         if (p!=p)
             return;
 
-        next.priMax(p); //set the task's pri too
+        next.pri(p); //set the task's pri too
 
-        float delta = tasklink.priMax(
-                next.punc()==BELIEF ? QUESTION : QUEST
-                , p);
+        float delta = tasklink.
+            priMax
+            //priSet
+                (next.punc(), p);
 //        float delta = series.tasklink.priMax(next.punc(), p/2);
 //        delta += series.tasklink.priMax(QUESTION, p/4);
 //        delta += series.tasklink.priMax(QUEST, p/4);

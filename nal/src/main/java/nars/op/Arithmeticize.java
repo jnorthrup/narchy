@@ -153,7 +153,7 @@ public class Arithmeticize {
         Term y = mmm[ Roulette.selectRoulette(mmm.length, c -> mmm[c].score, random) ]
                     .apply(x, cdt, anon);
 
-        if (y.volume() > volMax) return null;
+        if (y == null || y.volume() > volMax) return null;
 
 //        Term y = IMPL.the(equality, eternal ? DTERNAL : 0, yy);
 //        if (y.op()!=IMPL) return null;
@@ -308,8 +308,7 @@ public class Arithmeticize {
 
             Term y = CONJ.the(equality, cdt, yy);
 
-            if (y.op()!=CONJ) return null;
-            return y;
+            return y.op() != CONJ ? null : y;
         }
     }
 

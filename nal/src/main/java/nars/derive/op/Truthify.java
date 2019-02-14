@@ -75,7 +75,10 @@ public class Truthify extends AbstractPred<Derivation> {
 
         FasterList<Term> args = new FasterList(4);
 
-        args.add($.quote(punc.toString())); //HACK
+        args.add(
+                //$.quote(punc.toString()) //HACK
+                $.func("punc", $.the(System.identityHashCode(punc)))
+        );
 
         String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : null;
         args.add(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct);

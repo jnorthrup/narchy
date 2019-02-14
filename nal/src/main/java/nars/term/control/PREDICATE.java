@@ -41,12 +41,29 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
         switch (p.length) {
             case 0: return null;
             case 1: return p[0];
-            default:
+            default: {
                 FasterList<PREDICATE<X>> pp = new FasterList<>(p);
-                pp.removeIf(x -> !x.remainAndWith(p));
+
+                boolean modified;
+
+                restart: do {
+                    modified = false;
+                    int ppp = pp.size();
+                    for (int i = 0; i < ppp; i++) {
+                        if (pp.get(i).reduceIn(pp)) {
+                            if (pp.size()==1)
+                                break;
+                            continue restart; //modified
+                        }
+                    }
+                } while (modified && pp.size() > 1);
+
                 return AND.the(pp);
+            }
         }
     }
+
+
 
     @Nullable
     static <X> PREDICATE<X> compileAnd(Collection<PREDICATE<X>> cond, @Nullable PREDICATE<X> conseq) {
@@ -70,13 +87,11 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
         return Float.POSITIVE_INFINITY;
     }
 
-    /** optimization subsumption: determines whether this predicate
-     * should remain when appearing in an AND condition of the
-     * specified predicates.  one of the 'p' in the array will be this instance
-     * be careful to avoid testing against self
+    /** optimization reducer: pp is the list of predicates in which this appears.
+     *  return true if the list has been modified (ex: remove this, replace another etc)
      */
-    default boolean remainAndWith(PREDICATE[] p) {
-        return true;
+    default boolean reduceIn(FasterList<PREDICATE<X>> p) {
+        return false;
     }
 
 

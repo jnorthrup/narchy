@@ -46,6 +46,6 @@ public class DoublePremiseRequired extends AbstractPred<PreDerivation> {
 
     @Override
     public float cost() {
-        return 0.05f;
+        return 0.01f;
     }
 }

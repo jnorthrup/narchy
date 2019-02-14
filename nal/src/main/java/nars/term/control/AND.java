@@ -23,6 +23,11 @@ abstract public class AND<X> extends AbstractPred<X> {
         super(
                 $.pFast(cond)
         );
+
+        for (PREDICATE x : cond)
+            if (x instanceof AND)
+                throw new UnsupportedOperationException("should have been flattened");
+
         assert (cond.length >= 2) : "unnecessary use of AndCondition";
         this.cost = Util.sum((FloatFunction<PREDICATE>) PREDICATE::cost, cond);
     }
@@ -80,7 +85,29 @@ abstract public class AND<X> extends AbstractPred<X> {
         }
 
     }
+    private final static class AND3<X> extends AND<X> {
+        /*@Stable*/
+        private final PREDICATE<X> a, b, c;
 
+        private AND3(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
+            super(a, b, c);
+            this.a = a; this.b = b; this.c = c;
+        }
+
+        @Override
+        public final boolean test(X x) {
+            return a.test(x) && b.test(x) && c.test(x);
+        }
+
+        public PREDICATE<X> first() {
+            return a;
+        }
+
+        public PREDICATE<X> last() {
+            return c;
+        }
+
+    }
 
 
 
@@ -124,6 +151,8 @@ abstract public class AND<X> extends AbstractPred<X> {
                         throw new WTF();
                     case 2:
                         return new AND2<>((PREDICATE)cond[0], (PREDICATE)cond[1]);
+                    case 3:
+                        return new AND3<>((PREDICATE)cond[0], (PREDICATE)cond[1], (PREDICATE)cond[2]);
                     default:
                         return new ANDn<>((PREDICATE[])cond);
                 }

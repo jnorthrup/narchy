@@ -98,7 +98,7 @@ public class LazyCompound {
     }
 
     protected byte intern(Term x) {
-        if (x == null || x==Null || x.op()==NEG)
+        if (x == null || x == Null || x.op() == NEG)
             throw new WTF();
         return sub().intern(x);
     }
@@ -132,9 +132,8 @@ public class LazyCompound {
 
     private Term getNext(byte[] ii, int[] range) {
         int from;
-        byte ctl = ii[(from = range[0])];
+        byte ctl = ii[(from = range[0]++)];
         //System.out.println("ctl=" + ctl + " @ " + from);
-        range[0]++;
 
         Term next;
         if (ctl < MAX_CONTROL_CODES) {
@@ -170,9 +169,9 @@ public class LazyCompound {
                         next = Null;
                     else {
 
-//            for (Term x : s)
-//                if (x == null)
-//                    throw new NullPointerException();
+//                        for (Term x : s)
+//                            if (x == null)
+//                                throw new NullPointerException();
 
                         next = op.the(dt, s);
                         assert (next != null);
@@ -234,36 +233,38 @@ public class LazyCompound {
     private Term[] getNext(byte n, byte[] ii, int[] range) {
         Term[] t = null;
         //System.out.println(range[0] + ".." + range[1]);
-        for (int i = 0; i < n; i++) {
-            Term y;
+        for (int i = 0; i < n; ) {
             //System.out.println("\t" + s + "\t" + range[0] + ".." + range[1]);
-            if (range[0] >= range[1]) {
+            if (range[0] >= range[1])
                 throw new ArrayIndexOutOfBoundsException();
-                //return Arrays.copyOfRange(t, 0, i); //hopefully this is becaues of an ellipsis that got inlined and had no effect
-            }
+            //return Arrays.copyOfRange(t, 0, i); //hopefully this is becaues of an ellipsis that got inlined and had no effect
+
+            Term y;
             if ((y = getNext(ii, range)) == Null)
                 return null;
-            if (y == null)
-                throw new NullPointerException(); //WTF
-            if (t == null)
-                t = new Term[n];
 
             if (y instanceof EllipsisMatch) {
                 //expand
-                int yy = y.subs();
-                n += yy -1;
-                if (t.length!=n) {
+                int en = y.subs();
+                n += en - 1;
+                if (t == null)
+                    t = (n == 0) ? EmptyTermArray : new Term[n];
+                else if (t.length != n) {
                     t = Arrays.copyOf(t, n);
                 }
-                if (yy > 0) {
-                    for (Term e : ((EllipsisMatch)y)) {
+                if (en > 0) {
+                    for (Term e : ((EllipsisMatch) y)) {
                         if (e == null || e == Null)
-                            return null;
+                            throw new NullPointerException();
                         t[i++] = e;
                     }
                 }
             } else {
-                t[i] = y;
+                if (t == null)
+                    t = new Term[n];
+                if (y == null)
+                    throw new NullPointerException(); //WTF
+                t[i++] = y;
             }
         }
         return t;

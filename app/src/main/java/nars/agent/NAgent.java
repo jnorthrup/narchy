@@ -509,9 +509,11 @@ public class NAgent extends NARService implements NSense, NAct {
             this.now = now;
             this.next = next;
 
-            attnAction.boost.set(nar.priDefault(GOAL) * actions.size());
-            attnReward.boost.set(nar.priDefault(GOAL) * rewards.size());
-            attnSensor.boost.set(nar.priDefault(BELIEF) * sensors.size());
+            float pg = nar.priDefault(GOAL);
+            float pb = nar.priDefault(BELIEF);
+            attnAction.boost.set((pb+pg)/2 * actions.size());
+            attnReward.boost.set(pg * rewards.size());
+            attnSensor.boost.set(pb * sensors.size());
             attn.update(pri.floatValue());
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);

@@ -117,7 +117,7 @@ public enum NALTruth implements TruthFunc {
     @SinglePremise @AllowOverlap StructuralDeductionWeak() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, NAR m, float minConf) {
-            return T != null ? weak(Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf)) : null;
+            return T != null ? weak(Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf), minConf) : null;
         }
     },
 
@@ -436,14 +436,16 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @AllowOverlap  Desire() {
+    //@AllowOverlap
+    Desire() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.desire(T, B, minConf, true);
         }
     },
 
-    @AllowOverlap DesireWeak() {
+    //@AllowOverlap
+    DesireWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.desire(T, B, minConf, false);

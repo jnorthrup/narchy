@@ -126,6 +126,13 @@ public class PriBuffer<Y> {
         put((Y)x, x.pri());
     }
 
+    public void clear() {
+        items.values().removeIf(i -> {
+            i.delete();
+            return true;
+        });
+    }
+
 //    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {
 //
 //        public final static Comparator<TermLinkage> preciseComparator = Comparator

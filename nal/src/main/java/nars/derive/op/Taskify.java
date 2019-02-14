@@ -1,7 +1,6 @@
 package nars.derive.op;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.util.ArrayUtils;
 import nars.*;
 import nars.derive.Derivation;
@@ -127,8 +126,8 @@ public class Taskify extends AbstractPred<Derivation> {
             S = Tense.dither(s, dither);
             E = Tense.dither(e, dither);
 
-            if ((1+E-S)-dither*2 > Math.max((d._task.isEternal() ? 0 : d._task.range()), d._belief!=null ? (d._belief.isEternal() ? 0 : d._belief.range()) : 0))
-                throw new WTF("hyperinflation of temporal evidence");
+//            if ((1+E-S)-dither*2 > Math.max((d._task.isEternal() ? 0 : d._task.range()), d._belief!=null ? (d._belief.isEternal() ? 0 : d._belief.range()) : 0))
+//                throw new WTF("hyperinflation of temporal evidence");
 
         } else {
             S = E = ETERNAL;

@@ -25,6 +25,11 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
     }
 
 
+    @Override
+    public void clear() {
+        buffer.clear();
+        super.clear();
+    }
 
     @Override
     public Bag<X, Y> commit(Consumer<Y> update) {

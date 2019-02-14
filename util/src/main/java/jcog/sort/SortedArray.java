@@ -211,11 +211,10 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             int tempV = pCmp.applyAsInt(temp);
 
             while (true) {
-                while (i < c.length - 1 && pCmp.applyAsInt(c[++i]) > tempV) ;
-                while (j > 0 && /* <- that added */ pCmp.applyAsInt(c[--j]) < tempV) ;
-                if (j < i) {
+                while (i < right && pCmp.applyAsInt(c[++i]) > tempV) ;
+                while (j > left && /* <- that added */ pCmp.applyAsInt(c[--j]) < tempV) ;
+                if (j <= i)
                     break;
-                }
                 swap(c, j, i);
             }
 
