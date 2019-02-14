@@ -436,36 +436,14 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    Desire() {
+    @AllowOverlap  Desire() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.desire(T, B, minConf, true);
         }
     },
 
-//    DesirePB() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            boolean neg = T.isNegative();
-//            Truth y = TruthFunctions2.desire(neg ? T.neg() : T, B, minConf, true);
-//            if (y!=null && neg)
-//                y = y.neg();
-//            return y;
-//        }
-//    },
-//
-//    DesireWeakPB() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            boolean neg = T.isNegative();
-//            Truth y = TruthFunctions2.desire(neg ? T.neg() : T, B, minConf, false);
-//            if (y!=null && neg)
-//                y = y.neg();
-//            return y;
-//        }
-//    },
-
-    DesireWeak() {
+    @AllowOverlap DesireWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.desire(T, B, minConf, false);

@@ -36,7 +36,6 @@ public class SensorBeliefTables extends BeliefTables {
     public final SeriesBeliefTable<SeriesBeliefTable.SeriesTask> series;
 
     public FloatRange res;
-    private FloatSupplier pri;
 
     /**
      * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
@@ -232,10 +231,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
     /** priority of tasklink applied to a new or stretched existing sensor task */
-    private float surprise(Task prev, Task next, NAR n) {
-
-
-
+    private float surprise(Task prev, Task next, FloatSupplier pri, NAR n) {
 
         float p = pri.asFloat();
         if (p != p)
@@ -268,13 +264,12 @@ public class SensorBeliefTables extends BeliefTables {
 
         Task prev = this.prev;
         this.prev = next;
-        this.pri = pri;
 
         if (next == null)
             return; //?
 
         //float before = series.tasklink.priElseZero();
-        float p = surprise(prev, next, n);
+        float p = surprise(prev, next, pri, n);
         if (p!=p)
             return;
 
