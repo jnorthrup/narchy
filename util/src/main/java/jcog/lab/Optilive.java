@@ -3,7 +3,7 @@ package jcog.lab;
 import com.google.common.io.Files;
 import jcog.Texts;
 import jcog.Util;
-import jcog.io.arff.ARFF;
+import jcog.table.ARFF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

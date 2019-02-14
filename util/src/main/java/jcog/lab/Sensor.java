@@ -1,6 +1,6 @@
 package jcog.lab;
 
-import jcog.io.Schema;
+import jcog.table.DataTable;
 
 import java.util.function.Function;
 
@@ -42,7 +42,7 @@ abstract public class Sensor<E, S> implements Function<E,S>, Comparable<Sensor> 
 //        @Nullable
 //        abstract S apply(E x);
 
-    abstract public void addToSchema(Schema data);
+    abstract public void addToSchema(DataTable data);
 
     @Override
     public final int compareTo(Sensor s) {

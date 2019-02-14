@@ -1,4 +1,4 @@
-package jcog.io;
+package jcog.table;
 
 import com.google.common.collect.ImmutableList;
 import jcog.TODO;
@@ -22,17 +22,15 @@ import java.util.Map;
 
 /**
  * specified semantics of a data record / structure
- * TODO move most of this to 'MutableSchema' implementation of interface Schema
+ * TODO move most of this to 'MutableDataTable' implementation of interface DataTable
  **/
-public class Schema extends Table {
+public class DataTable extends Table {
 
 
-//    protected final List<String> attribute_names;
-//    protected final Map<String, ARFF.AttributeType> attrTypes;
     protected final Map<String, String[]> nominalCats;
 
     /** see: Table.copy() */
-    public Schema(Table copy) {
+    public DataTable(Table copy) {
         super(copy.name());
 
         int rc = copy.rowCount();
@@ -48,7 +46,7 @@ public class Schema extends Table {
         nominalCats = new HashMap<>();
     }
 
-    public Schema(Schema copyMetadataFrom) {
+    public DataTable(DataTable copyMetadataFrom) {
         super("");
         addColumns(columnArray());
 //        this.attribute_names = copyMetadataFrom.attribute_names;
@@ -56,14 +54,14 @@ public class Schema extends Table {
         this.nominalCats = copyMetadataFrom.nominalCats;
     }
 
-    public Schema() {
+    public DataTable() {
         super("");
 //        this.attribute_names = new FasterList<>();
 //        this.attrTypes = new HashMap<>();
         this.nominalCats = new HashMap<>();
     }
 
-    public boolean equalSchema(Schema other) {
+    public boolean equalSchema(DataTable other) {
 
         return (this == other) ||
 
@@ -97,7 +95,7 @@ public class Schema extends Table {
      * "nominal". For nominal attributes, the allowed values
      * must also be given. This variant of defineAttribute allows to set this data.
      */
-    public Schema define(String name, ColumnType type) {
+    public DataTable define(String name, ColumnType type) {
 
         //assert (type != Nominal);
 //        if (attrTypes.put(name, type) != null)
@@ -115,11 +113,11 @@ public class Schema extends Table {
         return this;
     }
 
-    public Schema defineText(String attr) {
+    public DataTable defineText(String attr) {
         return define(attr, ColumnType.STRING);
     }
 
-    public Schema defineNumeric(String attr) {
+    public DataTable defineNumeric(String attr) {
         return define(attr, ColumnType.DOUBLE);
     }
 
@@ -187,7 +185,7 @@ public class Schema extends Table {
         printCSV(new FilterOutputStream(System.out) {
             @Override
             public void close()  {
-                //dont close it - can cause VM shutdown
+                //HACKK dont close it - can cause VM shutdown
             }
         });
     }
@@ -250,7 +248,7 @@ public class Schema extends Table {
 
     }
 
-    public Schema defineNominal(String nominalAttribute, String... categories) {
+    public DataTable defineNominal(String nominalAttribute, String... categories) {
         if (categories.length < 2)
             throw new RuntimeException("nominal types require > 1 categories");
 
@@ -265,18 +263,17 @@ public class Schema extends Table {
     }
 
 
-    public static class Instance {
-        public final Schema schema;
+    public class Instance {
         public final ImmutableList data;
 
-        public Instance(Schema schema, ImmutableList data) {
-            this.schema = schema;
+        public Instance(ImmutableList data) {
+
             this.data = data;
         }
 
         @Override
         public String toString() {
-            return schema + " " + data;
+            return DataTable.this + " " + data;
         }
 
         @Override
@@ -303,13 +300,15 @@ public class Schema extends Table {
             return x;
         }
 
+        protected DataTable table() { return DataTable.this; }
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Instance)) return false;
 
             Instance i = (Instance) obj;
-            return i.data.equals(data) && i.schema.equals(schema);
+            return i.data.equals(data) && table().equals(i.table());
         }
 
 

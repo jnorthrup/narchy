@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 import static java.lang.Float.NaN;
-import static nars.Op.ATOM;
+import static nars.Op.*;
 import static nars.time.Tense.TIMELESS;
 
 /**
@@ -255,14 +255,14 @@ public class SensorBeliefTables extends BeliefTables {
 
         //decrease tasklink priority if the same task or if similar truth
 
-        if (prev==null || (!stretched && !latched)) {
-            return p; //assume novel
-        } else {
+        if (prev!=null && (stretched || latched)) {
 
             float deltaFreq = prev!=next? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
 
-            return p * Util.lerp(deltaFreq, Param.SIGNAL_UNSURPRISING_FACTOR, 1);
+            p *= Util.lerp(deltaFreq, Param.SIGNAL_UNSURPRISING_FACTOR, 1);
         }
+
+        return p;
 
 
     }
@@ -277,20 +277,17 @@ public class SensorBeliefTables extends BeliefTables {
         if (next == null)
             return; //?
 
-        //float before = series.tasklink.priElseZero();
         float p = surprise(prev, next, pri, n);
         if (p!=p)
             return;
 
         next.pri(p); //set the task's pri too
 
-        float delta = tasklink.
-            priMax
-            //priSet
-                (next.punc(), p);
-//        float delta = series.tasklink.priMax(next.punc(), p/2);
-//        delta += series.tasklink.priMax(QUESTION, p/4);
-//        delta += series.tasklink.priMax(QUEST, p/4);
+        float delta = tasklink.priMax(next.punc(), p);
+
+//        float delta = tasklink.priMax(next.punc(), p/2);
+//        delta += tasklink.priMax(QUESTION, p/4);
+//        delta += tasklink.priMax(QUEST, p/4);
 
         TaskLink.link(tasklink, n);
 

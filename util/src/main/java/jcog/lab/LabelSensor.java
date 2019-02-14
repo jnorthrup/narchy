@@ -1,6 +1,6 @@
 package jcog.lab;
 
-import jcog.io.Schema;
+import jcog.table.DataTable;
 import jcog.lab.util.ExperimentRun;
 
 public class LabelSensor<X> extends Sensor<X,String> {
@@ -31,7 +31,7 @@ public class LabelSensor<X> extends Sensor<X,String> {
     }
 
     @Override
-    public void addToSchema(Schema data) {
+    public void addToSchema(DataTable data) {
         data.defineText(id);
     }
 }

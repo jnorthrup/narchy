@@ -203,7 +203,7 @@ public abstract class Param {
             1.618f; //goldenratio
             //2;
 
-    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = true;
+    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = false;
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
@@ -241,7 +241,7 @@ public abstract class Param {
     public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
 
     /** max variable unification recursion depth as a naive cyclic filter */
-    public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 8;
+    public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
 
 
     /** (unsafe) true should theoreticaly be faster,
@@ -260,7 +260,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 

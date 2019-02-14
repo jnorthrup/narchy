@@ -26,7 +26,6 @@ import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Introduction;
-import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
@@ -379,7 +378,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.setAt(0.03f);
-        n.termVolumeMax.set(22);
+        n.termVolumeMax.set(26);
 
         ((AbstractConceptIndex)n.concepts).activeCapacity.set(256);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
@@ -470,8 +469,8 @@ abstract public class NAgentX extends NAgent {
         //Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 
-        new Inperience.Believe(16, n);
-        new Inperience.Want(16, n);
+        //new Inperience.Believe(16, n);
+        //new Inperience.Want(16, n);
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
 

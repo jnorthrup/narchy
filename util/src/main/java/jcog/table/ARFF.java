@@ -33,13 +33,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package jcog.io.arff;
+package jcog.table;
 
 import com.google.common.primitives.Primitives;
 import jcog.TODO;
 import jcog.Texts;
 import jcog.data.list.FasterList;
-import jcog.io.Schema;
 import jcog.util.Reflect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +87,7 @@ import java.util.stream.Stream;
  * https:
  * TODO rewrite as output strategy for Schema
  */
-@Deprecated public class ARFF extends jcog.io.Schema  {
+@Deprecated public class ARFF extends DataTable {
 
 
     static final String NEW_LINE = System.getProperty("line.separator");
@@ -115,7 +114,7 @@ import java.util.stream.Stream;
         this.comment = copyMetadataFrom.comment;
     }
 
-    public ARFF(Schema copyMetadataFrom) {
+    public ARFF(DataTable copyMetadataFrom) {
         super(copyMetadataFrom);
         this.relation = this.comment = "";
     }
@@ -517,7 +516,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         //return data.stream().map(x -> new Instance(this, x));
     }
 
-    public boolean addAll(Schema incoming) {
+    public boolean addAll(DataTable incoming) {
         if (this == incoming)
             return false;
         if (!equalSchema(incoming)) {

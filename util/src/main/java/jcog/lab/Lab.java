@@ -5,7 +5,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.primitives.Primitives;
 import jcog.data.graph.ObjectGraph;
 import jcog.data.list.FasterList;
-import jcog.io.arff.ARFF;
+import jcog.table.ARFF;
 import jcog.lab.util.ExperimentRun;
 import jcog.lab.var.FloatVar;
 import jcog.math.FloatRange;

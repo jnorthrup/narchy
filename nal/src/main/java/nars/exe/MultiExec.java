@@ -39,7 +39,7 @@ abstract public class MultiExec extends UniExec {
 
     static private final float queueLatencyMeasurementProbability = 0.05f;
 
-    private float explorationRate = 0.1f;
+    private float explorationRate = 0.05f;
 
     int granularity = 2;
 
@@ -361,7 +361,6 @@ abstract public class MultiExec extends UniExec {
 
                         boolean singleton = c.singleton();
                         if (!singleton || c.busy.compareAndSet(false, true)) {
-//                            try {
 
                             long before = nanoTime();
 
@@ -374,14 +373,13 @@ abstract public class MultiExec extends UniExec {
                                     c.next(nar, this::deadline);
                                 } catch (Throwable t) {
                                     logger.error("{} {}", this, t);
-                                } finally {
-                                    if (singleton)
-                                        c.busy.set(false);
                                 }
                                 after = nanoTime();
                                 s.use(after - before);
                             }
 
+                            if (singleton)
+                                c.busy.set(false);
                         }
                     }
 
@@ -405,7 +403,7 @@ abstract public class MultiExec extends UniExec {
                 lastScheduled = now;
 
                 maxExe = workTimeNS / (granularity);
-
+                int n = this.n;
                 if (play.length != n) {
                     //TODO more careful test for change
                     play = new TimedLink.MyTimedLink[n];

@@ -1,7 +1,7 @@
 package jcog.lab.util;
 
 import jcog.data.list.FasterList;
-import jcog.io.arff.ARFF;
+import jcog.table.ARFF;
 import jcog.lab.Lab;
 import jcog.lab.Sensor;
 

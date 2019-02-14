@@ -2,7 +2,7 @@ package nars.util;
 
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
-import jcog.io.arff.ARFF;
+import jcog.table.ARFF;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
 import nars.NARS;
@@ -16,7 +16,7 @@ import java.util.Random;
 
 import static nars.Op.*;
 
-public class NALSchemaTest {
+public class NALDataTableTest {
 
     final NAR n = NARS.tmp();
 

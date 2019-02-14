@@ -1,6 +1,6 @@
 package jcog.lab;
 
-import jcog.io.Schema;
+import jcog.table.DataTable;
 
 public class ProxySensor<X,Y> extends Sensor<X,Y> {
     private final Sensor<X, Y> s;
@@ -19,7 +19,7 @@ public class ProxySensor<X,Y> extends Sensor<X,Y> {
     }
 
     @Override
-    public void addToSchema(Schema data) {
+    public void addToSchema(DataTable data) {
         data.defineNumeric(id);
     }
 }

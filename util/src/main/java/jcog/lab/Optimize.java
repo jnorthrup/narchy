@@ -3,8 +3,8 @@ package jcog.lab;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
-import jcog.io.Schema;
-import jcog.io.arff.ARFF;
+import jcog.table.DataTable;
+import jcog.table.ARFF;
 import jcog.lab.util.MyCMAESOptimizer;
 import jcog.lab.var.FloatVar;
 import jcog.learn.decision.RealDecisionTree;
@@ -53,7 +53,7 @@ public class Optimize<S, E> extends Lab<E>  {
     /**
      * history of experiments. TODO use ranking like TopN etc
      */
-    public Schema data;
+    public DataTable data;
 
     private final Supplier<S> subj;
     public final List<Var<S, ?>> var;
@@ -179,7 +179,7 @@ public class Optimize<S, E> extends Lab<E>  {
     protected void finish() {
         //sort data
         //((FasterList<ImmutableList>)((ArrayHashSet<ImmutableList>)data.data).list).sortThisByDouble(r -> -((Double)r.get(goalColumn)));
-        data = new Schema(data.sortDescendingOn(data.column(0).name()));
+        data = new DataTable(data.sortDescendingOn(data.column(0).name()));
     }
 
     protected double run(double[] point) {
@@ -266,7 +266,7 @@ public class Optimize<S, E> extends Lab<E>  {
         return Optimize.tree(data, discretization, maxDepth);
     }
 
-    public static RealDecisionTree tree(Schema data, int discretization, int maxDepth) {
+    public static RealDecisionTree tree(DataTable data, int discretization, int maxDepth) {
         return data.isEmpty() ? null :
                 new RealDecisionTree(data.toFloatTable(),
                         0 /* score */, maxDepth, discretization);

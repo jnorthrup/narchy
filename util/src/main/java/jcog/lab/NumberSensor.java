@@ -1,6 +1,6 @@
 package jcog.lab;
 
-import jcog.io.Schema;
+import jcog.table.DataTable;
 import org.eclipse.collections.api.block.function.primitive.BooleanFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
@@ -14,7 +14,7 @@ public abstract class NumberSensor<X> extends Sensor<X,Number> {
 
 
     @Override
-    public void addToSchema(Schema data) {
+    public void addToSchema(DataTable data) {
         data.defineNumeric(id);
     }
 

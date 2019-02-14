@@ -1,6 +1,6 @@
 package jcog.lab;
 
-import jcog.io.Schema;
+import jcog.table.DataTable;
 
 import java.util.Collections;
 import java.util.List;
@@ -86,7 +86,7 @@ abstract public class Var<X,Y> implements Comparable<Var> {
         }
 
         @Override
-        public void addToSchema(Schema data) {
+        public void addToSchema(DataTable data) {
             data.defineNumeric(id);
         }
     }

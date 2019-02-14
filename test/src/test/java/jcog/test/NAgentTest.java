@@ -1,7 +1,7 @@
 package jcog.test;
 
 import it.unimi.dsi.fastutil.longs.LongArrayList;
-import jcog.io.Schema;
+import jcog.table.DataTable;
 import jcog.test.control.BooleanChoiceTest;
 import jcog.test.control.MiniTest;
 import nars.NAR;
@@ -59,7 +59,7 @@ public class NAgentTest {
 
 
 
-        Schema s = new Schema();
+        DataTable s = new DataTable();
         s.addColumns(DoubleColumn.create("reward"),DoubleColumn.create("dex"),DoubleColumn.create("x"));
         n.onCycle(()->{
             float reward = a.reward();

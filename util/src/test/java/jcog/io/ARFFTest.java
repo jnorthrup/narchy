@@ -1,6 +1,6 @@
 package jcog.io;
 
-import jcog.io.arff.ARFF;
+import jcog.table.ARFF;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

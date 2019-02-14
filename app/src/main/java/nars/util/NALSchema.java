@@ -2,8 +2,8 @@ package nars.util;
 
 import jcog.Texts;
 import jcog.data.list.FasterList;
-import jcog.io.Schema;
-import jcog.io.arff.ARFF;
+import jcog.table.DataTable;
+import jcog.table.ARFF;
 import nars.$;
 import nars.NAR;
 import nars.Op;
@@ -168,7 +168,7 @@ public class NALSchema {
 
 
     /** any (query) variables are qualified by wrapping in conjunction specifying their type in the data model */
-    public static Function<Term[], Term> typed(Function<Term[], Term> pointGenerator, Schema dataset) {
+    public static Function<Term[], Term> typed(Function<Term[], Term> pointGenerator, DataTable dataset) {
         return (x) -> {
             Term y = pointGenerator.apply(x);
             if (y.hasAny(Op.VAR_QUERY)) {
