@@ -13,12 +13,9 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
     private final MotorFunction motor;
 
     public GoalActionConcept(Term term, NAR n, MotorFunction motor) {
-        super(term,
-                n);
-
+        super(term, n);
 
         this.motor = motor;
-
     }
 
     @Override

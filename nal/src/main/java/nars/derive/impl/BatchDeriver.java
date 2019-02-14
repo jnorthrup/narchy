@@ -96,7 +96,7 @@ public class BatchDeriver extends Deriver {
         tasklinks.sample(rng, tasklinksPerIteration.intValue(), tasklink->{
             Term tt = tasklink.target();
 
-            Task task = TaskLink.task(tasklink, nar);
+            Task task = tasklink.apply(nar);
             if (task == null)
                 return true;
 

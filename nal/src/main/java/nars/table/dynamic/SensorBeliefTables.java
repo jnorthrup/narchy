@@ -22,6 +22,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Float.NaN;
+import static nars.Op.*;
 import static nars.time.Tense.TIMELESS;
 
 /**
@@ -32,10 +33,15 @@ import static nars.time.Tense.TIMELESS;
  */
 public class SensorBeliefTables extends BeliefTables {
 
-    public final MySensorBeliefTable series;
+    public final SeriesBeliefTable<SeriesBeliefTable.SeriesTask> series;
 
     public FloatRange res;
     private FloatSupplier pri;
+
+    /**
+     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
+     */
+    public final TaskLink.GeneralTaskLink tasklink;
 
     public SensorBeliefTables(Term c, boolean beliefOrGoal) {
         this(c, beliefOrGoal,
@@ -45,20 +51,38 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
     SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<SeriesBeliefTable.SeriesTask> s) {
-        super(new MySensorBeliefTable(term, beliefOrGoal, s));
+        super(new SeriesBeliefTable<>(term, beliefOrGoal, s));
 
-        this.series = tableFirst(MySensorBeliefTable.class);
+        this.series = tableFirst(SeriesBeliefTable.class);
 
         tables.add(new MyRTreeBeliefTable());
+
+        tasklink = newTaskLink(term);
+    }
+
+    protected TaskLink.GeneralTaskLink newTaskLink(Term term) {
+        Term src = term;
+        Term tgt = term;
+        //Op.IMPL.the($.varDep(1), XTERNAL, c).concept(); //TEMPORARY
+        return new TaskLink.GeneralTaskLink(src, tgt);
     }
 
     @Override
     public void add(Remember r, NAR n) {
 
-        if (r.input instanceof SeriesBeliefTable.SeriesTask) {
+        Task x = r.input;
+        if (x instanceof SeriesBeliefTable.SeriesTask) {
             r.input = null;
             r.done = true;
             return;
+        } else {
+
+            if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
+                if (!x.isEternal() && series.absorbNonSignal(x, series.start(), series.end())) {
+                    r.reject();
+                    return;
+                }
+            }
         }
 
         super.add(r, n);
@@ -238,6 +262,7 @@ public class SensorBeliefTables extends BeliefTables {
 
     }
 
+    /** link and emit */
     private void remember(Task next, FloatSupplier pri, NAR n) {
         //if (y==prev)
 
@@ -255,9 +280,14 @@ public class SensorBeliefTables extends BeliefTables {
 
         next.priMax(p); //set the task's pri too
 
-        float delta = series.tasklink.priMax(next.punc(), p);
+        float delta = tasklink.priMax(
+                next.punc()==BELIEF ? QUESTION : QUEST
+                , p);
+//        float delta = series.tasklink.priMax(next.punc(), p/2);
+//        delta += series.tasklink.priMax(QUESTION, p/4);
+//        delta += series.tasklink.priMax(QUEST, p/4);
 
-        TaskLink.link(series.tasklink, n);
+        TaskLink.link(tasklink, n);
 
         if (delta > ScalarValue.EPSILON)
             ((AbstractConceptIndex)n.concepts).active.bag.pressurize(delta); //HACK
@@ -267,28 +297,7 @@ public class SensorBeliefTables extends BeliefTables {
 
     }
 
-    private static final class MySensorBeliefTable extends SeriesBeliefTable<SeriesBeliefTable.SeriesTask> {
 
-        private MySensorBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<SeriesBeliefTable.SeriesTask> s) {
-            super(c, beliefOrGoal, s);
-        }
-
-        @Override
-        public void add(Remember r, NAR n) {
-
-            Task x = r.input;
-
-            if (x.isEternal() || x instanceof SeriesTask)
-                return; //already owned, or was owned
-
-            if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
-                if (absorbNonSignal(x, start(), end())) {
-                    r.reject();
-                }
-            }
-
-        }
-    }
 
     /**
      * adjusted compression task value to exclude regions where the series belief table is defined.

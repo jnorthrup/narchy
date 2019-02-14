@@ -26,22 +26,19 @@ import static nars.time.Tense.ETERNAL;
  * adds a TaskSeries additional Task buffer which can be evaluated from, or not depending
  * if a stored task is available or not.
  */
-abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
+public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
     public final AbstractTaskSeries<T> series;
 
 
-    /**
-     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
-     */
-    public final TaskLink.GeneralTaskLink tasklink;
+
 
     public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
         super(c, beliefOrGoal);
         this.series = s;
 
-        tasklink = new TaskLink.GeneralTaskLink(c, c, ETERNAL, punc(), 0);
     }
+
 
     @Override
     public int size() {

@@ -15,6 +15,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.index.concept.AbstractConceptIndex;
+import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
@@ -36,16 +37,6 @@ import static nars.time.Tense.ETERNAL;
 public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
     TaskLink[] EmptyTaskLinkArray = new TaskLink[0];
-
-    /**
-     * dont use .apply() directly; use this
-     */
-    static Task task(TaskLink x, NAR n) {
-        Task y = x.apply(n);
-        if (y == null)
-            x.delete();
-        return y;
-    }
 
 
     /**
@@ -73,7 +64,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 //            return new DirectTaskLink(task, pri);
 //        } else {
 
-        return new GeneralTaskLink(src, task.term()).pri(task.punc(), pri);
+        return new GeneralTaskLink(src, task.term()).priMerge(task.punc(), pri);
         //}
     }
 
@@ -114,25 +105,41 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
     }
 
     default Task apply(NAR n) {
+        return apply(n, punc(n.random()));
+    }
 
-        Term t = target();
+    @Nullable
+    default Task apply(NAR n, byte punc) {
+        Term x = target();
 
-        //choose punc
-        byte punc = punc(n.random());
-
+        boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
         Concept c =
                 //n.concept(t);
-                punc == BELIEF || punc == GOAL ? n.conceptualizeDynamic(t) : n.concept(t);
+                beliefOrGoal ? n.conceptualizeDynamic(x) : n.concept(x);
 
-        if (c != null) {
+        if( c == null)
+            delete();
+        else {
 
             long start, end;
             start = end = when();
 
-            return c.table(punc).
+            Task y = c.table(punc).
                     sample
                     //match
-                            (start, end, t, n);
+                            (start, end, x, n);
+
+            if (y == null) {
+                if (!beliefOrGoal) {
+                    //form question
+                    y = new NALTask(x, punc, null, n.time(), start, end, new long[] { n.time.nextStamp() });
+                    y.pri(punc(punc));
+                } else {
+                    delete(punc); //TODO try another punc?
+                }
+            }
+
+            return y;
 
 //            if (task!=null) {
 //                    byte punc = task.punc();
@@ -194,8 +201,9 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 //        }
 
         return null;
-
     }
+
+    void delete(byte punc);
 
     float merge(TaskLink incoming, PriMerge merge);
 
@@ -312,7 +320,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             this(source, target);
             if (when != ETERNAL) throw new TODO("non-eternal tasklink not supported yet");
             if (pri > 0)
-                pri(punc, pri);
+                priMerge(punc, pri);
         }
 
         private void assertAccurate() {
@@ -320,6 +328,11 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                 if (!Util.equals(priElseZero(), punc.sumValues() / 4f, ScalarValue.EPSILON * 2))
                     throw new WTF();
             }
+        }
+
+        @Override
+        public void delete(byte punc) {
+            priSet(punc, 0);
         }
 
         @Override
@@ -336,8 +349,11 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             return Task.p(Roulette.selectRouletteCached(4, punc::getAt, rng));
         }
 
-        public final GeneralTaskLink pri(byte punc, float pri) {
+        public final GeneralTaskLink priMerge(byte punc, float pri) {
             return mergeComponent(punc, pri, Param.tasklinkMerge);
+        }
+        public final GeneralTaskLink priSet(byte punc, float pri) {
+            return mergeComponent(punc, pri, PriMerge.replace);
         }
 
         @Override

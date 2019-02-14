@@ -257,6 +257,8 @@ public class LazyCompound {
                 }
                 if (yy > 0) {
                     for (Term e : ((EllipsisMatch)y)) {
+                        if (e == null || e == Null)
+                            return null;
                         t[i++] = e;
                     }
                 }
