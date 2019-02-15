@@ -9,6 +9,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
+import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
 import nars.task.util.TaskRegion;
 import nars.term.Term;

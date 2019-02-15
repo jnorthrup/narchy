@@ -70,7 +70,9 @@ public abstract class Param {
 
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = true;
 
-    protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;
+    protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
+
+    public static final boolean DYNAMIC_TRUTH_TASK_STORE = true;
 
 
     /**
@@ -260,7 +262,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -274,7 +276,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 3;
+    public static final int TIMEGRAPH_ITERATIONS = 4;
 
 
     /**

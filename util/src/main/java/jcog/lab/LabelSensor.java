@@ -1,7 +1,7 @@
 package jcog.lab;
 
-import jcog.table.DataTable;
 import jcog.lab.util.ExperimentRun;
+import jcog.table.DataTable;
 
 public class LabelSensor<X> extends Sensor<X,String> {
     String cur = "";

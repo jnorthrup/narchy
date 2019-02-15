@@ -168,6 +168,7 @@ public class NAL7Test extends NALTest {
 //        Param.DEBUG = true;
 //        test.log();
         test
+                .termVolMax(7)
                 .inputAt(1, "a. :|:")
                 .mustNotOutput(cycles, "a", BELIEF, (t) -> t != 1)
                 .inputAt(5, "b. :|:")
@@ -678,13 +679,13 @@ public class NAL7Test extends NALTest {
     void variable_introduction_on_events_with_negation() {
 
         test
-                .input("(--,a:x). :|: %0.9;0.8% ")
-                .inputAt(10, "b:x. :|: %0.8;0.9% ")
+                .input("(--,a:x). | %0.9;0.8% ")
+                .inputAt(2, "b:x. | %0.8;0.9% ")
 
                 .mustBelieve(cycles,
-                        "(b:x ==>-10 a:x)",
+                        "(b:x ==>-2 a:x)",
                         0.1f, 0.37f,
-                        10)
+                        2)
 
 
         ;
@@ -1049,7 +1050,7 @@ public class NAL7Test extends NALTest {
     @ValueSource(strings = {"", " |"})
     void multiConditionSyllogismPost(String implSuffix) {
 
-        long implTime = implSuffix.isEmpty() ? ETERNAL : 0;
+//        long implTime = implSuffix.isEmpty() ? ETERNAL : 0;
         String a = "(goto(door) =|> open(door))";
         String b = "(goto(door) =|> hold(key))";
         test
@@ -1127,6 +1128,7 @@ public class NAL7Test extends NALTest {
 
 
         test
+                .termVolMax(6)
                 .believe("(x ==>+5 z)")
                 .believe("(y ==>+5 z)")
                 .mustBelieve(cycles, "( (x &| y) ==>+5 z)", 1f, 0.81f)
@@ -1358,7 +1360,8 @@ public class NAL7Test extends NALTest {
          $.41;.81$ (($1-->[heated]) ==>+10 ($1-->[pliable])). %1.0;.81% {1: 3;4} ((%1,(%2<=>%3),neqCom(%1,%3),neq(%1,%2),time(beliefDTSimultaneous)),(substitute(%1,%2,%3,strict),((Intersection-->Belief),(Strong-->Goal))))
          */
 
-        test.nar.termVolumeMax.set(16);
+        test.nar.termVolumeMax.set(17);
+        test.nar.confMin.set(0.5f);
         test
 
                 .input("((reshape(I,$1) &| ($1-->[pliable])) ==>+10 ($1-->[hardened])).")
@@ -1422,10 +1425,11 @@ public class NAL7Test extends NALTest {
 
     @Test
     void nal5_conditional_induction0Simple() {
+        test.termVolMax(5);
         test.believe("((x1 && a) ==>+2 c)");
         test.believe("((y1 && a) ==>+1 c)");
-        test.mustBelieve(cycles * 4, "(x1 ==>+1 y1)", 1.00f, 0.45f);
-        test.mustBelieve(cycles * 4, "(y1 ==>-1 x1)", 1.00f, 0.45f);
+        test.mustBelieve(cycles*4 , "(x1 ==>+1 y1)", 1.00f, 0.45f);
+        test.mustBelieve(cycles*4 , "(y1 ==>-1 x1)", 1.00f, 0.45f);
     }
 
     @Test public void occtestShiftWorkingRight() {

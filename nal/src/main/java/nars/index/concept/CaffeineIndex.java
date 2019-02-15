@@ -120,8 +120,8 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
         super.start(nar);
 
         cleanup =
-                null;
-                //DurService.on(nar, concepts::cleanUp);
+                //null;
+                DurService.on(nar, concepts::cleanUp);
     }
 
 

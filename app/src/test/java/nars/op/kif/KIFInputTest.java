@@ -7,6 +7,7 @@ import jcog.data.graph.GraphMeter;
 import nars.*;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.util.TermTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +20,14 @@ import static nars.$.$$;
 
 @Disabled
 class KIFInputTest {
+
+    @Test void testFormulaToArgs1() {
+        TermTest.assertEq(
+            "(&&,reflexiveOn(#RELATION,#CLASS),({#RELATION}-->SymmetricRelation),({#RELATION}-->TransitiveRelation))",
+            new KIFInput().
+                formulaToTerm("(and (instance ?RELATION TransitiveRelation) (instance ?RELATION SymmetricRelation) (reflexiveOn ?RELATION ?CLASS))", 1)
+        );
+    }
 
     @Test
     public void testSUMOViaMemory() {
@@ -42,7 +51,7 @@ class KIFInputTest {
         Runnable r = n.memory.copy(I, O);
         r.run();
 
-        
+
     }
 
     @Test
@@ -56,7 +65,7 @@ class KIFInputTest {
 
         NAR n = NARS.
                 tmp();
-        
+
 
         n.memory.on(KIFInput.load);
 
@@ -84,11 +93,11 @@ class KIFInputTest {
                     structure.edge(s, p, t);
                     break;
                 }
-                
+
             }
         });
 
-        
+
         structure.nodeSet().forEach((t) -> {
             System.out.println(t + " " +
                     GraphMeter.clustering((AdjGraph) structure, t)
@@ -96,7 +105,6 @@ class KIFInputTest {
         });
 
 
-        
     }
 
     @Test
@@ -132,10 +140,10 @@ class KIFInputTest {
 
     @Test
     public void testLoad() throws Narsese.NarseseException {
-        
+
 
         NAR n = NARS.tmp();
-                //NARchy.core();
+        //NARchy.core();
 
         n.beliefPriDefault.set(0.05f);
 
@@ -148,11 +156,6 @@ class KIFInputTest {
         n.clear();
 
         n.logPriMin(System.out, 0.01f);
-
-
-
-
-
 
 
 //        Deriver.derivers(n).forEach( (d)->
@@ -174,162 +177,34 @@ class KIFInputTest {
         n.input("$1.0 dislikes(I,?x)?");
         n.input("$1.0 needs(I,?x)?");
         n.input("$1.0 wants(I,?x)?");
-        n.input("$1.0 patient(?what,I)?"); 
-
-        
-        
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        n.input("$1.0 patient(?what,I)?");
 
 
         n.startFPS(10f);
         Util.sleepMS(1000 * 40);
         n.stop();
-        
+
     }
 
     @Test
     public void test1() throws Exception {
 
-
-        NAR nar = NARS.tmp();
-        
-        
-
-        
-
         String I =
-                
-                
-                
-                
-                "/home/me/sumo/Merge.kif"
-                
-                
-                ;
+                "/home/me/sumo/Merge.kif";
 
-        String O = "/home/me/d/sumo_merge.nal";
+        //String O = "/home/me/d/sumo_merge.nal";
         KIFInput k = new KIFInput(new FileInputStream(I));
+        k.beliefs.forEach(bb->System.out.println(bb));
+//
+//        NAR nar = NARS.tmp();
+//
+//
+//        //nar.inputNarsese(new FileInputStream(O));
+//
+//        nar.log();
+//
+//        nar.run(10000);
 
-
-        
-
-        nar.inputNarsese(new FileInputStream(O));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-        
-
-
-
-        
-        
-
-        nar.run(10000);
-
-
-        
-
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        nar.run(2500);
-
-        
 
 
     }

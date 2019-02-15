@@ -19,10 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ImplicationTest {
 
-    private static final Term x = $.the("x");
-    private static final Term y = $.the("y");
+    private static final Term x = $.the("x"), y = $.the("y");
     private static final boolean[] B = new boolean[]{true, false};
-    private static final int CYCLES = 4;
+    private static final int CYCLES = 50;
     private static final int TERM_VOL_MAX = 5;
 
     private static void assertContains(String oo, String c) {
@@ -70,10 +69,14 @@ class ImplicationTest {
 
         assertContains(oo, "x. %1.0% (x==>y). y=%1.0;.81%");
         assertContains(oo, "x. %0.0% ((--,x)==>y). y=%1.0;.81%");
+
+        assertContains(oo, "y. %1.0% (x==>y). x=%1.0;.45%");
         assertContains(oo, "y. %1.0% ((--,x)==>y). x=%0.0;.45%");
-        assertContains(oo, "y. %0.0% ((--,x)==>y). x=%1.0;.45%");
+        assertContains(oo, "y. %0.0% (--,(x==>y)). x=%1.0;.45%");
         assertContains(oo, "y. %0.0% (--,((--,x)==>y)). x=%0.0;.45%");
-        assertContains(oo, "y. %1.0% (--,((--,x)==>y)). x=%1.0;.45%");
+
+        //assertNotContains(oo, "y. %1.0% (--,((--,x)==>y)). x=%1.0;.45%");
+        //assertNotContains(oo, "y. %0.0% ((--,x)==>y). x=%1.0;.45%");
 
 
     }

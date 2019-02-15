@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 import static java.lang.Float.NaN;
-import static nars.Op.*;
+import static nars.Op.ATOM;
 import static nars.time.Tense.TIMELESS;
 
 /**

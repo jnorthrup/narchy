@@ -4,9 +4,9 @@ import com.jogamp.opengl.GL2;
 import com.jujutsu.tsne.matrix.MatrixOps;
 import jcog.Util;
 import jcog.data.set.ArrayHashSet;
-import jcog.io.Schema;
-import jcog.io.arff.ARFF;
 import jcog.math.FloatRange;
+import jcog.table.ARFF;
+import jcog.table.DataTable;
 import jcog.tree.rtree.rect.RectFloat;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ public class TsneTest {
 
     //TODO maxGain parameter for SimpleTsne
     //TODO dynamic perplexity control
-    public static class TsneModel implements Graph2D.Graph2DUpdater<Schema.Instance> {
+    public static class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
 
         public final int iters = 1;
         public final FloatRange spaceScale = new FloatRange(0.2f, 0.001f, 100);
@@ -45,11 +45,11 @@ public class TsneTest {
         );
 
         final SimpleTSne s = new SimpleTSne();
-        final ArrayHashSet<Graph2D.NodeVis<Schema.Instance>> xx = new ArrayHashSet<>();
-        final ArrayHashSet<Graph2D.NodeVis<Schema.Instance>> nn = new ArrayHashSet<>();
+        final ArrayHashSet<Graph2D.NodeVis<DataTable.Instance>> xx = new ArrayHashSet<>();
+        final ArrayHashSet<Graph2D.NodeVis<DataTable.Instance>> nn = new ArrayHashSet<>();
         double[][] X = new double[0][0];
 
-        @Override public void update(Graph2D<Schema.Instance> g, int dtMS) {
+        @Override public void update(Graph2D<DataTable.Instance> g, int dtMS) {
             g.forEachValue(nn::add);
             if (!nn.equals(xx)) {
                 xx.clear();
@@ -64,7 +64,7 @@ public class TsneTest {
                         X = new double[rows][];
                     }
                     int j = 0;
-                    for (Graph2D.NodeVis<Schema.Instance> i : xx) {
+                    for (Graph2D.NodeVis<DataTable.Instance> i : xx) {
                         X[j++] = i.id.toDoubleArray(firstCol, lastCol);
                     }
                 } else {
@@ -84,7 +84,7 @@ public class TsneTest {
             double cx = g.cx(), cy = g.cy();
             float scale = spaceScale.floatValue() * Math.max(g.w(), g.h()) / space;
             float nodeScale = this.nodeScale.floatValue();
-            for (Graph2D.NodeVis<Schema.Instance> i : xx) {
+            for (Graph2D.NodeVis<DataTable.Instance> i : xx) {
                 double[] Yj = Y[j];
                 double x = (Yj[0] =
                                 //Util.clamp(Yj[0], -space /2, space /2)
@@ -114,10 +114,10 @@ public class TsneTest {
 
     }
 
-    public static class TsneRenderer implements Graph2D.Graph2DRenderer<Schema.Instance> {
+    public static class TsneRenderer implements Graph2D.Graph2DRenderer<DataTable.Instance> {
 
         @Override
-        public void node(Graph2D.NodeVis<Schema.Instance> node, Graph2D.GraphEditing<Schema.Instance> graph) {
+        public void node(Graph2D.NodeVis<DataTable.Instance> node, Graph2D.GraphEditing<DataTable.Instance> graph) {
             node.set(new PushButton() {
                 @Override
                 protected void paintWidget(RectFloat bounds, GL2 gl) {
@@ -133,7 +133,7 @@ public class TsneTest {
             }));
         }
 
-        protected void paintNode(GL2 gl, Surface surface, Schema.Instance id) {
+        protected void paintNode(GL2 gl, Surface surface, DataTable.Instance id) {
             Draw.colorHash(gl, id.hashCode(), 0.8f);
             Draw.rect(surface.bounds, gl);
         }
@@ -146,10 +146,10 @@ public class TsneTest {
 
 
             SpaceGraph.window(
-                new Graph2D<Schema.Instance>().
+                new Graph2D<DataTable.Instance>().
                     update(new TsneModel(0, data.columnCount())).
                     render(new TsneRenderer() {
-                        @Override protected void paintNode(GL2 gl, Surface surface, Schema.Instance id) {
+                        @Override protected void paintNode(GL2 gl, Surface surface, DataTable.Instance id) {
                             float score = ((Double)(id.data.get(0))).floatValue();
                             Draw.colorGrays(gl, 0.25f + 0.75f * Util.unitize((score - 1400)/200));
                             Draw.rect(surface.bounds, gl);

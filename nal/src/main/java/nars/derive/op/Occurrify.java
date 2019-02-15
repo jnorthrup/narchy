@@ -122,20 +122,45 @@ public class Occurrify extends TimeGraph {
 //            }
 
 
-        Pair<Term, long[]> timing = time.occurrence(d, x);
-        if (timing == null) {
-            d.nar.emotion.deriveFailTemporal.increment();
-            ///*temporary:*/ time.solve(d, c1);
-            return false;
+
+        Term c2;
+        long[] occ;
+        {
+            Pair<Term, long[]> timing;
+            boolean neg = (x.op()==NEG); //HACK
+            Term xx;
+            if (neg)
+                xx = x.unneg();
+            else
+                xx = x;
+
+            timing = time.occurrence(d, xx);
+            if (timing == null) {
+                d.nar.emotion.deriveFailTemporal.increment();
+                ///*temporary:*/ time.solve(d, c1);
+                return false;
+            }
+
+            if (neg) {
+                Term y = timing.getOne();
+                if (y == xx)
+                    c2 = x;
+                else
+                    c2 = y.neg();
+
+            } else {
+                c2 = timing.getOne();
+            }
+
+            occ = timing.getTwo();
+
+            if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
+                    (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
+                    (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
+                throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
+
         }
 
-
-        Term c2 = timing.getOne();
-        long[] occ = timing.getTwo();
-        if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
-                (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
-                (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
-            throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
 
         if (!d.concSingle && (d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
             {
@@ -650,17 +675,7 @@ public class Occurrify extends TimeGraph {
         Default() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-
-                boolean neg = (x.op()==NEG); //HACK
-                if (neg)
-                    x = x.unneg();
-
-                Pair<Term, long[]> p = solveOccDT(x, d.occ.reset(true, true, x, true));
-                if (neg && p!=null) {
-                    p = pair(x.neg(), p.getTwo());
-                }
-
-                return p;
+                return solveOccDT(x, d.occ.reset(true, true, x, true));
             }
 
             @Override

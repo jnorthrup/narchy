@@ -9,6 +9,7 @@ import nars.agent.util.UnipolarMotor;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
 import nars.term.Term;
+import nars.term.atom.Int;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
@@ -25,8 +26,8 @@ import static nars.Op.BELIEF;
  */
 public interface NAct {
 
-    Term PLUS = $.the("\"+\"");
-    Term NEG = $.the("\"-\"");
+    Term PLUS = Int.the(+1); ////$.the("\"+\"");
+    Term NEG = Int.the(-1); //$.the("\"-\"");
 
 
     NAR nar();

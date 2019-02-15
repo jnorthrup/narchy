@@ -23,7 +23,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import static nars.Op.*;
+import static nars.Op.NEG;
+import static nars.Op.VAR_PATTERN;
 
 
 /* recurses a pair of compound target tree's subterms

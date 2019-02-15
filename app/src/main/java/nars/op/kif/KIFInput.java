@@ -16,10 +16,13 @@
  */
 package nars.op.kif;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.util.ArrayUtils;
 import nars.*;
+import nars.op.Equal;
+import nars.op.MathFunc;
 import nars.task.CommandTask;
 import nars.term.Compound;
 import nars.term.Term;
@@ -36,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -73,7 +75,10 @@ public class KIFInput {
 
 
 
-    private final SortedSet<Term> beliefs = new ConcurrentSkipListSet<>();
+    public final SortedSet<Term> beliefs =
+            //new ConcurrentSkipListSet<>();
+            new TreeSet();
+
     private final KIF kif;
     private final boolean includeRelatedInternalConcept = true;
     private final boolean includeDoc = false;
@@ -83,10 +88,6 @@ public class KIFInput {
     {
         symmetricRelations.add(SYMMETRIC_RELATION);
     }
-
-
-    
-    
     
     
     
@@ -102,25 +103,23 @@ public class KIFInput {
             $$("QuintaryRelation"),
             $$("SingleValuedRelation"),$$("TotalValuedRelation"),
 
-            $$("AsymmetricRelation") 
-
-            
+            $$("AsymmetricRelation")
     );
 
-    KIFInput(InputStream is) throws Exception {
+    public KIFInput() {
         this.kif = new KIF();
+    }
+
+    public KIFInput(InputStream is) throws Exception {
+        this();
+
         kif.read(is);
 
         KB kb = KBmanager.getMgr().addKB("preprocess");
 
-        FormulaPreprocessor fpp = new FormulaPreprocessor();
-        kif.formulaMap.values().forEach(_x -> {
+        kif.formulaMap.values().forEach(xx -> {
 
-            ArrayList<Formula> xx = fpp.preProcess(_x, false, kb);
-
-
-
-            xx.forEach(x -> {
+            FormulaPreprocessor.preProcess(xx, false, kb).forEach(x -> {
                 try {
                     Term y = formulaToTerm(x, 0);
                     if (y != null) {
@@ -202,12 +201,7 @@ public class KIFInput {
             }
             return false;
         });
-        
 
-
-
-
-        
     }
 
     private static Term atomic(String sx) {
@@ -230,7 +224,7 @@ public class KIFInput {
 
 
 
-    private Term formulaToTerm(String sx, int level) {
+    public Term formulaToTerm(String sx, int level) {
         sx = sx.replace("?", "#"); 
 
         Formula f = new Formula(sx);
@@ -321,7 +315,7 @@ public class KIFInput {
                             symmetricRelations.add(subj);
                         }
 
-                        if (pred.equals(SYMMETRIC_RELATION)) {
+                        if (pred.equals(SYMMETRIC_RELATION) && !subj.hasVars()) {
                             return null; 
                         }
 
@@ -360,14 +354,14 @@ public class KIFInput {
                 break;
 
             case "equal":
-                if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
-                    
-                    //y = impl(args.get(0), args.get(1), false);
-                    y = SIM.the(args.get(0), args.get(1));
-                } else {
-
-                }
-                
+//                if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
+//
+//                    //y = impl(args.get(0), args.get(1), false);
+//                    y = SIM.the(args.get(0), args.get(1));
+//                } else {
+//
+//                }
+                y = Equal.the(args.get(0), args.get(1));
                 
                 break;
 
@@ -398,7 +392,8 @@ public class KIFInput {
                 y = impl(args.get(0), args.get(1), true);
                 break;
             case "<=>":
-                y = impl(args.get(0), args.get(1), false);
+                //y = impl(args.get(0), args.get(1), false);
+                y = Equal.the(args.get(0), args.get(1));
                 break;
 
 
@@ -451,11 +446,23 @@ public class KIFInput {
                 }
                 break;
 
+            case "AdditionFn":
+                if (args.size()==2)
+                    return $.func(MathFunc.add, args.get(0), args.get(1));
+                else
+                    throw new TODO();
+            case "MultiplicationFn":
+                if (args.size()==2)
+                    return $.func(MathFunc.mul, args.get(0), args.get(1));
+                else
+                    throw new TODO();
+
             case "partition":
             case "disjointDecomposition":
                 if (args.size() > 2) {
                     y = disjoint(args.subList(1, args.size()), args.get(0));
-                }
+                } else
+                    throw new TODO();
                 break;
             case "disjointRelation":
             case "disjoint":

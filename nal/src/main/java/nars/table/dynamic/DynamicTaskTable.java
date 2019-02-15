@@ -21,16 +21,8 @@ public abstract class DynamicTaskTable extends EmptyBeliefTable {
         return false;
     }
 
-
-
-
-
     protected final byte punc() {
         return beliefOrGoal ? Op.BELIEF : Op.GOAL;
     }
 
 }
-//    /**
-//     * generates a dynamic matching truth
-//     */
-//    protected abstract Truth truthDynamic(long start, long end, Term template, Predicate<Task> filter, NAR nar);

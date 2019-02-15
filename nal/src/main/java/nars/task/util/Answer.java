@@ -2,7 +2,6 @@ package nars.task.util;
 
 import jcog.WTF;
 import jcog.data.pool.MetalPool;
-import jcog.data.set.MetalLongSet;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedTopN;
 import jcog.sort.TopN;
@@ -389,7 +388,7 @@ public final class Answer implements AutoCloseable {
     }
 
     private Task taskFirst(boolean topOrSample) {
-        return (topOrSample ? tasks.get(0) :  tasks.getRoulette(nar.random())).x;
+        return (topOrSample ? tasks.get(0) :  tasks.getRoulette(random())).x;
     }
 
     private Task taskMerge(@Nullable Task root) {
@@ -414,28 +413,20 @@ public final class Answer implements AutoCloseable {
         if (ditherTruth) {
             tt = tt.dithered(nar);
             if (tt == null)
-                return root;
+                return null;
         }
-
 
         long s = tp.start(), e = tp.end();
-        if (d.allSatisfy(Task::isEternal)) {
-            s = e = ETERNAL;
-        }
+//        if (allSatisfy(Task::isEternal)) {
+//            s = e = ETERNAL;
+//        }
 
-        Task dyn = d.task(tp.term, tt, (rng) -> {
 
-            @Nullable MetalLongSet stampSet = Stamp.toSet(Param.STAMP_CAPACITY, tp.size(), tp); //calculate stamp after filtering and after intermpolation filtering
-            if (stampSet.size() > Param.STAMP_CAPACITY) {
-                return Stamp.sample(Param.STAMP_CAPACITY, stampSet, rng);
-            } else {
-                return stampSet.toSortedArray();
-            }
-
-        }, root.isBelief(), s, e, nar);
+        Task dyn = tp.task(d, tt, root.isBeliefOrGoal(), s, e, nar);
 
         if (dyn == null)
             return root;
+
         if (root.isDeleted())
             return dyn; //which could have occurred by now
 

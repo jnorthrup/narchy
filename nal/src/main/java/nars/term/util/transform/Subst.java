@@ -1,6 +1,5 @@
 package nars.term.util.transform;
 
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;

@@ -18,9 +18,11 @@ import nars.term.util.Intermpolate;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.truth.dynamic.DynEvi;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Random;
 
 import static java.lang.Float.NaN;
 import static nars.term.util.Intermpolate.dtDiff;
@@ -484,6 +486,19 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
     private void invalidateEvi() {
         forEach(TaskComponent::invalidate);
+    }
+
+    public final Task task(DynEvi d, Truth tt, boolean beliefOrGoal, long s, long e, NAR nar) {
+        return d.task(term, tt, this::stamper, beliefOrGoal, s, e, nar);
+    }
+
+    private long[] stamper(Random rng) {
+        @Nullable MetalLongSet stampSet = Stamp.toSet(Param.STAMP_CAPACITY, size(), this); //calculate stamp after filtering and after intermpolation filtering
+        if (stampSet.size() > Param.STAMP_CAPACITY) {
+            return Stamp.sample(Param.STAMP_CAPACITY, stampSet, rng);
+        } else {
+            return stampSet.toSortedArray();
+        }
     }
 
 

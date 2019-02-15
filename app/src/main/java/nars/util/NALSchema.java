@@ -2,8 +2,8 @@ package nars.util;
 
 import jcog.Texts;
 import jcog.data.list.FasterList;
-import jcog.table.DataTable;
 import jcog.table.ARFF;
+import jcog.table.DataTable;
 import nars.$;
 import nars.NAR;
 import nars.Op;

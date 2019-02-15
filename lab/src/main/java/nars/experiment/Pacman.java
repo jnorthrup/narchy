@@ -20,7 +20,7 @@ public class Pacman extends NAgentX {
     private final PacmanGame g;
 
     public Pacman(NAR nar) {
-        super("G", FrameTrigger.fps(20), nar);
+        super("G", FrameTrigger.fps(10), nar);
 
         this.g = new PacmanGame();
 

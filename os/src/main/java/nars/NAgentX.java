@@ -171,7 +171,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        //Param.STRONG_COMPOSITION = true;
+        Param.STRONG_COMPOSITION = true;
 //        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -212,15 +212,15 @@ abstract public class NAgentX extends NAgent {
                 .time(clock)
                 .index(
 
-                        CaffeineIndex.soft()
+                        //CaffeineIndex.soft()
 
-//                        new CaffeineIndex(
+                        new CaffeineIndex(
 //////                                128 * 1024
-//////                                96 * 1024
+                    96 * 1024
 //                                64 * 1024
 ////                                //32 * 1024
 ////////                                //16 * 1024
-//                                , c -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                                 , c -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
 
 //                        new HijackConceptIndex(
 //
@@ -392,8 +392,8 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.1f * p);
         n.questPriDefault.set(0.1f * p);
 
-        n.beliefConfDefault.set(0.8f);
-        n.goalConfDefault.set(0.8f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 

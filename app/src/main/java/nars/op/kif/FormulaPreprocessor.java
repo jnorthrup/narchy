@@ -752,7 +752,7 @@ public class FormulaPreprocessor {
      *
      * @return an ArrayList of Formula(s), which could be empty.
      */
-    private ArrayList<Formula> replacePredVarsAndRowVars(Formula form, KB kb, boolean addHoldsPrefix) {
+    static private ArrayList<Formula> replacePredVarsAndRowVars(Formula form, KB kb, boolean addHoldsPrefix) {
 
         ArrayList<Formula> result = new ArrayList<Formula>();
         
@@ -936,7 +936,7 @@ public class FormulaPreprocessor {
      * @return an ArrayList of Formula(s), which could be empty.
      *
      */
-    public ArrayList<Formula> preProcess(Formula form, boolean isQuery, KB kb) {
+    public static List<Formula> preProcess(Formula form, boolean isQuery, KB kb) {
 
         ArrayList<Formula> results = new ArrayList<Formula>();
         if (!StringUtil.emptyString(form.theFormula)) {
@@ -1206,18 +1206,18 @@ public class FormulaPreprocessor {
         System.out.println("testFour() valence for ListFn_1: " + kb.kbCache.valences.get("ListFn_1"));
         System.out.println("testFour(): " + fp.addTypeRestrictions(f,kb));
     }
-
-    /** ***************************************************************
-     */
-    public static void main(String[] args) {
-
-        
-        
-        testFour();
-
-        
-        
-        
-    }
+//
+//    /** ***************************************************************
+//     */
+//    public static void main(String[] args) {
+//
+//
+//
+//        testFour();
+//
+//
+//
+//
+//    }
 
 }

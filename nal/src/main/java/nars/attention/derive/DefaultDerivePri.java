@@ -10,6 +10,7 @@ import nars.truth.Truth;
 import nars.truth.polation.TruthIntegration;
 
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * TODO parameterize, modularize, refactor etc
@@ -137,10 +138,12 @@ public class DefaultDerivePri implements DerivePri {
 //            throw new WTF("spontaneous belief inflation"); //not actually
             return 1;
         else {
-//            float cDerived = w2cSafe(eDerived);
-//            float cParent = w2cSafe(eParent);
-//            float lossFactor = 1 - ((cParent - cDerived) / cParent);
-            float lossFactor = 1 - ((eParent - eDerived) / eParent);
+            float cDerived = w2cSafe(eDerived);
+            float cParent = w2cSafe(eParent);
+            float lossFactor = 1 - ((cParent - cDerived) / cParent);
+
+            //float lossFactor = 1 - ((eParent - eDerived) / eParent);
+
             return Util.lerp(eviImportance.floatValue(), 1f, lossFactor);
         }
     }

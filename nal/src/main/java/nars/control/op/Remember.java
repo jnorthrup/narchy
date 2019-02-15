@@ -8,16 +8,12 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.CauseMerge;
 import nars.op.stm.ConjClustering;
-import nars.task.AbstractTask;
-import nars.task.ITask;
-import nars.task.NALTask;
-import nars.task.TaskProxy;
+import nars.task.*;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynamicTruthTask;
 import org.jetbrains.annotations.Nullable;
 
 /**

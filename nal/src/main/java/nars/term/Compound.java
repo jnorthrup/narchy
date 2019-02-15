@@ -309,7 +309,7 @@ public interface Compound extends Term, IPair, Subterms {
             if (xdt!=ydt && xx.equals(yy))
                 return true;
 
-            if (!u.var(xx) && !u.var(yy)) {
+            if (!xSpecific && !ySpecific && !u.var(xx) && !u.var(yy)) {
                 //both constant
                 if (!xx.hasAny(Op.CONJ.bit) && !yy.hasAny(Op.CONJ.bit))
                     return false; //both constant (excl CONJ); no possibility of unify

@@ -2,8 +2,8 @@ package nars.util;
 
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
-import jcog.table.ARFF;
 import jcog.random.XoRoShiRo128PlusRandom;
+import jcog.table.ARFF;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;

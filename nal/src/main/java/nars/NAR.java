@@ -1487,7 +1487,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         if (ConceptBuilder.dynamicModel(ct) != null) {
             //try conceptualizing the dynamic
 
-            if (Param.CONCEPTUALIZE_DYNAMIC_TRANSIENT) {
+            if (Param.DYNAMIC_CONCEPT_TRANSIENT) {
 
                 //create temporary dynamic concept
                 Concept c = conceptBuilder.construct(ct);
