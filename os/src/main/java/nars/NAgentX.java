@@ -25,7 +25,7 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
-import nars.op.ImpLinker;
+import nars.op.StatementLinker;
 import nars.op.Introduction;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
@@ -443,7 +443,7 @@ abstract public class NAgentX extends NAgent {
                 "relation_introduction.nal"
         ));
 
-        new ImpLinker(n);
+        new StatementLinker(n);
 
         new STMLinkage(n, 1);
 

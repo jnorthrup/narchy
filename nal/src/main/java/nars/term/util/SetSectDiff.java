@@ -6,6 +6,8 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.builder.HeapTermBuilder;
+import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 
 import static nars.Op.*;
@@ -15,11 +17,11 @@ import static nars.term.atom.Bool.True;
 /** NAL2/NAL3 setAt, intersection and difference functions */
 public class SetSectDiff {
 
-    public static Term intersect(Op o, Term... t ) {
-        return intersect(o, false, t);
+    public static Term intersect(TermBuilder b, Op o, Term... t ) {
+        return intersect(b, o, false, t);
     }
 
-    public static Term intersect(Op o, boolean union,Term... t ) {
+    public static Term intersect(TermBuilder b, Op o, boolean union, Term... t ) {
 
         switch (t.length) {
             case 0:
@@ -74,7 +76,7 @@ public class SetSectDiff {
                     y.keyValuesView().forEach(e ->
                             yyy[k[0]++] = e.getOne().negIf(e.getTwo()==-1)
                     );
-                    return Op.compound(o, yyy);
+                    return Op.compound(b, o, yyy);
                 }
 
         }
@@ -351,7 +353,7 @@ public class SetSectDiff {
         } else if (retained == 0) {
             return Null;
         } else {
-            return o.the(aa.subsExcluding(removals));
+            return o.the(HeapTermBuilder.the, aa.subsExcluding(removals));
         }
 
     }

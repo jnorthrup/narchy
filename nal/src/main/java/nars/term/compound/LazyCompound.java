@@ -4,17 +4,19 @@ import com.google.common.primitives.Ints;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.util.ArrayUtils;
-import nars.$;
 import nars.Op;
+import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Functor;
-import nars.term.ProxyTerm;
 import nars.term.Term;
+import nars.term.atom.Atomic;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.unify.ellipsis.EllipsisMatch;
-import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
@@ -41,19 +43,31 @@ public class LazyCompound {
 
     }
 
+    public boolean updateMap(Function<Term, Term> m) {
+        if (sub == null) return false;
+        return sub.updateMap(m);
+    }
+
     public final LazyCompound compoundStart(Op o) {
         compoundStart(o, DTERNAL);
         return this;
     }
 
-    public LazyCompound compound(Op o, Term... subs) {
+
+    /**
+     * append compound
+     */
+    public final LazyCompound compound(Op o, Term... subs) {
         return compound(o, DTERNAL, subs);
     }
 
+    /**
+     * append compound
+     */
     public LazyCompound compound(Op o, int dt, Term... subs) {
         int n = subs.length;
         assert (n < Byte.MAX_VALUE);
-        return compoundStart(o, dt).subs((byte) n).subs(subs).compoundEnd(o);
+        return compoundStart(o, dt).subsStart((byte) n).subs(subs).compoundEnd(o);
     }
 
     public LazyCompound compoundEnd(Op o) {
@@ -61,7 +75,7 @@ public class LazyCompound {
     }
 
 
-    public LazyCompound subs(byte subterms) {
+    public LazyCompound subsStart(byte subterms) {
         code.writeByte(subterms);
         return this;
     }
@@ -81,31 +95,52 @@ public class LazyCompound {
     final static byte MAX_CONTROL_CODES = (byte) Op.ops.length;
 
 
-    public final void negStart() {
+    public final LazyCompound negStart() {
         compoundStart(NEG, DTERNAL);
+        return this;
     }
+
 
     /**
      * add an already existent sub
      */
-    public LazyCompound add(Term x) {
-        if (x.op() == NEG) {
-            negStart();
-            x = x.unneg();
+    public LazyCompound append(Term x) {
+        if (x instanceof Compound) {
+            if (x.op() == NEG) {
+                return negStart().append(x.unneg()).compoundEnd(NEG);
+            } else {
+                return append((Compound) x);
+            }
+        } else {
+            return append((Atomic) x);
         }
+    }
+
+    protected final LazyCompound append(Compound x) {
+        Op o = x.op();
+        Subterms s = x.subterms();
+        return compoundStart(o, x.dt()).subsStart((byte) s.subs()).subs(s).subsEnd().compoundEnd(o);
+    }
+
+    protected LazyCompound append(Atomic x) {
         code.writeByte(MAX_CONTROL_CODES + intern(x));
         return this;
     }
 
-    protected byte intern(Term x) {
-        if (x == null || x == Null || x.op() == NEG)
-            throw new WTF();
+    private byte intern(Term x) {
+        //assert(!(x == null || x == Null || x.op() == NEG));
         return sub().intern(x);
     }
 
-    public LazyCompound subs(Term... subs) {
+    public final LazyCompound subs(Iterable<Term> subs) {
         for (Term x : subs)
-            add(x);
+            append(x);
+        return this;
+    }
+
+    public final LazyCompound subs(Term... subs) {
+        for (Term x : subs)
+            append(x);
         return this;
     }
 
@@ -115,10 +150,14 @@ public class LazyCompound {
         return this.sub == null ? (this.sub = new ByteAnonMap(INITIAL_ANON_SIZE)) : sub;
     }
 
+    public final Term get() {
+        return get(Op.terms);
+    }
+
     /**
      * run the construction process
      */
-    public Term get() {
+    public Term get(TermBuilder b) {
 
         DynBytes c = code;
         if (code == null)
@@ -126,11 +165,11 @@ public class LazyCompound {
         else {
 //            if (sub != null)
 //                sub.readonly(); //optional
-            return getNext(c.arrayDirect(), new int[]{0, c.len});
+            return getNext(b, c.arrayDirect(), new int[]{0, c.len});
         }
     }
 
-    private Term getNext(byte[] ii, int[] range) {
+    private Term getNext(TermBuilder b, byte[] ii, int[] range) {
         int from;
         byte ctl = ii[(from = range[0]++)];
         //System.out.println("ctl=" + ctl + " @ " + from);
@@ -139,7 +178,7 @@ public class LazyCompound {
         if (ctl < MAX_CONTROL_CODES) {
             Op op = Op.ops[ctl];
             if (op == NEG)
-                next = getNext(ii, range).neg();
+                next = getNext(b, ii, range).neg();
             else {
 
 
@@ -164,43 +203,30 @@ public class LazyCompound {
                         throw new WTF();
                     }
                 } else {
-                    Term[] s = getNext(subterms, ii, range);
+                    Term[] s = getNext(b, subterms, ii, range);
                     if (s == null)
-                        next = Null;
+                        return Null;
                     else {
 
-//                        for (Term x : s)
-//                            if (x == null)
-//                                throw new NullPointerException();
+//                        for (Term x : s) if (x == null) throw new NullPointerException();
 
-                        next = op.the(dt, s);
-                        assert (next != null);
+                        if (op==INH && evalInline() && s[1] instanceof Functor.InlineFunctor && s[0].op()==PROD) {
 
-                        if (next != Null) {
+                            Term z = ((Functor.InlineFunctor)s[1]).applyInline(s[0].subterms());
+                            if (z == null)
+                                return Null;
+                            next = z;
 
-                            int to = range[0];
-                            int end = range[1];
-                            int span = to - from;
-                            if (end - to >= span) {
-                                //search for repeat occurrences of the start..end sequence after this
-                                int afterTo = to;
-                                byte n = 0;
-                                do {
-                                    int match = ArrayUtils.nextIndexOf(ii, afterTo, end, ii, from, to);
+                            //TODO if Functor.isDeterministic { replaceAhead...
 
-                                    if (match != -1) {
-                                        //System.out.println("repeat found");
-                                        if (n == 0)
-                                            n = (byte) (MAX_CONTROL_CODES + intern(next)); //intern for re-substitute
-                                        code.set(match, n);
+                        } else {
 
-                                        code.fillBytes((byte) 0, match + 1, match + span); //zero padding, to be ignored
-                                        afterTo = match + span;
-                                    } else
-                                        break;
+                            next = op.the(b, dt, s);
 
-                                } while (afterTo < end);
-                            }
+                            assert (next != null);
+
+                            if (next != Null)
+                                replaceAhead(ii, range, from, next);
 
                         }
 
@@ -210,7 +236,7 @@ public class LazyCompound {
 
 
         } else {
-            next = next(ctl);
+            next = next(b, ctl);
             //skip zero padding suffix
             while (range[0] < range[1] && code.at(range[0]) == 0) {
                 ++range[0];
@@ -222,7 +248,37 @@ public class LazyCompound {
 
     }
 
-    protected Term next(byte ctl) {
+    protected boolean evalInline() {
+        return true;
+    }
+
+    private void replaceAhead(byte[] ii, int[] range, int from, Term next) {
+        int to = range[0];
+        int end = range[1];
+        int span = to - from;
+        if (end - to >= span) {
+            //search for repeat occurrences of the start..end sequence after this
+            int afterTo = to;
+            byte n = 0;
+            do {
+                int match = ArrayUtils.nextIndexOf(ii, afterTo, end, ii, from, to);
+
+                if (match != -1) {
+                    //System.out.println("repeat found");
+                    if (n == 0)
+                        n = (byte) (MAX_CONTROL_CODES + intern(next)); //intern for re-substitute
+                    code.set(match, n);
+
+                    code.fillBytes((byte) 0, match + 1, match + span); //zero padding, to be ignored
+                    afterTo = match + span;
+                } else
+                    break;
+
+            } while (afterTo < end);
+        }
+    }
+
+    protected Term next(TermBuilder b, byte ctl) {
         Term n = sub.interned((byte) (ctl - MAX_CONTROL_CODES));
         if (n == null)
             throw new NullPointerException();
@@ -230,7 +286,7 @@ public class LazyCompound {
     }
 
     @Nullable
-    private Term[] getNext(byte n, byte[] ii, int[] range) {
+    private Term[] getNext(TermBuilder b, byte n, byte[] ii, int[] range) {
         Term[] t = null;
         //System.out.println(range[0] + ".." + range[1]);
         for (int i = 0; i < n; ) {
@@ -240,7 +296,7 @@ public class LazyCompound {
             //return Arrays.copyOfRange(t, 0, i); //hopefully this is becaues of an ellipsis that got inlined and had no effect
 
             Term y;
-            if ((y = getNext(ii, range)) == Null)
+            if ((y = getNext(b, ii, range)) == Null)
                 return null;
 
             if (y instanceof EllipsisMatch) {
@@ -286,142 +342,140 @@ public class LazyCompound {
         code.len = pos;
     }
 
-    public void subsEnd() {
+    public LazyCompound subsEnd() {
+        return this;
     }
 
-    /**
-     * ability to lazily evaluate and rewrite functors
-     */
-    public static class LazyEvalCompound extends LazyCompound {
-
-        ShortArrayList inhStack = null;
-
-        private static class Eval extends ProxyTerm {
-            final Functor.InlineFunctor f;
-            byte arity;
-            final byte[] args;
-
-            public Eval(Functor.InlineFunctor f, byte arity, byte[] args) {
-                super((Term) f);
-                this.arity = arity;
-                this.f = f;
-                this.args = args;
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                return this == o;
-            }
-
-            @Override
-            public int hashCode() {
-                return System.identityHashCode(this);
-            }
-
-            @Override
-            public String toString() {
-                return f + "<" + Arrays.toString(args) + ">";
-            }
-
-            public Term eval(LazyCompound c) {
-                Term[] a = c.getNext(arity, args, new int[]{0, args.length});
-                if (a == null) {
-                    return Null;
-                } else {
-                    Term t = f.applyInline($.vFast(a));
-                    return t;
-                }
-            }
-        }
-
-        @Override
-        public LazyCompound compoundStart(Op o, int dt) {
-
-            if (o == INH) {
-                if (inhStack == null)
-                    inhStack = new ShortArrayList(8);
-
-                inhStack.add((short) code.length()); //record compound at this position
-            }
-
-            return super.compoundStart(o, dt);
-        }
-
-        @Override
-        public LazyCompound compoundEnd(Op o) {
-            if (o == INH) {
-                //assert(inhStack!=null);
-                inhPop();
-            }
-            return super.compoundEnd(o);
-        }
-
-        private void inhPop() {
-            inhStack.removeAtIndex(inhStack.size() - 1);
-        }
-
-        @Override
-        public LazyCompound add(Term x) {
-            if (x instanceof Functor.InlineFunctor) {
-                //
-                // ((arg1,arg,...)-->F)
-                //
-                //scan backwards, verifying preceding product arguments contained within inheritance
-                if (inhStack != null && !inhStack.isEmpty()) {
-                    DynBytes c = this.code;
-                    int lastInh = inhStack.getLast();
-
-                    byte[] cc = c.arrayDirect();
-                    int lastProd = lastInh + 2;
-                    if (c.length() >= lastProd && cc[lastProd] == PROD.id) {
-                        int pos = c.length();
-                        x = evalLater((Functor.InlineFunctor) x, lastProd, pos /* after adding the functor atomic */);
-                    }
-
-                }
-
-            }
-
-            return super.add(x);
-        }
-
-        @Override
-        public void rewind(int pos) {
-            if (pos != pos()) {
-                while (inhStack != null && !inhStack.isEmpty() && inhStack.getLast() > pos)
-                    inhStack.removeAtIndex(inhStack.size() - 1);
-                super.rewind(pos);
-            }
-        }
-
-        /**
-         * deferred functor evaluation
-         */
-        private Eval evalLater(Functor.InlineFunctor f, int start, int end) {
-            DynBytes c = code;
-            Eval e = new Eval(f, code.at(start + 1), c.subBytes(start + 2, end));
-            rewind(start - 2);
-            //inhPop();
-
-            return e;
-        }
-
-        @Override
-        protected Term next(byte ctl) {
-            Term t = super.next(ctl);
-            if (t instanceof Eval) {
-                Term n = ((Eval) t).eval(this);
-                if (n == null)
-                    throw new NullPointerException();
-                return n;
-            }
-            if (t == null)
-                throw new NullPointerException();
-            return t;
-        }
-
-
-    }
+//    /**
+//     * ability to lazily evaluate and rewrite functors
+//     */
+//    public static class LazyEvalCompound extends LazyCompound {
+//
+//        ShortArrayList inhStack = null;
+//
+//        private static class Eval extends UnnormalizedVariable {
+//            final Functor.InlineFunctor f;
+//            byte arity;
+//            final byte[] args;
+//
+//            public Eval(Functor.InlineFunctor f, byte arity, byte[] args) {
+//                super(Op.VAR_PATTERN, ";");
+//                this.arity = arity;
+//                this.f = f;
+//                this.args = args;
+//            }
+//
+//            @Override
+//            public boolean equals(Object o) {
+//                return this == o;
+//            }
+//
+//            @Override
+//            public int hashCode() {
+//                return System.identityHashCode(this);
+//            }
+//
+//            @Override
+//            public String toString() {
+//                return f + "<" + Arrays.toString(args) + ">";
+//            }
+//
+//            public Term eval(TermBuilder b, LazyCompound c) {
+//                Term[] a = c.getNext(b, arity, args, new int[]{0, args.length});
+//                if (a == null) {
+//                    return Null;
+//                } else {
+//                    Term t = f.applyInline($.vFast(a));
+//                    return t;
+//                }
+//            }
+//        }
+//
+//        @Override
+//        public LazyCompound compoundStart(Op o, int dt) {
+//
+//            if (o == INH) {
+//                if (inhStack == null)
+//                    inhStack = new ShortArrayList(8);
+//
+//                inhStack.add((short) code.length()); //record compound at this position
+//            }
+//
+//            return super.compoundStart(o, dt);
+//        }
+//
+//        @Override
+//        public LazyCompound compoundEnd(Op o) {
+//            if (o == INH) {
+//                //assert(inhStack!=null);
+//                inhPop();
+//            }
+//            return super.compoundEnd(o);
+//        }
+//
+//        private void inhPop() {
+//            inhStack.removeAtIndex(inhStack.size() - 1);
+//        }
+//
+//        @Override
+//        protected LazyCompound append(Atomic x) {
+//            if (x instanceof Functor.InlineFunctor) {
+//                //
+//                // ((arg1,arg,...)-->F)
+//                //
+//                //scan backwards, verifying preceding product arguments contained within inheritance
+//                if (inhStack != null && !inhStack.isEmpty()) {
+//                    DynBytes c = this.code;
+//                    int lastInh = inhStack.getLast();
+//
+//                    byte[] cc = c.arrayDirect();
+//                    int lastProd = lastInh + 2;
+//                    if (c.length() >= lastProd && cc[lastProd] == PROD.id) {
+//                        int pos = c.length();
+//                        return append(evalLater((Functor.InlineFunctor) x, lastProd, pos /* after adding the functor atomic */));
+//                    }
+//
+//                }
+//
+//            }
+//
+//            return super.append(x);
+//        }
+//
+//        @Override
+//        public void rewind(int pos) {
+//            if (pos != pos()) {
+//                while (inhStack != null && !inhStack.isEmpty() && inhStack.getLast() > pos)
+//                    inhStack.removeAtIndex(inhStack.size() - 1);
+//                super.rewind(pos);
+//            }
+//        }
+//
+//        /**
+//         * deferred functor evaluation
+//         */
+//        private Eval evalLater(Functor.InlineFunctor f, int start, int end) {
+//            DynBytes c = code;
+//            Eval e = new Eval(f, code.at(start + 1), c.subBytes(start + 2, end));
+//            rewind(start - 2);
+//            //inhPop();
+//
+//            return e;
+//        }
+//
+//        @Override
+//        protected Term next(TermBuilder b, byte ctl) {
+//            Term t = super.next(b, ctl);
+//            if (t instanceof Eval) {
+//                t = ((Eval) t).eval(b, this);
+//            }
+//            if (t == null)
+//                throw new NullPointerException();
+//            return t;
+//        }
+//
+//
+//    }
 
 
 //    static class Int1616 extends Int {

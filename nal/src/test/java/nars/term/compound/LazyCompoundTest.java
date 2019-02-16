@@ -71,8 +71,8 @@ class LazyCompoundTest {
     @Test
     void testCompoundInCompound() {
         assertEquals("(a,{b,c})", new LazyCompound()
-                .compoundStart(Op.PROD).subs((byte)2).add(A)
-                    .compoundStart(Op.SETe).subs((byte)2).subs(B, C)
+                .compoundStart(Op.PROD).subsStart((byte)2).append(A)
+                    .compoundStart(Op.SETe).subsStart((byte)2).subs(B, C)
                         .get().toString());
     }
 

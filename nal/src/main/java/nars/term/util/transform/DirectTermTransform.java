@@ -14,56 +14,12 @@ public abstract class DirectTermTransform extends TermTransform.NegObliviousTerm
 
     @Override
     public Term the(Op op, int dt, Term[] t) {
-        return localBuilder.compound(op, dt, t);
+        return op.the(localBuilder, dt, t);
     }
 
     @Override
     public Term the(Op op, int dt, Subterms t) {
-        return CachedCompound.newCompound(op, dt, t);
+        return op.the(localBuilder, dt, t);
     }
-
-//    class CachedDirectTermTransform implements DirectTermTransform {
-//        /** stores constructed Anon's locally, thread-local */
-//        final QuickMemoize<HashCachedPair<Term,Subterms>,Term> localIntern;
-//
-//
-//        public CachedDirectTermTransform(int capacity) {
-//            this.localIntern = new QuickMemoize<>(capacity, this::target);
-//        }
-//
-//        private Term target(HashCachedPair<Term,Subterms> xy) {
-//            Term x = xy.getOne();
-//            return localBuilder.theCompound(x.op(), x.dt(), xy.getTwo());
-//        }
-//
-//
-////        @Override
-////        public Term the(Op op, int dt, TermList t) {
-////            switch (dt) {
-////                case 0:
-////                case DTERNAL:
-////                case XTERNAL:
-////                    return localIntern.apply(pair(op, t));
-////                default:
-////                    return localBuilder.compound(op, dt, t.arrayShared());
-////            }
-////        }
-//        @Nullable
-//        public final Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
-//            return localIntern.apply(new HashCachedPair<>(x,
-//                    new TermList(yy.arrayShared())));
-//        }
-////        @Override
-////        public Term the(Op op, int dt, Term[] t) {
-////            if (dt == DTERNAL)
-////                return localIntern.apply(pair(op, new TermList(t)));
-////            else
-////                return localBuilder.compound(op, dt, t);
-////        }
-//
-//        public void resize(int s) {
-//            localIntern.resize(s);
-//        }
-//    }
 
 }

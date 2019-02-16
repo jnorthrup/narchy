@@ -44,7 +44,7 @@ public interface TermTransform {
                         y = new EllipsisMatch(s2);
                     }
                 }
-                out.add(y);
+                out.append(y);
                 if (y != x)
                     out.setChanged(true);
                 return true;
@@ -138,7 +138,7 @@ public interface TermTransform {
             out.compoundStart(o, o.temporal ? x.dt() : DTERNAL);
 
             Subterms s = x.subterms();
-            out.subs((byte) s.subs());
+            out.subsStart((byte) s.subs());
             if (!transformSubterms(s, out))
                 return false;
 
@@ -150,7 +150,7 @@ public interface TermTransform {
         if (!c && !out.changed()) {
             //remains same; rewind and paste as-is
             out.rewind(i);
-            out.add(x);
+            out.append(x);
         }
         return true;
     }
@@ -186,10 +186,10 @@ public interface TermTransform {
                         return v;
                 }
             }
-            if (op != x.op())
+//            if (op != x.op())
                 return the(op, dt, xx);
-            else
-                return x.dt(dt);
+//            else
+//                return x.dt(dt);
         }
 
     }
@@ -211,7 +211,7 @@ public interface TermTransform {
 //        return the(op, dt, (Subterms)t);
 //    }
     default Term the(Op op, int dt, Subterms t) {
-        return the(op, dt, t.arrayShared());
+        return op.the(dt, t);
     }
 
     default Term the(Op op, int dt, Term[] subterms) {
@@ -251,12 +251,17 @@ public interface TermTransform {
 
     }
 
+    default LazyCompound transformCompoundLazilyToLazyCompound(Compound x) {
+        return transformCompoundLazilyToLazyCompound(new LazyCompound(), x);
+    }
+
+    default LazyCompound transformCompoundLazilyToLazyCompound(LazyCompound l, Compound x) {
+        return !transformCompound(x, l) ? null : l;
+    }
+
     default Term transformCompoundLazily(Compound x) {
-        LazyCompound l = new LazyCompound.LazyEvalCompound();
-        if (!transformCompound(x, l))
-            return Null;
-        else
-            return l.get();
+        LazyCompound l = transformCompoundLazilyToLazyCompound(x);
+        return l == null ? Null : l.get();
     }
 
 

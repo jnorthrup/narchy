@@ -376,14 +376,14 @@ public class Builtin {
         nar.on(new Functor.AbstractInlineFunctor2("without") {
             @Override
             protected Term apply(Term container, Term content) {
-                return Op.without(container, x -> x.equals(content), nar.random());
+                return Terms.without(container, x -> x.equals(content), nar.random());
             }
         });
         nar.on(new Functor.AbstractInlineFunctor2("withoutPosOrNeg") {
             @Override
             protected Term apply(Term container, Term content) {
                 Term c = content.unneg();
-                return Op.without(container, x -> x.unneg().equals(c), nar.random());
+                return Terms.without(container, x -> x.unneg().equals(c), nar.random());
             }
         });
 

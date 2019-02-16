@@ -1360,8 +1360,8 @@ public class ConjTest {
         Term b = $("((else_0) &&-10 ((--,(b0)) &| (pre_1)))");
         assertEquals(a, b);
 
-        Term c = CONJ.the($("((--,(b0)) &| (pre_1))"), 10, $("(else_0)"));
-        Term d = CONJ.the($("(else_0)"), -10, $("((--,(b0)) &| (pre_1))"));
+        Term c = CONJ.the((Term)$("((--,(b0)) &| (pre_1))"), 10, $("(else_0)"));
+        Term d = CONJ.the((Term)$("(else_0)"), -10, $("((--,(b0)) &| (pre_1))"));
 
 
         assertEquals(b, c);

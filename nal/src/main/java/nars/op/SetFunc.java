@@ -11,6 +11,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.SetSectDiff;
+import nars.term.util.builder.HeapTermBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -43,7 +44,7 @@ public class SetFunc {
         @Override public Term apply(Term a, Term b, Subterms s) {
 
             Op op = s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
-            return SetSectDiff.intersect(op, true, a, b);
+            return SetSectDiff.intersect(HeapTermBuilder.the, op, true, a, b);
         }
     };
     /**

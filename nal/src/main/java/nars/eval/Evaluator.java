@@ -6,6 +6,8 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.compound.LazyCompound;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.transform.DirectTermTransform;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +20,7 @@ import static nars.term.atom.Bool.Null;
  * discovers functors within the provided target, or the target itself.
  * transformation results should not be interned, that is why DirectTermTransform used here
  */
-public class Evaluator extends DirectTermTransform {
+public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
 
     public final Function<Atom, Functor> funcResolver;
 
@@ -31,45 +33,55 @@ public class Evaluator extends DirectTermTransform {
     }
 
 
+    /**
+     * discover evaluable clauses in the provided term
+     */
     @Nullable
-    protected ArrayHashSet<Term> discover(Term x, Evaluation e) {
+    protected ArrayHashSet<Term> clauses(Term x, Evaluation e) {
         if (!x.hasAny(Op.FuncBits))
             return null;
 
 //        if (funcAble!=null)
 //            funcAble.clear();
-        final ArrayHashSet<Term>[] funcAble = new ArrayHashSet[]{null};
+        final ArrayHashSet<Term>[] clauses = new ArrayHashSet[]{null};
 
-        x.recurseTerms(s -> s.hasAll(Op.FuncBits), xx -> {
-            if (Functor.isFunc(xx)) {
-                if (funcAble[0] != null && funcAble[0].contains(xx))
+        x.recurseTerms(s -> s.hasAll(Op.FuncBits), X -> {
+            if (Functor.isFunc(X)) {
+                if (clauses[0] != null && clauses[0].contains(X))
                     return true;
 
-                Term yy = this.transform(xx);
-                if (yy.sub(1) instanceof Functor) {
-                    if (funcAble[0] == null)
-                        funcAble[0] = new ArrayHashSet<>(1);
+                LazyCompound y = new NonEvalLazyCompound().append(X);
+                final int[] functors = {0};
+                y.updateMap(g -> {
+                    if (g instanceof Functor)
+                        functors[0]++;
+                    if (g instanceof Atom) {
+                        Functor f = funcResolver.apply((Atom) g);
+                        if (f != null) {
+                            functors[0]++;
+                            return f;
+                        }
+                    }
+                    return g;
+                });
 
-                    funcAble[0].add(yy);
+                if (functors[0] > 0) {
+
+                    Term yy = y.get(HeapTermBuilder.the); //TEMPORARY
+                    if (yy.sub(1) instanceof Functor) {
+                        if (clauses[0] == null)
+                            clauses[0] = new ArrayHashSet<>(1);
+
+                        clauses[0].add(yy);
+                    }
                 }
             }
             return true;
         }, null);
 
-        return funcAble[0];
+        return clauses[0];
     }
 
-
-//    @Override
-//    protected void addUnique(Term x) {
-//        super.addUnique(x);
-//
-////            x.sub(0).recurseTerms((Termlike::hasVars), (s -> {
-////                if (s instanceof Variable)
-////                    vars.addAt((Variable) s);
-////                return true;
-////            }), null);
-//    }
 
     @Override
     public @Nullable Term transformAtomic(Atomic x) {
@@ -87,17 +99,10 @@ public class Evaluator extends DirectTermTransform {
     }
 
 
-//    private Evaluator sortDecreasingVolume() {
-//        //TODO only invoke this if the items changed
-//        if (size() > 1)
-//            ((FasterList<Term>) list).sortThisByInt(Termlike::volume);
-//        return this;
-//    }
-
     @Nullable
     public Evaluation eval(Predicate<Term> each, boolean includeTrues, boolean includeFalses, Term... queries) {
 
-        assert(queries.length > 0);
+        assert (queries.length > 0);
 
         Evaluation e = new EvaluationTrueFalseFiltered(each, includeTrues, includeFalses);
 
@@ -130,6 +135,13 @@ public class Evaluator extends DirectTermTransform {
         @Override
         protected Term boolFalse(Term x) {
             return includeFalses ? super.boolFalse(x) : Null;
+        }
+    }
+
+    private static class NonEvalLazyCompound extends LazyCompound {
+        @Override
+        protected boolean evalInline() {
+            return false; //TEMPORARY
         }
     }
 }

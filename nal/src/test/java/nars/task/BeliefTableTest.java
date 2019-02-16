@@ -228,7 +228,7 @@ class BeliefTableTest {
 
             //for (int dt = 3; dt < 7; dt++) {
             { int dt = 3;
-                Term tt = IMPL.the($.$("a"), +dt, $.$("b"));
+                Term tt = IMPL.the((Term)$.$("a"), +dt, $.$("b"));
                 Task fwd = n.answer(tt, BELIEF, when);
                 assertEquals("(a ==>+3 b)", fwd.term().toString(), ()->tt + " -> " + fwd);
             }

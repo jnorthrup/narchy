@@ -5,6 +5,8 @@ import jcog.data.list.FasterList;
 import nars.term.Term;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 
+import java.util.function.Function;
+
 /** this assumes < 127 unique elements */
 public class ByteAnonMap {
 
@@ -63,5 +65,18 @@ public class ByteAnonMap {
     @Override
     public int hashCode() {
         throw new TODO();
+    }
+
+    public boolean updateMap(Function<Term, Term> m) {
+        boolean changed = false;
+        for (int i = 0, idToTermSize = idToTerm.size(); i < idToTermSize; i++) {
+            Term x = idToTerm.get(i);
+            Term y = m.apply(x);
+            if (x!=y) {
+                idToTerm.set(i, y);
+                changed = true;
+            }
+        }
+        return changed;
     }
 }

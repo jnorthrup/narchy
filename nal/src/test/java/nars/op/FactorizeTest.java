@@ -62,7 +62,7 @@ public class FactorizeTest {
     void testInduction1() {
         assertEquals(
                 $$("(f(#1) && member(#1,{a,b,c}))"),
-                applyAndNormalize(CONJ.the($$("f(c)"), applyAndNormalize($$("(f(a) && f(b))"))))
+                applyAndNormalize(CONJ.the((Term)$$("f(c)"), applyAndNormalize($$("(f(a) && f(b))"))))
         );
     }
 }

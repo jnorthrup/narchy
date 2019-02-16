@@ -249,31 +249,30 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             Concept sc = nar.conceptualize(t);
             if (sc != null) {
                 TermLinker linker = sc.linker();
-                    if (//(!(linker instanceof FasterList) ||
-                            //rng.nextInt(t.volume() + 1) != 0
-                            rng.nextInt(((FasterList) linker).size() + 1) != 0
-                            //rng.nextFloat() < 0.25f
-                            //rng.nextInt(((FasterList) linker).size() + 1) == 0
-                            //src.equals(tgt) || rng.nextBoolean()
-                            //rng.nextBoolean()
-                    )
-                    {
+                if ((linker instanceof FasterList) &&
+                        //rng.nextInt(t.volume() + 1) != 0
+                        rng.nextInt(((FasterList) linker).size() + 1) != 0
+                    //rng.nextFloat() < 0.25f
+                    //rng.nextInt(((FasterList) linker).size() + 1) == 0
+                    //src.equals(tgt) || rng.nextBoolean()
+                    //rng.nextBoolean()
+                ) {
 
-                            @Nullable Term subSrc = linker.sample(rng);
-                            t = subSrc;
-                            @Nullable Concept subSrcConcept;
-                            if ((subSrcConcept = nar.conceptualize(subSrc))!=null) {
-                                t = subSrcConcept.term();
-                                TaskLink.link(
-                                        TaskLink.tasklink(source(), t, task.punc(),
-                                                //priPunc(task.punc())
-                                                task.priElseZero()
-                                        ),
-                                        nar);
-                            }
+                    @Nullable Term subSrc = linker.sample(rng);
+                    t = subSrc;
+                    if (subSrc.op().conceptualizable) {
+                        @Nullable Concept subSrcConcept;
+                        if ((subSrcConcept = nar.conceptualize(subSrc)) != null) {
+                            t = subSrcConcept.term();
+                            TaskLink.link(
+                                    TaskLink.tasklink(source(), t, task.punc(),
+                                            //priPunc(task.punc())
+                                            task.priElseZero()
+                                    ),
+                                    nar);
+                        }
                     }
-//                }
-
+                }
 
 
             }
@@ -324,8 +323,9 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         private final int hash;
 
         public AbstractTaskLink(Term self) {
-            this(self,self);
+            this(self, self);
         }
+
         public AbstractTaskLink(Term source, Term target) {
             this.source = source;
             this.target = target;
@@ -373,6 +373,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         public GeneralTaskLink(Term self) {
             super(self.concept());
         }
+
         public GeneralTaskLink(Term source, Term target, long when, byte punc, float pri) {
             this(source, target);
             if (when != ETERNAL) throw new TODO("non-eternal tasklink not supported yet");

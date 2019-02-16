@@ -25,11 +25,13 @@ import org.eclipse.collections.impl.factory.Maps;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static nars.term.Terms.sorted;
-import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -63,7 +65,7 @@ public enum Op {
             return new Neg(u);
         }
 
-        public Term the(int dt, Term[] u) {
+        public Term the(TermBuilder b, int dt, Term[] u) {
 
             if (u.length != 1)
                 throw new RuntimeException("negation requires one subterm");
@@ -77,14 +79,14 @@ public enum Op {
 
     INH("-->", 1, Args.Two) {
         @Override
-        public Term the(int dt, Term[] u) {
-            return terms.statement(this, dt, u);
+        public Term the(TermBuilder b, int dt, Term[] u) {
+            return b.statement(this, dt, u);
         }
     },
     SIM("<->", true, 2, Args.Two) {
         @Override
-        public Term the(int dt, Term[] u) {
-            return terms.statement(this, dt, u);
+        public Term the(TermBuilder b, int dt, Term[] u) {
+            return b.statement(this, dt, u);
         }
     },
 
@@ -93,8 +95,8 @@ public enum Op {
      */
     SECTe("&", true, 3, Args.GTETwo) {
         @Override
-        public Term the(int dt, Term[] u) {
-            return SetSectDiff.intersect(SECTe, u);
+        public Term the(TermBuilder b, int dt, Term[] u) {
+            return SetSectDiff.intersect(b, SECTe, u);
         }
     },
 
@@ -103,8 +105,8 @@ public enum Op {
      */
     SECTi("|", true, 3, Args.GTETwo) {
         @Override
-        public Term the(int dt, Term[] u) {
-            return SetSectDiff.intersect(SECTi, u);
+        public Term the(TermBuilder b, int dt, Term[] u) {
+            return SetSectDiff.intersect(b, SECTi, u);
         }
     },
 
@@ -143,8 +145,8 @@ public enum Op {
      */
     CONJ("&&", true, 5, Args.GTETwo) {
         @Override
-        public Term the(int dt, Term[] u) {
-            return terms.conj(dt, u);
+        public Term the(TermBuilder b, int dt, Term[] u) {
+            return b.conj(dt, u);
         }
     },
 
@@ -159,8 +161,8 @@ public enum Op {
         }
 
         @Override
-        public final Term the(int dt, Collection<Term> sub) {
-            return Op.terms.theCompound(this, dt, Terms.sorted(sub)); //already sorted
+        public final Term the(TermBuilder b, int dt, Collection<Term> sub) {
+            return b.theCompound(this, dt, Terms.sorted(sub)); //already sorted
         }
     },
 
@@ -174,8 +176,8 @@ public enum Op {
         }
 
         @Override
-        public final Term the(int dt, Collection<Term> sub) {
-            return Op.terms.theCompound(this, dt, Terms.sorted(sub)); //already sorted
+        public final Term the(TermBuilder b, int dt, Collection<Term> sub) {
+            return b.theCompound(this, dt, Terms.sorted(sub)); //already sorted
         }
     },
 
@@ -185,8 +187,8 @@ public enum Op {
      */
     IMPL("==>", 5, Args.Two) {
         @Override
-        public Term the(int dt, Term... u) {
-            return terms.statement(this, dt, u);
+        public Term the(TermBuilder b, int dt, Term... u) {
+            return b.statement(this, dt, u);
         }
     },
 
@@ -508,7 +510,7 @@ public enum Op {
 
                 //fast transform non-concurrent -> non-concurrent
 
-                return Op.compound(op, nextDT, xs);
+                return compound(op, nextDT, xs);
                 //return CachedCompound.newCompound(op, nextDT, xs);
             }
         }
@@ -636,34 +638,6 @@ public enum Op {
         return !c.hasAny(Op.NonGoalable);
     }
 
-    /**
-     * returns null if not found, and Null if no subterms remain after removal
-     */
-    @Nullable
-    public static Term without(Term container, Predicate<Term> filter, Random rand) {
-
-
-        Subterms cs = container.subterms();
-
-        int i = cs.indexOf(filter, rand);
-        if (i == -1)
-            return Null;
-
-
-        switch (cs.subs()) {
-            case 1:
-                return Null;
-            case 2:
-
-                Term remain = cs.sub(1 - i);
-                Op o = container.op();
-                return o.isSet() ? o.the(remain) : remain;
-            default:
-                return container.op().the(container.dt(), cs.subsExcluding(i));
-        }
-
-    }
-
 
     /**
      * encodes a structure vector as a human-readable target.
@@ -692,7 +666,11 @@ public enum Op {
     }
 
     public final Term the(int dt, Subterms s) {
-        return the(dt, s.arrayShared());
+        return the(terms, dt, s);
+    }
+
+    public final Term the(TermBuilder b, int dt, Subterms s) {
+        return the(b, dt, s.arrayShared());
     }
 
     public final Term the(/*@NotNull*/ Term... u) {
@@ -774,8 +752,16 @@ public enum Op {
         return the(DTERNAL, sub);
     }
 
-    public Term the(int dt, /*@NotNull*/ Collection<Term> sub) {
-        return the(dt, sub.toArray(EmptyTermArray));
+    public final Term the(TermBuilder b, Collection<Term> sub) {
+        return the(b, DTERNAL, sub);
+    }
+
+    public Term the(TermBuilder b, int dt, /*@NotNull*/ Collection<Term> sub) {
+        return the(b, dt, sub.toArray(EmptyTermArray));
+    }
+
+    public final Term the(int dt, /*@NotNull*/ Collection<Term> sub) {
+        return the(terms, dt, sub.toArray(EmptyTermArray));
     }
 
     /**
@@ -791,8 +777,20 @@ public enum Op {
      * - instance(..)
      * - reduction to another target or True/False/Null
      */
-    public Term the(int dt, Term... u) {
-        return compound(this, dt, u);
+    public final Term the(int dt, Term... u) {
+        return the(terms,dt, u);
+    }
+
+    public final Term the(TermBuilder b, Term... u) {
+        return the(b, DTERNAL, u);
+    }
+
+    public Term the(TermBuilder b, int dt, Term... u) {
+        return compound(b, this, dt, u);
+    }
+
+    public static Term compound(TermBuilder b, Op o, int dt, Subterms u) {
+        return compound(b, o, dt, u.arrayShared());
     }
 
     public static Term compound(Op o, int dt, Subterms u) {
@@ -805,8 +803,17 @@ public enum Op {
      * use with caution
      */
     public static Term compound(Op o, int dt, Term... u) {
-        return terms.compound(o, dt, u);
+        return compound(terms, o, dt, u);
     }
+
+    public static Term compound(TermBuilder b, Op o, Term... u) {
+        return compound(b, o, DTERNAL, u);
+    }
+
+    public static Term compound(TermBuilder b, Op o, int dt, Term... u) {
+        return b.compound(o, dt, u);
+    }
+
     public static Term compound(Op o, Term... u) {
         return compound(o, DTERNAL, u);
     }

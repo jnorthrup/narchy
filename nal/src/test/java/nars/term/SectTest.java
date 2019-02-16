@@ -64,7 +64,7 @@ public class SectTest {
         //TermTest.assertEq("((--,(c ==>+2 d))&(a ==>+1 b))", "((X &&+837 Y)~(--,(Y &&+1424 X)))");
     }
     @Test void testSectDiff() {
-        Term t = SECTi.the($$("(--,(?2~(|,(--,(?2~?1)),?2,?3)))"), $$("?2"), $$("?3"));
+        Term t = SECTi.the((Term)$$("(--,(?2~(|,(--,(?2~?1)),?2,?3)))"), $$("?2"), $$("?3"));
         assertEquals(t, t);
     }
 

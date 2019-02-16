@@ -17,6 +17,7 @@ import nars.term.util.transform.TermTransform;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -30,11 +31,11 @@ public class Evaluation {
 
     private final Predicate<Term> each;
 
-    private FasterList<Iterable<Predicate<VersionMap<Term, Term>>>> termutator = null;
+    transient private FasterList<Iterable<Predicate<VersionMap<Term, Term>>>> termutator = null;
 
-    private Versioning v;
+    transient private Versioning v = null;
 
-    private VersionMap<Term, Term> subst;
+    transient private VersionMap<Term, Term> subst = null;
 
 
 //    @Nullable
@@ -130,7 +131,7 @@ public class Evaluation {
 
 
     public boolean eval(Evaluator e, final Term x) {
-        ArrayHashSet<Term> ed = e.discover(x, this);
+        ArrayHashSet<Term> ed = e.clauses(x, this);
         return eval(e, x, ed!=null ? ed.list : null);
     }
 
@@ -138,7 +139,7 @@ public class Evaluation {
      * fails fast if no known functors apply
      */
     public boolean evalTry(Term x, Evaluator e) {
-        ArrayHashSet<Term> d = e.discover(x, this);
+        ArrayHashSet<Term> d = e.clauses(x, this);
         if ((d == null || d.isEmpty())  && (termutator == null || termutator.isEmpty())) {
             each.test(x);
             return true; //early exit
@@ -146,6 +147,8 @@ public class Evaluation {
         return eval(e, x, d!=null ? d.list : null);
     }
 
+    /** simple complexity heuristic */
+    static private final Comparator<Term> byComplexity = Comparator.comparingInt(Term::vars).thenComparing(Term::volume);
 
     protected boolean eval(Evaluator e, final Term x, @Nullable List<Term> operations) {
 
@@ -154,10 +157,9 @@ public class Evaluation {
         if (operations != null && !operations.isEmpty()) {
 
             //TODO topologically sort operations according to variable dependencies; it acts like an evaluation plan so ordering can help */
-            if (operations.size() > 1)
-                ((FasterList<Term>)operations).sortThis(
-                    (a,b)->Integer.compare(a.vars(), b.vars()) //simple sort, ordering less complex (by # of variables) operations first
-                );
+            if (operations.size() > 1) {
+                ((FasterList<Term>)operations).sortThis(byComplexity);
+            }
 
             Term prev;
             int vStart, tried, mutStart;

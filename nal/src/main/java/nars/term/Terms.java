@@ -21,10 +21,12 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
+import static nars.term.atom.Bool.Null;
 
 /**
  * Static utility class for static methods related to Terms
@@ -407,7 +409,36 @@ public enum Terms {
         }
 
         return true;
-    }}
+    }
+
+    /**
+     * returns null if not found, and Null if no subterms remain after removal
+     */
+    @Nullable
+    public static Term without(Term container, Predicate<Term> filter, Random rand) {
+
+
+        Subterms cs = container.subterms();
+
+        int i = cs.indexOf(filter, rand);
+        if (i == -1)
+            return Null;
+
+
+        switch (cs.subs()) {
+            case 1:
+                return Null;
+            case 2:
+
+                Term remain = cs.sub(1 - i);
+                Op o = container.op();
+                return o.isSet() ? o.the(remain) : remain;
+            default:
+                return container.op().the(container.dt(), cs.subsExcluding(i));
+        }
+
+    }
+}
 
 
 

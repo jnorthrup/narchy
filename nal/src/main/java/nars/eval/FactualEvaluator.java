@@ -181,7 +181,7 @@ public class FactualEvaluator extends Evaluator {
     }
 
     @Override
-    public @Nullable ArrayHashSet<Term> discover(Term x, Evaluation e) {
+    public @Nullable ArrayHashSet<Term> clauses(Term x, Evaluation e) {
 
 
         /** actually should be a set but duplicates should not normally be encountered */
@@ -234,7 +234,7 @@ public class FactualEvaluator extends Evaluator {
         if (!matches.isEmpty()) {
             e.canBe(x, matches);
         }
-        return super.discover(x, e);
+        return super.clauses(x, e);
     }
 
 
