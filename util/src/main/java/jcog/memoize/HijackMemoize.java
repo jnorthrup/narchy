@@ -29,7 +29,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     private final Function<X, Y> func;
     private final boolean soft;
 
-    protected float DEFAULT_VALUE, CACHE_HIT_BOOST, CACHE_REJECT_CUT;
+    protected float DEFAULT_VALUE, CACHE_HIT_BOOST, CACHE_SURVIVE_COST;
 
     public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes) {
         this(f, initialCapacity, reprobes, false);
@@ -202,15 +202,17 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 //            HijackMemoize.this.CACHE_HIT_BOOST = boost;
 
             float sc = (float) Math.sqrt(c);
-            HijackMemoize.this.DEFAULT_VALUE =
+            DEFAULT_VALUE =
                     //0.5f / reprobes;
                     1f / sc;
-            HijackMemoize.this.CACHE_HIT_BOOST = 1f/sc;
-            HijackMemoize.this.CACHE_REJECT_CUT = CACHE_HIT_BOOST / reprobes;
+            CACHE_HIT_BOOST = 0.5f/sc;
+            CACHE_SURVIVE_COST =
+                        CACHE_HIT_BOOST;
+                        //CACHE_HIT_BOOST / reprobes;
 
             assert(DEFAULT_VALUE > ScalarValue.EPSILON);
             assert(CACHE_HIT_BOOST > ScalarValue.EPSILON);
-            assert(CACHE_REJECT_CUT > ScalarValue.EPSILON);
+            assert(CACHE_SURVIVE_COST > ScalarValue.EPSILON);
         }
 
         @Override
@@ -251,7 +253,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
                 return true;
             } else {
                 //remains, gradually weaken
-                existingValue.priSub(CACHE_REJECT_CUT);
+                existingValue.priSub(CACHE_SURVIVE_COST);
                 return false;
             }
         }

@@ -7,7 +7,6 @@ import nars.op.Equal;
 import nars.op.SetFunc;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.util.Image;
 import nars.term.util.conj.ConjMatch;
@@ -16,16 +15,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static nars.derive.Derivation.BeliefTerm;
+import static nars.derive.Derivation.TaskTerm;
 import static nars.term.atom.Bool.Null;
 
 public enum DerivationFunctors {
     ;
 
-    public static Function<Atomic, Functor> get(Derivation d) {
+    public static Function<Atomic, Term> get(Derivation d) {
 
-        Map<Atomic, Functor> m = new HashMap<>();
+        Map<Atomic, Term> m = new HashMap<>() {
+            @Override
+            public Term get(Object key) {
+                if (key == TaskTerm) {
+                    return d.taskTerm;
+                } else if (key == BeliefTerm) {
+                    return d.beliefTerm;
+                } else {
+                    return super.get(key);
+                }
+            }
+        };
 
-        for (Termed s : Builtin.statik)
+        for (Term s : Builtin.statik)
             if (s instanceof Functor.InlineFunctor)
                 add(m, s);
 
@@ -71,7 +83,7 @@ public enum DerivationFunctors {
                 }
         };
 
-        for (Termed x : derivationFunctors) //override any statik's
+        for (Term x : derivationFunctors) //override any statik's
             add(m, x);
 
 
@@ -85,8 +97,8 @@ public enum DerivationFunctors {
         //x -> pre.contains(x) ? m.get(x) : null;
     }
 
-    private static Functor add(Map<Atomic, Functor> m, Termed x) {
-        return m.put((Atomic) x.term(), (Functor) x);
+    private static void add(Map<Atomic, Term> m, Term x) {
+        m.put((Atomic) x.term(), x);
     }
 
 

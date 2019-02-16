@@ -55,7 +55,7 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
                 y.updateMap(g -> {
                     if (g instanceof Functor)
                         functors[0]++;
-                    if (g instanceof Atom) {
+                    else if (g instanceof Atom) {
                         Functor f = funcResolver.apply((Atom) g);
                         if (f != null) {
                             functors[0]++;

@@ -13,7 +13,7 @@ import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
-import nars.term.util.transform.TermTransform;
+import nars.term.util.transform.DirectTermTransform;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -211,7 +211,7 @@ public class Evaluation {
                         Subterms args = a.sub(0).subterms();
                         if (canEval(args)) {
                             //evaluate subterms recursively
-                            args = args.transformSubs(new TermTransform() {
+                            args = args.transformSubs(new DirectTermTransform() {
                                 @Override
                                 public Term transform(Term x) {
                                     return Evaluation.solveFirst(x, (Function<Atom, Functor>) e.funcResolver);

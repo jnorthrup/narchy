@@ -7,6 +7,7 @@ import nars.derive.Derivation;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
+import nars.term.util.builder.HeapTermBuilder;
 
 import static nars.Op.NEG;
 import static nars.time.Tense.assertDithered;
@@ -52,12 +53,10 @@ public final class Termify extends AbstractPred<Derivation> {
         d.retransform.clear();
 
         Term x;
-        if (!Param.TERMIFY_TRANSFORM_LAZY) {
-            x = d.transform(pattern);
+        if (Param.TERMIFY_TRANSFORM_LAZY && pattern instanceof Compound) {
+            x = d.transformCompoundLazily((Compound)pattern, HeapTermBuilder.the);
         } else {
-            x = pattern instanceof Compound ?
-                    d.transformCompoundLazily((Compound)pattern) :
-                    d.transform(pattern);
+            x = d.transform(pattern);
         }
 
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {

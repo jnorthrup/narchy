@@ -11,6 +11,7 @@ import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.TermException;
 import org.jetbrains.annotations.NotNull;
 
 import static nars.time.Tense.DTERNAL;
@@ -25,7 +26,7 @@ import static nars.time.Tense.DTERNAL;
  */
 public class SerialCompound extends DynBytes implements Compound, The {
 
-    final byte volume;
+    final short volume;
 
     public SerialCompound(Compound c) {
         this(c.op(), c.dt(), c.arrayShared());
@@ -48,7 +49,9 @@ public class SerialCompound extends DynBytes implements Compound, The {
             v += x.volume();
         }
 
-        assert(v < Param.COMPOUND_VOLUME_MAX);
+        if (v > Param.COMPOUND_VOLUME_MAX)
+            throw new TermException("complexity overflow");
+
         this.volume = (byte) v;
 
     }

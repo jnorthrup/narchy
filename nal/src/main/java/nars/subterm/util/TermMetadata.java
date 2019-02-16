@@ -43,13 +43,14 @@ abstract public class TermMetadata implements Termlike {
 
     protected TermMetadata(SubtermMetadataCollector s) {
 
+        if (s.varPattern > Byte.MAX_VALUE || s.varQuery > Byte.MAX_VALUE || s.varDep > Byte.MAX_VALUE || s.varIndep > Byte.MAX_VALUE)
+            throw new TermException("variable overflow");
+
         int varTot =
-                (this.varPattern = s.varPattern) +
-                (this.varQuery = s.varQuery) +
-                (this.varDep = s.varDep) +
-                (this.varIndep = s.varIndep);
-        if (this.varPattern < 0 || this.varQuery < 0 || this.varDep < 0 || this.varIndep < 0)
-            throw new TermException("variable overflow"); //excess variables, wrap-around to neg
+                (this.varPattern = (byte) s.varPattern) +
+                (this.varQuery = (byte) s.varQuery) +
+                (this.varDep = (byte) s.varDep) +
+                (this.varIndep = (byte) s.varIndep);
 
         this.complexity = (short) ((this.volume = s.vol) - varTot);
         if (this.volume > Param.COMPOUND_VOLUME_MAX)

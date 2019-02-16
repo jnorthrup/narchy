@@ -21,6 +21,7 @@ import nars.concept.NodeConcept;
 import nars.derive.Derivation;
 import nars.index.concept.AbstractConceptIndex;
 import nars.task.NALTask;
+import nars.task.util.TaskException;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -322,11 +323,13 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         private final Term target;
         private final int hash;
 
-        public AbstractTaskLink(Term self) {
+        protected AbstractTaskLink(Term self) {
             this(self, self);
         }
 
-        public AbstractTaskLink(Term source, Term target) {
+        protected AbstractTaskLink(Term source, Term target) {
+            if (!source.op().taskable)
+                throw new TaskException(source, "source term not taskable");
             this.source = source;
             this.target = target;
             this.hash = Util.hashCombine(source, target);

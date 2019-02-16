@@ -105,24 +105,27 @@ public class LazyCompound {
      * add an already existent sub
      */
     public LazyCompound append(Term x) {
-        if (x instanceof Compound) {
+        if (x instanceof Atomic || x instanceof EllipsisMatch) {
+            return appendAtomic(x);
+        } else {
             if (x.op() == NEG) {
                 return negStart().append(x.unneg()).compoundEnd(NEG);
             } else {
                 return append((Compound) x);
             }
-        } else {
-            return append((Atomic) x);
         }
     }
 
     protected final LazyCompound append(Compound x) {
         Op o = x.op();
-        Subterms s = x.subterms();
-        return compoundStart(o, x.dt()).subsStart((byte) s.subs()).subs(s).subsEnd().compoundEnd(o);
+        return compoundStart(o, x.dt()).appendSubterms(x.subterms()).compoundEnd(o);
     }
 
-    protected LazyCompound append(Atomic x) {
+    public LazyCompound appendSubterms(Subterms s) {
+        return subsStart((byte) s.subs()).subs(s).subsEnd();
+    }
+
+    protected LazyCompound appendAtomic(Term x) {
         code.writeByte(MAX_CONTROL_CODES + intern(x));
         return this;
     }
@@ -132,13 +135,13 @@ public class LazyCompound {
         return sub().intern(x);
     }
 
-    public final LazyCompound subs(Iterable<Term> subs) {
+    final LazyCompound subs(Iterable<Term> subs) {
         for (Term x : subs)
             append(x);
         return this;
     }
 
-    public final LazyCompound subs(Term... subs) {
+    final LazyCompound subs(Term... subs) {
         for (Term x : subs)
             append(x);
         return this;

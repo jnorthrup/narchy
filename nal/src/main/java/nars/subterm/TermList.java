@@ -152,10 +152,7 @@ public class TermList extends FasterList<Term> implements Subterms {
         }
 
         if (volume() > Param.COMPOUND_VOLUME_MAX) {
-            if (Param.DEBUG) {
-                throw new TermException(this, "excessive complexity");
-            }
-            return null;
+            throw new TermException(this, "complexity overflow");
         }
 
         if (ys == 0)

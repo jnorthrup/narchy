@@ -283,7 +283,7 @@ public abstract class TermBuilder {
     }
 
     protected Term statement(Op op, int dt, Term subject, Term predicate) {
-        return Statement.statement(op, dt, subject, predicate);
+        return Statement.statement(this, op, dt, subject, predicate);
     }
 
     public final Term statement(Op op, int dt, Term[] u) {

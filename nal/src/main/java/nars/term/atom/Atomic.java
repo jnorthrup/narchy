@@ -316,12 +316,16 @@ public interface Atomic extends Term {
         return false;
     }
 
-
     @Override
     default int complexity() { return 1; }
 
     @Override
     default int volume() {
+        return 1;
+    }
+
+    @Override
+    default float voluplexity() {
         return 1;
     }
 

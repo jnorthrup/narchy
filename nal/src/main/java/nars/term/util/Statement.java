@@ -5,6 +5,7 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjDiff;
@@ -22,7 +23,7 @@ import static nars.time.Tense.*;
  */
 public class Statement {
 
-    public static Term statement(Op op, int dt, Term subject, Term predicate) {
+    public static Term statement(TermBuilder b, Op op, int dt, Term subject, Term predicate) {
         if (subject == Null || predicate == Null)
             return Null;
 
@@ -65,7 +66,7 @@ public class Statement {
                         return subject.neg();
                     return Null;
                 case NEG:
-                    return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
+                    return statement(b, IMPL, dt, subject, predicate.unneg()).neg();//recurse
                 case IMPL: {
                     Term newSubj, inner = predicate.sub(0);
                     if (dt == DTERNAL || dt == XTERNAL) {
@@ -77,7 +78,7 @@ public class Statement {
                             newSubj = ConjSeq.sequence(subject, 0, inner, subject.eventRange() + dt);
                         }
                     }
-                    return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
+                    return statement(b, IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
                 }
             }
 
@@ -163,7 +164,7 @@ public class Statement {
 
                         if (!newPred.equals(predicate)) { //HACK check again
                             try {
-                                return statement(IMPL, dt, subject, newPred); //recurse
+                                return statement(b, IMPL, dt, subject, newPred); //recurse
                             } catch (StackOverflowError e) {
                                 System.out.println("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
                                 throw new WTF("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
@@ -217,11 +218,12 @@ public class Statement {
         }
 
         //return builder.compound(op, dt, subject, predicate);
-        Term t = Op.terms.theCompound(op, dt, subject, predicate);
+        Term t = b.theCompound(op, dt, subject, predicate);
 
         //if (Param.DEBUG) {
         //test image normalization
         if (op==INH) {
+            //TODO accept TermBuilder b as parameter
             Term tt = Image.imageNormalize(t);
             if (tt instanceof Bool) {
                 return tt;

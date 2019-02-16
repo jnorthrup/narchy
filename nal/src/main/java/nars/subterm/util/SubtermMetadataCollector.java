@@ -10,7 +10,7 @@ import static nars.Op.*;
 public final class SubtermMetadataCollector {
     public int structure = 0;
     public short vol = 1;
-    public byte varPattern = 0, varQuery = 0, varDep = 0, varIndep = 0;
+    public short varPattern = 0, varQuery = 0, varDep = 0, varIndep = 0;
     public int hash = 1;
 
     public SubtermMetadataCollector() {
@@ -63,9 +63,9 @@ public final class SubtermMetadataCollector {
             int xstructure = x.structure();
             this.structure |= xstructure;
 
-            if ((xstructure & VAR_PATTERN.bit) != 0)
+            if ((xstructure & VAR_PATTERN.bit) != 0) {
                 this.varPattern += x.varPattern();
-            if ((xstructure & VAR_DEP.bit) != 0)
+            } if ((xstructure & VAR_DEP.bit) != 0)
                 this.varDep += x.varDep();
             if ((xstructure & VAR_INDEP.bit) != 0)
                 this.varIndep += x.varIndep();

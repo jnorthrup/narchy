@@ -23,7 +23,7 @@ public class StatementLinker extends NARService implements Consumer<Task> {
 
 
     public boolean include(Op o) {
-        switch(o) {
+        switch (o) {
             case IMPL:
             case SIM:
                 return true;
@@ -36,34 +36,42 @@ public class StatementLinker extends NARService implements Consumer<Task> {
         Term t = task.term();
         if (include(t.op())) {
             float pri = task.pri() * task.polarity()
-                //    * task.conf()
-            ;
+                    //    * task.conf()
+                    ;
             if (pri > ScalarValue.EPSILON) {
                 Subterms tt = t.subterms();
                 Term a = tt.sub(0);
-                Term b = tt.sub(1);
-                if (!a.equals(b)) {
-                    Term subj = a.concept();
-                    Term pred = b.concept();
-                    if ((a==subj && b == pred) || !subj.equals(pred)) {
-                        TaskLink.link(
-                                TaskLink.tasklink(subj, pred, BELIEF, pri/2),
-                                nar
-                        );
-                        TaskLink.link(
-                                TaskLink.tasklink(pred, subj, BELIEF, pri/2),
-                                nar
-                        );
+                if (a.op().taskable) {
+                    Term b = tt.sub(1);
+                    if (b.op().taskable) {
+                        if (!a.equals(b)) {
+                            Term subj = a.concept(), pred = b.concept();
+                            if ((a == subj && b == pred) || !subj.equals(pred)) {
+
+                                TaskLink.link(
+                                        TaskLink.tasklink(subj, pred, BELIEF, pri / 2),
+                                        nar
+                                );
+
+                                TaskLink.link(
+                                        TaskLink.tasklink(pred, subj, BELIEF, pri / 2),
+                                        nar
+                                );
+
+                            }
+                        }
                     }
                 }
             }
         }
     }
+
     @Override
     protected void starting(NAR nar) {
         super.starting(nar);
         off = nar.onTask(this, BELIEF);
     }
+
     @Override
     protected void stopping(NAR nar) {
         off.off();

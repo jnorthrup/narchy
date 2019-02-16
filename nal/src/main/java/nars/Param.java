@@ -439,12 +439,12 @@ public abstract class Param {
      * absolute limit for constructing terms in any context in which a NAR is not known, which could provide a limit.
      * typically a NAR instance's 'compoundVolumeMax' parameter will be lower than this
      */
-    public static final int COMPOUND_VOLUME_MAX = 127;
+    public static final int COMPOUND_VOLUME_MAX = Short.MAX_VALUE;
 
     /**
      * limited because some subterm paths are stored as byte[]. to be safe, use 7-bits
      */
-    public static final int SUBTERMS_MAX = 127;
+    public static final int SUBTERMS_MAX = Byte.MAX_VALUE;
 
 
     /**

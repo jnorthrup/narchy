@@ -9,6 +9,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
+import nars.term.util.builder.TermBuilder;
 import nars.unify.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,9 +40,11 @@ public interface TermTransform {
             else {
                 if (y instanceof EllipsisMatch) {
                     Subterms s = y.subterms();
-                    Subterms s2 = s.transformSubs(this,null);
-                    if (s2!=s) {
-                        y = new EllipsisMatch(s2);
+                    if (s.subs() > 0) {
+                        Subterms s2 = s.transformSubs(this, null);
+                        if (s2 != s) {
+                            y = new EllipsisMatch(s2);
+                        }
                     }
                 }
                 out.append(y);
@@ -150,7 +153,7 @@ public interface TermTransform {
         if (!c && !out.changed()) {
             //remains same; rewind and paste as-is
             out.rewind(i);
-            out.append(x);
+            out.append((Compound)x);
         }
         return true;
     }
@@ -260,8 +263,12 @@ public interface TermTransform {
     }
 
     default Term transformCompoundLazily(Compound x) {
+        return transformCompoundLazily(x, Op.terms);
+    }
+
+    default Term transformCompoundLazily(Compound x, TermBuilder b) {
         LazyCompound l = transformCompoundLazilyToLazyCompound(x);
-        return l == null ? Null : l.get();
+        return l == null ? Null : l.get(b);
     }
 
 
