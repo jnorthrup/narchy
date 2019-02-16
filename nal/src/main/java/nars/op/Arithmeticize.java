@@ -84,7 +84,7 @@ public class Arithmeticize {
                 return Float.NaN;
 
 
-            float intTerms = Util.unitize(numInts / (1+((float) tt.volume() - numInts)));
+            float intTerms = Util.unitize(numInts / (((float) tt.volume() - numInts)));
             return p * intTerms;
         }
 

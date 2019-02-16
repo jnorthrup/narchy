@@ -61,7 +61,7 @@ public class SortedSubterms {
             return b.apply(x);
         } else {
             //TODO if (xx.length == 1) return RepeatedSubterms.the(xx[0],x.length);
-            return MappedSubterms.the(x, b.apply(xx), xx);
+            return RemappedSubterms.the(x, b.apply(xx), xx);
         }
     }
 

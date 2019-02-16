@@ -8,7 +8,7 @@ import java.util.Random;
 /**
  * proxy to a TermContainer providing access to its subterms via a shuffling order
  */
-public final class ShuffledSubterms extends MappedSubterms {
+public final class ShuffledSubterms extends RemappedSubterms {
 
     private final ShuffledPermutations shuffle;
 

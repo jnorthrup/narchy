@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL4Test extends NALTest {
 
 
-    private static final int CYCLES = 250;
+    private static final int CYCLES = 550;
 
     @Override
     protected NAR nar() {

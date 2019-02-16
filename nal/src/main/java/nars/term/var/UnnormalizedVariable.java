@@ -26,17 +26,6 @@ public class UnnormalizedVariable extends AbstractAtomic implements Variable/*, 
         this.type = type;
     }
 
-
-    @Override
-    public final int complexity() {
-        return 0;
-    }
-
-    @Override
-    public float voluplexity() {
-        return 0.5f;
-    }
-
     @Override
     public boolean isNormalized() {
         return false;

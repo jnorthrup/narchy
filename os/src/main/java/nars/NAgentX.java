@@ -25,6 +25,7 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
+import nars.op.ImpLinker;
 import nars.op.Introduction;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
@@ -385,7 +386,7 @@ abstract public class NAgentX extends NAgent {
 
         float p =
                 //1;
-                0.25f;
+                0.1f;
         
         n.beliefPriDefault.set(1f * p);
         n.goalPriDefault.set(1f * p);
@@ -442,6 +443,7 @@ abstract public class NAgentX extends NAgent {
                 "relation_introduction.nal"
         ));
 
+        new ImpLinker(n);
 
         new STMLinkage(n, 1);
 

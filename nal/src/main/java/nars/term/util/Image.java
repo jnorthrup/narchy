@@ -68,8 +68,7 @@ public enum Image {;
 
                         do {
                             qq[index + 1] = target;
-                            index = ss.indexOf(x, index);
-                        } while (index != -1);
+                        } while ((index = ss.indexOf(x, index)) != -1);
 
                         Term q = PROD.the(qq);
                         return intOrExt ? INH.the(q, x) : INH.the(x, q);

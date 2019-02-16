@@ -2,7 +2,7 @@ package nars.term.util.builder;
 
 import nars.IO;
 import nars.Op;
-import nars.subterm.MappedSubterms;
+import nars.subterm.RemappedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -48,7 +48,7 @@ class InterningTermBuilderTest {
         InterningTermBuilder t = new InterningTermBuilder();
         assertTrue(InterningTermBuilder.sortCanonically);
         Subterms s = t.subterms((Op)null, $$("x").neg(), $$("y"));
-        assertTrue(s instanceof MappedSubterms);
+        assertTrue(s instanceof RemappedSubterms);
         assertEquals("((--,x),y)", s.toString());
     }
 

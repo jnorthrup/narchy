@@ -3,6 +3,7 @@ package nars.link;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
@@ -245,29 +246,30 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
         if (t instanceof Compound) {
 
-
+            Concept sc = nar.conceptualize(t);
+            if (sc != null) {
+                TermLinker linker = sc.linker();
                     if (//(!(linker instanceof FasterList) ||
-                            //rng.nextInt(src.volume() + 1) == 0
-                            //rng.nextInt(((FasterList) linker).size() + 1) != 0
+                            //rng.nextInt(t.volume() + 1) != 0
+                            rng.nextInt(((FasterList) linker).size() + 1) != 0
                             //rng.nextFloat() < 0.25f
                             //rng.nextInt(((FasterList) linker).size() + 1) == 0
                             //src.equals(tgt) || rng.nextBoolean()
-                            rng.nextBoolean()
+                            //rng.nextBoolean()
                     )
                     {
-                        Concept sc = nar.conceptualize(t);
-                        if (sc != null) {
-                            TermLinker linker = sc.linker();
+
                             @Nullable Term subSrc = linker.sample(rng);
+                            t = subSrc;
                             @Nullable Concept subSrcConcept;
                             if ((subSrcConcept = nar.conceptualize(subSrc))!=null) {
+                                t = subSrcConcept.term();
                                 TaskLink.link(
-                                        TaskLink.tasklink(task.term(), subSrcConcept.term(), task.punc(),
+                                        TaskLink.tasklink(source(), t, task.punc(),
                                                 //priPunc(task.punc())
                                                 task.priElseZero()
                                         ),
                                         nar);
-                                t = subSrc;
                             }
                     }
 //                }

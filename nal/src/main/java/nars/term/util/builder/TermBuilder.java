@@ -120,7 +120,7 @@ public abstract class TermBuilder {
                 if (different) {
                     return new ArrayTermVector(t);
                 } else {
-                    return new MappedSubterms.RepeatedSubterms<>(t[0], t.length);
+                    return new RemappedSubterms.RepeatedSubterms<>(t[0], t.length);
                 }
             }
         }
