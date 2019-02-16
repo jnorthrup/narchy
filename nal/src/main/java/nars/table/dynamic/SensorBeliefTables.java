@@ -63,7 +63,6 @@ public class SensorBeliefTables extends BeliefTables {
 
     protected TaskLink.GeneralTaskLink newTaskLink(Term term) {
         Term src = term;
-        Term tgt = term;
 
         //TEMPORARY
         Set<Term> atoms = term.subterms().recurseSubtermsToSet(ATOM);
@@ -72,7 +71,7 @@ public class SensorBeliefTables extends BeliefTables {
             src = atoms.iterator().next();
         }
 
-        return new TaskLink.GeneralTaskLink(src, tgt);
+        return new TaskLink.GeneralTaskLink(src);
     }
 
     @Override

@@ -300,7 +300,7 @@ public class NAL2Test extends NALTest {
         TestNAR tester = test;
         tester.believe("(planetX --> {Mars,Pluto,Venus})", 0.9f, 0.9f);
         tester.believe("(planetX --> {Pluto,Saturn})", 0.1f, 0.9f);
-        tester.mustBelieve(cycles, "(planetX --> {Mars,Venus})", 0.9f, 0.73f /*0.81f ,0.81f*/);
+        tester.mustBelieve(cycles, "(planetX --> {Mars,Venus})", 0.81f ,0.81f);
 
     }
 
@@ -312,7 +312,7 @@ public class NAL2Test extends NALTest {
         tester.believe("<planetX --> [marsy,earthly,venusy]>", 1.0f, 0.9f);
         tester.believe("<planetX --> [earthly,saturny]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<planetX --> [marsy,earthly,saturny,venusy]>", 0.1f, 0.81f);
-        tester.mustBelieve(cycles, "<planetX --> [marsy,venusy]>", 1 /*0.90f*/, 0.81f);
+        tester.mustBelieve(cycles, "<planetX --> [marsy,venusy]>", 0.90f, 0.81f);
     }
 
     @Test

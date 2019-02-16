@@ -7,11 +7,8 @@ import nars.concept.TaskConcept;
 import nars.link.TaskLink;
 import nars.task.AbstractTask;
 import nars.task.ITask;
-import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
-
-import static nars.time.Tense.ETERNAL;
 
 /** creates a seed tasklink for a processed Task that can subdivide recursively on propagation */
 public class TaskLinkTask extends AbstractTask {
@@ -45,10 +42,8 @@ public class TaskLinkTask extends AbstractTask {
             return null;
 
         //2. tasklink
-        Term conceptTerm = c.term();
         TaskLink.link(
-                //TaskLink.the(c.term(), task, generify(), eternalize(), pri, n),
-                new TaskLink.GeneralTaskLink(conceptTerm, conceptTerm, ETERNAL, task.punc(), pri),
+                new TaskLink.GeneralTaskLink(c.term()).priMerge(task.punc(), pri),
                 n);
 
         //3. feel

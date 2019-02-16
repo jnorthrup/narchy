@@ -1,8 +1,6 @@
 package nars.link;
 
 import jcog.pri.bag.Sampler;
-import nars.Task;
-import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.Termed;
 
@@ -17,14 +15,14 @@ public interface TermLinker extends Sampler<Term> {
     Stream<? extends Termed> targets();
 
 
-    /**
-     * a) insert forward and/or reverse termlinks
-     * b) activate concepts
-     * c) insert tasklinks
-     *
-     * balance = nar.termlinkBalance
-     */
-    void link(TaskLink tasklink, Task task, Derivation d);
+//    /**
+//     * a) insert forward and/or reverse termlinks
+//     * b) activate concepts
+//     * c) insert tasklinks
+//     *
+//     * balance = nar.termlinkBalance
+//     */
+//    void link(TaskLink tasklink, Task task, Derivation d);
 
 
     TermLinker NullLinker = new TermLinker() {
@@ -38,12 +36,12 @@ public interface TermLinker extends Sampler<Term> {
         public Stream<? extends Termed> targets() {
             return Stream.empty();
         }
-
-
-        @Override
-        public void link(TaskLink tasklink, Task task, Derivation d) {
-
-        }
+//
+//
+//        @Override
+//        public void link(TaskLink tasklink, Task task, Derivation d) {
+//
+//        }
 
     };
 

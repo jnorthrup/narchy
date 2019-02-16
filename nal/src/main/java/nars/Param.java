@@ -331,20 +331,6 @@ public abstract class Param {
                     (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
 
-
-    public static final int TaskLinkSpreadDefault =
-            //16;
-            //12;
-            //10;
-            8;
-            //7;
-            //6;
-            //5;
-            //4;
-            //3;
-            //2;
-            //1;
-
     /** termlink template layers depth. TODO this will be abstracted to more flexible weighted activation heuristic */
     @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH_min = 2;
 //    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH = 3 /* 2..4 tested to work ok */;

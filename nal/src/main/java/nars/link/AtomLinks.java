@@ -28,7 +28,7 @@ public final class AtomLinks {
     }
 
     /** caches an AtomLinks instance in the Concept's meta table, attached by a SoftReference */
-    @Nullable public static Term atomTangent(TaskLinkBag bag, NodeConcept src, TaskLink except, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
+    @Nullable public static Term tangent(TaskLinkBag bag, NodeConcept src, TaskLink except, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
 
         String id = bag.id(in, out);
 
@@ -123,7 +123,7 @@ public final class AtomLinks {
             }
         }
 
-        return l != null ? l.target() : null;
+        return l != null ? l.source() : null;
     }
 
     public final Term sample(Atomic srcTerm, Bag<TaskLink,TaskLink> bag, TaskLink except, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
@@ -136,13 +136,13 @@ public final class AtomLinks {
     }
 
     @Nullable static private Term atomOther(Term x, TaskLink t, boolean in, boolean out) {
-        Term tSrc = t.source();
-        if (out && x.equals(tSrc)) {
-            Term y = t.target();
+        Term tt = t.target();
+        if (out && x.equals(tt)) {
+            Term y = t.source();
             return y; //!t.isSelf() ? y : null;
         }
-        if (in && x.equals(t.target())) {
-            Term y = tSrc;
+        if (in && x.equals(t.source())) {
+            Term y = tt;
             return y; //!t.isSelf() ? y : null;
         }
         return null;

@@ -3,10 +3,11 @@ package nars.link;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.MutableFloat;
-import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
-import jcog.pri.*;
+import jcog.pri.ScalarValue;
+import jcog.pri.UnitPri;
+import jcog.pri.UnitPrioritizable;
+import jcog.pri.Weight;
 import jcog.pri.bag.Bag;
 import jcog.pri.op.PriMerge;
 import jcog.signal.tensor.AtomicArrayTensor;
@@ -56,48 +57,38 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
     //byte punc();
     float priPunc(byte punc);
 
-    /**
-     * main tasklink constructor
-     */
-    static TaskLink tasklink(Term src, Task task, float pri) {
 
-        //assert(task.target().volume() < n.termVolumeMax.intValue());
-
-
-//        if (task instanceof SignalTask) {
-//            return new DirectTaskLink(task, pri);
-//        } else {
-
-        return new GeneralTaskLink(src, task.term()).priMerge(task.punc(), pri);
-        //}
+    static TaskLink tasklink(Term src, Term tgt, byte punc, float pri) {
+        return new GeneralTaskLink(src, tgt).priMerge(punc, pri);
     }
 
 
     static void link(TaskLink x, NAR nar) {
-        link(x, nar, null);
-    }
-
-    static void link(TaskLink x, NAR nar, @Nullable OverflowDistributor<Bag> overflow) {
-
         Bag<TaskLink, TaskLink> b = ((AbstractConceptIndex) nar.concepts).active;
-
-        if (overflow != null) {
-            MutableFloat o = new MutableFloat();
-
-            TaskLink yy = b.put(x, o);
-
-            if (o.floatValue() > EPSILON) {
-                overflow.overflow(b, o.floatValue(),
-                        (yy != null) ?
-                                1f - yy.priElseZero()
-                                :
-                                1 //assume it needs as much as it can get
-                );
-            }
-        } else {
-            b.putAsync(x);
-        }
+        b.putAsync(x);
     }
+
+//    static void link(TaskLink x, NAR nar, @Nullable OverflowDistributor<Bag> overflow) {
+//
+//        Bag<TaskLink, TaskLink> b = ((AbstractConceptIndex) nar.concepts).active;
+//
+//        if (overflow != null) {
+//            MutableFloat o = new MutableFloat();
+//
+//            TaskLink yy = b.put(x, o);
+//
+//            if (o.floatValue() > EPSILON) {
+//                overflow.overflow(b, o.floatValue(),
+//                        (yy != null) ?
+//                                1f - yy.priElseZero()
+//                                :
+//                                1 //assume it needs as much as it can get
+//                );
+//            }
+//        } else {
+//            b.putAsync(x);
+//        }
+//    }
 
     /**
      * sample punctuation by relative priority
@@ -114,14 +105,14 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
     @Nullable
     default Task apply(NAR n, byte punc) {
-        Term x = target();
+        Term x = source();
 
         boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
         Concept c =
                 //n.concept(t);
                 beliefOrGoal ? n.conceptualizeDynamic(x) : n.concept(x);
 
-        if( c == null)
+        if (c == null)
             delete();
         else {
 
@@ -136,7 +127,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             if (y == null) {
                 if (!beliefOrGoal) {
                     //form question
-                    y = new NALTask(x, punc, null, n.time(), start, end, new long[] { n.time.nextStamp() });
+                    y = new NALTask(x, punc, null, n.time(), start, end, new long[]{n.time.nextStamp()});
                     y.pri(priPunc(punc));
                 } else {
                     delete(punc); //TODO try another punc?
@@ -230,51 +221,68 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
     }
 
     default Term other(Atomic x) {
-        if (source().equals(x)) {
-            return target();
-        } else if (!Param.DEBUG || target().equals(x)) {
+        if (target().equals(x)) {
             return source();
+        } else if (!Param.DEBUG || source().equals(x)) {
+            return target();
         }
         throw new WTF();
     }
 
-    /** returns the delta */
+    /**
+     * returns the delta
+     */
     float priMax(byte punc, float p);
 
-    @Nullable default Term term(Task task, Derivation d) {
-        Term tt = target();
-        Term src = source();
+    @Nullable
+    default Term term(Task task, Derivation d) {
 
-        Term b;
+        Term t = target();
+
+
         NAR nar = d.nar;
-        if (src instanceof Compound) {
-            Concept cc = nar.concept(src);
-            if (cc != null) {
-                TermLinker linker = cc.linker();
+        Random rng = d.random;
 
-                linker.link(this, task, d);
+        if (t instanceof Compound) {
 
-                Random rng = d.random;
-                if (cc.term().equals(tt) && ((!(linker instanceof FasterList) ||
-                        rng.nextInt(((FasterList) linker).size()+1)==0)))
-                    b = src;  //HACK
-                else
-                    b = linker.sample(rng); //TODO for atoms
 
-            } else {
-                b = src;
+                    if (//(!(linker instanceof FasterList) ||
+                            //rng.nextInt(src.volume() + 1) == 0
+                            //rng.nextInt(((FasterList) linker).size() + 1) != 0
+                            //rng.nextFloat() < 0.25f
+                            //rng.nextInt(((FasterList) linker).size() + 1) == 0
+                            //src.equals(tgt) || rng.nextBoolean()
+                            rng.nextBoolean()
+                    )
+                    {
+                        Concept sc = nar.conceptualize(t);
+                        if (sc != null) {
+                            TermLinker linker = sc.linker();
+                            @Nullable Term subSrc = linker.sample(rng);
+                            @Nullable Concept subSrcConcept;
+                            if ((subSrcConcept = nar.conceptualize(subSrc))!=null) {
+                                TaskLink.link(
+                                        TaskLink.tasklink(task.term(), subSrcConcept.term(), task.punc(),
+                                                //priPunc(task.punc())
+                                                task.priElseZero()
+                                        ),
+                                        nar);
+                                t = subSrc;
+                            }
+                    }
+//                }
+
+
+
             }
-        } else if (src.op().conceptualizable) {
-            //scan active tasklinks for a match to the atom
-            @Nullable Concept cc = nar.concept(src);
-            if (cc!=null)
-                b = ((AbstractConceptIndex)nar.concepts).active.atomTangent((NodeConcept) cc, this, d.time, d.ditherDT, d.random);
-            else
-                b = src;
-        } else {
-            b = src; //variable, int, etc.. ?
+        } else if (t.op().conceptualizable) {
+            //scan active tasklinks for a tangent match to the atom
+            @Nullable Concept cc = nar.concept(t);
+            if (cc != null)
+                t = ((AbstractConceptIndex) nar.concepts).active.atomTangent((NodeConcept) cc, this, d.time, d.ditherDT, d.random);
         }
-        return b;
+
+        return t;
 
     }
 
@@ -313,9 +321,12 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         private final Term target;
         private final int hash;
 
+        public AbstractTaskLink(Term self) {
+            this(self,self);
+        }
         public AbstractTaskLink(Term source, Term target) {
-            this.source = source.concept();
-            this.target = target.concept();
+            this.source = source;
+            this.target = target;
             this.hash = Util.hashCombine(source, target);
         }
 
@@ -354,9 +365,12 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         final AtomicArrayTensor punc = new AtomicArrayTensor(4);
 
         public GeneralTaskLink(Term source, Term target) {
-            super(source, target);
+            super(source.concept(), target.concept());
         }
 
+        public GeneralTaskLink(Term self) {
+            super(self.concept());
+        }
         public GeneralTaskLink(Term source, Term target, long when, byte punc, float pri) {
             this(source, target);
             if (when != ETERNAL) throw new TODO("non-eternal tasklink not supported yet");
@@ -394,7 +408,9 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             return mergeComponent(punc, pri, Param.tasklinkMerge);
         }
 
-        /** returns delta */
+        /**
+         * returns delta
+         */
         public float priSet(byte punc, float pri) {
             return mergeComponent(punc, pri, PriMerge.replace, false);
         }
@@ -414,7 +430,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                         delta += mergeComponent(Task.p(i), p, merge, false);
                     }
                 }
-                return delta/4;
+                return delta / 4;
             } else {
                 throw new TODO();
             }
@@ -556,7 +572,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
         @Override
         public String toString() {
-            return toBudgetString() + ' ' + target() + (punc) + ':' + source();
+            return toBudgetString() + ' ' + source() + (punc) + ':' + target();
         }
 
 

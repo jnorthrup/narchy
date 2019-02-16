@@ -239,39 +239,40 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 //        }
 //    }
 
-
-    /**
-     * spread a tasklink to subconcepts of the concept that owns this linker
-     */
-    @Override
-    public void link(TaskLink tasklink, Task task, Derivation d) {
-
-        Collection<Concept> subConcepts = subConcepts(d);
-
-        if (subConcepts.isEmpty())
-            return;
-
-        NAR nar = d.nar;
-
-
-        float pri =
-                task.priElseZero();
-                //tasklink.priPunc(task.punc());
-                //task.priElseZero() * tasklink.priElseZero();
-                //Math.min(task.priElseZero(), tasklink.priElseZero());
-
-        float pEach =
-                //TODO abstract priority transfer function here
-                pri; //no division
-                //pri/subConcepts.size(); //division
-
-        for (Concept c : subConcepts) {
-            TaskLink.link(
-                    TaskLink.tasklink(c.term(), task, pEach),
-                    nar, null /* overflow*/);
-        }
-
-    }
+//
+//    /**
+//     * spread a tasklink to subconcepts of the concept that owns this linker
+//     */
+//    @Override
+//    public void link(TaskLink tasklink, Task task, Derivation d) {
+//
+//        Collection<Concept> subConcepts = subConcepts(d);
+//
+//        if (subConcepts.isEmpty())
+//            return;
+//
+//        NAR nar = d.nar;
+//
+//
+//        float pri =
+//                task.priElseZero();
+//                //tasklink.priPunc(task.punc());
+//                //task.priElseZero() * tasklink.priElseZero();
+//                //Math.min(task.priElseZero(), tasklink.priElseZero());
+//
+//        float pEach =
+//                //TODO abstract priority transfer function here
+//                pri; //no division
+//                //pri/subConcepts.size(); //division
+//
+//        for (Concept c : subConcepts) {
+//            TaskLink.link(
+//                    TaskLink.tasklink(c.term(), task, pEach),
+//                    nar);
+//
+//        }
+//
+//    }
 
     @Override
     public void sample(Random rng, Function<? super Term, SampleReaction> each) {
@@ -280,91 +281,90 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
     }
 
 
-    private Collection<Concept> subConcepts(Derivation d) {
-
-        int n = concepts;
-        if (n == 0)
-            return Collections.emptyList();
-
-        Collection<Concept> firedConcepts = d.firedConcepts;
-        firedConcepts.clear();
-
-        n = Math.min(n, d.deriver.tasklinkSpread.intValue());
-
-
-
-        //taskPriSum *= concept.priElseZero();
-//        pri = Math.max(pri, ScalarValue.EPSILON);
-
-        NAR nar = d.nar;
-//        AbstractConceptIndex koncepts = (AbstractConceptIndex) nar.concepts;
-//        PriBuffer<Concept> linking = ((BufferedBag<Term,Concept,?>) koncepts.active).buffer; //HACK
-
-//        float conceptActivationEach =
-//                //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
-//                pri / Math.max(1, n); //TODO correct # of concepts fired in this batch
+//    private Collection<Concept> subConcepts(Derivation d) {
 //
-//        conceptActivationEach *= koncepts.activationRate.floatValue(); //HACK
-
-//            float balance = nar.termlinkBalance.floatValue();
-
-//            float termlinkReverse = Math.max(EPSILON, taskLinkPriSum * balance / n);
-
-//        //calculate exactly according to the size of the subset that are actually conceptualizable
-//        float budgetedForward = concepts == 0 ? 0 :
-//                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
-
-//            float termlinkForward = Math.max(EPSILON, taskLinkPriSum * (1 - balance) / n);
-
-
-//            NumberX refund = new MutableFloat(0);
-
-//            Term srcTerm = src.target();
-
-
-        Random rng = d.random;
-        int j; boolean inc;
-        if (n > 1) {
-            int r = rng.nextInt(); //using only one RNG call
-            inc = r >= 0;
-            j = (r & 0b01111111111111111111111111111111) % n;
-
-//            j = rng.nextInt(n); //random starting position
-//            inc = rng.nextBoolean();
-        } else {
-            j = 0;
-            inc = true;
-        }
-
-//        OverflowDistributor<Concept> overflow = n > 1 ? new OverflowDistributor<>() : null;
-
-        for (int i = 0; i < n; i++) {
-            if (inc) {
-                if (++j == n) j = 0;
-            } else {
-                if (--j == -1) j = n - 1;
-            }
-
-            Termed tgtTerm = get(j);
-
-            Concept tgt = tgtTerm instanceof Concept ?
-                    ((Concept)tgtTerm)
-                    :
-                    nar.conceptualize(tgtTerm);
-
-
-            if (tgt !=null) {
-//                linking.put(tgt, conceptActivationEach, overflow);
-
-                firedConcepts.add(tgt);
-            }
-
-        }
-
-//        if(overflow!=null)
-//            linking.put(overflow, rng);
-
-        return firedConcepts;
-    }
+//        int n = concepts;
+//        if (n == 0)
+//            return Collections.emptyList();
+//
+//        Collection<Concept> firedConcepts = new FasterList<>(32);
+//
+//        n = Math.min(n, d.deriver.tasklinkSpread.intValue());
+//
+//
+//
+//        //taskPriSum *= concept.priElseZero();
+////        pri = Math.max(pri, ScalarValue.EPSILON);
+//
+//        NAR nar = d.nar;
+////        AbstractConceptIndex koncepts = (AbstractConceptIndex) nar.concepts;
+////        PriBuffer<Concept> linking = ((BufferedBag<Term,Concept,?>) koncepts.active).buffer; //HACK
+//
+////        float conceptActivationEach =
+////                //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
+////                pri / Math.max(1, n); //TODO correct # of concepts fired in this batch
+////
+////        conceptActivationEach *= koncepts.activationRate.floatValue(); //HACK
+//
+////            float balance = nar.termlinkBalance.floatValue();
+//
+////            float termlinkReverse = Math.max(EPSILON, taskLinkPriSum * balance / n);
+//
+////        //calculate exactly according to the size of the subset that are actually conceptualizable
+////        float budgetedForward = concepts == 0 ? 0 :
+////                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
+//
+////            float termlinkForward = Math.max(EPSILON, taskLinkPriSum * (1 - balance) / n);
+//
+//
+////            NumberX refund = new MutableFloat(0);
+//
+////            Term srcTerm = src.target();
+//
+//
+//        Random rng = d.random;
+//        int j; boolean inc;
+//        if (n > 1) {
+//            int r = rng.nextInt(); //using only one RNG call
+//            inc = r >= 0;
+//            j = (r & 0b01111111111111111111111111111111) % n;
+//
+////            j = rng.nextInt(n); //random starting position
+////            inc = rng.nextBoolean();
+//        } else {
+//            j = 0;
+//            inc = true;
+//        }
+//
+////        OverflowDistributor<Concept> overflow = n > 1 ? new OverflowDistributor<>() : null;
+//
+//        for (int i = 0; i < n; i++) {
+//            if (inc) {
+//                if (++j == n) j = 0;
+//            } else {
+//                if (--j == -1) j = n - 1;
+//            }
+//
+//            Termed tgtTerm = get(j);
+//
+//            Concept tgt = tgtTerm instanceof Concept ?
+//                    ((Concept)tgtTerm)
+//                    :
+//                    nar.conceptualize(tgtTerm);
+//
+//
+//            if (tgt !=null) {
+////                linking.put(tgt, conceptActivationEach, overflow);
+//
+//                firedConcepts.add(tgt);
+//            }
+//
+//        }
+//
+////        if(overflow!=null)
+////            linking.put(overflow, rng);
+//
+//        return firedConcepts;
+//    }
 
 }

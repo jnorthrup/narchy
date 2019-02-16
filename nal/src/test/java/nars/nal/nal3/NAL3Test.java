@@ -321,9 +321,9 @@ public class NAL3Test extends NALTest {
             $.09 (((2-1)|(--,0))-->x). 1 %1.0;.60% {127: 1;2;3} (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neq(S,P) |- ((polarizeTask(P) | polarizeBelief(S)) --> M), (Belief:IntersectionDepolarized)
             $.19 ((2-1)-->x). 1⋈2 %1.0;.76% {84: 2;3}
          */
-        String ii = "(((2-1)|(--,0))-->x)";
+        String ii = "(((a2-a1)|(--,a0))-->x)";
         Term iii = $$(ii);
-        assertEquals("((2-1),(--,0))", iii.sub(0).subterms().toString());
+        assertEquals("((a2-a1),(--,a0))", iii.sub(0).subterms().toString());
         assertEquals(ii, iii.toString());
 
         Term cn = $$("((_2-_1)|(--,_3))");
@@ -337,12 +337,12 @@ public class NAL3Test extends NALTest {
 
         assertTrue(
             new SubOfConstraint($.varDep(1), $.varDep(2), SubtermCondition.Subterm)
-                .invalid(cn, (Term) xp)
+                .invalid(cn, xp)
         );
         test.termVolMax(9);
         test.believe(ii)
-            .mustBelieve(cycles, "(0-->x)", 0, 0.81f)
-            .mustNotOutput(cycles, "(0-->x)", BELIEF, 0.5f, 1f, 0, 0.99f, (t)->true)
+            .mustBelieve(cycles, "(a0-->x)", 0, 0.81f)
+            .mustNotOutput(cycles, "(a0-->x)", BELIEF, 0.5f, 1f, 0, 0.99f, (t)->true)
 
         ;
     }

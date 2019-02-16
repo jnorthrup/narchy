@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 400;
+    private static final int cycles = 800;
 
     @BeforeEach
     void setup() {
@@ -27,7 +27,7 @@ public class NAL6Test extends NALTest {
         NAR n = NARS.tmp(6);
         n.termVolumeMax.set(18);
         //n.freqResolution.setAt(0.1f);
-        n.confMin.set(0.3f);
+        n.confMin.set(0.1f);
         return n;
     }
 
@@ -1180,17 +1180,27 @@ public class NAL6Test extends NALTest {
         //tests:
         // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
         test
-                .termVolMax(8)
+                .termVolMax(5)
                 .believe("(S ==> M)", 0.6f, 0.9f)
                 .believe("((X && S) ==> M)", 0.7f, 0.81f)
-                .mustBelieve(cycles, "(X ==> M)", .6f, 0.36f) //some freq and conf, dunno
+                .mustBelieve(cycles, "(X ==> M)", .42f, 0.3f) //some freq and conf, dunno
+        ;
+    }
+    @Test void testDecomposePositiveImplicationCommonConjunctionSubtermMoreConfident() {
+        //tests:
+        // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
+        test
+                .termVolMax(5)
+                .believe("(S ==> M)", 1f, 0.9f)
+                .believe("((X && S) ==> M)", 1f, 0.9f)
+                .mustBelieve(cycles, "(X ==> M)", 1f, 0.81f) //some freq and conf, dunno
         ;
     }
     @Test void testDecomposeNegativeImplicationCommonConjunctionSubterm() {
         //tests:
         // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
         test
-                .termVolMax(8)
+                .termVolMax(5)
                 .believe("(       S ==> --M)")
                 .believe("((X && S) ==> --M)")
                 .mustBelieve(cycles, "(X ==> M)", 0f, 0.81f)

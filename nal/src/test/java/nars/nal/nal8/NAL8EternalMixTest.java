@@ -673,7 +673,6 @@ class NAL8EternalMixTest extends NALTest {
     void testStrongUnificationAbductionPN() {
 
         test
-                .logDebug()
                 .input("(--X ==>+1 Y).")
                 .input("Y. |")
                 .mustBelieve(cycles, "X", 0f, 0.45f, -1);

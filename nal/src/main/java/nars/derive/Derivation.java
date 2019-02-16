@@ -2,7 +2,6 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
@@ -12,7 +11,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.concept.Concept;
 import nars.control.CauseMerge;
 import nars.derive.op.Occurrify;
 import nars.derive.premise.PreDerivation;
@@ -190,10 +188,6 @@ public class Derivation extends PreDerivation {
     public transient int ditherDT;
 
     public Deriver deriver;
-
-
-    /** temporary storage buffer for recently activated concepts */
-    @Deprecated public final Collection<Concept> firedConcepts = new FasterList<>(32);
 
 
     private Function<Atomic, Functor> derivationFunctors;
@@ -606,7 +600,6 @@ public class Derivation extends PreDerivation {
         premiseBuffer.clear();
 
         occ.clear();
-        firedConcepts.clear();
         _belief = null;
         _task = null;
         taskStamp.clear();

@@ -1,10 +1,8 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.math.IntRange;
 import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.attention.DerivePri;
 import nars.control.Cause;
@@ -55,7 +53,7 @@ abstract public class Deriver extends Causable {
 //    protected final Consumer<Predicate<Activate>> source;
 
     public DerivePri pri;
-    public final IntRange tasklinkSpread =  new IntRange(Param.TaskLinkSpreadDefault, 1, 32);
+//    public final IntRange tasklinkSpread =  new IntRange(Param.TaskLinkSpreadDefault, 1, 32);
 
 
     protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
