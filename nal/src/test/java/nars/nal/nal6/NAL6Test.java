@@ -744,7 +744,10 @@ public class NAL6Test extends NALTest {
                 .termVolMax(12)
                 .believe("((&&,(#1 --> lock),open($2,#1)) ==> ($2 --> key))", 1.00f, 0.90f)
                 .believe("(lock1 --> lock)", 1.00f, 0.90f)
-                .mustBelieve(cycles, "((open($1,lock1)&&(lock1-->lock))==>($1-->key))", 1.00f, 0.81f);
+                //.mustBelieve(cycles, "((open($1,lock1)&&(lock1-->lock))==>($1-->key))", 1.00f, 0.81f)
+                .mustBelieve(cycles, "(open($1,lock1)==>($1-->key))", 1.00f, 0.81f)
+                ;
+
     }
     @Test
     void variable_elimination_deduction_neg_conc() {
@@ -753,17 +756,21 @@ public class NAL6Test extends NALTest {
                 .termVolMax(12)
                 .believe("((&&,(#1 --> lock),open($2,#1)) ==> ($2 --> key))", 0.00f, 0.90f)
                 .believe("(lock1 --> lock)", 1.00f, 0.90f)
-                .mustBelieve(cycles, "((open($1,lock1)&&(lock1-->lock))==>($1-->key))", 0.00f, 0.81f);
+                //.mustBelieve(cycles, "((open($1,lock1)&&(lock1-->lock))==>($1-->key))", 0.00f, 0.81f)
+                .mustBelieve(cycles, "(open($1,lock1)==>($1-->key))", 0.00f, 0.81f)
+        ;
     }
 
     @Test
     void variable_elimination_deduction_neg_condition() {
 
         test
-                .termVolMax(12)
-                .believe("((&&, --(#1 --> lock), open($2,#1)) ==> ($2 --> key))")
-                .believe("--(lock1 --> lock)")
-                .mustBelieve(cycles, "((open($1,lock1)&&--(lock1-->lock))==>($1-->key))", 1.00f, 0.81f);
+            .termVolMax(12)
+            .believe("((&&, --(#1 --> lock), open($2,#1)) ==> ($2 --> key))")
+            .believe("--(lock1 --> lock)")
+            //.mustBelieve(cycles, "((open($1,lock1)&&--(lock1-->lock))==>($1-->key))", 1.00f, 0.81f)
+            .mustBelieve(cycles, "(open($1,lock1)==>($1-->key))", 1.00f, 0.81f)
+            ;
     }
     @Test
     void abduction_without_variable_elimination() {

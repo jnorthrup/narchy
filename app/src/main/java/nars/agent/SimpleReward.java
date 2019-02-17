@@ -83,7 +83,7 @@ public class SimpleReward extends BeliefReward {
 
 
     @Override
-    protected void updateReward(long prev, long now) {
+    protected final void updateReward(long prev, long now) {
         ((Signal)concept).sense(prev, now, nar());
     }
 }

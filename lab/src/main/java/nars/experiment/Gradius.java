@@ -146,7 +146,7 @@ public class Gradius extends NAgentX {
         rewardNormalized("destroy",0, 1, ()->{
 
             if (g.paused)
-                return 0;
+                return Float.NaN;
 
             int nextScore = g.score;
 
@@ -154,7 +154,7 @@ public class Gradius extends NAgentX {
 
             lastScore = nextScore;
 
-            return Math.max(0, r);
+            return r!=0 ? Math.max(0, r) : Float.NaN;
        });
 
     }

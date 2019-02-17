@@ -170,7 +170,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        //Param.STRONG_COMPOSITION = true;
+        Param.STRONG_COMPOSITION = true;
 
         RealTime clock =
                 new RealTime.MS();
@@ -435,9 +435,9 @@ abstract public class NAgentX extends NAgent {
         bd.timing = new ActionTiming(n);
 
 
-//        BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8,
-//                "relation_introduction.nal"
-//        ));
+        BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8,
+                "relation_introduction.nal"
+        ));
 
 //        new StatementLinker(n);
 //        new PuncNoise(n);

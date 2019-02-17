@@ -462,7 +462,8 @@ public class NAL5Test extends NALTest {
         .termVolMax(12)
         .believe("<(&&,(#x --> [flying]),(#x --> [withWings])) ==> a>")
         .believe("(robin --> [flying])")
-        .mustBelieve(cycles, " (((robin-->[flying])&&(robin-->[withWings]))==>a)", 1.00f, 0.81f);
+        .mustBelieve(cycles, " ((robin-->[withWings])==>a)", 1.00f, 0.81f);
+        //.mustBelieve(cycles, " (((robin-->[flying])&&(robin-->[withWings]))==>a)", 1.00f, 0.81f);
 
     }
 

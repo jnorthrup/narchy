@@ -50,13 +50,17 @@
 
 
         //TODO question variations
-        Y, (  C ==> Z), is(C,"&&"),eventOf(C,Y)    |- (  conjWithout(C,  Y) ==> Z), (Belief:Pre)
-        Y, (--C ==> Z), is(C,"&&"),eventOf(C,Y)    |- (--conjWithout(C,  Y) ==> Z), (Belief:Pre)
-        Y, (  C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (  conjWithout(C,--Y) ==> Z), (Belief:PreN)
-        Y, (--C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (--conjWithout(C,--Y) ==> Z), (Belief:PreN)
+//        Y, (  C ==> Z), is(C,"&&"),eventOf(C,Y)    |- (  conjWithout(C,  Y) ==> Z), (Belief:Pre)
+//        Y, (--C ==> Z), is(C,"&&"),eventOf(C,Y)    |- (--conjWithout(C,  Y) ==> Z), (Belief:Pre)
+//        Y, (  C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (  conjWithout(C,--Y) ==> Z), (Belief:PreN)
+//        Y, (--C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (--conjWithout(C,--Y) ==> Z), (Belief:PreN)
                 //TOD eventsOf
-        Y, (  C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Pre)
-        Y, (  C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:PreN)
+        Y, ((&&,X,A..+) ==> Z),  --isVar(X)      |- unisubst(((&&,A..+) ==> Z), X,Y), (Belief:Pre)
+        Y, ((&&,--X,A..+) ==> Z), --isVar(X)     |- unisubst(((&&,A..+) ==> Z), X,Y), (Belief:PreN)
+          Y, (--(&&,X,A..+) ==> Z), --isVar(X)   |- unisubst((--(&&,A..+) ==> Z), X,Y), (Belief:Pre)
+          Y, (--(&&,--X,A..+) ==> Z), --isVar(X) |- unisubst((--(&&,A..+) ==> Z), X,Y), (Belief:PreN)
+        //Y, (  C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Pre)
+        //Y, (  C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:PreN)
           //Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
            //Y, ((&&,X,A..+) ==> Z) |- unisubst(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
 
