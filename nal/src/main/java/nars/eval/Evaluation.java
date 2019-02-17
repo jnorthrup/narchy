@@ -56,14 +56,13 @@ public class Evaluation {
      * @return
      */
     @Nullable
-    private static Evaluation eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver, Predicate<Term> each) {
+    private static void eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver, Predicate<Term> each) {
 
         if (canEval(x)) {
             Evaluator y = new Evaluator(resolver);
-            return y.eval(each, includeTrues, includeFalses, x);
+            y.eval(each, includeTrues, includeFalses, x);
         } else {
             each.test(x); //didnt need evaluating, just input
-            return null;
         }
     }
 
@@ -150,7 +149,7 @@ public class Evaluation {
     /** simple complexity heuristic */
     static private final Comparator<Term> byComplexity = Comparator.comparingInt(Term::vars).thenComparing(Term::volume);
 
-    protected boolean eval(Evaluator e, final Term x, @Nullable List<Term> operations) {
+    private boolean eval(Evaluator e, final Term x, @Nullable List<Term> operations) {
 
         Term y = x;
 
@@ -209,15 +208,15 @@ public class Evaluation {
                     if (!removeEntry && eval) {
                         Functor func = (Functor) a.sub(1);
                         Subterms args = a.sub(0).subterms();
-                        if (canEval(args)) {
-                            //evaluate subterms recursively
-                            args = args.transformSubs(new DirectTermTransform() {
-                                @Override
-                                public Term transform(Term x) {
-                                    return Evaluation.solveFirst(x, (Function<Atom, Functor>) e.funcResolver);
-                                }
-                            }, PROD);
-                        }
+//                        if (canEval(args)) {
+//                            //evaluate subterms recursively
+//                            args = args.transformSubs(new DirectTermTransform() {
+//                                @Override
+//                                public Term transform(Term x) {
+//                                    return Evaluation.solveFirst(x, (Function<Atom, Functor>) e.funcResolver);
+//                                }
+//                            }, PROD);
+//                        }
 
                         z = func.apply(this, args);
                         if (z == Null) {

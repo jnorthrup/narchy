@@ -110,7 +110,7 @@ public class Arithmeticize {
 
     public static Term apply(Term x, @Nullable Anon anon, int volMax, boolean eternal, Random random) {
         if (anon == null && !x.hasAny(INT))
-            return x;
+            return null;
 
         int cdt = eternal ? DTERNAL : 0;
 
@@ -122,13 +122,13 @@ public class Arithmeticize {
         if (xxs == 1) {
             Term xxx = xx.iterator().next();
             if (!xxx.hasAny(INT))
-                return x;
+                return null;
             else
                 x = xxx;
         } else if (xxs > 1) {
             Term xxx = CONJ.the(cdt, xx);
             if (!xxx.hasAny(INT))
-                return x;
+                return null;
             else
                 x = xxx;
         }
@@ -146,12 +146,11 @@ public class Arithmeticize {
 
         int ui = ints.size();
         if (ui < minInts)
-            return x; 
+            return null;
 
-        ArithmeticOp[] mmm = mods(ints);
-
-        Term y = mmm[ Roulette.selectRoulette(mmm.length, c -> mmm[c].score, random) ]
-                    .apply(x, cdt, anon);
+        Term y = mods(ints)[
+                    Roulette.selectRoulette(mods(ints).length, c -> mods(ints)[c].score, random)
+                ].apply(x, cdt, anon);
 
         if (y == null || y.volume() > volMax) return null;
 

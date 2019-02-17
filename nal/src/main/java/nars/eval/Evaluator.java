@@ -99,8 +99,7 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
     }
 
 
-    @Nullable
-    public Evaluation eval(Predicate<Term> each, boolean includeTrues, boolean includeFalses, Term... queries) {
+    public void eval(Predicate<Term> each, boolean includeTrues, boolean includeFalses, Term... queries) {
 
         assert (queries.length > 0);
 
@@ -110,7 +109,7 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
         for (Term x : queries) {
             e.evalTry(x, this);
         }
-        return e;
+
     }
 
     public void print() {

@@ -229,14 +229,18 @@ public abstract class Param {
     public static final float SIGNAL_UNSURPRISING_FACTOR = 0.1f;
 
 
-    /** may cause unwanted "sticky" event conflation */
-    public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
+    /** may cause unwanted "sticky" event conflation. may only be safe when the punctuation of the task in which the event contained is the same */
+    public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = false;
 
-    /** if false, keeps intersecting timegraph events separate.  if true, it merges them to one event. may cause unwanted "sticky" event conflation */
+    /** if false, keeps intersecting timegraph events separate.
+     *  if true, it merges them to one event. may cause unwanted "sticky" event conflation
+     *  may only be safe when the punctuation of the task in which the event contained is the same
+     * */
     public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = false;
 
-    /** whether timegraph should not return solutions with volume significantly less than the input's */
-    public static final boolean TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS = false;
+    /** whether timegraph should not return solutions with volume significantly less than the input's.
+     *  set 0 to disable the filter */
+    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.5f;
 
     /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
     public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
@@ -261,7 +265,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -275,7 +279,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 2;
+    public static final int TIMEGRAPH_ITERATIONS = 3;
 
 
     /**

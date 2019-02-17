@@ -957,17 +957,18 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
     private boolean solveExact(Event f, Predicate<Event> each) {
-        if (f instanceof Absolute && !f.id.hasXternal())
-            if (!each.test(f))
-                return false;
+        if (f instanceof Absolute && !f.id.hasXternal()) {
+            return each.test(f);
+        } else {
 
-        Term x = f.id;
-        //try exact absolute solutions
-        for (Event e : byTerm.get(x)) {
-            if (e instanceof Absolute && ((!(f instanceof Absolute)) || !e.equals(f)) && !each.test(e))
-                return false;
+            //try exact absolute solutions
+            for (Event e : byTerm.get(f.id)) {
+                if (e instanceof Absolute && ((!(f instanceof Absolute)) || !e.equals(f)) && !each.test(e))
+                    return false;
+            }
+
+            return true;
         }
-        return true;
     }
 
 //    private boolean solveExact(Term x, Predicate<Event> each) {

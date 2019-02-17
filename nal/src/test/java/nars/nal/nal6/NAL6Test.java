@@ -286,7 +286,9 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("({Tweety} --> [withWings])");
         tester.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> ($x --> bird))");
-        tester.mustBelieve(cycles, "((({Tweety}-->[chirping])&&({Tweety}-->[withWings]))==>({Tweety}-->bird))",
+        tester.mustBelieve(cycles,
+                //"((({Tweety}-->[chirping])&&({Tweety}-->[withWings]))==>({Tweety}-->bird))",
+                "(({Tweety}-->[chirping])==>({Tweety}-->bird))",
                 1.00f,
                 0.81f
         );
@@ -299,7 +301,9 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("({Tweety} --> [withWings])");
         tester.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> --($x --> nonBird))");
-        tester.mustBelieve(cycles, "((({Tweety}-->[chirping])&&({Tweety}-->[withWings]))==>({Tweety}-->nonBird))",
+        tester.mustBelieve(cycles,
+                //"((({Tweety}-->[chirping])&&({Tweety}-->[withWings]))==>({Tweety}-->nonBird))",
+                "(({Tweety}-->[chirping])==>({Tweety}-->nonBird))",
                 0.00f,
                 //0.81f
                 0.81f
@@ -1293,4 +1297,5 @@ public class NAL6Test extends NALTest {
 //        ;
 //    }
 }
+
 

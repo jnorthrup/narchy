@@ -45,7 +45,7 @@ class DepIndepVarIntroductionTest {
 
 
         assertEquals("[((a-->($_v,#1))=|>(b-->($_v,#1))), ((a-->$_v)=|>(b-->$_v))]",
-                introduce(x, 8).toString());
+                introduce(x, 16).toString());
     }
 
     @Test

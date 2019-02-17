@@ -487,14 +487,9 @@ public class Occurrify extends TimeGraph {
             return false;
 
         int v = y.volume();
-        return v < d.termVolMax && super.validPotentialSolution(y) &&
-                (
-                    !Param.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS
-                    ||
-                    v >=
-                            //patternVolume - 1 /* tolerance for only one less negation (ie. an outermost one) */
-                            patternVolume / 2 /* tolerate partial degeneracy*/
-                );
+        return v <= d.termVolMax && super.validPotentialSolution(y) &&
+               v >= Param.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume
+               ;
     }
 
     private ArrayHashSet<Event> solutions(Term pattern) {

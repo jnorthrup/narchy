@@ -52,7 +52,7 @@ public class NAL6DecomposeTest extends NALTest {
         assertDecomposeSubjDisjAandB(1f, 0.5f, 0.1f, 0.08f);
     }
     @Test void testDecomposeSubjDisjPosPosOpposite() {
-        assertDecomposeSubjDisjAandB(1f, 0.1f, 0.9f, 0.73f);
+        assertDecomposeSubjDisjAandB(1f, 0.1f, 1f, 0.73f);
     }
     @Test void testDecomposeSubjDisjPosPosOppositeWeaker() {
         assertDecomposeSubjDisjAandB(0.75f, 0.1f, 0.78f, 0.66f);

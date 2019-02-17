@@ -5,7 +5,6 @@ import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.Op;
 import nars.agent.Reward;
 import nars.attention.AttNode;
 import nars.concept.action.BiPolarAction;
@@ -19,7 +18,6 @@ import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
 import nars.sensor.PixelBag;
-import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.video.AutoclassifiedBitmap;
 import spacegraph.SpaceGraph;
@@ -109,14 +107,14 @@ public class NARio extends NAgentX {
         Atomic UP = $.the("up");
         Atomic DOWN = $.the("down");
         List<SelectorSensor> tileSensors = List.of(
-                tileSwitch(LEFT, -1, 0),
-                tileSwitch(RIGHT, +1, 0),
-                tileSwitch(UP, 0, -1),
-                tileSwitch(DOWN, 0, +1),
-                tileSwitch(Op.SECTi.the(LEFT, UP), -1, -1),
-                tileSwitch(Op.SECTi.the(RIGHT, UP), +1, -1),
-                tileSwitch(Op.SECTi.the(LEFT, DOWN), -1, +1),
-                tileSwitch(Op.SECTi.the(RIGHT, DOWN), +1, +1)
+                tileSwitch(-1, 0),
+                tileSwitch(+1, 0),
+                tileSwitch(0, -1),
+                tileSwitch(0, +1),
+                tileSwitch( -1, -1),
+                tileSwitch( +1, -1),
+                tileSwitch( -1, +1),
+                tileSwitch(+1, +1)
         );
 
         AttNode tileAttnGroup = new AttNode(tileSensors);
@@ -220,8 +218,8 @@ public class NARio extends NAgentX {
 
     static final int tileTypes = 3; //0..4
 
-    private SelectorSensor tileSwitch(Term label, int dx, int dy) {
-        return senseSwitch(i -> $.inh(label, $.the("tile" + i)),
+    private SelectorSensor tileSwitch(int dx, int dy) {
+        return senseSwitch(i -> $.inh($.p(dx, dy), $.p($.the("tile"), $.the(i))),
                 () -> tile(dx, dy), tileTypes);
     }
 
