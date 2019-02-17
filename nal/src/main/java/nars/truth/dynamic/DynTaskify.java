@@ -193,9 +193,9 @@ public class DynTaskify extends DynEvi {
 
 
     @Override
-    public boolean add(Task newItem) {
+    public boolean add(Task x) {
 
-        super.add(newItem);
+        super.add(x);
 
 
         if (evi == null) {
@@ -211,7 +211,7 @@ public class DynTaskify extends DynEvi {
         }
 
         if (evi!=null) {
-            evi.addAll(newItem.stamp());
+            evi.addAll(x.stamp());
         }
 
         return true;

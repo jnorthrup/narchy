@@ -66,7 +66,7 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
     }
 
     @Override
-    public double coord(int dimension, boolean maxOrMin) {
+    public float coordF(int dimension, boolean maxOrMin) {
         throw new TODO();
     }
 

@@ -11,7 +11,6 @@ import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.utility.ArrayIterate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -271,8 +270,12 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public final long longify(LongObjectToLongFunction<X> f, long l) {
-        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            l = f.longValueOf(l, this.get(i));
+        int thisSize = this.size;
+        if (thisSize > 0) {
+            X[] ii = this.items;
+            for (int i = 0; i < thisSize; i++) {
+                l = f.longValueOf(l, ii[i]);
+            }
         }
         return l;
     }
@@ -337,34 +340,28 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public long maxValue(ToLongFunction<? super X> function) {
-        long max = Long.MIN_VALUE;
-        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            long y = function.applyAsLong(this.get(i));
-            if (y > max)
-                max = y;
-        }
-        return max;
+        return longify((max, x)->Math.max(max,function.applyAsLong(x)), Long.MIN_VALUE);
     }
 
-    public X maxBy(float mustExceed, FloatFunction<? super X> function) {
-
-        if (ArrayIterate.isEmpty(items)) {
-            throw new NoSuchElementException();
-        }
-
-        X min = null;
-        float minValue = mustExceed;
-        for (int i = 0; i < size; i++) {
-            X next = items[i];
-            float nextValue = function.floatValueOf(next);
-            if (nextValue > minValue) {
-                min = next;
-                minValue = nextValue;
-            }
-        }
-        return min;
-
-    }
+//    public X maxBy(float mustExceed, FloatFunction<? super X> function) {
+//
+//        if (ArrayIterate.isEmpty(items)) {
+//            throw new NoSuchElementException();
+//        }
+//
+//        X min = null;
+//        float minValue = mustExceed;
+//        for (int i = 0; i < size; i++) {
+//            X next = items[i];
+//            float nextValue = function.floatValueOf(next);
+//            if (nextValue > minValue) {
+//                min = next;
+//                minValue = nextValue;
+//            }
+//        }
+//        return min;
+//
+//    }
 
 
     @Override
@@ -464,16 +461,20 @@ public class FasterList<X> extends FastList<X> {
     }
 
     @Override
-    public boolean add(X newItem) {
+    public boolean add(X x) {
         ensureCapacityForAdditional(1);
-        addWithoutResizeTest(newItem);
+        addWithoutResizeTest(x);
         return true;
     }
 
-    public int addAndGetSize(X newItem) {
+    public int addAndGetSize(X x) {
         ensureCapacityForAdditional(1);
-        addWithoutResizeTest(newItem);
+        addWithoutResizeTest(x);
         return size;
+    }
+
+    public final byte addAndGetSizeAsByte(X x) {
+        return (byte)addAndGetSize(x);
     }
 
 
@@ -610,6 +611,16 @@ public class FasterList<X> extends FastList<X> {
      */
     public final void addWithoutResizeTest(X x) {
         this.items[this.size++] = x;
+    }
+
+    public final void addWithoutResizeTest(X[] x, int n) {
+        //if (n > 0) {
+            X[] items = this.items;
+            int size = this.size;
+            for (int i = 0; i < n; i++)
+                items[size + i] = x[i];
+            this.size += n;
+        //}
     }
 
     public boolean addWithoutResize(X x) {

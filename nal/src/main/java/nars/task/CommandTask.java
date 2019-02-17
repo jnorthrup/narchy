@@ -53,7 +53,7 @@ public class CommandTask implements Task {
     }
 
     @Override
-    public double coord(int dimension, boolean maxOrMin) {
+    public float coordF(int dimension, boolean maxOrMin) {
         throw new UnsupportedOperationException();
     }
 

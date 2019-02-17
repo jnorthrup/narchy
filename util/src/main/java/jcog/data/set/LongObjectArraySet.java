@@ -55,7 +55,7 @@ public abstract class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     @Override
-    public final boolean add(X newItem) {
+    public final boolean add(X x) {
         throw new UnsupportedOperationException();
     }
 

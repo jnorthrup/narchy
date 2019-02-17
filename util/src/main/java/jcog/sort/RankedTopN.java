@@ -10,7 +10,7 @@ import java.util.function.IntFunction;
 public class RankedTopN<X> extends TopN<Ranked<X>> {
 
     /** source of ranked instances */
-    MetalPool<Ranked> r = null;
+    MetalPool<Ranked> pool = null;
 
     static final ThreadLocal<MetalPool<Ranked>> rr = ThreadLocal.withInitial(()->new MetalPool<>() {
         @Override
@@ -23,6 +23,13 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
             i.clear();
             super.put(i);
         }
+
+        @Override
+        public void put(Ranked[] items, int size) {
+            for (int i = 0; i < size; i++)
+                items[i].clear();
+            super.put(items, size);
+        }
     });
 
     public RankedTopN(IntFunction<Ranked<X>[]> arrayBuilder, int initialCapacity) {
@@ -30,15 +37,9 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
     }
 
     /** call this on start */
-    public TopN<Ranked<X>> ranking(FloatRank<X> rank, int capacity) {
-        this.r = rr.get();
-        return super.rank((Ranked<X> r, float min) -> {
-            float p = r.pri;
-            if (p == p)
-                return p;
-            else
-                return r.pri = rank.rank(r.x, min);
-        }, capacity);
+    public final TopN<Ranked<X>> ranking(FloatRank<X> rank, int capacity) {
+        this.pool = rr.get();
+        return super.rank((r, min) -> r.apply(rank, min), capacity);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
         Ranked<X> p = super.pop();
         if (p != null) {
             X x = p.x;
-            r.put(p);
+            pool.put(p);
             return x;
         } else {
             return null;
@@ -63,23 +64,24 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
     }
 
     public final boolean addRanked(X task) {
-        return add(r.get().set(task));
+        return add(pool.get().set(task));
     }
 
     @Override
     protected final void rejectExisting(Ranked<X> e) {
-        r.put(e);
+        pool.put(e);
     }
 
     @Override
     protected final void rejectOnEntry(Ranked<X> e) {
-        r.put(e);
+        pool.put(e);
     }
 
     @Override
     public void clear() {
-        if (size > 0)
-            forEach(r::put);
+        int s = this.size;
+        if (s > 0)
+            pool.put(items, s);
         super.clear();
     }
 }

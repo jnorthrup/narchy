@@ -43,6 +43,8 @@ public interface TermTransform {
                     if (s.subs() > 0) {
                         Subterms s2 = s.transformSubs(this, null);
                         if (s2 != s) {
+                            if (s2 == null)
+                                return false;
                             y = new EllipsisMatch(s2);
                         }
                     }

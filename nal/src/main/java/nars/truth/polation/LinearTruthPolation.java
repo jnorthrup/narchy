@@ -73,7 +73,8 @@ public class LinearTruthPolation extends TruthPolation {
         float wFreqSum = 0;
         float wSum = 0;
         float eSum = 0;
-        for (TaskComponent x : this) {
+        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+            TaskComponent x = this.get(i);
 //            if (x == null)
 //                continue;
 
@@ -81,9 +82,9 @@ public class LinearTruthPolation extends TruthPolation {
             eSum += e;
 
             float w = e;
-                //e * Math.abs(f-0.5f)*2f; /* polarity weighting */
-                //e * (0.5f + Math.abs(f-0.5f)); /* polarity partial weighting */
-                //e * (1 + (2*Math.abs(f-0.5f))); /* 2:1 compression polarity partial weighting */
+            //e * Math.abs(f-0.5f)*2f; /* polarity weighting */
+            //e * (0.5f + Math.abs(f-0.5f)); /* polarity partial weighting */
+            //e * (1 + (2*Math.abs(f-0.5f))); /* 2:1 compression polarity partial weighting */
             wSum += w;
 
             float f = x.freq;

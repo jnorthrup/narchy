@@ -235,33 +235,16 @@ public enum Util {
 
 
 
-    /*
-     **************************************************************************
-     *                                                                        *
-     *          General Purpose Hash Function Algorithms Library              *
-     *                                                                        *
-     * Author: Arash Partow - 2002                                            *
-     * URL: http:
-     * URL: http:
-     *                                                                        *
-     * Copyright notice:                                                      *
-     * Free use of the General Purpose Hash Function Algorithms Library is    *
-     * permitted under the guidelines and in accordance with the most current *
-     * version of the Common Public License.                                  *
-     * http:
-     *                                                                        *
-     **************************************************************************
-     */
-
-    public static <E> void assertNotEmpty(Collection<E> test, String varName) {
-        if (test == null) {
-            throw new NullPointerException(varName);
-        }
-        if (test.isEmpty()) {
-            throw new IllegalArgumentException("empty " + varName);
-        }
-    }
-    /* End Of  P. J. Weinberger Hash Function */
+//
+//    public static <E> void assertNotEmpty(Collection<E> test, String varName) {
+//        if (test == null) {
+//            throw new NullPointerException(varName);
+//        }
+//        if (test.isEmpty()) {
+//            throw new IllegalArgumentException("empty " + varName);
+//        }
+//    }
+//    /* End Of  P. J. Weinberger Hash Function */
 
     public static int fastCompare(float f1, float f2) {
 
@@ -270,7 +253,13 @@ public enum Util {
         if (f1 > f2)
             return 1;
 
-        return 0;
+        boolean nan1 = f1!=f1, nan2 = f2!=f2;
+        if (nan1==nan2)
+            return 0;
+        else if (nan1)
+            return +1;
+        else
+            return -1;
     }
 
     public static <K, V> void assertNotEmpty(Map<K, V> test, String varName) {
@@ -606,7 +595,11 @@ public enum Util {
      * targetFactor=0:   full current
      */
     public static float lerp(float x, float min, float max) {
-        return min + (max - min) * unitize(x);
+        return lerpSafe(unitize(x), min, max);
+    }
+
+    public static float lerpSafe(float x, float min, float max) {
+        return min + (max - min) * x;
     }
 
     /**

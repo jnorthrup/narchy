@@ -174,19 +174,18 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default boolean intersects(HyperRegion x) {
         if (x == this) return true;
         long start = start();
-        long end = end();
         if (x instanceof TimeRange) {
             if (x instanceof TimeConfRange) {
                 TimeConfRange t = (TimeConfRange) x;
-                return start <= t.end && end >= t.start && confMin() <= t.cMax && confMax() >= t.cMin;
+                return start <= t.end && end() >= t.start && confMin() <= t.cMax && confMax() >= t.cMin;
             } else {
                 TimeRange t = (TimeRange) x;
-                return start <= t.end && end >= t.start;
+                return start <= t.end && end() >= t.start;
             }
         } else {
             TaskRegion t = (TaskRegion) x;
             return start <= t.end() &&
-                    end >= t.start() &&
+                    end() >= t.start() &&
                     coordF(1, false) <= t.coordF(1, true) &&
                     coordF(1, true) >= t.coordF(1, false) &&
                     coordF(2, false) <= t.coordF(2, true) &&
@@ -199,19 +198,18 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         if (x == this) return true;
 
         long start = start();
-        long end = end();
         if (x instanceof TimeRange) {
             if (x instanceof TimeConfRange) {
                 TimeConfRange t = (TimeConfRange) x;
-                return start <= t.start && end >= t.end && confMin() <= t.cMin && confMax() >= t.cMax;
+                return start <= t.start && end() >= t.end && confMin() <= t.cMin && confMax() >= t.cMax;
             } else {
                 TimeRange t = (TimeRange) x;
-                return start <= t.start && end >= t.end;
+                return start <= t.start && end() >= t.end;
             }
         } else {
             TaskRegion t = (TaskRegion) x;
             return
-                    start <= t.start() && end >= t.end() &&
+                    start <= t.start() && end() >= t.end() &&
                             coordF(1, false) <= t.coordF(1, false) &&
                             coordF(1, true) >= t.coordF(1, true) &&
                             coordF(2, false) <= t.coordF(2, false) &&
@@ -219,9 +217,12 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         }
     }
 
+    default double coord(int dimension, boolean maxOrMin) {
+        return coordF(dimension, maxOrMin);
+    }
 
     @Override
-    double coord(int dimension, boolean maxOrMin);
+    float coordF(int dimension, boolean maxOrMin);
 
     default boolean intersectsConf(float cMin, float cMax) {
         return (cMin <= confMax() && cMax >= confMin());

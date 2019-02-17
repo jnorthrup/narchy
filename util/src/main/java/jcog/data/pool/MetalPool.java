@@ -61,6 +61,17 @@ public abstract class MetalPool<X> implements Pool<X> {
         }
 
     }
+    public void put(X[] items, int size) {
+        int c = this.capacity;
+        if (c != Integer.MAX_VALUE) {
+            size = c - data.size();
+            if (size <= 0)
+                return;
+        }
+
+        data.ensureCapacityForAdditional(size);
+        data.addWithoutResizeTest(items, size);
+    }
 
     @Override
     public void delete() {
@@ -98,6 +109,7 @@ public abstract class MetalPool<X> implements Pool<X> {
     public int size() {
         return data.size();
     }
+
 
 
 }

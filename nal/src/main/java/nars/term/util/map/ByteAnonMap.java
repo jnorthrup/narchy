@@ -22,7 +22,7 @@ public class ByteAnonMap {
     }
 
     public ByteAnonMap(int estSize) {
-        this(new ObjectByteHashMap<>(estSize),new FasterList(estSize));
+        this(new ObjectByteHashMap<>(estSize),new FasterList<>(estSize));
 
     }
 
@@ -32,14 +32,10 @@ public class ByteAnonMap {
     }
 
     /** put: returns in range 1..Byte.MAX_VALUE (does not issue 0) */
-    private byte intern_(Term x) {
-        int s = idToTerm.addAndGetSize(x);
-        assert (s <= Byte.MAX_VALUE);
-        return (byte) s;
-    }
-
     public final byte intern(Term x) {
-        return termToId.getIfAbsentPutWithKey(x, this::intern_);
+        byte b = termToId.getIfAbsentPutWithKey(x, idToTerm::addAndGetSizeAsByte);
+        assert (b >= 0);
+        return b;
     }
 
     /** get: accepts in range 1..Byte.MAX_VALUE (does not accept 0) */

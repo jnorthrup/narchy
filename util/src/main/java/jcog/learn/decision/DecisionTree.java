@@ -329,8 +329,8 @@ public class DecisionTree<K, V> {
         }
 
         @Override
-        public boolean add(DecisionNode<V> newItem) {
-            return !contains(newItem) && super.add(newItem);
+        public boolean add(DecisionNode<V> x) {
+            return !contains(x) && super.add(x);
         }
 
         public Stream<DecisionNode<V>> recurse() {
@@ -444,7 +444,7 @@ public class DecisionTree<K, V> {
 
 
             @Override
-            public boolean add(DecisionNode newItem) {
+            public boolean add(DecisionNode x) {
                 throw new UnsupportedOperationException();
             }
 

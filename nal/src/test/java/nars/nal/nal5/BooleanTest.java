@@ -255,8 +255,8 @@ class BooleanTest {
                         inputs.add(z); //get all structural transformed inputs (ex: images)
                 });
                 inputs.forEach(z -> {
-                    z.delete();
                     n.concept(z).remove(z);
+                    z.delete();
                 });
             }
 

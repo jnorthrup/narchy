@@ -47,8 +47,9 @@ public final class TasksRegion implements TaskRegion {
         return Arrays.toString(new double[]{start, end, freqMin, freqMax, confMin, confMax});
     }
 
+
     @Override
-    public double coord(int dimension, boolean maxOrMin) {
+    public final float coordF(int dimension, boolean maxOrMin) {
         if (maxOrMin) {
             switch (dimension) {
                 case 0:

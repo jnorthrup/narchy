@@ -40,10 +40,10 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
      * contains objects that are equal according to the comparator, the new
      * object will be inserted immediately after these other objects.</p>
      *
-     * @param o the object to be added
+     * @param x the object to be added
      */
     @Override
-    public final boolean add(E o) {
+    public final boolean add(E x) {
 
 
         int s = size;
@@ -54,7 +54,7 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
                 int mid = (low + high) / 2;
                 E midVal = get(mid);
 
-                int cmp = midVal.compareTo(o);
+                int cmp = midVal.compareTo(x);
 
                 if (cmp < 0) {
                     low = mid + 1;
@@ -68,13 +68,13 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
 
             if (low != s) {
                 orderChangedOrDeduplicated = true;
-                super.add(low, o);
+                super.add(low, x);
                 return true;
             }
 
         }
 
-        super.addWithoutResizeTest(o);
+        super.addWithoutResizeTest(x);
         return true;
     }
 

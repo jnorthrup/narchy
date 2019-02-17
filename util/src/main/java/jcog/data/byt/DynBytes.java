@@ -167,7 +167,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     /**
      * combo: (byte, int)
      */
-    public final void write(byte b, int v) {
+    public final void writeByteInt(byte b, int v) {
         int s = ensureSized(1 + 4);
         byte[] e = this.bytes;
         e[s++] = b;

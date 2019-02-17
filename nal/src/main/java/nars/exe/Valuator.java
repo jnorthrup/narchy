@@ -243,7 +243,7 @@ public abstract class Valuator {
             float[] o = this.out;
             for (int i = 0; i < o.length; i++) {
                 float next = momentum > 0 ?
-                        Util.lerp(momentum, prev[i], cur[i]) : prev[i];
+                        Util.lerpSafe(momentum, prev[i], cur[i]) : prev[i];
                 o[i] = next;
             }
         }

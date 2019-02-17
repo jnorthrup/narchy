@@ -25,8 +25,8 @@ public class LimitedFasterList<X> extends FasterList<X> {
     }
 
     @Override
-    public boolean add(X newItem) {
-        return ensureLimit() && super.add(newItem);
+    public boolean add(X x) {
+        return ensureLimit() && super.add(x);
     }
 
     @Override

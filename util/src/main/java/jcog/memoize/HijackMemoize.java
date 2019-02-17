@@ -206,9 +206,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
                     //0.5f / reprobes;
                     1f / sc;
             CACHE_HIT_BOOST = 0.5f/sc;
-            CACHE_SURVIVE_COST =
-                        CACHE_HIT_BOOST;
-                        //CACHE_HIT_BOOST / reprobes;
+            CACHE_SURVIVE_COST = CACHE_HIT_BOOST / reprobes;
 
             assert(DEFAULT_VALUE > ScalarValue.EPSILON);
             assert(CACHE_HIT_BOOST > ScalarValue.EPSILON);

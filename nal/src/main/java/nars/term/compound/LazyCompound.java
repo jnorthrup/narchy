@@ -82,10 +82,14 @@ public class LazyCompound {
 
     public LazyCompound compoundStart(Op o, int dt) {
         DynBytes c = this.code;
-        c.writeByte(o.id);
 
-        if (o.temporal)
-            c.writeInt(dt);
+        byte oid = o.id;
+
+        if (!o.temporal)
+            c.writeByte(oid);
+        else
+            c.writeByteInt(oid, dt);
+
 //        else
 //            assert (dt == DTERNAL);
 
@@ -108,17 +112,17 @@ public class LazyCompound {
         if (x instanceof Atomic || x instanceof EllipsisMatch) {
             return appendAtomic(x);
         } else {
-            if (x.op() == NEG) {
-                return negStart().append(x.unneg()).compoundEnd(NEG);
-            } else {
-                return append((Compound) x);
-            }
+            return append((Compound) x);
         }
     }
 
     protected final LazyCompound append(Compound x) {
         Op o = x.op();
-        return compoundStart(o, x.dt()).appendSubterms(x.subterms()).compoundEnd(o);
+        if (o == NEG) {
+            return negStart().append(x.unneg()).compoundEnd(NEG);
+        } else {
+            return compoundStart(o, x.dt()).appendSubterms(x.subterms()).compoundEnd(o);
+        }
     }
 
     public LazyCompound appendSubterms(Subterms s) {
@@ -136,8 +140,7 @@ public class LazyCompound {
     }
 
     final LazyCompound subs(Iterable<Term> subs) {
-        for (Term x : subs)
-            append(x);
+        subs.forEach(this::append);
         return this;
     }
 

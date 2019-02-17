@@ -1505,23 +1505,23 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> exist = n.edges(true, true);
 
             Collection<Event> ee = byTerm.get(n.id().id);
-            if (!ee.isEmpty()) {
+            int ees = ee.size();
+            if (ees <= 0)
+                return exist;
 
-                List<FromTo<Node<Event, TimeSpan>, TimeSpan>> dyn = null;
+            List<FromTo<Node<Event, TimeSpan>, TimeSpan>> dyn = null;
 
-                for (Event x : ee) {
-                    Node<Event, TimeSpan> xx = node(x);
-                    if (xx != null && xx != n && !log.hasVisited(xx)) {
-                        if (dyn == null)
-                            dyn = new FasterList<>(1);
-                        dyn.add(new ImmutableDirectedEdge<>(n, TS_ZERO, xx));
-                    }
+            int ii = 0;
+            for (Event x : ee) {
+                Node<Event, TimeSpan> xx = node(x);
+                if (xx != null && xx != n && !log.hasVisited(xx)) {
+                    if (dyn == null)
+                        dyn = new FasterList<>(ees - ii);
+                    dyn.add(new ImmutableDirectedEdge<>(n, TS_ZERO, xx));
                 }
-                if (dyn != null)
-                    return Iterables.concat(exist, dyn);
+                ii++;
             }
-
-            return exist;
+            return (dyn != null) ? Iterables.concat(exist, dyn) : exist;
 
 
 //            Iterator<Event> x = ee.iterator();

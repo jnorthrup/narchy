@@ -102,6 +102,30 @@ public class HyperIterator<X> implements AutoCloseable {
     }
 
 
+    private void local(Object itemOrNode) {
+        if (itemOrNode instanceof Node) {
+            Node node = (Node) itemOrNode;
+
+            //inline 1-arity branches for optimization
+            while (node.size() == 1) {
+                Object next = node.get(0);
+                if (next instanceof Node)
+                    node = (Node) next; //this might indicate a problem in the tree structure that could have been flattened automatically
+                else {
+
+                    //dont filter root node (traversed while plan is null)
+                    addPlan(node, next);
+                    return;
+                }
+            }
+
+            addPlan(node, node);
+
+        } else {
+            plan.addRanked(itemOrNode);
+        }
+
+    }
     /**
      * surveys the contents of the node, producing a new 'stack frame' for navigation
      */
@@ -109,30 +133,7 @@ public class HyperIterator<X> implements AutoCloseable {
         if (at.size() == 0)
             return;
 
-        at.forEachLocal(itemOrNode -> {
-            if (itemOrNode instanceof Node) {
-                Node node = (Node) itemOrNode;
-
-                //inline 1-arity branches for optimization
-                while (node.size() == 1) {
-                    Object first = node.get(0);
-                    if (first instanceof Node)
-                        node = (Node) first; //this might indicate a problem in the tree structure that could have been flattened automatically
-                    else {
-
-                        //dont filter root node (traversed while plan is null)
-                        addPlan(node, first);
-                        return;
-                    }
-                }
-
-                addPlan(node, node);
-
-            } else {
-                plan.addRanked(itemOrNode);
-            }
-        });
-
+        at.forEachLocal(this::local);
 
     }
 

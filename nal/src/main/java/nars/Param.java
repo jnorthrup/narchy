@@ -262,7 +262,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -452,7 +452,7 @@ public abstract class Param {
      * if this is exceeded it may indicate a recursively
      * malformed target due to a serious inference bug
      */
-    public final IntRange termVolumeMax = new IntRange(COMPOUND_VOLUME_MAX, 0, COMPOUND_VOLUME_MAX);
+    public final IntRange termVolumeMax = new IntRange(64, 0, 128 /*COMPOUND_VOLUME_MAX*/);
 
 
     static Atom randomSelf() {

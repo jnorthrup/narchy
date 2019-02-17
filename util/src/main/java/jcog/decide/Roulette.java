@@ -1,6 +1,7 @@
 package jcog.decide;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
@@ -45,8 +46,12 @@ public enum Roulette {
         } else {
 
             float[] w = new float[weightCount];
-            for (int i = 0; i < weightCount; i++)
-                w[i] = weight.valueOf(i);
+            for (int i = 0; i < weightCount; i++) {
+                float wi = weight.valueOf(i);
+                if (wi < 0)
+                    throw new WTF();
+                w[i] = wi;
+            }
             return selectRoulette(weightCount, i -> w[i], rng);
         }
     }
@@ -76,12 +81,15 @@ public enum Roulette {
 
         float distance = distanceFactor * weight_sum;
 
+        int limit = count;
         while ((distance = distance - weight.valueOf(i)) > Float.MIN_NORMAL) {
             if (dir) {
                 if (++i == count) i = 0;
             } else {
                 if (--i == -1) i = count - 1;
             }
+            if (--limit==0)
+                throw new WTF();
         }
 
         return i;

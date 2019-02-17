@@ -1,5 +1,7 @@
 package jcog.pri;
 
+import jcog.sort.FloatRank;
+
 /** aka MutableNLink */
 public final class Ranked<X> extends Weight {
     public X x;
@@ -28,4 +30,13 @@ public final class Ranked<X> extends Weight {
         this.x = x;
         return this;
     }
+
+    public final float apply(FloatRank<X> rank, float min) {
+        float p = this.pri;
+        if (p == p)
+            return p;
+        else
+            return this.pri = rank.rank(x, min);
+    }
+
 }

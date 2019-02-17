@@ -627,7 +627,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return indexOf(element, cmp, false);
     }
 
-    public int indexOf(final X element, FloatFunction<X> cmp, boolean eqByIdentity) {
+    public final int indexOf(final X element, FloatFunction<X> cmp, boolean eqByIdentity) {
 
         return find(element, Float.NaN, cmp, eqByIdentity, false);
     }
@@ -643,52 +643,54 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         int left = 0, right = s;
         X[] items = this.items;
-        do {
-            if (right - left <= BINARY_SEARCH_THRESHOLD) {
-                int i;
-                for (i = left; i < right; i++) {
-                    X x = items[i];
-                    if (!forInsertionOrFind) {
-                        boolean eq = eq(element, x, eqByIdentity);
-                        if (eq) {
-                            return i;
-                        }
-                    } else {
-                        if (0 < Util.fastCompare(cmp.floatValueOf(x), elementRank)) {
-                            break;
-                        }
-                    }
+        while (right - left >= BINARY_SEARCH_THRESHOLD) {
 
-                }
-                if (forInsertionOrFind)
-                    return i; //after the range
-                else
-                    break;
+                final int mid = left + (right - left) / 2;
 
-            } else {
-                final int midle = left + (right - left) / 2;
-
-                final X m = items[midle];
+                final X m = items[mid];
                 if (!forInsertionOrFind) {
                     if (m == element || (!eqByIdentity && m.equals(element))) {
-                        return midle;
+                        return mid;
                     }
                 }
 
                 final int comparedValue = Util.fastCompare(cmp.floatValueOf(m), elementRank);
-                if (comparedValue == 0) {
-                    if (forInsertionOrFind)
-                        return midle + 1; /* after existing element */
+
+                switch (comparedValue) {
+                    case 0:
+                        if (forInsertionOrFind)
+                            return mid + 1; /* after existing element */
+                        break;
+                    case 1:
+                        right = mid;
+                        break;
+                    case -1:
+                        left = mid;
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
                 }
-                boolean c = (0 < comparedValue);
-                int nextLeft = c ? left : midle, nextRight = c ? midle : right;
-                left = nextLeft;
-                right = nextRight;
+
+        }
+        if (right - left <= BINARY_SEARCH_THRESHOLD) {
+            int i;
+            for (i = left; i < right; i++) {
+                X x = items[i];
+                if (!forInsertionOrFind) {
+                    boolean eq = eq(element, x, eqByIdentity);
+                    if (eq) {
+                        return i;
+                    }
+                } else {
+                    if (0 < Util.fastCompare(cmp.floatValueOf(x), elementRank)) {
+                        break;
+                    }
+                }
             }
-        } while (right - left >= 1);
+        }
 
         if (forInsertionOrFind)
-            return right;
+            return right; //after the range
         else {
             if (element != null && exhaustiveFind())
                 return indexOfExhaustive(element, eqByIdentity);
