@@ -250,9 +250,10 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             Concept sc = nar.conceptualize(t);
             if (sc != null) {
                 TermLinker linker = sc.linker();
-                if ((linker instanceof FasterList) &&
+                if ((linker instanceof FasterList)
                         //rng.nextInt(t.volume() + 1) != 0
-                        rng.nextInt(((FasterList) linker).size() + 1) != 0
+
+                //&& rng.nextInt(((FasterList) linker).size() + 1) != 0
                     //rng.nextFloat() < 0.25f
                     //rng.nextInt(((FasterList) linker).size() + 1) == 0
                     //src.equals(tgt) || rng.nextBoolean()

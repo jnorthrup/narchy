@@ -332,50 +332,6 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @Deprecated DecomposePositivePositivePositive() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return NALTruth.Decompose.apply(T, B, m, minConf);
-        }
-    },
-
-    @Deprecated DecomposePositiveNegativeNegative() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.decompose(T, B, true, false, false, minConf);
-        }
-    },
-
-    @Deprecated DecomposeNegativeNegativeNegative() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.decompose(T, B, false, false, false, minConf);
-        }
-    },
-
-    @Deprecated DecomposePositiveNegativePositive() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.decompose(T, B, true, false, true, minConf);
-        }
-    },
-
-    @Deprecated DecomposePositivePositiveNegative() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.decompose(T, B, true, true, false, minConf);
-        }
-    },
-
-    @Deprecated DecomposeNegativePositivePositive() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.decompose(T, B, false, true, true, minConf);
-        }
-    },
-
-
-
     @SinglePremise
     Identity() {
         @Override

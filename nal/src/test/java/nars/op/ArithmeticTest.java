@@ -158,18 +158,19 @@ class ArithmeticTest {
     @Test
     void testCompleteAddInduction() {
         NAR n = NARS.tmp();
-        //n.log();
+//        n.log();
+
         new Arithmeticize.ArithmeticIntroduction( n, 16);
 
         final int cycles = 500;
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
-        n.freqResolution.set(0.1f);
+        n.freqResolution.set(0.25f);
         n.termVolumeMax.set(19);
 
 
-        for (int a = 0; a <= 2; a++) {
+        for (int a = 1; a <= 2; a++) {
             t.believe(("(a," + a + ")"));
         }
 

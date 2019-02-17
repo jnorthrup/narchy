@@ -904,15 +904,6 @@ public class NAL6Test extends NALTest {
 
 
     @Test
-    void testDecomposeImplSubj1Conj() {
-        test
-                .believe("( (y && z) ==> x )")
-                .mustBelieve(cycles, "( y ==> x )", 1f, 0.81f)
-                .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
-        ;
-    }
-
-    @Test
     void testPropositionalDecompositionConjPos() {
         ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
         test
@@ -979,15 +970,6 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-//    @Test
-//    void testDecomposeImplSubjDisjBelief() {
-//        test
-//                .believe("( (||, y, z) ==> x )")
-//                .mustBelieve(cycles, "( y ==> x )", 1f, 0.81f)
-//                .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
-//        ;
-//    }
-
     @Test
     void testDecomposeImplSubjConjQuestion() {
         test
@@ -1006,14 +988,6 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-    @Test
-    void testDecomposeImplPredDisjBelief() {
-        test
-                .believe("( x ==> (||, y, z))")
-                .mustBelieve(cycles, "( x ==> y )", 1f, 0.81f)
-                .mustBelieve(cycles, "( x ==> z )", 1f, 0.81f)
-        ;
-    }
 
     @Test
     void testDecomposeImplPredConjQuestion()  {
@@ -1176,106 +1150,6 @@ public class NAL6Test extends NALTest {
 //        ;
 //    }
 
-    @Test void testDecomposePositiveImplicationCommonConjunctionSubterm() {
-        //tests:
-        // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
-        test
-                .termVolMax(5)
-                .believe("(S ==> M)", 0.6f, 0.9f)
-                .believe("((X && S) ==> M)", 0.7f, 0.81f)
-                .mustBelieve(cycles, "(X ==> M)", .42f, 0.3f) //some freq and conf, dunno
-        ;
-    }
-    @Test void testDecomposePositiveImplicationCommonConjunctionSubtermMoreConfident() {
-        //tests:
-        // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
-        test
-                .termVolMax(5)
-                .believe("(S ==> M)", 1f, 0.9f)
-                .believe("((X && S) ==> M)", 1f, 0.9f)
-                .mustBelieve(cycles, "(X ==> M)", 1f, 0.81f) //some freq and conf, dunno
-        ;
-    }
-    @Test void testDecomposeNegativeImplicationCommonConjunctionSubterm() {
-        //tests:
-        // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
-        test
-                .termVolMax(5)
-                .believe("(       S ==> --M)")
-                .believe("((X && S) ==> --M)")
-                .mustBelieve(cycles, "(X ==> M)", 0f, 0.81f)
-        ;
-    }
-
-//    @Test
-//    void testDecomposeImplSubj1b() {
-//        test.confTolerance(0.03f)
-//                .believe("( (&&, y, z, w) ==> x )")
-//                .mustBelieve(cycles, "( y ==> x )", 1f, 0.73f)
-//                .mustBelieve(cycles, "( z ==> x )", 1f, 0.73f)
-//                .mustBelieve(cycles, "( w ==> x )", 1f, 0.73f)
-//        ;
-//    }
-
-//    @Test
-//    void testDecomposeImplSubj1bNeg() {
-//        test.confTolerance(0.03f)
-//                .believe("( (&&, --y, --z, --w) ==> x )")
-//                .mustBelieve(cycles, "( --y ==> x )", 1f, 0.73f)
-//                .mustBelieve(cycles, "( --z ==> x )", 1f, 0.73f)
-//                .mustBelieve(cycles, "( --w ==> x )", 1f, 0.73f)
-//        ;
-//    }
-
-    @Test
-    void testDecomposeImplPred1b() {
-        test.confTolerance(0.03f)
-                .believe("( x ==> (&&, y, z, w) )")
-                .mustBelieve(cycles, "( x ==> y )", 1f, 0.73f)
-                .mustBelieve(cycles, "( x ==> z )", 1f, 0.73f)
-                .mustBelieve(cycles, "( x ==> w )", 1f, 0.73f)
-        ;
-    }
-
-
-    @Test
-    void testDecomposeImplPred2() {
-        test.nar.termVolumeMax.set(11);
-        test.nar.confMin.set(0.6f);
-        test
-                .believe("( (a,#b) ==> (&&, (x,#b), y, z ) )")
-                .mustBelieve(cycles, "( (a,#b) ==> (x,#b) )", 1f, 0.73f)
-                .mustBelieve(cycles, "( (a,#b) ==> y )", 1f, 0.73f)
-                .mustBelieve(cycles, "( (a,#b) ==> z )", 1f, 0.73f)
-        ;
-    }
-
-    @Test
-    void testDecomposeImplsubjNeg() {
-        test
-                .believe("( (&&, --y, --z ) ==> x )")
-                .mustBelieve(cycles, "( --y ==> x )", 1f, 0.81f)
-                .mustBelieve(cycles, "( --z ==> x )", 1f, 0.81f)
-        ;
-    }
-
-    @Test
-    void testDecomposeImplPredNeg() {
-        test
-                .believe("( x ==> (&&, --y, --z ) )")
-                .mustBelieve(cycles, "( x ==> --y )", 1f, 0.81f)
-                .mustBelieve(cycles, "( x ==> --z )", 1f, 0.81f)
-        ;
-    }
-
-    @Test
-    void testDecomposeImplPred1() {
-        test
-                .believe("( x ==> (y && z) )")
-                .mustBelieve(cycles, "( x ==> y )", 1f, 0.81f)
-                .mustBelieve(cycles, "( x ==> z )", 1f, 0.81f)
-        ;
-    }
 
     @Test void testMutexBelief() {
         test

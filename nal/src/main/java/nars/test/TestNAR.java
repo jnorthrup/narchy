@@ -617,6 +617,11 @@ public class TestNAR {
         return this;
     }
 
+    public TestNAR confMin(float c) {
+        nar.confMin.set(c);
+        return this;
+    }
+
     final class EarlyExit implements Consumer<NAR> {
 
         final int checkResolution;

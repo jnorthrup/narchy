@@ -40,7 +40,7 @@ public class NARSpeakTest {
         NAR n = NARS.threadSafe();
         n.termVolumeMax.set(16);
         n.freqResolution.set(0.1f);
-        n.timeResolution.set(50);
+        n.dtDither.set(50);
 //        n.confMin.setAt(0.1f);
 
         n.log();

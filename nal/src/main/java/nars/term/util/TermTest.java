@@ -69,6 +69,7 @@ public enum TermTest { ;
         assertEquals(0, x.compareTo(y));
 
         assertEquals(x.op(), y.op());
+        assertEquals(x.opBit(), y.opBit());
         assertEquals(x.opX(), y.opX());
         assertEquals(x.subs(), y.subs());
 
@@ -140,6 +141,7 @@ public enum TermTest { ;
         Assertions.assertEquals(x.complexity(), y.complexity());
         Assertions.assertEquals(x.voluplexity(), y.voluplexity());
         Assertions.assertEquals(x.structure(), y.structure());
+        Assertions.assertEquals(x.structureSurface(), y.structureSurface());
         Assertions.assertEquals(x.vars(), y.vars());
         Assertions.assertEquals(x.hasVars(), y.hasVars());
         Assertions.assertEquals(x.hasVarDep(), y.hasVarDep());

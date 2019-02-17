@@ -9,7 +9,7 @@ import nars.term.Termed;
 /**
  * represents the current activation level of a concept
  */
-public final class Activate extends PLinkHashCached<Concept> implements Termed {
+@Deprecated public final class Activate extends PLinkHashCached<Concept> implements Termed {
 
     private Activate(Concept c, int hash, float pri) {
         super(c, hash, pri);

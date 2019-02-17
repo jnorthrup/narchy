@@ -297,31 +297,6 @@ public class NAL5Test extends NALTest {
     }
 
 
-    @Test
-    void compound_decomposition_two_premises1() {
-
-        TestNAR tester = test;
-        tester.believe("(bird:robin ==> --(animal:robin && (robin-->[flying])))", 1.0f, 0.9f);
-        tester.believe("          (bird:robin ==> (robin-->[flying]))");
-        tester.mustBelieve(cycles, "--(bird:robin ==> animal:robin)", 1.00f, 0.81f);
-
-    }
-
-//    @Test
-//    void compound_decomposition_subj_posneg() {
-//        test.nar.termVolumeMax.setAt(9);
-//        test.believe("((b && --c)==>a)", 1.0f, 0.9f)
-//                .mustBelieve(cycles, "(b==>a)", 1.00f, 0.81f)
-//                .mustBelieve(cycles, "(--c==>a)", 1.00f, 0.81f);
-//    }
-//
-//    @Test
-//    void compound_decomposition_pred_posneg() {
-//        test.nar.termVolumeMax.setAt(9);
-//        test.believe("(a==>(b && --c))", 1.0f, 0.9f)
-//                .mustBelieve(cycles, "(a==>b)", 1.00f, 0.81f)
-//                .mustBelieve(cycles, "(a==>c)", 0.00f, 0.81f);
-//    }
 
     @Test
     void compound_decomposition_one_premise_pos() {
@@ -331,47 +306,6 @@ public class NAL5Test extends NALTest {
         tester.believe("((robin --> [flying]) && (robin --> swimmer))", 1.0f, 0.9f);
         tester.mustBelieve(cycles, "(robin --> swimmer)", 1.00f, 0.81f);
         tester.mustBelieve(cycles, "(robin --> [flying])", 1.00f, 0.81f);
-    }
-    @Test
-    void impl_conjunction_subj_decompose_conditional() {
-        test
-                .believe("((a && b) ==> x)")
-                .input("--(b ==> x). %0.75;0.9%")
-                .mustBelieve(cycles, "(a ==> x)", 0.75f, 0.61f) //via decompose
-        ;
-    }
-    @Test
-    void impl_conjunction_pred_decompose_conditional() {
-        test
-                .believe("(x ==> --(a && b))")
-                .input("(x ==> b). %0.75;0.9%")
-                .mustBelieve(cycles, "(x ==> a)", 0.25f, 0.61f) //via decompose
-        ;
-    }
-    @Test
-    void impl_conjunction_predneg_decompose_conditional() {
-        test
-                .believe("(x ==> --(a && --b))")
-                .input("--(x ==> b). %0.75;0.9%")
-                .mustBelieve(cycles, "(x ==> a)", 0.25f, 0.61f) //via decompose
-        ;
-    }
-    @Test
-    void impl_disjunction_subj_decompose_conditional() {
-        test
-                .believe("((a || b) ==> x)")
-                .input("--(b ==> x). %0.75;0.9%")
-                .mustBelieve(cycles, "(a ==> x)", 0.75f, 0.61f) //via decompose
-        ;
-    }
-    @Test
-    void impl_disjunction_pred_decompose_conditional() {
-        test
-                .termVolMax(8)
-                .believe("(x ==> (a || b))")
-                .input("(x ==> b). %0.25;0.9%")
-                .mustBelieve(cycles, "(x ==> a)", 0.75f, 0.61f) //via decompose
-        ;
     }
 
     @Test
@@ -408,16 +342,6 @@ public class NAL5Test extends NALTest {
                 .mustBelieve(cycles, "a", 1f, 0.40f)
                 .mustBelieve(cycles, "b", 0f, 0.40f)
         ;
-    }
-
-    @Test
-    void disjunction_decompose_two_premises3() {
-
-        TestNAR tester = test;
-        tester.believe("(||,(robin --> [flying]),(robin --> swimmer))");
-        tester.believe("(robin --> swimmer)", 0.0f, 0.9f);
-        tester.mustBelieve(cycles, "(robin --> [flying])", 1.00f, 0.81f);
-
     }
 
 
@@ -591,19 +515,20 @@ public class NAL5Test extends NALTest {
     void conditional_abduction_viaMultiConditionalSyllogismSimple2() {
 
         test
-                .believe("((&&,x1,x2) ==> y)")
-                .believe("((&&,x1,x2,z) ==> y)")
-                .mustBelieve(cycles, "z", 1.00f, 0.45f /*0.4f*/);
+            .termVolMax(9).confMin(0.4f)
+            .believe("((&&,x1,x2) ==> y)")
+            .believe("((&&,x1,x2,z) ==> y)")
+            .mustBelieve(cycles, "z", 1.00f, 0.45f /*0.4f*/);
 
     }
     @Test
     void conditional_abduction_viaMultiConditionalSyllogism() {
 
-        TestNAR tester = test;
-
-        tester.believe("((robin-->[flying]) ==> bird:robin)");
-        tester.believe("((swimmer:robin && (robin-->[flying])) ==> bird:robin)");
-        tester.mustBelieve(cycles, "swimmer:robin", 1.00f, 0.45f /*0.4f*/);
+        test
+        .termVolMax(7).confMin(0.4f)
+        .believe("(flying:robin ==> bird:robin)")
+        .believe("((swimmer:robin && flying:robin) ==> bird:robin)")
+        .mustBelieve(cycles, "swimmer:robin", 1.00f, 0.45f /*0.4f*/);
 
     }
 
@@ -612,7 +537,7 @@ public class NAL5Test extends NALTest {
     void conditional_abduction2_viaMultiConditionalSyllogism() {
 
         test
-            .termVolMax(15)
+            .termVolMax(15).confMin(0.4f)
             .believe("<(&&,(robin --> [withWings]),(robin --> [chirping])) ==> a>")
             .believe("<(&&,(robin --> [flying]),(robin --> [withWings]),(robin --> [chirping])) ==> a>")
             .mustBelieve(cycles, "(robin --> [flying])",
@@ -626,6 +551,7 @@ public class NAL5Test extends NALTest {
     void conditional_abduction3_semigeneric2() {
 
         TestNAR tester = test;
+        tester.confMin(0.4f);
         tester.believe("<(&&,<ro --> [f]>,<ro --> [w]>) ==> <ro --> [l]>>", 0.9f, 0.9f);
         tester.believe("<(&&,<ro --> [f]>,<ro --> b>) ==> <ro --> [l]>>");
         tester.mustBelieve(cycles, "<<ro --> b> ==> <ro --> [w]>>", 1.00f, 0.42f);

@@ -10,7 +10,7 @@ import static nars.Op.GOAL;
 public class NAL1GoalTest extends NALTest {
 
 
-    private final int cycles = 90;
+    private final int cycles = 150;
 
     @Override protected NAR nar() {
         return NARS.tmp(1);

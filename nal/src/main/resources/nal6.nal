@@ -171,9 +171,9 @@
     //union/intersection assymmetry: union if subj, intersect if pred
 
      (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:Intersection)
-       (P ==> M), (S ==> M) |- --((P && S) ==> M), (Belief:IntersectionNN)
+       //(P ==> M), (S ==> M) |- --((P && S) ==> M), (Belief:IntersectionNN)
        (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:Union)
-        (P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
+        //(P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
 //     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
 //     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionSym)
         (P ==> M), (S ==> M), task("?"), neq(S,P), hasBelief() |- ((P && S) ==> M), (Punctuation:Question)
@@ -244,8 +244,9 @@
 
 
     //Conditional Abduction via Multi-conditional Syllogism
-    ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
     (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
+    //((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
+
       //TODO check (--C ==> X), (--E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)    |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
 
         (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) &&   M) ==> Z), (Belief:InductionPB)

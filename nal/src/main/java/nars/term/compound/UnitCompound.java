@@ -212,6 +212,16 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
+    public final int structureSurface() {
+        return sub().opBit();
+    }
+
+    @Override
+    public boolean hasVars() {
+        return sub().hasVars();
+    }
+
+    @Override
     public int varPattern() {
         return sub().varPattern();
     }

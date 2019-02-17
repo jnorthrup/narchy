@@ -116,6 +116,26 @@ public class FasterList<X> extends FastList<X> {
     }
 
     @Override
+    public void ensureCapacity(int minCapacity) {
+        int oldCapacity = this.items.length;
+        if (minCapacity > oldCapacity) {
+            if (oldCapacity == 0) {
+                items = (X[]) newArray(minCapacity);
+            } else {
+                int newCapacity = Math.max(this.sizePlusFiftyPercent(oldCapacity), minCapacity);
+                this.transferItemsToNewArrayWithCapacity(newCapacity);
+            }
+        }
+    }
+    private void transferItemsToNewArrayWithCapacity(int newCapacity)
+    {
+        //this.items = (X[]) this.copyItemsWithNewCapacity(newCapacity);
+        Object[] newItems = new Object[newCapacity];
+        System.arraycopy(this.items, 0, newItems, 0, Math.min(this.size, newCapacity));
+        this.items = (X[]) newItems;
+    }
+
+    @Override
     public FasterList<X> sortThis(Comparator<? super X> comparator) {
         if (size > 1)
             super.sortThis(comparator);
@@ -340,7 +360,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public long maxValue(ToLongFunction<? super X> function) {
-        return longify((max, x)->Math.max(max,function.applyAsLong(x)), Long.MIN_VALUE);
+        return longify((max, x) -> Math.max(max, function.applyAsLong(x)), Long.MIN_VALUE);
     }
 
 //    public X maxBy(float mustExceed, FloatFunction<? super X> function) {
@@ -474,9 +494,8 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public final byte addAndGetSizeAsByte(X x) {
-        return (byte)addAndGetSize(x);
+        return (byte) addAndGetSize(x);
     }
-
 
 
     public void ensureCapacityForAdditional(int num) {
@@ -484,9 +503,9 @@ public class FasterList<X> extends FastList<X> {
         int s = this.size + num, l = ii.length;
         if (l < s) {
             this.items = (X[]) ((l == 0) ?
-                            newArray(Math.max(num, INITIAL_SIZE_IF_GROWING_FROM_EMPTY))
-                            :
-                            Arrays.copyOf(items, sizePlusFiftyPercent(s)));
+                    newArray(Math.max(num, INITIAL_SIZE_IF_GROWING_FROM_EMPTY))
+                    :
+                    Arrays.copyOf(items, sizePlusFiftyPercent(s)));
         }
     }
 
@@ -615,11 +634,11 @@ public class FasterList<X> extends FastList<X> {
 
     public final void addWithoutResizeTest(X[] x, int n) {
         //if (n > 0) {
-            X[] items = this.items;
-            int size = this.size;
-            for (int i = 0; i < n; i++)
-                items[size + i] = x[i];
-            this.size += n;
+        X[] items = this.items;
+        int size = this.size;
+        for (int i = 0; i < n; i++)
+            items[size + i] = x[i];
+        this.size += n;
         //}
     }
 
@@ -852,8 +871,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     @Override
-    public final <P> void forEachWith(Procedure2<? super X, ? super P> procedure, P parameter)
-    {
+    public final <P> void forEachWith(Procedure2<? super X, ? super P> procedure, P parameter) {
         int s = this.size;
         if (s > 0) {
             X[] items = this.items;
@@ -896,6 +914,7 @@ public class FasterList<X> extends FastList<X> {
             this.lastIndex = -1;
         }
     }
+
     public boolean anySatisfy(int from, int to, Predicate<? super X> predicate2) {
         int s = size;
         if (s > 0 && s > from) {

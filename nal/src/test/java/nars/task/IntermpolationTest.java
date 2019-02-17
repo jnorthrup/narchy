@@ -45,7 +45,7 @@ public class IntermpolationTest {
     @Test
     void testDTDiffVariety() {
         assertEquals(0f, dtDiff("(x ==>+5 y)", "(x ==>+- y)"), 0.01f);
-        assertEquals(0.1f, dtDiff("(x ==>+5 y)", "(x ==> y)"), 0.01f);
+        assertEquals(0f, dtDiff("(x ==>+5 y)", "(x ==> y)"), 0.01f);
         assertEquals(0.4f, dtDiff("(x ==>+5 y)", "(x ==>+3 y)"), 0.01f);
         assertEquals(0.8f, dtDiff("(x ==>+5 y)", "(x ==>+1 y)"), 0.01f);
         assertEquals(1f, dtDiff("(x ==>+5 y)", "(x =|> y)"), 0.01f);

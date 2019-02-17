@@ -308,7 +308,7 @@ public class TrackXY_NAR extends NAgentX {
         //n.freqResolution.setAt(0.04f);
 
         n.termVolumeMax.set(volMax);
-        n.timeResolution.set(Math.max(1, durMS));
+        n.dtDither.set(Math.max(1, durMS));
 
         {
 

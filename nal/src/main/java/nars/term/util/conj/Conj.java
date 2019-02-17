@@ -63,7 +63,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     /**
      * TermBuilder to use internally
      */
-    private static final TermBuilder terms =
+    @Deprecated private static final TermBuilder terms =
             //HeapTermBuilder.the;
             Op.terms;
 
@@ -140,16 +140,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     public static boolean isEventFirstOrLast(Term container, Term x, boolean firstOrLast) {
-        if (!x.op().eventable)
-            return false;
-        if (container.op() != CONJ || container.impossibleSubTerm(x))
+        if (!x.op().eventable || container.op() != CONJ || container.impossibleSubTerm(x))
             return false;
 
         boolean seq = isSeq(container);
         if (!seq) {
             return ConjCommutive.contains(container, x);
         } else {
-
             return ConjSeq.contains(container, x, firstOrLast);
         }
 
@@ -830,15 +827,15 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return -1;
     }
 
-    private static Term conjSeq(FasterList<LongObjectPair<Term>> events) {
-        return conjSeq(events, 0, events.size());
+    private static Term conjSeq(TermBuilder B, FasterList<LongObjectPair<Term>> events) {
+        return conjSeq(B, events, 0, events.size());
     }
 
     /**
      * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
      * assumes that all of the event terms have distinct occurrence times
      */
-    private static Term conjSeq(List<LongObjectPair<Term>> events, int start, int end) {
+    private static Term conjSeq(TermBuilder B, List<LongObjectPair<Term>> events, int start, int end) {
 
         LongObjectPair<Term> first = events.get(start);
         int ee = end - start;
@@ -851,7 +848,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 LongObjectPair<Term> second = events.get(end - 1);
                 long a = first.getOne();
                 long b = second.getOne();
-                return conjSeqFinal(
+                return conjSeqFinal(B,
                         (int) (b - a),
                         /* left */ first.getTwo(), /* right */ second.getTwo());
             }
@@ -860,20 +857,20 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         int center = start + (end - 1 - start) / 2;
 
 
-        Term left = conjSeq(events, start, center + 1);
+        Term left = conjSeq(B, events, start, center + 1);
         if (left == Null) return Null;
         if (left == False) return False;
 
-        Term right = conjSeq(events, center + 1, end);
+        Term right = conjSeq(B, events, center + 1, end);
         if (right == Null) return Null;
         if (right == False) return False;
 
         int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.eventRange());
 
-        return !dtSpecial(dt) ? conjSeqFinal(dt, left, right) : conjoin(left, right, dt==DTERNAL);
+        return !dtSpecial(dt) ? conjSeqFinal(B, dt, left, right) : conjoin(left, right, dt==DTERNAL);
     }
 
-    static Term conjSeqFinal(int dt, Term left, Term right) {
+    static Term conjSeqFinal(TermBuilder b, int dt, Term left, Term right) {
         assert (dt != XTERNAL);
 
         if (left == Null) return Null;
@@ -914,7 +911,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //            }
 //        }
 
-        Term t = terms.theCompound(CONJ, dt, left, right);
+        Term t = b.theCompound(CONJ, dt, left, right);
         //HACK temporary
 //        if (((left instanceof Compound && right instanceof Compound && left.hasAny(CONJ) && right.hasAny(CONJ))
 //                )
@@ -1833,7 +1830,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     @Override
-    public Term term() {
+    public Term term(TermBuilder B) {
         if (result != null)
             return result;
 
@@ -1927,7 +1924,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                             break;
                         default:
                             temporals.sortThisBy(LongObjectPair::getOne);
-                            temporal = conjSeq(temporals);
+                            temporal = conjSeq(B, temporals);
                             break;
                     }
                 } else
@@ -1979,9 +1976,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 int tdt = temporal.dt();
                 int edt = eternal.dt();
                 if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
-                    return terms.conj(DTERNAL, temporal, eternal); //needs flatten
+                    return B.conj(DTERNAL, temporal, eternal); //needs flatten
                 else {
-                    return terms.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
+                    return B.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
                 }
             }
         } else if (eternal == null) {

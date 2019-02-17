@@ -234,10 +234,10 @@ public abstract class TermBuilder {
         switch (dt) {
             case DTERNAL:
             case 0:
-                return ConjCommutive.theSorted(dt, u);
+                return ConjCommutive.theSorted(this, dt, u);
 
             case XTERNAL:
-                return ConjCommutive.theXternal(u);
+                return ConjCommutive.theXternal(this, u);
 
             default:
                 return ConjSeq.theSequence(dt, u);

@@ -2,6 +2,7 @@ package nars.term.util.conj;
 
 import jcog.data.set.LongObjectArraySet;
 import nars.term.Term;
+import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
@@ -109,7 +110,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
     @Override
-    public Term term() {
+    public Term term(TermBuilder B) {
         int n = size();
         switch (n) {
             case 0:
@@ -129,7 +130,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                     if (a.equals(b))
                         return a; //quick test
                     else
-                        return CONJ.the((w0 == ETERNAL) ? DTERNAL : 0, a, b);
+                        return CONJ.the(B, (w0 == ETERNAL) ? DTERNAL : 0, a, b);
                 }
                 break;
             }
@@ -144,7 +145,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                 }
                 //all same time
                 if (parallel)
-                    return CONJ.the((w0 == ETERNAL) ? DTERNAL : 0, this);
+                    return CONJ.the(B, (w0 == ETERNAL) ? DTERNAL : 0, this);
             }
         }
 
@@ -155,7 +156,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             if (!c.add(when[i], t))
                 break;
         }
-        return c.term();
+        return c.term(B);
     }
 
 

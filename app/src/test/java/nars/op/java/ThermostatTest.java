@@ -31,7 +31,7 @@ public class ThermostatTest {
         //new ArithmeticIntroduction(4, n);
 
         n.time.dur(DUR);
-        n.timeResolution.set(1);
+        n.dtDither.set(1);
 
 
         n.termVolumeMax.set(18);

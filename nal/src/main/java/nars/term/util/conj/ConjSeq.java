@@ -37,6 +37,7 @@ public enum ConjSeq { ;
 
     }
 
+    /** TODO TermBuilder */
     public static Term theSequence(int dt, Term[] u) {
         if (u.length != 2)
             throw new TermException("temporal conjunction with n!=2 subterms");
@@ -46,6 +47,7 @@ public enum ConjSeq { ;
                 sequence(u[1], 0, u[0], -dt + u[1].eventRange());
     }
 
+    /** TODO TermBuilder */
     static public Term sequence(Term a, long aStart, Term b, long bStart) {
 
         if (aStart == ETERNAL) {

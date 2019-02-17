@@ -27,7 +27,7 @@ public abstract class Introduction extends TaskLeakTransform {
 
         Term y = newTerm(xx);
 
-        if (y != null && !(y instanceof Bool) && (y.volume() < volMax)) {
+        if (y != null && !(y instanceof Bool) && (y.volume() <= volMax)) {
             Term x = xx.term();
             if (!y.equals(x) && y.op().conceptualizable) {
 

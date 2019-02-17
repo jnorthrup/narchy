@@ -6,6 +6,7 @@ import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.*;
@@ -21,17 +22,17 @@ import static nars.time.Tense.*;
 public enum ConjCommutive {;
 
     public static Term the(int dt, Term... u) {
-        return theSorted(dt, sorted(u));
+        return theSorted(Op.terms, dt, sorted(u));
     }
 
     public static Term the(int dt, Collection<Term> u) {
-        return theSorted(dt, sorted(u));
+        return theSorted(Op.terms, dt, sorted(u));
     }
 
     /**
      * assumes u is sorted
      */
-    public static Term theSorted(int dt, Term... u) {
+    public static Term theSorted(TermBuilder B, int dt, Term... u) {
         if (u.length == 0)
             return True;
         if (u.length == 1)
@@ -259,7 +260,7 @@ public enum ConjCommutive {;
                         if (!c.add(sdt, u[i]))
                             break;
                     }
-                    return c.term();
+                    return c.term(B);
                 }
             }
         }
@@ -376,7 +377,7 @@ public enum ConjCommutive {;
         return container.contains(x);
     }
 
-    public static Term theXternal(Term[] u) {
+    public static Term theXternal(TermBuilder b, Term[] u) {
         int ul = u.length;
         Term[] args;
         switch (ul) {
@@ -410,7 +411,7 @@ public enum ConjCommutive {;
 
         }
 
-        return Op.terms.theCompound(CONJ, XTERNAL, args);
+        return b.theCompound(CONJ, XTERNAL, args);
 
     }
 }

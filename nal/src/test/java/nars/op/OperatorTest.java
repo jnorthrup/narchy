@@ -42,7 +42,7 @@ class OperatorTest {
     }
 
     /** tests Builtin.System and evaluating a target input as a command */
-    @Test
+    @Disabled @Test
     void testThe() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 

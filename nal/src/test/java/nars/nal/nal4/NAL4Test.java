@@ -77,8 +77,8 @@ public class NAL4Test extends NALTest {
     @Test
     void structural_transformationExt_reverse() {
         test
-                .believe("(acid --> (reaction,/,base))", 1.0f, 0.9f)
-                .mustBelieve(CYCLES, "((acid,base) --> reaction)", 1.0f, 0.9f);
+                .mustBelieve(CYCLES, "reaction(acid,base)", 1.0f, 0.9f)
+                .believe("(acid --> (reaction,/,base))", 1.0f, 0.9f);
     }
     @Test
     void structural_transformationExt() {
@@ -105,12 +105,10 @@ public class NAL4Test extends NALTest {
 
     @Test
     void structural_transformationInt_reverse() {
-
-
         test
-                .believe("((neutralization,\\,base) --> acid)", 1.0f, 0.9f)
                 .mustBelieve(CYCLES, "(neutralization --> (acid,base))", 1.0f, 0.9f)
                 .mustNotOutput(CYCLES, "(neutralization --> (acid,/,\\,base))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
+                .believe("((neutralization,\\,base) --> acid)", 1.0f, 0.9f)
         ;
     }
 
@@ -137,9 +135,11 @@ public class NAL4Test extends NALTest {
 
     @Test
     public void structural_transformation6() {
-        test.believe("((neutralization,acid,\\) --> base)", 1.0f, 0.9f) //en("Something that can neutralize a base is an acid.");
+        test
+
                 .mustBelieve(CYCLES, "(neutralization --> (acid,base))", 1.0f, 0.9f) //en("Something that can be neutralized by an acid is a base.");
                 .mustNotOutput(CYCLES, "((acid,base) --> neutralization)", BELIEF, 1f, 1.0f, 0.9f, 0.9f, ETERNAL)
+                .believe("((neutralization,acid,\\) --> base)", 1.0f, 0.9f) //en("Something that can neutralize a base is an acid.");
         ;
     }
 
@@ -274,9 +274,10 @@ public class NAL4Test extends NALTest {
         String input = "((likes,cat,\\)-->[blue])";
         assertEquals("(likes-->(cat,[blue]))", Image.imageNormalize($$(input)).toString());
 
-        test.believe(input)
+        test
                 .mustBelieve(CYCLES, "(likes-->(cat,[blue]))", 1f, 0.9f)
                 .mustNotOutput(CYCLES, "((cat,[blue])-->likes)", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
+                .believe(input)
         ;
     }
     @Test
@@ -307,9 +308,10 @@ public class NAL4Test extends NALTest {
 
     @Test
     public void testNormalize2() {
-        test.believe("([blue] --> (likes,cat,/))")
+        test
                 .mustBelieve(CYCLES, "likes(cat,[blue])", 0.9f)
                 .mustNotOutput(CYCLES, "(likes-->(cat,[blue]))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
+                .believe("([blue] --> (likes,cat,/))")
         ;
     }
 

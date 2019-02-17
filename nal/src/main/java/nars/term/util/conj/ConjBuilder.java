@@ -1,8 +1,10 @@
 package nars.term.util.conj;
 
 import jcog.WTF;
+import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -52,7 +54,11 @@ public interface ConjBuilder {
 
     void negateEvents();
 
-    Term term();
+    default Term term() {
+        return term(Op.terms);
+    }
+
+    Term term(TermBuilder b);
 
 
     LongIterator eventOccIterator();

@@ -252,14 +252,16 @@ public enum Util {
             return -1;
         if (f1 > f2)
             return 1;
+        if (f1 == f2)
+            return 0;
 
         boolean nan1 = f1!=f1, nan2 = f2!=f2;
         if (nan1==nan2)
             return 0;
         else if (nan1)
-            return +1;
-        else
             return -1;
+        else
+            return +1;
     }
 
     public static <K, V> void assertNotEmpty(Map<K, V> test, String varName) {

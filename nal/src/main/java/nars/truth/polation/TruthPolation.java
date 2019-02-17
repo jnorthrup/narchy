@@ -62,6 +62,10 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     @Nullable
     public abstract Truth truth(NAR nar, float eviMin);
 
+    public final boolean add(TaskRegion t) {
+        return add(t.task());
+    }
+
     public boolean add(Task t) {
         return add(new TaskComponent(t));
     }

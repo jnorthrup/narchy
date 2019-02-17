@@ -1,7 +1,6 @@
 package nars.op.mental;
 
 
-import jcog.TODO;
 import jcog.bloom.StableBloomFilter;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.MutableIntRange;
@@ -16,7 +15,8 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
-import nars.link.Activate;
+import nars.index.concept.AbstractConceptIndex;
+import nars.link.TaskLink;
 import nars.subterm.Subterms;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -236,7 +236,7 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
 
                 input.input(abbreviationTask);
 
-                onAbbreviated(abbreviationTask.term());
+                onAbbreviated(abbreviated, aliasTerm);
 
 
                 return aliasTerm;
@@ -247,8 +247,8 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
         return null;
     }
 
-    protected void onAbbreviated(Term term) {
-        logger.info("{}", term);
+    protected void onAbbreviated(Term abbreviated, Term alias) {
+        logger.info("{} => {}", alias, abbreviated);
     }
 
 
@@ -262,14 +262,11 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
     protected void next(NAR n, BooleanSupplier kontinue) {
         do {
 
-            Activate a = null;
+            TaskLink a = ((AbstractConceptIndex)n.concepts).active.sample(n.random());
             if (a == null)
-                throw new TODO();
-//            Activate a = n.concepts.sampleConcept(n.random());
-//            if (a == null)
-//                break;
+                break;
 
-            Term at = a.term();
+            Term at = a.source();
             if (at instanceof Compound) {
                 tryEncode(at, a.priElseZero());
             }

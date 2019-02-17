@@ -54,11 +54,11 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
     }
 
     public static TermLinker of(Term term) {
-        return of(term, Param.termlinkTemplateLayers(term));
+        return of(term, 2);
     }
 
     public static TermLinker of(Term term, Term... additional) {
-        return of(term, Param.termlinkTemplateLayers(term), additional);
+        return of(term, 2, additional);
     }
 
     /**

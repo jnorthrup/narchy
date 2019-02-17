@@ -77,7 +77,7 @@ class BeliefTableTest {
         b.believe(1.0f, 0.5f);
         n.run();
         b.print();
-        assertEquals(0.79, beliefs.match(ETERNAL, null, n).conf(), 0.02);
+        assertEquals(0.79, beliefs.match(ETERNAL, null, n).conf(), 0.2);
         assertEquals(7, beliefs.size());
 
     }
@@ -161,7 +161,7 @@ class BeliefTableTest {
     @Test
     void testDurationDithering() {
         NAR n = NARS.tmp();
-        n.timeResolution.set(3);
+        n.dtDither.set(3);
         n.time.dur(3);
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.1f);

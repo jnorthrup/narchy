@@ -16,11 +16,15 @@
       //D, X, eventOfPN(C,X), conjParallel(D), --isVar(X)  |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 
     //free structural implication belief and question decomposition
-    (C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
-        (C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X), hasBelief()   |- (conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
-      (--C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (--conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
-          (--C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X), hasBelief()   |- (--conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
-    (A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Belief:StructuralReduction)
+    (--D ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (--conjWithoutPN(D,  --X) ==> A), (Belief:StructuralReduction)
+    //(C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
+        (C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
+      //(--C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (--conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
+          (--C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (--conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
+
+    (A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
+    (A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- --(A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeductionN)
+    //(A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Belief:StructuralReduction)
          (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
 
 
@@ -106,8 +110,8 @@
 //    (M ==> S), (M ==> (&&,S,A_1..n)) |- (M ==> (&&,A_1..n)), (Truth:DecomposePositiveNegativeNegative, Order:ForAllSame, SequenceIntervals:FromBelief)
 //    (M ==> S), (M ==> (||,S,A_1..n)) |- (M ==> (||,A_1..n)), (Truth:DecomposeNegativePositivePositive, Order:ForAllSame)
 
-    (  S ==> M), (C ==> M), eventOf(C,S)                    |-   (  conjWithout(C,   S) ==> M), (Belief:DecomposePP)
-        (  S ==> M), (--D ==> M), eventOfNeg(D,S)           |-   (--conjWithout(D, --S) ==> M), (Belief:DecomposeNP)
+    (  S ==> M), (C ==> M), eventOf(C,S)                    |-   (  conjWithout(C,   S) ==> M), (Belief:DecomposeNP)
+        (  S ==> M), (--D ==> M), eventOfNeg(D,S)           |- --(--conjWithout(D, --S) ==> M), (Belief:DecomposePN)
           //TODO eventsOf rather than eventOf
 
     (M ==> S), (M ==> C), eventOf(C,S)                        |- --(M ==> conjWithout(C,   S)), (Belief:DecomposePN)

@@ -25,10 +25,8 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
-import nars.op.StatementLinker;
 import nars.op.Introduction;
 import nars.op.stm.ConjClustering;
-import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.term.Term;
@@ -172,9 +170,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        Param.STRONG_COMPOSITION = true;
-//        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
-
+        //Param.STRONG_COMPOSITION = true;
 
         RealTime clock =
                 new RealTime.MS();
@@ -371,7 +367,7 @@ abstract public class NAgentX extends NAgent {
 
 
     public static void config(NAR n) {
-        n.timeResolution.set(
+        n.dtDither.set(
                 //10
                 20
                 //40
@@ -379,9 +375,9 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.setAt(0.03f);
-        n.termVolumeMax.set(26);
+        n.termVolumeMax.set(28);
 
-        ((AbstractConceptIndex)n.concepts).activeCapacity.set(256);
+        ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
         float p =
@@ -389,7 +385,7 @@ abstract public class NAgentX extends NAgent {
                 0.1f;
         
         n.beliefPriDefault.set(1f * p);
-        n.goalPriDefault.set(1f * p);
+        n.goalPriDefault.set(2f * p);
         n.questionPriDefault.set(0.1f * p);
         n.questPriDefault.set(0.1f * p);
 
@@ -439,13 +435,14 @@ abstract public class NAgentX extends NAgent {
         bd.timing = new ActionTiming(n);
 
 
-        BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8,
-                "relation_introduction.nal"
-        ));
+//        BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8,
+//                "relation_introduction.nal"
+//        ));
 
-        new StatementLinker(n);
+//        new StatementLinker(n);
+//        new PuncNoise(n);
 
-        new STMLinkage(n, 1);
+//        new STMLinkage(n, 1);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
                 Task::isInput,
@@ -471,10 +468,12 @@ abstract public class NAgentX extends NAgent {
         //Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 
-        //new Inperience.Believe(16, n);
-        //new Inperience.Want(16, n);
+//        new Inperience.Believe(8, n);
+//        new Inperience.Want(8, n);
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
+
+        //new Abbreviation("z", 5, 9, n);
 
 
 
@@ -493,7 +492,6 @@ abstract public class NAgentX extends NAgent {
 //            e.printStackTrace();
 //        }
 
-        //new Abbreviation("z", 5, 9, n);
 
 //        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(8, 16, n);
 //        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);

@@ -8,7 +8,6 @@ import jcog.math.Range;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.util.builder.MemoizingTermBuilder;
 import nars.term.util.transform.Conceptualization;
@@ -262,7 +261,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -331,108 +330,24 @@ public abstract class Param {
                     (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
 
-    /** termlink template layers depth. TODO this will be abstracted to more flexible weighted activation heuristic */
-    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH_min = 2;
-//    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH = 3 /* 2..4 tested to work ok */;
-
     /**
-     * includes the host as layer 0, so if this returns 1 it will only include the host
-     */
-    public static int termlinkTemplateLayers(Term root) {
-//        if (root.op().statement)
-//            return Param.TERMLINK_TEMPLATE_DEPTH;
-//        else
-            return Param.TERMLINK_TEMPLATE_DEPTH_min;
-
-//        switch (root.op()) {
-//            case PROD:
-//            case CONJ:
-//                return TERMLINK_TEMPLATE_DEPTH_min;
-//            default:
-//                return Param.TERMLINK_TEMPLATE_DEPTH;
-//        }
-
-//
-//            case SETe:
-//            case SETi:
-//                return 2;
-//
-//            case SECTi:
-//            case SECTe:
-//                return 2;
-//
-//            case DIFFe:
-//            case DIFFi:
-//                return 2;
-//
-//
-//            case SIM: {
-//
-//
-////                if (x.subterms().OR(xx -> xx.unneg().isAny(SetBits | Op.SectBits | Op.PROD.bit)))
-////                    return 3;
-////                else
-//                    return 2;
-//            }
-//
-//            case INH: {
-////                if (x.subterms().OR(xx -> xx.unneg().isAny(Op.SetBits | Op.SectBits
-////                        | Op.PROD.bit
-////                        )))
-////                    return 3;
-//
-//                return 2;
-//            }
-//
-//            case IMPL:
-////                if (x./*subterms().*/hasAny(Op.CONJ.bit))
-////                    return 3;
-////                else
-//                    return 2;
-////                }
-//
-//
-//            case CONJ:
-////                if (x.hasAny(Op.IMPL))
-////                    return 3;
-//                return 2;
-//
-//
-//            default:
-//                /** atomics,etc */
-//                return 0;
-//
-//        }
-    }
-
-
-    /**
-     * how many durations above which to dither dt relations to dt=0 (parallel)
-     * set to zero to disable dithering.  typically the value will be 0..1.0.
+     * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
      */
-    public final IntRange timeResolution = new IntRange(1, 1, 1024);
+    public final IntRange dtDither = new IntRange(1, 1, 1024);
 
     /**
      * number of time units (cycles) to dither into
      */
     public int dtDither() {
-        return timeResolution.intValue();
+        return dtDither.intValue();
     }
 
+    /** cycles per duration */
     abstract int dur();
 
 
     abstract long time();
-
-
-//    /**
-//     * abs(target.dt()) safety limit for non-dternal/non-xternal temporal compounds
-//     * exists for debugging
-//     */
-//    @Deprecated
-//    public static int DT_ABS_LIMIT =
-//            Integer.MAX_VALUE / 16384;
 
 
     /**
@@ -445,7 +360,6 @@ public abstract class Param {
      * limited because some subterm paths are stored as byte[]. to be safe, use 7-bits
      */
     public static final int SUBTERMS_MAX = Byte.MAX_VALUE;
-
 
     /**
      * hard upper-bound limit on Compound target complexity;
@@ -543,8 +457,8 @@ public abstract class Param {
 
         //inverse linear decay
         float falloffDurs =
-                1;
-                //1.618f; //phi
+                //1;
+                1.618f; //phi
                 //2; //nyquist
                 //4;
                 //dur;

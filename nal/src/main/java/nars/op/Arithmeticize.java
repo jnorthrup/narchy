@@ -285,26 +285,28 @@ public class Arithmeticize {
         @Override
         public Term apply(Term x, int cdt, @Nullable Anon anon) {
 
+            Term var = x.hasAny(A.op()) ? A : $.v(A.op(), (byte)1); //safe to use normalized var?
+
             Term baseTerm = Int.the(base);
             if (anon!=null)
                 baseTerm = anon.put(baseTerm);
 
-            Term yy = x.replace(baseTerm, A);
+            Term yy = x.replace(baseTerm, var);
 
             for (Pair<Term, Function<Term, Term>> s : mods) {
                 Term s0 = s.getOne();
-                Term s1 = s.getTwo().apply(A);
+                Term s1 = s.getTwo().apply(var);
                 if (anon!=null)
                     s0 = anon.put(s0);
                 yy = yy.replace(s0, s1);
             }
 
-            if (baseTerm.equals(A))
+            if (baseTerm.equals(var))
                 return null;
 
             Term equality =
                     //SIM.the(baseTerm, V);
-                    Equal.the(baseTerm, A);
+                    Equal.the(baseTerm, var);
 
             Term y = CONJ.the(equality, cdt, yy);
 

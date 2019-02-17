@@ -10,21 +10,18 @@ import nars.derive.Premise;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.index.concept.AbstractConceptIndex;
-import nars.link.Activate;
 import nars.link.TaskLink;
 import nars.term.Term;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-    public final IntRange tasklinksPerIteration = new IntRange(3, 1, 32);
+    public final IntRange tasklinksPerIteration = new IntRange(2, 1, 32);
 
 
     public BatchDeriver(PremiseDeriverRuleSet rules) {
@@ -32,17 +29,9 @@ public class BatchDeriver extends Deriver {
     }
 
     public BatchDeriver(Set<PremiseRuleProto> rules, NAR nar) {
-        super(fire(nar), rules, nar);
+        super(rules, nar);
     }
 
-
-    public BatchDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
-        super(source, rules, rules.nar);
-    }
-
-    public BatchDeriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
-        super(source, rules, nar);
-    }
 
     @Override
     protected final void derive(Derivation d, BooleanSupplier kontinue) {

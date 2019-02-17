@@ -56,7 +56,7 @@ abstract public class Deriver extends Causable {
 //    public final IntRange tasklinkSpread =  new IntRange(Param.TaskLinkSpreadDefault, 1, 32);
 
 
-    protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
+    protected Deriver(Set<PremiseRuleProto> rules, NAR nar) {
         this(PremiseDeriverCompiler.the(rules), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
@@ -64,14 +64,9 @@ abstract public class Deriver extends Causable {
 
 
 
-    protected Deriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
-        this(source, rules, rules.nar);
+    protected Deriver(PremiseDeriverRuleSet rules) {
+        this(rules, rules.nar);
     }
-
-    protected static Consumer<Predicate<Activate>> fire(NAR nar) {
-        return (Predicate<Activate> each)->nar.concepts.sample(nar.random(), (Predicate)each);
-    }
-
 
     protected Deriver(DeriverRules rules, NAR nar) {
         this(rules, nar.attn.derivePri, nar);

@@ -24,7 +24,7 @@ class DynamicTruthBeliefTableTest {
         n.believe("x", 0f, 0.50f);
         n.believe("y", 0f, 0.50f);
         n.run(1);
-        TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink(Op.EmptyProduct, $$("(x && y)"), ETERNAL, BELIEF,  1f);
+        TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink($$("(x && y)"), Op.EmptyProduct, ETERNAL, BELIEF,  1f);
         Set<Task> tasks = new HashSet();
         for (int i = 0; i < 10; i++)
             tasks.add(tl.apply(n));
@@ -38,7 +38,7 @@ class DynamicTruthBeliefTableTest {
         n.input("x. +1");
         n.input("y. +2");
         n.run(1);
-        TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink(Op.EmptyProduct, $$("(x && y)"), ETERNAL, BELIEF, 1f);
+        TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink($$("(x && y)"), Op.EmptyProduct, ETERNAL, BELIEF, 1f);
         Set<Task> tasks = new HashSet();
         for (int i = 0; i < 100; i++)
             tasks.add(tl.apply(n));

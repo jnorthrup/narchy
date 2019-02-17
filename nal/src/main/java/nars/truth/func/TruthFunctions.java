@@ -114,7 +114,7 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion, or null if either truth is analytic already
      */
     public static Truth induction(Truth a, Truth b, float minConf) {
-        float c = w2cSafe(confCompose(a,b) * b.freq());
+        float c = w2cSafe(confCompose(a, b) * b.freq());
         return c >= minConf ? $.t(a.freq(), c) : null;
     }
 
@@ -153,7 +153,7 @@ public final class TruthFunctions {
 
 
         float f0 = //or(f1, f2);
-                Math.max( and(f1, f2), and(1-f1, 1-f2));
+                Math.max(and(f1, f2), and(1 - f1, 1 - f2));
         float c = w2cSafe(and(f0, TruthFunctions.confCompose(a, b)));
         if (c >= minConf) {
             float f = (Util.equals(f0, 0, Param.TRUTH_EPSILON)) ? 0 : (and(f1, f2) / f0);
@@ -162,10 +162,6 @@ public final class TruthFunctions {
 
         return null;
     }
-
-
-
-
 
 
     public static float confCompose(Truth a, Truth b) {
@@ -189,22 +185,22 @@ public final class TruthFunctions {
      * @param v1 Truth value of the first premise
      * @param v2 Truth value of the second premise
      * @return Truth value of the conclusion
-     *
+     * <p>
      * In the confidence functions, each case for the conclusion to reach its
-     *     maximum is separately considered. The plus operator is used in place of an
-     *     or operator, because the two cases involved are mutually exclusive, rather
-     *     than independent of each other.
-     *
-     *     Fint : Intersection
-     *         f = and(f1, f2)
-     *         c = or(and(not(f1), c1), and(not(f2), c2)) + and(f1, c1, f2, c2)
-     *     Funi : Union
-     *         f = or(f1, f2)
-     *         c = or(and(f1, c1), and(f2, c2)) + and(not(f1), c1, not(f2), c2)
-     *     Fdif : Difference
-     *         f = and(f1, not(f2))
-     *         c = or(and(not(f1), c1), and(f2, c2)) + and(f1, c1, not(f2), c2)
-     *
+     * maximum is separately considered. The plus operator is used in place of an
+     * or operator, because the two cases involved are mutually exclusive, rather
+     * than independent of each other.
+     * <p>
+     * Fint : Intersection
+     * f = and(f1, f2)
+     * c = or(and(not(f1), c1), and(not(f2), c2)) + and(f1, c1, f2, c2)
+     * Funi : Union
+     * f = or(f1, f2)
+     * c = or(and(f1, c1), and(f2, c2)) + and(not(f1), c1, not(f2), c2)
+     * Fdif : Difference
+     * f = and(f1, not(f2))
+     * c = or(and(not(f1), c1), and(f2, c2)) + and(f1, c1, not(f2), c2)
+     * <p>
      * https://en.wikipedia.org/wiki/Fuzzy_set_operations
      * https://en.wikipedia.org/wiki/Fuzzy_set#Fuzzy_set_operations
      * https://en.wikipedia.org/wiki/T-norm
@@ -262,15 +258,21 @@ public final class TruthFunctions {
      */
     @Nullable
     public static Truth decompose(Truth X, Truth Y, boolean x, boolean y, boolean z, float minConf) {
-        float cxy = confCompose(X,Y);
-        if (cxy < minConf) return null;
-        float fx = X.freq(), fy = Y.freq();
-        float fxy = and(x ? fx : 1 - fx, y ? fy : 1 - fy);
-        float c =
-                fxy * cxy;
-                //cxy;
+        float cxy = confCompose(X, Y);
+        if (cxy >= minConf) {
+            float fx = X.freq(), fy = Y.freq();
+            float fxy = and(
+                    x ? fx : 1 - fx,
+                    y ? fy : 1 - fy
+            );
+            float c =
+                    fxy * cxy;
 
-        return c < minConf ? null : t(z ? fxy : 1 - fxy, c);
+            if (c >= minConf)
+                return t(z ? fxy : 1 - fxy, c);
+
+        }
+        return null;
     }
 
 
@@ -305,7 +307,9 @@ public final class TruthFunctions {
         return horizon * c / (1 - c);
     }
 
-    /** http://www.wolframalpha.com/input/?i=x%2F(x%2B1) */
+    /**
+     * http://www.wolframalpha.com/input/?i=x%2F(x%2B1)
+     */
     public static float w2cSafe(float w, float horizon) {
         return w / (w + horizon);
     }

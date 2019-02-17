@@ -457,10 +457,11 @@ public final class Answer implements AutoCloseable {
         long s = d.start();
         long e = s != ETERNAL ? d.end() : ETERNAL;
         if (s!=ETERNAL) {
-             if (this.time.start!=ETERNAL) {
+            TimeRangeFilter t = this.time;
+            if (t.start!=ETERNAL) {
                  //project to the question time range
-                 s = this.time.start;
-                 e = this.time.end;
+                 s = t.start;
+                 e = t.end;
              } else {
                  //use the answered time range
              }
@@ -468,7 +469,7 @@ public final class Answer implements AutoCloseable {
 
         TruthPolation tp = Param.truth(s, e, dur);
         tp.ensureCapacity(d.size());
-        d.forEach(r -> tp.add(r.task()));
+        d.forEach(tp::add);
         return tp;
     }
 

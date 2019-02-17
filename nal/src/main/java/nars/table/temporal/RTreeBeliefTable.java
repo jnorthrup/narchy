@@ -39,8 +39,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private static final Split SPLIT = AxialSplitLeaf.the;
 
 
-    private static final int EvictWeakest = 0, MergeLeaf = 1;
-
     protected int capacity;
 
 
