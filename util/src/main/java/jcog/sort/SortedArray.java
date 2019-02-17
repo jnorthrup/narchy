@@ -616,7 +616,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public boolean isSorted(FloatFunction<X> f) {
         X[] ii = this.items;
         for (int i = 1; i < size; i++) {
-            if (f.floatValueOf(ii[i - 1]) > f.floatValueOf(ii[i]))
+            if (f.floatValueOf(ii[i - 1]) >= f.floatValueOf(ii[i]))
                 return false;
         }
         return true;
@@ -683,7 +683,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                     }
                 } else {
                     if (0 < Util.fastCompare(cmp.floatValueOf(x), elementRank)) {
-                        break;
+                        return i;
                     }
                 }
             }
