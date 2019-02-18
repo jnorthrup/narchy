@@ -2,8 +2,7 @@ package nars.term;
 
 import nars.$;
 import nars.*;
-import nars.eval.Evaluation;
-import nars.term.atom.Bool;
+import nars.op.Equal;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import static nars.$.or;
 import static nars.$.*;
 import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.*;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,32 +22,32 @@ public class BoolTest {
 
     @Test
     void testBoolType() {
-        assertEquals("(true,false)", $.p(Bool.True, Bool.False).toString());
+        assertEquals("(true,false)", $.p(True, False).toString());
     }
 
     @Test
     void testBoolBytes() {
 
-        assertEquals(2, Bool.True.bytes().length);
-        assertEquals(2, Bool.False.bytes().length);
+        assertEquals(2, True.bytes().length);
+        assertEquals(2, False.bytes().length);
         assertEquals(2, Null.bytes().length);
         assertEquals(Null, IO.bytesToTerm(Null.bytes()));
-        assertEquals(Bool.True, IO.bytesToTerm(Bool.True.bytes()));
-        assertEquals(Bool.False, IO.bytesToTerm(Bool.False.bytes()));
+        assertEquals(True, IO.bytesToTerm(True.bytes()));
+        assertEquals(False, IO.bytesToTerm(False.bytes()));
     }
 
     @Test void testBoolLabel() {
-        assertEquals(Bool.True, $$("true"));
-        assertEquals(Bool.False, $$("false"));
+        assertEquals(True, $$("true"));
+        assertEquals(False, $$("false"));
         //assertEquals(Null, $$("null"));
     }
 
     @Test
     void testNegationTautologies() {
-        assertEquals(Bool.True, Bool.True.unneg());
-        assertEquals(Bool.False, Bool.True.neg());
-        assertEquals(Bool.True, Bool.False.unneg());
-        assertEquals(Bool.True, Bool.False.neg());
+        assertEquals(True, True.unneg());
+        assertEquals(False, True.neg());
+        assertEquals(True, False.unneg());
+        assertEquals(True, False.neg());
         assertEquals(Null, Null.neg());
         assertEquals(Null, Null.unneg());
     }
@@ -58,16 +57,23 @@ public class BoolTest {
     @Test void testEqualOperatorTautologies() {
         //TODO finish
         NAR n = NARS.shell();
-        assertEquals("[equal(true,true)]", Evaluation.eval($$("equal(true,true)"), n).toString());
-        assertEquals("[equal(false,false)]", Evaluation.eval($$("equal(false,false)"), n).toString());
+        assertEquals(True, Equal.the(True,True));
+        assertEquals(False, Equal.the(True,False));
+        assertEquals(Null, Equal.the(True,Null));
+        assertEquals(Null, Equal.the(False,Null));
+        assertEq("(y-->x)", Equal.the($$("x:y"),True));
+        assertEq("(--,(y-->x))", Equal.the($$("x:y"),False));
+
+//        assertEquals("[equal(true,true)]", Evaluation.eval($$("equal(true,true)"), n).toString());
+//        assertEquals("[equal(false,false)]", Evaluation.eval($$("equal(false,false)"), n).toString());
         //assertEquals("[null]", Evaluation.eval($$("equal(null,null)"), n).toString());
     }
 
     @Test
     void testStatementTautologies() {
         for (Op o: new Op[]{INH, SIM, IMPL}) {
-            assertEq(Bool.True, o.the(Bool.True, Bool.True));
-            assertEq(Bool.True, o.the(Bool.False, Bool.False));
+            assertEq(True, o.the(True, True));
+            assertEq(True, o.the(False, False));
             assertEq(Null, o.the(Null, Null));
         }
 
@@ -80,18 +86,18 @@ public class BoolTest {
 //        assertEq("(x<->false)", SIM.the(Bool.False, x));
 //        assertEq("((--,x)-->true)", INH.the(x.neg(), Bool.True));
 
-        assertEq(Bool.True, INH.the(Bool.True, Bool.True));
-        assertEq(Bool.True, SIM.the(Bool.True, Bool.True));
-        assertEq(Bool.False, INH.the(Bool.True, Bool.False));
-        assertEq(Bool.False, INH.the(Bool.False, Bool.True));
-        assertEq(Bool.False, SIM.the(Bool.True, Bool.False));
-        assertEq(Bool.True, SIM.the(Bool.True, Bool.True));
+        assertEq(True, INH.the(True, True));
+        assertEq(True, SIM.the(True, True));
+        assertEq(False, INH.the(True, False));
+        assertEq(False, INH.the(False, True));
+        assertEq(False, SIM.the(True, False));
+        assertEq(True, SIM.the(True, True));
 
-        assertEquals(0, Bool.True.compareTo(Bool.True));
-        assertEquals(0, Bool.False.compareTo(Bool.False));
+        assertEquals(0, True.compareTo(True));
+        assertEquals(0, False.compareTo(False));
         assertEquals(0, Null.compareTo(Null));
 
-        assertEquals(-Bool.False.compareTo(Bool.True), Bool.True.compareTo(Bool.False));
+        assertEquals(-False.compareTo(True), True.compareTo(False));
 
     }
 
@@ -103,11 +109,11 @@ public class BoolTest {
         assertEq(Null, IMPL.the(x, Null));
 
 
-        assertEq(x, IMPL.the(Bool.True, x));
-        assertEq(Null, IMPL.the(Bool.False, x));
+        assertEq(x, IMPL.the(True, x));
+        assertEq(Null, IMPL.the(False, x));
 
-        assertEq(x, IMPL.the(x, Bool.True));
-        assertEq(x.neg(), IMPL.the(x, Bool.False));
+        assertEq(x, IMPL.the(x, True));
+        assertEq(x.neg(), IMPL.the(x, False));
 
     }
 
@@ -179,8 +185,8 @@ public class BoolTest {
             assertEquals(x, o.the(x, x));
             assertEq(Null, o.the(x, x.neg()));
 
-            assertEquals(x, o.the(x, Bool.True));
-            assertEquals(Null /* False ?  */, o.the(x, Bool.False));
+            assertEquals(x, o.the(x, True));
+            assertEquals(Null /* False ?  */, o.the(x, False));
             assertEquals(Null, o.the(x, Null));
         }
     }
@@ -198,13 +204,13 @@ public class BoolTest {
     /** Huntington conj/disj tautologies */
     @Test void testConjTautologies() {
         //a∧true == a		# neutral element (Huntington axiom)
-        assertEq(x, and(x, Bool.True));
+        assertEq(x, and(x, True));
         //a∨false == a		# neutral element (Huntington axiom)
-        assertEq(x, or(x, Bool.False));
+        assertEq(x, or(x, False));
         //a∧¬a == false		# complement (Huntington axiom) induces Principium contradictionis
-        assertEq(Bool.False, and(x, x.neg()));
+        assertEq(False, and(x, x.neg()));
         //a∨¬a == true		# complement (Huntington axiom) induces Tertium non datur, law of excluded middle (Russel/Whitehead. Principia Mathematica. 1910, 101 *2.11)
-        assertEq(Bool.True, or(x, x.neg()));
+        assertEq(True, or(x, x.neg()));
 
         //a∧a == a		# idempotent
         assertEq(x, and(x, x));
@@ -212,9 +218,9 @@ public class BoolTest {
         assertEq(x, or(x, x));
 
         //a∧false == false	# (dual to neutral element)
-        assertEq(Bool.False, and(Bool.False, x));
+        assertEq(False, and(False, x));
         //a∨true == true		# (dual to neutral element)
-        assertEq(Bool.True, or(Bool.True, x));
+        assertEq(True, or(True, x));
 
         //a∧(a∨b) == a		# absorbtion
         assertEq(x, or(x, and(x, or(x, y))));
@@ -229,9 +235,9 @@ public class BoolTest {
         //half deMorgan
         assertEq(or(x, y.neg()), and(x.neg(),y).neg());
 
-        assertEq(Bool.False, and(Bool.False, Bool.True));
-        assertEq(Bool.True, and(Bool.True, Bool.True));
-        assertEq(Bool.False, and(Bool.False, Bool.False));
+        assertEq(False, and(False, True));
+        assertEq(True, and(True, True));
+        assertEq(False, and(False, False));
         assertEq(Null, and(Null, x));
         assertEq(Null, and(Null, Null));
 
@@ -243,7 +249,7 @@ public class BoolTest {
     }
 
     @Test void testConjFactor2() {
-        assertEq(Bool.False, and(and(x, y), and(x, y.neg())));
+        assertEq(False, and(and(x, y), and(x, y.neg())));
     }
     @Test void testConjFactor3() {
         assertEq("(&&,x,y,z)", and(and(x, y), and(x, z)));

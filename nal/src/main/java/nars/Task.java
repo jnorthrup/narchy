@@ -506,8 +506,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
         x = x.normalize();
 
         if (x instanceof Compound && !validTaskCompound((Compound)x, true)) {
-            x = VariableTransform.indepToDepVar(x);
-            x = x.normalize();
+            x = VariableTransform.indepToDepVar(x).normalize();
         }
 
         return x;

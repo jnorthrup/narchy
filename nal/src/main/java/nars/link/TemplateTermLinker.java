@@ -3,18 +3,13 @@ package nars.link;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
-import nars.NAR;
 import nars.Op;
 import nars.Param;
-import nars.Task;
-import nars.concept.Concept;
-import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.Img;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Set;

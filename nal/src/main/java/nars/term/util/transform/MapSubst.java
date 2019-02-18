@@ -19,8 +19,8 @@ abstract public class MapSubst implements Subst {
 
     @Override
     public @Nullable Term transformCompound(Compound x) {
-        Term y = resolve(x);
-        if (y==x) {
+        Term y = xy(x);
+        if (y == null || y==x) {
             return Subst.super.transformCompound(x);
         } else
             return y;
@@ -190,13 +190,6 @@ abstract public class MapSubst implements Subst {
 //        xy.clear();
 //        return this;
     }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-//        return xy.isEmpty();
-    }
-
 
     final static class SubstCompound implements TermTransform {
 

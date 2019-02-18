@@ -65,7 +65,7 @@ public class EllipsisTest {
             
             
 
-            @Nullable Term ellipsisTerm = (Term) firstEllipsis(x);
+            @Nullable Variable ellipsisTerm = (Variable) firstEllipsis(x);
             assertNotNull(ellipsisTerm);
 
 
@@ -82,7 +82,7 @@ public class EllipsisTest {
                         
 
 
-                        Term a = xy(ellipsisTerm);
+                        Term a = resolve(ellipsisTerm);
                         if (a instanceof EllipsisMatch) {
                             EllipsisMatch varArgs = (EllipsisMatch) a;
 
@@ -90,7 +90,7 @@ public class EllipsisTest {
 
                             assertEquals(getExpectedUniqueTerms(arity), varArgs.subs());
 
-                            Term u = xy(varArgs);
+                            Term u = transformCompound(varArgs);
                             if (u == null) {
                                 u = varArgs;
                             }
@@ -198,7 +198,7 @@ public class EllipsisTest {
 
     public static class CommutiveEllipsisTest1 extends CommutiveEllipsisTest {
 
-        static final Term fixedTerm = $.varPattern(1);
+        static final Variable fixedTerm = $.varPattern(1);
 
 
         CommutiveEllipsisTest1(String ellipsisTerm, String[] openClose) throws Narsese.NarseseException {
@@ -222,7 +222,7 @@ public class EllipsisTest {
         @Override
         public void testFurther(Set<Term> selectedFixed, @NotNull Unify f, @NotNull Set<Term> varArgTerms) {
             assertEquals(2, f.xy.size());
-            Term fixedTermValue = f.xy(fixedTerm);
+            Term fixedTermValue = f.resolve(fixedTerm);
             assertNotNull(fixedTermValue, f.toString());
             assertTrue(fixedTermValue instanceof Atomic);
             assertFalse(varArgTerms.contains(fixedTermValue));

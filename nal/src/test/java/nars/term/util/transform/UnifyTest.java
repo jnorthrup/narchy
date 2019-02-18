@@ -888,7 +888,7 @@ public class UnifyTest {
      */
 
 
-    private Subst testUnify(Compound a, Compound b, boolean matches) {
+    private Unify testUnify(Compound a, Compound b, boolean matches) {
 
         AtomicBoolean matched = new AtomicBoolean(false);
 

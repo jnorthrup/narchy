@@ -12,6 +12,7 @@ import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INT;
+import static nars.term.Functor.CommutiveBinaryBidiFunctor.commute;
 import static nars.term.atom.Bool.*;
 
 public enum MathFunc { ;
@@ -86,6 +87,38 @@ public enum MathFunc { ;
                         return Int.the(xy/xx); 
                 }
             };
+
+    public static Term add(Term x, Term y) {
+        boolean xInt = x.op() == INT;
+        if (xInt) {
+            int X = ((Int) x).id;
+            if (X == 0) return y;
+        }
+        if (y.op()==INT) {
+            int Y = ((Int) y).id;
+            if (Y == 0) return x;
+            if (xInt && ((Int) x).id==Y) return mul(x, Int.the(2));
+        }
+
+
+        return $.func(add, commute(x, y));
+    }
+
+    public static Term mul(Term x, Term y) {
+        if (x.op()==INT) {
+            int X = ((Int) x).id;
+            if (X == 0) return Int.ZERO;
+            if (X == 1) return y;
+        }
+
+        if (y.op()==INT) {
+            int Y = ((Int) y).id;
+            if (Y == 0) return Int.ZERO;
+            if (Y == 1) return x;
+        }
+
+        return $.func(mul, commute(x, y));
+    }
 
     /** TODO abstract CommutiveBooleanBidiFunctor */
     public static class XOR extends Functor.InlineCommutiveBinaryBidiFunctor implements The {

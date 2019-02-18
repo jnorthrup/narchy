@@ -63,12 +63,8 @@ public class FormulaUtil {
                     int[] newPrefix = Arrays.copyOf(prefix, prefix.length + 1);
                     newPrefix[prefix.length] = array[i];
                     int[] leftovers = new int[n - 1];
-                    for (int j = 0; j < i; j++) {
-                        leftovers[j] = array[j];
-                    }
-                    for (int j = i + 1; j < n; j++) {
-                        leftovers[j - 1] = array[j];
-                    }
+                    System.arraycopy(array, 0, leftovers, 0, i);
+                    if (n - i + 1 >= 0) System.arraycopy(array, i + 1, leftovers, i + 1 - 1, n - i + 1);
                     permutation(newPrefix, leftovers, permutations, validateFn);
                 }
             }

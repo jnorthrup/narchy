@@ -25,7 +25,11 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
     }
 
     public static Term the(Term x, Term y) {
-        return $.func(the, x.compareTo(y) <= 0 ? new Term[]{x, y} : new Term[]{y, x});
+        @Nullable Term p = pretest(x, y);
+        if (p!=null)
+            return p;
+        else
+            return $.func(the, commute(x, y));
     }
 
     @Override
@@ -39,13 +43,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
             Term x = args.sub(0), y = args.sub(1);
 
-            Term p = pretest(x, y);
-            if (p != null)
-                return p;
-
-            if (!x.hasVars() && !y.hasVars())
-                return False; //constant in-equal
-
+            return pretest(x, y);
         }
         //TODO support N-ary equality
         return null;
@@ -120,15 +118,14 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
     @Nullable
     private static Term pretest(Term x, Term y) {
-        /** null != null, like NaN!=NaN .. it represents an unknokwn or invalid value.  who can know if it equals another one */
-        if (x == Null || y == Null)
-            return Null;
-
-        if (x.equals(y))
-            return True; //fast equality pre-test
-        if (x.equalsNeg(y))
-            return False;
-
+        if (x == Null || y == Null) return Null;
+        if (x.equals(y)) return True;
+        if (x.equalsNeg(y)) return False;
+        if (x == True) return y;
+        if (y == True) return x;
+        if (x == False) return y.neg();
+        if (y == False) return x.neg();
+        if (!x.hasVars() && !y.hasVars()) return False; //constant in-equal
         return null;
     }
 

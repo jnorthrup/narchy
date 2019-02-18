@@ -17,7 +17,7 @@ import java.util.*;
 public class PredVarInst {
     
     
-    private static final HashMap<String,Integer> predVarArity = new HashMap<String,Integer>();
+    private static final Map<String, Integer> predVarArity = new HashMap<String,Integer>();
     
     
     private static final HashMap<String,HashSet<String>> candidatePredicates = new HashMap<String,HashSet<String>>();
@@ -41,7 +41,7 @@ public class PredVarInst {
         HashMap<String,HashSet<String>> result = new HashMap<String,HashSet<String>>();
         FormulaPreprocessor fp = new FormulaPreprocessor();
     	HashMap<String,HashSet<String>> explicit = fp.findExplicitTypesInAntecedent(kb,input);
-        if (explicit == null || explicit.keySet() == null || explicit.keySet().size() == 0)
+        if (explicit == null || explicit.keySet() == null || explicit.keySet().isEmpty())
             return types;
         Iterator<String> it = explicit.keySet().iterator();
         while (it.hasNext()) {
@@ -70,7 +70,7 @@ public class PredVarInst {
         HashSet<String> predVars = gatherPredVars(kb,input);
         if (predVars == null )
             return null;
-        if (predVars.size() == 0)   
+        if (predVars.isEmpty())
             return result;
         
         HashMap<String,HashSet<String>> varTypes = findPredVarTypes(input,kb);
@@ -105,7 +105,7 @@ public class PredVarInst {
                 }
             }
         }
-        if (result.size() == 0) {   
+        if (result.isEmpty()) {
             String errStr = "No predicate instantiations for ";
             errStr += input.theFormula;
             input.errors.add(errStr);
@@ -142,9 +142,9 @@ public class PredVarInst {
             if (kb.kbCache != null && kb.kbCache.valences != null)
                 intval= kb.kbCache.valences.get(rel);
             if (intval != null)
-                val = intval.intValue();
+                val = intval;
             else {
-                if (l.size() != 0 && !logicalTerms.contains(rel) && !rel.startsWith("?")) {
+                if (!l.isEmpty() && !logicalTerms.contains(rel) && !rel.startsWith("?")) {
                     System.out.printf("INFO in PredVarInst.hasCorrectArityRecurse(): Predicate %s does not have an arity defined in KB, can't get the arity number!\n%s\n", rel, f, f.getSourceFile(), f.startLine);
                     
                 }
@@ -174,7 +174,7 @@ public class PredVarInst {
                     return hasCorrectArityRecurse(f.cddrAsFormula(), kb);
             }
         }
-        if (l != null && l.size() != 0) {
+        if (l != null && !l.isEmpty()) {
             for (String k : l) {
                 if (Formula.atom(k))
                     continue;
@@ -389,11 +389,11 @@ public class PredVarInst {
             
             if (arg0.startsWith("?")) {
                 ArrayList<String> arglist = f.complexArgumentsToArrayList(1);
-                if (arglist != null && arglist.size() > 0) {
+                if (arglist != null && !arglist.isEmpty()) {
                     
                     
                     ans.add(arg0);
-                    predVarArity.put(arg0,Integer.valueOf(arglist.size()));
+                    predVarArity.put(arg0, arglist.size());
                 }
                 else {
                     

@@ -608,6 +608,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
             super(atom);
         }
 
+        public static Term[] commute(Term x, Term y) {
+            return x.compareTo(y) <= 0 ? new Term[]{x, y} : new Term[]{y, x};
+        }
+
 
         @Override
         protected Term apply2(Evaluation e, Term x, Term y) {

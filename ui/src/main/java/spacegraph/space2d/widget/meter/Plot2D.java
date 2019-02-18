@@ -376,7 +376,7 @@ public class Plot2D extends Widget {
         Draw.line(0, H, W, H, gl);
 
         HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
-        HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, Texts.n(maxValue, 7), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
 
 
         for (int sn = 0, seriesSize = series.size(); sn < seriesSize; sn++) {
@@ -388,7 +388,7 @@ public class Plot2D extends Widget {
             float range = maxValue - minValue;
             float yy = NaN;
 
-            float mid = ypos((s.minValue() + s.maxValue()) / 2f, lanes, sn, seriesSize, maxValue-minValue, minValue);
+            //float mid = ypos((s.minValue() + s.maxValue()) / 2f, lanes, sn, seriesSize, maxValue-minValue, minValue);
             float base = ypos(s.minValue(), lanes, sn, seriesSize, maxValue-minValue, minValue);
 
             if (range > Float.MIN_NORMAL) {

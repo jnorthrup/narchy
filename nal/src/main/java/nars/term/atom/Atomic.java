@@ -149,7 +149,7 @@ public interface Atomic extends Term {
         if (l == 1) {
             char c = id.charAt(0);
             switch (c) {
-                case Op.ImdexSym:
+                case Op.VarAutoSym:
                     return Op.VarAuto;
                 case Op.NullSym:
                     return Null;

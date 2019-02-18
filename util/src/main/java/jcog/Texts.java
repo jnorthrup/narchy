@@ -555,20 +555,22 @@ public enum Texts {
         return "";
     }
 
-    public static CharSequence n(float v, int decimals) {
+    public static CharSequence n(float x, int decimals) {
 
         switch (decimals) {
             case 1:
-                return n1(v);
+                return n1(x);
             case 2:
-                return n2(v);
+                return n2(x);
             case 3:
-                return n3(v);
+                return n3(x);
             case 4:
-                return n4(v);
+                return n4(x);
+            default:
+                return x==x ? DoubleFormatUtil.formatDoubleFast(x,decimals ) : "NaN";
         }
 
-        throw new RuntimeException("invalid decimal number");
+
     }
 
     public static int count(String s, char x) {

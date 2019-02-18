@@ -115,10 +115,10 @@ public class Clausifier  {
         old.theFormula = thisFormula.theFormula;
         ArrayList result = new ArrayList();
         Formula ans = null;
-        HashMap topLevelVars  = new HashMap();
-        HashMap scopedRenames = new HashMap();
+        Map topLevelVars  = new HashMap();
+        Map scopedRenames = new HashMap();
         HashMap allRenames    = new HashMap();
-        HashMap standardizedRenames = new HashMap();
+        Map standardizedRenames = new HashMap();
         thisFormula = equivalencesOut();
         thisFormula = implicationsOut();
         thisFormula = negationsIn();
@@ -280,14 +280,14 @@ public class Clausifier  {
         if (clauseData.isEmpty()) 
             ans = thisFormula;
         else {
-            List clauses = (List) clauseData.get(0);
+            Collection clauses = (List) clauseData.get(0);
             if (!clauses.isEmpty()) {
                 List sortedClauses = new ArrayList();
                 StringBuilder sb = null;
                 Iterator itc = null;
                 for (itc = clauses.iterator(); itc.hasNext();) {
                     List clause = (List) itc.next();
-                    if (!clause.isEmpty() && (clause.size() == 2)) {
+                    if (clause.size() == 2) {
                         sb = new StringBuilder();
                         Iterator itl = null;
                         List neglits = (List) clause.get(0);
@@ -1001,13 +1001,13 @@ public class Clausifier  {
 
         Formula f = renameVariables();
         ArrayList<ArrayList<String>> varList = f.collectVariables();
-        TreeMap<String,String> vars = new TreeMap<String,String>();
+        Map<String, String> vars = new TreeMap<String,String>();
         ArrayList<String> al = varList.get(0);
         al.addAll(varList.get(1));
         for (int i = 0; i < al.size(); i++) {
             String s = al.get(i);
             _GENSYM_COUNTER++;
-            String value = "GenSym" + String.valueOf(_GENSYM_COUNTER);
+            String value = "GenSym" + _GENSYM_COUNTER;
             vars.put(s,value);
         }
         return f.substituteVariables(vars);
@@ -1024,9 +1024,9 @@ public class Clausifier  {
      */
     private Formula renameVariables() {
 
-        HashMap topLevelVars = new HashMap();
-        HashMap scopedRenames = new HashMap();
-        HashMap allRenames = new HashMap();
+        Map topLevelVars = new HashMap();
+        Map scopedRenames = new HashMap();
+        Map allRenames = new HashMap();
         return renameVariables(topLevelVars, scopedRenames, allRenames);
     }
 
@@ -1138,7 +1138,7 @@ public class Clausifier  {
      * (a list) if vars contains variables.  Otherwise, it will be an
      * atomic constant.
      */
-    private static String newSkolemTerm(TreeSet<String> vars) {
+    private static String newSkolemTerm(Set<String> vars) {
 
         String ans = Formula.SK_PREF;
         int idx = incSkolemIndex();
@@ -1642,7 +1642,7 @@ public class Clausifier  {
      * @return A Formula.
      */
     private Formula standardizeApart() {
-        HashMap<String, String> reverseRenames = new HashMap<String, String>();
+        Map<String, String> reverseRenames = new HashMap<String, String>();
         return standardizeApart(thisFormula,reverseRenames);
     }
 
@@ -1698,7 +1698,7 @@ public class Clausifier  {
             
             int n = clauses.size();
             for (int i = 0 ; i < n ; i++) {
-                HashMap<String, String> renames = new HashMap<String, String>();
+                Map<String, String> renames = new HashMap<String, String>();
                 Formula oldClause = clauses.remove(0);
                 clauses.add(standardizeApart_1(oldClause,renames,reverseRenames));
             }

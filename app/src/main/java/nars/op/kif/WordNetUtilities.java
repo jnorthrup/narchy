@@ -346,7 +346,7 @@ public class WordNetUtilities {
      * @return is a boolean indicating whether the result of the substitution
      * was found in the hashtable.
      */
-    public static boolean substTest(String result, String match, String subst, Hashtable hash) {
+    public static boolean substTest(String result, String match, String subst, Map hash) {
 
         Pattern p = Pattern.compile(match);
         Matcher m = p.matcher(result);
@@ -408,7 +408,7 @@ public class WordNetUtilities {
         Iterator it = words.keySet().iterator();
         while (it.hasNext() && count < 50) {
             String word = (String) it.next();
-            String synset = (String) words.get(word);
+            CharSequence synset = (String) words.get(word);
             result.append("<a href=\"WordNet.jsp?word=");
             result.append(word);
             result.append("&POS=");
@@ -442,7 +442,7 @@ public class WordNetUtilities {
             String word = (String) it.next();
             ArrayList synsetList = (ArrayList) words.get(word);
             for (int i = 0; i < synsetList.size(); i++) {
-                String synset = (String) synsetList.get(i);
+                CharSequence synset = (String) synsetList.get(i);
                 result.append("<a href=\"WordNet.jsp?word=");
                 result.append(word);
                 result.append("&POS=");
@@ -573,7 +573,7 @@ public class WordNetUtilities {
      */
     private static String findMappingFromHypernym(String synset) {
 
-        ArrayList rels = (ArrayList) WordNet.wn.relations.get(synset);   
+        Iterable rels = (ArrayList) WordNet.wn.relations.get(synset);
         if (rels != null) {
             for (Object rel : rels) {
                 AVPair avp = (AVPair) rel;

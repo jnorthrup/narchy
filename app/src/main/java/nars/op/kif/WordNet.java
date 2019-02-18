@@ -217,8 +217,8 @@ public class WordNet {
     private final Hashtable exceptionNounHash = new Hashtable();  
     private final Hashtable exceptionVerbHash = new Hashtable();  
 
-    private final Hashtable exceptionNounPluralHash = new Hashtable();    
-    private final Hashtable exceptionVerbPastHash = new Hashtable();
+    private final Map exceptionNounPluralHash = new Hashtable();
+    private final Map exceptionVerbPastHash = new Hashtable();
 
     /**
      * Keys are POS-prefixed synsets, values are ArrayList(s) of AVPair(s) in
@@ -240,7 +240,7 @@ public class WordNet {
      * English "stop words" such as "a", "at", "them", which have no or little
      * inherent meaning when taken alone.
      */
-    private final ArrayList stopwords = new ArrayList();
+    private final List stopwords = new ArrayList();
 
     /**
      * A HashMap where the keys are of the form word_POS_num, and values are 8
@@ -1045,7 +1045,7 @@ public class WordNet {
      * synset, the corresponding SUMO target, and the score reflecting the quality
      * of the guess the given synset is the right one.
      */
-    private ArrayList findSUMOWordSenseArray(String word, ArrayList words, int POS) {
+    private ArrayList findSUMOWordSenseArray(String word, Iterable words, int POS) {
 
         String SUMOterm = null;
 
@@ -1331,7 +1331,7 @@ public class WordNet {
 
         try {
             if (initNeeded) {
-                if ((WordNet.baseDir != null && WordNet.baseDir.isEmpty()) || (WordNet.baseDir == null)) {
+                if (WordNet.baseDir == null || WordNet.baseDir.isEmpty()) {
                     WordNet.baseDir = KBmanager.getMgr().getPref("kbDir");
                 }
                 baseDirFile = new File(WordNet.baseDir);
@@ -1642,7 +1642,7 @@ public class WordNet {
                 String sense = (String) sense1;                
                 String POS = WordNetUtilities.getPOSfromKey(sense);
                 String synset = WordNetUtilities.posLettersToNumber(POS) + senseIndex.get(sense);
-                ArrayList words = (ArrayList) synsetsToWords.get(synset);
+                Iterable words = (ArrayList) synsetsToWords.get(synset);
                 for (Object word1 : words) {
                     String newword = (String) word1;
                     ArrayList al = (ArrayList) result.get(newword);
@@ -1660,7 +1660,7 @@ public class WordNet {
                 String sense = (String) sense1;                
                 String POS = WordNetUtilities.getPOSfromKey(sense);
                 String synset = WordNetUtilities.posLettersToNumber(POS) + senseIndex.get(sense);
-                ArrayList words = (ArrayList) synsetsToWords.get(synset);
+                Iterable words = (ArrayList) synsetsToWords.get(synset);
                 for (Object word1 : words) {
                     String newword = (String) word1;
                     ArrayList al = (ArrayList) result.get(newword);
@@ -1684,14 +1684,14 @@ public class WordNet {
     public TreeMap getWordsFromTerm(String SUMOterm) {
 
         TreeMap result = new TreeMap();
-        ArrayList synsets = (ArrayList) SUMOHash.get(SUMOterm);
+        Iterable synsets = (ArrayList) SUMOHash.get(SUMOterm);
         if (synsets == null) {
             System.out.println("INFO in WordNet.getWordsFromTerm(): No synsets for target : " + SUMOterm);
             return null;
         }
         for (Object synset1 : synsets) {
             String synset = (String) synset1;
-            ArrayList words = (ArrayList) synsetsToWords.get(synset);
+            Iterable words = (ArrayList) synsetsToWords.get(synset);
             if (words == null) {
                 System.out.println("INFO in WordNet.getWordsFromTerm(): No words for synset: " + synset);
                 return null;
@@ -1889,7 +1889,7 @@ public class WordNet {
                 buf.append(avp.attribute).append(' ');
                 buf.append("<a href=\"WordNet.jsp?synset=").append(avp.value).append("\">").append(avp.value).append("</a> - ");
                 words = new TreeSet();
-                ArrayList al2 = (ArrayList) synsetsToWords.get(avp.value);
+                Collection al2 = (ArrayList) synsetsToWords.get(avp.value);
                 if (al2 != null) {
                     words.addAll(al2);
                 }
@@ -1935,7 +1935,7 @@ public class WordNet {
         String intransitive = "no";
         String transitive = "no";
         String ditransitive = "no";
-        ArrayList frames = new ArrayList();
+        List frames = new ArrayList();
         ArrayList res = (ArrayList) verbFrames.get(synset);
         if (res != null) {
             frames.addAll(res);
@@ -2316,7 +2316,7 @@ public class WordNet {
             for (Object o : wordsToSenses.keySet()) {
                 String word = (String) o;
                 String processedWord = processWordForProlog(word);
-                ArrayList keys = (ArrayList) wordsToSenses.get(word);
+                List keys = (ArrayList) wordsToSenses.get(word);
                 Iterator it2 = keys.iterator();
                 if (keys.size() < 1) {
                     System.out.println("Error in WordNet.writeWordNetS(): No synsets for word: " + word);
@@ -2373,7 +2373,7 @@ public class WordNet {
                 String synset = (String) o;
                 
 
-                ArrayList rels = (ArrayList) relations.get(synset);
+                List rels = (ArrayList) relations.get(synset);
                 if (rels == null || rels.size() < 1) {
                     System.out.println("Error in WordNet.writeWordNetHyp(): No contents in rels for synset: " + synset);
                 }

@@ -57,10 +57,10 @@ public class RowVars {
                     int arity = kb.kbCache.valences.get(pred).intValue();
                     if (arities.containsKey(pred)) {
                         if (arity < arities.get(rowvar).intValue())
-                            arities.put(rowvar, Integer.valueOf(arity));
+                            arities.put(rowvar, arity);
                     }
                     else
-                        arities.put(rowvar, Integer.valueOf(arity));
+                        arities.put(rowvar, arity);
                 }
             }
         }
@@ -91,7 +91,7 @@ public class RowVars {
                 
                 int nonRowVar = 0;
                 int start = f.theFormula.indexOf("("+pred);
-                int end = f.theFormula.indexOf(")", start);
+                int end = f.theFormula.indexOf(')', start);
                 String simpleFS = f.theFormula.substring(start, end+1);
                 Formula simpleF = new Formula();
                 simpleF.read(simpleFS);
@@ -105,10 +105,10 @@ public class RowVars {
                     int arity = kb.kbCache.valences.get(pred).intValue();
                     if (arities.containsKey(pred)) {
                         if (arity < arities.get(rowvar).intValue())
-                            arities.put(rowvar, Integer.valueOf(arity)-nonRowVar);
+                            arities.put(rowvar, arity -nonRowVar);
                     }
                     else if (arity > 0)
-                        arities.put(rowvar, Integer.valueOf(arity)-nonRowVar);
+                        arities.put(rowvar, arity -nonRowVar);
                 }
             }
         }
@@ -120,9 +120,8 @@ public class RowVars {
      */
     private static HashMap<String,HashSet<String>> 
         mergeValueSets(HashMap<String,HashSet<String>> ar1, HashMap<String,HashSet<String>> ar2) {
-        
-        HashMap<String,HashSet<String>> result = new HashMap<String,HashSet<String>>();
-        result.putAll(ar1);
+
+        HashMap<String, HashSet<String>> result = new HashMap<String, HashSet<String>>(ar1);
         Iterator<String> it = ar2.keySet().iterator();
         while (it.hasNext()) {
             String key = it.next();
@@ -293,7 +292,7 @@ public class RowVars {
             for (int j = 0; j < maxArity; j++) {
                 if (j > 0)
                     replaceString.append(" ");
-                replaceString.append(replaceVar + Integer.toString(j+1));
+                replaceString.append(replaceVar + (j + 1));
                 if (DEBUG)
                     System.out.println("Info in RowVars.expandRowVars(): replace: " + replaceString);
                 for (String form : result) {

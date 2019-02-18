@@ -7,7 +7,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
-import org.jetbrains.annotations.NotNull;
 
 import static nars.Op.*;
 
@@ -67,8 +66,7 @@ public abstract class VariableTransform extends TermTransform.NegObliviousTermTr
         };
     }
 
-    @NotNull
-    public static UnnormalizedVariable unnormalizedShadow(Atomic atomic, Op to) {
+    private static UnnormalizedVariable unnormalizedShadow(Atomic atomic, Op to) {
         return new UnnormalizedVariable(to, to.ch + Texts.quote(atomic.toString()));
     }
 

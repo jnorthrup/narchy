@@ -1,6 +1,5 @@
 package nars.unify;
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
@@ -13,8 +12,9 @@ import nars.Param;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
+import nars.term.atom.Atomic;
 import nars.term.util.map.TermHashMap;
-import nars.term.util.transform.Subst;
+import nars.term.util.transform.TermTransform;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ So it can be useful for a more easy to understand rewrite of this class TODO
 
 
 */
-public abstract class Unify extends Versioning implements Subst {
+public abstract class Unify extends Versioning implements TermTransform.AbstractNegObliviousTermTransform {
 
     /**
      * accumulates the next segment of the termutation stack
@@ -72,7 +72,7 @@ public abstract class Unify extends Versioning implements Subst {
      * TODO use a real stack of arbitrarily length for detecting cycles */
     public int varDepth = 0;
 
-    private FasterList<ConstrainedVersionedTerm> constrained = new FasterList();
+    private final FasterList<ConstrainedVersionedTerm> constrained = new FasterList();
 
 
     /**
@@ -143,15 +143,6 @@ public abstract class Unify extends Versioning implements Subst {
 
     }
 
-
-    /**
-     * only really useful with atom/variable parameters.  compounds arent unified here like apply() will
-     */
-    @Nullable
-    @Override
-    public final Term xy(/*Variable*/Term x) {
-        return !(x instanceof Variable) ? null : xy.get(x);
-    }
 
     /**
      * completely dereferences a target (usually a variable)
@@ -271,10 +262,6 @@ public abstract class Unify extends Versioning implements Subst {
         return false;
     }
 
-    @Override
-    public boolean isEmpty() {
-        throw new TODO();
-    }
 
 
     /**
@@ -320,6 +307,10 @@ public abstract class Unify extends Versioning implements Subst {
         return x; //no change
     }
 
+    @Override
+    public Term transformAtomic(Atomic atomic) {
+        return atomic instanceof Variable ? resolve((Variable)atomic) : atomic;
+    }
 
     private static class ConstrainedVersionMap extends VersionMap<Variable, Term> {
         ConstrainedVersionMap(Versioning<Term> versioning, Map<Variable, Versioned<Term>> termMap) {

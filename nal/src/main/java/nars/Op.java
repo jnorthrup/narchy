@@ -267,9 +267,9 @@ public enum Op {
     /**
      * Image index ("imdex") symbol for products, and anonymous variable in products
      */
-    public final static char ImdexSym = '_';
+    public final static char VarAutoSym = '_';
     public static final Atomic VarAuto =
-            new UnnormalizedVariable(Op.VAR_DEP, String.valueOf(ImdexSym)) {
+            new UnnormalizedVariable(Op.VAR_DEP, String.valueOf(VarAutoSym)) {
 
                 final int RANK = Term.opX(VAR_PATTERN, (short) 20 /* different from normalized variables with a subOp of 0 */);
 

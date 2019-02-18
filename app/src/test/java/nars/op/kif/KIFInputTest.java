@@ -190,7 +190,9 @@ class KIFInputTest {
     public void test1() throws Exception {
 
         String I =
-                "/home/me/sumo/Merge.kif";
+                //"/home/me/sumo/Merge.kif";
+                //"/home/me/sumo/tinySUMO.kif";
+                "/home/me/sumo/ComputerInput.kif";
 
         //String O = "/home/me/d/sumo_merge.nal";
         KIFInput k = new KIFInput(new FileInputStream(I));

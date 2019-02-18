@@ -22,7 +22,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.IMPL;
 import static nars.term.atom.Bool.Null;
 
 public class Evaluation {

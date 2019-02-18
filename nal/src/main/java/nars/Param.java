@@ -199,8 +199,9 @@ public abstract class Param {
     /** restrains revision's ability to stretch evidence across time:
      * as a factor of the maximum of the ranges of the tasks involved in the revision */
     public static final float TASK_REVISION_STRETCH_LIMIT_PROPORTION =
+            0.5f;
             //1;
-            1.5f;
+            //1.5f;
             //1.618f; //goldenratio
             //2;
 

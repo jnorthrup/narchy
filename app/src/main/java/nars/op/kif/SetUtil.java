@@ -33,10 +33,10 @@ public class SetUtil {
      *                   are to be removed.
      *
      */
-    public static void removeDuplicates(Collection collection) {
+    public static void removeDuplicates(Iterable collection) {
     	
         try {
-            HashSet hs = new HashSet();
+            Set hs = new HashSet();
             Object obj = null;
             for (Iterator it = collection.iterator(); it.hasNext();) {
                 obj = it.next();

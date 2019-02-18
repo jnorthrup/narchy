@@ -12,15 +12,12 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.exe.Causable;
-import nars.link.Activate;
 import nars.term.Term;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**

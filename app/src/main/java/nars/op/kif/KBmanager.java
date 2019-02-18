@@ -56,7 +56,7 @@ public class KBmanager implements Serializable {
     public static boolean initialized = false;
     public static boolean initializing = false;
     public static boolean debug = false;
-    private final int oldInferenceBitValue = -1;
+    private static final int oldInferenceBitValue = -1;
     private String error = "";
 
     public static final List<String> configKeys =
@@ -721,7 +721,7 @@ public class KBmanager implements Serializable {
      * Double the backslash in a filename so that it can be saved to a text
      * file and read back properly.
      */
-    public static String escapeFilename(String fname) {
+    public static String escapeFilename(CharSequence fname) {
 
         StringBuilder newstring = new StringBuilder();
         for (int i = 0; i < fname.length(); i++) {
@@ -913,11 +913,11 @@ public class KBmanager implements Serializable {
     public void printPrefs() {
 
         System.out.println("KBmanager.printPrefs()");
-        if (preferences == null || preferences.size() == 0)
+        if (preferences == null || preferences.isEmpty())
             System.out.println("KBmanager.printPrefs(): preference list is empty");
-        for (String key : preferences.keySet()) {
-            String value = preferences.get(key);
-            System.out.println(key + " : " + value);
+        for (Map.Entry<String, String> entry : preferences.entrySet()) {
+            String value = entry.getValue();
+            System.out.println(entry.getKey() + " : " + value);
         }
     }
 

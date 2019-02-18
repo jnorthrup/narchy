@@ -239,8 +239,6 @@ public class KIFInput {
 
     private Term formulaToTerm(final Formula x, int level) {
 
-        String xCar = x.car();
-        String root = xCar; 
 
         int l = x.listLength();
         if (l == -1)
@@ -254,10 +252,8 @@ public class KIFInput {
         List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
         List<Term> args = sargs.stream().map((z) -> formulaToTerm(z, level + 1)).collect(Collectors.toList());
 
-        if (args.contains(null)) {
-            
+        if (args.contains(null))
             return Bool.Null;
-        }
 
         if (args.isEmpty())
             return Bool.Null;
@@ -284,6 +280,8 @@ public class KIFInput {
          *
          */
 
+        String xCar = x.car();
+        String root = xCar;
         Term y = null;
         switch (root) {
             case "ListFn":
@@ -448,29 +446,35 @@ public class KIFInput {
 
             case "AdditionFn":
                 if (args.size()==2)
-                    return $.func(MathFunc.add, args.get(0), args.get(1));
+                    y = MathFunc.add(args.get(0), args.get(1));
                 else
-                    throw new TODO();
-            case "MultiplicationFn":
-                if (args.size()==2)
-                    return $.func(MathFunc.mul, args.get(0), args.get(1));
-                else
-                    throw new TODO();
-
-            case "partition":
-            case "disjointDecomposition":
-                if (args.size() > 2) {
-                    y = disjoint(args.subList(1, args.size()), args.get(0));
-                } else
                     throw new TODO();
                 break;
+
+            case "MultiplicationFn":
+                if (args.size()==2)
+                    y = MathFunc.mul(args.get(0), args.get(1));
+                else
+                    throw new TODO();
+                break;
+
+//                if (args.size() > 2)
+//                    y = disjoint(args.subList(1, args.size()), args.get(0));
+//                else
+//                    y = Equal.the(args.get(0), args.get(1)).neg();
+//                break;
+
+            case "disjointDecomposition":
+            case "partition":
             case "disjointRelation":
             case "disjoint":
             case "inverse":
             case "contraryAttribute":
-                
-                Variable v0 = $.varDep(1);
-                y = disjoint(args, v0);
+
+//                if (args.size() > 2)
+                    y = $.inh(VarAuto, SETe.the(args));
+//                else
+//                    y = Equal.the(args.get(0), args.get(1)).neg();
 
                 break;
 
@@ -556,13 +560,10 @@ public class KIFInput {
         return y;
     }
 
-    private Term disjoint(List<Term> args, Term v0) {
-        Term y;
-        y = Op.INH.the(
-                v0,
-                Op.SECTe.the(args.toArray(Op.EmptyTermArray))
+    private static Term disjoint(List<Term> args, Term v0) {
+        return Op.INH.the(
+                Op.SECTe.the(args.toArray(Op.EmptyTermArray)), v0
         ).neg();
-        return y;
     }
 
 

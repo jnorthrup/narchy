@@ -78,7 +78,7 @@ public class KIF {
     /** warnings generated during parsing */
     public TreeSet<String> warningSet = new TreeSet<String>();
     /** errors generated during parsing */
-    public TreeSet<String> errorSet = new TreeSet<String>();
+    public Set<String> errorSet = new TreeSet<String>();
 
     /*****************************************************************
      * @return int Returns an integer value denoting the current parse mode.
@@ -128,8 +128,8 @@ public class KIF {
 
     /*****************************************************************
      */
-    private void display(StreamTokenizer_s st, boolean inRule, boolean inAntecedent, boolean inConsequent,
-                         int argumentNum, int parenLevel, String key) {
+    private static void display(StreamTokenizer_s st, boolean inRule, boolean inAntecedent, boolean inConsequent,
+                                int argumentNum, int parenLevel, String key) {
 
         StringBuilder result = new StringBuilder();
         result.append(inRule);
@@ -255,7 +255,7 @@ public class KIF {
 
 
                             if (StringUtil.emptyString(validArgs))
-                                validArgs = f.badQuantification();
+                                validArgs = Formula.badQuantification();
                             if (StringUtil.isNonEmptyString(validArgs)) {
                                 errStr = (errStart + ": Invalid number of arguments near line " + f.startLine + " : "
                                         + validArgs);
@@ -325,7 +325,7 @@ public class KIF {
                     if (st.nval == 0)
                         expression.append(st.sval);
                     else
-                        expression.append(Double.toString(st.nval));
+                        expression.append(st.nval);
                     if (parenLevel < 2) 
                         argumentNum = argumentNum + 1;
                 }
@@ -336,7 +336,7 @@ public class KIF {
                         argumentNum = argumentNum + 1;
                     if (lastVal != 40) 
                         expression.append(" ");
-                    expression.append(String.valueOf(st.sval));
+                    expression.append(st.sval);
                     if (expression.length() > 64000) {
                         errStr = (errStart + ": Sentence over 64000 characters new line " + f.startLine);
                         errorSet.add(errStr);
@@ -403,12 +403,12 @@ public class KIF {
      * @param parenLevel      - if the paren level is > 1 then the target appears nested in a
      *            statement and the argument number is ignored.
      */
-    private String createKey(String sval, boolean inAntecedent, boolean inConsequent, int argumentNum, int parenLevel) {
+    private static String createKey(String sval, boolean inAntecedent, boolean inConsequent, int argumentNum, int parenLevel) {
 
         if (sval == null) {
             sval = "null";
         }
-        String key = new String("");
+        String key = "";
         if (inAntecedent) {
             key = key.concat("ant-");
             key = key.concat(sval);
@@ -438,7 +438,7 @@ public class KIF {
      * @param str - the string to be tested.
      * @param c   - the character to be counted.
      */
-    private int countChar(String str, char c) {
+    private static int countChar(String str, char c) {
 
         int len = 0;
         char[] cArray = str.toCharArray();

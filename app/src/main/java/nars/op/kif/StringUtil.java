@@ -796,7 +796,7 @@ public class StringUtil {
 
     /****************************************************************
      */
-    public static String allCapsToSUMOID(String str) {
+    public static String allCapsToSUMOID(CharSequence str) {
 
         if (emptyString(str)) {
             System.out.println("Error in StringUtil.allCapsToSUMOID(): str is null");
@@ -990,7 +990,7 @@ public class StringUtil {
      *
      * @param input A String
      */
-    public static boolean isQuotedString(String input) {
+    public static boolean isQuotedString(CharSequence input) {
 
         boolean ans = false;
         try {
@@ -1023,7 +1023,7 @@ public class StringUtil {
             if (isNonEmptyString(input)
                     && !isQuotedString(input)
                     && (input.charAt(0) != quoteChar)) {
-                ans = String.valueOf(quoteChar) + input + quoteChar;
+                ans = quoteChar + input + quoteChar;
             }
         }
         catch (Exception ex) {
@@ -1070,8 +1070,7 @@ public class StringUtil {
         String ans = "";
         try {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < n; i++)
-                sb.append(input);
+            sb.append(String.valueOf(input).repeat(Math.max(0, n)));
             ans = sb.toString();
         }
         catch (Exception ex) {
@@ -1353,7 +1352,7 @@ public class StringUtil {
         File result = f;
         try {
             String canonicalPath = result.getCanonicalPath();
-            int lidx = canonicalPath.lastIndexOf(".");
+            int lidx = canonicalPath.lastIndexOf('.');
             String suff = "";
             String base = canonicalPath;
             if (lidx != -1) {
@@ -1444,7 +1443,7 @@ public class StringUtil {
      *  Convert any arbitrary string to a valid KIF id.  There is no guarantee that
      *  it is unique however, since the current KB isn't inspected.
      */
-    public static String stringToKIF(String input, boolean upcaseFirst) {
+    public static String stringToKIF(CharSequence input, boolean upcaseFirst) {
 
         if (StringUtil.emptyString(input))
             return null;
@@ -1476,8 +1475,7 @@ public class StringUtil {
     public static String indent(int num, String indentChars) {
         
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < num; i++)
-            sb.append(indentChars);
+        sb.append(String.valueOf(indentChars).repeat(Math.max(0, num)));
         return sb.toString();
     }
     
@@ -1486,7 +1484,7 @@ public class StringUtil {
      * Find the parenthesis that balances the one in st at character pIndex
      * @return -1 if not found
      */
-    public static int findBalancedParen(int pIndex, String st) {
+    public static int findBalancedParen(int pIndex, CharSequence st) {
         
         int parenLevel = 1;
         for (int i = pIndex + 1; i < st.length(); i++) {

@@ -5,24 +5,24 @@ import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
 
-public interface Subst extends TermTransform.AbstractNegObliviousTermTransform {
+public interface Subst extends TermTransform {
 
 
 
-    /** completely dereferences a target (usually a variable)*/
-    default Term resolve(final Term x) {
-        Term y, z = x;
-        while ((y = xy(z))!=null) {
-            z = y;
-        }
-        return z;
-    }
+//    /** completely dereferences a target (usually a variable)*/
+//    default Term resolve(final Term x) {
+//        Term y, z = x;
+//        while ((y = xy(z))!=null) {
+//            z = y;
+//        }
+//        return z;
+//    }
 
     @Override @Nullable
     default Term transformAtomic(Atomic atomic) {
-//        Term y = xy(atomic);
-//        return y != null ? y : atomic;
-        return resolve(atomic);
+        Term y = xy(atomic);
+        return y != null ? y : atomic;
+        //return resolve(atomic);
     }
 
 
@@ -36,12 +36,6 @@ public interface Subst extends TermTransform.AbstractNegObliviousTermTransform {
 //        }
 //    }
 
-
-    /**
-     * can be used to determine if this subst will have any possible effect on any transforms to any possible target,
-     * used as a quick test to prevent transform initializations
-     */
-    boolean isEmpty();
 
     /**
      * the assigned value for x
