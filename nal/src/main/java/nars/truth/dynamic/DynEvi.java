@@ -34,7 +34,7 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
 
     public DynEvi(int size, Task[] t) {
         super(size, t);
-        for (Task x : t) if (x == null) throw new NullPointerException(); //TEMPORARY
+//        for (Task x : t) if (x == null) throw new NullPointerException(); //TEMPORARY
     }
 
     private static float pri(TaskRegion x) {

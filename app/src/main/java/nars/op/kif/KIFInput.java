@@ -582,7 +582,6 @@ public class KIFInput {
         
         Term tmp = IMPL.the(a, b);
         if (tmp.unneg().op() != IMPL) {
-            //IMPL.the(a, b); //TEMPORARY
             logger.warn("un-impl: {} ==> {} ", a, b);
             return Bool.Null;
         }

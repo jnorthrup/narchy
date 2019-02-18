@@ -3,7 +3,6 @@ package nars.eval;
 import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import jcog.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
@@ -25,9 +24,12 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static nars.Op.CONJ;
 import static nars.Op.IMPL;
 import static nars.eval.FactualEvaluator.ProofTruth.Choose;
 import static nars.eval.FactualEvaluator.ProofTruth.Unknown;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 public class FactualEvaluator extends Evaluator {
 
@@ -211,9 +213,28 @@ public class FactualEvaluator extends Evaluator {
 
 
         /** actually should be a set but duplicates should not normally be encountered */
-        List<Term> matches = new FasterList(1);
+
 
         //TODO cache
+        if (x.op()==CONJ && x.dt()==DTERNAL || x.dt()==XTERNAL) {
+            for (Term xx : x.subterms())
+                resolve(xx, e);
+        } else {
+            resolve(x, e);
+        }
+
+
+
+        return super.clauses(x, e);
+    }
+
+    private void resolve(Term x, Evaluation e) {
+        List<Term> matches = new FasterList(1);
+        resolve(x, matches, e);
+        e.canBe(x, matches);
+    }
+
+    private void resolve(Term x, List<Term> matches, Evaluation e) {
         /*List<Predicate<VersionMap<Term, Term>>> l = */
         factResolver.apply(x).
                 //map(y -> {
@@ -223,17 +244,22 @@ public class FactualEvaluator extends Evaluator {
                     //TODO neg, temporal
                     if (y.op() == IMPL) {
 
-                        UnifySubst u = new UnifyAny(new XoRoShiRo128PlusRandom(1) /* HACK */);
+                        UnifySubst u = new UnifyAny();
+                        u.commonVariables = false;
 
-                        Term head = y.sub(1); //predicate, headicate
-                        if (head.unify(x, u.clear())) {
+                        Term pre = y.sub(1);
+                        if (pre.unify(x, u.clear())) {
+                            u.xy.forEach(e::canBe);
+
                             //ifs.get(k).forEach(v->{
-                            Term vv = u.transform(y.sub(0));
-                            if (vv.op().conceptualizable) {
-                                //facts.addAt($.func("ifThen", vv, k));
-                                //facts.put(vv, True);
-                                nodeOrAdd(x).add(vv);
-                                matches.add(vv);
+                            Term conc = u.transform(y.sub(0));
+                            if (conc.op().conceptualizable) {
+//                                //facts.addAt($.func("ifThen", vv, k));
+//                                //facts.put(vv, True);
+//
+                                nodeOrAdd(x).add(conc);
+//
+                                matches.add(conc);
 
                             }
 //                                });
@@ -256,11 +282,6 @@ public class FactualEvaluator extends Evaluator {
 
                     }
                 });
-
-        if (!matches.isEmpty()) {
-            e.canBe(x, matches);
-        }
-        return super.clauses(x, e);
     }
 
 

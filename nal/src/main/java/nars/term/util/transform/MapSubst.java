@@ -1,10 +1,12 @@
 package nars.term.util.transform;
 
+import jcog.TODO;
 import jcog.WTF;
 import nars.Param;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.compound.LazyCompound;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -12,6 +14,20 @@ import java.util.Map;
 
 
 abstract public class MapSubst implements Subst {
+
+    @Override
+    public @Nullable Term transformCompound(Compound x) {
+        Term y = resolve(x);
+        if (y==x) {
+            return Subst.super.transformCompound(x);
+        } else
+            return y;
+    }
+
+    @Override
+    public boolean transformCompound(Compound x, LazyCompound out) {
+        throw new TODO();
+    }
 
     public static Term replace(Term x, Map<? extends Term, Term> m) {
 
@@ -109,6 +125,7 @@ abstract public class MapSubst implements Subst {
         public Term xy(Term t) {
             return xy.get(t);
         }
+
     }
 
     public static TermTransform replace(Term from, Term to) {

@@ -50,12 +50,12 @@ public class QueryTest {
 
     @Test void testFactImpliedByConj() throws Narsese.NarseseException {
         final NAR n = NARS.shell();
-        n.believe("((f(x) && f(y)) ==> g(x,y))");
+        n.believe("((f(#1) && f(#2)) ==> g(#1,#2))");
         n.believe("f(x)");
         n.believe("f(y)");
 
         Set<Term> e = FactualEvaluator.queryAll($$("g(?1,?2)"), n);
-        assertEquals("[g(x,y),g(y,x)]", e.toString());
+        assertEquals("[g(x,x),g(x,y),g(y,y),g(y,x)]", e.toString());
     }
 
     static class FunctorBacktrackingTest {
@@ -123,14 +123,16 @@ public class QueryTest {
         }
 
         @Test
-        public void test4() throws Narsese.NarseseException {
-            FactualEvaluator e = FactualEvaluator.query("sibling(tom,erica)", n);
-            e.print();
+        public void test4() {
+            Set<Term> x = FactualEvaluator.queryAll($$("sibling(tom,erica)"), n);
+            System.out.println(x);
+
 
 //        assertEquals(
-//                "[wonder(sibling(tom,erica))]", //UNKNOWN, not true or false
+//                "[wonder(sibling(tom,erica))]", //UNKNOWN, not true or falsedate
+
 //                .toString()
-//        );
+//        );+
 
 
 

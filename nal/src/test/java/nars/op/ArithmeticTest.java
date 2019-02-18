@@ -106,7 +106,7 @@ class ArithmeticTest {
     }
 
     @Test
-    void testEqBackSubstitution() throws Narsese.NarseseException {
+    void testEqBackSubstitutionAdd() throws Narsese.NarseseException {
         assertSolves("(&&,(#1,add(#2,1)),equal(#2,3),(#1,#2))", "((#1,4)&&(#1,3))");
 
     }
@@ -118,7 +118,7 @@ class ArithmeticTest {
     }
 
     @Test
-    void testSimBackSubstitution2() throws Narsese.NarseseException {
+    void testEqBackSubstitutionAdd2() throws Narsese.NarseseException {
         assertSolves("(&&,(#1,add(#2,1)),(#1,#2),equal(#2,3))", "((#1,3)&&(#1,4))");
     }
 
@@ -135,8 +135,24 @@ class ArithmeticTest {
         t.test();
     }
 
-    @Test public void testEqualSolutionAddInverse() {
+    @Test public void testEqualSolutionAddInverse1a() {
         assertEval($$("x(0)"), "(x(#1) && equal(add(#1,1),1))");
+    }
+    @Test public void testEqualSolutionAddInverse1b() {
+        assertEval($$("x(0)"), "(x(#1) && equal(add(1,#1),1))");
+    }
+    @Test public void testEqualSolutionAddInverse2a() {
+        assertEval($$("x(0)"), "(x(#1) && equal(1,add(#1,1)))");
+    }
+    @Test public void testEqualSolutionAddInverse2b() {
+        assertEval($$("x(0)"), "(x(#1) && equal(1,add(1,#1)))");
+    }
+
+    @Test public void testEqualSolutionMulInverse1a() {
+        assertEval($$("x(-2)"), "(x(#1) && equal(mul(#1,-1),2))");
+    }
+    @Test public void testEqualSolutionMulInverse1b() {
+        assertEval($$("x(1)"), "(x(#1) && equal(mul(2,#1),2))");
     }
 
     @Test public void testEqualSolutionComplex() {

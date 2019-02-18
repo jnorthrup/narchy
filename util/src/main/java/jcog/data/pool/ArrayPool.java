@@ -238,16 +238,6 @@ public class ArrayPool<T> extends FasterList<T> {
                 break;
             default:
 
-//                int index = Collections.binarySearch(this, array, comparator);
-//                if (index < 0) {
-//                    //HACK
-//                    if (len(array) < len(0))
-//                        addAt(array);
-//                    else
-//                        addAt(0, array);
-//                }
-//                else { addAt(index, array); }
-//                assertSorted(); //temporary
 
                 //TODO use binary insertion
                 int l = len(array);

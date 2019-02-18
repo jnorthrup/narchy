@@ -18,13 +18,11 @@ import nars.term.atom.Bool;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static nars.Op.IMPL;
 import static nars.term.atom.Bool.Null;
 
 public class Evaluation {
@@ -35,7 +33,7 @@ public class Evaluation {
 
     transient private Versioning v = null;
 
-    transient private VersionMap<Term, Term> subst = null;
+    protected transient VersionMap<Term, Term> subst = null;
 
 
     private static void eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver, Predicate<Term> each) {
@@ -64,9 +62,8 @@ public class Evaluation {
             Iterable<Predicate<VersionMap<Term, Term>>> t = termutator.remove(0);
             for (Predicate tt : t) {
                 if (tt.test(subst)) {
-                    Term z = y.replace(subst);
-                    if (z != y && !eval(e, z)) //recurse
-                        return false; //CUT
+                    if (!recurse(e, y))
+                        break;
                 }
                 v.revert(before);
             }
@@ -91,12 +88,18 @@ public class Evaluation {
 
                 //all components applied successfully
 
-                Term z = y.replace(subst);
-                if (z != y && !eval(e, z)) //recurse
-                    return false; //CUT
+                if (!recurse(e, y))
+                    return false;
 
             }
         }
+        return true;
+    }
+
+    private boolean recurse(Evaluator e, Term y) {
+        Term z = y.replace(subst);
+        if (z != y && !eval(e, z)) //recurse
+            return false;  //CUT
         return true;
     }
 
@@ -427,6 +430,12 @@ public class Evaluation {
     public void canBe(Term x, Term y) {
         if (!x.equals(y))
             canBe(assign(x, y));
+    }
+
+    public void canBe(Term x, Collection<Term> y) {
+        if (!y.isEmpty()) {
+            canBe(x, (Iterable)y);
+        }
     }
 
     public void canBe(Term x, Iterable<Term> y) {

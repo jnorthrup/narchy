@@ -437,7 +437,7 @@ abstract public class NAgentX extends NAgent {
                 //,"relation_introduction.nal"
         ));
 
-        new StatementLinker(n);
+        //new StatementLinker(n);
         new PuncNoise(n);
 
 //        new STMLinkage(n, 1);

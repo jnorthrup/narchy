@@ -56,7 +56,7 @@ public abstract class Param {
 
 
 
-    public static final boolean SHUFFLE_TERMUTES = true; //this may be dangerous
+    public static final boolean SHUFFLE_TERMUTES = false; //this may be dangerous
 
 
     public static final boolean DT_DITHER_LOGARITHMICALLY = false;

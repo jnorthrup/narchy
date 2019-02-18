@@ -1,5 +1,6 @@
 package nars.op;
 
+import jcog.TODO;
 import nars.$;
 import nars.Op;
 import nars.The;
@@ -11,6 +12,7 @@ import nars.term.Variable;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.INH;
 import static nars.Op.INT;
 import static nars.term.atom.Bool.*;
 
@@ -23,7 +25,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
     }
 
     public static Term the(Term x, Term y) {
-        return $.func(the, x.compareTo(y) <= 0 ? new Term[] { x, y } : new Term[] { y, x });
+        return $.func(the, x.compareTo(y) <= 0 ? new Term[]{x, y} : new Term[]{y, x});
     }
 
     @Override
@@ -56,39 +58,58 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
         if (p != null)
             return p;
 
-        boolean xHasVar = x.hasVars();
-        boolean yHasVar = y.hasVars();
-        if (xHasVar || yHasVar) {
-            //algebraic solutions TODO use symbolic algebra system
-            Term xf = Functor.func(x);
-            if (xf.equals(MathFunc.add)) {
-                Term[] xa = Functor.funcArgsArray(x);
-                if (xa.length == 2 && xa[1].op() == INT && xa[0].op().var) {
-                    if (y.op() == INT) {
-                        //"equal(addAt(#x,a),b)"
-                        return e.is(xa[0], Int.the(((Int) y).id - ((Int) xa[1]).id)) ? True : Null;
-                    }
-                }
-            }
+        Op xOp = x.op(), yOp = y.op();
+        boolean xIsVar = xOp.var, yIsVar = yOp.var;
 
-        }
+        if (xIsVar ^ yIsVar) {
 
-        boolean xVar = x.op().var, yVar = y.op().var;
-        if (xVar ^ yVar) {
-
-            if (xVar) {
-                if (e != null) {
+            if (xIsVar) {
+//                if (e != null) {
                     return e.is(x, y) ? True : Null;
-                }
+//                }
             } else {
-                if (e != null) {
+//                if (e != null) {
                     return e.is(y, x) ? True : Null;
-                }
+//                }
             }
 
             //indeterminable in non-evaluation context
-            return null;
-        } else if (xHasVar || yHasVar) {
+//            return null;
+        }
+
+
+        boolean xHasVar = xIsVar || x.hasVars(), yHasVar = yIsVar || y.hasVars();
+        if (yHasVar && !xHasVar) {
+            //swap
+            Term z = x;
+            x = y;
+            y = z;
+            xHasVar = true;
+            yHasVar = false;
+            Op zOp = xOp;
+            xOp = yOp;
+            yOp = zOp;
+        }
+
+
+        if (xHasVar && xOp == INH && yOp==INT) {
+            //algebraic solutions TODO use symbolic algebra system
+            Term xf = Functor.func(x);
+            if (xf.equals(MathFunc.add)) {
+                Term[] xa = Functor.funcArgsArray(x, 2);
+                if (xa[0].op().var && xa[1].op() == INT)
+                    return e.is(xa[0], Int.the(((Int) y).id - ((Int) xa[1]).id)) ? True : Null; //"equal(add(#x,a),b)"
+                else if (xa[1].op().var && xa[0].op() == INT)
+                    throw new TODO();
+            } else if (xf.equals(MathFunc.mul)) {
+                Term[] xa = Functor.funcArgsArray(x, 2);
+                if (xa[0].op().var && xa[1].op() == INT)
+                    return e.is(xa[0], $.the(((double)((Int) y).id) / ((Int) xa[1]).id)) ? True : Null; //"equal(mul(#x,a),b)"
+            }
+        }
+
+
+        if (xHasVar || yHasVar) {
             //indeterminable
             return null;
         } else {

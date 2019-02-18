@@ -69,14 +69,17 @@ public class Facts implements Function<Term, Stream<Term>> {
                             if (table.isEmpty())
                                 return null;
 
-                            boolean t = polarized(table, true);
-                            boolean f = polarized(table, false);
+                            boolean t = polarized(table, true), f = polarized(table, false);
+                            if (t == f)
+                                return null;
+
+                            Term ct = c.term();
                             if (t && !f) {
-                                return c.term();
-                            } else if (!t && f) {
-                                return c.term().neg();
+                                return ct;
+                            } else /*if (!t && f)*/ {
+                                return ct.neg();
                             }
-                            return null;
+
                         }).filter(Objects::nonNull);
     }
 

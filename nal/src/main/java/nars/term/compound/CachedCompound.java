@@ -40,9 +40,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //        boolean hasTemporal = op.temporal || subterms.hasAny(Op.Temporal);
 //        boolean isNormalized = subterms.isNormalized();
 
-//        //HACK TEMPORARY
-//        if (op==CONJ && subterms.subs()==2 && subterms.sub(0).volume() < subterms.sub(1).volume())
-//            throw new WTF();
 
         Compound c;
         if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
@@ -141,15 +138,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
 
             this.dt = dt;
-
-
-//            if (anon().volume()!=volume()) {
-//                System.out.println(this + " could be reduced?"); //TEMPORARY
-//                //throw new WTF(); //TEMPORARY
-//            }
-
-//            if (dt!=XTERNAL && dt > 2147470000)//TEMPORARY
-//                throw new WTF();
         }
 
         @Override

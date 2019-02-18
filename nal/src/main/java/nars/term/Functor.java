@@ -55,6 +55,14 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return Operator.args(x).arrayShared();
     }
 
+    @Nullable public static Term[] funcArgsArray(Term x, int requireN) {
+        Subterms a = Operator.args(x);
+        if (a.subs()==requireN)
+            return a.arrayShared();
+        else
+            return null;
+    }
+
     @Override
     public final byte[] bytes() {
         return ((Atomic) term).bytes();
