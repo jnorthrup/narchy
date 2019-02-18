@@ -3,6 +3,7 @@ package nars.unify;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.version.UniVersioned;
 import jcog.version.VersionMap;
 import jcog.version.Versioned;
@@ -16,7 +17,6 @@ import nars.term.util.map.TermHashMap;
 import nars.term.util.transform.Subst;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -48,8 +48,8 @@ public abstract class Unify extends Versioning implements Subst {
      * accumulates the next segment of the termutation stack
      */
     public final Set<Termutator> termutes =
-            //new ArrayHashSet<>(4);
-            new UnifiedSet(4, 0.99f);
+            new ArrayHashSet<>(4);
+            //new UnifiedSet(4, 0.99f);
 
     public final VersionMap<Variable, Term> xy;
 
@@ -222,10 +222,15 @@ public abstract class Unify extends Versioning implements Subst {
 
     }
 
+
     @Override
     public Unify clear() {
 
         super.clear();
+
+        Map other = ((TermHashMap) (xy.map)).other;
+        if(!other.isEmpty())
+            other.clear();
 
         varDepth = 0;
         termutes.clear();

@@ -8,6 +8,7 @@ import jcog.decide.Roulette;
 import jcog.memoize.Memoizers;
 import nars.*;
 import nars.eval.Evaluation;
+import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
@@ -15,6 +16,7 @@ import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
+import nars.term.util.transform.MapSubst;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
@@ -326,8 +328,23 @@ public class Arithmeticize {
         Term apply(Term x, int cdt, @Nullable Anon anon) {
             //TODO anon
             Int aaa = Int.the(a), bbb = Int.the(b);
-            Term xx = x.replace(Map.of(aaa, A, bbb, B));
+            Term xx = new IntReplacer(Map.of(aaa, A, bbb, B)).transform(x);
             return CONJ.the(cdt, xx, Equal.cmp(A, B, -1));
+        }
+    }
+
+    private static final class IntReplacer extends MapSubst.MapSubstN {
+
+        public IntReplacer(Map<? extends Term, Term> xy) {
+            super(xy);
+        }
+
+        @Override
+        public @Nullable Term transformCompound(Compound x) {
+            if (x.hasAny(Op.INT))
+                return super.transformCompound(x);
+            else
+                return x;
         }
     }
 }

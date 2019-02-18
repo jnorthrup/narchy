@@ -20,8 +20,8 @@ import java.util.function.Function;
  */
 public class TermHashMap<X> extends AbstractMap<Term, X> {
 
-    protected final ShortObjectHashMap<X> id;
-    protected final Map<Term, X> other;
+    final ShortObjectHashMap<X> id;
+    public final Map<Term, X> other;
 
     public TermHashMap() {
         this(new ShortObjectHashMap<>(8), new UnifiedMap<>(8));
@@ -41,7 +41,8 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     public void clear() {
 
         //int sizeBeforeClear = id.size();
-        id.clear();
+        if (!id.isEmpty())
+            id.clear();
 //        if (sizeBeforeClear > compactThreshold())
 //            id.compact();
 
@@ -113,9 +114,17 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public void forEach(BiConsumer<? super Term, ? super X> action) {
-        id.forEachKeyValue((x, y) -> action.accept(AnonID.term(x), y));
-        if (!other.isEmpty())
-            other.forEach(action);
+        id.forEachKeyValue((x, y) -> {
+            if (y!=null)
+                action.accept(AnonID.term(x), y);
+        });
+        if (!other.isEmpty()) {
+            //other.forEach(action);
+            other.forEach((x,y)->{
+               if (y!=null)
+                   action.accept(x,y);
+            });
+        }
     }
 
 

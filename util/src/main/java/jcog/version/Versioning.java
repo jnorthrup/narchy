@@ -1,6 +1,7 @@
 package jcog.version;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 /**
  * versioning context that holds versioned instances
@@ -28,6 +29,13 @@ public class Versioning<X> {
         return size + ":" + super.toString();
     }
 
+
+    public void forEach(Consumer<Versioned> each) {
+        int s = size;
+        for (int i = 0; i < s; i++) {
+            each.accept(items[i]);
+        }
+    }
 
     public final boolean revertLive(int before, int cost) {
         ttl -= cost;

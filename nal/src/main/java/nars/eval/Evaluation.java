@@ -437,6 +437,16 @@ public class Evaluation {
             canBe(x, (Iterable)y);
         }
     }
+    public void canBePairs(List<Term> y) {
+        canBe((Predicate<VersionMap<Term,Term>>)(VersionMap<Term,Term> e)->{
+            int n = y.size();
+            for (int i = 0; i < n; ) {
+                if (!e.set(y.get(i++), y.get(i++)))
+                    return false;
+            }
+            return true;
+        });
+    }
 
     public void canBe(Term x, Iterable<Term> y) {
         canBe((Iterable<Predicate<VersionMap<Term, Term>>>) Iterables.transform(y, yy -> assign(x, yy)));

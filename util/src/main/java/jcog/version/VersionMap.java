@@ -87,6 +87,11 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
     @Override
     public final int size() {
+        int cs = context.size;
+        if (cs <= 1 || itemVersions == 1)
+            return cs;
+
+
         int count = 0;
         for (Versioned<Y> e : map.values()) {
             if (e.get()!=null)
@@ -106,7 +111,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
      */
     @Override
     public Set<Entry<X, Y>> entrySet() {
-        int s = map.size();
+        int s = size();
         if (s == 0)
             return Set.of();
 
@@ -117,10 +122,25 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
                 e.add(new SimpleEntry<>(k, vv));
             }
         });
+
         return e;
     }
 
-
+    @Override
+    public Set<X> keySet() {
+        int s = size();
+        if (s == 0)
+            return Set.of();
+        //else if (s == 1) ...
+        else {
+            ArrayUnenforcedSet e = new ArrayUnenforcedSet(0, new Object[s]);
+            map.forEach((k, v) -> {
+                if (v!=null)
+                    e.add(k);
+            });
+            return e;
+        }
+    }
 
 
 
@@ -240,11 +260,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
 
-    @Override
-    public Set<X> keySet() {
-        throw new UnsupportedOperationException(); 
-        
-    }
+
 
     public static final VersionMap Empty = new VersionMap(new Versioning<>(1), 0) {
 

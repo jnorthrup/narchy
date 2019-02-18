@@ -2,6 +2,7 @@ package nars.term.util.transform;
 
 import jcog.TODO;
 import jcog.WTF;
+import jcog.data.list.FasterList;
 import nars.Param;
 import nars.term.Compound;
 import nars.term.Term;
@@ -10,6 +11,7 @@ import nars.term.compound.LazyCompound;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 
@@ -31,7 +33,8 @@ abstract public class MapSubst implements Subst {
 
     public static Term replace(Term x, Map<? extends Term, Term> m) {
 
-        switch (m.size()) {
+        int ms = m.size();
+        switch (ms) {
             case 0:
                 return x;
             case 1: {
@@ -47,10 +50,48 @@ abstract public class MapSubst implements Subst {
             case 2: {
                 Iterator<? extends Map.Entry<? extends Term, Term>> ii = m.entrySet().iterator();
                 Map.Entry<? extends Term, Term> e1 = ii.next(), e2 = ii.next();
-                return new MapSubst2(e1, e2).transform(x);
+                Term a = e1.getKey();
+                if (x.equals(a))
+                    return e1.getValue();
+
+                Term b = e2.getKey();
+                if (x.equals(b))
+                    return e2.getValue();
+                if (x.impossibleSubTerm(a)) {
+                    return x.impossibleSubTerm(b) ?
+                            x
+                            :
+                            replace(b, e2.getValue()).transform(x);
+                } else {
+                    if (x.impossibleSubTerm(b))
+                        return replace(a, e1.getValue()).transform(x);
+                    else
+                        return new MapSubst2(e1, e2).transform(x);
+                }
             }
-            default:
-                return new MapSubstN(m).transform(x);
+            default: {
+                List<Term> valid = new FasterList(ms);
+                for (Map.Entry<? extends Term,? extends Term> e : m.entrySet()) {
+                    Term k = e.getKey();
+                    if (!x.impossibleSubTerm(k))
+                        valid.add(k);
+                }
+                int validN = valid.size();
+                switch (validN) {
+                    case 0:
+                        return x;
+                    case 1: {
+                        Term a = valid.get(0);
+                        return replace(a, m.get(a)).transform(x);
+                    } case 2: {
+                        Term a = valid.get(0), b = valid.get(1);
+                        return new MapSubst2(a, m.get(a), b, m.get(b)).transform(x);
+                    }
+                    default:
+                        //TODO build key filter to sub-map only the applicable keys
+                        return new MapSubstN(m).transform(x);
+                }
+            }
         }
 
     }
@@ -86,10 +127,14 @@ abstract public class MapSubst implements Subst {
         final Term ax, ay, bx, by;
 
         public MapSubst2(Map.Entry<? extends Term, Term> a, Map.Entry<? extends Term, Term> b){
-            this.ax = a.getKey();
-            this.ay = a.getValue();
-            this.bx = b.getKey();
-            this.by = b.getValue();
+            this(a.getKey(), a.getValue(), b.getKey(), b.getValue());
+        }
+
+        public MapSubst2(Term ax, Term ay, Term bx, Term by) {
+            this.ax = ax;
+            this.ay = ay;
+            this.bx = bx;
+            this.by = by;
         }
 
         /**
@@ -108,7 +153,7 @@ abstract public class MapSubst implements Subst {
         }
     }
 
-    private static final class MapSubstN extends MapSubst {
+    public static class MapSubstN extends MapSubst {
         private final Map<? extends Term, Term> xy;
 
         public MapSubstN(Map < ? extends Term, Term > xy){
