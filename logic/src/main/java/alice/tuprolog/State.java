@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
  */
 abstract class State {
     
-    @Deprecated protected PrologRun c;
     protected String stateName;
 
     @Deprecated protected State() {

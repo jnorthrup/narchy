@@ -29,8 +29,10 @@ import java.util.List;
 public class StateRuleSelection extends State {
 
 
-    public StateRuleSelection(PrologRun c) {
-        this.c = c;
+    public static StateRuleSelection the = new StateRuleSelection();
+
+
+    private StateRuleSelection() {
         stateName = "Init";
     }
 
@@ -39,6 +41,8 @@ public class StateRuleSelection extends State {
      */
     @Override
     State run(PrologSolve e) {
+        PrologRun c = e.run;
+
         /*----------------------------------------------------
          * Individuo compatibleGoals e
          * stabilisco se derivo da Backtracking.

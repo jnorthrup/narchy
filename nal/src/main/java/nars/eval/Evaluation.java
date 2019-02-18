@@ -6,14 +6,15 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
-import nars.*;
+import nars.NAR;
+import nars.Op;
+import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
-import nars.term.util.transform.DirectTermTransform;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.PROD;
 import static nars.term.atom.Bool.Null;
 
 public class Evaluation {
@@ -38,24 +38,6 @@ public class Evaluation {
     transient private VersionMap<Term, Term> subst = null;
 
 
-//    @Nullable
-//    public static Evaluation eval(Term x, NAR nar, Predicate<Term> each) {
-//        return eval(x, nar::functor, each);
-//    }
-//
-//    @Nullable
-//    public static Evaluation eval(Term x, Function<Atom, Functor> resolver, Predicate<Term> each) {
-//        return eval(x, true, false, resolver, each);
-//    }
-
-
-    /**
-     * @param x
-     * @param resolver
-     * @param each
-     * @return
-     */
-    @Nullable
     private static void eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver, Predicate<Term> each) {
 
         if (canEval(x)) {
@@ -67,7 +49,7 @@ public class Evaluation {
     }
 
     protected Evaluation() {
-        this.each = (Predicate<Term>)this;
+        this.each = (Predicate<Term>) this;
     }
 
     public Evaluation(Predicate<Term> each) {
@@ -79,20 +61,12 @@ public class Evaluation {
         int before = v.size();
 
         if (termutator.size() == 1) {
-            Iterable<Predicate<VersionMap<Term, Term>>> t = termutator.get(0);
-            termutator.clear();
+            Iterable<Predicate<VersionMap<Term, Term>>> t = termutator.remove(0);
             for (Predicate tt : t) {
                 if (tt.test(subst)) {
                     Term z = y.replace(subst);
-                    if (z != y) {
-                        if (!eval(e, z)) //recurse
-                            return false; //CUT
-                    }
-                    //if (z!=y) {
-//                        if (!each.test(z)) { //TODO check for new solvable sub-components
-//                            return false;
-//                        }
-                    //}
+                    if (z != y && !eval(e, z)) //recurse
+                        return false; //CUT
                 }
                 v.revert(before);
             }
@@ -118,96 +92,87 @@ public class Evaluation {
                 //all components applied successfully
 
                 Term z = y.replace(subst);
-                if (z != y) {
-                    if (!eval(e, z)) //recurse
-                        return false; //CUT
+                if (z != y && !eval(e, z)) //recurse
+                    return false; //CUT
 
-                }
             }
         }
         return true;
     }
 
 
-    public boolean eval(Evaluator e, final Term x) {
-        ArrayHashSet<Term> ed = e.clauses(x, this);
-        return eval(e, x, ed!=null ? ed.list : null);
+    private boolean eval(Evaluator e, final Term x) {
+        ArrayHashSet<Term> c = e.clauses(x, this);
+        return eval(e, x, c != null ? c.list : null);
     }
 
     /**
      * fails fast if no known functors apply
      */
     public boolean evalTry(Term x, Evaluator e) {
-        ArrayHashSet<Term> d = e.clauses(x, this);
-        if ((d == null || d.isEmpty())  && (termutator == null || termutator.isEmpty())) {
+        ArrayHashSet<Term> c = e.clauses(x, this);
+        if ((c == null || c.isEmpty()) && (termutator == null || termutator.isEmpty())) {
             each.test(x);
             return true; //early exit
         }
-        return eval(e, x, d!=null ? d.list : null);
+        return eval(e, x, c != null ? c.list : null);
     }
 
-    /** simple complexity heuristic */
-    static private final Comparator<Term> byComplexity = Comparator.comparingInt(Term::vars).thenComparing(Term::volume);
+    /**
+     * simple complexity heuristic: sorting first by volume naively ensures innermost functors evaluated first
+     */
+    static private final Comparator<Term> byVolume = Comparator.comparingInt(Term::volume).thenComparing(Term::vars);
 
-    private boolean eval(Evaluator e, final Term x, @Nullable List<Term> operations) {
+    private boolean eval(Evaluator e, final Term x, @Nullable List<Term> clauses) {
 
         Term y = x;
 
-        if (operations != null && !operations.isEmpty()) {
+        if (clauses != null && !clauses.isEmpty()) {
 
             //TODO topologically sort operations according to variable dependencies; it acts like an evaluation plan so ordering can help */
-            if (operations.size() > 1) {
-                ((FasterList<Term>)operations).sortThis(byComplexity);
+            if (clauses.size() > 1) {
+                ((FasterList<Term>) clauses).sortThis(byVolume);
             }
 
             Term prev;
             int vStart, tried, mutStart;
             //iterate until stable
-            main: do {
+            main:
+            do {
                 prev = y;
                 mutStart = termutators();
                 tried = 0;
-                Iterator<Term> ii = operations.iterator();
+                Iterator<Term> ii = clauses.iterator();
                 while (ii.hasNext()) {
                     vStart = now();
 
                     Term a = ii.next();
 
-                    boolean removeEntry, eval;
 
-                    if (Functor.isFunc(a)) {
+                    //still a functor, but different. update it
 
-                        //still a functor, but different. update it
+                    //run the functor resolver for any new functor terms which may have appeared
 
-                        //run the functor resolver for any new functor terms which may have appeared
-                        Term af = Functor.func(a);
+                    boolean remove = false, eval = true;
 
-                        removeEntry = false;
-
-                        eval = true;
-
-                        if (!(af instanceof Functor)) {
-                            //try resolving
-                            Term aa = e.transform(a);
-                            if (aa == a) {
-                                //no change. no such functor
-                                removeEntry = true;
-                                eval = false;
-                            } else {
-                                a = aa;
-                            }
+                    Term af = Functor.func(a);
+                    if (!(af instanceof Functor)) {
+                        //try resolving
+                        Term aa = e.transform(a);
+                        if (aa == a) {
+                            //no change. no such functor
+                            remove = true;
+                            eval = false;
+                        } else {
+                            a = aa;
                         }
-
-                    } else {
-                        eval = false;
-                        removeEntry = true;
                     }
 
                     Term z;
-                    boolean substAdded, mutAdded;
-                    if (!removeEntry && eval) {
-                        Functor func = (Functor) a.sub(1);
-                        Subterms args = a.sub(0).subterms();
+                    boolean substing, mutAdded;
+
+                    Functor func = (Functor) a.sub(1);
+                    Subterms args = a.sub(0).subterms();
 //                        if (canEval(args)) {
 //                            //evaluate subterms recursively
 //                            args = args.transformSubs(new DirectTermTransform() {
@@ -218,80 +183,75 @@ public class Evaluation {
 //                            }, PROD);
 //                        }
 
-                        z = func.apply(this, args);
-                        if (z == Null) {
-                            ii.remove(); //CUT
-                            y = Null;
-                            break main;
-                        }
-                        substAdded = now() != vStart;
-                        mutAdded = mutStart != termutators();
-                        if ((z == null && (substAdded || mutAdded)) || (z!=null && z!=a)) { //(z instanceof Bool)) {
-                            removeEntry = true;
-                        }
-
-                    } else {
-                        substAdded = mutAdded = false;
-                        z = a;
+                    z = func.apply(this, args);
+                    if (z == Null) {
+                        ii.remove(); //CUT
+                        y = Null;
+                        break main;
+                    }
+                    substing = now() != vStart;
+                    mutAdded = mutStart != termutators();
+                    if ((z == null && (substing || mutAdded)) || (z != null && z != a)) { //(z instanceof Bool)) {
+                        remove = true;
                     }
 
-                    if (removeEntry) {
+
+                    if (remove) {
                         ii.remove();
                     }
 
 
-                    if ((z != null && z != a) || substAdded) {
+                    if (substing || (z != null && z != a)) {
                         tried++;
-
 
                         Term y0 = y;
                         if (z != null) {
-                            y = y.replace(a, z);
+                            y = y.replace(a, z); //TODO replace only the first?
+
+                            if (!y.op().conceptualizable)
+                                break main;
                         }
 
-                        if (substAdded && y.op().conceptualizable) {
+
+                        if (substing) {
                             y = y.replace(subst);
+
+                            if (!y.op().conceptualizable)
+                                break main;
                         }
 
-                        if (!y.op().conceptualizable) break main;
+                        if (clauses == null || clauses.isEmpty())
+                            break main;
 
-//                        if (y0!=y) {
-//                            operations = e.discover(y, this);
-//                        }
+                         if (z != null || substing) {
+                             Term finalA = a;
+                             clauses.replaceAll(o -> {
+                                 Term p;
+                                 if (z != null) {
+                                     p = o.replace(finalA, z);
+                                 } else
+                                     p = o;
 
-                        if (operations==null || operations.isEmpty()) break main;
+                                 Term q;
+                                 if (substing) {
+                                     q = p.replace(subst);
+                                 } else
+                                     q = p;
 
-                        Term finalA = a;
-                        operations.replaceAll(o -> {
-                            Term p, q;
-                            if (z != null) {
-                                p = o.replace(finalA, z);
-                                if (o != p && !Functor.isFunc(p))
-                                    return Null;
-                            } else
-                                p = o;
+                                 if (o != q && !Functor.isFunc(q))
+                                     return Null;
+                                 else
+                                     return q;
+                             });
 
-                            if (substAdded) {
-                                q = p.replace(subst);
-                                if (p != q && !Functor.isFunc(q))
-                                    return Null;
-                            } else
-                                q = p;
-
-                            return q;
-                        });
-
-                        //if (operations.removeIf(xxx -> xxx==null || xxx==Null)) break main;
-
-                        //if (operations==null || operations.isEmpty()) break main;
-
+                             if (clauses.removeIf(xxx -> xxx == Null) && clauses.isEmpty())
+                                 break main;
+                         }
 
                         break; //changed so start again
                     }
 
-
                 }
-
 
             } while ((y != prev) || (tried > 0));
         }
@@ -339,12 +299,12 @@ public class Evaluation {
      * returns first result. returns null if no solutions
      */
     public static Term solveFirst(Term x, NAR n) {
-        return solveFirst(x, n::functor);
+        return solveFirst(x, n::axioms);
     }
 
-    public static Term solveFirst(Term x, Function<Atom, Functor> resolver) {
+    private static Term solveFirst(Term x, Function<Atom, Functor> axioms) {
         Term[] y = new Term[1];
-        Evaluation.eval(x, true, true, resolver, (what) -> {
+        Evaluation.eval(x, true, true, axioms, (what) -> {
             if (what instanceof Bool) {
                 if (y[0] != null)
                     return true; //ignore and continue try to find a non-bool solution
@@ -355,29 +315,7 @@ public class Evaluation {
         return y[0];
     }
 
-    @Deprecated
-    public static FactualEvaluator query(String s, NAR n) throws Narsese.NarseseException {
-        return query($.$(s), n);
-    }
-
-    @Deprecated
-    private static FactualEvaluator query(Term x, NAR n) {
-        FactualEvaluator f = new FactualEvaluator(n::functor, n.facts(0.75f, true));
-        f.eval((y) -> true, true, false, x);
-        return f;
-    }
-
-    public static Set<Term> queryAll(Term x, NAR n) {
-        Set<Term> solutions = new ArrayHashSet(1);
-        FactualEvaluator f = new FactualEvaluator(n::functor, n.facts(0.75f, true));
-        f.eval((y) -> {
-            solutions.add(y);
-            return true;
-        }, true, false, x);
-        return solutions;
-    }
-
-//    public static Set<Term> eval(String s, NAR n) {
+    //    public static Set<Term> eval(String s, NAR n) {
 //        return eval($$(s), n);
 //    }
 
@@ -386,7 +324,7 @@ public class Evaluation {
     }
 
     public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, NAR n) {
-        return eval(x, includeTrues, includeFalses, n::functor);
+        return eval(x, includeTrues, includeFalses, n::axioms);
     }
 
     private static final class MyEvaluated extends UnifiedSet<Term> implements Predicate<Term> {
@@ -443,8 +381,13 @@ public class Evaluation {
      * returns false if it could not be assigned (enabling callee fast-fail)
      */
     public boolean is(Term x, Term y) {
-        ensureReady();
-        return subst.set(x, y);
+        if (x.equals(y))
+            return true;
+        else {
+            ensureReady();
+            return subst.set(x, y);
+        }
+
     }
 
     /**
@@ -452,8 +395,7 @@ public class Evaluation {
      * returns false if it could not be assigned (enabling callee fast-fail)
      */
     public boolean is(Term x, Term xx, Term y, Term yy) {
-        ensureReady();
-        return subst.set(x, xx) && subst.set(y, yy);
+        return is(x, xx) && is(y, yy);
     }
 
     /**
@@ -463,7 +405,7 @@ public class Evaluation {
         return m -> m.set(x, xx) && m.set(y, yy);
     }
 
-    public static Predicate<VersionMap<Term, Term>> assign(Term x, Term y) {
+    protected static Predicate<VersionMap<Term, Term>> assign(Term x, Term y) {
         return (subst) -> subst.set(x, y);
     }
 
@@ -483,9 +425,8 @@ public class Evaluation {
     }
 
     public void canBe(Term x, Term y) {
-        if (x.equals(y))
-            return;
-        canBe(assign(x, y));
+        if (!x.equals(y))
+            canBe(assign(x, y));
     }
 
     public void canBe(Term x, Iterable<Term> y) {
@@ -494,9 +435,9 @@ public class Evaluation {
 
     public void canBe(Term a, Term b, Term x, Term y) {
         if (x.equals(y)) {
-            canBe(assign(a, b));
+            canBe(a, b);
         } else if (a.equals(b)) {
-            canBe(assign(x, y));
+            canBe(x, y);
         } else {
             canBe(assign(a, b, x, y));
         }

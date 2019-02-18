@@ -13,7 +13,7 @@ import static nars.Task.p;
 
 /** randomly shifts tasklink punctuation */
 public class PuncNoise extends DurService {
-    public final IntRange tasklinksPerDuration = new IntRange(8, 1, 128);
+    public final IntRange tasklinksPerDuration = new IntRange(32, 1, 128);
     public final FloatRange strength = new FloatRange(0.5f, 0, 1f);
 
     public PuncNoise(NAR n) {

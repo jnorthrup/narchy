@@ -4,6 +4,9 @@ import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.random.XoRoShiRo128PlusRandom;
+import nars.$;
+import nars.NAR;
+import nars.Narsese;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -16,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -29,6 +33,28 @@ public class FactualEvaluator extends Evaluator {
 
     private final Function<Term, Stream<Term>> factResolver;
     public final Map<Term, Node> nodes = new ConcurrentHashMap();
+
+    @Deprecated
+    public static FactualEvaluator query(String s, NAR n) throws Narsese.NarseseException {
+        return query($.$(s), n);
+    }
+
+    @Deprecated
+    private static FactualEvaluator query(Term x, NAR n) {
+        FactualEvaluator f = new FactualEvaluator(n::axioms, n.facts(0.75f, true));
+        f.eval((y) -> true, true, false, x);
+        return f;
+    }
+
+    public static Set<Term> queryAll(Term x, NAR n) {
+        Set<Term> solutions = new ArrayHashSet(1);
+        FactualEvaluator f = new FactualEvaluator(n::axioms, n.facts(0.75f, true));
+        f.eval((y) -> {
+            solutions.add(y);
+            return true;
+        }, true, false, x);
+        return solutions;
+    }
 
     enum ProofTruth {
         True, False, Unknown, Conflict, Choose

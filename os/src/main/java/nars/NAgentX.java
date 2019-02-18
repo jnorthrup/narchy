@@ -23,9 +23,7 @@ import nars.gui.BagSpectrogram;
 import nars.gui.NARui;
 import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
-import nars.op.Arithmeticize;
-import nars.op.AutoencodedBitmap;
-import nars.op.Introduction;
+import nars.op.*;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
@@ -435,12 +433,12 @@ abstract public class NAgentX extends NAgent {
         bd.timing = new ActionTiming(n);
 
 
-        BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8,
-                "relation_introduction.nal"
+        BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8
+                //,"relation_introduction.nal"
         ));
 
-//        new StatementLinker(n);
-//        new PuncNoise(n);
+        new StatementLinker(n);
+        new PuncNoise(n);
 
 //        new STMLinkage(n, 1);
 

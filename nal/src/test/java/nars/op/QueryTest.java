@@ -3,7 +3,6 @@ package nars.op;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.eval.Evaluation;
 import nars.eval.FactualEvaluator;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,7 @@ public class QueryTest {
         final NAR n = NARS.shell();
         n.believe("f(x)");
 
-        Set<Term> e = Evaluation.queryAll($$("f(?what)"), n);
+        Set<Term> e = FactualEvaluator.queryAll($$("f(?what)"), n);
         assertEquals("[f(x)]", e.toString());
     }
 
@@ -28,7 +27,7 @@ public class QueryTest {
         n.believe("f(x)");
         n.believe("f(y)");
 
-        Set<Term> e = Evaluation.queryAll($$("f(?what)"), n);
+        Set<Term> e = FactualEvaluator.queryAll($$("f(?what)"), n);
         assertEquals("[f(x), f(y)]", e.toString());
     }
 
@@ -36,7 +35,7 @@ public class QueryTest {
         final NAR n = NARS.shell();
         n.believe("--f(x)");
 
-        Set<Term> e = Evaluation.queryAll($$("f(?what)"), n);
+        Set<Term> e = FactualEvaluator.queryAll($$("f(?what)"), n);
         assertEquals("[(--,f(x))]", e.toString());
     }
 
@@ -45,7 +44,7 @@ public class QueryTest {
         n.believe("(f(x) ==> g(x))");
         n.believe("f(x)");
 
-        Set<Term> e = Evaluation.queryAll($$("g(?what)"), n);
+        Set<Term> e = FactualEvaluator.queryAll($$("g(?what)"), n);
         assertEquals("[g(x)]", e.toString());
     }
 
@@ -55,7 +54,7 @@ public class QueryTest {
         n.believe("f(x)");
         n.believe("f(y)");
 
-        Set<Term> e = Evaluation.queryAll($$("g(?1,?2)"), n);
+        Set<Term> e = FactualEvaluator.queryAll($$("g(?1,?2)"), n);
         assertEquals("[g(x,y),g(y,x)]", e.toString());
     }
 
@@ -91,7 +90,7 @@ public class QueryTest {
         @Test
         public void test2() throws Narsese.NarseseException {
 
-            FactualEvaluator e = Evaluation.query("father(?Father, ?Child)", n);
+            FactualEvaluator e = FactualEvaluator.query("father(?Father, ?Child)", n);
             e.print();
             //"[father(mike,tom), father(tom,sally), father(tom,erica)]",
             assertEquals("{father(tom,sally)=[true], father(tom,erica)=[true], father(mike,tom)=[true]}",
@@ -105,14 +104,14 @@ public class QueryTest {
 
             //        "[wonder(sibling(sally,erica))]",
             {
-                FactualEvaluator e = Evaluation.query("sibling(sally,erica)", n);
+                FactualEvaluator e = FactualEvaluator.query("sibling(sally,erica)", n);
                 e.print();
             }
 
             n.believe("mother(trude,erica)"); //becomes true only after this missing information
 
             {
-                FactualEvaluator e = Evaluation.query("sibling(sally,erica)", n);
+                FactualEvaluator e = FactualEvaluator.query("sibling(sally,erica)", n);
                 e.print();
 //            assertEquals(
 //                    "[sibling(sally,erica)]",
@@ -125,7 +124,7 @@ public class QueryTest {
 
         @Test
         public void test4() throws Narsese.NarseseException {
-            FactualEvaluator e = Evaluation.query("sibling(tom,erica)", n);
+            FactualEvaluator e = FactualEvaluator.query("sibling(tom,erica)", n);
             e.print();
 
 //        assertEquals(

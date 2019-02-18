@@ -50,15 +50,13 @@ public class ClauseInfo {
     public final String libName;
 
 
-    
-
     /**
      * building a valid clause with a time stamp = original time stamp + NumVar in clause
      */
     public ClauseInfo(Struct clause_, String lib) {
         clause = clause_;
         libName = lib;
-        head = (Struct) clause_.sub(0); 
+        head = (Struct) clause_.sub(0);
         body = extractBody(clause_.sub(1));
     }
 
@@ -74,23 +72,10 @@ public class ClauseInfo {
      * Gets a clause from a generic Term
      */
     static SubGoalTree extractBody(Term body) {
-        SubGoalTree r = new SubGoalTree();
-        extractBody(r, body);
-        return r;
+        return new SubGoalTree(body);
     }
 
-    private static void extractBody(SubGoalTree parent, Term body) {
-        while (body instanceof Struct && ((Struct) body).name().equals(",")) {
-            Term t = ((Struct) body).sub(0);
-            if (t instanceof Struct && ((Struct) t).name().equals(",")) {
-                extractBody(parent.addChild(), t);
-            } else {
-                parent.add(t);
-            }
-            body = ((Struct) body).sub(1);
-        }
-        parent.add(body);
-    }
+
 
 
     /**
@@ -121,18 +106,6 @@ public class ClauseInfo {
     }
 
 
-    
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Perform copy for use in current engine's demostration
      *
@@ -146,8 +119,8 @@ public class ClauseInfo {
 
         SubGoalTree bodyCopy = new SubGoalTree();
         bodyCopy(body, bodyCopy, v, idExecCtx);
-        target.goalsToEval = new SubGoalStore( bodyCopy );
-        
+        target.goalsToEval = new SubGoalStore(bodyCopy);
+
     }
 
     private static void bodyCopy(SubGoalTree source, SubGoalTree destination, AbstractMap<Var, Var> map, int id) {
@@ -163,15 +136,15 @@ public class ClauseInfo {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        ClauseInfo ci = (ClauseInfo)obj;
-        return head.equals(ci.head) && body.equals(ci.body) && clause.equals(ci.clause); 
+        ClauseInfo ci = (ClauseInfo) obj;
+        return head.equals(ci.head) && body.equals(ci.body) && clause.equals(ci.clause);
     }
 
     /**
      * Gets the string representation with default operator representation
      */
     public String toString() {
-        
+
         String st = indentPredicates(clause.sub(1));
         return (clause.sub(0) + " :-\n\t" + st + ".\n");
     }

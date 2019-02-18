@@ -23,8 +23,9 @@ package alice.tuprolog;
 public class StateGoalSelection extends State {
 
 
-    public StateGoalSelection(PrologRun c) {
-        this.c = c;
+    public static final StateGoalSelection the = new StateGoalSelection();
+
+    private StateGoalSelection() {
         stateName = "Call";
     }
 
@@ -34,6 +35,7 @@ public class StateGoalSelection extends State {
      */
     @Override
     State run(PrologSolve e) {
+        PrologRun c = e.run;
         Term curGoal = null;
         while (curGoal == null) {
             curGoal = e.currentContext.goalsToEval.fetch();

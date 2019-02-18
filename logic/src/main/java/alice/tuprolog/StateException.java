@@ -8,12 +8,12 @@ import java.util.Iterator;
  */
 public class StateException extends State {
 
-    final Term catchTerm = Term.term("catch(Goal, Catcher, Handler)");
-    final Term javaCatchTerm = Term
-            .term("java_catch(Goal, List, Finally)");
+    public static final State the = new StateException();
 
-    public StateException(PrologRun c) {
-        this.c = c;
+    final Term catchTerm = Term.term("catch(Goal, Catcher, Handler)");
+    final Term javaCatchTerm = Term.term("java_catch(Goal, List, Finally)");
+
+    private StateException() {
         stateName = "Exception";
     }
 
@@ -36,6 +36,8 @@ public class StateException extends State {
             e.nextState = PrologRun.END_HALT;
             return;
         }
+
+        PrologRun c = e.run;
         while (true) {
             
             
@@ -97,6 +99,7 @@ public class StateException extends State {
     }
 
     private void javaException(PrologSolve e) {
+        PrologRun c = e.run;
         Struct cg = e.currentContext.currentGoal;
         Term exceptionTerm = cg.subs() > 0 ? cg.sub(0) : null;
         e.currentContext = e.currentContext.fatherCtx;

@@ -216,12 +216,12 @@ public abstract class Term implements Serializable, SubTree {
         y.resolveTerm(now);
 
         Collection<Var> v1 =
-                new ArrayHashSet();
+                varSet();
                 //new HashSet();
                 //new LinkedHashSet();
                 //new UnifiedSet();
         Collection<Var> v2 =
-                new ArrayHashSet();
+                varSet();
                 //new HashSet();
                 //new LinkedHashSet();
                 //new UnifiedSet();
@@ -263,6 +263,10 @@ public abstract class Term implements Serializable, SubTree {
         return false;
     }
 
+    private static Term.MyVarSet varSet() {
+        return new MyVarSet();
+    }
+
 
     /**
      * Tests if this term is unifiable with an other term.
@@ -279,13 +283,13 @@ public abstract class Term implements Serializable, SubTree {
         resolveTerm(now);
         y.resolveTerm(now);
         Collection<Var> v1 =
-                new ArrayHashSet();
+                varSet();
                 //new HashSet();
                 //new LinkedHashSet<Var>();
                 //new UnifiedSet(); //<- fails, why? unordered?
 
         Collection<Var> v2 =
-                new ArrayHashSet();
+                varSet();
                 //new HashSet();
                 //new LinkedHashSet<Var>();
                 //new UnifiedSet(); //<- fails, why
@@ -395,4 +399,10 @@ public abstract class Term implements Serializable, SubTree {
     }
 
 
+    private static class MyVarSet extends ArrayHashSet {
+        @Override
+        protected Set newSet(int cap) {
+            return new LinkedHashSet(cap);
+        }
+    }
 }

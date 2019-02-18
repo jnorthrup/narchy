@@ -186,7 +186,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         list.add(element);
     }
 
-    private Set<X> newSet(int cap) {
+    protected Set<X> newSet(int cap) {
         return new UnifiedSet<>(cap,0.99f);
         //return new HashSet(cap, 0.99f);
     }

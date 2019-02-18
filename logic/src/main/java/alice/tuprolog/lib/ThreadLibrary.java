@@ -71,7 +71,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public Solution read(int id) {
-		PrologRun er = runner(id);
+		ThreadedPrologRun er = runner(id);
 		if (er == null || er.isDetached()) return null;
 		/*toSPY
 		 * System.out.println("Thread id "+runnerId()+" - prelevo la soluzione (read) del thread di id: "+er.getId());
@@ -113,7 +113,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public boolean hasNext(int id) {
-		PrologRun er = runner(id);
+		ThreadedPrologRun er = runner(id);
 		return !(er == null || er.isDetached()) && er.hasOpenAlternatives();
 	}
 
@@ -126,7 +126,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public boolean nextSolution(int id) {
-		PrologRun er = runner(id);
+		ThreadedPrologRun er = runner(id);
 		/*toSPY
 		 * System.out.println("Thread id "+runnerId()+" - next_solution: risveglio il thread di id: "+er.getId());
 		 */
@@ -476,7 +476,7 @@ public class ThreadLibrary extends PrologLib {
 	
 	
 	public Solution join(int id) {
-		PrologRun er = runner(id);
+		ThreadedPrologRun er = runner(id);
 		if (er == null || er.isDetached()) return null;
 		/*toSPY
 		 * System.out.println("Thread id "+runnerId()+" - prelevo la soluzione (join)");*/
@@ -488,7 +488,7 @@ public class ThreadLibrary extends PrologLib {
 	}
 
 	public void detach(int id) {
-		PrologRun er = runner(id);
+		ThreadedPrologRun er = runner(id);
 		if (er != null)
 			er.detach();
 	}
@@ -524,16 +524,35 @@ public class ThreadLibrary extends PrologLib {
 
 	public static class ThreadedPrologRun extends PrologRun {
 		public final TermQueue msgs;
+		private boolean detached;
 
 		public ThreadedPrologRun(int id) {
 			super(id);
 			msgs = new TermQueue();
 		}
+
+		@Override
+		public PrologRun initialize(Prolog vm) {
+			detached = false;
+			return super.initialize(vm);
+		}
+
 		@Override
 		public void run() {
 			threads.set(this);
 			super.run();
 		}
+
+
+
+		public void detach() {
+			detached = true;
+		}
+
+		public boolean isDetached() {
+			return detached;
+		}
+
 	}
 
 	public static class TermQueue {

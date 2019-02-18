@@ -97,7 +97,7 @@ public class PoleCart extends NAgentX {
     static final double forceMag =
             //100.;
             200;
-    public final FloatRange tau = new FloatRange(0.01f, 0.001f, 0.02f);
+    public final FloatRange tau = new FloatRange(0.005f, 0.001f, 0.02f);
     //0.01;
     //0.005;
     //0.0025f;

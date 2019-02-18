@@ -24,8 +24,9 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class StateGoalEvaluation extends State {
 
-    public StateGoalEvaluation(PrologRun c) {
-        this.c = c;
+    public static final State the = new StateGoalEvaluation();
+
+    private StateGoalEvaluation() {
         stateName = "Eval";
     }
 
@@ -36,6 +37,7 @@ public class StateGoalEvaluation extends State {
      */
     @Override
     State run(PrologSolve e) {
+        PrologRun c = e.run;
         State nextState;
         if (e.currentContext.currentGoal.isPrimitive()) {
             

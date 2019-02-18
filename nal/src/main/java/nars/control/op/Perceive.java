@@ -15,11 +15,11 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
+import org.eclipse.collections.impl.list.mutable.FastList;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Predicate;
 
@@ -37,25 +37,22 @@ public enum Perceive { ;
     public static ITask perceive(Task task, NAR n) {
         Term x = task.term();
 
-        FasterList<ITask> yy;
         if (Evaluation.canEval(x)) {
 
-            yy = new Perceive.TaskEvaluation(task, n).result;
-            if (yy==null)
-                return null;
+            return task(new TaskEvaluation(task, n).result);
 
         } else {
-            yy = new FasterList(1);
-            if (!Perceive.remember(task, x, yy, n))
-                return null;
+            return Perceive.remember(task, x, n);
         }
 
-        return task(yy);
 
     }
 
     /** deduplicate and bundle to one task */
-    @Nullable static ITask task(FasterList<ITask> yy) {
+    @Nullable static ITask task(FastList<ITask> yy) {
+        if (yy == null)
+            return null;
+
         int yys = yy.size();
         switch (yys) {
             case 0:
@@ -79,11 +76,11 @@ public enum Perceive { ;
     }
 
     /** returns true if the task is acceptable */
-    private static boolean remember(Task input, Term y, Collection<ITask> queue, NAR n) {
+    private static ITask remember(Task input, Term y, NAR n) {
 
         if (y == Bool.Null) {
             //logger.debug("nonsense {}", input);
-            return false;
+            return null;
         }
 
         Task t;
@@ -108,11 +105,11 @@ public enum Perceive { ;
                         throw new WTF();
 
                 } else {
-                    return false; //???
+                    return null; //???
                 }
             } else {
 
-                return rememberTransformed(input, y, queue, punc);
+                return rememberTransformed(input, y, punc);
 
             }
 
@@ -120,22 +117,22 @@ public enum Perceive { ;
             t = input;
         }
 
-        return perceived(t, queue, n);
+        return perceived(t, n);
     }
 
-    private static boolean rememberTransformed(Task input, Term y, Collection<ITask> queue, byte punc) {
+    private static ITask rememberTransformed(Task input, Term y, byte punc) {
         @Nullable ObjectBooleanPair<Term> yy = Task.tryContent(y, punc,
                 !input.isInput() // || !Param.DEBUG
         );
         if (yy == null)
-            return false;
+            return null;
 
         Term yyz = yy.getOne();
         @Nullable Task u;
 
         u = Task.clone(input, yyz.negIf(yy.getTwo()));
         if (u!=null) {
-            return queue.add(u); //recurse
+            return u; //recurse
         } else {
             throw new WTF();
             //return false;
@@ -166,10 +163,14 @@ public enum Perceive { ;
             if (y == Bool.Null)
                 return true; //continue TODO maybe limit these
 
-            if (result==null)
-                result = new FasterList<>(1);
 
-            if (Perceive.remember(t, y, result, nar)) {
+            ITask next = Perceive.remember(t, y, nar);
+            if (next != null) {
+                if (result==null)
+                    result = new FasterList<>(1);
+
+                result.add(next);
+
                 if (result.size() >= Param.TASK_EVAL_FORK_LIMIT)
                     return false; //done, enough forks
             }
@@ -190,32 +191,38 @@ public enum Perceive { ;
         }
     }
 
-    private static boolean perceived(Task t, Collection<ITask> queue, NAR n) {
-
+    private static ITask perceived(ITask t, NAR n) {
 
         byte punc = t.punc();
         boolean cmd = punc == COMMAND;
+
+        ITask e = null, r = null;
+        if (cmd || (t instanceof Task && (punc == GOAL && !((Task)t).isEternal()))) {
+            e = execute((Task)t, n, cmd);
+        }
+
         if (!cmd) {
-            ITask p = Remember.the(t, n);
-            if (p != null)
-                queue.add(p);
+            r = Remember.the((Task)t, n);
         }
 
-        if (cmd || (punc == GOAL && !t.isEternal())) {
-            if (!execute(t, queue, n, cmd))
-                return false;
-        }
-
-
-        return true;
+        if (e != null && r != null)
+            return task(new FasterList<ITask>(2).with(e, r));
+        else if (e!=null)
+            return e;
+        else if (r!=null)
+            return r;
+        else
+            return null;
     }
 
-    private static boolean execute(Task t, Collection<ITask> queue, NAR n, boolean cmd) {
+    private static ITask execute(Task t, NAR n, boolean cmd) {
         Term maybeOperator = Functor.func(t.term());
 
         if (maybeOperator!= Bool.Null) {
             Concept oo = n.concept(maybeOperator);
             if (oo instanceof Operator) {
+                FasterList<ITask> queue = new FasterList(cmd ? 2 : 1);
+
                 Operator o = (Operator)oo;
                 try {
                     Task yy = o.model.apply(t, n);
@@ -225,14 +232,14 @@ public enum Perceive { ;
                 } catch (Throwable xtt) {
                     logger.warn("{} operator {} exception {}", t, o, xtt);
                     //queue.addAt(Operator.error(this, xtt, n.time()));
-                    return false;
+                    return null;
                 }
                 if (cmd) {
                     queue.add(new TaskEvent(t));
                 }
-
+                return task(queue);
             }
         }
-        return true;
+        return null;
     }
 }

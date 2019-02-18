@@ -129,7 +129,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public Logger logger;
 
-    public final Evaluator evaluator = new Evaluator(this::functor);
+    public final Evaluator evaluator = new Evaluator(this::axioms);
 
     public final TaskBuffer input;
 
@@ -212,9 +212,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     /**
-     * resolves functor by its target
+     * dynamic axiom resolver
      */
-    public final Functor functor(Atom term) {
+    public final Functor axioms(Atom term) {
         Termed x = concept(term);
         return x instanceof Functor ? (Functor) x : null;
     }

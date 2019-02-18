@@ -19,6 +19,7 @@ import java.util.TreeSet;
 import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /** arithmetic operators and arithmetic introduction tests */
 class ArithmeticTest {
@@ -234,7 +235,7 @@ class ArithmeticTest {
     }
 
     @Test void testNonConjArithmeticize() {
-        assertArithmetic("x(1,1)", "[x(1,1)]"); //nothing to do
+        assertArithmetic("x(1,1)", null); //nothing to do
         assertArithmetic("x(1,2)", "[(cmp(#1,#2,-1)&&x(#1,#2)), (x(#1,add(#1,1))&&equal(#1,1))]");
         assertArithmetic("((1~2)-->x)", "[(((#1~add(#1,1))-->x)&&equal(#1,1)), (((#2~#1)-->x)&&cmp(#2,#1,-1))]");
         //assertArithmetic("(((1,1)~(2,3))-->x)", "4 of them");
@@ -250,7 +251,11 @@ class ArithmeticTest {
         Set<String> solutions = new TreeSet();
         for (int i = 0; i < 10; i++) {
             Term s = Arithmeticize.apply($$(x), true, rng);
-            solutions.add(s.toString());
+            if (s == null) {
+                assertNull(y);
+                return;
+            } else
+                solutions.add(s.toString());
         }
         assertEquals(y, solutions.toString());
     }

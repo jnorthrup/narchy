@@ -22,6 +22,12 @@ import static alice.tuprolog.PrologPrim.PREDICATE;
 public class PrologRun implements java.io.Serializable, Runnable {
 
 
+
+    public static final int HALT = -1;
+    public static final int FALSE = 0;
+    public static final int TRUE = 1;
+    public static final int TRUE_CP = 2;
+
     PrologSolve solve;
 
     Prolog prolog;
@@ -35,7 +41,7 @@ public class PrologRun implements java.io.Serializable, Runnable {
 
     public final int id;
 
-    private boolean detached;
+
     private boolean solving;
     private Term query;
     private BooleanArrayList next;
@@ -52,37 +58,20 @@ public class PrologRun implements java.io.Serializable, Runnable {
     protected Solution sinfo;
     private String sinfoSetOf;
 
-    /**
-     * States
-     */
-    public static final State INIT = StateInit.the;
-    final State GOAL_EVALUATION;
-    final State EXCEPTION;
-    final State RULE_SELECTION;
-    final State GOAL_SELECTION;
-    public static final State BACKTRACK = StateBacktrack.the;
 
-
-    public static final int HALT = -1;
-    public static final int FALSE = 0;
-    public static final int TRUE = 1;
-    public static final int TRUE_CP = 2;
-
-    public static final State END_FALSE = new StateEnd(FALSE);
-    public static final State END_TRUE = new StateEnd(TRUE);
-    public static final State END_TRUE_CP = new StateEnd(TRUE_CP);
-    public static final State END_HALT = new StateEnd(HALT);
-
-
+    static final State INIT = StateInit.the;
+    static final State GOAL_EVALUATION = StateGoalEvaluation.the;
+    static final State EXCEPTION = StateException.the;
+    static final State RULE_SELECTION = StateRuleSelection.the;
+    static final State GOAL_SELECTION = StateGoalSelection.the;
+    static final State BACKTRACK = StateBacktrack.the;
+    static final State END_FALSE = new StateEnd(FALSE);
+    static final State END_TRUE = new StateEnd(TRUE);
+    static final State END_TRUE_CP = new StateEnd(TRUE_CP);
+    static final State END_HALT = new StateEnd(HALT);
 
     public PrologRun(int id) {
         this.id = id;
-
-        GOAL_EVALUATION = new StateGoalEvaluation(this);
-        EXCEPTION = new StateException(this);
-        RULE_SELECTION = new StateRuleSelection(this);
-        GOAL_SELECTION = new StateGoalSelection(this);
-
     }
 
 
@@ -91,8 +80,6 @@ public class PrologRun implements java.io.Serializable, Runnable {
      */
     public PrologRun initialize(Prolog vm) {
         prolog = vm;
-
-        detached = false;
         solving = false;
         sinfo = null;
         next = new BooleanArrayList();
@@ -104,16 +91,6 @@ public class PrologRun implements java.io.Serializable, Runnable {
 
     void on(State action, PrologSolve env) {
         prolog.spy(action, env);
-    }
-
-
-
-    public void detach() {
-        detached = true;
-    }
-
-    public boolean isDetached() {
-        return detached;
     }
 
     /**

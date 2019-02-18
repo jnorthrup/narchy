@@ -702,6 +702,9 @@ public class Struct extends Term {
 
         if (y instanceof Struct) {
             Struct yy = (Struct) y;
+            if (resolved && yy.resolved && equals(y))
+                return true;
+
             final int arity = this.subs();
             if (arity == yy.subs() && name.equals(yy.name)) {
                 Term[] xarg = this.subs;

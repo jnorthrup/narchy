@@ -299,10 +299,7 @@ public final class BuiltIn extends PrologLib {
     }
 
     public boolean comma_2(Term arg0, Term arg1) {
-        arg0 = arg0.term();
-        arg1 = arg1.term();
-        Struct s = new Struct(",", arg0, arg1);
-        prolog.pushSubGoal(ClauseInfo.extractBody(s));
+        prolog.pushSubGoal(ClauseInfo.extractBody(new Struct(",", arg0.term(), arg1.term())));
         return true;
     }
 
@@ -342,18 +339,24 @@ public final class BuiltIn extends PrologLib {
      * corresponds to T.
      */
     static Term convertTermToGoal(Term term) {
+
+        term = term.term();
+
         if (term instanceof NumberTerm)
             return null;
-        if (term instanceof Var && ((Var) term).link() instanceof NumberTerm)
-            return null;
-        term = term.term();
+
+//        if (term instanceof Var && ((Var) term).link() instanceof NumberTerm)
+//            return null;
+
         if (term instanceof Var)
             return new Struct("call", term);
+
         if (term instanceof Struct) {
             Struct s = (Struct) term;
             String pi = s.key();
             if (pi.equals(";/2") || pi.equals(",/2") || pi.equals("->/2")) {
-                for (int i = 0; i < s.subs(); i++) {
+                int n = s.subs();
+                for (int i = 0; i < n; i++) {
                     Term t = s.sub(i);
                     Term arg = convertTermToGoal(t);
                     if (arg == null)
