@@ -70,7 +70,7 @@
 //// similarity from inheritance ////////////////////////////////////////////////////////////////////////////////////
 //If S is a special case of P, and P is a special case of S, then S and P are similar
 
-    (S --> P), (P --> S), --isVar(S), --isVar(P) |-   (S <-> P), (Belief:Intersection)
+    (S --> P), (P --> S), --isVar(S), --isVar(P) |-   (S <-> P), (Belief:Intersection, Goal:Desire)
 //    (S --> P), (P --> S) |- --(S <-> P), (Belief:IntersectionNN, Goal:IntersectionNN)
 
     //(S --> P), (P --> S) |- --(S <-> P), (Belief:ComparisonSymmetric, Time:Intersect)
@@ -94,7 +94,7 @@
 
 //// inheritance from similarty <- todo check why this one was missing ////////////////////////////////////////////////////////////////////////////////////
     //(S <-> P), P         |- (S --> P), (Belief:Identity)
-    (S <-> P), P, task("!")  |- (S --> P), (Goal:Identity)
+    //(S <-> P), P, task("!")  |- (S --> P), (Goal:Identity)
 
     //TODO maybe Comparison..
     (S <-> P), (P --> S), --isVar(S), --isVar(P) |- (S --> P), (Belief:ReduceConjunction)

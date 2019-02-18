@@ -258,7 +258,7 @@ class DynamicConjTest {
                 Op.CONJ.the(XTERNAL, new Term[]{$.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"), $.$("(joy-->fz)"), $.$("fwd")}).normalize();
 
         assertTrue(c instanceof Compound, () -> c.toString());
-        assertTrue(Task.taskConceptTerm(c), () -> c + " should be a valid task target");
+        assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task target");
     }
 
     @Test
@@ -268,7 +268,7 @@ class DynamicConjTest {
                 Op.CONJ.the(XTERNAL, new Term[]{$.$("(--,((--,#1)&&#2))"), $.$("(--,#2)"), $.varDep(1)}).normalize();
 
         assertTrue(c instanceof Compound, () -> c.toString());
-        assertTrue(Task.taskConceptTerm(c), () -> c + " should be a valid task target");
+        assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task target");
     }
 
     @Test

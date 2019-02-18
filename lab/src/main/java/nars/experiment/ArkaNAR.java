@@ -213,7 +213,7 @@ public class ArkaNAR extends NAgentX {
         public static final float BLOCK_HEIGHT = 15.0f;
 
         public static final int COUNT_BLOCKS_X = 5;
-        public static final int COUNT_BLOCKS_Y = 1; /* 3 */
+        public static final int COUNT_BLOCKS_Y = 2; /* 3 */
 
         public static final float FT_STEP = 4.0f;
 

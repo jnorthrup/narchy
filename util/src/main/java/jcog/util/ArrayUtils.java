@@ -8755,7 +8755,8 @@ public enum ArrayUtils {;
 
         for (int i = left, j = i; i < right; j = ++i) {
             int ai = a[i + 1];
-            while (v.valueOf(ai) > v.valueOf(a[j])) {
+            float vai = v.valueOf(ai);
+            while (vai > v.valueOf(a[j])) {
                 a[j + 1] = a[j];
                 if (j-- == left)
                     break;
@@ -8770,7 +8771,8 @@ public enum ArrayUtils {;
 
         for (int i = left, j = i; i < right; j = ++i) {
             byte ai = a[i + 1];
-            while (v.valueOf(ai) > v.valueOf(a[j])) {
+            byte vai = v.valueOf(ai);
+            while (vai > v.valueOf(a[j])) {
                 a[j + 1] = a[j];
                 if (j-- == left)
                     break;
@@ -8785,8 +8787,9 @@ public enum ArrayUtils {;
      */
     public static <X> void sort(X[] a, int left, int right /* inclusive */, ToDoubleFunction<X> v) {
         for (int i = left, j = i; i < right; j = ++i) {
-            X ai = a[i + 1];
-            while (v.applyAsDouble(ai) > v.applyAsDouble(a[j])) {
+            final X ai = a[i + 1];
+            double aid = v.applyAsDouble(ai);
+            while (aid > v.applyAsDouble(a[j])) {
                 a[j + 1] = a[j];
                 if (j-- == left)
                     break;
@@ -8795,6 +8798,7 @@ public enum ArrayUtils {;
         }
 
     }
+
 
     /**
      * sorts descending
@@ -8809,7 +8813,8 @@ public enum ArrayUtils {;
     public static void sort(long[] a, int left, int right /* inclusive */, LongToLongFunction v) {
         for (int i = left, j = i; i < right; j = ++i) {
             long ai = a[i + 1];
-            while (v.valueOf(ai) > v.valueOf(a[j])) {
+            long vai = v.valueOf(ai);
+            while (vai > v.valueOf(a[j])) {
                 a[j + 1] = a[j];
                 if (j-- == left)
                     break;
@@ -8829,7 +8834,8 @@ public enum ArrayUtils {;
     public static void sort(byte[] a, int left, int right, ByteToFloatFunction v) {
         for (int i = left, j = i; i < right; j = ++i) {
             byte ai = a[i + 1];
-            while (v.valueOf(ai) > v.valueOf(a[j])) {
+            float vai = v.valueOf(ai);
+            while (vai > v.valueOf(a[j])) {
                 a[j + 1] = a[j];
                 if (j-- == left) {
                     break;

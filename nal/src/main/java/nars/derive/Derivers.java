@@ -21,7 +21,7 @@ public class Derivers {
 
                     f.add("nal6.nal");
                     f.add("nal6.decompose.nal");
-                    f.add("nal6.layer2.nal");
+                    //f.add("nal6.layer2.nal");
                     f.add("nal6.guess.nal");
 
                     //f.addAt("nal6.to.nal3.nal");

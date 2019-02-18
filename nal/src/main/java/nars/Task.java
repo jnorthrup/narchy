@@ -148,11 +148,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 //                new BytesHashProvider<>(IO::taskToBytes));
 //    }
 
-    static boolean taskConceptTerm(@Nullable Term t) {
-        return taskConceptTerm(t, (byte) 0, true);
+    static boolean validTaskTerm(@Nullable Term t) {
+        return validTaskTerm(t, (byte) 0, true);
     }
 
-    static boolean taskConceptTerm(@Nullable Term t, byte punc, boolean safe) {
+    static boolean validTaskTerm(@Nullable Term t, byte punc, boolean safe) {
 
         if (t == null)
             return fail(t, "null content", false /* FORCE */);
@@ -404,7 +404,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
             negated = false;
         }
 
-        return Task.taskConceptTerm(t/*.the()*/, punc, safe) ? pair(t, negated) : null;
+        return Task.validTaskTerm(t/*.the()*/, punc, safe) ? pair(t, negated) : null;
     }
 
 

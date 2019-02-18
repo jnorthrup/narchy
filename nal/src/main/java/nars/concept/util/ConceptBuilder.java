@@ -94,7 +94,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 //    }
 
 
-    private static final Predicate<Term> validDynamicSubterm = x -> Task.taskConceptTerm(x.unneg());
+    private static final Predicate<Term> validDynamicSubterm = x -> Task.validTaskTerm(x.unneg());
 
 
     private static boolean validDynamicSubterms(Subterms subterms) {
@@ -291,7 +291,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     /** constructs a concept but does no capacity allocation (result will have zero capacity, except dynamic abilities) */
     public final Concept construct(Term x) {
-        Concept c = Task.taskConceptTerm(x) ? taskConcept(x) : nodeConcept(x);
+        Concept c = Task.validTaskTerm(x) ? taskConcept(x) : nodeConcept(x);
         if (c == null)
             throw new WTF(x + " unconceptualizable");
         return c;

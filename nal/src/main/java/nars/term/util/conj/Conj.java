@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
+import jcog.data.set.LongObjectArraySet;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.Param;
@@ -45,7 +46,6 @@ import static nars.Op.*;
 import static nars.term.Terms.sorted;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * representation of conjoined (eternal, parallel, or sequential) events specified in one or more conjunctions,
@@ -827,7 +827,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return -1;
     }
 
-    private static Term conjSeq(TermBuilder B, FasterList<LongObjectPair<Term>> events) {
+    private static Term conjSeq(TermBuilder B, LongObjectArraySet<Term> events) {
         return conjSeq(B, events, 0, events.size());
     }
 
@@ -835,22 +835,21 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
      * assumes that all of the event terms have distinct occurrence times
      */
-    private static Term conjSeq(TermBuilder B, List<LongObjectPair<Term>> events, int start, int end) {
+    private static Term conjSeq(TermBuilder B, LongObjectArraySet<Term> events, int start, int end) {
 
-        LongObjectPair<Term> first = events.get(start);
+        Term first = events.get(start);
+        long firstWhen = events.when(start);
         int ee = end - start;
         switch (ee) {
             case 0:
                 throw new NullPointerException("should not be called with empty events list");
             case 1:
-                return first.getTwo();
+                return first;
             case 2: {
-                LongObjectPair<Term> second = events.get(end - 1);
-                long a = first.getOne();
-                long b = second.getOne();
+                Term second = events.get(end-1); long secondWhen = events.when(end-1);
                 return conjSeqFinal(B,
-                        (int) (b - a),
-                        /* left */ first.getTwo(), /* right */ second.getTwo());
+                        Tense.occToDT(secondWhen - firstWhen),
+                        /* left */ first, /* right */ second);
             }
         }
 
@@ -865,9 +864,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (right == Null) return Null;
         if (right == False) return False;
 
-        int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.eventRange());
+        int dt = (int) (events.when(center + 1) - firstWhen - left.eventRange());
 
-        return !dtSpecial(dt) ? conjSeqFinal(B, dt, left, right) : conjoin(left, right, dt==DTERNAL);
+        return !dtSpecial(dt) ? conjSeqFinal(B, dt, left, right) : conjoin(B, left, right, dt==DTERNAL);
     }
 
     static Term conjSeqFinal(TermBuilder b, int dt, Term left, Term right) {
@@ -1262,7 +1261,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     return d.term();
 
                 } else {
-                    return conjoin(incoming, newConj, eternal);
+                    return conjoin(terms, incoming, newConj, eternal);
                 }
 
             }
@@ -1298,8 +1297,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             Term B = bb.term();
             if (b == Null)
                 return Null;
-            long as = aa.shift();
-            long bs = bb.shift();
+            long as = aa.shift(), bs = bb.shift();
             long abShift = Math.min(as, bs);
             ConjBuilder dd = newConjSharingTermMap(cc);
             if (eternal && as == 0 && bs == 0) {
@@ -1621,7 +1619,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     /**
      * stateless/fast 2-ary conjunction in either eternity (dt=DTERNAL) or parallel(dt=0) modes
      */
-    public static Term conjoin(Term x, Term y, boolean eternalOrParallel) {
+    public static Term conjoin(TermBuilder B, Term x, Term y, boolean eternalOrParallel) {
 
         if (x == Null || y == Null) return Null;
 
@@ -1641,7 +1639,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (xy == True) {
             return x; //x absorbs y
         } else if (xy == null) {
-            return terms.theCompound(CONJ, eternalOrParallel ? DTERNAL : 0, sorted(x, y));
+            return B.theCompound(CONJ, eternalOrParallel ? DTERNAL : 0, sorted(x, y));
         } else {
             //failure or some particular merge result
             return xy;
@@ -1892,7 +1890,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                temporal = t;
 //                break;
             default:
-                FasterList<LongObjectPair<Term>> temporals = null;
+                LongObjectArraySet<Term> temporals = null;
 
                 for (LongObjectPair next : event.keyValuesView()) {
                     long when = next.getOne();
@@ -1908,9 +1906,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         return this.result = Null;
                     }
 
-                    if (temporals == null) temporals = new FasterList<>(numOcc + 1);
+                    if (temporals == null) temporals = new LongObjectArraySet<>(numOcc + 1);
 
-                    temporals.add(pair(when, wt));
+                    temporals.add(when, wt);
                 }
                 if (temporals != null) {
 
@@ -1920,10 +1918,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                             temporal = null;
                             break;
                         case 1:
-                            temporal = temporals.get(0).getTwo();
+                            temporal = temporals.get(0);
                             break;
                         default:
-                            temporals.sortThisBy(LongObjectPair::getOne);
+                            temporals.sortThis();
                             temporal = conjSeq(B, temporals);
                             break;
                     }

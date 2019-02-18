@@ -27,7 +27,7 @@ public class PacComponent extends JComponent {
         this.game = g;
 
 
-        this.setPreferredSize(new Dimension(400, 400));
+        this.setPreferredSize(new Dimension(350, 400));
         size = Math.min(Math.round((getWidth()) / (game.maze.width + 3)), Math.round((getHeight()) / (game.maze.height + 5)));
 
     }
@@ -69,20 +69,22 @@ public class PacComponent extends JComponent {
 
                 } else if (Maze.isWall(game.maze.tiles[x][y])) {
 
+//                    g2d.setColor(Color.darkGray);
+//                    g2d.fill(tile);
                     g2d.setColor(Color.darkGray);
-                    g2d.fill(tile);
-                    g2d.setColor(Color.gray);
-                    g2d.fillRect(tile.x + tile.width * 1 / 7, tile.y + tile.height * 1 / 7, tile.width * 5 / 7, tile.height * 5 / 7);
+                    g2d.fillRect(tile.x , tile.y , tile.width, tile.height);
 
                 }
 
                 if ((x * y) % 2 == 1 && game.maze.dots[x / 2][y / 2]) {
 
-                    g2d.setColor(Color.green);
-                    if (game.maze.isBigFood(x, y))
-                        g2d.fillOval(tile.x, tile.y, tile.width, tile.height);
-                    else
-                        g2d.fillOval(tile.x + tile.width * 1 / 5, tile.y + tile.height * 1 / 5, tile.width * 3 / 5, tile.height * 3 / 5);
+
+                    if (game.maze.isBigFood(x, y)) {
+                        g2d.setColor(Color.green.brighter());
+                    } else{
+                        g2d.setColor(Color.green);
+                    }
+                    g2d.fillOval(tile.x, tile.y, tile.width, tile.height);
 
                 }
 
@@ -91,24 +93,24 @@ public class PacComponent extends JComponent {
 
         if (game.maze.fruit != Maze.Fruit.none) {
 
-            switch (game.maze.fruit) {
+//            switch (game.maze.fruit) {
+//
+//                case red:
+                    g2d.setColor(Color.GREEN);
+//                    break;
 
-                case red:
-                    g2d.setColor(Color.PINK);
-                    break;
+//                case blue:
+//                    g2d.setColor(Color.CYAN.darker().darker());
+//                    break;
+//
+//                case yellow:
+//                    g2d.setColor(Color.orange);
+//                    break;
+//
+//                default:
+//                    break;
 
-                case blue:
-                    g2d.setColor(Color.CYAN.darker().darker());
-                    break;
-
-                case yellow:
-                    g2d.setColor(Color.orange);
-                    break;
-
-                default:
-                    break;
-
-            }
+//            }
 
             Rectangle fruit = getTileBounds(game.maze.playerStart().x, game.maze.playerStart().y, offset);
             g2d.fillOval(fruit.x, fruit.y, fruit.width, fruit.height);
@@ -129,18 +131,12 @@ public class PacComponent extends JComponent {
             }
 
             if (ghost.scared && (game.player.power > 99 || game.player.power % 25 < 12))
-                g2d.setColor(Color.red.brighter());
+                g2d.setColor(Color.green.brighter());
             else if (ghost.scared)
-                g2d.setColor(Color.red.brighter());
+                g2d.setColor(Color.green.brighter());
             else
                 g2d.setColor(ghost.color);
             g2d.fill(ghostShape);
-//            if (ghost.scared)
-//                g2d.setColor(Color.orange.brighter());
-//            else
-//                g2d.setColor(Color.orange.brighter());
-//            g2d.draw(ghostShape);
-
 
         }
 

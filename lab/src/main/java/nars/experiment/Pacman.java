@@ -27,7 +27,7 @@ public class Pacman extends NAgentX {
 
 
         Gridding gg = new Gridding();
-        ScaledBitmap2D camScale = new ScaledBitmap2D(new SwingBitmap2D(g.view), 28, 28);
+        ScaledBitmap2D camScale = new ScaledBitmap2D(new SwingBitmap2D(g.view), 15, 14);
         onFrame(camScale::update);
 
         for (MonoBufImgBitmap2D.ColorMode cm : new MonoBufImgBitmap2D.ColorMode[]{
@@ -35,14 +35,15 @@ public class Pacman extends NAgentX {
                 MonoBufImgBitmap2D.ColorMode.G,
                 MonoBufImgBitmap2D.ColorMode.B
         }) {
-            Bitmap2DSensor c = senseCamera("c" /*"(G,c"*/ + cm.name()  /* + *")"*/,
+            Bitmap2DSensor c = senseCamera(
+                    $.p($.the("c"), $.the(cm.ordinal())),
                     camScale.filter(cm)
             );
 
             VectorSensorView v = new VectorSensorView(c, this);
 //            onFrame(v::update);
             gg.add(v/*.withControls()*/);
-            c.resolution(0.05f);
+            c.resolution(0.1f);
         }
         window(gg, 900, 300);
 

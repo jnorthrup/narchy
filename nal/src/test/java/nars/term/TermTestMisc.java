@@ -250,7 +250,7 @@ public class TermTestMisc {
 
     @Test
     void testValidIndep() {
-        assertTrue(Task.taskConceptTerm(
+        assertTrue(Task.validTaskTerm(
                 $$("(($1 &&+4 $1) ==>-2 ((--,angX) &&+8 $1))")));
     }
 

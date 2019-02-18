@@ -375,7 +375,7 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.setAt(0.03f);
         n.termVolumeMax.set(28);
 
-        ((AbstractConceptIndex)n.concepts).activeCapacity.set(128);
+        ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
         float p =

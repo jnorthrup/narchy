@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
@@ -19,7 +20,6 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
 import static java.lang.Float.NaN;
-import static jcog.Texts.n4;
 
 public class Plot2D extends Widget {
     public final List<Series> series;
@@ -375,8 +375,8 @@ public class Plot2D extends Widget {
         float H = 1.0f;
         Draw.line(0, H, W, H, gl);
 
-        HersheyFont.hersheyText(gl, n4(minValue), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
-        HersheyFont.hersheyText(gl, n4(maxValue), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
 
 
         for (int sn = 0, seriesSize = series.size(); sn < seriesSize; sn++) {
@@ -461,7 +461,7 @@ public class Plot2D extends Widget {
         return (v - minValue) / range;
     }
     private static float ypos(float minValue, float range, float v, int lane, int numLanes) {
-        return (v == v ? ((v - minValue) / range) : (0.5f)) * (1f/numLanes) + (((float)lane)/numLanes);
+        return (v == v ? ((v - minValue) / range) : (0.5f)) /numLanes + (((float)lane)/numLanes);
     }
 
     public void update() {

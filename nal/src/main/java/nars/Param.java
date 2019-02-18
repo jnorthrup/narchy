@@ -199,12 +199,12 @@ public abstract class Param {
     /** restrains revision's ability to stretch evidence across time:
      * as a factor of the maximum of the ranges of the tasks involved in the revision */
     public static final float TASK_REVISION_STRETCH_LIMIT_PROPORTION =
-            1;
-            ////1.5f;
+            //1;
+            1.5f;
             //1.618f; //goldenratio
             //2;
 
-    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = true;
+    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = false;
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */

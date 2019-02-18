@@ -10,7 +10,7 @@ public class Player extends Entity {
     int mouthSpeed = 2;
     final static int MOUTH_WIDTH = 40;
     public int power;
-    public int lives;
+
 
     public Player(Maze maze, int x, int y, float speed) {
 
@@ -20,8 +20,6 @@ public class Player extends Entity {
         this.lead = 0.4;
 
         power = 0;
-
-        lives = 3;
 
     }
 

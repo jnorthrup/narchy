@@ -304,7 +304,7 @@ public class TemporalTermTest {
         String s = "believe(x,(believe(x,(--,(cam(9,$1) ==>-78990 (ang,$1))))&|(cam(9,$1) ==>+570 (ang,$1))))";
         Term ss = $$(s);
         assertTrue(Task.validTaskCompound((Compound) ss, true));
-        assertTrue(Task.taskConceptTerm(ss));
+        assertTrue(Task.validTaskTerm(ss));
     }
 
     @Test void testImplTransformMaintainsTiming() {

@@ -325,7 +325,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                 Term ab = Intermpolate.intermpolate(a,
                         b, e1Evi / (e1Evi + e2Evi), nar);
 
-                if (Task.taskConceptTerm(ab)) {
+                if (Task.validTaskTerm(ab)) {
 
                     this.term = ab;
                     removeAbove(1+1);  assert(size()==2);

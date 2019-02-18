@@ -18,7 +18,6 @@ import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
 import nars.sensor.PixelBag;
-import nars.term.atom.Atomic;
 import nars.video.AutoclassifiedBitmap;
 import spacegraph.SpaceGraph;
 
@@ -102,10 +101,10 @@ public class NARio extends NAgentX {
         camAE.noise.set(0.02f);
 
 
-        Atomic LEFT = $.the("left");
-        Atomic RIGHT = $.the("right");
-        Atomic UP = $.the("up");
-        Atomic DOWN = $.the("down");
+//        Atomic LEFT = $.the("left");
+//        Atomic RIGHT = $.the("right");
+//        Atomic UP = $.the("up");
+//        Atomic DOWN = $.the("down");
         List<SelectorSensor> tileSensors = List.of(
                 tileSwitch(-1, 0),
                 tileSwitch(+1, 0),
@@ -151,8 +150,8 @@ public class NARio extends NAgentX {
         });
 
 
-        initButton();
-        //initBipolar();
+        //initButton();
+        initBipolar();
 
 
         DigitizedScalar vx = senseNumberDifferenceBi($$("vx"), 8, () -> theMario != null ? theMario.x : 0).resolution(0.02f);

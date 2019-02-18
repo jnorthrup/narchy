@@ -32,7 +32,7 @@ public class PacmanGame {
     public final PacComponent view;
     Maze maze;
     boolean doubled;
-    Player player;
+    public Player player;
     public boolean[] keys;
     boolean started = true;
     Ghost[] ghosts;
@@ -76,7 +76,7 @@ public class PacmanGame {
     }
 
     public void restart() {
-        maze = Maze.create(13, 13);
+        maze = Maze.create(15, 13);
         player = new Player(maze, maze.playerStart().x, maze.playerStart().y, playerSpeed);
         resetGhosts();
         text = "";

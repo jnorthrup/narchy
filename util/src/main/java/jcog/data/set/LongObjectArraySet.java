@@ -1,5 +1,7 @@
 package jcog.data.set;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
@@ -7,6 +9,7 @@ import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.impl.iterator.ImmutableEmptyLongIterator;
+import org.eclipse.collections.impl.list.mutable.FastList;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -15,13 +18,52 @@ import java.util.NoSuchElementException;
 /** a set of (long,object) pairs as 2 array lists
  *  TODO sort and binary search lookup
  * */
-public abstract class LongObjectArraySet<X> extends FasterList<X> {
+public class LongObjectArraySet<X> extends FasterList<X> {
 
     protected long[] when;
+
+    public LongObjectArraySet() {
+        this(0);
+    }
 
     public LongObjectArraySet(int initialCapacity) {
         super(initialCapacity);
         when = ArrayUtils.EMPTY_LONG_ARRAY;
+    }
+
+
+    @Override
+    public FastList<X> sortThis() {
+        if (size <= 1)
+            return this;
+
+        long[] when = this.when;
+
+        int left = 0, right = size-1;
+        for (int i = left, j = i; i < right; j = ++i) {
+            X xi = get(i + 1);
+
+            long li = when[i+1];
+            while (li < when[j]) {
+                setFast(j + 1, get(j));
+                when[j +1] = when[j];
+                if (j-- == left)
+                    break;
+            }
+
+                setFast(j + 1, xi);
+                when[j + 1] = li;
+
+
+        }
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        //HACK this could be better
+        final int[] i = {0};
+        return Joiner.on(',').join(Iterables.transform(this, n-> when[i[0]++] + ":" + n));
     }
 
     /**

@@ -216,7 +216,7 @@ public enum ConjCommutive {;
             if (dd != -1) {
                 Term d = u[dd];
                 Term x = u[1 - dd];
-                Term cj = Conj.conjoin(d, x, dt == DTERNAL);
+                Term cj = Conj.conjoin(B, d, x, dt == DTERNAL);
                 if (cj == null)
                     throw new WTF();
                 return cj;
@@ -253,7 +253,7 @@ public enum ConjCommutive {;
                 case 1:
                     return u[0];
                 case 2:
-                    return Conj.conjoin(u[0], u[1], dt == DTERNAL);
+                    return Conj.conjoin(B, u[0], u[1], dt == DTERNAL);
                 default: {
                     ConjBuilder c = new Conj(u.length);
                     for (int i = u.length - 1; i >= 0; i--) {

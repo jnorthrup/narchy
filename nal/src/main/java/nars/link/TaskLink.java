@@ -129,11 +129,14 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             if (y == null) {
                 if (!beliefOrGoal) {
                     //form question
-                    y = new NALTask(x, punc, null, n.time(), start, end, new long[]{n.time.nextStamp()});
-                    y.pri(priPunc(punc));
-                } else {
-                    delete(punc); //TODO try another punc?
+                    if (Task.validTaskTerm(x, punc, true)) {
+                        y = new NALTask(x, punc, null, n.time(), start, end, new long[]{n.time.nextStamp()});
+                        y.pri(priPunc(punc));
+                    }
                 }
+
+                if (y == null)
+                    delete(punc); //TODO try another punc?
             }
 
             return y;
