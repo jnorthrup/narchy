@@ -99,8 +99,11 @@ public final class Answer implements AutoCloseable {
                     //x.evi(now, dur) * (1 + (e-s)/2f)/*x.range()*/;
                     //evi * x.originality();
                     //evi * x.originality() * range;
-                    evi * (adjRange);
-                      //* x.originality()
+                    evi
+                        * adjRange
+                        //* (1f/(1+x.term().volume())) //TODO only if table for temporable concept
+                        //* x.originality()
+                    ;
         };
 
         //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));
@@ -191,36 +194,36 @@ public final class Answer implements AutoCloseable {
     }
 
 
-    /** TODO FloatRank not FloatFunction */
-    public static FloatFunction<TaskRegion> mergeability(Task x) {
-        LongPredicate xStamp = Stamp.toContainment(x);
-
-        long xStart = x.start(), xEnd = x.end();
-
-        FloatFunction<TaskRegion> f = (TaskRegion t) -> {
-
-            if (t==x || (!Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME /* TODO: && !disjointTime(x,y) */
-                    && Stamp.overlapsAny(xStamp, ((Task) t).stamp())))
-                return Float.NaN;
-
-            return
-                1f/(1 + (Math.abs(t.start() - xStart) + Math.abs(t.end() - xEnd))/2f);
-        };
-
-        Term xt = x.term();
-        if (xt.hasAny(Op.Temporal)) {
-
-            return (t) -> {
-                float v1 = f.floatValueOf(t);
-                if (v1 != v1) return Float.NaN;
-
-                Term tt = ((Task) t).term();
-                return v1 / (1f + Intermpolate.dtDiff(xt, tt));
-            };
-        } else {
-            return f;
-        }
-    }
+//    /** TODO FloatRank not FloatFunction */
+//    public static FloatFunction<TaskRegion> mergeability(Task x) {
+//        LongPredicate xStamp = Stamp.toContainment(x);
+//
+//        long xStart = x.start(), xEnd = x.end();
+//
+//        FloatFunction<TaskRegion> f = (TaskRegion t) -> {
+//
+//            if (t==x || (!Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME /* TODO: && !disjointTime(x,y) */
+//                    && Stamp.overlapsAny(xStamp, ((Task) t).stamp())))
+//                return Float.NaN;
+//
+//            return
+//                1f/(1 + (Math.abs(t.start() - xStart) + Math.abs(t.end() - xEnd))/2f);
+//        };
+//
+//        Term xt = x.term();
+//        if (xt.hasAny(Op.Temporal)) {
+//
+//            return (t) -> {
+//                float v1 = f.floatValueOf(t);
+//                if (v1 != v1) return Float.NaN;
+//
+//                Term tt = ((Task) t).term();
+//                return v1 / (1f + Intermpolate.dtDiff(xt, tt));
+//            };
+//        } else {
+//            return f;
+//        }
+//    }
 
     public static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, Term template) {
         return (x, min) -> {

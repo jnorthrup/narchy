@@ -74,10 +74,7 @@ public class Tetris extends NAgentX {
 
 
         //if a pixel is on, pixels above it should be off
-        reward(new BeliefReward($$("(&|,tetris(#x,#yl),--tetris(#x,#yh),cmp(#yl,#yh,-1))"), this));
-
-        //if a pixel is on, pixels below it should be on
-        reward(new BeliefReward($$("(&|,tetris(#x,#yh),tetris(#x,#yl),cmp(#yl,#yh,-1))"), this));
+        reward(new BeliefReward($$("(&|,tetris(#x,#yBelow),--tetris(#x,#yAbove),cmp(#yBelow,#yAbove,1))"), this));
 
         //pixels on same row should be the same color TODO
         //reward(new BeliefReward($$("--xor(tetris(#x1,#y), tetris(#x2,#y))"), this));

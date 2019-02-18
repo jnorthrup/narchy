@@ -1,7 +1,9 @@
 package jcog.table;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 import jcog.TODO;
+import jcog.data.list.FasterList;
 import jcog.learn.decision.FloatTable;
 import jcog.util.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +21,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * specified semantics of a data record / structure
@@ -181,6 +184,11 @@ public class DataTable extends Table {
         return rowCount();
     }
 
+    public Stream<Instance> stream() {
+        return Streams.stream(iterator()).map(this::instance);
+    }
+
+
     public void printCSV() {
         printCSV(new FilterOutputStream(System.out) {
             @Override
@@ -262,14 +270,29 @@ public class DataTable extends Table {
         return this;
     }
 
+    @Deprecated private Instance instance(Row x) {
 
-    public class Instance {
+        ColumnType[] ct = columnTypes();
+        List<Double> d = new FasterList(ct.length);
+        for (int i1 = 0, ctLength = ct.length; i1 < ctLength; i1++) {
+//            ColumnType t = ct[i1];
+//            if (t instanceof FloatColumnType)
+//                d.add((double)x.getFloat(i1));
+//            else if (t == DoubleColumnType)
+                d.add(x.getDouble(i1));
+        }
+        return new Instance(ImmutableList.copyOf(d));
+    }
+
+    @Deprecated public class Instance {
         public final ImmutableList data;
 
         public Instance(ImmutableList data) {
 
             this.data = data;
         }
+
+
 
         @Override
         public String toString() {

@@ -5,7 +5,6 @@ import com.jujutsu.tsne.matrix.MatrixOps;
 import jcog.Util;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.FloatRange;
-import jcog.table.ARFF;
 import jcog.table.DataTable;
 import jcog.tree.rtree.rect.RectFloat;
 import org.junit.jupiter.api.Disabled;
@@ -16,8 +15,7 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
-
-import java.io.File;
+import tech.tablesaw.api.DoubleColumn;
 
 public class TsneTest {
 
@@ -142,7 +140,12 @@ public class TsneTest {
     @Test public void testTsneModel() {
 
         try {
-            ARFF data = new ARFF(new File("/tmp/x.arff"));
+            DataTable data = //new ARFF(new File("/tmp/x.arff"));
+                    new DataTable();
+            data.addColumns(DoubleColumn.create("a"), DoubleColumn.create("b"), DoubleColumn.create("c"));
+            data.add(0.1, 0.3, 0.5);
+            data.add(0.2, 0.4, 0.2);
+            data.add(0.2, 0.4, 0.21);
 
 
             SpaceGraph.window(

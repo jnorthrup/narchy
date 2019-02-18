@@ -57,7 +57,6 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 
 /**
@@ -511,10 +510,6 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 //        }
 //    }
 
-    public Stream<Instance> stream() {
-        throw new TODO();
-        //return data.stream().map(x -> new Instance(this, x));
-    }
 
     public boolean addAll(DataTable incoming) {
         if (this == incoming)
