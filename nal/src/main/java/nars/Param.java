@@ -47,7 +47,9 @@ public abstract class Param {
     }
 
     public static final Retemporalize conceptualization =
-            Conceptualization.FlattenAndDeduplicateConj
+            Conceptualization.DirectXternal;
+            //Conceptualization.PreciseXternal;
+            //Conceptualization.FlattenAndDeduplicateConj
             //Conceptualization.FlattenAndDeduplicateAndUnnegateConj //untested
             ;
 

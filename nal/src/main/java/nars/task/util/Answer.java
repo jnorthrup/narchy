@@ -6,13 +6,11 @@ import jcog.sort.FloatRank;
 import jcog.sort.RankedTopN;
 import jcog.sort.TopN;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.table.TaskTable;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynEvi;
 import nars.truth.polation.TruthIntegration;
@@ -21,7 +19,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
-import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 
 import static jcog.math.SloppyMath.max;

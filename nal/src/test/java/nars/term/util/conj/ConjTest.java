@@ -1106,12 +1106,7 @@ public class ConjTest {
 
     }
 
-    @Test
-    void testStableConceptualization1() throws Narsese.NarseseException {
-        Term c1 = ceptualStable("((((#1,(2,true),true)-->#2)&|((gameOver,(),true)-->#2)) &&+29 tetris(#1,(11,true),true))");
-        assertEq("( &&+- ,((#1,(2,true),true)-->#2),tetris(#1,(11,true),true),((gameOver,(),true)-->#2))",
-                c1.toString());
-    }
+
 
     @Test
     void testConceptualizationWithoutConjReduction() throws Narsese.NarseseException {
@@ -1145,32 +1140,6 @@ public class ConjTest {
         assertEq("((tetris(isRow,(8,false),true) &&+- tetris($1,#2)) ==>+- (tetris(checkScore,#2) &&+- tetris($1,#2)))", s.concept().toString());
     }
 
-    @Test
-    void testStableConceptualization2() throws Narsese.NarseseException {
-        Term c1 = ceptualStable("((a&&b)&|do(that))");
-        assertEq(
-                "( &&+- ,do(that),a,b)",
-
-                c1.toString());
-    }
-
-    @Test
-    void testStableConceptualization0() throws Narsese.NarseseException {
-        Term c1 = ceptualStable("((a &&+5 b) &&+5 c)");
-        assertEq("( &&+- ,a,b,c)", c1.toString());
-    }
-
-    @Test
-    void testStableConceptualization4() throws Narsese.NarseseException {
-        Term c1 = ceptualStable("((--,((#1-->happy)&|(#1-->neutral)))&|(--,(#1-->sad)))");
-        assertEq("((--,((#1-->happy) &&+- (#1-->neutral))) &&+- (--,(#1-->sad)))", c1.toString());
-    }
-
-    @Test
-    void testStableConceptualization6() throws Narsese.NarseseException {
-        assertEq("( &&+- ,(--,(\"-\"-->move)),(--,(joy-->cart)),(\"+\"-->move),(happy-->cart))",
-                ceptualStable("((((--,(\"-\"-->move))&|(happy-->cart)) &&+334 (\"+\"-->move)) &&+5 (--,(joy-->cart)))").toString());
-    }
 
     @Test
     void testEventsWithXTERNAL() throws Narsese.NarseseException {
@@ -1496,25 +1465,6 @@ public class ConjTest {
             assertTrue(c instanceof Compound);
             assertEquals(r, c);
         }
-    }
-
-    @Test
-    void testConjSeqConceptual1() throws Narsese.NarseseException {
-        assertConceptual("((--,(nario,zoom)) &&+- happy)", "((--,(nario,zoom)) && happy)");
-        assertConceptual("((--,(nario,zoom)) &&+- happy)", "--((--,(nario,zoom)) && happy)");
-        assertConceptual("((--,(nario,zoom)) &&+- happy)", "((--,(nario,zoom)) &&+- happy)");
-        assertConceptual("( &&+- ,(--,(x,(--,x))),(--,(nario,zoom)),happy)", "(((--,(nario,zoom)) &&+- happy) &&+- (--,(x,(--,x))))");
-
-        String c =
-
-                "( &&+- ,(--,(nario,zoom)),vx,vy)";
-        assertConceptual(
-                c, "((vx &&+97 vy) &&+156 (--,(nario,zoom)))");
-        assertConceptual(
-                c, "((vx &&+97 vy) &&+100 (--,(nario,zoom)))");
-        assertConceptual(
-                c,
-                "((vx &&+97 vy) &&-100 (--,(nario,zoom)))");
     }
 
     @Test

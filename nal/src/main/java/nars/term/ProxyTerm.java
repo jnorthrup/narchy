@@ -121,7 +121,6 @@ public class ProxyTerm implements Compound {
         return ref.hashCode();
     }
 
-
     @Override
     public Term root() {
         return ifDifferentElseThis(ref.root());

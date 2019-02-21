@@ -58,7 +58,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
             //2. handle dynamic truth tables
             B = dmt.newTable(t, true, this);
-            G = goalable(t) ?
+            G = !t.hasAny(IMPL) ?
                     dmt.newTable(t, false, this) :
                     BeliefTable.Empty;
         } else {
@@ -76,7 +76,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
             //4. default task concept
             B = this.newTable(t, true);
-            G = goalable(t) ? this.newTable(t, false) : BeliefTable.Empty;
+            G = !t.hasAny(IMPL) ? this.newTable(t, false) : BeliefTable.Empty;
         }
 
 

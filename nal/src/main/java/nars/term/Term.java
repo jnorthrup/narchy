@@ -633,8 +633,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return this;
     }
 
-    @Nullable
-    default /* final */ Term normalize() {
+
+    /* final */ @Nullable default /* final */ Term normalize() {
         return normalize((byte) 0);
     }
 

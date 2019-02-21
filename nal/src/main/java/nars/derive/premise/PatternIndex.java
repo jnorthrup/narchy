@@ -183,7 +183,7 @@ public class PatternIndex extends MapConceptIndex {
         }
 
         @Override
-        public @Nullable Term normalize() {
+        public final @Nullable Term normalize(byte varOffset) {
             throw new UnsupportedOperationException("normalize before patternify");
         }
 

@@ -276,6 +276,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             cells.removeAll(wontRemain);
             wontRemain.clear();
         }
+
+        onUpdateEnd();
+    }
+
+    protected void onUpdateEnd() {
+
     }
 
 

@@ -186,50 +186,7 @@ public class TsneTest {
         }
 
 
-        SimpleTSne t = new SimpleTSne() {
-            Surface plot = new Surface() {
-
-                @Override
-                protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                    Draw.bounds(bounds, gl, this::paint);
-                }
-
-                protected void paint(GL2 gl) {
-                    double[][] vv = Y;
-                    if (vv == null)
-                        return;
-                    vv = vv.clone();
-
-
-                    float scale = 0.1f;
-                    float w, h;
-                    w = h = 1f / vv.length;
-                    for (int i = 0, yLength = vv.length; i < yLength; i++) {
-                        double[] v = vv[i];
-
-                        float x = (float) (v[0]);
-                        float y = (float) (((v.length > 1) ? v[1] : 0));
-
-                        x *= scale;
-                        y *= scale;
-
-                        Draw.colorHash(gl, i, 0.75f);
-                        Draw.rect(x, y, w, h, gl);
-                    }
-                }
-            };
-
-            {
-                SpaceGraph.window(plot, 800, 800);
-            }
-
-//            @Override
-//            public double[][] next(int iter) {
-//                Util.sleep(50);
-//
-//                return super.next(iter);
-//            }
-        };
+        SimpleTSne t = new SimpleTSne();
 
         double[][] y = t.reset(x, new TSneConfig(
                  2, 5f,
@@ -237,6 +194,42 @@ public class TsneTest {
         ));
         System.out.println(MatrixOps.doubleArrayToPrintString(y));
 
+        Surface plot = new Surface() {
 
+            @Override
+            protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+                Draw.bounds(bounds, gl, this::paint);
+            }
+
+            protected void paint(GL2 gl) {
+                double[][] vv = t.Y;
+                if (vv == null)
+                    return;
+                vv = vv.clone();
+
+
+                float scale = 0.1f;
+                float w, h;
+                w = h = 1f / vv.length;
+                for (int i = 0, yLength = vv.length; i < yLength; i++) {
+                    double[] v = vv[i];
+
+                    float x = (float) (v[0]);
+                    float y = (float) (((v.length > 1) ? v[1] : 0));
+
+                    x *= scale;
+                    y *= scale;
+
+                    Draw.colorHash(gl, i, 0.75f);
+                    Draw.rect(x, y, w, h, gl);
+                }
+            }
+        };
+
+        {
+            SpaceGraph.window(plot, 800, 800);
+        }
+
+//        Util.sleepMS(10000);
     }
 }

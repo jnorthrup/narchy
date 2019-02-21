@@ -446,9 +446,12 @@ abstract public class NAgentX extends NAgent {
 //        new STMLinkage(n, 1);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
-                Task::isInput,
-                //t->true,
+                //Task::isInput,
+                t->true,
                 32, 256);
+        NARui.clusterView(conjClusterBinput, n);
+
+
 //        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
 //                t->!t.isInput(),
 //                4, 16);

@@ -17,8 +17,6 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static nars.Op.goalable;
-
 public class DefaultConceptBuilder extends ConceptBuilder {
 
 
@@ -53,7 +51,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
     @Override
     public BeliefTables newTable(Term c, boolean beliefOrGoal) {
-        if (c.op().beliefable && !c.hasAny(Op.VAR_QUERY) && (beliefOrGoal || goalable(c))) {
+        if (c.op().beliefable && !c.hasAny(Op.VAR_QUERY) && (beliefOrGoal || !c.hasAny(Op.IMPL))) {
             return new BeliefTables( newEternalTable(c), newTemporalTable(c, beliefOrGoal) );
         } else {
             return BeliefTables.Empty;

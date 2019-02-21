@@ -578,7 +578,10 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("(((#1 --> lock)&&($2 --> key)) ==> open(#1,$2))", 1.00f, 0.90f);
         tester.believe("({key1} --> key)", 1.00f, 0.90f);
-        tester.mustBelieve(cycles, "((({key1}-->key)&&(#1-->lock))==>open(#1,{key1}))", 1.00f, 0.81f);
+        tester.mustBelieve(cycles,
+                //"((({key1}-->key)&&(#1-->lock))==>open(#1,{key1}))",
+                "((#1-->lock)==>open(#1,{key1}))",
+                1.00f, 0.81f);
     }
 
     @Test

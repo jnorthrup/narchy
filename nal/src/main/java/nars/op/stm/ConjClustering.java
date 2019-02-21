@@ -60,6 +60,7 @@ public class ConjClustering extends Causable {
     final AtomicBoolean learn = new AtomicBoolean(true);
     private int maxStampLen;
 
+
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);
     }
@@ -123,12 +124,12 @@ public class ConjClustering extends Causable {
     @Override
     protected void starting(NAR nar) {
 
-        DurService.on(nar, ()-> learn.set(true));
+        on(DurService.on(nar, ()-> learn.set(true)));
 
         on(nar.onTask(t -> {
             if (!t.isEternal()
-                    && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets) //TODO allow ImDep's
-                    && t.stamp().length <= maxStampLen
+                    && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
+                    && (maxStampLen==Integer.MAX_VALUE || (t.stamp().length <= maxStampLen))
                     && filter.test(t)) {
 
                 data.put(t, pri(t));
@@ -138,11 +139,13 @@ public class ConjClustering extends Causable {
 
     }
 
+
     protected float pri(Task t) {
         return t.priElseZero()
                 //* TruthIntegration.evi(t);
+                 * (1/(1f+t.volume()))
+                 * t.polarity()
                  * t.originality();
-
     }
 
 

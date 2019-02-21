@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static jcog.Texts.n4;
 
 /**
- * Created by Scadgek on 11/3/2014.
+ * TODO implement Tensor
  */
 public class Centroid extends ArrayRealVector {
 

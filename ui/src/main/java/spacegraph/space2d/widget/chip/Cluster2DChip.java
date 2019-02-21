@@ -8,14 +8,14 @@ import jcog.signal.Tensor;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meter.Cluster2DView;
+import spacegraph.space2d.widget.meter.ScatterPlot2D;
 import spacegraph.space2d.widget.port.Port;
 import spacegraph.space2d.widget.port.TypedPort;
 
 public class Cluster2DChip extends Bordering {
 
     private final Port<Tensor> in;
-    private final Cluster2DView centroids;
+    private final ScatterPlot2D centroids;
 
     //TODO allow choice or more abstract mapping from certain dimensions
     final IntRange xDimension = null;
@@ -100,7 +100,8 @@ public class Cluster2DChip extends Bordering {
 //            }
 //
 //        };
-        centroids = new Cluster2DView();
+        centroids = new ScatterPlot2D<Centroid>(null /* TODO */);
+        //(c)->new v2((float)c.getEntry(0), (float)c.getEntry(1)));
 
 
 //        Graph2D<Object> data = new Graph2D<>()
@@ -119,7 +120,7 @@ public class Cluster2DChip extends Bordering {
         super.starting();
         update = root().animate((dt) -> {
             //if (visible()) {
-                centroids.update(g);
+                centroids.set(g.nodeStream());
             //}
 //            for (Centroid c : g.centroids) {
 //                float a = (float) (1.0 / (1 + c.localError()));

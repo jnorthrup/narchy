@@ -1,6 +1,8 @@
 package nars;
 
 
+import jcog.Paper;
+import jcog.Skill;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -234,15 +236,21 @@ public enum Op {
     public static final int FuncInnerBits = Op.or(Op.ATOM, Op.PROD);
     public static final byte BELIEF = '.';
     public static final byte QUESTION = '?';
+
+    /** https://en.wikipedia.org/wiki/Is%E2%80%93ought_problem
+     *  "But how exactly can an "ought" be derived from an "is"?"
+     * */
+    @Paper
     public static final byte GOAL = '!';
+
     public static final byte QUEST = '@';
     public static final byte COMMAND = ';';
     public static final byte[] Punctuation = new byte[]{BELIEF, QUESTION, GOAL, QUEST, COMMAND};
-    public static final String TENSE_PAST = ":\\:";
-    public static final String TENSE_PRESENT = ":|:";
-    public static final String TENSE_FUTURE = ":/:";
-    public static final String TENSE_ETERNAL = ":-:";
-    public static final String TASK_RULE_FWD = "|-";
+//    public static final String TENSE_PAST = ":\\:";
+//    public static final String TENSE_PRESENT = ":|:";
+//    public static final String TENSE_FUTURE = ":/:";
+//    public static final String TENSE_ETERNAL = ":-:";
+//    public static final String TASK_RULE_FWD = "|-";
     public static final char BUDGET_VALUE_MARK = '$';
     public static final char TRUTH_VALUE_MARK = '%';
     public static final char VALUE_SEPARATOR = ';';
@@ -259,16 +267,12 @@ public enum Op {
     public static final char STAMP_CLOSER = '}';
     public static final char STAMP_SEPARATOR = ';';
     public static final char STAMP_STARTER = ':';
-    /**
-     * bitvector of non-variable terms which can not be part of a goal target
-     */
-    public static final int NonGoalable = or(IMPL);
     public static final int varBits = Op.or(VAR_PATTERN, VAR_DEP, VAR_QUERY, VAR_INDEP);
-    /**
-     * Image index ("imdex") symbol for products, and anonymous variable in products
-     */
+
     public final static char VarAutoSym = '_';
-    public static final Atomic VarAuto =
+
+    /** anonymous depvar */
+    @Skill("Prolog") public static final Atomic VarAuto =
             new UnnormalizedVariable(Op.VAR_DEP, String.valueOf(VarAutoSym)) {
 
                 final int RANK = Term.opX(VAR_PATTERN, (short) 20 /* different from normalized variables with a subOp of 0 */);
@@ -631,11 +635,6 @@ public enum Op {
     public static Object theIfPresent(String s) {
         Op x = stringToOperator.get(s);
         return x != null ? x : s;
-    }
-
-
-    public static boolean goalable(Term c) {
-        return !c.hasAny(Op.NonGoalable);
     }
 
 

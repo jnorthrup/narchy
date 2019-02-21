@@ -11,7 +11,7 @@ dependencies {
         exclude(group: 'com.google.guava')
     }
 
-    compile group: 'org.zeromq', name: 'jeromq', version: '0.4.3'
+    compile group: 'org.zeromq', name: 'jeromq', version: '0.5.0'
     compile group: 'org.semanticweb.yars', name: 'nxparser-parsers', version: '2.3.3'
 
 //    testCompile group: 'tech.tablesaw', name: 'tablesaw-plot', version: '0.25.2'

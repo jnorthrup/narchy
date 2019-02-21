@@ -23,38 +23,11 @@ public class TemporalTermTest {
 
     private static final NAR n = NARS.shell();
 
-
-    public static Term ceptualStable(String s) throws Narsese.NarseseException {
-        Term c = $(s);
-        Term c1 = c.concept();
-
-        Term c2 = c1.concept();
-        assertEquals(c1, c2, () -> "unstable: irst " + c1 + "\n\t, then " + c2);
-        return c1;
-    }
-
-    public static void assertConceptual(String cexp, String c) throws Narsese.NarseseException {
-        assertEq(cexp, $(c).concept().toString());
-    }
-
     @Test
     public void testSortingTemporalImpl() {
         assertEquals(-1, $$("(x ==>+1 y)").compareTo($$("(x ==>+10 y)")));
         assertEquals(+1, $$("(x ==>+1 y)").compareTo($$("(x ==>-1 y)")));
         assertEquals(-1, $$("(x ==>-1 y)").compareTo($$("(x ==>+1 y)")));
-    }
-
-
-    @Test
-    void testCoNegatedSubtermConceptImpl() throws Narsese.NarseseException {
-        assertEquals("(x ==>+- x)", n.conceptualize($("(x ==>+10 x)")).toString());
-        assertEquals("((--,x) ==>+- x)", n.conceptualize($("((--,x) ==>+10 x)")).toString());
-
-        Term xThenNegX = $("(x ==>+10 (--,x))");
-        assertEquals("(x ==>+- x)", n.conceptualize(xThenNegX).toString());
-
-        assertEquals("(x ==>+- x)", n.conceptualize($("(x ==>-10 (--,x))")).toString());
-
     }
 
 

@@ -7,7 +7,9 @@ import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.math.Quantiler;
+import jcog.math.v2;
 import jcog.pri.PLinkHashCached;
+import jcog.pri.VLink;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
@@ -20,6 +22,7 @@ import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.index.concept.AbstractConceptIndex;
+import nars.op.stm.ConjClustering;
 import nars.term.Termed;
 import nars.truth.Truth;
 import nars.util.MemorySnapshot;
@@ -31,6 +34,7 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
 import spacegraph.space2d.widget.button.ButtonSet;
@@ -45,11 +49,13 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.meta.TriggeredSurface;
 import spacegraph.space2d.widget.meter.Plot2D;
+import spacegraph.space2d.widget.meter.ScatterPlot2D;
 import spacegraph.space2d.widget.slider.FloatGuage;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
+import spacegraph.video.Draw;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,7 +80,6 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  * SpaceGraph-based visualization utilities for NARchy
  */
 public class NARui {
-
 
 
     public static Surface beliefCharts(NAR nar, Object... x) {
@@ -129,8 +134,8 @@ public class NARui {
                 "val", () -> ExeCharts.valuePanel(n),
                 "mem", () -> MemEdit(n),
                 "can", () -> ExeCharts.causeProfiler(n),
-                                //ExeCharts.focusPanel(n),
-                                ///causePanel(n),
+                //ExeCharts.focusPanel(n),
+                ///causePanel(n),
                 "grp", () -> BagregateConceptGraph2D.get(n).widget(),
                 "svc", () -> new ServicesTable(n.services),
                 "pri", () -> priView(n),
@@ -162,28 +167,35 @@ public class NARui {
 
 
         return Splitting.row(new BagView<>(cc.active, n), 0.8f,
-            new Gridding(
-                new XYSlider(cc.forgetRate,
-                        ((AbstractConceptIndex)n.concepts).activationRate
+                new Gridding(
+                        new XYSlider(cc.forgetRate,
+                                ((AbstractConceptIndex) n.concepts).activationRate
                                 //.subRange(1/1000f, 1/2f)
-                ) {
-                    @Override public String summaryX(float x) { return "forget=" + n4(x); }
-                    @Override public String summaryY(float y) { return "activate=" + n4(y); }
-                },
+                        ) {
+                            @Override
+                            public String summaryX(float x) {
+                                return "forget=" + n4(x);
+                            }
 
-                new PushButton("Print", () -> {
-                    Appendable a = null;
-                    try {
-                        a = TextEdit.out().append(
-                            Joiner.on('\n').join(cc.active)
-                        );
-                        window(a, 800, 500);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }),
-                new PushButton("Clear", ()->cc.active.clear())
-        ));
+                            @Override
+                            public String summaryY(float y) {
+                                return "activate=" + n4(y);
+                            }
+                        },
+
+                        new PushButton("Print", () -> {
+                            Appendable a = null;
+                            try {
+                                a = TextEdit.out().append(
+                                        Joiner.on('\n').join(cc.active)
+                                );
+                                window(a, 800, 500);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }),
+                        new PushButton("Clear", () -> cc.active.clear())
+                ));
     }
 
     public static Surface MemEdit(NAR nar) {
@@ -261,31 +273,31 @@ public class NARui {
 
                             });
                         })
-        ));
+                ));
     }
 
     public static Surface taskView(NAR n) {
         List<Predicate<Task>> filter = new CopyOnWriteArrayList<>();
-        Consumer<Task> printer = (Task t)->{
-            if (Util.and(t,(Iterable)filter))
+        Consumer<Task> printer = (Task t) -> {
+            if (Util.and(t, (Iterable) filter))
                 System.out.println(t);
         };
 
         return new LabeledPane("Trace",
-            grid(
                 grid(
-                    new CheckBox("Belief").on(taskTrace(n, BELIEF, printer)),
-                    new CheckBox("Goal").on(taskTrace(n, GOAL, printer)),
-                    new CheckBox("Question").on(taskTrace(n, QUESTION, printer)),
-                    new CheckBox("Quest").on(taskTrace(n, QUEST, printer))
-                ),
-                grid(
-                    new CheckBox("Not Eternal").on(taskFilter(filter, (x)->!x.isEternal())),
-                    new CheckBox("Not Signal").on(taskFilter(filter, (x)->!(x instanceof Signal))),
-                    new CheckBox("Not Input").on(taskFilter(filter, (x)->x.stamp().length > 1))
-                    //TODO priority and complexity sliders
+                        grid(
+                                new CheckBox("Belief").on(taskTrace(n, BELIEF, printer)),
+                                new CheckBox("Goal").on(taskTrace(n, GOAL, printer)),
+                                new CheckBox("Question").on(taskTrace(n, QUESTION, printer)),
+                                new CheckBox("Quest").on(taskTrace(n, QUEST, printer))
+                        ),
+                        grid(
+                                new CheckBox("Not Eternal").on(taskFilter(filter, (x) -> !x.isEternal())),
+                                new CheckBox("Not Signal").on(taskFilter(filter, (x) -> !(x instanceof Signal))),
+                                new CheckBox("Not Input").on(taskFilter(filter, (x) -> x.stamp().length > 1))
+                                //TODO priority and complexity sliders
+                        )
                 )
-            )
         );
     }
 
@@ -297,7 +309,7 @@ public class NARui {
                     ff.add(f);
                 } else {
                     boolean rem = ff.remove(f);
-                    assert(rem);
+                    assert (rem);
                 }
             }
         };
@@ -312,10 +324,10 @@ public class NARui {
             @Override
             public synchronized void value(boolean b) {
                 if (b) {
-                    assert(off==null);
+                    assert (off == null);
                     off = n.onTask(printer, punc);
                 } else {
-                    assert(off!=null);
+                    assert (off != null);
                     off.off();
                     off = null;
                 }
@@ -410,7 +422,7 @@ public class NARui {
 
                 "dex", () -> new TriggeredSurface<>(
                         new Plot2D(512, Plot2D.Line)
-                            .add("Dex+0", () -> a.dexterity()/*, 0f, 1f*/),
+                                .add("Dex+0", () -> a.dexterity()/*, 0f, 1f*/),
                         a::onFrame, Plot2D::update),
 
 //                        .addAt("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
@@ -444,8 +456,8 @@ public class NARui {
                 if (b != null) {
                     float f = b.freq();
                     float conf = b.conf();
-                    float a = 0.25f + conf*0.75f;
-                    color.set((1-f)*a, f*a, 0);
+                    float a = 0.25f + conf * 0.75f;
+                    color.set((1 - f) * a, f * a, 0);
                     return;
                 }
             }
@@ -470,6 +482,45 @@ public class NARui {
             }
         });
         return input;
+    }
+
+    public static void clusterView(ConjClustering c, NAR n) {
+
+        ScatterPlot2D.ScatterPlotModel<VLink<Task>> model = new ScatterPlot2D.ScatterPlotModel<VLink<Task>>() {
+            @Override
+            public v2 coord(VLink<Task> v) {
+                Task t = v.get();
+                return new v2((float) (t.mid() - n.time()) / 10000.0f, t.conf());
+            }
+
+            @Override
+            public String label(VLink<Task> id) {
+                return id.get().toStringWithoutBudget();
+            }
+
+            @Override
+            public float pri(VLink<Task> v) {
+                return v.priElseZero();
+            }
+
+            final float[] c = new float[4];
+
+            @Override
+            public void colorize(VLink<Task> v, Graph2D.NodeVis<VLink<Task>> node) {
+                Draw.colorHash(v.centroid, c);
+                node.color(c[0], c[1], c[2], c[3]);
+            }
+
+            @Override
+            public float radius(VLink<Task> v) {
+                return (0.1f + v.priElseZero()) * 1/10f;
+            }
+        };
+        ScatterPlot2D<VLink<Task>> s = new ScatterPlot2D<VLink<Task>>(model);
+        window(DurSurface.get(new Gridding(s), n, () -> {
+            s.set(c.data.bag);
+        }), 500, 500);
+
     }
 
 //    @Deprecated public static void agentOld(NAgent a) {

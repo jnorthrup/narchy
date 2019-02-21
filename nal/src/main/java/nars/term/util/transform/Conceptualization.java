@@ -19,6 +19,21 @@ import static nars.time.Tense.XTERNAL;
  */
 public class Conceptualization {
 
+    public final static Retemporalize DirectXternal = new Untemporalization() {
+        @Override
+        protected Term transformConj(Compound y) {
+            return y.dt(XTERNAL);
+        }
+    };
+
+    /** distinguishes between sequences and non-sequences */
+    public final static Retemporalize PreciseXternal = new Untemporalization() {
+        @Override
+        protected Term transformConj(Compound y) {
+            int ydt = y.dt();
+            return (ydt == DTERNAL || ydt == 0) ? y.dt(DTERNAL) : y.dt(XTERNAL);
+        }
+    };
 
     public final static Retemporalize FlattenAndDeduplicateConj = new Untemporalization() {
         @Override
@@ -43,28 +58,6 @@ public class Conceptualization {
             return y;
         }
     };
-
-    abstract private static class Untemporalization extends Retemporalize {
-
-        abstract protected Term transformConj(Compound y);
-
-        @Override
-        public final Term transformTemporal(Compound x, int dtNext) {
-            Op xo = x.op();
-            int dt = xo.temporal ? XTERNAL : DTERNAL;
-            Term y = transformCompound(x, xo, dt);
-            if (y instanceof Compound && y.op() == CONJ) {
-                return transformConj((Compound) y);
-            } else {
-                return y;
-            }
-        }
-
-        @Override
-        public final int dt(Compound x) {
-            return x.op().temporal ? XTERNAL : DTERNAL;
-        }
-    }
 
     /** untested */
     public static final Retemporalize FlattenAndDeduplicateAndUnnegateConj = new Untemporalization() {
@@ -98,5 +91,28 @@ public class Conceptualization {
 
 
     };
+
+    abstract private static class Untemporalization extends Retemporalize {
+
+        abstract protected Term transformConj(Compound y);
+
+        @Override
+        public final Term transformTemporal(Compound x, int dtNext) {
+            Op xo = x.op();
+            int dt = xo.temporal ? XTERNAL : DTERNAL;
+            Term y = transformCompound(x, xo, dt);
+            if (y instanceof Compound && y.op() == CONJ) {
+                return transformConj((Compound) y);
+            } else {
+                return y;
+            }
+        }
+
+        @Override
+        public final int dt(Compound x) {
+            return x.op().temporal ? XTERNAL : DTERNAL;
+        }
+    }
+
 
 }
