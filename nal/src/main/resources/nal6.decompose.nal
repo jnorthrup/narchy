@@ -29,18 +29,6 @@
 
 
 
-//// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
-//If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
-
-    //CONJ
-    X, C, eventOf(C,X), conjParallel(C), --isVar(X)                   |-   conjWithout(C,  X), (Belief:DecomposePP)
-    X, C, eventOfNeg(C,X), conjParallel(C), has(C,"--"), --isVar(X)   |-   conjWithout(C,--X), (Belief:DecomposeNP)
-
-    //DISJ
-    X, D, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Belief:DecomposeNN)
-    X, D, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Belief:DecomposePN)
-
-
 
 //    //goal/antigoal in sequence
 //    X, C, eventOf(C,X), --eventOfNeg(C,X)   |- C, (Goal:DesireWeak, Time:BeliefAtTask)
@@ -101,6 +89,18 @@
         X, (--X ==> V), task("?"), is(V,"#"), --isVar(X)    |- --X, (Belief:BeliefStructuralAbduction)
 
 
+//// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
+//If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
+
+    //CONJ
+    X, C, eventOf(C,X), conjParallel(C), --isVar(X)                   |-   conjWithout(C,  X), (Belief:DecomposePP)
+    X, C, eventOfNeg(C,X), conjParallel(C), has(C,"--"), --isVar(X)   |-   conjWithout(C,--X), (Belief:DecomposeNP)
+
+    //DISJ
+    X, D, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Belief:DecomposeNN)
+    X, D, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Belief:DecomposePN)
+
+
 
 
 //Conditional implication decomposition
@@ -110,14 +110,17 @@
 //    (M ==> S), (M ==> (&&,S,A_1..n)) |- (M ==> (&&,A_1..n)), (Truth:DecomposePositiveNegativeNegative, Order:ForAllSame, SequenceIntervals:FromBelief)
 //    (M ==> S), (M ==> (||,S,A_1..n)) |- (M ==> (||,A_1..n)), (Truth:DecomposeNegativePositivePositive, Order:ForAllSame)
 
-    (  S ==> M), (C ==> M), eventOf(C,S)                    |-   (  conjWithout(C,   S) ==> M), (Belief:DecomposeNP)
-        (  S ==> M), (--D ==> M), eventOfNeg(D,S)           |- --(--conjWithout(D, --S) ==> M), (Belief:DecomposePN)
-          //TODO eventsOf rather than eventOf
+    //changed from above NP -> PP, etc
+    (  S ==> M), (C ==> M), eventOf(C,S)                    |-   (  conjWithout(C,   S) ==> M), (Belief:DecomposePP)
+        (  S ==> M), (C ==> M), eventOf(C,S)                |-   (  conjWithout(C,   S) ==> M), (Belief:DecomposeNN)
+      (  S ==> M), (--D ==> M), eventOfNeg(D,S)             |- --(--conjWithout(D, --S) ==> M), (Belief:DecomposePN)
+          (  S ==> M), (--D ==> M), eventOfNeg(D,S)         |- --(--conjWithout(D, --S) ==> M), (Belief:DecomposeNP)
+
 
     (M ==> S), (M ==> C), eventOf(C,S)                        |- --(M ==> conjWithout(C,   S)), (Belief:DecomposePN)
-    (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")         |- --(M ==> conjWithout(C,    --S)), (Belief:DecomposeNN)
-        (M ==> S), (M ==> D), eventOfNeg(D,S), has(D,"--")     |-   (M ==> conjWithout(D,    --S)), (Belief:DecomposeNP)
-        (M ==> S), (M ==> D), eventOf(D,S)                     |-   (M ==> conjWithout(D,      S)), (Belief:DecomposePP)
+    (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")        |- --(M ==> conjWithout(C, --S)), (Belief:DecomposeNN)
+        (M ==> S), (M ==> D), eventOfNeg(D,S), has(D,"--")    |-   (M ==> conjWithout(D, --S)), (Belief:DecomposeNP)
+        (M ==> S), (M ==> D), eventOf(D,S)                    |-   (M ==> conjWithout(D,   S)), (Belief:DecomposePP)
 
 
 

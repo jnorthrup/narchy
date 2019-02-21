@@ -87,13 +87,15 @@ public class Pacman extends NAgentX {
             int nextScore = g.score;
 
             float r = (nextScore - lastScore);
-            if(r == 0)
-                return Float.NaN;
+//            if(r == 0)
+//                return Float.NaN;
 
 
             lastScore = nextScore;
             if (r > 0) return +1;
-            else return 0;
+            else if (r < 0) return 0;
+            else
+                return 0.5f;
             //return (Util.tanhFast(r) + 1)/2f;
         });
     }

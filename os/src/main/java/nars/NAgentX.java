@@ -171,7 +171,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        Param.STRONG_COMPOSITION = true;
+        //Param.STRONG_COMPOSITION = true;
 
         RealTime clock =
                 new RealTime.MS();

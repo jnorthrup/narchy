@@ -135,8 +135,14 @@ public class RevisionTest {
         Task t100_102 = t(1, 0.9f, 100, 102).apply(n);
 
         //evidence density
-        assertTrue(Revision.merge(t01, t45, n).evi() < Revision.merge(t02, t45, n).evi());
-        assertTrue(Revision.merge(t02, t45, n).evi() < Revision.merge(t03, t45, n).evi());
+        Task a = Revision.merge(t01, t45, n);
+        Task b = Revision.merge(t02, t45, n);
+        Task c = Revision.merge(t03, t45, n);
+        assertNotNull(a);
+        assertNotNull(b);
+        assertTrue(a.evi() < b.evi());
+        assertNotNull(c);
+        assertTrue(b.evi() < c.evi());
 
         assertEquals("(b-->a). 0⋈102 %1.0;.34%", Revision.merge(t02, t100_102, n).toStringWithoutBudget());
 

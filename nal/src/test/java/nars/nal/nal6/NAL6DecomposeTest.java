@@ -1,12 +1,19 @@
 package nars.nal.nal6;
 
+import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
 import nars.test.TestNAR;
+import nars.truth.PreciseTruth;
+import nars.truth.Truth;
+import nars.truth.func.TruthFunctions;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL6DecomposeTest extends NALTest {
     private static final int cycles = 350;
@@ -31,6 +38,20 @@ public class NAL6DecomposeTest extends NALTest {
     }
 
     private void assertDecomposeSubjAB(float fAB, float fA, float c, float fB, float cB, boolean conjOrDisj) {
+
+        if (conjOrDisj) {
+            PreciseTruth tA = $.t(fA, c);
+            PreciseTruth tAB = $.t(fAB, c);
+            Truth tAB_decompose_tA = TruthFunctions.decompose(tA, tAB, true, true, true, 0);
+            System.out.println(tAB + " <= " + tA + " * " + tAB_decompose_tA);
+
+            assertEquals(fB, tAB_decompose_tA.freq(), 0.01f);
+
+            //reverse, to check:
+            @Nullable Truth tAB_check = TruthFunctions.intersection(tA, tAB_decompose_tA, 0);
+            assertEquals(tAB.freq(), tAB_check.freq(), 0.01f);
+        }
+
         //tests:
         // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
         String AB = conjOrDisj ? "(A && B)" : "(A || B)";
@@ -45,6 +66,10 @@ public class NAL6DecomposeTest extends NALTest {
     @Test void testDecomposeSubjConjPosPos() {
         assertDecomposeSubjConjAandB(1f, 1f, 1f, 0.81f);
     }
+    @Test void testDecomposeSubjConjPosWeakPos() {
+        assertDecomposeSubjConjAandB(0.9f, 1f, 0.9f, 0.73f);
+    }
+
     @Test void testDecomposeSubjDisjPosPos() {
         assertDecomposeSubjDisjAandB(1f, 0.9f, 0.1f, 0.08f);
     }
@@ -222,16 +247,28 @@ public class NAL6DecomposeTest extends NALTest {
         tester.mustBelieve(cycles, "--(bird:robin ==> animal:robin)", 1.00f, 0.81f);
 
     }
+
     @Test
     void disjunction_decompose_two_premises3() {
-
         TestNAR tester = test;
-        tester.believe("(||,(robin --> [flying]),(robin --> swimmer))");
+        tester.believe("((robin --> [flying]) || (robin --> swimmer))");
         tester.believe("(robin --> swimmer)", 0.0f, 0.9f);
         tester.mustBelieve(cycles, "(robin --> [flying])", 1.00f, 0.81f);
-
     }
-
+    @Test
+    void disjunction_impl_decompose_two_premises3() {
+        TestNAR tester = test;
+        tester.believe("(((robin --> [flying]) || (robin --> swimmer)) ==> x)");
+        tester.believe("((robin --> swimmer) ==> x)", 0.0f, 0.9f);
+        tester.mustBelieve(cycles, "((robin --> [flying]) ==> x)", 1.00f, 0.81f);
+    }
+    @Test
+    void disjunction_impl_decompose_two_premises_neg() {
+        TestNAR tester = test;
+        tester.believe("(((robin --> [flying]) || (robin --> swimmer)) ==> --x)");
+        tester.believe("((robin --> swimmer) ==> --x)", 0.0f, 0.9f);
+        tester.mustBelieve(cycles, "((robin --> [flying]) ==> --x)", 1.00f, 0.81f);
+    }
 
 //    @Test
 //    void compound_decomposition_subj_posneg() {
