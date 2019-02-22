@@ -45,7 +45,7 @@ public class ByteHijackMemoize<X extends ByteKey.ByteKeyExternal,Y> extends Hija
 
     @Override
     public float value(X x, Y y) {
-        return 1f/(bag.reprobes * (1+x.length()));
+        return DEFAULT_VALUE /((1+x.length()));
         //return 1f/(bag.reprobes * (1+ Util.sqr(x.length())));
     }
 }

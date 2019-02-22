@@ -2,6 +2,7 @@ package nars.truth.func;
 
 import jcog.Util;
 import nars.$;
+import nars.Param;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -331,4 +332,31 @@ public enum TruthFunctions2 {
 //
 //            return c >= minConf ? t(f, c) : null;
 //    }
+
+
+    /** designed to be precise inverse of intersection (not a fuzzy-fuzzy-set result)
+     *
+     * XY = X * Y
+     *  Y = XY / X
+     * */
+    @Nullable public static Truth divide(Truth X, Truth XY, float minConf) {
+        float cxy = confCompose(X, XY);
+        if (cxy >= minConf) {
+            float fx = Math.max(Param.TRUTH_EPSILON, X.freq()), fxy = XY.freq();
+
+            float fy = fxy / fx;
+
+            float cFactor = 1;
+            if (fy > 1) {
+                cFactor = 1/fy;
+                fy = 1;
+            }
+            float c =
+                    cxy * cFactor;
+
+            if (c >= minConf)
+                return t(fy, c);
+        }
+        return null;
+    }
 }

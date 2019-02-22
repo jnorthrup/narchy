@@ -172,12 +172,13 @@
 //note: the question variations of these are responsible for creating terms that can be truthed dynamically. so they are important
 
     //Same as for inheritance
-    //union/intersection assymmetry: union if subj, intersect if pred
+    //classically: union/intersection assymmetry: union if subj, intersect if pred
 
      (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:Intersection)
-       //(P ==> M), (S ==> M) |- --((P && S) ==> M), (Belief:IntersectionNN)
+         (P ==> M), (S ==> M) |- --((P && S) ==> M), (Belief:IntersectionNN)
        (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:Union)
-        //(P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
+           (P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
+
 //     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
 //     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionSym)
         (P ==> M), (S ==> M), task("?"), neq(S,P), hasBelief() |- ((P && S) ==> M), (Punctuation:Question)
