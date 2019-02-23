@@ -1,5 +1,6 @@
 package nars.truth.func;
 
+import jcog.Skill;
 import jcog.Util;
 import nars.$;
 import nars.Param;
@@ -338,8 +339,10 @@ public enum TruthFunctions2 {
      *
      * XY = X * Y
      *  Y = XY / X
+     *
+     *  http://www.math.sk/fsta2014/presentations/VemuriHareeshSrinath.pdf
      * */
-    @Nullable public static Truth divide(Truth X, Truth XY, float minConf) {
+    @Skill("Fuzzy_set") @Nullable public static Truth divide(Truth X, Truth XY, float minConf) {
         float cxy = confCompose(X, XY);
         if (cxy >= minConf) {
             float fx = Math.max(Param.TRUTH_EPSILON, X.freq()), fxy = XY.freq();

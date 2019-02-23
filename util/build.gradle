@@ -63,7 +63,7 @@ dependencies {
 //    testCompile group: 'tech.tablesaw', name: 'tablesaw-jsplot', version: '0.31.0'
 
     // https://mvnrepository.com/artifact/net.openhft/zero-allocation-hashing
-    compile (group: 'net.openhft', name: 'zero-allocation-hashing', version: '0.8') {
+    compile (group: 'net.openhft', name: 'zero-allocation-hashing', version: '0.9') {
         exclude(module: 'guava')
     }
 
