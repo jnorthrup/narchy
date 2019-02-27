@@ -8,10 +8,10 @@ import jcog.learn.decision.FloatTable;
 import jcog.util.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import tech.tablesaw.api.*;
+import tech.tablesaw.columns.AbstractColumnParser;
 import tech.tablesaw.columns.AbstractColumnType;
-import tech.tablesaw.columns.AbstractParser;
 import tech.tablesaw.columns.Column;
-import tech.tablesaw.io.csv.CsvReadOptions;
+import tech.tablesaw.io.ReadOptions;
 import tech.tablesaw.io.csv.CsvWriteOptions;
 import tech.tablesaw.io.csv.CsvWriter;
 import tech.tablesaw.table.Rows;
@@ -234,9 +234,14 @@ public class DataTable extends Table {
         }
 
         @Override
-        public AbstractParser<?> customParser(CsvReadOptions options) {
+        public AbstractColumnParser<?> customParser(ReadOptions options) {
             throw new TODO();
         }
+
+//        @Override
+//        public AbstractParser<?> customParser(CsvReadOptions options) {
+//            throw new TODO();
+//        }
 
 
 //        @Override

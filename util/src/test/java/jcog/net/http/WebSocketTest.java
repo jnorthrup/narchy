@@ -2,7 +2,6 @@ package jcog.net.http;
 
 import jcog.Util;
 import org.java_websocket.WebSocket;
-import org.java_websocket.WebSocketImpl;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
@@ -32,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
         Server(int port) {
             super( new InetSocketAddress( port ), List.of(new Draft_6455()) );
-            WebSocketImpl.DEBUG = true;
+            //WebSocketImpl.DEBUG = true;
 
 
         }

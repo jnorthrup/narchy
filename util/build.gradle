@@ -16,7 +16,7 @@ dependencies {
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'
     compile group: 'org.hdrhistogram', name: 'HdrHistogram', version: '2.1.11'
     compile group: 'org.msgpack', name: 'jackson-dataformat-msgpack', version: '0.8.16'
-    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.38') {
+    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.42') {
         exclude(module: 'commons-lang3')
         exclude(module: 'guava')
     }
@@ -42,7 +42,9 @@ dependencies {
 //    compile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.1'
 //    compile group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.0.2'
 
-    compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.6.2'
+    compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.7.0'
+
+
     compile(group: 'net.openhft', name: 'affinity', version: '3.1.11') {
         exclude(module: 'slf4j-api')
         exclude(module: 'annotations')

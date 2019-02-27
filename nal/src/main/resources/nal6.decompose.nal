@@ -16,14 +16,14 @@
       //D, X, eventOfPN(C,X), conjParallel(D), --isVar(X)  |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 
     //free structural implication belief and question decomposition
-    (--D ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (--conjWithoutPN(D,  --X) ==> A), (Belief:StructuralReduction)
+    (A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
+      //(A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- --(A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeductionN)
+    (--D ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- polarizeTask((--conjWithoutPN(D,  --X) ==> A)), (Belief:StructuralReductionDepolarized)
     //(C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
         (C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
       //(--C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (--conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
           (--C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (--conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
 
-    (A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
-    (A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- --(A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeductionN)
     //(A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Belief:StructuralReduction)
          (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
 
@@ -70,7 +70,7 @@
     G, D, eventOf(D,G), conjParallel(D), --isVar(G)                   |- --conjWithout(D,  G), (Goal:DesireWeakPN)
     G, D, eventOfNeg(D,G), conjParallel(D), has(D,"--"), --isVar(G)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
 
-    //conditional disjunction goal decompose (alternate suppress by belief)
+    //conditional goal disjunction decompose (alternate suppress by belief)
     D, X, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Goal:DeductionWeakNP)
     D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Goal:DeductionWeakNN)
 

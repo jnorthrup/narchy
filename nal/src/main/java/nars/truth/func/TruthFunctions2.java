@@ -345,8 +345,9 @@ public enum TruthFunctions2 {
     @Skill("Fuzzy_set") @Nullable public static Truth divide(Truth X, Truth XY, float minConf) {
         float cxy = confCompose(X, XY);
         if (cxy >= minConf) {
-            float fx = Math.max(Param.TRUTH_EPSILON, X.freq()), fxy = XY.freq();
 
+            float fxy = XY.freq();
+            float fx = Math.max(Util.sqr(Param.TRUTH_EPSILON), X.freq()); //prevent division by zero
             float fy = fxy / fx;
 
             float cFactor = 1;

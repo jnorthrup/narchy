@@ -51,7 +51,7 @@ class WebSocketSelector extends WebSocketAdapter {
 
     private boolean readable(WebSocketImpl conn) throws IOException {
         buffer.clear();
-        int read = conn.channel.read(buffer);
+        int read = conn.getChannel().read(buffer);
         buffer.flip();
 
         switch (read) {
@@ -67,7 +67,7 @@ class WebSocketSelector extends WebSocketAdapter {
     }
 
     private static boolean writable(SelectionKey key, WebSocketImpl conn) throws IOException {
-        if (SocketChannelIOHelper.batch(conn, conn.channel)) {
+        if (SocketChannelIOHelper.batch(conn, conn.getChannel())) {
             if (key.isValid()) {
                 key.interestOps(SelectionKey.OP_READ);
             }
@@ -203,7 +203,7 @@ class WebSocketSelector extends WebSocketAdapter {
     @Override
     public final void onWriteDemand(WebSocket w) {
         WebSocketImpl conn = (WebSocketImpl) w;
-        conn.key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        conn.getSelectionKey().interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         try {
             selector.wakeup();
         } catch (IllegalStateException ex) {
@@ -255,7 +255,7 @@ class WebSocketSelector extends WebSocketAdapter {
     }
 
     private static Socket socket(WebSocket conn) {
-        return ((SocketChannel) ((WebSocketImpl) conn).key.channel()).socket();
+        return ((SocketChannel) ((WebSocketImpl) conn).getSelectionKey().channel()).socket();
     }
 
     @Override

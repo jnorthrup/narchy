@@ -34,10 +34,10 @@ public class WebSocketConnection extends WebSocketImpl {
         chan.configureBlocking(false);
         chan.socket().setTcpNoDelay(true);
 
-        key = chan.register(ws.selector, SelectionKey.OP_READ, this);
+        setSelectionKey(chan.register(ws.selector, SelectionKey.OP_READ, this));
 
         if (ws.listener.wssConnect(this)) {
-            channel = chan;
+            setChannel(chan);
 
             ByteBuffer prependData = newChannel.prependData;
             newChannel.prependData = null;
@@ -46,7 +46,7 @@ public class WebSocketConnection extends WebSocketImpl {
             logger.info("connect {} {}", chan.getRemoteAddress(), getResourceDescriptor());
         } else {
             close(CloseFrame.REFUSE);
-            key.cancel();
+            getSelectionKey().cancel();
             logger.info("non-connect {}", chan.getRemoteAddress(), this);
         }
 
