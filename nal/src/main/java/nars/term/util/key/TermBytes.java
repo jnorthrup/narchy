@@ -4,11 +4,12 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.HashCachedBytes;
 import nars.Op;
 import nars.Task;
+import nars.io.TermIO;
 import nars.term.Term;
 
 import java.io.IOException;
 
-import static nars.IO.writeEvidence;
+import static nars.io.IO.writeEvidence;
 
 /**
  * TODO lazily compute
@@ -28,7 +29,7 @@ public class TermBytes extends HashCachedBytes {
 
         y.writeByte(vol);
 
-        x.appendTo((ByteArrayDataOutput) y);
+        TermIO.the.write(x, (ByteArrayDataOutput) y);
 
         y.compact();
 
@@ -44,7 +45,7 @@ public class TermBytes extends HashCachedBytes {
         super(task.volume() * 4 + 64 /* ESTIMATE */);
         try {
 
-            task.term().appendTo((ByteArrayDataOutput) this);
+            TermIO.the.write(task.term(), (ByteArrayDataOutput) this);
 
             byte punc = task.punc();
             this.writeByte(punc);

@@ -1,6 +1,5 @@
 package nars.subterm;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.iterator.ArrayIterator;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
@@ -27,13 +26,6 @@ public class BiSubterm extends TermVector {
         normalized = normalized(this);
     }
 
-
-    @Override
-    public void appendTo(ByteArrayDataOutput out) {
-        out.writeByte(2);
-        x.appendTo(out);
-        y.appendTo(out);
-    }
 
     @Override
     public int sum(ToIntFunction<Term> value) {

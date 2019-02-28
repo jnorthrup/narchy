@@ -2,6 +2,7 @@ package nars.term.util.builder;
 
 import jcog.data.byt.DynBytes;
 import jcog.memoize.Memoizers;
+import jcog.memoize.byt.ByteKeyExternal;
 import nars.Op;
 import nars.subterm.AnonVector;
 import nars.subterm.SortedSubterms;
@@ -99,7 +100,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    protected <I extends Intermed, Y> Function<I, Y> newOpCache(String name, Function<I, Y> f, int capacity) {
+    protected <I extends ByteKeyExternal, Y> Function<I, Y> newOpCache(String name, Function<I, Y> f, int capacity) {
         return Memoizers.the.memoizeByte(
                 id + '_' + InterningTermBuilder.class.getSimpleName() + '_' + name,
                 capacity, f);

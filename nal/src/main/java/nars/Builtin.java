@@ -2,6 +2,7 @@ package nars;
 
 import jcog.Texts;
 import jcog.User;
+import nars.io.IO;
 import nars.op.*;
 import nars.op.data.flat;
 import nars.op.data.reflect;

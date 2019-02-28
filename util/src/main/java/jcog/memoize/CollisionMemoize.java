@@ -1,6 +1,7 @@
 package jcog.memoize;
 
-import jcog.memoize.byt.ByteKey;
+import jcog.memoize.byt.ByteKeyExternal;
+import jcog.memoize.byt.ByteKeyInternal;
 import systems.comodal.collision.cache.CollisionBuilder;
 import systems.comodal.collision.cache.CollisionCache;
 
@@ -14,17 +15,17 @@ public class CollisionMemoize<X,Y> extends AbstractMemoize<X,Y> {
     }
 
 //    /** probably inefficient as is */
-    public static <B extends ByteKey.ByteKeyExternal,Y> CollisionMemoize<B, ByteKey.ByteKeyInternal<Y>> byteKey(int capacity, Function<B,Y> f) {
+    public static <B extends ByteKeyExternal,Y> CollisionMemoize<B, ByteKeyInternal<Y>> byteKey(int capacity, Function<B,Y> f) {
 
 
         CollisionBuilder ccc = CollisionCache
-                .<ByteKey.ByteKeyInternal>withCapacity(capacity)
+                .<ByteKeyInternal>withCapacity(capacity)
 //                .<Key, byte[]>setLoader(
 //                        guid -> loadFromDisk(guid),
 //                        (guid, loaded) -> deserialize(loaded))
-                .setValueType(ByteKey.ByteKeyInternal.class);
+                .setValueType(ByteKeyInternal.class);
 
-        return new CollisionMemoize<B, ByteKey.ByteKeyInternal<Y>>(ccc
+        return new CollisionMemoize<B, ByteKeyInternal<Y>>(ccc
                 .setIsValForKey(Object::equals)
                 .setLoader(f, (k, y) -> ((B)k).internal(y, 0.5f))
                 .setLazyInitBuckets(true)
@@ -35,8 +36,8 @@ public class CollisionMemoize<X,Y> extends AbstractMemoize<X,Y> {
 
         ) {
             @Override
-            public ByteKey.ByteKeyInternal<Y> apply(B x) {
-                ByteKey.ByteKeyInternal<Y> y = super.apply(x);
+            public ByteKeyInternal<Y> apply(B x) {
+                ByteKeyInternal<Y> y = super.apply(x);
                 x.close();
                 return y;
             }

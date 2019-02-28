@@ -4,7 +4,7 @@ import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
 import jcog.sort.SortedList;
 import jcog.util.ArrayUtils;
-import nars.IO;
+import nars.io.IO;
 import nars.Op;
 import nars.derive.premise.PatternIndex;
 import nars.subterm.Subterms;

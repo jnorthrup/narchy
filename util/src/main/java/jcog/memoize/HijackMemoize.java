@@ -75,12 +75,22 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         if (exists != null) {
             Y e = exists.get();
             if (e != null) {
-                exists.priAdd(CACHE_HIT_BOOST);
+                boost(exists);
                 return e;
             } else
                 throw new NullPointerException();
         }
         return null;
+    }
+
+    /** gain of priority on cache hit */
+    protected void boost(PriProxy<X, Y> p) {
+        p.priAdd(CACHE_HIT_BOOST);
+    }
+
+    /** loss of priority if survives */
+    protected void cut(PriProxy<X,Y> p) {
+        p.priSub(CACHE_SURVIVE_COST);
     }
 
     @Nullable
@@ -251,7 +261,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
                 return true;
             } else {
                 //remains, gradually weaken
-                existingValue.priSub(CACHE_SURVIVE_COST);
+                cut(existingValue);
                 return false;
             }
         }

@@ -1,9 +1,7 @@
 package nars.subterm;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.WTF;
 import jcog.util.ArrayUtils;
-import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 
@@ -192,15 +190,15 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
         }
 
         @Override
-        protected int subMap(int i) {
+        public int subMap(int i) {
             return (size) - i;
         }
     }
 
 
-    private static final class ArrayRemappedSubterms<S extends Subterms> extends HashCachedRemappedSubterms<S> {
+    public static final class ArrayRemappedSubterms<S extends Subterms> extends HashCachedRemappedSubterms<S> {
         /** TODO even more compact 2-bit, 3-bit etc representations */
-        final byte[] map;
+        public final byte[] map;
 
         final byte negs;
 
@@ -229,19 +227,6 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
             return negs;
         }
 
-        /** @see AnonVector.appendTo */
-        @Override
-        public void appendTo(ByteArrayDataOutput out) {
-            byte[] xx = map;
-            out.writeByte(xx.length);
-            for (byte x : xx) {
-                if (x < 0) {
-                    out.writeByte(Op.NEG.id);
-                    x = (byte) -x;
-                }
-                mapSub(x).appendTo(out);
-            }
-        }
 
         @Override
         public final int subs() {
@@ -249,7 +234,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
         }
 
         @Override
-        protected final int subMap(int i) {
+        public final int subMap(int i) {
             return map[i];
         }
 
@@ -379,35 +364,19 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
         return mapTerm(subMap(i));
     }
 
-    private Term mapTerm(int xy) {
+    public Term mapTerm(int xy) {
         boolean neg = (xy < 0);
         if (neg) xy = -xy;
         Term y  = mapSub(xy);
         return neg ? y.neg() : y;
     }
 
-    protected Term mapSub(int xy) {
+    public Term mapSub(int xy) {
         return ref.sub(xy - 1);
     }
 
-    protected abstract int subMap(int i);
+    public abstract int subMap(int i);
 
-
-    /** @see AnonVector.appendTo */
-    @Override
-    public void appendTo(ByteArrayDataOutput out) {
-
-        int s = subs();
-        out.writeByte(s);
-        for (int i = 0; i < s; i++) {
-            int x = subMap(i);
-            if (x < 0) {
-                out.writeByte(Op.NEG.id);
-                x = (byte) -x;
-            }
-            mapTerm(x).appendTo(out);
-        }
-    }
 
 
 }

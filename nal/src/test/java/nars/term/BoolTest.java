@@ -2,6 +2,7 @@ package nars.term;
 
 import nars.$;
 import nars.*;
+import nars.io.IO;
 import nars.op.Equal;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;

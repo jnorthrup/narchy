@@ -2,7 +2,7 @@ package nars.term.util.transform;
 
 import jcog.data.set.ArrayHashSet;
 import nars.$;
-import nars.IO;
+import nars.io.IO;
 import nars.term.Term;
 import nars.term.atom.Int;
 import org.apache.lucene.util.BytesRef;

@@ -34,6 +34,7 @@ import nars.eval.Facts;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.index.concept.ConceptIndex;
+import nars.io.IO;
 import nars.link.Activate;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;

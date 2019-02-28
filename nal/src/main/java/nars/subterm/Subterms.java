@@ -1121,10 +1121,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return (index == -1) ? null : subsExcluding(index);
     }
 
-    default void appendTo(ByteArrayDataOutput out) {
-        out.writeByte(subs());
-        forEachWith(Term::appendTo, out);
-    }
+
 
     default Subterms replaceSub(Term from, Term to, Op superOp) {
         if (containsRecursively(from)) {

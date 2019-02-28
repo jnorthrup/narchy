@@ -47,9 +47,9 @@ public abstract class Param {
     }
 
     public static final Retemporalize conceptualization =
+            Conceptualization.FlattenAndDeduplicateConj
             //Conceptualization.DirectXternal;
-            Conceptualization.PreciseXternal;
-            //Conceptualization.FlattenAndDeduplicateConj
+            //Conceptualization.PreciseXternal;
             //Conceptualization.FlattenAndDeduplicateAndUnnegateConj //untested
             ;
 
@@ -63,7 +63,7 @@ public abstract class Param {
 
     public static final boolean DT_DITHER_LOGARITHMICALLY = false;
 
-    public static final boolean PREMISE_FOCUS_TIME_DITHER = true;
+    public static final boolean PREMISE_FOCUS_TIME_DITHER = false;
 
 
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = false;

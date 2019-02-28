@@ -21,7 +21,6 @@
 package nars.term;
 
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.NAR;
@@ -142,8 +141,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     Op op();
-
-    void appendTo(ByteArrayDataOutput out);
 
     @Override
     boolean equals(Object o);

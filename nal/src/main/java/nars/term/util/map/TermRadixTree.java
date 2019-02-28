@@ -3,7 +3,7 @@ package nars.term.util.map;
 import jcog.data.byt.AbstractBytes;
 import jcog.data.byt.ArrayBytes;
 import jcog.tree.radix.MyConcurrentRadixTree;
-import nars.IO;
+import nars.io.IO;
 import nars.term.Term;
 import nars.term.Termed;
 

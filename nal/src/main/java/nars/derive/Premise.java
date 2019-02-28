@@ -384,6 +384,7 @@ public class Premise implements Comparable<Premise> {
 
         if (match(d, matchTTL)) {
 
+
             if (d.deriver.rules.derivable(d)) {
 
                 d.derive(

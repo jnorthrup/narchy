@@ -5,7 +5,6 @@ import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
-import nars.Task;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.term.control.PREDICATE;
@@ -30,42 +29,9 @@ public class DeriverRules {
     /**
      * TODO move this to a 'CachingDeriver' subclass
      */
-    public final ByteHijackMemoize<PremiseKey, short[/*punc * singleOrDouble*/][/*conclusions*/]> whats;
+    public final ByteHijackMemoize<PremiseKey, short[]> whats;
 
 
-    public short[] can(Derivation d, short[][] can) {
-
-        byte punc = d.taskPunc;
-        boolean singleOrDouble = d.hasBeliefTruth();
-
-        int p = Task.i(punc);
-        int s = singleOrDouble ? 0 : 1;
-        int ps = p * 2 + s;
-        short[] cps = can[ps];
-        if (cps != null) {
-            whats.hit.incrementAndGet();
-            return cps;
-        }
-
-        whats.miss.incrementAndGet();
-
-        d.can.clear();
-
-        what.test(d);
-
-        return can[ps] = Util.toShort(d.can.toArray());
-    }
-
-    public boolean derivable(Derivation d) {
-        PremiseKey k = PremiseKey.get(d);
-        @Nullable short c[][] = whats.getIfPresent(k);
-        if (c == null)
-            whats.put(k, c = new short[4*2][]);
-        else
-            k.close();
-
-        return (d.will = can(d, c)).length > 0;
-    }
 
     /**
      * repertoire
@@ -81,14 +47,25 @@ public class DeriverRules {
         this.could = actions;
 
         this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.cause)).toArray(Cause[]::new);
+        this.whats = Memoizers.the.memoizeByte(this + "_what", Memoizers.DEFAULT_MEMOIZE_CAPACITY*2, (p)->{
 
+            Derivation d = p.d;
+            d.can.clear();
+            what.test(d);
+            return Util.toShort(d.can.toArray());
 
-
-//            @Override
-//            public float value(PremiseKey premiseKey, short[] shorts) {
-//                return premiseKey.pri;
-//            }
-        this.whats = Memoizers.the.memoizeByte(this + "_what", 128 * 1024, null);
+        });
+    }
+    public boolean derivable(Derivation d) {
+        PremiseKey k = new PremiseKey(d);
+        @Nullable short c[] = whats.apply(k);
+        if (c.length > 0) {
+            d.will = c;
+            return true;
+        } else {
+            d.will = null;
+            return false;
+        }
     }
 
 

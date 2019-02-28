@@ -305,7 +305,7 @@ abstract public class JoglSpace {
         }
 
         @Override
-        protected void update(int dtMS) {
+        protected void update() {
             int w = io.window.getWidth(), h = io.window.getHeight();
             rendering.clear();
             rendering.restart(w, h);

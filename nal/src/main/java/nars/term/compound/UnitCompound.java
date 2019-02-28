@@ -182,15 +182,6 @@ public abstract class UnitCompound implements Compound {
         return sub().isNormalized();
     }
 
-
-
-
-    @Override
-    public void appendSubtermsTo(ByteArrayDataOutput out) {
-        out.writeByte(1);
-        sub().appendTo(out);
-    }
-
     @Override
     public int volume() {
         return sub().volume()+1;

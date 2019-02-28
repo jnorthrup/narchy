@@ -1,6 +1,6 @@
 package nars.term.util.builder;
 
-import nars.IO;
+import nars.io.IO;
 import nars.Op;
 import nars.subterm.RemappedSubterms;
 import nars.subterm.Subterms;

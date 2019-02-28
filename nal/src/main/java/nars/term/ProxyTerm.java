@@ -137,12 +137,6 @@ public class ProxyTerm implements Compound {
     }
 
     @Override
-    public void appendTo(ByteArrayDataOutput out) {
-        ref.appendTo(out);
-    }
-
-
-    @Override
     public void appendTo(Appendable w) throws IOException {
         ref.appendTo(w);
     }

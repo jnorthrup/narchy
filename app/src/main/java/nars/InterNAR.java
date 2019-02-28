@@ -8,6 +8,7 @@ import jcog.util.TriConsumer;
 import nars.bag.leak.TaskLeak;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
+import nars.io.IO;
 import nars.task.ActiveQuestionTask;
 import nars.task.ITask;
 import nars.time.clock.RealTime;

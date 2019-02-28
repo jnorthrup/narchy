@@ -492,7 +492,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                                 onUpdate.emit(JoglWindow.this);
 
-                                update((int) Math.round(cycleTimeNS / 1_000_000.0));
+                                update();
 
                                 d.flushGLRunnables();
                                 updateWindow();
@@ -565,7 +565,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     }
 
-    protected void update(int dtMS) {
+    protected void update() {
 
     }
 

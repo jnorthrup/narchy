@@ -1,13 +1,12 @@
 package nars.term.compound;
 
-import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.primitives.Ints;
 import jcog.data.byt.DynBytes;
-import jcog.data.byt.util.IntCoding;
-import nars.IO;
 import nars.Op;
 import nars.Param;
 import nars.The;
+import nars.io.IO;
+import nars.io.TermIO;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -35,25 +34,17 @@ public class SerialCompound extends DynBytes implements Compound, The {
     public SerialCompound(Op o, int dt, Term[] subterms) {
         super(subterms.length * 4 /* estimate */);
 
-        boolean temporal = o.temporal && dt!=DTERNAL;
-
-        writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
-        if (temporal)
-            IntCoding.writeZigZagInt(dt, this);
-
-        writeByte(subterms.length);
-
         int v = 1;
-        for (Term x: subterms) {
-            x.appendTo((ByteArrayDataOutput) this);
+        for (Term x: subterms)
             v += x.volume();
-        }
 
         if (v > Param.COMPOUND_VOLUME_MAX)
             throw new TermException("complexity overflow");
 
         this.volume = (byte) v;
 
+        TermIO.the.writeCompoundPrefix(o, dt, this);
+        TermIO.the.writeSubterms(subterms, this);
     }
 
 

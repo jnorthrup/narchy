@@ -1,13 +1,14 @@
-package nars;
+package nars.io;
 
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.RecycledDynBytes;
-import jcog.data.byt.util.IntCoding;
 import jcog.io.BytesInput;
 import jcog.pri.Prioritized;
+import nars.Op;
+import nars.Task;
 import nars.subterm.Subterms;
 import nars.task.CommandTask;
 import nars.task.NALTask;
@@ -15,11 +16,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Terms;
-import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
-import nars.term.util.TermException;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,18 +56,21 @@ import static nars.time.Tense.XTERNAL;
 public class IO {
 
 
-    /** upper control flags for the op byte */
-    public static final byte SPECIAL_BIT = (byte) (1 << 7);
-    public static final byte TEMPORAL_BIT = (byte) (1 << 6);
-
-    /** lower 5 bits (bits 0..4) */
+    /** lower 5 bits (bits 0..4) = base op */
     public static final byte OP_MASK = (0b00011111);
+    static { assert(Op.values().length < OP_MASK); }
+
+    /** upper control flags for the op byte */
+    public static final byte TEMPORAL_BIT_0 = 1 << 5;
+    public static final byte TEMPORAL_BIT_1 = 1 << 6;
+    static { assert(TEMPORAL_BIT_0 == OP_MASK + 1); }
 
     @Deprecated public static final byte SPECIAL_BYTE = (byte) 0xff;
+    static { for (Op o : Op.values()) if (o.temporal) assert(o.id!=OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */ }
 
 
     public static final int STREAM_BUFFER_SIZE = 64 * 1024;
-    static final int GZIP_BUFFER_SIZE =
+    public static final int GZIP_BUFFER_SIZE =
             //512; //default
             1024;
     //4 * 1024;
@@ -105,7 +105,7 @@ public class IO {
 
         byte punc = in.readByte();
 
-        Term preterm = readTerm(in);
+        Term preterm = TermIO.the.read(in);
 
         final Term term = preterm.normalize();
         if (term == null)
@@ -154,7 +154,7 @@ public class IO {
         out.writeByte(p);
 
 
-        t.term().appendTo(out);
+        TermIO.the.write(t.term(), out);
 
 
         if (p != COMMAND) {
@@ -192,60 +192,6 @@ public class IO {
     }
 
 
-    private static Atomic readVariable(DataInput in, /*@NotNull*/ Op o) throws IOException {
-        return $.v(o, in.readByte());
-    }
-
-
-    /**
-     * called by readTerm after determining the op type
-     */
-    private static Term readTerm(DataInput in) throws IOException {
-
-        byte opByte = in.readByte();
-        if (opByte != SPECIAL_BYTE) {
-            Op o = Op.ops[opByte & OP_MASK];
-            switch (o) {
-                case VAR_DEP:
-                case VAR_INDEP:
-                case VAR_PATTERN:
-                case VAR_QUERY:
-                    return readVariable(in, o);
-                case IMG:
-                    return in.readByte() == ((byte)'/') ? Op.ImgExt : Op.ImgInt;
-                case BOOL:
-                    byte code = in.readByte();
-                    switch (code) {
-                        case -1:
-                            return Bool.Null;
-                        case 0:
-                            return Bool.False;
-                        case 1:
-                            return Bool.True;
-                        default:
-                            throw new UnsupportedEncodingException();
-                    }
-                case ATOM:
-                    switch (subType(opByte)) {
-                        case 0:
-                            return Atomic.the(in.readUTF());
-                        case 1:
-                            return Anom.the(in.readByte());
-                        default:
-                            throw new TODO();
-                    }
-                case INT:
-                    return Int.the(IntCoding.readZigZagInt(in));
-                case NEG:
-                    return readNegated(in);
-                default:
-                    return readCompound(in, o, (opByte & TEMPORAL_BIT) != 0);
-
-            }
-        } else {
-            return readSpecialTerm(in);
-        }
-    }
 
     public static byte opAndSubType(Op op, byte subtype) {
         return opAndSubType(op.id, subtype);
@@ -255,80 +201,34 @@ public class IO {
         return (byte) (op | (subtype << 5));
     }
 
-    private static byte subType(byte opByte) {
+    static byte subType(byte opByte) {
         return (byte) ((opByte & 0b11100000) >> 5);
     }
 
-    private static Term readSpecialTerm(DataInput in) throws IOException {
-        try {
-            return Narsese.term(in.readUTF(), false);
-        } catch (Narsese.NarseseException e) {
-            throw new IOException(e);
-        }
-    }
-
-
-
-
-    private static Term[] readTermContainer(DataInput in) throws IOException {
-        int siz = in.readByte();
-
-        assert (siz < Param.SUBTERMS_MAX);
-
-        Term[] s = new Term[siz];
-        for (int i = 0; i < siz; i++) {
-            Term read = (s[i] = readTerm(in));
-            if (read == null)
-                throw new TermException(Op.PROD /* consider the termvector as a product */, s, "invalid");
-        }
-
-        return s;
-    }
-
-    private static Term readNegated(DataInput in) throws IOException {
-        return readTerm(in).neg();
-    }
-
-    /**
-     * called by readTerm after determining the op type
-     * TODO make a version which reads directlyinto TermIndex
-     */
-    private static Term readCompound(DataInput in, /*@NotNull*/ Op o, boolean temporal) throws IOException {
-
-        int dt = temporal ? IntCoding.readZigZagInt(in) : DTERNAL;
-
-        Term[] v = readTermContainer(in);
-
-        Term y = o.the(dt, v);
-        if (!(y instanceof Compound))
-            throw new TermException(o, dt, v, "read invalid compound");
-
-        return y;
-    }
 
     public static byte[] termToBytes(Term t) {
         if (t instanceof Atomic) {
             return ((Atomic) t).bytes();
         } else {
             try (RecycledDynBytes d = RecycledDynBytes.get()) { //termBytesEstimate(t) /* estimate */);
-                t.appendTo((ByteArrayDataOutput) d);
+                TermIO.the.write(t, d);
                 return d.arrayCopy();
             }
         }
     }
 
-    /**
-     * warning: result may be RecycledDynBytes
-     */
-    public static DynBytes termToDynBytes(Term t) {
-        if (t instanceof Atomic) {
-            return new DynBytes(((Atomic) t).bytes()); //dont recycle
-        } else {
-            DynBytes d = new DynBytes(termBytesEstimate(t));
-            t.appendTo((ByteArrayDataOutput) d);
-            return d;
-        }
-    }
+//    /**
+//     * warning: result may be RecycledDynBytes
+//     */
+//    public static DynBytes termToDynBytes(Term t) {
+//        if (t instanceof Atomic) {
+//            return new DynBytes(((Atomic) t).bytes()); //dont recycle
+//        } else {
+//            DynBytes d = new DynBytes(termBytesEstimate(t));
+//            t.appendTo((ByteArrayDataOutput) d);
+//            return d;
+//        }
+//    }
 
     public static int termBytesEstimate(Termlike t) {
         return t.volume() * 8;
@@ -380,7 +280,7 @@ public class IO {
     @Nullable
     public static Term bytesToTerm(byte[] b) {
         try {
-            return IO.readTerm(input(b));
+            return TermIO.the.read(input(b));
         } catch (IOException e) {
             throw new RuntimeException(e);
         } /*catch (Term.InvalidTermException ignored) {

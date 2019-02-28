@@ -1,6 +1,5 @@
 package nars.subterm;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.term.Term;
@@ -14,7 +13,6 @@ import java.util.function.Predicate;
 
 import static nars.Op.NEG;
 import static nars.term.anon.AnonID.term;
-import static nars.term.anon.AnonID.termPos;
 
 /**
  * a vector which consists purely of AnonID terms
@@ -22,7 +20,7 @@ import static nars.term.anon.AnonID.termPos;
 public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCached*/ {
 
     /*@Stable*/
-    private final short[] subterms;
+    public final short[] subterms;
 
     private AnonVector(short[] s) {
         super(AnonID.subtermMetadata(s));
@@ -347,22 +345,7 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
 
     //private transient byte[] bytes = null;
 
-    @Override
-    public void appendTo(ByteArrayDataOutput out) {
-//        if (bytes==null) {
-            short[] ss = subterms;
-            out.writeByte(ss.length);
-            for (short s : ss) {
-                if (s < 0) {
-                    out.writeByte(Op.NEG.id);
-                    s = (short) -s;
-                }
-                termPos(s).appendTo(out);
-            }
-//        } else {
-//            out.write(bytes);
-//        }
-    }
+
 
 //    @Override
 //    public void acceptBytes(DynBytes constructedWith) {

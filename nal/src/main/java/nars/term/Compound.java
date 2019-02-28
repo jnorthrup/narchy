@@ -20,16 +20,14 @@
  */
 package nars.term;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
-import jcog.data.byt.util.IntCoding;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
-import nars.IO;
 import nars.Op;
 import nars.The;
+import nars.io.IO;
 import nars.subterm.Subterms;
 import nars.term.anon.Anon;
 import nars.term.atom.Bool;
@@ -212,27 +210,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    default void appendTo(ByteArrayDataOutput out) {
 
-        Op o = op();
-
-        int dt = 0;
-        boolean temporal = o.temporal && (dt=dt()) != DTERNAL;
-
-        out.writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
-
-        if (temporal)
-            IntCoding.writeZigZagInt(dt, out);
-
-        appendSubtermsTo(out);
-
-
-
-    }
-
-    default void appendSubtermsTo(ByteArrayDataOutput out) {
-        subterms().appendTo(out);
-    }
 
 
     /**

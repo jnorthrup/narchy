@@ -35,14 +35,6 @@ abstract class AbstractUnitSubterm implements Subterms {
         }
     }
 
-
-
-    @Override
-    public final void appendTo(ByteArrayDataOutput out) {
-        out.writeByte(1);
-        sub().appendTo(out);
-    }
-
     @Override
     public String toString() {
         return "(" + sub() + ')';

@@ -19,7 +19,7 @@ public final class ShuffledSubterms extends RemappedSubterms {
     }
 
     @Override
-    protected int subMap(int i) {
+    public int subMap(int i) {
         return shuffle.permute(i);
     }
 

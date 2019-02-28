@@ -212,10 +212,6 @@ public interface Atomic extends Term {
     /** byte[] representation */
     byte[] bytes();
 
-    @Override
-    default void appendTo(ByteArrayDataOutput out) {
-        out.write(bytes());
-    }
 
     default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm) {
         return whileTrue.test(this);

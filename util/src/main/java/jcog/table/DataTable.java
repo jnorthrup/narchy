@@ -8,16 +8,14 @@ import jcog.learn.decision.FloatTable;
 import jcog.util.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import tech.tablesaw.api.*;
-import tech.tablesaw.columns.AbstractColumnParser;
-import tech.tablesaw.columns.AbstractColumnType;
 import tech.tablesaw.columns.Column;
-import tech.tablesaw.io.ReadOptions;
 import tech.tablesaw.io.csv.CsvWriteOptions;
 import tech.tablesaw.io.csv.CsvWriter;
 import tech.tablesaw.table.Rows;
 
 import java.io.FilterOutputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +26,6 @@ import java.util.stream.Stream;
  * TODO move most of this to 'MutableDataTable' implementation of interface DataTable
  **/
 public class DataTable extends Table {
-
 
     protected final Map<String, String[]> nominalCats;
 
@@ -68,7 +65,8 @@ public class DataTable extends Table {
 
         return (this == other) ||
 
-                (columnTypes().equals(other.columnTypes()) &&
+                (Arrays.equals(columnTypes(), other.columnTypes())
+                        &&
 //                (attribute_names.equals(other.attribute_names) &&
 //                        attrTypes.equals(other.attrTypes) &&
                         nominalCats.equals(other.nominalCats)
@@ -84,14 +82,14 @@ public class DataTable extends Table {
 
 
 
-    /**
-     * Get the type of an attribute. Currently, the attribute types are
-     * "numeric", "string", and "nominal". For nominal attributes, use getAttributeData()
-     * to retrieve the possible values for the attribute.
-     */
-    public ColumnType attrType(String name) {
-        return column(name).type();
-    }
+//    /**
+//     * Get the type of an attribute. Currently, the attribute types are
+//     * "numeric", "string", and "nominal". For nominal attributes, use getAttributeData()
+//     * to retrieve the possible values for the attribute.
+//     */
+//    public ColumnType attrType(String name) {
+//        return column(name).type();
+//    }
 
     /**
      * Define a new attribute. Type must be one of "numeric", "string", and
@@ -218,48 +216,42 @@ public class DataTable extends Table {
         return best[0];
     }
 
-    public static class NominalColumnType extends AbstractColumnType {
-        public final String[] values;
-
-        public NominalColumnType(String name, String[] values) {
-            super(4,
-                    name,
-                    name);
-            this.values = values;
-        }
-
-        @Override
-        public Column<?> create(String name) {
-            return null;
-        }
-
-        @Override
-        public AbstractColumnParser<?> customParser(ReadOptions options) {
-            throw new TODO();
-        }
-
-//        @Override
-//        public AbstractParser<?> customParser(CsvReadOptions options) {
-//            throw new TODO();
+//    public static class NominalColumnType extends AbstractColumnType {
+//        public final String[] values;
+//
+//        public NominalColumnType(String name, String[] values) {
+//            super(4,
+//                    name,
+//                    name);
+//            this.values = values;
 //        }
-
-
+//
 //        @Override
-//        public StringColumn create(String name) {
+//        public Column<?> create(String name) {
 //            return StringColumn.create(name);
 //        }
 //
 //        @Override
-//        public StringStringParser defaultParser() {
-//            return new StringStringParser(this);
+//        public AbstractColumnParser<?> customParser(ReadOptions options) {
+//            throw new TODO();
 //        }
 //
-//        @Override
-//        public StringStringParser customParser(CsvReadOptions options) {
-//            return new StringStringParser(this, options);
-//        }
-
-    }
+////        @Override
+////        public StringColumn create(String name) {
+////            return StringColumn.create(name);
+////        }
+////
+////        @Override
+////        public StringStringParser defaultParser() {
+////            return new StringStringParser(this);
+////        }
+////
+////        @Override
+////        public StringStringParser customParser(CsvReadOptions options) {
+////            return new StringStringParser(this, options);
+////        }
+//
+//    }
 
     public DataTable defineNominal(String nominalAttribute, String... categories) {
         if (categories.length < 2)
@@ -278,7 +270,7 @@ public class DataTable extends Table {
     @Deprecated private Instance instance(Row x) {
 
         ColumnType[] ct = columnTypes();
-        List<Double> d = new FasterList(ct.length);
+        List<Double> d = new FasterList<>(ct.length);
         for (int i1 = 0, ctLength = ct.length; i1 < ctLength; i1++) {
 //            ColumnType t = ct[i1];
 //            if (t instanceof FloatColumnType)
@@ -309,9 +301,9 @@ public class DataTable extends Table {
             return data.hashCode();
         }
 
-        public double[] toDoubleArray() {
-            return toDoubleArray(0, data.size());
-        }
+//        public double[] toDoubleArray() {
+//            return toDoubleArray(0, data.size());
+//        }
         public double[] toDoubleArray(int from, int to) {
             double[] x = new double[to-from];
             int j = 0;

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
-public class ByteHijackMemoize<X extends ByteKey.ByteKeyExternal,Y> extends HijackMemoize<X,Y> {
+public class ByteHijackMemoize<X extends ByteKeyExternal,Y> extends HijackMemoize<X,Y> {
 
     public ByteHijackMemoize(Function<X, Y> f, int capacity, int reprobes, boolean soft) {
         super(f, capacity, reprobes, soft);
@@ -44,8 +44,23 @@ public class ByteHijackMemoize<X extends ByteKey.ByteKeyExternal,Y> extends Hija
     }
 
     @Override
+    protected void boost(PriProxy<X, Y> p) {
+        p.priAdd(valueBase(p.x()) * CACHE_HIT_BOOST);
+    }
+    @Override
+    protected void cut(PriProxy<X, Y> p) {
+        p.priSub(valueBase(p.x()) * CACHE_SURVIVE_COST);
+    }
+
+    @Override
     public float value(X x, Y y) {
-        return DEFAULT_VALUE /((1+x.length()));
+        return valueBase(x) * DEFAULT_VALUE;
+    }
+
+    private float valueBase(ByteKey x) {
+        return 1/((1+x.length()));
+        //return (float) (DEFAULT_VALUE /(Math.log(1+x.length())));
+        //return DEFAULT_VALUE /((1+sqr(x.length())));
         //return 1f/(bag.reprobes * (1+ Util.sqr(x.length())));
     }
 }
