@@ -320,7 +320,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     private void render() {
-        renderers.forEach(layer -> layer.render(cells,edit));
+        renderers.forEach(layer -> layer.nodes(cells,edit));
     }
 
 
@@ -406,7 +406,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
          */
         void node(NodeVis<X> node, GraphEditing<X> graph);
 
-        default void render(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
+        default void nodes(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
             cells.forEachValue(nv -> {
                 if (nv.visible())
                     node(nv, edit);
@@ -438,7 +438,11 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         private float r, g, b, a;
 
+        /** general re-purposeable serial integer */
+        public transient int i;
+
         void start(X id) {
+            this.i = Integer.MIN_VALUE;
             this.id = id;
             pri = 0.5f;
             r = g = b = 0.5f;
@@ -448,8 +452,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             hide();
             removeOuts(edgePool);
             this.mover = null;
-//            clear();
             this.id = null;
+            this.i = Integer.MIN_VALUE;
         }
 
 

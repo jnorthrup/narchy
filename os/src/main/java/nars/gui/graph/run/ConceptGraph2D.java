@@ -205,7 +205,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
         }
 
         @Override
-        public void render(CellMap<Term, NodeVis<Term>> cells, GraphEditing<Term> edit) {
+        public void nodes(CellMap<Term, NodeVis<Term>> cells, GraphEditing<Term> edit) {
 
             boolean belief = this.belief.getOpaque();
             boolean goal = this.goal.getOpaque();

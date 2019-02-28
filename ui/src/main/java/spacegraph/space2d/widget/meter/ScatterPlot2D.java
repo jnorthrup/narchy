@@ -1,18 +1,26 @@
 package spacegraph.space2d.widget.meter;
 
-import com.jogamp.opengl.GL2;
+import jcog.data.map.CellMap;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.video.Draw;
 
 /** 2d scatter ("bubble") plot */
 public class ScatterPlot2D<X> extends Graph2D<X> {
 
     public interface ScatterPlotModel<X> {
-        v2 coord(X x);
+
+        /** internal (model) dimension */
+        int dimensionInternal();
+
+        /** external (visualized) dimension */
+        default int dimensionExternal() {
+            return 2;
+        }
+
+        void coord(X x, float[] target);
 
         /** set size, color, etc */
         default void style(X x, NodeVis<X> v) {
@@ -34,6 +42,23 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         default String label(X id) {
             return id.toString();
         }
+
+        void layout(float[][] in, float[][] out);
+
+
+    }
+    public static abstract class SimpleXYScatterPlotModel<X> implements ScatterPlotModel<X> {
+        @Override
+        public int dimensionInternal() {
+            return 2;
+        }
+
+        @Override
+        public void layout(float[][] in, float[][] out) {
+            int dim = dimensionExternal();
+            for (int i = 0; i < in.length; i++)
+                System.arraycopy(in[i], 0, out[i], 0, dim);
+        }
     }
 
     final ScatterPlotModel<X> model;
@@ -46,42 +71,76 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                 x.set(
                         //TODO extract PolygonButton class
                         new PushButton(new VectorLabel(model.label(x.id))) {
-                            @Override
-                            protected void paintWidget(RectFloat bounds, GL2 gl) {
-
-
-                                NodeVis p = parent(NodeVis.class);
-                                if (p != null) {
-                                    float alpha = 0.25f + 0.75f * p.pri;
-                                    gl.glColor4f(1f, 0.5f, 0, alpha);
-                                    //Draw.colorHash(gl, x.id, alpha);
-                                    Draw.circle(gl, new v2(cx(), cy()), false, Math.max(w(), h()) / 2, 6);
-                                }
-                            }
+//                            @Override
+//                            protected void paintWidget(RectFloat bounds, GL2 gl) {
+//                                NodeVis p = parent(NodeVis.class);
+//                                if (p != null) {
+//                                    float alpha = 0.25f + 0.75f * p.pri;
+//                                    gl.glColor4f(1f, 0.5f, 0, alpha);
+//                                    //Draw.colorHash(gl, x.id, alpha);
+//                                    Draw.circle(gl, new v2(cx(), cy()), false, Math.max(w(), h()) / 2, 6);
+//                                }
+//                            }
                         }
                 )
         );
-        render((node, graph) -> {
+        render(
+            new Graph2DRenderer<X>() {
 
-            //synchronized (ScatterPlot2D.this) {
+                float[][] coord = new float[0][0], coordOut = null;
+                int currentCoord = 0;
 
-                X x = node.id;
+                @Override
+                public void nodes(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
 
-                v2 coords = model.coord(x);
-                double rad = w() /* Math.max(w,h)? */ * model.radius(x);
+                    int n = cells.size();
+                    if (coord.length < n || coord.length > n*2) {
+                        coord = new float[n][model.dimensionInternal()];
+                        coordOut = new float[n][model.dimensionExternal()];
+                    }
 
-                RectFloat b = bounds(coords, rad);
-                node.pos(b);
+                    currentCoord = 0;
+                    Graph2DRenderer.super.nodes(cells, edit);
 
-                node.pri = model.pri(x);
+                    model.layout(coord, coordOut);
 
-                model.colorize(x, node);
+                    cells.forEachValue(node -> {
+                        int c = node.i;
+                        if (c >= 0 && node.visible()) {
+                            post(node, c);
+                        }
+                    });
 
-                node.show();
+                }
 
-            //}
+                void post(NodeVis<X> node, int c) {
+                    X x = node.id;
 
-        });
+                    float[] xy = coordOut[c];
+                    double rad = ScatterPlot2D.this.w() /* Math.max(w,h)? */ * model.radius(x);
+                    RectFloat b = ScatterPlot2D.this.bounds(new v2(xy[0], xy[1]), rad);
+                    node.pos(b);
+
+                    node.pri = model.pri(x);
+
+                    model.colorize(x, node);
+
+                    node.show();
+                }
+
+                /** pre */
+                @Override public void node(NodeVis<X> node, GraphEditing<X> graph) {
+                    int c = currentCoord++;
+                    if(c < coord.length) {
+                        model.coord(node.id, coord[c]);
+                        node.i = c;
+                    } else {
+                        node.i = Integer.MIN_VALUE;
+                    }
+                }
+
+            }
+        );
     }
 
     /** maps the coordinates to a 2D boundary for display */

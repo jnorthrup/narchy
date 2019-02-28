@@ -7,7 +7,6 @@ import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.math.Quantiler;
-import jcog.math.v2;
 import jcog.pri.PLinkHashCached;
 import jcog.pri.VLink;
 import jcog.pri.bag.impl.PLinkArrayBag;
@@ -486,17 +485,21 @@ public class NARui {
 
     public static void clusterView(ConjClustering c, NAR n) {
 
-        ScatterPlot2D.ScatterPlotModel<VLink<Task>> model = new ScatterPlot2D.ScatterPlotModel<VLink<Task>>() {
+        ScatterPlot2D.ScatterPlotModel<VLink<Task>> model = new ScatterPlot2D.SimpleXYScatterPlotModel<VLink<Task>>() {
+
             @Override
-            public v2 coord(VLink<Task> v) {
+            public void coord(VLink<Task> v, float[] target) {
                 Task t = v.get();
-                return new v2((float) (t.mid() - n.time()) / 10000.0f, t.conf());
+                target[0] = (float) (t.mid() - n.time()) / 10000.0f;
+                target[1] = t.conf();
             }
+
 
             @Override
             public String label(VLink<Task> id) {
                 return id.get().toStringWithoutBudget();
             }
+
 
             @Override
             public float pri(VLink<Task> v) {
@@ -516,6 +519,7 @@ public class NARui {
                 return (0.1f + v.priElseZero()) * 1/10f;
             }
         };
+
         ScatterPlot2D<VLink<Task>> s = new ScatterPlot2D<VLink<Task>>(model);
         window(DurSurface.get(new Gridding(s), n, () -> {
             s.set(c.data.bag);
