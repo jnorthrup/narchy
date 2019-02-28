@@ -32,7 +32,7 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
 
-    compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.7.0'
+    compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.7.1'
 
     compile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.4.0'
     compile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.4.0'
