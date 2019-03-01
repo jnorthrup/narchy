@@ -8,6 +8,7 @@ import jcog.data.set.LongObjectArraySet;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.Param;
+import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
@@ -664,26 +665,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         });
     }
 
-
-    public static Term conj(Collection<LongObjectPair<Term>> events) {
-        int eventsSize = events.size();
-        switch (eventsSize) {
-            case 0:
-                return True;
-            case 1:
-                return events.iterator().next().getTwo();
-        }
-
-        ConjLazy ce = new ConjLazy(eventsSize);
-
-        for (LongObjectPair<Term> o : events) {
-            if (!ce.add(o.getOne(), o.getTwo())) {
-                break;
-            }
-        }
-
-        return ce.term();
-    }
 
     public static Term diff(Term include, Term exclude) {
         return diff(include, exclude, false);

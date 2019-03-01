@@ -24,15 +24,17 @@ import java.util.function.Function;
 import static nars.Op.*;
 
 /**
- * collection of evidence for dynamic truth calculation
+ * A List of Task's which can be used for various purposes, including dynamic truth and evidence calculations (as utility methods)
  */
-public class DynEvi extends FasterList<Task> implements TaskRegion {
+public class TaskList extends FasterList<Task> implements TaskRegion {
 
-    public DynEvi(int initialCap) {
+
+
+    public TaskList(int initialCap) {
         super(initialCap);
     }
 
-    public DynEvi(int size, Task[] t) {
+    public TaskList(int size, Task[] t) {
         super(size, t);
 //        for (Task x : t) if (x == null) throw new NullPointerException(); //TEMPORARY
     }
@@ -113,7 +115,7 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
 
         dyn.pri(
                 //pri(start, end)
-                reapply(DynEvi::pri, Param.DerivationPri)
+                reapply(TaskList::pri, Param.DerivationPri)
                         * dyn.originality() //HACK
         );
 

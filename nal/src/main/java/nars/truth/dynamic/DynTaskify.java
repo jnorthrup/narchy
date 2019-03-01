@@ -36,7 +36,7 @@ import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
  *
  * additionally tracks evidential overlap while being constructed, and provide the summation of evidence after*/
 @Paper
-public class DynTaskify extends DynEvi {
+public class DynTaskify extends TaskList {
 
     private final AbstractDynamicTruth model;
     private final NAR nar;

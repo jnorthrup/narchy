@@ -391,8 +391,8 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.1f * p);
         n.questPriDefault.set(0.1f * p);
 
-        n.beliefConfDefault.set(0.5f);
-        n.goalConfDefault.set(0.5f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
@@ -440,22 +440,25 @@ abstract public class NAgentX extends NAgent {
         BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8
                 //,"relation_introduction.nal"
         ));
+        //bd.timing = new DefaultTiming
+
 
         //new StatementLinker(n);
         new PuncNoise(n);
 
 //        new STMLinkage(n, 1);
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
-                t->t.isInput(),
-                32, 128);
+//        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
+//                t->t.isInput(),
+//                32, 128);
 
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
-                t->!t.isInput(),
+                t->true,
+//                t->!t.isInput(),
                 64, 256);
 
         window(grid(
-                NARui.clusterView(conjClusterBinput, n),
+//                NARui.clusterView(conjClusterBinput, n),
                 NARui.clusterView(conjClusterBany, n)
         ), 500, 500);
 

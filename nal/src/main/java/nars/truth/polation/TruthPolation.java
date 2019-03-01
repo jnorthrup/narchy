@@ -18,7 +18,7 @@ import nars.term.util.Intermpolate;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynEvi;
+import nars.truth.dynamic.TaskList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -492,7 +492,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         forEach(TaskComponent::invalidate);
     }
 
-    public final Task task(DynEvi d, Truth tt, boolean beliefOrGoal, long s, long e, NAR nar) {
+    public final Task task(TaskList d, Truth tt, boolean beliefOrGoal, long s, long e, NAR nar) {
         return d.task(term, tt, this::stamper, beliefOrGoal, s, e, nar);
     }
 

@@ -7,19 +7,16 @@ import jcog.pri.PriBuffer;
 import jcog.pri.Prioritized;
 import jcog.pri.VLink;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
+import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
-import jcog.util.ArrayUtils;
-import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
+import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.List;
-import java.util.Random;
-import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 
@@ -57,7 +54,6 @@ public class BagClustering<X> {
     /**
      * TODO allow dynamic change
      */
-    protected /*Flip<*/ FasterList<VLink<X>> sorted = new FasterList<>();
 
 
     public BagClustering(Dimensionalize<X> model, int centroids, int initialCap) {
@@ -67,21 +63,9 @@ public class BagClustering<X> {
 
         this.net = new NeuralGasNet(model.dims, centroids, model::distanceSq);
 
-        PriMerge merge = PriMerge.max;
-        ArrayBag<X, VLink<X>> b = new ArrayBag<>(merge, initialCap) {
-
-            @Override
-            public X key(VLink<X> xvLink) {
-                return xvLink.get();
-            }
-        };
-
-        //this.bag = b;
-        this.bag = new BufferedBag.SimpleBufferedBag<>(b, new PriBuffer<VLink<X>>(merge));
-//        this.bag = new FastPutProxyBag<>(b, 1024);
-//        this.bag = new PriLinkHijackBag<X,VLink<X>>(PriMerge.max, initialCap, 4) {
-//
-//        };
+        PriMerge merge = PriMerge.replace;
+        Bag<X, VLink<X>> b = new PriReferenceArrayBag<>(merge, initialCap);
+        this.bag = new BufferedBag.SimpleBufferedBag<>(b, new PriBuffer<>(merge));
 
     }
 
@@ -112,32 +96,41 @@ public class BagClustering<X> {
         return bag.size();
     }
 
-    public <A> void forEachCentroid(A arg, Random rng, BiPredicate<Stream<VLink<X>>, A> each) {
-
-        List<VLink<X>> sorted = itemsSortedByCentroid(rng);
-        int n = sorted.size();
-        if (n > 0) {
-            int c = -1;
-            int prev = -1;
-            for (int i = 0; i < n; i++) {
-                VLink<X> x = sorted.get(i);
-
-                if (c != x.centroid || (i == n - 1)) {
-                    c = x.centroid;
-                    if (prev != -1 && i - prev > 1) {
-                        if (!each.test(IntStream.range(prev, i + 1).mapToObj(sorted::get), arg))
-                            break;
-                    }
-                    prev = i;
-                }
-            }
-        }
-
-
+    public void forEachCentroid(Consumer<FasterList<X>> each) {
+        forEachCentroid(FasterList::new, each);
     }
 
-    public void learn(float forgetRate, int learningIterations) {
+    public <L extends List<X>> void forEachCentroid(IntToObjectFunction<L> listBuilder, Consumer<L> each) {
+        iterateCentroids(listBuilder).forEach(each);
+    }
 
+    private <L extends List<X>> Iterable<L> iterateCentroids(IntToObjectFunction<L> listBuilder) {
+
+        int s = bag.size();
+        if (s == 0)
+            return List.of();
+        else {
+
+            int cc = net.centroidCount();
+            IntObjectHashMap<L> x = new IntObjectHashMap<>(cc);
+            int meanItemsPerCentroid = (int)Math.ceil(((float)s)/cc);
+
+            bag.forEach((xx) -> {
+                int c = xx.centroid;
+
+                if (c >= 0) {
+                    X xxx = xx.get();
+                    if (xxx!=null)
+                        x.getIfAbsentPut(c, ()->listBuilder.apply(meanItemsPerCentroid)).add(xxx);
+                }
+            });
+            if (x.isEmpty())
+                return List.of();
+
+            return x.values();
+        }
+    }
+    public void learn(float forgetRate, int learningIterations) {
 
         bag.commit(t -> {
             X tt = t.get();
@@ -157,33 +150,33 @@ public class BagClustering<X> {
         }
     }
 
-    private List<VLink<X>> itemsSortedByCentroid(Random rng) {
-
-        int s = bag.size();
-        if (s == 0)
-            return List.of();
-
-        FasterList<VLink<X>> x = new FasterList<>(s);
-        bag.forEach(x::add);
-
-
-        s = x.size();
-        if (s > 2) {
-
-            int shuffle = rng.nextInt();
-            IntToIntFunction shuffler = (c) -> c ^ shuffle;
-            
-            ArrayUtils.quickSort(0, s,
-                    (a, b) -> a == b ? 0 : Integer.compare(
-                            shuffler.applyAsInt(x.get(a).centroid),
-                            shuffler.applyAsInt(x.get(b).centroid)),
-                    x::swap);
-
-        }
-
-
-        return x;
-    }
+//    private List<VLink<X>> itemsSortedByCentroid(Random rng) {
+//
+//        int s = bag.size();
+//        if (s == 0)
+//            return List.of();
+//
+//        FasterList<VLink<X>> x = new FasterList<>(s);
+//        bag.forEach(x::add);
+//
+//
+//        s = x.size();
+//        if (s > 2) {
+//
+//            int shuffle = rng.nextInt();
+//            IntToIntFunction shuffler = (c) -> c ^ shuffle;
+//
+//            ArrayUtils.quickSort(0, s,
+//                    (a, b) -> a == b ? 0 : Integer.compare(
+//                            shuffler.applyAsInt(x.get(a).centroid),
+//                            shuffler.applyAsInt(x.get(b).centroid)),
+//                    x::swap);
+//
+//        }
+//
+//
+//        return x;
+//    }
 
 
     private void learn(VLink<X> x) {
@@ -203,7 +196,7 @@ public class BagClustering<X> {
     }
 
     public final void put(X x, float pri) {
-        assert(pri==pri);
+        assert (pri == pri);
         bag.putAsync(new VLink<>(x, pri, model.dims));
     }
 
@@ -216,7 +209,7 @@ public class BagClustering<X> {
      */
     public double distance(X x, X y) {
         //assert (!x.equals(y));
-        assert(x!=y);
+        assert (x != y);
 
         @Nullable VLink<X> xx = bag.get(x);
         if (xx != null && xx.centroid >= 0) {

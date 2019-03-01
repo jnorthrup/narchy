@@ -17,6 +17,7 @@
 package jcog.util;
 
 
+import com.google.common.collect.ForwardingListIterator;
 import jcog.data.array.IntComparator;
 import jcog.data.bit.MetalBitSet;
 import jcog.random.Rand;
@@ -44,7 +45,8 @@ import static com.google.common.math.IntMath.factorial;
  *
  * @since 2.0
  */
-public enum ArrayUtils {;
+public enum ArrayUtils {
+    ;
 
     /**
      * An empty immutable {@code Object} array.
@@ -3519,10 +3521,10 @@ public enum ArrayUtils {;
 //        if (array != null) {
 //            if (startIndex < 0)
 //                startIndex = 0;
-            for (int i = startIndex; i < endIndex; i++) {
-                if (valueToFind == array[i])
-                    return i;
-            }
+        for (int i = startIndex; i < endIndex; i++) {
+            if (valueToFind == array[i])
+                return i;
+        }
 //        }
         return INDEX_NOT_FOUND;
     }
@@ -8740,12 +8742,6 @@ public enum ArrayUtils {;
         sort(a, 0, a.length - 1, v);
     }
 
-    /**
-     * sorts descending
-     */
-    public static <X> void sort(X[] a, ToDoubleFunction<X> v) {
-        sort(a, 0, a.length - 1, v);
-    }
 
     /**
      * sorts descending
@@ -8782,23 +8778,47 @@ public enum ArrayUtils {;
 
     }
 
+
     /**
      * sorts descending
      */
-    public static <X> void sort(X[] a, int left, int right /* inclusive */, ToDoubleFunction<X> v) {
+    public static <X> void sort(X[] a, DoubleFunction<X> v) {
+        sort(a, 0, a.length - 1, v);
+    }
+    public static <X> void sort(X[] a, FloatFunction<X> v) {
+        sort(a, 0, a.length - 1, v);
+    }
+
+    /**
+     * sorts descending, left and right BOTH inclusive
+     */
+    public static <X> void sort(X[] a, int left, int right /* inclusive */, DoubleFunction<X> v) {
         for (int i = left, j = i; i < right; j = ++i) {
             final X ai = a[i + 1];
-            double aid = v.applyAsDouble(ai);
-            while (aid > v.applyAsDouble(a[j])) {
+            double aid = v.doubleValueOf(ai);
+            while (aid > v.doubleValueOf(a[j])) {
                 a[j + 1] = a[j];
                 if (j-- == left)
                     break;
             }
             a[j + 1] = ai;
         }
-
     }
-
+    /**
+     * sorts descending, left and right BOTH inclusive
+     */
+    public static <X> void sort(X[] a, int left, int right /* inclusive */, FloatFunction<X> v) {
+        for (int i = left, j = i; i < right; j = ++i) {
+            final X ai = a[i + 1];
+            double aid = v.floatValueOf(ai);
+            while (aid > v.floatValueOf(a[j])) {
+                a[j + 1] = a[j];
+                if (j-- == left)
+                    break;
+            }
+            a[j + 1] = ai;
+        }
+    }
 
     /**
      * sorts descending
@@ -8906,7 +8926,7 @@ public enum ArrayUtils {;
 
     public static int nextIndexOf(byte[] array, int startingAt, int endingAt, byte[] target, int targetFrom, int targetTo) {
         int targetLen = targetTo - targetFrom;
-        assert(targetLen > 0);
+        assert (targetLen > 0);
 
         if (endingAt - startingAt < targetLen)
             return -1;
@@ -8924,4 +8944,33 @@ public enum ArrayUtils {;
 
 
     }
+
+    /**
+     * creates a never-ending (until empty) cyclic ListIterator for a given List
+     * adapted from Guava's Iterators.cycle(...)
+     */
+    public static <T> ListIterator<T> cycle(List<T> l) {
+
+        return new ForwardingListIterator<>() {
+
+            ListIterator<T> i = l.listIterator();
+
+            @Override
+            protected final ListIterator<T> delegate() {
+                return i;
+            }
+
+            @Override
+            public boolean hasNext() {
+                if (!i.hasNext()) {
+                    if (l.isEmpty())
+                        return false;
+                    i = l.listIterator();
+                }
+
+                return true;
+            }
+        };
+    }
+
 }

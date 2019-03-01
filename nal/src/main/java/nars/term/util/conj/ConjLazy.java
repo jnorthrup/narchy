@@ -1,6 +1,7 @@
 package nars.term.util.conj;
 
 import jcog.data.set.LongObjectArraySet;
+import nars.Task;
 import nars.term.Term;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -26,6 +27,27 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 
     public ConjLazy() {
         this(4);
+    }
+
+    /** TODO add support for supersampling to include task.end() features */
+    public static Term sequence(Task[] events) {
+        int eventsSize = events.length;
+        switch (eventsSize) {
+            case 0:
+                return True;
+            case 1:
+                return events[0].term();
+        }
+
+        ConjLazy ce = new ConjLazy(eventsSize);
+
+        for (Task o : events) {
+            if (!ce.add(o.start(), o.term())) {
+                break;
+            }
+        }
+
+        return ce.term();
     }
 
     /**

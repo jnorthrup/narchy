@@ -29,7 +29,7 @@ import nars.term.util.conj.ConjBuilder;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynEvi;
+import nars.truth.dynamic.TaskList;
 import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
@@ -858,10 +858,10 @@ public class Impiler {
      * truth state projected (mutable)
      */
     public static class Improjection {
-        final DynEvi truth;
+        final TaskList truth;
 
         Improjection() {
-            truth = new DynEvi(1);
+            truth = new TaskList(1);
         }
 
         //TODO other statistics

@@ -385,6 +385,9 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
     }
 
 
+    public int centroidCount() {
+        return centroids.length;
+    }
 }
 
 

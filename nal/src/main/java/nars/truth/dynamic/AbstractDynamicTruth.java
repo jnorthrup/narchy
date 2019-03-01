@@ -16,7 +16,7 @@ import java.util.List;
  */
 abstract public class AbstractDynamicTruth {
 
-    abstract public Truth truth(DynEvi var1, NAR nar);
+    abstract public Truth truth(TaskList var1, NAR nar);
 
     public abstract boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
 

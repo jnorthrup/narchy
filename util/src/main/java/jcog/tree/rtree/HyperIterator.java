@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 public class HyperIterator<X> implements AutoCloseable {
 
 
-    private static final ThreadLocal<MetalPool<RankedTopN>> pool = TopN.newRankedPool();
+    private static final ThreadLocal<MetalPool<RankedTopN>> pool = RankedTopN.newRankedPool();
 
     /**
      * next available item

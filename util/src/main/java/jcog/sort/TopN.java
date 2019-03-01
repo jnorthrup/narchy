@@ -60,10 +60,10 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     public TopN<X> rank(FloatRank<X> rank, int capacity) {
         this.rank = rank;
-        if (capacity > 0)
+        //if (capacity > 0)
             setCapacity(capacity);
-        else
-            this.capacity = 0; //HACK
+//        else
+//            this.capacity = 0; //HACK
         return this;
     }
 
@@ -78,7 +78,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
     @Override
-    public int capacity() {
+    public final int capacity() {
         return capacity;
     }
 
@@ -275,14 +275,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 //        });
 //    }
 
-    public static ThreadLocal<MetalPool<RankedTopN>> newRankedPool() {
-        return MetalPool.threadLocal(() -> {
-            int initialCapacity = 32;
-            return new RankedTopN(Ranked[]::new, initialCapacity);
-        });
-    }
-
-//    /**
+    //    /**
 //     * default pool
 //     */
 //    public final static ThreadLocal<MetalPool<TopN<Object>>> pool = TopN.newPool(Object[]::new);

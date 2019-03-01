@@ -19,12 +19,12 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
     }
 
     @Override
-    public final Truth truth(DynEvi l, NAR nar) {
+    public final Truth truth(TaskList l, NAR nar) {
         return apply(l, nar, unionOrIntersection, unionOrIntersection);
     }
 
     @Nullable
-    private static Truth apply(DynEvi l, NAR nar, boolean negComponents, boolean negResult) {
+    private static Truth apply(TaskList l, NAR nar, boolean negComponents, boolean negResult) {
         Truth y = null;
         for (TaskRegion li : l) {
             Truth x = (((Task) li)).truth();

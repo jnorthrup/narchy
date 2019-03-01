@@ -164,7 +164,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
      */
     public Graph2D<X> update(Graph2DUpdater<X> u) {
         this.updater = u;
-        layout();
         return this;
     }
 
@@ -236,6 +235,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             updateNodes(nodes, addOrReplace);
 
             render();
+
+            layout();
 
         } finally {
             busy.set(false);

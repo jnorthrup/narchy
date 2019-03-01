@@ -3,10 +3,14 @@ package jcog.sort;
 import jcog.Util;
 import jcog.data.pool.MetalPool;
 import jcog.pri.Ranked;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
+import java.util.Arrays;
 import java.util.function.IntFunction;
 
-/** caches the rank inside a Ranked instance for fast entry comparison as each entry */
+/** caches the rank inside a Ranked instance for fast entry comparison as each entry
+ * TODO maybe make autocloseable to enforce .clear (aka .close()) for returning Ranked to pools
+ * */
 public class RankedTopN<X> extends TopN<Ranked<X>> {
 
     /** source of ranked instances */
@@ -32,9 +36,44 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
         }
     });
 
-    public RankedTopN(IntFunction<Ranked<X>[]> arrayBuilder, int initialCapacity) {
-        super(arrayBuilder.apply(initialCapacity));
+//    public RankedTopN(IntFunction<Ranked<X>[]> arrayBuilder, int initialCapacity) {
+//        this(arrayBuilder.apply(initialCapacity));
+//    }
+
+    private RankedTopN() {
+        super(null);
     }
+
+    @Override
+    public final void setCapacity(int capacity) {
+        if (items == null)
+            items = new Ranked[capacity];
+        else if (items.length < capacity)
+            items = Arrays.copyOf(items, capacity);
+        super.setCapacity(capacity);
+    }
+
+    public RankedTopN(int capacity) {
+        this();
+        setCapacity(capacity);
+    }
+
+    public RankedTopN(int capacity, FloatFunction<X> ranking) {
+        this(capacity, FloatRank.the(ranking));
+    }
+
+    public RankedTopN(int capacity, FloatRank<X> ranking) {
+        this();
+        ranking(ranking, capacity);
+    }
+
+    public static ThreadLocal<MetalPool<RankedTopN>> newRankedPool() {
+        return MetalPool.threadLocal(() -> {
+            int initialCapacity = 32;
+            return new RankedTopN(initialCapacity);
+        });
+    }
+
 
     /** call this on start */
     public final TopN<Ranked<X>> ranking(FloatRank<X> rank, int capacity) {

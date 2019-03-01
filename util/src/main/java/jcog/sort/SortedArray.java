@@ -692,10 +692,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (forInsertionOrFind)
             return right; //after the range
         else {
-            if (element != null && exhaustiveFind())
-                return indexOfExhaustive(element, eqByIdentity);
-            else
-                return -1;
+            return element != null && exhaustiveFind() ?
+                    indexOfExhaustive(element, eqByIdentity) :
+                    -1;
         }
 
     }

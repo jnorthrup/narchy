@@ -22,6 +22,7 @@ package jcog.tree.rtree.split;
 
 import jcog.tree.rtree.*;
 import jcog.util.ArrayUtils;
+import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectDoublePair;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -72,8 +73,8 @@ public final class AxialSplitLeaf<X> implements Split<X> {
             sorted[i] = pair(li, -c /* negative since the ArrayUtils.sort below is descending */);
         }
 
-
-        ArrayUtils.sort(sorted, ObjectDoublePair::getTwo);
+        if (size > 1)
+            ArrayUtils.sort(sorted, (DoubleFunction<ObjectDoublePair>) ObjectDoublePair::getTwo);
 
 
 

@@ -12,7 +12,7 @@ import nars.table.TaskTable;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynEvi;
+import nars.truth.dynamic.TaskList;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -51,7 +51,7 @@ public final class Answer implements AutoCloseable {
     public TimeRangeFilter time;
     public Term template = null;
 
-    public final static ThreadLocal<MetalPool<RankedTopN>> topTasks = TopN.newRankedPool();
+    public final static ThreadLocal<MetalPool<RankedTopN>> topTasks = RankedTopN.newRankedPool();
 
     public RankedTopN<Task> tasks;
     public final Predicate<Task> filter;
@@ -393,7 +393,7 @@ public final class Answer implements AutoCloseable {
 
     private Task taskMerge(@Nullable Task root) {
 
-        @Nullable DynEvi d = dynTruth();
+        @Nullable TaskList d = dynTruth();
         if (d.size() <= 1)
             return root;
 
@@ -437,23 +437,23 @@ public final class Answer implements AutoCloseable {
      * TODO merge DynTruth and TruthPolation
      */
     @Nullable
-    protected DynEvi dynTruth() {
+    protected TaskList dynTruth() {
         int s = tasks.size();
         if (s == 0)
             return null;
-        return new DynEvi(s, tasks.itemsArray(Task[]::new));
+        return new TaskList(s, tasks.itemsArray(Task[]::new));
     }
 
 
     @Nullable public TruthPolation truthpolation() {
-        DynEvi d = dynTruth();
+        TaskList d = dynTruth();
         return d == null ? null : truthpolation(d);
     }
 
     /**
      * this does not filter cyclic; do that manually
      */
-    private TruthPolation truthpolation(DynEvi d) {
+    private TruthPolation truthpolation(TaskList d) {
         long s = d.start();
         long e = s != ETERNAL ? d.end() : ETERNAL;
         if (s!=ETERNAL) {
