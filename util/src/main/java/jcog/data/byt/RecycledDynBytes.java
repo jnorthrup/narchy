@@ -25,7 +25,7 @@ public final class RecycledDynBytes extends DynBytes {
         return r;
     }
 
-    public static DynBytes tmpKey() {
+    public static RecycledDynBytes tmpKey() {
         return get();
     }
 

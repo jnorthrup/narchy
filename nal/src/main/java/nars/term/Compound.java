@@ -27,7 +27,7 @@ import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import nars.Op;
 import nars.The;
-import nars.io.IO;
+import nars.io.TermAppender;
 import nars.subterm.Subterms;
 import nars.term.anon.Anon;
 import nars.term.atom.Bool;
@@ -248,21 +248,17 @@ public interface Compound extends Term, IPair, Subterms {
 
         Op o = op();
 
-        if (o == CONJ) {
-            int xdt = dt(), ydt = y.dt();
-            if (xdt == XTERNAL && ydt != XTERNAL) {
-                if (unifyXternal(y, x, xx, yy))
-                    return true;
-            } else if (ydt == XTERNAL && xdt != XTERNAL) {
-                if (unifyXternal(x, y, xx, yy))
-                    return true;
-            }
-//            if (xdt!=XTERNAL && ydt!=XTERNAL && xs!=yy.subs() && !x.hasXternal() && !y.hasXternal())
-//                return false; //arity mismatch
-        } else {
-//            if (xs != yy.subs())
-//                return false;
-        }
+//        if (o == CONJ) {
+//            int xdt = dt(), ydt = y.dt();
+//            if (xdt == XTERNAL || ydt == XTERNAL) {
+//                return unifyXternal(xx, yy, u);
+//            }
+////            if (xdt!=XTERNAL && ydt!=XTERNAL && xs!=yy.subs() && !x.hasXternal() && !y.hasXternal())
+////                return false; //arity mismatch
+//        } else {
+////            if (xs != yy.subs())
+////                return false;
+//        }
 
         if (xs != yy.subs())
             return false;
@@ -316,17 +312,28 @@ public interface Compound extends Term, IPair, Subterms {
 //            return false;
 
     }
-
-    static boolean unifyXternal(Term y, Term x, Subterms xx, Subterms yy) {
-        if (xx.equals(yy)) return true;
-        Term xr = x.root();
-        return x.equals(xr) && y.root().equals(xr);
-    }
+//
+//    static boolean unifyXternal(Subterms xx, Subterms yy, Unify u) {
+//        if (xx.equals(yy))
+//            return true;
+//
+//        int n = xx.subs();
+//        if (yy.subs()!=n)
+//            return false;
+//
+//        for (int i = 0; i < n; i++) {
+//            if (!xx.sub(i).unify(yy.sub(i), u))
+//                return false;
+//        }
+//        return true;
+////        Term xr = x.root();
+////        return xr.equals(x) && (xr.equals(y) || xr.equals(y.root()));
+//    }
 
 
     @Override
     default void appendTo(/*@NotNull*/ Appendable p) throws IOException {
-        IO.Printer.append(this, p);
+        TermAppender.append(this, p);
     }
 
 

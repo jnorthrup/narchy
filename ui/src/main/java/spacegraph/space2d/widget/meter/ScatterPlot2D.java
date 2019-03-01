@@ -1,7 +1,6 @@
 package spacegraph.space2d.widget.meter;
 
 import jcog.data.map.CellMap;
-import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
@@ -43,7 +42,8 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
             return id.toString();
         }
 
-        void layout(float[][] in, float[][] out);
+        /** returns visible rect extent */
+        RectFloat layout(float[][] in, float[][] out);
 
 
     }
@@ -54,10 +54,11 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         }
 
         @Override
-        public void layout(float[][] in, float[][] out) {
+        public RectFloat layout(float[][] in, float[][] out) {
             int dim = dimensionExternal();
             for (int i = 0; i < in.length; i++)
                 System.arraycopy(in[i], 0, out[i], 0, dim);
+            return RectFloat.XYXY(-1, -1, +1, +1);
         }
     }
 
@@ -94,7 +95,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                 public void nodes(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
 
                     int n = cells.size();
-                    if (coord.length < n || coord.length > n*2) {
+                    if (coord.length < n || coord.length > n*2 /* TODO || coord[0].length!=dimensionInternal ... */) {
                         coord = new float[n][model.dimensionInternal()];
                         coordOut = new float[n][model.dimensionExternal()];
                     }
@@ -102,24 +103,25 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                     currentCoord = 0;
                     Graph2DRenderer.super.nodes(cells, edit);
 
-                    model.layout(coord, coordOut);
+                    extent = model.layout(coord, coordOut);
 
-                    cells.forEachValue(node -> {
-                        int c = node.i;
-                        if (c >= 0 && node.visible()) {
-                            post(node, c);
-                        }
-                    });
+                    cells.forEachValue(this::post);
+                }
 
+                void post(NodeVis<X> node) {
+                    int c = node.i;
+                    if (c >= 0 && node.visible())
+                        post(node, c);
+                    else
+                        node.hide();
                 }
 
                 void post(NodeVis<X> node, int c) {
                     X x = node.id;
 
-                    float[] xy = coordOut[c];
                     double rad = ScatterPlot2D.this.w() /* Math.max(w,h)? */ * model.radius(x);
-                    RectFloat b = ScatterPlot2D.this.bounds(new v2(xy[0], xy[1]), rad);
-                    node.pos(b);
+                    float[] xy = coordOut[c];
+                    node.pos(ScatterPlot2D.this.bounds(xy[0], xy[1], rad));
 
                     node.pri = model.pri(x);
 
@@ -144,9 +146,9 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
     }
 
     /** maps the coordinates to a 2D boundary for display */
-    protected RectFloat bounds(v2 p, double rad) {
-        float px = ((p.x - extent.x)/ extent.w);
-        float py = ((p.y - extent.y)/ extent.h);
+    protected RectFloat bounds(float x, float y, double rad) {
+        float px = ((x - extent.x)/ extent.w);
+        float py = ((y - extent.y)/ extent.h);
         return RectFloat.XYWH(
                 x() + w() * px,
                 y() + h() * py,
@@ -155,11 +157,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         );
     }
 
-    @Override
-    protected void onUpdateEnd() {
-        extent = RectFloat.XYXY(-1, -1, +1, +1);
-        //TODO abstract compute extent
-    }
+
 
 }
 //public class ConjClusterView extends ScatterPlot2D {

@@ -58,6 +58,16 @@ public interface TermIO {
 
     class DefaultTermIO implements TermIO {
 
+        /** lower 5 bits (bits 0..4) = base op */
+        public static final byte OP_MASK = (0b00011111);
+        /** upper control flags for the op byte */
+        protected static final byte TEMPORAL_BIT_0 = 1 << 5;
+        protected static final byte TEMPORAL_BIT_1 = 1 << 6;
+
+        static { assert(TEMPORAL_BIT_0 == OP_MASK + 1); }
+        static { assert(Op.values().length < OP_MASK); }
+        static { for (Op o : Op.values()) if (o.temporal) assert(o.id!=OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */ }
+
         @Override
         public Term read(DataInput in) throws IOException {
             byte opByte = in.readByte();

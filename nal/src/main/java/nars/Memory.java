@@ -9,6 +9,7 @@ import jcog.data.list.FasterList;
 import jcog.io.bzip2.BZip2InputStream;
 import jcog.io.bzip2.BZip2OutputStream;
 import nars.io.IO;
+import nars.io.TaskIO;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
@@ -278,7 +279,7 @@ public class Memory {
                 @Override
                 public boolean hasNext() {
                     try {
-                        next = IO.readTask(i);
+                        next = TaskIO.readTask(i);
                         return true;
                     } catch (EOFException f) {
                         next = null;

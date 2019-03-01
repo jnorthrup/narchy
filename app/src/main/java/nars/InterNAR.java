@@ -9,6 +9,7 @@ import nars.bag.leak.TaskLeak;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.io.IO;
+import nars.io.TaskIO;
 import nars.task.ActiveQuestionTask;
 import nars.task.ITask;
 import nars.time.clock.RealTime;
@@ -171,7 +172,7 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
     protected void receive(UDPeer.MsgReceived m) {
 
         try {
-            Task x = IO.bytesToTask(m.data());
+            Task x = TaskIO.bytesToTask(m.data());
 //            if (x.isQuestionOrQuest()) {
 //
 //                //expensive use a lighter weight common answer handler

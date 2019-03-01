@@ -223,7 +223,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     @Override
     public void clear() {
-
         set(List.of());
     }
 
@@ -277,31 +276,18 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             wontRemain.clear();
         }
 
-        onUpdateEnd();
     }
-
-    protected void onUpdateEnd() {
-
-    }
-
 
     private Graph2D.NodeVis<X> materialize(X x) {
         NodeVis<X> yy = nodeCache.computeIfAbsent(x, x0 -> {
-            NodeVis<X> y = new NodeVis();
+            NodeVis<X> y = new NodeVis<>();
             y.start(x0);
             builder.accept(y);
             return y;
         });
         yy.id = x; //in case x different instance but equal
         updater.init(this, yy);
-//        yy.show();
         return yy;
-//        xx = nodePool.get();
-//        xx.start(x);
-//        builder.accept(xx);
-//        updater.init(this, xx);
-//        //xx.show();
-//        return xx;
     }
 
     /**
@@ -316,7 +302,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     @Override
     protected void unmaterialize(NodeVis<X> v) {
         v.end(edgePool);
-//        nodePool.put(v);
     }
 
     private void render() {

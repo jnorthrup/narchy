@@ -11,7 +11,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -66,7 +65,7 @@ class TermIOTest {
 
         Object copy;
         if (orig instanceof Task)
-            copy = IO.bytesToTask(barray);
+            copy = TaskIO.bytesToTask(barray);
         else if (orig instanceof Term)
             copy = IO.bytesToTerm(barray);
         else
@@ -364,49 +363,49 @@ class TermIOTest {
 
     }
 
-    @Disabled
-    static class ByteMappingTest {
-
-        @Test
-        void testByteMappingAtom() throws Exception {
-            assertEquals("(0,0)=. ", map("x"));
-        }
-
-
-        @Test
-        void testByteMappingInh() throws Exception {
-            assertEquals("(0,0)=--> (1,2)=. (1,6)=. ", map("a:b"));
-        }
-
-        @Test
-        void testByteMappingCompoundDT() throws Exception {
-            assertEquals("(0,0)===> (1,2)=. (1,6)=. ",
-                    map("(a ==>+1 b)"));
-        }
-
-        @Test
-        void testByteMappingCompoundDTExt() throws Exception {
-            assertEquals("(0,0)=--> (1,2)===> (2,4)=. (2,8)=. (1,16)=. ",
-                    map("((a ==>+1 b) --> c)"));
-        }
-
-        @Test
-        void testByteMappingCompound() throws Exception {
-            assertEquals("(0,0)===> (1,2)=--> (2,4)=* (3,6)=. (3,10)=. (2,16)=. (1,20)=. ",
-                    map("(a(b,\"c\") ==>+1 d)"));
-        }
-
-        private String map(String x) throws IOException, Narsese.NarseseException {
-            return map($.$(x));
-        }
-
-        private String map(Term x) throws IOException {
-            byte[] xb = IO.termToBytes(x);
-            StringBuilder sb = new StringBuilder();
-            IO.mapSubTerms(xb, (o, depth, i) -> sb.append("(" + depth + "," + i + ")=" + o + " "));
-            return sb.toString();
-        }
-    }
+//    @Disabled
+//    static class ByteMappingTest {
+//
+//        @Test
+//        void testByteMappingAtom() throws Exception {
+//            assertEquals("(0,0)=. ", map("x"));
+//        }
+//
+//
+//        @Test
+//        void testByteMappingInh() throws Exception {
+//            assertEquals("(0,0)=--> (1,2)=. (1,6)=. ", map("a:b"));
+//        }
+//
+//        @Test
+//        void testByteMappingCompoundDT() throws Exception {
+//            assertEquals("(0,0)===> (1,2)=. (1,6)=. ",
+//                    map("(a ==>+1 b)"));
+//        }
+//
+//        @Test
+//        void testByteMappingCompoundDTExt() throws Exception {
+//            assertEquals("(0,0)=--> (1,2)===> (2,4)=. (2,8)=. (1,16)=. ",
+//                    map("((a ==>+1 b) --> c)"));
+//        }
+//
+//        @Test
+//        void testByteMappingCompound() throws Exception {
+//            assertEquals("(0,0)===> (1,2)=--> (2,4)=* (3,6)=. (3,10)=. (2,16)=. (1,20)=. ",
+//                    map("(a(b,\"c\") ==>+1 d)"));
+//        }
+//
+//        private String map(String x) throws IOException, Narsese.NarseseException {
+//            return map($.$(x));
+//        }
+//
+//        private String map(Term x) throws IOException {
+//            byte[] xb = IO.termToBytes(x);
+//            StringBuilder sb = new StringBuilder();
+//            IO.mapSubTerms(xb, (o, depth, i) -> sb.append("(" + depth + "," + i + ")=" + o + " "));
+//            return sb.toString();
+//        }
+//    }
 
 
 
