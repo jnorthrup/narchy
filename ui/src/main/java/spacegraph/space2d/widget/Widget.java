@@ -19,6 +19,8 @@ import spacegraph.video.Draw;
 public class Widget extends MutableUnitContainer<Surface> implements KeyPressed {
 
 
+    public static final float marginPctDefault = 0.04f;
+
     private static final float border = 0.05f;
 
     static final float backgroundAlpha = 0.8f;

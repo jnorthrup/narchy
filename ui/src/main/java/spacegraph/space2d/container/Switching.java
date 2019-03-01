@@ -26,6 +26,7 @@ public class Switching extends Container {
         if (states.length > 0) {
             states(states);
         }
+        set(0);
     }
 
     /**
@@ -35,7 +36,6 @@ public class Switching extends Container {
 
         switched = -1;
         this.states = states;
-        state(0);
 
         return this;
     }
@@ -44,33 +44,39 @@ public class Switching extends Container {
     /**
      * selects the active state
      */
-    private Switching state(int next) {
-        
-            if (switched == next)
-                return this;
+    public Switching set(int next) {
 
-            Surface prevSurface = this.current;
+        if (switched == next)
+            return this;
 
-            Surface nextSurface = (current = (states[switched = next].get()));
+        Surface prevSurface = this.current;
+
+        Surface nextSurface = (current = (states[switched = next].get()));
+        if (prevSurface != nextSurface) {
 
             if (prevSurface != null)
                 prevSurface.stop();
 
+
             if (parent != null) {
                 nextSurface.start(this);
-                layout();
             }
 
-        
+            layout();
+        }
+
+
         return this;
     }
 
     @Override
     public boolean start(@Nullable SurfaceBase parent) {
         if (super.start(parent)) {
-            if (!current.start(this))
-                throw new RuntimeException();
-            layout();
+
+                if (!current.start(this))
+                    throw new RuntimeException();
+
+
             return true;
         }
         return false;

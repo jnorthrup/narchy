@@ -23,6 +23,7 @@ public class MutableFloatRect<X> {
         clear();
     }
 
+
     public void set(RectFloat r) {
         this.x0 = this.x = r.cx();
         this.y0 = this.y = r.cy();
@@ -135,5 +136,22 @@ public class MutableFloatRect<X> {
 
     public float aspect() {
         return h/w;
+    }
+
+    public RectFloat immutable() {
+        return RectFloat.X0Y0WH(x, y, w, h);
+    }
+
+    public MutableFloatRect X0Y0WH(float x, float y, float w, float h) {
+        this.x = x; this.y= y; this.w = w; this.h = h;
+        return this;
+    }
+
+    public MutableFloatRect<X> mbr(float px, float py) {
+        if (x > px) x = px;
+        if (y > py) y = py;
+        if (x + w < px) w = px - x;
+        if (y + h < py) h = py - y;
+        return this;
     }
 }

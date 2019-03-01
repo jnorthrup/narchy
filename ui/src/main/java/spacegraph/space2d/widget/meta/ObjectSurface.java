@@ -25,7 +25,6 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,6 +33,36 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * constructs a representative surface for an object by reflection analysis
  */
 public class ObjectSurface<X> extends MutableUnitContainer {
+
+    private static final AutoBuilder.AutoBuilding<Object,Surface>  DefaultObjectSurfaceBuilder = (List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj, @Nullable Object context) -> {
+        List<Surface> outer =  new FasterList<>(target.size());
+        for (Pair<Object, Iterable<Surface>> p : target) {
+            //Object o = p.getOne();
+            List<Surface> cx = Lists.newArrayList(p.getTwo());
+            switch(cx.size()) {
+                case 0: break; //TODO shouldnt happen
+                case 1:
+                    outer.add(cx.get(0));
+                    break;
+                default:
+                    //TODO selector
+                    outer.add(new Gridding(cx));
+                    break;
+            }
+        }
+
+        switch (outer.size()) {
+            case 0: return null;
+            case 1:
+                //outer.add(new Scale(cx.get(0), Widget.marginPctDefault));
+                return outer.get(0);
+            default:
+                return new Gridding(outer);
+        }
+
+        //return new ObjectMetaFrame(obj, y, context);
+
+    };
 
     final AutoBuilder<Object, Surface> builder;
 
@@ -46,35 +75,19 @@ public class ObjectSurface<X> extends MutableUnitContainer {
     public ObjectSurface(X x) {
         this(x, 1);
     }
+    public ObjectSurface(X x, int depth) {
+        this(x, DefaultObjectSurfaceBuilder, depth);
+    }
 
-    public ObjectSurface(X x, int maxDepth) {
+    public ObjectSurface(X x, AutoBuilder.AutoBuilding<Object,Surface> builder, int maxDepth) {
+        this(x, new AutoBuilder<>(maxDepth, builder));
+    }
+
+    public ObjectSurface(X x, AutoBuilder<Object, Surface> builder) {
         super();
 
         this.obj = x;
-        AutoBuilder.AutoBuilding<Object,Surface> building = (List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj, @Nullable Object context) -> {
-            List<Surface> c =  new FasterList(target.size());
-            for (Pair<Object, Iterable<Surface>> p : target) {
-                //Object o = p.getOne();
-                ArrayList<Surface> cx = Lists.newArrayList(p.getTwo());
-                switch(cx.size()) {
-                    case 0: break; //TODO shouldnt happen
-                    case 1: c.add(cx.get(0)); break;
-                    default:
-                        //TODO selector
-                        c.add(new Gridding(cx));
-                        break;
-                }
-            }
-
-            if (c.isEmpty())
-                return null;
-
-            Surface y = c.size() > 1 ? new Gridding(c) : c.get(0);
-            return y;
-            //return new ObjectMetaFrame(obj, y, context);
-        };
-
-        builder = new AutoBuilder<>(maxDepth, building);
+        this.builder = builder;
 
         initDefaults();
     }

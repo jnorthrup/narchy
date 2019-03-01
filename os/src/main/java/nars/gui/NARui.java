@@ -490,14 +490,16 @@ public class NARui {
             @Override
             public void coord(VLink<Task> v, float[] target) {
                 Task t = v.get();
-                target[0] = (float) (t.mid() - n.time()) / 10000.0f;
-                target[1] = t.conf();
+                target[0] = (float)(t.mid() / 1000.0);
+                target[1] = t.priElseZero();
             }
 
 
             @Override
             public String label(VLink<Task> id) {
-                return id.get().toStringWithoutBudget();
+                return id.get()
+                        .term().toString();
+                        //toStringWithoutBudget();
             }
 
 
@@ -510,19 +512,33 @@ public class NARui {
 
             @Override
             public void colorize(VLink<Task> v, Graph2D.NodeVis<VLink<Task>> node) {
-                Draw.colorHash(v.centroid, c);
-                node.color(c[0], c[1], c[2], c[3]);
+                int centroid = v.centroid;
+
+                float a = v.priElseZero() * 0.5f + 0.5f;
+                if (centroid >= 0) {
+                    Draw.colorHash(centroid, c, 1, 0.75f, a);
+                    node.color(c[0], c[1], c[2], c[3]);
+                } else {
+                    node.color(0.5f,0.5f,0.5f, a); //unassigned
+                }
             }
 
             @Override
-            public float radius(VLink<Task> v) {
-                return (0.1f + v.priElseZero()) * 1/10f;
+            public float width(VLink<Task> v, int population) {
+                return v.get().range()/(population * 50f);
+                //return (0.5f + v.get().priElseZero()) * 1/20f;
+            }
+            @Override
+            public float height(VLink<Task> v, int population) {
+                return 1/(population * 1f);
             }
         };
 
         ScatterPlot2D<VLink<Task>> s = new ScatterPlot2D<VLink<Task>>(model);
         window(DurSurface.get(new Gridding(s), n, () -> {
-            s.set(c.data.bag);
+
+            s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
+
         }), 500, 500);
 
     }

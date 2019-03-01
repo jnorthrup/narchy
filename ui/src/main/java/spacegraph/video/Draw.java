@@ -634,7 +634,11 @@ public enum Draw {
 
     public static void hsb(GL2 gl, float hue, float saturation, float brightness, float a) {
         float[] f = new float[4];
-        hsb(f, hue, saturation, brightness, a);
+
+        //hsb(f, hue, saturation, brightness, a);
+
+        hsl(f, hue, saturation, brightness); f[3] = a;
+
         gl.glColor4fv(f, 0);
 
     }
@@ -776,7 +780,25 @@ public enum Draw {
 //        int[] rgb = {(int) (r * 255), (int) (g * 255), (int) (b * 255)};
 //        return rgb;
     }
+    public static void hsl(float[] target, float h, float s, float l){
+        float r, g, b;
 
+        if (s == 0f) {
+            r = g = b = l; // achromatic
+        } else {
+            float q = l < 0.5f ? l * (1 + s) : l + s - l * s;
+            float p = 2 * l - q;
+            r = hueToRgb(p, q, h + 1f/3f);
+            g = hueToRgb(p, q, h);
+            b = hueToRgb(p, q, h - 1f/3f);
+        }
+        target[0] = r;
+        target[1] = g;
+        target[2] = b;
+        //return rgbInt(r, g, b);
+//        int[] rgb = {(int) (r * 255), (int) (g * 255), (int) (b * 255)};
+//        return rgb;
+    }
     /** Helper method that converts hue to rgb */
     static float hueToRgb(float p, float q, float t) {
         if (t < 0f)
@@ -808,9 +830,9 @@ public enum Draw {
         gl.glColor3f(r, g, b);
     }
 
-    public static int colorBipolarHSB(float v) {
-        return hsb(v / 2f + 0.5f, 0.7f, 0.75f);
-    }
+//    public static int colorBipolarHSB(float v) {
+//        return hsb(v / 2f + 0.5f, 0.7f, 0.75f);
+//    }
 
     public static int colorBipolar(float v) {
 
@@ -859,7 +881,7 @@ public enum Draw {
         colorHash(x.hashCode(), color, 1f);
     }
 
-    private static void colorHash(int hash, float[] color, float sat, float bri, float alpha) {
+    public static void colorHash(int hash, float[] color, float sat, float bri, float alpha) {
         Draw.hsb(color, (Math.abs(hash) % 500) / 500f * 360.0f, sat, bri, alpha);
     }
 

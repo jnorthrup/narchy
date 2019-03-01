@@ -6,6 +6,7 @@ import jcog.data.list.FasterList;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.widget.Widget;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +29,7 @@ public class Gridding extends MutableListContainer {
     /** https://en.wikipedia.org/wiki/Golden_ratio */
     public static final float PHI = 0.618f;
 
-    protected float margin = 0.04f;
+    protected float margin = Widget.marginPctDefault;
 
     private float aspect;
 
