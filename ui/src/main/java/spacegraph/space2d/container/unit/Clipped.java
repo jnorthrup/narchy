@@ -20,8 +20,7 @@ public class Clipped extends UnitContainer {
     }
 
     @Override
-    protected void paintAbove(GL2 gl, SurfaceRender r) {
-
-        Draw.stencilEnd(gl);
+    protected void compileAbove(SurfaceRender r) {
+        r.on(Draw::stencilEnd);
     }
 }

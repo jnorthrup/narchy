@@ -31,10 +31,10 @@ abstract public class AbstractBiFunctionChip<X, Y, Z> extends Gridding {
 
         set(new Gridding(
                 new Gridding(
-                    new LabeledPane(this.xIn.type + " x (in)", xIn),
-                    new LabeledPane(this.yIn.type + " y (in)", yIn)
+                        LabeledPane.the(this.xIn.type + " x (in)", xIn),
+                        LabeledPane.the(this.yIn.type + " y (in)", yIn)
                 ),
-                new LabeledPane(this.out.type + " out", out))
+                LabeledPane.the(this.out.type + " out", out))
         );
 
     }

@@ -24,9 +24,9 @@ public class AudioOutPort extends Gridding  {
         enableButton = CheckBox.awesome("play");
         enableButton.on(true);
 
-        set(new LabeledPane("in", in = new Port()),
+        set(LabeledPane.the("in", in = new Port()),
             enableButton,
-            new LabeledPane("passthru", passThru = new Port()));
+                LabeledPane.the("passthru", passThru = new Port()));
     }
 
     @Override

@@ -66,8 +66,15 @@ public class ArrayTermVector extends TermVector {
             return false;
 
         Subterms that = (Subterms) obj;
-        if (hash != that.hashCodeSubterms())
+
+        //HACK
+        //if (!(that instanceof TermVector) && !(that instanceof AnonVector) && !(that instanceof RemappedSubterms.HashCachedRemappedSubterms) && !(that instanceof RemappedSubterms.RepeatedSubterms))
+            if (subs()!=that.subs()) //check before computing hashCode
+                return false;
+
+        if (hash != that.hashCodeSubterms()) {
             return false;
+        }
 
         if (obj instanceof ArrayTermVector) {
 

@@ -119,14 +119,16 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     }
 
     @Override
-    protected void paintAbove(GL2 gl, SurfaceRender r) {
+    protected void compileAbove(SurfaceRender r) {
 
         if (focused) {
-            float t = this.pri;
-            RectFloat b = this.bounds;
-            float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
-            gl.glColor4f(0.5f + 0.5f * t,0.25f, 0.15f, 0.5f);
-            Draw.rectFrame(b,  th, gl);
+            r.on((gl)->{
+                float t = this.pri;
+                RectFloat b = this.bounds;
+                float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
+                gl.glColor4f(0.5f + 0.5f * t,0.25f, 0.15f, 0.5f);
+                Draw.rectFrame(b,  th, gl);
+            });
         }
     }
 

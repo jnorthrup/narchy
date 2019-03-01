@@ -25,7 +25,7 @@ public class PulseChip extends Gridding {
 
     public PulseChip() {
         super();
-        set(new LabeledPane("period(MS)", periodMS), new LabeledPane("trigger", pulse));
+        set(LabeledPane.the("period(MS)", periodMS), LabeledPane.the("trigger", pulse));
 
         p = Float.NaN;
         loop = null;

@@ -327,7 +327,7 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
 
             Subterms ss = (Subterms) obj;
 
-            if (this.hash != ss.hashCodeSubterms()) return false;
+            //if (this.hash != ss.hashCodeSubterms()) return false;
 
             int s = subterms.length;
             if (ss.subs() != s)

@@ -25,6 +25,7 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
+import nars.$;
 import nars.Op;
 import nars.The;
 import nars.io.TermAppender;
@@ -42,11 +43,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.SortedSet;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import static nars.Op.CONJ;
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.time.Tense.*;
 
 /**
@@ -248,20 +249,40 @@ public interface Compound extends Term, IPair, Subterms {
 
         Op o = op();
 
-//        if (o == CONJ) {
-//            int xdt = dt(), ydt = y.dt();
-//            if (xdt == XTERNAL || ydt == XTERNAL) {
-//                return unifyXternal(xx, yy, u);
-//            }
-////            if (xdt!=XTERNAL && ydt!=XTERNAL && xs!=yy.subs() && !x.hasXternal() && !y.hasXternal())
-////                return false; //arity mismatch
-//        } else {
-////            if (xs != yy.subs())
-////                return false;
-//        }
+        int ys = yy.subs();
 
-        if (xs != yy.subs())
-            return false;
+        if (xs != ys) {
+            if (o == CONJ) {
+                int xdt = dt(), ydt = y.dt();
+                if (xdt!=ydt) {
+                    if (xdt ==XTERNAL || ydt ==XTERNAL) {
+
+                        if (!Subterms.possiblyUnifiable(x, y, u.varBits))
+                            return false;
+
+                        if (xdt == XTERNAL) {
+                            SortedSet<Term> yyy = y.eventSet();
+                            if ((ys = yyy.size()) != xs)
+                                return false; //TODO permute if possiblyUnifiable
+                            yy = $.vFast(yyy.toArray(EmptyTermArray));
+                        } else /*if (ydt == XTERNAL)*/ {
+                            SortedSet<Term> xxx = x.eventSet();
+                            if ((xs = xxx.size()) != ys)
+                                return false; //TODO permute if possiblyUnifiable
+                            xx = $.vFast(xxx.toArray(EmptyTermArray));
+                        }
+
+                        return xx.equals(yy) || xx.unifyCommute(yy, u);
+                    }
+
+                    return false; //differing #subterms and neither is XTERNAL
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
 
         if (!Subterms.possiblyUnifiable(xx, yy, u))
             return false;
@@ -271,11 +292,13 @@ public interface Compound extends Term, IPair, Subterms {
             boolean xSpecific = (xdt != XTERNAL && xdt != DTERNAL);
             boolean ySpecific = (ydt != XTERNAL && ydt != DTERNAL);
 
-            if (xdt != ydt && xSpecific && ySpecific && !u.unifyDT(xdt, ydt))
-                return false;
+            if (xSpecific && ySpecific) {
+                if (xdt != ydt && !u.unifyDT(xdt, ydt))
+                    return false;
 
-            if (o == CONJ && xSpecific && ySpecific)
-                return (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
+                if (o == CONJ)
+                    return (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
+            }
 
 
 
@@ -312,6 +335,7 @@ public interface Compound extends Term, IPair, Subterms {
 //            return false;
 
     }
+
 //
 //    static boolean unifyXternal(Subterms xx, Subterms yy, Unify u) {
 //        if (xx.equals(yy))

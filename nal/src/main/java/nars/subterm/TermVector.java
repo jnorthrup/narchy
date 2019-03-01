@@ -39,7 +39,10 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
     }
 
 
-
+    @Override
+    public final int hashCodeSubterms() {
+        return hash;
+    }
 
 
     void equivalentTo(TermVector that) {

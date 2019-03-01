@@ -23,9 +23,11 @@ public class PuncNoise extends DurService {
     @Override
     protected void run(NAR n, long dt) {
         TaskLinkBag b = ((AbstractConceptIndex) n.concepts).active;
-        int i = Math.min(b.size(), tasklinksPerDuration.intValue());
-        if (i > 0)
-            b.sample(n.random(), i, this::noise);
+        if (b!=null) {
+            int i = Math.min(b.size(), tasklinksPerDuration.intValue());
+            if (i > 0)
+                b.sample(n.random(), i, this::noise);
+        }
     }
 
     protected void noise(TaskLink t) {

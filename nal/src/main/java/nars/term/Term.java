@@ -41,7 +41,6 @@ import nars.time.Tense;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -52,6 +51,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.*;
 
 import static nars.Op.*;
@@ -693,9 +694,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 //        }
 //    }
 
-    default MutableSet<Term> eventSet() {
+    default SortedSet<Term> eventSet() {
         assert (op() == CONJ);
-        MutableSet<Term> s = new UnifiedSet<>();
+        TreeSet<Term> s = new TreeSet();
         eventsWhile((when, what) -> {
             if (what != Term.this)
                 s.add(what);

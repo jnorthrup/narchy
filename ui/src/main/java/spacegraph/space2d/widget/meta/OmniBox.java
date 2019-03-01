@@ -200,7 +200,7 @@ public class OmniBox extends Widget {
             surface = new ObjectSurface<>(x);
         }
 
-        SpaceGraph.window(new LabeledPane(src, surface), 800, 800);
+        SpaceGraph.window(LabeledPane.the(src, surface), 800, 800);
     }
 
     /**

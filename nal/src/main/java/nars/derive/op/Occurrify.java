@@ -54,6 +54,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class Occurrify extends TimeGraph {
 
+    private final Derivation d;
+
     public static boolean occurrify(Term x, Truthify truth, OccurrenceSolver time, Derivation d) {
         if (d.temporal) {
 
@@ -269,10 +271,11 @@ public class Occurrify extends TimeGraph {
             nextNeg = new UnifiedSet<>(8, 0.99f),
             nextPos = new UnifiedSet(8, 0.99f);
 
-    private final Derivation d;
 
-    private boolean decomposeEvents;
-    int patternVolume;
+
+    private transient boolean decomposeEvents;
+    private transient int patternVolume;
+    private transient Op patternOp;
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -483,7 +486,8 @@ public class Occurrify extends TimeGraph {
 
 
     @Override protected boolean validPotentialSolution(Term y) {
-        if(!y.op().taskable)
+        Op o = y.op();
+        if(o == patternOp && !o.taskable)
             return false;
 
         int v = y.volume();
@@ -496,6 +500,7 @@ public class Occurrify extends TimeGraph {
 
         ttl = Param.TIMEGRAPH_ITERATIONS;
         patternVolume = pattern.volume();
+        patternOp = pattern.op();
 
         solve(pattern,  /* take everything */ this::eachSolution);
 

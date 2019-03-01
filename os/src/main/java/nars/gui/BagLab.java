@@ -11,6 +11,7 @@ import nars.$;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.util.math.Color3f;
 
 import java.util.Arrays;
@@ -58,9 +59,9 @@ public class BagLab {
                 col(inputSliders),
                 
                 col(
-                        NARui.pane("Bag Selection Distribution (0..1)", new HistogramChart(
+                        LabeledPane.the("Bag Selection Distribution (0..1)", new HistogramChart(
                                 () -> selectionHistogram, new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))),
-                        NARui.pane("Bag Content Distribution (0..1)", new HistogramChart(
+                        LabeledPane.the("Bag Content Distribution (0..1)", new HistogramChart(
                                 () -> bag.histogram(new float[BINS]),
                                 new Color3f(0f, 0.25f, 0.5f), new Color3f(0.1f, 0.5f, 1f)))
                 )

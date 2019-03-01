@@ -219,7 +219,11 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
 
     /** prepares the rendering procedures in the rendering context */
     public void recompile(SurfaceRender r) {
-        if (showing = (visible() && (!clipBounds || r.visible(bounds)))) {
+        if (!showing) {
+            showing = (visible() && (!clipBounds || r.visible(bounds)));
+        }
+
+        if (showing) {
             compile(r);
         }
     }

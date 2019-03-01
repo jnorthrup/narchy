@@ -105,10 +105,6 @@ public class NARui {
         return new Stacking(s);
     }
 
-    public static LabeledPane pane(String k, Surface s) {
-        return new LabeledPane(k, s);
-    }
-
 
     public static Surface top(NAR n) {
         HashMap<String, Supplier<Surface>> mm = menu(n);
@@ -282,7 +278,7 @@ public class NARui {
                 System.out.println(t);
         };
 
-        return new LabeledPane("Trace",
+        return LabeledPane.the("Trace",
                 grid(
                         grid(
                                 new CheckBox("Belief").on(taskTrace(n, BELIEF, printer)),

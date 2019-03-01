@@ -3,7 +3,6 @@ package spacegraph.space2d.container.graph;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.graph.Node;
-import jcog.data.list.FasterList;
 import jcog.data.map.CellMap;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.data.map.MRUMap;
@@ -18,7 +17,6 @@ import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.Clipped;
-import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.windo.Windo;
@@ -48,7 +46,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     //public AtomicFloat scale = new AtomicFloat(1);
 
 
-    private List<Graph2DRenderer<X>> renderers = new FasterList<>();
+    private List<Graph2DRenderer<X>> renderers = List.of();
 
 //    private final DequePool<NodeVis<X>> nodePool = new DequePool<>() {
 //        @Override
@@ -95,7 +93,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     private final transient Set<X> wontRemain = new ArrayHashSet();
 
     private final Consumer<NodeVis<X>> DEFAULT_NODE_BUILDER = x -> x.set(
-            new Scale(new PushButton(x.id.toString()), 0.75f)
+            //new Scale(
+                    new PushButton(x.id.toString())
+                    //, 0.75f)
     );
     private transient Consumer<NodeVis<X>> builder = DEFAULT_NODE_BUILDER;
 
@@ -105,6 +105,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     public Graph2D(Graph2DUpdater<X> updater) {
         super();
+        clipBounds = false;
         update(updater);
     }
     public Surface widget() {
@@ -149,13 +150,19 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
      * adds a rendering stage.  these are applied successively at each visible node
      */
     public Graph2D<X> render(Graph2DRenderer<X>... renderStages) {
-        renderers = new FasterList<>(renderStages);
-        //Collections.addAll(renderers, stages);
+        List<Graph2DRenderer<X>> nextRenderStages = List.of(renderStages);
+        if (!renderers.equals(nextRenderStages)) {
+            renderers = nextRenderStages;
+            layout();
+        }
         return this;
     }
 
     public Graph2D<X> build(Consumer<NodeVis<X>> builder) {
-        this.builder = builder;
+        if (this.builder!=builder) {
+            this.builder = builder;
+            layout();
+        }
         return this;
     }
 
@@ -163,7 +170,10 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
      * TODO to support dynamically changing updater, apply the updater's init procdure to all existing nodes.  do this in between frames so there is no interruption if rendering current frame.  this means saving a 'nextUpdater' reference to delay application
      */
     public Graph2D<X> update(Graph2DUpdater<X> u) {
-        this.updater = u;
+        if (this.updater!=u) {
+            this.updater = u;
+            layout();
+        }
         return this;
     }
 
@@ -235,8 +245,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             updateNodes(nodes, addOrReplace);
 
             render();
-
-            layout();
 
         } finally {
             busy.set(false);

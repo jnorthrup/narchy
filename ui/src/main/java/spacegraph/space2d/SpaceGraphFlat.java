@@ -1,6 +1,7 @@
 package spacegraph.space2d;
 
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.finger.impl.NewtMouseFinger;
@@ -49,8 +50,8 @@ public class SpaceGraphFlat extends JoglSpace {
 
 
                 @Override
-                protected void paintAbove(GL2 gl, SurfaceRender r) {
-                    gl.glPopMatrix();
+                protected void compileAbove(SurfaceRender r) {
+                    r.on(GLMatrixFunc::glPopMatrix);
                 }
 
             };

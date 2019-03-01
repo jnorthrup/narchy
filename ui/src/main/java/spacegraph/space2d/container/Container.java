@@ -66,36 +66,37 @@ abstract public class Container extends Surface {
     /**
      * first sub-layer
      */
-    protected void paintIt(GL2 gl, SurfaceRender r) {
+    @Deprecated protected void paintIt(GL2 gl, SurfaceRender r) {
 
     }
 
-    /**
-     * last sub-layer
-     */
-    protected void paintAbove(GL2 gl, SurfaceRender r) {
 
-    }
 
 
     @Override
     protected void compile(SurfaceRender r) {
         if (!prePaint(r)) {
             showing = false;
-            return;
         } else {
             showing = true;
+
+            if (MUSTLAYOUT.compareAndSet(this, 1, 0)) {
+                doLayout(r.dtMS);
+            }
+
+            r.on(this::paintIt); //TODO if transparent this doesnt need rendered
+
+            forEach(c -> c.recompile(r));
+
+            compileAbove(r);
+
+
         }
 
-        if (MUSTLAYOUT.compareAndSet(this, 1, 0)) {
-            doLayout(r.dtMS);
-        }
+    }
 
-        r.on(this::paintIt); //TODO if transparent this doesnt need rendered
+    protected void compileAbove(SurfaceRender r) {
 
-        forEach(c -> c.recompile(r));
-
-        r.on(this::paintAbove); //TODO if transparent this doesnt need rendered
     }
 
     @Override

@@ -21,16 +21,18 @@ public class ColorToggle extends ToggleButton {
 
 
     @Override
-    protected void paintAbove(GL2 gl, SurfaceRender r) {
-        super.paintAbove(gl, r);
+    protected void compileAbove(SurfaceRender r) {
+        super.compileAbove(r);
 
         if (on.get()) {
             
-            
 
-            gl.glColor3f(1,1,1);
-            gl.glLineWidth(3f);
-            Draw.rectStroke(bounds, gl);
+            r.on((gl)-> {
+
+                gl.glColor3f(1, 1, 1);
+                gl.glLineWidth(3f);
+                Draw.rectStroke(bounds, gl);
+            });
         }
     }
 

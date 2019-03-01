@@ -81,10 +81,10 @@ public class GraphEditTest {
 
             GraphEdit s = GraphEdit.window(1000, 1000);
 
-            Surface mux = new Gridding(HORIZONTAL, new LabeledPane("->", new Gridding(VERTICAL,
+            Surface mux = new Gridding(HORIZONTAL, LabeledPane.the("->", new Gridding(VERTICAL,
                     new Port(),
                     new Port()
-            )), new LabeledPane("->", new Port()));
+            )), LabeledPane.the("->", new Port()));
             s.add(mux).pos(RectFloat.Unit.transform(250, 0, 250));
 
             Port A = new FloatRangePort(0.5f, 0, 1);

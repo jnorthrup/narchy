@@ -7,6 +7,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.hud.Ortho;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /** surface rendering context */
 public class SurfaceRender {
@@ -29,7 +30,9 @@ public class SurfaceRender {
 
     }
 
-
+    public final void on(Consumer<GL2> renderable) {
+        on((gl, rr)->renderable.accept(gl));
+    }
 
     /** encodes the rendering sequence */
     public final void on(BiConsumer<GL2, SurfaceRender> renderable) {
@@ -138,6 +141,7 @@ public class SurfaceRender {
     public String toString() {
         return scaleX + "x" + scaleY + " " + main.size() + " renderables";
     }
+
 
     //    /** adapts the world coordinates to a new virtual local coordinate system */
 //    public SurfaceRender virtual(RectFloat xywh) {

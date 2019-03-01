@@ -29,7 +29,7 @@ public class PlotChip extends Bordering {
             }
             plot.update();
         });
-        set(S, new LabeledPane("in", new Gridding(in)));
+        set(S, LabeledPane.the("in", new Gridding(in)));
 
     }
 }

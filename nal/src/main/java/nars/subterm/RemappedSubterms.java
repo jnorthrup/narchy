@@ -71,7 +71,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
         return new ReversedSubterms(x);
     }
 
-    private static abstract class HashCachedRemappedSubterms<S extends Subterms> extends RemappedSubterms<S> {
+    public static abstract class HashCachedRemappedSubterms<S extends Subterms> extends RemappedSubterms<S> {
 
         /**
          * make sure to calculate hash code in implementation's constructor
@@ -96,7 +96,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof Subterms && hash == ((Subterms)obj).hashCodeSubterms() && ((Subterms) obj).equalTerms(this);
+            return (this==obj) || (obj instanceof Subterms && hash == ((Subterms)obj).hashCodeSubterms() && ((Subterms) obj).equalTerms(this));
         }
     }
 
@@ -131,7 +131,9 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof Subterms && hash == ((Subterms)obj).hashCodeSubterms() && ((Subterms) obj).equalTerms(this);
+            return (this == obj) || (
+                    obj instanceof Subterms && hash == ((Subterms)obj).hashCodeSubterms() && ((Subterms) obj).equalTerms(this)
+            );
         }
 
         @Override

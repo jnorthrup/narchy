@@ -125,7 +125,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             String l = relationLabel(relation);
 
             if (!l.isEmpty())
-                return new LabeledPane(l, xx);
+                return LabeledPane.the(l, xx);
             else
                 return xx;
         });

@@ -69,12 +69,12 @@ public class ConjClustering extends Causable {
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super();
 
-        this.in = nar.newChannel(this);//.buffered();
+        this.in = nar.newChannel(this);
 
         this.model = new BagClustering.Dimensionalize<>(4) {
 
             /** (mid-)time difference importance in clustering */
-            static final double TIME_ANCHOR_STRENGTH = 8;
+            static final double TIME_ANCHOR_STRENGTH = 4;
 
             @Override
             public void coord(Task t, double[] c) {
@@ -165,25 +165,37 @@ public class ConjClustering extends Causable {
         }
 
         //round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
-        List<TaskList> centroids = new FasterList<>(this.data.net.centroidCount());
+        FasterList<TaskList> centroids = new FasterList<>(this.data.net.centroidCount());
         data.forEachCentroid(TaskList::new, tt ->{
-            if (tt.size() > 1)
+            int tts = tt.size();
+            if (tts > 1) {
+                if (tts > 2)
+                    ArrayUtils.sort(tt.array(), 0, tts-1, Prioritized::priElseZero);
+
                 centroids.add(tt);
+            }
         });
 
-        if (centroids.isEmpty())
+        int cc = centroids.size();
+        if (cc == 0)
             return;
+        if (cc > 1)
+            centroids.shuffleThis(nar.random());
+
 
         do {
 
             Iterator<TaskList> ii = centroids.iterator();
             while (ii.hasNext()) {
                 FasterList<Task> l = ii.next();
-                if (conjoiner.conjoinCentroid(l, tasksPerIterationPerCentroid, nar) == 0 || l.size()<2)
+                if (conjoiner.conjoinCentroid(l, tasksPerIterationPerCentroid, nar) == 0 || l.size()<=1)
                     ii.remove();
+
+                 if (!kontinue.getAsBoolean())
+                     return;
             }
 
-        } while (!centroids.isEmpty() && kontinue.getAsBoolean());
+        } while (!centroids.isEmpty());
 
     }
 
@@ -242,8 +254,6 @@ public class ConjClustering extends Causable {
             if (s == 0)
                 return 0;
 
-            if (s > 2)
-                ArrayUtils.sort(items.array(), 0, s-1, Prioritized::priElseZero);
 
             int count = 0;
             float confMinThresh = confMin + nar.confResolution.floatValue()/2f;
