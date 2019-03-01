@@ -273,7 +273,7 @@ public class ConjClustering extends Causable {
             main: for (; i.hasNext(); ) {
 
 
-                if (--s <= 0)
+                if (--s < 0)
                     reset = true;
 
                 if (reset) {
@@ -308,11 +308,13 @@ public class ConjClustering extends Causable {
 
                 Truth tx = t.truth();
                 float tc = tx.conf();
-                if (confCompose(conf, tc) < confMin)
+                float nextConf = confCompose(conf, tc);
+                if (nextConf < confMin)
                     continue; //try next
 
                 Term term = t.term();
-                if (tx.isNegative())
+                boolean taskNeg = tx.isNegative();
+                if (taskNeg)
                     term = term.neg();
 
                 int xtv = term.volume();
@@ -335,17 +337,17 @@ public class ConjClustering extends Causable {
                         if (start > tStart) start = tStart;
 
 
-                        conf = confCompose(conf, tc);
+                        conf = nextConf;
 
                         float tf = tx.freq();
-                        freq *= tx.isNegative() ? (1f - tf) : tf;
+                        freq *= taskNeg ? (1f - tf) : tf;
 
                         trying.add(t);
                         i.remove();
 
                         if (trying.size() > 1) {
 
-                            if ((items.size() <=1) || (conf <= confMinThresh) || (volEstimate  >= volMax) || (trying.size() >= Param.STAMP_CAPACITY)) {
+                            if (items.isEmpty() || (conf <= confMinThresh) || (volEstimate  >= volMax) || (trying.size() >= Param.STAMP_CAPACITY)) {
                                 Task[] x = trying.toArray(Task.EmptyArray);
                                 trying.clear();
 

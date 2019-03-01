@@ -206,7 +206,9 @@ class ConceptualizationTest {
     }
     @Test
     void testConceptOfDisjunctionFckup() {
-        assertEq("TODO", $$("((--,(&|,(--,(1-->ang)),ang,z))&&(--,(2-->ang)))").concept());
+        assertEq("((||+- ,(1-->ang),(--,z),(--,ang)) &&+- (--,(2-->ang)))",
+                $$("((--,(&|,(--,(1-->ang)),ang,z))&&(--,(2-->ang)))").concept());
+
         //TODO ((grid,#1,13) &&+440 (--,((||,(--,(grid,#1,#1)),rotate)&&left))) .concept()
         //TODO ((&|,(tetris-->curi),(--,left),(--,rotate))&&(--,((--,rotate) &&+819 (--,left))))
     }

@@ -36,18 +36,22 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             case 0:
                 return True;
             case 1:
-                return events[0].term();
+                return sequenceTerm(events[0]);
         }
 
         ConjLazy ce = new ConjLazy(eventsSize);
 
         for (Task o : events) {
-            if (!ce.add(o.start(), o.term())) {
+            if (!ce.add(o.start(), sequenceTerm(o))) {
                 break;
             }
         }
 
         return ce.term();
+    }
+
+    private static Term sequenceTerm(Task o) {
+        return o.term().negIf(o.isNegative());
     }
 
     /**
