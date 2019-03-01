@@ -5,6 +5,7 @@ import jcog.WTF;
 import jcog.data.set.MetalLongSet;
 import jcog.math.FloatRange;
 import jcog.math.LongInterval;
+import jcog.pri.NLink;
 import jcog.pri.Prioritizable;
 import jcog.pri.VLink;
 import nars.NAR;
@@ -26,14 +27,13 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 import static nars.truth.func.TruthFunctions.confCompose;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -46,19 +46,19 @@ public class ConjClustering extends Causable {
     private final CauseChannel in;
     private final byte punc;
 
-    public final FloatRange termVolumeMaxFactor = new FloatRange(0.75f, 0, 1f);
+    public final FloatRange termVolumeMaxPct = new FloatRange(0.75f, 0, 1f);
 
     private final Predicate<Task> filter;
     private long now;
     private int dur;
     private float confMin;
-    private int volMax, volMaxSafe;
+    private int volMax;
     private int ditherTime;
     private final boolean popConjoinedTasks = false;
     static final boolean priCopyOrTransfer = false;
 
     final AtomicBoolean learn = new AtomicBoolean(true);
-    private int maxStampLen;
+    private int inputTermVolMax, stampLenMax;
 
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
@@ -70,35 +70,32 @@ public class ConjClustering extends Causable {
 
         this.in = nar.newChannel(this);//.buffered();
 
-        this.model = new BagClustering.Dimensionalize<>(5) {
+        this.model = new BagClustering.Dimensionalize<>(4) {
 
-            /** # durs (in-)sensitivity factor */
-            static final double TIME_SENSITIVITY = 8;
+            /** (mid-)time difference importance in clustering */
+            static final double TIME_ANCHOR_STRENGTH = 8;
 
             @Override
             public void coord(Task t, double[] c) {
                 Truth tt = t.truth();
                 c[0] = t.mid();
-                c[1] = t.priElseZero();
 
-                c[2] = tt.polarity();
-                c[3] = tt.conf();
+                c[1] = tt.polarity();
+                c[2] = tt.conf();
 
-                c[4] = t.range();
+                c[3] = t.range();
             }
 
             @Override
             public double distanceSq(double[] a, double[] b) {
-                double dMid = Math.abs(a[0] - b[0])/dur;
-                double dRange = Math.abs(a[4] - b[4]);
-                double dPri = Math.abs(a[1] - b[1]);
+                double dMid = Math.abs(a[0] - b[0]) / dur;
+                double dRange = Math.abs(a[3] - b[3]);
                 double dPolarity = Math.abs(a[2] - b[2]);
-                double dConf = Math.abs(a[3] - b[3]);
-                return dMid / (TIME_SENSITIVITY) +
-                        dPri +
+                double dConf = Math.abs(a[2] - b[2]);
+                return dMid / (TIME_ANCHOR_STRENGTH) +
                         dPolarity +
                         dConf +
-                        dRange/(1 + dMid) * 0.5;
+                        dRange / (1 + dMid) * 0.5;
 
 //                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4] - b[4]) / dur))
 //                        *
@@ -124,12 +121,13 @@ public class ConjClustering extends Causable {
     @Override
     protected void starting(NAR nar) {
 
-        on(DurService.on(nar, ()-> learn.set(true)));
+        on(DurService.on(nar, () -> learn.set(true)));
 
         on(nar.onTask(t -> {
             if (!t.isEternal()
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
-                    && (maxStampLen==Integer.MAX_VALUE || (t.stamp().length <= maxStampLen))
+                    && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))
+                    && t.volume() <= inputTermVolMax
                     && filter.test(t)) {
 
                 data.put(t, pri(t));
@@ -142,13 +140,14 @@ public class ConjClustering extends Causable {
 
     protected float pri(Task t) {
         return t.priElseZero()
-                //* TruthIntegration.evi(t);
+                * (t.conf())
+                * (0.5f + 0.5f * t.polarity())
+                //                 * t.polarity()
+                //                 * t.originality()
 //                 * (1/(1f+t.volume()))
-//                 * t.polarity()
-//                 * t.originality()
+                //* TruthIntegration.evi(t);
                 ;
     }
-
 
 
     @Override
@@ -156,13 +155,14 @@ public class ConjClustering extends Causable {
 
         update(nar);
 
-        if (data == null || data.bag.isEmpty()) return;
+        if (data.bag.isEmpty()) return;
 
-        if (learn.compareAndSet(true,false)) {
+        if (learn.compareAndSet(true, false)) {
             //learn once per duration
             data.learn(forgetRate(), 1);
         }
 
+        //TODO round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
         conjoiner.kontinue = kontinue;
         data.forEachCentroid(nar, nar.random(), conjoiner::conjoinCentroid);
 
@@ -172,18 +172,21 @@ public class ConjClustering extends Causable {
     private void update(NAR nar) {
         long now = nar.time();
         long lastNow = this.now;
-        if (lastNow!=now) {
+        if (lastNow != now) {
             //parameters must be set even if data is empty due to continued use in the filter
             //but at most once per cycle or duration
             this.now = now;
             this.dur = nar.dur();
             this.ditherTime = nar.dtDither();
-            this.maxStampLen =
+            this.stampLenMax =
                     //Param.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
                     //Param.STAMP_CAPACITY - 1;
                     Integer.MAX_VALUE;
             this.confMin = nar.confMin.floatValue();
-            this.volMaxSafe = Math.round((this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxFactor.floatValue());
+            this.inputTermVolMax = Math.round(Math.max(1f,
+                    (this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxPct.floatValue()) +
+                    -2 /* for the super-CONJ itself and another term of at least volume 1 */
+            );
         }
     }
 
@@ -223,11 +226,19 @@ public class ConjClustering extends Causable {
 
         private boolean conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
 
-            Iterator<VLink<Task>> gg =
-                    group.filter(x -> x != null && !x.isDeleted()).iterator();
+            List<Task> ggl =
+                    group.filter(x -> x != null && !x.isDeleted()).map(NLink::get).collect(toList());
 
-            main:
-            while (gg.hasNext()) {
+
+            boolean active = true;
+
+            //System.out.println(ggl.size());
+
+            main: while (active && ggl.size() > 1) {
+
+                //System.out.println("\t" + ggl.size());
+
+                active = false;
 
                 vv.clear();
                 actualStamp.clear();
@@ -237,14 +248,16 @@ public class ConjClustering extends Causable {
                 long start = Long.MAX_VALUE;
 
                 float freq = 1f, conf = 1f;
+
+                float confMinThresh = confMin + nar.confResolution.floatValue();
+
                 float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
                 float confMax = Float.NEGATIVE_INFINITY;//, confMin = Float.POSITIVE_INFINITY;
-                int vol = 0;
+                int volEstimate = 1;
 
-
-                while (gg.hasNext()) {
-
-                    Task t = gg.next().get();
+                ListIterator<Task> gg = ggl.listIterator();
+                for (Iterator<Task> iterator = gg; iterator.hasNext(); ) {
+                    Task t = iterator.next();
 
                     Truth tx = t.truth();
                     float tc = tx.conf();
@@ -252,88 +265,115 @@ public class ConjClustering extends Causable {
                         continue; //try next
 
                     Term taskTerm = t.term();
-
                     if (tx.isNegative())
                         taskTerm = taskTerm.neg();
 
                     int xtv = taskTerm.volume();
-                    if (vol + xtv + 1 > ConjClustering.this.volMaxSafe)
-                        continue; //try next
+
+                    if (volEstimate + xtv <= volMax) {
+                        long[] tStamp = t.stamp();
+
+                        if (!Stamp.overlapsAny(actualStamp, tStamp)) {
+
+                            long taskStart = Tense.dither(t.start(), ditherTime);
+
+                            if (vv.isEmpty() || !vv.containsKey(pair(taskStart, taskTerm.neg()))) {
+
+                                LongObjectPair<Term> ps = pair(taskStart, taskTerm);
+
+                                if (null == vv.putIfAbsent(ps, t)) {
 
 
-                    long[] tStamp = t.stamp();
+                                    volEstimate += xtv;
 
-                    if (!Stamp.overlapsAny(actualStamp, tStamp)) {
+                                    actualStamp.addAll(tStamp);
 
-                        long taskStart = Tense.dither(t.start(), ditherTime);
-
-                        if (vv.isEmpty() || !vv.containsKey(pair(taskStart, taskTerm.neg()))) {
-
-                            LongObjectPair<Term> ps = pair(taskStart, taskTerm);
-
-                            if (null == vv.putIfAbsent(ps, t)) {
-                                vol += xtv;
-
-                                actualStamp.addAll(tStamp);
-
-                                if (start > taskStart) start = taskStart;
-                                if (end < taskStart) end = taskStart;
+                                    if (start > taskStart) start = taskStart;
+                                    if (end < taskStart) end = taskStart;
 
 
-                                if (tc > confMax) confMax = tc;
+                                    if (tc > confMax) confMax = tc;
 
-                                conf = confCompose(conf, tc);
+                                    conf = confCompose(conf, tc);
 
-                                float tf = tx.freq();
-                                freq *= tx.isNegative() ? (1f - tf) : tf;
+                                    float tf = tx.freq();
+                                    freq *= tx.isNegative() ? (1f - tf) : tf;
 
-                                float p = t.priElseZero();
-                                if (p < priMin) priMin = p;
-                                if (p > priMax) priMax = p;
+                                    float p = t.priElseZero();
+                                    if (p < priMin) priMin = p;
+                                    if (p > priMax) priMax = p;
 
-                                if (vv.size() >= Param.STAMP_CAPACITY)
-                                    break;
+                                    gg.remove();
+
+                                    if (vv.size() > 1) {
+
+                                        if ((ggl.size() <=1) || (conf <= confMinThresh) || (volEstimate  >= volMax) || (vv.size() >= Param.STAMP_CAPACITY)) {
+                                            Task[] uu = vv.values().toArray(Task.EmptyArray);
+
+                                            Task m = conjoin(uu, freq, conf, start, priMin);
+                                            boolean conjoined = m != null;
+
+                                            if (conjoined) {
+
+                                                active = true;
+
+                                                if (popConjoinedTasks) {
+                                                    for (Task aa : uu)
+                                                        data.remove(aa);
+                                                }
+
+                                                in.input(m);
+                                                continue main;
+
+                                            } else {
+
+                                                //recycle to be reused
+                                                for (Task u : uu)
+                                                    gg.add(u);
+                                            }
+
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
-                int vs = vv.size();
-                if (vs < 2)
-                    continue;
+            }
 
-                Task[] uu = vv.values().toArray(Task.EmptyArray);
+            return kontinue.getAsBoolean(); //continue with next centroid
+        }
 
+        private Task conjoin(Task[] uu, float freq, float conf, long start, float priMin) {
 
-                float e = c2wSafe(conf);
-                if (e!=e)
-                    throw new WTF();
-                if (e > 0) {
-                    final Truth t = Truth.theDithered(freq, e, nar);
-                    if (t != null) {
+            float e = c2wSafe(conf);
+            if (e != e)
+                throw new WTF();
 
-                        Term cj = Conj.conj(vv.keySet());
-                        if (cj.volume() > volMax)
-                            return false;
+            if (e > 0) {
+                final Truth t = Truth.theDithered(freq, e, nar);
+                if (t != null) {
 
-                        if (cj != null) {
+                    Term cj = Conj.conj(vv.keySet());
+                    if (cj != null && cj.volume() <= volMax) {
 
-                            Term tt = Task.forceNormalizeForBelief(cj);
+                        Term tt = Task.forceNormalizeForBelief(cj);
 
-                            ObjectBooleanPair<Term> cp = Task.tryContent(tt, punc, true);
-                            if (cp != null) {
+                        ObjectBooleanPair<Term> cp = Task.tryContent(tt, punc, true);
+                        if (cp != null) {
 
-                                long range = Util.min(LongInterval::range, uu) - 1;
-                                long tEnd = start + range;
-                                NALTask m = new STMClusterTask(cp, t,
-                                        Tense.dither(start, ditherTime), Tense.dither(tEnd,ditherTime),
-                                        Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
-                                m.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), uu));
+                            long range = Util.min(LongInterval::range, uu) - 1;
+                            long tEnd = start + range;
+                            NALTask m = new STMClusterTask(cp, t,
+                                    Tense.dither(start, ditherTime), Tense.dither(tEnd, ditherTime),
+                                    Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
+                            m.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), uu));
 
 
-                                int v = cp.getOne().volume();
-                                float cmplFactor =
-                                        1f - Util.unitize(((float) v) / volMax);
+                            int v = cp.getOne().volume();
+                            float cmplFactor =
+                                    1f - Util.unitize(((float) v) / volMax);
 
 //                                float freqFactor =
 //                                        t.freq();
@@ -341,33 +381,20 @@ public class ConjClustering extends Causable {
 //                                        (conf / (conf + confMax));
 
 
-                                m.pri(Prioritizable.fund(Util.unitize((priMin /* * uu.length*/ ) * cmplFactor /* * freqFactor  * confFactor*/ ), priCopyOrTransfer, uu));
+                            m.pri(Prioritizable.fund(Util.unitize((priMin /* * uu.length*/) * cmplFactor /* * freqFactor  * confFactor*/), priCopyOrTransfer, uu));
 
-                                if (popConjoinedTasks) {
-                                    for (Task aa : uu)
-                                        data.remove(aa);
-                                }
 
-                                in.input(m);
+                            return m;
 
-                                if (!kontinue.getAsBoolean())
-                                    return false;
-
-                            } else {
-                                return false;
-                            }
                         }
                     }
-
-
                 }
+
+
             }
 
-            return true;
+
+            return null;
         }
-
     }
-
-
-
 }

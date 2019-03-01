@@ -7,7 +7,6 @@ import jcog.Util;
 import jcog.data.byt.DynBytes;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
-import jcog.event.ByteTopic;
 import jcog.event.ListTopic;
 import jcog.event.Off;
 import jcog.event.Topic;
@@ -42,6 +41,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.TaskBuffer;
 import nars.task.util.TaskException;
+import nars.task.util.TaskTopic;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -98,7 +98,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Exec exe;
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
-    public final ByteTopic<Task> eventTask = new ByteTopic<>(Op.Punctuation);
+
+    public final TaskTopic eventTask = new TaskTopic();
     public final Services<NAR, Term> services;
     public final Time time;
     public final ConceptIndex concepts;

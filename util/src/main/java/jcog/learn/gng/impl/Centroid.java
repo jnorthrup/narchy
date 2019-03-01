@@ -1,10 +1,10 @@
 package jcog.learn.gng.impl;
 
 
+import jcog.data.atomic.NonNegativeAtomicInteger;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static jcog.Texts.n4;
 
@@ -14,8 +14,8 @@ import static jcog.Texts.n4;
 public class Centroid extends ArrayRealVector {
 
     /** serial unique ID */
-    private static final AtomicInteger ID = new AtomicInteger();
-    public final int id = ID.getAndIncrement();
+    private static final NonNegativeAtomicInteger ID = new NonNegativeAtomicInteger();
+    public final int id = ID.getAndIncrementNonNegative();
 
     public final int _id;
 

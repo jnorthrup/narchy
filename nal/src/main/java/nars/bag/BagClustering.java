@@ -112,23 +112,24 @@ public class BagClustering<X> {
         return bag.size();
     }
 
-    public <A> void forEachCentroid(A arg, @Nullable Random rng, BiPredicate<Stream<VLink<X>>, A> each) {
+    public <A> void forEachCentroid(A arg, Random rng, BiPredicate<Stream<VLink<X>>, A> each) {
 
         List<VLink<X>> sorted = itemsSortedByCentroid(rng);
-
-        int current = -1;
         int n = sorted.size();
-        int bs = -1;
-        for (int i = 0; i < n; i++) {
-            VLink<X> x = sorted.get(i);
+        if (n > 0) {
+            int c = -1;
+            int prev = -1;
+            for (int i = 0; i < n; i++) {
+                VLink<X> x = sorted.get(i);
 
-            if (current != x.centroid || (i == n - 1)) {
-                current = x.centroid;
-                if (bs != -1 && i - bs > 1) {
-                    if (!each.test(IntStream.range(bs, i + 1).mapToObj(sorted::get), arg))
-                        break;
+                if (c != x.centroid || (i == n - 1)) {
+                    c = x.centroid;
+                    if (prev != -1 && i - prev > 1) {
+                        if (!each.test(IntStream.range(prev, i + 1).mapToObj(sorted::get), arg))
+                            break;
+                    }
+                    prev = i;
                 }
-                bs = i;
             }
         }
 
@@ -156,7 +157,7 @@ public class BagClustering<X> {
         }
     }
 
-    private List<VLink<X>> itemsSortedByCentroid(@Nullable Random rng) {
+    private List<VLink<X>> itemsSortedByCentroid(Random rng) {
 
         int s = bag.size();
         if (s == 0)
@@ -167,20 +168,17 @@ public class BagClustering<X> {
 
 
         s = x.size();
-        if (s > 0) {
-            IntToIntFunction shuffler;
-            if (rng != null) {
-                int shuffle = rng.nextInt();
-                shuffler = (c) -> c ^ shuffle;
-            } else {
-                shuffler = (c) -> c;
-            }
+        if (s > 2) {
 
-            if (s > 2) {
-                ArrayUtils.quickSort(0, s,
-                        (a, b) -> a == b ? 0 : Integer.compare(shuffler.applyAsInt(x.get(a).centroid), shuffler.applyAsInt(x.get(b).centroid)),
-                        x::swap);
-            }
+            int shuffle = rng.nextInt();
+            IntToIntFunction shuffler = (c) -> c ^ shuffle;
+            
+            ArrayUtils.quickSort(0, s,
+                    (a, b) -> a == b ? 0 : Integer.compare(
+                            shuffler.applyAsInt(x.get(a).centroid),
+                            shuffler.applyAsInt(x.get(b).centroid)),
+                    x::swap);
+
         }
 
 

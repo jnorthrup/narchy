@@ -16,7 +16,7 @@ public final class TaskEvent extends AbstractTask {
 
     @Override
     public ITask next(NAR n) {
-        n.eventTask.emit(task, task.punc());
+        n.eventTask.emit(task);
         return null;
     }
 

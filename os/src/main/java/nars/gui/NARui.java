@@ -483,7 +483,7 @@ public class NARui {
         return input;
     }
 
-    public static void clusterView(ConjClustering c, NAR n) {
+    public static Surface clusterView(ConjClustering c, NAR n) {
 
         ScatterPlot2D.ScatterPlotModel<VLink<Task>> model = new ScatterPlot2D.SimpleXYScatterPlotModel<VLink<Task>>() {
 
@@ -535,12 +535,11 @@ public class NARui {
         };
 
         ScatterPlot2D<VLink<Task>> s = new ScatterPlot2D<VLink<Task>>(model);
-        window(DurSurface.get(new Gridding(s), n, () -> {
+        return DurSurface.get(new Gridding(s), n, () -> {
 
             s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
 
-        }), 500, 500);
-
+        });
     }
 
 //    @Deprecated public static void agentOld(NAgent a) {

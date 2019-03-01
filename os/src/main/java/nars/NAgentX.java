@@ -50,6 +50,7 @@ import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -446,10 +447,17 @@ abstract public class NAgentX extends NAgent {
 //        new STMLinkage(n, 1);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
-                //Task::isInput,
-                t->true,
-                32, 256);
-        NARui.clusterView(conjClusterBinput, n);
+                t->t.isInput(),
+                32, 128);
+
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
+                t->!t.isInput(),
+                64, 256);
+
+        window(grid(
+                NARui.clusterView(conjClusterBinput, n),
+                NARui.clusterView(conjClusterBany, n)
+        ), 500, 500);
 
 
 //        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
