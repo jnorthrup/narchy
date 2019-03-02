@@ -88,11 +88,14 @@ public class ConjClustering extends Causable {
 
             @Override
             public double distanceSq(double[] a, double[] b) {
-                double dMid = Math.abs(a[0] - b[0]) / dur;
+
                 double dPolarity = Math.abs(a[1] - b[1]);
                 double dConf = Math.abs(a[2] - b[2]);
+
                 double dRange = Math.abs(a[3] - b[3]) / dur;
-                return (1 + Math.log(1 + dMid)) *
+                double rangeMax = Math.max(a[3], b[3]) / dur;
+                double dMid = Math.abs(a[0] - b[0]) / rangeMax;
+                return (1 + dMid) *
                        (1 + dRange) *
                        (1 + dPolarity) *
                        (1 + dConf)
@@ -222,8 +225,8 @@ public class ConjClustering extends Causable {
     protected float forgetRate() {
         //nar.forgetRate.floatValue()
         //return 1f;
-        return 0.9f;
-        //return 0.75f;
+        //return 0.9f;
+        return 0.75f;
         //return 0.5f;
     }
 

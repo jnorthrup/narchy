@@ -56,7 +56,7 @@ public class ArkaNAR extends NAgentX {
 
             return new ArkaNAR(n, cam, numeric);
 
-        }, 20);
+        }, 40);
 
 
     }

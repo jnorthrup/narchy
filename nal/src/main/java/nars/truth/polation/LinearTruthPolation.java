@@ -75,8 +75,6 @@ public class LinearTruthPolation extends TruthPolation {
         float eSum = 0;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
             TaskComponent x = this.get(i);
-//            if (x == null)
-//                continue;
 
             float e = x.evi;
             eSum += e;
@@ -92,12 +90,13 @@ public class LinearTruthPolation extends TruthPolation {
 
         }
 
-        if (eSum < eviMin)
-            return null;
         if (wSum < Float.MIN_NORMAL)
             return null;
 
         eSum *= eviFactor;
+        if (eSum < eviMin)
+            return null;
+
         float eAvg;
         if (start==ETERNAL) {
             eAvg = eSum;

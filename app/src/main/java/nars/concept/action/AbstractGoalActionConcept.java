@@ -37,24 +37,32 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 //    private static final Logger logger = LoggerFactory.getLogger(AbstractGoalActionConcept.class);
 
-    @Nullable private Curiosity curiosity = null;
+    @Nullable
+    private Curiosity curiosity = null;
 
     private final CuriosityGoalTable curiosityTable;
 
-    /** current calculated goalTask */
+    /**
+     * current calculated goalTask
+     */
     protected @Nullable Truth actionTruth;
 
-    /** truth calculated (in attempt to) excluding curiosity */
+    /**
+     * instantaneous truth (implemented as avg truth integrated over a finite present-moment answer interval)
+     */
     protected @Nullable Truth actionDex;
 
-    /** latches the last non-null actionDex, used for echo/sustain */
-    public @Nullable Truth lastActionDex;
+    /**
+     * latches the last non-null actionDex, used for echo/sustain
+     * TODO make this more complex like a replay buffer in DQN
+     */
+    public @Nullable Truth curiDex;
 
     final short cause;
 
     private static final boolean shareCuriosityEvi = true;
 
-    public AbstractGoalActionConcept(Term term,  NAR n) {
+    public AbstractGoalActionConcept(Term term, NAR n) {
         this(term,
                 new RTreeBeliefTable(),
                 n);
@@ -67,7 +75,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         cause = n.newCause(term).id;
 
-        ((BeliefTables)goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, Param.CURIOSITY_CAPACITY));
+        ((BeliefTables) goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, Param.CURIOSITY_CAPACITY));
 
 
     }
@@ -84,7 +92,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     @Override
     public float dexterity() {
         Truth t = this.actionDex;
-        return t!=null ? w2cSafe(t.evi()) : 0;
+        return t != null ? w2cSafe(t.evi()) : 0;
     }
 
 
@@ -106,10 +114,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
     public void sense(long prev, long now, NAR n) {
 
 
-
         int narDur = n.dur();
 
-        final long s = prev, e = now;
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
 
@@ -119,51 +125,90 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         Predicate<Task> fil =
                 withoutCuriosity;
-                //Answer.filter(withoutCuriosity, (t) -> t.endsAfter(recent)); //prevent stronger past from overriding weaker future
+        //Answer.filter(withoutCuriosity, (t) -> t.endsAfter(recent)); //prevent stronger past from overriding weaker future
 
-        try(Answer a = Answer.relevance(true, limit, s, e, term, fil, n).dur(narDur)) {
+        int dither = n.dtDither.intValue();
+        int dur = n.dur();
+        long s, e;
+        int iter = 0;
+        do {
 
+            switch (iter) {
+                case 0:
+                    //duration-precision window
+                    //s = now - dur / 2;
+                    //e = now + dur / 2;
+                    s = now - dur;
+                    e = now;
+                    break;
+                case 1:
+//                    s = now - dur;
+//                    e = now + dur;
+                    s = now - dur*2;
+                    e = now; //now + dur;
+                    break;
+                default:
+                    //frame-precision window
+                    long frameDur = now - prev;
+//                    s = now - Math.max(dur*2, frameDur/2);
+//                    e = now + Math.max(dur*2, frameDur/2);
+                    s = now - Math.max(dur * 4, frameDur);
+                    e = now; //now + Math.max(dur * 2, 0);
+                    break;
 
-            @Nullable TemporalBeliefTable temporalTable = ((BeliefTables) goals()).tableFirst(TemporalBeliefTable.class);
-            if (temporalTable!=null) {
-                a.triesRemain = limit;  a.match(temporalTable);
             }
 
+            //shift forward
+            s += dither/2;
+            e += dither/2;
 
-            @Nullable EternalTable eternalTable = ((BeliefTables) goals()).tableFirst(EternalTable.class);
-            if (eternalTable!=null) {
-                a.triesRemain = limit; a.match(eternalTable);
-            }
 
-            TruthPolation organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
+            try (Answer a = Answer.relevance(true, limit, s, e, term, fil, n).dur(narDur)) {
 
-            //TODO my truthpolation .stamp()'s and .cause()'s for clues
 
-            if (organic != null) {
-                actionDex = organic.filtered().truth();
-                if (actionDex!=null) {
-                    lastActionDex = actionDex;
+                @Nullable TemporalBeliefTable temporalTable = ((BeliefTables) goals()).tableFirst(TemporalBeliefTable.class);
+                if (temporalTable != null) {
+                    a.triesRemain = limit;
+                    a.match(temporalTable);
                 }
-            } else {
-                actionDex = null;
+
+
+                @Nullable EternalTable eternalTable = ((BeliefTables) goals()).tableFirst(EternalTable.class);
+                if (eternalTable != null) {
+                    a.triesRemain = limit;
+                    a.match(eternalTable);
+                }
+
+                TruthPolation organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
+
+                //TODO my truthpolation .stamp()'s and .cause()'s for clues
+
+                if (organic != null) {
+                    actionDex = organic.filtered().truth();
+                    if (actionDex != null) {
+                        curiDex = actionDex;
+                    }
+                } else {
+                    actionDex = null;
+                }
             }
-        }
+        } while (actionDex == null && (++iter) < 3);
 
 
         Truth actionCuri = curiosity.curiosity(this);
 
         Curiosity.CuriosityInjection curiosityInject = null;
-        if (actionCuri!=null) {
+        if (actionCuri != null) {
             curiosityInject = Curiosity.CuriosityInjection.Override;
 
             float confMin = n.confMin.floatValue();
-            if(actionCuri.conf() < confMin) {
+            if (actionCuri.conf() < confMin) {
                 //boost sub-threshold confidence to minimum
                 actionCuri = $.t(actionCuri.freq(), confMin);
             }
 
             Truth curiDithered = actionCuri.dither(
-                    Math.max(n.freqResolution.floatValue(),resolution().floatValue()),
+                    Math.max(n.freqResolution.floatValue(), resolution().floatValue()),
                     n.confResolution.floatValue()
             );
             if (curiDithered != null) {
@@ -226,12 +271,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     private long[] eviShared = null;
+
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
         long[] evi = evi(n);
 
         SignalTask curiosity = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);
         curiosity.priMax(attn.elementPri());
-        curiosity.cause(new short[] { cause });
+        curiosity.cause(new short[]{cause});
         return curiosity;
     }
 

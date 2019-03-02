@@ -391,12 +391,12 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.1f * p);
         n.questPriDefault.set(0.1f * p);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.5f);
+        n.goalConfDefault.set(0.5f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        //n.emotion.want(MetaGoal.Believe, 0.02f);
+        n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.02f);
 
         n.emotion.want(MetaGoal.Action, +1f);
