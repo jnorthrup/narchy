@@ -645,6 +645,17 @@ public class FasterList<X> extends FastList<X> {
         this.items[this.size++] = x;
     }
 
+    public final void addAll(X a, X b) {
+        ensureCapacityForAdditional(2);
+        addWithoutResizeTest(a);
+        addWithoutResizeTest(b);
+    }
+
+    public final void addAll(X... x) {
+        ensureCapacityForAdditional(x.length);
+        addWithoutResizeTest(x, x.length);
+    }
+
     public final void addWithoutResizeTest(X[] x, int n) {
         //if (n > 0) {
         X[] items = this.items;

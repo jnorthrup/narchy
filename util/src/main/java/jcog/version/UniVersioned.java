@@ -83,4 +83,5 @@ public class UniVersioned<X> implements Versioned<X> {
     public void pop() {
         value = null;
     }
+
 }

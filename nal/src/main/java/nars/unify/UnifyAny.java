@@ -20,4 +20,6 @@ public class UnifyAny extends UnifySubst {
     protected boolean each(Term t) {
         return false; //stop after the first
     }
+
+
 }

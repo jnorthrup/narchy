@@ -18,11 +18,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static nars.Op.NEG;
 import static nars.Op.VAR_PATTERN;
+import static nars.unify.Unification.NotUnified;
+import static nars.unify.Unification.Self;
 
 
 /* recurses a pair of compound target tree's subterms
@@ -45,7 +48,7 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
     /**
      * accumulates the next segment of the termutation stack
      */
-    public final Set<Termutator> termutes =
+    public final ArrayHashSet<Termutator> termutes =
             new ArrayHashSet<>(4);
             //new UnifiedSet(4, 0.99f);
 
@@ -174,41 +177,90 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
      */
     public final boolean unify(Term x, Term y, boolean finish) {
 
-        varDepth = 0;
-//        if (!(ttl > 0))
-//            throw new WTF("likely needs some TTL");
+        //assert(ttl > 0): "needs some TTL";
 
         if (x.unify(y, this)) {
-            if (finish) {
+
+            if (finish)
                 tryMatches();
-            }
+
             return true;
         }
         return false;
     }
 
-
-    protected void tryMatches() {
-        int ts = termutes.size();
-        if (ts > 0) {
-
-
-            Termutator[] t = termutes.toArray(new Termutator[ts]);
-
-            termutes.clear();
-
-            if (ts > 1 && Param.SHUFFLE_TERMUTES) {
-                Util.shuffle(t, random);
-            }
-
-            tryMutate(t, -1);
-
+    /** will have been cleared() */
+    public Unification unification(Term x, Term y) {
+        if (!unify(x, y, false)) {
+            clear();
+            return NotUnified;
         } else {
+            return unification(x, y, true);
+        }
+    }
 
-            tryMatch();
+    protected Unification unification(Term x, Term y, boolean clear) {
+        FasterList<Term> xyPairs = new FasterList(size * 2 /* estimate */);
+
+        Termutator[] termutes = commitTermutes();
+
+        BiConsumer<Term, Term> eachXY = xyPairs::addAll;
+        if (clear) {
+            clear(eachXY);
+        } else {
+            forEach(eachXY);
         }
 
+        Unification.PossibleUnification base;
+        int n = xyPairs.size()/2;
+        if (n == 0)
+            base = Self;
+        else if (n == 1)
+            base = new Unification.UniUnification(x, y, xyPairs.get(0), xyPairs.get(1));
+        else
+            base = new Unification.MapUnification(x, y).putIfAbsent(xyPairs);
 
+        if (termutes==null) {
+            return base;
+        } else {
+            return new Unification.PermutingUnification(x, y, base, termutes);
+        }
+    }
+
+    public Unification unification(Term x, Term y, int discoveryTTL) {
+        Unification u = unification(x, y);
+        if (u instanceof Unification.PermutingUnification) {
+            ((Unification.PermutingUnification)u).discover(this, discoveryTTL);
+        }
+        return u;
+    }
+
+    protected void tryMatches() {
+        Termutator[] t = commitTermutes();
+        if (t!=null) {
+            tryMatches(t);
+        } else {
+            tryMatch();
+        }
+    }
+
+    public void tryMatches(Termutator[] t) {
+        if (Param.SHUFFLE_TERMUTES && t.length > 1) {
+            Util.shuffle(t, random);
+        }
+
+        tryMutate(t, -1);
+    }
+
+    protected Termutator[] commitTermutes() {
+        int ts = termutes.size();
+        if (ts > 0) {
+            Termutator[] t = termutes.toArray(new Termutator[ts]);
+            termutes.clear();
+            return t;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -265,12 +317,27 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
         return true;
     }
 
+
+    public final void forEach(BiConsumer<Term,Term> each) {
+        forEach(versionedToBiConsumer(each));
+    }
+
     public final void revert(int when, BiConsumer<Term,Term> each) {
-        revert(when, (Versioned<Term> v)->{
-            if (v instanceof KeyValueVersioned) {
-                each.accept(((KeyValueVersioned<Term,Term>)v).key, v.get());
+        if (each==null)
+            revert(0);
+        else
+            revert(when, versionedToBiConsumer(each));
+    }
+
+
+    static private Consumer<Versioned<Term>> versionedToBiConsumer(BiConsumer<Term, Term> each) {
+        return (Versioned<Term> v)->{
+            if (v instanceof KeyMultiVersioned) {
+                each.accept(((KeyMultiVersioned<Term,Term>)v).key, v.get());
+            } else if (v instanceof KeyUniVersioned) {
+                each.accept(((KeyUniVersioned<Term,Term>)v).key, v.get());
             }
-        });
+        };
     }
 
     /**
@@ -321,6 +388,10 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
         return atomic instanceof Variable ? resolve((Variable)atomic) : atomic;
     }
 
+    public Unify emptyCopy(Predicate<Unify> each) {
+        return new LazyUnify(this, each);
+    }
+
     private static class ConstrainedVersionMap extends VersionMap<Variable, Term> {
         ConstrainedVersionMap(Versioning<Term> versioning, Map<Variable, Versioned<Term>> termMap) {
             super(versioning,
@@ -331,21 +402,21 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
 
         @Override
         protected Versioned<Term> newEntry(Variable x) {
-            return new ConstrainedVersionedTerm(context);
+            return new ConstrainedVersionedTerm(x, context);
         }
 
 
     }
 
-    static final class ConstrainedVersionedTerm extends UniVersioned<Term> {
+    static final class ConstrainedVersionedTerm extends KeyUniVersioned<Term,Term> {
 
         /**
          * lazily constructed
          */
         public UnifyConstraint constraint;
 
-        ConstrainedVersionedTerm(Versioning<Term> sharedContext) {
-            super(sharedContext);
+        ConstrainedVersionedTerm(Term key, Versioning<Term> sharedContext) {
+            super(key, sharedContext);
         }
 
         @Override
@@ -380,6 +451,23 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
         }
     }
 
+    public static class LazyUnify extends Unify {
+        private final Predicate<Unify> each;
+
+        public LazyUnify(Unify u, Predicate<Unify> each) {
+            super(u.varBits, u.random, u.items.length);
+            commonVariables = u.commonVariables;
+            dtTolerance = u.dtTolerance;
+            //TODO any other flags?
+            this.each = each;
+        }
+
+        @Override
+        protected void tryMatch() {
+            if (!each.test(this))
+                stop();
+        }
+    }
 }
 
 

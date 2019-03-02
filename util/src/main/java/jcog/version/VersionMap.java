@@ -184,7 +184,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     protected Versioned<Y> newEntry(X x) {
-        return new KeyValueVersioned<>(x, context, itemVersions);
+        return new KeyMultiVersioned<>(x, context, itemVersions);
     }
 
     public void forEach(BiConsumer<? super X, ? super Y> each) {

@@ -9,7 +9,7 @@ import java.util.function.Consumer;
  */
 public class Versioning<X> {
 
-    private final Versioned[] items;
+    protected final Versioned[] items;
     protected int size = 0;
 
     public int ttl;
@@ -30,12 +30,6 @@ public class Versioning<X> {
     }
 
 
-    public void forEach(Consumer<Versioned> each) {
-        int s = size;
-        for (int i = 0; i < s; i++) {
-            each.accept(items[i]);
-        }
-    }
 
     public final boolean revertLive(int before, int cost) {
         ttl -= cost;
@@ -72,6 +66,21 @@ public class Versioning<X> {
 
         return true;
     }
+    public final void forEach(Consumer<Versioned<X>> each) {
+
+
+        int s = size;
+        if (s <= 0)
+            return;
+
+        final Versioned[] i = this.items;
+
+        while (s>0) {
+            each.accept(i[--s]);
+        }
+
+    }
+
     public final boolean revert(int when, Consumer<Versioned<X>> each) {
 
         int s = size;

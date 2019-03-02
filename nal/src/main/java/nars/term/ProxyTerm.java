@@ -1,6 +1,5 @@
 package nars.term;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.WTF;
 import nars.Op;
@@ -9,7 +8,6 @@ import org.eclipse.collections.api.list.primitive.ByteList;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.function.Predicate;
 
 
@@ -65,16 +63,16 @@ public class ProxyTerm implements Compound {
             return u;
     }
 
-
-    @Override
-    public @Nullable Term replace(Map<? extends Term, Term> m) {
-        return ifDifferentElseThis(ref.replace(m));
-    }
-
-    @Override
-    public Term replace(Term from, Term to) {
-        return ifDifferentElseThis(ref.replace(from, to));
-    }
+//
+//    @Override
+//    public @Nullable Term replace(Map<? extends Term, Term> m) {
+//        return ifDifferentElseThis(ref.replace(m));
+//    }
+//
+//    @Override
+//    public Term replace(Term from, Term to) {
+//        return ifDifferentElseThis(ref.replace(from, to));
+//    }
 
     @Override
     public @Nullable Term replaceAt(ByteList path, Term replacement) {

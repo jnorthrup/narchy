@@ -3,7 +3,6 @@ package nars.subterm;
 import com.google.common.base.Joiner;
 import jcog.TODO;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
@@ -718,13 +717,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     private static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
 
-        int n = xx.size();
-        if (yy.size()!=n) {
-            throw new WTF();
-        }
+        int n = xx.size(); assert(yy.size()==n);
+
+
+
 
         for (int i = 0; i < n; ) {
-            Term xi = xx.get(i);
+            Term xi = u.resolvePosNeg(xx.get(i));
             if (yy.removeFirst(xi)) {
                 xx.removeFast(i);
                 n--;

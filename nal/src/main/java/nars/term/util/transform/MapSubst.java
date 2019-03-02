@@ -57,7 +57,7 @@ abstract public class MapSubst implements Subst {
                 }
             }
             default: {
-                List<Term> valid = new FasterList(ms);
+                List<Term> valid = new FasterList<>(ms);
                 for (Map.Entry<? extends Term,? extends Term> e : m.entrySet()) {
                     Term k = e.getKey();
                     if (!x.impossibleSubTerm(k))
@@ -138,7 +138,7 @@ abstract public class MapSubst implements Subst {
 
     }
 
-    public static AbstractTermTransform replace(Term from, Term to) {
+    public static TermTransform replace(Term from, Term to) {
 
         if (Param.DEBUG && from == to)
             throw new WTF("pointless substitution");
