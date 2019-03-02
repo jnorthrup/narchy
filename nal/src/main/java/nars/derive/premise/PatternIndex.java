@@ -79,7 +79,7 @@ public class PatternIndex extends MapConceptIndex {
 
     public static Term patternify(Term x) {
         if (x instanceof Compound)
-            return Ellipsify.transformCompound((Compound) x);
+            return Ellipsify.applyCompound((Compound) x);
         return x;
     }
 
@@ -104,31 +104,20 @@ public class PatternIndex extends MapConceptIndex {
 
 
         @Override
-        public Term apply(Term x) {
+        protected Term applyFilteredPosCompound(Compound x) {
             /** process completely to resolve built-in functors,
              * to override VariableNormalization's override */
-            //return TermTransform.NegObliviousTermTransform.super.transform(x);
-            return (x instanceof Compound) ?
-                    transformCompound((Compound) x)
-                    :
-                    transformAtomic((Atomic) x);
-        }
-
-        @Override
-        protected Term transformNonNegCompound(Compound x) {
-            /** process completely to resolve built-in functors,
-             * to override VariableNormalization's override */
-            return transformCompound(x, x.op(), x.dt());
+            return applyCompound(x, x.op(), x.dt());
         }
 
 
         @Override
-        public Term transformAtomic(Atomic x) {
+        public Term applyAtomic(Atomic x) {
             if (x instanceof Atom) {
                 Functor f = Builtin.functor(x);
                 return f != null ? f : x;
             }
-            return super.transformAtomic(x);
+            return super.applyAtomic(x);
         }
 
         /*@NotNull*/
@@ -158,12 +147,12 @@ public class PatternIndex extends MapConceptIndex {
 
 
         @Override
-        protected @Nullable Term transformNonNegCompound(Compound x) {
-            Term __x = Retemporalize.retemporalizeAllToXTERNAL.transformCompound(x);
+        protected @Nullable Term applyPosCompound(Compound x) {
+            Term __x = Retemporalize.retemporalizeAllToXTERNAL.applyCompound(x);
             if (!(__x instanceof Compound))
                 return __x;
 
-            Term _x = super.transformNonNegCompound((Compound) __x);
+            Term _x = super.applyPosCompound((Compound) __x);
             if (!(_x instanceof Compound)) {
                 return _x;
             }

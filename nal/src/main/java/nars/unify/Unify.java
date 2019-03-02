@@ -12,6 +12,7 @@ import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.map.TermHashMap;
 import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.TermTransform;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import org.jetbrains.annotations.Nullable;
@@ -20,10 +21,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.NEG;
-import static nars.Op.VAR_PATTERN;
+import static nars.Op.*;
 import static nars.unify.Unification.NotUnified;
 import static nars.unify.Unification.Self;
 
@@ -43,7 +44,7 @@ So it can be useful for a more easy to understand rewrite of this class TODO
 
 
 */
-public abstract class Unify extends Versioning<Term> implements AbstractTermTransform.AbstractNegObliviousTermTransform {
+public abstract class Unify extends Versioning<Term> {
 
     /**
      * accumulates the next segment of the termutation stack
@@ -119,6 +120,25 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
         return (U) this;
     }
 
+    /** default unify substitution */
+    private final UnifyTransform transform = new UnifyTransform() {
+        @Override protected Term resolve(Variable v) {
+            return Unify.this.resolve(v);
+        }
+    };
+
+    public TermTransform transform() {
+        return transform;
+    }
+
+    public final Term apply(Term x) {
+        return transform().apply(x);
+    }
+
+
+    public static TermTransform transform(Function<Variable,Term> resolve) {
+        return new UnifyTransform.LambdaUnifyTransform(resolve);
+    }
 
     /**
      * called each time all variables are satisfied in a unique way
@@ -195,11 +215,11 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
             clear();
             return NotUnified;
         } else {
-            return unification(x, y, true);
+            return unification(true);
         }
     }
 
-    protected Unification unification(Term x, Term y, boolean clear) {
+    protected Unification unification(boolean clear) {
         FasterList<Term> xyPairs = new FasterList(size * 2 /* estimate */);
 
         Termutator[] termutes = commitTermutes();
@@ -216,21 +236,21 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
         if (n == 0)
             base = Self;
         else if (n == 1)
-            base = new Unification.UniUnification(x, y, xyPairs.get(0), xyPairs.get(1));
+            base = new Unification.OneTermUnification(xyPairs.get(0), xyPairs.get(1));
         else
-            base = new Unification.MapUnification(x, y).putIfAbsent(xyPairs);
+            base = new Unification.MapUnification(this).putIfAbsent(xyPairs);
 
         if (termutes==null) {
             return base;
         } else {
-            return new Unification.PermutingUnification(x, y, base, termutes);
+            return new Unification.PermutingUnification(this, base, termutes);
         }
     }
 
     public Unification unification(Term x, Term y, int discoveryTTL) {
         Unification u = unification(x, y);
         if (u instanceof Unification.PermutingUnification) {
-            ((Unification.PermutingUnification)u).discover(this, discoveryTTL);
+            ((Unification.PermutingUnification)u).discover(discoveryTTL);
         }
         return u;
     }
@@ -311,10 +331,12 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
     }
 
     public final boolean varReverse(Op var) {
-        assert(var!=VAR_PATTERN);
-        //return var!=VAR_PATTERN && var!=VAR_QUERY && var(var);
+        //assert(var!=VAR_PATTERN);
+        return var!=VAR_PATTERN
+                //&& var!=VAR_QUERY ;
+                && var(var);
         //return false;
-        return true;
+        //return true;
     }
 
 
@@ -383,12 +405,9 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
         return x; //no change
     }
 
-    @Override
-    public Term transformAtomic(Atomic atomic) {
-        return atomic instanceof Variable ? resolve((Variable)atomic) : atomic;
-    }
 
-    public Unify emptyCopy(Predicate<Unify> each) {
+
+    public Unify emptyClone(Predicate<Unify> each) {
         return new LazyUnify(this, each);
     }
 
@@ -466,6 +485,33 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
         protected void tryMatch() {
             if (!each.test(this))
                 stop();
+        }
+    }
+
+    public abstract static class UnifyTransform extends AbstractTermTransform.NegObliviousTermTransform {
+
+        abstract protected Term resolve(Variable v);
+
+        @Override
+        public Term applyAtomic(Atomic x) {
+            if (x instanceof Variable) {
+                Term y = resolve((Variable) x);
+                if (y != null)
+                    return y;
+            }
+            return x;
+        }
+
+        public static class LambdaUnifyTransform extends UnifyTransform {
+            private final Function<Variable, Term> resolve;
+
+            public LambdaUnifyTransform(Function<Variable, Term> resolve) {
+                this.resolve = resolve;
+            }
+
+            @Override protected Term resolve(Variable v) {
+                return resolve.apply(v);
+            }
         }
     }
 }

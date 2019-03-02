@@ -72,7 +72,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     @Override
-    public final @Nullable Term transformAtomic(Atomic atomic) {
+    public final @Nullable Term applyAtomic(Atomic atomic) {
         return putOrGet ? put(atomic) : get(atomic);
     }
 
@@ -111,7 +111,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
 //                default:
                     putOrGet = false;
 
-                    Term y0 = transformCompound((Compound) x);
+                    Term y0 = applyCompound((Compound) x);
 
 //                    Term y = transformCompoundLazily((Compound)x);
 //                    if (!y.equals(y0)) {
@@ -131,7 +131,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     protected final Term putCompound(Compound x) {
         putOrGet = true;
 //        Term x0 = transformCompound(x);
-        Term x1 = transformCompoundLazily(x);
+        Term x1 = applyCompoundLazy(x);
 //        if (!x0.equals(x1)) {
 //            transformCompoundLazily((Compound)x);  throw new WTF(); //TEMPORARY
 //        }

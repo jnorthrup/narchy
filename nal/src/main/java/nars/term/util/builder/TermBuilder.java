@@ -192,7 +192,7 @@ public abstract class TermBuilder {
 
 
     public Term normalize(Compound x, byte varOffset) {
-        Term y = new CompoundNormalization(x, varOffset).transformCompound(x);
+        Term y = new CompoundNormalization(x, varOffset).applyCompound(x);
 
 //        LazyCompound yy = new LazyCompound();
 //        new nars.util.target.transform.CompoundNormalization(this, varOffset)

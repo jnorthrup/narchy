@@ -48,16 +48,7 @@ public final class Termify extends AbstractPred<Derivation> {
         nar.emotion.deriveTermify.increment();
 
 
-        d.concTerm = null;
-        d.concOcc = null;
-        d.retransform.clear();
-
-        Term x;
-        if (Param.TERMIFY_TRANSFORM_LAZY && pattern instanceof Compound) {
-            x = d.transformCompoundLazily((Compound)pattern, HeapTermBuilder.the);
-        } else {
-            x = d.apply(pattern);
-        }
+        Term x = d.subst(pattern);
 
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
             //Term c1e = c1;

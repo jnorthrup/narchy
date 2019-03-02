@@ -100,7 +100,7 @@ public class Conceptualization {
         public final Term transformTemporal(Compound x, int dtNext) {
             Op xo = x.op();
             int dt = xo.temporal ? XTERNAL : DTERNAL;
-            Term y = transformCompound(x, xo, dt);
+            Term y = applyCompound(x, xo, dt);
             if (y instanceof Compound && y.op() == CONJ) {
                 return transformConj((Compound) y);
             } else {

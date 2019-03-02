@@ -6,8 +6,8 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.atom.Atomic;
 import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.TermTransform;
 import nars.unify.mutate.Termutator;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -15,24 +15,16 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.True;
 
 /**
  * immutable and memoizable unification result (map of variables to terms) useful for substitution
  */
 abstract public class Unification {
 
-    public final Term sourceX, sourceY;
 
-    protected Unification(Term sourceX, Term sourceY) {
-        this.sourceX = sourceX;
-        this.sourceY = sourceY;
+    protected Unification() {
     }
 
-    //abstract public Term xy(Term x);
 
     abstract public Iterable<Term> apply(Term x);
 
@@ -40,7 +32,7 @@ abstract public class Unification {
      * indicates unsuccessful unification attempt.
      * TODO distinguish between deterministically impossible and those which stopped before exhausting permutations
      */
-    static final Unification NotUnified = new Unification(True,False) {
+    static final Unification NotUnified = new Unification() {
         @Override
         public Iterable<Term> apply(Term x) {
             return List.of();
@@ -50,7 +42,7 @@ abstract public class Unification {
     /**
      * does this happen in any cases besides .equals, ex: conj seq
      */
-    static final PossibleUnification Self = new PossibleUnification(True,True) {
+    static final PossibleUnification Self = new PossibleUnification() {
 
         @Override
         protected boolean equals(PossibleUnification obj) {
@@ -71,8 +63,8 @@ abstract public class Unification {
     /** an individual solution */
     abstract static class PossibleUnification extends Unification {
 
-        public PossibleUnification(Term sourceX, Term sourceY) {
-            super(sourceX, sourceY);
+        public PossibleUnification() {
+            super();
         }
 
         @Override
@@ -96,20 +88,20 @@ abstract public class Unification {
         abstract void apply(Unify y);
     }
 
-    public static class UniUnification extends PossibleUnification {
+    public static class OneTermUnification extends PossibleUnification {
 
         public final Term tx, ty;
 
-        public UniUnification(Term x, Term y, Term tx, Term ty) {
-            super(x, y);
+        public OneTermUnification(Term tx, Term ty) {
+            super();
             this.tx = tx;
             this.ty = ty;
         }
 
         @Override
         protected boolean equals(PossibleUnification obj) {
-            if (obj instanceof UniUnification) {
-                UniUnification u = (UniUnification) obj;
+            if (obj instanceof OneTermUnification) {
+                OneTermUnification u = (OneTermUnification) obj;
                 return tx.equals(u.tx) && ty.equals(u.ty);
             }
             return false;
@@ -130,14 +122,15 @@ abstract public class Unification {
     public static class MapUnification extends PossibleUnification {
 
         final Map<Term,Term> xy;
+        private final TermTransform transform;
 
-        //TODOdate
+        //TODO
         int matchStructure = Integer.MAX_VALUE;
 
-        public MapUnification(Term x, Term y) {
-            super(x, y);
+        public MapUnification(Unify parent) {
+            super();
             this.xy = new UnifiedMap(4);
-
+            this.transform = parent.transform();
         }
 
         @Override
@@ -172,37 +165,14 @@ abstract public class Unification {
         }
 
         @Override public Term subst(Term x) {
-            return transform.apply(x);
+
+            return AbstractTermTransform.applyBest(x, transform);
         }
 
-        private final AbstractTermTransform.NegObliviousTermTransform transform = new AbstractTermTransform.NegObliviousTermTransform() {
-
-            @Override
-            public Term transformAtomic(Atomic x) {
-                Term y = xy.get(x);
-                if (y == null)
-                    return x;
-                else
-                    return y;
-            }
-
-            @Override
-            public Term apply(Term x) {
-                if (!x.hasAny(matchStructure))
-                    return x; //no change
-
-                return super.apply(x);
-            }
-
-        };
 
         @Override
         public String toString() {
-            return "unification(" +
-                    sourceX + "," + sourceY + ',' +
-                    xy +
-                    ")";
-
+            return "unification(" + xy + ")";
         }
 
         public MapUnification putIfAbsent(FasterList<Term> xyPairs) {
@@ -214,33 +184,36 @@ abstract public class Unification {
     }
 
 
+    /** not thread-safe */
     public static class PermutingUnification extends Unification {
 
         private final PossibleUnification start;
         public final ArrayHashSet<PossibleUnification> fork = new ArrayHashSet();
 
         public final Termutator[] termutes;
+        private final Unify u;
 
-        public PermutingUnification(Term x, Term y, PossibleUnification start, Termutator[] termutes) {
-            super(x, y);
+        public PermutingUnification(Unify x, PossibleUnification start, Termutator[] termutes) {
+            super();
             this.start = start;
             this.termutes = termutes;
-            //TODO calculate max possible permutations from Termutes
-        }
-
-        public void discover(Unify x, int ttl) {
-            Unify y = x.emptyCopy((yy)->{
-                Unification z = yy.unification(sourceX, sourceY, false);
-                if (z instanceof PossibleUnification)
-                    fork.add((PossibleUnification) z);
-                else
-                    throw new TODO("recursive termute");
+            this.u = x.emptyClone((yy)->{
+                Unification z = yy.unification(false);
+                if (z instanceof PossibleUnification) {
+                    if (fork.add((PossibleUnification) z)) {
+                        //TODO calculate max possible permutations from Termutes, and set done
+                    }
+                } else
+                    throw new TODO("recursive or-other 2nd-layer termute");
                 return true;
             });
-            y.setTTL(ttl);
-            start.apply(y);
-            y.tryMatches(termutes);
+        }
 
+        public void discover(int ttl) {
+            u.clear();
+            u.setTTL(ttl);
+            start.apply(u);
+            u.tryMatches(termutes);
         }
 
         @Override
@@ -251,8 +224,7 @@ abstract public class Unification {
                 case 1:
                     return fork.first().apply(x);
                 default:
-                    Iterable<PossibleUnification> forkShuffled = shuffle(fork, ThreadLocalRandom.current());
-                    return Iterables.transform(forkShuffled, a -> a.subst(x)); //HACK could be better
+                    return Iterables.transform(shuffle(fork, u.random), a -> a.subst(x)); //HACK could be better
             }
         }
 
@@ -261,7 +233,4 @@ abstract public class Unification {
         }
     }
 
-
-//TODO 1-element simple substitution.  compact and fast
-//public static class ReplacementUnification = new Unification();
 }

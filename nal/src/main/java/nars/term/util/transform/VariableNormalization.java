@@ -38,7 +38,7 @@ public class VariableNormalization extends VariableTransform {
 
 
     @Override
-    public Term transformAtomic(Atomic atomic) {
+    public Term applyAtomic(Atomic atomic) {
         if (normalizable(atomic)) {
 
             if (atomic.equals(Op.VarAuto)) {

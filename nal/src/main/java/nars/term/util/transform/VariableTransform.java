@@ -11,20 +11,11 @@ import nars.term.var.UnnormalizedVariable;
 import static nars.Op.*;
 
 
-public abstract class VariableTransform extends AbstractTermTransform.NegObliviousTermTransform {
+public abstract class VariableTransform extends AbstractTermTransform.FilteredTermTransform {
 
-
-
-    @Override
-    public Term apply(Term x) {
-        return x.hasVars() ? super.apply(x) : x;
+    @Override public boolean preFilter(Compound x) {
+        return x.hasVars();
     }
-
-    @Override
-    protected Term transformNonNegCompound(Compound x) {
-        return x.hasVars() ? super.transformNonNegCompound(x) : x;
-    }
-
 
     /**
      * change all query variables to dep vars by use of Op.imdex
@@ -34,16 +25,16 @@ public abstract class VariableTransform extends AbstractTermTransform.NegOblivio
     private static final TermTransform indepToDepVarDirect = variableTransform1(VAR_INDEP, VAR_DEP);
 
     private static TermTransform variableTransform1(Op from, Op to) {
-        return new AbstractTermTransform.NegObliviousTermTransform() {
 
+        return new OneTypeOfVariableTransform(from, to) {
             @Override
-            public Term transformAtomic(Atomic atomic) {
+            public Term applyAtomic(Atomic atomic) {
                 if (!(atomic instanceof nars.term.Variable) || atomic.op() != from)
                     return atomic;
                 else {
                     if (atomic instanceof NormalizedVariable) {
                         //just re-use the ID since the input term is expected to have none of the target type
-                        return NormalizedVariable.the(to, ((nars.term.var.NormalizedVariable) atomic).id);
+                        return NormalizedVariable.the(to, ((NormalizedVariable) atomic).id);
                     } else {
                         //unnormalized, just compute the complete unnormalized form.
                         return unnormalizedShadow(atomic, to);
@@ -55,9 +46,9 @@ public abstract class VariableTransform extends AbstractTermTransform.NegOblivio
     }
 
     private static TermTransform variableTransformN(Op from, Op to) {
-        return new AbstractTermTransform.NegObliviousTermTransform() {
+        return new OneTypeOfVariableTransform(from,to) {
             @Override
-            public Term transformAtomic(Atomic atomic) {
+            public Term applyAtomic(Atomic atomic) {
                 if (!(atomic instanceof nars.term.Variable) || atomic.op() != from)
                     return atomic;
                 else
@@ -71,13 +62,29 @@ public abstract class VariableTransform extends AbstractTermTransform.NegOblivio
     }
 
     public static Term indepToDepVar(Term x) {
-        int v = x.varIndep();
         if (x.varDep()==0) {
             return indepToDepVarDirect.apply(x); //optimized case
-        } else if (v >= 1) {
+        } else if (x.varIndep() >= 1) {
             return indepToDepVar.apply(x);
         } else {
             return x;
         }
+    }
+
+    private static class OneTypeOfVariableTransform extends VariableTransform {
+
+        private final Op from;
+        private final Op to;
+
+        public OneTypeOfVariableTransform(Op from, Op to) {
+            this.from = from;
+            this.to = to;
+        }
+
+        @Override
+        public boolean preFilter(Compound x) {
+            return x.hasAny(from.bit);
+        }
+
     }
 }

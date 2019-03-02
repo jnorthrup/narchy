@@ -23,7 +23,7 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
 
     @Nullable
     @Override
-    protected final Term transformNonNegCompound(final Compound x) {
+    protected final Term applyPosCompound(final Compound x) {
         return requiresTransform(x) ? transformTemporal(x, dt(x)) : x;
     }
 
@@ -36,9 +36,9 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
             Op xo = x.op();
             int n = xo.temporal ? dtNext : DTERNAL;
             if (n == xdt)
-                return super.transformNonNegCompound(x); //fast fail if dt doesnt change
+                return super.applyPosCompound(x); //fast fail if dt doesnt change
             else {
-                return transformCompound(x, xo, n);
+                return applyCompound(x, xo, n);
             }
         }
     }

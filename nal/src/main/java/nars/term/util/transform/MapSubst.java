@@ -171,12 +171,12 @@ abstract public class MapSubst implements Subst {
 
 
         @Override
-        public @Nullable Term transformCompound(Compound x) {
-            if (x.equals(from))
+        public @Nullable Term applyCompound(Compound c) {
+            if (c.equals(from))
                 return to;
-            if (x.impossibleSubTerm(from))
-                return x;
-            return AbstractTermTransform.super.transformCompound(x);
+            if (c.impossibleSubTerm(from))
+                return c;
+            return AbstractTermTransform.super.applyCompound(c);
         }
 
     }
@@ -195,13 +195,13 @@ abstract public class MapSubst implements Subst {
         }
 
         @Override
-        public @Nullable Term transformAtomic(Atomic x) {
+        public @Nullable Term applyAtomic(Atomic x) {
             return x.equals(from) ? to : x;
         }
 
         @Override
-        protected @Nullable Term transformNonNegCompound(Compound x) {
-            return x.impossibleSubTerm(from) ? x : super.transformNonNegCompound(x);
+        protected @Nullable Term applyPosCompound(Compound x) {
+            return x.impossibleSubTerm(from) ? x : super.applyPosCompound(x);
         }
 
     }

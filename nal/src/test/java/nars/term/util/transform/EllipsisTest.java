@@ -90,7 +90,7 @@ public class EllipsisTest {
 
                             assertEquals(getExpectedUniqueTerms(arity), varArgs.subs());
 
-                            Term u = transformCompound(varArgs);
+                            Term u = transform().applyCompound(varArgs);
                             if (u == null) {
                                 u = varArgs;
                             }

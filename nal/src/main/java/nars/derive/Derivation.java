@@ -27,6 +27,8 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
+import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
@@ -138,6 +140,7 @@ public class Derivation extends PreDerivation {
 
             return super.put(key, value);
         }
+
     };
     protected final Subst mySubst = new Subst("substitute") {
 
@@ -193,7 +196,6 @@ public class Derivation extends PreDerivation {
     public Deriver deriver;
 
 
-    private Function<Atomic, Term> derivationFunctors;
 
     /**
      * precise time that the task and belief truth are sampled
@@ -246,10 +248,7 @@ public class Derivation extends PreDerivation {
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit);
     }
 
-    @Override
-    public final boolean evalInline() {
-        return true;
-    }
+    private TermTransform transform;
 
 
     private void init(NAR nar) {
@@ -262,10 +261,8 @@ public class Derivation extends PreDerivation {
         this.random.setSeed(nar.random().nextLong());
 
         this.unifyPremise.random(this.random);
-
+        this.transform = new DerivationTransform();
         //this.random.setSeed(nar.random().nextLong());
-
-        this.derivationFunctors = DerivationFunctors.get(this);
 
     }
 
@@ -490,24 +487,6 @@ public class Derivation extends PreDerivation {
     }
 
 
-    /**
-     * only returns derivation-specific functors.  other functors must be evaluated at task execution time
-     */
-    @Override
-    public final Term transformAtomic(Atomic atomic) {
-
-        if (atomic instanceof Variable) {
-            Term y = resolve((Variable) atomic);
-            if (y != null)
-                return y;
-        } else if (atomic instanceof Atom) {
-            Term f = derivationFunctors.apply(atomic);
-            if (f != null)
-                return f;
-        }
-
-        return atomic;
-    }
 
     public Derivation next(Deriver deri) {
         NAR pnar = this.nar;
@@ -660,8 +639,59 @@ public class Derivation extends PreDerivation {
 //        return concSingle ? taskEvi : (taskEvi + beliefEvi);
 //    }
 
+
     public final float parentPri() {
         return (concSingle ? priSingle : priDouble);
+    }
+
+    public Term subst(Term pattern) {
+        concTerm = null;
+        concOcc = null;
+        retransform.clear();
+
+//        Iterator<Term> ii = unification(false).apply(pattern, transform).iterator();
+//        return ii.hasNext() ? ii.next() : Null;
+
+        return AbstractTermTransform.applyBest(pattern, transform);
+    }
+
+    @Override
+    public TermTransform transform() {
+        return this.transform;
+    }
+
+    private final class DerivationTransform extends UnifyTransform {
+
+
+        private final Function<Atomic, Term> derivationFunctors = DerivationFunctors.get(Derivation.this);
+
+        @Override
+        protected Term resolve(nars.term.Variable v) {
+            return Derivation.this.resolve(v);
+        }
+
+        /**
+         * only returns derivation-specific functors.  other functors must be evaluated at task execution time
+         */
+        @Override
+        public final Term applyAtomic(Atomic atomic) {
+
+            if (atomic instanceof Variable) {
+                return super.applyAtomic(atomic);
+            } else if (atomic instanceof Atom) {
+                Term f = derivationFunctors.apply(atomic);
+                if (f != null)
+                    return f;
+            }
+
+            return atomic;
+        }
+
+        @Override
+        public final boolean evalInline() {
+            return true;
+        }
+
     }
 }
 

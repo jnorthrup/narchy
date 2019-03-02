@@ -79,7 +79,7 @@ abstract public class Inperience extends TaskLeakTransform {
         private final Atomic similar = Atomic.the("alike"); //similarity
 
         @Override
-        protected Term transformNonNegCompound(Compound term) {
+        protected Term applyPosCompound(Compound term) {
             int dt = term.dt();
             switch (term.op()) {
 

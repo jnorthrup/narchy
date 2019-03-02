@@ -919,7 +919,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
         @Override
-        public Term transformAtomic(Atomic atomic) {
+        public Term applyAtomic(Atomic atomic) {
             if (atomic instanceof Atom) {
                 if (!reservedMetaInfoCategories.contains(atomic)) {
                     String name = atomic.toString();
@@ -1007,11 +1007,11 @@ public class PremiseRuleSource extends ProxyTerm {
     /** conclusion post-processing */
     private final TermTransform ConcTransform = new AbstractTermTransform() {
         @Override
-        public Term transformCompound(Compound c) {
+        public Term applyCompound(Compound c) {
 
             c = Unifiable.transform(c, PremiseRuleSource.this, pre);
 
-            return AbstractTermTransform.super.transformCompound(c);
+            return AbstractTermTransform.super.applyCompound(c);
         }
     };
 }

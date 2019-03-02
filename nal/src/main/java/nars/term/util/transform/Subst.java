@@ -19,7 +19,7 @@ public interface Subst extends AbstractTermTransform {
 //    }
 
     @Override
-    default Term transformAtomic(Atomic x) {
+    default Term applyAtomic(Atomic x) {
         Term y = xy(x);
         return y != null ? y : x;
         //return resolve(atomic);
@@ -27,10 +27,10 @@ public interface Subst extends AbstractTermTransform {
 
     @Override
     @Nullable
-    default Term transformCompound(Compound x) {
-        Term y = xy(x);
-        if (y == null || y == x) {
-            return AbstractTermTransform.super.transformCompound(x);
+    default Term applyCompound(Compound c) {
+        Term y = xy(c);
+        if (y == null || y == c) {
+            return AbstractTermTransform.super.applyCompound(c);
         } else
             return y;
     }

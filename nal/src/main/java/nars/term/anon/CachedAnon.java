@@ -41,18 +41,18 @@ public class CachedAnon extends Anon {
     }
 
     @Override
-    protected Term transformNonNegCompound(Compound x) {
+    protected Term applyPosCompound(Compound x) {
         if (!cache(x,putOrGet))
-            return super.transformNonNegCompound(x);
+            return super.applyPosCompound(x);
 
         return putOrGet ? putCache.computeIfAbsent(x, xx -> {
-            Term y = super.transformNonNegCompound(xx);
+            Term y = super.applyPosCompound(xx);
             if (y instanceof Compound && cache((Compound) y, false))
                 getCache.put((Compound) y, xx);
             return y;
         })
             :
-            getCache.computeIfAbsent(x, xx -> super.transformNonNegCompound(xx));
+            getCache.computeIfAbsent(x, xx -> super.applyPosCompound(xx));
     }
 
     /** whether a target is cacheable */

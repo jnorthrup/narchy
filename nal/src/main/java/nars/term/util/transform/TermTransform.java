@@ -17,12 +17,18 @@ import static nars.time.Tense.DTERNAL;
 
 public interface TermTransform extends Function<Term,Term> {
 
+    @Override default Term apply(Term x) {
+        return (x instanceof Compound) ?
+                applyCompound((Compound) x)
+                :
+                applyAtomic((Atomic) x);
+    }
 
     default boolean apply(Term x, LazyCompound out) {
         if (x instanceof Compound) {
             return transformCompound((Compound) x, out);
         } else {
-            @Nullable Term y = transformAtomic((Atomic) x);
+            @Nullable Term y = applyAtomic((Atomic) x);
             if (y == null || y == Bool.Null)
                 return false;
             else {
@@ -45,9 +51,10 @@ public interface TermTransform extends Function<Term,Term> {
         }
     }
 
-    default Term transformAtomic(Atomic a) {
+    default Term applyAtomic(Atomic a) {
         return a;
     }
+    default Term applyCompound(Compound c) { return c; }
 
     default boolean transformCompound(Compound x, LazyCompound out) {
         boolean c = out.changed();

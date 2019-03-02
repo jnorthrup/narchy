@@ -24,16 +24,21 @@ public final class CompoundNormalization extends VariableNormalization {
     public Term apply(Term x) {
         if (x instanceof Compound) {
             if (x.hasVars() || x.hasAll(Image.ImageBits))
-                return transformCompound((Compound)x);
+                return applyCompound((Compound)x);
         } else {
             if (x instanceof Variable) // || x instanceof ImDep)
-                return transformAtomic((Atomic)x);
+                return applyAtomic((Atomic)x);
         }
         return x;
     }
 
     @Override
-    protected @Nullable Term transformNonNegCompound(Compound x) {
+    public boolean preFilter(Compound x) {
+        return x.hasVars() || x.hasAll(Image.ImageBits);
+    }
+
+    @Override
+    protected Term applyFilteredPosCompound(Compound x) {
         /* if x is not the root target (ie. a subterm) */
         boolean hasImg = x.hasAll(Image.ImageBits);
         if (hasImg && x!=root && x.op()==INH) {
@@ -51,7 +56,7 @@ public final class CompoundNormalization extends VariableNormalization {
 
 //                }
         }
-        return hasImg || x.hasVars() ? super.transformCompound(x, null, XTERNAL) : x;
+        return hasImg || x.hasVars() ? super.applyCompound(x, null, XTERNAL) : x;
     }
 
 

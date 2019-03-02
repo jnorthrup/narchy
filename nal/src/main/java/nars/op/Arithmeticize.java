@@ -340,11 +340,11 @@ public class Arithmeticize {
         }
 
         @Override
-        public @Nullable Term transformCompound(Compound x) {
-            if (x.hasAny(Op.INT))
-                return super.transformCompound(x);
+        public @Nullable Term applyCompound(Compound c) {
+            if (c.hasAny(Op.INT))
+                return super.applyCompound(c);
             else
-                return x;
+                return c;
         }
     }
 }

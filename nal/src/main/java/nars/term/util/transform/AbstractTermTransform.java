@@ -1,6 +1,7 @@
 package nars.term.util.transform;
 
 import nars.Op;
+import nars.Param;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;
@@ -9,6 +10,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,29 +24,30 @@ import static nars.time.Tense.XTERNAL;
  */
 public interface AbstractTermTransform extends TermTransform {
 
-    @Override default Term apply(Term x) {
-        return (x instanceof Compound) ?
-            transformCompound((Compound) x)
-                :
-            transformAtomic((Atomic) x);
-    }
 
+    static Term applyBest(Term x, TermTransform transform) {
+        if (Param.TERMIFY_TRANSFORM_LAZY && x instanceof Compound) {
+            return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x, HeapTermBuilder.the);
+        } else {
+            return transform.apply(x);
+        }
+    }
 
     /**
      * transform pathway for atomics
      */
-    default Term transformAtomic(Atomic atomic) {
+    default Term applyAtomic(Atomic atomic) {
         return atomic;
     }
 
     /**
      * transform pathway for compounds
      */
-    default Term transformCompound(Compound x) {
-        return transformCompound(x, null, XTERNAL);
+    default Term applyCompound(Compound c) {
+        return applyCompound(c, null, XTERNAL);
     }
 
-    default Term transformCompound(Compound x, Op newOp, int newDT) {
+    default Term applyCompound(Compound x, Op newOp, int newDT) {
 
         boolean sameOpAndDT = newOp == null;
         Op xop = x.op();
@@ -89,7 +92,7 @@ public interface AbstractTermTransform extends TermTransform {
             }
         }
 
-        return transformedCompound(x, targetOp, newDT, xx, yy);
+        return appliedCompound(x, targetOp, newDT, xx, yy);
     }
 
 
@@ -108,7 +111,7 @@ public interface AbstractTermTransform extends TermTransform {
      * called after subterms transform has been applied
      */
     @Nullable
-    default Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
+    default Term appliedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
         if (yy != xx) {
             Term[] a = yy instanceof TermList ? ((TermList) yy).arrayKeep() : yy.arrayShared();
             if (op == INH && evalInline() && a[1] instanceof Functor.InlineFunctor && a[0].op() == PROD) {
@@ -177,35 +180,35 @@ public interface AbstractTermTransform extends TermTransform {
 
         @Override
         @Nullable
-        default Term transformCompound(Compound x) {
+        default Term applyCompound(Compound c) {
 
-            if (x.op() == NEG) {
-                Term xx = x.unneg();
+            if (c.op() == NEG) {
+                Term xx = c.unneg();
                 Term yy = apply(xx);
-                return yy == xx ? x : yy.neg();
+                return yy == xx ? c : yy.neg();
 
             } else {
-                return AbstractTermTransform.super.transformCompound(x);
+                return AbstractTermTransform.super.applyCompound(c);
             }
 
         }
 
     }
 
-    default LazyCompound transformCompoundLazilyToLazyCompound(Compound x) {
-        return transformCompoundLazilyToLazyCompound(new LazyCompound(), x);
+    default LazyCompound applyLazy(Compound x) {
+        return applyLazy(new LazyCompound(), x);
     }
 
-    default LazyCompound transformCompoundLazilyToLazyCompound(LazyCompound l, Compound x) {
+    default LazyCompound applyLazy(LazyCompound l, Compound x) {
         return !transformCompound(x, l) ? null : l;
     }
 
-    default Term transformCompoundLazily(Compound x) {
-        return transformCompoundLazily(x, Op.terms);
+    default Term applyCompoundLazy(Compound x) {
+        return applyCompoundLazy(x, Op.terms);
     }
 
-    default Term transformCompoundLazily(Compound x, TermBuilder b) {
-        LazyCompound l = transformCompoundLazilyToLazyCompound(x);
+    default Term applyCompoundLazy(Compound x, TermBuilder b) {
+        LazyCompound l = applyLazy(x);
         return l == null ? Null : l.get(b);
     }
 
@@ -217,15 +220,15 @@ public interface AbstractTermTransform extends TermTransform {
 
         @Override
         @Nullable
-        public final Term transformCompound(Compound x) {
+        public final Term applyCompound(Compound c) {
 
-            if (x.op() == NEG) {
-                Term xx = x.unneg();
+            if (c.op() == NEG) {
+                Term xx = c.unneg();
                 Term yy = apply(xx);
-                return yy == xx ? x : yy.neg();
+                return yy == xx ? c : yy.neg();
 
             } else {
-                return transformNonNegCompound(x);
+                return applyPosCompound(c);
             }
 
         }
@@ -233,10 +236,24 @@ public interface AbstractTermTransform extends TermTransform {
         /**
          * default implementation
          */
-        protected Term transformNonNegCompound(Compound x) {
-            return AbstractTermTransform.super.transformCompound(x);
+        protected Term applyPosCompound(Compound x) {
+            return AbstractTermTransform.super.applyCompound(x);
         }
 
+    }
+
+    abstract class FilteredTermTransform extends NegObliviousTermTransform {
+
+        @Override
+        protected final Term applyPosCompound(Compound x) {
+            return preFilter(x) ? applyFilteredPosCompound(x) : x;
+        }
+
+        protected Term applyFilteredPosCompound(Compound x) {
+            return x;
+        }
+
+        abstract public boolean preFilter(Compound x);
     }
 
 }

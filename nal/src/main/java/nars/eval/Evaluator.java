@@ -84,7 +84,7 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
 
 
     @Override
-    public @Nullable Term transformAtomic(Atomic x) {
+    public @Nullable Term applyAtomic(Atomic x) {
         if (x instanceof Functor) {
             return x;
         }

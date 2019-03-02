@@ -741,7 +741,7 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     @Nullable
     default Term temporalize(Retemporalize r) {
-        return r.transformCompound(this);
+        return r.applyCompound(this);
     }
 
 
@@ -767,7 +767,7 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     default Term transform(AbstractTermTransform f) {
-        return f.transformCompound(this);
+        return f.applyCompound(this);
     }
 
 

@@ -51,7 +51,7 @@ class LazyCompoundTest {
         final Term cmp = $$("(x,y)");
 
         @Override
-        public Term transformAtomic(Atomic atomic) {
+        public Term applyAtomic(Atomic atomic) {
             return atomic.toString().equals("_1") ? cmp : atomic;
         }
     };
@@ -59,13 +59,13 @@ class LazyCompoundTest {
     @Test
     void testTransform1() {
         String x = "((_1) ==>+- (_1))";
-        assertEquals(x, nullTransform.transformCompoundLazily($$(x)).toString());
+        assertEquals(x, nullTransform.applyCompoundLazy($$(x)).toString());
     }
 
     @Test void testTransform2() {
         String x = "((_1) ==>+- _1)";
         assertEquals("(((x,y)) ==>+- (x,y))",
-                atomToCompoundTransform.transformCompoundLazily($$(x)).toString());
+                atomToCompoundTransform.applyCompoundLazy($$(x)).toString());
     }
 
     @Test
@@ -78,7 +78,7 @@ class LazyCompoundTest {
 
     @Test void testEmptyProd() {
         String x = "x(intValue,(),3)";
-        assertEquals(x, nullTransform.transformCompoundLazily($$(x)).toString());
+        assertEquals(x, nullTransform.applyCompoundLazy($$(x)).toString());
 
     }
 }

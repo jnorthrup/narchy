@@ -27,7 +27,7 @@ import static nars.time.Tense.ETERNAL;
 
 abstract public class MultiExec extends UniExec {
 
-    private static final float inputQueueSizeSafetyThreshold = 0.99f;
+    private static final float inputQueueSizeSafetyThreshold = 0.995f;
     private final Valuator valuator;
 
 
