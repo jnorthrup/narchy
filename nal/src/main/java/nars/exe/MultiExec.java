@@ -27,7 +27,7 @@ import static nars.time.Tense.ETERNAL;
 
 abstract public class MultiExec extends UniExec {
 
-    private static final float inputQueueSizeSafetyThreshold = 0.995f;
+    private static final float inputQueueSizeSafetyThreshold = 0.999f;
     private final Valuator valuator;
 
 
@@ -41,7 +41,7 @@ abstract public class MultiExec extends UniExec {
 
     private float explorationRate = 0.05f;
 
-    int granularity = 2;
+    int granularity = 3;
 
     MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
@@ -272,9 +272,10 @@ abstract public class MultiExec extends UniExec {
 //            private static final long minMaxExe = 10_000 /* 10uS */;
 
             int i = 0;
-            long lastScheduled = ETERNAL;
+            long prioLast = ETERNAL;
             private int n;
             private long maxExe;
+            private long prioCycles = 1;
 
 
             Worker() {
@@ -337,10 +338,12 @@ abstract public class MultiExec extends UniExec {
                 if (n == 0)
                     return;
 
+                prioCycles = nar.dtDither();
+
                 long now = nar.time();
-                if (now > lastScheduled) {
-                    if (scheduleDone(threadWorkTimePerCycle, now))
-                        return;
+                if (now > prioLast + prioCycles) {
+                    prioLast = now;
+                    prioritize(threadWorkTimePerCycle);
                 }
 
                 long start = nanoTime();
@@ -398,9 +401,8 @@ abstract public class MultiExec extends UniExec {
 //                );
             }
 
-            private boolean scheduleDone(long workTimeNS, long now) {
+            private void prioritize(long workTimeNS) {
 
-                lastScheduled = now;
 
                 maxExe = workTimeNS / (granularity);
                 int n = this.n;
@@ -427,7 +429,6 @@ abstract public class MultiExec extends UniExec {
                     int t = Math.round(shift + (workTimeNS * spendRate) * m.pri());
                     m.add(Math.max(1, t), -workTimeNS, workTimeNS);
                 }
-                return false;
             }
 
             private boolean deadline() {

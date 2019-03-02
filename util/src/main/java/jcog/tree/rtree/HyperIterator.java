@@ -74,7 +74,7 @@ public class HyperIterator<X> implements AutoCloseable {
     }
 
     public void start(Node<X> start) {
-        plan.addRanked(start);
+        plan.add(start);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class HyperIterator<X> implements AutoCloseable {
     private X find() {
 
         Object z;
-        while ((z = plan.popRanked()) != null) {
+        while ((z = plan.pop()) != null) {
             if (z instanceof Node) {
                 expand((Node<X>) z);
             } else {
@@ -122,7 +122,7 @@ public class HyperIterator<X> implements AutoCloseable {
             addPlan(node, node);
 
         } else {
-            plan.addRanked(itemOrNode);
+            plan.add(itemOrNode);
         }
 
     }
@@ -139,7 +139,7 @@ public class HyperIterator<X> implements AutoCloseable {
 
     private void addPlan(Node node, Object first) {
         if (nodeFilter == null || plan.isEmpty() || nodeFilter.tryVisit(node)) {
-            plan.addRanked(first);
+            plan.add(first);
         }
     }
 

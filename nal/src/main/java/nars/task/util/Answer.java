@@ -1,10 +1,8 @@
 package nars.task.util;
 
 import jcog.WTF;
-import jcog.data.pool.MetalPool;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedTopN;
-import jcog.sort.TopN;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -51,7 +49,7 @@ public final class Answer implements AutoCloseable {
     public TimeRangeFilter time;
     public Term template = null;
 
-    public final static ThreadLocal<MetalPool<RankedTopN>> topTasks = RankedTopN.newRankedPool();
+    //public final static ThreadLocal<MetalPool<RankedTopN>> topTasks = RankedTopN.newRankedPool();
 
     public RankedTopN<Task> tasks;
     public final Predicate<Task> filter;
@@ -66,7 +64,8 @@ public final class Answer implements AutoCloseable {
     /** TODO filter needs to be more clear if it refers to the finished task (if dynamic) or a component in creating one */
     private Answer(int capacity, int maxTries, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
         this.nar = nar;
-        this.tasks = TopN.pooled(topTasks, capacity, this.rank = rank.filter(filter));
+        this.tasks = //TopN.pooled(topTasks, capacity, this.rank = rank.filter(filter));
+                new RankedTopN<>(new Task[capacity], this.rank = rank.filter(filter));
         this.filter = filter;
         this.triesRemain = maxTries;
     }
@@ -299,7 +298,7 @@ public final class Answer implements AutoCloseable {
                     t = null;
                     break;
                 case 1:
-                    t = tasks.get(0).x;
+                    t = tasks.get(0);
                     break;
                 default: {
                     @Nullable Task root = taskFirst(topOrSample);
@@ -363,7 +362,7 @@ public final class Answer implements AutoCloseable {
                 return null;
 
             if (s == 1) {
-                Task only = tasks.get(0).x;
+                Task only = tasks.get(0);
                 if (only.isEternal() || (only.start()==time.start && only.end()==time.end)) {
                     Truth trEte = only.truth();
                     return (trEte.evi() < eviMin()) ? null : trEte;
@@ -388,7 +387,7 @@ public final class Answer implements AutoCloseable {
     }
 
     private Task taskFirst(boolean topOrSample) {
-        return (topOrSample ? tasks.get(0) :  tasks.getRoulette(random())).x;
+        return (topOrSample ? tasks.get(0) :  tasks.getRoulette(random()));
     }
 
     private Task taskMerge(@Nullable Task root) {
@@ -441,7 +440,7 @@ public final class Answer implements AutoCloseable {
         int s = tasks.size();
         if (s == 0)
             return null;
-        return new TaskList(s, tasks.itemsArray(Task[]::new));
+        return new TaskList(s, tasks.itemsArray());
     }
 
 
@@ -504,7 +503,7 @@ public final class Answer implements AutoCloseable {
 
     public void close() {
         if (tasks!=null) {
-            TopN.unpool(topTasks, tasks);
+            //TopN.unpool(topTasks, tasks);
             tasks = null;
         }
     }
@@ -520,7 +519,7 @@ public final class Answer implements AutoCloseable {
     }
 
     @Nullable public Task any() {
-        return isEmpty() ? null : tasks.top().x;
+        return isEmpty() ? null : tasks.top();
     }
 
     /** consume a limited 'tries' iteration. also applies the filter.
@@ -544,7 +543,7 @@ public final class Answer implements AutoCloseable {
 
         //if (tasks.capacity() == 1 || !(((CachedFloatFunction)(tasks.rank)).containsKey(task))) {
             //if (time == null || time.accept(task.start(), task.end())) {
-            tasks.addRanked(task);
+        tasks.add(task);
         //}
     }
 

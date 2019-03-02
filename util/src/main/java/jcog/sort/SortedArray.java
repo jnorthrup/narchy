@@ -59,7 +59,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public /*volatile*/ X[] items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
 
-    private static final AtomicIntegerFieldUpdater<SortedArray> SIZE =
+    protected static final AtomicIntegerFieldUpdater<SortedArray> SIZE =
             new MetalAtomicIntegerFieldUpdater(SortedArray.class, "size");
 
     protected volatile int size;
@@ -447,7 +447,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         final int index = find(element, elementRank, cmp, false, true);
 
-        int result = insert(element, index, s);
+        int result = insert(element, elementRank, index, s);
 
 //        if (!isSorted(cmp))
 //            throw new WTF();
@@ -455,16 +455,11 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return result;
     }
 
-    private int insert(X element, int index, int size) {
-        assert (index != -1);
-        if (index == size) {
-            return addEnd(element);
-        } else {
-            if (addAtIndex(index, element, size))
-                return index;
-            else
-                return -1;
-        }
+    private int insert(X element, float elementRank, int index, int size) {
+//        assert (index != -1);
+        return index == size ?
+                addEnd(element, elementRank) :
+                addAtIndex(index, element, elementRank, size);
     }
 
 
@@ -476,7 +471,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return true;
     }
 
-    private int addEnd(X e) {
+    protected int addEnd(X e, float elementRank) {
         int s = this.size;
         Object[] l = this.items;
         if (l.length == s) {
@@ -486,7 +481,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                 return -1;
             }
         }
-        l[SIZE.incrementAndGet(this) - 1] = e;
+        l[SIZE.getAndIncrement(this)] = e;
         return s;
     }
 
@@ -499,7 +494,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
 
-    private boolean addAtIndex(int index, X element, int oldSize) {
+    protected int addAtIndex(int index, X element, float elementRank, int oldSize) {
 
         X[] list = this.items;
         boolean adding;
@@ -526,7 +521,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         list[index] = element;
 
-        return true;
+        return index;
 
     }
 
@@ -564,51 +559,51 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return items.length;
     }
 
-    /**
-     * an adjustment: called when an item's sort order may have changed
-     */
-    public void partialSort(int index, FloatFunction<X> cmp) {
-        X[] l = this.items;
-        final float cur = cmp.floatValueOf(l[index]);
-
-        boolean reinsert = false;
-
-        if (index > 0) {
-            float f = cmp.floatValueOf(l[index - 1]);
-            if (f > cur)
-                reinsert = true;
-        }
-
-        int s = this.size;
-        if (!reinsert) {
-            if (index < s - 1) {
-                float f = cmp.floatValueOf(l[index + 1]);
-                if (f < cur)
-                    reinsert = true;
-            }
-        }
-
-        if (reinsert) {
-            int next = find(null, cur, cmp, true, true);
-            if (next == index) {
-                //in the correct pos
-            } else if (next == index - 1) {
-                if (index >= 1)
-                    swap(l, index, index - 1);
-            } else if (next == index + 1) {
-
-                if (index < size() - 1)
-                    swap(l, index, index + 1);
-
-            } else {
-
-                insert(remove(index), next, s);
-
-            }
-
-
-        }
-    }
+//    /**
+//     * an adjustment: called when an item's sort order may have changed
+//     */
+//    public void partialSort(int index, FloatFunction<X> cmp) {
+//        X[] l = this.items;
+//        final float cur = cmp.floatValueOf(l[index]);
+//
+//        boolean reinsert = false;
+//
+//        if (index > 0) {
+//            float f = cmp.floatValueOf(l[index - 1]);
+//            if (f > cur)
+//                reinsert = true;
+//        }
+//
+//        int s = this.size;
+//        if (!reinsert) {
+//            if (index < s - 1) {
+//                float f = cmp.floatValueOf(l[index + 1]);
+//                if (f < cur)
+//                    reinsert = true;
+//            }
+//        }
+//
+//        if (reinsert) {
+//            int next = find(null, cur, cmp, true, true);
+//            if (next == index) {
+//                //in the correct pos
+//            } else if (next == index - 1) {
+//                if (index >= 1)
+//                    swap(l, index, index - 1);
+//            } else if (next == index + 1) {
+//
+//                if (index < size() - 1)
+//                    swap(l, index, index + 1);
+//
+//            } else {
+//
+//                insert(remove(index), next, s);
+//
+//            }
+//
+//
+//        }
+//    }
 
     /**
      * tests for descending sort
@@ -647,14 +642,14 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
                 final int mid = left + (right - left) / 2;
 
-                final X m = items[mid];
                 if (!forInsertionOrFind) {
+                    final X m = items[mid];
                     if (m == element || (!eqByIdentity && m.equals(element))) {
                         return mid;
                     }
                 }
 
-                final int comparedValue = Util.fastCompare(cmp.floatValueOf(m), elementRank);
+                final int comparedValue = compare(mid, elementRank, cmp);
 
                 switch (comparedValue) {
                     case 0:
@@ -675,14 +670,13 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (right - left <= BINARY_SEARCH_THRESHOLD) {
             int i;
             for (i = left; i < right; i++) {
-                X x = items[i];
                 if (!forInsertionOrFind) {
-                    boolean eq = eq(element, x, eqByIdentity);
+                    boolean eq = eq(element, items[i], eqByIdentity);
                     if (eq) {
                         return i;
                     }
                 } else {
-                    if (0 < Util.fastCompare(cmp.floatValueOf(x), elementRank)) {
+                    if (0 < compare(i, elementRank, cmp)) {
                         return i;
                     }
                 }
@@ -697,6 +691,11 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                     -1;
         }
 
+    }
+
+    protected int compare(int item, float score, FloatFunction<X> cmp) {
+        float itemScore = cmp.floatValueOf(items[item]);
+        return Util.fastCompare(itemScore, score);
     }
 
     private static <X> boolean eq(X element, X ii, boolean eqByIdentity) {

@@ -2,7 +2,6 @@ package nars.table.temporal;
 
 import jcog.WTF;
 import jcog.data.list.FasterList;
-import jcog.pri.Ranked;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedTopN;
 import jcog.sort.Top;
@@ -354,21 +353,21 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             short n = m.size;
             if (n > 2) {
-                RankedTopN<Task> mmm = new RankedTopN<Task>(3, taskStrength);
+                RankedTopN<Task> mmm = new RankedTopN<>(new Task[3], taskStrength);
                 for (int i = 0; i < n; i++)
-                    mmm.addRanked((Task) m.get(i));
+                    mmm.add((Task) m.get(i));
 
-                Ranked<Task>[] mm = mmm.toArrayIfSameSizeOrRecycleIfAtCapacity(new Ranked[3]);
+                Task[] mm = mmm.toArrayIfSameSizeOrRecycleIfAtCapacity(new Task[3]);
                 mmm.clear();
 
-                AB = tryMerge(mm[0].x, mm[1].x, nar);
-                if (AB!=null) { A = mm[0].x; B = mm[1].x; }
+                AB = tryMerge(mm[0], mm[1], nar);
+                if (AB!=null) { A = mm[0]; B = mm[1]; }
                 else {
-                    AB = tryMerge(mm[0].x, mm[2].x, nar);
-                    if (AB!=null) { A = mm[0].x; B = mm[2].x; }
+                    AB = tryMerge(mm[0], mm[2], nar);
+                    if (AB!=null) { A = mm[0]; B = mm[2]; }
                     else {
-                        AB = tryMerge(mm[1].x, mm[2].x, nar);
-                        if (AB != null) { A = mm[1].x; B = mm[2].x; }
+                        AB = tryMerge(mm[1], mm[2], nar);
+                        if (AB != null) { A = mm[1]; B = mm[2]; }
                         else {
                             A = B = null;
                         }

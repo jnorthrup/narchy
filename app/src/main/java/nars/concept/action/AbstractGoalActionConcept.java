@@ -237,7 +237,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
             //use existing curiosity
             @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
             try (Answer a = Answer.
-                    relevance(true, 1, s, e, term, null, n).match(curiTable).dur(narDur)) {
+                    relevance(true, 2, s, e, term, null, n).match(curiTable).dur(narDur)) {
                 TruthPolation curi = a.truthpolation(); //Math.round(actionWindowCuriDurs * dur));
                 if (curi != null) {
                     actionCuri = curi.filtered().truth();
