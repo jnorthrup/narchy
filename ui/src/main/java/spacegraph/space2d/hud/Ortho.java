@@ -66,8 +66,8 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     S surface;
 
 
-    /** finger position local to this layer/camera */
-    public final v2 fingerPos = new v2();
+//    /** finger position local to this layer/camera */
+//    public final v2 fingerPos = new v2();
 
 
     public Ortho(JoglSpace space, S content, NewtKeyboard keyboard) {

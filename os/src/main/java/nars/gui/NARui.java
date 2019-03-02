@@ -36,6 +36,7 @@ import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
+import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
@@ -483,10 +484,18 @@ public class NARui {
 
         ScatterPlot2D.ScatterPlotModel<VLink<Task>> model = new ScatterPlot2D.SimpleXYScatterPlotModel<VLink<Task>>() {
 
+
+            private long now = n.time();
+
+            @Override
+            public void start() {
+                now = n.time();
+            }
+
             @Override
             public void coord(VLink<Task> v, float[] target) {
                 Task t = v.get();
-                target[0] = (float)(t.mid() / 1000.0);
+                target[0] = t.mid() - now; //to be certain of accuracy with 32-bit reduced precision assigned from long
                 target[1] = t.priElseZero();
             }
 
@@ -521,7 +530,8 @@ public class NARui {
 
             @Override
             public float width(VLink<Task> v, int population) {
-                return v.get().range()/(population * 50f);
+                Task t = v.get();
+                return (t.term().eventRange() + t.range())/(population * 50f);
                 //return (0.5f + v.get().priElseZero()) * 1/20f;
             }
             @Override
@@ -531,7 +541,7 @@ public class NARui {
         };
 
         ScatterPlot2D<VLink<Task>> s = new ScatterPlot2D<VLink<Task>>(model);
-        return DurSurface.get(new Gridding(s), n, () -> {
+        return DurSurface.get(new Clipped(s), n, () -> {
 
             s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
 

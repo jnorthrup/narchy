@@ -22,13 +22,14 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
 
         void coord(X x, float[] target);
 
-        /** set size, color, etc */
-        default void style(X x, NodeVis<X> v) {
-
-        }
+//        /** set size, color, etc */
+//        default void style(X x, NodeVis<X> v) {
+//
+//        }
 
         /** in proportion of the entire visible area's radius. provided population estimate for relative sizing heuristics */
         float width(X x, int population);
+        float height(X x, int n);
 
         /** priority in 0..1.0 */
         default float pri(X x) {
@@ -47,7 +48,8 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         RectFloat layout(float[][] in, float[][] out);
 
 
-        float height(X x, int n);
+        /** called before an update */
+        default void start()  { }
     }
 
     public static abstract class SimpleXYScatterPlotModel<X> implements ScatterPlotModel<X> {
@@ -65,9 +67,10 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                 System.arraycopy(in[i], 0, out[i], 0, dim); //TODO make this unnecessary by making in==out
             }
 
-            MutableFloatRect m = new MutableFloatRect().X0Y0WH(out[0][0], out[0][1], 0, 0);
-            for (int i = 1; i < in.length; i++)
+            MutableFloatRect m = new MutableFloatRect().set(out[0][0], out[0][1], 0, 0);
+            for (int i = 1; i < in.length; i++) {
                 m.mbr(out[i][0], out[i][1]);
+            }
             return m.immutable();
         }
     }
@@ -75,6 +78,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
     final ScatterPlotModel<X> model;
 
     private transient RectFloat extent;
+    float[][] coord = new float[0][0], coordOut = null;
 
     public ScatterPlot2D(ScatterPlotModel<X> model) {
         this.model = model;
@@ -95,14 +99,45 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                         }
                 )
         );
+        update((g, dtMS)->{
+            int n = g.nodes();
+            g.forEachValue(node->{
+                int c = node.i;
+                if (c < 0) {
+                    node.hide();
+                } else {
+
+                    float[] xy = coordOut[c];
+
+                    X id = node.id;
+                    float w = ScatterPlot2D.this.w() /* Math.max(w,h)? */ * model.width(id, n);
+                    float h = ScatterPlot2D.this.h() /* Math.max(w,h)? */ * model.height(id, n);
+
+//                if (node.mover==null) {
+//                    node.mover = new MutableFloatRect();
+//                }
+//                node.mover.set(xy[0], xy[1], w, h);
+                    //node.pos(bounds(node.mover));
+                    node.pos(bounds(xy[0], xy[1], w, h));
+
+                    node.pri = model.pri(id);
+
+                    model.colorize(id, node);
+
+                    node.show();
+                }
+
+            });
+        });
         render(
             new Graph2DRenderer<X>() {
 
-                float[][] coord = new float[0][0], coordOut = null;
                 int currentCoord = 0;
 
                 @Override
                 public void nodes(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
+
+                    model.start();
 
                     int n = cells.size();
                     if (coord.length < n || coord.length > n*2 /* TODO || coord[0].length!=dimensionInternal ... */) {
@@ -115,31 +150,20 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
 
                     extent = model.layout(coord, coordOut);
 
-                    cells.forEachValue(p -> post(p, n));
+//                    cells.forEachValue(p -> post(p, n));
                 }
 
-                void post(NodeVis<X> node, int n) {
-                    int c = node.i;
-                    if (c >= 0 && node.visible())
-                        post(node, c, n);
-                    else
-                        node.hide();
-                }
-
-                void post(NodeVis<X> node, int c, int n) {
-                    X x = node.id;
-
-                    float w = ScatterPlot2D.this.w() /* Math.max(w,h)? */ * model.width(x, n);
-                    float h = ScatterPlot2D.this.h() /* Math.max(w,h)? */ * model.height(x, n);
-                    float[] xy = coordOut[c];
-                    node.pos(ScatterPlot2D.this.bounds(xy[0], xy[1], w, h));
-
-                    node.pri = model.pri(x);
-
-                    model.colorize(x, node);
-
-                    node.show();
-                }
+//                void post(NodeVis<X> node, int n) {
+//                    int c = node.i;
+//                    if (c >= 0 && node.visible())
+//                        post(node, c, n);
+//                    else
+//                        node.hide();
+//                }
+//
+//                void post(NodeVis<X> node, int c, int n) {
+//
+//                }
 
                 /** pre */
                 @Override public void node(NodeVis<X> node, GraphEditing<X> graph) {
@@ -156,6 +180,9 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         );
     }
 
+    protected final RectFloat bounds(MutableFloatRect r) {
+        return bounds(r.left(), r.top(), r.w, r.h);
+    }
     /** maps the coordinates to a 2D boundary for display */
     protected RectFloat bounds(float x, float y, float w, float  h) {
         float px = ((x - extent.x)/ extent.w);

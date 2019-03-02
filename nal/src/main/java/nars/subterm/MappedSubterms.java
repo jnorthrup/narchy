@@ -11,7 +11,6 @@ public abstract class MappedSubterms<S extends Termlike> extends ProxySubterms<S
         super(ref);
     }
 
-
     @Override
     public final boolean hasXternal() {
         return ref.hasXternal();

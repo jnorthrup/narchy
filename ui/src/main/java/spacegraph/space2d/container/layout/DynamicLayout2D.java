@@ -61,7 +61,7 @@ public abstract class DynamicLayout2D<X, M extends MutableFloatRect<X>> implemen
      * default impl: copy directly
      * */
     protected void put(MutableFloatRect<X> mover, Graph2D.NodeVis node) {
-        node.posXYWH(mover.x, mover.y, mover.w, mover.h);
+        node.posXYWH(mover.cx, mover.cy, mover.w, mover.h);
     }
 
 }

@@ -1,6 +1,5 @@
 package nars.subterm;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import nars.Op;
 import nars.term.Term;
@@ -23,6 +22,46 @@ abstract class AbstractUnitSubterm implements Subterms {
     protected abstract Term sub();
 
     @Override
+    public final String toString() {
+        return Subterms.toString(sub());
+    }
+
+    @Override
+    public final Term[] arrayClone() {
+        return new Term[]{sub()};
+    }
+
+    @Override
+    public final boolean OR(Predicate<Term> p) {
+        return AND(p);
+    }
+
+    @Override
+    public final boolean AND(Predicate<Term> p) {
+        return p.test(sub());
+    }
+
+    @Override
+    public final boolean ORith(ObjectIntPredicate<Term> p) {
+        return ANDith(p);
+    }
+
+    @Override
+    public final boolean ANDith(ObjectIntPredicate<Term> p) {
+        return p.accept(sub(), 0);
+    }
+
+    @Override
+    public final <X> boolean ORwith(BiPredicate<Term, X> p, X param) {
+        return ANDwith(p, param);
+    }
+
+    @Override
+    public final <X> boolean ANDwith(BiPredicate<Term, X> p, X param) {
+        return p.test(sub(), param);
+    }
+
+    @Override
     public @Nullable Term subSub(int start, int end, byte[] path) {
         byte a = path[start];
         if (a != 0)
@@ -36,44 +75,6 @@ abstract class AbstractUnitSubterm implements Subterms {
     }
 
     @Override
-    public String toString() {
-        return "(" + sub() + ')';
-    }
-
-    @Override
-    public Term[] arrayClone() {
-        return new Term[] { sub() };
-    }
-
-    @Override
-    public boolean OR(Predicate<Term> p) {
-        return p.test(sub());
-    }
-    @Override
-    public boolean AND(Predicate<Term> p) {
-        return p.test(sub());
-    }
-
-    @Override
-    public boolean ORith(ObjectIntPredicate<Term> p) {
-        return p.accept(sub(), 0);
-    }
-    @Override
-    public boolean ANDith(ObjectIntPredicate<Term> p) {
-        return p.accept(sub(), 0);
-    }
-
-    @Override
-    public <X> boolean ORwith(BiPredicate<Term, X> p, X param) {
-        return p.test(sub(), param);
-    }
-    @Override
-    public <X> boolean ANDwith(BiPredicate<Term, X> p, X param) {
-        return p.test(sub(), param);
-    }
-
-
-    @Override
     public final void forEachWith(ObjectIntProcedure<Term> t) {
         t.accept(sub(), 0);
     }
@@ -82,21 +83,12 @@ abstract class AbstractUnitSubterm implements Subterms {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Subterms)) return false;
-        Subterms s = (Subterms)obj;
+        Subterms s = (Subterms) obj;
         return
                 (s.subs() == 1) &&
-                (sub().equals(s.sub(0)));
+                        (sub().equals(s.sub(0)));
     }
 
-    @Override
-    public final int volume() {
-        return 1 + sub().volume();
-    }
-
-    @Override
-    public final int complexity() {
-        return 1 + sub().complexity();
-    }
 
     @Override
     public int hashCode() {
@@ -110,13 +102,13 @@ abstract class AbstractUnitSubterm implements Subterms {
 
     @Override
     public final Term sub(int i) {
-        if (i!=0) throw new ArrayIndexOutOfBoundsException();
+        if (i != 0) throw new ArrayIndexOutOfBoundsException();
         return sub();
     }
 
 
     public final Term[] subsExcluding(int index) {
-        assert(index ==0);
+        assert (index == 0);
         return Op.EmptyTermArray;
     }
 
@@ -129,7 +121,7 @@ abstract class AbstractUnitSubterm implements Subterms {
     public boolean isNormalized() {
         Term s = sub();
         if (s instanceof Variable) {
-            return s instanceof NormalizedVariable && ((NormalizedVariable)s).id==1;
+            return s instanceof NormalizedVariable && ((NormalizedVariable) s).id == 1;
         }
         return s.isNormalized();
     }
@@ -146,8 +138,8 @@ abstract class AbstractUnitSubterm implements Subterms {
 
     @Override
     public void forEach(Consumer<? super Term> c, int start, int stop) {
-        if (start!=0 ||
-                stop!=1)
+        if (start != 0 ||
+                stop != 1)
             throw new ArrayIndexOutOfBoundsException();
         c.accept(sub());
     }
@@ -176,5 +168,18 @@ abstract class AbstractUnitSubterm implements Subterms {
     public final int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         return reduce.intValueOf(v, sub());
     }
+
+//    @Override
+//    public @Nullable Term subSub(int start, int end, byte[] path) {
+//        byte a = path[start];
+//        if (a != 0)
+//            return null;
+//        else {
+//            Term s = sub();
+//            return end - start == 1 ?
+//                    s :
+//                    s.subPath(start + 1, end);
+//        }
+//    }
 
 }

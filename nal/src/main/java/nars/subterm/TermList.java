@@ -36,17 +36,13 @@ public class TermList extends FasterList<Term> implements Subterms {
         copied.forEach(this::add);
     }
 
-
     @Override
-    public int hashCodeSubterms() {
+    public int hashCode() {
         int s = size;
         return s > 0 ? Subterms.hash(items, size) : 1;
     }
 
-    @Override
-    public int hashCode() {
-        return hashCodeSubterms();
-    }
+
 
     @Override
     public final boolean these() {

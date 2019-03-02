@@ -127,8 +127,7 @@ public class MetaFrame extends Bordering implements HudHover {
     protected void starting() {
         super.starting();
 
-        PushButton n = new PushButton(new VectorLabel(name()));
-        set(N, n);
+
 
         Surface surface = get(0);
         Surface wm = (surface instanceof Menu) ? ((Menu) surface).menu() : null;
@@ -138,7 +137,9 @@ public class MetaFrame extends Bordering implements HudHover {
         else
             borderSouth=0;
 
-        n.click(this::click);
+        PushButton n = new PushButton(new VectorLabel(name()));
+        set(N, n);
+        //n.click(this::click); //DISABLED
 
     }
 

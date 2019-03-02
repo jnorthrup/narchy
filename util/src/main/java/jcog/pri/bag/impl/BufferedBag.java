@@ -4,7 +4,6 @@ import jcog.data.NumberX;
 import jcog.pri.PriBuffer;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
-import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.util.ProxyBag;
 import org.jetbrains.annotations.Nullable;
@@ -89,24 +88,24 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
         public DefaultBufferedBag(Bag<X,Y> activates, PriBuffer<B> conceptPriBuffer) {
             super(activates, conceptPriBuffer);
         }
-        private float min;
+//        private float min;
 
         @Override
         public Bag<X,Y> commit(Consumer<Y> update) {
-            min = bag.size() >= bag.capacity() ? bag.priMin() : 0;
+//            min = bag.size() >= bag.capacity() ? bag.priMin() : 0;
             return super.commit(update);
         }
 
         @Override
         public void putInternal(B b, float pri) {
-            if (min <= ScalarValue.EPSILON  ||  (pri >= min || bag.contains(keyInternal(b)))) {
+//            if (min <= ScalarValue.EPSILON  ||  (pri >= min || bag.contains(keyInternal(b)))) {
                 //Prioritizable b will need its pri set with the provided pri that may not match, having accumulated since its first insertion
                 Y y = valueInternal(b, pri);
                 bag.putAsync(y);
-            } else {
-                //System.out.println("ignored: " + c + " "+n4(pri));
-                bag.pressurize(pri);
-            }
+//            } else {
+//                //System.out.println("ignored: " + c + " "+n4(pri));
+//                bag.pressurize(pri);
+//            }
         }
 
 

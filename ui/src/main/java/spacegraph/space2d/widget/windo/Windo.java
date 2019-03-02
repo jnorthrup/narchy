@@ -7,7 +7,6 @@ import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
-import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.windo.util.DragEdit;
 import spacegraph.video.Draw;
@@ -191,19 +190,28 @@ public class Windo extends MutableUnitContainer {
     }
 
 
+    private transient v2 posGlobal = null;
+
+    @Override
+    public void fingerTouch(Finger finger, boolean touching) {
+//        Ortho root = (Ortho) root();
+//        if (root == null)
+//            return;
+
+//        v2 mousePos = root.fingerPos;
+//        float pmx = mousePos.x, pmy = mousePos.y;
+
+        posGlobal = finger.posOrtho;
+
+    }
+
     protected void postpaint(GL2 gl) {
 
         DragEdit p = potentialDragMode;
-        if (p != null && p != DragEdit.MOVE) {
+        if (posGlobal!=null && p != null && p != DragEdit.MOVE) {
 
-            Ortho root = (Ortho) root();
-            if (root == null)
-                return;
-
+            float pmx = posGlobal.x, pmy = posGlobal.y;
             float W = 0.5f,H = 0.5f;
-            v2 mousePos = root.fingerPos;
-            float pmx = mousePos.x, pmy = mousePos.y;
-
             gl.glPushMatrix();
 
             float resizeBorder = Math.max(W, H) * Windo.resizeBorder;
@@ -260,20 +268,16 @@ public class Windo extends MutableUnitContainer {
 
     @Override
     protected void paintIt(GL2 gl, SurfaceRender r) {
-        paintBack(gl);
-
-
-        postpaint(gl);
-
-
-    }
-
-    private void paintBack(GL2 gl) {
         if (opaque()) {
             //default
             gl.glColor4f(0.25f, 0.25f, 0.25f, 0.75f);
             Draw.rect(bounds, gl);
         }
+    }
+
+    @Override
+    protected void compileAbove(SurfaceRender r) {
+        r.on(this::postpaint);
     }
 
     /**

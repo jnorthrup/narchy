@@ -89,10 +89,6 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
             return hash;
         }
 
-        @Override
-        public final int hashCodeSubterms() {
-            return hash;
-        }
 
         @Override
         public boolean equals(Object obj) {
@@ -124,10 +120,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
         public int hashCode() {
             return hash;
         }
-        @Override
-        public final int hashCodeSubterms() {
-            return hash;
-        }
+
 
         @Override
         public boolean equals(Object obj) {

@@ -11,6 +11,15 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public abstract class SeparateSubtermsCompound implements Compound {
+    @Override
+    public int hashCode() {
+        return Compound.hashCode(this);
+    }
+
+    @Override
+    public final int hashCodeSubterms() {
+        return subterms().hashCodeSubterms();
+    }
 
     /*@NotNull*/
     @Override

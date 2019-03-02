@@ -187,7 +187,7 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Valuator.DefaultValuator(0.85f),
+                        new Valuator.DefaultValuator(0.95f),
                         //new Valuator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
                         threads <= 0 ? Util.concurrencyExcept(1) : threads, false/* affinity */))
@@ -396,7 +396,7 @@ abstract public class NAgentX extends NAgent {
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        n.emotion.want(MetaGoal.Believe, 0.02f);
+        //n.emotion.want(MetaGoal.Believe, 0.02f);
         n.emotion.want(MetaGoal.Desire, 0.02f);
 
         n.emotion.want(MetaGoal.Action, +1f);
@@ -452,15 +452,13 @@ abstract public class NAgentX extends NAgent {
 //                t->t.isInput(),
 //                32, 128);
 
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
-                t->true,
-//                t->!t.isInput(),
-                64, 256);
 
-        window(grid(
-//                NARui.clusterView(conjClusterBinput, n),
-                NARui.clusterView(conjClusterBany, n)
-        ), 500, 500);
+        List<ConjClustering> conjClusters = List.of(
+            new ConjClustering(n, BELIEF, 32, 256)
+            //new ConjClustering(n, GOAL, 4, 16)
+        );
+
+        window(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
 
 
 //        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,

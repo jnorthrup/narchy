@@ -91,7 +91,7 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
 
 
     @Override
-    public int hashCodeSubterms() {
+    public final int hashCodeSubterms() {
         return super.hashCode();
     }
 }

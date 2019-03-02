@@ -78,10 +78,6 @@ public class SerialCompound extends DynBytes implements Compound, The {
         throw new UnsupportedOperationException(); 
     }
 
-    @Override
-    public int hashCodeSubterms() {
-        throw new UnsupportedOperationException(); 
-    }
 
     @Override
     public boolean equals(Object obj) {

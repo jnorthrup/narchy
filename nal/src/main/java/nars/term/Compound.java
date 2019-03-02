@@ -113,15 +113,6 @@ public interface Compound extends Term, IPair, Subterms {
         return sb;
     }
 
-    /**
-     * reference impl for compound hashcode
-     */
-    static int hashCode(Compound c) {
-        return Util.hashCombine(
-                c.hashCodeSubterms(),
-                c.op().id
-        );
-    }
 
     Op op();
 
@@ -136,6 +127,19 @@ public interface Compound extends Term, IPair, Subterms {
      */
     @Override
     Subterms subterms();
+
+
+    /**
+     * reference impl for compound hashcode
+     */
+    static int hashCode(Compound c) {
+        return Util.hashCombine(
+                c.hashCodeSubterms(),
+                c.op().id
+        );
+    }
+
+
 
     @Override
     default int hashCodeSubterms() {

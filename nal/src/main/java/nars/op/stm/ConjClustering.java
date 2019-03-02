@@ -73,8 +73,7 @@ public class ConjClustering extends Causable {
 
         this.model = new BagClustering.Dimensionalize<>(4) {
 
-            /** (mid-)time difference importance in clustering */
-            static final double TIME_ANCHOR_STRENGTH = 4;
+
 
             @Override
             public void coord(Task t, double[] c) {
@@ -90,13 +89,14 @@ public class ConjClustering extends Causable {
             @Override
             public double distanceSq(double[] a, double[] b) {
                 double dMid = Math.abs(a[0] - b[0]) / dur;
-                double dRange = Math.abs(a[3] - b[3]);
-                double dPolarity = Math.abs(a[2] - b[2]);
+                double dPolarity = Math.abs(a[1] - b[1]);
                 double dConf = Math.abs(a[2] - b[2]);
-                return dMid / (TIME_ANCHOR_STRENGTH) +
-                        dPolarity +
-                        dConf +
-                        dRange / (1 + dMid) * 0.5;
+                double dRange = Math.abs(a[3] - b[3]) / dur;
+                return (1 + Math.log(1 + dMid)) *
+                       (1 + dRange) *
+                       (1 + dPolarity) *
+                       (1 + dConf)
+                       ;
 
 //                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4] - b[4]) / dur))
 //                        *
@@ -221,7 +221,10 @@ public class ConjClustering extends Causable {
 
     protected float forgetRate() {
         //nar.forgetRate.floatValue()
-        return 1f;
+        //return 1f;
+        return 0.9f;
+        //return 0.75f;
+        //return 0.5f;
     }
 
     @Override
@@ -420,16 +423,16 @@ public class ConjClustering extends Causable {
 
 
 
-//                            int v = y.volume();
-//                            float cmplFactor =
-//                                    1f - Util.unitize(((float) v) / volMax);
+                            int xVolMax = Util.max((Task z) -> (z.volume()), x);
+                            float cmplFactor =
+                                    ((float)xVolMax) / y.volume();
 
 //                                float freqFactor =
 //                                        t.freq();
 //                                float confFactor =
 //                                        (conf / (conf + confMax));
 
-                            float p = Util.max(Task::priElseZero, x); // * cmplFactor;
+                            float p = Util.max(Task::priElseZero, x) * cmplFactor;
 
                             y.pri(
                                 Prioritizable.fund(p, priCopyOrMove,

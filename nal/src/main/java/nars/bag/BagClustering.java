@@ -65,7 +65,7 @@ public class BagClustering<X> {
 
         PriMerge merge =
                 //PriMerge.replace;
-                PriMerge.max;forEachCluster();
+                PriMerge.max;
         Bag<X, VLink<X>> b = new PriReferenceArrayBag<>(merge, initialCap);
         this.bag = new BufferedBag.SimpleBufferedBag<>(b, new PriBuffer<>(merge));
 

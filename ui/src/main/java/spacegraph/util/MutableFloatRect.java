@@ -12,8 +12,8 @@ import spacegraph.space2d.container.graph.Graph2D;
  */
 public class MutableFloatRect<X> {
 
-    public float x, y;
-    public float x0, y0;
+    public float cx, cy;
+    public float cxPrev, cyPrev;
     public float w, h;
 
     public Graph2D.NodeVis<X> node;
@@ -24,10 +24,15 @@ public class MutableFloatRect<X> {
     }
 
 
-    public void set(RectFloat r) {
-        this.x0 = this.x = r.cx();
-        this.y0 = this.y = r.cy();
-        size(r.w, r.h);
+    public final MutableFloatRect set(float x, float y, float w, float h) {
+        this.cxPrev = this.cx = x + w/2;
+        this.cyPrev = this.cy = y + h/2;
+        return size(w, h);
+
+    }
+
+    public final void set(RectFloat r) {
+        set(r.x, r.y, r.w, r.h);
     }
 
     public float radius() {
@@ -35,39 +40,39 @@ public class MutableFloatRect<X> {
     }
 
     public MutableFloatRect pos(float x, float y) {
-        this.x = x;
-        this.y = y;
+        this.cx = x;
+        this.cy = y;
         return this;
     }
 
     public MutableFloatRect move(float dx, float dy) {
-        this.x += dx;
-        this.y += dy;
+        this.cx += dx;
+        this.cy += dy;
         return this;
     }
 
 
     public float cx() {
-        return x;
+        return cx;
     }
 
     public float cy() {
-        return y;
+        return cy;
     }
 
     public void commit(float speedLimit) {
-        v2 delta = new v2(x, y);
+        v2 delta = new v2(cx, cy);
         float lenSq = delta.lengthSquared();
         if (lenSq > speedLimit*speedLimit) {
 
-            delta.subbed(x0, y0);
+            delta.subbed(cxPrev, cyPrev);
 
             float len = (float) Math.sqrt(lenSq);
             delta.scaled(speedLimit/len);
             //x = Util.lerp(momentum, x0 + delta.x, x0);
             //y = Util.lerp(momentum, y0 + delta.y, y0);
-            x = x0 + delta.x;
-            y = y0 + delta.y;
+            cx = cxPrev + delta.x;
+            cy = cyPrev + delta.y;
         }
 
     }
@@ -77,8 +82,8 @@ public class MutableFloatRect<X> {
     }
 
     public void moveTo(float x, float y, float rate) {
-        this.x = Util.lerp(rate, this.x, x);
-        this.y = Util.lerp(rate, this.y, y);
+        this.cx = Util.lerp(rate, this.cx, x);
+        this.cy = Util.lerp(rate, this.cy, y);
     }
 
     public float area() {
@@ -99,32 +104,33 @@ public class MutableFloatRect<X> {
             node.mover = null;
             node = null;
         }
-        this.x0 = this.y0 = 0;
+        this.cxPrev = this.cyPrev = 0;
         set(RectFloat.Unit);
     }
 
     /** keeps this rectangle within the given bounds */
     public void fence(RectFloat bounds) {
-        if ((x!=x) || (y!=y)) randomize(bounds);
-        x = Util.clamp(x, bounds.left()+w/2, bounds.right()-w/2);
-        y = Util.clamp(y, bounds.top()+h/2, bounds.bottom()-h/2);
+        if ((cx != cx) || (cy != cy)) randomize(bounds);
+        cx = Util.clamp(cx, bounds.left()+w/2, bounds.right()-w/2);
+        cy = Util.clamp(cy, bounds.top()+h/2, bounds.bottom()-h/2);
     }
 
     public void randomize(RectFloat bounds) {
         throw new TODO();
     }
 
-    public void size(float w, float h) {
+    public MutableFloatRect size(float w, float h) {
         this.w = w;
         this.h = h;
         this.rad = (float) Math.sqrt((w * w) + (h * h));
+        return this;
     }
 
     @Override
     public String toString() {
-        return "MovingRectFloat2D{" +
-                "x=" + x +
-                ", y=" + y +
+        return getClass().getSimpleName() + "{" +
+                "cx=" + cx +
+                ", cy=" + cy +
                 ", w=" + w +
                 ", h=" + h +
                 '}';
@@ -139,19 +145,32 @@ public class MutableFloatRect<X> {
     }
 
     public RectFloat immutable() {
-        return RectFloat.X0Y0WH(x, y, w, h);
-    }
-
-    public MutableFloatRect X0Y0WH(float x, float y, float w, float h) {
-        this.x = x; this.y= y; this.w = w; this.h = h;
-        return this;
+        return RectFloat.XYWH(cx, cy, w, h);
     }
 
     public MutableFloatRect<X> mbr(float px, float py) {
-        if (x > px) x = px;
-        if (y > py) y = py;
-        if (x + w < px) w = px - x;
-        if (y + h < py) h = py - y;
+
+        float x1 = left(), x2 = right();
+        if (x1 > px) {  w = right() - px; cx = px + w/2; }
+        else if (x2 < px) { w = px - left(); cx = px - w/2;}
+
+        float y1 = top(), y2 = bottom();
+        if (y1 > py) {  h = bottom() - py; cy = py + h/2; }
+        else if (y2 < py) { h = py - top(); cy = py - h/2; }
+
         return this;
+    }
+
+    public final float left() {
+        return cx - w/2;
+    }
+    public final float right() {
+        return cx + w/2;
+    }
+    public final float top() {
+        return cy - h/2;
+    }
+    public final float bottom() {
+        return cy + h/2;
     }
 }

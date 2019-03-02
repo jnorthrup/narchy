@@ -1,7 +1,6 @@
 package nars.subterm;
 
 import com.google.common.base.Joiner;
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
@@ -617,8 +616,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * allows the subterms to hold a different hashcode than hashCode when comparing subterms
      */
     default int hashCodeSubterms() {
-        return hashCode();
+        return Subterms.hash(this);
     }
+
 
 
 //    default boolean unifyLinearSimple(Subterms Y, /*@NotNull*/ Unify u) {

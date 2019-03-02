@@ -1,6 +1,5 @@
 package nars.term.compound;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import nars.Op;
 import nars.The;
@@ -27,6 +26,9 @@ public abstract class UnitCompound implements Compound {
 
     protected abstract Term sub();
 
+    public final Term[] arrayClone() {
+        return new Term[]{sub()};
+    }
 
     @Override
     public final Term sub(int i) {
@@ -42,10 +44,6 @@ public abstract class UnitCompound implements Compound {
         return sub();
     }
 
-    @Override
-    public int hashCode() {
-        return Compound.hashCode(this);
-    }
 
     @Override
     public boolean the() {
@@ -65,6 +63,11 @@ public abstract class UnitCompound implements Compound {
     @Override
     public boolean containsNeg(Term x) {
         return sub().equalsNeg(x);
+    }
+
+    @Override
+    public int hashCode() {
+        return Compound.hashCode(this);
     }
 
     @Override

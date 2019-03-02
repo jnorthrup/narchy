@@ -29,7 +29,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
 
         this.sub = sub;
         this.op = op.id;
-        this.chash = Compound.hashCode(this);
+        this.chash = super.hashCode();;
         this.cstruct = super.structure();
 
         int v = sub.volume() + 1;

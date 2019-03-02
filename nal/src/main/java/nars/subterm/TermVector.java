@@ -38,13 +38,6 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
         return the;
     }
 
-
-    @Override
-    public final int hashCodeSubterms() {
-        return hash;
-    }
-
-
     void equivalentTo(TermVector that) {
         //share normalize state if different
         if (normalized ^ that.normalized)
