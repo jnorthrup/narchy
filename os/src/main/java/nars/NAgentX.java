@@ -23,10 +23,7 @@ import nars.gui.BagSpectrogram;
 import nars.gui.NARui;
 import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
-import nars.op.Arithmeticize;
-import nars.op.AutoencodedBitmap;
-import nars.op.Introduction;
-import nars.op.PuncNoise;
+import nars.op.*;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
@@ -391,8 +388,8 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.1f * p);
         n.questPriDefault.set(0.1f * p);
 
-        n.beliefConfDefault.set(0.5f);
-        n.goalConfDefault.set(0.5f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
@@ -443,7 +440,7 @@ abstract public class NAgentX extends NAgent {
         //bd.timing = new DefaultTiming
 
 
-        //new StatementLinker(n);
+        new StatementLinker(n);
         new PuncNoise(n);
 
 //        new STMLinkage(n, 1);
