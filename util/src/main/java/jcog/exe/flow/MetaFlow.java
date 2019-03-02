@@ -8,7 +8,7 @@ import jcog.data.list.FasterList;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.memoize.QuickMemoize;
 import jcog.random.XoRoShiRo128PlusRandom;
-import jcog.tree.radix.MyConcurrentRadixTree;
+import jcog.tree.radix.MyRadixTree;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 
@@ -286,7 +286,7 @@ public class MetaFlow {
         return !f.getClassName().equals(thisClassName);
     }
 
-    final MyConcurrentRadixTree<Node> plan = new MyConcurrentRadixTree<>();
+    final MyRadixTree<Node> plan = new MyRadixTree<>();
 
     public Quality quality(String q) {
         return qualia.computeIfAbsent(q, qq -> {

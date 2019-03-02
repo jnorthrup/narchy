@@ -7,10 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
+import java.util.function.*;
 
 
 public class VersionMap<X, Y> extends AbstractMap<X, Y> {
@@ -80,10 +77,12 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void clear() {
+
+    /** clears the unifier while simultaneously fast iterating assignments (in reverse) before they are pop()'d */
+    @Override public final void clear() {
         throw new UnsupportedOperationException();
     }
+
 
     @Override
     public final int size() {
@@ -185,7 +184,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     protected Versioned<Y> newEntry(X x) {
-        return new MultiVersioned<>(context, itemVersions);
+        return new KeyValueVersioned<>(x, context, itemVersions);
     }
 
     public void forEach(BiConsumer<? super X, ? super Y> each) {

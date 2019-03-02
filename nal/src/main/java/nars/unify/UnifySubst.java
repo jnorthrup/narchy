@@ -49,7 +49,7 @@ abstract public class UnifySubst extends Unify {
 
     @Override
     public void tryMatch() {
-        Term aa = transform(input);
+        Term aa = apply(input);
         if (aa.op().conceptualizable) {
             if (!each(aa)) {
                 stop();

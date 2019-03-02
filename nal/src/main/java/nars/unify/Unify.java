@@ -3,10 +3,7 @@ package nars.unify;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import jcog.version.UniVersioned;
-import jcog.version.VersionMap;
-import jcog.version.Versioned;
-import jcog.version.Versioning;
+import jcog.version.*;
 import nars.Op;
 import nars.Param;
 import nars.term.Term;
@@ -14,7 +11,7 @@ import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.map.TermHashMap;
-import nars.term.util.transform.TermTransform;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import static nars.Op.NEG;
 import static nars.Op.VAR_PATTERN;
@@ -42,7 +40,7 @@ So it can be useful for a more easy to understand rewrite of this class TODO
 
 
 */
-public abstract class Unify extends Versioning implements TermTransform.AbstractNegObliviousTermTransform {
+public abstract class Unify extends Versioning<Term> implements AbstractTermTransform.AbstractNegObliviousTermTransform {
 
     /**
      * accumulates the next segment of the termutation stack
@@ -213,30 +211,33 @@ public abstract class Unify extends Versioning implements TermTransform.Abstract
 
     }
 
-
     @Override
-    public Unify clear() {
+    public Versioning clear() {
+        clear((BiConsumer)null);
+        return this;
+    }
 
-        super.clear();
+    public Unify clear(@Nullable BiConsumer<Term,Term> each) {
 
-        Map other = ((TermHashMap) (xy.map)).other;
-        if(!other.isEmpty())
-            other.clear();
+        revert(0, each);
+
+        if (Param.DEBUG) {
+            assert (((TermHashMap) (xy.map)).other.isEmpty());
+            assert (((TermHashMap) (xy.map)).id.isEmpty());
+        }
 
         varDepth = 0;
+
         termutes.clear();
 
-        if (!constrained.isEmpty()) {
-            constrained.forEach(ConstrainedVersionedTerm::unconstrain);
-            constrained.clear();
-        }
+        constrained.clear(ConstrainedVersionedTerm::unconstrain);
 
         return this;
     }
 
     @Override
     public String toString() {
-        return xy + "$" + ((Versioning<Term>) this).ttl;
+        return xy + "$" + this.ttl;
     }
 
 
@@ -258,11 +259,19 @@ public abstract class Unify extends Versioning implements TermTransform.Abstract
     }
 
     public final boolean varReverse(Op var) {
+        assert(var!=VAR_PATTERN);
         //return var!=VAR_PATTERN && var!=VAR_QUERY && var(var);
-        return false;
+        //return false;
+        return true;
     }
 
-
+    public final void revert(int when, BiConsumer<Term,Term> each) {
+        revert(when, (Versioned<Term> v)->{
+            if (v instanceof KeyValueVersioned) {
+                each.accept(((KeyValueVersioned<Term,Term>)v).key, v.get());
+            }
+        });
+    }
 
     /**
      * returns true if the assignment was allowed, false otherwise

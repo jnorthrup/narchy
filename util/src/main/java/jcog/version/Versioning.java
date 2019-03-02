@@ -72,7 +72,24 @@ public class Versioning<X> {
 
         return true;
     }
+    public final boolean revert(int when, Consumer<Versioned<X>> each) {
 
+        int s = size;
+        if (s <= when)
+            return false;
+
+        final Versioned[] i = this.items;
+
+        while (s>when) {
+            Versioned<X> victim = i[--s];
+            each.accept(victim);
+            victim.pop();
+        }
+        Arrays.fill(i, when, size, null);
+        this.size = s;
+
+        return true;
+    }
 
     public Versioning clear() {
         revert(0);
@@ -118,6 +135,14 @@ public class Versioning<X> {
 
     public final void pop() {
         revert(size - 1);
+    }
+
+    public final void clear(Consumer<Versioned<X>> each) {
+        if (each == null) {
+            clear();
+        } else {
+            revert(0, each);
+        }
     }
 
 }

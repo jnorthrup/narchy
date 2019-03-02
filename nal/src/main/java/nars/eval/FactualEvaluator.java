@@ -254,7 +254,7 @@ public class FactualEvaluator extends Evaluator {
                 if (pre.unify(x, u.clear())) {
 
                     //ifs.get(k).forEach(v->{
-                    Term z = u.transform(y.sub(0));
+                    Term z = u.apply(y.sub(0));
                     if (z.op().conceptualizable) {
 //                                //facts.addAt($.func("ifThen", vv, k));
 //                                //facts.put(vv, True);
@@ -279,7 +279,7 @@ public class FactualEvaluator extends Evaluator {
 //                            nx.add(y);
 //                        }
                 if (x.unify(y, u.clear())) {
-                    Term z = u.transform(x);
+                    Term z = u.apply(x);
                     if (z.op().conceptualizable) {
                         if (!z.equals(x)) {
                             matches.add(z.negIf(neg));

@@ -14,7 +14,7 @@ import nars.term.control.AND;
 import nars.term.control.FORK;
 import nars.term.control.PREDICATE;
 import nars.term.control.SWITCH;
-import nars.term.util.map.TermTrie;
+import nars.term.util.map.TermPerfectTrie;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
@@ -51,7 +51,7 @@ public enum PremiseDeriverCompiler {
 
         r.forEach(rule -> pairs.add(rule.rule));
 
-        final TermTrie<PREDICATE<Derivation>, DeriveAction> path = new TermTrie<>();
+        final TermPerfectTrie<PREDICATE<Derivation>, DeriveAction> path = new TermPerfectTrie<>();
 
 
         DeriveAction[] rootBranches = new DeriveAction[rules];
@@ -86,7 +86,7 @@ public enum PremiseDeriverCompiler {
 
     public static void print(Object p, PrintStream out, int indent) {
 
-        TermTrie.indent(indent);
+        TermPerfectTrie.indent(indent);
 
         if (p instanceof DeriverRules) {
 
@@ -97,7 +97,7 @@ public enum PremiseDeriverCompiler {
             UnifyTerm.NextUnifyTransform u = (UnifyTerm.NextUnifyTransform) p;
             out.println("unify(" + UnifyTerm.label(u.taskOrBelief) + "," + u.pattern + ") {");
             print(u.eachMatch, out, indent + 2);
-            TermTrie.indent(indent);
+            TermPerfectTrie.indent(indent);
             out.println("}");
         } else if (p instanceof AND) {
             out.println("and {");
@@ -105,7 +105,7 @@ public enum PremiseDeriverCompiler {
             ac.subStream().forEach(b->
                 print(b, out, indent + 2)
             );
-            TermTrie.indent(indent);
+            TermPerfectTrie.indent(indent);
             out.println("}");
         } /*else if (p instanceof Try) {
             out.println("eval {");
@@ -127,7 +127,7 @@ public enum PremiseDeriverCompiler {
             for (PREDICATE b : ac.branch) {
                 print(b, out, indent + 2);
             }
-            TermTrie.indent(indent);
+            TermPerfectTrie.indent(indent);
             out.println("}");
 
         } else if (p instanceof SWITCH) {
@@ -138,14 +138,14 @@ public enum PremiseDeriverCompiler {
                 i++;
                 if (b == null) continue;
 
-                TermTrie.indent(indent + 2);
+                TermPerfectTrie.indent(indent + 2);
                 out.println('"' + Op.values()[i].toString() + "\": {");
                 print(b, out, indent + 4);
-                TermTrie.indent(indent + 2);
+                TermPerfectTrie.indent(indent + 2);
                 out.println("}");
 
             }
-            TermTrie.indent(indent);
+            TermPerfectTrie.indent(indent);
             out.println("}");
         } else {
             out.print( /*Util.className(p) + ": " +*/ p);
@@ -167,7 +167,7 @@ public enum PremiseDeriverCompiler {
     }
 
 
-    static PREDICATE<Derivation> compile(TermTrie<PREDICATE<Derivation>, DeriveAction> trie) {
+    static PREDICATE<Derivation> compile(TermPerfectTrie<PREDICATE<Derivation>, DeriveAction> trie) {
         Collection<PREDICATE<Derivation>> bb = compile(trie.root);
 
         PREDICATE<Derivation> tf = FORK.fork(bb, (Function<PREDICATE<Derivation>[], PREDICATE<Derivation>>) FORK::new);

@@ -21,7 +21,7 @@ public final class CompoundNormalization extends VariableNormalization {
     }
 
     @Override
-    public Term transform(Term x) {
+    public Term apply(Term x) {
         if (x instanceof Compound) {
             if (x.hasVars() || x.hasAll(Image.ImageBits))
                 return transformCompound((Compound)x);

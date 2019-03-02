@@ -73,7 +73,7 @@ public class EllipsisTest {
 
                 
 
-                System.out.println(seed + ": " + x + " unify " + y + " => " + r);
+                //System.out.println(seed + ": " + x + " unify " + y + " => " + r);
 
                 Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.UnificationStackMax) {
 
@@ -113,7 +113,7 @@ public class EllipsisTest {
                         }
 
 
-                        Term s = transform(r);
+                        Term s = apply(r);
                         if (s != null) {
                             
                             if (s.varPattern() == 0)
@@ -406,12 +406,12 @@ public class EllipsisTest {
     }
 
 
-    private static void testCombinations(Compound _X, Compound Y, int expect) {
+    private static Set<String> testCombinations(Compound _X, Compound Y, int expect) {
         Compound X = (Compound) new PatternIndex().rule(_X);
 
-        for (int seed = 0; seed < expect*expect; seed++) {
+        Set<String> results = new HashSet(0);
+        for (int seed = 0; seed < (expect+1)*(expect+1); seed++) {
 
-            Set<String> results = new HashSet(0);
 
             Random rng = new XorShift128PlusRandom(seed);
             Unify f = new Unify(VAR_PATTERN, rng, Param.UnificationStackMax, 128) {
@@ -423,10 +423,14 @@ public class EllipsisTest {
 
             f.unify(X, Y);
 
-            results.forEach(System.out::println);
-            assertEquals(expect, results.size(), ()->"insufficient permutations for: " + X + " .. " + Y);
-        }
+            //results.forEach(System.out::println);
 
+            assertEquals(expect, results.size(),
+                    ()->"insufficient permutations for: " + X + " .. " + Y);
+
+            results.clear();
+        }
+        return results;
     }
 
     @Test
@@ -509,6 +513,20 @@ public class EllipsisTest {
                 $("(%M --> (&,%S,%A..+))"),
                 $("(m-->(&,s,a))"),
                 2);
+    }
+    @Test
+    void conjEllipsisToConjSeq1() throws Narsese.NarseseException {
+        testCombinations(
+                $("(a &&+- %A..+)"),
+                $("((a &&+1 b) &&+1 c)"),
+                1);
+    }
+    @Test
+    void conjEllipsisToConjSeq2() throws Narsese.NarseseException {
+        testCombinations(
+                $("(%X &&+- %A..+)"),
+                $("((a &&+1 b) &&+1 c)"),
+                3);
     }
 
 

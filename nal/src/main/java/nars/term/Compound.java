@@ -34,9 +34,9 @@ import nars.term.anon.Anon;
 import nars.term.atom.Bool;
 import nars.term.compound.UnitCompound;
 import nars.term.util.conj.Conj;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
-import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -233,9 +233,9 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean unify(Term y, Unify u) {
-        return (y instanceof Compound &&
-                    (equals(y) || (op() == y.op() && unifySubterms(y, u)))
-               )
+        return (this==y)
+               ||
+               (y instanceof Compound && (equals(y) || (op() == y.op() && unifySubterms(y, u))))
                ||
                (y instanceof Variable && y.unify(this, u));
     }
@@ -766,7 +766,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    default Term transform(TermTransform f) {
+    default Term transform(AbstractTermTransform f) {
         return f.transformCompound(this);
     }
 

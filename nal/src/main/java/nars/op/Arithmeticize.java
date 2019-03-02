@@ -328,7 +328,7 @@ public class Arithmeticize {
         Term apply(Term x, int cdt, @Nullable Anon anon) {
             //TODO anon
             Int aaa = Int.the(a), bbb = Int.the(b);
-            Term xx = new IntReplacer(Map.of(aaa, A, bbb, B)).transform(x);
+            Term xx = new IntReplacer(Map.of(aaa, A, bbb, B)).apply(x);
             return CONJ.the(cdt, xx, Equal.cmp(A, B, -1));
         }
     }

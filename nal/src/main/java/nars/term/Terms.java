@@ -6,10 +6,10 @@ import jcog.sort.SortedList;
 import jcog.util.ArrayUtils;
 import nars.io.IO;
 import nars.Op;
-import nars.derive.premise.PatternIndex;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.atom.Atom;
+import nars.term.compound.PatternCompound;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
@@ -347,7 +347,7 @@ public enum Terms {
     }
 
     private static boolean canExtractFixedPath(Term container) {
-        return !(container instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis)
+        return !(container instanceof PatternCompound.PatternCompoundWithEllipsis)
                 &&
                !container.isCommutative();
     }

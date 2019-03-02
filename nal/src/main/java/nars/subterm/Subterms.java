@@ -1158,7 +1158,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             Term xi = sub(i);
 
-            Term yi = f.transform(xi);
+            Term yi = f.apply(xi);
 
             if (yi == null || yi == Bool.Null)
                 return null;
@@ -1212,7 +1212,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         for (int j = 0; j < xes; j++) {
 
-            Term k = f.transform(e.sub(j));
+            Term k = f.apply(e.sub(j));
 
             if (k == null || k == Bool.Null) {
                 return null;

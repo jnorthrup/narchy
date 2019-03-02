@@ -770,6 +770,10 @@ public enum $ {
         return pFast(x.toArray(EmptyTermArray));
     }
 
+    public static Subterms vFast(Collection<Term> t) {
+        return vFast(t.toArray(EmptyTermArray));
+    }
+
     /**
      * on-stack/on-heap cheaply constructed Subterms
      */

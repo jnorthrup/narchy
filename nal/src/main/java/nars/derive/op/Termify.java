@@ -56,7 +56,7 @@ public final class Termify extends AbstractPred<Derivation> {
         if (Param.TERMIFY_TRANSFORM_LAZY && pattern instanceof Compound) {
             x = d.transformCompoundLazily((Compound)pattern, HeapTermBuilder.the);
         } else {
-            x = d.transform(pattern);
+            x = d.apply(pattern);
         }
 
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {

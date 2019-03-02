@@ -18,6 +18,7 @@ import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.util.Image;
 import nars.term.util.conj.Conj;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.term.util.transform.VariableTransform;
@@ -67,7 +68,7 @@ abstract public class Inperience extends TaskLeakTransform {
     /** semanticize, as much as possible, a target so it can enter higher order
      * TODO merge with NLPGen stuff
      * */
-    final static TermTransform Described = new TermTransform.NegObliviousTermTransform() {
+    final static TermTransform Described = new AbstractTermTransform.NegObliviousTermTransform() {
 
         private final Atomic and = Atomic.the("and");
         //private final Atomic so = Atomic.the("so"); //so, then, thus
@@ -91,19 +92,19 @@ abstract public class Inperience extends TaskLeakTransform {
                         //preserve functor form
                         return INH.the(PROD.the(term.sub(0).subterms().transformSubs(this, PROD)), term.sub(1));
                     } else {
-                        return $.func(inherits, transform(term.sub(0)), transform(term.sub(1)));
+                        return $.func(inherits, apply(term.sub(0)), apply(term.sub(1)));
                     }
                 }
 
                 case SIM:
-                    return $.func(similar, SETe.the(transform(term.sub(0)), transform(term.sub(1)) ));
+                    return $.func(similar, SETe.the(apply(term.sub(0)), apply(term.sub(1)) ));
 
                 case IMPL:
                     //TODO insert 'dur' for dt()'s
                     if (dt == DTERNAL || dt == XTERNAL) {
-                        return $.func(If, transform(term.sub(0)), transform(term.sub(1)));
+                        return $.func(If, apply(term.sub(0)), apply(term.sub(1)));
                     } else {
-                        return $.func(If, transform(term.sub(0)), transform(term.sub(1)), $.func(this.dt, Int.the(dt)));
+                        return $.func(If, apply(term.sub(0)), apply(term.sub(1)), $.func(this.dt, Int.the(dt)));
                     }
 
                 case CONJ:
@@ -119,7 +120,7 @@ abstract public class Inperience extends TaskLeakTransform {
                                 if (interval > 0)
                                     ss.add($.func(this.dt, $.the(interval)));
                             }
-                            ss.add(transform(what));
+                            ss.add(apply(what));
                             last[0] = when;
                             return true;
                         },0, false, false, false);
@@ -188,14 +189,14 @@ abstract public class Inperience extends TaskLeakTransform {
 //                        //c.table(BELIEF).answer(t.start(), t.end(), tt, null, nar);
 
                 Term bb = //belief != null ? Described.transform(belief.target().negIf(belief.isNegative())) :
-                        Described.transform(tt);
+                        Described.apply(tt);
                 return $.funcImg(believe, self, bb);
             } else {
 //                Task goal = t;
 //                        //c.table(GOAL).answer(t.start(), t.end(), tt.unneg(), null, nar);
 
                 Term gg = //goal!=null ? Described.transform(goal.target().negIf(goal.isNegative())) :
-                        Described.transform(tt);
+                        Described.apply(tt);
                 return $.funcImg(want, self, gg);
 
 //                else {
@@ -233,12 +234,12 @@ abstract public class Inperience extends TaskLeakTransform {
 
         private static Term reifyQuestion(Term x, byte punc, NAR nar) {
             x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-            x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.transform(x) : x;
+            x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.apply(x) : x;
             if (x instanceof Bool) return Bool.Null;
 
             x = Image.imageNormalize(x);
 
-            return $.funcImg(punc == QUESTION ? wonder : evaluate, nar.self(), Described.transform(x));
+            return $.funcImg(punc == QUESTION ? wonder : evaluate, nar.self(), Described.apply(x));
         }
 
         @Override

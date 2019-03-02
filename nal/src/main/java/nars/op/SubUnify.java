@@ -38,7 +38,7 @@ public class SubUnify extends Unify {
     protected void tryMatch() {
 
         if (transformed != null) {
-            Term result = transform(transformed);
+            Term result = apply(transformed);
             if (result != null && result != Null && tryMatch(result)) {
 
                 this.result = result;

@@ -160,7 +160,7 @@ public class Evaluation {
                     Term af = Functor.func(a);
                     if (!(af instanceof Functor)) {
                         //try resolving
-                        Term aa = e.transform(a);
+                        Term aa = e.apply(a);
                         if (aa == a) {
                             //no change. no such functor
                             remove = true;

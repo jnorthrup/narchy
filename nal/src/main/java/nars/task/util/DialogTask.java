@@ -98,7 +98,8 @@ public class DialogTask extends NARService {
         SubUnify uu = new SubUnify(nar.random());
         for (Term u : unifyWith) {
             if (u.op()==xo) { //prefilter
-                if (u.unify(xx, uu.clear())) {
+                uu.clear();
+                if (u.unify(xx, uu)) {
                     if (!onTask(x, u))
                         return false;
                 }

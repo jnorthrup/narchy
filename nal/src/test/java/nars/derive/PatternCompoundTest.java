@@ -11,7 +11,7 @@ import static nars.$.$$;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class PremisePatternCompoundTest {
+class PatternCompoundTest {
 
     private final PatternIndex i = new PatternIndex();
 

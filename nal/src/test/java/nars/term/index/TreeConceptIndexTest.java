@@ -1,7 +1,7 @@
 package nars.term.index;
 
 import jcog.data.byt.ArrayBytes;
-import jcog.tree.radix.MyConcurrentRadixTree;
+import jcog.tree.radix.MyRadixTree;
 import nars.$;
 import nars.Narsese;
 import nars.index.concept.TreeConceptIndex;
@@ -45,6 +45,7 @@ class TreeConceptIndexTest {
         System.out.println(t.prettyPrint());
 
     }
+
     @Test
     void testVolumeSubTrees() throws Narsese.NarseseException {
         TreeConceptIndex t = new TreeConceptIndex( 128);
@@ -60,7 +61,7 @@ class TreeConceptIndexTest {
         System.out.println(t.concepts.root);
 
         
-        List<MyConcurrentRadixTree.Node> oe = t.concepts.root.getOutgoingEdges();
+        List<MyRadixTree.Node> oe = t.concepts.root.getOutgoingEdges();
         assertEquals(6, oe.size());
 
         assertTrue(oe.get(0).toString().length() < oe.get(1).toString().length());

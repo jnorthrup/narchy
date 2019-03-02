@@ -22,6 +22,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.DirectTermTransform;
 import nars.term.util.transform.TermTransform;
 import nars.truth.func.NALTruth;
@@ -91,7 +92,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     private PremiseRuleSource(String ruleSrc) throws Narsese.NarseseException {
         super(
-                INDEX.rule(new UppercaseAtomsToPatternVariables().transform($.pFast(parseRuleComponents(ruleSrc))))
+                INDEX.rule(new UppercaseAtomsToPatternVariables().apply($.pFast(parseRuleComponents(ruleSrc))))
         );
 
         this.source = ruleSrc;
@@ -603,7 +604,7 @@ public class PremiseRuleSource extends ProxyTerm {
     private Term conclusion(Term x) {
 
         if (!x.unneg().op().var)
-            return conclusionOptimize(ConcTransform.transform(PatternIndex.patternify(x)));
+            return conclusionOptimize(ConcTransform.apply(PatternIndex.patternify(x)));
         else
             return x;
 
@@ -1004,13 +1005,13 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
     /** conclusion post-processing */
-    private final TermTransform ConcTransform = new TermTransform() {
+    private final TermTransform ConcTransform = new AbstractTermTransform() {
         @Override
         public Term transformCompound(Compound c) {
 
             c = Unifiable.transform(c, PremiseRuleSource.this, pre);
 
-            return TermTransform.super.transformCompound(c);
+            return AbstractTermTransform.super.transformCompound(c);
         }
     };
 }

@@ -8,7 +8,6 @@ import jcog.data.set.LongObjectArraySet;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.Param;
-import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
@@ -36,7 +35,6 @@ import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -1873,23 +1871,26 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             default:
                 LongObjectArraySet<Term> temporals = null;
 
-                for (LongObjectPair next : event.keyValuesView()) {
+                int occSkipped = 0;
+                for (LongObjectPair<?> next : event.keyValuesView()) {
                     long when = next.getOne();
-                    if (when == ETERNAL)
-                        continue;
+                    if (when == ETERNAL) {
+                        occSkipped++;
+                    } else {
 
-                    Term wt = term(when, next.getTwo(), tmp);
-                    if (wt == null || wt == True) {
-                        continue;
-                    } else if (wt == False) {
-                        return this.result = False;
-                    } else if (wt == Null) {
-                        return this.result = Null;
+                        Term wt = term(when, next.getTwo(), tmp);
+                        if (wt == False || wt == Null) {
+                            return this.result = wt;
+                        } else if (wt != True && wt != null) {
+
+                            if (temporals == null) temporals = new LongObjectArraySet<>((numOcc - occSkipped) * 2 /* estimate */);
+
+                            temporals.add(when, wt);
+
+                        } else {
+                            occSkipped++;
+                        }
                     }
-
-                    if (temporals == null) temporals = new LongObjectArraySet<>(numOcc + 1);
-
-                    temporals.add(when, wt);
                 }
                 if (temporals != null) {
 

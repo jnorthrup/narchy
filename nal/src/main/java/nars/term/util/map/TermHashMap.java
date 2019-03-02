@@ -20,7 +20,7 @@ import java.util.function.Function;
  */
 public class TermHashMap<X> extends AbstractMap<Term, X> {
 
-    final ShortObjectHashMap<X> id;
+    public final ShortObjectHashMap<X> id;
     public final Map<Term, X> other;
 
     public TermHashMap() {

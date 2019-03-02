@@ -98,6 +98,20 @@ public class FasterList<X> extends FastList<X> {
     }
 
     @Override
+    public FastList<X> sortThis() {
+        if (size > 1) //superclass doesnt test for this condition
+            super.sortThis();
+        return this;
+    }
+
+    @Override
+    public FastList<X> reverseThis() {
+        if (size > 1) //superclass doesnt test for this condition
+            super.reverseThis();
+        return this;
+    }
+
+    @Override
     public FastList<X> toSortedList() {
         //TODO size=2 simple case
         return size > 1 ? super.toSortedList() : this;

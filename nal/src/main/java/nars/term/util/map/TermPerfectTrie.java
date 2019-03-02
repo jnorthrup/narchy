@@ -19,7 +19,7 @@ import java.util.List;
  * indexes sequences of (a perfectly-hashable fixed number
  * of unique) terms in a magnos trie
  */
-public class TermTrie<K extends Term, V> extends Trie<List<K>, V> implements TrieSequencer<List<K>> {
+public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> implements TrieSequencer<List<K>> {
 
     final ObjectIntHashMap<Term> conds = new ObjectIntHashMap<>();
 
@@ -32,7 +32,7 @@ public class TermTrie<K extends Term, V> extends Trie<List<K>, V> implements Tri
     }
 
 
-    public TermTrie() {
+    public TermPerfectTrie() {
         super(null);
     }
 

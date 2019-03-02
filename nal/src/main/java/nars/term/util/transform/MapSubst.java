@@ -17,19 +17,6 @@ import java.util.Map;
 
 abstract public class MapSubst implements Subst {
 
-    @Override
-    public @Nullable Term transformCompound(Compound x) {
-        Term y = xy(x);
-        if (y == null || y==x) {
-            return Subst.super.transformCompound(x);
-        } else
-            return y;
-    }
-
-    @Override
-    public boolean transformCompound(Compound x, LazyCompound out) {
-        throw new TODO();
-    }
 
     public static Term replace(Term x, Map<? extends Term, Term> m) {
 
@@ -45,7 +32,7 @@ abstract public class MapSubst implements Subst {
                 else if (src.equals(target) || x.impossibleSubTerm(src))
                     return x; //no change
                 else
-                    return replace(src, target).transform(x);
+                    return replace(src, target).apply(x);
             }
             case 2: {
                 Iterator<? extends Map.Entry<? extends Term, Term>> ii = m.entrySet().iterator();
@@ -61,12 +48,12 @@ abstract public class MapSubst implements Subst {
                     return x.impossibleSubTerm(b) ?
                             x
                             :
-                            replace(b, e2.getValue()).transform(x);
+                            replace(b, e2.getValue()).apply(x);
                 } else {
                     if (x.impossibleSubTerm(b))
-                        return replace(a, e1.getValue()).transform(x);
+                        return replace(a, e1.getValue()).apply(x);
                     else
-                        return new MapSubst2(e1, e2).transform(x);
+                        return new MapSubst2(e1, e2).apply(x);
                 }
             }
             default: {
@@ -82,46 +69,24 @@ abstract public class MapSubst implements Subst {
                         return x;
                     case 1: {
                         Term a = valid.get(0);
-                        return replace(a, m.get(a)).transform(x);
+                        return replace(a, m.get(a)).apply(x);
                     } case 2: {
                         Term a = valid.get(0), b = valid.get(1);
-                        return new MapSubst2(a, m.get(a), b, m.get(b)).transform(x);
+                        return new MapSubst2(a, m.get(a), b, m.get(b)).apply(x);
                     }
                     default:
                         //TODO build key filter to sub-map only the applicable keys
-                        return new MapSubstN(m).transform(x);
+                        return new MapSubstN(m).apply(x);
                 }
             }
         }
 
     }
-//    private static final class MapSubst1 extends MapSubst {
-//        final Term x, y;
-//
-//        public MapSubst1(Term x, Term y) {
-//            this.x = x; this.y = y;
-//        }
-//
-//        @Override
-//        public Term transform(Term t) {
-//            if (t.impossibleSubTerm(x))
-//                return t;
-//            return super.transform(t);
-//        }
-//
-//        /**
-//         * gets the substitute
-//         *
-//         * @param t
-//         */
-//        @Nullable
-//        @Override
-//        public Term xy(Term t) {
-//            if (t.equals(x))
-//                return y;
-//            return null;
-//        }
-//    }
+
+    @Override
+    public boolean transformCompound(Compound x, LazyCompound out) {
+        throw new TODO();
+    }
 
     private static final class MapSubst2 extends MapSubst {
         final Term ax, ay, bx, by;
@@ -173,7 +138,7 @@ abstract public class MapSubst implements Subst {
 
     }
 
-    public static TermTransform replace(Term from, Term to) {
+    public static AbstractTermTransform replace(Term from, Term to) {
 
         if (Param.DEBUG && from == to)
             throw new WTF("pointless substitution");
@@ -191,7 +156,7 @@ abstract public class MapSubst implements Subst {
 //        return this;
     }
 
-    final static class SubstCompound implements TermTransform {
+    final static class SubstCompound implements AbstractTermTransform {
 
         private final Compound from;
         private final Term to;
@@ -211,12 +176,12 @@ abstract public class MapSubst implements Subst {
                 return to;
             if (x.impossibleSubTerm(from))
                 return x;
-            return TermTransform.super.transformCompound(x);
+            return AbstractTermTransform.super.transformCompound(x);
         }
 
     }
 
-    final static class SubstAtomic extends TermTransform.NegObliviousTermTransform {
+    final static class SubstAtomic extends AbstractTermTransform.NegObliviousTermTransform {
 
         private final Atomic from;
         private final Term to;

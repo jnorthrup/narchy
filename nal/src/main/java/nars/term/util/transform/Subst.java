@@ -1,12 +1,12 @@
 package nars.term.util.transform;
 
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
 
-public interface Subst extends TermTransform {
-
+public interface Subst extends AbstractTermTransform {
 
 
 //    /** completely dereferences a target (usually a variable)*/
@@ -18,13 +18,22 @@ public interface Subst extends TermTransform {
 //        return z;
 //    }
 
-    @Override @Nullable
-    default Term transformAtomic(Atomic atomic) {
-        Term y = xy(atomic);
-        return y != null ? y : atomic;
+    @Override
+    default Term transformAtomic(Atomic x) {
+        Term y = xy(x);
+        return y != null ? y : x;
         //return resolve(atomic);
     }
 
+    @Override
+    @Nullable
+    default Term transformCompound(Compound x) {
+        Term y = xy(x);
+        if (y == null || y == x) {
+            return AbstractTermTransform.super.transformCompound(x);
+        } else
+            return y;
+    }
 
 //    @Override @Nullable
 //    default Term transformCompound(Compound x) {
@@ -41,8 +50,6 @@ public interface Subst extends TermTransform {
      * the assigned value for x
      */
     @Nullable Term xy(Term t);
-
-
 
 
 }

@@ -11,13 +11,13 @@ import nars.term.var.UnnormalizedVariable;
 import static nars.Op.*;
 
 
-public abstract class VariableTransform extends TermTransform.NegObliviousTermTransform {
+public abstract class VariableTransform extends AbstractTermTransform.NegObliviousTermTransform {
 
 
 
     @Override
-    public Term transform(Term x) {
-        return x.hasVars() ? super.transform(x) : x;
+    public Term apply(Term x) {
+        return x.hasVars() ? super.apply(x) : x;
     }
 
     @Override
@@ -34,7 +34,7 @@ public abstract class VariableTransform extends TermTransform.NegObliviousTermTr
     private static final TermTransform indepToDepVarDirect = variableTransform1(VAR_INDEP, VAR_DEP);
 
     private static TermTransform variableTransform1(Op from, Op to) {
-        return new TermTransform.NegObliviousTermTransform() {
+        return new AbstractTermTransform.NegObliviousTermTransform() {
 
             @Override
             public Term transformAtomic(Atomic atomic) {
@@ -55,7 +55,7 @@ public abstract class VariableTransform extends TermTransform.NegObliviousTermTr
     }
 
     private static TermTransform variableTransformN(Op from, Op to) {
-        return new TermTransform.NegObliviousTermTransform() {
+        return new AbstractTermTransform.NegObliviousTermTransform() {
             @Override
             public Term transformAtomic(Atomic atomic) {
                 if (!(atomic instanceof nars.term.Variable) || atomic.op() != from)
@@ -73,9 +73,9 @@ public abstract class VariableTransform extends TermTransform.NegObliviousTermTr
     public static Term indepToDepVar(Term x) {
         int v = x.varIndep();
         if (x.varDep()==0) {
-            return indepToDepVarDirect.transform(x); //optimized case
+            return indepToDepVarDirect.apply(x); //optimized case
         } else if (v >= 1) {
-            return indepToDepVar.transform(x);
+            return indepToDepVar.apply(x);
         } else {
             return x;
         }

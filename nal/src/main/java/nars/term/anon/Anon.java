@@ -7,7 +7,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.map.ByteAnonMap;
-import nars.term.util.transform.TermTransform;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.term.var.UnnormalizedVariable;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * //return new DirectTermTransform() {
  * //return new TermTransform.NegObliviousTermTransform() {
  */
-public class Anon extends TermTransform.NegObliviousTermTransform {
+public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
 
 //    final static TermBuilder localBuilder =
 //            new InterningTermBuilder(Anon.class.getSimpleName(), 8*1024);

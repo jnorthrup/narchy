@@ -2,14 +2,14 @@ package nars.index.concept;
 
 import com.google.common.collect.Streams;
 import jcog.data.byt.AbstractBytes;
-import jcog.tree.radix.MyConcurrentRadixTree;
+import jcog.tree.radix.ConcurrentRadixTree;
+import jcog.tree.radix.MyRadixTree;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.util.key.TermBytes;
-import nars.term.util.map.TermRadixTree;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -27,18 +27,17 @@ public class TreeConceptIndex extends AbstractConceptIndex implements Consumer<N
     float descentRate = 0.5f;
 
 
-    public final TermRadixTree<Termed> concepts;
+    public final ConcurrentRadixTree<Termed> concepts;
 
     int sizeLimit;
 
+    static AbstractBytes key(Term k) {
+        return TermBytes.termByVolume(k.concept());
+    }
+
     public TreeConceptIndex(int sizeLimit) {
 
-        this.concepts = new TermRadixTree<>() {
-
-            @Override
-            public AbstractBytes key(Object k) {
-                return TermBytes.termByVolume(((Termed) k).term().concept());
-            }
+        this.concepts = new ConcurrentRadixTree<Termed>() {
 
             @Override
             public boolean onRemove(Termed r) {
@@ -89,18 +88,18 @@ public class TreeConceptIndex extends AbstractConceptIndex implements Consumer<N
 
         concepts.acquireWriteLock();
         try {
-            MyConcurrentRadixTree.SearchResult s = null;
+            MyRadixTree.SearchResult s = null;
 
             while (/*(iterationLimit-- > 0) &&*/ ((sizeEst() - sizeLimit) > maxConceptsThatCanBeRemovedAtATime)) {
 
                 Random rng = nar.random();
 
-                MyConcurrentRadixTree.Node subRoot = volumeWeightedRoot(rng);
+                MyRadixTree.Node subRoot = volumeWeightedRoot(rng);
 
                 if (s == null)
                     s = concepts.random(subRoot, descentRate, rng);
 
-                MyConcurrentRadixTree.Node f = s.found;
+                MyRadixTree.Node f = s.found;
 
                 if (f != null && f != subRoot) {
                     int subTreeSize = concepts.sizeIfLessThan(f, maxConceptsThatCanBeRemovedAtATime);
@@ -126,9 +125,9 @@ public class TreeConceptIndex extends AbstractConceptIndex implements Consumer<N
     /**
      * since the terms are sorted by a volume-byte prefix, we can scan for removals in the higher indices of this node
      */
-    private MyConcurrentRadixTree.Node volumeWeightedRoot(Random rng) {
+    private MyRadixTree.Node volumeWeightedRoot(Random rng) {
 
-        List<MyConcurrentRadixTree.Node> l = concepts.root.getOutgoingEdges();
+        List<MyRadixTree.Node> l = concepts.root.getOutgoingEdges();
         int levels = l.size();
 
 
@@ -151,21 +150,21 @@ public class TreeConceptIndex extends AbstractConceptIndex implements Consumer<N
 
     @Override
     public @Nullable Termed get(Term t, boolean createIfMissing) {
-        TermBytes k = (TermBytes) key(t);
+        AbstractBytes k = key(t);
 
         return createIfMissing ? _get(k, t) : _get(k);
     }
 
-    protected @Nullable Termed _get(TermBytes k) {
+    protected @Nullable Termed _get(AbstractBytes k) {
         return concepts.get(k);
     }
 
-    protected Termed _get(TermBytes k, Term finalT) {
+    protected Termed _get(AbstractBytes k, Term finalT) {
         return concepts.putIfAbsent(k, () -> nar.conceptBuilder.apply(finalT, null));
     }
 
-    public AbstractBytes key(Term t) {
-        return concepts.key(t);
+    public final AbstractBytes key(Termed t) {
+        return key(t.term());
     }
 
 

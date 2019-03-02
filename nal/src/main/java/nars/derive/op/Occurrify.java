@@ -235,7 +235,7 @@ public class Occurrify extends TimeGraph {
         byte punc = d.concPunc;
         if ((punc == BELIEF || punc == GOAL) && x.hasXternal()) { // && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
             //HACK this is for deficiencies in the temporal solver that can be fixed
-            x = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(x);
+            x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
             if (!Taskify.valid(x, d.concPunc)) {
                 d.nar.emotion.deriveFailTemporal.increment();
                 Taskify.spam(d, Param.TTL_DERIVE_TASK_FAIL);

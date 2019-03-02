@@ -4,7 +4,7 @@ import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.transform.TermTransform;
+import nars.term.util.transform.AbstractTermTransform;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -43,10 +43,10 @@ class LazyCompoundTest {
                 .compound(Op.IMPL, 1, A, B).get().toString());
     }
 
-    static final TermTransform nullTransform = new TermTransform() {
+    static final AbstractTermTransform nullTransform = new AbstractTermTransform() {
 
     };
-    static final TermTransform atomToCompoundTransform = new TermTransform() {
+    static final AbstractTermTransform atomToCompoundTransform = new AbstractTermTransform() {
 
         final Term cmp = $$("(x,y)");
 

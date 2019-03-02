@@ -1,7 +1,7 @@
 package nars.index.task;
 
 import jcog.data.byt.AbstractBytes;
-import jcog.tree.radix.MyConcurrentRadixTree;
+import jcog.tree.radix.MyRadixTree;
 import nars.Task;
 import nars.term.util.key.TermBytes;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 public class TreeTaskIndex implements TaskIndex {
 
 
-    public final MyConcurrentRadixTree<Task> tasks = new MyConcurrentRadixTree<>();
+    public final MyRadixTree<Task> tasks = new MyRadixTree<>();
 
     @Override
     public boolean contains(Task t) {

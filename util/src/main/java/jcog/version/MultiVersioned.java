@@ -19,10 +19,10 @@ public class MultiVersioned<X> extends FasterList<X> implements Versioned<X> {
         this.context = sharedContext;
     }
 
-    public MultiVersioned(Versioning<X> sharedContext, X[] emptyArray) {
-        super(0, emptyArray);
-        this.context = sharedContext;
-    }
+//    public MultiVersioned(Versioning<X> sharedContext, X[] emptyArray) {
+//        super(0, emptyArray);
+//        this.context = sharedContext;
+//    }
 
     @Override
     public final boolean equals(Object otherVersioned) {
