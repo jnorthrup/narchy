@@ -44,7 +44,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.Param.TTL_UNIFY;
+import static nars.Param.TTL_termify;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -156,7 +156,7 @@ public class Derivation extends PreDerivation {
 
             Term y = apply(xx, input, replaced, replacement);
 
-            use(TTL_UNIFY); //substitute actually
+            use(TTL_termify); //substitute actually
 
             if (y != null && !(y instanceof Bool)) {
 

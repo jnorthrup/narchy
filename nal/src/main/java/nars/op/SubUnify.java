@@ -1,5 +1,6 @@
 package nars.op;
 
+import jcog.version.Versioning;
 import nars.Op;
 import nars.Param;
 import nars.term.Term;
@@ -21,6 +22,7 @@ public class SubUnify extends Unify {
 
     @Nullable
     protected Term result;
+    private boolean live = true;
 
 
     public SubUnify(Random rng) {
@@ -31,11 +33,17 @@ public class SubUnify extends Unify {
         super(varBits, rng, Param.UnificationStackMax);
     }
 
+    @Override
+    public Versioning clear() {
+        live = true;
+        return super.clear();
+    }
+
     /**
      * terminate after the first match
      */
     @Override
-    protected void tryMatch() {
+    protected final void tryMatch() {
 
         if (transformed != null) {
             Term result = apply(transformed);
@@ -48,20 +56,16 @@ public class SubUnify extends Unify {
         }
     }
 
-
-
-
-    @Nullable
-    public Term unifySubst(Term x, Term y, @Nullable Term transformed, int ttl) {
-        this.transformed = transformed;
-        this.result = null;
-        setTTL(ttl);
-        assert (ttl > 0);
-
-        unify(x, y);
-
-        return result;
+    @Override public int stop() {
+        this.live = false;
+        return ttl;
     }
+
+    @Override
+    protected boolean live() {
+        return live && super.live();
+    }
+
 
     protected boolean tryMatch(Term result) {
         return true;

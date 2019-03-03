@@ -12,8 +12,10 @@ import java.util.Map;
 
 public final class IntroVars extends AbstractPred<Derivation> {
 
+    public static final Atomic VarIntro = Atomic.the("varIntro");
+
     public IntroVars() {
-        super(Atomic.the("varIntro"));
+        super(VarIntro);
     }
 
     @Override

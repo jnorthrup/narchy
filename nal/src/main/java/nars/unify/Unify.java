@@ -112,7 +112,8 @@ public abstract class Unify extends Versioning<Term> {
      * spend an amount of TTL; returns whether it is still live
      */
     public final boolean use(int cost) {
-        return ((ttl -= cost) > 0);
+        ttl = Math.max(0, ttl - cost);
+        return live();
     }
 
     public <U extends Unify> U random(Random random) {
@@ -154,9 +155,10 @@ public abstract class Unify extends Versioning<Term> {
 
             chain[next].mutate(chain, next, this);
 
-            return true;
+            return use(Param.TTL_MUTATE_COMPONENT);
 
         } else {
+
             tryMatch();
 
             return use(Param.TTL_MUTATE);
@@ -247,10 +249,14 @@ public abstract class Unify extends Versioning<Term> {
         }
     }
 
-    public Unification unification(Term x, Term y, int discoveryTTL) {
+    public final Unification unification(Term x, Term y, int discoveryTTL) {
+        return unification(x, y, Integer.MAX_VALUE, discoveryTTL);
+    }
+
+    public Unification unification(Term x, Term y, int discoveriesMax, int discoveryTTL) {
         Unification u = unification(x, y);
         if (u instanceof Unification.PermutingUnification) {
-            use( ((Unification.PermutingUnification)u).discover(discoveryTTL) );
+            use( ((Unification.PermutingUnification)u).discover(discoveriesMax, discoveryTTL) );
         }
         return u;
     }
@@ -406,11 +412,6 @@ public abstract class Unify extends Versioning<Term> {
     }
 
 
-
-    public Unify emptyClone(Predicate<Unify> each) {
-        return new LazyUnify(this, each);
-    }
-
     private static class ConstrainedVersionMap extends VersionMap<Variable, Term> {
         ConstrainedVersionMap(Versioning<Term> versioning, Map<Variable, Versioned<Term>> termMap) {
             super(versioning,
@@ -470,22 +471,15 @@ public abstract class Unify extends Versioning<Term> {
         }
     }
 
-    public static class LazyUnify extends Unify {
-        private final Predicate<Unify> each;
+    abstract static class LazyUnify extends Unify {
 
-        public LazyUnify(Unify u, Predicate<Unify> each) {
+        public LazyUnify(Unify u) {
             super(u.varBits, u.random, u.items.length);
             commonVariables = u.commonVariables;
             dtTolerance = u.dtTolerance;
             //TODO any other flags?
-            this.each = each;
         }
 
-        @Override
-        protected void tryMatch() {
-            if (!each.test(this))
-                stop();
-        }
     }
 
     public abstract static class UnifyTransform extends AbstractTermTransform.NegObliviousTermTransform {

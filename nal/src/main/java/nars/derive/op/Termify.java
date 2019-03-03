@@ -41,6 +41,7 @@ public final class Termify extends ProxyTerm {
 
         NAR nar = d.nar;
 
+        d.use(Param.TTL_termify);
 
         nar.emotion.deriveTermify.increment();
 

@@ -30,7 +30,6 @@ public class Versioning<X> {
     }
 
 
-
     public final boolean revertLive(int before, int cost) {
         ttl -= cost;
         return revertLive(before);
@@ -116,21 +115,24 @@ public class Versioning<X> {
 
     /**
      * returns remaining TTL
+     * callees should have something to do with the returned TTL value, otherwise it may indicate a stop() is zero'ing via mistakenly lost ttl
      */
-    public final void stop() {
+    @Deprecated public int stop() {
+        int t = this.ttl;
         ttl = 0;
+        return t;
     }
 
 
     /**
      * whether the unifier should continue: if TTL is non-zero.
      */
-    private boolean live() {
+    protected boolean live() {
         return ttl > 0;
     }
 
     public final void setTTL(int ttl) {
-        assert (ttl > 0);
+//        assert (ttl > 0);
         this.ttl = ttl;
     }
 

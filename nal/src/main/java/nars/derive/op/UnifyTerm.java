@@ -15,6 +15,7 @@ import nars.unify.Unification;
 import java.util.function.Function;
 
 import static nars.$.$$;
+import static nars.Param.TermutatorFanOut;
 
 /**
  * Created by me on 5/26/16.
@@ -93,7 +94,9 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 //            d.forEachMatch = each;
             d.forEachMatch = (x) -> true; //HACK
 
-            Unification u = d.unification(pattern, taskOrBelief ? d.taskTerm : d.beliefTerm, Param.TermutatorSearchTTL);
+            Unification u = d.unification(pattern, taskOrBelief ? d.taskTerm : d.beliefTerm,
+                    TermutatorFanOut,
+                    Param.TermutatorSearchTTL);
 
             if (u instanceof Unification.PermutingUnification) {
 
@@ -101,7 +104,7 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
                         ((Unification.PermutingUnification) u).fork.list.clone();
                 ii.shuffleThis(d.random);
 
-                int fanOut = Math.min(ii.size(), Param.TermutatorFanOut);
+                int fanOut = Math.min(ii.size(), TermutatorFanOut);
                 for (int i = 0; i < fanOut; i++) {
                     if (!permute(d, ii.get(i)::xy))
                         return false;
@@ -132,7 +135,7 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
                 if (!each.test(y, d))
                     return false;
 
-            return d.use(Param.TTL_UNIFY);
+            return true;
         }
     }
 

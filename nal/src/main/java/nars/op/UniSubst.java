@@ -209,6 +209,19 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
         }
 
         @Nullable
+        Term unifySubst(Term x, Term y, @Nullable Term transformed, int ttl) {
+            this.transformed = transformed;
+            this.result = null;
+
+            setTTL(ttl);
+            assert (ttl > 0);
+
+            unify(x, y);
+
+            return result;
+        }
+
+        @Nullable
         public Term unifySubst(Term x, Term y, Term transformed, int ttl, int var, boolean strict) {
             reset(var, strict);
             return unifySubst(x, y, transformed, ttl);

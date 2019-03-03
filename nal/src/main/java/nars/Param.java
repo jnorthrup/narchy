@@ -58,7 +58,7 @@ public abstract class Param {
 
 
 
-    public static final boolean SHUFFLE_TERMUTES = false; //this may be dangerous
+    public static final boolean SHUFFLE_TERMUTES = true;
 
 
     public static final boolean DT_DITHER_LOGARITHMICALLY = false;
@@ -268,8 +268,8 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public static final int TermutatorSearchTTL = 8;
-    public static final int TermutatorFanOut = 3;
+    public static final int TermutatorSearchTTL = 4;
+    public static final int TermutatorFanOut = 2;
     public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
@@ -288,10 +288,10 @@ public abstract class Param {
 
 
     /**
-     * cost of attempting a unification
+     * cost of attempting a termify/taskify/.. branch
      */
     @Range(min = 0, max = 64)
-    public static final int TTL_UNIFY = 1;
+    public static final int TTL_termify = 1;
 
     @Range(min = 0, max = 64)
     public static final int TTL_BRANCH = 1;
@@ -301,6 +301,7 @@ public abstract class Param {
      */
     @Range(min = 0, max = 64)
     public static final int TTL_MUTATE = 1;
+    public static final int TTL_MUTATE_COMPONENT = 0;
 
     /**
      * cost of a successful task derivation
@@ -312,7 +313,7 @@ public abstract class Param {
      * cost of a repeat (of another within the premise's batch) task derivation
      */
     @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_REPEAT = 2;
+    public static final int TTL_DERIVE_TASK_REPEAT = 4;
 
 
     /**
@@ -335,7 +336,7 @@ public abstract class Param {
      */
     @Deprecated
     public static final int TTL_MIN =
-            (Param.TTL_UNIFY * 2) +
+            (Param.TTL_termify * 2) +
                     (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
 

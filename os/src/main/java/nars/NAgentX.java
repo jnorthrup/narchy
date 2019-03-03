@@ -376,6 +376,8 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.setAt(0.03f);
         n.termVolumeMax.set(28);
 
+        n.input.capacity.set(256);
+
         ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
@@ -394,7 +396,7 @@ abstract public class NAgentX extends NAgent {
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.02f);
+        n.emotion.want(MetaGoal.Desire, 0.2f);
 
         n.emotion.want(MetaGoal.Action, +1f);
 

@@ -35,16 +35,11 @@ public class Taskify extends ProxyTerm {
         static final IntroVars introVars = new IntroVars();
 
         public VarTaskify(Termify termify, PremiseRuleProto.RuleCause channel) {
-            super(termify, channel);
+            super($.funcFast(TASKIFY, $.func(IntroVars.VarIntro, termify), $.the(channel.id)), termify, channel);
         }
 
         public boolean test(Term x, Derivation d) {
-            if (super.test(x, d)) {
-                if (introVars.test(d)) {
-                    return taskify(d.concTerm, d);
-                }
-            }
-            return false;
+            return super.test(x,d) && introVars.test(d) && taskify(d.concTerm, d);
         }
 
         //TODO
@@ -185,10 +180,16 @@ public class Taskify extends ProxyTerm {
      */
     public final PremiseRuleProto.RuleCause channel;
 
-    private static final Atomic TASKIFY = Atomic.the("taskify");
+    private static final Atomic TASKIFY = Atomic.the("Taskify");
+
+
 
     public Taskify(Termify termify, PremiseRuleProto.RuleCause channel) {
-        super($.funcFast(TASKIFY, termify, $.the(channel.id)));
+        this($.funcFast(TASKIFY, termify, $.the(channel.id)), termify, channel);
+    }
+
+    protected Taskify(Term id, Termify termify, PremiseRuleProto.RuleCause channel) {
+        super(id);
         this.termify = termify;
         this.channel = channel;
     }

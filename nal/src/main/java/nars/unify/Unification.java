@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static nars.term.atom.Bool.Null;
+
 /**
  * immutable and memoizable unification result (map of variables to terms) useful for substitution
  */
@@ -53,7 +55,7 @@ abstract public class Unification {
 
         @Override
         protected boolean equals(DeterministicUnification obj) {
-            return this==obj;
+            return this == obj;
         }
 
         @Override
@@ -69,7 +71,9 @@ abstract public class Unification {
 
     abstract public int forkCount();
 
-    /** an individual solution */
+    /**
+     * an individual solution
+     */
     abstract public static class DeterministicUnification extends Unification {
 
         public DeterministicUnification() {
@@ -80,7 +84,7 @@ abstract public class Unification {
         public final boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj instanceof DeterministicUnification)
-                return equals((DeterministicUnification)obj);
+                return equals((DeterministicUnification) obj);
             return false;
         }
 
@@ -107,7 +111,9 @@ abstract public class Unification {
         @Nullable
         abstract public Term xy(Term t);
 
-        /** sets the mappings in a target unify */
+        /**
+         * sets the mappings in a target unify
+         */
         abstract void apply(Unify y);
     }
 
@@ -132,19 +138,20 @@ abstract public class Unification {
 
         @Override
         public Term xy(Term t) {
-            if (t.equals(tx)) return ty; else return null;
+            if (tx.equals(t)) return ty;
+            else return null;
         }
 
         @Override
         void apply(Unify u) {
-            boolean applied = u.putXY((Variable/*HACK*/)tx, ty);
-            assert(applied);
+            boolean applied = u.putXY((Variable/*HACK*/) tx, ty);
+            assert (applied);
         }
     }
 
     public static class MapUnification extends DeterministicUnification {
 
-        final Map<Term,Term> xy;
+        final Map<Term, Term> xy;
 
         //TODO
         int matchStructure = Integer.MAX_VALUE;
@@ -158,7 +165,7 @@ abstract public class Unification {
         protected boolean equals(DeterministicUnification obj) {
             if (obj instanceof MapUnification) {
                 MapUnification u = (MapUnification) obj;
-                if (u.matchStructure!=matchStructure)
+                if (u.matchStructure != matchStructure)
                     return false;
                 return xy.equals(u.xy);
             }
@@ -167,9 +174,9 @@ abstract public class Unification {
 
         @Override
         void apply(Unify u) {
-            xy.forEach((tx,ty)->{
-                boolean applied = u.putXY((Variable/*HACK*/)tx, ty);
-                assert(applied);
+            xy.forEach((tx, ty) -> {
+                boolean applied = u.putXY((Variable/*HACK*/) tx, ty);
+                assert (applied);
             });
         }
 
@@ -185,14 +192,11 @@ abstract public class Unification {
 //                matchStructure |= (x.structure() & ~Op.Variable);
         }
 
-        @Override public final Term xy(Term x) {
+        @Override
+        public final Term xy(Term x) {
             return xy.get(x);
         }
 
-        @Override
-        public Term transform(Term x) {
-            return super.transform(x);
-        }
 
         @Override
         public String toString() {
@@ -201,48 +205,70 @@ abstract public class Unification {
 
         public MapUnification putIfAbsent(FasterList<Term> xyPairs) {
             for (int i = 0, n = xyPairs.size(); i < n; ) {
-                putIfAbsent(xyPairs.get(i++),xyPairs.get(i++));
+                putIfAbsent(xyPairs.get(i++), xyPairs.get(i++));
             }
             return this;
         }
     }
 
 
-    /** not thread-safe */
+    /**
+     * not thread-safe
+     */
     public static class PermutingUnification extends Unification {
 
         private final DeterministicUnification start;
         public final ArrayHashSet<DeterministicUnification> fork = new ArrayHashSet();
 
         public final Termutator[] termutes;
-        private final Unify u;
+        private final Unify discovery;
+        private final int restart;
+        private int discoveriesRemain;
+
 
         public PermutingUnification(Unify x, DeterministicUnification start, Termutator[] termutes) {
             super();
             this.start = start;
             this.termutes = termutes;
-            this.u = x.emptyClone((yy)->{
-                Unification z = yy.unification(false);
-                if (z instanceof DeterministicUnification) {
-                    if (fork.add((DeterministicUnification) z)) {
-                        //TODO calculate max possible permutations from Termutes, and set done
-                    }
-                } else if (z instanceof PermutingUnification) {
-                    if (Param.DEBUG)
-                        throw new TODO("recursive or-other 2nd-layer termute");
+            this.discovery = new Unify.LazyUnify(x) {
+                @Override
+                protected boolean live() {
+                    return super.live() && discoveriesRemain > 0;
                 }
-                return true;
-            });
+
+                @Override
+                protected void tryMatch() {
+
+                    Unification z = unification(false);
+                    if (z instanceof DeterministicUnification) {
+                        if (fork.add((DeterministicUnification) z)) {
+                            //TODO calculate max possible permutations from Termutes, and set done
+                            --discoveriesRemain;
+                        }
+                    } else if (z instanceof PermutingUnification) {
+                        if (Param.DEBUG)
+                            throw new TODO("recursive or-other 2nd-layer termute");
+                    }
+                }
+
+            };
+            start.apply(discovery);
+            restart = discovery.size();
         }
 
 
-        /** returns how many TTL used */
-        public int discover(int ttl) {
-            u.clear();
-            u.setTTL(ttl);
-            start.apply(u);
-            u.tryMatches(termutes);
-            return Util.clamp(ttl - u.ttl, 0, ttl);
+        /**
+         * returns how many TTL used
+         */
+        public int discover(int discoveriesMax, int ttl) {
+            discovery.revert(restart);
+
+            this.discoveriesRemain = discoveriesMax;
+            discovery.setTTL(ttl);
+
+            discovery.tryMatches(termutes);
+
+            return Util.clamp(ttl - discovery.ttl, 0, ttl);
         }
 
         @Override
@@ -258,7 +284,13 @@ abstract public class Unification {
                 case 1:
                     return fork.first().apply(x);
                 default:
-                    return Iterables.transform(shuffle(fork, u.random), a -> a.transform(x)); //HACK could be better
+                    //HACK could be better
+                    return Iterables.filter(
+                            Iterables.transform(shuffle(fork, discovery.random), a -> a.transform(x)),
+                            z -> z != null
+                                    &&
+                                    z != Null
+                    );
             }
         }
 

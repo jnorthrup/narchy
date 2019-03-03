@@ -14,6 +14,7 @@ import nars.link.TaskLink;
 import nars.term.Term;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
@@ -21,7 +22,8 @@ import java.util.function.BooleanSupplier;
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-    public final IntRange tasklinksPerIteration = new IntRange(3, 1, 32);
+    public final IntRange tasklinksPerIteration = new IntRange(1, 1, 32);
+    public final IntRange termlinksPerTaskLink = new IntRange(2, 1, 4);
 
 
     public BatchDeriver(PremiseDeriverRuleSet rules) {
@@ -56,6 +58,11 @@ public class BatchDeriver extends Deriver {
      */
     private Collection<Premise> hypothesize(Derivation d) {
 
+
+        int tlAttempts = termlinksPerTaskLink.intValue();
+        if (tlAttempts == 0)
+            return List.of();
+
         Collection<Premise> premises = d.premiseBuffer;
         premises.clear();
 
@@ -64,11 +71,12 @@ public class BatchDeriver extends Deriver {
 //        tasklinks.print(); System.out.println();
 
         tasklinks.sample(d.random, tasklinksPerIteration.intValue(), tasklink->{
-            Task task = tasklink.apply(nar);
-            if (task != null) {
-                Term term = tasklink.term(task, d);
-                if (term != null) {
-                    premises.add(new Premise(task, term));
+            for (int i = 0; i < tlAttempts; i++) {
+                Task task = tasklink.apply(nar);
+                if (task != null) {
+                    Term term = tasklink.term(task, d);
+                    if (term != null)
+                        premises.add(new Premise(task, term));
                 }
             }
         });
