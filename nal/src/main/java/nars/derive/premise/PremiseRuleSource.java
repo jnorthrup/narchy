@@ -60,10 +60,7 @@ public class PremiseRuleSource extends ProxyTerm {
     private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
     public final String source;
     public final Truthify truthify;
-    /**
-     * return this to being a inline evaluable functor
-     */
-    static final IntroVars introVars = new IntroVars();
+
     /**
      * conditions which can be tested before unification
      */

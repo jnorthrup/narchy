@@ -26,8 +26,6 @@ import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.control.PREDICATE;
-import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -43,6 +41,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.Param.TTL_UNIFY;
@@ -173,7 +172,7 @@ public class Derivation extends PreDerivation {
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */
-    public PREDICATE<Derivation> forEachMatch;
+    public Predicate<Derivation> forEachMatch;
 
     /**
      * current NAR time, set at beginning of derivation
@@ -228,7 +227,7 @@ public class Derivation extends PreDerivation {
     public transient long[] concOcc;
     public transient Truth concTruth;
     public transient byte concPunc;
-    public transient Term concTerm;
+    @Deprecated public transient Term concTerm;
     public transient Task _task, _belief;
 
     public transient int dur;
@@ -248,7 +247,7 @@ public class Derivation extends PreDerivation {
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit);
     }
 
-    private TermTransform transform;
+    public DerivationTransform transform;
 
 
     private void init(NAR nar) {
@@ -644,24 +643,15 @@ public class Derivation extends PreDerivation {
         return (concSingle ? priSingle : priDouble);
     }
 
-    public Term subst(Term pattern) {
-        concTerm = null;
-        concOcc = null;
-        retransform.clear();
-
-//        Iterator<Term> ii = unification(false).apply(pattern, transform).iterator();
-//        return ii.hasNext() ? ii.next() : Null;
-
-        return AbstractTermTransform.applyBest(pattern, transform);
-    }
 
     @Override
-    public TermTransform transform() {
+    public final TermTransform transform() {
         return this.transform;
     }
 
-    private final class DerivationTransform extends UnifyTransform {
+    public final class DerivationTransform extends UnifyTransform {
 
+        public transient Function<Variable,Term> xy = null;
 
         private final Function<Atomic, Term> derivationFunctors = DerivationFunctors.get(Derivation.this);
 
@@ -677,7 +667,7 @@ public class Derivation extends PreDerivation {
         public final Term applyAtomic(Atomic atomic) {
 
             if (atomic instanceof Variable) {
-                return super.applyAtomic(atomic);
+                return xy!=null ? xy.apply((Variable)atomic) : super.applyAtomic(atomic);
             } else if (atomic instanceof Atom) {
                 Term f = derivationFunctors.apply(atomic);
                 if (f != null)

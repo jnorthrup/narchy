@@ -231,14 +231,14 @@ public abstract class Unify extends Versioning<Term> {
             forEach(eachXY);
         }
 
-        Unification.PossibleUnification base;
+        Unification.DeterministicUnification base;
         int n = xyPairs.size()/2;
         if (n == 0)
             base = Self;
         else if (n == 1)
             base = new Unification.OneTermUnification(xyPairs.get(0), xyPairs.get(1));
         else
-            base = new Unification.MapUnification(this).putIfAbsent(xyPairs);
+            base = new Unification.MapUnification().putIfAbsent(xyPairs);
 
         if (termutes==null) {
             return base;
@@ -250,7 +250,7 @@ public abstract class Unify extends Versioning<Term> {
     public Unification unification(Term x, Term y, int discoveryTTL) {
         Unification u = unification(x, y);
         if (u instanceof Unification.PermutingUnification) {
-            ((Unification.PermutingUnification)u).discover(discoveryTTL);
+            use( ((Unification.PermutingUnification)u).discover(discoveryTTL) );
         }
         return u;
     }

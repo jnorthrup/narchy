@@ -7,10 +7,10 @@ import nars.derive.Derivation;
 import nars.derive.premise.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
+import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.control.AbstractPred;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.slf4j.Logger;
@@ -20,54 +20,48 @@ import static nars.Op.*;
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
 import static nars.time.Tense.ETERNAL;
 
-public class Taskify extends AbstractPred<Derivation> {
+public class Taskify extends ProxyTerm {
 
+    public final Termify termify;
 
-    private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
-    /**
-     * destination of any derived tasks; also may be used to communicate backpressure
-     * from the recipient.
-     */
-    public final PremiseRuleProto.RuleCause channel;
-
-    private static final Atomic TASKIFY = Atomic.the("taskify");
-
-    public Taskify(PremiseRuleProto.RuleCause channel) {
-        super($.funcFast(TASKIFY, $.the(channel.id)));
-        this.channel = channel;
+    public boolean test(Term x, Derivation d) {
+        return termify.test(x, d) && taskify(d.concTerm, d);
     }
 
-    static boolean valid(Term x, byte punc) {
-        if (x == null || x instanceof Bool)
-            return false;
-        x = x.unneg();
-        if (!(x.op().taskable &&
-               !x.hasAny(Op.VAR_PATTERN) &&
-               ((punc != BELIEF && punc != GOAL) || (!x.hasVarQuery()))))
-            return false;
+    public static class VarTaskify extends Taskify {
+        /**
+         * return this to being a inline evaluable functor
+         */
+        static final IntroVars introVars = new IntroVars();
 
-        return true;
-    }
+        public VarTaskify(Termify termify, PremiseRuleProto.RuleCause channel) {
+            super(termify, channel);
+        }
 
-    protected static boolean spam(Derivation d, int cost) {
-        d.use(cost);
-        d.concTerm = null; //erase immediately
-        return true;
+        public boolean test(Term x, Derivation d) {
+            if (super.test(x, d)) {
+                if (introVars.test(d)) {
+                    return taskify(d.concTerm, d);
+                }
+            }
+            return false;
+        }
+
+        //TODO
+        //                varIntro ?
+        //                        AND.the(taskify, introVars, taskify)
+        //                        :
+        //                        taskify
     }
 
     /**
      * note: the return value here shouldnt matter so just return true anyway
      */
-    @Override
-    public boolean test(Derivation d) {
-
+    protected boolean taskify(Term x0, Derivation d) {
 
         final byte punc = d.concPunc;
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
-
-        Term x0 = d.concTerm;
-
 
         Term x1 = d.anon.get(x0);
         if (x1 == null)
@@ -138,9 +132,9 @@ public class Taskify extends AbstractPred<Derivation> {
 
 
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
-            Param.DEBUG ?
-                new DebugDerivedTask(C, punc, tr, S, E, d) :
-                new DerivedTask(C, punc, tr, S, E, d)
+                Param.DEBUG ?
+                        new DebugDerivedTask(C, punc, tr, S, E, d) :
+                        new DerivedTask(C, punc, tr, S, E, d)
         );
 
         if (t == null) {
@@ -165,23 +159,58 @@ public class Taskify extends AbstractPred<Derivation> {
         t.pri(priority);
 
 
+        int cost;
         if (d.add(t) != t) {
 
-            d.use(Param.TTL_DERIVE_TASK_REPEAT);
             d.nar.emotion.deriveFailDerivationDuplicate.increment();
+            cost = Param.TTL_DERIVE_TASK_REPEAT;
 
         } else {
 
             if (Param.DEBUG)
                 t.log(channel.ruleString);
 
-            d.use(Param.TTL_DERIVE_TASK_SUCCESS);
             d.nar.emotion.deriveTask.increment();
+            cost = Param.TTL_DERIVE_TASK_SUCCESS;
 
         }
+        return d.use(cost);
+
+    }
+
+    private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
+    /**
+     * destination of any derived tasks; also may be used to communicate backpressure
+     * from the recipient.
+     */
+    public final PremiseRuleProto.RuleCause channel;
+
+    private static final Atomic TASKIFY = Atomic.the("taskify");
+
+    public Taskify(Termify termify, PremiseRuleProto.RuleCause channel) {
+        super($.funcFast(TASKIFY, termify, $.the(channel.id)));
+        this.termify = termify;
+        this.channel = channel;
+    }
+
+    static boolean valid(Term x, byte punc) {
+        if (x == null || x instanceof Bool)
+            return false;
+        x = x.unneg();
+        if (!(x.op().taskable &&
+               !x.hasAny(Op.VAR_PATTERN) &&
+               ((punc != BELIEF && punc != GOAL) || (!x.hasVarQuery()))))
+            return false;
 
         return true;
     }
+
+    protected static boolean spam(Derivation d, int cost) {
+        d.use(cost);
+        d.concTerm = null; //erase immediately
+        return true;
+    }
+
 
     protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Task parent, NAR n) {
         if (parent.isDeleted())
@@ -211,6 +240,8 @@ public class Taskify extends AbstractPred<Derivation> {
 
         return false;
     }
+
+
 
     //    @Deprecated
 //    protected boolean same(Task derived, Task parent, float truthResolution) {

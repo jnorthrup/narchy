@@ -37,53 +37,20 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
 
         RuleCause cause = nar.newCause(s -> new RuleCause(this, s));
-        Taskify taskify = new Taskify(cause);
+        Taskify taskify = !raw.varIntro ?
+                new Taskify(termify, cause) :
+                new Taskify.VarTaskify(termify, cause);
 
         final List<PREDICATE<Derivation>> post = new FasterList<>(4);
 
-
-
-        PREDICATE<Derivation> conc = AND.the(
-                this.termify,
-                varIntro ?
-                        AND.the(taskify, introVars, taskify)
-                        :
-                        taskify
-        );
-
-//        if (taskPattern.equals(beliefPattern) || taskPattern.containsRecursively(beliefPattern)) {
-//            post.addAt(new UnifyTerm.NextUnify(0, taskPattern));
-//
-//            byte[] beliefInTask = Terms.pathConstant(taskPattern, beliefPattern);
-//            if (beliefInTask!=null) {
-//                //this should be a PRE filter
-//                //probably wont work
-//                post.addAt(new AbstractPred<Derivation>() {
-//                    @Override
-//                    public boolean test(Derivation derivation) {
-//                        return derivation.taskTerm.sub(beliefInTask).equals(derivation.beliefTerm);
-//                    }
-//                });
-//            } else {
-//                post.addAt(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc)); //<--- if possible, replace with subterm equality test
-//            }
-//
-//        } else if (beliefPattern.containsRecursively(taskPattern)) {
-//            post.addAt(new UnifyTerm.NextUnify(0, taskPattern));   //<--- if possible, replace with subterm equality test
-//            post.addAt(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc));
-//        } else {
-
-        //smaller one first
+        //smaller, simpler one first
         if ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.vars() <= beliefPattern.vars()) {
-            post.add(new UnifyTerm.NextUnifyTransform(true, taskPattern,
-                    new UnifyTerm.NextUnifyTransform(false, beliefPattern, conc)));
+            post.add(new UnifyTerm.NextUnify(true, taskPattern));
+            post.add(new UnifyTerm.NextUnifyTransform(false, beliefPattern, taskify));
         } else {
-            post.add(new UnifyTerm.NextUnifyTransform(false, beliefPattern,
-                    new UnifyTerm.NextUnifyTransform(true, taskPattern, conc)));
+            post.add(new UnifyTerm.NextUnify(false, beliefPattern));
+            post.add(new UnifyTerm.NextUnifyTransform(true, taskPattern, taskify));
         }
-
-//        }
-
 
         PREDICATE<Derivation>[] postpost = new PREDICATE[
                 2 + constraintSet.size() + post.size()

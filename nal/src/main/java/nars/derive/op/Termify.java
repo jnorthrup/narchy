@@ -4,10 +4,8 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.derive.Derivation;
-import nars.term.Compound;
+import nars.term.ProxyTerm;
 import nars.term.Term;
-import nars.term.control.AbstractPred;
-import nars.term.util.builder.HeapTermBuilder;
 
 import static nars.Op.NEG;
 import static nars.time.Tense.assertDithered;
@@ -21,9 +19,9 @@ import static nars.time.Tense.assertDithered;
  * a unique instance, assigned the appropriate cause id by the NAR
  * at initialization.
  */
-public final class Termify extends AbstractPred<Derivation> {
+public final class Termify extends ProxyTerm {
 
-    private final Term pattern;
+    public final Term pattern;
 
     
     private final Occurrify.OccurrenceSolver time;
@@ -39,27 +37,23 @@ public final class Termify extends AbstractPred<Derivation> {
 
     }
 
-    @Override
-    public final boolean test(Derivation d) {
-
+    public final boolean test(Term x, Derivation d) {
 
         NAR nar = d.nar;
 
+
         nar.emotion.deriveTermify.increment();
-
-
-        Term x = d.subst(pattern);
 
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
             //Term c1e = c1;
-            d.nar.emotion.deriveFailEval.increment(/*() ->
+            nar.emotion.deriveFailEval.increment(/*() ->
                     rule + " |\n\t" + d.xy + "\n\t -> " + c1e
             */);
             return false;
         }
 
         if (x.volume() - (x.op()==NEG ? 1 : 0) > d.termVolMax) {
-            d.nar.emotion.deriveFailVolLimit.increment();
+            nar.emotion.deriveFailVolLimit.increment();
             return false;
         }
 

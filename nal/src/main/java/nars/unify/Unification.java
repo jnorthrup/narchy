@@ -2,15 +2,17 @@ package nars.unify;
 
 import com.google.common.collect.Iterables;
 import jcog.TODO;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
+import nars.Param;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.util.transform.AbstractTermTransform;
-import nars.term.util.transform.TermTransform;
 import nars.unify.mutate.Termutator;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -37,15 +39,20 @@ abstract public class Unification {
         public Iterable<Term> apply(Term x) {
             return List.of();
         }
+
+        @Override
+        public int forkCount() {
+            return 0;
+        }
     };
 
     /**
      * does this happen in any cases besides .equals, ex: conj seq
      */
-    static final PossibleUnification Self = new PossibleUnification() {
+    public static final DeterministicUnification Self = new DeterministicUnification() {
 
         @Override
-        protected boolean equals(PossibleUnification obj) {
+        protected boolean equals(DeterministicUnification obj) {
             return this==obj;
         }
 
@@ -55,40 +62,56 @@ abstract public class Unification {
         }
 
         @Override
-        public Term subst(Term x) {
+        public Term xy(Term x) {
             return x;
         }
     };
 
-    /** an individual solution */
-    abstract static class PossibleUnification extends Unification {
+    abstract public int forkCount();
 
-        public PossibleUnification() {
+    /** an individual solution */
+    abstract public static class DeterministicUnification extends Unification {
+
+        public DeterministicUnification() {
             super();
         }
 
         @Override
         public final boolean equals(Object obj) {
             if (obj == this) return true;
-            if (obj instanceof PossibleUnification)
-                return equals((PossibleUnification)obj);
+            if (obj instanceof DeterministicUnification)
+                return equals((DeterministicUnification)obj);
             return false;
         }
 
-        abstract protected boolean equals(PossibleUnification obj);
+        abstract protected boolean equals(DeterministicUnification obj);
+
+        @Override
+        public final int forkCount() {
+            return 1;
+        }
 
         @Override
         public final Iterable<Term> apply(Term x) {
-            return List.of(subst(x));
+            return List.of(transform(x));
         }
 
-        abstract public Term subst(Term t);
+        public Term transform(Term x) {
+            return AbstractTermTransform.applyBest(x, transform());
+        }
+
+        protected Unify.UnifyTransform.LambdaUnifyTransform transform() {
+            return new Unify.UnifyTransform.LambdaUnifyTransform(this::xy);
+        }
+
+        @Nullable
+        abstract public Term xy(Term t);
 
         /** sets the mappings in a target unify */
         abstract void apply(Unify y);
     }
 
-    public static class OneTermUnification extends PossibleUnification {
+    public static class OneTermUnification extends DeterministicUnification {
 
         public final Term tx, ty;
 
@@ -99,7 +122,7 @@ abstract public class Unification {
         }
 
         @Override
-        protected boolean equals(PossibleUnification obj) {
+        protected boolean equals(DeterministicUnification obj) {
             if (obj instanceof OneTermUnification) {
                 OneTermUnification u = (OneTermUnification) obj;
                 return tx.equals(u.tx) && ty.equals(u.ty);
@@ -108,8 +131,8 @@ abstract public class Unification {
         }
 
         @Override
-        public Term subst(Term t) {
-            return t.replace(tx, ty);
+        public Term xy(Term t) {
+            if (t.equals(tx)) return ty; else return null;
         }
 
         @Override
@@ -119,22 +142,20 @@ abstract public class Unification {
         }
     }
 
-    public static class MapUnification extends PossibleUnification {
+    public static class MapUnification extends DeterministicUnification {
 
         final Map<Term,Term> xy;
-        private final TermTransform transform;
 
         //TODO
         int matchStructure = Integer.MAX_VALUE;
 
-        public MapUnification(Unify parent) {
+        public MapUnification() {
             super();
             this.xy = new UnifiedMap(4);
-            this.transform = parent.transform();
         }
 
         @Override
-        protected boolean equals(PossibleUnification obj) {
+        protected boolean equals(DeterministicUnification obj) {
             if (obj instanceof MapUnification) {
                 MapUnification u = (MapUnification) obj;
                 if (u.matchStructure!=matchStructure)
@@ -164,11 +185,14 @@ abstract public class Unification {
 //                matchStructure |= (x.structure() & ~Op.Variable);
         }
 
-        @Override public Term subst(Term x) {
-
-            return AbstractTermTransform.applyBest(x, transform);
+        @Override public final Term xy(Term x) {
+            return xy.get(x);
         }
 
+        @Override
+        public Term transform(Term x) {
+            return super.transform(x);
+        }
 
         @Override
         public String toString() {
@@ -187,33 +211,43 @@ abstract public class Unification {
     /** not thread-safe */
     public static class PermutingUnification extends Unification {
 
-        private final PossibleUnification start;
-        public final ArrayHashSet<PossibleUnification> fork = new ArrayHashSet();
+        private final DeterministicUnification start;
+        public final ArrayHashSet<DeterministicUnification> fork = new ArrayHashSet();
 
         public final Termutator[] termutes;
         private final Unify u;
 
-        public PermutingUnification(Unify x, PossibleUnification start, Termutator[] termutes) {
+        public PermutingUnification(Unify x, DeterministicUnification start, Termutator[] termutes) {
             super();
             this.start = start;
             this.termutes = termutes;
             this.u = x.emptyClone((yy)->{
                 Unification z = yy.unification(false);
-                if (z instanceof PossibleUnification) {
-                    if (fork.add((PossibleUnification) z)) {
+                if (z instanceof DeterministicUnification) {
+                    if (fork.add((DeterministicUnification) z)) {
                         //TODO calculate max possible permutations from Termutes, and set done
                     }
-                } else
-                    throw new TODO("recursive or-other 2nd-layer termute");
+                } else if (z instanceof PermutingUnification) {
+                    if (Param.DEBUG)
+                        throw new TODO("recursive or-other 2nd-layer termute");
+                }
                 return true;
             });
         }
 
-        public void discover(int ttl) {
+
+        /** returns how many TTL used */
+        public int discover(int ttl) {
             u.clear();
             u.setTTL(ttl);
             start.apply(u);
             u.tryMatches(termutes);
+            return Util.clamp(ttl - u.ttl, 0, ttl);
+        }
+
+        @Override
+        public int forkCount() {
+            return fork.size();
         }
 
         @Override
@@ -224,11 +258,11 @@ abstract public class Unification {
                 case 1:
                     return fork.first().apply(x);
                 default:
-                    return Iterables.transform(shuffle(fork, u.random), a -> a.subst(x)); //HACK could be better
+                    return Iterables.transform(shuffle(fork, u.random), a -> a.transform(x)); //HACK could be better
             }
         }
 
-        static private MutableList<PossibleUnification> shuffle(ArrayHashSet<PossibleUnification> fork, Random rng) {
+        static private MutableList<DeterministicUnification> shuffle(ArrayHashSet<DeterministicUnification> fork, Random rng) {
             return fork.list.clone().shuffleThis(rng);
         }
     }

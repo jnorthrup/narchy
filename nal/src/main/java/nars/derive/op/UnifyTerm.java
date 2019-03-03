@@ -1,12 +1,18 @@
 package nars.derive.op;
 
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
+import nars.term.util.transform.AbstractTermTransform;
+import nars.unify.Unification;
+
+import java.util.function.Function;
 
 import static nars.$.$$;
 
@@ -27,41 +33,40 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
     private static Atomic label(int subterm) {
         return (subterm == 0 ? Derivation.TaskTerm : Derivation.BeliefTerm);
     }
+
     public static Atomic label(boolean taskOrBelief) {
         return (taskOrBelief ? Derivation.TaskTerm : Derivation.BeliefTerm);
     }
 
     protected static final Atomic UNIFY = $.the("unify");
 
-//    /**
-//     * this will be called prior to UnifySubtermThenConclude.
-//     * so as part of an And condition, it is legitimate for this
-//     * to return false and interrupt the procedure when unification fails
-//     * in the first stage.
-//     */
-//    public static final class NextUnify extends UnifyTerm {
-//
-//        /**
-//         * which premise component, 0 (task) or 1 (belief)
-//         */
-//        private final int subterm;
-//
-//
-//        public NextUnify(int subterm, Term pattern) {
-//            super($.funcFast(UNIFY, UnifyTerm.label(subterm), pattern), pattern);
-//            this.subterm = subterm;
-//        }
-//
-//        @Override
-//        public final boolean test(Derivation d) {
-//            boolean unified = d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, false);
-////            if (!unified) {
-////                System.err.println(pattern + " "+ d);
-////            }
-//            return unified && d.use(Param.TTL_UNIFY);
-//        }
-//
-//    }
+    /**
+     * this will be called prior to UnifySubtermThenConclude.
+     * so as part of an And condition, it is legitimate for this
+     * to return false and interrupt the procedure when unification fails
+     * in the first stage.
+     */
+    public static final class NextUnify extends UnifyTerm {
+
+        /**
+         * which premise component, 0 (task) or 1 (belief)
+         */
+        private final boolean taskOrBelief;
+
+
+        public NextUnify(boolean taskOrBelief, Term pattern) {
+            super($.funcFast(UNIFY, label(taskOrBelief), pattern), pattern);
+            this.taskOrBelief = taskOrBelief;
+        }
+
+        @Override
+        public final boolean test(Derivation d) {
+
+
+            return d.unify(pattern, taskOrBelief ? d.taskTerm : d.beliefTerm, false);
+        }
+
+    }
 
     /**
      * returns false if the deriver is noticed to have depleted TTL,
@@ -73,27 +78,59 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
          * which premise component to match
          */
         public final boolean taskOrBelief;
-        public final PREDICATE<Derivation> eachMatch;
+        public final Taskify each;
 
 
-        public NextUnifyTransform(boolean taskOrBelief, /*@NotNull*/ Term pattern, /*@NotNull*/ PREDICATE<Derivation> eachMatch) {
-            super($.funcFast(UNIFY, label(taskOrBelief), pattern, eachMatch), pattern);
+        public NextUnifyTransform(boolean taskOrBelief, /*@NotNull*/ Term pattern, Taskify each) {
+            super($.funcFast(UNIFY, label(taskOrBelief), pattern, each), pattern);
             this.taskOrBelief = taskOrBelief;
-            this.eachMatch = eachMatch;
+            this.each = each;
         }
 
         @Override
         public final boolean test(Derivation d) {
 
-            PREDICATE<Derivation> lastMatch = d.forEachMatch; //HACK stack push
-            d.forEachMatch = eachMatch;
+//            d.forEachMatch = each;
+            d.forEachMatch = (x) -> true; //HACK
 
-            boolean unified = d.unify(pattern, taskOrBelief ? d.taskTerm : d.beliefTerm, true);
-//            if (!unified) {
-//                System.err.println(d);
-//            }
+            Unification u = d.unification(pattern, taskOrBelief ? d.taskTerm : d.beliefTerm, Param.TermutatorSearchTTL);
 
-            d.forEachMatch = lastMatch;
+            if (u instanceof Unification.PermutingUnification) {
+
+                FasterList<Unification.DeterministicUnification> ii =
+                        ((Unification.PermutingUnification) u).fork.list.clone();
+                ii.shuffleThis(d.random);
+
+                int fanOut = Math.min(ii.size(), Param.TermutatorFanOut);
+                for (int i = 0; i < fanOut; i++) {
+                    if (!permute(d, ii.get(i)::xy))
+                        return false;
+                }
+
+            } else if (u instanceof Unification.DeterministicUnification) {
+                if (!permute(d, ((Unification.DeterministicUnification) u)::xy))
+                    return false;
+            } else if (u == Unification.Self) {
+                if (!permute(d, (z)->null))
+                    return false;
+            }
+
+
+            //boolean unified = d.unify(pattern, taskOrBelief ? d.taskTerm : d.beliefTerm, true);
+
+            return true;
+        }
+
+        private boolean permute(Derivation d, Function<Variable,Term> xy) {
+            d.transform.xy = xy;
+            d.concTerm = null;
+            d.concOcc = null;
+            d.retransform.clear();
+
+            Term y = AbstractTermTransform.applyBest(each.termify.pattern, d.transform);
+            if (y.unneg().op().taskable)
+                if (!each.test(y, d))
+                    return false;
 
             return d.use(Param.TTL_UNIFY);
         }
