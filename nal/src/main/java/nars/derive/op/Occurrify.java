@@ -56,7 +56,7 @@ public class Occurrify extends TimeGraph {
 
     private final Derivation d;
 
-    static boolean occurrify(Term x, Truthify truth, OccurrenceSolver time, Derivation d) {
+    @Nullable static Term occurrify(Term x, Truthify truth, OccurrenceSolver time, Derivation d) {
         if (d.temporal) {
 
             //HACK reset to the input
@@ -114,7 +114,7 @@ public class Occurrify extends TimeGraph {
 
     }
 
-    private static boolean temporalify(Term x, OccurrenceSolver time, Derivation d) {
+    @Nullable private static Term temporalify(Term x, OccurrenceSolver time, Derivation d) {
         //            boolean unwrapNeg;
 //            if (c1.op()==NEG) {
 //                unwrapNeg = true;
@@ -140,7 +140,7 @@ public class Occurrify extends TimeGraph {
             if (timing == null) {
                 d.nar.emotion.deriveFailTemporal.increment();
                 ///*temporary:*/ time.solve(d, c1);
-                return false;
+                return null;
             }
 
             if (neg) {
@@ -220,18 +220,17 @@ public class Occurrify extends TimeGraph {
                 d.nar.emotion.deriveFailTemporal.increment(/*() ->
                     rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
             */);
-                return false;
+                return null;
             }
 
         }
 
 
         d.concOcc = occ;
-        d.concTerm = c2;
-        return true;
+        return c2;
     }
 
-    private static boolean eternify(Term x, Derivation d) {
+    private static @Nullable Term eternify(Term x, Derivation d) {
         byte punc = d.concPunc;
         if ((punc == BELIEF || punc == GOAL) && x.hasXternal()) { // && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
             //HACK this is for deficiencies in the temporal solver that can be fixed
@@ -239,13 +238,12 @@ public class Occurrify extends TimeGraph {
             if (!Taskify.valid(x, d.concPunc)) {
                 d.nar.emotion.deriveFailTemporal.increment();
                 Taskify.spam(d, Param.TTL_DERIVE_TASK_FAIL);
-                return false;
+                return null;
             }
         }
 
-        d.concTerm = x;
         d.concOcc = null;
-        return true;
+        return x;
     }
 
 

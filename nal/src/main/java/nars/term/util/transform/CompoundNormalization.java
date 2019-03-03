@@ -5,7 +5,6 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.Image;
-import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INH;
 import static nars.time.Tense.XTERNAL;

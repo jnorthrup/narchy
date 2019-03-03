@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.op.Taskify;
-import nars.derive.op.UnifyTerm;
+import nars.derive.op.UnifyPremise;
 import nars.term.Term;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
@@ -44,13 +44,8 @@ public class PremiseRuleProto extends PremiseRuleSource {
         final List<PREDICATE<Derivation>> post = new FasterList<>(4);
 
         //smaller, simpler one first
-        if ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.vars() <= beliefPattern.vars()) {
-            post.add(new UnifyTerm.NextUnify(true, taskPattern));
-            post.add(new UnifyTerm.NextUnifyTransform(false, beliefPattern, taskify));
-        } else {
-            post.add(new UnifyTerm.NextUnify(false, beliefPattern));
-            post.add(new UnifyTerm.NextUnifyTransform(true, taskPattern, taskify));
-        }
+        boolean fwd = ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.vars() <= beliefPattern.vars());
+        post.add(new UnifyPremise(taskPattern, beliefPattern, fwd, taskify));
 
         PREDICATE<Derivation>[] postpost = new PREDICATE[
                 2 + constraintSet.size() + post.size()
@@ -59,7 +54,7 @@ public class PremiseRuleProto extends PremiseRuleSource {
         int k = 0;
 
         postpost[k++] = this.truthify;
-        postpost[k++] = UnifyTerm.preUnify;
+        postpost[k++] = UnifyPremise.preUnify;
 
         for (PREDICATE p : constraintSet)
             postpost[k++] = p;

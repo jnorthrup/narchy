@@ -356,10 +356,10 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
 
                     int c = target.concurrency();
-                    if (c <= 2) {
+                    if (c <= 1) {
                         tasks.pop(null, n, target::input);
                     } else {
-                        //concurrency > 2
+                        //concurrency > 1
                         int nEach = (int) Math.ceil(((float) n) / (c - 1));
                         for (int i = 0; i < c && n > 0; i++) {
 

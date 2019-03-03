@@ -6,6 +6,7 @@ import nars.Param;
 import nars.derive.Derivation;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
 import static nars.time.Tense.assertDithered;
@@ -37,7 +38,7 @@ public final class Termify extends ProxyTerm {
 
     }
 
-    public final boolean test(Term x, Derivation d) {
+    public final @Nullable Term test(Term x, Derivation d) {
 
         d.concTerm = null;
         d.concOcc = null;
@@ -51,12 +52,12 @@ public final class Termify extends ProxyTerm {
             nar.emotion.deriveFailEval.increment(/*() ->
                     rule + " |\n\t" + d.xy + "\n\t -> " + c1e
             */);
-            return false;
+            return null;
         }
 
         if (x.volume() - (x.op()==NEG ? 1 : 0) > d.termVolMax) {
             nar.emotion.deriveFailVolLimit.increment();
-            return false;
+            return null;
         }
 
 
@@ -69,12 +70,12 @@ public final class Termify extends ProxyTerm {
 //                d.concTruth = d.concTruth.neg();
 //        }
 
-        boolean o = Occurrify.occurrify(x, truth, time, d);
-
-        if (o) {
+        Term y = Occurrify.occurrify(x, truth, time, d);
+        if (y!=null) {
             if (Param.DEBUG_ENSURE_DITHERED_DT)
-                assertDithered(d.concTerm, d.ditherDT);
+                assertDithered(y, d.ditherDT);
         }
+        d.concTerm = y;
 
 
 //        if (o) {
@@ -84,7 +85,7 @@ public final class Termify extends ProxyTerm {
 //                }
 //            }
 //        }
-        return o;
+        return y;
     }
 
 

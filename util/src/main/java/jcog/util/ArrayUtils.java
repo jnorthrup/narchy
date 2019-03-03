@@ -28,7 +28,6 @@ import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
-import java.util.function.ToDoubleFunction;
 
 import static com.google.common.math.IntMath.factorial;
 

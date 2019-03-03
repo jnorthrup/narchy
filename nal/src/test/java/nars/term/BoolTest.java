@@ -1,7 +1,9 @@
 package nars.term;
 
 import nars.$;
-import nars.*;
+import nars.NAR;
+import nars.NARS;
+import nars.Op;
 import nars.io.IO;
 import nars.op.Equal;
 import nars.truth.Truth;

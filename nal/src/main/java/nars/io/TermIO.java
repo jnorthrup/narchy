@@ -27,7 +27,8 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import static nars.io.IO.*;
+import static nars.io.IO.SPECIAL_BYTE;
+import static nars.io.IO.subType;
 import static nars.term.anon.AnonID.termPos;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;

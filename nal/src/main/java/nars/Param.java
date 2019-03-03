@@ -217,7 +217,7 @@ public abstract class Param {
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
      */
-    public final static float SIGNAL_STRETCH_LIMIT_DURS = 4;
+    public final static float SIGNAL_STRETCH_LIMIT_DURS = 8;
 
     /** maximum time between signal updates to stretch an equivalently-truthed data point across.
      * stretches perception across some amount of lag
@@ -280,7 +280,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 3f;
+    public static final float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)

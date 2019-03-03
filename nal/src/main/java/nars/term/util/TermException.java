@@ -4,7 +4,6 @@ import nars.Op;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.util.SoftException;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 

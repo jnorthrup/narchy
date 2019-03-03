@@ -127,7 +127,7 @@ public class Versioning<X> {
     /**
      * whether the unifier should continue: if TTL is non-zero.
      */
-    protected boolean live() {
+    public boolean live() {
         return ttl > 0;
     }
 

@@ -1,8 +1,8 @@
 package nars.term.anon;
 
 import jcog.Util;
-import nars.io.IO;
 import nars.Op;
+import nars.io.IO;
 import nars.term.Neg;
 import nars.term.Term;
 

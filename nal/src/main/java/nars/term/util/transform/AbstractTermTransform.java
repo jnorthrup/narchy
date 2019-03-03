@@ -25,7 +25,7 @@ public interface AbstractTermTransform extends TermTransform {
 
 
     static Term transform(Term x, TermTransform transform) {
-        if (Param.TERMIFY_TRANSFORM_LAZY && x instanceof Compound) {
+        if (x instanceof Compound && Param.TERMIFY_TRANSFORM_LAZY) {
             return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x,
                     //HeapTermBuilder.the
                     Op.terms

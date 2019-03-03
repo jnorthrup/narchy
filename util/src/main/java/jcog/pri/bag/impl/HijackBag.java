@@ -3,7 +3,6 @@ package jcog.pri.bag.impl;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;

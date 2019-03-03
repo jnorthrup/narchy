@@ -10,8 +10,8 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.Image;
 import nars.term.util.conj.ConjMatch;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -24,7 +24,7 @@ public enum DerivationFunctors {
 
     public static Function<Atomic, Term> get(Derivation d) {
 
-        Map<Atomic, Term> m = new HashMap<>() {
+        Map<Atomic, Term> m = new UnifiedMap<>() {
             @Override
             public Term get(Object key) {
                 if (key == TaskTerm) {
@@ -93,6 +93,8 @@ public enum DerivationFunctors {
 //            pre.addAt(x);
 //        }
 
+        ((UnifiedMap)m).trimToSize();
+        
         return //Maps.immutable.ofMap(m)::get;
                 m::get;
         //x -> pre.contains(x) ? m.get(x) : null;

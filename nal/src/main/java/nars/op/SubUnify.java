@@ -62,7 +62,7 @@ public class SubUnify extends Unify {
     }
 
     @Override
-    protected boolean live() {
+    public boolean live() {
         return live && super.live();
     }
 

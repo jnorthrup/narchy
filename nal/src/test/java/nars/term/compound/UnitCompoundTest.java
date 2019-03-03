@@ -1,9 +1,9 @@
 package nars.term.compound;
 
 import nars.$;
-import nars.io.IO;
 import nars.Narsese;
 import nars.Op;
+import nars.io.IO;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;

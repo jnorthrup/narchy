@@ -1,8 +1,8 @@
 package nars.term.var;
 
 import nars.$;
-import nars.io.IO;
 import nars.Op;
+import nars.io.IO;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.AbstractAtomic;

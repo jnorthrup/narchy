@@ -22,10 +22,10 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
-import static nars.Op.*;
-import static nars.unify.Unification.NotUnified;
+import static nars.Op.NEG;
+import static nars.Op.VAR_PATTERN;
+import static nars.unify.Unification.Null;
 import static nars.unify.Unification.Self;
 
 
@@ -211,15 +211,6 @@ public abstract class Unify extends Versioning<Term> {
         return false;
     }
 
-    /** will have been cleared() */
-    public Unification unification(Term x, Term y) {
-        if (!unify(x, y, false)) {
-            clear();
-            return NotUnified;
-        } else {
-            return unification(true);
-        }
-    }
 
     protected Unification unification(boolean clear) {
         FasterList<Term> xyPairs = new FasterList(size * 2 /* estimate */);
@@ -233,34 +224,50 @@ public abstract class Unify extends Versioning<Term> {
             forEach(eachXY);
         }
 
-        Unification.DeterministicUnification base;
+        DeterministicUnification base;
         int n = xyPairs.size()/2;
         if (n == 0)
             base = Self;
         else if (n == 1)
-            base = new Unification.OneTermUnification(xyPairs.get(0), xyPairs.get(1));
+            base = new OneTermUnification(xyPairs.get(0), xyPairs.get(1));
         else
-            base = new Unification.MapUnification().putIfAbsent(xyPairs);
+            base = new MapUnification().putIfAbsent(xyPairs);
 
         if (termutes==null) {
             return base;
         } else {
-            return new Unification.PermutingUnification(this, base, termutes);
+            return new PermutingUnification(this, base, termutes);
         }
     }
 
-    public final Unification unification(Term x, Term y, int discoveryTTL) {
+    @Deprecated public final Unification unification(Term x, Term y, int discoveryTTL) {
         return unification(x, y, Integer.MAX_VALUE, discoveryTTL);
     }
 
-    public Unification unification(Term x, Term y, int discoveriesMax, int discoveryTTL) {
+    @Deprecated public Unification unification(Term x, Term y, int discoveriesMax, int discoveryTTL) {
         Unification u = unification(x, y);
-        if (u instanceof Unification.PermutingUnification) {
-            use( ((Unification.PermutingUnification)u).discover(discoveriesMax, discoveryTTL) );
+        if (u instanceof PermutingUnification) {
+            use( ((PermutingUnification)u).discover(discoveriesMax, discoveryTTL) );
+        }
+        return u;
+    }
+    public Unification unification(boolean clear, int discoveriesMax, int discoveryTTL) {
+        Unification u = unification(clear);
+        if (u instanceof PermutingUnification) {
+            use( ((PermutingUnification)u).discover(discoveriesMax, discoveryTTL) );
         }
         return u;
     }
 
+    /** will have been cleared() */
+    protected Unification unification(Term x, Term y) {
+        if (!unify(x, y, false)) {
+            clear();
+            return Null;
+        } else {
+            return unification(true);
+        }
+    }
     protected void tryMatches() {
         Termutator[] t = commitTermutes();
         if (t!=null) {

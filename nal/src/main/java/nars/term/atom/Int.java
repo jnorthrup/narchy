@@ -3,10 +3,10 @@ package nars.term.atom;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 import jcog.data.byt.util.IntCoding;
-import nars.io.IO;
 import nars.Op;
 import nars.Param;
 import nars.The;
+import nars.io.IO;
 import nars.term.Term;
 
 import java.util.function.IntConsumer;

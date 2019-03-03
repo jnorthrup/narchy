@@ -12,7 +12,10 @@ import nars.derive.Derivation;
 import nars.derive.filter.CommutativeConstantPreFilter;
 import nars.derive.filter.DoublePremiseRequired;
 import nars.derive.filter.Unifiable;
-import nars.derive.op.*;
+import nars.derive.op.ConjParallel;
+import nars.derive.op.Occurrify;
+import nars.derive.op.Termify;
+import nars.derive.op.Truthify;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.term.Variable;
@@ -78,7 +81,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     public final Term taskPattern;
     public final Term beliefPattern;
-    public final Term concPattern;
+
 
 
     private static final PatternIndex INDEX = new PatternIndex();
@@ -575,7 +578,7 @@ public class PremiseRuleSource extends ProxyTerm {
         this.CONSTRAINTS = Sets.immutable.of(theInterned(constraints));
 
 
-        this.termify = new Termify(this.concPattern = conclusion(postcon[0]), truthify, time);
+        this.termify = new Termify(conclusion(postcon[0]), truthify, time);
 
 
         this.PRE = preconditions();
@@ -602,33 +605,13 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
     private Term conclusion(Term x) {
-
         if (!x.unneg().op().var)
             return conclusionOptimize(ConcTransform.apply(PatternIndex.patternify(x)));
         else
             return x;
-
-//        if (y.hasVars()) {
-//            Set<Term> eventables = new HashSet();
-//            y.recurseTerms(Compound::hasVars, (sub, sper) -> {
-//                sub = sub.unneg();
-//                if (sper != null && sub instanceof Variable && !(sub instanceof Ellipsislike)) {
-//                    Op spo = sper.op();
-//                    if (spo == IMPL || spo == CONJ) {
-//                        eventables.add(sub);
-//                    }
-//                }
-//                return true;
-//            }, null);
-//            if (!eventables.isEmpty()) {
-//                eventables.forEach(e -> match(e, TermMatch.Eventable.the));
-//            }
-//        }
     }
 
     private Term conclusionOptimize(Term y) {
-        //decide when inline "paste" (macro substitution) of the premise task or belief terms is allowed.
-        boolean taskPastable = false, beliefPastable = false;
 
 //            boolean taskEqY = taskPattern.equals(y);
 //            boolean beliefEqualY = beliefPattern.equals(y);
@@ -640,6 +623,8 @@ public class PremiseRuleSource extends ProxyTerm {
 
         boolean atMostOneTemporal = !(taskTemporal && beliefTemporal);
 
+        //decide when inline "paste" (macro substitution) of the premise task or belief terms is allowed.
+        boolean taskPastable = false, beliefPastable = false;
         if (!taskObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
             taskPastable = true;
         if (!beliefObviouslyNotPastable && ((atMostOneTemporal || !y.hasAny(Op.Temporal))))
@@ -745,7 +730,6 @@ public class PremiseRuleSource extends ProxyTerm {
         this.goalTruth = raw.goalTruth;
         this.taskPattern = raw.taskPattern;
         this.beliefPattern = raw.beliefPattern;
-        this.concPattern = raw.concPattern;
         this.constraintSet = raw.constraintSet;
 
     }

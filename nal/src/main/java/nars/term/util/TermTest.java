@@ -18,8 +18,8 @@ package nars.term.util;
 
 import com.google.common.collect.Iterators;
 import nars.$;
-import nars.io.IO;
 import nars.Narsese;
+import nars.io.IO;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;

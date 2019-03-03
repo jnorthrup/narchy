@@ -3,7 +3,6 @@ package nars.derive.premise;
 import nars.Builtin;
 import nars.Op;
 import nars.index.concept.MapConceptIndex;
-import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -17,7 +16,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static nars.Op.*;
+import static nars.Op.ATOM;
+import static nars.Op.NEG;
 import static nars.unify.ellipsis.Ellipsis.firstEllipsis;
 
 /**

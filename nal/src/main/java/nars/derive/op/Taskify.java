@@ -1,6 +1,7 @@
 package nars.derive.op;
 
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.*;
 import nars.derive.Derivation;
@@ -14,6 +15,10 @@ import nars.term.atom.Bool;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.unify.DeterministicUnification;
+import nars.unify.PermutingUnification;
+import nars.unify.Unification;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +26,14 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
+import static nars.Param.TermutatorFanOut;
 import static nars.time.Tense.ETERNAL;
 
 public class Taskify extends ProxyTerm {
 
     public final Termify termify;
 
-    public final boolean test(Function<nars.term.Variable, Term> xy, Derivation d) {
+    public final boolean test(@Nullable Function<nars.term.Variable, Term> xy, Derivation d) {
         assert(d.retransform.isEmpty());
         assert(d.transform.xy == null);
 
@@ -47,7 +53,34 @@ public class Taskify extends ProxyTerm {
 
 
     public boolean test(Term x, Derivation d) {
-        return termify.test(x, d) && taskify(d.concTerm, d);
+        Term y = termify.test(x, d);
+        return y!=null && taskify(y, d);
+    }
+
+    public boolean test(Unification u, Derivation d) {
+
+        if (u instanceof PermutingUnification) {
+
+            FasterList<DeterministicUnification> ii =
+                    ((PermutingUnification) u).fork.list.clone();
+            ii.shuffleThis(d.random);
+
+            int fanOut = Math.min(ii.size(), TermutatorFanOut);
+            for (int i = 0; i < fanOut; i++) {
+                if (!test(ii.get(i)::xy, d))
+                    return false;
+            }
+
+        } else if (u instanceof DeterministicUnification) {
+            if (!test(((DeterministicUnification) u)::xy, d))
+                return false;
+        } else if (u == Unification.Self) {
+            throw new UnsupportedOperationException();
+//                if (!taskify.test((z)->Null), d)
+//                    return false;
+        }
+
+        return true;
     }
 
     public static class VarTaskify extends Taskify {

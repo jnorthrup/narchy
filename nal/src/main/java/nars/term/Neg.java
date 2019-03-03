@@ -1,6 +1,5 @@
 package nars.term;
 
-import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.The;
 import nars.term.compound.UnitCompound;

@@ -1,6 +1,5 @@
 package nars.term.atom;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.Texts;
 import nars.$;
 import nars.Op;
