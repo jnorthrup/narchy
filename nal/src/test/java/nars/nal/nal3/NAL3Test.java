@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 250;
+    static final int cycles = 100;
 
     @Override
     protected NAR nar() {
@@ -29,6 +29,7 @@ public class NAL3Test extends NALTest {
         n.termVolumeMax.set(7);
         return n;
     }
+
 
     @Test
     void compound_composition_two_premises() {

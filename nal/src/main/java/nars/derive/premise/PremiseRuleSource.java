@@ -160,6 +160,9 @@ public class PremiseRuleSource extends ProxyTerm {
                 case "eqRoot":
                     match(XX, new TermMatch.EqualsRoot(YY));
                     break;
+                case "subsEqual":
+                    constraints.add(new NotEqualConstraint.SubsEqual(XX, YY));
+                    break;
                 case "neqOrInhCommon":
                     neqRoot(XX, YY);
                     constraints.add(new NotEqualConstraint.NoCommonInh(XX, YY));

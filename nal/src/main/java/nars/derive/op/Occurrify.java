@@ -56,7 +56,7 @@ public class Occurrify extends TimeGraph {
 
     private final Derivation d;
 
-    public static boolean occurrify(Term x, Truthify truth, OccurrenceSolver time, Derivation d) {
+    static boolean occurrify(Term x, Truthify truth, OccurrenceSolver time, Derivation d) {
         if (d.temporal) {
 
             //HACK reset to the input

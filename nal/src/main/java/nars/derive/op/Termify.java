@@ -39,11 +39,11 @@ public final class Termify extends ProxyTerm {
 
     public final boolean test(Term x, Derivation d) {
 
-        NAR nar = d.nar;
         d.concTerm = null;
         d.concOcc = null;
         d.use(Param.TTL_termify);
 
+        NAR nar = d.nar;
         nar.emotion.deriveTermify.increment();
 
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {

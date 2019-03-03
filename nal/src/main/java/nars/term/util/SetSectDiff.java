@@ -2,6 +2,7 @@ package nars.term.util;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.data.iterator.ArrayIterator;
+import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
@@ -9,82 +10,142 @@ import nars.term.atom.Bool;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
 import static nars.term.atom.Bool.True;
 
-/** NAL2/NAL3 setAt, intersection and difference functions */
+/**
+ * NAL2/NAL3 setAt, intersection and difference functions
+ */
 public class SetSectDiff {
 
-    public static Term intersect(TermBuilder b, Op o, Term... t ) {
+    /** high-level intersection/union build procedure.  handles:
+     *      decoding op type
+     *      whether a or b is negated
+     *      whether a or b is set, sect, or product
+     */
+    public static @Nullable Term sect(Term a, Term b, boolean union, Subterms s) {
+        Op op = s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
+
+        if (a.unneg().op()==PROD && b.unneg().op()==PROD && a.unneg().subs()==b.unneg().subs() /* && rng? */) {
+            return SetSectDiff.intersectProd(op, union, a, b);
+        } else {
+            return SetSectDiff.intersect(op, union, a, b);
+        }
+    }
+
+    public static Term intersect(TermBuilder b, Op o, Term... t) {
         return intersect(b, o, false, t);
     }
 
-    public static Term intersect(TermBuilder b, Op o, boolean union, Term... t ) {
+    public static Term intersect(Op o, boolean union, Term... t) {
+        return intersect(HeapTermBuilder.the, o, union, t);
+    }
+
+    public static Term intersect(TermBuilder b, Op o, boolean union, Term... t) {
 
         switch (t.length) {
             case 0:
                 return True;
             case 1:
                 return t[0];
-//            case 2:
-//
-//                boolean sect = intersection==SECTe || intersection == SECTi;
-//
-//                if (t[0].equals(t[1])) return t[0];
-//
-//                if (sect) {
-//                    //fast eliminate contradiction
-//                    Op o0 = t[0].op();
-//                    if (o0 == NEG && t[0].unneg().equals(t[1])) return Null;
-//                    Op o1 = t[1].op();
-//                    if (o1 == NEG && t[1].unneg().equals(t[0])) return Null;
-//                }
-//                break;
-            default:
+            case 2:
+                Op o0 = t[0].op(), o1 = t[1].op();
+                if (o0 == o1 && t[0].equals(t[1]))
+                    return t[0];
 
-                Op oSet = t[0].op();
-                if ((o==SECTe && oSet==SETe) || (o == SECTi && oSet == SETi)) {
-                    boolean allSet = true;
-                    for (int i = 1, tLength = t.length; i < tLength; i++) {
-                        Term x = t[i];
-                        if (x.op()!=oSet) {
-                            allSet = false;
-                            break;
-                        }
+                //fast eliminate contradiction
 
-                    }
-                    if (allSet) {
-                        o = oSet;
+                if (o0 == NEG ^ o1 == NEG) {
+                    if (o0 == NEG && t[0].unneg().equals(t[1])) {
+                        return union ? t[1] : Null;
+                    } else if (/*o1 == NEG && */t[1].unneg().equals(t[0])) {
+                        return union ? t[0] : Null;
                     }
                 }
 
-                /** if the boolean value of a key is false, then the entry is negated */
-                ObjectByteHashMap<Term> y = intersect(o, o==SECTe || o == SECTi, union, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
-                if (y == null)
-                    return Null;
-                int s = y.size();
-                if (s == 0)
-                    return True;
-                else if (s == 1)
-                    return y.keysView().getOnly();
-                else {
+                //continue below:
+                break;
+        }
 
-                    Term[] yyy = new Term[s];
-                    final int[] k = {0};
-                    y.keyValuesView().forEach(e ->
-                            yyy[k[0]++] = e.getOne().negIf(e.getTwo()==-1)
-                    );
-                    return Op.compound(b, o, yyy);
+
+        Op oSet = t[0].op();
+        if ((o == SECTe && oSet == SETe) || (o == SECTi && oSet == SETi)) {
+            boolean allSet = true;
+            for (int i = 1, tLength = t.length; i < tLength; i++) {
+                Term x = t[i];
+                if (x.op() != oSet) {
+                    allSet = false;
+                    break;
                 }
 
+            }
+            if (allSet) {
+                o = oSet;
+            }
+        }
+
+        /** if the boolean value of a key is false, then the entry is negated */
+        ObjectByteHashMap<Term> y = intersect(o, o == SECTe || o == SECTi, union, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
+        if (y == null)
+            return Null;
+        int s = y.size();
+        if (s == 0)
+            return True;
+        else if (s == 1)
+            return y.keysView().getOnly();
+        else {
+
+            Term[] yyy = new Term[s];
+            final int[] k = {0};
+            y.keyValuesView().forEach(e ->
+                    yyy[k[0]++] = e.getOne().negIf(e.getTwo() == -1)
+            );
+            return Op.compound(b, o, yyy);
         }
 
 
     }
 
-    /** returns null to short-circuit failure */
+    public static Term intersectProd(Op o, boolean union, Term x, Term y) {
+        return intersectProd(HeapTermBuilder.the, o, union, x, y);
+    }
+
+    public static Term intersectProd(TermBuilder b, Op o, boolean union, Term x, Term y) {
+
+        if (x.equals(y))
+            return x;
+
+        boolean xNeg = x.op() == NEG, yNeg = y.op() == NEG;
+        if ((xNeg ^ yNeg) && x.unneg().equals(y.unneg()))
+            return union ? x : Null;
+
+        Term X = !xNeg ? x : x.unneg();
+        if (X.op()!=PROD) return Null; //both must be PROD
+        Term Y = !yNeg ? y : y.unneg();
+        if (Y.op()!=PROD) return Null; //both must be PROD
+
+        Subterms xx = X.subterms();
+        int n = xx.subs();
+        Subterms yy = Y.subterms();
+        if (n != yy.subs())
+            return Null;
+
+
+        Term[] xy = new Term[n];
+        for (int i = 0; i < n; i++) {
+            if ((xy[i] = intersect(b, o, union, xx.sub(i).negIf(xNeg), yy.sub(i).negIf(yNeg))) == Null)
+                return Null;
+        }
+
+        return $.pFast(xy);
+    }
+
+    /**
+     * returns null to short-circuit failure
+     */
     private static ObjectByteHashMap<Term> intersect(Op o, boolean sect, boolean union, Iterable<Term> t, ObjectByteHashMap<Term> y) {
         if (y == null)
             return null;
@@ -101,14 +162,13 @@ public class SetSectDiff {
             Op xo = x.op();
 
 
-
             if (xo != o) {
                 if (sect) {
-                    byte p = (byte) (x.op()!=NEG ? +1 : -1);
+                    byte p = (byte) (x.op() != NEG ? +1 : -1);
                     if (p == -1) x = x.unneg();
                     int existing = y.getIfAbsent(x, Byte.MIN_VALUE);
-                    if (existing!=Byte.MIN_VALUE) {
-                        if (existing==p)
+                    if (existing != Byte.MIN_VALUE) {
+                        if (existing == p)
                             continue; //same exact target and polarity present
                         else {
                             if (!union) {
@@ -123,7 +183,7 @@ public class SetSectDiff {
                         y.put(x, p);
                     }
                 } else {
-                    y.put(x, (byte)0); //as-is, doesnt matter
+                    y.put(x, (byte) 0); //as-is, doesnt matter
                 }
             } else {
                 //recurse
@@ -330,7 +390,7 @@ public class SetSectDiff {
     /*@NotNull*/
     public static Term differenceSet(/*@NotNull*/ Op o, Term a, Term b) {
 
-        assert(o.isSet() && a.op()==o && b.op()==o);
+        assert (o.isSet() && a.op() == o && b.op() == o);
 
         if (a.equals(b))
             return Null;

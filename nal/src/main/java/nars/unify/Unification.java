@@ -101,7 +101,7 @@ abstract public class Unification {
         }
 
         public Term transform(Term x) {
-            return AbstractTermTransform.applyBest(x, transform());
+            return AbstractTermTransform.transform(x, transform());
         }
 
         protected Unify.UnifyTransform.LambdaUnifyTransform transform() {
@@ -231,6 +231,7 @@ abstract public class Unification {
             this.start = start;
             this.termutes = termutes;
             this.discovery = new Unify.LazyUnify(x) {
+
                 @Override
                 protected boolean live() {
                     return super.live() && discoveriesRemain > 0;
@@ -239,11 +240,12 @@ abstract public class Unification {
                 @Override
                 protected void tryMatch() {
 
+                    --discoveriesRemain;
+
                     Unification z = unification(false);
                     if (z instanceof DeterministicUnification) {
                         if (fork.add((DeterministicUnification) z)) {
                             //TODO calculate max possible permutations from Termutes, and set done
-                            --discoveriesRemain;
                         }
                     } else if (z instanceof PermutingUnification) {
                         if (Param.DEBUG)

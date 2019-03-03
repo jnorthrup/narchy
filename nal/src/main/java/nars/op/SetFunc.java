@@ -11,7 +11,6 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.SetSectDiff;
-import nars.term.util.builder.HeapTermBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -38,13 +37,15 @@ public class SetFunc {
         }
 
     };
+
     public static final Functor unionSect = new AbstractBinarySetFunctor("unionSect") {
-
-        @Nullable
-        @Override public Term apply(Term a, Term b, Subterms s) {
-
-            Op op = s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
-            return SetSectDiff.intersect(HeapTermBuilder.the, op, true, a, b);
+        @Nullable @Override public Term apply(Term a, Term b, Subterms s) {
+            return SetSectDiff.sect(a, b, true, s);
+        }
+    };
+    public static final Functor interSect = new AbstractBinarySetFunctor("interSect") {
+        @Nullable @Override public Term apply(Term a, Term b, Subterms s) {
+            return SetSectDiff.sect(a, b, false, s);
         }
     };
     /**

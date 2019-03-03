@@ -120,7 +120,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
-            return new EqualNegConstraint(newX, newY);
+            return new EqualPosOrNeg(newX, newY);
         }
 
         @Override
@@ -278,7 +278,28 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
     }
+    public static final class SubsEqual extends RelationConstraint {
 
+        public SubsEqual(Variable target, Variable other) {
+            super("SubsEqual", target, other);
+        }
+
+        @Override
+        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+            return new SubsEqual(newX, newY);
+        }
+
+        @Override
+        public float cost() {
+            return 0.04f;
+        }
+
+        @Override
+        public boolean invalid(Term x, Term y) {
+            return x!=y && x.subs()!=y.subs();
+        }
+
+    }
     public static class NotSetsOrDifferentSets extends RelationConstraint {
         public NotSetsOrDifferentSets(Variable target, Variable other) {
             super("notSetsOrDifferentSets", target, other);

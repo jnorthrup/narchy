@@ -129,9 +129,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         int dither = n.dtDither.intValue();
         int dur = n.dur();
-        long s, e;
-        int iter = 0;
-        do {
+        long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
+        Truth nextActionDex = null;
+        for (int iter = 0; iter < 3; iter++) {
+
 
             switch (iter) {
                 case 0:
@@ -179,20 +180,23 @@ public class AbstractGoalActionConcept extends ActionConcept {
                     a.match(eternalTable);
                 }
 
-                TruthPolation organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
-
                 //TODO my truthpolation .stamp()'s and .cause()'s for clues
 
+                TruthPolation organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
                 if (organic != null) {
-                    actionDex = organic.filtered().truth();
-                    if (actionDex != null) {
-                        curiDex = actionDex;
-                    }
-                } else {
-                    actionDex = null;
+                    @Nullable Truth maybeNextActionDex = organic.filtered().truth();
+                    if (nextActionDex == null)
+                        nextActionDex = maybeNextActionDex;
+                    else
+                        nextActionDex = Truth.stronger(maybeNextActionDex, nextActionDex);
+
                 }
             }
-        } while (actionDex == null && (++iter) < 3);
+        }
+        actionDex = nextActionDex;
+        if (nextActionDex != null) {
+            curiDex = actionDex;
+        }
 
 
         Truth actionCuri = curiosity.curiosity(this);

@@ -9,6 +9,7 @@ import nars.agent.FrameTrigger;
 import nars.experiment.pacman.PacmanGame;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
+import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
 import spacegraph.space2d.container.grid.Gridding;
 
@@ -20,7 +21,7 @@ public class Pacman extends NAgentX {
     private final PacmanGame g;
 
     public Pacman(NAR nar) {
-        super("G", FrameTrigger.fps(20), nar);
+        super("Pac", FrameTrigger.fps(20), nar);
 
         this.g = new PacmanGame();
 
@@ -36,7 +37,7 @@ public class Pacman extends NAgentX {
                 MonoBufImgBitmap2D.ColorMode.B
         }) {
             Bitmap2DSensor c = senseCamera(
-                    $.p($.the("c"), $.the(cm.ordinal())),
+                    (x,y)->$.func((Atomic)id, $.the(cm.name()), $.the(x), $.the(y)),
                     camScale.filter(cm)
             );
 

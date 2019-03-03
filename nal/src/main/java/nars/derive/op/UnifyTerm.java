@@ -5,14 +5,12 @@ import nars.$;
 import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.Unification;
 
-import java.util.function.Function;
+import java.util.Map;
 
 import static nars.$.$$;
 import static nars.Param.TermutatorFanOut;
@@ -62,8 +60,6 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
         @Override
         public final boolean test(Derivation d) {
-
-
             return d.unify(pattern, taskOrBelief ? d.taskTerm : d.beliefTerm, false);
         }
 
@@ -91,6 +87,12 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         @Override
         public final boolean test(Derivation d) {
 
+            Map<Term, Term> retransformCopy;
+            if (!d.retransform.isEmpty())
+                retransformCopy = Map.copyOf(d.retransform);
+            else
+                retransformCopy = null;
+
 //            d.forEachMatch = each;
             d.forEachMatch = (x) -> true; //HACK
 
@@ -106,16 +108,26 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
                 int fanOut = Math.min(ii.size(), TermutatorFanOut);
                 for (int i = 0; i < fanOut; i++) {
-                    if (!permute(d, ii.get(i)::xy))
+                    if (!taskify.test(ii.get(i)::xy, d))
                         return false;
+                    else {
+                        if (i < fanOut-1) {
+                            //HACK
+                            if (retransformCopy != null && !d.retransform.equals(retransformCopy)) {
+                                d.retransform.clear();
+                                d.retransform.putAll(retransformCopy);
+                            }
+                        }
+                    }
                 }
 
             } else if (u instanceof Unification.DeterministicUnification) {
-                if (!permute(d, ((Unification.DeterministicUnification) u)::xy))
+                if (!taskify.test(((Unification.DeterministicUnification) u)::xy, d))
                     return false;
             } else if (u == Unification.Self) {
-                if (!permute(d, (z)->null))
-                    return false;
+                throw new UnsupportedOperationException();
+//                if (!taskify.test((z)->Null), d)
+//                    return false;
             }
 
 
@@ -124,23 +136,6 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
             return true;
         }
 
-        private boolean permute(Derivation d, Function<Variable,Term> xy) {
-            d.transform.xy = xy;
-
-
-            try {
-                d.retransform.clear();
-
-                Term y = AbstractTermTransform.applyBest(taskify.termify.pattern, d.transform);
-
-                if (!taskify.test(y, d))
-                    return false;
-
-                return true;
-            } finally {
-                d.transform.xy = null;
-            }
-        }
     }
 
 
@@ -148,7 +143,7 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         @Override
         public boolean test(Derivation d) {
             d.clear();
-
+            d.retransform.clear();
             d.forEachMatch = null;
             return true;
         }

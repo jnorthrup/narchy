@@ -44,7 +44,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.Param.TTL_termify;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -148,21 +147,13 @@ public class Derivation extends PreDerivation {
             Term input = xx.sub(0);
             Term replaced = xx.sub(1);
             Term replacement = xx.sub(2);
-
-//            if (replaced instanceof Atom) {
-//
-//                replaced = anon.put(replaced);
-//            }
+            if (replaced.equals(replacement))
+                return input;
 
             Term y = apply(xx, input, replaced, replacement);
 
-            use(TTL_termify); //substitute actually
-
             if (y != null && !(y instanceof Bool)) {
-
-                //retransform.put(input, y);
                 retransform.put(replaced, replacement);
-
             }
             return y;
         }
@@ -567,9 +558,9 @@ public class Derivation extends PreDerivation {
         time = ETERNAL;
         premiseBuffer.clear();
 
+        retransform.clear();
         occ.clear();
-        _belief = null;
-        _task = null;
+        _task = _belief = null;
         taskStamp.clear();
         parentCause = null;
         concTruth = null;
@@ -588,6 +579,7 @@ public class Derivation extends PreDerivation {
 
         return this;
     }
+
 
 
     /**

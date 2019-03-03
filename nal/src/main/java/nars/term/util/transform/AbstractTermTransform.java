@@ -24,7 +24,7 @@ import static nars.time.Tense.XTERNAL;
 public interface AbstractTermTransform extends TermTransform {
 
 
-    static Term applyBest(Term x, TermTransform transform) {
+    static Term transform(Term x, TermTransform transform) {
         if (Param.TERMIFY_TRANSFORM_LAZY && x instanceof Compound) {
             return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x,
                     //HeapTermBuilder.the

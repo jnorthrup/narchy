@@ -55,6 +55,7 @@ public enum DerivationFunctors {
                 Image.imageInt,
                 Image.imageNormalize,
                 SetFunc.union,
+                SetFunc.interSect,
                 SetFunc.unionSect,
                 SetFunc.differ,
                 SetFunc.intersect,

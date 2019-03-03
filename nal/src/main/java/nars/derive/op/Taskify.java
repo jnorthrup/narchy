@@ -11,10 +11,13 @@ import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
@@ -23,6 +26,25 @@ import static nars.time.Tense.ETERNAL;
 public class Taskify extends ProxyTerm {
 
     public final Termify termify;
+
+    public final boolean test(Function<nars.term.Variable, Term> xy, Derivation d) {
+        assert(d.retransform.isEmpty());
+        assert(d.transform.xy == null);
+
+        d.transform.xy = xy;
+
+        try {
+
+            Term y = AbstractTermTransform.transform(termify.pattern, d.transform);
+
+            return test(y, d);
+
+        } finally {
+            d.retransform.clear();
+            d.transform.xy = null;
+        }
+    }
+
 
     public boolean test(Term x, Derivation d) {
         return termify.test(x, d) && taskify(d.concTerm, d);
@@ -48,7 +70,6 @@ public class Taskify extends ProxyTerm {
         //                        :
         //                        taskify
     }
-
     /**
      * note: the return value here shouldnt matter so just return true anyway
      */
