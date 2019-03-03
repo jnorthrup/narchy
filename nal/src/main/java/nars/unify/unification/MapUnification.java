@@ -10,10 +10,10 @@ import java.util.Map;
 
 public class MapUnification extends DeterministicUnification {
 
-    Map<Term, Term> xy;
+    final Map<Term, Term> xy;
 
     //TODO
-    int matchStructure = Integer.MAX_VALUE;
+    //int matchStructure = Integer.MAX_VALUE;
 
     public MapUnification() {
         super();
@@ -24,8 +24,8 @@ public class MapUnification extends DeterministicUnification {
     protected boolean equals(DeterministicUnification obj) {
         if (obj instanceof MapUnification) {
             MapUnification u = (MapUnification) obj;
-            if (u.matchStructure != matchStructure)
-                return false;
+//            if (u.matchStructure != matchStructure)
+//                return false;
             return xy.equals(u.xy);
         }
         return false;
@@ -59,7 +59,7 @@ public class MapUnification extends DeterministicUnification {
 
     @Override
     public String toString() {
-        return "unification(" + xy + ")";
+        return "unification(" + xy + ')';
     }
 
     public MapUnification putIfAbsent(FasterList<Term> xyPairs) {

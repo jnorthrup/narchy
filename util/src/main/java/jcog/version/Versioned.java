@@ -1,5 +1,7 @@
 package jcog.version;
 
+/** LIFO queue of >=1 data values
+ *  representing a history of changing value assignments */
 public interface Versioned<X> {
     X get();
 

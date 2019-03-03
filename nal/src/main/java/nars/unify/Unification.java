@@ -18,7 +18,7 @@ public interface Unification extends Function<Term,Iterable<Term>> {
      * indicates unsuccessful unification attempt.
      * TODO distinguish between deterministically impossible and those which stopped before exhausting permutations
      */
-    static final Unification Null = new Unification() {
+    Unification Null = new Unification() {
         @Override
         public Iterable<Term> apply(Term x) {
             return List.of();
@@ -33,7 +33,7 @@ public interface Unification extends Function<Term,Iterable<Term>> {
     /**
      * does this happen in any cases besides .equals, ex: conj seq
      */
-    public static final DeterministicUnification Self = new DeterministicUnification() {
+    DeterministicUnification Self = new DeterministicUnification() {
 
         @Override
         protected boolean equals(DeterministicUnification obj) {

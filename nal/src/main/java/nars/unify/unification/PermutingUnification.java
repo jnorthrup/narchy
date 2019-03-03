@@ -67,7 +67,7 @@ public class PermutingUnification extends ArrayHashSet<DeterministicUnification>
                         Iterables.transform(shuffle(this, discovery.random), a -> a.transform(x)),
                         z -> z != null
                                 &&
-                                z != Null
+                                z != Unification.Null
                 );
         }
     }

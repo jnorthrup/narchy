@@ -17,7 +17,6 @@ import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -239,8 +238,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
         private static Stream<UnifyConstraint> the(Stream<UnifyConstraint> c) {
             ListMultimap<Term, UnifyConstraint> m = matchConstraintMapBuilder.build();
             c.forEach(x -> m.put(x.x, x));
-            return m.asMap().entrySet().stream().map(e -> {
-                Collection<UnifyConstraint> cc = e.getValue();
+            return m.asMap().values().stream().map(cc -> {
                 int ccn = cc.size();
 
                 assert (ccn > 0);
