@@ -40,7 +40,8 @@ public final class Termify extends ProxyTerm {
     public final boolean test(Term x, Derivation d) {
 
         NAR nar = d.nar;
-
+        d.concTerm = null;
+        d.concOcc = null;
         d.use(Param.TTL_termify);
 
         nar.emotion.deriveTermify.increment();

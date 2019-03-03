@@ -131,14 +131,14 @@ public interface TermIO {
                     for (int i = 0; i < siz; i++) {
                         Term read = (s[i] = read(in));
                         if (read == null)
-                            throw new TermException(Op.PROD /* consider the termvector as a product */, s, "invalid");
+                            throw new TermException("invalid", Op.PROD /* consider the termvector as a product */, s);
                     }
 
                     Term[] v = s;
 
                     Term y = o.the(dt, v);
                     if (!(y instanceof Compound))
-                        throw new TermException(o, dt, v, "read invalid compound");
+                        throw new TermException("read invalid compound", o, dt, v);
 
                     return y;
                 }

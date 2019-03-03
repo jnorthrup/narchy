@@ -353,7 +353,7 @@ public class ConjTest {
         assertEq("((x&|y) &&+1 w)", "((x && y) &&+1 w)");
         assertEq("(w &&+1 (x&|y))", "(w &&+1 (x && y))");
         assertEq("((a&|b) &&+1 (x&|y))", "((a && b) &&+1 (x && y))");
-        assertEq("((a&|b) &&+1 (c&|d))", ConjSeq.sequence($$("(a&&b)"), 0, $$("(c&&d)"), 1));
+        assertEq("((a&|b) &&+1 (c&|d))", ConjSeq.sequence($$("(a&&b)"), 0, $$("(c&&d)"), 1, Op.terms));
     }
 
     @Test void eteConjInParallelShouldBeParallel() {
@@ -1539,7 +1539,7 @@ public class ConjTest {
         */
         Term a = $.$("(a &&+5 (--,a))");
         Term b = $.$("((b &&+5 (--,b)) &&+5 (--,c))");
-        assertEq("((a &&+5 ((--,a)&|b)) &&+5 ((--,b) &&+5 (--,c)))", ConjSeq.sequence(a, 0, b, 5));
+        assertEq("((a &&+5 ((--,a)&|b)) &&+5 ((--,b) &&+5 (--,c)))", ConjSeq.sequence(a, 0, b, 5, Op.terms));
     }
 
     @Test

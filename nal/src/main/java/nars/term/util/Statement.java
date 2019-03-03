@@ -23,7 +23,7 @@ import static nars.time.Tense.*;
  */
 public class Statement {
 
-    public static Term statement(TermBuilder b, Op op, int dt, Term subject, Term predicate) {
+    public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate) {
         if (subject == Null || predicate == Null)
             return Null;
 
@@ -66,19 +66,19 @@ public class Statement {
                         return subject.neg();
                     return Null;
                 case NEG:
-                    return statement(b, IMPL, dt, subject, predicate.unneg()).neg();//recurse
+                    return statement(B, IMPL, dt, subject, predicate.unneg()).neg();//recurse
                 case IMPL: {
                     Term newSubj, inner = predicate.sub(0);
                     if (dt == DTERNAL || dt == XTERNAL) {
-                        newSubj = CONJ.the(dt, subject, inner);
+                        newSubj = CONJ.the(B, dt, subject, inner);
                     } else {
                         if (dt == XTERNAL || dt == DTERNAL) {
-                            newSubj = CONJ.the(dt, subject, inner);
+                            newSubj = CONJ.the(B, dt, subject, inner);
                         } else {
-                            newSubj = ConjSeq.sequence(subject, 0, inner, subject.eventRange() + dt);
+                            newSubj = ConjSeq.sequence(subject, 0, inner, subject.eventRange() + dt, B);
                         }
                     }
-                    return statement(b, IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
+                    return statement(B, IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
                 }
             }
 
@@ -130,7 +130,7 @@ public class Statement {
                     //subtract any common subject components from predicate
                     boolean subjNeg = subject.op() == NEG;
                     ConjBuilder newPredConj = ConjDiff.the(predicate, po, subject.negIf(subjNeg), so, subjNeg);
-                    Term newPred = newPredConj.term(b);
+                    Term newPred = newPredConj.term(B);
 
 
                     boolean predChange = !predicate.equals(newPred);
@@ -164,7 +164,7 @@ public class Statement {
 
                         if (!newPred.equals(predicate)) { //HACK check again
                             try {
-                                return statement(b, IMPL, dt, subject, newPred); //recurse
+                                return statement(B, IMPL, dt, subject, newPred); //recurse
                             } catch (StackOverflowError e) {
                                 System.out.println("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
                                 throw new WTF("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
@@ -218,7 +218,7 @@ public class Statement {
         }
 
         //return builder.compound(op, dt, subject, predicate);
-        Term t = b.theCompound(op, dt, subject, predicate);
+        Term t = B.theCompound(op, dt, subject, predicate);
 
         //if (Param.DEBUG) {
         //test image normalization

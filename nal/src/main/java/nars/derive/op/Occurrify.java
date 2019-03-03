@@ -971,9 +971,9 @@ public class Occurrify extends TimeGraph {
 
                     int ditherDT = d.ditherDT;
                     if (tTime == earlyStart)
-                        y = ConjSeq.sequence(tt, 0, bb, Tense.dither(bTime - tTime, ditherDT));
+                        y = ConjSeq.sequence(tt, 0, bb, Tense.dither(bTime - tTime, ditherDT), terms);
                     else
-                        y = ConjSeq.sequence(bb, 0, tt, Tense.dither(tTime - bTime, ditherDT));
+                        y = ConjSeq.sequence(bb, 0, tt, Tense.dither(tTime - bTime, ditherDT), terms);
 
                     //dont dither occ[] here, since it will be done in Taskify
                     long range = Math.max(Math.min(d._task.range(), d._belief.range()) - 1, 0);

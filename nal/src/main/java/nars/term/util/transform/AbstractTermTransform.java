@@ -10,7 +10,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
-import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +26,10 @@ public interface AbstractTermTransform extends TermTransform {
 
     static Term applyBest(Term x, TermTransform transform) {
         if (Param.TERMIFY_TRANSFORM_LAZY && x instanceof Compound) {
-            return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x, HeapTermBuilder.the);
+            return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x,
+                    //HeapTermBuilder.the
+                    Op.terms
+            );
         } else {
             return transform.apply(x);
         }

@@ -597,7 +597,7 @@ public class Derivation extends PreDerivation {
         Term y = x;
 
         if (y.hasAny(VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit))
-            y = y.replace(xy);
+            y = transform().apply(y);
 
         if (!retransform.isEmpty())
             y = y.replace(retransform); //retransforms only
@@ -657,8 +657,9 @@ public class Derivation extends PreDerivation {
 
         @Override
         protected Term resolve(nars.term.Variable v) {
-            return Derivation.this.resolve(v);
+            return xy!=null ? xy.apply(v) : Derivation.this.resolve(v);
         }
+
 
         /**
          * only returns derivation-specific functors.  other functors must be evaluated at task execution time
@@ -667,7 +668,7 @@ public class Derivation extends PreDerivation {
         public final Term applyAtomic(Atomic atomic) {
 
             if (atomic instanceof Variable) {
-                return xy!=null ? xy.apply((Variable)atomic) : super.applyAtomic(atomic);
+                return super.applyAtomic(atomic);
             } else if (atomic instanceof Atom) {
                 Term f = derivationFunctors.apply(atomic);
                 if (f != null)

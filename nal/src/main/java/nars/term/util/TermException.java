@@ -25,36 +25,28 @@ public final class TermException extends SoftException {
 
 
     public TermException(String reason) {
-        this(null, Op.EmptyTermArray, reason);
-    }
-    public TermException(Termlike t, String reason) {
-        this(null, DTERNAL, t, reason);
+        this(reason, null, Op.EmptyTermArray);
     }
 
-    public TermException(Op op, Term[] args, String reason) {
-        this(op, DTERNAL, reason, args);
+    public TermException(String reason, Termlike t) {
+        this(reason, null, DTERNAL, t);
     }
 
-    public TermException(Op op, int dt, Term[] args, String reason) {
-        this(op, dt, reason, args);
+    public TermException(String reason, Op op, Term[] args) {
+        this(reason, op, DTERNAL, args);
     }
 
-    public TermException(Op op, int dt, Termlike args, String reason) {
-        this(op, dt, reason, args.arrayShared());
+    public TermException(String reason, Op op, int dt, Termlike args) {
+        this(reason, op, dt, args.arrayShared());
     }
 
-    public TermException(Op op, int dt, String reason, Term... args) {
+    public TermException(String reason, Op op, int dt, Term... args) {
         this.op = op;
         this.dt = dt;
         this.args = args;
         this.reason = reason;
     }
 
-//        public InvalidTermException(String s, Compound c) {
-//            this(c.op(), c.dt(), c.subterms(), s);
-//        }
-
-    @NotNull
     @Override
     public String getMessage() {
         return getClass().getSimpleName() + ": " + reason + " {" +

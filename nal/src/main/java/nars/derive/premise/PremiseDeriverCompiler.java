@@ -96,7 +96,7 @@ public enum PremiseDeriverCompiler {
         } else if (p instanceof UnifyTerm.NextUnifyTransform) {
             UnifyTerm.NextUnifyTransform u = (UnifyTerm.NextUnifyTransform) p;
             out.println("unify(" + UnifyTerm.label(u.taskOrBelief) + "," + u.pattern + ") {");
-            print(u.each, out, indent + 2);
+            print(u.taskify, out, indent + 2);
             TermPerfectTrie.indent(indent);
             out.println("}");
         } else if (p instanceof AND) {

@@ -79,13 +79,13 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
          * which premise component to match
          */
         public final boolean taskOrBelief;
-        public final Taskify each;
+        public final Taskify taskify;
 
 
-        public NextUnifyTransform(boolean taskOrBelief, /*@NotNull*/ Term pattern, Taskify each) {
-            super($.funcFast(UNIFY, label(taskOrBelief), pattern, each), pattern);
+        public NextUnifyTransform(boolean taskOrBelief, /*@NotNull*/ Term pattern, Taskify taskify) {
+            super($.funcFast(UNIFY, label(taskOrBelief), pattern, taskify), pattern);
             this.taskOrBelief = taskOrBelief;
-            this.each = each;
+            this.taskify = taskify;
         }
 
         @Override
@@ -126,16 +126,20 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
         private boolean permute(Derivation d, Function<Variable,Term> xy) {
             d.transform.xy = xy;
-            d.concTerm = null;
-            d.concOcc = null;
-            d.retransform.clear();
 
-            Term y = AbstractTermTransform.applyBest(each.termify.pattern, d.transform);
-            if (y.unneg().op().taskable)
-                if (!each.test(y, d))
+
+            try {
+                d.retransform.clear();
+
+                Term y = AbstractTermTransform.applyBest(taskify.termify.pattern, d.transform);
+
+                if (!taskify.test(y, d))
                     return false;
 
-            return true;
+                return true;
+            } finally {
+                d.transform.xy = null;
+            }
         }
     }
 

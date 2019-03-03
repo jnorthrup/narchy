@@ -2,6 +2,7 @@ package nars.unify.ellipsis;
 
 import jcog.util.ArrayUtils;
 import nars.Op;
+import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.compound.LightCompound;
@@ -13,6 +14,7 @@ import java.util.Collection;
 import java.util.SortedSet;
 
 import static nars.Op.PROD;
+import static nars.term.atom.Bool.Null;
 
 /**
  * Holds results of an ellipsis match and
@@ -136,8 +138,21 @@ public final class EllipsisMatch extends LightCompound {
     }
 
     @Override
-    public Term neg() {
-        throw new UnsupportedOperationException();
+    public final Term neg() {
+        int s = subs();
+        if (s ==0)
+            return this; //no change
+        else {
+            //assert(s!=1);
+            if (Param.DEBUG)
+                throw new UnsupportedOperationException();
+            return Null;
+        }
+    }
+
+    @Override
+    public final Term unneg() {
+        return this;
     }
 
     @Override

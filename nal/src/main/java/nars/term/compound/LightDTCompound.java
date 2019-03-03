@@ -49,7 +49,7 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
             int size = s.subs();
 
             if (op.temporal && (op != CONJ && size != 2))
-                throw new TermException(op, dt, "Invalid dt value for operator", s.arrayShared());
+                throw new TermException("Invalid dt value for operator", op, dt, s.arrayShared());
 
             if (dt != XTERNAL && op.commutative && size == 2) {
                 if (sub(0).compareTo(sub(1)) > 0)

@@ -240,7 +240,7 @@ public abstract class TermBuilder {
                 return ConjCommutive.theXternal(this, u);
 
             default:
-                return ConjSeq.theSequence(dt, u);
+                return ConjSeq.sequence(this, dt, u);
 
         }
 
