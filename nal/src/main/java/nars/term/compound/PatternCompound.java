@@ -7,6 +7,7 @@ import nars.Op;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.util.conj.Conj;
@@ -32,6 +33,19 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
 
     PatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
         super(op, dt, subterms);
+    }
+
+    /*@NotNull*/
+    public static PatternCompound ellipsis(/*@NotNull*/ Compound seed, /*@NotNull*/ Subterms v, /*@NotNull*/ Ellipsis e) {
+        Op op = seed.op();
+        int dt = seed.dt();
+
+        if ((op.commutative)) {
+            return new PatternCompoundEllipsisCommutive(op, dt, e, v);
+        } else {
+            return PatternCompoundEllipsisLinear.the(op, dt, e, v);
+        }
+
     }
 
     @Override
@@ -62,9 +76,9 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
     }
 
 
-    public static final class PatternCompoundWithEllipsisLinear extends PatternCompoundWithEllipsis {
+    public static final class PatternCompoundEllipsisLinear extends PatternCompoundWithEllipsis {
 
-        public static PatternCompoundWithEllipsisLinear the(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
+        public static PatternCompoundEllipsisLinear the(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
             if (op.statement) {
                 //HACK
                 Term x = subterms.sub(0);
@@ -79,10 +93,10 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                 }
                 subterms = new BiSubterm(x, y); //avoid interning
             }
-            return new PatternCompoundWithEllipsisLinear(op, dt, ellipsis, subterms);
+            return new PatternCompoundEllipsisLinear(op, dt, ellipsis, subterms);
         }
 
-        private PatternCompoundWithEllipsisLinear(/*@NotNull*/ Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
+        private PatternCompoundEllipsisLinear(/*@NotNull*/ Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
             super(op, dt, ellipsis, subterms);
             if (op.statement && subterms.OR(x -> x instanceof Ellipsislike))
                 throw new WTF("raw ellipsis subj/pred makes no sense here");
@@ -155,10 +169,10 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
     }
 
 
-    public static final class PatternCompoundWithEllipsisCommutive extends PatternCompoundWithEllipsis {
+    public static final class PatternCompoundEllipsisCommutive extends PatternCompoundWithEllipsis {
 
 
-        public PatternCompoundWithEllipsisCommutive(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
+        public PatternCompoundEllipsisCommutive(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
             super(op, dt, ellipsis, subterms);
             assert (op != CONJ || dt == XTERNAL); //CONJ always XTERNAL
         }
@@ -202,7 +216,8 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
             SortedSet<Term> yFree;
                     //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
                     //y.toSetSorted();
-            if (op()==CONJ && dt()==XTERNAL && Conj.isSeq(Y)) {
+            boolean seq = op() == CONJ && dt() == XTERNAL && Conj.isSeq(Y);
+            if (seq) {
                 yFree = Y.eventSet();
             } else {
                 yFree = Y.subterms().toSetSorted(u::resolvePosNeg);
@@ -306,7 +321,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
 
             switch (xs) {
                 case 0:
-                    return ellipsis.unify(ys > 0 ? EllipsisMatch.matched(yFree) : EllipsisMatch.empty, u);
+                    return ellipsis.unify(ys > 0 ? EllipsisMatch.matched(seq, yFree) : EllipsisMatch.empty, u);
 
                 case 1:
                     if (xs == ys) {

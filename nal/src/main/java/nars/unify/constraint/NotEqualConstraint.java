@@ -278,15 +278,15 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
     }
-    public static final class SubsEqual extends RelationConstraint {
+    public static final class SubCountEqual extends RelationConstraint {
 
-        public SubsEqual(Variable target, Variable other) {
+        public SubCountEqual(Variable target, Variable other) {
             super("SubsEqual", target, other);
         }
 
         @Override
         protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
-            return new SubsEqual(newX, newY);
+            return new SubCountEqual(newX, newY);
         }
 
         @Override

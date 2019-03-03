@@ -25,11 +25,17 @@ public class SetSectDiff {
      *      decoding op type
      *      whether a or b is negated
      *      whether a or b is set, sect, or product
+     *
+     *      Subterm params:
+     *          2:              "&" or "|" indicating the SECT type
+     *          3 (optional):   "*" enabling product splice
      */
     public static @Nullable Term sect(Term a, Term b, boolean union, Subterms s) {
         Op op = s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
 
-        if (a.unneg().op()==PROD && b.unneg().op()==PROD && a.unneg().subs()==b.unneg().subs() /* && rng? */) {
+        boolean productSplice = s.subs() > 3 && s.sub(3).equals(Op.PROD.strAtom);
+
+        if (productSplice && a.unneg().op()==PROD && b.unneg().op()==PROD && a.unneg().subs()==b.unneg().subs() /* && rng? */) {
             return SetSectDiff.intersectProd(op, union, a, b);
         } else {
             return SetSectDiff.intersect(op, union, a, b);
@@ -113,7 +119,7 @@ public class SetSectDiff {
         return intersectProd(HeapTermBuilder.the, o, union, x, y);
     }
 
-    public static Term intersectProd(TermBuilder b, Op o, boolean union, Term x, Term y) {
+    public static Term intersectProd(TermBuilder B, Op o, boolean union, Term x, Term y) {
 
         if (x.equals(y))
             return x;
@@ -136,8 +142,20 @@ public class SetSectDiff {
 
         Term[] xy = new Term[n];
         for (int i = 0; i < n; i++) {
-            if ((xy[i] = intersect(b, o, union, xx.sub(i).negIf(xNeg), yy.sub(i).negIf(yNeg))) == Null)
-                return Null;
+            Term a = xx.sub(i).negIf(xNeg);
+            Term b = yy.sub(i).negIf(yNeg);
+            Term ab;
+            if (a.equals(b))
+                ab = a;
+            else {
+                ab = a.unneg().op() == PROD && b.unneg().op() == PROD ?
+                        intersectProd(B, o, union, a, b) //recurse
+                        :
+                        intersect(B, o, union, a, b);
+                if (ab == Null)
+                    return Null;
+            }
+            xy[i] = ab;
         }
 
         return $.pFast(xy);

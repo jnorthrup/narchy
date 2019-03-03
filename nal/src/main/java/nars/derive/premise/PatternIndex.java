@@ -3,7 +3,6 @@ package nars.derive.premise;
 import nars.Builtin;
 import nars.Op;
 import nars.index.concept.MapConceptIndex;
-import nars.subterm.Subterms;
 import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Atom;
@@ -31,19 +30,6 @@ public class PatternIndex extends MapConceptIndex {
         super(new ConcurrentHashMap<>(512));
     }
 
-
-    /*@NotNull*/
-    private static PatternCompound ellipsis(/*@NotNull*/ Compound seed, /*@NotNull*/ Subterms v, /*@NotNull*/ Ellipsis e) {
-        Op op = seed.op();
-        int dt = seed.dt();
-
-        if ((op.commutative)) {
-            return new PatternCompound.PatternCompoundWithEllipsisCommutive(op, dt, e, v);
-        } else {
-            return PatternCompound.PatternCompoundWithEllipsisLinear.the(op, dt, e, v);
-        }
-
-    }
 
     @SuppressWarnings("Java8MapApi")
     @Override
@@ -166,7 +152,7 @@ public class PatternIndex extends MapConceptIndex {
             else xx = x;
 
             @Nullable Ellipsislike e = firstEllipsis(xx.subterms());
-            return (e != null ? ellipsis((Compound) xx, xx.subterms(), (Ellipsis) e) : xx).negIf(neg);
+            return (e != null ? PatternCompound.ellipsis((Compound) xx, xx.subterms(), (Ellipsis) e) : xx).negIf(neg);
         }
     };
 }

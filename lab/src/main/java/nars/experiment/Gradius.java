@@ -1,11 +1,13 @@
 package nars.experiment;
 
 import java4k.gradius4k.Gradius4K;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.agent.Reward;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
@@ -45,8 +47,8 @@ public class Gradius extends NAgentX {
         //TODO coordinate with fps
         g.updateMS =
                 //50; //20fps
-                30;
-                //25; //40fps
+                //30;
+                25; //40fps
                 //20;
                 //10; //100fps
                 //5; //200fps
@@ -136,19 +138,19 @@ public class Gradius extends NAgentX {
         initToggle();
         //initBipolar();
 
-        rewardNormalized("alive", -1, +1, ()->{
+        Reward alive = rewardNormalized("alive", 0, +1, ()->{
+            if (g.paused) return Float.NaN;
+
             if (g.playerDead > 1)
-                return -1f;
-            else if (g.paused)
-                return Float.NaN;
+                return 0f;
             else
-                return +1;
+                return Float.NaN; //return +1;
         });
+        alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()/2));
 
-        rewardNormalized("destroy",0, 1, ()->{
+        Reward destroy = rewardNormalized("destroy",0, 1, ()->{
 
-            if (g.paused)
-                return Float.NaN;
+            if (g.paused) return Float.NaN;
 
             int nextScore = g.score;
 
@@ -156,8 +158,11 @@ public class Gradius extends NAgentX {
 
             lastScore = nextScore;
 
-            return r!=0 ? Math.max(0, r) : Float.NaN;
+            //return Util.unitize(r);
+            return r!=0 ? Util.unitize(r) : Float.NaN;
        });
+       destroy.setDefault($.t(0, nar.beliefConfDefault.floatValue()/2));
+
 
     }
 

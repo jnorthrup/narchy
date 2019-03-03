@@ -14,12 +14,12 @@ import static nars.term.util.TermTest.assertEq;
 
 /** recursive NAL3 operations within inner products */
 public class NAL4FuzzyProduct extends NALTest {
-    static final int cycles = 900;
+    static final int cycles = 100;
 
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(4);
-        n.termVolumeMax.set(12);
+        n.termVolumeMax.set(9);
         return n;
     }
 
@@ -63,6 +63,18 @@ public class NAL4FuzzyProduct extends NALTest {
         ;
     }
 
+    @Test
+    void testIntersectionOfProductSubtermsRecursive() {
+        test.termVolMax(15);
+        test
+                .believe("((x,(y,x))-->a)")
+                .believe("((x,(z,x))-->a)")
+                .mustBelieve(cycles, "((x,((y&z),x))-->a)", 1, 0.81f)
+                .mustBelieve(cycles, "((x,((y|z),x))-->a)", 1, 0.81f)
+                .mustBelieve(cycles, "(((x,(y,x))|(x,(z,x)))-->a)", 1.0f, 0.81f)
+                .mustBelieve(cycles, "(((x,(y,x))&(x,(z,x)))-->a)", 1.0f, 0.81f)
+        ;
+    }
 
     @Test
     void testIntersectionOfProductSubterms1() {
@@ -79,6 +91,7 @@ public class NAL4FuzzyProduct extends NALTest {
 
     @Test
     void testIntersectionOfProductSubterms2ReverseIntensional() {
+        test.termVolMax(11);
 
         test
             .believe("f((x|y),z)", 1.0f, 0.9f)
@@ -90,4 +103,5 @@ public class NAL4FuzzyProduct extends NALTest {
         ;
 
     }
+
 }

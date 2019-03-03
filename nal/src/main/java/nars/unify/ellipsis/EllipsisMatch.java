@@ -6,6 +6,7 @@ import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.compound.LightCompound;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -13,8 +14,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.SortedSet;
 
+import static nars.Op.CONJ;
 import static nars.Op.PROD;
 import static nars.term.atom.Bool.Null;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * Holds results of an ellipsis match and
@@ -30,13 +33,13 @@ public final class EllipsisMatch extends LightCompound {
         super(EllipsisOp.id, t);
     }
 
-    private EllipsisMatch(Term[] t) {
-        super(EllipsisOp.id, t /*new DisposableTermList(t)*/);
-        assert(t.length > 1 || (t.length == 0 && empty == null /* HACK */));
+    private EllipsisMatch(Term[] x) {
+        super(EllipsisOp.id, x /*new DisposableTermList(t)*/);
+        assert(x.length > 1 || (x.length == 0 && empty == null /* HACK */));
     }
 
-    private EllipsisMatch(Collection<Term> term) {
-        this(term.toArray(Op.EmptyTermArray));
+    private EllipsisMatch(Collection<Term> x) {
+        this(x.toArray(Op.EmptyTermArray));
     }
 
     /** the ellipsis itself contributes no op */
@@ -45,14 +48,15 @@ public final class EllipsisMatch extends LightCompound {
     }
 
 
-    public static Term matched(Term... matched) {
-        switch (matched.length) {
+    public static Term matched(Term... x) {
+
+        switch (x.length) {
             case 0:
                 return empty;
             case 1:
-                return matched[0];
+                return x[0];
             default:
-                return new EllipsisMatch(matched);
+                return new EllipsisMatch(x);
         }
 
     }
@@ -69,15 +73,18 @@ public final class EllipsisMatch extends LightCompound {
         ));
     }
 
-    public static Term matched(SortedSet<Term> term) {
-        int num = term.size();
+    public static Term matched(boolean seq, SortedSet<Term> x) {
+        int num = x.size();
         switch (num) {
             case 0:
                 return empty;
             case 1:
-                return term.first();
+                return x.first();
             default:
-                return new EllipsisMatch(term);
+                if (seq)
+                    return CONJ.the(HeapTermBuilder.the, XTERNAL, x);
+                else
+                    return new EllipsisMatch(x);
         }
     }
 
