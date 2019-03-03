@@ -268,7 +268,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public static final int TermutatorSearchTTL = 4;
+    public static final int TermutatorSearchTTL = 8;
     public static final int TermutatorFanOut = 2;
     public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
@@ -284,7 +284,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 2;
+    public static final int TIMEGRAPH_ITERATIONS = 3;
 
 
     /**
@@ -313,7 +313,7 @@ public abstract class Param {
      * cost of a repeat (of another within the premise's batch) task derivation
      */
     @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_REPEAT = 4;
+    public static final int TTL_DERIVE_TASK_REPEAT = 3;
 
 
     /**

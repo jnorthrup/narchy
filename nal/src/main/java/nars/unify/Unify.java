@@ -15,6 +15,11 @@ import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.TermTransform;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
+import nars.unify.unification.DeterministicUnification;
+import nars.unify.unification.MapUnification;
+import nars.unify.unification.OneTermUnification;
+import nars.unify.unification.PermutingUnification;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -252,10 +257,12 @@ public abstract class Unify extends Versioning<Term> {
         return u;
     }
     public Unification unification(boolean clear, int discoveriesMax, int discoveryTTL) {
+
         Unification u = unification(clear);
-        if (u instanceof PermutingUnification) {
+
+        if (u instanceof PermutingUnification)
             use( ((PermutingUnification)u).discover(discoveriesMax, discoveryTTL) );
-        }
+
         return u;
     }
 
@@ -419,20 +426,15 @@ public abstract class Unify extends Versioning<Term> {
     }
 
 
-    private static class ConstrainedVersionMap extends VersionMap<Variable, Term> {
+    private static final class ConstrainedVersionMap extends VersionMap<Variable, Term> {
         ConstrainedVersionMap(Versioning<Term> versioning, Map<Variable, Versioned<Term>> termMap) {
-            super(versioning,
-                    termMap,
-                    1);
+            super(versioning, termMap);
         }
-
 
         @Override
         protected Versioned<Term> newEntry(Variable x) {
-            return new ConstrainedVersionedTerm(x, context);
+            return new ConstrainedVersionedTerm(x);
         }
-
-
     }
 
     static final class ConstrainedVersionedTerm extends KeyUniVersioned<Term,Term> {
@@ -442,8 +444,8 @@ public abstract class Unify extends Versioning<Term> {
          */
         public UnifyConstraint constraint;
 
-        ConstrainedVersionedTerm(Term key, Versioning<Term> sharedContext) {
-            super(key, sharedContext);
+        ConstrainedVersionedTerm(Term key) {
+            super(key);
         }
 
         @Override
@@ -451,18 +453,19 @@ public abstract class Unify extends Versioning<Term> {
             if (prevValue.equals(nextValue))
                 return 0;
 
-            if (prevValue.unify(nextValue, (Unify) context)) {
-                if (nextValue.hasAny(Op.Temporal)) {
-                    //prefer more specific temporal matches, etc?
-                    if (prevValue.hasXternal() && !nextValue.hasXternal()) {
-                        return +1;
-                    }
-                }
-                return 0;
-            } else return -1;
+//            if (prevValue.unify(nextValue, (Unify) context)) {
+//                if (nextValue.hasAny(Op.Temporal)) {
+//                    //prefer more specific temporal matches, etc?
+//                    if (prevValue.hasXternal() && !nextValue.hasXternal()) {
+//                        return +1;
+//                    }
+//                }
+//                return 0;
+//            } else
+                return -1;
         }
 
-        @Override protected boolean valid(Term x) {
+        @Override protected boolean valid(Term x, Versioning<Term> context) {
             UnifyConstraint c = this.constraint;
             return c == null || !c.invalid(x, (Unify)context);
         }
@@ -478,10 +481,11 @@ public abstract class Unify extends Versioning<Term> {
         }
     }
 
-    abstract static class LazyUnify extends Unify {
+    /** can be used to extend a Unify */
+    public abstract static class EmptyUnify extends Unify {
 
-        public LazyUnify(Unify u) {
-            super(u.varBits, u.random, u.items.length);
+        public EmptyUnify(Unify u) {
+            super(u.varBits, u.random, u.items.length, new UnifiedMap(0));
             commonVariables = u.commonVariables;
             dtTolerance = u.dtTolerance;
             //TODO any other flags?

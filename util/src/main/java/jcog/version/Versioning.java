@@ -156,4 +156,7 @@ public class Versioning<X> {
         }
     }
 
+    public final boolean set(Versioned<X> x, X y) {
+        return x.set(y, this);
+    }
 }

@@ -15,8 +15,8 @@ import nars.term.atom.Bool;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.unify.DeterministicUnification;
-import nars.unify.PermutingUnification;
+import nars.unify.unification.DeterministicUnification;
+import nars.unify.unification.PermutingUnification;
 import nars.unify.Unification;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -62,7 +62,7 @@ public class Taskify extends ProxyTerm {
         if (u instanceof PermutingUnification) {
 
             FasterList<DeterministicUnification> ii =
-                    ((PermutingUnification) u).fork.list.clone();
+                    ((PermutingUnification) u).list.clone();
             ii.shuffleThis(d.random);
 
             int fanOut = Math.min(ii.size(), TermutatorFanOut);

@@ -102,12 +102,13 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         update((g, dtMS)->{
             int n = g.nodes();
             g.forEachValue(node->{
+                float[][] cc = coordOut;
                 int c = node.i;
-                if (c < 0) {
+                if (c < 0 || c >= cc.length) {
                     node.hide();
                 } else {
 
-                    float[] xy = coordOut[c];
+                    float[] xy = cc[c];
 
                     X id = node.id;
                     float w = ScatterPlot2D.this.w() /* Math.max(w,h)? */ * model.width(id, n);

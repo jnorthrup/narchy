@@ -3,8 +3,8 @@ package jcog.version;
 public class KeyMultiVersioned<X,Y> extends MultiVersioned<Y> {
     public final X key;
 
-    public KeyMultiVersioned(X key, Versioning<Y> sharedContext, int initialCap) {
-        super(sharedContext, initialCap);
+    public KeyMultiVersioned(X key, int initialCap) {
+        super(initialCap);
         this.key = key;
     }
 }

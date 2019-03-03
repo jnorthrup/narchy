@@ -1,8 +1,9 @@
-package nars.unify;
+package nars.unify.unification;
 
 import jcog.data.list.FasterList;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.unify.Unify;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Map;
@@ -21,8 +22,8 @@ public class MapUnification extends DeterministicUnification {
 
     @Override
     protected boolean equals(DeterministicUnification obj) {
-        if (obj instanceof nars.unify.MapUnification) {
-            nars.unify.MapUnification u = (nars.unify.MapUnification) obj;
+        if (obj instanceof MapUnification) {
+            MapUnification u = (MapUnification) obj;
             if (u.matchStructure != matchStructure)
                 return false;
             return xy.equals(u.xy);
@@ -31,7 +32,7 @@ public class MapUnification extends DeterministicUnification {
     }
 
     @Override
-    void apply(Unify u) {
+    protected void apply(Unify u) {
         xy.forEach((tx, ty) -> {
             boolean applied = u.putXY((Variable/*HACK*/) tx, ty);
             assert (applied);
@@ -61,7 +62,7 @@ public class MapUnification extends DeterministicUnification {
         return "unification(" + xy + ")";
     }
 
-    public nars.unify.MapUnification putIfAbsent(FasterList<Term> xyPairs) {
+    public MapUnification putIfAbsent(FasterList<Term> xyPairs) {
         for (int i = 0, n = xyPairs.size(); i < n; ) {
             putIfAbsent(xyPairs.get(i++), xyPairs.get(i++));
         }

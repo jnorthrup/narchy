@@ -11,18 +11,9 @@ import org.jetbrains.annotations.Nullable;
 public class MultiVersioned<X> extends FasterList<X> implements Versioned<X> {
 
 
-    @Deprecated protected final Versioning context;
-
-
-    public MultiVersioned(Versioning<X> sharedContext, int initialCap) {
+    public MultiVersioned(int initialCap) {
         super(initialCap);
-        this.context = sharedContext;
     }
-
-//    public MultiVersioned(Versioning<X> sharedContext, X[] emptyArray) {
-//        super(0, emptyArray);
-//        this.context = sharedContext;
-//    }
 
     @Override
     public final boolean equals(Object otherVersioned) {
@@ -30,9 +21,9 @@ public class MultiVersioned<X> extends FasterList<X> implements Versioned<X> {
     }
 
     @Override
-    public boolean replace(X y) {
+    public boolean replace(X y, @Nullable Versioning<X> context) {
         if (size==0) {
-            return set(y);
+            return set(y, context);
         } else {
             replaceLast(y);
             return true;
@@ -55,7 +46,7 @@ public class MultiVersioned<X> extends FasterList<X> implements Versioned<X> {
      * returns null if the capacity was hit, or some other error
      */
     @Override
-    public boolean set(X nextValue) {
+    public boolean set(X nextValue, @Nullable Versioning<X> context) {
 
         //unique value mode only:
 //        X existing = get();
@@ -65,7 +56,7 @@ public class MultiVersioned<X> extends FasterList<X> implements Versioned<X> {
             return true;
 
         if (addWithoutResize(nextValue)) {
-            if (context.add(this))
+            if (context==null || context.add(this))
                 return true;
             else
                 pop();

@@ -1,5 +1,6 @@
 package nars.unify;
 
+import jcog.random.XoRoShiRo128PlusRandom;
 import nars.term.Term;
 
 import java.util.Random;
@@ -9,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class UnifyAny extends UnifySubst {
 
     public UnifyAny() {
-        this(ThreadLocalRandom.current());
+        this(new XoRoShiRo128PlusRandom(ThreadLocalRandom.current().nextLong()));
     }
 
     public UnifyAny(Random rng) {

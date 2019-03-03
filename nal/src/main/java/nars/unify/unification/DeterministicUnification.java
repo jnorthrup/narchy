@@ -1,7 +1,9 @@
-package nars.unify;
+package nars.unify.unification;
 
 import nars.term.Term;
 import nars.term.util.transform.AbstractTermTransform;
+import nars.unify.Unification;
+import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.List;
 /**
  * an individual solution
  */
-abstract public class DeterministicUnification extends Unification {
+abstract public class DeterministicUnification implements Unification {
 
     public DeterministicUnification() {
         super();
@@ -18,15 +20,15 @@ abstract public class DeterministicUnification extends Unification {
     @Override
     public final boolean equals(Object obj) {
         if (obj == this) return true;
-        if (obj instanceof nars.unify.DeterministicUnification)
-            return equals((nars.unify.DeterministicUnification) obj);
+        if (obj instanceof DeterministicUnification)
+            return equals((DeterministicUnification) obj);
         return false;
     }
 
-    abstract protected boolean equals(nars.unify.DeterministicUnification obj);
+    abstract protected boolean equals(DeterministicUnification obj);
 
     @Override
-    public final int forkCount() {
+    public final int forkKnown() {
         return 1;
     }
 
@@ -49,5 +51,5 @@ abstract public class DeterministicUnification extends Unification {
     /**
      * sets the mappings in a target unify
      */
-    abstract void apply(Unify y);
+    protected abstract void apply(Unify y);
 }

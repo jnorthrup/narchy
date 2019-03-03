@@ -1,16 +1,18 @@
 package nars.unify;
 
 import nars.term.Term;
+import nars.unify.unification.DeterministicUnification;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * immutable and memoizable unification result (map of variables to terms) useful for substitution
  */
-abstract public class Unification {
+public interface Unification extends Function<Term,Iterable<Term>> {
 
-    abstract public Iterable<Term> apply(Term x);
-    abstract public int forkCount();
+    int forkKnown();
+    //int forkMax();
 
     /**
      * indicates unsuccessful unification attempt.
@@ -23,7 +25,7 @@ abstract public class Unification {
         }
 
         @Override
-        public int forkCount() {
+        public int forkKnown() {
             return 0;
         }
     };
@@ -39,7 +41,7 @@ abstract public class Unification {
         }
 
         @Override
-        void apply(Unify y) {
+        protected void apply(Unify y) {
 
         }
 

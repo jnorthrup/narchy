@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.op.Taskify;
-import nars.derive.op.UnifyPremise;
+import nars.derive.op.Premisify;
 import nars.term.Term;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
@@ -43,27 +43,27 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
         final List<PREDICATE<Derivation>> post = new FasterList<>(4);
 
-        //smaller, simpler one first
-        boolean fwd = ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.vars() <= beliefPattern.vars());
-        post.add(new UnifyPremise(taskPattern, beliefPattern, fwd, taskify));
 
-        PREDICATE<Derivation>[] postpost = new PREDICATE[
+        boolean fwd = ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.vars() <= beliefPattern.vars());
+        post.add(new Premisify(taskPattern, beliefPattern, fwd, taskify));
+
+        PREDICATE<Derivation>[] y = new PREDICATE[
                 2 + constraintSet.size() + post.size()
         ];
 
         int k = 0;
 
-        postpost[k++] = this.truthify;
-        postpost[k++] = UnifyPremise.preUnify;
+        y[k++] = this.truthify;
+        y[k++] = Premisify.preUnify;
 
         for (PREDICATE p : constraintSet)
-            postpost[k++] = p;
+            y[k++] = p;
 
         for (PREDICATE p : post)
-            postpost[k++] = p;
+            y[k++] = p;
 
         this.rule = pair(PRE,
-                DeriveAction.action(cause, AND.the(postpost)));
+                DeriveAction.action(cause, AND.the(y)));
     }
 
     private static boolean hasEllipsis(Term x) {
@@ -76,7 +76,7 @@ public class PremiseRuleProto extends PremiseRuleSource {
      * derivation inputs are batched for input by another method
      * holds the deriver id also that it can be applied at the end of a derivation.
      */
-    public static class RuleCause extends Cause {
+    public static final class RuleCause extends Cause {
         public final PremiseRuleSource rule;
         public final String ruleString;
 

@@ -17,23 +17,19 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
     protected final Versioning context;
     public final Map<X, Versioned<Y>> map;
-    private final int itemVersions;
-
 
 
     /**
      * @param context
-     * @param itemVersions  max # of versions per item
      * @param mapCap  initial capacity of map (but can grow
      */
-    public VersionMap(Versioning<Y> context, int itemVersions) {
-        this(context, new UnifiedMap(), itemVersions);
+    public VersionMap(Versioning<Y> context) {
+        this(context, new UnifiedMap<>(0));
     }
 
-    public VersionMap(Versioning<Y> context, Map<X, Versioned<Y>/*<Y>*/> map, int itemVersions) {
+    public VersionMap(Versioning<Y> context, Map<X, Versioned<Y>/*<Y>*/> map) {
         this.context = context;
         this.map = map;
-        this.itemVersions = itemVersions;
     }
 
     @Override
@@ -44,29 +40,29 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
                if (x!=null) {
                    Y y = function.apply(v, x);
                    if (x != y) {
-                       val.replace(y);
+                       val.replace(y, context);
                    }
                }
            }
         });
     }
 
-    public boolean tryReplaceAll(BiFunction<? super X, ? super Y, ? extends Y> function) {
-        final boolean[] ok = {true};
-        map.forEach((v,val)->{
-            if (ok[0] && val!=null) {
-                Y x = val.get();
-                if (x!=null) {
-                    Y y = function.apply(v, x);
-                    if (x != y) {
-                        if (!val.replace(y))
-                            ok[0] = false;
-                    }
-                }
-            }
-        });
-        return ok[0];
-    }
+//    public boolean tryReplaceAll(BiFunction<? super X, ? super Y, ? extends Y> function) {
+//        final boolean[] ok = {true};
+//        map.forEach((v,val)->{
+//            if (ok[0] && val!=null) {
+//                Y x = val.get();
+//                if (x!=null) {
+//                    Y y = function.apply(v, x);
+//                    if (x != y) {
+//                        if (!val.replace(y))
+//                            ok[0] = false;
+//                    }
+//                }
+//            }
+//        });
+//        return ok[0];
+//    }
 
     @Nullable
     @Override
@@ -90,16 +86,16 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     @Override
     public final int size() {
         int cs = context.size;
-        if (cs <= 1 || itemVersions == 1)
+//        if (cs <= 1) // || itemVersions == 1)
             return cs;
 
 
-        int count = 0;
-        for (Versioned<Y> e : map.values()) {
-            if (e.get()!=null)
-                count++;
-        }
-        return count;
+//        int count = 0;
+//        for (Versioned<Y> e : map.values()) {
+//            if (e.get()!=null)
+//                count++;
+//        }
+//        return count;
     }
 
     @Override
@@ -170,11 +166,11 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     public final boolean force(X key, Y value) {
-        return getOrCreateIfAbsent(key).replace(value);
+        return getOrCreateIfAbsent(key).replace(value, context);
     }
 
     public final boolean set(X key, Y value) {
-        return getOrCreateIfAbsent(key).set(value);
+        return getOrCreateIfAbsent(key).set(value, context);
     }
 
 
@@ -187,7 +183,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     protected Versioned<Y> newEntry(X x) {
-        return new KeyMultiVersioned<>(x, context, itemVersions);
+        return new KeyUniVersioned<>(x);
     }
 
     public void forEach(BiConsumer<? super X, ? super Y> each) {
@@ -238,17 +234,13 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
             Y prev, next;
 
-            prev = v == null ? null : v.get();
+            prev = v != null ? v.get() : null;
 
             next = f.apply(prev);
 
-            if (next!=null) {
-                if (v == null)
-                    v = newEntry(k);
-                result[0] = v.set(next);
-            } else {
-                result[0] = false;
-            }
+            result[0] = (next != null) &&
+                    (v != null ? v : (v = newEntry(k))).set(next, context);
+
             return v;
         });
         return result[0];
@@ -264,7 +256,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
 
 
-    public static final VersionMap Empty = new VersionMap(new Versioning<>(1), 0) {
+    public static final VersionMap Empty = new VersionMap(new Versioning<>(1)) {
 
         @Override
         public Object get(Object key) {

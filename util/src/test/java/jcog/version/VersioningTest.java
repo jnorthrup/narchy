@@ -12,20 +12,16 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class VersioningTest {
 
+    private
+    MultiVersioned a = new MultiVersioned(8);
     @NotNull
     private
-    Versioning v = new Versioning(10, 10);
-    @NotNull
-    private
-    MultiVersioned a = new MultiVersioned(v, 8);
-    @NotNull
-    private
-    MultiVersioned b = new MultiVersioned(v, 8);
+    MultiVersioned b = new MultiVersioned(8);
 
     @Test
     void testRevision() {
         Versioning<Object> w = new Versioning(10, 10);
-        VersionMap<Object,Object> m = new VersionMap(w, 4);
+        VersionMap<Object,Object> m = new MultiVersionMap(4, w);
         m.set("x", "a");
         assertEquals("{x=a}", m.toString());
         assertEquals(1, w.size);
@@ -65,7 +61,7 @@ class VersioningTest {
 
     @Test void testLimitedChanges() {
         Versioning<Object> w = new Versioning<>(10, 10);
-        VersionMap<Object,Object> m = new VersionMap<>(w, 1);
+        VersionMap<Object,Object> m = new VersionMap<>(w);
         boolean a = m.set("x", "a");
         assertTrue(a);
         boolean b = m.set("x", "b");
@@ -82,21 +78,23 @@ class VersioningTest {
 
     }
 
-    private void initTestSequence1(boolean print) {
+    private void sequence1(Versioning v, boolean print) {
 
-        if (print) System.out.println(v);
-        assertTrue(a.set("a0"));
-        if (print) System.out.println(v);      a.set("a1");
-        if (print) System.out.println(v);      b.set("b0");
-        if (print) System.out.println(v);      a.set("a2");
-        if (print) System.out.println(v);      a.set("a3");
-        if (print) System.out.println(v);      b.set("b1");
+        if (print) System.out.println(v); assertTrue(a.set("a0",v));
+        if (print) System.out.println(v);      v.set(a, "a1");
+        if (print) System.out.println(v);      v.set(b, "b0");
+        if (print) System.out.println(v);      v.set(a, "a2");
+        if (print) System.out.println(v);      v.set(a, "a3");
+        if (print) System.out.println(v);      v.set(b, "b1");
 
     }
 
     @Test
     void test2() {
-        initTestSequence1();
+
+        Versioning v = new Versioning(10, 10);
+
+        sequence1(v);
 
         Supplier<String> s = () -> a + " " + b;
 
@@ -123,15 +121,17 @@ class VersioningTest {
 
     }
 
-    private void initTestSequence1() {
-        initTestSequence1(false);
+    private void sequence1(Versioning v) {
+        sequence1(v, false);
     }
 
 
     @Test
     void testRevert() {
 
-        initTestSequence1();
+
+        Versioning v = new Versioning(10, 10);
+        sequence1(v);
 
         Supplier<String> s = () -> a + " " + b;
 

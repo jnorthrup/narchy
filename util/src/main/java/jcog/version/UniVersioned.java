@@ -1,14 +1,13 @@
 package jcog.version;
 
+import org.jetbrains.annotations.Nullable;
+
 /** supports only one state and refuses change if a value is held */
 public class UniVersioned<X> implements Versioned<X> {
 
-    @Deprecated protected final Versioning context;
-
     protected X value;
 
-    public UniVersioned(Versioning context) {
-        this.context = context;
+    public UniVersioned() {
     }
 
     @Override
@@ -17,11 +16,11 @@ public class UniVersioned<X> implements Versioned<X> {
     }
 
     @Override
-    public final boolean replace(X x) {
+    public final boolean replace(X x, Versioning<X> context) {
         if (value==null) {
-            return set(x);
+            return set(x, context);
         } else {
-            if (valid(x)) {
+            if (valid(x, context)) {
                 value = x;
                 return true;
             } else
@@ -44,12 +43,12 @@ public class UniVersioned<X> implements Versioned<X> {
 
 
     /** override to filter */
-    protected boolean valid(X x) {
+    protected boolean valid(X x, Versioning<X> context) {
         return true;
     }
 
     @Override
-    public final boolean set(X next) {
+    public final boolean set(X next, @Nullable Versioning<X> context) {
         X prev = value;
         if (prev!=null) {
 
@@ -60,7 +59,7 @@ public class UniVersioned<X> implements Versioned<X> {
                 return true;
             }
         } else {
-            if (valid(next) && context.add(this)) {
+            if (valid(next, context) && (context==null || context.add(this))) {
                 value = next;
                 return true;
             }

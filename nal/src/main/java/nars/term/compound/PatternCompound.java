@@ -321,7 +321,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
 
             switch (xs) {
                 case 0:
-                    return ellipsis.unify(ys > 0 ? EllipsisMatch.matched(seq, yFree) : EllipsisMatch.empty, u);
+                    return ellipsis.unify(ys > 0 ? EllipsisMatch.matched(false, yFree) : EllipsisMatch.empty, u);
 
                 case 1:
                     if (xs == ys) {

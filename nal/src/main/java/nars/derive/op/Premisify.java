@@ -1,7 +1,6 @@
 package nars.derive.op;
 
 import nars.$;
-import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -13,11 +12,12 @@ import nars.unify.Unification;
 
 import static nars.$.$$;
 import static nars.Param.TermutatorFanOut;
+import static nars.Param.TermutatorSearchTTL;
 
 /**
  * Created by me on 5/26/16.
  */
-public final class UnifyPremise extends AbstractPred<Derivation> {
+public final class Premisify extends AbstractPred<Derivation> {
 
 
     public final Term taskPatern, beliefPattern;
@@ -27,7 +27,7 @@ public final class UnifyPremise extends AbstractPred<Derivation> {
     private static final Atomic REV = Atomic.the("rev");
     public final Taskify taskify;
 
-    public UnifyPremise(Term taskPatern, Term beliefPattern, boolean fwd, Taskify taskify) {
+    public Premisify(Term taskPatern, Term beliefPattern, boolean fwd, Taskify taskify) {
         super($.funcFast(UNIFY, $.pFast(taskPatern, beliefPattern), fwd ? FWD : REV));
         this.taskPatern = taskPatern;
         this.beliefPattern = beliefPattern;
@@ -37,51 +37,58 @@ public final class UnifyPremise extends AbstractPred<Derivation> {
 
     @Override
     public boolean test(Derivation d) {
-        //first component
-        if (d.unify(fwd ? taskPatern : beliefPattern, fwd ? d.taskTerm : d.beliefTerm, false)) {
 
-            //second component
+        substituteUnification(d);
 
-            substituteUnification(d);
-
-            //substituteDirect(d);
-
-        }
+        //substituteDirect(d);
 
         return d.live();
     }
 
-    /** the original, direct method */
+    /**
+     * the original, direct method
+     */
     private void substituteDirect(Derivation d) {
-        d.forEachMatch = (dd)->{
+        if (!unify(d, fwd))
+            return;
+
+        d.forEachMatch = (dd) -> {
             Term y = AbstractTermTransform.transform(taskify.termify.pattern, dd.transform);
             if (!(y instanceof Bool) && y.unneg().op().taskable)
                 taskify.test(y, dd);
             return true;
         };
 
-        boolean unified = d.unify(fwd ? beliefPattern : taskPatern, fwd ? d.beliefTerm: d.taskTerm, true);
+        boolean unified = unify(d, !fwd);
 
         d.forEachMatch = null;
 
     }
 
-    /** memoizable method */
+    /**
+     * memoizable method
+     */
     private void substituteUnification(Derivation d) {
+        if (!unify(d, fwd))
+            return;
 
         d.forEachMatch = (x) -> true; //HACK
 
-        if (d.unify(fwd ? beliefPattern : taskPatern, fwd ? d.beliefTerm: d.taskTerm, false)) {
+        if (unify(d, !fwd)) {
 
-            Unification u = d.unification(true, TermutatorFanOut, Param.TermutatorSearchTTL);
+            Unification u = d.unification(true,
+                    TermutatorFanOut, TermutatorSearchTTL);
 
             taskify.test(u, d);
         }
     }
 
+    private boolean unify(Derivation d, boolean dir) {
+        return d.unify(dir ? taskPatern : beliefPattern, dir ? d.taskTerm : d.beliefTerm, false);
+    }
+
 
     protected static final Atomic UNIFY = $.the("unify");
-
 
 
     public final static PREDICATE<Derivation> preUnify = new AbstractPred<>($$("preUnify")) {

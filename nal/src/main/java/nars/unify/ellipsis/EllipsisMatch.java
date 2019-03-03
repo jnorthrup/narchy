@@ -73,7 +73,7 @@ public final class EllipsisMatch extends LightCompound {
         ));
     }
 
-    public static Term matched(boolean seq, SortedSet<Term> x) {
+    public static Term matched(@Deprecated boolean seq, SortedSet<Term> x) {
         int num = x.size();
         switch (num) {
             case 0:

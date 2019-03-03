@@ -7,7 +7,7 @@ import jcog.tree.perfect.TrieNode;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.op.Branchify;
-import nars.derive.op.UnifyPremise;
+import nars.derive.op.Premisify;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.control.AND;
@@ -93,9 +93,9 @@ public enum PremiseDeriverCompiler {
             DeriverRules r = (DeriverRules) p;
             r.print(out, indent);
 
-        } else if (p instanceof UnifyPremise) {
-            out.println(((UnifyPremise)p).term());
-            print(((UnifyPremise)p).taskify, out, indent + 2);
+        } else if (p instanceof Premisify) {
+            out.println(((Premisify)p).term());
+            print(((Premisify)p).taskify, out, indent + 2);
             TermPerfectTrie.indent(indent);
             out.println("}");
         } else if (p instanceof AND) {
