@@ -15,9 +15,9 @@ import nars.term.atom.Bool;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.unify.Unification;
 import nars.unify.unification.DeterministicUnification;
 import nars.unify.unification.PermutingUnification;
-import nars.unify.Unification;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Function;
 
 import static nars.Op.*;
-import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
-import static nars.Param.TermutatorFanOut;
+import static nars.Param.*;
 import static nars.time.Tense.ETERNAL;
 
 public class Taskify extends ProxyTerm {
@@ -51,13 +50,10 @@ public class Taskify extends ProxyTerm {
         }
     }
 
+    public boolean test(Derivation d) {
 
-    public boolean test(Term x, Derivation d) {
-        Term y = termify.test(x, d);
-        return y!=null && taskify(y, d);
-    }
-
-    public boolean test(Unification u, Derivation d) {
+        Unification u = d.unification(true,
+                TermutatorFanOut, TermutatorSearchTTL);
 
         if (u instanceof PermutingUnification) {
 
@@ -82,6 +78,12 @@ public class Taskify extends ProxyTerm {
 
         return true;
     }
+
+    public boolean test(Term x, Derivation d) {
+        Term y = termify.test(x, d);
+        return y!=null && taskify(y, d);
+    }
+
 
     public static class VarTaskify extends Taskify {
         /**

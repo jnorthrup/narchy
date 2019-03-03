@@ -163,7 +163,7 @@ public class Derivation extends PreDerivation {
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */
-    public Predicate<Derivation> forEachMatch;
+    @Deprecated public Predicate<Derivation> forEachMatch;
 
     /**
      * current NAR time, set at beginning of derivation
@@ -471,8 +471,9 @@ public class Derivation extends PreDerivation {
     @Override
     public final void tryMatch() {
 
-
-        forEachMatch.test(this);
+        Predicate<Derivation> f = this.forEachMatch;
+        if (f!=null)
+            f.test(this);
 
     }
 

@@ -8,11 +8,8 @@ import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.transform.AbstractTermTransform;
-import nars.unify.Unification;
 
 import static nars.$.$$;
-import static nars.Param.TermutatorFanOut;
-import static nars.Param.TermutatorSearchTTL;
 
 /**
  * Created by me on 5/26/16.
@@ -45,6 +42,19 @@ public final class Premisify extends AbstractPred<Derivation> {
         return d.live();
     }
 
+
+    /**
+     * memoizable method
+     */
+    private void substituteUnification(Derivation d) {
+
+        //d.forEachMatch = (x) -> true; //HACK
+
+        if (unify(d, fwd) && unify(d, !fwd)) {
+            taskify.test(d);
+        }
+    }
+
     /**
      * the original, direct method
      */
@@ -64,25 +74,6 @@ public final class Premisify extends AbstractPred<Derivation> {
         d.forEachMatch = null;
 
     }
-
-    /**
-     * memoizable method
-     */
-    private void substituteUnification(Derivation d) {
-        if (!unify(d, fwd))
-            return;
-
-        d.forEachMatch = (x) -> true; //HACK
-
-        if (unify(d, !fwd)) {
-
-            Unification u = d.unification(true,
-                    TermutatorFanOut, TermutatorSearchTTL);
-
-            taskify.test(u, d);
-        }
-    }
-
     private boolean unify(Derivation d, boolean dir) {
         return d.unify(dir ? taskPatern : beliefPattern, dir ? d.taskTerm : d.beliefTerm, false);
     }
