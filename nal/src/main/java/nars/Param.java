@@ -207,7 +207,7 @@ public abstract class Param {
             //1.618f; //goldenratio
             //2;
 
-    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = false;
+    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = true;
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
@@ -455,7 +455,7 @@ public abstract class Param {
      * with a perceptual duration used as a time constant
      * dt >= 0
      */
-    public static float evi(float evi, long dt, long dur) {
+    public static float evi(float evi, long dt, int dur) {
 
         assert(dur > 0);
 
@@ -464,27 +464,34 @@ public abstract class Param {
         //inverse linear decay
         float falloffDurs =
                 //1;
-                1.618f; //phi
+                //1.618f; //phi
                 //2; //nyquist
                 //4;
                 //dur;
-                //8;
-//
-//        e = evi / (1.0f + ((dt) / (falloffDurs * dur)));
+                8;
 
+        float decayTime = falloffDurs * dur;
+        //double?
+
+        //exponential decay
+        //e = evi / (1.0f + dt / decayTime);
 
         //constant time linear decay
-        e = evi * Math.max(0, (1.0f - ((float)dt) / (falloffDurs * dur)));
+        e = (dt < decayTime) ?
+                evi * (1.0f - dt / decayTime)
+                : 0;
+
+        //constant time quadratic decay
+//        e = (dt < decayTime) ?
+//                evi * (1.0f - Util.sqr(dt / decayTime))
+//                : 0;
 
 //        //eternal noise floor
 //        float ee = TruthFunctions.eternalize(evi);
 //                       // / STAMP_CAPACITY;
 //        e = ee +  (e - ee) / (1.0f + (((float)dt) / (falloffDurs * dur)));
 
-
-
         return e;
-
 
         //return evi / (1.0f +    Util.sqr(((float)dt) / (falloffDurs * dur)));
         //return evi / (1.0f +    Util.sqr(((float)dt) / dur)/falloffDurs);

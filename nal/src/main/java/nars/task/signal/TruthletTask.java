@@ -121,7 +121,7 @@ public class TruthletTask extends SignalTask {
     }
 
     @Override
-    public float evi(long when, long dur) {
+    public float evi(long when, int dur) {
         return truthlet.truth(when)[1];
     }
 

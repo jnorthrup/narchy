@@ -21,7 +21,7 @@ public class TruthIntegration {
         return evi(t, 0);
     }
 
-    public static float evi(Task t, long dur) {
+    public static float evi(Task t, int dur) {
         return evi(t, t.start(), t.end(), dur);
     }
 
@@ -34,7 +34,7 @@ public class TruthIntegration {
      * interval is: [qStart, qEnd], ie: qStart: inclusive qEnd: inclusive
      * if qStart==qEnd then it is a point sample
      */
-    public static float evi(Task t, long qStart, long qEnd, long dur) {
+    public static float evi(Task t, long qStart, long qEnd, int dur) {
         if (qStart == qEnd) {
             if (qStart == ETERNAL) {
                 //return t.isEternal() ? t.evi() : t.eviEternalized();

@@ -1060,14 +1060,16 @@ public enum Util {
         assert (max >= min);
         if (max - min <= Double.MIN_NORMAL)
             return 0.5f;
-        return (x - min) / (max - min);
+        else
+            return (x - min) / (max - min);
     }
 
     public static float normalize(float x, float min, float max) {
         assert (max >= min);
         if (max - min <= Float.MIN_NORMAL)
             return 0.5f;
-        return (x - min) / (max - min);
+        else
+            return (x - min) / (max - min);
     }
 
     public static float variance(float[] population) {

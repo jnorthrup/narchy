@@ -40,6 +40,7 @@ abstract public class MultiExec extends UniExec {
     private float explorationRate = 0.05f;
 
     int granularity = 2;
+    private long cycleNS;
 
     MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
@@ -85,7 +86,7 @@ abstract public class MultiExec extends UniExec {
 
 
     private void updateTiming() {
-        long cycleNS = nar.loop.periodNS();
+        cycleNS = nar.loop.periodNS();
         if(cycleNS < 0) {
             //paused
             threadIdleTimePerCycle = NapTime;
@@ -131,36 +132,42 @@ abstract public class MultiExec extends UniExec {
             if (sleeping)
                 return;
 
+            float vr;
             long tUsed = s.used();
-            float v = tUsed > 0 ? (float)((c.value())/(tUsed/1.0e9)) : 0;
-            s.value = v;
-            assert(v==v);
+            if (tUsed  <= 0) {
+                s.value = Float.NaN;
+                vr = 0;
+            } else {
+                float v = Math.max(0, s.value = c.value());
+                double cyclesUsed = ((double)tUsed) / cycleNS;
+                //vr = (float)(v / cyclesUsed);
+                vr = (float)(v / (1 + cyclesUsed));
+                assert (vr == vr);
+            }
 
-            if (v > valMax[0]) valMax[0] = v;
-            if (v < valMin[0]) valMin[0] = v;
+            s.valueRate = vr;
+
+            if (vr > valMax[0]) valMax[0] = vr;
+            if (vr < valMin[0]) valMin[0] = vr;
 
         });
 
         float valRange = valMax[0] - valMin[0];
-
-
         if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
             float exp = explorationRate * valRange;
-            cpu.forEach((s) -> {
+            cpu.forEach(s -> {
                 Causable c = s.get();
                 if (c.sleeping()) {
                     s.pri(0);
                 } else {
-                    float vNorm = Util.normalize(s.value, valMin[0] - exp, valMax[0]);
+                    float vNorm = Util.normalize(s.valueRate, valMin[0] - exp, valMax[0]);
                     s.pri(vNorm);
                 }
             });
         } else {
             //FLAT
             float p = 1f/n;
-            cpu.forEach((s) -> {
-                s.pri(p);
-            });
+            cpu.forEach(s -> s.pri(p));
         }
 
     }

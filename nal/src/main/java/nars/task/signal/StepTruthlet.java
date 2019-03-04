@@ -1,6 +1,7 @@
 package nars.task.signal;
 
 import nars.Param;
+import nars.time.Tense;
 
 public class StepTruthlet extends ProxyTruthlet {
     public float freqBefore, freqAfter;
@@ -33,7 +34,7 @@ public class StepTruthlet extends ProxyTruthlet {
                 f = freqAfter;
             }
             freqEvi[0] = f;
-            freqEvi[1] = Param.evi(eviInactive, dist, Math.max(1, (e - s) / 2));
+            freqEvi[1] = Param.evi(eviInactive, dist, Math.max(1, Tense.occToDT(e - s) / 2));
         }
     }
 

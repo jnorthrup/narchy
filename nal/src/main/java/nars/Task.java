@@ -576,7 +576,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
      * @param minEvi used to fast fail if the result will not exceed the value
      * @return value >= 0 indicating the evidence
      */
-    default float evi(long when, final long dur) {
+    default float evi(long when, final int dur) {
 
         float ee = evi();
 
@@ -899,18 +899,18 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     /** maybe */
 
 
-    default float eviIntegTrapezoidal(long dur, long a, long b) {
+    default float eviIntegTrapezoidal(int dur, long a, long b) {
         float ea = evi(a, dur);
         float eb = evi(b, dur);
         return (ea+eb)/2 * (b-a+1);
     }
-    default float eviIntegTrapezoidal(long dur, long a, long b, long c) {
+    default float eviIntegTrapezoidal(int dur, long a, long b, long c) {
         float ea = evi(a, dur);
         float eb = evi(b, dur);
         float ec = evi(c, dur);
         return ((ea+eb)/2 * (b-a+1)) + ((eb+ec)/2 * (c-b+1));
     }
-    default float eviIntegTrapezoidal(long dur, long a, long b, long c, long d) {
+    default float eviIntegTrapezoidal(int dur, long a, long b, long c, long d) {
         float ea = evi(a, dur);
         float eb = evi(b, dur);
         float ec = evi(c, dur);
@@ -922,9 +922,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
      * https:
      * long[] points needs to be sorted, unique, and not contain any ETERNALs
      *
-     * TODO still needs improvement
+     * TODO still needs improvement, tested
      */
-    default float eviIntegTrapezoidal(long dur, long... times) {
+    default float eviIntegTrapezoidal(int dur, long... times) {
 
         int n = times.length; assert(n > 1);
 

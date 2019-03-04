@@ -155,11 +155,13 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
 
         void update(Concept c) {
-            int dur = projectDurs.intValue();
             BeliefTable table = (BeliefTable) c.table(beliefOrGoal ? BELIEF : GOAL);
-            int dither = Math.max(1, (int) Math.round(((double) (end - start)) / projections));
-            long projStart = Util.round(start, dither);
-            long projEnd = Math.max(Util.round(end, dither), Util.round(start + 1, dither));
+            int dither = Math.max(1,
+                    (int) Math.round(((double) (end - start)) / (projections)));
+            long projStart = Util.round(start-dither/2, dither);
+            long projEnd = Math.max(Util.round(end+dither/2, dither), Util.round(start + 1, dither));
+
+            int dur = projectDurs.intValue();
             projected.project(table, projStart, projEnd, projections, term, dur, nar);
             tasks.set(table, start, end);
         }

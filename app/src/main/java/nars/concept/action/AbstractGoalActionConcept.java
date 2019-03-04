@@ -1,5 +1,6 @@
 package nars.concept.action;
 
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -114,7 +115,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
     public void sense(long prev, long now, NAR n) {
 
 
-        int narDur = n.dur();
+        int organicDur = n.dur();
+        int curiDur = 0;
 
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
@@ -131,71 +133,72 @@ public class AbstractGoalActionConcept extends ActionConcept {
         int dur = n.dur();
         long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
         Truth nextActionDex = null;
-        for (int iter = 0; iter < 3; iter++) {
+        FasterList<BeliefTable> goalTables = ((BeliefTables) goals()).tables;
+        if (!goalTables.isEmpty()) {
+            for (int iter = 0; iter < 3; iter++) {
 
-
-            switch (iter) {
-                case 0:
-                    //duration-precision window
-                    //s = now - dur / 2;
-                    //e = now + dur / 2;
-                    s = now - dur;
-                    e = now;
-                    break;
-                case 1:
+                switch (iter) {
+                    case 0:
+                        //duration-precision window
+                        //s = now - dur / 2;
+                        //e = now + dur / 2;
+                        s = now - dur;
+                        e = now;
+                        break;
+                    case 1:
 //                    s = now - dur;
 //                    e = now + dur;
-                    s = now - dur*2;
-                    e = now; //now + dur;
-                    break;
-                default:
-                    //frame-precision window
-                    long frameDur = now - prev;
-//                    s = now - Math.max(dur*2, frameDur/2);
-//                    e = now + Math.max(dur*2, frameDur/2);
-                    s = now - Math.max(dur * 4, frameDur);
-                    e = now; //now + Math.max(dur * 2, 0);
-                    break;
+                        s = now - dur * 2;
+                        e = now; //now + dur;
+                        break;
+                    default:
+                        //frame-precision window
+                        long frameDur = now - prev;
+                        int dn = 3;
+//                    s = now - Math.max(dur*dn/2f, frameDur/2);
+//                    e = now + Math.max(dur*dn/2f, frameDur/2);
+                        s = now - Math.max(dur * dn, frameDur);
+                        e = now; //now + Math.max(dur * 2, 0);
+                        break;
 
+                }
+
+                //shift forward
+                s += dither / 2;
+                e += dither / 2;
+
+
+                try (Answer a = Answer.relevance(true, limit, s, e, term, fil, n).dur(organicDur)) {
+
+                    for (BeliefTable b : goalTables) {
+                        if (!(b instanceof CuriosityGoalTable)) {
+                            a.triesRemain = limit;
+                            a.match(b);
+                        }
+                    }
+
+                    //TODO my truthpolation .stamp()'s and .cause()'s for clues
+
+                    TruthPolation organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
+                    if (organic != null) {
+                        @Nullable Truth maybeNextActionDex = organic.filtered().truth();
+                        if (nextActionDex == null)
+                            nextActionDex = maybeNextActionDex;
+                        else
+                            nextActionDex = Truth.stronger(maybeNextActionDex, nextActionDex);
+
+                    }
+                }
+
+                //optional:
+//            if (nextActionDex!=null)
+//                break; //take the first (not the strongest)
             }
 
-            //shift forward
-            s += dither/2;
-            e += dither/2;
-
-
-            try (Answer a = Answer.relevance(true, limit, s, e, term, fil, n).dur(narDur)) {
-
-
-                @Nullable TemporalBeliefTable temporalTable = ((BeliefTables) goals()).tableFirst(TemporalBeliefTable.class);
-                if (temporalTable != null) {
-                    a.triesRemain = limit;
-                    a.match(temporalTable);
-                }
-
-
-                @Nullable EternalTable eternalTable = ((BeliefTables) goals()).tableFirst(EternalTable.class);
-                if (eternalTable != null) {
-                    a.triesRemain = limit;
-                    a.match(eternalTable);
-                }
-
-                //TODO my truthpolation .stamp()'s and .cause()'s for clues
-
-                TruthPolation organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
-                if (organic != null) {
-                    @Nullable Truth maybeNextActionDex = organic.filtered().truth();
-                    if (nextActionDex == null)
-                        nextActionDex = maybeNextActionDex;
-                    else
-                        nextActionDex = Truth.stronger(maybeNextActionDex, nextActionDex);
-
-                }
+            actionDex = nextActionDex;
+            if (nextActionDex != null) {
+                curiDex = actionDex;
             }
-        }
-        actionDex = nextActionDex;
-        if (nextActionDex != null) {
-            curiDex = actionDex;
         }
 
 
@@ -241,7 +244,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
             //use existing curiosity
             @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
             try (Answer a = Answer.
-                    relevance(true, 2, s, e, term, null, n).match(curiTable).dur(narDur)) {
+                    relevance(true, 2, s, e, term, null, n).match(curiTable).dur(curiDur)) {
                 TruthPolation curi = a.truthpolation(); //Math.round(actionWindowCuriDurs * dur));
                 if (curi != null) {
                     actionCuri = curi.filtered().truth();

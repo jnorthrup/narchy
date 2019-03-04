@@ -28,7 +28,9 @@ public class UniExec extends AbstractExec {
 
         public final AtomicLong used = new AtomicLong(0);
 
-        /** cached value */
+        /** cached: last calculated non-negative value rate */
+        transient public float valueRate;
+        /** cached: last calculated positive, negative, or NaN value rate */
         transient public float value;
 
         TimedLink(Causable causable) {

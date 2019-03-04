@@ -31,7 +31,12 @@ public class EternalNALTask extends NALTask {
     }
 
     @Override
-    public final float evi(long when, long dur) {
+    public final boolean isEternal() {
+        return true;
+    }
+
+    @Override
+    public final float evi(long when, int dur) {
         return truth().evi();
     }
 }

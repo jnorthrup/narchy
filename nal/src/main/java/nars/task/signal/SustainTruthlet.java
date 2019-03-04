@@ -57,8 +57,7 @@ public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
 
     }
 
-    public long dur() {
-        
+    public final int dur() {
         return dur;
     }
 }

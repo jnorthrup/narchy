@@ -147,6 +147,12 @@ public class ExeCharts {
                 return w.value;
             }
         },
+        ValueRate() {
+            @Override
+            public float floatValueOf(TimedLink w) {
+                return w.valueRate;
+            }
+        },
 //        Time() {
 //            @Override
 //            public float floatValueOf(TimedLink w) {
