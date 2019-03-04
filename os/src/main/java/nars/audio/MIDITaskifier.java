@@ -91,9 +91,9 @@ public class MIDITaskifier {
             });
             nar.on(c);
 
-            
-            nar.input(new NALTask(c.term(), BELIEF, $.t(0f, 0.35f), 0, ETERNAL, ETERNAL, nar.evidence()));
-            nar.input(new NALTask(c.term(), GOAL, $.t(0f, 0.1f), 0, ETERNAL, ETERNAL, nar.evidence()));
+
+            nar.input(NALTask.the(c.term(), BELIEF, $.t(0f, 0.35f), (long) 0, ETERNAL, ETERNAL, nar.evidence()));
+            nar.input(NALTask.the(c.term(), GOAL, $.t(0f, 0.1f), (long) 0, ETERNAL, ETERNAL, nar.evidence()));
             nar.onCycle(n -> {
 
                 float v = volume[finalI];

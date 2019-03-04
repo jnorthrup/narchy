@@ -12,8 +12,8 @@ import java.util.Arrays;
  * */
 public class RankedTopN<X> extends TopN<X> {
 
-    /** cached score table; maintained to be synchronized with the items array */
-    private float[] ranked = null;
+    /** cached rank/strength/weight/value table; maintained to be synchronized with the items array */
+    private float[] value = null;
 
 
 //    static final ThreadLocal<MetalPool<Ranked>> rr = ThreadLocal.withInitial(()->new MetalPool<>() {
@@ -48,7 +48,7 @@ public class RankedTopN<X> extends TopN<X> {
     public final void setCapacity(int capacity) {
         if (capacity != capacity()) {
             super.setCapacity(capacity);
-            ranked = ranked!=null ? Arrays.copyOf(ranked, capacity) : new float[capacity];
+            value = value !=null ? Arrays.copyOf(value, capacity) : new float[capacity];
         }
     }
 
@@ -77,7 +77,7 @@ public class RankedTopN<X> extends TopN<X> {
     protected int addEnd(X e, float elementRank) {
         int i = super.addEnd(e, elementRank);
         if (i!=-1)
-            insertScore(i, elementRank);
+            insertValue(i, elementRank);
         return i;
     }
 
@@ -85,19 +85,19 @@ public class RankedTopN<X> extends TopN<X> {
     protected int addAtIndex(int index, X element, float elementRank, int oldSize) {
         int i = super.addAtIndex(index, element, elementRank, oldSize);
         if (i!=-1) {
-            insertScore(i, elementRank);
+            insertValue(i, elementRank);
         }
         return i;
     }
 
     @Override
-    protected int compare(int item, float score, FloatFunction<X> cmp) {
-        return Util.fastCompare(this.ranked[item], score);
+    protected int compare(int item, float value, FloatFunction<X> cmp) {
+        return Util.fastCompare(this.value[item], value);
     }
 
-    private void insertScore(int i, float elementRank) {
-        System.arraycopy(ranked, i, ranked, i+1, size-1-i );
-        ranked[i] = elementRank;
+    private void insertValue(int i, float elementRank) {
+        System.arraycopy(value, i, value, i+1, size-1-i );
+        value[i] = elementRank;
     }
 
 
@@ -109,7 +109,7 @@ public class RankedTopN<X> extends TopN<X> {
             X previous = list[index];
             if (totalOffset > 0) {
                 System.arraycopy(list, index + 1, list, index, totalOffset);
-                System.arraycopy(ranked, index + 1, ranked, index, totalOffset);
+                System.arraycopy(value, index + 1, value, index, totalOffset);
             }
             list[SIZE.decrementAndGet(this)] = null;
             return previous;

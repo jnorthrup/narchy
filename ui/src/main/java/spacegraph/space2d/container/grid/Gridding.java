@@ -224,8 +224,8 @@ public class Gridding extends MutableListContainer {
     public static Gridding row(Collection<? extends Surface> content) {
         return row(array(content));
     }
-    public static Gridding col(Collection<? extends Surface> content) {
-        return col(array(content));
+    public static Gridding column(Collection<? extends Surface> content) {
+        return column(array(content));
     }
 
     private static Surface[] array(Collection<? extends Surface> content) {
@@ -236,14 +236,14 @@ public class Gridding extends MutableListContainer {
         return new Gridding(HORIZONTAL, content);
     }
 
-    public static Gridding col(Surface... content) {
+    public static Gridding column(Surface... content) {
         return new Gridding(VERTICAL, content);
     }
 
     public static Surface row(Surface x, Surface y) {
         return Splitting.row(x, y);
     }
-    public static Surface col(Surface x, Surface y) {
+    public static Surface column(Surface x, Surface y) {
         return Splitting.column(x, y);
     }
 

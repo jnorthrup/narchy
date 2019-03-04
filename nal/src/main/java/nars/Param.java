@@ -459,6 +459,8 @@ public abstract class Param {
 
         assert(dur > 0);
 
+        float e;
+
         //inverse linear decay
         float falloffDurs =
                 //1;
@@ -467,20 +469,25 @@ public abstract class Param {
                 //4;
                 //dur;
                 //8;
+//
+//        e = evi / (1.0f + ((dt) / (falloffDurs * dur)));
 
-        return evi / (1.0f + ((dt) / (falloffDurs * dur)));
+
+        //constant time linear decay
+        e = evi * Math.max(0, (1.0f - ((float)dt) / (falloffDurs * dur)));
 
 //        //eternal noise floor
 //        float ee = TruthFunctions.eternalize(evi);
 //                       // / STAMP_CAPACITY;
-//        return ee +  (evi - ee) / (1.0f + (((float)dt) / (falloffDurs * dur)));
+//        e = ee +  (e - ee) / (1.0f + (((float)dt) / (falloffDurs * dur)));
+
+
+
+        return e;
 
 
         //return evi / (1.0f +    Util.sqr(((float)dt) / (falloffDurs * dur)));
         //return evi / (1.0f +    Util.sqr(((float)dt) / dur)/falloffDurs);
-
-        //return evi * Math.max(0, (1.0f - ((float)dt) / (falloffDurs * dur))); //constant time linear decay
-
 
 
         //return evi / (1.0f + ( Math.max(0,(dt-dur/2f)) / (dur)));
@@ -495,9 +502,6 @@ public abstract class Param {
         //return evi * (Util.tanhFast((-(((float)dt)/dur)+2))+1)/2; //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIodGFuaCgteCsyKSsxKS8yIiwiY29sb3IiOiIjMjExNUFCIn0seyJ0eXBlIjowLCJlcSI6IjEvKDEreCkiLCJjb2xvciI6IiMwMDAwMDAifSx7InR5cGUiOjEwMDAsInNpemUiOls2NDgsMzk4XX1d
 
         //return (float) (evi / (1.0 + Math.log(1 + ((double)dt) / dur)));
-
-
-
 
     }
 

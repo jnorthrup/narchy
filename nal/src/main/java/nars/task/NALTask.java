@@ -10,93 +10,51 @@ import nars.Task;
 import nars.control.CauseMerge;
 import nars.task.util.TaskException;
 import nars.term.Term;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 /**
  * generic immutable Task implementation,
  * with mutable cause[] and initially empty meta table
  */
-public class NALTask extends UnitPri implements Task {
-
-    private final Term term;
-    private final Truth truth;
-    private final byte punc;
-    private final int hash;
+public abstract class NALTask extends UnitPri implements Task {
+    protected final Term term;
+    protected final Truth truth;
+    protected final byte punc;
+    protected final int hash;
+    /*@Stable*/ protected final long[] stamp;
     public long creation;
-    private final long start;
-    private final long end;
-    /*@Stable*/ private final long[] stamp;
     private /*volatile*/ short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
-
     private volatile boolean cyclic;
 
-    public NALTask(Task parent, Term newContent, @Nullable Truth newTruth) throws TaskException {
-        this(newContent, parent.punc(), newTruth, parent.creation(), parent.start(), parent.end(), parent.stamp());
+    public static NALTask the(Term c, byte punct, Truth tr, long creation, long start, long end, long[] evidence) {
+        if (start == ETERNAL) {
+            return new EternalNALTask(c, punct, tr, creation, evidence);
+        } else {
+            return new GenericNALTask(c, punct, tr, creation, start, end, evidence);
+        }
     }
 
-    public NALTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
+    protected NALTask(Term term, byte punc, @Nullable Truth truth, long start, long end, long[] stamp, long creation) {
         super();
-
-//        if ((punc==BELIEF || punc==GOAL) && truth.conf() > 0.96)
-//            throw new WTF(); //TEMPORARY
-
-        if (start!=ETERNAL && end-start > Param.TASK_RANGE_LIMIT)
-            throw new TaskException(term, "excessive range: " + (end-start));
-
-        if (!term.op().taskable)
-            throw new TaskException(term, "invalid task term: " + term);
-
-        if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
-            throw new TaskException(term, "null truth");
-
-        if ((start == ETERNAL && end != ETERNAL) ||
-                (start > end) ||
-                (start == TIMELESS) || (end == TIMELESS)
-        ) {
-            throw new RuntimeException("start=" + start + ", end=" + end + " is invalid task occurrence time");
-        }
-
-//        if (truth!=null && truth.conf() < Param.TRUTH_EPSILON)
-//            throw new Truth.TruthException("evidence underflow: conf=", truth.conf());
-
-        if (Param.DEBUG_EXTRA) {
-            if (!Stamp.validStamp(stamp))
-                throw new TaskException(term, "invalid stamp: " + Arrays.toString(stamp));
-
-            Task.validTaskTerm(term, punc, false);
-        }
-
-
         this.term = term;
         this.truth = truth;
         this.punc = punc;
-        this.start = start;
-        this.end = end;
         this.creation = creation;
         this.stamp = stamp;
-
-        this.hash = hashCalculate();
-
+        this.hash = hashCalculate(start, end); //must be last
     }
 
-
-    protected int hashCalculate() {
+    protected int hashCalculate(long start, long end) {
         return Task.hash(
                 term,
                 truth,
                 punc,
                 start, end, stamp);
     }
-
 
     @Override
     public final int hashCode() {
@@ -107,7 +65,6 @@ public class NALTask extends UnitPri implements Task {
     public boolean equals(Object that) {
         return Task.equal(this, that);
     }
-
 
     @Override
     public boolean isCyclic() {
@@ -130,7 +87,6 @@ public class NALTask extends UnitPri implements Task {
 
         return causeMerge(incoming.cause(), merge);
     }
-
 
     public Task causeMerge(short[] c, CauseMerge merge) {
 
@@ -174,9 +130,7 @@ public class NALTask extends UnitPri implements Task {
     }
 
     @Override
-    public long start() {
-        return start;
-    }
+    public abstract long start();
 
     @Override
     public void setCreation(long nextCreation) {
@@ -184,9 +138,7 @@ public class NALTask extends UnitPri implements Task {
     }
 
     @Override
-    public long end() {
-        return end;
-    }
+    public abstract long end();
 
     @Override
     public long[] stamp() {
@@ -205,7 +157,6 @@ public class NALTask extends UnitPri implements Task {
         this.cause = cause;
         return this;
     }
-
 
     @Override
     public String toString() {
@@ -242,7 +193,7 @@ public class NALTask extends UnitPri implements Task {
     /**
      * extended: with meta table
      */
-    public static class NALTaskX extends NALTask implements jcog.data.map.MetaMap {
+    public static class NALTaskX extends GenericNALTask implements jcog.data.map.MetaMap {
 
         private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
 
@@ -277,6 +228,4 @@ public class NALTask extends UnitPri implements Task {
             return m != null ? (X) m.get(key) : null;
         }
     }
-
-
 }

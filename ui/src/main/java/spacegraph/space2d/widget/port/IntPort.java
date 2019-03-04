@@ -6,7 +6,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntConsumer;
 
-import static spacegraph.space2d.container.grid.Gridding.col;
+import static spacegraph.space2d.container.grid.Gridding.column;
 
 /** TODO add both text and spinner methods */
 public class IntPort extends EditablePort<Integer> {
@@ -22,7 +22,7 @@ public class IntPort extends EditablePort<Integer> {
         incButton.click(()-> out(get() +1));
         decButton.click(()-> out((get() -1))); //TODO fully atomic
 
-        set(new Splitting(edit, col(incButton, decButton), false, 0.8f));
+        set(new Splitting(edit, column(incButton, decButton), false, 0.8f));
     }
 
     public IntPort(IntConsumer i) {

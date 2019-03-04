@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -71,6 +72,14 @@ public class ObjectSurface<X> extends MutableUnitContainer {
      * root
      */
     private final X obj;
+
+    public static ObjectSurface<Object> the(Object x) {
+        return new ObjectSurface<>(x);
+    }
+
+    public static ObjectSurface<Object> the(Object... x) {
+        return new ObjectSurface<>(List.of(x));
+    }
 
     public ObjectSurface(X x) {
         this(x, 1);
@@ -216,11 +225,21 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             Draw.rect(bounds, gl);
         }
 
-        @Override protected String name() {
+        @Override @Nullable protected Surface label() {
+            String s;
             if (context instanceof Field) {
-                return ((Field)context).getName();
+                s = ((Field)context).getName();
+            } else {
+                s = context != null ? context.toString() : (instance != null ? instance.toString() : null);
             }
-            return context != null ? context.toString() : (instance!=null ? instance.toString() : null);
+
+            Surface provided = super.label();
+            if (s == null) { return provided; }
+            else  {
+                VectorLabel l = new VectorLabel(s);
+                if (provided == null) return l;
+                else return Splitting.row(l, 0.3f, provided);
+            }
         }
 
 

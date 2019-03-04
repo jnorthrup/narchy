@@ -170,7 +170,7 @@ class BeliefTableTest {
         t.mustBelieve(5, "(x&|y)", 1f, 0.81f, s -> true  /* TODO test occ = 0..3 */);
         t.mustBelieve(5, "(x=|>y)", 1f, 0.45f, s -> true  /* TODO test occ = 0..3 */);
         n.onTask(tt -> {
-            if (!tt.isInput() && tt.start() % 3 != 0 && tt.end() % 3 != 0 || tt.endsBefore(0) || tt.startsAfter(3))
+            if (!tt.isInput() && tt.start() % 3 != 0 && tt.end() % 3 != 0 || tt.end() > 0 && tt.start() > 3)
                 fail();
         });
         t.test();

@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static java.lang.Math.sqrt;
-import static jcog.Util.clamp;
+import static jcog.Util.clampSafe;
 
 
 /**
@@ -166,8 +166,8 @@ public class BitmapMatrixView extends Surface {
         finger.relativePos(this).scaled(w, h, touchPos);
 
         touchPixel.set(
-                clamp((int) Math.floor(touchPos.x),0,w-1),
-                clamp((int) Math.floor(touchPos.y), 0, h-1));
+                clampSafe((int) Math.floor(touchPos.x),0,w-1),
+                clampSafe((int) Math.floor(touchPos.y), 0, h-1));
 
         return true;
 

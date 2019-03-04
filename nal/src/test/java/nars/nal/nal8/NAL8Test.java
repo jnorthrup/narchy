@@ -66,8 +66,8 @@ public class NAL8Test extends NALTest {
          */
 
         test
-                .input(new NALTask($.$("(a-->b)"), GOAL, $.t(1f, 0.9f), 5, 10, 20, new long[]{100}).priSet(0.5f))
-                .input(new NALTask($.$("(c-->b)"), BELIEF, $.t(1f, 0.9f), 4, 5, 25, new long[]{101}).priSet(0.5f))
+                .input(NALTask.the($.$("(a-->b)"), GOAL, $.t(1f, 0.9f), (long) 5, (long) 10, (long) 20, new long[]{100}).priSet(0.5f))
+                .input(NALTask.the($.$("(c-->b)"), BELIEF, $.t(1f, 0.9f), (long) 4, (long) 5, (long) 25, new long[]{101}).priSet(0.5f))
                 .mustGoal(cycles, "(a-->c)", 1f, 0.4f,
 
                         x -> x >= 5 && x <= 25

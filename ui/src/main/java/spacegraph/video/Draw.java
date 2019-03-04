@@ -385,27 +385,28 @@ public enum Draw {
         gl.glEnd();
     }
 
-    public static void rectStroke(float x1, float y1, float w, float h, GL2 gl) {
+    public static void rectStroke(float left, float bottom, float w, float h, GL2 gl) {
         gl.glBegin(GL2.GL_LINE_STRIP);
-        gl.glVertex2f(x1, y1);
-        gl.glVertex2f(x1 + w, y1);
-        gl.glVertex2f(x1 + w, y1 + h);
-        gl.glVertex2f(x1, y1 + h);
-        gl.glVertex2f(x1, y1);
+        gl.glVertex2f(left, bottom);
+        gl.glVertex2f(left + w, bottom);
+        gl.glVertex2f(left + w, bottom + h);
+        gl.glVertex2f(left, bottom + h);
+        gl.glVertex2f(left, bottom);
         gl.glEnd();
     }
 
-    public static void rectFrame(GL2 gl, float cx, float cy, float wi, float hi, float thick) {
-        rectFrame(gl, cx, cy, wi, hi, wi + thick, hi + thick);
+    /** note: (cx,cy,w,h) */
+    public static void rectFrame(float cx, float cy, float wi, float hi, float thick, GL2 gl) {
+        rectFrame(cx, cy, wi, hi, wi + thick, hi + thick, gl);
     }
 
     public static void rectFrame(RectFloat bounds, float thick, GL2 gl) {
-        rectFrame(gl, bounds.cx(), bounds.cy(), bounds.w, bounds.h, thick);
+        rectFrame(bounds.cx(), bounds.cy(), bounds.w, bounds.h, thick, gl);
     }
     /** wi,hi - inner width/height
      *  wo,ho - outer width/height
      *  */
-    public static void rectFrame(GL2 gl, float cx, float cy, float wi, float hi, float wo, float ho) {
+    public static void rectFrame(float cx, float cy, float wi, float hi, float wo, float ho, GL2 gl) {
         //N
         float vthick = (ho - hi) / 2;
         Draw.rect(cx-wo/2, cy-ho/2, wo, vthick, gl );
@@ -474,20 +475,20 @@ public enum Draw {
 
     }
 
-    public static void rect(float x1, float y1, float w, float h, GL2 gl) {
-        gl.glRectf(x1, y1, x1 + w, y1 + h);
+    public static void rect(float left, float bottom, float w, float h, GL2 gl) {
+        gl.glRectf(left, bottom, left + w, bottom + h);
     }
 
-    public static void rectAlphaCorners(float x1, float y1, float x2, float y2, float[] color, float[] cornerAlphas, GL2 gl) {
+    public static void rectAlphaCorners(float left, float bottom, float x2, float y2, float[] color, float[] cornerAlphas, GL2 gl) {
         gl.glBegin(GL2.GL_QUADS);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[0]);
-        gl.glVertex3f(x1, y1, 0);
+        gl.glVertex3f(left, bottom, 0);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[1]);
-        gl.glVertex3f(x2, y1, 0);
+        gl.glVertex3f(x2, bottom, 0);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[2]);
         gl.glVertex3f(x2, y2, 0);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[3]);
-        gl.glVertex3f(x1, y2, 0);
+        gl.glVertex3f(left, y2, 0);
         gl.glEnd();
 
     }

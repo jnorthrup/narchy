@@ -65,6 +65,7 @@ class TruthPolationTest {
 
 
     private NALTask t(float freq, float conf, long start, long end) {
-        return new NALTask(x,BELIEF, $.t(freq, conf), 0, start, end, new long[] { serial++ });
+        long[] stamp = new long[] { serial++ };
+        return NALTask.the(x, BELIEF, $.t(freq, conf), (long) 0, start, end, stamp);
     }
 }

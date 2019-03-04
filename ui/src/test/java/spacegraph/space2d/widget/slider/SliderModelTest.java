@@ -10,7 +10,7 @@ class SliderModelTest {
         SpaceGraph.window(
                 grid(
                         new XYSlider(), new XYSlider(), new XYSlider(),
-                        col(
+                        column(
                                 new SliderModel(0.75f),
                                 new SliderModel(0.25f).type(SliderModel.KnobHoriz),
                                 new SliderModel(0.5f)

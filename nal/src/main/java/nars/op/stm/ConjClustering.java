@@ -17,6 +17,7 @@ import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
 import nars.task.NALTask;
+import nars.task.GenericNALTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.util.conj.ConjLazy;
@@ -236,7 +237,7 @@ public class ConjClustering extends Causable {
         return in.value();
     }
 
-    public static class STMClusterTask extends NALTask {
+    public static class STMClusterTask extends GenericNALTask {
 
         STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws TaskException {
             super(cp.getOne(), punc, t.negIf(cp.getTwo()), now, start, end, evidence);

@@ -1,0 +1,37 @@
+package nars.task;
+
+import nars.term.Term;
+import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
+
+public class EternalNALTask extends NALTask {
+
+    public EternalNALTask(Term term, byte punc, @Nullable Truth truth, long creation, long[] stamp) {
+        super(term, punc, truth, ETERNAL, ETERNAL, stamp, creation);
+    }
+
+    @Override
+    public final boolean intersects(long rangeStart, long rangeEnd) {
+        return true;
+    }
+
+    @Override
+    public final boolean contains(long rangeStart, long rangeEnd) {
+        return rangeStart!=ETERNAL;
+    }
+
+    @Override
+    public final long start() {
+        return ETERNAL;
+    }
+
+    @Override
+    public final long end() {
+        return ETERNAL;
+    }
+
+    @Override
+    public final float evi(long when, long dur) {
+        return truth().evi();
+    }
+}

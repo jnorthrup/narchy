@@ -93,17 +93,17 @@ public class Weather extends NARService {
 
 
                 long HALF_HOUR_ms = 3600/2 * 1000;
+                /* (parameters) */
                 events.add(
-                    new NALTask($$("sunrise" /* (parameters) */), BELIEF, $.t(1, 0.9f), nar.time(),
-                            sunrise.getTime() - HALF_HOUR_ms, sunrise.getTime() + HALF_HOUR_ms, nar.evidence())
+                        NALTask.the($$("sunrise" /* (parameters) */), BELIEF, $.t(1, 0.9f), nar.time(), sunrise.getTime() - HALF_HOUR_ms, sunrise.getTime() + HALF_HOUR_ms, nar.evidence())
                 );
+                /* (parameters) */
                 events.add(
-                        new NALTask($$("sunset" /* (parameters) */), BELIEF, $.t(1, 0.9f), nar.time(),
-                                sunset.getTime() - HALF_HOUR_ms, sunset.getTime() + HALF_HOUR_ms, nar.evidence())
+                        NALTask.the($$("sunset" /* (parameters) */), BELIEF, $.t(1, 0.9f), nar.time(), sunset.getTime() - HALF_HOUR_ms, sunset.getTime() + HALF_HOUR_ms, nar.evidence())
                 );
+                /* (parameters) */
                 events.add(
-                        new NALTask($$("daylight" /* (parameters) */), BELIEF, $.t(1, 0.9f), nar.time(),
-                                sunrise.getTime(), sunset.getTime(), nar.evidence())
+                        NALTask.the($$("daylight" /* (parameters) */), BELIEF, $.t(1, 0.9f), nar.time(), sunrise.getTime(), sunset.getTime(), nar.evidence())
                 );
             }
 
@@ -153,9 +153,9 @@ public class Weather extends NARService {
 
     private void forecastTemperature(Date at, long radiusMS, float degreesF) {
         //System.out.println(at + " " + degreesF + " deg F");
+        /* parameters, */
         events.add(
-                new NALTask($.func("temperature", /* parameters, */ $.the(degreesF)), BELIEF, $.t(1, 0.9f), nar.time(),
-                        at.getTime() - radiusMS, at.getTime() + radiusMS, nar.evidence())
+                NALTask.the($.func("temperature", /* parameters, */ $.the(degreesF)), BELIEF, $.t(1, 0.9f), nar.time(), at.getTime() - radiusMS, at.getTime() + radiusMS, nar.evidence())
         );
     }
 

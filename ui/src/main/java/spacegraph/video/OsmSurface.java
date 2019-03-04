@@ -188,7 +188,7 @@ public class OsmSurface extends Surface {
 
     private static final Consumer<GL2> loading = (gl)->{
         gl.glColor3f(1, 0, 0);
-        Draw.rectFrame(gl, 0, 0, 1, 1, 0.1f);
+        Draw.rectFrame(0, 0, 1, 1, 0.1f, gl);
     };
 
     public OsmSurface go(Osm o) {

@@ -7,11 +7,11 @@ import jcog.signal.wave2d.Bitmap2D;
 import org.apache.commons.math3.random.MersenneTwister;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
+import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.ColorToggle;
-import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.video.Tex;
 
@@ -22,7 +22,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /** see: http://perfectionkills.com/exploring-canvas-drawing-techniques/ */
-public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
+public class Sketch2DBitmap extends Surface implements MenuSupplier {
 
     private final Tex bmp = new Tex();
     public final int[] pix;

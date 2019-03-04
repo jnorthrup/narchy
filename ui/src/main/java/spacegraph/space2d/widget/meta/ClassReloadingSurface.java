@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import jcog.Util;
 import jcog.util.ClassReloader;
+import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
@@ -11,7 +12,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import java.lang.reflect.Constructor;
 import java.net.URISyntaxException;
 
-public class ClassReloadingSurface<C extends Surface> extends MutableUnitContainer implements MetaFrame.Menu {
+public class ClassReloadingSurface<C extends Surface> extends MutableUnitContainer implements MenuSupplier {
 
     private final ClassReloader reloader;
     private final String className;

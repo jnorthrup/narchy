@@ -540,7 +540,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         PreciseTruth tr = Truth.theDithered(freq, c2w(conf), this);
         @Nullable Task z = Task.tryTask(term, punc, tr, (c, truth) -> {
-            Task y = new NALTask(c, punc, truth, time(), start, end, evidence());
+            Task y = NALTask.the(c, punc, truth, time(), start, end, evidence());
             y.pri(pri);
             return y;
         }, false);
@@ -568,10 +568,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         assert ((punc == QUESTION) || (punc == QUEST));
 
         return inputTask(
-                new NALTask(term.unneg(), punc, null,
-                        time(), start, end,
-                        new long[]{time.nextStamp()}
-                ).budget(this)
+                NALTask.the(term.unneg(), punc, null, time(), start, end, new long[]{time.nextStamp()}).budget(this)
         );
     }
 
@@ -592,23 +589,22 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         });
     }
 
-    public NAR logWhen(Appendable out, boolean past, boolean present, boolean future) {
-
-        if (past && present && future)
-            return log(out);
-
-        return log(out, v -> {
-            if (v instanceof Task) {
-                Task t = (Task) v;
-                long now = time();
-                return
-                        (past && t.endsBefore(now)) ||
-                                (present && t.startsAfter(now)) ||
-                                (future && t.isDuring(now));
-            }
-            return false;
-        });
-    }
+//    public NAR logWhen(Appendable out) {
+//
+//        if (past && present && future)
+//            return log(out);
+//
+//        return log(out, v -> {
+//            if (v instanceof Task) {
+//                Task t = (Task) v;
+//                long now = time();
+//                return
+//
+//                                (future && t.isDuring(now));
+//            }
+//            return false;
+//        });
+//    }
 
     @Override
     public final void input(ITask t) {

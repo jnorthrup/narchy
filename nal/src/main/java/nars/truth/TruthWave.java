@@ -112,8 +112,10 @@ public class TruthWave {
     private static void load(float[] array, int index, long absStart, long absEnd, long start, long end, @Nullable Truthed truth) {
 
         double range = absEnd - absStart;
-        array[index++] = start == Tense.ETERNAL ? Float.NaN : (float) (((start - absStart)) / range);
-        array[index++] = end == Tense.ETERNAL ? Float.NaN : (float) (((end - absStart)) / range);
+        array[index++] = start == Tense.ETERNAL ? Float.NaN :
+                (float) (((start - absStart)) / range);
+        array[index++] = end == Tense.ETERNAL ? Float.NaN :
+                (float) (((end - absStart)) / range);
         if (truth != null) {
             array[index++] = truth.freq();
             array[index/*++*/] = truth.conf();
@@ -139,7 +141,8 @@ public class TruthWave {
     /**
      * fills the wave with evenly sampled points in a time range
      */
-    public void project(BeliefTable table, long minT, long maxT, int points, Term term, NAR nar) {
+    public void project(BeliefTable table, long minT, long maxT, int points, Term term, int dur, NAR nar) {
+
         clear();
         this.start = minT;
         this.end = maxT;
@@ -148,15 +151,24 @@ public class TruthWave {
 
         size(points);
 
-        double dt = (maxT - minT) / ((float) points);
-        double t = minT ;
+        double dt, t;
+        if (points <= 1) {
+            dt = 0;
+            t = (minT + maxT)/2;
+        } else {
+            dt = (maxT - minT) / ((float) (points - 1));
+            t = minT + dt / 2;
+        }
+
         float[] data = this.truth;
         int j = 0;
         for (int i = 0; i < points; i++) {
-            long a = Math.round(t); //Math.round(t - dt/2);
-            long b = Math.round(t + dt);
+            long a = Math.round(t);
+            long b = a;
+//            long a = Math.round(t); //Math.round(t - dt/2);
+//            long b = Math.round(t + dt);
 
-            Truth tr = table.truth(a, b, term, null, precision, 0, nar);
+            Truth tr = table.truth(a, b, term, null, precision, dur, nar);
 
             load(data, (j++) * ENTRY_SIZE,
                     minT, maxT,
@@ -204,14 +216,15 @@ public class TruthWave {
         int n = this.size;
         float[] t = this.truth;
         int j = 0;
-        long totalRange = this.end-this.start;
+        long start = this.start;
+        double totalRange = this.end-this.start;
         for (int i = 0; i < n; i++) {
             float s = t[j++];
             float e = t[j++];
             float f = t[j++];
             float c = t[j++];
-            long S = this.start + Math.round(totalRange * s);
-            long E = this.start + Math.round(totalRange * e);
+            long S = start + Math.round(totalRange * s);
+            long E = start + Math.round(totalRange * e);
             v.onTruth(f, c, S, E);
         }
     }

@@ -12,6 +12,8 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
+import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
 import tech.tablesaw.api.Row;
 
 import java.util.Arrays;
@@ -88,12 +90,7 @@ public class NALSchema {
 
         }
 
-        return meta.stream().map(t ->
-            new NALTask(t.normalize(), BELIEF, $.t(1f, nar.confDefault(BELIEF)),
-                    nar.time(),
-                    ETERNAL, ETERNAL,
-                    nar.evidence()
-            ).pri(nar)
+        return meta.stream().map(t -> NALTask.the(t.normalize(), BELIEF, $.t(1f, nar.confDefault(BELIEF)), nar.time(), ETERNAL, ETERNAL, nar.evidence()).pri(nar)
         );
     }
 
@@ -128,14 +125,11 @@ public class NALSchema {
             byte p = punc != 0 ?
                     punc 
                     :
-                    (point.hasAny(VAR_QUERY) ? QUESTION : BELIEF); 
+                    (point.hasAny(VAR_QUERY) ? QUESTION : BELIEF);
 
-            return new NALTask(point.normalize(), p, p==QUESTION || p == QUEST ? null :
-                $.t(1f, n.confDefault(p)),
-                    now,
-                    ETERNAL,
-                    ETERNAL, n.evidence()
-            ).pri(n);
+            @Nullable Truth truth = p==QUESTION || p == QUEST ? null :
+                $.t(1f, n.confDefault(p));
+            return NALTask.the(point.normalize(), p, truth, now, ETERNAL, ETERNAL, n.evidence()).pri(n);
         });
     }
 

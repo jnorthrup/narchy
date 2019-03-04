@@ -3,6 +3,7 @@ package jcog.sort;
 import jcog.data.list.FasterList;
 import jcog.data.pool.MetalPool;
 import jcog.decide.Roulette;
+import jcog.math.FloatSupplier;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
@@ -30,12 +31,16 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     };
 
     public FloatRank<X> rank;
-    private float min;
+    private float min= NEGATIVE_INFINITY;
     private int capacity;
 
     public TopN(X[] target) {
         this.items = target;
-        this.min = NEGATIVE_INFINITY;
+
+    }
+
+    public TopN() {
+        this(null);
     }
 
     /**
@@ -223,7 +228,12 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
     @Nullable
-    public X getRoulette(Random rng) {
+    public final X getRoulette(Random rng) {
+        return getRoulette(rng::nextFloat);
+    }
+
+    @Nullable
+    public X getRoulette(FloatSupplier rng) {
         return getRoulette(rng, rank);
     }
 
@@ -244,13 +254,15 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
      * roulette select
      */
     @Nullable
-    public X getRoulette(Random rng, FloatRank<X> rank) {
+    public X getRoulette(FloatSupplier rng, FloatRank<X> anyRank) {
         int n = size();
         if (n == 0)
             return null;
-        IntToFloatFunction select = i -> rank.rank(get(i));
+        IntToFloatFunction select = i -> anyRank.rank(get(i));
         return get( //n < 8 ?
-                Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
+                this instanceof RankedTopN ?
+                    Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache
+                    Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
                 // :
                 // Roulette.selectRoulette(n, select, rng)
         );

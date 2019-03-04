@@ -10,6 +10,7 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.util.math.Color3f;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import static spacegraph.space2d.container.grid.Gridding.col;
+import static spacegraph.space2d.container.grid.Gridding.column;
 import static spacegraph.space2d.container.grid.Gridding.row;
 
 /**
@@ -56,9 +57,9 @@ public class BagLab {
 
     public Surface surface() {
         return row(
-                col(inputSliders),
+                Gridding.column(inputSliders),
                 
-                col(
+                column(
                         LabeledPane.the("Bag Selection Distribution (0..1)", new HistogramChart(
                                 () -> selectionHistogram, new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))),
                         LabeledPane.the("Bag Content Distribution (0..1)", new HistogramChart(

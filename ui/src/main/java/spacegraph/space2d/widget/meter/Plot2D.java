@@ -607,8 +607,8 @@ public class Plot2D extends Widget {
                     float sStart = first + (last - first) * (x / ((float) w));
                     float sEnd = first + (last - first) * ((x + 1) / ((float) w));
 
-                    int iStart = Util.clamp((int) Math.ceil(sStart), 0, sn - 1);
-                    int iEnd = Util.clamp((int) Math.floor(sEnd), 0, sn - 1);
+                    int iStart = Util.clampSafe((int) Math.ceil(sStart), 0, sn - 1);
+                    int iEnd = Util.clampSafe((int) Math.floor(sEnd), 0, sn - 1);
                     float amp = 0;
 
                     amp += (iStart - sStart) * s.get(iStart);

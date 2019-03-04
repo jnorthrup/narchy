@@ -401,7 +401,7 @@ public class ShapeSensor extends NARService {
 
     private void believe(long now, Term term, Truth truth) {
         float pri = nar.priDefault(BELIEF);
-        in.input(new NALTask(term, BELIEF, truth, now, now, now, nar.evidence()).pri(pri));
+        in.input(NALTask.the(term, BELIEF, truth, now, now, now, nar.evidence()).pri(pri));
     }
 
 

@@ -340,14 +340,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             Task finalOldBelief = oldBelief;
             float finalAProp = aProp;
-            revised = Task.tryTask(newTerm, input.punc(), conclusion, (term, revisionTruth) ->
-                    new NALTask(term,
-                            input.punc(),
-                            revisionTruth,
-                            nar.time() /* creation time */,
-                            ETERNAL, ETERNAL,
-                            Stamp.merge(input.stamp(), finalOldBelief.stamp(), finalAProp, nar.random())
-                    )
+            revised = Task.tryTask(newTerm, input.punc(), conclusion, (term, revisionTruth) -> NALTask.the(term, input.punc(), revisionTruth, nar.time(), ETERNAL, ETERNAL, Stamp.merge(input.stamp(), finalOldBelief.stamp(), finalAProp, nar.random()))
             );
             if (revised != null) {
                 //TODO maybe based on relative evidence

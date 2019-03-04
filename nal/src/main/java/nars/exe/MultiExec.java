@@ -11,10 +11,7 @@ import jcog.random.SplitMix64Random;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.control.DurService;
-import nars.task.AbstractTask;
-import nars.task.ITask;
-import nars.task.NALTask;
-import nars.task.TaskProxy;
+import nars.task.*;
 import nars.time.clock.RealTime;
 
 import java.io.IOException;

@@ -22,7 +22,7 @@ import static java.lang.Float.MIN_NORMAL;
  * <p>
  * when no choices remain, it exits automatically.
  */
-public final class MutableRoulette {
+public class MutableRoulette {
 
     private final static float EPSILON = MIN_NORMAL;
     /**

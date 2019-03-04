@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * TODO extend an ImmutableTask class
  */
-public class DerivedTask extends NALTask {
+public class DerivedTask extends GenericNALTask {
 
     
 

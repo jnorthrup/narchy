@@ -2,6 +2,7 @@ package nars.link;
 
 import jcog.decide.Roulette;
 import jcog.pri.bag.Bag;
+import jcog.sort.RankedTopN;
 import jcog.sort.TopN;
 import nars.concept.NodeConcept;
 import nars.term.Term;
@@ -63,7 +64,7 @@ public final class AtomLinks {
                             if (((Set)match).add(t)) {
                                 if (((Set)match).size() >= cap) {
                                     //upgrade to TopN
-                                    TopN<TaskLink> mm = new TopN<>(new TaskLink[cap], (FloatFunction<TaskLink>) TaskLink::pri);
+                                    RankedTopN<TaskLink> mm = new RankedTopN<>(new TaskLink[cap], (FloatFunction<TaskLink>) TaskLink::pri);
                                     match.forEach(mm::add);
                                     match = mm;
                                 }

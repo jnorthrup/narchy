@@ -256,10 +256,8 @@ class StampTest {
     @Test
     void testDetectOverlapAfterZipOverflow() {
         ObjectFloatPair<long[]> p = Stamp.zip(List.of(
-                new NALTask($.the("x"), QUESTION, null, 0, 0, 0,
-                        new long[]{1, 2, 8, 9}),
-                new NALTask($.the("y"), QUESTION, null, 0, 0, 0,
-                        new long[]{3, 4, 5, 8})
+                NALTask.the($.the("x"), QUESTION, null, (long) 0, (long) 0, (long) 0, new long[]{1, 2, 8, 9}),
+                NALTask.the($.the("y"), QUESTION, null, (long) 0, (long) 0, (long) 0, new long[]{3, 4, 5, 8})
         ), 2);
         assertEquals("[8, 9]", Arrays.toString(p.getOne()));
         assertEquals(1/8f, p.getTwo(), 0.01f);

@@ -18,6 +18,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -85,10 +86,9 @@ public abstract class Reward implements Termed, Iterable<Concept> {
     }
 
     public void alwaysWantEternally(Term goal, float conf) {
-        Task t = new NALTask(goal.unneg(), GOAL, $.t(goal.op()==NEG ? 0f : 1f, conf), nar().time(),
-                ETERNAL, ETERNAL,
-                goalUnstamped ? Stamp.UNSTAMPED : nar().evidence()
-        );
+        @Nullable Truth truth = $.t(goal.op()==NEG ? 0f : 1f, conf);
+        long[] stamp = goalUnstamped ? Stamp.UNSTAMPED : nar().evidence();
+        Task t = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
         Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
         AttNode a = new AttnBranch(at, List.of(t)) {

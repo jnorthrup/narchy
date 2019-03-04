@@ -229,7 +229,7 @@ import static nars.time.Tense.ETERNAL;
             tFinal = null;
         }
 
-        Task i = new NALTask(term, punc, tFinal, creation, start, end, evidence);
+        Task i = NALTask.the(term, punc, tFinal, creation, start, end, evidence);
         i.pri(this);
         
 

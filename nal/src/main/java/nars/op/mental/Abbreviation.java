@@ -218,11 +218,7 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
                     $.t(1f, abbreviationConfidence.floatValue()),
                     (te, tr) -> {
 
-                        NALTask ta = new NALTask(
-                                te, BELIEF, tr,
-                                nar.time(), ETERNAL, ETERNAL,
-                                nar.evidence()
-                        );
+                        NALTask ta = NALTask.the(te, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, nar.evidence());
 
 
                         ta.log("Abbreviate");

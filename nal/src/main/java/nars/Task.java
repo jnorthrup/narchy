@@ -7,10 +7,7 @@ import jcog.math.Longerval;
 import jcog.pri.UnitPrioritizable;
 import nars.control.op.Perceive;
 import nars.subterm.Subterms;
-import nars.task.DerivedTask;
-import nars.task.ITask;
-import nars.task.NALTask;
-import nars.task.UnevaluatedTask;
+import nars.task.*;
 import nars.task.proxy.SpecialNegatedTermTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
@@ -335,11 +332,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
     @Nullable
     static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
-        return clone(x, newContent, newTruth, newPunc, (c, t) ->
-                new NALTask(c, newPunc, t,
-                        x.creation(), start, end,
-                        x.stamp()
-                ));
+        return clone(x, newContent, newTruth, newPunc, (c, t) -> NALTask.the(c, newPunc, t, x.creation(), start, end, x.stamp()));
     }
 
     @Nullable
@@ -568,9 +561,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
         return conf();
     }
 
-    default float evi(long when, final long dur) {
-        return evi(when, dur, Float.NEGATIVE_INFINITY);
-    }
+
 
     /**
      * POINT EVIDENCE
@@ -585,11 +576,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
      * @param minEvi used to fast fail if the result will not exceed the value
      * @return value >= 0 indicating the evidence
      */
-    default float evi(long when, final long dur, float minEvi) {
+    default float evi(long when, final long dur) {
 
         float ee = evi();
-        if (ee < minEvi)
-            return 0;
 
         long s = start();
         if (s == ETERNAL) {

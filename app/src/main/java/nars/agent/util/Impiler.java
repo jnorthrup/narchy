@@ -214,11 +214,7 @@ public class Impiler {
 
                             Term ee = IMPL.the(cc.term(), zDT, Z);
                                 LongHashSet ss = stamp;
-                                Task z = Task.tryTask(ee, BELIEF, t, (ttt, tr) ->
-                                        new NALTask(
-                                                ttt, BELIEF, tr, nar.time(), ETERNAL, ETERNAL,
-                                                ss.toArray()
-                                        )
+                                Task z = Task.tryTask(ee, BELIEF, t, (ttt, tr) -> NALTask.the(ttt, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, ss.toArray())
                                 );
                                 if (z!=null) {
                                     System.out.println(z);
@@ -604,11 +600,7 @@ public class Impiler {
                 Term tt = IMPL.the(start, idt, end);
 
                 LongHashSet ss = stamp;
-                Task y = Task.tryTask(tt, BELIEF, $.t(freq, conf), (ttt, tr) ->
-                        new NALTask(
-                                ttt, BELIEF, tr, nar.time(), this.start, this.end,
-                                ss.toArray()
-                        )
+                Task y = Task.tryTask(tt, BELIEF, $.t(freq, conf), (ttt, tr) -> NALTask.the(ttt, BELIEF, tr, nar.time(), this.start, this.end, ss.toArray())
                 );
 
                 if (y != null)

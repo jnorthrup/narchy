@@ -85,7 +85,7 @@ public class ThermostatTest {
                 hotToHot = Thermostat.change(true, true);
         Predicate<Thermostat> isCold = x -> x.is() == Thermostat.cold;
         Predicate<Thermostat> isHot = x -> x.is() == Thermostat.hot;
-        n.logWhen(System.out, true, true, true);
+        n.log(System.out);
 
         boolean stupid = true;
         training:

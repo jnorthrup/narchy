@@ -78,7 +78,7 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
 
 
     private static Task command(Term content, long when) {
-        return new NALTask(content, Op.COMMAND, null, when, when, when, ArrayUtils.EMPTY_LONG_ARRAY);
+        return NALTask.the(content, Op.COMMAND, null, when, when, when, ArrayUtils.EMPTY_LONG_ARRAY);
     }
 
     public static Task log(long when, Object content) {

@@ -2,7 +2,10 @@ package spacegraph.space2d.widget.meta;
 
 import jcog.WTF;
 import jcog.tree.rtree.rect.RectFloat;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
+import spacegraph.space2d.Labeled;
+import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
@@ -130,15 +133,16 @@ public class MetaFrame extends Bordering implements HudHover {
 
 
         Surface surface = get(0);
-        Surface wm = (surface instanceof Menu) ? ((Menu) surface).menu() : null;
+        Surface wm = (surface instanceof MenuSupplier) ? ((MenuSupplier) surface).menu() : null;
         if(wm!=null)
 
             set(S,wm);
         else
             borderSouth=0;
 
-        PushButton n = new PushButton(new VectorLabel(name()));
-        set(N, n);
+
+
+        set(N, label());
         //n.click(this::click); //DISABLED
 
     }
@@ -226,8 +230,22 @@ public class MetaFrame extends Bordering implements HudHover {
 //        setAt(NE, new Scale(hideButton, 0.8f));
 
 
-    protected String name() {
+    @Deprecated private String name() {
+        //try to avoid
         return childrenCount() == 0 ? "" : the().toString();
+    }
+
+    protected Surface label() {
+        Surface label;
+        Surface x = the();
+        if (x!=null) {
+            if (x instanceof Labeled)
+                label = ((Labeled) x).label();
+            else
+                label = new VectorLabel(name());
+            return label;
+        } else
+            return null;
     }
 
     @Override
@@ -240,10 +258,6 @@ public class MetaFrame extends Bordering implements HudHover {
         return new BitmapLabel(screenBounds.toString()).pos(screenBounds.scale(1.5f));
     }
 
-
-    public interface Menu {
-        Surface menu();
-    }
 
     private class SatelliteMetaFrame extends MetaFrame {
 

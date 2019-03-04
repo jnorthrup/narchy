@@ -118,7 +118,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (y < min)
                 return Float.NaN;
 
-            if (pastDiscount!=1 && !r.endsAfter(now))
+            if (pastDiscount!=1 && r.end() < now)
                 y *= pastDiscount;
 
             return (float) y;

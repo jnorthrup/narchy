@@ -60,11 +60,11 @@ public class ConceptSurface extends TabMenu {
                     return new Gridding(
                             new PushButton("gOAL tRUE").click((b) -> {
                                 long now = n.time();
-                                n.input(new NALTask(x, GOAL, $.t(1f, n.confDefault(GOAL)), now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(GOAL)));
+                                n.input(NALTask.the(x, GOAL, $.t(1f, n.confDefault(GOAL)), now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(GOAL)));
                             }),
                             new PushButton("gOAL fALSE").click((b) -> {
                                 long now = n.time();
-                                n.input(new NALTask(x, GOAL, $.t(0f, n.confDefault(GOAL)), now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(GOAL)));
+                                n.input(NALTask.the(x, GOAL, $.t(0f, n.confDefault(GOAL)), now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(GOAL)));
                             })
                     );
                 },
@@ -72,15 +72,15 @@ public class ConceptSurface extends TabMenu {
                     return new Gridding(
                             new PushButton("What +1").click((b) -> {
                                 long now = n.time();
-                                n.input(new NALTask(x, QUESTION, null, now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(QUESTION)));
+                                n.input(NALTask.the(x, QUESTION, null, now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(QUESTION)));
                             }),
                             new PushButton("What +4").click((b) -> {
                                 long now = n.time();
-                                n.input(new NALTask(x, QUESTION, null, now, now + n.dur() * 3, now + n.dur() * 4, n.evidence()).priSet(n.priDefault(QUESTION)));
+                                n.input(NALTask.the(x, QUESTION, null, now, now + n.dur() * 3, now + n.dur() * 4, n.evidence()).priSet(n.priDefault(QUESTION)));
                             }),
                             new PushButton("How +1").click((b) -> {
                                 long now = n.time();
-                                n.input(new NALTask(x, QUEST, null, now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(QUEST)));
+                                n.input(NALTask.the(x, QUEST, null, now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(QUEST)));
                             })
                     );
                 }

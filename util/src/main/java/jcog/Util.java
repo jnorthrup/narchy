@@ -601,7 +601,7 @@ public enum Util {
     }
 
     public static float lerpSafe(float x, float min, float max) {
-        return min + (max - min) * x;
+        return min + x * (max - min);
     }
 
     /**
@@ -852,9 +852,14 @@ public enum Util {
 
     }
 
+    public static int bin(FloatSupplier x, int bins) {
+        return bin(x.asFloat(), bins);
+    }
+
     public static int bin(float x, int bins) {
 //        assertFinite(x);
-        return Util.clamp((int)(x * bins), 0, bins-1);
+        assert(bins > 0);
+        return Util.clampSafe((int)(x * bins), 0, bins-1);
         //return (int) Math.floor(x * bins);
         //return (int) (x  * bins);
 
@@ -1589,6 +1594,10 @@ public enum Util {
 
     public static int clamp(int i, int min, int max) {
         assert (min <= max);
+        return clampSafe(i, min, max);
+    }
+
+    public static int clampSafe(int i, int min, int max) {
         if (i < min) i = min;
         if (i > max) i = max;
         return i;
@@ -2584,8 +2593,8 @@ public enum Util {
         /* adapted from: PolynomialFunction
            https://en.wikipedia.org/wiki/Horner%27s_method
            */
-        int YMin = yMin;
-        int YMax = yMax;
+        int YMin = yMin, YMax = yMax;
+        assert(yMin < yMax);
         return (X) -> {
             int n = coefficients.length;
             float x = toInt.applyAsInt(X);
@@ -2593,7 +2602,7 @@ public enum Util {
             for (int j = n - 2; j >= 0; j--) {
                 y = x * y + coefficients[j];
             }
-            return Util.clamp(Math.round(y), YMin, YMax);
+            return Util.clampSafe(Math.round(y), YMin, YMax);
         };
     }
 
@@ -2685,4 +2694,6 @@ public enum Util {
         sum += (sEnd - iEnd) * data[i];
         return sum;
     }
+
+
 }

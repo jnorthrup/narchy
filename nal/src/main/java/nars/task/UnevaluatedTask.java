@@ -12,7 +12,7 @@ import nars.truth.Truth;
  *  something is specified in the task that evaluation
  *  otherwise would un-do.
  */
-public class UnevaluatedTask extends NALTask {
+public class UnevaluatedTask extends GenericNALTask {
 
     public UnevaluatedTask(Term t, byte punct, Truth truth, long creation, long start, long end, long[] stamp) {
         super(t, punct, truth, creation, start, end,

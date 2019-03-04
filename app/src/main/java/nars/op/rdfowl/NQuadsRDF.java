@@ -456,10 +456,7 @@ public abstract class NQuadsRDF {
 
         if (belief instanceof Compound) {
 
-            return new NALTask(belief, BELIEF,
-                    $.t(1f, nar.confDefault(BELIEF)),
-                    nar.time(), Tense.ETERNAL, Tense.ETERNAL,
-                    nar.evidence())
+            return NALTask.the(belief, BELIEF, $.t(1f, nar.confDefault(BELIEF)), nar.time(), Tense.ETERNAL, Tense.ETERNAL, nar.evidence())
                     .pri(nar)
                     ;
 

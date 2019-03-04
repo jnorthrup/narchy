@@ -89,7 +89,7 @@ public abstract class SurfaceHiliteOverlay extends Surface {
         //gl.glLineWidth(thick);
         //Draw.rectStroke(gl, px, py, q.x+thick-px, q.y+thick-py);
 
-        Draw.rectFrame(gl, (p.x + q.x) / 2, (p.y + q.y) / 2, q.x - p.x, q.y - p.y, thick);
+        Draw.rectFrame((p.x + q.x) / 2, (p.y + q.y) / 2, q.x - p.x, q.y - p.y, thick, gl);
     }
 
 
