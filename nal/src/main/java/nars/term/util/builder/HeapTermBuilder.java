@@ -14,7 +14,7 @@ public class HeapTermBuilder extends TermBuilder {
     }
 
     @Override
-    public Term compound(Op o, int dt, Term[] u) {
+    public Term compound(Op o, int dt, Term... u) {
         return theCompound(o, dt, o.sortedIfNecessary(dt, u));
     }
 

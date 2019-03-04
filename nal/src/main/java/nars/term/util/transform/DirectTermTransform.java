@@ -12,12 +12,12 @@ public abstract class DirectTermTransform extends AbstractTermTransform.NegObliv
     final static TermBuilder localBuilder = HeapTermBuilder.the;
 
     @Override
-    public Term the(Op op, int dt, Term[] t) {
+    public Term compound(Op op, int dt, Term[] t) {
         return op.the(localBuilder, dt, t);
     }
 
     @Override
-    public Term the(Op op, int dt, Subterms t) {
+    public Term compound(Op op, int dt, Subterms t) {
         return op.the(localBuilder, dt, t);
     }
 

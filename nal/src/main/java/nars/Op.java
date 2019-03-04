@@ -16,6 +16,7 @@ import nars.term.atom.Bool;
 import nars.term.util.SetSectDiff;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
+import nars.term.util.builder.TermConstructor;
 import nars.term.util.conj.Conj;
 import nars.term.var.Img;
 import nars.term.var.UnnormalizedVariable;
@@ -788,7 +789,7 @@ public enum Op {
         return compound(b, this, dt, u);
     }
 
-    public static Term compound(TermBuilder b, Op o, int dt, Subterms u) {
+    public static Term compound(TermConstructor b, Op o, int dt, Subterms u) {
         return compound(b, o, dt, u.arrayShared());
     }
 
@@ -805,11 +806,11 @@ public enum Op {
         return compound(terms, o, dt, u);
     }
 
-    public static Term compound(TermBuilder b, Op o, Term... u) {
+    public static Term compound(TermConstructor b, Op o, Term... u) {
         return compound(b, o, DTERNAL, u);
     }
 
-    public static Term compound(TermBuilder b, Op o, int dt, Term... u) {
+    public static Term compound(TermConstructor b, Op o, int dt, Term... u) {
         return b.compound(o, dt, u);
     }
 

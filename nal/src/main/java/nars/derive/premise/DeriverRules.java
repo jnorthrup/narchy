@@ -5,6 +5,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
+import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.term.control.PREDICATE;
@@ -74,7 +75,7 @@ public class DeriverRules {
      */
     private boolean test(Derivation d, int branch) {
         could[branch].run.test(d);
-        return d.use(1); //return d.revertLive(0, 1);
+        return d.use(Param.TTL_BRANCH);
     }
 
 

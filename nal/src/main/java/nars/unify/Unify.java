@@ -160,7 +160,8 @@ public abstract class Unify extends Versioning<Term> {
 
             chain[next].mutate(chain, next, this);
 
-            return use(Param.TTL_MUTATE_COMPONENT);
+            //return use(Param.TTL_MUTATE_COMPONENT);
+            return true;
 
         } else {
 
@@ -217,7 +218,7 @@ public abstract class Unify extends Versioning<Term> {
     }
 
 
-    protected Unification unification(boolean clear) {
+    public Unification unification(boolean clear) {
         FasterList<Term> xyPairs = new FasterList(size * 2 /* estimate */);
 
         Termutator[] termutes = commitTermutes();
@@ -252,16 +253,16 @@ public abstract class Unify extends Versioning<Term> {
     @Deprecated public Unification unification(Term x, Term y, int discoveriesMax, int discoveryTTL) {
         Unification u = unification(x, y);
         if (u instanceof PermutingUnification) {
-            use( ((PermutingUnification)u).discover(discoveriesMax, discoveryTTL) );
+            ((PermutingUnification)u).discover(this, discoveriesMax, discoveryTTL);
         }
         return u;
     }
-    public Unification unification(boolean clear, int discoveriesMax, int discoveryTTL) {
+    @Deprecated public Unification unification(boolean clear, int discoveriesMax, int discoveryTTL) {
 
         Unification u = unification(clear);
 
         if (u instanceof PermutingUnification)
-            use( ((PermutingUnification)u).discover(discoveriesMax, discoveryTTL) );
+            ((PermutingUnification)u).discover(this, discoveriesMax, discoveryTTL);
 
         return u;
     }

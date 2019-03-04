@@ -11,6 +11,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.builder.TermBuilder;
+import nars.term.util.builder.TermConstructor;
 import nars.term.util.map.ByteAnonMap;
 import nars.unify.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
@@ -284,7 +285,7 @@ public class LazyCompound {
         }
     }
 
-    protected Term next(TermBuilder b, byte ctl) {
+    protected Term next(TermConstructor b, byte ctl) {
         Term n = sub.interned((byte) (ctl - MAX_CONTROL_CODES));
         if (n == null)
             throw new NullPointerException();

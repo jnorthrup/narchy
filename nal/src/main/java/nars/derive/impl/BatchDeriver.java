@@ -22,8 +22,8 @@ import java.util.function.BooleanSupplier;
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-    public final IntRange tasklinksPerIteration = new IntRange(1, 1, 32);
-    public final IntRange termlinksPerTaskLink = new IntRange(2, 1, 4);
+    public final IntRange tasklinksPerIteration = new IntRange(2, 1, 32);
+    public final IntRange termlinksPerTaskLink = new IntRange(1, 1, 4);
 
 
     public BatchDeriver(PremiseDeriverRuleSet rules) {

@@ -1,9 +1,12 @@
 package jcog.memoize;
 
+import jcog.TODO;
+import jcog.util.HashCachedPair;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -16,45 +19,67 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class QuickMemoize<X, Y> {
 
     protected Pair<X,Y>[] data;
-    protected int mask;
-    protected int shift;
-    private final Function<X, Y> eFunction;
+    protected int mask, shift;
     protected boolean toggle = false;
 
 
-    public QuickMemoize(int capacity, Function<X, Y> eFunction) throws IllegalArgumentException {
-        this.eFunction = eFunction;
+    public QuickMemoize(int capacity) throws IllegalArgumentException {
         resize(capacity);
     }
 
-    public void resize(int capacity) {
-        int n = nextPower2(capacity, 16);
-        shift = intLog2(n);
-        data = new Pair[n];
-        mask = n - 1;
+    public void resize(int _capacity) {
+        int capacity = nextPower2(_capacity, 4 /* was: 16 */);
+        if (data!=null && capacity == data.length)
+            return; //same size
+
+        int nextShift = intLog2(capacity);
+        int nextMask = capacity - 1;
+        Pair[] nextData = new Pair[capacity];
+
+        if (this.data!=null) {
+            throw new TODO("copy to the new instance and replace the fields here");
+        }
+
+        this.shift = nextShift; this.mask = nextMask; this.data = nextData;
     }
 
-    @Nullable
-    public Y apply(@Nullable X x) {
-        if (x == null)
-            return null;
+    @Nullable  public Y apply(@Nullable X x, Function<X, Y> calc) {
+        Pair<X,Y>[] data = this.data;
         int hash = this.hash(x);
         int h = hash & mask;
         Pair<X, Y> s1 = data[h];
-        if (s1 != null && x.equals(s1.getOne())) {
+        if (s1 != null && x.equals(s1.getOne()))
             return s1.getTwo();
-        }
 
         int h2 = (hash >> shift) & mask;
         Pair<X, Y> s2 = data[h2];
-        if (s2 != null && x.equals(s2.getOne())) {
+        if (s2 != null && x.equals(s2.getOne()))
             return s2.getTwo();
-        }
 
-        Y xy = eFunction.apply(x);
+        Y xy = calc.apply(x);
         Pair<X, Y> s3 = pair(x, xy);
         data[s1 == null || (s2 != null && toggle()) ? h : h2] = s3;
+        return xy;
+    }
 
+    @Nullable  public <P> Y apply(@Nullable X x, P p, BiFunction<X, P, Y> calc) {
+        Pair<X, Y> s1, s2;
+
+        Pair<X,Y>[] data = this.data;
+
+        int hash = this.hash(x);
+        int h = hash & mask;
+        if ((s1 = data[h]) != null && x.equals(s1.getOne()))
+            return s1.getTwo();
+
+
+        int h2 = (hash >> shift) & mask;
+        if ((s2 = data[h2]) != null && x.equals(s2.getOne()))
+            return s2.getTwo();
+
+        Y xy = calc.apply(x, p);
+        Pair<X, Y> s3 = new HashCachedPair(x, xy);
+        data[s1 == null || (s2 != null && toggle()) ? h : h2] = s3;
         return xy;
     }
 
@@ -62,7 +87,7 @@ public class QuickMemoize<X, Y> {
         return x.hashCode();
     }
 
-    protected boolean toggle() {
+    private boolean toggle() {
         return toggle = !toggle;
     }
 

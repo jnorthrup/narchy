@@ -36,19 +36,15 @@ import static nars.time.Tense.XTERNAL;
  * - instance(..)
  * - reduction to another target or True/False/Null
  */
-public abstract class TermBuilder {
+public abstract class TermBuilder implements TermConstructor {
 
     abstract public Term compound(Op o, int dt, Term... u);
 
-    protected abstract Subterms subterms(@Nullable Op inOp, Term... u);
+    abstract protected Subterms subterms(@Nullable Op inOp, Term... u);
 
     public final Term compound(Op o, Term... u) {
         return compound(o, DTERNAL, u);
     }
-
-//    protected Term resolve(Term x){
-//        return x;
-//    }
 
     public final Subterms subterms(Term... s) {
         if (s.length == 0)
@@ -61,7 +57,7 @@ public abstract class TermBuilder {
         return subterms(s.toArray(Op.EmptyTermArray));
     }
 
-    public Subterms theSubterms(boolean tryAnon, Term... t) {
+    protected Subterms theSubterms(boolean tryAnon, Term... t) {
         final int tLength = t.length;
         if (tLength == 0)
             return Op.EmptySubterms;

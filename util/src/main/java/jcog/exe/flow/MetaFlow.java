@@ -269,16 +269,16 @@ public class MetaFlow {
                                 x.getDescriptor().equals(y.getDescriptor()));
     }
 
-    static final QuickMemoize<String,byte[]> compactMethodDescriptors = new QuickMemoize<>(1024, (descriptor)->{
-        //TODO use byteseek automaton
-        descriptor = descriptor.replace("java/lang/","");
-        if (descriptor.endsWith("V")) //void return value
-            descriptor = descriptor.substring(0, descriptor.length()-1);
-        return descriptor.getBytes();
-    });
+    static final QuickMemoize<String,byte[]> compactMethodDescriptors = new QuickMemoize<>(1024);
 
-    static byte[] compactDescriptor(String descriptor) {
-        return compactMethodDescriptors.apply(descriptor);
+    static byte[] compactDescriptor(String _descriptor) {
+        return compactMethodDescriptors.apply(_descriptor, (descriptor)->{
+            //TODO use byteseek automaton
+            descriptor = descriptor.replace("java/lang/","");
+            if (descriptor.endsWith("V")) //void return value
+                descriptor = descriptor.substring(0, descriptor.length()-1);
+            return descriptor.getBytes();
+        });
     }
 
     /** shared by all cursors */

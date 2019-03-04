@@ -32,7 +32,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     @Override
-    public Term the(Op op, int dt, Subterms t) {
+    public Term compound(Op op, int dt, Subterms t) {
         return op.the(dt, t);
     }
 

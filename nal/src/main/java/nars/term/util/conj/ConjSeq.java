@@ -2,7 +2,7 @@ package nars.term.util.conj;
 
 import nars.term.Term;
 import nars.term.util.TermException;
-import nars.term.util.builder.TermBuilder;
+import nars.term.util.builder.TermConstructor;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.*;
@@ -39,7 +39,7 @@ public enum ConjSeq { ;
     }
 
     /** TODO TermBuilder */
-    public static Term sequence(TermBuilder B, int dt, Term[] u) {
+    public static Term sequence(TermConstructor B, int dt, Term[] u) {
         if (u.length != 2)
             throw new TermException("temporal conjunction with n!=2 subterms", CONJ, dt, u);
 
@@ -49,7 +49,7 @@ public enum ConjSeq { ;
     }
 
     /** TODO TermBuilder */
-    static public Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {
+    static public Term sequence(Term a, long aStart, Term b, long bStart, TermConstructor B) {
 
         if (aStart == ETERNAL) {
             assert(bStart == aStart);

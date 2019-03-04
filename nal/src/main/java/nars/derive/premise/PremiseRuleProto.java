@@ -1,19 +1,16 @@
 package nars.derive.premise;
 
-import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.control.Cause;
 import nars.derive.Derivation;
-import nars.derive.op.Taskify;
 import nars.derive.op.Premisify;
+import nars.derive.op.Taskify;
 import nars.term.Term;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
 import nars.unify.ellipsis.Ellipsislike;
 import org.eclipse.collections.api.tuple.Pair;
-
-import java.util.List;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -35,35 +32,32 @@ public class PremiseRuleProto extends PremiseRuleSource {
     public PremiseRuleProto(PremiseRuleSource raw, NAR nar) {
         super(raw);
 
-
         RuleCause cause = nar.newCause(s -> new RuleCause(this, s));
+
         Taskify taskify = !raw.varIntro ?
                 new Taskify(termify, cause) :
                 new Taskify.VarTaskify(termify, cause);
 
-        final List<PREDICATE<Derivation>> post = new FasterList<>(4);
-
-
         boolean fwd = ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.vars() <= beliefPattern.vars());
-        post.add(new Premisify(taskPattern, beliefPattern, fwd, taskify));
+        Premisify premisify =
+            //new Premisify
+            new Premisify.CachingPremisify
+                (taskPattern, beliefPattern, fwd, taskify);
 
-        PREDICATE<Derivation>[] y = new PREDICATE[
-                2 + constraintSet.size() + post.size()
-        ];
+
+        PREDICATE<Derivation>[] y = new PREDICATE[3 + CONSTRAINTS.size() ];
 
         int k = 0;
 
         y[k++] = this.truthify;
         y[k++] = Premisify.preUnify;
 
-        for (PREDICATE p : constraintSet)
+        for (PREDICATE p : CONSTRAINTS)
             y[k++] = p;
 
-        for (PREDICATE p : post)
-            y[k++] = p;
+        y[k++] = premisify;
 
-        this.rule = pair(PRE,
-                DeriveAction.action(cause, AND.the(y)));
+        this.rule = pair(PRE, DeriveAction.action(cause, AND.the(y)));
     }
 
     private static boolean hasEllipsis(Term x) {

@@ -86,7 +86,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     private static final PatternIndex INDEX = new PatternIndex();
     protected final Termify termify;
-    protected final MutableSet<UnifyConstraint> constraintSet;
+
     private final BytePredicate taskPunc;
 
 
@@ -582,7 +582,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
         this.PRE = preconditions();
-        this.constraintSet = CONSTRAINTS.toSet();
+//        this.constraintSet = CONSTRAINTS.toSet();
 
     }
 
@@ -718,7 +718,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
         this.termify = raw.termify;
         this.PRE = raw.PRE.clone(); //because it gets modified when adding Branchify suffix
-        this.CONSTRAINTS = null;
+        this.CONSTRAINTS = raw.CONSTRAINTS;
         this.source = raw.source;
         this.truthify = raw.truthify;
         this.constraints = raw.constraints;
@@ -730,7 +730,7 @@ public class PremiseRuleSource extends ProxyTerm {
         this.goalTruth = raw.goalTruth;
         this.taskPattern = raw.taskPattern;
         this.beliefPattern = raw.beliefPattern;
-        this.constraintSet = raw.constraintSet;
+//        this.constraintSet = raw.constraintSet;
 
     }
 

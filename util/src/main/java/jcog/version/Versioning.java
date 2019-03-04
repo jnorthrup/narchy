@@ -51,17 +51,18 @@ public class Versioning<X> {
      */
     public final boolean revert(int when) {
 
-        int s = size;
-        if (s <= when)
+        final int sizePrev;
+        if ((sizePrev= size) <= when)
             return false;
 
+        int sizeNext = sizePrev;
         final Versioned[] i = this.items;
 
-        while (s>when) {
-            i[--s].pop();
+        while (sizeNext>when) {
+            i[--sizeNext].pop();
         }
-        Arrays.fill(i, when, size, null);
-        this.size = s;
+        Arrays.fill(i, when, sizePrev, null);
+        this.size = sizeNext;
 
         return true;
     }

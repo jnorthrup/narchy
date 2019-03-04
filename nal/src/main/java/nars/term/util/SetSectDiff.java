@@ -8,7 +8,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.HeapTermBuilder;
-import nars.term.util.builder.TermBuilder;
+import nars.term.util.builder.TermConstructor;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +42,7 @@ public class SetSectDiff {
         }
     }
 
-    public static Term intersect(TermBuilder b, Op o, Term... t) {
+    public static Term intersect(TermConstructor b, Op o, Term... t) {
         return intersect(b, o, false, t);
     }
 
@@ -50,7 +50,7 @@ public class SetSectDiff {
         return intersect(HeapTermBuilder.the, o, union, t);
     }
 
-    public static Term intersect(TermBuilder b, Op o, boolean union, Term... t) {
+    public static Term intersect(TermConstructor b, Op o, boolean union, Term... t) {
 
         switch (t.length) {
             case 0:
@@ -119,7 +119,7 @@ public class SetSectDiff {
         return intersectProd(HeapTermBuilder.the, o, union, x, y);
     }
 
-    public static Term intersectProd(TermBuilder B, Op o, boolean union, Term x, Term y) {
+    public static Term intersectProd(TermConstructor B, Op o, boolean union, Term x, Term y) {
 
         if (x.equals(y))
             return x;

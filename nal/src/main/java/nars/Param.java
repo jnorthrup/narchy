@@ -268,9 +268,9 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public static final int TermutatorSearchTTL = 8;
+    public static final int TermutatorSearchTTL = 4;
     public static final int TermutatorFanOut = 2;
-    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -301,7 +301,7 @@ public abstract class Param {
      */
     @Range(min = 0, max = 64)
     public static final int TTL_MUTATE = 1;
-    public static final int TTL_MUTATE_COMPONENT = 0;
+    //public static final int TTL_MUTATE_COMPONENT = 0;
 
     /**
      * cost of a successful task derivation

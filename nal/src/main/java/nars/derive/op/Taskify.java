@@ -15,7 +15,6 @@ import nars.term.atom.Bool;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.unify.Unification;
 import nars.unify.unification.DeterministicUnification;
 import nars.unify.unification.PermutingUnification;
 import org.jetbrains.annotations.Nullable;
@@ -25,14 +24,29 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Function;
 
 import static nars.Op.*;
-import static nars.Param.*;
+import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
+import static nars.Param.TermutatorFanOut;
 import static nars.time.Tense.ETERNAL;
 
 public class Taskify extends ProxyTerm {
 
     public final Termify termify;
 
-    public final boolean test(@Nullable Function<nars.term.Variable, Term> xy, Derivation d) {
+
+    public final boolean test(PermutingUnification u, Derivation d) {
+        FasterList<DeterministicUnification> ii =
+                u.list.clone();
+        ii.shuffleThis(d.random);
+
+        int fanOut = Math.min(ii.size(), TermutatorFanOut);
+        for (int i = 0; i < fanOut; i++) {
+            if (!test(ii.get(i)::xy, d))
+                return false;
+        }
+        return true;
+    }
+
+        public final boolean test(@Nullable Function<nars.term.Variable, Term> xy, Derivation d) {
         assert(d.retransform.isEmpty());
         assert(d.transform.xy == null);
 
@@ -50,34 +64,7 @@ public class Taskify extends ProxyTerm {
         }
     }
 
-    public boolean test(Derivation d) {
 
-        Unification u = d.unification(true,
-                TermutatorFanOut, TermutatorSearchTTL);
-
-        if (u instanceof PermutingUnification) {
-
-            FasterList<DeterministicUnification> ii =
-                    ((PermutingUnification) u).list.clone();
-            ii.shuffleThis(d.random);
-
-            int fanOut = Math.min(ii.size(), TermutatorFanOut);
-            for (int i = 0; i < fanOut; i++) {
-                if (!test(ii.get(i)::xy, d))
-                    return false;
-            }
-
-        } else if (u instanceof DeterministicUnification) {
-            if (!test(((DeterministicUnification) u)::xy, d))
-                return false;
-        } else if (u == Unification.Self) {
-            throw new UnsupportedOperationException();
-//                if (!taskify.test((z)->Null), d)
-//                    return false;
-        }
-
-        return true;
-    }
 
     public boolean test(Term x, Derivation d) {
         Term y = termify.test(x, d);
@@ -254,12 +241,10 @@ public class Taskify extends ProxyTerm {
         if (x == null || x instanceof Bool)
             return false;
         x = x.unneg();
-        if (!(x.op().taskable &&
-               !x.hasAny(Op.VAR_PATTERN) &&
-               ((punc != BELIEF && punc != GOAL) || (!x.hasVarQuery()))))
-            return false;
+        return x.op().taskable &&
+                !x.hasAny(Op.VAR_PATTERN) &&
+                ((punc != BELIEF && punc != GOAL) || (!x.hasVarQuery()));
 
-        return true;
     }
 
     protected static boolean spam(Derivation d, int cost) {

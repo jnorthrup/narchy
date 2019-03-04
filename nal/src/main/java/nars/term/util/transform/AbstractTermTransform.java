@@ -22,9 +22,10 @@ import static nars.time.Tense.XTERNAL;
 /**
  * I = input target type, T = transformable subterm type
  */
-public interface AbstractTermTransform extends TermTransform {
+public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
 
+    /** global default transform procedure: can decide semi-optimal transform implementation */
     static Term transform(Term x, TermTransform transform) {
         if (x instanceof Compound && Param.TERMIFY_TRANSFORM_LAZY) {
             return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x,
@@ -99,16 +100,6 @@ public interface AbstractTermTransform extends TermTransform {
     }
 
 
-//    /** default lazy implementation, doesnt offer any benefit by just calling the non-lazy */
-//    default boolean transformCompound(Compound x, LazyCompound out) {
-//        Term y = transformCompound(x, x.op(), x.dt());
-//        if (y == null)
-//            return false;
-//
-//        out.addAt(y);
-//        return true;
-//    }
-
 
     /**
      * called after subterms transform has been applied
@@ -122,7 +113,7 @@ public interface AbstractTermTransform extends TermTransform {
                 if (v != null)
                     return v;
             }
-            return the(op, dt, a); //transformed subterms
+            return compound(op, dt, a); //transformed subterms
         } else {
             //same subterms
             if (op == INH && evalInline()) {
@@ -134,7 +125,7 @@ public interface AbstractTermTransform extends TermTransform {
                 }
             }
 //            if (op != x.op())
-                return the(op, dt, xx);
+                return compound(op, dt, xx);
 //            else
 //                return x.dt(dt);
         }
@@ -157,11 +148,13 @@ public interface AbstractTermTransform extends TermTransform {
 //    default Term the(Op op, int dt, TermList t) {
 //        return the(op, dt, (Subterms)t);
 //    }
-    default Term the(Op op, int dt, Subterms t) {
+    @Override
+    default Term compound(Op op, int dt, Subterms t) {
         return op.the(dt, t);
     }
 
-    default Term the(Op op, int dt, Term[] subterms) {
+    @Override
+    default Term compound(Op op, int dt, Term[] subterms) {
         return op.the(dt, subterms);
     }
 

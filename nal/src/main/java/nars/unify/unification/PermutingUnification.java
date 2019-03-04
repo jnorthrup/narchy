@@ -38,7 +38,7 @@ public class PermutingUnification extends ArrayHashSet<DeterministicUnification>
     /**
      * returns how many TTL used
      */
-    public int discover(int discoveriesMax, int ttl) {
+    public void discover(Unify ctx, int discoveriesMax, int ttl) {
         discovery.revert(restart);
 
         this.discoveriesRemain = discoveriesMax;
@@ -46,7 +46,8 @@ public class PermutingUnification extends ArrayHashSet<DeterministicUnification>
 
         discovery.tryMatches(termutes);
 
-        return Util.clamp(ttl - discovery.ttl, 0, ttl);
+        int spent = Util.clamp(ttl - discovery.ttl, 0, ttl);
+        ctx.use(spent);
     }
 
     @Override
