@@ -1,5 +1,6 @@
 package nars.derive.op;
 
+import jcog.WTF;
 import jcog.data.set.ArrayHashRing;
 import jcog.memoize.QuickMemoize;
 import jcog.util.HashCachedPair;
@@ -45,22 +46,31 @@ public class Premisify extends AbstractPred<Derivation> {
     @Override
     public boolean test(Derivation d) {
 
-        //substituteUnification(d);
+        //return substituteUnification(d);
 
         substituteDirect(d);
-
         return true;
     }
 
 
     /**
      * memoizable method
+     * @return
      */
-    private void substituteUnification(Derivation d) {
+    private boolean substituteUnification(Derivation d) {
         if (unify(d, fwd, false) && unify(d, !fwd, false)) {
-            Unification u = d.unification(true, TermutatorFanOut, TermutatorSearchTTL);
-            test(u, d);
+
+            Unification u = d.unification(true);
+
+            if (u instanceof Termutifcation) {
+                if (!((Termutifcation) u).discover(d, TermutatorFanOut, TermutatorSearchTTL))
+                    return false;
+            }
+
+            if (u!=Unification.Null)
+                return test(u, d);
         }
+        return true;
     }
 
     /**
@@ -73,8 +83,9 @@ public class Premisify extends AbstractPred<Derivation> {
         d.forEachMatch = (dd) -> {
             Term y = AbstractTermTransform.transform(taskify.termify.pattern, dd.transform);
             if (!(y instanceof Bool) && y.unneg().op().taskable)
-                taskify.test(y, dd);
-            return true;
+                return taskify.test(y, dd);
+            else
+                return true;
         };
 
         boolean unified = unify(d, !fwd, true);
@@ -86,16 +97,16 @@ public class Premisify extends AbstractPred<Derivation> {
         return d.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish);
     }
 
-    public boolean test(Unification u,Derivation d) {
+    protected boolean test(Unification u, Derivation d) {
 
         if (u instanceof Termutifcation)
             return taskify.test(((Termutifcation)u), d);
 
-        if (u instanceof DeterministicUnification)
-            return taskify.test(((DeterministicUnification) u)::xy, d);
+        else if (u instanceof DeterministicUnification)
+            return taskify.test((DeterministicUnification) u, d);
 
-
-        return true;
+        else
+            throw new WTF();
     }
 
     protected static final Atomic UNIFY = $.the("unify");

@@ -17,11 +17,10 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import nars.unify.unification.DeterministicUnification;
 import nars.unify.unification.Termutifcation;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Function;
+import java.util.List;
 
 import static nars.Op.*;
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
@@ -34,40 +33,40 @@ public class Taskify extends ProxyTerm {
 
 
     public final boolean test(Termutifcation u, Derivation d) {
-        FasterList<DeterministicUnification> ii = u.list.clone();
-        ii.shuffleThis(d.random);
+        List<DeterministicUnification> ii = u.listClone();
+        int s = ii.size();
+        if (s > 0) {
+            if (s > 1)
+                ((FasterList) ii).shuffleThis(d.random);
 
-        int fanOut = Math.min(ii.size(), TermutatorFanOut);
-        for (int i = 0; i < fanOut; i++) {
-            if (!test(ii.get(i)::xy, d))
-                return false;
+            int fanOut = Math.min(s, TermutatorFanOut);
+            for (int i = 0; i < fanOut; i++) {
+                if (!test(ii.get(i), d))
+                    return false;
+            }
         }
         return true;
     }
 
-    public final boolean test(@Nullable Function<nars.term.Variable, Term> xy, Derivation d) {
-        assert(d.retransform.isEmpty());
-        assert(d.transform.xy == null);
+    public final boolean test(DeterministicUnification xy, Derivation d) {
+//        assert(d.transform.xy == null);
 
-        d.transform.xy = xy;
-
-        try {
-
+        int start = d.size();
+        d.transform.xy = null;
+        d.retransform.clear();
+        if (xy.apply(d)) {
             Term y = AbstractTermTransform.transform(termify.pattern, d.transform);
-
+            d.revert(start);
             return test(y, d);
-
-        } finally {
-            d.retransform.clear();
-            d.transform.xy = null;
         }
-    }
 
+        return true;
+    }
 
 
     public boolean test(Term x, Derivation d) {
         Term y = termify.test(x, d);
-        return y!=null && taskify(y, d);
+        return y != null && taskify(y, d);
     }
 
 
@@ -82,7 +81,7 @@ public class Taskify extends ProxyTerm {
         }
 
         public boolean test(Term x, Derivation d) {
-            return super.test(x,d) && introVars.test(d) && taskify(d.concTerm, d);
+            return super.test(x, d) && introVars.test(d) && taskify(d.concTerm, d);
         }
 
         //TODO
@@ -91,6 +90,7 @@ public class Taskify extends ProxyTerm {
         //                        :
         //                        taskify
     }
+
     /**
      * note: the return value here shouldnt matter so just return true anyway
      */
@@ -108,7 +108,6 @@ public class Taskify extends ProxyTerm {
         Term x = Task.forceNormalizeForBelief(x1);
 
         Op xo = x.op();
-
 
 
         boolean neg = xo == NEG;
@@ -143,7 +142,7 @@ public class Taskify extends ProxyTerm {
 
 
         long S, E;
-        if (d.concOcc!=null && d.concOcc[0]!=ETERNAL) {
+        if (d.concOcc != null && d.concOcc[0] != ETERNAL) {
             long s = d.concOcc[0], e = d.concOcc[1];
             assert (e >= s) : "task has reversed occurrence: " + s + ".." + e;
 
@@ -167,7 +166,6 @@ public class Taskify extends ProxyTerm {
         }
 
 
-
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
                 Param.DEBUG ?
                         new DebugDerivedTask(C, punc, tr, S, E, d) :
@@ -180,7 +178,7 @@ public class Taskify extends ProxyTerm {
         }
 
 
-        float priority = d.deriver.pri.pri(t,d);
+        float priority = d.deriver.pri.pri(t, d);
 
         if (priority != priority) {
             d.nar.emotion.deriveFailPrioritize.increment();
@@ -188,7 +186,7 @@ public class Taskify extends ProxyTerm {
         }
 
         //these must be applied before possible merge on input to derivedTask bag
-        t.cause(ArrayUtils.add(d.parentCause, channel.id) );
+        t.cause(ArrayUtils.add(d.parentCause, channel.id));
 
         if ((d.concSingle) || (Param.OVERLAP_DOUBLE_SET_CYCLIC && d.overlapDouble))
             t.setCyclic(true);
@@ -223,7 +221,6 @@ public class Taskify extends ProxyTerm {
     public final PremiseRuleProto.RuleCause channel;
 
     private static final Atomic TASKIFY = Atomic.the("Taskify");
-
 
 
     public Taskify(Termify termify, PremiseRuleProto.RuleCause channel) {
@@ -265,7 +262,7 @@ public class Taskify extends ProxyTerm {
 
                         if ((punc == QUESTION || punc == QUEST) || (
                                 Util.equals(parent.freq(), truth.freq(), n.freqResolution.floatValue()) &&
-                                        parent.conf() >= truth.conf() - n.confResolution.floatValue()/2
+                                        parent.conf() >= truth.conf() - n.confResolution.floatValue() / 2
                                 // / 2 /* + epsilon to avid creeping confidence increase */
                         )) {
 
@@ -281,7 +278,6 @@ public class Taskify extends ProxyTerm {
 
         return false;
     }
-
 
 
     //    @Deprecated

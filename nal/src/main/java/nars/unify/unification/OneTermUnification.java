@@ -30,8 +30,8 @@ public class OneTermUnification extends DeterministicUnification {
     }
 
     @Override
-    protected void apply(Unify u) {
+    public boolean apply(Unify u) {
         boolean applied = u.putXY((Variable/*HACK*/) tx, ty);
-        assert (applied);
+        return applied;
     }
 }

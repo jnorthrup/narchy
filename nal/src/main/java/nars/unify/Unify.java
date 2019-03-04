@@ -243,23 +243,10 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     @Deprecated public final Unification unification(Term x, Term y, int discoveryTTL) {
-        return unification(x, y, Integer.MAX_VALUE, discoveryTTL);
-    }
-
-    @Deprecated public Unification unification(Term x, Term y, int discoveriesMax, int discoveryTTL) {
         Unification u = unification(x, y);
         if (u instanceof Termutifcation) {
-            ((Termutifcation)u).discover(this, discoveriesMax, discoveryTTL);
+            ((Termutifcation)u).discover(this, Integer.MAX_VALUE, discoveryTTL);
         }
-        return u;
-    }
-    @Deprecated public Unification unification(boolean clear, int discoveriesMax, int discoveryTTL) {
-
-        Unification u = unification(clear);
-
-        if (u instanceof Termutifcation)
-            ((Termutifcation)u).discover(this, discoveriesMax, discoveryTTL);
-
         return u;
     }
 

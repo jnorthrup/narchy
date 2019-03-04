@@ -41,8 +41,8 @@ public interface Unification extends Function<Term,Iterable<Term>> {
         }
 
         @Override
-        protected void apply(Unify y) {
-
+        public boolean apply(Unify y) {
+            return true;
         }
 
         @Override

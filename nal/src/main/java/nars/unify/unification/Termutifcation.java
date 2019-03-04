@@ -2,6 +2,7 @@ package nars.unify.unification;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import nars.term.Term;
 import nars.term.Variable;
@@ -29,7 +30,8 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
 
         UnifiedMap<Term, Term> baseMap = new UnifiedMap<>(4, 1f);
         Unify.ContinueUnify base = new Unify.ContinueUnify(u, baseMap);
-        pre.apply(base);
+        boolean applied = pre.apply(base);
+        assert(applied);
         baseMap.trimToSize();
         this.base = base;
 
@@ -41,7 +43,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
     /**
      * returns how many TTL used
      */
-    public void discover(Unify ctx, int discoveriesMax, int ttl) {
+    public boolean discover(Unify ctx, int discoveriesMax, int ttl) {
 
 
         Discovery u = new Discovery(this.base, discoveriesMax);
@@ -50,7 +52,8 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         u.tryMatches(termutes);
 
         int spent = Util.clamp(ttl - u.ttl, 0, ttl);
-        ctx.use(spent);
+
+        return ctx.use(spent);
     }
 
     @Override
@@ -80,6 +83,15 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         return fork.list.clone().shuffleThis(rng);
     }
 
+    public List<DeterministicUnification> listClone() {
+        FasterList<DeterministicUnification> l = list;
+        switch (l.size()) {
+            case 0: return List.of();
+            case 1: return List.of(l.getOnly());
+            default: return list.clone();
+        }
+    }
+
 
     private class Discovery extends Unify.ContinueUnify {
 
@@ -103,7 +115,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         public Term resolve(Variable x) {
             Term y = parent.resolve(x);
             if (y != null && y != x) {
-                if (!(y instanceof Variable) || size == 0)
+                if (size==0 || !(y instanceof Variable) || !var(y))
                     return y; //constant
 
                 x = (Variable) y;   //recurse thru this resolver

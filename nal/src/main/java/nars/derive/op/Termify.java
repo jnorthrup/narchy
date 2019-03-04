@@ -40,9 +40,9 @@ public final class Termify extends ProxyTerm {
 
     public final @Nullable Term test(Term x, Derivation d) {
 
+
         d.concTerm = null;
         d.concOcc = null;
-        d.use(Param.TTL_termify);
 
         NAR nar = d.nar;
         nar.emotion.deriveTermify.increment();
@@ -75,7 +75,9 @@ public final class Termify extends ProxyTerm {
             if (Param.DEBUG_ENSURE_DITHERED_DT)
                 assertDithered(y, d.ditherDT);
         }
+
         d.concTerm = y;
+
 
 
 //        if (o) {

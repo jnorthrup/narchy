@@ -17,7 +17,7 @@ public class MapUnification extends DeterministicUnification {
 
     public MapUnification() {
         super();
-        this.xy = new UnifiedMap(4);
+        this.xy = new UnifiedMap(4,1f);
     }
 
     @Override
@@ -32,11 +32,12 @@ public class MapUnification extends DeterministicUnification {
     }
 
     @Override
-    protected void apply(Unify u) {
+    public boolean apply(Unify u) {
         xy.forEach((tx, ty) -> {
             boolean applied = u.putXY((Variable/*HACK*/) tx, ty);
             assert (applied);
         });
+        return true;
     }
 
     public void put(Term x, Term y) {

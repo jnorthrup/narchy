@@ -270,7 +270,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermutatorFanOut = 2;
-    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -284,14 +284,8 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 3;
+    public static final int TIMEGRAPH_ITERATIONS = 2;
 
-
-    /**
-     * cost of attempting a termify/taskify/.. branch
-     */
-    @Range(min = 0, max = 64)
-    public static final int TTL_termify = 1;
 
     @Range(min = 0, max = 64)
     public static final int TTL_BRANCH = 1;
@@ -336,7 +330,7 @@ public abstract class Param {
      */
     @Deprecated
     public static final int TTL_MIN =
-            (Param.TTL_termify * 2) +
+            (2) +
                     (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
 

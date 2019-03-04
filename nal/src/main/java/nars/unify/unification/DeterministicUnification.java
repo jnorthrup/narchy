@@ -50,6 +50,7 @@ abstract public class DeterministicUnification implements Unification {
 
     /**
      * sets the mappings in a target unify
+     * @return true if successful
      */
-    protected abstract void apply(Unify y);
+    public abstract boolean apply(Unify y);
 }
