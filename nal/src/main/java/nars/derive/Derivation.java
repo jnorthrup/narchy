@@ -649,8 +649,11 @@ public class Derivation extends PreDerivation {
         private final Function<Atomic, Term> derivationFunctors = DerivationFunctors.get(Derivation.this);
 
         @Override
-        protected Term resolve(nars.term.Variable v) {
-            return xy!=null ? xy.apply(v) : Derivation.this.resolve(v);
+        protected Term resolve(nars.term.Variable x) {
+            if (xy != null) {
+                Term y = xy.apply(x); if (y == null) return x; else return y;
+            } else
+                return Derivation.this.resolve(x);
         }
 
 

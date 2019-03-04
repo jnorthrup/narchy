@@ -1,7 +1,5 @@
 package jcog.version;
 
-import jcog.WTF;
-
 import java.util.Arrays;
 import java.util.function.Consumer;
 
@@ -75,12 +73,12 @@ public class Versioning<X> {
 
         while (sizeNext>when) {
 
-            //i[--sizeNext].pop();
+            i[--sizeNext].pop();
 
-            Versioned ii;
-            if ((ii = i[--sizeNext])==null)
-                throw new WTF();
-            ii.pop();
+//            Versioned ii;
+//            if ((ii = i[--sizeNext])==null)
+//                throw new WTF();
+//            ii.pop();
 
         }
         Arrays.fill(i, when, sizePrev, null);

@@ -176,6 +176,9 @@ public abstract class Unify extends Versioning<Term> {
      * completely dereferences a target (usually a variable)
      */
     public Term resolve(final Variable x) {
+        if (size == 0)
+            return x;
+
         Term /*Variable*/ z = x, y;
 
         do {

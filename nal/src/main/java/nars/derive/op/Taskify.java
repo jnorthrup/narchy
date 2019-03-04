@@ -24,7 +24,7 @@ import java.util.List;
 
 import static nars.Op.*;
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
-import static nars.Param.TermutatorFanOut;
+import static nars.Param.TermUnifyForkMax;
 import static nars.time.Tense.ETERNAL;
 
 public class Taskify extends ProxyTerm {
@@ -39,7 +39,7 @@ public class Taskify extends ProxyTerm {
             if (s > 1)
                 ((FasterList) ii).shuffleThis(d.random);
 
-            int fanOut = Math.min(s, TermutatorFanOut);
+            int fanOut = Math.min(s, TermUnifyForkMax);
             for (int i = 0; i < fanOut; i++) {
                 if (!test(ii.get(i), d))
                     return false;
@@ -51,14 +51,15 @@ public class Taskify extends ProxyTerm {
     public final boolean test(DeterministicUnification xy, Derivation d) {
 //        assert(d.transform.xy == null);
 
-        int start = d.size();
-        d.transform.xy = null;
+//            int start = d.size();
+        d.transform.xy = xy::xy;
         d.retransform.clear();
-        if (xy.apply(d)) {
-            Term y = AbstractTermTransform.transform(termify.pattern, d.transform);
-            d.revert(start);
-            return test(y, d);
-        }
+        Term y = AbstractTermTransform.transform(termify.pattern, d.transform);
+//      d.revert(start);
+        d.transform.xy = null;
+        if (!test(y, d))
+            return false;
+
 
         return true;
     }

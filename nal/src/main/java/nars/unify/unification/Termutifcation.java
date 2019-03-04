@@ -43,7 +43,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
     /**
      * returns how many TTL used
      */
-    public boolean discover(Unify ctx, int discoveriesMax, int ttl) {
+    public void discover(Unify ctx, int discoveriesMax, int ttl) {
 
 
         Discovery u = new Discovery(this.base, discoveriesMax);
@@ -53,7 +53,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
 
         int spent = Util.clamp(ttl - u.ttl, 0, ttl);
 
-        return ctx.use(spent);
+        ctx.use(spent);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
 
             Unification z = unification(false);
             if (z != Unification.Null) {
-                if (z instanceof DeterministicUnification) {
+                if (z!=Self && z instanceof DeterministicUnification) {
                     if (Termutifcation.this.add((DeterministicUnification) z)) {
                         //TODO calculate max possible permutations from Termutes, and set done
                     }

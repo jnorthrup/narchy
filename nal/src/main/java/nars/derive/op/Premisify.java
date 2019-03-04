@@ -15,11 +15,13 @@ import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.Unification;
 import nars.unify.unification.DeterministicUnification;
 import nars.unify.unification.Termutifcation;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
+import java.util.Set;
 import java.util.function.BiFunction;
 
 import static nars.$.$$;
-import static nars.Param.TermutatorFanOut;
+import static nars.Param.TermUnifyForkMax;
 import static nars.Param.TermutatorSearchTTL;
 
 /**
@@ -46,9 +48,10 @@ public class Premisify extends AbstractPred<Derivation> {
     @Override
     public boolean test(Derivation d) {
 
+        //not working yet:
         //return substituteUnification(d);
 
-        substituteDirect(d);
+        substituteDirect(d, TermUnifyForkMax);
         return true;
     }
 
@@ -63,32 +66,54 @@ public class Premisify extends AbstractPred<Derivation> {
             Unification u = d.unification(true);
 
             if (u instanceof Termutifcation) {
-                if (!((Termutifcation) u).discover(d, TermutatorFanOut, TermutatorSearchTTL))
-                    return false;
+                int searchTTL = TermutatorSearchTTL;
+                if (((Termutifcation) u).isEmpty() || d.ttl > searchTTL) {
+                    ((Termutifcation) u).discover(d, TermUnifyForkMax, searchTTL);
+                }
             }
 
-            if (u!=Unification.Null)
-                return test(u, d);
+            return test(u, d);
+
         }
-        return true;
+        return false;
     }
 
     /**
      * the original, direct method
      */
-    private void substituteDirect(Derivation d) {
+    private void substituteDirect(Derivation d, int forkLimit) {
         if (!unify(d, fwd, false))
             return;
 
+        //final int[] forksRemain = {forkMax};
+        final Set<Term> tried = new UnifiedSet(forkLimit+1, 1f);
+        final int[] finalTTL = new int[] { -1 };
+
         d.forEachMatch = (dd) -> {
+            //assert(finalTTL[0]==-1);
             Term y = AbstractTermTransform.transform(taskify.termify.pattern, dd.transform);
-            if (!(y instanceof Bool) && y.unneg().op().taskable)
-                return taskify.test(y, dd);
-            else
-                return true;
+
+            if (!(y instanceof Bool) && y.unneg().op().taskable) {
+
+                if (tried.add(y)) {
+                    taskify.test(y, dd);
+
+                    if (tried.size() >= forkLimit) {
+                        finalTTL[0] = dd.stop(); //<- what really breaks; bool return val ignored
+                        return false;
+                    }
+                }
+            }
+
+
+            return true;
         };
 
+
         boolean unified = unify(d, !fwd, true);
+
+        if (finalTTL[0] >= 0)
+            d.ttl = finalTTL[0]; //HACK
 
         d.forEachMatch = null;
 
@@ -166,7 +191,7 @@ public class Premisify extends AbstractPred<Derivation> {
 
                 if (u instanceof Termutifcation)
                     ((Termutifcation) u).discover(derivation,
-                            TermutatorFanOut, TermutatorSearchTTL);
+                            TermUnifyForkMax, TermutatorSearchTTL);
 
                 test(u, derivation);
             }
