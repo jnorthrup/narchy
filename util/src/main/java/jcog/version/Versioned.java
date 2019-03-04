@@ -7,6 +7,13 @@ public interface Versioned<X> {
 
     void pop();
 
+    default X getAndPop() {
+        X x = get();
+        if (x!=null)
+            pop();
+        return x;
+    }
+
     boolean set(X nextValue, Versioning<X> context);
 
 

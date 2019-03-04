@@ -40,8 +40,8 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
         boolean fwd = ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.vars() <= beliefPattern.vars());
         Premisify premisify =
-            //new Premisify
-            new Premisify.CachingPremisify
+            new Premisify
+            //new Premisify.CachingPremisify
                 (taskPattern, beliefPattern, fwd, taskify);
 
 

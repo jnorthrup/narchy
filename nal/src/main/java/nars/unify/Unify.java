@@ -18,8 +18,7 @@ import nars.unify.mutate.Termutator;
 import nars.unify.unification.DeterministicUnification;
 import nars.unify.unification.MapUnification;
 import nars.unify.unification.OneTermUnification;
-import nars.unify.unification.PermutingUnification;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import nars.unify.unification.Termutifcation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -176,7 +175,7 @@ public abstract class Unify extends Versioning<Term> {
     /**
      * completely dereferences a target (usually a variable)
      */
-    public final Term resolve(final Variable x) {
+    public Term resolve(final Variable x) {
         Term /*Variable*/ z = x, y;
 
         do {
@@ -239,11 +238,8 @@ public abstract class Unify extends Versioning<Term> {
         else
             base = new MapUnification().putIfAbsent(xyPairs);
 
-        if (termutes==null) {
-            return base;
-        } else {
-            return new PermutingUnification(this, base, termutes);
-        }
+        return (termutes != null) ?
+            new Termutifcation(this, base, termutes) : base;
     }
 
     @Deprecated public final Unification unification(Term x, Term y, int discoveryTTL) {
@@ -252,8 +248,8 @@ public abstract class Unify extends Versioning<Term> {
 
     @Deprecated public Unification unification(Term x, Term y, int discoveriesMax, int discoveryTTL) {
         Unification u = unification(x, y);
-        if (u instanceof PermutingUnification) {
-            ((PermutingUnification)u).discover(this, discoveriesMax, discoveryTTL);
+        if (u instanceof Termutifcation) {
+            ((Termutifcation)u).discover(this, discoveriesMax, discoveryTTL);
         }
         return u;
     }
@@ -261,8 +257,8 @@ public abstract class Unify extends Versioning<Term> {
 
         Unification u = unification(clear);
 
-        if (u instanceof PermutingUnification)
-            ((PermutingUnification)u).discover(this, discoveriesMax, discoveryTTL);
+        if (u instanceof Termutifcation)
+            ((Termutifcation)u).discover(this, discoveriesMax, discoveryTTL);
 
         return u;
     }
@@ -482,16 +478,24 @@ public abstract class Unify extends Versioning<Term> {
         }
     }
 
-    /** can be used to extend a Unify */
-    public abstract static class EmptyUnify extends Unify {
+    /** extension adapter, can be used to extend a Unify */
+    public static class ContinueUnify extends Unify {
 
-        public EmptyUnify(Unify u) {
-            super(u.varBits, u.random, u.items.length, new UnifiedMap(0));
-            commonVariables = u.commonVariables;
-            dtTolerance = u.dtTolerance;
+        /**
+         * if xy is null then inherits the Map<Term,Term> from u
+         * otherwise, no mutable state is shared between parent and child
+         */
+        public ContinueUnify(Unify parent, @Nullable Map<Term,Term> xy) {
+            super(parent.varBits, parent.random, parent.items.length, xy!=null ? xy : parent.xy);
+            commonVariables = parent.commonVariables;
+            dtTolerance = parent.dtTolerance;
             //TODO any other flags?
         }
 
+        @Override
+        protected void tryMatch() {
+
+        }
     }
 
     public abstract static class UnifyTransform extends AbstractTermTransform.NegObliviousTermTransform {

@@ -16,7 +16,7 @@ import nars.term.util.transform.AbstractTermTransform;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.unify.unification.DeterministicUnification;
-import nars.unify.unification.PermutingUnification;
+import nars.unify.unification.Termutifcation;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +33,8 @@ public class Taskify extends ProxyTerm {
     public final Termify termify;
 
 
-    public final boolean test(PermutingUnification u, Derivation d) {
-        FasterList<DeterministicUnification> ii =
-                u.list.clone();
+    public final boolean test(Termutifcation u, Derivation d) {
+        FasterList<DeterministicUnification> ii = u.list.clone();
         ii.shuffleThis(d.random);
 
         int fanOut = Math.min(ii.size(), TermutatorFanOut);
@@ -46,7 +45,7 @@ public class Taskify extends ProxyTerm {
         return true;
     }
 
-        public final boolean test(@Nullable Function<nars.term.Variable, Term> xy, Derivation d) {
+    public final boolean test(@Nullable Function<nars.term.Variable, Term> xy, Derivation d) {
         assert(d.retransform.isEmpty());
         assert(d.transform.xy == null);
 

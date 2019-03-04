@@ -1,6 +1,6 @@
 package nars.derive.op;
 
-import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashRing;
 import jcog.memoize.QuickMemoize;
 import jcog.util.HashCachedPair;
 import nars.$;
@@ -13,7 +13,7 @@ import nars.term.control.PREDICATE;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.Unification;
 import nars.unify.unification.DeterministicUnification;
-import nars.unify.unification.PermutingUnification;
+import nars.unify.unification.Termutifcation;
 
 import java.util.function.BiFunction;
 
@@ -27,17 +27,17 @@ import static nars.Param.TermutatorSearchTTL;
 public class Premisify extends AbstractPred<Derivation> {
 
 
-    public final Term taskPatern, beliefPattern;
+    public final Term taskPat, beliefPat;
     final boolean fwd;
 
     private static final Atomic FWD = Atomic.the("fwd");
     private static final Atomic REV = Atomic.the("rev");
     public final Taskify taskify;
 
-    public Premisify(Term taskPatern, Term beliefPattern, boolean fwd, Taskify taskify) {
-        super($.funcFast(UNIFY, $.pFast(taskPatern, beliefPattern), fwd ? FWD : REV));
-        this.taskPatern = taskPatern;
-        this.beliefPattern = beliefPattern;
+    public Premisify(Term taskPat, Term beliefPat, boolean fwd, Taskify taskify) {
+        super($.funcFast(UNIFY, $.pFast(taskPat, beliefPat), fwd ? FWD : REV));
+        this.taskPat = taskPat;
+        this.beliefPat = beliefPat;
         this.fwd = fwd;
         this.taskify = taskify;
     }
@@ -45,9 +45,9 @@ public class Premisify extends AbstractPred<Derivation> {
     @Override
     public boolean test(Derivation d) {
 
-        substituteUnification(d);
+        //substituteUnification(d);
 
-        //substituteDirect(d);
+        substituteDirect(d);
 
         return true;
     }
@@ -57,7 +57,7 @@ public class Premisify extends AbstractPred<Derivation> {
      * memoizable method
      */
     private void substituteUnification(Derivation d) {
-        if (unify(d, fwd) && unify(d, !fwd)) {
+        if (unify(d, fwd, false) && unify(d, !fwd, false)) {
             Unification u = d.unification(true, TermutatorFanOut, TermutatorSearchTTL);
             test(u, d);
         }
@@ -67,7 +67,7 @@ public class Premisify extends AbstractPred<Derivation> {
      * the original, direct method
      */
     private void substituteDirect(Derivation d) {
-        if (!unify(d, fwd))
+        if (!unify(d, fwd, false))
             return;
 
         d.forEachMatch = (dd) -> {
@@ -77,19 +77,19 @@ public class Premisify extends AbstractPred<Derivation> {
             return true;
         };
 
-        boolean unified = unify(d, !fwd);
+        boolean unified = unify(d, !fwd, true);
 
         d.forEachMatch = null;
 
     }
-    protected boolean unify(Derivation d, boolean dir) {
-        return d.unify(dir ? taskPatern : beliefPattern, dir ? d.taskTerm : d.beliefTerm, false);
+    protected boolean unify(Derivation d, boolean dir, boolean finish) {
+        return d.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish);
     }
 
     public boolean test(Unification u,Derivation d) {
 
-        if (u instanceof PermutingUnification)
-            return taskify.test(((PermutingUnification)u), d);
+        if (u instanceof Termutifcation)
+            return taskify.test(((Termutifcation)u), d);
 
         if (u instanceof DeterministicUnification)
             return taskify.test(((DeterministicUnification) u)::xy, d);
@@ -111,17 +111,28 @@ public class Premisify extends AbstractPred<Derivation> {
         }
     };
 
-    /** experimental unification caching */
+    /** experimental unification caching (single thread only) */
     public static class CachingPremisify extends Premisify {
 
-        QuickMemoize<HashCachedPair<Term,Term>, Unification> cache = new QuickMemoize<>(64);
+        final ArrayHashRing<HashCachedPair<Term,Term>> impossible = new ArrayHashRing<>(64);
+
+        final QuickMemoize<HashCachedPair<Term,Term>, Unification> cache = new QuickMemoize<>(64) {
+            @Override
+            protected boolean store(HashCachedPair<Term, Term> p, Unification unification) {
+                if (unification==Unification.Null) {
+                    impossible.add(p);
+                    return false;
+                } else
+                    return true;
+            }
+        };
 
         public CachingPremisify(Term taskPatern, Term beliefPattern, boolean fwd, Taskify taskify) {
             super(taskPatern, beliefPattern, fwd, taskify);
         }
 
         final BiFunction<HashCachedPair<Term, Term>, Derivation, Unification> builder = (HashCachedPair<Term, Term> p, Derivation d) -> {
-            if (unify(d, fwd) && unify(d, !fwd))
+            if (unify(d, fwd, false) && unify(d, !fwd, false))
                 return d.unification(true);
             else
                 return Unification.Null;
@@ -130,14 +141,20 @@ public class Premisify extends AbstractPred<Derivation> {
         @Override
         public boolean test(Derivation derivation) {
 
-            HashCachedPair premise = new HashCachedPair(derivation.taskTerm, derivation.beliefTerm);
+            final HashCachedPair<Term,Term> premise = new HashCachedPair<>(derivation.taskTerm, derivation.beliefTerm);
+
+            if (impossible.contains(premise)) {
+                /** TODO log these wasted premises for most frequent offenders to cull the spam */
+                return true;
+            }
+
 
             Unification u = cache.apply(premise, derivation, builder);
 
             if (u!=Unification.Null) {
 
-                if (u instanceof PermutingUnification)
-                    ((PermutingUnification) u).discover(derivation,
+                if (u instanceof Termutifcation)
+                    ((Termutifcation) u).discover(derivation,
                             TermutatorFanOut, TermutatorSearchTTL);
 
                 test(u, derivation);

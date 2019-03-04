@@ -47,7 +47,7 @@ public interface Unification extends Function<Term,Iterable<Term>> {
 
         @Override
         public Term xy(Term x) {
-            return x;
+            return null;
         }
     };
 

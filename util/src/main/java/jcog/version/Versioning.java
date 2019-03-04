@@ -1,5 +1,7 @@
 package jcog.version;
 
+import jcog.WTF;
+
 import java.util.Arrays;
 import java.util.function.Consumer;
 
@@ -43,29 +45,6 @@ public class Versioning<X> {
             return false;
         }
     }
-
-
-    /**
-     * reverts/undo to previous state
-     * returns whether any revert was actually applied
-     */
-    public final boolean revert(int when) {
-
-        final int sizePrev;
-        if ((sizePrev= size) <= when)
-            return false;
-
-        int sizeNext = sizePrev;
-        final Versioned[] i = this.items;
-
-        while (sizeNext>when) {
-            i[--sizeNext].pop();
-        }
-        Arrays.fill(i, when, sizePrev, null);
-        this.size = sizeNext;
-
-        return true;
-    }
     public final void forEach(Consumer<Versioned<X>> each) {
 
 
@@ -81,21 +60,52 @@ public class Versioning<X> {
 
     }
 
-    public final boolean revert(int when, Consumer<Versioned<X>> each) {
+    /**
+     * reverts/undo to previous state
+     * returns whether any revert was actually applied
+     */
+    public final boolean revert(int when) {
 
-        int s = size;
-        if (s <= when)
+        final int sizePrev;
+        if ((sizePrev = size) <= when)
             return false;
 
+        int sizeNext = sizePrev;
         final Versioned[] i = this.items;
 
-        while (s>when) {
-            Versioned<X> victim = i[--s];
+        while (sizeNext>when) {
+
+            //i[--sizeNext].pop();
+
+            Versioned ii;
+            if ((ii = i[--sizeNext])==null)
+                throw new WTF();
+            ii.pop();
+
+        }
+        Arrays.fill(i, when, sizePrev, null);
+        this.size = sizeNext;
+
+        return true;
+    }
+
+
+    public final boolean revert(int when, Consumer<Versioned<X>> each) {
+
+        final int sizePrev;
+        if ((sizePrev = size) <= when)
+            return false;
+
+        int sizeNext = sizePrev;
+        final Versioned[] i = this.items;
+
+        while (sizeNext>when) {
+            Versioned<X> victim = i[--sizeNext];
             each.accept(victim);
             victim.pop();
         }
-        Arrays.fill(i, when, size, null);
-        this.size = s;
+        Arrays.fill(i, when, sizePrev, null);
+        this.size = sizeNext;
 
         return true;
     }
@@ -106,6 +116,9 @@ public class Versioning<X> {
     }
 
     public final boolean add(/*@NotNull*/ Versioned<X> newItem) {
+        if (newItem == null)
+            throw new NullPointerException();
+
         Versioned<X>[] ii = this.items;
         if (ii.length > this.size) {
             ii[this.size++] = newItem;
@@ -149,13 +162,7 @@ public class Versioning<X> {
         revert(size - 1);
     }
 
-    public final void clear(Consumer<Versioned<X>> each) {
-        if (each == null) {
-            clear();
-        } else {
-            revert(0, each);
-        }
-    }
+
 
     public final boolean set(Versioned<X> x, X y) {
         return x.set(y, this);

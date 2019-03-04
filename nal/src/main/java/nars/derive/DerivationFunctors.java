@@ -24,7 +24,7 @@ public enum DerivationFunctors {
 
     public static Function<Atomic, Term> get(Derivation d) {
 
-        Map<Atomic, Term> m = new UnifiedMap<>() {
+        Map<Atomic, Term> m = new UnifiedMap<>(32, 1f) {
             @Override
             public Term get(Object key) {
                 if (key == TaskTerm) {
@@ -94,7 +94,7 @@ public enum DerivationFunctors {
 //        }
 
         ((UnifiedMap)m).trimToSize();
-        
+
         return //Maps.immutable.ofMap(m)::get;
                 m::get;
         //x -> pre.contains(x) ? m.get(x) : null;

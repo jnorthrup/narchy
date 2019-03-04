@@ -10,8 +10,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static org.eclipse.collections.impl.tuple.Tuples.pair;
-
 /**
     based on Chronicle Core's ParsingCache<E>
         Created by Peter Lawrey on 29/02/16.
@@ -43,23 +41,8 @@ public class QuickMemoize<X, Y> {
         this.shift = nextShift; this.mask = nextMask; this.data = nextData;
     }
 
-    @Nullable  public Y apply(@Nullable X x, Function<X, Y> calc) {
-        Pair<X,Y>[] data = this.data;
-        int hash = this.hash(x);
-        int h = hash & mask;
-        Pair<X, Y> s1 = data[h];
-        if (s1 != null && x.equals(s1.getOne()))
-            return s1.getTwo();
-
-        int h2 = (hash >> shift) & mask;
-        Pair<X, Y> s2 = data[h2];
-        if (s2 != null && x.equals(s2.getOne()))
-            return s2.getTwo();
-
-        Y xy = calc.apply(x);
-        Pair<X, Y> s3 = pair(x, xy);
-        data[s1 == null || (s2 != null && toggle()) ? h : h2] = s3;
-        return xy;
+    @Nullable  public final Y apply(@Nullable X X, Function<X, Y> calc) {
+        return apply(X, calc, (x, c)->c.apply(x));
     }
 
     @Nullable  public <P> Y apply(@Nullable X x, P p, BiFunction<X, P, Y> calc) {
@@ -78,9 +61,16 @@ public class QuickMemoize<X, Y> {
             return s2.getTwo();
 
         Y xy = calc.apply(x, p);
-        Pair<X, Y> s3 = new HashCachedPair(x, xy);
-        data[s1 == null || (s2 != null && toggle()) ? h : h2] = s3;
+        if (store(x,xy)) {
+            Pair<X, Y> s3 = new HashCachedPair(x, xy);
+            data[s1 == null || (s2 != null && toggle()) ? h : h2] = s3;
+        }
         return xy;
+    }
+
+    /** post-filter, deciding to keep the value */
+    protected boolean store(X x, Y y) {
+        return true;
     }
 
     private int hash(@Nullable X x) {

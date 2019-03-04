@@ -27,10 +27,12 @@ public class ArrayHashRing<X> extends ArrayHashSet<X> {
     }
 
     public void pop(int n) {
-        for (int i = 0; i < n; i++) {
-            X x = list.remove(0);
-            boolean removed = set.remove(x);
-            assert(removed): "tried to remove " + x + " but couldnt";
+        if (n > 0) {
+            for (int i = 0; i < n; i++) {
+                X x = list.remove(0);
+                boolean removed = set.remove(x);
+                assert (removed) : "tried to remove " + x + " but couldnt";
+            }
         }
     }
 

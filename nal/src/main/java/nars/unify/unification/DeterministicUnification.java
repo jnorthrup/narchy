@@ -37,7 +37,7 @@ abstract public class DeterministicUnification implements Unification {
         return List.of(transform(x));
     }
 
-    public Term transform(Term x) {
+    public final Term transform(Term x) {
         return AbstractTermTransform.transform(x, transform());
     }
 
