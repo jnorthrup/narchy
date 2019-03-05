@@ -49,7 +49,7 @@ public class SurfaceRender {
 
     public void compile(Ortho.Camera cam, v2 scale, Surface root) {
         set(cam, scale);
-        root.recompile(this);
+        root.compile(this);
     }
 
     public SurfaceRender restart(float pw, float ph) {

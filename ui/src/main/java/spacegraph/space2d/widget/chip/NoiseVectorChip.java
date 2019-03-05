@@ -70,6 +70,6 @@ public class NoiseVectorChip extends Splitting {
         }
 
         out.out(outputVector.update());
-        view.update();
+        view.updateIfNotShowing();
     }
 }

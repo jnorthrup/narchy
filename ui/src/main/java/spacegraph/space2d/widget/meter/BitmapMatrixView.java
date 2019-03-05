@@ -215,11 +215,15 @@ public class BitmapMatrixView extends Surface {
     /**
      * must call this to re-generate texture so it will display
      */
-    public final boolean update() {
+    public final boolean updateIfNotShowing() {
 
         if (!showing())
             return false;
 
+        return update();
+    }
+
+    public boolean update() {
         if (buf == null) {
             if (w == 0 || h == 0) return false;
 
@@ -228,7 +232,7 @@ public class BitmapMatrixView extends Surface {
         }
 
 
-        view.update(buf, pix);
+        view.color(buf, pix);
 
         return bmp.update(buf);
     }
@@ -258,7 +262,7 @@ public class BitmapMatrixView extends Surface {
     @FunctionalInterface
     public interface BitmapPainter {
         /** provides access to the bitmap in either BufferedImage or the raw int[] raster */
-        void update(BufferedImage buf, int[] pix);
+        void color(BufferedImage buf, int[] pix);
     }
 
     @FunctionalInterface
@@ -267,14 +271,14 @@ public class BitmapMatrixView extends Surface {
          * updates the GL state for each visited matrix cell (ex: gl.glColor...)
          * before a rectangle is drawn at the returned z-offset
          */
-        int update(int x, int y);
+        int color(int x, int y);
 
-        default void update(BufferedImage buf, int[] pix) {
+        default void color(BufferedImage buf, int[] pix) {
             final int w = buf.getWidth(), h = buf.getHeight();
             int i = 0;
             for (int y = 0; y < h; y++) {
                 for (int x = 0; x < w; x++) {
-                    pix[i++] = update(x, y);
+                    pix[i++] = color(x, y);
                 }
             }
         }

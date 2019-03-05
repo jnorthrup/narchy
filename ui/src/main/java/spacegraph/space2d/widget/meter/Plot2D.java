@@ -559,7 +559,7 @@ public class Plot2D extends Widget {
             this.maxValue = maxValue;
 
             if (update) {
-                update = !bmp.update(); //keep updating till updated
+                update = !bmp.updateIfNotShowing(); //keep updating till updated
             }
 
             bmp.paintMatrix(g);
@@ -572,7 +572,7 @@ public class Plot2D extends Widget {
 
 
         @Override
-        public synchronized void update(BufferedImage buf, int[] pix) {
+        public synchronized void color(BufferedImage buf, int[] pix) {
 
 
             if (gfx == null) {

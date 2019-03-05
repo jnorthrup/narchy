@@ -1,8 +1,10 @@
 package nars;
 
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
+import jcog.pri.bag.Bag;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -19,10 +21,12 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Valuator;
-import nars.gui.BagSpectrogram;
+import nars.gui.DurSurface;
 import nars.gui.NARui;
+import nars.gui.Spectrogram;
 import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
+import nars.link.TaskLink;
 import nars.op.*;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -32,6 +36,7 @@ import nars.term.Termed;
 import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
+import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.Draw;
@@ -293,12 +298,31 @@ abstract public class NAgentX extends NAgent {
 
         window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
 
-        window(new BagSpectrogram<>(((AbstractConceptIndex)n.concepts).active, 128, n)
-                .color(x -> {
-                    float r = x.priPunc(BELIEF);
-                    float g = x.priPunc(GOAL);
-                    float b = (x.priPunc(QUESTION) + x.priPunc(QUEST))/2;
-                    return Draw.rgbInt(r, g, b);
+
+        final Bag<?,TaskLink> active = ((AbstractConceptIndex) n.concepts).active;
+        int c = active.capacity();
+        Spectrogram s = new Spectrogram(128, c);
+
+        DurSurface d = DurSurface.get(s, n, new Runnable() {
+
+            final FasterList<TaskLink> snapshot = new FasterList();
+
+            @Override
+            public void run() {
+                active.forEach(snapshot::add);
+                s.next(color);
+                snapshot.clear();
+            }
+
+            final IntToIntFunction color = _x -> {
+                TaskLink x = snapshot.getSafe(_x);
+                if (x == null)
+                    return 0;
+
+                float r = x.priPunc(BELIEF);
+                float g = x.priPunc(GOAL);
+                float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;
+                return Draw.rgbInt(r, g, b);
 
 //                    float h;
 //                    switch (x.puncMax()) {
@@ -312,8 +336,13 @@ abstract public class NAgentX extends NAgent {
 //
 //                    return Draw.colorHSB(h, 0.75f, 0.25f + 0.75f * x.priElseZero());
 
-                }), 500, 500);
+            };
 
+        });
+
+        window(d, 500, 500);
+
+        //d.durs(0.25f);
 
 //                if (a instanceof NAgentX) {
 //                    NAgent m = metavisor(a);

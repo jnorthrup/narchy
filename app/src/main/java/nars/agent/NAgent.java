@@ -490,16 +490,10 @@ public class NAgent extends NARService implements NSense, NAct {
 
             int frameDur = frameTrigger.dur();
 
-            //int d = nar.timeResolution.intValue();
             long now = nar.time();
             long prev = this.prev;
             if (prev == ETERNAL)
-                prev = now - frameDur;
-            else if (now <= prev)
-                now = prev; //what
-
-            prev = Math.max(prev, now - frameDur);
-                    //+ 1
+                prev = now - frameDur; //start
 
             long next =
                         //(Math.max(now, frameTrigger.next(now)), d);

@@ -491,16 +491,16 @@ public abstract class Param {
 
         //inverse linear decay
         float falloffDurs =
-                1;
+                //1;
                 //1.618f; //phi
                 //2; //nyquist
                 //4;
                 //dur;
-                //8;
+                8;
 
         float decayTime = falloffDurs * dur; //double?
 
-        //quadratic decay, should be finite (a=1), see: https://en.wikipedia.org/wiki/List_of_definite_integrals
+        //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
         e = evi / (1.0f + Util.sqr(dt / decayTime));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral

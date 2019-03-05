@@ -25,7 +25,7 @@ public class MatrixViewChip extends Bordering {
 //                       if (matrix!=null)
 //                            matrix.remove();
                 if (matrix!=null && last == x) {
-                    matrix.update();
+                    matrix.updateIfNotShowing();
                     return; //no change
                 }
 
@@ -44,7 +44,7 @@ public class MatrixViewChip extends Bordering {
                                            (cx, cy) -> Draw.rgbInt(Util.tanhFast(x.get(cx))/2+0.5f, 0, 0));
                }
                set(matrix);
-               matrix.update();
+               matrix.updateIfNotShowing();
 //                       matrix.up
             }
            //}

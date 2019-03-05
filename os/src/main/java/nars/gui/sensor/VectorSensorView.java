@@ -210,7 +210,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         this.end = Math.round(now + dur * window);
 
         this._truthDur = Math.round(truthDur.floatValue() * dur);
-        update();
+        updateIfNotShowing();
     }
 
     private final SplitMix64Random noise = new SplitMix64Random(1);
@@ -220,7 +220,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
     @Override
-    public int update(int x, int y) {
+    public int color(int x, int y) {
 
 
         TaskConcept s = concept(x,y);

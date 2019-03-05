@@ -112,9 +112,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
     @Override
     public void sense(long prev, long now, NAR n) {
 
+        int narDur = n.dur();
 
-        int curiDur = 0;
+        int curiDur = narDur;
 
+        int organicDur =
+                //Tense.occToDT(e-s);
+                narDur;
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
 
@@ -127,7 +131,6 @@ public class AbstractGoalActionConcept extends ActionConcept {
         //Answer.filter(withoutCuriosity, (t) -> t.endsAfter(recent)); //prevent stronger past from overriding weaker future
 
         int dither = n.dtDither.intValue();
-        int narDur = n.dur();
         long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
         Truth nextActionDex = null;
         FasterList<BeliefTable> goalTables = ((BeliefTables) goals()).tables;
@@ -166,7 +169,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 e += dither / 2;
 
 
-                int organicDur = Tense.occToDT(e-s);
+
                 try (Answer a = Answer.relevance(true, limit, s, e, term, fil, n).dur(organicDur)) {
 
                     for (BeliefTable b : goalTables) {
