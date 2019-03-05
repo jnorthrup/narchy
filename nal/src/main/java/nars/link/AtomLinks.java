@@ -40,7 +40,7 @@ public final class AtomLinks {
             src.meta(id, new SoftReference<>(match));
         }
 
-        return match.sample((Atomic) src.term, bag, except, in, out, now, minUpdateCycles, rng);
+        return match.sample( (Atomic)(src.term()), bag, except, in, out, now, minUpdateCycles, rng);
     }
 
     public boolean refresh(Atomic x, Iterable<TaskLink> items, int itemCount, boolean in, boolean out, long now, int minUpdateCycles) {

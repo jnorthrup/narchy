@@ -3,7 +3,6 @@ package nars.link;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
@@ -247,33 +246,33 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
         NAR nar = d.nar;
         Random rng = d.random;
+        Term s = source();
+        byte punc = task.punc();
 
-        if (t instanceof Compound) {
+        float p =
+                //priPunc(punc);
+                task.priElseZero();
+        float pFwd = p;
 
-            Concept targetConcept = nar.conceptualize(t);
-            if (targetConcept != null) {
+        Concept c;
+        if (t.op().conceptualizable) {
 
-                t = targetConcept.term();
+            c = nar.conceptualize(t);
+        } else {
+            c = null;
+        }
 
-                TermLinker linker = targetConcept.linker();
-                if ((linker instanceof FasterList)
-                        //rng.nextInt(t.volume() + 1) != 0
+        if (c!=null && t instanceof Compound) {
 
-                //&& rng.nextInt(((FasterList) linker).size() + 1) != 0
-                    //rng.nextFloat() < 0.25f
-                    //rng.nextInt(((FasterList) linker).size() + 1) == 0
-                    //src.equals(tgt) || rng.nextBoolean()
-                    //rng.nextBoolean()
-                ) {
+            float balance = 2 / 3f;
 
-                    float p =
-                            //priPunc(punc);
-                            task.priElseZero();
 
-                    float pFwd = p;
+            if (c != null) {
 
-                    Term s = source();
-                    byte punc = task.punc();
+                t = c.term();
+
+                TermLinker linker = c.linker();
+                if (linker != TermLinker.NullLinker) {
 
                     t = linker.sample(rng);
                     if (t.op().conceptualizable) {
@@ -281,26 +280,29 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                         if ((subSrcConcept = nar.conceptualize(t)) != null) {
                             t = subSrcConcept.term();
                             //TODO balance control
-                            float pRev = p/2;
-                            pFwd = p/2;
+                            float pRev = p * (1 - balance);
+                            pFwd = p * balance;
                             TaskLink.link(
-                                    TaskLink.tasklink(t, s, punc, pRev), nar);
+                                    TaskLink.tasklink(s, t, punc, pRev), nar);
                         }
                     }
 
-                    TaskLink.link(
-                            TaskLink.tasklink(s, t, punc, pFwd), nar);
-
-                }
-
 
             }
-        } else if (t.op().conceptualizable) {
-            //scan active tasklinks for a tangent match to the atom
-            @Nullable Concept cc = nar.concept(t);
-            if (cc != null)
-                t = ((AbstractConceptIndex) nar.concepts).active.atomTangent((NodeConcept) cc, this, d.time, d.ditherDT, d.random);
+
         }
+        if (c != null && t instanceof Atomic) {
+            //scan active tasklinks for a tangent match to the atom
+            Term u = ((AbstractConceptIndex) nar.concepts).active.atomTangent((NodeConcept) c, this, d.time, d.ditherDT, d.random);
+            if (u == null)
+                throw new NullPointerException();
+            t = u;
+        }
+
+        if (t.op().conceptualizable) {
+            TaskLink.link(
+                    TaskLink.tasklink(t, s, punc, pFwd), nar);
+        } //else: budget sinked (exit point)
 
         return t;
 
