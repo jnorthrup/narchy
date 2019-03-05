@@ -7,7 +7,6 @@ import nars.Op;
 import nars.Param;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.TermedDelegate;
 import nars.term.var.Img;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 

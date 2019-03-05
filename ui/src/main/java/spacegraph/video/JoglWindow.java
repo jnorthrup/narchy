@@ -49,17 +49,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public float dtS = 0;
     public final Topic<JoglWindow> eventClosed = new ListTopic<>();
 
-    //    private float updateFPS = 32f;
     public float renderFPS = UI.FPS_default;
 
     /**
      * factor to decrease FPS of unfocused windows
      */
     public float renderFPSUnfocusedRate = 0.5f;
-
-
 //    public float renderFPSInvisibleRate = 0;
-
 
     /**
      * render loop
@@ -247,7 +243,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
     @Override
-    public final void display(GLAutoDrawable drawable) {
+    public final /*synchronized*/ void display(GLAutoDrawable drawable) {
 
         long nowNS = System.nanoTime();
         long renderDtNS = nowNS - lastRenderNS;
@@ -256,6 +252,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         /* ns -> ms */
         render((int) Math.min(Integer.MAX_VALUE, Math.round(renderDtNS / 1_000_000.0)));
 
+        gl.glFlush();
+        //gl.glFinish();
     }
 
 
@@ -271,7 +269,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //Exe.invokeLater(() -> {
 
         if (window != null) {
-
             return window;
         }
 
@@ -284,21 +281,25 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //            edt.setPollPeriod(EDT_POLL_PERIOD_MS);
 //        }
 
-        window.addGLEventListener(this);
-        window.addWindowListener(this);
+
+        W.addGLEventListener(this);
+        W.addWindowListener(this);
 
         windows.add(this);
 
-        W.setTitle(title);
-        if (x != Integer.MIN_VALUE) {
-            setPositionAndSize(x, y, w, h);
-            W.setPosition(x, y);
-            W.setSize(w, h);
-        } else {
-            setSize(w, h);
-            W.setSize(w, h);
-        }
-        W.setVisible(true);
+        Exe.invokeLater(()->{
+
+            W.setTitle(title);
+            if (x != Integer.MIN_VALUE) {
+                setPositionAndSize(x, y, w, h);
+                W.setPosition(x, y);
+                W.setSize(w, h);
+            } else {
+                setSize(w, h);
+                W.setSize(w, h);
+            }
+            W.setVisible(true);
+        });
 
         return W;
         //});
@@ -360,16 +361,18 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         this.gl = gl;
 
         if (gl.getGLProfile().isHardwareRasterizer()) {
-            gl.setSwapInterval(1);
+            gl.setSwapInterval(0);
         } else {
             gl.setSwapInterval(2); //lower framerate
         }
 
-        renderer.add(window);
-
         HersheyFont.load(gl);
 
         init(gl);
+
+        renderer.add(window);
+
+        //ready
 
         renderer.loop.setFPS(renderFPS);
     }

@@ -12,8 +12,6 @@ import jcog.event.ListTopic;
 import jcog.event.Off;
 import jcog.event.Topic;
 import jcog.util.ArrayUtils;
-import spacegraph.input.finger.Finger;
-import spacegraph.space2d.Surface;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -61,12 +59,12 @@ import java.util.function.Consumer;
         window.setComponent(box);
     }
 
-    @Override
-    public Surface finger(Finger finger) {
-        /** middle mouse button paste */
-        //middleMouseClickPaste = Finger.clicked(2, ((TextEditUI) term)::paste);
-        return super.finger(finger);
-    }
+//    @Override
+//    public Surface finger(Finger finger) {
+//        /** middle mouse button paste */
+//        //middleMouseClickPaste = Finger.clicked(2, ((TextEditUI) term)::paste);
+//        return super.finger(finger);
+//    }
 
     public Off on(Consumer<String> textChange) {
         return ((TextEditUI)term).onText.on(textChange);

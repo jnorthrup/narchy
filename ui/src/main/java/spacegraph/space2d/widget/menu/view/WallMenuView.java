@@ -17,11 +17,11 @@ public class WallMenuView extends Menu.MenuView {
 //            setWrapper(x -> new Windo(new MetaFrame(x)).size(w()/2, h()/2));
 
         this.wall = new GraphEdit() {
-            @Override
-            public void doLayout(int dtMS) {
-                super.doLayout(dtMS);
-                //TODO move windows which are now outside of the view into view
-            }
+//            @Override
+//            public void doLayout(int dtMS) {
+//                super.doLayout(dtMS);
+//                //TODO move windows which are now outside of the view into view
+//            }
         };
     }
 

@@ -302,6 +302,7 @@ abstract public class JoglSpace {
             renderVolume(dtMS);
 
             renderOrthos(dtMS);
+
         }
 
         @Override

@@ -7,7 +7,6 @@ import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
 import nars.term.util.builder.HeapTermBuilder;
@@ -35,13 +34,6 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
         } else {
             return transform.apply(x);
         }
-    }
-
-    /**
-     * transform pathway for atomics
-     */
-    default Term applyAtomic(Atomic atomic) {
-        return atomic;
     }
 
     /**

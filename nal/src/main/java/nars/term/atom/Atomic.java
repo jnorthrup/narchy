@@ -349,10 +349,6 @@ public interface Atomic extends Term {
         return Stream.empty();
     }
 
-    @Override
-    default boolean these() {
-        return the();
-    }
 
 
 

@@ -1,8 +1,6 @@
 package nars.term.anon;
 
 import jcog.data.list.FasterList;
-import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -31,10 +29,6 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
         return map.toString();
     }
 
-    @Override
-    public Term compound(Op op, int dt, Subterms t) {
-        return op.the(dt, t);
-    }
 
     protected boolean putOrGet = true;
 

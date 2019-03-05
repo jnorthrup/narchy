@@ -11,7 +11,10 @@ import jcog.random.SplitMix64Random;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.control.DurService;
-import nars.task.*;
+import nars.task.AbstractTask;
+import nars.task.ITask;
+import nars.task.NALTask;
+import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
 
 import java.io.IOException;
@@ -39,7 +42,7 @@ abstract public class MultiExec extends UniExec {
     /** proportion of time spent in forced curiosity */
     private float explorationRate = 0.05f;
 
-    int granularity = 2;
+    int granularity = 1;
     private long cycleNS;
 
     MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
@@ -140,8 +143,8 @@ abstract public class MultiExec extends UniExec {
             } else {
                 float v = Math.max(0, s.value = c.value());
                 double cyclesUsed = ((double)tUsed) / cycleNS;
-                vr = (float)(v / cyclesUsed);
-                //vr = (float)(v / (1 + cyclesUsed));
+                //vr = (float)(v / cyclesUsed);
+                vr = (float)(v / (1 + cyclesUsed));
                 assert (vr == vr);
             }
 

@@ -6,7 +6,6 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.TermedDelegate;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;

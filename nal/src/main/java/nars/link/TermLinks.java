@@ -52,19 +52,19 @@ public final class TermLinks {
             for (TaskLink t : items) {
                 if (t == null) continue; //HACK
                 float xp = t.priElseZero();
-                if (match == null || match instanceof Set || (match instanceof TopN && xp > ((TopN)match).minValueIfFull())) {
+                if (match == null || match instanceof Set || (match instanceof RankedTopN && xp > ((RankedTopN)match).minValueIfFull())) {
                     Term y = other(x, t, in, out);
                     if (y != null) {
 
                         if (match == null)
-                            match = new UnifiedSet<>(cap+1, 0.99f);
+                            match = new UnifiedSet<>(cap+1, 1f);
 
                         if (match instanceof Set) {
                             if (((Set)match).add(t)) {
                                 if (((Set)match).size() >= cap) {
                                     //upgrade to TopN
                                     RankedTopN<TaskLink> mm = new RankedTopN<>(new TaskLink[cap], (FloatFunction<TaskLink>) TaskLink::pri);
-                                    match.forEach(mm::add);
+                                    match.forEach(mm::accept);
                                     match = mm;
                                 }
                             }

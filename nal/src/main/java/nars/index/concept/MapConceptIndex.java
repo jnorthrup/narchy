@@ -2,7 +2,6 @@ package nars.index.concept;
 
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.TermedDelegate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

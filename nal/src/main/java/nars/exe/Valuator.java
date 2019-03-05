@@ -162,7 +162,7 @@ public abstract class Valuator {
     /**
      * denoising autoencoder revaluator
      */
-    static class AEValuator extends DefaultValuator {
+    public static class AEValuator extends DefaultValuator {
 
         private final Random rng;
 

@@ -1,12 +1,10 @@
 package jcog.grammar.parse.examples.mechanics;
 
-import jcog.grammar.parse.Parser;
 import jcog.grammar.parse.tokens.Token;
 import jcog.grammar.parse.tokens.Word;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * This class shows the how to introduce a new type of 
@@ -54,17 +52,17 @@ public class UppercaseWord extends Word {
 		return v;
 	}
 
-	/**
-	 * Returns a textual description of this production.
-	 *
-	 * @param   vector   a list of productions already printed 
-	 *                   in this description
-	 * 
-	 * @return   string   a textual description of this production
-	 *
-	 * @see ProductionRule#toString()
-	 */
-	public String unvisitedString(Set<Parser> visited) {
-		return "Word";
-	}
+//	/**
+//	 * Returns a textual description of this production.
+//	 *
+//	 * @param   vector   a list of productions already printed
+//	 *                   in this description
+//	 *
+//	 * @return   string   a textual description of this production
+//	 *
+//	 * @see ProductionRule#toString()
+//	 */
+//	public String unvisitedString(Set<Parser> visited) {
+//		return "Word";
+//	}
 }

@@ -168,8 +168,8 @@ public abstract class Param {
     public static boolean DEBUG_ENSURE_DITHERED_DT = false;
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.max;
-            //PriMerge.plus;
+            //PriMerge.max;
+            PriMerge.plus;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 
@@ -180,8 +180,8 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        (t,b)->Util.unitize(t+b);
-        //Util::or;
+        //(t,b)->Util.unitize(t+b);
+        Util::or;
         //Math::max;
         //Util::and;
         //Util::mean;
@@ -197,8 +197,8 @@ public abstract class Param {
     /** restrains revision's ability to stretch evidence across time:
      * as a factor of the maximum of the ranges of the tasks involved in the revision */
     public static final float TASK_REVISION_STRETCH_LIMIT_PROPORTION =
-            0.5f;
-            //1;
+            //0.5f;
+            1;
             //1.5f;
             //1.618f; //goldenratio
             //2;
@@ -271,7 +271,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 

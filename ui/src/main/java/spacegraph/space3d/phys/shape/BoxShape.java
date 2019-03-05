@@ -48,18 +48,6 @@ public class BoxShape extends SimpleBoxShape {
 	}
 
 	@Override
-    public v3 getHalfExtentsWithMargin(v3 out) {
-		v3 halfExtents = getHalfExtentsWithoutMargin(out);
-
-		float m = getMargin();
-		if (m!=0) {
-			halfExtents.add(m, m, m);
-		}
-
-		return halfExtents;
-	}
-
-	@Override
 	public v3 localGetSupportingVertex(v3 vec, v3 out) {
 		v3 halfExtents = getHalfExtentsWithoutMargin(out);
 		
@@ -72,21 +60,6 @@ public class BoxShape extends SimpleBoxShape {
 				ScalarUtil.fsel(vec.x, halfExtents.x, -halfExtents.x),
 				ScalarUtil.fsel(vec.y, halfExtents.y, -halfExtents.y),
 				ScalarUtil.fsel(vec.z, halfExtents.z, -halfExtents.z));
-		return out;
-	}
-
-	@Override
-	public v3 localGetSupportingVertexWithoutMargin(v3 vec, v3 out) {
-		
-		v3 halfExtents = this.implicitShapeDimensions;
-		float hx = halfExtents.x;
-		float hy = halfExtents.y;
-		float hz = halfExtents.z;
-
-		out.set(
-				ScalarUtil.fsel(vec.x, hx, -hx),
-				ScalarUtil.fsel(vec.y, hy, -hy),
-				ScalarUtil.fsel(vec.z, hz, -hz));
 		return out;
 	}
 

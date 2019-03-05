@@ -16,8 +16,9 @@ import nars.control.CauseMerge;
 import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
+import nars.index.concept.AbstractConceptIndex;
 import nars.task.NALTask;
-import nars.task.GenericNALTask;
+import nars.task.UnevaluatedTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.util.conj.ConjLazy;
@@ -225,11 +226,11 @@ public class ConjClustering extends Causable {
     }
 
     protected float forgetRate() {
+        return ((AbstractConceptIndex)nar().concepts).forgetRate.floatValue();
         //return 1f;
-        return 0.9f;
+        //return 0.9f;
         //return 0.75f;
         //return 0.5f;
-        //return nar.forgetRate.floatValue()
     }
 
     @Override
@@ -237,7 +238,7 @@ public class ConjClustering extends Causable {
         return in.value();
     }
 
-    public static class STMClusterTask extends GenericNALTask {
+    public static class STMClusterTask extends UnevaluatedTask {
 
         STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws TaskException {
             super(cp.getOne(), punc, t.negIf(cp.getTwo()), now, start, end, evidence);

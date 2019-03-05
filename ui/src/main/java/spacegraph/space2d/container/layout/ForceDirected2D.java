@@ -18,11 +18,6 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
     private float AUTOSCALE = 0f;
 
 
-    @Override
-    protected MutableFloatRect<X> newContainer() {
-        return new MutableFloatRect<>();
-    }
-
     public final FloatRange repelSpeed = new FloatRange(4f, 0, 16f);
 
     public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 16f);

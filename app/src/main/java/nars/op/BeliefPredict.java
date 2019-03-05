@@ -14,7 +14,6 @@ import nars.control.channel.BufferedCauseChannel;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.TermedDelegate;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;

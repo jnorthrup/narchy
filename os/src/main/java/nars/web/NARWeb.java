@@ -188,11 +188,6 @@ abstract public class NARWeb extends WebServer {
                 }
 
                 @Override
-                public void start(NAR nar) {
-                    super.start(nar);
-                }
-
-                @Override
                 public void execute(Runnable async) {
                     exe.execute(async);
                 }

@@ -3,7 +3,6 @@ package nars.truth.polation;
 
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongListIterator;
-import jcog.WTF;
 import jcog.math.Longerval;
 import jcog.util.ArrayUtils;
 import nars.Param;

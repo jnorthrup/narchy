@@ -23,12 +23,6 @@ public abstract class Attention extends DurService {
         this.forgetting = forgetting;
     }
 
-    @Override
-    protected void starting(NAR nar) {
-
-        super.starting(nar);
-
-    }
 
     @Override
     protected void run(NAR n, long dt) {

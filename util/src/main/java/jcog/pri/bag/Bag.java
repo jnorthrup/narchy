@@ -385,16 +385,16 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
                 int cap = capacity();
                 if (cap > 0) {
 
-                    float pressure = depressurizePct(temperature);
+                    float pressure = depressurizePct(1);
 
                     float mass = mass();
                     if (mass > Float.MIN_NORMAL) {
 
                         Consumer eachMustForgetPct =
 
-//                        //FAIR
-                        PriForget.forgetPressure(temperature, size, cap, pressure, mass);
 
+                            //PriForget.forgetPressure(temperature, 0, size, cap, pressure, mass);
+                            PriForget.forgetIdeal(temperature, 0.5f, size, cap, pressure, mass);
 
                                 //OVERDRIVE (attenuated by size/capacity ratio)
                                 //PriForget.forgetPressure(temperature * (((float)size)/cap), cap, pressure, mass);

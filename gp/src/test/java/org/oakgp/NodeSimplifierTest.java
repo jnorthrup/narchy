@@ -227,10 +227,6 @@ public class NodeSimplifierTest {
                 return evaluationResult;
             }
 
-            @Override
-            public boolean isPure() {
-                return true;
-            }
         };
 
         FnNode fn = new FnNode(f, integerConstant(1));

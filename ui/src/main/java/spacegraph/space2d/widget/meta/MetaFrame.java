@@ -2,7 +2,6 @@ package spacegraph.space2d.widget.meta;
 
 import jcog.WTF;
 import jcog.tree.rtree.rect.RectFloat;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Labeled;
 import spacegraph.space2d.MenuSupplier;
@@ -13,7 +12,6 @@ import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.hud.HudHover;
 import spacegraph.space2d.hud.Ortho;
-import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 

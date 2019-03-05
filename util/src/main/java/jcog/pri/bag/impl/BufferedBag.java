@@ -90,11 +90,11 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
         }
 //        private float min;
 
-        @Override
-        public Bag<X,Y> commit(Consumer<Y> update) {
-//            min = bag.size() >= bag.capacity() ? bag.priMin() : 0;
-            return super.commit(update);
-        }
+//        @Override
+//        public Bag<X,Y> commit(Consumer<Y> update) {
+////            min = bag.size() >= bag.capacity() ? bag.priMin() : 0;
+//            return super.commit(update);
+//        }
 
         @Override
         public void putInternal(B b, float pri) {

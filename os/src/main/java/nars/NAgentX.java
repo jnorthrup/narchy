@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
 import jcog.pri.bag.Bag;
+import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -18,7 +19,6 @@ import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Valuator;
 import nars.gui.DurSurface;
@@ -27,7 +27,10 @@ import nars.gui.Spectrogram;
 import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
 import nars.link.TaskLink;
-import nars.op.*;
+import nars.op.Arithmeticize;
+import nars.op.AutoencodedBitmap;
+import nars.op.Introduction;
+import nars.op.PuncNoise;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
@@ -189,8 +192,8 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Valuator.DefaultValuator(0.95f),
-                        //new Valuator.AERevaluator(new XoRoShiRo128PlusRandom()),
+                        //new Valuator.DefaultValuator(0.95f),
+                        new Valuator.AEValuator(new XoRoShiRo128PlusRandom()),
 
                         threads <= 0 ? Util.concurrencyExcept(1) : threads, false/* affinity */))
 
@@ -406,9 +409,9 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.setAt(0.03f);
         n.termVolumeMax.set(28);
 
-        n.input.capacity.set(256);
+        n.input.capacity.set(512);
 
-        ((AbstractConceptIndex)n.concepts).activeCapacity.set(1024);
+        ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
         float p =
@@ -421,7 +424,7 @@ abstract public class NAgentX extends NAgent {
         n.questPriDefault.set(0.1f * p);
 
         n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.9f);
+        n.goalConfDefault.set(0.75f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
@@ -457,22 +460,28 @@ abstract public class NAgentX extends NAgent {
     public static void initPlugins(NAR n) {
 
 
+//        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
+//                "motivation.nal"
+//                //"nal6.to.nal1.nal"
+//                //"equivalence.nal"
+//                //  "induction.goal.nal"
+//        ));
+//        bd.timing = new ActionTiming(n);
+//        bd.tasklinksPerIteration.set(8);
+
+
+
         BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
-                //"nal6.to.nal1.nal"
-                "motivation.nal"
-                //"equivalence.nal"
-                //  "induction.goal.nal"
-        ));
-        bd.timing = new ActionTiming(n);
-
-
-        BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8
                 //,"relation_introduction.nal"
+                "motivation.nal"
         ));
-        //bd.timing = new DefaultTiming
+        //bd.timing = new ActionTiming(n);
+        bd.tasklinksPerIteration.set(8);
+        bd.timing = bd.timing; //default
 
 
-        new StatementLinker(n);
+
+        //new StatementLinker(n);
         new PuncNoise(n);
 
 //        new STMLinkage(n, 1);

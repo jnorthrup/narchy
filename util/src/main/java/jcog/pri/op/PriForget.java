@@ -21,23 +21,34 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
         this.mult = 1 - pctToRemove;
     }
 
-    @Nullable
-    public static Consumer<? extends Prioritizable> forgetPressure(float temperature, int size, int cap, float pressure, float mass) {
-        //            float idealPri = 1 - temperature; //headroom median balanced
-        //            float totalQuell = (mass + pressure ) - (s * idealPri);
-        //            float eachMustForgetPct =
-        //                        Util.unitize(totalQuell / s);
+
+    /**
+     *
+     * @param pressure bag pressure released
+     * @param mass bag mass remaining
+     * @param size items
+     * @param cap  item capacity
+     *
+     * @param temperature decay rate per item, opposite of elitism/retention. any non-negative value
+     * @param leak in percentage rate per item. any non-negative value
+     *         TODO until time is considered, use only very small values for this like 0.001
+     */
+    @Nullable public static Consumer<? extends Prioritizable> forgetPressure(float temperature, float leak, int size, int cap, float pressure, float mass) {
 
         if (pressure > Float.MIN_NORMAL) {
 
-            float eachMustForgetPct =
-                    temperature * size / cap * Util.unitize(pressure / mass);
 
-            //temperature * Util.unitize(pressure / (pressure + mass));
+
+            float decayRate = temperature * (pressure / mass);
+            //float decayRate = temperature * Util.unitize(pressure / (pressure + mass));
+            //float decayRate = pressure * temperature / mass;
+
+            float factor = leak + decayRate;
+
             //Util.unitize(pressure * temperature / mass);
 
-            if (eachMustForgetPct > cap * ScalarValue.EPSILON) {
-                return new PriForget<>(eachMustForgetPct);
+            if (factor > cap * ScalarValue.EPSILON) {
+                return new PriForget<>(decayRate);
             }
         }
         return null;

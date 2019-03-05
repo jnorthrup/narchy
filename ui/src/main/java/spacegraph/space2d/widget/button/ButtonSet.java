@@ -80,15 +80,15 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
 
     }
 
-    @Override
-    protected void starting() {
-        super.starting();
-
-//        Exe.later...
-//        if (mode == Mode.One && buttons.AND(b -> !b.on())) {
-//            this.buttons.first().on(true);
-//        }
-    }
+//    @Override
+//    protected void starting() {
+//        super.starting();
+//
+////        Exe.later...
+////        if (mode == Mode.One && buttons.AND(b -> !b.on())) {
+////            this.buttons.first().on(true);
+////        }
+//    }
 
     public void on(ObjectBooleanProcedure<T> action) {
         this.action = action;

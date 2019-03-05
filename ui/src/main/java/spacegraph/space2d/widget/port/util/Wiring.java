@@ -84,10 +84,6 @@ public class Wiring extends FingerDragging {
     }
 
 
-    @Override
-    public boolean escapes() {
-        return true;
-    }
 
     @Override
     protected boolean drag(Finger f) {
