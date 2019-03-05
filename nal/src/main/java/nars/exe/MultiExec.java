@@ -40,10 +40,11 @@ abstract public class MultiExec extends UniExec {
     static private final float queueLatencyMeasurementProbability = 0.05f;
 
     /** proportion of time spent in forced curiosity */
-    private float explorationRate = 0.05f;
+    private float explorationRate = 0.1f;
+    private static float expectedWorkTimeFactor = 0.75f;
 
-    int granularity = 1;
-    private long cycleNS;
+
+    protected long cycleNS;
 
     MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
@@ -142,9 +143,9 @@ abstract public class MultiExec extends UniExec {
                 vr = 0;
             } else {
                 float v = Math.max(0, s.value = c.value());
-                double cyclesUsed = ((double)tUsed) / cycleNS;
-                //vr = (float)(v / cyclesUsed);
-                vr = (float)(v / (1 + cyclesUsed));
+                double cyclesUsed = Math.max(1, ((double)tUsed) / cycleNS);
+                vr = (float)(v / cyclesUsed);
+                //vr = (float)(v / (1 + cyclesUsed));
                 assert (vr == vr);
             }
 
@@ -221,6 +222,8 @@ abstract public class MultiExec extends UniExec {
         final int threads;
         final boolean affinity;
 
+        double granularity = 2;
+
         final AffinityExecutor exe = new AffinityExecutor();
         private List<Worker> workers;
 
@@ -260,6 +263,7 @@ abstract public class MultiExec extends UniExec {
 
             exe.shutdownNow();
 
+
             sync();
 
             super.stop();
@@ -277,14 +281,11 @@ abstract public class MultiExec extends UniExec {
             final SplitMix64Random rng;
             private long deadline;
 
-//            private static final long minMaxExe = 10_000 /* 10uS */;
-
             int i = 0;
             long prioLast = ETERNAL;
             private int n;
-            private long maxExe;
-            private long prioCycles = 1;
-
+            private long subCycleMin, subCycleMax;
+            private long prioritizeEveryCycles;
 
             Worker() {
                  rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
@@ -346,10 +347,12 @@ abstract public class MultiExec extends UniExec {
                 if (n == 0)
                     return;
 
-                prioCycles = nar.dtDither();
-
                 long now = nar.time();
-                if (now > prioLast + prioCycles) {
+                if (now > prioLast + prioritizeEveryCycles) {
+                    prioritizeEveryCycles =
+                            nar.dur(); //update current dur
+                            //2 * nar.dtDither();
+
                     prioLast = now;
                     prioritize(threadWorkTimePerCycle);
                 }
@@ -375,7 +378,7 @@ abstract public class MultiExec extends UniExec {
 
                             long before = nanoTime();
 
-                            long runtimeNS = Math.min(until - before, Math.min(sTime, maxExe));
+                            long runtimeNS = Math.min(until - before, Math.min(sTime, subCycleMax));
 
                             if (runtimeNS > 0) {
                                 playing = true;
@@ -411,31 +414,36 @@ abstract public class MultiExec extends UniExec {
 
             private void prioritize(long workTimeNS) {
 
-
-                maxExe = workTimeNS / (granularity);
                 int n = this.n;
+                if (n == 0)
+                    return;
+
+//                /** expected time will be equal to or less than the max due to various overheads on resource constraints */
+//                double expectedWorkTimeNS = (((double)workTimeNS) * expectedWorkTimeFactor); //TODO meter and predict
+
+                subCycleMin = 1; //Math.max(1, Math.round(cycleNS / (n * granularity)));
+                subCycleMax = Math.max(subCycleMin, Math.round(cycleNS/ (n * granularity)));
+
                 if (play.length != n) {
                     //TODO more careful test for change
                     play = new TimedLink.MyTimedLink[n];
                     for (int i = 0; i < n; i++)
                         play[i] = cpu.get(i).my();
 
-                    ArrayUtils.shuffle(play, rng); //each worker gets unique order
+
                 }
+                if (n > 2)
+                    ArrayUtils.shuffle(play, rng); //each worker gets unique order
 
 
                 //schedule
                 //TODO Util.max((TimedLink.MyTimedLink m) -> m.time, play);
-                long maxTime =  Long.MIN_VALUE;
-                for (TimedLink.MyTimedLink m : play)
-                    if (m.time > maxTime)
-                        maxTime = m.time;
+                long minTime = -Util.max((TimedLink.MyTimedLink x) -> -x.time, play);
 
-                float spendRate = 1f;
-                long shift = maxTime < 0 ? 1 - maxTime : 0;
+                long shift = minTime < 0 ? 1 - minTime : 0;
                 for (TimedLink.MyTimedLink m : play) {
-                    int t = Math.round(shift + (workTimeNS * spendRate) * m.pri());
-                    m.add(Math.max(1, t), -workTimeNS, workTimeNS);
+                    int t = Math.round(shift + cycleNS * m.pri());
+                    m.add(Math.max(subCycleMin, t), -workTimeNS, +workTimeNS);
                 }
             }
 

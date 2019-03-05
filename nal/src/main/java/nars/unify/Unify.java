@@ -300,11 +300,6 @@ public abstract class Unify extends Versioning<Term> {
 
         revert(0, each);
 
-        if (Param.DEBUG) {
-            assert (((TermHashMap) (xy.map)).other.isEmpty());
-            assert (((TermHashMap) (xy.map)).id.isEmpty());
-        }
-
         varDepth = 0;
 
         termutes.clear();

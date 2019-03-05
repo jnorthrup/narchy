@@ -21,7 +21,6 @@ public class NAL1Test extends NALTest {
     void deduction() {
 
         test
-                .log()
                 .believe("(bird --> animal)")
                 /*.en("bird is a type of animal.")
                 .es("bird es un tipo de animal.")

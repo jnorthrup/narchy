@@ -428,7 +428,7 @@ abstract public class NAgentX extends NAgent {
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        n.emotion.want(MetaGoal.Believe, 0.01f);
+        //n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.1f);
 
         n.emotion.want(MetaGoal.Action, +1f);
@@ -476,7 +476,7 @@ abstract public class NAgentX extends NAgent {
                 "motivation.nal"
         ));
         //bd.timing = new ActionTiming(n);
-        bd.tasklinksPerIteration.set(8);
+//        bd.tasklinksPerIteration.set(8);
         bd.timing = bd.timing; //default
 
 

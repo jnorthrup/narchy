@@ -133,7 +133,7 @@ class ConceptIndexTest {
 
         String y = "(c --> b).";
         Task t3 = n.inputTask(y);
-        n.run(4);
+        n.run(9);
 
         testShared(n.concept("b"), n.concept(t3.term().sub(1)));
     }

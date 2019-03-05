@@ -9,7 +9,6 @@ import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.test.TestNAR;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -146,12 +145,13 @@ class DeriverTest {
     @Test
     void testDeriveQuest() {
 
-        @NotNull TestNAR t = test("(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
+        TestNAR t =
+            test("(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
                 .ask("b:a")
                 .believe("a:b")
-                .mustOutput(16, "b:a", QUEST);
-
-
+                .mustOutput(100, "b:a", QUEST)
+                .run(100)
+                ;
     }
 
     private TestNAR test(String... rules) {

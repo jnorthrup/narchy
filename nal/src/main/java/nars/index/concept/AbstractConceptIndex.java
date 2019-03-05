@@ -29,7 +29,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
     /** tasklink activation */
     @Deprecated public final FloatRange activationRate = new FloatRange(1f, Param.tasklinkMerge == plus ? ScalarValue.EPSILON : 1, 1);
 
-    public final FloatRange forgetRate = new FloatRange(0.9f, 0f, 1f /* 2f */);
+    public final FloatRange forgetRate = new FloatRange(0.5f, 0f, 1f /* 2f */);
 
 
     public final IntRange activeCapacity = new IntRange(256, 0, 2024) {

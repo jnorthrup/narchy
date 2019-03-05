@@ -1,6 +1,5 @@
 package jcog.pri.op;
 
-import jcog.Util;
 import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import org.jetbrains.annotations.Nullable;
@@ -39,9 +38,9 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
 
 
 
-            float decayRate = temperature * (pressure / mass);
             //float decayRate = temperature * Util.unitize(pressure / (pressure + mass));
-            //float decayRate = pressure * temperature / mass;
+            //float decayRate = temperature * Util.unitize(pressure / (pressure + mass));
+            float decayRate = pressure * temperature / mass;
 
             float factor = leak + decayRate;
 
@@ -58,7 +57,7 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
     public static Consumer<? extends Prioritizable> forgetIdeal(float rate, float idealPri, int size, int cap, float pressure, float mass) {
         float excess = pressure + Math.max(0, mass  - (size * idealPri));
         float eachMustForgetPct =
-                rate * Util.unitize(excess / mass);
+                rate * (excess / mass);
 
             if (eachMustForgetPct * mass / size > ScalarValue.EPSILONsqrt) {
                 return new PriForget<>(eachMustForgetPct);

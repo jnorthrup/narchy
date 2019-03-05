@@ -176,8 +176,8 @@ public class ExeCharts {
         SortedArray<TimedLink> cc = ((UniExec) nar.exe).cpu.items;
         int history = 128;
         Plot2D pp = new Plot2D(history,
-                Plot2D.BarLanes
-                //Plot2D.LineLanes
+                //Plot2D.BarLanes
+                Plot2D.LineLanes
                 //Plot2D.Line
         );
 
