@@ -117,23 +117,16 @@ abstract public class DurService extends NARService  {
             long lastStarted = this.lastStarted;
 
             long atStart = nar.time();
+            scheduleNext( atStart );
 
             this.lastStarted = atStart;
 
             long delta = atStart - lastStarted;
 
-            {
-                run(nar, delta);
-            }
+            run(nar, delta);
 
-            if (!isOff())
-                scheduleNext( atStart );
 
-        } catch (Throwable e) {
-
-            logger.error("ERR {} {}", this, e);
-
-        } finally {
+        }  finally {
 
             busy.set(false);
         }

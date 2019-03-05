@@ -79,7 +79,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return bounds.right();
     }
 
-    public float bottom() {
+    public final float bottom() {
         return bounds.bottom();
     }
 
@@ -93,7 +93,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return id;
     }
 
-    abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
+    @Deprecated abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
 
     public <S extends Surface> S pos(RectFloat next) {
         BOUNDS.lazySet(this, next);
@@ -214,11 +214,8 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         out.println(this);
     }
 
-
-
-
     /** prepares the rendering procedures in the rendering context */
-    public void recompile(SurfaceRender r) {
+    public final void recompile(SurfaceRender r) {
         if (!showing) {
             showing = (visible() && (!clipBounds || r.visible(bounds)));
         }
@@ -233,9 +230,8 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
     @Deprecated public final void render(GL2 gl, SurfaceRender r) {
-        if (showing = (visible() && (!clipBounds || r.visible(bounds)))) {
+        if (showing = visible(r))
             paint(gl, r);
-        }
     }
 
 
@@ -260,6 +256,9 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
 
     public boolean visible() {
         return parent!=null && visible;
+    }
+    public final boolean visible(SurfaceRender r) {
+         return visible() && (!clipBounds || r.visible(bounds));
     }
 
     public float radius() {

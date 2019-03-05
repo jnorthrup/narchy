@@ -108,12 +108,20 @@ public class Spectrogram extends Surface implements BitmapMatrixView.ViewFunctio
     }
 
     @Override
+    protected void compile(SurfaceRender r) {
+        super.compile(r);
+        r.on((gl,sr)->{
+            for (BitmapMatrixView z : tn) {
+                if (!z.showing())
+                    z.recompile(sr);
+                z.render(gl, sr);
+            }
+        });
+    }
+
+    @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        for (BitmapMatrixView z : tn) {
-            if (!z.showing())
-                z.recompile(surfaceRender);
-            z.render(gl, surfaceRender);
-        }
+
     }
 
     public final <X> void next(Iterable<X> items, ToIntFunction<X> colorFn) {

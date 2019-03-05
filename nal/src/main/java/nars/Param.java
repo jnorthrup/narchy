@@ -180,16 +180,12 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        (t,b)->Util.unitize(t+b);
+        //(t,b)->Util.unitize(t+b);
+        Util::or;
         //Math::max;
-        //Math::min;
         //Util::and;
-        //Util::or;
         //Util::mean;
 
-
-
-    public static final PriMerge taskMerge = PriMerge.max;
 
     /** perceptible priority increase that warrants automatic reactivation.
      * used during Remember's merge repeat suppression filter */
@@ -491,12 +487,12 @@ public abstract class Param {
 
         //inverse linear decay
         float falloffDurs =
-                //1;
+                1;
                 //1.618f; //phi
                 //2; //nyquist
                 //4;
                 //dur;
-                8;
+                //8;
 
         float decayTime = falloffDurs * dur; //double?
 

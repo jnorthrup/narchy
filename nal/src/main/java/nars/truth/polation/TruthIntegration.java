@@ -41,8 +41,7 @@ public class TruthIntegration {
      */
     public static float evi(Task t, long qStart, long qEnd, int dur) {
 
-        if (!(qStart != ETERNAL && qStart <= qEnd))
-            throw new WTF();
+        assert(qStart != ETERNAL && qStart <= qEnd);
 
         if (qStart == qEnd) {
             return t.evi(qStart, dur);

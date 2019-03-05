@@ -585,11 +585,16 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
      * @return value >= 0 indicating the evidence
      */
     default float evi(long when, final int dur) {
-        return eviBatch(dur, new long[]{when})[0];
+        if (isEternal())
+            return evi();
+        else
+            return eviBatch(dur, new long[]{when})[0];
     }
 
     /**
      * batch evidence point sampling
+     *
+     * do not call this on external tasks. it can be avoided a better way than creating when[] etc
      */
     default float[] eviBatch(final int dur, long... when) {
 
@@ -597,7 +602,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
         long s = start();
         if (s == ETERNAL)
-            return new float[]{ee};
+            throw new WTF();
+        assert(s != ETERNAL);
 
         int n = when.length;
         float[] e = new float[n];
@@ -605,20 +611,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
         long wPre = Long.MIN_VALUE;
         for (int i = 0; i < n; i++) {
             long w = when[i]; assert(w!=ETERNAL && w!=TIMELESS);
-            //assert(wPre < w);
-            if (wPre > w)
-                throw new WTF();
+            assert(wPre <= w);
 
             if (i <= 1 || w != wPre) {
-
-
-
-                long dt = LongInterval.minTimeTo(w, ts, te);
+                long dt = LongInterval.minTimeOutside(w, ts, te);
                 e[i] = (dt == 0) ?
-                        ee
-                        : ((dur == 0) ?
-                        0
-                        : Param.evi(ee, dt, dur));
+                    ee : ((dur != 0) ? Param.evi(ee, dt, dur) : 0);
                 wPre = w;
 
             } else {

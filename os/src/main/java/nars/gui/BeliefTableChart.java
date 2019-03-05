@@ -126,7 +126,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
         private final TruthWave projected, tasks;
         private final boolean beliefOrGoal;
-        private final Colorize colorize;
+        private final Colorize colorizeLine, colorizeFill;
         private static final float taskWidthMin = 0.005f;
         private static final float taskHeightMin = 0.04f;
         private final int projections;
@@ -137,7 +137,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             projected = new TruthWave(projections);
             tasks = new TruthWave(256);
             this.beliefOrGoal = beliefOrGoal;
-            this.colorize = beliefOrGoal ?
+            this.colorizeLine = beliefOrGoal ?
                     (gl, f, c) -> {
                         float a = 0.8f + 0.1f * c;
                         float i = 0.1f + 0.9f * c;  //intensity
@@ -151,6 +151,17 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
                         float j = 0.05f * (1 - c);
                         gl.glColor4f(j, i, j, a);
                     };
+            this.colorizeFill = beliefOrGoal ?
+                    (gl, f, c) -> {
+                        float a = 0.25f + 0.65f * c;
+                        gl.glColor4f(1, 0, 0, a);
+                    }
+                    :
+                    (gl, f, c) -> {
+                        float a = 0.25f + 0.65f * c;
+                        gl.glColor4f(0, 1, 0, a);
+                    };
+
         }
 
 
@@ -168,25 +179,25 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
 
         @Override
-        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+        protected void paint(GL2 _gl, SurfaceRender surfaceRender) {
 
+            float mid = xTime(nar.time());
 
-            Draw.bounds(bounds, gl, ggl -> {
+            Draw.bounds(bounds, _gl, gl -> {
 
                 //render present line
-                ggl.glColor3f(0.5f, 0.5f, 0.5f);
-                ggl.glLineWidth(2f);
-                float mid = xTime(nar.time());
-                Draw.line(mid, 0, mid, 1, ggl);
+                gl.glColor3f(0.5f, 0.5f, 0.5f);
+                gl.glLineWidth(2f);
+                Draw.line(mid, 0, mid, 1, gl);
 
+                renderTasks(gl, tasks, colorizeFill);
+
+                FloatFloatToFloatFunction FtoY = (f, c) -> f;
                 if (beliefOrGoal) {
-                    renderWaveLine
-                            /*renderWaveArea*/(ggl, projected, (f, c) -> f, colorize);
-
+                    renderWaveLine(gl, projected, FtoY, colorizeLine);
                 } else {
-                    renderWaveLine(ggl, projected, (f, c) -> f, colorize);
+                    renderWaveLine(gl, projected, FtoY, colorizeLine);
                 }
-                renderTasks(ggl, tasks, colorize);
             });
         }
 

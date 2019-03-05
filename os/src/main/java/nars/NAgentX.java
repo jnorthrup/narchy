@@ -412,7 +412,7 @@ abstract public class NAgentX extends NAgent {
 
         float p =
                 //1;
-                0.1f;
+                0.05f;
         
         n.beliefPriDefault.set(1f * p);
         n.goalPriDefault.set(2f * p);
@@ -420,12 +420,12 @@ abstract public class NAgentX extends NAgent {
         n.questPriDefault.set(0.1f * p);
 
         n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.9f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.2f);
+        n.emotion.want(MetaGoal.Desire, 0.1f);
 
         n.emotion.want(MetaGoal.Action, +1f);
 

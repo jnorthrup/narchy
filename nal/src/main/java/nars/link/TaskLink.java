@@ -269,12 +269,18 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                         @Nullable Concept subSrcConcept;
                         if ((subSrcConcept = nar.conceptualize(subSrc)) != null) {
                             t = subSrcConcept.term();
+                            Term s = source();
+                            byte punc = task.punc();
+                            float p =
+                                    //priPunc(punc);
+                                    task.priElseZero();
+                            //TODO balance control
+                            float pFwd = p/2;
+                            float pRev = p/2;
                             TaskLink.link(
-                                    TaskLink.tasklink(source(), t, task.punc(),
-                                            //priPunc(task.punc())
-                                            task.priElseZero()
-                                    ),
-                                    nar);
+                                    TaskLink.tasklink(s, t, punc, pFwd), nar);
+                            TaskLink.link(
+                                    TaskLink.tasklink(t, s, punc, pRev), nar);
                         }
                     }
                 }
@@ -332,8 +338,10 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         }
 
         protected AbstractTaskLink(Term source, Term target) {
-            if (!source.op().taskable)
-                throw new TaskException(source, "source term not taskable");
+//            if (!source.op().taskable)
+//                throw new TaskException(source, "source term not taskable");
+            if (!source.op().conceptualizable)
+                throw new TaskException(source, "source term not conceptualizable");
             this.source = source;
             this.target = target;
             this.hash = Util.hashCombine(source, target);

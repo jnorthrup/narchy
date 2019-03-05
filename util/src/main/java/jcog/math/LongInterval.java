@@ -142,17 +142,18 @@ public interface LongInterval {
         //assert (when != ETERNAL);
         long e = end();
 
-        return minTimeTo(when, s, e);
+        return minTimeOutside(when, s, e);
     }
 
-    static long minTimeTo(long when, long s, long e) {
-        if (s != e) {
-            if (s <= when && e >= when)
-                return 0;
-            else
-                return Math.min(Math.abs(s - when), Math.abs(e - when));
-        } else {
-            return Math.abs(s - when);
+    static long minTimeOutside(long when, long s, long e) {
+        if (s <= when && e >= when)
+            return 0; //internal
+        else {
+            long ds = Math.abs(s - when);
+            if (s==e)
+                return ds;
+            long de = Math.abs(e - when);
+            return Math.min(ds, de);
         }
     }
 

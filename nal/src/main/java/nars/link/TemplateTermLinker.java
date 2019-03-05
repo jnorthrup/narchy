@@ -82,10 +82,10 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
         return NullLinker;
     }
 
-    protected TemplateTermLinker(TemplateTermLinker base) {
-        super(base.items.length, base.items);
-        concepts = base.concepts;
-    }
+//    protected TemplateTermLinker(TemplateTermLinker base) {
+//        super(base.items.length, base.items);
+//        concepts = base.concepts;
+//    }
 
     private TemplateTermLinker(Termed[] terms) {
         super(terms.length, terms);

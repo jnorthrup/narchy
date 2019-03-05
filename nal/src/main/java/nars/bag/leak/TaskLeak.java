@@ -11,7 +11,6 @@ import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.exe.Causable;
@@ -53,7 +52,7 @@ public abstract class TaskLeak extends Causable {
         this(
                 new BufferSource(
                         new BufferedBag.SimpleBufferedBag<>(
-                                new PLinkArrayBag<>(Param.taskMerge, capacity), new PriBuffer(PriMerge.max))
+                                new PLinkArrayBag<>(PriMerge.max, capacity), new PriBuffer(PriMerge.max))
                 )
                 , n, puncs
         );
