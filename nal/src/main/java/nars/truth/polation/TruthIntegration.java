@@ -1,8 +1,12 @@
 package nars.truth.polation;
 
 
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongListIterator;
 import jcog.WTF;
 import jcog.math.Longerval;
+import jcog.util.ArrayUtils;
+import nars.Param;
 import nars.Task;
 
 import static nars.time.Tense.ETERNAL;
@@ -64,20 +68,20 @@ public class TruthIntegration {
         if (Longerval.intersects(tStart, tEnd, qStart, qEnd)) {
             if (qStart <= tStart && qEnd >= tEnd) {
                 //question contains task
-                return eviIntegTrapezoidal(t, dur,
+                return eviInteg(t, dur,
                         qStart,
                         tStart, tEnd,
                         qEnd);
 
             } else if (tStart <= qStart && tEnd >= qEnd) {
                 //task contains question
-                return eviIntegTrapezoidal(t, dur, qStart, qEnd); //assumes task evi is uniform
+                return eviInteg(t, dur, qStart, qEnd); //assumes task evi is uniform
             } else {
 
                 if (qStart <= tStart) {
 
                     //before and during
-                    return eviIntegTrapezoidal(t, dur, qStart, tStart, qEnd);
+                    return eviInteg(t, dur, qStart, tStart, qEnd);
 
 
                 } else { //if (qEnd >= tEnd) {
@@ -85,7 +89,7 @@ public class TruthIntegration {
                     assert(qEnd >= tEnd);
 
                     //during and after
-                    return eviIntegTrapezoidal(t, dur, qStart, tEnd, qEnd);
+                    return eviInteg(t, dur, qStart, tEnd, qEnd);
 
                 }
             }
@@ -94,27 +98,67 @@ public class TruthIntegration {
 
 
             //entirely before, or after
-            return eviIntegTrapezoidal(t, dur, qStart, qEnd);
+            return eviInteg(t, dur, qStart, qEnd);
         }
     }
 
-    static float eviIntegTrapezoidal(Task t, int dur, long a, long b) {
-        float[] eab = t.eviBatch(dur, a, b);
-        float ea = eab[0], eb = eab[1];
-        return (ea + eb) / 2 * (b - a + 1);
+    private static float eviInteg(Task t, int dur, long... when) {
+        //assumes when[] is sorted
+        if (Param.DEBUG)
+            assert(ArrayUtils.isSorted(when));
+        //Arrays.sort(when);
+        return eviIntegTrapezoidal(t, dur, Param.TRUTH_INTEGRATION_SUPERSAMPLING==1 ? supersample1(when) : when);
     }
 
-    static float eviIntegTrapezoidal(Task t, int dur, long a, long b, long c) {
-        float[] e = t.eviBatch(dur, a, b, c);
-        float ea = e[0], eb = e[1], ec = e[2];
-        return ((ea + eb) / 2 * (b - a + 1)) + ((eb + ec) / 2 * (c - b + 1));
+    /** also deduplicates */
+    private static long[] supersample1(long[] whenSorted) {
+        int n = whenSorted.length;
+        long range = whenSorted[n - 1] - whenSorted[0];
+        if (range <= whenSorted.length)
+            return whenSorted; //no net change from start to end
+
+        //TODO special 2-element case
+
+        LongArrayList l = new LongArrayList(whenSorted);
+        LongListIterator ll = l.listIterator();
+        long prev = ll.nextLong();
+        boolean changed = false;
+        while (ll.hasNext()) {
+            long next = ll.nextLong();
+            long delta = next - prev;
+            if (delta == 0)
+                ll.remove();
+            else if (delta >= 2) {
+                long mid = prev + delta/2;
+                ll.set(mid);
+                ll.add(next);
+                prev = next;
+                changed = true;
+            }
+
+        }
+
+        return changed ? l.toLongArray() : whenSorted;
     }
 
-    static float eviIntegTrapezoidal(Task t, int dur, long a, long b, long c, long d) {
-        float[] e = t.eviBatch(dur, a, b, c, d);
-        float ea = e[0], eb = e[1], ec = e[2], ed = e[3];
-        return ((ea + eb) / 2 * (b - a + 1)) + ((eb + ec) / 2 * (c - b + 1)) + ((ec + ed) / 2 * (d - c + 1));
-    }
+
+//    static float eviIntegTrapezoidal(Task t, int dur, long a, long b) {
+//        float[] eab = t.eviBatch(dur, a, b);
+//        float ea = eab[0], eb = eab[1];
+//        return (ea + eb) / 2 * (b - a + 1);
+//    }
+//
+//    static float eviIntegTrapezoidal(Task t, int dur, long a, long b, long c) {
+//        float[] e = t.eviBatch(dur, a, b, c);
+//        float ea = e[0], eb = e[1], ec = e[2];
+//        return ((ea + eb) / 2 * (b - a + 1)) + ((eb + ec) / 2 * (c - b + 1));
+//    }
+//
+//    static float eviIntegTrapezoidal(Task t, int dur, long a, long b, long c, long d) {
+//        float[] e = t.eviBatch(dur, a, b, c, d);
+//        float ea = e[0], eb = e[1], ec = e[2], ed = e[3];
+//        return ((ea + eb) / 2 * (b - a + 1)) + ((eb + ec) / 2 * (c - b + 1)) + ((ec + ed) / 2 * (d - c + 1));
+//    }
 
     /**
      * https:
@@ -122,27 +166,28 @@ public class TruthIntegration {
      * <p>
      * TODO still needs improvement, tested
      */
-    static float eviIntegTrapezoidal(Task t, int dur, long... times) {
+    private static float eviIntegTrapezoidal(Task t, int dur, long[] when) {
 
-        int n = times.length;
-        assert (n > 1);
+        int n = when.length;
+        if (n == 1)
+            return t.evi(when[0], dur);
 
-        float[] ee = t.eviBatch(dur, times);
+        //assert (n > 1);
+        //assert(superSampling == 0 || superSampling == 1);
+
+        float[] ee = t.eviBatch(dur, when);
         float e = 0;
-        long a = times[0];
+        long a = when[0];
         float eviPrev = ee[0];
+
         for (int i = 1; i < n; i++) {
-            long b = times[i];
-
-            //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
-            float eviNext = ee[i];
-
+            long b = when[i];
             long dt = b - a;
-
             if (dt == 0)
                 continue;
             assert (dt > 0);
 
+            float eviNext = ee[i];
             e += (eviNext + eviPrev) / 2 * (dt + 1);
 
             eviPrev = eviNext;

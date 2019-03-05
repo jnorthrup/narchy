@@ -7384,10 +7384,8 @@ public enum ArrayUtils {
         final int n = array.length;
         for (int i = 1; i < n; i++) {
             final double current = array[i];
-            if (Double.compare(previous, current) > 0) {
+            if (previous > current)
                 return false;
-            }
-
             previous = current;
         }
         return true;
@@ -7401,23 +7399,33 @@ public enum ArrayUtils {
      * @since 3.4
      */
     public static boolean isSorted(final float[] array) {
-        if (array == null || array.length < 2) {
+        if (array == null || array.length < 2)
             return true;
-        }
 
-        float previous = array[0];
         final int n = array.length;
+        float previous = array[0];
         for (int i = 1; i < n; i++) {
             final float current = array[i];
-            if (Float.compare(previous, current) > 0) {
+            if (previous > current)
                 return false;
-            }
-
             previous = current;
         }
         return true;
     }
+    public static boolean isSorted(final long[] array) {
+        if (array == null || array.length < 2)
+            return true;
 
+        final int n = array.length;
+        long previous = array[0];
+        for (int i = 1; i < n; i++) {
+            final long current = array[i];
+            if (previous > current)
+                return false;
+            previous = current;
+        }
+        return true;
+    }
 
     /**
      * Removes the occurrences of the specified element from the specified boolean array.

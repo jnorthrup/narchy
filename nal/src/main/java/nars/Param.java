@@ -213,6 +213,11 @@ public abstract class Param {
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
     public static long TASK_RANGE_LIMIT = (1L << 61) /* estimate */;
 
+    public static int TRUTH_INTEGRATION_SUPERSAMPLING =
+            //0 //no super-sampling
+            1   //1 additional mid-point inserted
+    ;
+
     /**
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
@@ -475,7 +480,7 @@ public abstract class Param {
      *          since dt>=0, dur
      *
      * see:
-     *      definite/convergent integrals
+     *      https://en.wikipedia.org/wiki/List_of_definite_integrals
      *      https://en.wikipedia.org/wiki/Template:Series_(mathematics)
      */
     public static float evi(float evi, long dt, int dur) {
@@ -486,32 +491,39 @@ public abstract class Param {
 
         //inverse linear decay
         float falloffDurs =
-                //1;
+                1;
                 //1.618f; //phi
-                2; //nyquist
+                //2; //nyquist
                 //4;
                 //dur;
                 //8;
 
-        float decayTime = falloffDurs * dur;
-        //double?
+        float decayTime = falloffDurs * dur; //double?
 
-        //exponential decay
-        //e = evi / (1.0f + dt / decayTime);
+        //quadratic decay, should be finite (a=1), see: https://en.wikipedia.org/wiki/List_of_definite_integrals
+        e = evi / (1.0f + Util.sqr(dt / decayTime));
 
-        //constant time linear decay
-//        e = evi * Math.max(0, (1.0f - dt / decayTime))
+        //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
+        //TODO
 
-        //constant time quadratic decay
-        e = evi * Math.max(0, (float) (1.0f - Math.sqrt(dt / decayTime)));
+        //constant duration linear decay
+        //e = evi * Math.max(0, (1.0f - dt / decayTime))
 
-        //constant time quadratic discharge
+        //constant duration quadratic decay (sharp falloff)
+        //e = evi * Math.max(0, (float) (1.0f - Math.sqrt(dt / decayTime)));
+
+        //constant duration quadratic discharge (slow falloff)
         //e = evi * Math.max(0, 1.0f - Util.sqr(dt / decayTime));
 
-//        //eternal noise floor
-//        float ee = TruthFunctions.eternalize(evi);
-//                       // / STAMP_CAPACITY;
-//        e = ee +  (e - ee) / (1.0f + (((float)dt) / (falloffDurs * dur)));
+        //linear decay WARNING - not finite integral
+        //e = evi / (1.0f + dt / decayTime);
+
+        //---------
+
+        //eternal noise floor (post-filter)
+        //float ee = TruthFunctions.eternalize(evi);
+        //     // / STAMP_CAPACITY;
+        //e = ee + ((e - ee) / (1.0f + (((float)dt) / (falloffDurs * dur))));
 
         return e;
 
