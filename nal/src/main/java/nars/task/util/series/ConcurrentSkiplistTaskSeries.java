@@ -1,6 +1,7 @@
 package nars.task.util.series;
 
 import com.google.common.collect.Iterators;
+import jcog.math.LongInterval;
 import nars.table.dynamic.SeriesBeliefTable;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,20 +25,29 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
      * should not have the same mid-point even if they overlap
      * slightly.
      */
-    final NavigableMap<Long, T> at;
+    final NavigableMap<Long, T> q;
 
     public ConcurrentSkiplistTaskSeries(int cap) {
         this(new ConcurrentSkipListMap<>(), cap);
     }
 
-    public ConcurrentSkiplistTaskSeries(NavigableMap<Long, T> at, int cap) {
+    public ConcurrentSkiplistTaskSeries(NavigableMap<Long, T> q, int cap) {
         super(cap);
-        this.at = at;
+        this.q = q;
     }
 
     @Override
+    public final boolean isEmpty() {
+        return q.isEmpty();
+    }
+
+    @Override
+    public final boolean isEmpty(LongInterval l) {
+        return !q.isEmpty() && super.isEmpty(l);
+    }
+    @Override
     public long start() {
-        Map.Entry<Long, T> e = at.firstEntry();
+        Map.Entry<Long, T> e = q.firstEntry();
         if (e == null)
             return TIMELESS;
         return e.getValue().start();
@@ -45,31 +55,31 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
     @Override
     public long end() {
-        Map.Entry<Long, T> e = at.lastEntry();
+        Map.Entry<Long, T> e = q.lastEntry();
         if (e == null)
             return TIMELESS;
         return e.getValue().end();
     }
 
     @Override
-    public int size() {
-        return at.size();
+    public final int size() {
+        return q.size();
     }
 
     @Override
     public Stream<T> stream() {
-        return at.values().stream();
+        return q.values().stream();
     }
 
     @Override
     public void forEach(Consumer<? super T> action) {
-        at.values().forEach(action);
+        q.values().forEach(action);
     }
 
 
     @Override
     public void clear() {
-        at.clear();
+        q.clear();
     }
 
     @Override
@@ -77,22 +87,22 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
         assert(minT!=ETERNAL);
 
 
-        Long low = at.floorKey(minT);
+        Long low = q.floorKey(minT);
         if (low == null)
             low = minT;
 
         if (!exactRange) {
-            Long lower = at.lowerKey(low);
+            Long lower = q.lowerKey(low);
             if (lower != null)
                 low = lower;
         }
 
-        Long high = at.ceilingKey(maxT);
+        Long high = q.ceilingKey(maxT);
         if (high == null)
             high = maxT;
 
         if (!exactRange) {
-            Long higher = at.higherKey(high);
+            Long higher = q.higherKey(high);
             if (higher != null)
                 high = higher;
         }
@@ -100,9 +110,9 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
         Iterator<T> ii;
         if (low != high) {
-            ii = at.subMap(low, true, high, true).values().iterator();
+            ii = q.subMap(low, true, high, true).values().iterator();
         } else {
-            T the = at.get(low);
+            T the = q.get(low);
             if (the == null)
                 return true; //nothing
             ii = Iterators.singletonIterator(the);
@@ -122,7 +132,7 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
     @Override
     public boolean isEmpty(long start, long end) {
         try {
-            return at.subMap(start, true, end, true).isEmpty();
+            return q.subMap(start, true, end, true).isEmpty();
         } catch (NoSuchElementException e) {
             return true;
         }
@@ -131,12 +141,12 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
     @Nullable
     @Override public T last() {
-        Map.Entry<Long, T> x = at.lastEntry();
+        Map.Entry<Long, T> x = q.lastEntry();
         return x!=null ? x.getValue() : null;
     }
     @Nullable
     @Override public T first() {
-        Map.Entry<Long, T> x = at.firstEntry();
+        Map.Entry<Long, T> x = q.firstEntry();
         return x!=null ? x.getValue() : null;
     }
 
@@ -144,11 +154,11 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
 
     @Nullable @Override protected T pop() {
-        return at.remove(at.firstKey());
+        return q.remove(q.firstKey());
     }
 
     @Override
     public void push(T t) {
-        at.put(t.start(), t);
+        q.put(t.start(), t);
     }
 }

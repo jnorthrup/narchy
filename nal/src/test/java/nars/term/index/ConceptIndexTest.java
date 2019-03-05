@@ -2,9 +2,11 @@ package nars.term.index;
 
 import nars.*;
 import nars.index.concept.*;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.TermedDelegate;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -90,7 +92,7 @@ class ConceptIndexTest {
         if (t1 instanceof Compound) {
 
             for (int i = 0; i < t1.term().subs(); i++)
-                testShared(t1.sub(i), t2.sub(i));
+                testShared(((Subterms)t1).sub(i), ((Subterms)t2).sub(i));
         }
     }
 

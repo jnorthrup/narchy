@@ -13,7 +13,7 @@ import nars.table.eternal.DefaultOnlyEternalTable;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.term.Termed;
+import nars.term.TermedDelegate;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -25,7 +25,7 @@ import java.util.List;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
-public abstract class Reward implements Termed, Iterable<Concept> {
+public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
 

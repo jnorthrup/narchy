@@ -147,10 +147,11 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                 //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
                 if (t.hasAny(Op.VAR_INDEP))
                     return null;
-                Term su = t.sub(0);
+                Subterms tt = t.subterms();
+                Term su = tt.sub(0);
 //                if (su.hasAny(Op.VAR_INDEP))
 //                    return null;
-                Term pu = t.sub(1);
+                Term pu = tt.sub(1);
 //                if (pu.hasAny(Op.VAR_INDEP))
 //                    return null;
 

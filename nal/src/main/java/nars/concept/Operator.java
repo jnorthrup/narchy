@@ -39,6 +39,11 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
         this.model = model;
     }
 
+    @Override
+    public final Op op() {
+        return ATOM;
+    }
+
     public static Operator simple(Atom name, BiFunction<Task, NAR, Task> exe) {
          return new Operator(name, new SimpleOperatorModel(exe));
     }

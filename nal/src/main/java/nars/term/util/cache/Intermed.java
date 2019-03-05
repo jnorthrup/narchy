@@ -50,7 +50,7 @@ public enum Intermed  { ;
         public InternedCompoundByComponentsSubs(Term x) {
             super(x.op(), x.dt());
             this.x = x;
-            TermIO.the.writeSubterms((Subterms)x, key);
+            TermIO.the.writeSubterms(x.subterms(), key);
             commit();
         }
         @Override

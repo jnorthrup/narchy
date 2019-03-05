@@ -115,10 +115,10 @@ public class TemporalTermTest {
 
         assertSame(na, nc);
 
-        assertSame(na.sub(0), nc.sub(0));
+        assertSame(na.term().sub(0), nc.term().sub(0));
 
 
-        assertEquals(n.concept(b.term(), true).sub(0), n.concept(c.term(), true).sub(0));
+        assertEquals(n.concept(b.term(), true).term().sub(0), n.concept(c.term(), true).term().sub(0));
 
     }
 

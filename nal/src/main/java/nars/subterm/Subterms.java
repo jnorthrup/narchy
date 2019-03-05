@@ -362,10 +362,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     u.add(x);
                 }
             }
-            if (u != null) {
-
-                return u;
-            }
+            return u;
         }
 
         return null;
@@ -825,8 +822,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (XS != YS || ((XS & Op.CONJ.bit) == 0) && xx.volume()!=yy.volume())
                 return false;
 
-            if (((XS & Op.Temporal) == 0) /*&& ((YS & Op.Temporal) == 0)*/ && !xx.equals(yy))
-                return false; //constant, inequal
+            return ((XS & Op.Temporal) != 0) /*&& ((YS & Op.Temporal) == 0)*/ || xx.equals(yy); //constant, inequal
 
 //            //if volume differs (and no recursive conjunction subterms)
 //            if ((xx.volume() != yy.volume()) &&
@@ -1168,7 +1164,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             if (yi instanceof EllipsisMatch) {
 
-                EllipsisMatch ee = (EllipsisMatch) yi;
+                Subterms ee = yi.subterms();
                 if (ee.subs()==0) {
                     if (s == 1)
                         return EmptySubterms; //the empty ellipsis is the only subterm

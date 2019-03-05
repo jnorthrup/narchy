@@ -2,7 +2,6 @@ package nars.concept;
 
 import jcog.data.map.CompactArrayMap;
 import nars.NAR;
-import nars.Op;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.link.TermLinker;
@@ -60,12 +59,6 @@ public class NodeConcept implements Concept {
     @Override
     public Term term() {
         return term;
-    }
-
-
-    @Override
-    public final /*@NotNull*/ Op op() {
-        return term.op();
     }
 
     @Override

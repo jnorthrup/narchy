@@ -364,13 +364,6 @@ public interface Compound extends Term, IPair, Subterms {
         TermAppender.append(this, p);
     }
 
-
-    @Override
-    default Term sub(int i, Term ifOutOfBounds) {
-        return subterms().sub(i, ifOutOfBounds);
-    }
-
-
     @Nullable
     @Override
     default Object _car() {

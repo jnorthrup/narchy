@@ -174,10 +174,6 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
         return ref.subterms();
     }
 
-    @Override
-    public final int subs() {
-        return ref.subs();
-    }
 
     @Override
     public final int volume() {

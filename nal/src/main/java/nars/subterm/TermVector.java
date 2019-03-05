@@ -38,12 +38,11 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
         return the;
     }
 
-    void equivalentTo(TermVector that) {
-        //share normalize state if different
-        if (normalized ^ that.normalized)
-            this.normalized = that.normalized = true;
-
-    }
+//    void equivalentTo(TermVector that) {
+//        //share normalize state if different
+//        if (normalized ^ that.normalized)
+//            this.normalized = that.normalized = true;
+//    }
 
     /**
      * if the compound tracks normalization state, this will set the flag internally

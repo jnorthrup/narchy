@@ -217,7 +217,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         Complexity {
             @Override
             public void color(ConceptWidget cw, NAR nar) {
-                float c = Util.unitize(cw.id.volume() / 32f);
+                float c = Util.unitize(cw.id.term().volume() / 32f);
                 Draw.colorUnipolarHue(cw.shapeColor, c, 0.1f, 0.9f);
             }
         };
@@ -415,7 +415,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
             
 
-            float volume = 1f / (1f + cw.id.complexity());
+            float volume = 1f / (1f + cw.id.term().complexity());
             float density = 5f / (1f + volume);
             float ep = 1 + p;
             float minSize = this.minSize.floatValue();

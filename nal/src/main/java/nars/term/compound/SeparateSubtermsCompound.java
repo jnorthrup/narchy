@@ -1,16 +1,22 @@
 package nars.term.compound;
 
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
+import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/** delegates certain methods to a specific impl */
 public abstract class SeparateSubtermsCompound implements Compound {
+
     @Override
     public int hashCode() {
         return Compound.hashCode(this);
@@ -38,18 +44,27 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public int subs() {
+    public final int subs() {
         return subterms().subs();
     }
 
     @Override
-    public Term sub(int i) {
+    public final Term sub(int i) {
         return subterms().sub(i);
     }
 
     @Override
-    public boolean subIs(int i, Op o) {
+    public final Term sub(int i, Term ifOutOfBounds) {
+        return subterms().sub(i, ifOutOfBounds);
+    }
+    @Override
+    public final boolean subIs(int i, Op o) {
         return subterms().subIs(i, o);
+    }
+
+    @Override
+    public final boolean subIsOrOOB(int i, Op o) {
+        return subterms().subIsOrOOB(i, o);
     }
 
     @Override
@@ -133,15 +148,34 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+    public final int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         return subterms().intifyRecurse(reduce, v);
     }
 
     @Override
-    public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+    public final int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         return subterms().intifyShallow(reduce, v);
     }
 
+    @Override
+    public final @Nullable Term subSub(int start, int end, byte[] path) {
+        return subterms().subSub(start, end, path);
+    }
+
+    @Override
+    public final @Nullable Term subSub(byte[] path) {
+        return subterms().subSub(path);
+    }
+
+    @Override
+    public final @Nullable Term subSubUnsafe(int start, int end, byte[] path) {
+        return subterms().subSubUnsafe(start, end, path);
+    }
+
+    @Override
+    public final @Nullable Subterms transformSubs(TermTransform f, Op superOp) {
+        return subterms().transformSubs(f, superOp);
+    }
 
     @Override
     public boolean OR(/*@NotNull*/ Predicate<Term> p) {
@@ -153,4 +187,22 @@ public abstract class SeparateSubtermsCompound implements Compound {
         return subterms().AND(p);
     }
 
+    @Override
+    public <X> boolean ORwith(BiPredicate<Term, X> p, X param) {
+        return subterms().ORwith(p, param);
+    }
+
+    @Override
+    public <X> boolean ANDwith(BiPredicate<Term, X> p, X param) {
+        return subterms().ANDwith(p, param);
+    }
+
+    @Override
+    public boolean ANDith(ObjectIntPredicate<Term> p) {
+        return subterms().ANDith(p);
+    }
+    @Override
+    public boolean ORith(ObjectIntPredicate<Term> p) {
+        return subterms().ORith(p);
+    }
 }

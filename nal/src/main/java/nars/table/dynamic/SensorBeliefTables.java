@@ -85,7 +85,7 @@ public class SensorBeliefTables extends BeliefTables {
         } else {
 
             if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
-                if (!x.isEternal() && series.absorbNonSignal(x, series.start(), series.end())) {
+                if (!x.isEternal() && series.absorbNonSignal(x)) {
                     r.reject();
                     return;
                 }

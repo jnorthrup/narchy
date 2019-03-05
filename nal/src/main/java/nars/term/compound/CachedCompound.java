@@ -145,18 +145,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             return dt;
         }
 
-//        @Override
-//        public Term root() {
-//            Term rooted = this.rooted;
-//            return (rooted != null) ? rooted : (this.rooted = super.root());
-//        }
-//
-//        @Override
-//        public Term concept() {
-//            Term concepted = this.concepted;
-//            return (concepted != null) ? concepted : (this.concepted = super.concept());
-//        }
-
     }
 
 
@@ -198,7 +186,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     }
 
     @Override
-    public int vars() {
+    public final int vars() {
         return hasVars() ? super.vars() : 0;
     }
 

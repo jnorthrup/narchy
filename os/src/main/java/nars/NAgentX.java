@@ -221,7 +221,7 @@ abstract public class NAgentX extends NAgent {
 //                                64 * 1024
 ////                                //32 * 1024
 ////////                                //16 * 1024
-                                 , c -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                                 , c -> (int) Math.ceil(c.term().voluplexity()))
 
 //                        new HijackConceptIndex(
 //

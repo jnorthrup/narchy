@@ -6,12 +6,12 @@ import jcog.service.Service;
 import nars.$;
 import nars.NAR;
 import nars.term.Term;
-import nars.term.Termed;
+import nars.term.TermedDelegate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NARService extends Service<NAR> implements Termed {
+public class NARService extends Service<NAR> implements TermedDelegate {
 
     static final Logger logger = LoggerFactory.getLogger(NARService.class);
 

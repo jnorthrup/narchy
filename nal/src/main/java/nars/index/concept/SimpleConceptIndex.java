@@ -28,7 +28,7 @@ public class SimpleConceptIndex extends MapConceptIndex {
         return threadSafe ? Collections.synchronizedMap(m) : m;
     }
 
-    private static final class MyMRUMap extends MRUMap<Term,Termed> {
+    private static final class MyMRUMap extends MRUMap<Term, Termed> {
         public MyMRUMap(int capacity, float loadFactor) {
             super(capacity, loadFactor);
         }

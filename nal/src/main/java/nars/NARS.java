@@ -27,6 +27,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 
 import static jcog.Util.curve;
 
@@ -152,40 +153,42 @@ public class NARS {
 
 //        attention(()->new ActiveConcepts(96));
 
+        ToIntFunction<Concept> termVolume = c->c.term().volume();
+
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(
                         //beliefs ete
-                        curve(Concept::volume,
+                        curve(termVolume,
                         1, 8,
                                 12, 5,
                                 18, 3
                         ),
                         //beliefs tmp
-                        curve(Concept::volume,
+                        curve(termVolume,
                                 1, 64,
                                 16, 32,
                                 32, 8
                         ),
                         //goals ete
-                        curve(Concept::volume,
+                        curve(termVolume,
                                 1, 4,
                                 16, 3,
                                 32, 2
                         ),
                         //goals tmp
-                        curve(Concept::volume,
+                        curve(termVolume,
                                 1, 64,
                                 16, 32,
                                 32, 8
                         ),
                         //questions
-                        curve(Concept::volume,
+                        curve(termVolume,
                           1, 8,
                                 12, 6,
                                 24, 4
                         ),
                         //quests
-                        curve(Concept::volume,
+                        curve(termVolume,
                                 1, 8,
                                 12, 6,
                                 24, 4

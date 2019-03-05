@@ -31,7 +31,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
     }
 
     public CaffeineIndex(long capacity) {
-        this(capacity, Termed::volume);
+        this(capacity, false, c->c.term().volume());
     }
 
     public CaffeineIndex(long capacity, ToIntFunction<Concept> w) {
@@ -42,7 +42,6 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
             if (v instanceof PermanentConcept) return 0;
             return w.applyAsInt((Concept)v);
         }), weightDynamic);
-
     }
 
     private CaffeineIndex(Caffeine builder, boolean weightDynamic) {
@@ -120,8 +119,8 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
         super.start(nar);
 
         cleanup =
-                //null;
-                DurService.on(nar, concepts::cleanUp);
+                null;
+                //DurService.on(nar, concepts::cleanUp);
     }
 
 

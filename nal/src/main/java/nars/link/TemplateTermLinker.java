@@ -7,6 +7,7 @@ import nars.Op;
 import nars.Param;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.TermedDelegate;
 import nars.term.var.Img;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
@@ -24,7 +25,7 @@ import java.util.stream.Stream;
  *
  * also caches Concept references until a concept becomes deleted
  */
-public class TemplateTermLinker extends FasterList<Termed> implements TermLinker {
+public class TemplateTermLinker extends FasterList<Term> implements TermLinker {
 
 
     //    /**
@@ -44,7 +45,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
 
     @Override
-    public Stream<? extends Termed> targets() {
+    public Stream<? extends Term> targets() {
         return stream();
     }
 
@@ -76,7 +77,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
             int tcs = tc.size();
             if (tcs > 0)
-                return new TemplateTermLinker(tc.toArray(Termed[]::new));
+                return new TemplateTermLinker(tc.toArray(Term[]::new));
         }
 
         return NullLinker;
@@ -87,7 +88,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 //        concepts = base.concepts;
 //    }
 
-    private TemplateTermLinker(Termed[] terms) {
+    private TemplateTermLinker(Term[] terms) {
         super(terms.length, terms);
 
         int lastConcept;
@@ -103,7 +104,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
             }
             if (lastConcept > 0 && lastConcept < n) {
                 ArrayUtils.quickSort(0, n, c.indexComparatorReverse(), (a, b) -> {
-                    Termed x = items[b];
+                    Term x = items[b];
                     items[b] = items[a];
                     items[a] = x;
                     c.swap(a,b);
@@ -206,7 +207,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
 
 
-    private static boolean conceptualizable(Termed x) {
+    private static boolean conceptualizable(Term x) {
         //return x.equals(x.normalize()) && x.op().conceptualizable;
         return x.op().conceptualizable;
     }

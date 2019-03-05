@@ -1,5 +1,6 @@
 package nars.task.util.series;
 
+import jcog.math.LongInterval;
 import nars.Task;
 
 import java.util.function.Consumer;
@@ -100,10 +101,14 @@ public interface TaskSeries<T extends Task> {
         return whileEach(start, end, true, (x)->{
             if (x.intersects(start, end))
                 return false; //found
-            return true; //keep looking
+            else
+                return true; //keep looking
         });
     }
 
+    default boolean isEmpty(LongInterval l) {
+        return isEmpty(l.start(), l.end());
+    }
 
     T first();
     T last();

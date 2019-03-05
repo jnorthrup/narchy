@@ -22,6 +22,7 @@ package nars.concept;
 
 import jcog.data.map.MetaMap;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
@@ -60,6 +61,7 @@ public interface Concept extends Termed, MetaMap {
     }
 
 
+    default Op op() { return term().op(); }
 
 
     default void print() {
@@ -77,7 +79,7 @@ public interface Concept extends Termed, MetaMap {
 //        return Iterators.singletonIterator(this);
 //    }
 
-    default <A extends Appendable> A print(@NotNull A out) {
+    default <A extends Appendable> A print(A out) {
         print(out, true, true);
         return out;
     }

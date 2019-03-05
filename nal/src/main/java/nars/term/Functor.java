@@ -44,11 +44,20 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         super(atom, TermLinker.NullLinker);
     }
 
+    @Override
+    public final Op op() {
+        return ATOM;
+    }
+
     public static Atomic func(Term x) {
         return isFunc(x) ? (Atomic) x.sub(1) : Bool.Null;
     }
     public static boolean isFunc(Term x) {
-        return (x.hasAll(Op.FuncBits) && x.op()==INH && x.sub(0).op()==PROD && x.sub(1).op()==ATOM );
+        if (x.op() == INH && x.hasAll(Op.FuncBits)) {
+            Subterms xx = x.subterms();
+            return xx.subIs(0, PROD) && xx.subIs(1, ATOM);
+        }
+        return false;
     }
 
     public static Term[] funcArgsArray(Term x) {
@@ -339,6 +348,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         public final Term apply(Evaluation e, Subterms terms) {
             return f.apply(terms);
         }
+
+
     }
 
 

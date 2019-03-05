@@ -88,7 +88,7 @@ public interface Termlike {
     }
 
 
-    /** recursive, visits only 1 layer deep, and not the current if compound */
+    /** non-recursive, visits only 1 layer deep, and not the current if compound */
     default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         int n = subs();
         for (int i = 0; i < n; i++)
@@ -96,12 +96,12 @@ public interface Termlike {
         return v;
     }
 
-    /** recursive, visits each component */
-    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        int n = subs();
-        for (int i = 0; i < n; i++)
-            v = sub(i).intifyRecurse(reduce, v);
-        return v;
+    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int _v) {
+        return intifyShallow((v,s)->s.intifyRecurse(reduce,v), _v);
+//        int n = subs();
+//        for (int i = 0; i < n; i++)
+//            v = sub(i).intifyRecurse(reduce, v);
+//        return v;
     }
 
     boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
@@ -377,9 +377,16 @@ public interface Termlike {
 
     /**
      * return whether a subterm op at an index is an operator.
-     * if there is no subterm or the index is out of bounds, returns false.
      */
     default boolean subIs(int i, Op o) {
+        return sub(i).op()==o;
+    }
+
+    /**
+     * return whether a subterm op at an index is an operator.
+     * if there is no subterm or the index is out of bounds, returns false.
+     */
+    default boolean subIsOrOOB(int i, Op o) {
         Term x = sub(i, null);
         return x != null && x.op() == o;
     }

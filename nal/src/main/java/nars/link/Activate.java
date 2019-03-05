@@ -3,13 +3,13 @@ package nars.link;
 import jcog.pri.PLinkHashCached;
 import nars.concept.Concept;
 import nars.term.Term;
-import nars.term.Termed;
+import nars.term.TermedDelegate;
 
 
 /**
  * represents the current activation level of a concept
  */
-@Deprecated public final class Activate extends PLinkHashCached<Concept> implements Termed {
+@Deprecated public final class Activate extends PLinkHashCached<Concept> implements TermedDelegate {
 
     private Activate(Concept c, int hash, float pri) {
         super(c, hash, pri);

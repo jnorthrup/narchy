@@ -8,14 +8,14 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
-import nars.term.Termed;
+import nars.term.TermedDelegate;
 import nars.time.Tense;
 import nars.truth.TruthWave;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** utility class for analyzing the belief/goal state of a concept */
-public class BeliefAnalysis implements Termed {
+public class BeliefAnalysis implements TermedDelegate {
 
 	public final Term term;
 	public final NAR nar;

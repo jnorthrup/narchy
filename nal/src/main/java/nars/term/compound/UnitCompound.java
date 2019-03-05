@@ -50,10 +50,6 @@ public abstract class UnitCompound implements Compound {
         return this instanceof The && sub().the();
     }
 
-    @Override
-    public boolean subIs(int i, Op o) {
-        return i == 0 && sub().op()==o;
-    }
 
     @Override
     public boolean contains(Term t) {
@@ -244,6 +240,11 @@ public abstract class UnitCompound implements Compound {
     @Override
     public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         return reduce.intValueOf(v, sub()); 
+    }
+
+    @Override
+    public int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+        return sub().intifyRecurse(reduce, v);
     }
 
     @Override

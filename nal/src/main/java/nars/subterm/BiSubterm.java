@@ -2,12 +2,9 @@ package nars.subterm;
 
 import jcog.data.iterator.ArrayIterator;
 import nars.term.Term;
-import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
 
 /**
  * Size 2 TermVector
@@ -24,44 +21,6 @@ public class BiSubterm extends TermVector {
         this.x = x;
         this.y = y;
         normalized = normalized(this);
-    }
-
-
-    @Override
-    public int sum(ToIntFunction<Term> value) {
-        int vx = value.applyAsInt(x);
-        return x == y ? (vx*2) : vx + value.applyAsInt(y);
-    }
-
-    @Override
-    public final int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return y.intifyRecurse(reduce, x.intifyRecurse(reduce, v));
-    }
-
-    @Override
-    public final int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
-        return reduce.intValueOf(reduce.intValueOf(v, x), y);
-    }
-
-    @Override
-    public boolean OR(Predicate<Term> p) {
-        return p.test(x) || (x!=y && p.test(y));
-    }
-
-
-    @Override
-    public boolean ORrecurse(Predicate<Term> p) {
-        return x.ORrecurse(p) || (x!=y && y.ORrecurse(p));
-    }
-
-    @Override
-    public boolean AND(Predicate<Term> p) {
-        return p.test(x) && (x==y || p.test(y));
-    }
-
-    @Override
-    public boolean ANDrecurse(Predicate<Term> p) {
-        return x.ANDrecurse(p) && (x==y || y.ANDrecurse(p));
     }
 
     @Override
@@ -86,11 +45,12 @@ public class BiSubterm extends TermVector {
         if (this == obj) return true;
 
         if (obj instanceof Subterms) {
-            Subterms t;
-            if (hash == (t = ((Subterms) obj)).hashCodeSubterms()) {
+            boolean avoidDynamicHashing = obj instanceof TermList; //TODO marker interface
+            Subterms t = ((Subterms) obj);
+            if (avoidDynamicHashing || hash == t.hashCodeSubterms()) {
                 if (t.subs() == 2 && t.sub(0).equals(x) && t.sub(1).equals(y)) {
-                    if (t instanceof TermVector)
-                        equivalentTo((TermVector) t);
+//                    if (t instanceof TermVector)
+//                        equivalentTo((TermVector) t);
                     return true;
                 }
             }
@@ -127,39 +87,4 @@ public class BiSubterm extends TermVector {
         action.accept(y);
     }
 
-
-    @Override
-    public boolean contains(Term t) {
-        return t.equals(x) || (x!=y && t.equals(y));
-    }
-
-    @Override
-    public boolean containsRecursively(Term t, boolean root, Predicate<Term> subTermOf) {
-        return ((root ? x.equalsRoot(t) : x.equals(t)) || ((x!=y) && (root ? y.equalsRoot(t) : y.equals(t))))
-                ||
-               (x.containsRecursively(t, root, subTermOf) || ((x!=y) && y.containsRecursively(t,root,subTermOf)));
-    }
-
-
-    @Deprecated final public static class BiRepeat extends BiSubterm {
-        public BiRepeat(Term x) {
-            super(x,x);
-        }
-
-        @Override
-        public Subterms reversed() {
-            return this;
-        }
-
-        @Override
-        public boolean AND(Predicate<Term> p) {
-            return p.test(x);
-        }
-
-        @Override
-        public boolean OR(Predicate<Term> p) {
-            return p.test(x);
-        }
-
-    }
 }

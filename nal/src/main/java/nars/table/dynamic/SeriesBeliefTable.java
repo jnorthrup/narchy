@@ -97,7 +97,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             for (TaskTable b : tables) {
                 if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
                     b.forEachTask(sStart, sEnd, t -> {
-                        if (t.isDeleted() || absorbNonSignal(t, sStart, sEnd)) {
+                        if (t.isDeleted() || absorbNonSignal(t)) {
                             deleteAfter.add(t);
                         } else {
                             //System.out.println(t + " saved");
@@ -115,23 +115,23 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     /**
      * used for if you can cache seriesStart,seriesEnd for a batch of calls
      */
-    boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
+    boolean absorbNonSignal(Task t) {
 
-        long tStart = t.start(), tEnd = t.end();
-        if (tStart != ETERNAL) {
-            if (seriesStart != TIMELESS && seriesEnd != TIMELESS /* allow prediction 'suffix' */) {
-                if (seriesEnd >= tEnd) {
-                //if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
+
+//        if (tStart != ETERNAL) {
+//            if (seriesStart != TIMELESS && seriesEnd != TIMELESS /* allow prediction 'suffix' */) {
+//                if (seriesEnd >= tEnd) {
+//                //if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
 
                     //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption
-                    boolean seriesDefinedThere = !series.isEmpty(tStart, tEnd);
+                    boolean seriesDefinedThere = !series.isEmpty(t);
 
                     return seriesDefinedThere;
 
-                }
-            }
-        }
-        return false;
+//                }
+//            }
+//        }
+
     }
 
     /**

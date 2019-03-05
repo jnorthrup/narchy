@@ -8,7 +8,7 @@ import nars.concept.Concept;
 import nars.task.util.TaskException;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termed;
+import nars.term.TermedDelegate;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.util.Timed;
@@ -37,7 +37,7 @@ import static nars.time.Tense.ETERNAL;
  * <p>
  * once input, input tasks will have unique serial numbers anyway
  */
-@Deprecated public class TaskBuilder extends UnitPri implements Termed, Truthed, Function<NAR, Task> {
+@Deprecated public class TaskBuilder extends UnitPri implements TermedDelegate, Truthed, Function<NAR, Task> {
 
     @NotNull
     private Term term;

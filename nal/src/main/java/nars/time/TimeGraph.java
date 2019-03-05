@@ -900,10 +900,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (dt == DTERNAL)
             return x.dt(DTERNAL);
 
-        assert (!x.subterms().hasXternal());
+        Subterms xx = x.subterms();
+        assert (!xx.hasXternal());
 
         Op xo = x.op();
-        Term x0 = x.sub(0);
+
+        Term x0 = xx.sub(0);
         if (xo == IMPL) {
             return x.dt(dt);
         } else if (xo == CONJ) {
@@ -914,7 +916,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 if (x.dt() == XTERNAL) {
 
                     //use the provided 'path' and 'dir'ection, if non-null, to correctly order the sequence, which may be length>2 subterms
-                    Term x1 = x.sub(1);
+                    Term x1 = xx.sub(1);
 
                     if (dir) {
                         return ConjSeq.sequence(x0, 0, x1, dt, terms);
@@ -930,8 +932,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         dt = -dt;
 
 
-                    Term xEarly = x.sub(early);
-                    Term xLate = x.sub(1 - early);
+                    Term xEarly = xx.sub(early);
+                    Term xLate = xx.sub(1 - early);
 
                     return ConjSeq.sequence(
                             xEarly, 0,

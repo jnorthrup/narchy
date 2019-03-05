@@ -2,7 +2,6 @@ package nars.link;
 
 import jcog.pri.bag.Sampler;
 import nars.term.Term;
-import nars.term.Termed;
 
 import java.util.Random;
 import java.util.function.Function;
@@ -12,7 +11,7 @@ import java.util.stream.Stream;
 public interface TermLinker extends Sampler<Term> {
 
     /** enumerate all targets.  results may be Term or Concept instances */
-    Stream<? extends Termed> targets();
+    Stream<? extends Term> targets();
 
 
 //    /**
@@ -33,7 +32,7 @@ public interface TermLinker extends Sampler<Term> {
         }
 
         @Override
-        public Stream<? extends Termed> targets() {
+        public Stream<? extends Term> targets() {
             return Stream.empty();
         }
 //

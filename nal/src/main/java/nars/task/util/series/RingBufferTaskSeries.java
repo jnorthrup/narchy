@@ -2,6 +2,7 @@ package nars.task.util.series;
 
 import jcog.WTF;
 import jcog.data.list.MetalConcurrentQueue;
+import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import nars.Task;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +24,15 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         this.q = new MetalConcurrentQueue<>(capacity); // + 1 /* for safety? */
     }
 
+    @Override
+    public final boolean isEmpty() {
+        return q.isEmpty();
+    }
+
+    @Override
+    public final boolean isEmpty(LongInterval l) {
+        return !q.isEmpty() && super.isEmpty(l);
+    }
 
     @Override
     public final void push(T t) {
