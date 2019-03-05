@@ -40,8 +40,7 @@ abstract public class MultiExec extends UniExec {
     static private final float queueLatencyMeasurementProbability = 0.05f;
 
     /** proportion of time spent in forced curiosity */
-    private float explorationRate = 0.1f;
-    private static float expectedWorkTimeFactor = 0.75f;
+    private float explorationRate = 0.25f;
 
 
     protected long cycleNS;
@@ -143,9 +142,8 @@ abstract public class MultiExec extends UniExec {
                 vr = 0;
             } else {
                 float v = Math.max(0, s.value = c.value());
-                double cyclesUsed = Math.max(1, ((double)tUsed) / cycleNS);
-                vr = (float)(v / cyclesUsed);
-                //vr = (float)(v / (1 + cyclesUsed));
+                double cyclesUsed = ((double)tUsed) / cycleNS;
+                vr = (float)(v / (1 + cyclesUsed));
                 assert (vr == vr);
             }
 
@@ -439,11 +437,14 @@ abstract public class MultiExec extends UniExec {
                 //schedule
                 //TODO Util.max((TimedLink.MyTimedLink m) -> m.time, play);
                 long minTime = -Util.max((TimedLink.MyTimedLink x) -> -x.time, play);
-
-                long shift = minTime < 0 ? 1 - minTime : 0;
-                for (TimedLink.MyTimedLink m : play) {
-                    int t = Math.round(shift + cycleNS * m.pri());
-                    m.add(Math.max(subCycleMin, t), -workTimeNS, +workTimeNS);
+                long existingTime = Util.sum((TimedLink.MyTimedLink x) -> Math.max(0,x.time), play);
+                long remainingTime = workTimeNS - existingTime;
+                if (remainingTime > subCycleMin) {
+                    long shift = minTime < 0 ? 1 - minTime : 0;
+                    for (TimedLink.MyTimedLink m : play) {
+                        int t = Math.round(shift + remainingTime * m.pri());
+                        m.add(Math.max(subCycleMin, t), -workTimeNS, +workTimeNS);
+                    }
                 }
             }
 

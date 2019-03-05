@@ -5,7 +5,6 @@ import jcog.data.list.FasterList;
 import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
 import jcog.pri.bag.Bag;
-import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -192,8 +191,8 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        //new Valuator.DefaultValuator(0.95f),
-                        new Valuator.AEValuator(new XoRoShiRo128PlusRandom()),
+                        new Valuator.DefaultValuator(0.95f),
+                        //new Valuator.AEValuator(new XoRoShiRo128PlusRandom()),
 
                         threads <= 0 ? Util.concurrencyExcept(1) : threads, false/* affinity */))
 
@@ -416,7 +415,7 @@ abstract public class NAgentX extends NAgent {
 
         float p =
                 //1;
-                0.1f;
+                0.02f;
         
         n.beliefPriDefault.set(1f * p);
         n.goalPriDefault.set(2f * p);
@@ -428,7 +427,7 @@ abstract public class NAgentX extends NAgent {
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        //n.emotion.want(MetaGoal.Believe, 0.01f);
+        n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.1f);
 
         n.emotion.want(MetaGoal.Action, +1f);

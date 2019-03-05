@@ -169,8 +169,8 @@ public class PoleCart extends NAgentX {
         );
 
 
-        initBipolar();
-        //initUnipolar();
+        //initBipolar();
+        initUnipolar();
 
 
 //        SpaceGraph.window(NARui.beliefCharts(512,

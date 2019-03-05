@@ -14,6 +14,7 @@ import nars.task.ITask;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.transform.Retemporalize;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.list.mutable.FastList;
 import org.jetbrains.annotations.Nullable;
@@ -84,19 +85,23 @@ public enum Perceive { ;
         }
 
         Task t;
-        if (!input.term().equals(y)) {
+        Term it = input.term();
+        if (!it.equals(y)) {
             byte punc = input.punc();
             if (y.op()==BOOL) {
-                if (punc == QUESTION || punc == QUEST) {
+                if (punc == QUESTION/* || punc == QUEST*/) {
                     //conver to an answering belief/goal now that the absolute truth has been determined
-
+                    //TODO decide if this makes sense for QUEST
 
                     byte answerPunc;
                     if (punc == QUESTION) answerPunc = BELIEF;
                     else answerPunc = GOAL;
 
+                    if (it.hasXternal())
+                        it = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(it);
+
                     t = Task.clone(input,
-                            input.term(),
+                            it,
                             $.t(y==True ? 1 : 0, n.confDefault(answerPunc)),
                             answerPunc,
                             input.start(), input.end());

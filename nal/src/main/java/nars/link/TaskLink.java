@@ -60,6 +60,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
     //byte punc();
     float priPunc(byte punc);
 
+    float getAndSetPriPunc(byte punc, float next);
+
 
     static TaskLink tasklink(Term src, Term tgt, byte punc, float pri) {
         return new GeneralTaskLink(src, tgt).priMerge(punc, pri);
@@ -257,8 +259,12 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         byte punc = task.punc();
 
         float p =
-                //priPunc(punc);
-                task.priElseZero();
+                priPunc(punc);
+                //task.priElseZero();
+
+        ///* HACK */ getAndSetPriPunc(punc, p*0.9f /* decay */); //spend
+
+
         //Math.max(ScalarValue.EPSILON, task.priElseZero() - priPunc(punc));
 
 //        float pDown = 1*p, pUp = Float.NaN;
@@ -295,9 +301,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
             if (u != null && !u.equals(t)) {
 
-                TaskLink.linkSafe(s, u, punc, p / 2, nar); //forward
-                TaskLink.linkSafe(u, t, punc, p / 2, nar); //reverse
-
+                TaskLink.linkSafe(s, u, punc, p * 1/2f, nar); //forward (hop)
+                TaskLink.linkSafe(u, t, punc, p * 1/2f, nar); //reverse (adjacent)
 
                 if (self) {
                     t = u;
@@ -496,6 +501,12 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         }
 
         private static FloatFloatToFloatFunction mergeComponent(PriMerge merge) {
+            if (merge == PriMerge.replace) {
+                //optimized
+                return (existing, incoming) -> {
+                    return incoming;
+                };
+            }
             if (merge == PriMerge.max) {
                 //optimized
                 return (existing, incoming) -> {
@@ -604,6 +615,11 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         @Override
         public float priPunc(byte punc) {
             return this.punc.getAt(Task.i(punc));
+        }
+
+        @Override
+        public float getAndSetPriPunc(byte punc, float next) {
+            return mergeComponent(punc, next, PriMerge.replace, true);
         }
 
         @Override
