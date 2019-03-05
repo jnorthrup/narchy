@@ -23,6 +23,7 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
@@ -252,7 +253,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                 //priPunc(punc);
                 task.priElseZero();
 
-        float pDown = p, pUp = p;
+        float pDown = p/2, pUp = p/2;
 
         Concept ct = null;
         boolean self = s.equals(t);
@@ -273,7 +274,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                 u = linker.sample(rng);
             else {
                 //sample active tasklinks for a tangent match to the atom
-                u = ((AbstractConceptIndex) nar.concepts).active.atomTangent((NodeConcept) ct, this, d.time, d.ditherDT, d.random);
+                if (t instanceof Atom)
+                    u = ((AbstractConceptIndex) nar.concepts).active.atomTangent((NodeConcept) ct, this, d.time, d.ditherDT, d.random);
             }
         }
 
@@ -288,17 +290,17 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             //TODO abstract balance control
             //float balance = 1 / 2f;
 
-            //if (u.op().conceptualizable) {
-
-
-                //split budget
-//                pUp = p * (1 - balance);
-//                pDown = p * balance;
-
+//            if (u.op().conceptualizable) {
+//
+//
+//                //split budget
+////                pUp = p * (1 - balance);
+////                pDown = p * balance;
+//
 //                TaskLink.link(
-//                        TaskLink.tasklink(t, u, punc, pUp), nar);
-
-            //}
+//                        TaskLink.tasklink(u, s, punc, pUp), nar);
+//
+//            }
 
 //            if (u.op().conceptualizable) {
 //                TaskLink.link(
