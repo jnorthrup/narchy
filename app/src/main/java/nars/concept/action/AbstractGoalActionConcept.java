@@ -13,9 +13,7 @@ import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
-import nars.table.eternal.EternalTable;
 import nars.table.temporal.RTreeBeliefTable;
-import nars.table.temporal.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
@@ -115,7 +113,6 @@ public class AbstractGoalActionConcept extends ActionConcept {
     public void sense(long prev, long now, NAR n) {
 
 
-        int organicDur = n.dur();
         int curiDur = 0;
 
 
@@ -130,25 +127,26 @@ public class AbstractGoalActionConcept extends ActionConcept {
         //Answer.filter(withoutCuriosity, (t) -> t.endsAfter(recent)); //prevent stronger past from overriding weaker future
 
         int dither = n.dtDither.intValue();
-        int dur = n.dur();
+        int narDur = n.dur();
         long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
         Truth nextActionDex = null;
         FasterList<BeliefTable> goalTables = ((BeliefTables) goals()).tables;
         if (!goalTables.isEmpty()) {
             for (int iter = 0; iter < 3; iter++) {
 
+
                 switch (iter) {
                     case 0:
                         //duration-precision window
                         //s = now - dur / 2;
                         //e = now + dur / 2;
-                        s = now - dur;
+                        s = now - narDur;
                         e = now;
                         break;
                     case 1:
 //                    s = now - dur;
 //                    e = now + dur;
-                        s = now - dur * 2;
+                        s = now - narDur * 2;
                         e = now; //now + dur;
                         break;
                     default:
@@ -157,7 +155,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                         int dn = 3;
 //                    s = now - Math.max(dur*dn/2f, frameDur/2);
 //                    e = now + Math.max(dur*dn/2f, frameDur/2);
-                        s = now - Math.max(dur * dn, frameDur);
+                        s = now - Math.max(narDur * dn, frameDur);
                         e = now; //now + Math.max(dur * 2, 0);
                         break;
 
@@ -168,6 +166,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 e += dither / 2;
 
 
+                int organicDur = Tense.occToDT(e-s);
                 try (Answer a = Answer.relevance(true, limit, s, e, term, fil, n).dur(organicDur)) {
 
                     for (BeliefTable b : goalTables) {

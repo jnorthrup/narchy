@@ -2,6 +2,7 @@ package nars.truth.polation;
 
 
 import jcog.WTF;
+import jcog.math.Longerval;
 import nars.Task;
 
 import static nars.time.Tense.ETERNAL;
@@ -13,7 +14,7 @@ public class TruthIntegration {
     }
 
     public static float eviAvg(Task t, long start, long end, int dur) {
-        long range = start==ETERNAL ? 1 : 1 + (end - start);
+        long range = start == ETERNAL ? 1 : 1 + (end - start);
         return evi(t, start, end, dur) / range;
     }
 
@@ -35,13 +36,12 @@ public class TruthIntegration {
      * if qStart==qEnd then it is a point sample
      */
     public static float evi(Task t, long qStart, long qEnd, int dur) {
+
+        if (!(qStart != ETERNAL && qStart <= qEnd))
+            throw new WTF();
+
         if (qStart == qEnd) {
-            if (qStart == ETERNAL) {
-                //return t.isEternal() ? t.evi() : t.eviEternalized();
-                throw new WTF();
-            } else {
-                return t.evi(qStart, dur);
-            }
+            return t.evi(qStart, dur);
         }
 
         long tStart = t.start();
@@ -51,50 +51,106 @@ public class TruthIntegration {
         }
 
         long tEnd = t.end();
-        if (dur == 0) {
-            //trim the question to the task because dur=0 means no residual evidence is measured outside of the task's bounds
-            qStart = Math.max(qStart, tStart);
-            qEnd = Math.min(qEnd, tEnd);
-            if (qEnd < qStart)
-                return 0; //no intersection
-            if (qStart == qEnd)
-                return t.evi(qStart, dur); //point
-        }
 
-        if (
-                (qEnd <= tStart) //disjoint before
-                ||
-                (qStart >= tEnd) //disjoint after
-                ||
-                (qStart >= tStart && qEnd <= tEnd)  //contained
-            ) {
-            //task contains question
-            return qStart <= qEnd ?
-                    t.eviIntegTrapezoidal(dur, qStart, qEnd) :
-                    t.eviIntegTrapezoidal(dur, qEnd, qStart);
-        }
+        //possible optimization, needs tested:
+//        if (dur == 0) {
+//            //trim the question to the task because dur=0 means no residual evidence is measured outside of the task's bounds
+//            qStart = Math.max(qStart, tStart);
+//            qEnd = Math.min(qEnd, tEnd);
+//            if (qStart >= qEnd)
+//                return t.evi(qStart, dur); //reduced to a point
+//        }
 
-        if (qStart <= tStart && qEnd >= tEnd) {
-            //question contains task
-            return tStart == tEnd ?
-                    t.eviIntegTrapezoidal(dur, qStart, tStart, qEnd) :
-                    t.eviIntegTrapezoidal(dur, qStart, tStart, tEnd, qEnd);
-        }
+        if (Longerval.intersects(tStart, tEnd, qStart, qEnd)) {
+            if (qStart <= tStart && qEnd >= tEnd) {
+                //question contains task
+                return eviIntegTrapezoidal(t, dur,
+                        qStart,
+                        tStart, tEnd,
+                        qEnd);
 
-        //remaining cases:
-        //  intersects the task and includes time
-        //          a) before
-        //          OR
-        //          b) after
+            } else if (tStart <= qStart && tEnd >= qEnd) {
+                //task contains question
+                return eviIntegTrapezoidal(t, dur, qStart, qEnd); //assumes task evi is uniform
+            } else {
 
-        if (qStart <= tStart) {
-            return t.eviIntegTrapezoidal(dur, qStart, tStart, qEnd);
+                if (qStart <= tStart) {
+
+                    //before and during
+                    return eviIntegTrapezoidal(t, dur, qStart, tStart, qEnd);
+
+
+                } else { //if (qEnd >= tEnd) {
+
+                    assert(qEnd >= tEnd);
+
+                    //during and after
+                    return eviIntegTrapezoidal(t, dur, qStart, tEnd, qEnd);
+
+                }
+            }
         } else {
-            return t.eviIntegTrapezoidal(dur, qStart, tEnd, qEnd);
-        }
+            //disjoint
 
+
+            //entirely before, or after
+            return eviIntegTrapezoidal(t, dur, qStart, qEnd);
+        }
     }
 
+    static float eviIntegTrapezoidal(Task t, int dur, long a, long b) {
+        float[] eab = t.eviBatch(dur, a, b);
+        float ea = eab[0], eb = eab[1];
+        return (ea + eb) / 2 * (b - a + 1);
+    }
+
+    static float eviIntegTrapezoidal(Task t, int dur, long a, long b, long c) {
+        float[] e = t.eviBatch(dur, a, b, c);
+        float ea = e[0], eb = e[1], ec = e[2];
+        return ((ea + eb) / 2 * (b - a + 1)) + ((eb + ec) / 2 * (c - b + 1));
+    }
+
+    static float eviIntegTrapezoidal(Task t, int dur, long a, long b, long c, long d) {
+        float[] e = t.eviBatch(dur, a, b, c, d);
+        float ea = e[0], eb = e[1], ec = e[2], ed = e[3];
+        return ((ea + eb) / 2 * (b - a + 1)) + ((eb + ec) / 2 * (c - b + 1)) + ((ec + ed) / 2 * (d - c + 1));
+    }
+
+    /**
+     * https:
+     * long[] points needs to be sorted, unique, and not contain any ETERNALs
+     * <p>
+     * TODO still needs improvement, tested
+     */
+    static float eviIntegTrapezoidal(Task t, int dur, long... times) {
+
+        int n = times.length;
+        assert (n > 1);
+
+        float[] ee = t.eviBatch(dur, times);
+        float e = 0;
+        long a = times[0];
+        float eviPrev = ee[0];
+        for (int i = 1; i < n; i++) {
+            long b = times[i];
+
+            //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
+            float eviNext = ee[i];
+
+            long dt = b - a;
+
+            if (dt == 0)
+                continue;
+            assert (dt > 0);
+
+            e += (eviNext + eviPrev) / 2 * (dt + 1);
+
+            eviPrev = eviNext;
+            a = b;
+        }
+
+        return e;
+    }
 
 //    private static final class TempLongArrayList extends LongArrayList {
 //

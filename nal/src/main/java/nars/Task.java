@@ -2,12 +2,17 @@ package nars;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.list.FasterList;
+import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import jcog.pri.UnitPrioritizable;
 import nars.control.op.Perceive;
 import nars.subterm.Subterms;
-import nars.task.*;
+import nars.task.DerivedTask;
+import nars.task.ITask;
+import nars.task.NALTask;
+import nars.task.UnevaluatedTask;
 import nars.task.proxy.SpecialNegatedTermTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
@@ -97,14 +102,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
         //if (stamp.length > 1) {
 
-            if (truth != null)
-                h = Util.hashCombine(h, truth.hashCode());
+        if (truth != null)
+            h = Util.hashCombine(h, truth.hashCode());
 
-            if (start != ETERNAL) {
-                h = Util.hashCombine(h, start);
-                if (end!=start)
-                    h = Util.hashCombine(h,  end);
-            }
+        if (start != ETERNAL) {
+            h = Util.hashCombine(h, start);
+            if (end != start)
+                h = Util.hashCombine(h, end);
+        }
         //}
 
         if (stamp.length > 0)
@@ -112,7 +117,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
         return h;
     }
-
 
 
     static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
@@ -262,7 +266,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
             ByteByteHashMap count = new ByteByteHashMap();
 
-            for (ByteList p: varPaths) {
+            for (ByteList p : varPaths) {
 
 
                 if (rootIsStatement) {
@@ -276,7 +280,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
 
                 nextStatement:
-                for (ByteList statement: statements) {
+                for (ByteList statement : statements) {
                     statementNum++;
                     int statementPathLength = statement.size();
                     if (statementPathLength > pSize)
@@ -358,7 +362,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
         return y;
     }
 
-    @Nullable static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
+    @Nullable
+    static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
         return tryTask(t, punc, tr, withResult, !Param.DEBUG_EXTRA);
     }
 
@@ -401,13 +406,15 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     }
 
 
-    @Nullable static Task project(Task t, long start, long end, NAR n) {
+    @Nullable
+    static Task project(Task t, long start, long end, NAR n) {
         return project(t, start, end, false, false, false, n);
     }
 
 
-    @Nullable static Task project(Task t, long start, long end, boolean trimIfIntersects, boolean ditherTruth, boolean negated, NAR n) {
-        if (!negated && t.start()==start && t.end()==end || (t.isBeliefOrGoal() && t.isEternal()))
+    @Nullable
+    static Task project(Task t, long start, long end, boolean trimIfIntersects, boolean ditherTruth, boolean negated, NAR n) {
+        if (!negated && t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
             return t;
 
         if (trimIfIntersects) {
@@ -448,7 +455,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
      */
     static Task negated(@Nullable Task t) {
         if (t instanceof SpecialNegatedTermTask) {
-            return ((SpecialNegatedTermTask)t).task;
+            return ((SpecialNegatedTermTask) t).task;
         }
         return new SpecialNegatedTermTask(t);
     }
@@ -457,12 +464,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 //        return eternalized(tx, 1);
 //    }
 
-    /** leave n null to avoid dithering */
+    /**
+     * leave n null to avoid dithering
+     */
     static Task eternalized(Task x, float eviFactor, float eviMin, @Nullable NAR n) {
         boolean isEternal = x.isEternal();
         boolean hasTruth = x.isBeliefOrGoal();
         if (isEternal) {
-            if (eviFactor!=1)
+            if (eviFactor != 1)
                 throw new TODO();
             if (hasTruth) {
                 if (x.evi() < eviMin)
@@ -498,7 +507,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     static Term forceNormalizeForBelief(Term x) {
         x = x.normalize();
 
-        if (x instanceof Compound && !validTaskCompound((Compound)x, true)) {
+        if (x instanceof Compound && !validTaskCompound((Compound) x, true)) {
             x = VariableTransform.indepToDepVar(x).normalize();
         }
 
@@ -562,7 +571,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     }
 
 
-
     /**
      * POINT EVIDENCE
      * <p>
@@ -570,36 +578,57 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
      * <p>
      * WARNING check that you arent calling this with (start,end) values
      *
-     * @param when time
-     * @param dur  duration period across which evidence can decay before and after its defined start/stop time.
-     *             if (dur <= 0) then no extrapolation is computed
+     * @param when   time
+     * @param dur    duration period across which evidence can decay before and after its defined start/stop time.
+     *               if (dur <= 0) then no extrapolation is computed
      * @param minEvi used to fast fail if the result will not exceed the value
      * @return value >= 0 indicating the evidence
      */
     default float evi(long when, final int dur) {
+        return eviBatch(dur, new long[]{when})[0];
+    }
+
+    /**
+     * batch evidence point sampling
+     */
+    default float[] eviBatch(final int dur, long... when) {
 
         float ee = evi();
 
         long s = start();
-        if (s == ETERNAL) {
-            return ee;
-        } else if (when == ETERNAL) {
-            //return eviEternalized();
-            throw new UnsupportedOperationException();
-        } else {
+        if (s == ETERNAL)
+            return new float[]{ee};
+
+        int n = when.length;
+        float[] e = new float[n];
+        long ts = start(), te = end(); //cache these here to avoid repeat access through LongInterval.minTimeTo
+        long wPre = Long.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            long w = when[i]; assert(w!=ETERNAL && w!=TIMELESS);
+            //assert(wPre < w);
+            if (wPre > w)
+                throw new WTF();
+
+            if (i <= 1 || w != wPre) {
 
 
-            long dist = minTimeTo(when);
-            if (dist == 0) {
-                return ee;
+
+                long dt = LongInterval.minTimeTo(w, ts, te);
+                e[i] = (dt == 0) ?
+                        ee
+                        : ((dur == 0) ?
+                        0
+                        : Param.evi(ee, dt, dur));
+                wPre = w;
+
             } else {
-                return (dur == 0) ? 0 : Param.evi(ee, dist, dur);
+                e[i] = e[i-1]; //copy a repeat value
             }
 
         }
 
+        return e;
     }
-
 
     @Override
     @NotNull
@@ -665,7 +694,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     }
 
 
-    default @Nullable StringBuilder appendTo(@Nullable StringBuilder sb ) {
+    default @Nullable StringBuilder appendTo(@Nullable StringBuilder sb) {
         return appendTo(sb, false);
     }
 
@@ -896,62 +925,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 //    }
 
 
-    /** maybe */
-
-
-    default float eviIntegTrapezoidal(int dur, long a, long b) {
-        float ea = evi(a, dur);
-        float eb = evi(b, dur);
-        return (ea+eb)/2 * (b-a+1);
-    }
-    default float eviIntegTrapezoidal(int dur, long a, long b, long c) {
-        float ea = evi(a, dur);
-        float eb = evi(b, dur);
-        float ec = evi(c, dur);
-        return ((ea+eb)/2 * (b-a+1)) + ((eb+ec)/2 * (c-b+1));
-    }
-    default float eviIntegTrapezoidal(int dur, long a, long b, long c, long d) {
-        float ea = evi(a, dur);
-        float eb = evi(b, dur);
-        float ec = evi(c, dur);
-        float ed = evi(d, dur);
-        return ((ea+eb)/2 * (b-a+1)) + ((eb+ec)/2 * (c-b+1)) + ((ec+ed)/2 * (d-c+1));
-    }
-
     /**
-     * https:
-     * long[] points needs to be sorted, unique, and not contain any ETERNALs
-     *
-     * TODO still needs improvement, tested
+     * maybe
      */
-    default float eviIntegTrapezoidal(int dur, long... times) {
 
-        int n = times.length; assert(n > 1);
-
-        //double e = 0;
-        float e = 0;
-        long a = times[0];
-        float eviPrev = evi(times[0], dur);
-        for (int i = 1; i < n; i++) {
-            long b = times[i];
-
-            //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
-            float eviNext = evi(b, dur);
-
-            long dt = b - a;
-
-            if (dt == 0)
-                continue;
-            assert(dt > 0);
-
-            e += (eviNext+eviPrev)/2 * (dt+1);
-
-            eviPrev = eviNext;
-            a = b;
-        }
-
-        return (float) e;
-    }
 
     byte punc();
 
@@ -974,7 +951,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
 
     default boolean isBeliefOrGoal(boolean beliefOrGoal) {
-         return beliefOrGoal ? isBelief() : isGoal();
+        return beliefOrGoal ? isBelief() : isGoal();
     }
 
 }

@@ -207,7 +207,7 @@ public abstract class Param {
             //1.618f; //goldenratio
             //2;
 
-    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = true;
+    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = false;
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
@@ -454,10 +454,33 @@ public abstract class Param {
      * computes the projected evidence at a specific distance (dt) from a perceptual moment evidence
      * with a perceptual duration used as a time constant
      * dt >= 0
+     *
+     * @param dt > 0
+     * @param dur > 0
+     *
+     * evi(baseEvidence, dt, dur)
+     *   many functions will work here, provided:
+     *
+     *      evidential limit
+     *        integral(evi(x, 0, d), evi(x, infinity, d)) is FINITE (convergent integral for t>=0)
+     *
+     *      temporal identity; no temporal difference,
+     *        evi(x, 0, d) = 1
+     *
+     *      no duration, point-like
+     *        evi(x, v, 0) = 0
+     *
+     *      monotonically decreasing
+     *        for A >= B: evi(x, A, d) >= evi(x, B, d)
+     *          since dt>=0, dur
+     *
+     * see:
+     *      definite/convergent integrals
+     *      https://en.wikipedia.org/wiki/Template:Series_(mathematics)
      */
     public static float evi(float evi, long dt, int dur) {
 
-        assert(dur > 0);
+        //assert(dur > 0);
 
         float e;
 
@@ -465,10 +488,10 @@ public abstract class Param {
         float falloffDurs =
                 //1;
                 //1.618f; //phi
-                //2; //nyquist
+                2; //nyquist
                 //4;
                 //dur;
-                8;
+                //8;
 
         float decayTime = falloffDurs * dur;
         //double?
@@ -477,14 +500,13 @@ public abstract class Param {
         //e = evi / (1.0f + dt / decayTime);
 
         //constant time linear decay
-        e = (dt < decayTime) ?
-                evi * (1.0f - dt / decayTime)
-                : 0;
+//        e = evi * Math.max(0, (1.0f - dt / decayTime))
 
         //constant time quadratic decay
-//        e = (dt < decayTime) ?
-//                evi * (1.0f - Util.sqr(dt / decayTime))
-//                : 0;
+        e = evi * Math.max(0, (float) (1.0f - Math.sqrt(dt / decayTime)));
+
+        //constant time quadratic discharge
+        //e = evi * Math.max(0, 1.0f - Util.sqr(dt / decayTime));
 
 //        //eternal noise floor
 //        float ee = TruthFunctions.eternalize(evi);

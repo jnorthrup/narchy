@@ -39,4 +39,15 @@ public class EternalNALTask extends NALTask {
     public final float evi(long when, int dur) {
         return truth().evi();
     }
+
+    @Override
+    public final long minTimeTo(long when) {
+        return 0;
+    }
+
+    @Override
+    public final long minTimeTo(long a, long b) {
+        return 0;
+    }
+
 }

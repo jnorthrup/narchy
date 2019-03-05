@@ -86,5 +86,7 @@ public class TimeRange implements HyperRegion, LongInterval {
         return end;
     }
 
-
+    public final long minTimeTo(LongInterval b) {
+        return minTimeTo(b.start(), b.end());
+    }
 }

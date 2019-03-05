@@ -142,6 +142,10 @@ public interface LongInterval {
         //assert (when != ETERNAL);
         long e = end();
 
+        return minTimeTo(when, s, e);
+    }
+
+    static long minTimeTo(long when, long s, long e) {
         if (s != e) {
             if (s <= when && e >= when)
                 return 0;
@@ -185,9 +189,7 @@ public interface LongInterval {
         }
     }
 
-    default long minTimeTo(LongInterval b) {
-        return minTimeTo(b.start(), b.end());
-    }
+
 
     /** if the task intersects (ex: occurrs during) the specified interval,
      *  returned time distance is zero, regardless of how far it may extend before or after it */
