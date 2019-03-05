@@ -3,6 +3,7 @@ package nars.link;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
@@ -21,7 +22,6 @@ import nars.derive.Derivation;
 import nars.index.concept.AbstractConceptIndex;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
@@ -243,7 +243,6 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
         Term t = target();
 
-
         NAR nar = d.nar;
         Random rng = d.random;
         Term s = source();
@@ -252,60 +251,68 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         float p =
                 //priPunc(punc);
                 task.priElseZero();
-        float pFwd = p;
 
-        Concept c;
+        float pDown = p, pUp = p;
+
+        Concept ct = null;
+        boolean self = s.equals(t);
         if (t.op().conceptualizable) {
-
-            c = nar.conceptualize(t);
-        } else {
-            c = null;
+            ct = nar.conceptualize(t);
+            if (ct != null)
+                t = ct.term();
         }
 
-        if (c!=null && t instanceof Compound) {
+        /* expand self compound tasklink */
 
-            float balance = 2 / 3f;
+        Term u = null;
 
+        if (ct!=null) {
+            TermLinker linker = ct.linker();
+            if (linker != TermLinker.NullLinker && !((FasterList) linker).isEmpty())
+                //grow-ahead: s -> t -> u
+                u = linker.sample(rng);
+            else {
+                //sample active tasklinks for a tangent match to the atom
+                u = ((AbstractConceptIndex) nar.concepts).active.atomTangent((NodeConcept) ct, this, d.time, d.ditherDT, d.random);
+            }
+        }
 
-            if (c != null) {
+        if (u != null && !u.equals(t)) {
 
-                t = c.term();
-
-                TermLinker linker = c.linker();
-                if (linker != TermLinker.NullLinker) {
-
-                    t = linker.sample(rng);
-                    if (t.op().conceptualizable) {
-                        @Nullable Concept subSrcConcept;
-                        if ((subSrcConcept = nar.conceptualize(t)) != null) {
-                            t = subSrcConcept.term();
-                            //TODO balance control
-                            float pRev = p * (1 - balance);
-                            pFwd = p * balance;
-                            TaskLink.link(
-                                    TaskLink.tasklink(s, t, punc, pRev), nar);
-                        }
-                    }
-
-
+            if (s.op().conceptualizable) {
+                TaskLink.link(
+                        TaskLink.tasklink(s, u, punc, pDown), nar);
             }
 
-        }
-        if (c != null && t instanceof Atomic) {
-            //scan active tasklinks for a tangent match to the atom
-            Term u = ((AbstractConceptIndex) nar.concepts).active.atomTangent((NodeConcept) c, this, d.time, d.ditherDT, d.random);
-            if (u == null)
-                throw new NullPointerException();
-            t = u;
+
+            //TODO abstract balance control
+            //float balance = 1 / 2f;
+
+            //if (u.op().conceptualizable) {
+
+
+                //split budget
+//                pUp = p * (1 - balance);
+//                pDown = p * balance;
+
+//                TaskLink.link(
+//                        TaskLink.tasklink(t, u, punc, pUp), nar);
+
+            //}
+
+//            if (u.op().conceptualizable) {
+//                TaskLink.link(
+//                        TaskLink.tasklink(u, s, punc, pDown), nar);
+//            }
+
+
+            if (self) {
+                t = u;
+            }
         }
 
-        if (t.op().conceptualizable) {
-            TaskLink.link(
-                    TaskLink.tasklink(t, s, punc, pFwd), nar);
-        } //else: budget sinked (exit point)
 
         return t;
-
     }
 
 
@@ -348,8 +355,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         }
 
         protected AbstractTaskLink(Term source, Term target) {
-//            if (!source.op().taskable)
-//                throw new TaskException(source, "source term not taskable");
+            if (!source.op().taskable)
+                throw new TaskException(source, "source term not taskable");
             if (!source.op().conceptualizable)
                 throw new TaskException(source, "source term not conceptualizable");
             this.source = source;

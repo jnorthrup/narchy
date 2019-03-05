@@ -6,7 +6,6 @@ import jcog.sort.RankedTopN;
 import jcog.sort.TopN;
 import nars.concept.NodeConcept;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
@@ -17,14 +16,14 @@ import java.util.Random;
 import java.util.Set;
 
 /** caches an array of tasklinks tangent to an atom */
-public final class AtomLinks {
+public final class TermLinks {
 
     private volatile long updated;
 
     @Nullable
     private volatile TaskLink[] links;
 
-    public AtomLinks(long now, int minUpdateCycles) {
+    public TermLinks(long now, int minUpdateCycles) {
         this.updated = now - minUpdateCycles;
     }
 
@@ -33,17 +32,17 @@ public final class AtomLinks {
 
         String id = bag.id(in, out);
 
-        Reference<AtomLinks> matchRef = src.meta(id);
-        AtomLinks match = matchRef != null ? matchRef.get() : null;
+        Reference<TermLinks> matchRef = src.meta(id);
+        TermLinks match = matchRef != null ? matchRef.get() : null;
         if (match == null) {
-            match = new AtomLinks(now, minUpdateCycles);
+            match = new TermLinks(now, minUpdateCycles);
             src.meta(id, new SoftReference<>(match));
         }
 
-        return match.sample( (Atomic)(src.term()), bag, except, in, out, now, minUpdateCycles, rng);
+        return match.sample( src.term(), bag, except, in, out, now, minUpdateCycles, rng);
     }
 
-    public boolean refresh(Atomic x, Iterable<TaskLink> items, int itemCount, boolean in, boolean out, long now, int minUpdateCycles) {
+    public boolean refresh(Term x, Iterable<TaskLink> items, int itemCount, boolean in, boolean out, long now, int minUpdateCycles) {
         if (now - updated >= minUpdateCycles) {
 
             int cap = Math.max(4, (int) Math.ceil(Math.sqrt(itemCount))); //heuristic
@@ -54,7 +53,7 @@ public final class AtomLinks {
                 if (t == null) continue; //HACK
                 float xp = t.priElseZero();
                 if (match == null || match instanceof Set || (match instanceof TopN && xp > ((TopN)match).minValueIfFull())) {
-                    Term y = atomOther(x, t, in, out);
+                    Term y = other(x, t, in, out);
                     if (y != null) {
 
                         if (match == null)
@@ -127,16 +126,16 @@ public final class AtomLinks {
         return l != null ? l.source() : null;
     }
 
-    public final Term sample(Atomic srcTerm, Bag<TaskLink,TaskLink> bag, TaskLink except, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
+    public final Term sample(Term  srcTerm, Bag<TaskLink,TaskLink> bag, TaskLink except, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
         return sample(srcTerm, bag, bag.size(), except, in, out, now, minUpdateCycles, rng);
     }
 
-    public final Term sample(Atomic srcTerm, Iterable<TaskLink> items, int itemCount, TaskLink except, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
+    public final Term sample(Term srcTerm, Iterable<TaskLink> items, int itemCount, TaskLink except, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
         return refresh(srcTerm, items, itemCount, in, out, now, minUpdateCycles) ?
                 sample(except, rng) : null;
     }
 
-    @Nullable static private Term atomOther(Term x, TaskLink t, boolean in, boolean out) {
+    @Nullable static private Term other(Term x, TaskLink t, boolean in, boolean out) {
         Term tt = t.target();
         if (out && x.equals(tt)) {
             Term y = t.source();

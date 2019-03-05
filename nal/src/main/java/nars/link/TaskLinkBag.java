@@ -62,7 +62,7 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
      * acts as a virtual tasklink bag associated with an atom concept allowing it to otherwise act as a junction between tasklinking compounds which share it
      */
     public final Term atomTangent(NodeConcept src, TaskLink except, long now, int minUpdateCycles, Random rng) {
-        return AtomLinks.tangent(this,
+        return TermLinks.tangent(this,
                 src, except,
                 false, true,
                 now, minUpdateCycles, rng);

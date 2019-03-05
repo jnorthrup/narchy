@@ -120,7 +120,7 @@ public class NARS {
 
                 n.termVolumeMax.set(26);
 
-                ((AbstractConceptIndex)n.concepts).activeCapacity.set(256);
+                ((AbstractConceptIndex)n.concepts).activeCapacity.set(128);
                 ((AbstractConceptIndex)n.concepts).activationRate.set(1f);
                 ((AbstractConceptIndex)n.concepts).forgetRate.set(0.5f);
 
