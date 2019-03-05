@@ -221,7 +221,8 @@ abstract public class NAgentX extends NAgent {
 //                                64 * 1024
 ////                                //32 * 1024
 ////////                                //16 * 1024
-                                 , c -> (int) Math.ceil(c.term().voluplexity()))
+                                 //, c -> (int) Math.ceil(c.term().voluplexity()))
+                        )
 
 //                        new HijackConceptIndex(
 //
@@ -407,12 +408,12 @@ abstract public class NAgentX extends NAgent {
 
         n.input.capacity.set(256);
 
-        ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
+        ((AbstractConceptIndex)n.concepts).activeCapacity.set(1024);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
         float p =
                 //1;
-                0.05f;
+                0.1f;
         
         n.beliefPriDefault.set(1f * p);
         n.goalPriDefault.set(2f * p);

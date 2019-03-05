@@ -252,8 +252,9 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         float p =
                 //priPunc(punc);
                 task.priElseZero();
+                //Math.max(ScalarValue.EPSILON, task.priElseZero() - priPunc(punc));
 
-        float pDown = p/2, pUp = p/2;
+        float pDown = 1*p, pUp = Float.NaN;
 
         Concept ct = null;
         boolean self = s.equals(t);
@@ -281,31 +282,24 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
         if (u != null && !u.equals(t)) {
 
-            if (s.op().conceptualizable) {
-                TaskLink.link(
-                        TaskLink.tasklink(s, u, punc, pDown), nar);
-            }
-
-
-            //TODO abstract balance control
-            //float balance = 1 / 2f;
 
 //            if (u.op().conceptualizable) {
-//
-//
 //                //split budget
-////                pUp = p * (1 - balance);
-////                pDown = p * balance;
+//
+//                //TODO abstract balance control
+//                float balance = 1 / 2f;
+//                pUp = p * (1 - balance);
+//                pDown = p * balance;
 //
 //                TaskLink.link(
 //                        TaskLink.tasklink(u, s, punc, pUp), nar);
 //
 //            }
 
-//            if (u.op().conceptualizable) {
-//                TaskLink.link(
-//                        TaskLink.tasklink(u, s, punc, pDown), nar);
-//            }
+            if (s.op().conceptualizable) {
+                TaskLink.link(
+                        TaskLink.tasklink(s, u, punc, pDown), nar);
+            }
 
 
             if (self) {

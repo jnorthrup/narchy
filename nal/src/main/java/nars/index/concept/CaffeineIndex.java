@@ -31,7 +31,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
     }
 
     public CaffeineIndex(long capacity) {
-        this(capacity, false, c->c.term().volume());
+        this(capacity, false, c->1);
     }
 
     public CaffeineIndex(long capacity, ToIntFunction<Concept> w) {
