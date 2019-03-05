@@ -140,8 +140,8 @@ abstract public class MultiExec extends UniExec {
             } else {
                 float v = Math.max(0, s.value = c.value());
                 double cyclesUsed = ((double)tUsed) / cycleNS;
-                //vr = (float)(v / cyclesUsed);
-                vr = (float)(v / (1 + cyclesUsed));
+                vr = (float)(v / cyclesUsed);
+                //vr = (float)(v / (1 + cyclesUsed));
                 assert (vr == vr);
             }
 

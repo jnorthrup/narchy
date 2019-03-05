@@ -160,11 +160,13 @@ public class TruthWave {
             t = minT + dt / 2;
         }
 
+        int halfDur = dur/2;
         float[] data = this.truth;
         int j = 0;
         for (int i = 0; i < points; i++) {
-            long a = Math.round(t);
-            long b = a;
+            long mid = Math.round(t);
+            long a = mid - halfDur;
+            long b = mid + halfDur;
 //            long a = Math.round(t); //Math.round(t - dt/2);
 //            long b = Math.round(t + dt);
 
@@ -172,7 +174,7 @@ public class TruthWave {
 
             load(data, (j++) * ENTRY_SIZE,
                     minT, maxT,
-                    a, b,
+                    mid,mid,
                     tr
             );
             t += dt;

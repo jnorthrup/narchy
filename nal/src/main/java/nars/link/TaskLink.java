@@ -250,9 +250,12 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
         if (t instanceof Compound) {
 
-            Concept sc = nar.conceptualize(t);
-            if (sc != null) {
-                TermLinker linker = sc.linker();
+            Concept targetConcept = nar.conceptualize(t);
+            if (targetConcept != null) {
+
+                t = targetConcept.term();
+
+                TermLinker linker = targetConcept.linker();
                 if ((linker instanceof FasterList)
                         //rng.nextInt(t.volume() + 1) != 0
 
@@ -263,26 +266,31 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                     //rng.nextBoolean()
                 ) {
 
-                    @Nullable Term subSrc = linker.sample(rng);
-                    t = subSrc;
-                    if (subSrc.op().conceptualizable) {
+                    float p =
+                            //priPunc(punc);
+                            task.priElseZero();
+
+                    float pFwd = p;
+
+                    Term s = source();
+                    byte punc = task.punc();
+
+                    t = linker.sample(rng);
+                    if (t.op().conceptualizable) {
                         @Nullable Concept subSrcConcept;
-                        if ((subSrcConcept = nar.conceptualize(subSrc)) != null) {
+                        if ((subSrcConcept = nar.conceptualize(t)) != null) {
                             t = subSrcConcept.term();
-                            Term s = source();
-                            byte punc = task.punc();
-                            float p =
-                                    //priPunc(punc);
-                                    task.priElseZero();
                             //TODO balance control
-                            float pFwd = p/2;
                             float pRev = p/2;
-                            TaskLink.link(
-                                    TaskLink.tasklink(s, t, punc, pFwd), nar);
+                            pFwd = p/2;
                             TaskLink.link(
                                     TaskLink.tasklink(t, s, punc, pRev), nar);
                         }
                     }
+
+                    TaskLink.link(
+                            TaskLink.tasklink(s, t, punc, pFwd), nar);
+
                 }
 
 
