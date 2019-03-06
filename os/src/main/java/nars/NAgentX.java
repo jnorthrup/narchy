@@ -191,12 +191,12 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Valuator.DefaultValuator(0.95f),
+                        new Valuator.DefaultValuator(0.9f),
                         //new Valuator.AEValuator(new XoRoShiRo128PlusRandom()),
 
-                        threads <= 0 ? Util.concurrencyExcept(1) : threads,
+                        threads <= 0 ? Util.concurrencyExcept(2) : threads,
 
-                        true/* affinity */))
+                        false/* affinity */))
 
 //                .exe(MixMultiExec.get(
 //                            1024,
