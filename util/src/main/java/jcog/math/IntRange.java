@@ -14,8 +14,9 @@ public class IntRange extends MutableInteger {
     }
 
     @Override
-    public final void set(int value) {
+    public final IntRange set(int value) {
         super.set(Util.clamp(value, min, max));
+        return this;
     }
 
 

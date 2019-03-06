@@ -282,7 +282,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         next.pri(p); //set the task's pri too
 
-        float delta = tasklink.priMax(next.punc(), p);
+        float delta = tasklink.priMergeGetDelta(next.punc(), p, Param.tasklinkMerge);
 
 //        float delta = tasklink.priMax(next.punc(), p/2);
 //        delta += tasklink.priMax(QUESTION, p/4);

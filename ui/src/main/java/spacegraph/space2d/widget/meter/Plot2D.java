@@ -264,7 +264,7 @@ public class Plot2D extends Widget {
         gl.glColor4fv(backgroundColor, 0);
         Draw.rect(gl, 0, 0, 1, 1);
 
-        vis.draw(series, gl, minValue, maxValue);
+        vis.draw(series, minValue, maxValue, gl);
 
         if (title != null) {
 
@@ -287,7 +287,7 @@ public class Plot2D extends Widget {
 
         }
 
-        void draw(List<Series> series, GL2 g, float minValue, float maxValue);
+        void draw(List<Series> series, float minValue, float maxValue, GL2 g);
 
         default void stop() {
 
@@ -349,13 +349,13 @@ public class Plot2D extends Widget {
 //    float _minValue = NaN, _maxValue = NaN;
 //    String minValueStr = "", maxValueStr = "";
 
-    public static final PlotVis Line = (List<Series> series, GL2 gl, float minValue, float maxValue) -> {
+    public static final PlotVis Line = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
         plotLine(series, gl, minValue, maxValue, false,false);
     };
-    public static final PlotVis LineLanes = (List<Series> series, GL2 gl, float minValue, float maxValue) -> {
+    public static final PlotVis LineLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
         plotLine(series, gl, minValue, maxValue, true, false);
     };
-    public static final PlotVis BarLanes = (List<Series> series, GL2 gl, float minValue, float maxValue) -> {
+    public static final PlotVis BarLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
         plotLine(series, gl, minValue, maxValue, true, true);
     };
 
@@ -378,54 +378,50 @@ public class Plot2D extends Widget {
         HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
         HersheyFont.hersheyText(gl, Texts.n(maxValue, 7), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
 
+        int seriesSize = series.size();
+        float textScale = 1f/(seriesSize) * 0.5f;
+        float range = maxValue - minValue;
+        float laneHeight = 1f/seriesSize;
 
-        for (int sn = 0, seriesSize = series.size(); sn < seriesSize; sn++) {
-            Series s = series.get(sn);
+        for (int i = 0; i < seriesSize; i++) {
+            Series s = series.get(i);
 
-
-
-            float textScale = 1f/(lanes ? sn : 1);
-            float range = maxValue - minValue;
-            float yy = NaN;
 
             //float mid = ypos((s.minValue() + s.maxValue()) / 2f, lanes, sn, seriesSize, maxValue-minValue, minValue);
-            float base = ypos(s.minValue(), lanes, sn, seriesSize, maxValue-minValue, minValue);
+//            float base = ypos(s.minValue(), lanes, i, seriesSize,
+//                    maxValue-minValue, minValue);
+            float yy = NaN;
+            float baseY = i * laneHeight;
 
             if (range > Float.MIN_NORMAL) {
 
+                int histSize = s.size(), histCap = s.capacity();
+
+                float dx = (W / histCap);
+                float x = (histCap - histSize) * dx;
 
 
+                float[] color = s.color();
+                float r = color[0], g = color[1], b = color[2];
 
                 if (!filled) {
                     gl.glLineWidth(3);
                     gl.glBegin(GL.GL_LINE_STRIP);
                 }
 
+                for (int j = 0; j < histSize; j++) {
 
-                int histSize = s.size();
-                int histCap = s.capacity();
-
-                float dx = (W / histCap);
-                float x = (histCap - histSize) * dx;
-
-                float[] color = s.color();
-                float r = color[0], g = color[1], b = color[2];
-
-                for (int i = 0; i < histSize; i++) {
-
-                    float v = s.get(i);
-
-                    float ny = ypos(v, lanes, sn, seriesSize, range, minValue);
-
+                    float v = s.get(j);
 
                     //gl.glColor3fv(color, 0);
                     float a = ((v==v) ? ((v-minValue)/range) : 0) * 0.5f + 0.5f;
                     gl.glColor4f(r,g,b,a);
 
-                    yy = ny;
+                    yy = yLane(ypos(v, minValue, range), i, laneHeight);
 
                     if (filled) {
-                        gl.glRectf(x-dx, base, x, yy);
+                        //TODO fill to an edge (barchart), or the center (waveform)
+                        gl.glRectf(x-dx, baseY, x, yy);
                     } else {
                         gl.glVertex2f(x, yy);
                     }
@@ -439,7 +435,7 @@ public class Plot2D extends Widget {
             }
 
             if (yy != yy)
-                yy = 0.5f;
+                yy = baseY + laneHeight/2;
 
 
             gl.glColor3f(1,1,1);
@@ -447,17 +443,21 @@ public class Plot2D extends Widget {
             gl.glLineWidth(2);
 
 
-            HersheyFont.hersheyText(gl, s.name(), 0.04f * textScale, W , filled ? base : yy, 0, Draw.TextAlignment.Right);
+            HersheyFont.hersheyText(gl, s.name(), 0.04f * textScale, W , filled ? 0 : yy, 0, Draw.TextAlignment.Right);
 
 
         }
     }
 
-    private static float ypos(float v, boolean lanes, int sn, int seriesSize, float range, float minValue) {
-        return lanes ? ypos(minValue, range, v, sn, seriesSize) : ypos(minValue, range, v);
+    private static float yLane(float unitY, int i, float laneHeight) {
+        return unitY * laneHeight + (laneHeight * i);
     }
 
-    private static float ypos(float minValue, float range, float v) {
+    private static float ypos(float v, boolean lanes, int sn, int seriesSize, float range, float minValue) {
+        return lanes ? ypos(minValue, range, v, sn, seriesSize) : ypos(v, minValue, range);
+    }
+
+    private static float ypos(float v, float minValue, float range) {
         return (v - minValue) / range;
     }
     private static float ypos(float minValue, float range, float v, int lane, int numLanes) {
@@ -545,7 +545,7 @@ public class Plot2D extends Widget {
         }
 
         @Override
-        public void draw(List<Series> series, GL2 g, float minValue, float maxValue) {
+        public void draw(List<Series> series, float minValue, float maxValue, GL2 g) {
             if (bmp == null) {
                 bmp = new BitmapMatrixView(w, h, this) {
                     @Override

@@ -49,6 +49,7 @@ public class ByteHijackMemoize<X extends ByteKeyExternal,Y> extends HijackMemoiz
     }
     @Override
     protected void cut(PriProxy<X, Y> p) {
+
         p.priSub(valueBase(p.x()) * CACHE_SURVIVE_COST);
     }
 

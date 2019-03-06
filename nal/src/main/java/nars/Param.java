@@ -53,7 +53,7 @@ public abstract class Param {
             //Conceptualization.FlattenAndDeduplicateAndUnnegateConj //untested
             ;
 
-    public static final boolean SIGNAL_TASK_OCC_DITHER = true;
+    public static final boolean SIGNAL_TASK_OCC_DITHER = false;
     public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS = true;
 
 
@@ -168,8 +168,8 @@ public abstract class Param {
     public static boolean DEBUG_ENSURE_DITHERED_DT = false;
 
     public static final PriMerge tasklinkMerge =
-            //PriMerge.max;
-            PriMerge.plus;
+            PriMerge.max;
+            //PriMerge.plus;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 

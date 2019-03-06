@@ -91,9 +91,10 @@ class ArrayBagTest {
 
         a.commit();
 
-        
-        assertTrue(a.listCopy().toString().contains("x,")); 
-        assertTrue(a.listCopy().toString().contains("y]")); 
+        System.out.println(a.listCopy());
+
+        assertTrue(a.listCopy().toString().contains("x,"));
+        assertTrue(a.listCopy().toString().contains("y]"));
 
         ii = a.iterator();
         assertEquals("x", ii.next().get());

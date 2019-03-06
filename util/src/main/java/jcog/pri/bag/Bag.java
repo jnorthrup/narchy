@@ -23,7 +23,7 @@ import java.util.stream.StreamSupport;
 /**
  * K=key, V = item/value of type Item
  */
-public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
+public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizable {
 
 
     @Nullable Bag EMPTY = new Bag() {
@@ -176,6 +176,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
     /**
      * when adjusting the priority of links directly, to correctly absorb the pressure difference, call this
      */
+    @Override
     default void pressurize(float f) {
 
     }
@@ -335,38 +336,6 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
     }
 
 
-
-    default void depressurize(float pri, @Nullable NumberX overflow) {
-        assert(pri==pri);
-        if (pri > ScalarValue.EPSILON) {
-            depressurize(pri);
-            if (overflow != null)
-                overflow.add(pri);
-        }
-    }
-
-
-    void depressurize(float pri);
-
-    float depressurizePct(float rate);
-
-//        rate = Math.min(1, rate);
-//
-//        //HACK TODO atomic instead of release/return
-//
-//        float maxPressurePerItem = 1;
-//
-//        float release = depressurize();
-//
-//        float p = Math.min(size() * maxPressurePerItem, release);
-//        float freed = p * rate;
-//        float returned = p * (1 - rate);
-//        if (returned > ScalarValue.EPSILON)
-//            pressurize(returned);
-//
-//        return freed;
-
-
     default Iterable<V> commit() {
         return commit(forget(PriForget.FORGET_TEMPERATURE_DEFAULT));
     }
@@ -434,23 +403,18 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
         forEach(b -> each.accept(key(b)));
     }
 
-    /** estimate of current pressure */
-    float pressure();
 
-
-
-
-    /**
-     * TODO super-bag acting as a router for N sub-bags
-     */
-    abstract class CompoundBag<K, V> implements Bag<K, V> {
-        abstract public Bag<K, V> bag(int selector);
-
-        /**
-         * which bag to associate with a keys etc
-         */
-        abstract protected int insertToWhich(K key);
-    }
+//    /**
+//     * TODO super-bag acting as a router for N sub-bags
+//     */
+//    abstract class CompoundBag<K, V> implements Bag<K, V> {
+//        abstract public Bag<K, V> bag(int selector);
+//
+//        /**
+//         * which bag to associate with a keys etc
+//         */
+//        abstract protected int insertToWhich(K key);
+//    }
 }
 
 

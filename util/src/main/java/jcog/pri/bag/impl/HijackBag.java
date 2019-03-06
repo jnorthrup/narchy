@@ -130,6 +130,17 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         PRESSURE.add(this, f);
     }
 
+    @Override
+    public void depressurize(float priAmount) {
+        PRESSURE.update(this, (p, a) -> Math.max(0, p - a), priAmount);
+    }
+
+    @Override
+    public float depressurizePct(float percentage) {
+        return PRESSURE.getAndUpdate(this, (p, factor) -> Math.min(mass() /* limit */, p * factor), 1 - percentage) * percentage;
+    }
+
+
     private static <Y> void forEach(AtomicReferenceArray<Y> map, Predicate<Y> accept, Consumer<? super Y> e) {
         for (int c = map.length(), j = 0; j < c; j++) {
             Y v = map
@@ -279,11 +290,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         if (mode == PUT) {
             if ((incomingPri = pri(incoming)) != incomingPri)
                 return null;
-            pressurize(incomingPri);
         } else {
             incomingPri = Float.POSITIVE_INFINITY; /* shouldnt be used */
         }
-
+        if (mode == PUT)
+            pressurize(incomingPri);
 
         int mutexTicket = -1;
         V toAdd = null, toRemove = null, toReturn = null;
@@ -291,6 +302,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         int start = (kHash % c);
         if (start < 0)
             start += c;
+
+
 
         if (mode != GET) {
             mutexTicket = mutex.start(id, kHash);
@@ -301,7 +314,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             switch (mode) {
                 case GET:
                     for (int i = start, j = reprobes; j > 0; j--) {
-                        V v = map.get(i);
+                        V v = map.getOpaque(i);
                         if (v != null && keyEquals(k, kHash, v)) {
                             return v;
                         }
@@ -309,9 +322,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     return null; //not found
                 case REMOVE:
                     for (int i = start, j = reprobes; j > 0; j--) {
-                        V v = map.get(i);
+                        V v = map.getAcquire(i);
                         if (v != null && keyEquals(k, kHash, v)) {
-                            if (map.compareAndSet(i, v, null)) {
+                            if (map.weakCompareAndSetRelease(i, v, null)) {
                                 toReturn = toRemove = v;
                                 break;
                             }
@@ -329,7 +342,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                         for (int i = start, j = reprobes; j > 0; j--) {
 
-                            V v = map.get(i);
+                            V v = map.getAcquire(i);
                             if (v == null) {
                                 if (victimPri > NEGATIVE_INFINITY) {
                                     victimIndex = i;
@@ -380,7 +393,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                             //assert(victimWeakest!=-1);
 
                             if ((victimIndex >= 0 && victimValue == null) || (victimValue!=null && replace(incomingPri, victimValue, victimPri))) {
-                                if (map.compareAndSet(victimIndex, victimValue, incoming)) {
+                                if (map.weakCompareAndSetRelease(victimIndex, victimValue, incoming)) {
                                     toRemove = victimValue;
                                     toReturn = toAdd = incoming;
                                     break; //done
@@ -405,8 +418,10 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         }
 
 
-        int size = SIZE.addAndGet(this, (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0));
+        int dSize = (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0);
+        int size = dSize == 0 ? size() : SIZE.addAndGet(this, dSize);
 
+        if (toRemove!=null)
 
         if (toAdd != null) {
             _onAdded(toAdd);
@@ -422,6 +437,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         if (toRemove != null) {
             if (map == this.map) {
+                depressurize(pri(toRemove));
                 onRemove(toRemove);
             }
         }
@@ -463,7 +479,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      * <p>
      * this supports fairness so that existing items will not have a
      * second-order budgeting advantage of not contributing as much
-     * to the presssure as new insertions.
+     * to the pressure as new insertions.
      * <p>
      * if returns null, the merge is considered failed and will try inserting/merging
      * at a different probe location
@@ -483,6 +499,12 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     protected boolean replace(float incoming, V existingValue, float existing) {
         return hijackFair(incoming, existing);
     }
+
+
+//    /** loss of priority if survives */
+//    protected void cut(V p) {
+//        p.priSub(CACHE_SURVIVE_COST);
+//    }
 
     abstract public void priAdd(V entry, float amount);
 
@@ -536,22 +558,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         if (k == null)
             return null;
 
-        //HACK this should depressurize even if overflowing is null..
-//        float oBefore;
-//        if (overflowing == null) {
-//            overflowing = new MutableFloat(0);
-//            oBefore = 0;
-//        } else {
-//            oBefore = overflowing.floatValue();
-//        }
 
         V x = update(k, v, PUT, overflowing);
-
-
-//        float oAfter = overflowing.floatValue();
-//        float oDelta = oAfter - oBefore;
-//        if (oDelta >= ScalarValue.EPSILON)
-//            depressurize(oDelta);
 
         if (x == null)
             onReject(v);
@@ -765,24 +773,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
 
-//    /**
-//     * always >= 0
-//     */
-//    @Override
-//    public float depressurize() {
-//        return Math.max(0, PRESSURE.getAndZero(this));
-//    }
-
-
-    @Override
-    public void depressurize(float priAmount) {
-        PRESSURE.update(this, (p, a) -> Math.max(0, p - a), priAmount);
-    }
-
-    @Override
-    public float depressurizePct(float percentage) {
-        return PRESSURE.getAndUpdate(this, (p, factor) -> Math.min(mass() /* limit */, p * factor), 1 - percentage) * percentage;
-    }
 
     @Override
     public float mass() {

@@ -1,5 +1,6 @@
 package nars.attention;
 
+import jcog.pri.Pressurizable;
 import jcog.pri.bag.Bag;
 import jcog.pri.op.PriForget;
 import nars.NAR;
@@ -42,7 +43,7 @@ abstract public class Forgetting {
 
     }
 
-    static protected float depressurize(Bag b, float temperature) {
+    static protected float depressurize(Pressurizable b, float temperature) {
         return b.depressurizePct(temperature);
     }
 

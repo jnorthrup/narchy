@@ -40,7 +40,7 @@ public class PuncNoise extends DurService {
         if (delta == delta) {
             float amt = delta / 4;
             for (int i = 0; i < 4; i++) {
-                ((TaskLink.GeneralTaskLink) t).mergeComponent(p(i), amt, PriMerge.plus);
+                ((TaskLink.GeneralTaskLink) t).priMerge(p(i), amt, PriMerge.plus);
             }
         }
 

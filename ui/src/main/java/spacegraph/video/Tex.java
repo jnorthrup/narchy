@@ -12,6 +12,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.unit.AspectAlign;
+import spacegraph.space2d.hud.Ortho;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -45,7 +46,7 @@ public class Tex {
     boolean inverted = false;
 
     private Object src;
-    protected GL2 gl;
+//    @Deprecated private GL2 gl;
 
     public Tex mipmap(boolean mipmap) {
         this.mipmap = mipmap;
@@ -74,18 +75,18 @@ public class Tex {
     /** try to commit */
     public Tex commit(GL2 gl) {
 
-        if (gl!=null && this.gl!=null && gl.getContext()!=this.gl.getContext()) {
-            //if the texture was re-opened in a new GL context (new window) then the texture will be inaccessible
-            profile = null;
-            if(texture!=null) {
-                texture.destroy(this.gl);
-                texture = null;
-            }
-            textureUpdated.set(true);
-        }
+//        if (profile!=null) {
+//            //reset
+//            //if the texture was re-opened in a new GL context (new window) then the texture will be inaccessible
+//            profile = null;
+//            if(texture!=null) {
+//                texture.destroy(this.gl);
+//                texture = null;
+//            }
+//            textureUpdated.set(true);
+//        }
 
         if (profile == null) {
-            this.gl = gl;
             profile = gl.getGLProfile();
         }
 
@@ -102,21 +103,13 @@ public class Tex {
     }
 
     public static TexSurface view(BufferedImage b) {
-        Tex t = new Tex();
-        //t.update(b);
-        return new TexSurface(t) {
 
-//            @Override
-//            public boolean start(SurfaceBase parent) {
-//                if (super.start(parent)) {
-//                    return true;
-//                }
-//                return false;
-//            }
 
+        return new TexSurface() {
             @Override
             protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                if (t.nextData == null)
+                Tex t = this.tex;
+                if (t !=null && t.nextData == null)
                     t.update(b);
                 super.paint(gl, surfaceRender);
             }
@@ -210,42 +203,58 @@ public class Tex {
 
     }
 
+    public final boolean ready() {
+        return nextData!=null;
+    }
+
     public static class TexSurface extends Surface {
 
-        private final Tex tex;
+        public final Tex tex;
 
-        TexSurface(Tex tex) {
+        TexSurface() {
+            this(new Tex());
+        }
+
+        public TexSurface(Tex tex) {
             this.tex = tex;
         }
 
+
         @Override
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-            try {
-                tex.paint(gl, bounds);
-            } catch (NullPointerException e) {
 
+            paintMatrix(gl);
+        }
 
-            }
+        public void paintMatrix(GL2 gl) {
+            Tex t = this.tex;
+            if (t == null) return; //wtf
+
+            RectFloat b = bounds;
+            if (b == null) return; //wtf
+
+            t.paint(gl, b);
         }
 
         @Override
         public boolean stop() {
-            tex.stop();
-            return super.stop();
+            if (super.stop()) {
+                tex.stop(((Ortho) root()).space.gl());
+                return true;
+            }
+            return false;
         }
 
         public TexSurface update(BufferedImage img) {
             tex.update(img);
-
             return this;
         }
     }
 
-    public void stop() {
+    public void stop(GL2 gl) {
         if (gl!=null && texture!=null) {
             texture.destroy(gl);
             texture = null;
-            gl = null;
         }
     }
 

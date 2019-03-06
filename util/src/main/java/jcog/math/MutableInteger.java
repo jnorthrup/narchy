@@ -73,13 +73,15 @@ public class MutableInteger extends NumberX implements Comparable, IntSupplier, 
      * Sets the value.
      *
      * @param value the value to setAt
+     * @return
      */
-    public void set(int value) {
+    public IntRange set(int value) {
         int v = this.value;
         if (v != value) {
             this.value = value;
             changed();
         }
+        return null;
     }
 
 

@@ -73,7 +73,6 @@ public class ArrayTensor extends AbstractShapedTensor
         data[linearCell] = newValue;
     }
 
-
     @Override public void fill(float v) {
         Arrays.fill(data, v);
     }

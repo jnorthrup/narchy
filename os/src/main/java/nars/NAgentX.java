@@ -194,7 +194,9 @@ abstract public class NAgentX extends NAgent {
                         new Valuator.DefaultValuator(0.95f),
                         //new Valuator.AEValuator(new XoRoShiRo128PlusRandom()),
 
-                        threads <= 0 ? Util.concurrencyExcept(1) : threads, false/* affinity */))
+                        threads <= 0 ? Util.concurrencyExcept(1) : threads,
+
+                        true/* affinity */))
 
 //                .exe(MixMultiExec.get(
 //                            1024,
@@ -271,40 +273,18 @@ abstract public class NAgentX extends NAgent {
 //        );
 //        senseReward.timing = new ActionTiming(n);
 
-//        ZipperDeriver senseActions = BeliefSource.forConcepts(n, rules,
-//                sensorConcepts,
-//                actionLinker
-//        );
-//        senseActions.timing = new ActionTiming(n);
-
-
-//        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.files(n,
-//                "nal6.nal", "motivation.nal"),
-//                a.actions.stream().collect(Collectors.toList())
-//        );
-//        motorInference.timing = new ActionTiming(n);
-
-
-        //sd.timing = new ActionTiming(n);
-////                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
-////                        rules) {
-//////                    @Override
-//////                    public float puncFactor(byte conclusion) {
-//////                        return conclusion == GOAL ? 1 : 0.5f;
-//////                    }
-////                };
-
 
         MetaAgent meta = new MetaAgent(a);
 
         //window(AttentionUI.attentionGraph(n, a), 600, 600);
 
-        window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
-
+        window(new Gridding(NARui.agent(a), NARui.top(n)), 800, 500);
 
         final Bag<?,TaskLink> active = ((AbstractConceptIndex) n.concepts).active;
         int c = active.capacity();
-        Spectrogram s = new Spectrogram(128, c);
+        int history = 64;
+        int width = c;
+        Spectrogram s = new Spectrogram(false, history, width);
 
         DurSurface d = DurSurface.get(s, n, new Runnable() {
 
@@ -322,6 +302,7 @@ abstract public class NAgentX extends NAgent {
                 if (x == null)
                     return 0;
 
+//                float[] bgqq = x.priPuncSnapshot();
                 float r = x.priPunc(BELIEF);
                 float g = x.priPunc(GOAL);
                 float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;

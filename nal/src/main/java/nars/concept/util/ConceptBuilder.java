@@ -1,7 +1,6 @@
 package nars.concept.util;
 
 import jcog.WTF;
-import jcog.pri.bag.Bag;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
@@ -53,7 +52,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         AbstractDynamicTruth dmt = ConceptBuilder.dynamicModel(t);
 
-        Bag L;
         if (dmt != null) {
 
             //2. handle dynamic truth tables

@@ -40,7 +40,7 @@ abstract public class MultiExec extends UniExec {
     static private final float queueLatencyMeasurementProbability = 0.05f;
 
     /** proportion of time spent in forced curiosity */
-    private float explorationRate = 0.25f;
+    private float explorationRate = 0.1f;
 
 
     protected long cycleNS;
@@ -220,7 +220,7 @@ abstract public class MultiExec extends UniExec {
         final int threads;
         final boolean affinity;
 
-        double granularity = 2;
+        double granularity = 1;
 
         final AffinityExecutor exe = new AffinityExecutor();
         private List<Worker> workers;
@@ -372,7 +372,7 @@ abstract public class MultiExec extends UniExec {
                     } else {
 
                         boolean singleton = c.singleton();
-                        if (!singleton || c.busy.compareAndSet(false, true)) {
+                        if (!singleton || c.busy.weakCompareAndSetAcquire(false, true)) {
 
                             long before = nanoTime();
 
@@ -390,8 +390,10 @@ abstract public class MultiExec extends UniExec {
                                 s.use(after - before);
                             }
 
-                            if (singleton)
-                                c.busy.set(false);
+                            if (singleton) {
+                                //c.busy.set(false);
+                                c.busy.lazySet(false);
+                            }
                         }
                     }
 

@@ -2,6 +2,7 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.IntRange;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -26,7 +27,11 @@ public class Spectrogram extends Surface implements BitmapMatrixView.ViewFunctio
     /** N item axis capacity ("bins", "states", "frequencies", etc..) */
     private final IntRange N = new IntRange(1, 1, 512);
 
-    private BitmapMatrixView[] tn = new BitmapMatrixView[1];
+
+    /** TODO abstract, and other visualization options (z-curve, etc) */
+    @Deprecated private final boolean horizOrVert;
+
+    private MyBitmapMatrixView[] tn = new MyBitmapMatrixView[1];
 
     /** current time */
     private int y = 0;
@@ -42,7 +47,8 @@ public class Spectrogram extends Surface implements BitmapMatrixView.ViewFunctio
         return 0;
     };
 
-    public Spectrogram(int T, int N) {
+    public Spectrogram(boolean leftOrDown, int T, int N) {
+        this.horizOrVert = leftOrDown;
         this.T.set(T);
         this.N.set(N);
         next(BLACK);
@@ -54,19 +60,24 @@ public class Spectrogram extends Surface implements BitmapMatrixView.ViewFunctio
         int t = T.intValue(), n = N.intValue();
         int y = this.y;
 
-        BitmapMatrixView[] xy = Spectrogram.this.tn;
-        if (xy == null || xy.length!=t || xy[0]==null || xy[0].h!= n) { //TODO if history changes
+        MyBitmapMatrixView[] xy = Spectrogram.this.tn;
+        if (xy == null || xy.length!=t || xy[0]==null || (xy[0].w * xy[0].h) != n) { //TODO if history changes
             xy = allocate(this.tn, t, n);
         }
 
-        float W = w();
-        float dh = h()/t;
-        int last = -1;
+        float W = w(), H = h(), left = left(), right = right(), top = top(), bottom = bottom();
+        float di = (horizOrVert ? W : H)/t;
         for (int i = 0; i < t; i++) {
             int ii = Math.abs(i - y) % t;
-            ii = (t-1) - ii; //t-.. : for y-orientation HACK
-            float iy = ii * dh;
-            xy[i].pos(0, iy, W, iy + dh);
+            MyBitmapMatrixView xyi = xy[i];
+            ii = (t - 1) - ii; //t-.. : for y-orientation HACK
+            if (horizOrVert) {
+                float ix = ii * di;
+                xyi.posSpectro(left, top + ix,  left + ix + di, bottom);
+            } else {
+                float iy = ii * di;
+                xyi.posSpectro(left,  top + iy, right, top + iy + di);
+            }
         }
 
 
@@ -82,14 +93,20 @@ public class Spectrogram extends Surface implements BitmapMatrixView.ViewFunctio
 
     }
 
-    private BitmapMatrixView[] allocate(BitmapMatrixView[] x, int t, int n) {
-        BitmapMatrixView[] y = x!=null ? Arrays.copyOf(x, t) : new BitmapMatrixView[t];
+    private MyBitmapMatrixView[] allocate(MyBitmapMatrixView[] x, int t, int n) {
+        MyBitmapMatrixView[] y = x!=null ? Arrays.copyOf(x, t) : new MyBitmapMatrixView[t];
         for (int i = 0; i < t; i++) {
-            BitmapMatrixView yi = y[i];
-            if (yi!=null && yi.w == n)
+            MyBitmapMatrixView yi = y[i];
+            if (yi!=null && yi.w * yi.h == n)
                 continue;
 
-            BitmapMatrixView r = new BitmapMatrixView(n, 1, Spectrogram.this).cellTouch(false);
+            int W, H;
+            if (horizOrVert) {
+                W = 1; H = n;
+            } else {
+                W = n; H = 1;
+            }
+            MyBitmapMatrixView r = new MyBitmapMatrixView(W, H);
             r.start(this);
             y[i] = r;
         }
@@ -103,18 +120,29 @@ public class Spectrogram extends Surface implements BitmapMatrixView.ViewFunctio
 
 
     @Override
-    public final int color(int x, int yIgnored /* == 0 */) {
-        return _color.applyAsInt(x);
+    public final int color(int x, int y) {
+        return _color.applyAsInt(horizOrVert ? y : x);
     }
 
     @Override
     protected void compile(SurfaceRender r) {
         super.compile(r);
         r.on((gl,sr)->{
-            for (BitmapMatrixView z : tn) {
-                if (!z.showing())
-                    z.recompile(sr);
-                z.render(gl, sr);
+            //float W = w(), H = h();
+            for (MyBitmapMatrixView z : tn) {
+//                if (!z.showing())
+//                    z.recompile(sr);
+//                z.render(gl, sr);
+
+//                gl.glPushMatrix();
+                //gl.glTranslatef(z.px1, z.py1, 0);
+                //gl.glScalef(W * (z.px2 - z.px1), H * (z.py2 - z.py1), 1);
+                if (!z.tex.ready()) {
+                    z.tex.commit(gl);
+                    z.show();
+                }
+                z.tex.paint(gl, RectFloat.XYXY(z.px1, z.py1, z.px2, z.py2));
+//                gl.glPopMatrix();
             }
         });
     }
@@ -138,4 +166,23 @@ public class Spectrogram extends Surface implements BitmapMatrixView.ViewFunctio
                 return 0;
         });
     }
+
+    private class MyBitmapMatrixView extends BitmapMatrixView {
+        private float px1, py1, px2, py2;
+
+        public MyBitmapMatrixView(int w, int h) {
+            super(w, h, Spectrogram.this);
+            cellTouch(false);
+            pos(RectFloat.Unit);
+            //pos = 0,0..1,1
+        }
+
+        void posSpectro(float x1, float y1, float x2, float y2) {
+            this.px1 = x1; this.py1 = y1; this.px2 = x2; this.py2 = y2;
+        }
+
+
+        //        public void setPosSpectro(float )
+    }
+
 }

@@ -76,9 +76,9 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
      * interpolates the coordinates, and the scale is proportional to the mean dimensions of each
      */
     public static RectFloat mid(RectFloat source, RectFloat target, float relScale) {
-        float cx = (source.cx() + target.cx()) / 2f;
-        float cy = (source.cy() + target.cy()) / 2f;
-        float wh = relScale * Math.max((source.w + target.w) / 2f, (source.h + target.h) / 2f);
+        float cx = (source.cx() + target.cx()) / 2;
+        float cy = (source.cy() + target.cy()) / 2;
+        float wh = relScale * Math.max((source.w + target.w) / 2f, (source.h + target.h) / 2);
         return RectFloat.XYWH(cx, cy, wh, wh);
     }
 
@@ -112,20 +112,33 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public RectFloat size(float ww, float hh, float epsilon) {
-        float w = this.w;
-        float h = this.h;
-        return Util.equals(w, ww, epsilon) && Util.equals(h, hh, epsilon) ? this : XYWH(cx(), cy(), ww, hh);
+        return Util.equals(this.w, ww, epsilon)
+                &&
+               Util.equals(this.h, hh, epsilon) ?
+                        this :
+                        XYWH(cx(), cy(), ww, hh);
     }
 
     @Override
-    public RectFloat mbr(final HyperRegion r) {
-        if (r == this) return this;
+    public RectFloat mbr(final HyperRegion _b) {
+        if (_b == this) return this;
 
-        final RectFloat r2 = (RectFloat) r;
-        final float minX = Math.min(x, r2.x);
-        final float minY = Math.min(y, r2.y);
-        final float maxX = Math.max(x + w, r2.x + r2.w);
-        final float maxY = Math.max(y + h, r2.y + r2.h);
+        final RectFloat b = (RectFloat) _b;
+
+        //TODO better merge of these conditions
+//        if (contains(b))
+//            return this;
+//        else if (b.contains(this))
+//            return this;
+//        else if (b.equals(this))
+//            return this;
+
+        final float ax = this.x, bx = b.x,
+                minX = Math.min(ax, bx),
+                maxX = Math.max(ax + w, bx + b.w);
+        final float ay = this.y, by = b.y,
+                minY = Math.min(ay, by),
+                maxY = Math.max(ay + h, by + b.h);
 
         return XYXY(minX, minY, maxX, maxY);
     }
@@ -212,12 +225,19 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return equals(o, (float) EPSILON);
     }
 
+    public final boolean equals(RectFloat o) {
+        return equals(o, (float) EPSILON);
+    }
+
     public final boolean equals(Object o, float epsilon) {
         if (this == o) return true;
         if (!(o instanceof RectFloat)) return false;
 
-        RectFloat rect2D = (RectFloat) o;
-        return equals(rect2D.x, rect2D.y, rect2D.w, rect2D.h, epsilon);
+        return equals((RectFloat) o, epsilon);
+    }
+
+    public final boolean equals(RectFloat o, float epsilon) {
+        return equals(o.x, o.y, o.w, o.h, epsilon);
     }
 
     public boolean equals(float xx, float yy, float ww, float hh, float epsilon) {

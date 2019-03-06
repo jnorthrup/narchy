@@ -28,11 +28,6 @@ abstract public class BatchArrayTensor extends ArrayTensor {
         throw new UnsupportedOperationException("only batch operations available");
     }
 
-
-
-
-
-
     @Override public float[] snapshot() {
         
         if (busy.compareAndSet(false, true)) {

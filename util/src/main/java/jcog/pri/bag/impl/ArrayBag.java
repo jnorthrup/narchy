@@ -531,16 +531,14 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     @Override
     public Y put(final Y incoming, final NumberX overflow) {
 
-        final int capacity = this.capacity();
 
         float p = incoming.priElseZero();
 
-        if (capacity == 0) {
-            depressurize(p, overflow);
+        final int capacity = this.capacity();
+        if (capacity == 0)
             return null;
-        }
 
-        pressurize(p);
+
 
 
 //        //HACK special case for saving a lot of unnecessary work when merge=Max
@@ -558,18 +556,21 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         boolean inserted;
 
+        Y mergeResult;
+
         synchronized (items) {
 
             Y existing = map.get(key);
 
             if (existing != null) {
-                if (existing != incoming) {
-                    return merge(existing, incoming, overflow);
-                } else {
-                    depressurize(p, overflow);
-                    return incoming; //exact same instance
-                }
+                depressurize(p); //undo the initial pressurization
+                mergeResult = (existing != incoming) ?
+                        merge(existing, incoming, overflow) :
+                        incoming; //exact same instance
+                inserted = false;
             } else {
+
+                mergeResult = null;
 
                 int s = size();
 
@@ -593,12 +594,15 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         }
 
+        if (mergeResult != null)
+            return mergeResult; //merge finished
+        else
+            pressurize(p);
 
         if (!inserted) {
 
             onReject(incoming);
-            if (overflow != null)
-                depressurize(p, overflow);
+
             incoming.delete();
 
             return null;
@@ -621,7 +625,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     /**
      * will not need to be sorted after calling this; the index is automatically updated
      */
-    private Y merge(Y existing, Y incoming, @Nullable NumberX overflow) {
+    private Y merge(Y existing, Y incoming,  @Nullable NumberX overflow) {
 
 
 //        int posBefore = items.indexOf(existing, this, true);
@@ -644,7 +648,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         Y result;
 
         float priBefore = existing.pri();
-        float oo = merge(existing, incoming);
+        float overflo = merge(existing, incoming);
         float priAfter = existing.pri();
         if (priAfter != priAfter) {
             //got deleted
@@ -654,11 +658,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         } else {
             result = existing;
         }
+        if (overflo!=0 && overflow!=null)
+            overflow.add(overflo);
 
         float delta = priAfter - priBefore;
 
-
-        depressurize(oo, overflow);
+        pressurize(delta);
 
 
         if (Math.abs(delta) >= ScalarValue.EPSILON) {

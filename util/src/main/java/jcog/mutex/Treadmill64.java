@@ -40,11 +40,12 @@ public class Treadmill64 implements SpinMutex {
             }
 
             if (mod.weakCompareAndSetRelease(now, now+1)) { //TODO separate into modIn and modOut?
-                if (jProlly != -1 && buf.weakCompareAndSetVolatile(jProlly, 0, hash))
+                if (jProlly != -1 && buf.weakCompareAndSetAcquire(jProlly, 0, hash))
                     return jProlly;
 
-                for (int j = offset; j < offset+size; j++)
-                    if (j!=jProlly && buf.weakCompareAndSetVolatile(j, 0, hash))
+                int os = offset + size;
+                for (int j = offset; j < os; j++)
+                    if (j!=jProlly && buf.weakCompareAndSetAcquire(j, 0, hash))
                         return j;
             }
 
@@ -54,7 +55,7 @@ public class Treadmill64 implements SpinMutex {
 
     @Override
     public final void end(int slot) {
-        buf.set(slot, 0);
+        buf.setRelease(slot, 0);
     }
 
 

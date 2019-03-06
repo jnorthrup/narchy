@@ -240,6 +240,11 @@ abstract public class JoglSpace {
         return io.onUpdate(c);
     }
 
+    public final GL2 gl() {
+        return io.gl;
+    }
+
+
 
     private class MyJoglWindow extends JoglWindow {
 

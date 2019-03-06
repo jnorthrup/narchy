@@ -2,7 +2,8 @@ package jcog.signal.tensor;
 
 import jcog.math.FloatSupplier;
 
-/** dynamically updating 1-value tensor from a FloatSupplier */
+/** dynamically updating 1-value tensor from a FloatSupplier.
+ * TODO dont override ArrayTensor but something simpler */
 public class ScalarTensor extends ArrayTensor {
     private final FloatSupplier f;
 
@@ -12,7 +13,6 @@ public class ScalarTensor extends ArrayTensor {
     }
 
     @Override public float[] snapshot() {
-        setAt(f.asFloat(), 0);
-        return super.snapshot();
+        return new float[] { this.data[0] = f.asFloat() };
     }
 }

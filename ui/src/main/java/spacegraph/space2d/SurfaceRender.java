@@ -89,14 +89,14 @@ public class SurfaceRender {
 //    }
 
     public SurfaceRender set(Ortho.Camera cam, v2 scale) {
-        return set(scale.x, scale.y, cam.x, cam.y);
+        return set(cam.x, cam.y, scale.x, scale.y);
     }
 
-    public SurfaceRender set(float scalex, float scaley, float cx, float cy) {
-        this.scaleX = scalex;
-        this.scaleY = scaley;
-        float sxw = 0.5f * pw / scalex;
-        float syh = 0.5f * ph / scaley;
+    public SurfaceRender set(float cx, float cy, float sx, float sy) {
+        this.scaleX = sx;
+        this.scaleY = sy;
+        float sxw = 0.5f * pw / sx;
+        float syh = 0.5f * ph / sy;
         this.x1 = cx - sxw;
         this.x2 = cx + sxw;
         this.y1 = cy - syh;

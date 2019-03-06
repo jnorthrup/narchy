@@ -28,12 +28,11 @@ import static jcog.Util.clampSafe;
  * 1D/2D bitmap viewer with parametric coloring.
  * updated and displayed as a bitmap texture
  */
-public class BitmapMatrixView extends Surface {
+public class BitmapMatrixView extends Tex.TexSurface {
 
     public final int w;
     public final int h;
     private volatile BitmapPainter view;
-    public final Tex bmp;
     protected final v2 touchPos = new v2();
     protected final Point2i touchPixel = new Point2i();
     private BufferedImage buf;
@@ -55,15 +54,15 @@ public class BitmapMatrixView extends Surface {
     }
 
     public BitmapMatrixView(int w, int h, BitmapPainter view) {
+        super(new Tex());
         this.w = w;
         this.h = h;
         this.view = view != null ? view : ((BitmapPainter) this);
-        this.bmp = new Tex();
     }
 
-    public BitmapMatrixView(Bitmap2D bmp) {
-        this(bmp.width(), bmp.height(), (x,y)->{
-            float a = bmp.brightness(x, y);
+    public BitmapMatrixView(Bitmap2D tex) {
+        this(tex.width(), tex.height(), (x, y)->{
+            float a = tex.brightness(x, y);
             return Draw.rgbInt(a,a,a);
         });
     }
@@ -155,7 +154,6 @@ public class BitmapMatrixView extends Surface {
     @Override
     public boolean stop() {
         if (super.stop()) {
-            bmp.stop();
             return true;
         }
         return false;
@@ -175,12 +173,7 @@ public class BitmapMatrixView extends Surface {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        paintMatrix(gl);
-    }
-
-    protected void paintMatrix(GL2 gl) {
-        bmp.paint(gl, bounds);
-
+        super.paint(gl, surfaceRender);
         /* paint cursor hilited cell */
         if (cellTouch) {
             float w = w() / this.w, h = h() / this.h;
@@ -190,6 +183,7 @@ public class BitmapMatrixView extends Surface {
             Draw.rectStroke(x + touchPixel.x * w, y + touchPixel.y * h, w, h, gl);
         }
     }
+
 
     /**
      * the position of a cell's center
@@ -234,7 +228,7 @@ public class BitmapMatrixView extends Surface {
 
         view.color(buf, pix);
 
-        return bmp.update(buf);
+        return tex.update(buf);
     }
 
     public boolean alpha() {

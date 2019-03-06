@@ -88,10 +88,11 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         p.priAdd(CACHE_HIT_BOOST);
     }
 
-    /** loss of priority if survives */
-    protected void cut(PriProxy<X,Y> p) {
+    protected void cut(PriProxy<X, Y> p) {
         p.priSub(CACHE_SURVIVE_COST);
     }
+
+
 
     @Nullable
     public Y removeIfPresent(X x) {
@@ -266,6 +267,11 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
             }
         }
 
+        /** loss of priority if survives */
+        protected void cut(PriProxy<X,Y> p) {
+            p.priSub(CACHE_SURVIVE_COST);
+        }
+
         @Override
         protected boolean keyEquals(Object k, int kHash, PriProxy<X, Y> p) {
             return p.xEquals(k, kHash);
@@ -273,7 +279,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
         @Override
         public Consumer<PriProxy<X, Y>> forget(float rate) {
-            return null;
+            /* TODO */ return null;
         }
 
         @Override

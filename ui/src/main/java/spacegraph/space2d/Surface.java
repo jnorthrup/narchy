@@ -93,7 +93,9 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return id;
     }
 
-    @Deprecated abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
+    @Deprecated protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+
+    }
 
     public <S extends Surface> S pos(RectFloat next) {
         BOUNDS.lazySet(this, next);

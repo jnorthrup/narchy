@@ -26,7 +26,11 @@ public class AtomicArrayTensor extends AbstractVector {
 
     @Override
     public final void setAt(float newValue, int linearCell) {
-        data.set(linearCell, Float.floatToIntBits(newValue));
+        data.set(linearCell, floatToIntBits(newValue));
+    }
+
+    public final void setAtLazy(float newValue, int linearCell) {
+        data.lazySet(linearCell, floatToIntBits(newValue));
     }
 
     /** @see jcog.data.atomic.AtomicFloatFieldUpdater */

@@ -243,10 +243,10 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         throw new WTF();
     }
 
-    /**
-     * returns the delta
-     */
-    float priMax(byte punc, float p);
+//    /**
+//     * returns the delta
+//     */
+//    float priMax(byte punc, float p);
 
     @Nullable
     default Term term(Task task, Derivation d) {
@@ -318,6 +318,11 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         Op o = s.op();
         if (o.conceptualizable && o.taskable)
             TaskLink.link(s, u, punc, p, nar);
+    }
+
+    /** snapshots a 4-tuple: beliefs, goals, questions, quests */
+    default float[] priPuncArray() {
+        return new float[] { priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST) };
     }
 
 
@@ -419,7 +424,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                 priMerge(punc, pri);
         }
 
-        private void assertAccurate() {
+
+            private void assertAccurate() {
             if (Param.DEBUG) {
                 if (!Util.equals(priElseZero(), punc.sumValues() / 4f, ScalarValue.EPSILON * 2))
                     throw new WTF();
@@ -446,20 +452,31 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         }
 
         public final GeneralTaskLink priMerge(byte punc, float pri) {
-            return mergeComponent(punc, pri, Param.tasklinkMerge);
+            mergeComponent(punc, pri, Param.tasklinkMerge, true);
+            return this;
+        }
+
+        public final TaskLink priMerge(byte punc, float pri, PriMerge merge) {
+            priMergeGetValue(punc, pri, merge);
+            return this;
+        }
+
+        public final float priMergeGetValue(byte punc, float pri, PriMerge merge) {
+            return mergeComponent(punc, pri, merge, true);
+        }
+
+        public final float priMergeGetDelta(byte punc, float pri, PriMerge merge) {
+            return mergeComponent(punc, pri, merge, false);
         }
 
         /**
          * returns delta
          */
-        public float priSet(byte punc, float pri) {
-            return mergeComponent(punc, pri, PriMerge.replace, false);
+        public void priSet(byte punc, float pri) {
+            priMergeGetDelta(punc, pri, PriMerge.replace);
         }
 
-        @Override
-        public float priMax(byte punc, float max) {
-            return mergeComponent(punc, max, PriMerge.max, false);
-        }
+
 
         @Override
         public /* HACK */ float merge(TaskLink incoming, PriMerge merge) {
@@ -468,7 +485,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
                 for (int i = 0; i < 4; i++) {
                     float p = ((GeneralTaskLink) incoming).punc.getAt(i);
                     if (Math.abs(p) > Float.MIN_NORMAL) {
-                        delta += mergeComponent(Task.p(i), p, merge, false);
+                        delta += priMergeGetDelta(Task.p(i), p, merge);
                     }
                 }
                 return delta / 4;
@@ -477,14 +494,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             }
         }
 
-        public GeneralTaskLink mergeComponent(byte punc, float pri, PriMerge merge) {
-
-            mergeComponent(punc, pri, merge, true);
-
-            return this;
-        }
-
-        public float mergeComponent(byte punc, float pri, PriMerge merge, boolean valueOrDelta) {
+        private float mergeComponent(byte punc, float pri, PriMerge merge, boolean valueOrDelta) {
             assertFinite(pri);
 
             //assertAccurate();
