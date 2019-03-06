@@ -36,7 +36,6 @@ import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
-import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
@@ -541,7 +540,7 @@ public class NARui {
         };
 
         ScatterPlot2D<VLink<Task>> s = new ScatterPlot2D<VLink<Task>>(model);
-        return DurSurface.get(new Clipped(new Gridding(s)), n, () -> {
+        return DurSurface.get(s, n, () -> {
 
             s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
 

@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.meter;
 
+import jcog.Util;
 import jcog.data.map.CellMap;
-import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
@@ -11,6 +11,8 @@ import spacegraph.util.RectAnimator;
 
 /** 2d scatter ("bubble") plot */
 public class ScatterPlot2D<X> extends Graph2D<X> {
+
+    private final float minVisPct = 0.01f;
 
 //    private float marginPctW = 0.01f, marginPctH = 0.1f;
 
@@ -49,7 +51,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         }
 
         /** returns visible rect extent */
-        RectFloat layout(float[][] in, float[][] out);
+        MutableRectFloat layout(float[][] in, float[][] out);
 
 
         /** called before an update */
@@ -63,8 +65,8 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         }
 
         @Override
-        public RectFloat layout(float[][] in, float[][] out) {
-            if (in.length == 0) return RectFloat.Unit;
+        public MutableRectFloat layout(float[][] in, float[][] out) {
+            if (in.length == 0) return new MutableRectFloat().set(0,0, 1,1);
 
             int dim = dimensionExternal();
             for (int i = 0; i < in.length; i++) {
@@ -75,7 +77,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
             for (int i = 1; i < in.length; i++) {
                 m.mbr(out[i][0], out[i][1]);
             }
-            return m.immutable();
+            return m;
         }
     }
 
@@ -108,8 +110,13 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                         }
                 )
         );
+
+
         update((g, dtMS)->{
+            float minVis = this.minVisPct;
             int n = g.nodes();
+            float w = w(), h = h();
+            MutableRectFloat e = extent.animated();
             g.forEachValue(node->{
                 float[][] cc = coordOut;
                 int c = node.i;
@@ -120,15 +127,13 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                     float[] xy = cc[c];
 
                     X id = node.id;
-                    float w = ScatterPlot2D.this.w() /* Math.max(w,h)? */ * model.width(id, n);
-                    float h = ScatterPlot2D.this.h() /* Math.max(w,h)? */ * model.height(id, n);
 
-//                if (node.mover==null) {
-//                    node.mover = new MutableFloatRect();
-//                }
-//                node.mover.set(xy[0], xy[1], w, h);
-                    //node.pos(bounds(node.mover));
-                    node.pos(bounds(xy[0], xy[1], w, h));
+                    node.pos(e.normalizeScale(
+                            xy[0], xy[1],
+                            model.width(id, n), model.height(id, n),
+                            minVis,
+                            w,h
+                    ));
 
                     node.pri = model.pri(id);
 
@@ -149,9 +154,10 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                 @Override
                 public void nodes(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
 
+                    int n = cells.size();
+
                     model.start();
 
-                    int n = cells.size();
                     if (coord.length < n || coord.length > n*2 /* TODO || coord[0].length!=dimensionInternal ... */) {
                         coord = new float[n][model.dimensionInternal()];
                         coordOut = new float[n][model.dimensionExternal()];
@@ -160,22 +166,15 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                     currentCoord = 0;
                     Graph2DRenderer.super.nodes(cells, edit);
 
-                    extent.set(model.layout(coord, coordOut), extentUpdatePeriodS);
+                    MutableRectFloat nextExtent = model.layout(coord, coordOut);
+                    if (Util.equals(0,nextExtent.w))
+                        nextExtent.w = 1;
+                    if (Util.equals(0, nextExtent.h))
+                        nextExtent.h = 1;
 
-//                    cells.forEachValue(p -> post(p, n));
+                    extent.set(nextExtent, extentUpdatePeriodS);
                 }
 
-//                void post(NodeVis<X> node, int n) {
-//                    int c = node.i;
-//                    if (c >= 0 && node.visible())
-//                        post(node, c, n);
-//                    else
-//                        node.hide();
-//                }
-//
-//                void post(NodeVis<X> node, int c, int n) {
-//
-//                }
 
                 /** pre */
                 @Override public void node(NodeVis<X> node, GraphEditing<X> graph) {
@@ -201,27 +200,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         return false;
     }
 
-    protected final RectFloat bounds(MutableRectFloat r) {
-        return bounds(r.left(), r.top(), r.w, r.h);
-    }
 
-    /** maps the coordinates to a 2D boundary for display */
-    protected RectFloat bounds(float x, float y, float w, float  h) {
-        MutableRectFloat extent = this.extent.animated();
-        float ew = extent.w;
-        float px = (x - extent.left()) / ew;
-        float eh = extent.h;
-        float py = (y - extent.top()) / eh;
-
-//        float _W = w(), marginW = this.marginPctW * _W, W = _W - marginW*2;
-//        float _H = h(), marginH = this.marginPctH * _H, H = _H - marginH*2;
-        return RectFloat.XYWH(
-                left() + w() * px,
-                top() + h() * py,
-                w,
-                h
-        );
-    }
 
 
 

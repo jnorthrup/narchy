@@ -41,7 +41,7 @@ public class IRL {
 
 
     final Memoize<RectFloat, Osm> reqCache = CaffeineMemoize.build(bounds -> {
-        return load(bounds.left(), bounds.top(), bounds.right(), bounds.bottom());
+        return load(bounds.left(), bounds.bottom(), bounds.right(), bounds.top());
     }, 1024, false);
 
 

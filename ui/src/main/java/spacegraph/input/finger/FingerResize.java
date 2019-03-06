@@ -39,7 +39,7 @@ public abstract class FingerResize extends FingerDragging {
 
         switch (mode) {
             case RESIZE_S: {
-                float pmy = before.bottom();
+                float pmy = before.top();
                 float bh = before.h;
                 float ty = (fy - posStart.y);
                 resize(before.left(), pmy - bh + ty, before.right(), pmy);
@@ -48,7 +48,7 @@ public abstract class FingerResize extends FingerDragging {
 
             case RESIZE_SW: {
                 float pmx = before.right();
-                float pmy = before.bottom();
+                float pmy = before.top();
                 float bw = before.w;
                 float bh = before.h;
                 float tx = (fx - posStart.x);
@@ -59,7 +59,7 @@ public abstract class FingerResize extends FingerDragging {
 
             case RESIZE_NE: {
                 float pmx = before.left();
-                float pmy = before.top();
+                float pmy = before.bottom();
                 float bw = before.w;
                 float bh = before.h;
                 float tx = (fx - posStart.x);
@@ -71,7 +71,7 @@ public abstract class FingerResize extends FingerDragging {
             }
             case RESIZE_SE: {
                 float pmx = before.left();
-                float pmy = before.bottom();
+                float pmy = before.top();
                 float bw = before.w;
                 float bh = before.h;
                 float tx = (fx - posStart.x);
@@ -84,10 +84,10 @@ public abstract class FingerResize extends FingerDragging {
                 float bh = before.h;
                 float ty = (fy - posStart.y);
                 if (!invY) {
-                    top = before.top();
+                    top = before.bottom();
                     bottom = Math.max(top + aspectRatioRatioLimit * bh, top + bh + ty);
                 } else {
-                    bottom = before.bottom();
+                    bottom = before.top();
                     top = Math.min(bottom - aspectRatioRatioLimit * bh, bottom - bh - ty);
                 }
                 resize(
@@ -101,7 +101,7 @@ public abstract class FingerResize extends FingerDragging {
 
             case RESIZE_NW: {
                 float pmx = before.right();
-                float pmy = before.top();
+                float pmy = before.bottom();
                 float bw = before.w;
                 float bh = before.h;
                 float tx = (fx - posStart.x);
@@ -117,16 +117,16 @@ public abstract class FingerResize extends FingerDragging {
                 float pmx = before.left();
                 float bw = before.w;
                 float tx = (fx - posStart.x);
-                resize(pmx, before.top(),
-                       pmx + Math.max(aspectRatioRatioLimit * bw, bw + tx), before.bottom());
+                resize(pmx, before.bottom(),
+                       pmx + Math.max(aspectRatioRatioLimit * bw, bw + tx), before.top());
                 break;
             }
             case RESIZE_W: {
                 float pmx = before.right();
                 float bw = before.w;
                 float tx = (posStart.x - fx);
-                resize(pmx - Math.max(aspectRatioRatioLimit * bw, bw + tx), before.top(),
-                        pmx, before.bottom());
+                resize(pmx - Math.max(aspectRatioRatioLimit * bw, bw + tx), before.bottom(),
+                        pmx, before.top());
                 break;
             }
 

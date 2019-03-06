@@ -11,6 +11,7 @@ import spacegraph.space2d.container.collection.AbstractMutableContainer;
 import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.meta.WeakSurface;
+import spacegraph.util.MutableRectFloat;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -72,7 +73,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
     public final float top() {
-        return bounds.top();
+        return bounds.bottom();
     }
 
     public final float right() {
@@ -80,7 +81,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
     public final float bottom() {
-        return bounds.bottom();
+        return bounds.top();
     }
 
     @Override
@@ -95,6 +96,11 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
 
     @Deprecated protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
+    }
+
+    public <S extends Surface> S pos(MutableRectFloat next) {
+        //TODO equality test?
+        return pos(next.immutable());
     }
 
     public <S extends Surface> S pos(RectFloat next) {

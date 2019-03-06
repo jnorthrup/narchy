@@ -26,7 +26,7 @@ abstract public class RectAnimator implements Animator<MutableRectFloat> {
         @Override
         protected void animate(MutableRectFloat from, MutableRectFloat to, float dt) {
 
-            float r = (float) Math.exp(-(dt)/length);
+            float r = (float) Math.exp(-dt/length); //TODO verify
             from.cx = Util.lerpSafe(r, to.cx, from.cx);
             from.cy = Util.lerpSafe(r, to.cy, from.cy);
             from.size(

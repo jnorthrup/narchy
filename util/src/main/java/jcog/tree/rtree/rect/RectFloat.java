@@ -286,10 +286,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return (px >= x && px <= x + w && py >= y && py <= y + h);
     }
 
-    public final float top() {
-        return y;
-    }
-
+    public final float bottom() { return y; }
     public final float left() {
         return x;
     }
@@ -298,7 +295,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return x + w;
     }
 
-    public final float bottom() {
+    public final float top() {
         return y + h;
     }
 
@@ -312,14 +309,18 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
     public RectFloat transform(float s, float ox, float oy) {
         ////        if (Util.equals(scale, 1f, ScalarValue.EPSILON) && offset.equalsZero())
-            return RectFloat.XYWH(cx()+ox, cy()+oy, w * s, h * s);
+            return RectFloat.X0Y0WH(left()+ox, bottom()+oy, w * s, h * s);
     }
 
     public RectFloat scale(float s) {
         if (Util.equals(s, 1, EPSILON))
             return this;
         else
-            return RectFloat.XYWH(cx(), cy(), w * s, h * s);
+            return RectFloat.X0Y0WH(left(), bottom(), w * s, h * s);
+    }
+
+    public RectFloat scalePosSize(float sw, float sh) {
+        return RectFloat.X0Y0WH(left() * sw, bottom() * sh, w * sw, h * sh);
     }
 
     public float radius() {

@@ -122,36 +122,36 @@ public class AspectAlign extends UnitContainer {
             case Center:
                 
                 tx = bounds.left() + (w - tw) / 2f;
-                ty = bounds.top() + (h - th) / 2f;
+                ty = bounds.bottom() + (h - th) / 2f;
                 break;
             case LeftCenter:
                 tx = bounds.left();
-                ty = bounds.top() + (h - th) / 2f;
+                ty = bounds.bottom() + (h - th) / 2f;
                 break;
 
             case TopRight:
                 tx = bounds.right() - tw;
-                ty = bounds.bottom() - th;
+                ty = bounds.top() - th;
                 break;
 
             case RightTopOut:
                 tx = bounds.right();
-                ty = bounds.bottom();
+                ty = bounds.top();
                 break;
             case LeftTopOut:
                 tx = bounds.left();
-                ty = bounds.bottom();
+                ty = bounds.top();
                 break;
 
             case LeftTop:
                 tx = bounds.left();
-                ty = bounds.bottom() - th;
+                ty = bounds.top() - th;
                 break;
 
             case None:
             default:
                 tx = bounds.left();
-                ty = bounds.top();
+                ty = bounds.bottom();
                 break;
 
         }
