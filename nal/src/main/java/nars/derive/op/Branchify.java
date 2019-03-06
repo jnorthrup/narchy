@@ -25,7 +25,7 @@ public class Branchify extends AbstractPred<Derivation> {
 
     @Override
     public boolean test(/*Pre*/Derivation derivation) {
-        derivation.can.or(can);
+        derivation.canCollector.or(can);
         return true;
     }
 }

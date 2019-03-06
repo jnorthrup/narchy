@@ -5,6 +5,7 @@ import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.v3;
 
+/** TODO: implements Animator<v3> following RectAnimator */
 public class AnimVector3f extends v3 implements Animated {
 
     protected final v3 target = new v3();

@@ -97,7 +97,7 @@ public class Derivation extends PreDerivation {
     protected final Functor polarizeBelief = new Functor.AbstractInlineFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
-            Truth t = Derivation.this.beliefTruthRaw;
+            Truth t = Derivation.this.beliefTruthBelief;
             if (t == null)
                 return Null;  //TODO WTF
             return t.isPositive() ? arg : arg.neg();
@@ -116,7 +116,7 @@ public class Derivation extends PreDerivation {
                 compared = taskTruth;
             } else {
                 //assert(whichTask.equals(Belief))
-                compared = beliefTruthRaw;
+                compared = beliefTruthBelief;
             }
             if (compared == null)
                 return Null;
@@ -264,14 +264,75 @@ public class Derivation extends PreDerivation {
      * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
      */
     public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
+        this._task = resetTask(nextTask, this._task);
+        this._belief = resetBelief(nextBelief, nextBeliefTerm);
+    }
+
+    public Task resetBelief(Task nextBelief, Term nextBeliefTerm) {
+
+        if (nextBelief != null) {
+
+            if (nextBelief.isEternal()) {
+                beliefTruthTask = beliefTruthBelief = nextBelief.truth();
+            } else {
+
+                this.beliefTruthBelief = nextBelief.truth();
+                this.beliefTruthTask =
+                    taskStart!=ETERNAL ?
+                        nextBelief.truth(taskStart, taskEnd, dur) :
+                        nextBelief.truth().eternalized( 1, Param.TRUTH_EVI_MIN, null);
+
+                if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION
+                        && !nextBelief.isEternal()
+                        && beliefTruthBelief !=null
+                        && !beliefTruthTask.equals(beliefTruthBelief)) {
+                    this.beliefTruthTask = Truth.stronger(
+                            beliefTruthTask,
+                            beliefTruthBelief.eternalized(1, Param.TRUTH_EVI_MIN, null /* dont dither */)
+                    );
+                }
+            }
+
+            if (beliefTruthTask == null && beliefTruthBelief == null)
+                nextBelief = null;
+        }
+
+
+        if (nextBelief != null) {
+            this.beliefStart = nextBelief.start(); this.beliefEnd = nextBelief.end();
+            this.beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
+        } else {
+            this.beliefTruthBelief = this.beliefTruthTask = null;
+            this.beliefStart = this.beliefEnd = TIMELESS;
+            this.beliefTerm =
+                    !(nextBeliefTerm instanceof Variable) ?
+                            anon.putShift(this._beliefTerm = nextBeliefTerm, taskTerm) :
+                            anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the target may be structural
+        }
+
+        if (Param.DEBUG) {
+            if ((beliefTerm instanceof Bool) || ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op() != _beliefTerm.op())))
+                throw new WTF(_beliefTerm + " could not be anon, result: " + beliefTerm);
+
+            assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
+            //assert (!(beliefTerm instanceof Bool));
+            assert (beliefTerm.op() != NEG) : nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";
+        }
+
+        return nextBelief;
+    }
+
+    public Task resetTask(Task nextTask, Task currentTask) {
 
         Term nextTaskTerm = nextTask.term();
 
-        if (this._task != null && this._task.term().equals(nextTaskTerm)) {
+        if (currentTask != null && currentTask.term().equals(nextTaskTerm)) {
 
+            //roll back only as far as the unique task terms. we can re-use them as-is
             anon.rollback(taskUniques);
 
         } else {
+            //have to re-anon completely
             anon.clear();
 
             this.taskTerm = anon.put(nextTaskTerm);
@@ -281,9 +342,8 @@ public class Derivation extends PreDerivation {
         }
 
 
-        if (this._task == null || this._task != nextTask) {
+        if (currentTask == null || currentTask != nextTask) {
 
-            this._task = nextTask;
 
             assert (taskTerm != null) : (nextTask + " could not be anonymized: " + nextTaskTerm.anon() + " , " + taskTerm);
 
@@ -300,54 +360,9 @@ public class Derivation extends PreDerivation {
 
             this.taskStart = nextTask.start();
             this.taskEnd = nextTask.end();
-
         }
 
-
-        if (nextBelief != null) {
-            this.beliefStart = nextBelief.start();
-            this.beliefEnd = nextBelief.end();
-
-            this.beliefTruthRaw = nextBelief.truth();
-
-            this.beliefTruthProjectedToTask = taskStart != ETERNAL ?
-                    nextBelief.truth(taskStart, taskEnd, dur)
-                    : beliefTruthRaw;
-
-            if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !(beliefStart == ETERNAL && !beliefTruthProjectedToTask.equals(beliefTruthRaw))) {
-                if (Param.eternalizeInDerivation.test(nextBelief.op())) {
-                    this.beliefTruthProjectedToTask = Truth.stronger(
-                            beliefTruthProjectedToTask,
-                            beliefTruthRaw.eternalized(1, Param.TRUTH_EVI_MIN, null /* dont dither */)
-                    );
-                }
-            }
-
-            this._belief = beliefTruthRaw != null || beliefTruthProjectedToTask != null ? nextBelief : null;
-        } else {
-            this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
-            this.beliefStart = this.beliefEnd = TIMELESS;
-            this._belief = null;
-        }
-
-        if (this._belief != null) {
-
-            this.beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
-        } else {
-
-            this.beliefTerm =
-                    !(nextBeliefTerm instanceof Variable) ?
-                            anon.putShift(this._beliefTerm = nextBeliefTerm, taskTerm) :
-                            anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the target may be structural
-        }
-
-        if ((beliefTerm instanceof Bool) || ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op() != _beliefTerm.op())))
-            throw new WTF(_beliefTerm + " could not be anon, result: " + beliefTerm);
-
-        assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
-        //assert (!(beliefTerm instanceof Bool));
-        assert (beliefTerm.op() != NEG) : nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";
-
+        return nextTask;
     }
 
     protected float pri(Task t) {
@@ -375,7 +390,7 @@ public class Derivation extends PreDerivation {
     /**
      * called after protoderivation has returned some possible Try's
      */
-    public void derive(int ttl) {
+    public void derive(int ttl, short[] can) {
 
         if (taskStart == ETERNAL && (_belief == null || beliefStart == ETERNAL)) {
             this.taskBeliefTimeIntersects[0] = this.taskBeliefTimeIntersects[1] = ETERNAL;
@@ -460,7 +475,7 @@ public class Derivation extends PreDerivation {
         deriver.pri.premise(this);
 
 //        try {
-        deriver.rules.run(this);
+        deriver.rules.run(this, can);
 //        } catch (Exception e) {
 //            reset();
 //            throw e;
@@ -526,7 +541,7 @@ public class Derivation extends PreDerivation {
             if (taskPunc == BELIEF || taskPunc == GOAL) {
 
                 te = taskTruth.evi();
-                be = beliefTruthRaw != null ? beliefTruthRaw.evi() : 0;
+                be = beliefTruthBelief != null ? beliefTruthBelief.evi() : 0;
                 tb = te / (te + be);
             } else {
 
@@ -567,9 +582,8 @@ public class Derivation extends PreDerivation {
         concTruth = null;
         concTerm = null;
         taskTerm = beliefTerm = null;
-        taskTruth = beliefTruthProjectedToTask = beliefTruthRaw = null;
-        can.clear();
-        will = null;
+        taskTruth = beliefTruthTask = beliefTruthBelief = null;
+        canCollector.clear();
         ttl = 0;
         taskUniques = 0;
         time = TIMELESS;

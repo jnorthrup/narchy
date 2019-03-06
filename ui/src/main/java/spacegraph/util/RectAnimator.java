@@ -2,57 +2,103 @@ package spacegraph.util;
 
 import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat;
+import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
+import spacegraph.util.animate.Animator;
 
-public class RectAnimator {
+import java.util.concurrent.atomic.AtomicReference;
 
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
+
+abstract public class RectAnimator implements Animator<MutableRectFloat> {
+
+    /** time units until the next movement is finished (in seconds) */
+    protected volatile float ttl = Float.NaN;
+
+    /** for determining the total intended animation time */
+    protected float length;
+
+    public static class ExponentialRectAnimator extends RectAnimator {
+
+        public ExponentialRectAnimator(MutableRectFloat animated) {
+            super(animated);
+        }
+
+        @Override
+        protected void animate(MutableRectFloat from, MutableRectFloat to, float dt) {
+
+            float r = (float) Math.exp(-(dt)/length);
+            from.cx = Util.lerpSafe(r, to.cx, from.cx);
+            from.cy = Util.lerpSafe(r, to.cy, from.cy);
+            from.size(
+                    Util.lerpSafe(r, to.w, from.w),
+                    Util.lerpSafe(r, to.h, from.h)
+            );
+
+        }
+    }
     /** rect being animated */
     private final MutableRectFloat rect;
 
-    private MutableRectFloat target = new MutableRectFloat().set(0, 0, 0, 1);
+    private final MutableRectFloat target = new MutableRectFloat().set(0, 0, 0, 1);
 
-    /** time units until finished: default MS */
-    int ttl = Integer.MIN_VALUE;
 
-    public RectAnimator(MutableRectFloat r) {
-        this.rect = r;
+
+    public RectAnimator(MutableRectFloat toAnimate) {
+        this.rect = toAnimate;
     }
 
-    public void animate(int dtMS/*..*/) {
-        int t = this.ttl;
-        if (t == Integer.MIN_VALUE)
-            return;
+    @Override
+    public final MutableRectFloat animated() {
+        return rect;
+    }
 
-        if (t < 0) {
-            //finished
-            rect.set(target);
-            this.ttl = Integer.MIN_VALUE;
+
+    @Override public final boolean animate(float dt/*..*/) {
+
+
+        ObjectFloatPair<MutableRectFloat> n = next.getAndSet(null);
+        if (n!=null) {
+            target.set(n.getOne());
+            this.length = this.ttl = n.getTwo();
         }
 
-        if (dtMS > t) {
-            dtMS = t;
-            this.ttl = 0;
-        } else {
-            this.ttl = t - dtMS;
+        float t = this.ttl;
+        if (t==t) {
+
+
+            boolean finished = t <= 0;
+
+            if (finished) {
+                //finished
+                this.ttl = Float.NaN;
+                rect.set(target);
+            } else {
+                //continue
+                if (dt > t) {
+                    dt = t;
+                    this.ttl = 0;
+                } else {
+                    this.ttl = t - dt;
+                }
+                animate(rect, target, dt);
+            }
         }
 
-        animate(rect, target, dtMS);
+        return true;
     }
 
-    private void animate(MutableRectFloat from, MutableRectFloat to, int dtMS) {
-        float rate = 0.99f;
-        from.cx = Util.lerp(rate, to.cx, from.cx);
-        from.cy = Util.lerp(rate, to.cy, from.cy);
-        from.w = Util.lerp(rate, to.w, from.w);
-        from.h = Util.lerp(rate, to.h, from.h);
-    }
+    abstract protected void animate(MutableRectFloat from, MutableRectFloat to, float dt);
+
+
+    private final AtomicReference<ObjectFloatPair<MutableRectFloat>> next = new AtomicReference();
 
     /** reset the targetting */
-    public void set(MutableRectFloat target, int duration) {
-        this.target = target;
-        this.ttl = duration;
+    public void set(MutableRectFloat target, float ttl) {
+        this.next.set(pair(target, ttl));
     }
-    public void set(RectFloat target, int duration) {
-        set(new MutableRectFloat(target), duration);
+
+    public void set(RectFloat target, float ttl) {
+        set(new MutableRectFloat(target), ttl);
     }
 
 }

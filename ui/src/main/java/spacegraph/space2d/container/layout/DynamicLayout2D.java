@@ -5,7 +5,7 @@ import jcog.data.pool.MetalPool;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.util.MutableRectFloat;
 
-public abstract class DynamicLayout2D<X, M extends MutableRectFloat<X>> implements Graph2D.Graph2DUpdater<X> {
+public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
 
     protected final FasterList<MutableRectFloat<X>> nodes = new FasterList<>();
 

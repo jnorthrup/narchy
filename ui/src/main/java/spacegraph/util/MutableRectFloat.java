@@ -16,8 +16,12 @@ public class MutableRectFloat<X> {
     public float cxPrev, cyPrev;
     public float w, h;
 
-    public Graph2D.NodeVis<X> node;
-    private transient float rad;
+    /** TODO make a MutableFloatRect proxy and adapter class for transparently controlling a graph2d node */
+    @Deprecated public Graph2D.NodeVis<X> node;
+
+    /** is this helpful? move to subclass if really neceessry.
+     * using an index (kdtree etc) will be better */
+    @Deprecated private transient float rad;
 
     public MutableRectFloat() {
 

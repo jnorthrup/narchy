@@ -6,10 +6,7 @@ import nars.NAR;
 import nars.Task;
 import nars.attention.DerivePri;
 import nars.control.Cause;
-import nars.derive.premise.DeriverRules;
-import nars.derive.premise.PremiseDeriverCompiler;
-import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.premise.PremiseRuleProto;
+import nars.derive.premise.*;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.exe.Causable;
 import nars.term.Term;
@@ -42,7 +39,7 @@ abstract public class Deriver extends Causable {
 
 
 
-    protected final DeriverRules rules;
+    public final DeriverRules rules;
 
 //    /**
 //     * source of concepts supplied to this for this deriver
@@ -140,6 +137,9 @@ abstract public class Deriver extends Causable {
     @Deprecated
     private static final AtomicInteger serial = new AtomicInteger();
 
+    public final short[] what(PreDerivation d) {
+        return rules.planner.apply(d);
+    }
 }
 
 

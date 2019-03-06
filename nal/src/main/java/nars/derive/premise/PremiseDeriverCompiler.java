@@ -80,7 +80,11 @@ public enum PremiseDeriverCompiler {
 
         return new DeriverRules(
                 PremiseDeriverCompiler.compile(path),
-                rootBranches);
+                rootBranches,
+
+                DeriverPlanner.DirectDeriverPlanner
+                //new DeriverRules.CentrallyMemoizedDeriverPlanner()
+        );
     }
 
 

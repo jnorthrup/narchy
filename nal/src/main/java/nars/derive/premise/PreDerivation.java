@@ -1,6 +1,5 @@
 package nars.derive.premise;
 
-import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.derive.UnifyPremise;
 import nars.term.Term;
@@ -21,15 +20,14 @@ public abstract class PreDerivation extends Unify {
     public byte taskPunc;
 
     public Truth taskTruth;
-    public Truth beliefTruthRaw, beliefTruthProjectedToTask;
+    public Truth beliefTruthBelief, beliefTruthTask;
 
     /**
      * choices mapping the available post targets
      */
-    public final RoaringBitmap can = new RoaringBitmap();
-    public short[] will = ArrayUtils.EMPTY_SHORT_ARRAY;
+    public final RoaringBitmap canCollector = new RoaringBitmap();
 
-    public UnifyPremise unifyPremise = new UnifyPremise(); {
+    public final UnifyPremise unifyPremise = new UnifyPremise(); {
         unifyPremise.commonVariables = false; //disable common variables for the query variables matched in premise formation; since the task target is not transformed like the belief target is.
     }
 
@@ -38,7 +36,7 @@ public abstract class PreDerivation extends Unify {
     }
 
     public boolean hasBeliefTruth() {
-        return beliefTruthRaw !=null || beliefTruthProjectedToTask !=null;
+        return beliefTruthBelief !=null || beliefTruthTask !=null;
     }
 
 }

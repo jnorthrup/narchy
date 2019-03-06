@@ -14,7 +14,7 @@ import spacegraph.util.MutableRectFloat;
  *
  * adapted from:https://github.com/peterdmv/treemap/
  */
-public class TreeMap2D<X> extends DynamicLayout2D<X, MutableRectFloat<X>> {
+public class TreeMap2D<X> extends DynamicLayout2D<X> {
 
 
 

@@ -385,11 +385,14 @@ public class Premise implements Comparable<Premise> {
         if (match(d, matchTTL)) {
 
 
-            if (d.deriver.rules.derivable(d)) {
+
+            short[] can = d.deriver.what(d);
+
+            if (can.length > 0) {
 
                 d.derive(
                     //Util.lerp(Math.max(d.priDouble, d.priSingle), Param.TTL_MIN, deriveTTL)
-                    deriveTTL
+                    deriveTTL, can
                 );
 
                 result = e.premiseFire; //premiseFired(p, d);

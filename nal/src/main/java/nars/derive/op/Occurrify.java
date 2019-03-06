@@ -17,6 +17,7 @@ import nars.term.util.transform.Retemporalize;
 import nars.time.Event;
 import nars.time.Tense;
 import nars.time.TimeGraph;
+import nars.truth.Truth;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
@@ -27,10 +28,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
-import static nars.derive.op.Occurrify.BeliefProjection.Raw;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -67,7 +68,7 @@ public class Occurrify extends TimeGraph {
                 d.beliefEnd = d._belief.end();
 
                 boolean taskEternal = d.taskStart == ETERNAL;
-                if (truth.beliefProjection == Raw || taskEternal) {
+                if (truth.beliefProjection == BeliefProjection.Belief || taskEternal) {
 
                     //unchanged: d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
 
@@ -862,7 +863,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw; //N/A structuraldeduction
+                return BeliefProjection.Belief; //N/A structuraldeduction
             }
         },
 
@@ -910,7 +911,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw;
+                return BeliefProjection.Belief;
             }
 
         },
@@ -932,7 +933,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw;
+                return BeliefProjection.Belief;
             }
 
         },
@@ -948,7 +949,7 @@ public class Occurrify extends TimeGraph {
 
 
                 Term tt = d.taskTerm.negIf(d.taskTruth.isNegative());
-                Term bb = d.beliefTerm.negIf(d.beliefTruthRaw.isNegative());
+                Term bb = d.beliefTerm.negIf(d._belief.isNegative());
 
                 long tTime = d.taskStart, bTime = d.beliefStart;
 
@@ -1010,7 +1011,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw;
+                return BeliefProjection.Belief;
             }
 
         },
@@ -1510,20 +1511,26 @@ public class Occurrify extends TimeGraph {
     /**
      * TODO do derivation truth calculation in implemented method of this enum
      */
-    public enum BeliefProjection {
+    public enum BeliefProjection implements Function<Derivation, Truth> {
 
         /**
-         * belief's truth at the time it occurred
+         * belief truth evident at its own occurrence time
          */
-        Raw {
-
+        Belief {
+            @Override
+            public Truth apply(Derivation d) {
+                return d.beliefTruthBelief;
+            }
         },
 
         /**
-         * belief projected to task's occurrence time
+         * belief truth projected to task's occurrence time
          */
         Task {
-
+            @Override
+            public Truth apply(Derivation d) {
+                return d.beliefTruthTask;
+            }
         },
 
 //        /** belief

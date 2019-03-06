@@ -11,7 +11,7 @@ import spacegraph.util.MutableRectFloat;
 
 import java.util.Random;
 
-public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableRectFloat<X>> {
+public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
     private int iterations = 1;

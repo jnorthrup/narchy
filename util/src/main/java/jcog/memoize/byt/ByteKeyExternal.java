@@ -51,4 +51,5 @@ public class ByteKeyExternal extends ByteKey {
     public final int length() {
         return key.length();
     }
+
 }

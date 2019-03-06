@@ -6,4 +6,8 @@ package spacegraph.util.animate;
     /** returns whether to continue (true), or false if the animation should be removed */
     boolean animate(float dt);
 
+    default boolean animate(int dtMS) {
+        return animate(dtMS/1000f);
+    }
+
 }

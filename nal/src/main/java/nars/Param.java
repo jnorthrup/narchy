@@ -15,8 +15,6 @@ import nars.term.util.transform.Retemporalize;
 import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 
-import java.util.function.Predicate;
-
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
@@ -105,13 +103,9 @@ public abstract class Param {
 
     public static final boolean TERMIFY_TRANSFORM_LAZY = true;
 
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 
-    /** if ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION is true, then this is tested: */
-    public static final Predicate<Op> eternalizeInDerivation = (o) -> {
-        return true;
-        //return o == IMPL;
-    };
+
 
 //    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 

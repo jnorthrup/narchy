@@ -3,8 +3,6 @@ package nars.derive.premise;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
-import jcog.memoize.Memoizers;
-import jcog.memoize.byt.ByteHijackMemoize;
 import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
@@ -28,19 +26,20 @@ public class DeriverRules {
     /*@Stable*/ public final Cause[] causes;
 
     /**
-     * TODO move this to a 'CachingDeriver' subclass
-     */
-    public final ByteHijackMemoize<PremiseKey, short[]> whats;
-
-
-
-    /**
      * repertoire
      */
     private final DeriveAction[] could;
 
+    public final DeriverPlanner planner;
 
-    public DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions) {
+    static short[] what(PreDerivation p) {
+        Derivation d = (Derivation)p;
+        d.canCollector.clear();
+        d.deriver.rules.what.test(d);
+        return Util.toShort(d.canCollector.toArray());
+    }
+
+    public DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions, DeriverPlanner planner) {
 
         this.what = what;
 
@@ -48,26 +47,10 @@ public class DeriverRules {
         this.could = actions;
 
         this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.cause)).toArray(Cause[]::new);
-        this.whats = Memoizers.the.memoizeByte(this + "_what", Memoizers.DEFAULT_MEMOIZE_CAPACITY*2, (p)->{
 
-            Derivation d = p.d;
-            d.can.clear();
-            what.test(d);
-            return Util.toShort(d.can.toArray());
+        this.planner = planner;
+    }
 
-        });
-    }
-    public boolean derivable(Derivation d) {
-        PremiseKey k = new PremiseKey(d);
-        @Nullable short c[] = whats.apply(k);
-        if (c.length > 0) {
-            d.will = c;
-            return true;
-        } else {
-            d.will = null;
-            return false;
-        }
-    }
 
 
     /**
@@ -79,13 +62,12 @@ public class DeriverRules {
     }
 
 
-    public void run(Derivation d) {
-
+    public void run(Derivation d, short[] can) {
 
         /**
          * weight vector generation
          */
-        short[] could = d.will;
+        short[] could = can;
 
         float[] maybeHow;
         short[] maybeWhat;

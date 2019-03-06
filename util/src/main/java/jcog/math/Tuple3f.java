@@ -41,9 +41,9 @@ import static jcog.Util.notNaN;
  * A generic 3-element tuple that is represented by single precision-floating
  * point x,y,z coordinates.
  */
-public abstract class Tuple3f implements java.io.Serializable, Cloneable {
+@Deprecated public abstract class Tuple3f implements java.io.Serializable, Cloneable {
 
-    static final long serialVersionUID = 5019834619484343712L;
+
 
     /**
      * The x coordinate.

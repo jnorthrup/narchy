@@ -81,13 +81,13 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
 
     final ScatterPlotModel<X> model;
 
-    private transient RectFloat extentTarget = RectFloat.Unit;
 
-    final MutableRectFloat extent = new MutableRectFloat();
-    private int extentPeriodMS = 250;
-    final RectAnimator extentAnimator = new RectAnimator(extent);
+    private float extentUpdatePeriodS = 0.1f;
+    final RectAnimator extent =
+            new RectAnimator.ExponentialRectAnimator(new MutableRectFloat());
 
     float[][] coord = new float[0][0], coordOut = null;
+
 
     public ScatterPlot2D(ScatterPlotModel<X> model) {
         this.model = model;
@@ -143,6 +143,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
             new Graph2DRenderer<X>() {
 
 
+
                 int currentCoord = 0;
 
                 @Override
@@ -159,7 +160,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                     currentCoord = 0;
                     Graph2DRenderer.super.nodes(cells, edit);
 
-                    extentAnimator.set(model.layout(coord, coordOut), extentPeriodMS);
+                    extent.set(model.layout(coord, coordOut), extentUpdatePeriodS);
 
 //                    cells.forEachValue(p -> post(p, n));
                 }
@@ -194,7 +195,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
     @Override
     protected boolean prePaint(SurfaceRender r) {
         if (super.prePaint(r)) {
-            extentAnimator.animate(r.dtMS);
+            extent.animate(r.dtMS);
             return true;
         }
         return false;
@@ -206,6 +207,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
 
     /** maps the coordinates to a 2D boundary for display */
     protected RectFloat bounds(float x, float y, float w, float  h) {
+        MutableRectFloat extent = this.extent.animated();
         float ew = extent.w;
         float px = (x - extent.left()) / ew;
         float eh = extent.h;

@@ -118,7 +118,7 @@ public class Truthify extends AbstractPred<Derivation> {
                 if (single) {
                     beliefTruth = null;
                 } else {
-                    if ((beliefTruth = beliefProjection(d)) == null)
+                    if ((beliefTruth = beliefProjection.apply(d)) == null)
                         return false;
                 }
 
@@ -157,22 +157,6 @@ public class Truthify extends AbstractPred<Derivation> {
 
 
         return true;
-    }
-
-    private Truth beliefProjection(Derivation d) {
-
-        switch (beliefProjection) {
-            case Raw:
-                return d.beliefTruthRaw;
-
-            case Task:
-                return d.beliefTruthProjectedToTask;
-
-            //case Union: throw new TODO();
-            default:
-                throw new UnsupportedOperationException();
-        }
-
     }
 
 
@@ -216,7 +200,7 @@ public class Truthify extends AbstractPred<Derivation> {
         }
 
         if (!single) {
-            if (beliefProjection(d) == null)
+            if (beliefProjection.apply(d) == null)
                 return 0;
         }
 
