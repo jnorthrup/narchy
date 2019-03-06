@@ -12,6 +12,7 @@ import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.util.Statement;
+import nars.term.util.TermException;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjCommutive;
 import nars.term.util.conj.ConjSeq;
@@ -279,7 +280,9 @@ public abstract class TermBuilder implements TermConstructor {
     }
 
     public final Term statement(Op op, int dt, Term[] u) {
-        assert (u.length == 2) : op + " requires 2 arguments, but got: " + Arrays.toString(u);
+        if (u.length != 2)
+            throw new TermException(op + " requires 2 arguments, but got: " + Arrays.toString(u), op, dt, u);
+
         return statement(op, dt, u[0], u[1]);
     }
 

@@ -167,15 +167,11 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     /**
      * combo: (byte, int)
      */
-    public final void writeByteInt(byte b, int v) {
-        int s = ensureSized(1 + 4);
-        byte[] e = this.bytes;
-        e[s++] = b;
-        e[s++] = (byte) (v >> 24);
-        e[s++] = (byte) (v >> 16);
-        e[s++] = (byte) (v >> 8);
-        e[s++] = (byte) v;
-        this.len = s;
+    public final void writeByteInt(byte b, int i) {
+        int len = ensureSized(1 + 4);
+        byte[] bytes = this.bytes;
+        bytes[len++] = b;
+        this.len = writeInt(i, bytes, len);
     }
 
     public final void fillBytes(byte b, int from, int to) {
@@ -340,11 +336,16 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     public final void writeInt(int v) {
         int s = ensureSized(4);
         byte[] e = this.bytes;
+        s = writeInt(v, e, s);
+        this.len = s;
+    }
+
+    public int writeInt(int v, byte[] e, int s) {
         e[s++] = (byte) (v >> 24);
         e[s++] = (byte) (v >> 16);
         e[s++] = (byte) (v >> 8);
         e[s++] = (byte) v;
-        this.len = s;
+        return s;
     }
 
     @Override

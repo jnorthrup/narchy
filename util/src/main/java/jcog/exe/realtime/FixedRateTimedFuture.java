@@ -74,15 +74,15 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
 //    }
 
     @Override
-    public boolean isPeriodic() {
+    public final boolean isPeriodic() {
         return true;
     }
 
-    public void setPeriodMS(long periodMS) {
+    public final void setPeriodMS(long periodMS) {
         setPeriodNS(periodMS * 1_000_000);
     }
 
-    public void setPeriodNS(long periodNS) {
+    public final void setPeriodNS(long periodNS) {
         this.periodNS = periodNS;
     }
 

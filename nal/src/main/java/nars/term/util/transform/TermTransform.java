@@ -68,6 +68,8 @@ public interface TermTransform extends Function<Term,Term> {
             if (!apply(x.sub(0), out))
                 return false;
 
+            out.compoundEnd(NEG);
+
         } else {
             out.compoundStart(o, o.temporal ? x.dt() : DTERNAL);
 
@@ -76,8 +78,6 @@ public interface TermTransform extends Function<Term,Term> {
 
             out.compoundEnd(o);
         }
-
-        //out.compoundEnd(o); //??
 
         if (!c && !out.changed()) {
             //remains same; rewind and paste as-is

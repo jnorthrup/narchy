@@ -20,6 +20,7 @@ import nars.time.clock.RealTime;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 import static java.lang.System.nanoTime;
@@ -339,6 +340,8 @@ abstract public class MultiExec extends UniExec {
                 return workEnd - workStart;
             }
 
+            private final BooleanSupplier deadlineFn = this::deadline;
+
             private void play(long playTime) {
 
                 n = cpu.size();
@@ -358,10 +361,13 @@ abstract public class MultiExec extends UniExec {
                 long start = nanoTime();
                 long until = start + playTime, after = start /* assigned for safety */;
 
+
                 int skip = 0;
                 do {
-                    if (i == n) i = 0;
+
                     TimedLink.MyTimedLink s = play[i++];
+                    if (i == n) i = 0;
+
                     long sTime = s.time;
 
                     Causable c = s.can;
@@ -382,7 +388,7 @@ abstract public class MultiExec extends UniExec {
                                 playing = true;
                                 deadline = before + runtimeNS;
                                 try {
-                                    c.next(nar, this::deadline);
+                                    c.next(nar, deadlineFn);
                                 } catch (Throwable t) {
                                     logger.error("{} {}", this, t);
                                 }
@@ -392,7 +398,7 @@ abstract public class MultiExec extends UniExec {
 
                             if (singleton) {
                                 //c.busy.set(false);
-                                c.busy.lazySet(false);
+                                c.busy.setRelease(false);
                             }
                         }
                     }
@@ -429,9 +435,8 @@ abstract public class MultiExec extends UniExec {
                     play = new TimedLink.MyTimedLink[n];
                     for (int i = 0; i < n; i++)
                         play[i] = cpu.get(i).my();
-
-
                 }
+
                 if (n > 2)
                     ArrayUtils.shuffle(play, rng); //each worker gets unique order
 

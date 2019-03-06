@@ -87,33 +87,25 @@ public abstract class AbstractTask implements ITask, Prioritizable {
 //    }
 
 
-    public static final class SchedTask implements Runnable,Comparable<SchedTask> {
+    public abstract static class ScheduledTask implements Runnable,Comparable<ScheduledTask> {
 
-        public final long when;
-        public final Runnable what;
+//        public final long when;
+//        public final Runnable what;
+//
+//
+//        public SchedTask(long whenOrAfter, Runnable what) {
+//            this.when = whenOrAfter;
+//            this.what = what;
+//        }
 
-
-        public SchedTask(long whenOrAfter, Runnable what) {
-            this.when = whenOrAfter;
-            this.what = what;
-        }
+        /** when or after this task may be run next */
+        abstract public long when();
 
         @Override
         public String toString() {
-            return "@" + when + ':' + what;
+            return "@" + when() + ':' + super.toString();
         }
 
-//        @Override
-//        public final ITask next(NAR n) {
-//            what.run();
-//            return null;
-//        }
-
-
-        @Override
-        public final void run() {
-            what.run();
-        }
 
         @Override
         public boolean equals(Object obj) {
@@ -121,15 +113,15 @@ public abstract class AbstractTask implements ITask, Prioritizable {
         }
 
         @Override
-        public int compareTo(AbstractTask.SchedTask that) {
+        public int compareTo(ScheduledTask that) {
             if (this == that) return 0;
 
-            int t = Longs.compare(when, that.when);
+            int t = Longs.compare(when(), that.when());
             if (t != 0) {
                 return t;
             }
 
-            return Integer.compare(System.identityHashCode(what), System.identityHashCode(that.what));
+            return Integer.compare(System.identityHashCode(this), System.identityHashCode(that));
         }
     }
 

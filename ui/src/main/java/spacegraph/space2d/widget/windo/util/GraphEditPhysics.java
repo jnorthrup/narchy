@@ -5,7 +5,6 @@ import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Link;
-import spacegraph.space2d.widget.windo.Windo;
 
 public abstract class GraphEditPhysics {
 
@@ -13,9 +12,9 @@ public abstract class GraphEditPhysics {
 
     transient public Surface surface = new EmptySurface();
 
-    abstract public void add(Windo w);
+    abstract public void add(Surface w);
 
-    abstract public void remove(Windo w);
+    abstract public void remove(Surface w);
 
     public final Surface start(GraphEdit parent) {
         this.graph = parent;
@@ -27,5 +26,6 @@ public abstract class GraphEditPhysics {
 
     public abstract Link link(Wire w);
 
+    public abstract void invokeLater(Runnable o);
 
 }

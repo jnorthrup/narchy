@@ -3,6 +3,7 @@ package nars.control;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloat;
 import nars.NAR;
+import nars.task.AbstractTask;
 import nars.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import static nars.time.Tense.TIMELESS;
 
 /**
  * executes approximately once every N durations
@@ -99,6 +102,7 @@ abstract public class DurService extends NARService  {
 
     @Override
     protected void starting(NAR nar) {
+
         long now = nar.time();
         //long durCycles = durCycles();
         lastStarted = now;// - durCycles;
@@ -117,7 +121,6 @@ abstract public class DurService extends NARService  {
             long lastStarted = this.lastStarted;
 
             long atStart = nar.time();
-            scheduleNext( atStart );
 
             this.lastStarted = atStart;
 
@@ -125,6 +128,7 @@ abstract public class DurService extends NARService  {
 
             run(nar, delta);
 
+            scheduleNext( atStart );
 
         }  finally {
 
@@ -132,22 +136,49 @@ abstract public class DurService extends NARService  {
         }
     }
 
+    private transient long next = TIMELESS;
+
     private void scheduleNext(long atStart) {
 
-            long atEnd = nar.time();
 
-            long next = Math.max(
-                    atEnd + 1 /* next cycle */,
-                    atStart + durCycles());
 
-            //System.out.println(this + "\tnext=" + next);
+            long d = durCycles();
+            long idealNext = atStart + d;
+            long now = nar.time();
+            if (idealNext < now) {
+                //LAG
+                //compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged
+                //long delta = atEnd - n;
+                //int e = 1 + Math.round((float)delta) / d);
+                long idealNextNext = atStart + 2 * d;
+                if (idealNextNext < now || (idealNextNext - now > d/2)) {
+                    idealNext = now + 1;
+                } else {
+                    //lag within one cycle, try shifting if
+                    idealNext = now + 2 * d - (now - idealNext);
+                }
+            }
 
-            nar.runAt(next, this::run);
+            next = idealNext;
 
+            nar.runAt(myScheduledTask);
     }
 
+    private final AbstractTask.ScheduledTask myScheduledTask = new AbstractTask.ScheduledTask() {
+
+        @Override
+        public void run() {
+            DurService.this.run();
+        }
+
+        @Override
+        public long when() {
+            return next;
+        }
+    };
+
     public long durCycles() {
-        return Math.round(durations.floatValue() * this.nar.dur());
+        return Math.round((double)(durations.floatValue()) * this.nar.dur());
     }
 
     /**

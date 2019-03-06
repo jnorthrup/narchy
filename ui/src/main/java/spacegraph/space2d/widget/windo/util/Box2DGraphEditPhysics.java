@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Container;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
@@ -50,7 +51,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     final Dynamics2D physics;
 
-    final ConcurrentFastIteratingHashMap<Windo, WindowData> w = new ConcurrentFastIteratingHashMap<>(new WindowData[0]);
+    final ConcurrentFastIteratingHashMap<Surface, PhySurface> w =
+            new ConcurrentFastIteratingHashMap<>(new PhySurface[0]);
+
     private Off loop;
     private int velIter = 4;
     private int posIter = 4;
@@ -58,30 +61,29 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     static final float minDimension = 0.5f;
     static final float scaling = 10f;
 
-    private static class WindowData {
-        final Windo window;
-        final Body2D body;
+    public static class PhySurface<S extends Surface> {
+        public final S surface;
+        public final Body2D body;
         private final PolygonShape shape;
 
 
-        private WindowData(Windo window, Body2D body) {
-            this.window = window;
+        private PhySurface(S surface, Body2D body) {
+            this.surface = surface;
             this.body = body;
-            this.shape = PolygonShape.box(Math.max(minDimension, window.w() / 2), Math.max(minDimension, window.h() / 2));
+            this.shape = PolygonShape.box(Math.max(minDimension, surface.w() / 2), Math.max(minDimension, surface.h() / 2));
             body.setFixedRotation(true);
             body.addFixture(shape, 1f);
-            body.setData(window);
+            body.setData(surface);
         }
 
         void pre(Dynamics2D physics) {
-            RectFloat r = window.bounds;
-//            if (r != physBounds) {
+            RectFloat r = surface.bounds;
 //
+            //TODO
 //                if (!Util.equals(r.w, physBounds.w, SHAPE_SIZE_EPSILON) ||
 //                        !Util.equals(r.h, physBounds.h, SHAPE_SIZE_EPSILON)) {
             body.updateFixtures((f) -> f.setShape(
-                    shape.setAsBox(r.w / 2 / scaling, r.h / 2 / scaling)
-
+                shape.setAsBox(r.w / 2 / scaling, r.h / 2 / scaling)
             ));
 
             v2 target = new v2(r.cx() / scaling, r.cy() / scaling);
@@ -94,11 +96,11 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         void post(Dynamics2D physics) {
 
-            float w = window.w(), h = window.h();
-
             v2 p = body.pos;
-            RectFloat r = RectFloat.XYWH(p.x * scaling, p.y * scaling, w, h);
-            window.pos(r);
+            surface.pos(RectFloat.XYWH(
+                    p.x * scaling, p.y * scaling,
+                    surface.w(), surface.h()));
+
             //if (!r.equals(physBounds, Spatialization.EPSILONf)) {
 
             //pos(physBounds = r);
@@ -117,15 +119,45 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     }
 
     @Override
-    public void add(Windo w) {
-        WindowData ww = new WindowData(w, new Body2D(BodyType.DYNAMIC, physics));
-        this.w.put(w, ww);
-        physics.addBody(ww.body);
+    public void add(Surface w) {
+        this.w.computeIfAbsent(w, (ww->{
+            Body2D body = new Body2D(BodyType.DYNAMIC, physics);
+            PhySurface<?> wd = ww instanceof Windo ?
+                    new PhySurface(ww, body)
+                    :
+                    new PhyWindo((Windo) ww, body);
+            physics.addBody(wd.body);
+            return wd;
+        }));
+    }
+
+    public static class PhyWindo extends PhySurface<Windo> {
+
+        private PhyWindo(Windo surface, Body2D body) {
+            super(surface, body);
+        }
+
+        @Override
+        void pre(Dynamics2D physics) {
+
+
+            body.setType(surface.fixed() ? BodyType.STATIC : BodyType.DYNAMIC,
+                    physics);
+            super.pre(physics);
+
+        }
+
+        @Override
+        void post(Dynamics2D physics) {
+            if (!surface.fixed()) {
+                super.post(physics);
+            }
+        }
     }
 
     @Override
-    public void remove(Windo w) {
-        WindowData ww = this.w.remove(w);
+    public void remove(Surface w) {
+        PhySurface ww = this.w.remove(w);
         physics.removeBody(ww.body);
     }
 
@@ -160,7 +192,12 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
     }
 
-    private WindowData phy(Windo x) {
+    @Override
+    public final void invokeLater(Runnable o) {
+        physics.invoke(o);
+    }
+
+    private PhySurface phy(Container x) {
         return w.get(x);
     }
 
@@ -182,7 +219,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         protected Body2D body(Surface x) {
-            WindowData p = phy(x instanceof Windo ? (Windo) x : x.parent(Windo.class));
+            PhySurface p = phy(x.parent(Windo.class));
             return p!=null ? p.body : null;
         }
 
@@ -314,7 +351,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     class SnakeLink extends Box2DLink {
 
         private final Snake snake;
-        private final Windo linkPanel;
+        private final Container linkPanel;
 
         public SnakeLink(Wire wire) {
             super(wire);
@@ -370,7 +407,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             synchronized (this) {
                 remove();
 
-                Windo wPort = graph.add(port);
+                Container wPort = graph.add(port);
                 wPort.pos(center());
                 float w = widgetRadius() * 4f;
                 wPort.size(w, w);

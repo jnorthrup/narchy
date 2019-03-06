@@ -26,7 +26,7 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
 public abstract class Param {
 
 
-
+    public static final int COMMON_VAR_MAX = 5;
 
     static {
         Op.terms =

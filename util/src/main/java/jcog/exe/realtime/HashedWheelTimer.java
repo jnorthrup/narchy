@@ -391,7 +391,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     void assertRunning() {
         if (cursor.compareAndSet(-1, 0)) {
-            this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() + "_" + hashCode());
+            this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() + '_' + hashCode());
             this.loop.setDaemon(daemon);
             this.loop.setPriority(THREAD_PRI);
             this.loop.start();
@@ -480,7 +480,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         abstract public void reschedule(int wheel, TimedFuture r);
 
-        public final void schedule(TimedFuture r, int c, HashedWheelTimer timer) {
+        public final void schedule(TimedFuture r, int c, Executor timer) {
             int offset = r.offset(resolution);
             if (offset > -1 || r.isPeriodic()) {
                 reschedule(idx(c + offset + 1), r);

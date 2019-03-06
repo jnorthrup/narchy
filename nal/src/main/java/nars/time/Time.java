@@ -3,7 +3,7 @@ package nars.time;
 import com.netflix.servo.util.Clock;
 import jcog.data.list.MetalConcurrentQueue;
 import nars.NAR;
-import nars.task.AbstractTask.SchedTask;
+import nars.task.AbstractTask;
 
 import javax.measure.Quantity;
 import java.io.Serializable;
@@ -11,6 +11,9 @@ import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 /**
  * Time state
@@ -21,11 +24,11 @@ public abstract class Time implements Clock, Serializable {
     final AtomicLong scheduledNext = new AtomicLong(Long.MIN_VALUE);
 
     final static int MAX_INCOMING = 4 * 1024;
-    final MetalConcurrentQueue<SchedTask> incoming =
+    final MetalConcurrentQueue<AbstractTask.ScheduledTask> incoming =
             new MetalConcurrentQueue<>(MAX_INCOMING);
 
 
-    final PriorityQueue<SchedTask> scheduled = new PriorityQueue<>(MAX_INCOMING /* estimate capacity */);
+    final PriorityQueue<AbstractTask.ScheduledTask> scheduled = new PriorityQueue<>(MAX_INCOMING /* estimate capacity */);
 
     /**
      * busy mutex
@@ -72,64 +75,64 @@ public abstract class Time implements Clock, Serializable {
     public abstract Time dur(int d);
 
 
-    public void runAt(long whenOrAfter, Runnable then) {
-        runAt(new SchedTask(whenOrAfter, then));
+    public final void runAt(long whenOrAfter, Runnable then) {
+        runAt(new ScheduledRunnable(whenOrAfter, then));
     }
 
 
-    private void runAt(SchedTask event) {
+    public void runAt(AbstractTask.ScheduledTask event) {
+        long w = event.when();
+        assert(w!=ETERNAL && w!=TIMELESS);
+
         if (!incoming.offer(event)) {
             throw new RuntimeException(this + " overflow");
         }
 
-        scheduledNext.accumulateAndGet(
-                event.when,
-                Math::min
-        );
+        scheduledNext.accumulateAndGet(w, Math::min);
     }
 
 
     /**
      * drain scheduled tasks ready to be executed
      */
-    public void schedule(Consumer<SchedTask> each) {
+    public void schedule(Consumer<AbstractTask.ScheduledTask> each) {
 
 
-        if (scheduling.compareAndSet(false, true)) {
+        if (scheduling.weakCompareAndSetAcquire(false, true)) {
 
             try {
-                long now;
-                //..
+                long now = now();
 
-                now = now();
-                SchedTask p;
-                for (; (p = incoming.poll()) != null; ) {
-                    if (p.when <= now)
-                        each.accept(p);
-                    else
-                        scheduled.offer(p);
-                }
+                {
+                    //fire  previously scheduled
+                    if (now >= scheduledNext.getOpaque()) {
+                        AbstractTask.ScheduledTask next;
 
-                now = now();
-                if (now >= scheduledNext.getOpaque()) {
-                    SchedTask next;
+                        while (((next = scheduled.peek()) != null) && (next.when() <= now)) {
+                            each.accept(scheduled.poll()); //assert (next == actualNext);
+                        }
 
-                    while (((next = scheduled.peek()) != null) && (next.when <= now)) {
-                        each.accept(scheduled.poll()); //assert (next == actualNext);
+                        scheduledNext.accumulateAndGet(
+                                next != null ? next.when() : Long.MAX_VALUE,
+                                Math::min
+                        );
+
                     }
-
-                    scheduledNext.accumulateAndGet(
-                            next != null ? next.when : Long.MAX_VALUE,
-                            Math::min
-                    );
-
                 }
-
-                //now = now(); //udpate the time
+                {
+                    //drain incoming queue
+                    AbstractTask.ScheduledTask next;
+                    for (; (next = incoming.poll()) != null; ) {
+                        if (next.when() <= now)
+                            each.accept(next);
+                        else
+                            scheduled.offer(next);
+                    }
+                }
 
 
             } finally {
-                scheduling.set(false);
+                scheduling.setRelease(false);
             }
         }
 
@@ -162,5 +165,25 @@ public abstract class Time implements Clock, Serializable {
 
     public long toCycles(Quantity q) {
         throw new UnsupportedOperationException("Only in RealTime implementations");
+    }
+
+    private static final class ScheduledRunnable extends AbstractTask.ScheduledTask {
+        private final long whenOrAfter;
+        private final Runnable then;
+
+        public ScheduledRunnable(long whenOrAfter, Runnable then) {
+            this.whenOrAfter = whenOrAfter;
+            this.then = then;
+        }
+
+        @Override
+        public long when() {
+            return whenOrAfter;
+        }
+
+        @Override
+        public void run() {
+            then.run();
+        }
     }
 }

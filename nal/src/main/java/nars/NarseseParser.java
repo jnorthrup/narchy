@@ -17,6 +17,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.obj.QuantityTerm;
+import nars.term.var.CommonVariable;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.unify.ellipsis.Ellipsis;
@@ -508,20 +509,34 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
 
+
+    static final char[] VarChars = {VAR_DEP.ch, VAR_INDEP.ch, VAR_QUERY.ch, VAR_PATTERN.ch};
+
     Rule Variable() {
+
         return firstOf(
                 seq(Op.VAR_INDEP.ch, Variable(VAR_INDEP)),
                 seq(Op.VAR_DEP.ch, Variable(VAR_DEP)),
                 seq(Op.VAR_QUERY.ch, Variable(VAR_QUERY)),
-                seq(Op.VAR_PATTERN.ch, Variable(VAR_PATTERN))
+                seq(Op.VAR_PATTERN.ch, Variable(VAR_PATTERN)),
+
+                //HACK
+                seq(anyOf(VarChars), firstOf(
+                    seq(repeat(Variable()).times(5),
+                            push(CommonVariable.parse(pop(), pop(), pop(), pop(), pop()))),
+                    seq(repeat(Variable()).times(4),
+                            push(CommonVariable.parse(pop(), pop(), pop(), pop()))),
+                    seq(repeat(Variable()).times(3),
+                            push(CommonVariable.parse(pop(), pop(), pop()))),
+                    seq(repeat(Variable()).times(2),
+                            push(CommonVariable.parse(pop(), pop())))
+                ))
+
         );
     }
 
     Rule Variable(Op varType) {
-        return seq(
-            AtomStr(),
-            push($.v(varType, (String) pop()))
-        );
+        return seq(AtomStr(), push($.v(varType, (String) pop())));
     }
 
     

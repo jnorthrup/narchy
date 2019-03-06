@@ -35,9 +35,9 @@ import java.util.function.Function;
 /**
  * wall which organizes its sub-surfaces according to 2D phys dynamics
  */
-public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, Windo> {
+public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, Container> {
 
-    final GraphEditPhysics physics =
+    public final GraphEditPhysics physics =
             //new VerletGraphEditPhysics();
             new Box2DGraphEditPhysics();
 
@@ -107,16 +107,17 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
 
 
     public Windo add(Surface x) {
-        return add(x, xx -> new ManagedWindo(windowContent(xx)));
+        Windo w = add(x, xx -> new DependentWindow(windowContent(xx)));
+        return w;
     }
 
     public Windo addWeak(Surface x) {
-        return add(x, xx -> new ManagedWindo(new WeakSurface(xx) {
+        return add(x, xx -> new DependentWindow(new WeakSurface(xx) {
             @Override
             protected void delete() {
                 super.delete();
 
-                ManagedWindo w = parent(ManagedWindo.class);
+                DependentWindow w = parent(DependentWindow.class);
                 if (w!=null) {
                     w.remove();
                 }
@@ -124,7 +125,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
         }));
     }
 
-    private void removingComponent(Surface s) {
+    public void removeComponent(Surface s) {
         synchronized (links) {
             links.removeNode(s);
         }
@@ -142,15 +143,16 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
             w.layout();
         });
     }
-    public @Nullable Windo get(Surface t) {
+    public @Nullable Container get(Surface t) {
         return getValue(t);
     }
 
     @Override
-    public Windo remove(Object key) {
-        Windo w = super.remove(key);
+    public Container remove(Object key) {
+        Container w = super.remove(key);
         if (w!=null) {
             w.stop();
+            physics.remove(w);
             return w;
         }
         return null;
@@ -159,22 +161,24 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
 
 
     /** uses put() semantics */
-    public final Windo add(Surface x, Function<Surface,Windo> windowize) {
-        Windo w = computeIfAbsent(x, (xx) -> {
-            Windo ww = windowize.apply(xx);
+    public final Windo add(Surface x, Function<Surface, Container> windowize) {
+        Windo w = (Windo) computeIfAbsent(x, (xx) -> {
+            Container ww = windowize.apply(xx);
             if (ww!=null && parent!=null) {
                 ww.start(this);
             }
+            physics.add(ww);
             return ww;
         }).value;
         return w;
     }
 
-    public final Windo add(S x, float w, float h) {
-        Windo y = add(x);
+    public final Container add(S x, float w, float h) {
+        Container y = add(x);
         y.size(w, h);
         return y;
     }
+
 
     class Debugger extends Gridding {
 
@@ -193,7 +197,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
                     GraphEdit.this.keySet(), t -> info(t, GraphEdit.this.get(t)))));
         }
 
-        protected String info(Surface x, Windo w) {
+        protected String info(Surface x, Container w) {
             return x + "\n  " + (w != null ? w.bounds : "?");
         }
 
@@ -272,7 +276,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
     protected void doubleClick(v2 pos) {
         float h = 100;
         float w = 100;
-        Windo z = add(
+        Container z = add(
                 new WizardFrame(new ProtoWidget()) {
                     @Override
                     protected void become(Surface next) {
@@ -340,7 +344,9 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
 
         }
 
-        link(wire);
+        physics.invokeLater(()->
+            link(wire)
+        );
 
         return wire;
 
@@ -370,37 +376,6 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
         return false;
     }
 
-
-    class ManagedWindo extends Windo {
-
-        private final Surface content;
-
-
-        public ManagedWindo(Surface content) {
-            super(content);
-            this.content = content;
-        }
-
-        @Override
-        protected void starting() {
-            super.starting();
-            physics.add(this);
-        }
-
-        @Override
-        protected void stopping() {
-            physics.remove(this);
-
-            //remove any associated links, recursively
-            if (content instanceof Container) {
-                ((Container) content).forEachRecursively(GraphEdit.this::removingComponent);
-            } else {
-                removingComponent(content);
-            }
-
-            super.stopping();
-        }
-    }
 
     public static class VisibleLink extends Link {
 

@@ -164,6 +164,11 @@ class TermIOTest {
     }
 
     @Test
+    void testCommonVariableSerialization() throws Exception {
+        assertEqualSerialize("##1#2");
+    }
+
+    @Test
     void testAnonSerialization() throws IOException {
 
         Term[] anons = new Term[] {

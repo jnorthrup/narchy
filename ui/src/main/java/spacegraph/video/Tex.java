@@ -228,10 +228,12 @@ public class Tex {
 
         public void paintMatrix(GL2 gl) {
             Tex t = this.tex;
-            if (t == null) return; //wtf
+            if (t == null)
+                return; //wtf
 
             RectFloat b = bounds;
-            if (b == null) return; //wtf
+            if (b == null)
+                return; //wtf
 
             t.paint(gl, b);
         }
@@ -239,7 +241,10 @@ public class Tex {
         @Override
         public boolean stop() {
             if (super.stop()) {
-                tex.stop(((Ortho) root()).space.gl());
+                Ortho r = (Ortho) root();
+                if (r!=null && r.space!=null) {
+                    tex.stop(r.space.gl());
+                }
                 return true;
             }
             return false;

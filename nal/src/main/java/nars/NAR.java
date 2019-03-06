@@ -37,6 +37,7 @@ import nars.io.IO;
 import nars.link.Activate;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
+import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.TaskBuffer;
@@ -889,13 +890,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 //        exe.execute(t);
 //    }
 
-    /**
-     * adds a task to the queue of task which will be executed in batch
-     * after the end of the current frame before the next frame.
-     */
-    public final void runLater(Runnable t) {
-        time.runAt(time(), t);
-    }
+
 
 
     @Override
@@ -971,6 +966,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         time.runAt(whenOrAfter, then);
     }
 
+    public final void runAt(AbstractTask.ScheduledTask t) {
+        time.runAt(t);
+    }
+
+    /**
+     * adds a task to the queue of task which will be executed in batch
+     * after the end of the current frame before the next frame.
+     */
+    public final void runLater(Runnable t) {
+        time.runAt(time(), t);
+    }
 
     /**
      * tasks in concepts

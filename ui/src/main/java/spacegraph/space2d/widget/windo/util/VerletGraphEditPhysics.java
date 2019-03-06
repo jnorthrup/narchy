@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.windo.util;
 
 import com.jogamp.opengl.GL2;
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import org.eclipse.collections.api.tuple.Pair;
@@ -26,25 +27,26 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
 
     protected final VerletSurface physics = new VerletSurface();
 
-    final ConcurrentFastIteratingHashMap<Windo, WindowData> w = new ConcurrentFastIteratingHashMap<>(new WindowData[0]);
+    final ConcurrentFastIteratingHashMap<Surface, PhySurface> w =
+        new ConcurrentFastIteratingHashMap<>(new PhySurface[0]);
 
 
-    private static class WindowData {
+    public static class PhySurface {
 
-        final Windo window;
-        final Vec2D center;
-        final AttractionBehavior2D repel;
+        public final Surface surface;
+        public final Vec2D center;
+        public final AttractionBehavior2D repel;
 
-        private WindowData(Windo window) {
-            this.window = window;
+        private PhySurface(Surface surface) {
+            this.surface = surface;
             this.center = new Vec2D();
             this.repel = new AttractionBehavior2D(center, 1, 0);
         }
 
         public void update() {
-            center.set(window.cx(), window.cy());
-            repel.setRadius(window.radius() * 2);
-            repel.setStrength(-(float) (Math.sqrt(window.bounds.area()) * 0.1f));
+            center.set(surface.cx(), surface.cy());
+            repel.setRadius(surface.radius() * 2);
+            repel.setStrength(-(float) (Math.sqrt(surface.bounds.area()) * 0.1f));
         }
     }
 
@@ -56,6 +58,11 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
         physics.start(parent);
         return physics;
     }
+    @Override
+    public final void invokeLater(Runnable o) {
+        //physics.invoke(o);
+        throw new TODO();
+    }
 
     @Override
     public void stop() {
@@ -63,22 +70,23 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
     }
 
     @Override
-    public void add(Windo x) {
-        WindowData w = new WindowData(x);
-        this.w.put(x, w);
-        physics.physics.addBehavior(w.repel);
-
+    public void add(Surface x) {
+        this.w.computeIfAbsent(x, (ww->{
+            PhySurface wd = new PhySurface(ww);
+            physics.physics.addBehavior(wd.repel);
+            return wd;
+        }));
     }
 
     public void update() {
-        for (WindowData w : this.w.valueArray()) {
+        for (PhySurface w : this.w.valueArray()) {
             w.update();
         }
     }
 
     @Override
-    public void remove(Windo x) {
-        WindowData removed = this.w.remove(x);
+    public void remove(Surface x) {
+        PhySurface removed = this.w.remove(x);
         physics.physics.removeBehavior(removed.repel);
     }
 

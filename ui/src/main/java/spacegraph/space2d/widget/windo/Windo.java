@@ -3,9 +3,11 @@ package spacegraph.space2d.widget.windo;
 import com.jogamp.opengl.GL2;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.windo.util.DragEdit;
@@ -23,7 +25,9 @@ public class Windo extends MutableUnitContainer {
     public DragEdit potentialDragMode = null;
 
 
-    protected Windo() {
+    private boolean fixed = false;
+
+    public Windo() {
         super();
     }
 
@@ -59,86 +63,94 @@ public class Windo extends MutableUnitContainer {
             return null;
         } else {
 
-            DragEdit potentialDragMode = null;
-
-
-            v2 hitPoint = windowHitPointRel(finger);
-
-
-            if (hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
-                if (hitPoint.y <= resizeBorder) {
-                    potentialDragMode = DragEdit.RESIZE_S;
-                }
-                if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                    potentialDragMode = DragEdit.RESIZE_N;
-                }
-            }
-
-            if (potentialDragMode == null && hitPoint.y >= 0.5f - resizeBorder / 2f && hitPoint.y <= 0.5f + resizeBorder / 2) {
-                if (hitPoint.x <= resizeBorder) {
-                    potentialDragMode = DragEdit.RESIZE_W;
-                }
-                if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
-                    potentialDragMode = DragEdit.RESIZE_E;
-                }
-            }
-
-            if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
-                if (hitPoint.y <= resizeBorder) {
-                    potentialDragMode = DragEdit.RESIZE_SW;
-                }
-                if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                    potentialDragMode = DragEdit.RESIZE_NW;
-                }
-            }
-
-            if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
-
-                if (hitPoint.y <= resizeBorder) {
-                    potentialDragMode = DragEdit.RESIZE_SE;
-                }
-                if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                    potentialDragMode = DragEdit.RESIZE_NE;
-                }
-            }
-
-
-            if (!fingerable(potentialDragMode))
-                potentialDragMode = null;
-
-            if (potentialDragMode == null) {
-                if (fingerable(MOVE))
-                    potentialDragMode = MOVE;
-            }
-
-
-            this.potentialDragMode = potentialDragMode;
-
-
-            if (finger.pressing(ZoomOrtho.PAN_BUTTON)) {
-                FingerDragging d =
-                        potentialDragMode != null ? (FingerDragging) fingering(potentialDragMode) : null;
-
-                if (d != null && finger.tryFingering(d)) {
-                    this.dragMode = d;
-                    return null;
-                } else {
-                    this.dragMode = null;
-                }
-            }
-
-            if (potentialDragMode != null) {
-                RenderWhileHovering h = potentialDragMode.hover();
-                if (h != null)
-                    finger.tryFingering(h);
-            } else {
-                finger.tryFingering(RenderWhileHovering.Reset);
-            }
-
-            return null;
+            if (!fixed())
+                return drag(finger);
+            else
+                return null;
         }
 
 
+    }
+
+    @Nullable
+    private Surface drag(Finger finger) {
+        DragEdit potentialDragMode = null;
+
+
+        v2 hitPoint = windowHitPointRel(finger);
+
+
+        if (hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
+            if (hitPoint.y <= resizeBorder) {
+                potentialDragMode = DragEdit.RESIZE_S;
+            }
+            if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                potentialDragMode = DragEdit.RESIZE_N;
+            }
+        }
+
+        if (potentialDragMode == null && hitPoint.y >= 0.5f - resizeBorder / 2f && hitPoint.y <= 0.5f + resizeBorder / 2) {
+            if (hitPoint.x <= resizeBorder) {
+                potentialDragMode = DragEdit.RESIZE_W;
+            }
+            if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
+                potentialDragMode = DragEdit.RESIZE_E;
+            }
+        }
+
+        if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
+            if (hitPoint.y <= resizeBorder) {
+                potentialDragMode = DragEdit.RESIZE_SW;
+            }
+            if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                potentialDragMode = DragEdit.RESIZE_NW;
+            }
+        }
+
+        if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
+
+            if (hitPoint.y <= resizeBorder) {
+                potentialDragMode = DragEdit.RESIZE_SE;
+            }
+            if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                potentialDragMode = DragEdit.RESIZE_NE;
+            }
+        }
+
+
+        if (!fingerable(potentialDragMode))
+            potentialDragMode = null;
+
+        if (potentialDragMode == null) {
+            if (fingerable(MOVE))
+                potentialDragMode = MOVE;
+        }
+
+
+        this.potentialDragMode = potentialDragMode;
+
+
+        if (finger.pressing(ZoomOrtho.PAN_BUTTON)) {
+            FingerDragging d =
+                    potentialDragMode != null ? (FingerDragging) fingering(potentialDragMode) : null;
+
+            if (d != null && finger.tryFingering(d)) {
+                this.dragMode = d;
+                return null;
+            } else {
+                this.dragMode = null;
+            }
+        }
+
+        if (potentialDragMode != null) {
+            RenderWhileHovering h = potentialDragMode.hover();
+            if (h != null)
+                finger.tryFingering(h);
+        } else {
+            finger.tryFingering(RenderWhileHovering.Reset);
+        }
+
+        return null;
     }
 
     public void unfinger(Finger finger) {
@@ -284,13 +296,13 @@ public class Windo extends MutableUnitContainer {
      * position relative to parent
      * 0  .. (0.5,0.5) center ... +1
      */
-    public final Windo posRel(float cx, float cy, float pct) {
+    public final Container posRel(float cx, float cy, float pct) {
         return posRel(cx, cy, pct, pct);
     }
 
     public Windo posRel(float cx, float cy, float pctX, float pctY) {
         GraphEdit p = parent(GraphEdit.class);
-        return posRel(p, cx, cy, pctX, pctY);
+        return p!=null ? posRel(p, cx, cy, pctX, pctY) : null;
     }
 
     public Windo posRel(Surface s, float cx, float cy, float pctX, float pctY) {
@@ -303,4 +315,13 @@ public class Windo extends MutableUnitContainer {
     }
 
 
+    public Windo fixed(boolean b) {
+        this.fixed = b;
+        return this;
+    }
+
+    /** whether this window is not able to move */
+    public final boolean fixed() {
+        return fixed;
+    }
 }

@@ -426,9 +426,9 @@ public class Body2D extends Transform {
         return true;
     }
 
-    private void setTransformStatic(v2 position, float angle) {
-
-    }
+//    private void setTransformStatic(v2 position, float angle) {
+//
+//    }
 
     /**
      * Get the world body origin position. Do not modify.
@@ -468,7 +468,7 @@ public class Body2D extends Transform {
      * @param v the new linear velocity of the center of mass.
      */
     public final void setLinearVelocity(v2 v) {
-        if (type == STATIC) {
+        if (type != DYNAMIC) {
             return;
         }
 
@@ -581,9 +581,9 @@ public class Body2D extends Transform {
      * @param torque about the z-axis (out of the screen), usually in N-m.
      */
     public final void applyTorque(float torque) {
-        if (type != DYNAMIC) {
+        if (type != DYNAMIC)
             return;
-        }
+
 
         if (!isAwake()) {
             setAwake(true);
@@ -603,9 +603,9 @@ public class Body2D extends Transform {
      * @param wake    also wake up the body
      */
     public final void applyLinearImpulse(v2 impulse, v2 point, boolean wake) {
-        if (type != DYNAMIC) {
+        if (type != DYNAMIC)
             return;
-        }
+
 
         if (!isAwake()) {
             if (wake) {
@@ -966,6 +966,7 @@ public class Body2D extends Transform {
 
         if (this.type == type)
             return;
+
         dyn.invoke(() -> {
 
             this.type = type;

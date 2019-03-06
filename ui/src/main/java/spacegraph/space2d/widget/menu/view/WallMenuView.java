@@ -1,10 +1,10 @@
 package spacegraph.space2d.widget.menu.view;
 
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.menu.Menu;
 import spacegraph.space2d.widget.windo.GraphEdit;
-import spacegraph.space2d.widget.windo.Windo;
 
 /** TODO */
 public class WallMenuView extends Menu.MenuView {
@@ -32,7 +32,7 @@ public class WallMenuView extends Menu.MenuView {
 
     @Override
     public void active(Surface surface) {
-        Windo w = wall.add(surface);
+        Container w = wall.add(surface);
         w.pos(10, 10, 400, 300); //TODO
     }
 

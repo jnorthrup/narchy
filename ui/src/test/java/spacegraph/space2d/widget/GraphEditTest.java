@@ -12,6 +12,7 @@ import spacegraph.audio.sample.SoundSample;
 import spacegraph.audio.speech.TinySpeech;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.chip.AudioOutPort;
@@ -59,11 +60,11 @@ public class GraphEditTest {
 
 
             Port A = new Port();
-            Windo a = s.add(A).pos(RectFloat.Unit.transform(500, 250, 250));
+            Container a = s.add(A).pos(RectFloat.Unit.transform(500, 250, 250));
 
 
             Port B = LabeledPort.generic();
-            Windo b = s.add(B).pos(RectFloat.XYWH(+1, 0, 0.25f, 0.25f).scale(500));
+            Container b = s.add(B).pos(RectFloat.XYWH(+1, 0, 0.25f, 0.25f).scale(500));
 
             TogglePort AB = new TogglePort();
             s.add(AB).pos(RectFloat.XYWH(0, 0, 0.25f, 0.25f).scale(500));
@@ -295,6 +296,10 @@ public class GraphEditTest {
 
         public static void main(String[] args) {
             GraphEdit w = GraphEdit.window(1000, 1000);
+
+            w.add(new Windo())
+                    .posRel(0.25f,0.25f,0.25f,0.6f)
+                    .fixed(true);
 
             Windo x = w.add(
                     //new OKSurface("NOT OK")
