@@ -7,11 +7,11 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.graph.Graph2D;
-import spacegraph.util.MutableFloatRect;
+import spacegraph.util.MutableRectFloat;
 
 import java.util.Random;
 
-public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
+public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableRectFloat<X>> {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
     private int iterations = 1;
@@ -62,7 +62,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
 
         assert (AUTOSCALE == AUTOSCALE);
 
-        for (MutableFloatRect<X> m : nodes)
+        for (MutableRectFloat<X> m : nodes)
             size(m, AUTOSCALE);
 
         maxRepelDist = (float) ((2 * g.radius()) * Math.sqrt(2) / 2); //estimate
@@ -81,7 +81,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
         for (int ii = 0; ii < iterations; ii++) {
 
             for (int x = 0; x < n; x++) {
-                MutableFloatRect<X> a = nodes.get(x);
+                MutableRectFloat<X> a = nodes.get(x);
 
                 attract(a, attractSpeed);
 
@@ -95,7 +95,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
 
             RectFloat gg = g.bounds;
 
-            for (MutableFloatRect b : nodes) {
+            for (MutableRectFloat b : nodes) {
                 b.commit(maxSpeedPerIter);
                 b.fence(gg);
             }
@@ -105,7 +105,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
 
     }
 
-    protected void size(MutableFloatRect<X> m, float a) {
+    protected void size(MutableRectFloat<X> m, float a) {
         float p = (float) (1f + Math.sqrt(m.node.pri)) * a;
         m.size(p, p);
     }
@@ -114,7 +114,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
     /**
      * HACK this reads the positions from the nodevis not the rectangle
      */
-    private void attract(MutableFloatRect a, float attractSpeed) {
+    private void attract(MutableRectFloat a, float attractSpeed) {
 
         Graph2D.NodeVis<X> from = a.node;
         float px = a.cx(), py = a.cy();
@@ -133,7 +133,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
             if (who == null)
                 return;
 
-            MutableFloatRect b = who.mover;
+            MutableRectFloat b = who.mover;
             if (b == null)
                 return;
 
@@ -165,7 +165,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
         //return weight * weight;
     }
 
-    private void repel(MutableFloatRect a, v2 aCenter, float ar, MutableFloatRect b, float repelSpeed) {
+    private void repel(MutableRectFloat a, v2 aCenter, float ar, MutableRectFloat b, float repelSpeed) {
 
         v2 delta = aCenter.clone().subbed(b.cx(), b.cy());
 

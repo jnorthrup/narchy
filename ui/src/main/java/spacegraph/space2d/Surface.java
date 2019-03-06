@@ -104,7 +104,8 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return (S) this;
     }
 
-    protected final boolean posChanged(RectFloat next) {
+    /** override and return false to prevent movement */
+    protected boolean posChanged(RectFloat next) {
         RectFloat last = BOUNDS.getAndSet(this, next);
 //        if (bounds.area() < ScalarValue.EPSILON)
 //            throw new WTF();

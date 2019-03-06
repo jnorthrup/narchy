@@ -1,8 +1,7 @@
 package jcog.data.map;
 
+import jcog.TODO;
 import jcog.data.iterator.ArrayIterator;
-import jcog.data.list.FastCoWList;
-import jcog.data.list.FasterList;
 import jcog.random.SplitMix64Random;
 
 import java.util.*;
@@ -12,29 +11,54 @@ import java.util.function.*;
 
 public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
-    final Y[] emptyArray;
+    final Y[] empty;
 
     final Map<X, Y> map =
             //new ConcurrentOpenHashMap<>();
             new ConcurrentHashMap<>();
 
-    /** maximum allowed extra null space at suffix of array before reallocating smaller */
-    static final int extraThreshold = 16;
-
     /** double buffer live copy */
-    //private volatile Y[] list;
-    private final FastCoWList<Y> list;
     private AtomicBoolean invalid = new AtomicBoolean(false);
+    private volatile Y[] values;
 
-//    /** double buffer backup copy */
-//    final AtomicReference<T[]> lists = new AtomicReference<>();
+    public ConcurrentFastIteratingHashMap(Y[] empty) {
+        this.empty = empty;
+        this.values = empty;
+    }
+
+    @Override
+    public final Y put(X key, Y value) {
+        if (value == null)
+            throw new NullPointerException();
+
+        Y prev = value == null ? map.remove(key) : map.put(key, value);
+        if (prev!=value)
+            invalidate();
+        return prev;
+    }
+
+    public final boolean removeIf(Predicate<? super Y> filter) {
+        if (map.values().removeIf(filter)) {
+            invalidate();
+            return true;
+        }
+        return false;
+    }
 
 
+    public final boolean removeIf(BiPredicate<X, ? super Y> filter) {
+        if (map.entrySet().removeIf((e) -> filter.test(e.getKey(), e.getValue()))) {
+            invalidate();
+            return true;
+        }
+        return false;
+    }
 
-    public ConcurrentFastIteratingHashMap(Y[] emptyArray) {
-        this.emptyArray = emptyArray;
-        this.list = new FastCoWList<>((x)->Arrays.copyOf(emptyArray, x));
-        //lists.setAt(this.list = this.emptyArray = emptyArray);
+    public final void clear(Consumer<Y> each) {
+        removeIf((y)-> {
+            each.accept(y);
+            return true;
+        });
     }
 
     /**
@@ -42,7 +66,9 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
      * a near atomic invalidation of the list after the hashmap method returns
      */
     @Override
-    public Y putIfAbsent(X key, Y value) {
+    public final Y putIfAbsent(X key, Y value) {
+        if (value == null)
+            throw new NullPointerException();
         Y r;
         if ((r = map.putIfAbsent(key, value)) != value) {
             invalidate();
@@ -56,7 +82,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
      * a near atomic invalidation of the list after the hashmap method returns
      */
     @Override
-    public Y remove(Object key) {
+    public final Y remove(Object key) {
         Y r = map.remove(key);
         if (r != null)
             invalidate();
@@ -64,7 +90,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     }
 
     @Override
-    public boolean remove(Object key, Object value) {
+    public final boolean remove(Object key, Object value) {
         if (map.remove(key, value)) {
             invalidate();
             return true;
@@ -73,20 +99,15 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     }
 
     @Override
-    public void clear() {
+    public final void clear() {
+        values = empty;
         map.clear();
         invalidate();
     }
 
     @Override
-    public int size() {
-        Y[] y = valueArray();
-        return y.length;
-//        Y[] y = list.readOK();
-//        if (y == null)
-//            return map.size();
-//        else
-//            return y.length;
+    public final int size() {
+        return valueArray().length;
     }
 
     @Override
@@ -95,8 +116,14 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     }
 
     public List<Y> asList() {
-        return new MyAbstractList();
+        return MyAbstractList;
     }
+
+    @Override
+    public final void forEach(BiConsumer<? super X, ? super Y> action) {
+        this.map.forEach(action);
+    }
+
 
     /**
      * this is the fast value iterating method
@@ -136,14 +163,14 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     }
 
 
-    public final void invalidate() {
+    protected final void invalidate() {
         invalid.set(true);
     }
 
     public boolean whileEachValue(Predicate<? super Y> action) {
         Y[] x = valueArray();
         for (Y xi : x) {
-            if (xi != null && !action.test(xi))
+            if (!action.test(xi))
                 return false;
         }
         return true;
@@ -153,7 +180,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
         Y[] x = valueArray();
         for (int i = x.length - 1; i >= 0; i--) {
             Y xi = x[i];
-            if (xi!=null && !action.test(xi))
+            if (!action.test(xi))
                 return false;
         }
         return true;
@@ -165,18 +192,18 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     }
 
     @Override
-    public Set<Entry<X, Y>> entrySet() {
+    public final Set<Entry<X, Y>> entrySet() {
         return map.entrySet();
     }
 
     @Override
-    public Set<X> keySet() {
+    public final Set<X> keySet() {
         return map.keySet();
     }
 
     @Override
-    public Collection<Y> values() {
-        return new FasterList(valueArray());
+    public final Collection<Y> values() {
+        return MyAbstractList;
     }
 
     @Override
@@ -190,17 +217,20 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     }
 
 
-    public Iterator<Y> valueIterator() {
+    public final Iterator<Y> valueIterator() {
         return ArrayIterator.iterator(valueArray());
+    }
+
+    public ListIterator<Y> valueListIterator() {
+        throw new TODO();
     }
 
 
     public final Y[] valueArray() {
-        //return list.readValid(true, this::_valueArray);
         if (invalid.compareAndSet(true,false)) {
-            list.set(map.values());
+            values = map.values().toArray(empty);
         }
-        return list.array();
+        return values;
     }
 
 //    private Y[] _valueArray(Y[] prev) {
@@ -240,41 +270,10 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 //    }
 
 
-    @Override
-    public Y put(X key, Y value) {
-        Y prev = value == null ? map.remove(key) : map.put(key, value);
-        if (prev!=value)
-            invalidate();
-        return prev;
-    }
-
-    public boolean removeIf(Predicate<? super Y> filter) {
-        if (map.values().removeIf(filter)) {
-            invalidate();
-            return true;
-        }
-        return false;
-    }
-
-
-    public boolean removeIf(BiPredicate<X, ? super Y> filter) {
-        if (map.entrySet().removeIf((e) -> filter.test(e.getKey(), e.getValue()))) {
-            invalidate();
-            return true;
-        }
-        return false;
-    }
-
-    public void clear(Consumer<Y> each) {
-        removeIf((y)-> {
-            each.accept(y);
-            return true;
-        });
-    }
 
 
 
-    private final class MyAbstractList extends AbstractList<Y> {
+    private final AbstractList<Y> MyAbstractList = new AbstractList<>() {
 
         @Override
         public int size() {
@@ -285,19 +284,26 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
         public Y get(int i) {
            return getIndex(i);
         }
-    }
+
+        @Override
+        public Iterator<Y> iterator() {
+            return ConcurrentFastIteratingHashMap.this.valueIterator();
+        }
+
+
+    };
 
     public Y getIndex(int i) {
         Y[] l = valueArray();
-        return l != null && l.length > i ? l[i] : null;
+        return l.length > i ? l[i] : null;
     }
     public Y getIndex(Random rng) {
         Y[] l = valueArray();
-        return l != null && l.length > 0 ? l[rng.nextInt(l.length)] : null;
+        return l.length > 0 ? l[rng.nextInt(l.length)] : null;
     }
 
     public Y getIndex(SplitMix64Random rng) {
         Y[] l = valueArray();
-        return l != null && l.length > 0 ? l[rng.nextInt(l.length)] : null;
+        return l.length > 0 ? l[rng.nextInt(l.length)] : null;
     }
 }

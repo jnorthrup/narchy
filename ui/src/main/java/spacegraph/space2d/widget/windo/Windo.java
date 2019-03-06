@@ -314,8 +314,12 @@ public class Windo extends MutableUnitContainer {
         return this;
     }
 
+    @Override
+    protected final boolean posChanged(RectFloat next) {
+        return !fixed && super.posChanged(next);
+    }
 
-    public Windo fixed(boolean b) {
+    public final Windo fixed(boolean b) {
         this.fixed = b;
         return this;
     }

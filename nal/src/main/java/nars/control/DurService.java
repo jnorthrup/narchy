@@ -148,15 +148,9 @@ abstract public class DurService extends NARService  {
             if (idealNext < now) {
                 //LAG
                 //compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged
-                //long delta = atEnd - n;
-                //int e = 1 + Math.round((float)delta) / d);
-                long idealNextNext = atStart + 2 * d;
-                if (idealNextNext < now || (idealNextNext - now > d/2)) {
-                    idealNext = now + 1;
-                } else {
-                    //lag within one cycle, try shifting if
-                    idealNext = now + 2 * d - (now - idealNext);
-                }
+                long phase = (now - idealNext) % d;
+                //idealNext = now + 1; //immediate
+                idealNext = now + Math.max(1, d - phase);
             }
 
             next = idealNext;

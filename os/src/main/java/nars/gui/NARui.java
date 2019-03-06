@@ -519,9 +519,9 @@ public class NARui {
             public void colorize(VLink<Task> v, Graph2D.NodeVis<VLink<Task>> node) {
                 int centroid = v.centroid;
 
-                float a = v.priElseZero() * 0.5f + 0.5f;
+                float a = 0.8f;//v.priElseZero() * 0.5f + 0.5f;
                 if (centroid >= 0) {
-                    Draw.colorHash(centroid, c, 1, 0.75f, a);
+                    Draw.colorHash(centroid, c, 1, 0.75f + 0.25f * v.priElseZero(), a);
                     node.color(c[0], c[1], c[2], c[3]);
                 } else {
                     node.color(0.5f,0.5f,0.5f, a); //unassigned
@@ -541,7 +541,7 @@ public class NARui {
         };
 
         ScatterPlot2D<VLink<Task>> s = new ScatterPlot2D<VLink<Task>>(model);
-        return DurSurface.get(new Clipped(s), n, () -> {
+        return DurSurface.get(new Clipped(new Gridding(s)), n, () -> {
 
             s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
 

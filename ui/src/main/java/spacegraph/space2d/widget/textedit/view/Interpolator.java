@@ -3,14 +3,15 @@ package spacegraph.space2d.widget.textedit.view;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import jcog.TODO;
 
 import java.util.concurrent.ExecutionException;
 
 public enum Interpolator {
 
-  LINER {
+  LINEAR {
     @Override
-    protected double[] innerGains(int divOfNum) {
+    protected double[] newCurve(int divOfNum) {
       double[] result = new double[divOfNum];
       double gain = 1.0 / divOfNum;
       for (int i = 0; i < divOfNum; i++) {
@@ -21,7 +22,7 @@ public enum Interpolator {
   },
   SMOOTH {
     @Override
-    protected double[] innerGains(int divOfNum) {
+    protected double[] newCurve(int divOfNum) {
       double[] result = new double[divOfNum];
       double gain = 1.0 / divOfNum;
       double g = Math.PI * gain;
@@ -34,7 +35,7 @@ public enum Interpolator {
   },
   SMOOTH_OUT {
     @Override
-    protected double[] innerGains(int divOfNum) {
+    protected double[] newCurve(int divOfNum) {
       double[] result = new double[divOfNum];
       double gain = 1.0 / divOfNum;
       double g = Math.PI * gain / 2.0;
@@ -47,7 +48,7 @@ public enum Interpolator {
   },
   SMOOTH_IN {
     @Override
-    protected double[] innerGains(int divOfNum) {
+    protected double[] newCurve(int divOfNum) {
       double[] result = new double[divOfNum];
       double gain = 1.0 / divOfNum;
       double g = Math.PI * gain / 2.0;
@@ -61,7 +62,7 @@ public enum Interpolator {
   },
   BOUND {
     @Override
-    protected double[] innerGains(int divOfNum) {
+    protected double[] newCurve(int divOfNum) {
       double[] result = new double[divOfNum];
       double gain = 1.0 / divOfNum;
       double g = Math.PI * 1.5 * gain;
@@ -75,17 +76,22 @@ public enum Interpolator {
     }
   };
 
-  private final LoadingCache<Integer, double[]> cache =
+  @Deprecated private final LoadingCache<Integer, double[]> cache =
       CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<Integer, double[]>() {
         @Override
         public double[] load(Integer divOfNum) {
-          return innerGains(divOfNum);
+          return newCurve(divOfNum);
         }
       });
 
-  protected abstract double[] innerGains(int divOfNum);
+  /** point sample: x in range 0..1, y in range 0..1 */
+  public float get(float x) {
+      throw new TODO();
+  }
 
-  public double[] gains(int divOfNum) {
+  protected abstract double[] newCurve(int divOfNum);
+
+  public double[] curve(int divOfNum) {
     try {
       return cache.get(divOfNum);
     } catch (ExecutionException e) {

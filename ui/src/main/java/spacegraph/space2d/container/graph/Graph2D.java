@@ -20,7 +20,7 @@ import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.windo.Windo;
-import spacegraph.util.MutableFloatRect;
+import spacegraph.util.MutableRectFloat;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -255,12 +255,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     @Override
     protected void stopping() {
-        super.stopping();
-        //synchronized (this) {
-            nodeCache.values().forEach(Container::stop);
-            nodeCache.clear();
-            edgePool.delete();
-        //}
+        nodeCache.values().forEach(Container::stop);
+        nodeCache.clear();
+        edgePool.delete();
     }
 
     private void updateNodes(Iterable<X> nodes, boolean addOrReplace) {
@@ -423,7 +420,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         /**
          * current layout movement instance
          */
-        public /*volatile*/ transient MutableFloatRect mover = null;
+        public /*volatile*/ transient MutableRectFloat mover = null;
 
         /**
          * outgoing edges

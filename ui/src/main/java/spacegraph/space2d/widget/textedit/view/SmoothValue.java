@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.textedit.view;
 
+import jcog.Util;
 import jcog.data.list.MetalConcurrentQueue;
-import jcog.pri.ScalarValue;
 
 public class SmoothValue {
 
@@ -11,8 +11,6 @@ public class SmoothValue {
     private double value;
     private double currentValue;
     private Interpolator interpolator;
-
-    private static final double epsilon = ScalarValue.EPSILON;
 
     public SmoothValue() {
         this(0, NUM_OF_DIV, Interpolator.SMOOTH);
@@ -58,17 +56,15 @@ public class SmoothValue {
         this.value = value;
     }
 
-    private void set(double value, int delayTime, Interpolator interpolator, int numOfDiv) {
+    private void set(final double nextValue, int delayTime, Interpolator interpolator, int numOfDiv) {
         this.interpolator = interpolator;
 
-        double delta = value - this.value;
-        if (this.value == value) {
+        double delta = nextValue - this.value;
+        if (Util.equals(this.value, nextValue))
             return;
-        }
 
-        this.value = value;
-        double[] gains = interpolator.gains(numOfDiv);
-
+        this.value = nextValue;
+        double[] gains = interpolator.curve(numOfDiv);
 
         //queue.clear();
         for (int i = 0; i < delayTime; i++) {

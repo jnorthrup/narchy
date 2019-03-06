@@ -3,7 +3,7 @@ package spacegraph.space2d.container.layout;
 import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.graph.Graph2D;
-import spacegraph.util.MutableFloatRect;
+import spacegraph.util.MutableRectFloat;
 
 /**
  * Implements the Squarified Treemap layout published by
@@ -14,7 +14,7 @@ import spacegraph.util.MutableFloatRect;
  *
  * adapted from:https://github.com/peterdmv/treemap/
  */
-public class TreeMap2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
+public class TreeMap2D<X> extends DynamicLayout2D<X, MutableRectFloat<X>> {
 
 
 
@@ -75,7 +75,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
 
         float max = Float.NEGATIVE_INFINITY;
         for (int i = start; i <= end; i++) {
-            MutableFloatRect<X> ni = this.nodes.get(i);
+            MutableRectFloat<X> ni = this.nodes.get(i);
             float r = ni.aspectExtreme();
             if (r > max) {
                 max = r;
@@ -93,7 +93,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
         float offset = 0;
 
         for (int i = start; i <= end; i++) {
-            MutableFloatRect x = this.nodes.get(i);
+            MutableRectFloat x = this.nodes.get(i);
 
             float p = x.node.pri;
             if (p != p || p < ScalarValue.EPSILON) {

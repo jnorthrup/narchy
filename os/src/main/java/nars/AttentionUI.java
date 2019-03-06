@@ -9,7 +9,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.util.MutableFloatRect;
+import spacegraph.util.MutableRectFloat;
 
 public class AttentionUI {
 
@@ -45,7 +45,7 @@ public class AttentionUI {
                 })
                 .update(new ForceDirected2D<>() {
                     @Override
-                    protected void size(MutableFloatRect<AttNode> m, float a) {
+                    protected void size(MutableRectFloat<AttNode> m, float a) {
                         float q =
                                     m.node.id.pri.pri();
 

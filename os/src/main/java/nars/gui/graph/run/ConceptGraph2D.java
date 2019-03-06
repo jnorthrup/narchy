@@ -12,7 +12,6 @@ import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 import spacegraph.space2d.container.unit.Scale;
@@ -122,24 +121,20 @@ public class ConceptGraph2D extends Graph2D<Term> {
     }
 
 
+
     @Override
-    public boolean start(SurfaceBase parent) {
-        if (super.start(parent)) {
-            on = DurService.on(nar, this::commit);
-            return true;
-        }
-        return false;
+    protected void starting() {
+        super.starting();
+        on = DurService.on(nar, this::commit);
     }
 
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            on.off();
-            on = null;
-            return true;
-        }
-        return false;
+    protected void stopping() {
+        on.off();
+        on = null;
+        super.stopping();
     }
+
 
     protected void commit() {
         if (showing() && controls.update.get()) {

@@ -3,28 +3,28 @@ package spacegraph.space2d.container.layout;
 import jcog.data.list.FasterList;
 import jcog.data.pool.MetalPool;
 import spacegraph.space2d.container.graph.Graph2D;
-import spacegraph.util.MutableFloatRect;
+import spacegraph.util.MutableRectFloat;
 
-public abstract class DynamicLayout2D<X, M extends MutableFloatRect<X>> implements Graph2D.Graph2DUpdater<X> {
+public abstract class DynamicLayout2D<X, M extends MutableRectFloat<X>> implements Graph2D.Graph2DUpdater<X> {
 
-    protected final FasterList<MutableFloatRect<X>> nodes = new FasterList<>();
+    protected final FasterList<MutableRectFloat<X>> nodes = new FasterList<>();
 
-    private final MetalPool<MutableFloatRect<X>> nodesPool = new MetalPool<>() {
+    private final MetalPool<MutableRectFloat<X>> nodesPool = new MetalPool<>() {
 
         @Override
-        public MutableFloatRect<X> create() {
+        public MutableRectFloat<X> create() {
             return newContainer();
         }
 
         @Override
-        public void put(MutableFloatRect<X> i) {
+        public void put(MutableRectFloat<X> i) {
             i.clear();
             super.put(i);
         }
     };
 
-    protected MutableFloatRect<X> newContainer() {
-        return new MutableFloatRect<X>();
+    protected MutableRectFloat<X> newContainer() {
+        return new MutableRectFloat<X>();
     }
 
     @Override
@@ -42,7 +42,7 @@ public abstract class DynamicLayout2D<X, M extends MutableFloatRect<X>> implemen
     private boolean get(Graph2D<X> g) {
         g.forEachValue(v -> {
             if (v.visible() && !v.pinned()) {
-                MutableFloatRect<X> m = nodesPool.get();
+                MutableRectFloat<X> m = nodesPool.get();
                 m.set(v);
                 nodes.add(m);
             }
@@ -60,7 +60,7 @@ public abstract class DynamicLayout2D<X, M extends MutableFloatRect<X>> implemen
     /** apply to node after layout
      * default impl: copy directly
      * */
-    protected void put(MutableFloatRect<X> mover, Graph2D.NodeVis node) {
+    protected void put(MutableRectFloat<X> mover, Graph2D.NodeVis node) {
         node.posXYWH(mover.cx, mover.cy, mover.w, mover.h);
     }
 

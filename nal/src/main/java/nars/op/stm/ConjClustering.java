@@ -94,9 +94,9 @@ public class ConjClustering extends Causable {
                 double dPolarity = Math.abs(a[1] - b[1]);
                 double dConf = Math.abs(a[2] - b[2]);
 
-                double dRange = Math.abs(a[3] - b[3])/dur;
-//                double rangeMax = Math.max(a[3], b[3])/dur;
-                double dMid = Math.abs(a[0] - b[0]);
+                double rangeMin = Math.min(a[3], b[3])/dur;
+                double dRange = Math.abs(a[3] - b[3])/rangeMin;
+                double dMid = Math.abs(a[0] - b[0])/rangeMin;
                 return (1 + dMid)
                         *
                        (1 + dRange)
@@ -147,9 +147,9 @@ public class ConjClustering extends Causable {
 
     protected float pri(Task t) {
         return t.priElseZero()
-                * (t.conf())
+                // * (0.5f + 0.5f * t.conf())
                 * (0.5f + 0.5f * t.polarity())
-                * t.originality()
+                * (0.5f + 0.5f * t.originality())
                 //                 * t.polarity()
 
 //                 * (1/(1f+t.volume()))

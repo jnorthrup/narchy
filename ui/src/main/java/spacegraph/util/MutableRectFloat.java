@@ -10,7 +10,7 @@ import spacegraph.space2d.container.graph.Graph2D;
  * similar to RectFloat2D with additional
  * except the x,y components are mutable
  */
-public class MutableFloatRect<X> {
+public class MutableRectFloat<X> {
 
     public float cx, cy;
     public float cxPrev, cyPrev;
@@ -19,16 +19,24 @@ public class MutableFloatRect<X> {
     public Graph2D.NodeVis<X> node;
     private transient float rad;
 
-    public MutableFloatRect() {
-        clear();
+    public MutableRectFloat() {
+
     }
 
+    public MutableRectFloat(RectFloat r) {
+        this();
+        set(r);
+    }
 
-    public final MutableFloatRect set(float x, float y, float w, float h) {
+    public final MutableRectFloat set(float x, float y, float w, float h) {
         this.cxPrev = this.cx = x + w/2;
         this.cyPrev = this.cy = y + h/2;
         return size(w, h);
 
+    }
+
+    public final void set(MutableRectFloat r) {
+        set(r.cx, r.cy, r.w, r.h);
     }
 
     public final void set(RectFloat r) {
@@ -39,13 +47,13 @@ public class MutableFloatRect<X> {
         return rad;
     }
 
-    public MutableFloatRect pos(float x, float y) {
+    public MutableRectFloat pos(float x, float y) {
         this.cx = x;
         this.cy = y;
         return this;
     }
 
-    public MutableFloatRect move(float dx, float dy) {
+    public MutableRectFloat move(float dx, float dy) {
         this.cx += dx;
         this.cy += dy;
         return this;
@@ -81,10 +89,6 @@ public class MutableFloatRect<X> {
         move((float)dx, (float)dy);
     }
 
-    public void moveTo(float x, float y, float rate) {
-        this.cx = Util.lerp(rate, this.cx, x);
-        this.cy = Util.lerp(rate, this.cy, y);
-    }
 
     public float area() {
         return w * h;
@@ -119,7 +123,7 @@ public class MutableFloatRect<X> {
         throw new TODO();
     }
 
-    public MutableFloatRect size(float w, float h) {
+    public MutableRectFloat size(float w, float h) {
         this.w = w;
         this.h = h;
         this.rad = (float) Math.sqrt((w * w) + (h * h));
@@ -148,7 +152,7 @@ public class MutableFloatRect<X> {
         return RectFloat.XYWH(cx, cy, w, h);
     }
 
-    public MutableFloatRect<X> mbr(float px, float py) {
+    public MutableRectFloat<X> mbr(float px, float py) {
 
         float x1 = left(), x2 = right();
         if (x1 > px) {  w = right() - px; cx = px + w/2; }
@@ -173,4 +177,6 @@ public class MutableFloatRect<X> {
     public final float bottom() {
         return cy + h/2;
     }
+
+
 }

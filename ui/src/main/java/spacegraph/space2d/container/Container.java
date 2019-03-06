@@ -70,9 +70,6 @@ abstract public class Container extends Surface {
 
     }
 
-
-
-
     @Override
     protected void compile(SurfaceRender r) {
         if (!prePaint(r)) {
@@ -89,8 +86,6 @@ abstract public class Container extends Surface {
             forEach(c -> c.recompile(r));
 
             compileAbove(r);
-
-
         }
 
     }
