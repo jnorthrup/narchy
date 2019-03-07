@@ -150,10 +150,9 @@ public interface LongInterval {
             return 0; //internal
         else {
             long ds = Math.abs(s - when);
-            if (s==e)
-                return ds;
-            long de = Math.abs(e - when);
-            return Math.min(ds, de);
+            return s == e ?
+                    ds :
+                    Math.min(ds, Math.abs(e - when));
         }
     }
 

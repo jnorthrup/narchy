@@ -48,7 +48,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
                     //int cv = c.term().volume();
 
-                    int capacity = 4096;
+                    int capacity = 512;
 
                     return new ByteHijackMemoize<>(k-> DeriverRules.what(k.x),
                             capacity,

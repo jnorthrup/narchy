@@ -22,7 +22,7 @@ import java.util.function.Function;
 public class Memoizers {
 
 
-    public static final int DEFAULT_HIJACK_REPROBES = 3;
+    public static final int DEFAULT_HIJACK_REPROBES = 4;
     public static final int DEFAULT_MEMOIZE_CAPACITY;
     static {
         //1gb -> 64k

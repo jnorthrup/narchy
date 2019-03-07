@@ -2,9 +2,7 @@ package nars;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.list.FasterList;
-import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import jcog.pri.UnitPrioritizable;
 import nars.control.op.Perceive;
@@ -27,12 +25,12 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.polation.TruthIntegration;
+import nars.truth.util.EvidenceEvaluator;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -571,6 +569,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
 
+    default EvidenceEvaluator eviEvaluator() {
+        return EvidenceEvaluator.the(this);
+    }
+
     /**
      * POINT EVIDENCE
      * <p>
@@ -585,59 +587,48 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * @return value >= 0 indicating the evidence
      */
     default float evi(long when, final int dur) {
-        if (isEternal())
-            return evi();
-        else
-            return eviBatch(dur, new long[]{when})[0];
+        return EvidenceEvaluator.the(this).evi(when, dur);
+        //eviBatch(dur, new long[]{when})[0];
     }
 
-    /** used for accelerating evidence queries involving a batch of time points */
-    public static class EvidenceEvaluator {
-        
-    }
-
-    default EvidenceEvaluator eviEvaluator() {
-
-    }
-    /**
-     * batch evidence point sampling
-     *
-     * do not call this on external tasks. it can be avoided a better way than creating when[] etc
-     */
-    default float[] eviBatch(final int dur, long... when) {
-
-        float ee = evi();
-
-        long s = start();
-        if (s == ETERNAL)
-            throw new WTF();
-        assert(s != ETERNAL);
-
-        int n = when.length;
-        float[] e = new float[n];
-        long ts = start(), te = end(); //cache these here to avoid repeat access through LongInterval.minTimeTo
-        long wPre = Long.MIN_VALUE;
-        for (int i = 0; i < n; i++) {
-            long w = when[i]; assert(w!=ETERNAL && w!=TIMELESS);
-            assert(wPre <= w);
-
-            if (i <= 1 || w != wPre) {
-                long dt = LongInterval.minTimeOutside(w, ts, te);
-                e[i] = (dt == 0) ?
-                    ee : ((dur != 0) ? Param.evi(ee, dt, dur) : 0);
-                wPre = w;
-
-            } else {
-                e[i] = e[i-1]; //copy a repeat value
-            }
-
-        }
-
-        return e;
-    }
+//    /**
+//     * batch evidence point sampling
+//     *
+//     * do not call this on external tasks. it can be avoided a better way than creating when[] etc
+//     */
+//    default float[] eviBatch(final int dur, long... when) {
+//
+//        float ee = evi();
+//
+//        long s = start();
+//        if (s == ETERNAL)
+//            throw new WTF();
+//        assert(s != ETERNAL);
+//
+//        int n = when.length;
+//        float[] e = new float[n];
+//        long ts = start(), te = end(); //cache these here to avoid repeat access through LongInterval.minTimeTo
+//        long wPre = Long.MIN_VALUE;
+//        for (int i = 0; i < n; i++) {
+//            long w = when[i]; assert(w!=ETERNAL && w!=TIMELESS);
+//            assert(wPre <= w);
+//
+//            if (i <= 1 || w != wPre) {
+//                long dt = LongInterval.minTimeOutside(w, ts, te);
+//                e[i] = (dt == 0) ?
+//                    ee : ((dur != 0) ? Param.evi(ee, dt, dur) : 0);
+//                wPre = w;
+//
+//            } else {
+//                e[i] = e[i-1]; //copy a repeat value
+//            }
+//
+//        }
+//
+//        return e;
+//    }
 
     @Override
-    @NotNull
     default Task task() {
         return this;
     }
@@ -959,5 +950,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     default boolean isBeliefOrGoal(boolean beliefOrGoal) {
         return beliefOrGoal ? isBelief() : isGoal();
     }
+
 
 }

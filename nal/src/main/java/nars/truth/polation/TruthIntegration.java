@@ -3,10 +3,13 @@ package nars.truth.polation;
 
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongListIterator;
+import jcog.WTF;
 import jcog.math.Longerval;
 import jcog.util.ArrayUtils;
 import nars.Param;
 import nars.Task;
+import nars.truth.util.EvidenceEvaluator;
+import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -101,15 +104,24 @@ public class TruthIntegration {
     }
 
     private static float eviInteg(Task t, int dur, long... when) {
+        if (when.length == 0)
+            return when[0];
+
         //assumes when[] is sorted
         if (Param.DEBUG)
             assert(ArrayUtils.isSorted(when));
         //Arrays.sort(when);
-        return eviIntegTrapezoidal(t, dur, Param.TRUTH_INTEGRATION_SUPERSAMPLING==1 ? supersample1(when) : when);
+
+        EvidenceEvaluator ee = t.eviEvaluator();
+        //if (Param.TRUTH_INTEGRATION_SUPERSAMPLING==0) {
+            return LongFloatTrapezoidalIntegrator.sum(when, (w)->ee.evi(w,dur));
+//        }
+//        return eviIntegTrapezoidal(t, dur,
+//                Param.TRUTH_INTEGRATION_SUPERSAMPLING==1 ? supersample1(when) : when);
     }
 
     /** also deduplicates */
-    private static long[] supersample1(long[] whenSorted) {
+    @Deprecated private static long[] supersample1(long[] whenSorted) {
         int n = whenSorted.length;
         long range = whenSorted[n - 1] - whenSorted[0];
         if (range <= whenSorted.length)
@@ -158,42 +170,98 @@ public class TruthIntegration {
 //        return ((ea + eb) / 2 * (b - a + 1)) + ((eb + ec) / 2 * (c - b + 1)) + ((ec + ed) / 2 * (d - c + 1));
 //    }
 
-    /**
-     * https:
-     * long[] points needs to be sorted, unique, and not contain any ETERNALs
-     * <p>
-     * TODO still needs improvement, tested
-     */
-    private static float eviIntegTrapezoidal(Task t, int dur, long[] when) {
+//
 
-        int n = when.length;
-        if (n == 1)
-            return t.evi(when[0], dur);
+    /** trapezoidally integrates a function where the x domain is long integers, and the y range is floats */
+    public static class LongFloatTrapezoidalIntegrator {
 
-        //assert (n > 1);
-        //assert(superSampling == 0 || superSampling == 1);
+        private long xPrev = Long.MIN_VALUE;
+        private float yPrev = Float.NaN;
+        private float sum = Float.NaN;
 
-        float[] ee = t.eviBatch(dur, when);
-        float e = 0;
-        long a = when[0];
-        float eviPrev = ee[0];
-
-        for (int i = 1; i < n; i++) {
-            long b = when[i];
-            long dt = b - a;
-            if (dt == 0)
-                continue;
-            assert (dt > 0);
-
-            float eviNext = ee[i];
-            e += (eviNext + eviPrev) / 2 * (dt + 1);
-
-            eviPrev = eviNext;
-            a = b;
+        public static float sum(long[] x, LongToFloatFunction each) {
+            float[] f = new float[x.length];
+            LongFloatTrapezoidalIntegrator t = new LongFloatTrapezoidalIntegrator();
+            for (int i = 0; i < x.length; i++) {
+                long xi = x[i];
+                t.sample(xi, each.valueOf(xi));
+            }
+            return t.sum();
         }
 
-        return e;
+        public void sample(long xNext, float yNext) {
+            boolean first = yPrev!=yPrev;
+
+                //first value
+            if (!first) {
+                //subsequent value
+                if (xNext < xPrev)
+                    throw new WTF("x must be monotonically increasing");
+                if (xNext == xPrev)
+                    return; //no effect, same point. assume same y-value
+            }
+
+            if (!Float.isFinite(yNext))
+                throw new WTF("y must be finite");
+
+            if (!first) {
+                //accumulate sum
+                if (sum!=sum)
+                    sum = 0; //initialize first summation
+                long dt = xNext - xPrev;
+                sum += (yNext + yPrev) / 2 * (dt + 1);
+            }
+
+            this.xPrev = xNext; this.yPrev = yNext;
+        }
+
+        /** returns Float.Nan if empty */
+        public float sum() {
+            if (sum != sum) {
+                //zero or 1 points
+                return xPrev;
+            }
+            return sum;
+        }
+//        /**
+//         //     * https:
+//         //     * long[] points needs to be sorted, unique, and not contain any ETERNALs
+//         //     * <p>
+//         //     * TODO still needs improvement, tested
+//         //     */
+//    private static float eviIntegTrapezoidal(Task t, int dur, long[] when) {
+//
+//        int n = when.length;
+//        if (n == 1)
+//            return t.evi(when[0], dur);
+//
+//        //assert (n > 1);
+//        //assert(superSampling == 0 || superSampling == 1);
+//
+//        float[] ee = t.eviEvaluator().evi(dur, when);
+//        float e = 0;
+//        long a = when[0];
+//        float eviPrev = ee[0];
+//
+//        for (int i = 1; i < n; i++) {
+//            long b = when[i];
+//            long dt = b - a;
+//            if (dt == 0)
+//                continue;
+//            assert (dt > 0);
+//
+//            float eviNext = ee[i];
+//            e += (eviNext + eviPrev) / 2 * (dt + 1);
+//
+//            eviPrev = eviNext;
+//            a = b;
+//        }
+//
+//        return e;
+//    }
     }
+
+
 
 //    private static final class TempLongArrayList extends LongArrayList {
 //
