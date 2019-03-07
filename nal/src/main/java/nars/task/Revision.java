@@ -122,8 +122,6 @@ public enum Revision {;
 
         assert(T.size()>=2);
 
-        T.refocus();
-
         Truth truth = T.truth(c2wSafe(nar.confMin.floatValue()), nar);
         if (truth == null)
             return null;

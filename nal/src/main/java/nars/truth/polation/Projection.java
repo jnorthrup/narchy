@@ -135,31 +135,33 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         if ((s = size()) < minResults) return null;
         else if (s == 1) return only(provideStamp);
 
-        validate(null);
+        validate();
 
         if ((s = size()) < minResults) return null;
         else if (s == 1) {
             return only(provideStamp);
         } else {
-
-
             MetalLongSet e = filterCyclicN(minResults);
+            if (size()!=s)
+                refocus();
             return provideStamp ? e : null;
         }
     }
 
     private MetalLongSet filterCyclicN(int minComponents) {
-        sortThisByFloat(tc -> -tc.evi); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
 
         int ss = size();
 
-
         MetalLongSet e = null;
         do {
-            if (e == null)
+            if (e == null) {
                 e = new MetalLongSet(Param.STAMP_CAPACITY);
-            else
+            } else {
                 e.clear();
+                refocus();
+            }
+
+            sortByEvidence();
 
             int weakestConflict = Integer.MIN_VALUE, strongestConflict = Integer.MAX_VALUE;
             for (int i = ss - 1; i >= 0; i--) {
@@ -180,13 +182,14 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
                 return e; //all ok
 
 
+            //something must be removed:
             if (ss - 1 < minComponents)
-                return null; //impossible
+                return null; //impossible: nothing else to remove
 
             if (strongestConflict == ss - 1) {
                 //2. if the only overlapping task is the least ranked, just remove that and continue.
                 removeLastFast();
-                break;
+                return e;
             } else {
                 if (strongestConflict == weakestConflict) {
                     //it is only conflict present in this set.
@@ -221,60 +224,25 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
 
         return null;
 
-        //TODO permute alternate insertion order here
-//            MetalLongSet e = new MetalLongSet(Param.STAMP_CAPACITY);
-//
-//            int mask1 = -1;
-//            int conflict1 = -1;
-//            int ss = size();
-//            for (int i = 0; i < ss; ) {
-//                if (i == mask1)
-//                    continue;
-//                Task ii = get(i).task;
-//                long[] iis = ii.stamp();
-//
-//                if (i == 0 || !Stamp.overlapsAny(e, iis)) {
-//                    if (e != null)
-//                        e.addAll(iis);
-//                    i++;
-//                } else {
-//                    if (conflict1 == -1)
-//                        conflict1 = i;
-//                    else {
-//                        //give-up because it will involve tracking 2-ary removals
-//                        conflict1 = Integer.MAX_VALUE;
-//                        break;
-//                    }
-//                    removeFast(i);ss--;
-//                }
-//            }
-//            if (conflict1 != Integer.MAX_VALUE) {
-//                if (conflict1 == -1) {
-//                    //no conflicts.
-//
-//                } else {
-//                    //no conflicts if conflict1 removed
-//                    removeFast(conflict1);
-//                    return
-//                }
-//                return provideStamp ? e : null;
-//            }
+    }
 
-
+    private void sortByEvidence() {
+        sortThisByFloat(tc -> -tc.evi); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
     }
 
     /** a one-for-all and all-for-one decision */
     private void oneForAll(int conflict) {
+        if (size()==2) {
+            removeFast(1); //the weaker will obviously be the 1th one regardless
+            return;
+        }
         TaskComponent cc = get(conflict);
         if (cc.evi < eviSumExcept(conflict)) {
             removeFast(conflict);
-            return;
         } else {
             //remove all except strongest conflict
             clear();
             add(cc);
-            refocus();
-            return;
         }
     }
 
@@ -457,8 +425,8 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         return false;
     }
 
-    protected void validate(@Nullable NAR nar) {
-        if (nar!=null && start == ETERNAL)
+    protected void validate() {
+        if (start == ETERNAL)
             refocus();
 
         removeIf(x -> update(x, Float.MIN_NORMAL) == null);

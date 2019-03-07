@@ -52,7 +52,7 @@ public class LinearTruthPolation extends Projection {
 //            end = Util.clamp(E, start, end);
 //        }
 
-        validate(nar);
+        validate();
 
         float eviFactor = 1f;
         if (nar != null) {

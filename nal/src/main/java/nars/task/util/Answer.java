@@ -1,7 +1,6 @@
 package nars.task.util;
 
 import jcog.WTF;
-import jcog.math.Longerval;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedTopN;
 import nars.NAR;
@@ -357,30 +356,10 @@ public final class Answer implements AutoCloseable {
             return root;
         } else  {
             Projection all = tryMerge();
-            if (all!=null) {
-                Task allTasks = newTask(all, root.isBeliefOrGoal());
-                return allTasks != null ? Truth.stronger(allTasks, root) : root;
-            } else {
-                //TODO try suppressing each task until some result emerges stronger than rootP
-                return root;
-            }
+            if (all == null)
+                return null;
 
-
-//            tp = tryMerge();
-//
-//            RankedTopN<TruthPolation> r = new RankedTopN<>(new TruthPolation[n]);
-//            for (Task t : tasks) {
-//
-//                r.add(, , )
-//            }
-//
-//            if (tryMerge && tasks.size() > 1)
-//                t = taskMerge(root);
-//            else
-//                t = root;
-//
-//            root.isBeliefOrGoal()
-//            return Truth.stronger(root, dyn);
+            return newTask(all, root.isBeliefOrGoal());
         }
     }
 
@@ -409,7 +388,7 @@ public final class Answer implements AutoCloseable {
                 }
             }
 
-            Projection p = truthpolation(false);
+            Projection p = truthpolation();
             if (p == null)
                 return null;
 
@@ -427,11 +406,9 @@ public final class Answer implements AutoCloseable {
 
     @Nullable private Projection tryMerge() {
 
-        Projection p = truthpolation(taskList(), true);
+        Projection p = truthpolation(taskList());
 
         p.filterCyclic(false);
-
-        p.refocus();
 
         return p;
     }
@@ -451,8 +428,8 @@ public final class Answer implements AutoCloseable {
 
 
 
-    @Nullable public Projection truthpolation(boolean trim) {
-        return truthpolation(taskList(), trim);
+    @Nullable public Projection truthpolation() {
+        return truthpolation(taskList());
     }
 
     @Nullable public TaskList taskList() {
@@ -463,9 +440,9 @@ public final class Answer implements AutoCloseable {
     }
 
     /**
-     * this does not filter cyclic; do that manually
+     * this does not filter cyclic; do that separately
      */
-    private Projection truthpolation(TaskList tt, boolean trim) {
+    private Projection truthpolation(TaskList tt) {
         if (tt == null)
             return null;
 
@@ -478,23 +455,23 @@ public final class Answer implements AutoCloseable {
             TimeRangeFilter t = this.time;
             long ts = t.start;
             if (ts !=ETERNAL) {
-                if (!trim) {
+//                if (!trim) {
                     //project to the question time range
                     s = t.start;
                     e = t.end;
-                } else {
-
-                    //shrinkwrap
-                    if (Longerval.contains(t.start, t.end, s, e)) {
-                        //long s0 = s, e0 = e;
-                        s = Math.max(ts, s);
-                        e = Math.min(Math.max(s, t.end), e);
-//                        if (s0 != s || e0 != e) {
-//                            if (e == s)
-//                                System.out.println(s0 + ".." + e0 + " -> " + s + ".." + e + "\td=" + ((e - s) - (e0 - s0)));
-//                        }
-                    }
-                }
+//                } else {
+//
+//                    //shrinkwrap
+//                    if (Longerval.contains(t.start, t.end, s, e)) {
+//                        //long s0 = s, e0 = e;
+//                        s = Math.max(ts, s);
+//                        e = Math.min(Math.max(s, t.end), e);
+////                        if (s0 != s || e0 != e) {
+////                            if (e == s)
+////                                System.out.println(s0 + ".." + e0 + " -> " + s + ".." + e + "\td=" + ((e - s) - (e0 - s0)));
+////                        }
+//                    }
+//                }
 
              } else {
                  //use the answered time range

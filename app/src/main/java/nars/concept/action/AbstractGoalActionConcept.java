@@ -181,7 +181,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
                     //TODO my truthpolation .stamp()'s and .cause()'s for clues
 
-                    Projection organic = a.truthpolation(false); //Math.round(actionWindowDexDurs *dur));
+                    Projection organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
                     if (organic != null) {
                         @Nullable Truth maybeNextActionDex = organic.filtered().truth();
                         if (nextActionDex == null)
@@ -247,7 +247,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
             @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
             try (Answer a = Answer.
                     relevance(true, 2, s, e, term, null, n).match(curiTable).dur(curiDur)) {
-                Projection curi = a.truthpolation(false); //Math.round(actionWindowCuriDurs * dur));
+                Projection curi = a.truthpolation(); //Math.round(actionWindowCuriDurs * dur));
                 if (curi != null) {
                     actionCuri = curi.filtered().truth();
                 } else
