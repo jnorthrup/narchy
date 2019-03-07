@@ -105,15 +105,13 @@ public abstract class Param {
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 
-
-
 //    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
     /** whether INT atoms can name a concept directly */
     public static final boolean INT_CONCEPTUALIZABLE = false;
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -174,8 +172,8 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        //(t,b)->Util.unitize(t+b);
-        Util::or;
+        (t,b)->Util.unitize(t+b);
+        //Util::or;
         //Math::max;
         //Util::and;
         //Util::mean;
@@ -197,7 +195,7 @@ public abstract class Param {
             //1.618f; //goldenratio
             //2;
 
-    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = true;
+    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = false;
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
@@ -261,7 +259,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -477,17 +475,18 @@ public abstract class Param {
 
         //inverse linear decay
         float falloffDurs =
-                1;
+                //1;
                 //1.618f; //phi
-                //2; //nyquist
+                2; //nyquist
                 //4;
                 //dur;
                 //8;
+                //64;
 
-        float decayTime = falloffDurs * dur; //double?
+        double decayTime = falloffDurs * dur;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        e = evi / (1.0f + Util.sqr(dt / decayTime));
+        e = (float)(evi / (1.0 + Util.sqr(dt / decayTime )));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
         //TODO

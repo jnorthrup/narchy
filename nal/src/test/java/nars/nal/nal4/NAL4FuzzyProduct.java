@@ -14,7 +14,7 @@ import static nars.term.util.TermTest.assertEq;
 
 /** recursive NAL3 operations within inner products */
 public class NAL4FuzzyProduct extends NALTest {
-    static final int cycles = 100;
+    static final int cycles = 300;
 
     @Override
     protected NAR nar() {

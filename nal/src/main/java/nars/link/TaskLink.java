@@ -286,7 +286,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
                     if (t instanceof Atom) {
                         //why is this necessary
-                        if (self || d.random.nextBoolean()) {
+                        if (self || d.random.nextFloat() > 1f/(1+s.volume())) {
                             //sample active tasklinks for a tangent match to the atom
                             u = ((AbstractConceptIndex) nar.concepts).active.atomTangent((NodeConcept) ct, this, d.time, d.ditherDT, d.random);
                         }
@@ -301,8 +301,11 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
             if (u != null && !u.equals(t)) {
 
-                TaskLink.linkSafe(s, u, punc, p * 1/2f, nar); //forward (hop)
-                TaskLink.linkSafe(u, t, punc, p * 1/2f, nar); //reverse (adjacent)
+                float subLink =
+                        1/2f;
+                        //1f;
+                TaskLink.linkSafe(s, u, punc, p * subLink, nar); //forward (hop)
+                TaskLink.linkSafe(u, t, punc, p * subLink, nar); //reverse (adjacent)
 
                 if (self) {
                     t = u;

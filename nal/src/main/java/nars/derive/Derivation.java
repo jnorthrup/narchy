@@ -279,15 +279,18 @@ public class Derivation extends PreDerivation {
             } else {
 
                 this.beliefTruthBelief = nextBelief.truth();
+
+                boolean taskEternal = taskStart == ETERNAL;
+
                 this.beliefTruthTask =
-                    taskStart!=ETERNAL ?
-                        nextBelief.truth(taskStart, taskEnd, dur) :
-                        nextBelief.truth().eternalized( 1, Param.TRUTH_EVI_MIN, null);
+                        taskEternal ?
+                                beliefTruthBelief :
+                                nextBelief.truth(taskStart, taskEnd, dur);
 
                 if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION
-                        && !nextBelief.isEternal()
-                        && beliefTruthBelief !=null
-                        && !beliefTruthTask.equals(beliefTruthBelief)) {
+                        && !taskEternal
+                        && beliefTruthBelief!=null
+                        && (beliefTruthTask == null || !beliefTruthTask.equals(beliefTruthBelief))) {
                     this.beliefTruthTask = Truth.stronger(
                             beliefTruthTask,
                             beliefTruthBelief.eternalized(1, Param.TRUTH_EVI_MIN, null /* dont dither */)

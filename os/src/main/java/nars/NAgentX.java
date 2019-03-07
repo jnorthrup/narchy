@@ -18,18 +18,18 @@ import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Valuator;
 import nars.gui.DurSurface;
 import nars.gui.NARui;
-import spacegraph.space2d.widget.meter.Spectrogram;
 import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
 import nars.link.TaskLink;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Introduction;
-import nars.op.PuncNoise;
+import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
@@ -41,6 +41,7 @@ import nars.video.WaveletBag;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.video.Draw;
 
 import java.awt.*;
@@ -386,7 +387,6 @@ abstract public class NAgentX extends NAgent {
         );
 
         n.confMin.set(0.01f);
-        //n.freqResolution.setAt(0.03f);
         n.termVolumeMax.set(28);
 
         n.input.capacity.set(512);
@@ -395,13 +395,13 @@ abstract public class NAgentX extends NAgent {
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
 
-        n.beliefPriDefault.set(0.1);
+        n.beliefPriDefault.set(0.25f);
         n.goalPriDefault.set(0.5f);
-        n.questionPriDefault.set(0.02f);
-        n.questPriDefault.set(0.02f);
+        n.questionPriDefault.set(0.05f);
+        n.questPriDefault.set(0.05f);
 
-        n.beliefConfDefault.set(0.8f);
-        n.goalConfDefault.set(0.8f);
+        n.beliefConfDefault.set(0.85f);
+        n.goalConfDefault.set(0.85f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
@@ -448,18 +448,18 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
-                //,"relation_introduction.nal"
-                "motivation.nal"
+        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8
+               // ,"relation_introduction.nal"
+               , "motivation.nal"
         ));
-        //bd.timing = new ActionTiming(n);
+        bd.timing = new ActionTiming(n);
 //        bd.tasklinksPerIteration.set(8);
-        bd.timing = bd.timing; //default
+        //bd.timing = bd.timing; //default
 
 
 
         //new StatementLinker(n);
-        new PuncNoise(n);
+        //new PuncNoise(n);
 
 //        new STMLinkage(n, 1);
 
