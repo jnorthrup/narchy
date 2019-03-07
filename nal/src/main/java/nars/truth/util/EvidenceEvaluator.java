@@ -3,6 +3,7 @@ package nars.truth.util;
 import jcog.math.LongInterval;
 import nars.Param;
 import nars.Task;
+import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -25,6 +26,13 @@ public interface EvidenceEvaluator {
         }
         return e;
     }
+
+    default LongToFloatFunction eviFn(int dur) {
+        return w->evi(w,dur);
+    }
+
+
+
 
     final class EternalEvidenceEvaluator implements EvidenceEvaluator {
         private final float evi;
