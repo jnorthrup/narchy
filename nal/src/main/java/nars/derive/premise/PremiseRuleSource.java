@@ -9,6 +9,7 @@ import nars.Narsese;
 import nars.Op;
 import nars.concept.Operator;
 import nars.derive.Derivation;
+import nars.derive.PreDerivation;
 import nars.derive.filter.CommutativeConstantPreFilter;
 import nars.derive.filter.DoublePremiseRequired;
 import nars.derive.filter.Unifiable;

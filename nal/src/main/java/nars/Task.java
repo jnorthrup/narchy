@@ -591,6 +591,14 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
             return eviBatch(dur, new long[]{when})[0];
     }
 
+    /** used for accelerating evidence queries involving a batch of time points */
+    public static class EvidenceEvaluator {
+        
+    }
+
+    default EvidenceEvaluator eviEvaluator() {
+
+    }
     /**
      * batch evidence point sampling
      *

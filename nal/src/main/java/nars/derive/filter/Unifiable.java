@@ -4,7 +4,7 @@ import jcog.WTF;
 import nars.$;
 import nars.Param;
 import nars.concept.Operator;
-import nars.derive.premise.PreDerivation;
+import nars.derive.PreDerivation;
 import nars.derive.premise.PremiseRuleSource;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;

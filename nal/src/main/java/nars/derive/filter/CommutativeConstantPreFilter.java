@@ -1,7 +1,7 @@
 package nars.derive.filter;
 
 import nars.$;
-import nars.derive.premise.PreDerivation;
+import nars.derive.PreDerivation;
 import nars.derive.premise.PremiseRuleSource;
 import nars.term.Compound;
 import nars.term.Term;

@@ -7,7 +7,7 @@ import jcog.data.list.FasterList;
 import nars.$;
 import nars.Param;
 import nars.derive.Derivation;
-import nars.derive.premise.PreDerivation;
+import nars.derive.PreDerivation;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;

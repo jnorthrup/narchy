@@ -10,6 +10,9 @@ import nars.table.question.QuestionTable;
 import nars.term.Term;
 import nars.term.Termed;
 
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.function.Function;
 import java.util.stream.Stream;
 

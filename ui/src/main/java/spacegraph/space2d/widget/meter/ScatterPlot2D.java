@@ -96,7 +96,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         build(x ->
                 x.set(
                         //TODO extract PolygonButton class
-                        new PushButton(new VectorLabel(model.label(x.id))) {
+                        new PushButton(new VectorLabel(model.label(x.id)))
 //                            @Override
 //                            protected void paintWidget(RectFloat bounds, GL2 gl) {
 //                                NodeVis p = parent(NodeVis.class);
@@ -107,7 +107,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
 //                                    Draw.circle(gl, new v2(cx(), cy()), false, Math.max(w(), h()) / 2, 6);
 //                                }
 //                            }
-                        }
+//                        }
                 )
         );
 

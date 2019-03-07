@@ -2,7 +2,7 @@ package nars.unify.constraint;
 
 import com.google.common.collect.Iterables;
 import nars.Op;
-import nars.derive.premise.PreDerivation;
+import nars.derive.PreDerivation;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.control.AbstractPred;

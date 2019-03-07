@@ -38,6 +38,13 @@ public class MutableRectFloat<X> {
         set(r);
     }
 
+    public final MutableRectFloat setXYXY(float x1, float y1, float x2, float y2) {
+        this.cx = (x1+x2)/2; this.cy = (y1+y2)/2;
+        return size(
+            (x2-x1), (y2-y1)
+        );
+    }
+
     public final MutableRectFloat set(float x, float y, float w, float h) {
         this.cxPrev = this.cx = x + w / 2;
         this.cyPrev = this.cy = y + h / 2;
@@ -164,27 +171,34 @@ public class MutableRectFloat<X> {
         return RectFloat.XYWH(cx, cy, w, h);
     }
 
+    /** stretch to maximum bounding rectangle of this rect and the provided point */
     public MutableRectFloat<X> mbr(float px, float py) {
+
+        boolean change = false;
 
         float x1 = left(), x2 = right();
         if (x1 > px) {
-            w = right() - px;
-            cx = px + w / 2;
-        } else if (x2 < px) {
-            w = px - left();
-            cx = px - w / 2;
+            x1 = px;
+            change = true;
         }
-
-        float y1 = top(), y2 = bottom();
+        if (x2 < px) {
+            x2 = px;
+            change = true;
+        }
+        float y1 = bottom(), y2 = top();
         if (y1 > py) {
-            h = bottom() - py;
-            cy = py + h / 2;
-        } else if (y2 < py) {
-            h = py - top();
-            cy = py - h / 2;
+            y1 = py;
+            change = true;
+        }
+        if (y2 < py) {
+            y2 = py;
+            change = true;
         }
 
-        return this;
+        if (change)
+            return setXYXY(x1, y1, x2, y2);
+        else
+            return this;
     }
 
     public final float left() {

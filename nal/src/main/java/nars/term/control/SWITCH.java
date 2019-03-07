@@ -2,7 +2,7 @@ package nars.term.control;
 
 import nars.$;
 import nars.Op;
-import nars.derive.premise.PreDerivation;
+import nars.derive.PreDerivation;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 

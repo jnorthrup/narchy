@@ -2,10 +2,15 @@ package nars.derive.premise;
 
 import jcog.memoize.byt.ByteKeyExternalWithParameter;
 import nars.Task;
+import nars.derive.Derivation;
+import nars.derive.PreDerivation;
 import nars.io.TermIO;
 
 public class PremiseKey extends ByteKeyExternalWithParameter<PreDerivation> {
 
+    public PremiseKey(PreDerivation d) {
+        this(d, ((Derivation)d).ditherDT);
+    }
 
     public PremiseKey(PreDerivation d, int ditherDT) {
         super(d);
@@ -31,5 +36,6 @@ public class PremiseKey extends ByteKeyExternalWithParameter<PreDerivation> {
 
         //System.out.println(d.taskTerm + " " + d.beliefTerm + " " + key.length() + " " + toString());
     }
+
 
 }

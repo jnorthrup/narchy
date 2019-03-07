@@ -17,6 +17,7 @@ import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
@@ -62,11 +63,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     private static final int PUT_ATTEMPTS = 2;
 
     /**
-     * internal random NumberX generator, used for deciding hijacks but not sampling.
-     */
-    private final SplitMix64Random rng;
-
-    /**
      * id unique to this bag instance, for use in treadmill
      */
     private final int id;
@@ -98,7 +94,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     protected HijackBag(int initialCapacity, int reprobes) {
         this.id = serial.getAndIncrement();
-        this.rng = new SplitMix64Random(id);
 
         assert (reprobes < Byte.MAX_VALUE - 1);
         this.reprobes = reprobes;
@@ -514,11 +509,15 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return update(k, null, REMOVE, null);
     }
 
+    public Random random() {
+        return ThreadLocalRandom.current();
+    }
+
     /**
      * roulette fair
      */
     private boolean hijackFair(float newPri, float oldPri) {
-        return rng.nextFloat() < newPri / (newPri + oldPri);
+        return random().nextFloat() < newPri / (newPri + oldPri);
 
 //        float priEpsilon = ScalarValue.EPSILON;
 //

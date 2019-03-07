@@ -6,8 +6,8 @@ import jcog.decide.MutableRoulette;
 import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
+import nars.derive.PreDerivation;
 import nars.term.control.PREDICATE;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.stream.Stream;

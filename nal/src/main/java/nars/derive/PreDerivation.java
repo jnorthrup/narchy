@@ -1,7 +1,6 @@
-package nars.derive.premise;
+package nars.derive;
 
 import nars.Op;
-import nars.derive.UnifyPremise;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.unify.Unify;
@@ -27,9 +26,6 @@ public abstract class PreDerivation extends Unify {
      */
     public final RoaringBitmap canCollector = new RoaringBitmap();
 
-    public final UnifyPremise unifyPremise = new UnifyPremise(); {
-        unifyPremise.commonVariables = false; //disable common variables for the query variables matched in premise formation; since the task target is not transformed like the belief target is.
-    }
 
     protected PreDerivation(@Nullable Op type, Random random, int stackMax) {
         super(type, random, stackMax);

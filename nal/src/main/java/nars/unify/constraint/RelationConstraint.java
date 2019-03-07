@@ -2,7 +2,7 @@ package nars.unify.constraint;
 
 import jcog.WTF;
 import nars.$;
-import nars.derive.premise.PreDerivation;
+import nars.derive.PreDerivation;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;

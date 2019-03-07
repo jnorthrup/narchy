@@ -13,7 +13,6 @@ import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.derive.op.Occurrify;
-import nars.derive.premise.PreDerivation;
 import nars.eval.Evaluation;
 import nars.op.Subst;
 import nars.op.UniSubst;
@@ -65,6 +64,9 @@ public class Derivation extends PreDerivation {
     private final static int ANON_INITIAL_CAPACITY = 16;
 
 
+    public final UnifyPremise unifyPremise = new UnifyPremise(); {
+        unifyPremise.commonVariables = false; //disable common variables for the query variables matched in premise formation; since the task target is not transformed like the belief target is.
+    }
     public final Collection<Premise> premiseBuffer =
             new ArrayHashSet();
     //new LinkedHashSet();

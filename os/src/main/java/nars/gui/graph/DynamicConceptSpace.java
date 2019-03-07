@@ -147,7 +147,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                 concepts.forEach((clink) -> {
                     
                     Concept cc = clink.get();
-                    ConceptWidget cw = cc.meta(spaceID, (sid) -> new ConceptWidget(cc) {
+                    ConceptWidget cw = cc.meta(spaceID, () -> new ConceptWidget(cc) {
                         @Override
                         protected void onClicked(PushButton b) {
                             SpaceGraph.window(new ConceptSurface(id.term(), nar), 800, 700);
