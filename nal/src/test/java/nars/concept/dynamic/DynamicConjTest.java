@@ -242,12 +242,14 @@ class DynamicConjTest {
         BeliefTable xtable = cc.beliefs();
 
 
-        assertEquals(0.81f, xtable.answer(0, 0, $("((x) &&+4 (y))"), n).conf(), 0.05f);
-        assertEquals(0.74f, xtable.answer(0, 0, $("((x) &&+6 (y))"), n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.answer(0, 0, $("((x) &&+2 (y))"), n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.answer(0, 0, $("((x) &&+0 (y))"), n).conf(), 0.07f);
-        assertEquals(0.62f, xtable.answer(0, 0, $("((x) &&-32 (y))"), n).conf(), 0.2f);
+        int dur = 0;
+        assertEquals(0.81f, xtable.answer(0, 0, $("((x) &&+4 (y))"), dur, n).conf(), 0.05f);
+        assertEquals(0.74f, xtable.answer(0, 0, $("((x) &&+6 (y))"), dur, n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.answer(0, 0, $("((x) &&+2 (y))"), dur, n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.answer(0, 0, $("((x) &&+0 (y))"), dur, n).conf(), 0.07f);
+        assertEquals(0.62f, xtable.answer(0, 0, $("((x) &&-32 (y))"), dur, n).conf(), 0.2f);
 
+        //TODO test dur = 1, 2, ... etc
 
     }
 
@@ -371,17 +373,18 @@ class DynamicConjTest {
             assertEq("((y &&+2 z)&&x)", t.term());
         }
 
+        int dur = 0; //TODO test other durations
         TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, x, y, z)"));
         BeliefTable xtable = cc.beliefs();
         {
             Term xyz = $("((x &| y) &&+2 (x &| z))");
             assertEq("((y &&+2 z)&&x)", xyz);
-            Task t = xtable.answer(0, 0, xyz, n);
+            Task t = xtable.answer(0, 0, xyz, dur, n);
             assertEquals(1f, t.freq(), 0.05f);
             assertEquals(0.81f, t.conf(), 0.4f);
         }
         {
-            Task t = xtable.answer(0, 0, $("((x && y) &&+2 (x && z))"), n);
+            Task t = xtable.answer(0, 0, $("((x && y) &&+2 (x && z))"), dur, n);
             assertEquals(1f, t.freq(), 0.05f);
             assertEquals(0.81f, t.conf(), 0.4f);
         }
@@ -409,7 +412,7 @@ class DynamicConjTest {
 
     public static List<String> components(AbstractDynamicTruth model, Term xyz, long s, long e) {
         List<String> components = new FasterList();
-        model.components(xyz,s, e,
+        model.evalComponents(xyz,s, e,
                 (what,whenStart,whenEnd)->{
                     components.add(what + " @ " + whenStart + ".." + whenEnd); return true;
                 });

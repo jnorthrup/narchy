@@ -189,7 +189,6 @@ public final class Answer implements AutoCloseable {
         return this;
     }
 
-
 //    /** TODO FloatRank not FloatFunction */
 //    public static FloatFunction<TaskRegion> mergeability(Task x) {
 //        LongPredicate xStamp = Stamp.toContainment(x);
@@ -314,6 +313,11 @@ public final class Answer implements AutoCloseable {
                             case BELIEF:
                             case GOAL: {
                                 t = newTask();
+                                if (t==null) {
+//                                    newTask(); //Temporary
+                                    return null;
+                                }
+
                                 if (t.evi() < eviMin())
                                     return null;
                                 if (forceProject && !t.isEternal()) { //dont bother sub-projecting eternal here.
@@ -408,7 +412,10 @@ public final class Answer implements AutoCloseable {
 
         Projection p = truthpolation(taskList());
 
-        p.filterCyclic(false);
+        if (p.filterCyclic(true)==null)
+            return null;
+
+        assert(!p.isEmpty());
 
         return p;
     }
@@ -436,7 +443,7 @@ public final class Answer implements AutoCloseable {
         int t = tasks.size();
         if (t == 0)
             return null;
-        return new TaskList(t, tasks.itemsArray());
+        return new TaskList(tasks, tasks.size()); //copy because it can be modified
     }
 
     /**

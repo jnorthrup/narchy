@@ -29,13 +29,13 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
     }
 
     /** optimized for cases with zero and one stored tasks */
-    @Override public Task match(long start, long end, Term template, NAR nar) {
+    @Override public Task match(long start, long end, Term template, int dur, NAR nar) {
         switch (size()) {
             case 0: return null;
             case 1:
-                return next(0,(t)->false);
+                return next(0,t->false);
             default:
-                return QuestionTable.super.match(start, end, template, nar);
+                return QuestionTable.super.match(start, end, template, dur, nar);
         }
     }
 

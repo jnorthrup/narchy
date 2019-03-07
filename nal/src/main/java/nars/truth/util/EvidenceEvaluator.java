@@ -71,7 +71,7 @@ public interface EvidenceEvaluator {
         }
     }
 
-    class TemporalSpanEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
+    final class TemporalSpanEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
         public final long e;
 
 

@@ -59,7 +59,7 @@ public class DynamicConjTruth {
         }
 
         @Override
-        public boolean components(Term conj, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Term conj, long start, long end, ObjectLongLongPredicate<Term> each) {
 
             //try to evaluate the eternal component of factored sequence independently
             //but this can dilute its truth too much if the sequence is sparse. better to evaluate it

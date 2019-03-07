@@ -28,9 +28,9 @@ import jcog.io.BinTxt;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.task.Tasked;
 import nars.truth.func.TruthFunctions;
 import org.eclipse.collections.api.list.primitive.MutableLongList;
+import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
@@ -39,7 +39,9 @@ import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.function.IntFunction;
 import java.util.function.LongPredicate;
+import java.util.function.Supplier;
 
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -166,45 +168,52 @@ public interface Stamp {
         return toSetArray(c, maxLen);
     }
 
-    static MetalLongSet toSet(Stamp task) {
-        return new MetalLongSet(task.stamp());
+//    static MetalLongSet toSet(Stamp task) {
+//        return new MetalLongSet(task.stamp());
+//    }
+    static MetalLongSet toMutableSet(Stamp task) {
+        long[] ts = task.stamp();
+        return toMutableSet(ts);
     }
 
-    static LongPredicate toContainment(Stamp task) {
-        long[] s = task.stamp();
-        switch (s.length) {
-            case 0: return (x)->false;
-            case 1: { long y = s[0]; return (x)->x==y; }
-            case 2: { long y0 = s[0], y1 = s[1]; return (x)->x==y0 || x == y1; }
-            case 3: { long y0 = s[0], y1 = s[1], y2 = s[2]; return (x)->x==y0 || x == y1 || x == y2; }
+    static MetalLongSet toMutableSet(long[] ts) {
+        MetalLongSet s = new MetalLongSet(ts);
+        s.trim();
+        return s;
+    }
+
+    static ImmutableLongSet toImmutableSet(Stamp task) {
+        return LongSets.immutable.of(task.stamp());
+    }
+//        switch (s.length) {
+//            case 0: return (x)->false;
+//            case 1: { long y = s[0]; return (x)->x==y; }
+//            case 2: { long y0 = s[0], y1 = s[1]; return (x)->x==y0 || x == y1; }
+//            case 3: { long y0 = s[0], y1 = s[1], y2 = s[2]; return (x)->x==y0 || x == y1 || x == y2; }
+//            default:
+//                return LongSets.immutable.of(s)::contains;
+//        }
+//    }
+
+    /** unsampled, may exceed expected capacity */
+    static MetalLongSet toMutableSet(int expectedCap, IntFunction<long[]> t, int n) {
+        switch (n) {
+            case 0: throw new NullPointerException();
+            case 1: return toMutableSet(t.apply(0));
             default:
-                return LongSets.immutable.of(s)::contains;
+                MetalLongSet e = new MetalLongSet(expectedCap);
+                for (int i = 0; i < n; i++)
+                    e.addAll(t.apply(i));
+                e.trim();
+                return e;
         }
-    }
-
-    static MetalLongSet toSet(int expectedCap, Task... t) {
-        return toSet(expectedCap, t.length, t);
-    }
-
-    /** unsampled, may exceed expected capacity */
-    static MetalLongSet toSet(int expectedCap, int n, Task... t) {
-        MetalLongSet e = new MetalLongSet(expectedCap);
-        for (int i = 0; i < n; i++)
-            e.addAll(t[i].stamp());
-        return e;
-    }
-    /** unsampled, may exceed expected capacity */
-    static MetalLongSet toSet(int expectedCap, int n, List<? extends Tasked> t) {
-        MetalLongSet e = new MetalLongSet(expectedCap);
-        for (int i = 0; i < n; i++)
-            e.addAll(t.get(i).task().stamp());
-        return e;
     }
 
     static MetalLongSet toSet(int expectedCap, long[]... t) {
         MetalLongSet e = new MetalLongSet(expectedCap);
         for (long[] tt : t)
             e.addAll(tt);
+        e.trim();
         return e;
     }
 

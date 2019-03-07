@@ -222,7 +222,7 @@ public class DynamicStatementTruth {
 
         int superDT = superterm.dt();
         int decRange = decomposed.eventRange();
-        return DynamicConjTruth.ConjIntersection.components(decomposed, start, end, (what, s, e) -> {
+        return DynamicConjTruth.ConjIntersection.evalComponents(decomposed, start, end, (what, s, e) -> {
             //TODO fix
 //            int innerDT = (s == ETERNAL) ? XTERNAL : Tense.occToDT(
 //                    //(e-s)-outerDT
@@ -280,7 +280,7 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
 
 
 
@@ -348,7 +348,7 @@ public class DynamicStatementTruth {
 
     public static final AbstractDynamicTruth SectImplPred = new DynamicInhSectTruth(false, false) {
         @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             Term common = stmtCommon(subjOrPred, superterm);
             Term decomposed = stmtCommon(!subjOrPred, superterm);
             return decomposeImplConj(superterm, start, end, each, common, decomposed, false, false);
@@ -387,7 +387,7 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             return decomposeImplConj(superterm, start, end, each, superterm.sub(1), superterm.sub(0), true, false);
         }
 
@@ -403,7 +403,7 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             return decomposeImplConj(superterm, start, end, each, superterm.sub(1), superterm.sub(0).unneg(), true, true);
         }
 

@@ -11,11 +11,13 @@ import java.util.function.LongConsumer;
 
 public class MetalLongSet extends LongOpenHashSet  {
 
+    private static final float LOAD = LongOpenHashSet.FAST_LOAD_FACTOR;
+
     public MetalLongSet(int capacity) {
-        super(capacity, 1f);
+        super(capacity, LOAD);
     }
     public MetalLongSet(long[] initial) {
-        super(initial);
+        super(initial, LOAD);
     }
 
     public long[] toSortedArray() {

@@ -91,31 +91,33 @@ public interface TaskTable {
 //    }
 
     @Nullable
-    default Task match(long when, Term template, NAR nar) {
-        return match(when, when, template, nar);
-    }
-    @Nullable default Task match(long start, long end, Term template, NAR nar) { return match(start, end, template, null, nar); }
-
-    @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return !isEmpty() ? matching(start, end, template, filter, nar).task(true, false) : null;
+    @Deprecated default Task match0(long when, Term template, NAR nar) {
+        return match(when, when, template, 0, nar);
     }
 
-    default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
+    @Nullable default Task match(long start, long end, Term template, int dur, NAR nar) { return match(start, end, template, null, dur, nar); }
+
+    @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
+        return !isEmpty() ? matching(start, end, template, filter, dur, nar).task(true, false) : null;
+    }
+
+    default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
         boolean beliefOrQuestion = !(this instanceof QuestionTable);
         return Answer.relevance(beliefOrQuestion,
                 beliefOrQuestion ? Answer.BELIEF_MATCH_CAPACITY : Answer.QUESTION_MATCH_CAPACITY, start, end, template, filter, nar)
+                .dur(dur)
                 .match(this);
     }
 
 
-    @Nullable default Task answer(long start, long end, Term template, NAR n) {
-        return answer(start, end, template, null, n);
-    }
-    @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
-        return !isEmpty() ? matching(start, end, template, filter, n)
-                .task(true, true) : null;
+    @Nullable default Task answer(long start, long end, Term template, int dur, NAR n) {
+        return answer(start, end, template, null, dur, n);
     }
 
+    @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, int dur, NAR n) {
+        return !isEmpty() ? matching(start, end, template, filter, dur, n)
+                .task(true, true) : null;
+    }
 
     default Task sample(long start, long end, Term template, NAR nar) {
         return sample(start, end, template, null, nar);

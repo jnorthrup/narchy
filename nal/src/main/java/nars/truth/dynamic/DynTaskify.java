@@ -39,44 +39,42 @@ import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 public class DynTaskify extends TaskList {
 
     private final AbstractDynamicTruth model;
-    private final NAR nar;
-    private final Term template;
+
+    private final Answer answer;
+    private final int dur;
     private MetalLongSet evi = null;
 
     final boolean beliefOrGoal;
     final Predicate<Task> filter;
 
 
-    public DynTaskify(Term template, AbstractDynamicTruth model, boolean beliefOrGoal, Predicate<Task> filter, NAR nar) {
+    public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
         super(4 /* estimate */);
+
+        this.answer = a;
+
         this.beliefOrGoal = beliefOrGoal;
 
-        this.template = template;
-
-        this.model = model;
-        this.nar = nar;
-
-        this.filter = Param.DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER ?
-                        Answer.filter(filter, this::doesntOverlap) :
-                        filter;
-
-
-    }
-
-    @Nullable private static DynTaskify eval(Term template, AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
+        Term template = a.term;
         assert (template.op() != NEG);
 
-        DynTaskify d = new DynTaskify(template, model, beliefOrGoal, a.filter, a.nar);
+        this.model = model;
 
-        return model.components(template, a.time.start, a.time.end, d::evalComponent) ? d : null;
+        Predicate<Task> answerfilter = a.filter;
+        this.filter = Param.DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER ?
+                        Answer.filter(answerfilter, this::doesntOverlap) :
+                        answerfilter;
+
+        this.dur = a.dur;
     }
+
 
     @Nullable
     public static Task task(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
-        Term template = a.term;
-        DynTaskify d = eval(template, model, beliefOrGoal, a);
-        if (d == null)
-            return null;
+
+        DynTaskify d = new DynTaskify(model, beliefOrGoal, a);
+        if (!model.evalComponents(a, d::evalComponent))
+            return null; //fail
 
         long s, e;
 
@@ -127,6 +125,7 @@ public class DynTaskify extends TaskList {
 
 
         NAR nar = a.nar;
+        Term template = a.term;
         Term term = model.reconstruct(template, d, nar, s, e);
         if (term == null || term instanceof Bool || !term.unneg().op().taskable) { //quick tests
             if (Param.DEBUG)
@@ -155,8 +154,7 @@ public class DynTaskify extends TaskList {
         if (t == null)
             return null;
 
-        Task y = d.task(term, t, d::stamp, beliefOrGoal, s, e, nar);
-        return y;
+        return d.task(term, t, d::stamp, beliefOrGoal, s, e, nar);
     }
 
     private boolean evalComponent(Term subTerm, long subStart, long subEnd) {
@@ -169,18 +167,22 @@ public class DynTaskify extends TaskList {
         if (negated)
             subTerm = subTerm.unneg();
 
+        NAR nar = answer.nar;
+
         Concept subConcept = nar.conceptualizeDynamic(subTerm);
         if (!(subConcept instanceof TaskConcept))
             return false;
 
+
+
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
         Task bt = //forceProjection ?
                 //table.answer(subStart, subEnd, subTerm, filter, nar);
-                table.match(subStart, subEnd, subTerm, filter, nar);
+                table.match(subStart, subEnd, subTerm, filter, dur, nar);
                 //table.sample(subStart, subEnd, subTerm, filter, nar);
 
 
-        if (bt == null || !model.acceptComponent(template, bt.term(), bt))
+        if (bt == null || !model.acceptComponent(template(), bt.term(), bt))
             return false;
 
         /* project to a specific time, and apply negation if necessary */
@@ -293,5 +295,9 @@ public class DynTaskify extends TaskList {
     public void clear() {
         super.clear();
         evi = null;
+    }
+
+    public final Term template() {
+        return answer.term;
     }
 }

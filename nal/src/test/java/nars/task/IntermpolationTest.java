@@ -345,7 +345,7 @@ public class IntermpolationTest {
 
 
             long when = t == Present ? 0 : ETERNAL;
-            Task m = cc.beliefs().match(when, null, n);
+            Task m = cc.beliefs().match0(when, null, n);
             assertEquals(correctMerge, m.term().toString());
 
 
@@ -354,7 +354,7 @@ public class IntermpolationTest {
             cc.print();
 
 
-            assertEquals(correctMerge, cc.beliefs().match(0, null, n).term().toString());
+            assertEquals(correctMerge, cc.beliefs().match0(0, null, n).term().toString());
         }
     }
 

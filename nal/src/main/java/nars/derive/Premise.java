@@ -178,7 +178,7 @@ public class Premise implements Comparable<Premise> {
         return true;
     }
 
-    @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept) {
+    private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept) {
 
         NAR n = d.nar;
 
@@ -189,13 +189,13 @@ public class Premise implements Comparable<Premise> {
                 :
                 null;
 
+        /** dereference */
         if (beliefConcept instanceof AliasConcept)
             beliefTerm = (beliefConcept = ((AliasConcept) beliefConcept).abbr).term(); //dereference alias
 
         if (!(beliefConcept instanceof TaskConcept))
             return null;
 
-        Task belief = null;
 
         final BeliefTable beliefTable = beliefConcept.beliefs();
 
@@ -220,33 +220,29 @@ public class Premise implements Comparable<Premise> {
 
 //                        n.input(answered);
 
-                        if (answerGoal) {
-                            //store goals
-                            d.add(answered);
-                        } else {
-                            //just emit if belief
+//                        if (answerGoal) {
+//                            //store goals
+//                            //d.add(answered);
+//                        } else {
+//                            //just emit if belief
                             n.eventTask.emit(answered);
-                        }
+//                        }
                     }
 
                 }
-                if (answerGoal) {
-                    //goal, already added in tryAnswer
-                } else {
-                    //belief
-                    return answered;
-                }
+                return answered;
             }
         }
 
-        if (belief == null && !beliefTable.isEmpty())
-            belief = tryMatch(beliefTerm, beliefTable, d);
+        if (!beliefTable.isEmpty()) {
+            return tryMatch(beliefTerm, beliefTable, d);
+        }
 
 //        if (unifiedBelief && belief != null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
 //            linkVariable(unifiedBelief, d.nar, beliefConcept);
 //        }
 
-        return belief;
+        return null;
     }
 
     private Predicate<Task> beliefFilter() {
@@ -270,7 +266,7 @@ public class Premise implements Comparable<Premise> {
                     null;
 
         return bb.
-                match(focus[0], focus[1], beliefTerm, beliefFilter, nar);
+                match(focus[0], focus[1], beliefTerm, beliefFilter, nar.dur(), nar);
                 //sample(focus[0], focus[1], beliefTerm, beliefFilter, nar);
                   //answer(focus[0], focus[1], beliefTerm, beliefFilter, nar);
     }
@@ -287,7 +283,7 @@ public class Premise implements Comparable<Premise> {
         } else {
             te = task.end();
         }
-        Task match = answerTable.answer(ts, te, beliefTerm, d.nar);
+        Task match = answerTable.answer(ts, te, beliefTerm, d.nar.dur(), d.nar);
 
 //        long qStart = task.start();
 //        //int limit = qStart == ETERNAL ? Answer.TASK_LIMIT_ETERNAL_QUESTION : Answer.TASK_LIMIT_DEFAULT;

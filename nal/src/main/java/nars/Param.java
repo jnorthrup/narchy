@@ -200,7 +200,7 @@ public abstract class Param {
      */
     public final static float SIGNAL_STRETCH_LIMIT_DURS = 4;
 
-    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = false;
+    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = true;
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */

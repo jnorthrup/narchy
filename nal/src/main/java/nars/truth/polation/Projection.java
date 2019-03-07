@@ -97,11 +97,14 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
 
             if ((tc.evi = evi(task)) >= eviMin) {
                 tc.freq = task.freq(start, end);
-            } else
+            } else {
+                evi(task);//TEMPORARY
                 return null;
+            }
         }
 
-        return tc.evi >= eviMin ? tc : null;
+        return tc.evi >= eviMin ? tc :
+                null;
     }
 
     protected float evi(Task task) {
@@ -149,6 +152,8 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
     }
 
     private MetalLongSet filterCyclicN(int minComponents) {
+
+        assert(minComponents >= 1);
 
         int ss = size();
 
@@ -262,14 +267,13 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
 
     @Nullable
     private MetalLongSet only(boolean provideStamp) {
-        return provideStamp ? Stamp.toSet(get(0).task) : null;
+        return provideStamp ? Stamp.toMutableSet(get(0).task) : null;
     }
 
     public final Projection add(Tasked... tasks) {
         ensureCapacity(tasks.length);
         for (Tasked t : tasks) {
-            //if (t != null)
-            add(t);
+            add(t); //if (t != null)
         }
         return this;
     }
@@ -442,11 +446,14 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
     }
 
     private long[] stamper(Random rng) {
-        @Nullable MetalLongSet stampSet = Stamp.toSet(Param.STAMP_CAPACITY, size(), this); //calculate stamp after filtering and after intermpolation filtering
-        if (stampSet.size() > Param.STAMP_CAPACITY) {
-            return Stamp.sample(Param.STAMP_CAPACITY, stampSet, rng);
+        @Nullable MetalLongSet s = Stamp.toMutableSet(
+                Param.STAMP_CAPACITY,
+                i->get(i).task.stamp(),
+                size()); //calculate stamp after filtering and after intermpolation filtering
+        if (s.size() > Param.STAMP_CAPACITY) {
+            return Stamp.sample(Param.STAMP_CAPACITY, s, rng);
         } else {
-            return stampSet.toSortedArray();
+            return s.toSortedArray();
         }
     }
 

@@ -25,7 +25,7 @@ public class DynamicImageTruth {
         }
 
         @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             throw new UnsupportedOperationException();
         }
 

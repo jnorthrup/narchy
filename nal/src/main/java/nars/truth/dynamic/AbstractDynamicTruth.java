@@ -6,6 +6,7 @@ import nars.concept.util.ConceptBuilder;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
+import nars.task.util.Answer;
 import nars.term.Term;
 import nars.truth.Truth;
 
@@ -18,7 +19,11 @@ abstract public class AbstractDynamicTruth {
 
     abstract public Truth truth(TaskList var1, NAR nar);
 
-    public abstract boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
+    public final boolean evalComponents(Answer a, ObjectLongLongPredicate<Term> each) {
+        return evalComponents(a.term, a.time.start, a.time.end, each);
+    }
+
+    public abstract boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
 
     /**
      * used to reconstruct a dynamic target from some or all components

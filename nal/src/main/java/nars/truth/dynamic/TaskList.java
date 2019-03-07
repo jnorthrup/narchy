@@ -30,6 +30,18 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         super(initialCap);
     }
 
+    public TaskList(Collection<Task> t) {
+        this(0, new Task[t.size()]);
+        assert(size() > 0);
+        for (Task x : t)
+            add(x);
+    }
+
+    public TaskList(Iterable<Task> t, int sizeEstimate) {
+        super(sizeEstimate);
+        t.forEach(this::add);
+    }
+
     public TaskList(int size, Task[] t) {
         super(size, t);
 //        for (Task x : t) if (x == null) throw new NullPointerException(); //TEMPORARY
