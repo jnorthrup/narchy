@@ -87,13 +87,13 @@ public class TruthIntegration {
 //                            qEnd);
 //
 //                } else {
-                    return LongFloatTrapezoidalIntegrator.sumSort(ee,
+                    return LongFloatTrapezoidalIntegrator.sum(ee,
                             qStart,
-                            (qStart + tStart) / 2, //supersample
+                            Math.min(qStart, (qStart + tStart) / 2), //supersample
                             Math.max(qStart, tStart - 1), //task rising edge supersample
                             tStart, tEnd,   //internal to task.  supersample not necessary unless task is not uniform
                             Math.min(tEnd + 1, qEnd),//task falling edge supersample
-                            (tEnd + qEnd) / 2, //supersample
+                            Math.max(qEnd, (tEnd + qEnd) / 2), //supersample
                             qEnd);
 //                }
 
@@ -104,6 +104,7 @@ public class TruthIntegration {
                     return LongFloatTrapezoidalIntegrator.sum(ee,
                     qStart,
                             (qStart+tStart)/2, //supersample
+                            Math.max(qStart, tStart - 1), //task rising edge supersample
                             tStart,
                             qEnd
                     );

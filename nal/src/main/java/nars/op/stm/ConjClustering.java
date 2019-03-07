@@ -146,8 +146,8 @@ public class ConjClustering extends Causable {
 
 
     protected float pri(Task t) {
-        return    (0.1f + 0.9f * t.priElseZero())
-                * (0.1f + 0.9f * t.conf())
+        return    (t.priElseZero())
+                * (t.conf())
                 * (0.5f + 0.5f * t.polarity())
                 * (0.5f + 0.5f * t.originality())
 

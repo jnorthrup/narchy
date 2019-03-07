@@ -49,8 +49,8 @@ public class BagClustering<X> {
 
     /** each option here has its own subtle consequences. be careful */
     PriMerge merge =
-            PriMerge.replace;
-            //PriMerge.max;
+            //PriMerge.replace;
+            PriMerge.max;
 
 
     public final Bag<X, VLink<X>> bag;
