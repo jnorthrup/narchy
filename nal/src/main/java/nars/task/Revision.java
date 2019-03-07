@@ -108,7 +108,7 @@ public enum Revision {;
         if (u == null)
             return null;
 
-        TruthPolation T = Param.truth(u[0], u[1], 0).add(tasks);
+        TruthPolation T = nar.truth(u[0], u[1], 0).add(tasks);
 
         MetalLongSet stamp = T.filterCyclic(true, 2);
         if (stamp == null)
@@ -119,11 +119,11 @@ public enum Revision {;
 
         T.refocus(nar);
 
-        Truth truth = T.truth(nar, c2wSafe(nar.confMin.floatValue()));
+        Truth truth = T.truth(c2wSafe(nar.confMin.floatValue()), nar);
         if (truth == null)
             return null;
 
-        Truth cTruth = truth.dithered(nar);
+        Truth cTruth = truth.dither(nar);
         if (cTruth == null)
             return null;
 

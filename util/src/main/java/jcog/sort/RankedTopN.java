@@ -1,7 +1,6 @@
 package jcog.sort;
 
 import jcog.Util;
-import jcog.data.pool.MetalPool;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
@@ -66,12 +65,12 @@ public class RankedTopN<X> extends TopN<X> {
         rank(ranking, buffer.length);
     }
 
-    public static ThreadLocal<MetalPool<RankedTopN>> newRankedPool() {
-        return MetalPool.threadLocal(() -> {
-            int initialCapacity = 32;
-            return new RankedTopN(new Object[initialCapacity]);
-        });
-    }
+//    public static ThreadLocal<MetalPool<RankedTopN>> newRankedPool() {
+//        return MetalPool.threadLocal(() -> {
+//            int initialCapacity = 32;
+//            return new RankedTopN(new Object[initialCapacity]);
+//        });
+//    }
 
     @Override
     protected int addEnd(X e, float elementRank) {

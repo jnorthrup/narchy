@@ -22,12 +22,12 @@ public class LinearTruthPolation extends TruthPolation {
     }
 
     public final Truth truth(NAR nar) {
-        return truth(nar, Float.MIN_NORMAL);
+        return truth(Float.MIN_NORMAL, nar);
     }
 
     @Override
     @Nullable
-    public Truth truth(NAR nar, float eviMin) {
+    public Truth truth(float eviMin, NAR nar) {
 
         //trim TODO test. may need to invalidate some computed values if the range changes
 //        int s0 = size();
@@ -74,7 +74,7 @@ public class LinearTruthPolation extends TruthPolation {
         float wSum = 0;
         float eSum = 0;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            TaskComponent x = this.get(i);
+            TaskComponent x = get(i);
 
             float e = x.evi;
             eSum += e;
@@ -87,7 +87,6 @@ public class LinearTruthPolation extends TruthPolation {
 
             float f = x.freq;
             wFreqSum += w * f;
-
         }
 
         if (wSum < Float.MIN_NORMAL)

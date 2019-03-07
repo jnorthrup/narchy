@@ -1,8 +1,6 @@
 package jcog.tree.rtree;
 
-import jcog.data.pool.MetalPool;
 import jcog.sort.RankedTopN;
-import jcog.sort.TopN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +15,7 @@ import java.util.function.Consumer;
 public class HyperIterator<X> implements AutoCloseable {
 
 
-    private static final ThreadLocal<MetalPool<RankedTopN>> pool = RankedTopN.newRankedPool();
+    //private static final ThreadLocal<MetalPool<RankedTopN>> pool = RankedTopN.newRankedPool();
 
     /**
      * next available item
@@ -31,7 +29,7 @@ public class HyperIterator<X> implements AutoCloseable {
     /**
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
      */
-    final RankedTopN plan;
+    final RankedTopN<Object> plan;
 
 
     //                    new DequePool() {
@@ -42,9 +40,9 @@ public class HyperIterator<X> implements AutoCloseable {
 //                    }
 //            );
 
-    public static <X> void iterate(ConcurrentRTree<X> tree, FloatFunction<HyperRegion> rank, Consumer<HyperIterator<X>> with) {
+    public static <X> void iterate(ConcurrentRTree<X> tree, int capacity, FloatFunction<HyperRegion> rank, Consumer<HyperIterator<X>> with) {
 
-        try (HyperIterator<X> h = new HyperIterator<>(tree.model(), rank)) {
+        try (HyperIterator<X> h = new HyperIterator<X>(tree.model(), capacity, rank)) {
             tree.read((t) -> {
                 Node<X> r = t.root();
                 if (r!=null && r.size() > 0) {
@@ -56,21 +54,12 @@ public class HyperIterator<X> implements AutoCloseable {
 
     }
 
-    public HyperIterator(RTree<X> tree, FloatFunction<HyperRegion> rank) {
-        this(tree.model, tree.root(), rank);
-    }
-
-    public HyperIterator(Spatialization<X> model, FloatFunction<HyperRegion> rank) {
-        this.plan = TopN.pooled(pool, 256, (FloatFunction<?>) r -> rank.floatValueOf(
+    public HyperIterator(Spatialization<X> model, int capacity, FloatFunction<HyperRegion> rank) {
+        this.plan = new RankedTopN<Object>(new Object[capacity], (FloatFunction) r -> rank.floatValueOf(
                 r instanceof HyperRegion ? ((HyperRegion) r) :
-                        (r instanceof Node ? ((Node<X>) r).bounds() :
+                        (r instanceof Node ? ((Node) r).bounds() :
                                 model.bounds((X) r))
         ));
-    }
-
-    public HyperIterator(Spatialization<X> model, Node<X> start, FloatFunction<HyperRegion> rank) {
-        this(model, rank);
-        start(start);
     }
 
     public void start(Node<X> start) {
@@ -79,9 +68,8 @@ public class HyperIterator<X> implements AutoCloseable {
 
     @Override
     public final void close() {
-        TopN.unpool(pool, plan);
-    }
 
+    }
 
     /**
      * finds the next item given the current item and

@@ -59,8 +59,19 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     /**
      * computes the final truth value
      */
-    @Nullable
-    public abstract Truth truth(NAR nar, float eviMin);
+    @Nullable public abstract Truth truth(float eviMin, NAR nar);
+
+    @Nullable public Truth truth(float eviMin, boolean dither, NAR nar) {
+        Truth t  = truth(eviMin, nar);
+        if (t == null)
+            return null;
+        if (dither) {
+            t = t.dither(nar);
+            if (t == null || t.evi() < eviMin)
+                return null;
+        }
+        return t;
+    }
 
     public final boolean add(TaskRegion t) {
         return add(t.task());
@@ -104,25 +115,13 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
     public final TruthPolation filtered() {
-        return filtered(null);
-    }
-
-    public final TruthPolation filtered(@Nullable Task against) {
-        filterCyclic(against, false);
+        filterCyclic(false);
         return this;
     }
 
-    //    @Nullable public final MetalLongSet filterCyclic(boolean provideStampIfOneTask) {
-//        return filterCyclic(null, provideStampIfOneTask);
-//    }
     @Nullable
-    public final MetalLongSet filterCyclic(boolean provideStampIfOneTask, int minResults) {
-        return filterCyclic(null, provideStampIfOneTask, minResults);
-    }
-
-    @Nullable
-    public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp) {
-        return filterCyclic(selected, provideStamp, 1);
+    public final MetalLongSet filterCyclic(boolean provideStamp) {
+        return filterCyclic(provideStamp, 1);
     }
 
     /**
@@ -130,61 +129,52 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      * should be called after all entries are added
      */
     @Nullable
-    public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp, int minResults) {
+    public final MetalLongSet filterCyclic(boolean provideStamp, int minResults) {
 
-        int s = size();
-        if (s == 0) {
-            return null;
-        } else if (s == 1) {
-            return only(provideStamp);
-        }
+        int s;
+        if ((s = size()) < minResults) return null;
+        else if (s == 1) return only(provideStamp);
 
         validate(null);
-        if ((s = size()) < minResults)
-            return null;
+        if ((s = size()) < minResults) return null;
+
+        if ((s = size()) < minResults) return null;
+        else if (s == 1) return only(provideStamp);
 
         sortThisByFloat(tc -> -tc.evi); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
 
-        if (selected == null)
-            selected = get(0).task; //strongest
 
-
-        if (s == 1)
+        if (s == 1) {
             return only(provideStamp);
-        else if (s == 2) {
-            Task a = get(0).task;
-            Task b = get(1).task;
-            if (Stamp.overlaps(a, b)) {
-                if (a == selected) remove(1);
-                else remove(0);
-                return (provideStamp ? Stamp.toSet(selected) : null);
-            } else {
-                return provideStamp ? Stamp.toSet(a.stamp().length + b.stamp().length, a, b) : null;
-            }
         } else {
 
-            MetalLongSet e = provideStamp ? Stamp.toSet(s * Param.STAMP_CAPACITY / 2, selected) : null;
+            MetalLongSet e = new MetalLongSet(Param.STAMP_CAPACITY);
 
             int ss = size();
-            for (int i = 1 /* skip first */; i < ss; ) {
+
+            //TODO permute alternate insertion order here
+            for (int i = 0; i < ss; ) {
                 Task ii = get(i).task;
-                boolean keep = true;
-                for (int j = 0; j < i; j++) {
-                    Task jj = get(j).task;
-                    if (Stamp.overlaps(ii, jj)) {
-                        keep = false;
-                        break;
-                    }
-                }
-                if (!keep) {
-                    remove(i);
-                    ss--;
-                } else {
+                long[] iis = ii.stamp();
+
+                if (i == 0 || !Stamp.overlapsAny(e, iis)) {
                     if (e != null)
-                        e.addAll(ii.stamp());
+                        e.addAll(iis);
                     i++;
+                } else {
+                    removeFast(i);
+                    ss--;
                 }
             }
+            return provideStamp ? e : null;
+
+            //                for (int j = 0; j < i; j++) {
+//                    Task jj = get(j).task;
+//                    if (Stamp.overlaps(iis, jj.stamp())) {
+//                        keep = false;
+//                        break;
+//                    }
+//                }
 
 //            removeIf(tc -> {
 //                Task tt = tc.task;
@@ -218,7 +208,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 ////                return false;
 //            });
 
-            return e; //provideStamp ? e : null;
+
         }
     }
 
@@ -397,7 +387,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
     @Nullable
     public final Truth truth() {
-        return truth(null, Float.MIN_NORMAL);
+        return truth(Float.MIN_NORMAL, null);
     }
 
 //    /** refined time involving the actual contained tasks.  the pre-specified interval may be larger but
@@ -492,8 +482,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         forEach(TaskComponent::invalidate);
     }
 
-    public final Task task(TaskList d, Truth tt, boolean beliefOrGoal, long s, long e, NAR nar) {
-        return d.task(term, tt, this::stamper, beliefOrGoal, s, e, nar);
+    public final Task task(TaskList d, Truth tt, boolean beliefOrGoal, NAR nar) {
+        return d.task(term, tt, this::stamper, beliefOrGoal, start(), end(), nar);
     }
 
     private long[] stamper(Random rng) {
@@ -506,7 +496,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
 
-    protected static class TaskComponent implements Tasked {
+    /** TODO extend TaskList as TruthTaskList storing evi,freq pairs of floats in a compact float[] */
+    @Deprecated protected static class TaskComponent implements Tasked {
         final Task task;
 
         /**

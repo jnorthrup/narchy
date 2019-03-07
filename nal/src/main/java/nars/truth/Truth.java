@@ -90,7 +90,7 @@ public interface Truth extends Truthed {
 
     static void assertDithered(@Nullable Truth t, NAR n) {
         if (t != null) {
-            Truth d = t.dithered(n);
+            Truth d = t.dither(n);
             if (!t.equals(d))
                 throw WTF("not dithered");
         }
@@ -274,9 +274,10 @@ public interface Truth extends Truthed {
     }
 
     @Nullable
-    default PreciseTruth dithered(NAR nar) {
+    default PreciseTruth dither(NAR nar) {
         return theDithered(freq(), evi(), nar);
     }
+
 
     default Truth dither(float freqRes, float confRes) {
         if (freqRes < Param.TRUTH_EPSILON && confRes < Param.TRUTH_EPSILON)

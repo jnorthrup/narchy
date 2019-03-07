@@ -339,7 +339,7 @@ abstract public class Inperience extends TaskLeakTransform {
         PreciseTruth t = $.t(
             freq, nar.confDefault(BELIEF)
             //freq, Util.lerp(x.isQuestionOrQuest() ? 0.5f : x.polarity(), nar.confMin.floatValue()*2, nar.confDefault(Op.BELIEF))
-        ).dithered(nar);
+        ).dither(nar);
         if (t == null)
             return 0;
 

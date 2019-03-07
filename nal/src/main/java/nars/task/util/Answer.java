@@ -1,6 +1,7 @@
 package nars.task.util;
 
 import jcog.WTF;
+import jcog.math.Longerval;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedTopN;
 import nars.NAR;
@@ -33,8 +34,9 @@ public final class Answer implements AutoCloseable {
     public final static int BELIEF_MATCH_CAPACITY =
             //Param.STAMP_CAPACITY - 1;
             //Math.max(1, Param.STAMP_CAPACITY / 2);
-            Math.max(1, (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
+            Math.max(1, 2 * (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
             //3;
+    public final static int QUESTION_MATCH_CAPACITY = 1;
 
     public static final int BELIEF_SAMPLE_CAPACITY = 2; //Math.max(1, BELIEF_MATCH_CAPACITY / 2);
     public static final int QUESTION_SAMPLE_CAPACITY = 1;
@@ -297,49 +299,88 @@ public final class Answer implements AutoCloseable {
                     t = null;
                     break;
                 case 1:
-                    t = tasks.get(0);
+                    t = tasks.first();
                     break;
                 default: {
-                    @Nullable Task root = taskFirst(topOrSample);
-                    switch (root.punc()) {
-                        case BELIEF:
-                        case GOAL: {
-                            if (tryMerge)
-                                t = taskMerge(root);
-                            else
-                                t = root;
+                    if (!topOrSample) {
+                        t = tasks.getRoulette(random());
+                        assert(!forceProject);
 
-                            if (ditherTruth) {
+                    } else {
+                        //compare alternate roots, as they might match better with tasks below
+
+
+                        @Nullable Task root = tasks.first();
+                        switch (root.punc()) {
+                            case BELIEF:
+                            case GOAL: {
+                                t = newTask();
                                 if (t.evi() < eviMin())
                                     return null;
+                                if (forceProject && !t.isEternal()) { //dont bother sub-projecting eternal here.
+                                    long ss = time.start;
+                                    if (ss != ETERNAL) { //dont eternalize here
+                                        long ee = time.end;
+                                        if (/*t.isEternal() || */!t.containedBy(ss, ee)) {
+                                            t = Task.project(t, ss, ee, true, ditherTruth, false, eviMin(), nar);
+                                        }
+                                    }
+                                }
+
                             }
-                        }
-                        break;
-                        case QUESTION:
-                        case QUEST:
-                            t = root;
                             break;
-                        default:
-                            throw new UnsupportedOperationException();
+                            case QUESTION:
+                            case QUEST:
+                                throw new UnsupportedOperationException();
+                                //break;
+                            default:
+                                throw new UnsupportedOperationException();
+                        }
                     }
 
                     break;
-                }
-            }
-
-            if (forceProject && t != null && !t.isEternal()) { //dont bother sub-projecting eternal here.
-                long ss = time.start;
-                if (ss != ETERNAL) { //dont eternalize here
-                    long ee = time.end;
-                    if (/*t.isEternal() || */!t.containedBy(ss, ee)) {
-                        t = Task.project(t, ss, ee, true, ditherTruth, false, nar);
-                    }
                 }
             }
 
             return t;
         } finally {
             close();
+        }
+    }
+
+    private Task newTask() {
+        int n = tasks.size();
+        assert(n > 0);
+
+        Task root = tasks.first();
+        if (n == 1) {
+            return root;
+        } else  {
+            TruthPolation all = tryMerge();
+            if (all!=null) {
+                Task allTasks = newTask(all, root.isBeliefOrGoal());
+                return allTasks != null ? Truth.stronger(allTasks, root) : root;
+            } else {
+                //TODO try suppressing each task until some result emerges stronger than rootP
+                return root;
+            }
+
+
+//            tp = tryMerge();
+//
+//            RankedTopN<TruthPolation> r = new RankedTopN<>(new TruthPolation[n]);
+//            for (Task t : tasks) {
+//
+//                r.add(, , )
+//            }
+//
+//            if (tryMerge && tasks.size() > 1)
+//                t = taskMerge(root);
+//            else
+//                t = root;
+//
+//            root.isBeliefOrGoal()
+//            return Truth.stronger(root, dyn);
         }
     }
 
@@ -368,106 +409,103 @@ public final class Answer implements AutoCloseable {
                 }
             }
 
-            TruthPolation p = truthpolation();
+            TruthPolation p = truthpolation(false);
             if (p == null)
                 return null;
 
             TruthPolation tp = p.filtered();
-            if (tp!=null)
-                return truth(tp);
-            return null;
+            if (tp!=null) {
+                assert(!ditherTruth);
+                return tp.truth(eviMin(), nar);
+            }
         } finally {
             close();
         }
+
+        return null;
     }
 
-    @Nullable private Truth truth(TruthPolation tp) {
-        return tp.truth(nar, eviMin());
-    }
+    @Nullable private TruthPolation tryMerge() {
 
-    private Task taskFirst(boolean topOrSample) {
-        return (topOrSample ? tasks.get(0) :  tasks.getRoulette(random()));
-    }
+        TruthPolation tp = truthpolation(taskList(), true);
 
-    private Task taskMerge(@Nullable Task root) {
-
-        @Nullable TaskList d = dynTruth();
-        if (d.size() <= 1)
-            return root;
-
-        TruthPolation tp = truthpolation(d);
-
-        tp.filterCyclic(root, false);
-
-        if (tp.size() == 1)
-            return root;
+        tp.filterCyclic(false);
 
         tp.refocus(nar);
 
-        @Nullable Truth tt = truth(tp);
-        if (tt == null)
-            return root;
-
-        if (ditherTruth) {
-            tt = tt.dithered(nar);
-            if (tt == null)
-                return null;
-        }
-
-        long s = tp.start(), e = tp.end();
-//        if (allSatisfy(Task::isEternal)) {
-//            s = e = ETERNAL;
-//        }
-
-
-        Task dyn = tp.task(d, tt, root.isBeliefOrGoal(), s, e, nar);
-
-        if (dyn == null)
-            return root;
-
-        if (root.isDeleted())
-            return dyn; //which could have occurred by now
-
-        return Truth.stronger(root, dyn);
+        return tp;
     }
 
-    /**
-     * TODO merge DynTruth and TruthPolation
-     */
-    @Nullable
-    protected TaskList dynTruth() {
-        int s = tasks.size();
-        if (s == 0)
+    @Nullable private Task newTask(@Nullable TruthPolation tp, boolean beliefOrGoal) {
+
+        if (tp == null)
             return null;
-        return new TaskList(s, tasks.itemsArray());
+
+        @Nullable Truth tt = tp.truth(eviMin(), ditherTruth, nar);
+        if (tt == null)
+            return null;
+
+        //HACK TODO do this without creating a temporary TaskList
+        return tp.task(taskList(), tt, beliefOrGoal, nar);
     }
 
 
-    @Nullable public TruthPolation truthpolation() {
-        TaskList d = dynTruth();
-        return d == null ? null : truthpolation(d);
+
+    @Nullable public TruthPolation truthpolation(boolean trim) {
+        return truthpolation(taskList(), trim);
+    }
+
+    @Nullable public TaskList taskList() {
+        int t = tasks.size();
+        if (t == 0)
+            return null;
+        return new TaskList(t, tasks.itemsArray());
     }
 
     /**
      * this does not filter cyclic; do that manually
      */
-    private TruthPolation truthpolation(TaskList d) {
-        long s = d.start();
-        long e = s != ETERNAL ? d.end() : ETERNAL;
+    private TruthPolation truthpolation(TaskList tt, boolean trim) {
+        if (tt == null)
+            return null;
+
+        assert(!tt.isEmpty());
+
+        long s = tt.start(), e;
+
         if (s!=ETERNAL) {
+            e = tt.end();
             TimeRangeFilter t = this.time;
-            if (t.start!=ETERNAL) {
-                 //project to the question time range
-                 s = t.start;
-                 e = t.end;
+            long ts = t.start;
+            if (ts !=ETERNAL) {
+                if (!trim) {
+                    //project to the question time range
+                    s = t.start;
+                    e = t.end;
+                } else {
+
+                    //shrinkwrap
+                    if (Longerval.contains(t.start, t.end, s, e)) {
+                        //long s0 = s, e0 = e;
+                        s = Math.max(ts, s);
+                        e = Math.min(Math.max(s, t.end), e);
+//                        if (s0 != s || e0 != e) {
+//                            if (e == s)
+//                                System.out.println(s0 + ".." + e0 + " -> " + s + ".." + e + "\td=" + ((e - s) - (e0 - s0)));
+//                        }
+                    }
+                }
+
              } else {
                  //use the answered time range
              }
+        } else {
+            e = ETERNAL;
         }
 
-        TruthPolation tp = Param.truth(s, e, dur);
-        tp.ensureCapacity(d.size());
-        d.forEach(tp::add);
+        TruthPolation tp = nar.truth(s, e, dur);
+        tp.ensureCapacity(tt.size());
+        tt.forEach(tp::add);
         return tp;
     }
 

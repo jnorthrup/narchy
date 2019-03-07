@@ -38,6 +38,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private static final int MAX_TASKS_PER_LEAF = 3;
     private static final Split SPLIT = AxialSplitLeaf.the;
 
+    private static final int CURSOR_CAPACITY = 32;
+
 
     protected int capacity;
 
@@ -187,7 +189,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         FloatFunction timeDist = a.temporalDistanceFn();
 
-        HyperIterator.iterate(this, timeDist, i->{
+        HyperIterator.iterate(this, RTreeBeliefTable.CURSOR_CAPACITY, timeDist, i->{
             while (i.hasNext() && a.tryAccept((Task) i.next())) {
             }
         });

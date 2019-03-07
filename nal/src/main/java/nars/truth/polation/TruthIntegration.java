@@ -53,6 +53,9 @@ public class TruthIntegration {
 
         long tEnd = t.end();
 
+        LongToFloatFunction ee = t.eviEvaluator().eviFn(dur);
+        //TODO: ee.integrate(...)
+
         //possible optimization, needs tested:
 //        if (dur == 0) {
 //            //trim the question to the task because dur=0 means no residual evidence is measured outside of the task's bounds
@@ -62,19 +65,19 @@ public class TruthIntegration {
 //                return t.evi(qStart, dur); //reduced to a point
 //        }
 
-        LongToFloatFunction ee = t.eviEvaluator().eviFn(dur);
-        //TODO: ee.integrate(...)
+
+        if (tStart <= qStart && tEnd >= qEnd) {
+
+            //task contains question
+            return LongFloatTrapezoidalIntegrator.sum(ee, qStart, qEnd);
+
+            //return eviInteg(t, dur, qStart, qEnd);
+            //return (qEnd - qStart) * t.evi(); //fast, assumes task evi is uniform between the end-points:
+
+        }
 
         if (Longerval.intersects(tStart, tEnd, qStart, qEnd)) {
-            if (tStart <= qStart && tEnd >= qEnd) {
-
-                //task contains question
-                return LongFloatTrapezoidalIntegrator.sum(ee, qStart, qEnd);
-
-                //return eviInteg(t, dur, qStart, qEnd);
-                //return (qEnd - qStart) * t.evi(); //fast, assumes task evi is uniform between the end-points:
-
-            } else if (qStart <= tStart && qEnd >= tEnd) {
+            if (qStart <= tStart && qEnd >= tEnd) {
                 //question contains task
 
 //                if (qStart == tStart) {

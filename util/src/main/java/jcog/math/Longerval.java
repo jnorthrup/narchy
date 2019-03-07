@@ -177,10 +177,17 @@ public class Longerval implements LongInterval {
 		long b = min(y1, y2);
 		return a <= b ? b - a : -1;
 	}
+	/** true if [x1..y1] intersects [x2..y2] */
 	public static boolean intersects(long x1, long y1, long x2, long y2) {
 		if (x1 == ETERNAL || x2 == ETERNAL) return true;
 		assert(x1!=TIMELESS && x2!=TIMELESS);
 		return max(x1, x2) <= min(y1, y2);
+	}
+	/** true if [os..oe] contains [is..ie] */
+	public static boolean contains(long os, long oe, long is, long ie) {
+		if (os == ETERNAL && is != ETERNAL) return true;
+		assert(os!=TIMELESS && is!=TIMELESS);
+		return (os <= is && oe >= ie);
 	}
 
 

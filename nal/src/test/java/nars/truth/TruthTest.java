@@ -172,7 +172,7 @@ class TruthTest {
         for (int i = 1; i < steps; i++) {
             for (int j = 1; j < subSteps; j++) {
                 float c = step * i + (subStep) * j;
-                @Nullable PreciseTruth p = t(1f, c).dithered(n);
+                @Nullable PreciseTruth p = t(1f, c).dither(n);
                 if (p!=null)
                     System.out.println(p + "\t" + Texts.n2(c) +  "\t" + Texts.n4(c)+ "\t" + c );
             }

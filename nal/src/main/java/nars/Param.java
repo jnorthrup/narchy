@@ -184,16 +184,21 @@ public abstract class Param {
     public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONsqrt;
 
     /** novelty threshold: >=0; higher values decrease the rate at which repeated tasks can be reactivated */
-    public static final float REMEMBER_REPEAT_THRESH_DURS = 2f;
+    public static final float REMEMBER_REPEAT_THRESH_DURS = 1f;
 
     /** restrains revision's ability to stretch evidence across time:
      * as a factor of the maximum of the ranges of the tasks involved in the revision */
-    public static final float TASK_REVISION_STRETCH_LIMIT_PROPORTION =
+    public static final float REVISION_STRETCH_LIMIT_PROPORTION =
             //0.5f;
             1;
             //1.5f;
             //1.618f; //goldenratio
             //2;
+    /**
+     * maximum time (in durations) that a signal task can stretch the same value
+     * until a new task (with new evidence) is created (seamlessly continuing it afterward)
+     */
+    public final static float SIGNAL_STRETCH_LIMIT_DURS = 4;
 
     public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = false;
 
@@ -202,11 +207,7 @@ public abstract class Param {
     public static long TASK_RANGE_LIMIT = (1L << 61) /* estimate */;
 
 
-    /**
-     * maximum time (in durations) that a signal task can stretch the same value
-     * until a new task (with new evidence) is created (seamlessly continuing it afterward)
-     */
-    public final static float SIGNAL_STRETCH_LIMIT_DURS = 8;
+
 
     /** maximum time between signal updates to stretch an equivalently-truthed data point across.
      * stretches perception across some amount of lag
@@ -246,9 +247,9 @@ public abstract class Param {
     public static final boolean INPUT_BUFFER_PRI_BACKPRESSURE = false;
 
     /**
-     * creates instance of the default truthpolation implementation
+     * provides an instance of the default truthpolation implementation
      */
-    public static TruthPolation truth(long start, long end, int dur) {
+    public TruthPolation truth(long start, long end, int dur) {
         return new LinearTruthPolation(start, end, dur);
         //return new FocusingLinearTruthPolation(start, end, dur);
     }
@@ -259,7 +260,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -466,6 +467,8 @@ public abstract class Param {
      * see:
      *      https://en.wikipedia.org/wiki/List_of_definite_integrals
      *      https://en.wikipedia.org/wiki/Template:Series_(mathematics)
+     *
+     * TODO integrate with EvidenceEvaluator
      */
     public static float evi(float evi, long dt, int dur) {
 
@@ -477,11 +480,11 @@ public abstract class Param {
         float falloffDurs =
                 //1;
                 //1.618f; //phi
-                //2; //nyquist
+                2; //nyquist
                 //4;
                 //dur;
                 //8;
-                64;
+                //64;
 
         double decayTime = falloffDurs * dur;
 
@@ -492,23 +495,23 @@ public abstract class Param {
         //TODO
 
         //constant duration linear decay
-        //e = evi * Math.max(0, (1.0f - dt / decayTime))
+        //e = evi * Math.max(0, (1.0 - dt / decayTime))
 
         //constant duration quadratic decay (sharp falloff)
-        //e = evi * Math.max(0, (float) (1.0f - Math.sqrt(dt / decayTime)));
+        //e = evi * Math.max(0, (float) (1.0 - Math.sqrt(dt / decayTime)));
 
         //constant duration quadratic discharge (slow falloff)
-        //e = evi * Math.max(0, 1.0f - Util.sqr(dt / decayTime));
+        //e = evi * Math.max(0, 1.0 - Util.sqr(dt / decayTime));
 
         //linear decay WARNING - not finite integral
-        //e = evi / (1.0f + dt / decayTime);
+        //e = (float) (evi / (1.0 + dt / decayTime));
 
         //---------
 
         //eternal noise floor (post-filter)
         //float ee = TruthFunctions.eternalize(evi);
         //     // / STAMP_CAPACITY;
-        //e = ee + ((e - ee) / (1.0f + (((float)dt) / (falloffDurs * dur))));
+        //e = ee + ((e - ee) / (1.0 + (((float)dt) / (falloffDurs * dur))));
 
         return e;
 

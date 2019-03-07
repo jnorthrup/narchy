@@ -404,14 +404,15 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
 
-    @Nullable
-    static Task project(Task t, long start, long end, NAR n) {
+    @Nullable static Task project(Task t, long start, long end, NAR n) {
         return project(t, start, end, false, false, false, n);
     }
 
+    @Nullable static Task project(Task t, long start, long end, boolean trimIfIntersects, boolean ditherTruth, boolean negated, NAR n) {
+        return project(t, start, end, trimIfIntersects, ditherTruth, negated, 0, n);
+    }
 
-    @Nullable
-    static Task project(Task t, long start, long end, boolean trimIfIntersects, boolean ditherTruth, boolean negated, NAR n) {
+    @Nullable static Task project(Task t, long start, long end, boolean trimIfIntersects, boolean ditherTruth, boolean negated, float eviMin, NAR n) {
         if (!negated && t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
             return t;
 
@@ -435,10 +436,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
                 return null;
 
             if (ditherTruth) {
-                tt = tt.dithered(n);
+                tt = tt.dither(n);
                 if (tt == null)
                     return null;
             }
+            if (eviMin > 0 && tt.evi() < eviMin)
+                return null;
             tt = tt.negIf(negated);
         } else {
             tt = null;

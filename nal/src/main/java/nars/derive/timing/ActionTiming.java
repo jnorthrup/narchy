@@ -25,20 +25,28 @@ public class ActionTiming implements BiFunction<Task, Term, long[]> {
         long now = nar.time();
         int dur = nar.dur();
         Random rng = nar.random();
-
-        //gaussian
-        long then = Math.round(now + rng.nextGaussian() * horizonDurs.floatValue() * dur);
-
-        //uniform
-        //long then = Math.round(now + (-.5f + rng.nextFloat()) * 2 * horizonDurs.floatValue() * dur); //uniform
-
-
         long start, end;
-        start = (then - dur/2);
-        //start = Tense.dither(start, nar);
-        end = (then + dur/2);
-        //end = Tense.dither(end, nar);
+        long taskStart = task.start();
+        if (taskStart <= now - dur) {
 
-        return new long[] { start, end };
+            //gaussian
+            long then = Math.round(now + rng.nextGaussian() * horizonDurs.floatValue() * dur);
+
+            //uniform
+            //long then = Math.round(now + (-.5f + rng.nextFloat()) * 2 * horizonDurs.floatValue() * dur); //uniform
+
+
+
+            start = (then - dur / 2);
+            //start = Tense.dither(start, nar);
+            end = (then + dur / 2);
+            //end = Tense.dither(end, nar);
+
+
+        } else {
+            //non-eternal present or future
+            start = taskStart; end = task.end();
+        }
+        return new long[]{start, end};
     }
 }

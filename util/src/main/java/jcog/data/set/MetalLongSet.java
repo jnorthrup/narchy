@@ -12,7 +12,7 @@ import java.util.function.LongConsumer;
 public class MetalLongSet extends LongOpenHashSet  {
 
     public MetalLongSet(int capacity) {
-        super(capacity);
+        super(capacity, 1f);
     }
     public MetalLongSet(long[] initial) {
         super(initial);

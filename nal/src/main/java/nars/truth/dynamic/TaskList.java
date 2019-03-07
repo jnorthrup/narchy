@@ -14,20 +14,16 @@ import nars.task.NALTask;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Random;
 import java.util.function.Function;
 
-import static nars.Op.*;
-
 /**
  * A List of Task's which can be used for various purposes, including dynamic truth and evidence calculations (as utility methods)
  */
 public class TaskList extends FasterList<Task> implements TaskRegion {
-
 
 
     public TaskList(int initialCap) {
@@ -93,23 +89,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
 
     public final Task task(Term content, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
 
-        if (content.op() == NEG) {
-            content = content.unneg();
-            t = t.neg();
-        }
-
-
-        @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
-                content,
-                beliefOrGoal ? BELIEF : GOAL, !Param.DEBUG_EXTRA);
-        if (r == null)
-            return null;
-
-        NALTask dyn = new DynamicTruthTask(
-                r.getOne(), beliefOrGoal,
-                t.negIf(r.getTwo()),
-                nar, start, end,
-                stamp.apply(nar.random()));
+        NALTask dyn = DynamicTruthTask.Task(content, t, stamp, beliefOrGoal, start, end, nar);
 
         dyn.cause( cause() );
 
