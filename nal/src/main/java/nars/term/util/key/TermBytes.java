@@ -17,7 +17,7 @@ import static nars.io.IO.writeEvidence;
 public class TermBytes extends HashCachedBytes {
 
 
-    private static final boolean COMPRESS = false;
+
 
     /**
      * target with volume byte prepended for sorting by volume
@@ -58,9 +58,6 @@ public class TermBytes extends HashCachedBytes {
 
 
             writeEvidence(this, task.stamp());
-
-            if (COMPRESS)
-                compress();
 
             compact();
 

@@ -25,6 +25,8 @@ import jcog.util.LambdaStampedLock;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -41,15 +43,19 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
         this.tree = tree;
     }
 
+    @Override
+    public final boolean contains(X x) {
+        return testWith(RTree::contains, x);
+    }
 
     @Override
     public boolean OR(Predicate<X> o) {
-        return root().OR(o);
+        return testWith((tr,oo)->tr.root().OR(oo), o);
     }
 
     @Override
     public boolean AND(Predicate<X> o) {
-        return root().AND(o);
+        return testWith((tr,oo)->tr.root().AND(oo), o);
     }
 
     /**
@@ -59,12 +65,13 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
      * @param t    - array to hold results
      * @return number of entries found
      */
-    @Override
+    @Deprecated  @Override
     public int containedToArray(HyperRegion rect, X[] t) {
         return read(() -> tree.containedToArray(rect, t));
     }
 
-    @Override
+    /** TODO encapsulate. should not be exposed */
+    @Deprecated @Override
     public final Node<X> root() {
         return tree.root();
     }
@@ -104,33 +111,34 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
 
-    public void read(Consumer<RTree<X>> x) {
+    public final void read(Consumer<RTree<X>> x) {
         read(() -> x.accept(tree));
     }
+
 
     /**
      * doesnt lock, use at your own risk
      */
-    public void readDirect(Consumer<Space<X>> x) {
+    protected final void readDirect(Consumer<Space<X>> x) {
         x.accept(tree);
     }
 
-    public void write(Consumer<Space<X>> x) {
+    public final void write(Consumer<Space<X>> x) {
         write(() -> x.accept(tree));
     }
 
-    public boolean write(Predicate<Space<X>> x) {
+    public final boolean write(Predicate<Space<X>> x) {
         return write(() -> x.test(tree));
     }
 
-    public void readOptimistic(Consumer<Space<X>> x) {
+    public final void readOptimistic(Consumer<Space<X>> x) {
         readOptimistic(() -> {
             x.accept(tree);
         });
     }
 
     @Override
-    public HyperRegion bounds(X task) {
+    public final HyperRegion bounds(X task) {
         return tree.bounds(task);
     }
 
@@ -142,13 +150,13 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
      * @param tnew - entry with new value
      */
     @Override
-    public boolean replace(X told, X tnew) {
+    public final boolean replace(X told, X tnew) {
         write(() -> tree.replace(told, tnew));
         return false;
     }
 
     @Override
-    public int size() {
+    public final int size() {
         return tree.size();
 
     }
@@ -159,12 +167,40 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     @Override
-    public void forEach(Consumer<? super X> consumer) {
-        read(() -> tree.forEach(consumer));
+    public final void forEach(Consumer<? super X> consumer) {
+        read(r -> r.forEach(consumer));
     }
 
-    public void forEachOptimistic(Consumer<? super X> consumer) {
+    public final void forEachOptimistic(Consumer<? super X> consumer) {
         readOptimistic(() -> tree.forEach(consumer));
+    }
+
+    public <Y> void readWith(BiConsumer<RTree<X>,Y> readProcedure, Y x) {
+        long stamp = readLock();
+        try {
+            readProcedure.accept(tree, x);
+        } finally {
+            unlockRead(stamp);
+        }
+    }
+
+
+    public boolean test(Predicate<RTree<X>> p) {
+        long stamp = readLock();
+        try {
+            return p.test(tree);
+        } finally {
+            unlockRead(stamp);
+        }
+    }
+
+    public <Y> boolean testWith(BiPredicate<RTree<X>,Y> p, Y y) {
+        long stamp = readLock();
+        try {
+            return p.test(tree, y);
+        } finally {
+            unlockRead(stamp);
+        }
     }
 
     @Override
@@ -175,6 +211,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     @Override
     public boolean intersectsWhile(HyperRegion rect, Predicate<X> t) {
+        //Predicates.compose(t,)
         read(() -> tree.intersectsWhile(rect, t));
         return false;
     }
@@ -207,13 +244,9 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     @Override
     public boolean contains(X t, HyperRegion b, Spatialization<X> model) {
-        return read(() -> tree.contains(t, b, model));
+        return test(r -> r.contains(t, b, model));
     }
 
-    @Override
-    public boolean contains(X t) {
-        return read(() -> tree.contains(t));
-    }
 
 
     public final Spatialization<X> model() {

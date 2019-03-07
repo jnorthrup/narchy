@@ -11,8 +11,10 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import nars.truth.polation.TruthPolation;
+import nars.truth.polation.Projection;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
@@ -80,6 +82,10 @@ public enum Revision {;
 //        return x;
 //    }
 
+    /** might be useful in lazily prioritizing or parallelizing somehow */
+    public static Task merge(Supplier<TaskRegion> x, Supplier<TaskRegion> y, NAR nar) {
+        return merge(x::get, y::get, nar);
+    }
 
     /**
      * 2-ary merge with quick overlap filter
@@ -100,7 +106,7 @@ public enum Revision {;
      * also cause merge is deferred in the same way
      */
     @Nullable
-    private static Task merge(NAR nar, TaskRegion... tasks) {
+    static Task merge(NAR nar, TaskRegion... tasks) {
 
         assert (tasks.length > 1);
 
@@ -108,16 +114,15 @@ public enum Revision {;
         if (u == null)
             return null;
 
-        TruthPolation T = nar.truth(u[0], u[1], 0).add(tasks);
+        Projection T = nar.projection(u[0], u[1], 0).add(tasks);
 
         MetalLongSet stamp = T.filterCyclic(true, 2);
         if (stamp == null)
             return null;
 
-        if (T.size() == 1)
-            return null; //fail
+        assert(T.size()>=2);
 
-        T.refocus(nar);
+        T.refocus();
 
         Truth truth = T.truth(c2wSafe(nar.confMin.floatValue()), nar);
         if (truth == null)

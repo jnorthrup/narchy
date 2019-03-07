@@ -19,6 +19,7 @@ import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -49,6 +50,80 @@ public class RevisionTest {
                 new FocusingLinearTruthPolation(0, 0, n.dur())
                         .add(Lists.newArrayList(a.apply(n), b.apply(n)))
                         .truth());
+    }
+
+    @Test void testCoincidentTasks() throws Narsese.NarseseException {
+        Task t01 = Revision.merge(
+                t(1, 0.9f, 0, 0).apply(n),
+                t(1, 0.9f, 0, 0).apply(n),
+                n);
+        assertNotNull(t01);
+        assertEquals("(b-->a). 0 %1.0;.95%", t01.toStringWithoutBudget());
+        assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
+    }
+
+    @Test void testPartiallyCoincidentTasks() throws Narsese.NarseseException {
+        Task t01 = Revision.merge(
+                t(1, 0.9f, 0, 0).apply(n),
+                t(1, 0.9f, 0, 1).apply(n),
+                n);
+        assertNotNull(t01);
+        assertEquals("(b-->a). 0⋈1 %1.0;.93%", t01.toStringWithoutBudget());
+        assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
+    }
+
+    @Test void testAdjacentTasks() throws Narsese.NarseseException {
+        Task t01 = Revision.merge(
+                t(1, 0.9f, 0, 0).apply(n),
+                t(1, 0.9f, 1, 1).apply(n),
+                n);
+        assertNotNull(t01);
+        assertEquals("(b-->a). 0⋈1 %1.0;.90%", t01.toStringWithoutBudget());
+        assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
+    }
+
+    /** test solutions are optimal in cases where one or more tasks have
+     * overlapping evidence.  including cases where the top ranked merge
+     * result is best excluded.
+     */
+    @Test void testOverlapConflict() throws Narsese.NarseseException {
+        Task t = Revision.merge(n,
+                t(0, 0.71f, 0, 0).evidence(1,2).apply(n),
+                t(1, 0.7f, 0, 0).evidence(1).apply(n),
+                t(1, 0.7f, 0, 0).evidence(2).apply(n));
+
+        assertNotNull(t);
+        assertEquals("(b-->a). 0 %1.0;.82%", t.toStringWithoutBudget());
+        assertEquals("[1, 2]", Arrays.toString(t.stamp()));
+
+    }
+
+    @Test void testNonAdjacentTasks() throws Narsese.NarseseException {
+        if (Param.TASK_REVISION_ALLOW_DILUTE_UNION) { //HACK requires truth dilution to be enabled, which ideally will be controlled on a per-revision basis. not statically
+            NAR n = NARS.shell();
+
+            Task t01 = t(1, 0.9f, 0, 1).apply(n);
+            Task t02 = t(1, 0.9f, 0, 2).apply(n);
+            Task t03 = t(1, 0.9f, 0, 3).apply(n);
+            Task t35 = t(1, 0.9f, 3, 5).apply(n);
+            Task t45 = t(1, 0.9f, 4, 5).apply(n);
+            Task t100_102 = t(1, 0.9f, 100, 102).apply(n);
+
+            //evidence density
+            Task a = Revision.merge(t01, t45, n);
+            Task b = Revision.merge(t02, t45, n);
+            Task c = Revision.merge(t03, t45, n);
+            assertNotNull(a);
+            assertNotNull(b);
+            assertTrue(a.evi() < b.evi());
+            assertNotNull(c);
+            assertTrue(b.evi() < c.evi());
+
+            assertEquals("(b-->a). 0⋈102 %1.0;.34%", Revision.merge(t02, t100_102, n).toStringWithoutBudget());
+
+            assertEquals("(b-->a). 0⋈5 %1.0;.91%", Revision.merge(t03, t35, n).toStringWithoutBudget());
+            assertEquals("(b-->a). 0⋈5 %1.0;.90%", Revision.merge(t02, t35, n).toStringWithoutBudget());
+        }
 
     }
 
@@ -121,34 +196,6 @@ public class RevisionTest {
 
     static TaskBuilder t(float freq, float conf, long start, long end) throws Narsese.NarseseException {
         return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, start, end);
-    }
-
-    @Test
-    void testAdjacentTasks() throws Narsese.NarseseException {
-        NAR n = NARS.shell();
-
-        Task t01 = t(1, 0.9f, 0, 1).apply(n);
-        Task t02 = t(1, 0.9f, 0, 2).apply(n);
-        Task t03 = t(1, 0.9f, 0, 3).apply(n);
-        Task t35 = t(1, 0.9f, 3, 5).apply(n);
-        Task t45 = t(1, 0.9f, 4, 5).apply(n);
-        Task t100_102 = t(1, 0.9f, 100, 102).apply(n);
-
-        //evidence density
-        Task a = Revision.merge(t01, t45, n);
-        Task b = Revision.merge(t02, t45, n);
-        Task c = Revision.merge(t03, t45, n);
-        assertNotNull(a);
-        assertNotNull(b);
-        assertTrue(a.evi() < b.evi());
-        assertNotNull(c);
-        assertTrue(b.evi() < c.evi());
-
-        assertEquals("(b-->a). 0⋈102 %1.0;.34%", Revision.merge(t02, t100_102, n).toStringWithoutBudget());
-
-        assertEquals("(b-->a). 0⋈5 %1.0;.91%", Revision.merge(t03, t35, n).toStringWithoutBudget());
-        assertEquals("(b-->a). 0⋈5 %1.0;.90%", Revision.merge(t02, t35, n).toStringWithoutBudget());
-
     }
 
 
@@ -367,8 +414,8 @@ public class RevisionTest {
 
         Task at = n.believe(a, Tense.Present, 1f);
         n.believe(b, Tense.Present);
-        ((BeliefTables)n.concept(a).beliefs()).tableFirst(EternalTable.class).setTaskCapacity(1);
-        ((BeliefTables)n.concept(a).beliefs()).tableFirst(TemporalBeliefTable.class).setTaskCapacity(1);
+        ((BeliefTables) n.concept(a).beliefs()).tableFirst(EternalTable.class).setTaskCapacity(1);
+        ((BeliefTables) n.concept(a).beliefs()).tableFirst(TemporalBeliefTable.class).setTaskCapacity(1);
         n.input(at);
 
 
@@ -481,7 +528,6 @@ public class RevisionTest {
     void testTruthOscillation() {
 
         NAR n = NARS.shell();
-
 
 
         int offCycles = 2;
@@ -704,9 +750,11 @@ public class RevisionTest {
         Task ab = Revision.merge(a, b, n);
         p(ab);
         assertTrue(ab.conf() == a.conf());
-        Task ac = Revision.merge(a, c, n);
-        p(ac);
-        assertTrue(ac.conf() < ab.conf(), ()->ac + " must have less conf than " + ab);
+        if (Param.TASK_REVISION_ALLOW_DILUTE_UNION) {
+            Task ac = Revision.merge(a, c, n);
+            p(ac);
+            assertTrue(ac.conf() < ab.conf(), () -> ac + " must have less conf than " + ab);
+        }
 //        Task ad = Revision.merge(a, d, n);
 //        p(ad);
 //        assertTrue(ad.conf() < ac.conf());

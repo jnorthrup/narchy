@@ -13,7 +13,7 @@ import nars.term.util.builder.MemoizingTermBuilder;
 import nars.term.util.transform.Conceptualization;
 import nars.term.util.transform.Retemporalize;
 import nars.truth.polation.LinearTruthPolation;
-import nars.truth.polation.TruthPolation;
+import nars.truth.polation.Projection;
 
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
@@ -103,7 +103,7 @@ public abstract class Param {
 
     public static final boolean TERMIFY_TRANSFORM_LAZY = true;
 
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 //    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
@@ -249,7 +249,7 @@ public abstract class Param {
     /**
      * provides an instance of the default truthpolation implementation
      */
-    public TruthPolation truth(long start, long end, int dur) {
+    public Projection projection(long start, long end, int dur) {
         return new LinearTruthPolation(start, end, dur);
         //return new FocusingLinearTruthPolation(start, end, dur);
     }

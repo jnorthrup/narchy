@@ -6,7 +6,6 @@ import jcog.Util;
 import jcog.data.byt.util.IntCoding;
 import jcog.util.ArrayUtils;
 import org.apache.lucene.util.ArrayUtil;
-import org.iq80.snappy.Snappy;
 
 import java.io.DataOutput;
 import java.io.IOException;
@@ -18,7 +17,9 @@ import static jcog.data.byt.util.IntCoding.decodeZigZagInt;
 import static jcog.data.byt.util.IntCoding.decodeZigZagLong;
 
 /**
- * dynamic byte array with mostly append-oriented functionality
+ * mutable resizable dynamic byte array for fast single-thread use
+ *   includes zigzag integer encode/decode operations
+ *
  * @see org.objectweb.asm.ByteVector
  */
 public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes, AutoCloseable {
@@ -27,11 +28,9 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
      * must remain final for global consistency
      * might as well be 1.0, if it's already compressed to discover what this is, just keep it
      */
-    private final static float minCompressionRatio = 1f;
     /**
      * must remain final for global consistency
      */
-    private final static int MIN_COMPRESSION_BYTES = 64;
     public int len;
     protected byte[] bytes;
 
@@ -48,54 +47,6 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         this.bytes = zeroCopy;
         this.len = len;
     }
-
-    public int compress() {
-        return compress(0);
-    }
-
-
-    /**
-     * return length of the compressed region (not including the from offset).
-     * or -1 if compression was not applied
-     */
-    public int compress(int from) {
-
-
-        int to = length();
-        int len = to - from;
-        if (len < MIN_COMPRESSION_BYTES) {
-            return -1;
-        }
-
-
-        //TODO compress to a temporary suffix the end of the buffer rather than allocating new byte[]
-        int bufferLen = from + Snappy.maxCompressedLength(len);
-
-
-        byte[] compressed = new byte[bufferLen];
-
-        int compressedLength = Snappy.compress(
-                this.bytes, from, len,
-                compressed, from);
-
-
-        if (compressedLength < (len * minCompressionRatio)) {
-
-            if (from > 0)
-                System.arraycopy(this.bytes, 0, compressed, 0, from);
-
-
-            this.bytes = compressed;
-            this.len = from + compressedLength;
-            return compressedLength;
-        } else {
-            return -1;
-
-        }
-
-
-    }
-
 
     @Override
     public int hashCode() {
@@ -505,4 +456,51 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     public void set(int n, byte b) {
         bytes[n] = b;
     }
+
+//    private final static int MIN_COMPRESSION_BYTES = 64;
+//    private final static float minCompressionRatio = 1f;
+//    public int compress() {
+//        return compress(0);
+//    }
+//
+//    /**
+//     * return length of the compressed region (not including the from offset).
+//     * or -1 if compression was not applied
+//     */
+//    public int compress(int from) {
+//
+//
+//        int to = length();
+//        int len = to - from;
+//        if (len < MIN_COMPRESSION_BYTES) {
+//            return -1;
+//        }
+//
+//
+//        //TODO compress to a temporary suffix the end of the buffer rather than allocating new byte[]
+//        int bufferLen = from + Snappy.maxCompressedLength(len);
+//
+//
+//        byte[] compressed = new byte[bufferLen];
+//
+//        int compressedLength = Snappy.compress(
+//                this.bytes, from, len,
+//                compressed, from);
+//
+//
+//        if (compressedLength < (len * minCompressionRatio)) {
+//
+//            if (from > 0)
+//                System.arraycopy(this.bytes, 0, compressed, 0, from);
+//
+//
+//            this.bytes = compressed;
+//            this.len = from + compressedLength;
+//            return compressedLength;
+//        } else {
+//            return -1;
+//
+//        }
+//    }
+
 }

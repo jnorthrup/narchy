@@ -268,8 +268,9 @@ class RTreeBeliefTableTest {
     static List<TaskRegion> seek(RTreeBeliefTable table, long s, long e) {
         List<TaskRegion> seq = new FasterList(table.capacity());
         table.read(t->{
-
-            HyperIterator<TaskRegion> h = new HyperIterator(t, Answer.temporalDistanceFn( new TimeRange(s, e)));
+            HyperIterator<TaskRegion> h = new HyperIterator(t.model,
+                    new TaskRegion[32],
+                    Answer.temporalDistanceFn( new TimeRange(s, e)));
             while (h.hasNext()) {
                 seq.add(h.next());
             }

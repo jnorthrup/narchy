@@ -189,7 +189,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         FloatFunction timeDist = a.temporalDistanceFn();
 
-        HyperIterator.iterate(this, RTreeBeliefTable.CURSOR_CAPACITY, timeDist, i->{
+        HyperIterator.iterate(this, RTreeBeliefTable.CURSOR_CAPACITY,
+                timeDist, i->{
             while (i.hasNext() && a.tryAccept((Task) i.next())) {
             }
         });

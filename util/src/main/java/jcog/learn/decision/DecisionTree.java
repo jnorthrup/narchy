@@ -409,7 +409,7 @@ public class DecisionTree<K, V> {
             boolean isTrue = child == 0;
             path.add(PrimitiveTuples.pair(this, isTrue));
             get(child).explain(c, path);
-            path.removeLast();
+            path.removeLastFast();
         }
 
 

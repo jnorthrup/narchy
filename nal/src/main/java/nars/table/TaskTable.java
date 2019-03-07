@@ -97,7 +97,7 @@ public interface TaskTable {
     @Nullable default Task match(long start, long end, Term template, NAR nar) { return match(start, end, template, null, nar); }
 
     @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return !isEmpty() ? matching(start, end, template, filter, nar).task(true, true, false) : null;
+        return !isEmpty() ? matching(start, end, template, filter, nar).task(true, false) : null;
     }
 
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
@@ -113,7 +113,7 @@ public interface TaskTable {
     }
     @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
         return !isEmpty() ? matching(start, end, template, filter, n)
-                .task(true, true, true) : null;
+                .task(true, true) : null;
     }
 
 
@@ -137,7 +137,7 @@ public interface TaskTable {
                 start, end, template, filter, nar)
             .ditherTruth(dither)
             .sample(this)
-            .task(false, false, false);
+            .task(false, false);
 
 //        return matching(start, end, template, filter, nar).task(false, false, false);
 

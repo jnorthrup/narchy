@@ -42,20 +42,25 @@ public class HyperIterator<X> implements AutoCloseable {
 
     public static <X> void iterate(ConcurrentRTree<X> tree, int capacity, FloatFunction<HyperRegion> rank, Consumer<HyperIterator<X>> with) {
 
-        try (HyperIterator<X> h = new HyperIterator<X>(tree.model(), capacity, rank)) {
+        try (HyperIterator<X> h = new HyperIterator(tree.model(), new Object[capacity], rank) {
+            @Override
+            public void start(Node start) {
+                super.start(start);
+                with.accept(this);
+            }
+        }) {
             tree.read((t) -> {
                 Node<X> r = t.root();
-                if (r!=null && r.size() > 0) {
+                if (r!=null) {
                     h.start(r);
-                    with.accept(h);
                 }
             });
         }
 
     }
 
-    public HyperIterator(Spatialization<X> model, int capacity, FloatFunction<HyperRegion> rank) {
-        this.plan = new RankedTopN<Object>(new Object[capacity], (FloatFunction) r -> rank.floatValueOf(
+    public HyperIterator(Spatialization<X> model, X[] x, FloatFunction<? super HyperRegion> rank) {
+        this.plan = new RankedTopN(x, (FloatFunction) r -> rank.floatValueOf(
                 r instanceof HyperRegion ? ((HyperRegion) r) :
                         (r instanceof Node ? ((Node) r).bounds() :
                                 model.bounds((X) r))

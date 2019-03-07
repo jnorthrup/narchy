@@ -181,13 +181,18 @@ public class FasterList<X> extends FastList<X> {
 //        this.items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
 //    }
 
+    /** pop() */
     public X removeLast() {
-//        if (size == 0)
-//            throw new ArrayIndexOutOfBoundsException(); //it will be obvious if this happens
         X[] ii = this.items;
         X x = ii[--size];
         ii[size] = null;
         return x;
+    }
+    /** pop() */
+    public void removeLastFast() {
+        X[] ii = this.items;
+        size--;
+        ii[size] = null;
     }
 
     /**

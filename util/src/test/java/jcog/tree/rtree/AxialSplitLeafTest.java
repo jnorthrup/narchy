@@ -148,7 +148,7 @@ class AxialSplitLeafTest {
     @ValueSource(ints = {2,3,4,5,8})
     void randomEntryTest(int maxLeaf) {
 
-        final int entryCount = 50000;
+        final int entryCount = 10000;
         final RectDouble[] rects = RTree2DTest.generateRandomRects(entryCount);
 
         final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(maxLeaf, TYPE);

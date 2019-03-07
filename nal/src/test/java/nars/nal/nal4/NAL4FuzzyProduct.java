@@ -2,6 +2,8 @@ package nars.nal.nal4;
 
 import nars.NAR;
 import nars.NARS;
+import nars.derive.Derivers;
+import nars.derive.impl.BatchDeriver;
 import nars.term.util.SetSectDiff;
 import nars.test.NALTest;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ public class NAL4FuzzyProduct extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(4);
+        new BatchDeriver(Derivers.files(n, "nal4.sect.nal")); //add-on deriver
         n.termVolumeMax.set(9);
         return n;
     }

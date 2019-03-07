@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
  * <p>
  * this implememnt aggregates combined evidence via linear inteprolation
  */
-public class LinearTruthPolation extends TruthPolation {
+public class LinearTruthPolation extends Projection {
 
     public LinearTruthPolation(long start, long end, int dur) {
         super(start, end, dur);

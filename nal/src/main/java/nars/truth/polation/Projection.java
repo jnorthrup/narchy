@@ -36,7 +36,7 @@ import static nars.time.Tense.ETERNAL;
  */
 @Paper
 @Skill({"Interpolation", "Extrapolation"})
-abstract public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
+abstract public class Projection extends FasterList<Projection.TaskComponent> {
 
     public long start, end;
     int dur;
@@ -47,7 +47,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      */
     public Term term = null;
 
-    TruthPolation(long start, long end, int dur) {
+    Projection(long start, long end, int dur) {
         super(0);
         this.start = start;
         this.end = end;
@@ -114,7 +114,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         }
     }
 
-    public final TruthPolation filtered() {
+    public final Projection filtered() {
         filterCyclic(false);
         return this;
     }
@@ -136,80 +136,160 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         else if (s == 1) return only(provideStamp);
 
         validate(null);
-        if ((s = size()) < minResults) return null;
 
         if ((s = size()) < minResults) return null;
-        else if (s == 1) return only(provideStamp);
-
-        sortThisByFloat(tc -> -tc.evi); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
-
-
-        if (s == 1) {
+        else if (s == 1) {
             return only(provideStamp);
         } else {
 
-            MetalLongSet e = new MetalLongSet(Param.STAMP_CAPACITY);
 
-            int ss = size();
+            MetalLongSet e = filterCyclicN(minResults);
+            return provideStamp ? e : null;
+        }
+    }
 
-            //TODO permute alternate insertion order here
-            for (int i = 0; i < ss; ) {
+    private MetalLongSet filterCyclicN(int minComponents) {
+        sortThisByFloat(tc -> -tc.evi); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
+
+        int ss = size();
+
+
+        MetalLongSet e = null;
+        do {
+            if (e == null)
+                e = new MetalLongSet(Param.STAMP_CAPACITY);
+            else
+                e.clear();
+
+            int weakestConflict = Integer.MIN_VALUE, strongestConflict = Integer.MAX_VALUE;
+            for (int i = ss - 1; i >= 0; i--) {
                 Task ii = get(i).task;
                 long[] iis = ii.stamp();
-
-                if (i == 0 || !Stamp.overlapsAny(e, iis)) {
-                    if (e != null)
-                        e.addAll(iis);
-                    i++;
-                } else {
-                    removeFast(i);
-                    ss--;
+                if (i < ss - 1) {
+                    if (Stamp.overlapsAny(e, iis)) {
+                        strongestConflict = Math.min(i, strongestConflict);
+                        weakestConflict = Math.max(i, weakestConflict);
+                        continue;
+                    }
                 }
+                e.addAll(iis); //first
             }
-            return provideStamp ? e : null;
 
-            //                for (int j = 0; j < i; j++) {
-//                    Task jj = get(j).task;
-//                    if (Stamp.overlaps(iis, jj.stamp())) {
-//                        keep = false;
+            //1. test if they are all independent.  then all may be combined.
+            if (weakestConflict < 0)
+                return e; //all ok
+
+
+            if (ss - 1 < minComponents)
+                return null; //impossible
+
+            if (strongestConflict == ss - 1) {
+                //2. if the only overlapping task is the least ranked, just remove that and continue.
+                removeLastFast();
+                break;
+            } else {
+                if (strongestConflict == weakestConflict) {
+                    //it is only conflict present in this set.
+                    // eliminate it if the sum of the other evidences are greater
+                    if (minComponents <= 1)
+                        oneForAll(strongestConflict);
+                    else
+                        removeFast(strongestConflict);
+                } else {
+
+                    //TODO try evaluating the truth by removing each of the conflicting tasks
+
+                    //for now, try removing the weakestConflict and repeat
+                    if (minComponents <= 1)
+                        oneForAll(weakestConflict);
+                    else
+                        removeFast(weakestConflict);
+
+                    //TODO early exit possible here if weakestConflict == 0, then 'e' will be correct for return in some cases
+                }
+
+            }
+
+            ss = size();
+            if (ss < minComponents)
+                return null;
+
+        } while (ss > 1);
+
+        if (ss == 1)
+            return e;
+
+        return null;
+
+        //TODO permute alternate insertion order here
+//            MetalLongSet e = new MetalLongSet(Param.STAMP_CAPACITY);
+//
+//            int mask1 = -1;
+//            int conflict1 = -1;
+//            int ss = size();
+//            for (int i = 0; i < ss; ) {
+//                if (i == mask1)
+//                    continue;
+//                Task ii = get(i).task;
+//                long[] iis = ii.stamp();
+//
+//                if (i == 0 || !Stamp.overlapsAny(e, iis)) {
+//                    if (e != null)
+//                        e.addAll(iis);
+//                    i++;
+//                } else {
+//                    if (conflict1 == -1)
+//                        conflict1 = i;
+//                    else {
+//                        //give-up because it will involve tracking 2-ary removals
+//                        conflict1 = Integer.MAX_VALUE;
 //                        break;
 //                    }
+//                    removeFast(i);ss--;
 //                }
-
-//            removeIf(tc -> {
-//                Task tt = tc.task;
-//                if (tt == theSelected)
-//                    return false; //skip and keep
+//            }
+//            if (conflict1 != Integer.MAX_VALUE) {
+//                if (conflict1 == -1) {
+//                    //no conflicts.
 //
-//                return false;
-////
-////                long[] stamp = tt.stamp();
-////                boolean mustTest = false;
-////                for (int i = 0, stampLength = stamp.length; i < stampLength; i++) {
-////                    long ss = stamp[i];
-////                    if (!e.addAt(ss)) {
-////                        //collision: test previous results pair-wise
-////                        mustTest = true;
-////                    }
-////                    //continue adding all
-////                }
-////
-//////                        //remove any contributed unique stamp components added for this task that overlaps
-//////                        if (i > 0) {
-//////                            for (int j = 0; j < i; j++) {
-//////                                boolean removed = e.remove(stamp[j]);
-//////                                assert (removed);
-//////                            }
-//////                        }
-////                        return true;
-////                    }
-////                }
-////
-////                return false;
-//            });
+//                } else {
+//                    //no conflicts if conflict1 removed
+//                    removeFast(conflict1);
+//                    return
+//                }
+//                return provideStamp ? e : null;
+//            }
 
 
+    }
+
+    /** a one-for-all and all-for-one decision */
+    private void oneForAll(int conflict) {
+        TaskComponent cc = get(conflict);
+        if (cc.evi < eviSumExcept(conflict)) {
+            removeFast(conflict);
+            return;
+        } else {
+            //remove all except strongest conflict
+            clear();
+            add(cc);
+            refocus();
+            return;
         }
+    }
+
+    public double eviSum() {
+        return eviSumExcept(-1);
+    }
+
+    public double eviSumExcept(int task) {
+        double e = 0;
+        int n = size();
+        for (int i = 0; i < n; i++) {
+            if (i!=task)
+                e += get(i).evi;
+        }
+        return e;
     }
 
     @Nullable
@@ -217,27 +297,26 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return provideStamp ? Stamp.toSet(get(0).task) : null;
     }
 
-
-    public final TruthPolation add(Tasked... tasks) {
+    public final Projection add(Tasked... tasks) {
         ensureCapacity(tasks.length);
         for (Tasked t : tasks) {
-            if (t != null)
-                add(t);
+            //if (t != null)
+            add(t);
         }
         return this;
     }
 
-    private TruthPolation add(Iterable<? extends Tasked> tasks) {
+    private Projection add(Iterable<? extends Tasked> tasks) {
         tasks.forEach(this::add);
         return this;
     }
 
-    public final TruthPolation add(Collection<? extends Tasked> tasks) {
+    public final Projection add(Collection<? extends Tasked> tasks) {
         ensureCapacity(tasks.size());
         return add((Iterable) tasks);
     }
 
-    public final TruthPolation add(Tasked tt) {
+    public final Projection add(Tasked tt) {
         add(tt.task());
         return this;
     }
@@ -262,15 +341,6 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             Term ttt = t.task.term();
             if (first.equals(ttt))
                 matchingFirst.set(i);
-//            if (!first.equals(ttt)) {
-//                if (second != null) {
-//
-//                    removeAbove(i);
-//                    break;
-//                } else {
-//                    second = t.task;
-//                }
-//            }
         }
         if (matchingFirst.cardinality() > 1) {
             this.term = first;
@@ -292,24 +362,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             if ((Float.isFinite(dtDiff(a, b)))) {
 
-//                long firstStart = first.start();
-//                long secondStart = second.start();
                 final float e2Evi = B.evi;
-//                Task finalFirst = A.task;
-//                Task finalSecond = B.task;
-//                removeIf(x -> {
-//                    Task xx = x.task;
-//                    Term xxx;
-//                    if (xx == finalFirst || (xxx = xx.target()).equals(a)) {
-//                        e1Evi[0] += x.evi;
-//                        return false;
-//                    } else if (xx == finalSecond || xxx.equals(b)) {
-//                        e2Evi[0] += x.evi;
-//                        return false;
-//                    } else {
-//                        return true;
-//                    }
-//                });
 
                 //if there isnt more evidence for the primarily sought target, then just use those components
                 Term ab = Intermpolate.intermpolate(a,
@@ -334,42 +387,11 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             return 1;
 
 
-//            Term theFirst = first;
-//            Term finalSecond = second;
-//            float e1, e2;
-//            if (size() > 2) {
-//
-//                e1 = (float) sumOfFloat(x -> x.task.target().equals(theFirst) ? x.evi : 0);
-//                e2 = (float) sumOfFloat(x -> x.task.target().equals(finalSecond) ? x.evi : 0);
-//            } else {
-//                e1 = get(0).evi;
-//                e2 = get(1).evi;
-//            }
-//            float firstProp = e1 / (e1 + e2);
-
-
-//            if (Task.taskConceptTerm(target)) {
-//                if (count(t -> !t.task.target().equals(theFirst)) > 1) {
-//                    //remove any that are different and just combine what matches the first
-//                    removeIfTermDiffers(theFirst);
-//                    return 1;
-//                } else {
-//                    this.target = target;
-//                    return differenceFactor;
-//                }
-//            } else {
-//                removeIfTermDiffers(theFirst);
-//                return 1f;
-//            }
         }
 
 
     }
 
-//    private void removeIfTermDiffers(Term theFirst) {
-//        removeIf(t -> !t.task.target().equals(theFirst));
-//        this.target = theFirst;
-//    }
 
     public byte punc() {
         if (isEmpty()) throw new RuntimeException();
@@ -390,42 +412,6 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return truth(Float.MIN_NORMAL, null);
     }
 
-//    /** refined time involving the actual contained tasks.  the pre-specified interval may be larger but
-//     * after filtering tasks, it may have shrunk.
-//     */
-//    public TimeRange taskRange() {
-//        long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
-//
-//        for (TaskComponent x : this) {
-//            long a = x.task.start();
-//            if (a!=ETERNAL) {
-//                a = Math.min(end, a);
-//                if (a < s)
-//                    s = a;
-//                long b = x.task.end();
-//                b = Math.max(start, b);
-//                if (b > e)
-//                    e = b;
-//            }
-//        }
-//
-//        if (s == Long.MAX_VALUE)
-//            return TimeRange.ETERNAL; //unchanged, must be due to eternal content only
-//        else if (start == ETERNAL)
-//            return new TimeRange(new long[] { s, e });
-//        else {
-//            long[] t = new long[]{
-//                    Math.max(s, start), Math.min(e, end)
-//            };
-//            if (t[0] > t[1])
-//                throw new WTF();
-//            return new TimeRange(t);
-//        }
-//    }
-
-//    public Task getTask(int i) {
-//        return get(i).task;
-//    }
 
     public void print() {
         forEach(t -> System.out.println(t.task.proof()));
@@ -440,39 +426,40 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
     /**
-     * use after filtering cyclic.
+     * aka "shrinkwrap", or "trim". use after filtering cyclic.
      * adjust start/end to better fit the (remaining) task components and minimize temporalizing truth dilution.
      * if the start/end has changed, then evidence for each will need recalculated
+     * returns true if the evidences have changed.
      *  */
-    public void refocus(NAR nar) {
-        if (size()<2)
-            return;
-
-        long[] se = Tense.union(Iterables.transform(this, (TaskComponent x)->x.task));
-        if (se[0] == ETERNAL)
-            return; //eternal
-
-        if (start==ETERNAL) {
-            //override eternal range with the calculated union
+    public boolean refocus() {
+        long[] se;
+        if (size() > 1) {
+            se = Tense.union(Iterables.transform(this, (TaskComponent x) -> x.task));
         } else {
-            se[0] = Math.min(end, Math.max(start, se[0]));
-            se[1] = Math.max(start, Math.min(end, se[1]));
+            Projection.TaskComponent only = getFirst();
+            se = new long[] { only.task.start(), only.task.end() };
         }
 
-        int dtDither = nar.dtDither();
-        if (dtDither > 1) {
-            Tense.dither(se, dtDither);
+        if (se[0] != ETERNAL) {
+            if (start == ETERNAL) {
+                //override eternal range with the calculated union
+            } else {
+                se[0] = Math.min(end, Math.max(start, se[0]));
+                se[1] = Math.max(start, Math.min(end, se[1]));
+            }
         }
         if (se[0]!=start || se[1]!=end) {
             invalidateEvi();
             start = se[0];
             end = se[1];
+            return true;
         }
+        return false;
     }
 
     protected void validate(@Nullable NAR nar) {
         if (nar!=null && start == ETERNAL)
-            refocus(nar);
+            refocus();
 
         removeIf(x -> update(x, Float.MIN_NORMAL) == null);
     }

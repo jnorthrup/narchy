@@ -12,8 +12,8 @@ import nars.term.Term;
 import nars.term.util.Intermpolate;
 import nars.truth.Truth;
 import nars.truth.dynamic.TaskList;
+import nars.truth.polation.Projection;
 import nars.truth.polation.TruthIntegration;
-import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -290,7 +290,7 @@ public final class Answer implements AutoCloseable {
      * <p>
      * clears the cache and tasks before returning
      */
-    public Task task(boolean topOrSample, boolean tryMerge, boolean forceProject) {
+    public Task task(boolean topOrSample, boolean forceProject) {
         try {
             int s = tasks.size();
             Task t;
@@ -356,7 +356,7 @@ public final class Answer implements AutoCloseable {
         if (n == 1) {
             return root;
         } else  {
-            TruthPolation all = tryMerge();
+            Projection all = tryMerge();
             if (all!=null) {
                 Task allTasks = newTask(all, root.isBeliefOrGoal());
                 return allTasks != null ? Truth.stronger(allTasks, root) : root;
@@ -409,11 +409,11 @@ public final class Answer implements AutoCloseable {
                 }
             }
 
-            TruthPolation p = truthpolation(false);
+            Projection p = truthpolation(false);
             if (p == null)
                 return null;
 
-            TruthPolation tp = p.filtered();
+            Projection tp = p.filtered();
             if (tp!=null) {
                 assert(!ditherTruth);
                 return tp.truth(eviMin(), nar);
@@ -425,18 +425,18 @@ public final class Answer implements AutoCloseable {
         return null;
     }
 
-    @Nullable private TruthPolation tryMerge() {
+    @Nullable private Projection tryMerge() {
 
-        TruthPolation tp = truthpolation(taskList(), true);
+        Projection p = truthpolation(taskList(), true);
 
-        tp.filterCyclic(false);
+        p.filterCyclic(false);
 
-        tp.refocus(nar);
+        p.refocus();
 
-        return tp;
+        return p;
     }
 
-    @Nullable private Task newTask(@Nullable TruthPolation tp, boolean beliefOrGoal) {
+    @Nullable private Task newTask(@Nullable Projection tp, boolean beliefOrGoal) {
 
         if (tp == null)
             return null;
@@ -451,7 +451,7 @@ public final class Answer implements AutoCloseable {
 
 
 
-    @Nullable public TruthPolation truthpolation(boolean trim) {
+    @Nullable public Projection truthpolation(boolean trim) {
         return truthpolation(taskList(), trim);
     }
 
@@ -465,7 +465,7 @@ public final class Answer implements AutoCloseable {
     /**
      * this does not filter cyclic; do that manually
      */
-    private TruthPolation truthpolation(TaskList tt, boolean trim) {
+    private Projection truthpolation(TaskList tt, boolean trim) {
         if (tt == null)
             return null;
 
@@ -503,7 +503,7 @@ public final class Answer implements AutoCloseable {
             e = ETERNAL;
         }
 
-        TruthPolation tp = nar.truth(s, e, dur);
+        Projection tp = nar.projection(s, e, dur);
         tp.ensureCapacity(tt.size());
         tt.forEach(tp::add);
         return tp;
