@@ -57,9 +57,9 @@ public class BeliefTables implements BeliefTable {
     public void match(Answer a) {
         tables.allSatisfyWith((t,aa) -> {
             if (aa.active()) {
-                int triesBefore = aa.triesRemain;
+                int triesBefore = aa.ttl;
                 t.match(aa);
-                aa.triesRemain = triesBefore; //restore for next
+                aa.ttl = triesBefore; //restore for next
                 return true;
             }
             return false;

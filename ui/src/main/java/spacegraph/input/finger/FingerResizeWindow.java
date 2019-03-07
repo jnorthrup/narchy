@@ -13,11 +13,15 @@ public class FingerResizeWindow extends FingerResize {
 
     private final JoglSpace space;
 
-    public FingerResizeWindow(JoglSpace space, int button, DragEdit mode) {
-        super(button, mode, false);
+    public FingerResizeWindow(JoglSpace space, int button) {
+        super(button, false);
         this.space = space;
     }
 
+    @Override
+    public DragEdit mode() {
+        return null;
+    }
 
     @Override
     protected v2 pos(Finger finger) {
@@ -43,8 +47,6 @@ public class FingerResizeWindow extends FingerResize {
         int h = Math.round(y2 - y1);
         if (h < MIN_HEIGHT)
             return;
-
-
 
         space.io.setPositionAndSize(Math.round(x1), Math.round(y1), w, h);
     }

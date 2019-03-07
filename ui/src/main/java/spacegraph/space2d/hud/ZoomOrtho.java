@@ -3,7 +3,8 @@ package spacegraph.space2d.hud;
 import jcog.math.v2;
 import jcog.math.v3;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerMovePixels;
+import spacegraph.input.finger.FingerMoveWindow;
+import spacegraph.input.finger.FingerResizeWindow;
 import spacegraph.input.finger.Fingering;
 import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.space2d.Surface;
@@ -107,7 +108,9 @@ public class ZoomOrtho extends Ortho {
 
         if (f==null) {
             if (finger.touching() == null) {
-                if (finger.tryFingering(fingerWindowMove) || finger.tryFingering(fingerContentPan)) {
+                if (finger.tryFingering(fingerWindowMove) ||
+                        finger.tryFingering(fingerWindowResize) ||
+                        finger.tryFingering(fingerContentPan)) {
                     return this;
                 }
             }
@@ -120,7 +123,7 @@ public class ZoomOrtho extends Ortho {
         return (MutableListContainer) ((space.layers).get(3)); //HACK
     }
 
-    private final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
+    private final Fingering fingerContentPan = new FingerMoveWindow(PAN_BUTTON) {
 
         float speed = 1f;
         private v3 camStart;
@@ -143,7 +146,7 @@ public class ZoomOrtho extends Ortho {
         }
 
     };
-    private final Fingering fingerWindowMove = new FingerMovePixels(MOVE_WINDOW_BUTTON) {
+    private final Fingering fingerWindowMove = new FingerMoveWindow(MOVE_WINDOW_BUTTON) {
 
 
         private final v2 windowStart = new v2();
@@ -184,6 +187,30 @@ public class ZoomOrtho extends Ortho {
 
     };
 
+    private final Fingering fingerWindowResize = new FingerResizeWindow(space, MOVE_WINDOW_BUTTON) {
+
+
+        private final v2 windowStart = new v2();
+
+        @Override
+        public boolean escapes() {
+            return false;
+        }
+
+        @Override
+        protected boolean startDrag(Finger f) {
+            windowStart.set(space.io.getX(), space.io.getY());
+            //System.out.println("window start=" + windowStart);
+            return super.startDrag(f);
+        }
+
+        @Override
+        protected v2 pos(Finger finger) {
+            return finger.posScreen.clone();
+        }
+
+
+    };
 
 
 

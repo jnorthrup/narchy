@@ -11,10 +11,17 @@ import spacegraph.space2d.widget.windo.util.DragEdit;
 public class FingerResizeSurface extends FingerResize {
 
     private final Surface resizing;
+    private final DragEdit mode;
 
     public FingerResizeSurface(Surface target, DragEdit mode) {
-        super(0, mode);
+        super(0);
+        this.mode = mode;
         this.resizing = target;
+    }
+
+    /** move most of Windo.drag() logic here */
+    @Override @Deprecated public DragEdit mode() {
+        return mode;
     }
 
     @Override

@@ -224,7 +224,7 @@ abstract public class MultiExec extends UniExec {
         final int threads;
         final boolean affinity;
 
-        double granularity = 2;
+        double granularity = 4;
 
         final AffinityExecutor exe = new AffinityExecutor();
         private List<Worker> workers;

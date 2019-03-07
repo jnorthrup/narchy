@@ -3,7 +3,6 @@ package nars.gui;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.FloatRange;
-import jcog.math.IntRange;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.concept.Concept;
@@ -33,7 +32,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
     public final FloatRange rangeDurs = new FloatRange(32, 0.5f, 2048f);
 
-    public final IntRange projectDurs;
+    public final FloatRange projectDurs;
     /**
      * (if > 0): draw additional projection wave to show truthpolation values for a set of evenly spaced points on the visible range
      */
@@ -172,10 +171,11 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             long projStart = Util.round(start-dither/2, dither);
             long projEnd = Math.max(Util.round(end+dither/2, dither), Util.round(start + 1, dither));
 
-            int dur = projectDurs.intValue();
+            int dur = Math.round(nar.dur() * projectDurs.floatValue());
             projected.project(table, projStart, projEnd, projections, term, dur, nar);
             tasks.set(table, start, end);
         }
+
 
 
         @Override
@@ -258,9 +258,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
     public BeliefTableChart(Termed term, NAR n) {
         super(new Stacking(), n);
 
-
-        int dur = n.dur();
-        this.projectDurs = new IntRange(dur, 0, dur * 8);
+        this.projectDurs = new FloatRange(1, 0, 32);
 
         this.term = term.term();
         the.add(beliefGrid = new TruthGrid(16, true));
@@ -306,8 +304,9 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
     @Override
     public Surface menu() {
         return Splitting.row(
-                PushButton.awesome("search-plus").click(() -> NARui.conceptWindow(term, nar)),
-                ObjectSurface.the(rangeDurs, projectDurs)
+            ObjectSurface.the(this),
+            0.9f,
+            PushButton.awesome("search-plus").click(() -> NARui.conceptWindow(term, nar))
         );
     }
 

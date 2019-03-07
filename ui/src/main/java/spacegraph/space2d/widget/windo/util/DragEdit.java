@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.windo.util;
 
+import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerRenderer;
@@ -32,6 +33,48 @@ public enum DragEdit {
         //cursor.put(DragEdit.MOVE, new FingerRenderer.PolygonCrosshairs().angle(45)); //TODO something special
 
         cursor.forEach((k,v)-> hover.put(k, new RenderWhileHoveringOnWindow(v)));
+    }
+
+    @Nullable public static DragEdit edge(v2 p, float margin) {
+        DragEdit m = null;
+        if (p.x >= 0.5f - margin / 2f && p.x <= 0.5f + margin / 2) {
+            if (p.y <= margin) {
+                m = DragEdit.RESIZE_S;
+            }
+            if (m == null && p.y >= 1f - margin) {
+                m = DragEdit.RESIZE_N;
+            }
+        }
+
+        if (m == null && p.y >= 0.5f - margin / 2f && p.y <= 0.5f + margin / 2) {
+            if (p.x <= margin) {
+                m = DragEdit.RESIZE_W;
+            }
+            if (m == null && p.x >= 1f - margin) {
+                m = DragEdit.RESIZE_E;
+            }
+        }
+
+        if (m == null && p.x <= margin) {
+            if (p.y <= margin) {
+                m = DragEdit.RESIZE_SW;
+            }
+            if (m == null && p.y >= 1f - margin) {
+                m = DragEdit.RESIZE_NW;
+            }
+        }
+
+        if (m == null && p.x >= 1f - margin) {
+
+            if (p.y <= margin) {
+                m = DragEdit.RESIZE_SE;
+            }
+            if (m == null && p.y >= 1f - margin) {
+                m = DragEdit.RESIZE_NE;
+            }
+        }
+        return m;
+
     }
 
     @Nullable

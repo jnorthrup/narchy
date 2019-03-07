@@ -120,8 +120,8 @@ public class TruthletTask extends SignalTask {
         return truthlet.freq();
     }
 
-    @Override
-    public float evi(long when, int dur) {
+    /** this is where truthlet would provide its custom EvidenceEvaluator */
+    @Override @Deprecated public float evi(long when, int dur) {
         return truthlet.truth(when)[1];
     }
 

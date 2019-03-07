@@ -21,7 +21,7 @@ import static spacegraph.space2d.widget.windo.util.DragEdit.MOVE;
 public class Windo extends MutableUnitContainer {
 
     private final static float resizeBorder = 0.1f;
-    public FingerDragging dragMode = null;
+    public Dragging dragMode = null;
     public DragEdit potentialDragMode = null;
 
 
@@ -74,48 +74,12 @@ public class Windo extends MutableUnitContainer {
 
     @Nullable
     private Surface drag(Finger finger) {
-        DragEdit potentialDragMode = null;
+
 
 
         v2 hitPoint = windowHitPointRel(finger);
 
-
-        if (hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
-            if (hitPoint.y <= resizeBorder) {
-                potentialDragMode = DragEdit.RESIZE_S;
-            }
-            if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                potentialDragMode = DragEdit.RESIZE_N;
-            }
-        }
-
-        if (potentialDragMode == null && hitPoint.y >= 0.5f - resizeBorder / 2f && hitPoint.y <= 0.5f + resizeBorder / 2) {
-            if (hitPoint.x <= resizeBorder) {
-                potentialDragMode = DragEdit.RESIZE_W;
-            }
-            if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
-                potentialDragMode = DragEdit.RESIZE_E;
-            }
-        }
-
-        if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
-            if (hitPoint.y <= resizeBorder) {
-                potentialDragMode = DragEdit.RESIZE_SW;
-            }
-            if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                potentialDragMode = DragEdit.RESIZE_NW;
-            }
-        }
-
-        if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
-
-            if (hitPoint.y <= resizeBorder) {
-                potentialDragMode = DragEdit.RESIZE_SE;
-            }
-            if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                potentialDragMode = DragEdit.RESIZE_NE;
-            }
-        }
+        DragEdit potentialDragMode = DragEdit.edge(hitPoint, resizeBorder);
 
 
         if (!fingerable(potentialDragMode))
@@ -131,8 +95,8 @@ public class Windo extends MutableUnitContainer {
 
 
         if (finger.pressing(ZoomOrtho.PAN_BUTTON)) {
-            FingerDragging d =
-                    potentialDragMode != null ? (FingerDragging) fingering(potentialDragMode) : null;
+            Dragging d =
+                    potentialDragMode != null ? (Dragging) fingering(potentialDragMode) : null;
 
             if (d != null && finger.tryFingering(d)) {
                 this.dragMode = d;
@@ -186,7 +150,7 @@ public class Windo extends MutableUnitContainer {
     }
 
     protected Fingering fingeringMove() {
-        return new FingerSurfaceMove(this);
+        return new FingerMoveSurface(this);
     }
 
     /**

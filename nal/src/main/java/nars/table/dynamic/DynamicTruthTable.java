@@ -24,8 +24,8 @@ public final class DynamicTruthTable extends DynamicTaskTable {
     @Override
     public final void match(Answer a) {
 
-        if (a.template == null)
-            a.template = term;
+        if (a.term == null)
+            a.term = term;
 
         Task tt = DynTaskify.task(model, beliefOrGoal, a);
         if (tt != null)

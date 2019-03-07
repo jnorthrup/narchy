@@ -588,45 +588,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      */
     default float evi(long when, final int dur) {
         return EvidenceEvaluator.the(this).evi(when, dur);
-        //eviBatch(dur, new long[]{when})[0];
     }
-
-//    /**
-//     * batch evidence point sampling
-//     *
-//     * do not call this on external tasks. it can be avoided a better way than creating when[] etc
-//     */
-//    default float[] eviBatch(final int dur, long... when) {
-//
-//        float ee = evi();
-//
-//        long s = start();
-//        if (s == ETERNAL)
-//            throw new WTF();
-//        assert(s != ETERNAL);
-//
-//        int n = when.length;
-//        float[] e = new float[n];
-//        long ts = start(), te = end(); //cache these here to avoid repeat access through LongInterval.minTimeTo
-//        long wPre = Long.MIN_VALUE;
-//        for (int i = 0; i < n; i++) {
-//            long w = when[i]; assert(w!=ETERNAL && w!=TIMELESS);
-//            assert(wPre <= w);
-//
-//            if (i <= 1 || w != wPre) {
-//                long dt = LongInterval.minTimeOutside(w, ts, te);
-//                e[i] = (dt == 0) ?
-//                    ee : ((dur != 0) ? Param.evi(ee, dt, dur) : 0);
-//                wPre = w;
-//
-//            } else {
-//                e[i] = e[i-1]; //copy a repeat value
-//            }
-//
-//        }
-//
-//        return e;
-//    }
 
     @Override
     default Task task() {

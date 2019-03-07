@@ -2,11 +2,12 @@ package spacegraph.input.finger;
 
 import jcog.math.v2;
 
-public abstract class FingerMove extends FingerDragging {
+public abstract class FingerMove extends Dragging {
 
     private final float xSpeed;
     private final float ySpeed;
-    private v2 startPos, current = new v2();
+    private final v2 current = new v2();
+    private final v2 start = new v2();
 
     public FingerMove(int button) {
         this(button, true, true);
@@ -30,11 +31,11 @@ public abstract class FingerMove extends FingerDragging {
     @Override
     protected boolean drag(Finger f) {
 
-        current.set(pos(f));
-        if (current!=null) {
-            v2 start = startPos;
-            float tx = (xSpeed != 0 ? (current.x - start.x) * xSpeed : 0);
-            float ty = (ySpeed != 0 ? (current.y - start.y) * ySpeed : 0);
+        v2 pos = pos(f);
+        if (pos !=null) {
+            current.set(pos);
+            float tx = xSpeed != 0 ? (current.x - start.x) * xSpeed : 0;
+            float ty = ySpeed != 0 ? (current.y - start.y) * ySpeed : 0;
             move(tx, ty);
             return true;
         }
@@ -44,7 +45,7 @@ public abstract class FingerMove extends FingerDragging {
 
     @Override
     protected boolean startDrag(Finger f) {
-        this.startPos = pos(f).clone();
+        this.start.set(pos(f));
         return super.startDrag(f);
     }
 

@@ -5,21 +5,19 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.widget.windo.util.DragEdit;
 
-public abstract class FingerResize extends FingerDragging {
+public abstract class FingerResize extends Dragging {
     private final static float aspectRatioRatioLimit = 0.1f;
-    private final DragEdit mode;
     private final boolean invY;
     private RectFloat before;
 
     private v2 posStart;
 
-    FingerResize(int button, DragEdit mode) {
-        this(button, mode, false);
+    FingerResize(int button) {
+        this(button, false);
     }
 
-    FingerResize(int button, DragEdit mode, boolean invertY) {
+    FingerResize(int button, boolean invertY) {
         super(button);
-        this.mode = mode;
         this.invY = invertY;
     }
 
@@ -30,6 +28,8 @@ public abstract class FingerResize extends FingerDragging {
         return super.startDrag(f);
     }
 
+    public abstract DragEdit mode();
+
     @Override
     public boolean drag(Finger finger) {
 
@@ -37,7 +37,7 @@ public abstract class FingerResize extends FingerDragging {
         float fx = pos.x;
         float fy = pos.y;
 
-        switch (mode) {
+        switch (mode()) {
             case RESIZE_S: {
                 float pmy = before.top();
                 float bh = before.h;
@@ -148,10 +148,8 @@ public abstract class FingerResize extends FingerDragging {
 
     @Override
     public @Nullable FingerRenderer renderer() {
-        if (mode!=null) {
-            return mode.cursor();
-        }
-        return null;
+        DragEdit mode = mode();
+        return mode != null ? mode.cursor() : null;
     }
 
     @Override

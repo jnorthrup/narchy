@@ -5,7 +5,7 @@ import jcog.pri.ScalarValue;
 import jcog.signal.buffer.CircularFloatBuffer;
 import spacegraph.audio.AudioBuffer;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerDragging;
+import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.MenuSupplier;
@@ -60,7 +60,7 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
     volatile private float selectStart = NaN, selectEnd = NaN;
 
 
-    final Fingering select = new FingerDragging(SELECT_BUTTON) {
+    final Fingering select = new Dragging(SELECT_BUTTON) {
 
         float sample(float x) {
             return vis.start + (vis.end - vis.start) * (x / w());

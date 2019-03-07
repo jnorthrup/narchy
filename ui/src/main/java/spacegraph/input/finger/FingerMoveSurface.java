@@ -3,15 +3,15 @@ package spacegraph.input.finger;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 
-public class FingerSurfaceMove extends FingerMove {
+public class FingerMoveSurface extends FingerMove {
     private final Surface moving;
     private RectFloat before;
 
-    public FingerSurfaceMove(Surface moving) {
+    public FingerMoveSurface(Surface moving) {
         this(moving, true, true);
     }
 
-    private FingerSurfaceMove(Surface moving, boolean xAxis, boolean yAxis) {
+    private FingerMoveSurface(Surface moving, boolean xAxis, boolean yAxis) {
         super(0, /* LEFT BUTTON */xAxis, yAxis);
         this.moving = moving;
     }

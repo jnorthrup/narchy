@@ -23,6 +23,8 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     }
 
 
+
+
     @Override
     public boolean hasNext() {
         return index < array.length;
@@ -104,6 +106,10 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
                         new ArrayIterator(e) :
                         new PartialArrayIterator(e, size);
         }
+    }
+
+    public static <E> Iterator<E> getNonNull(E[] e) {
+        return getNonNull(e, e.length);
     }
 
     public static <E> Iterator<E> getNonNull(E[] e, int size) {

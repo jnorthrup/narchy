@@ -8,8 +8,8 @@ import jcog.math.v2;
 import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
+import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
@@ -90,7 +90,7 @@ public class XYSlider extends Surface implements HudHover  {
         return this;
     }
 
-    final FingerDragging drag = new FingerDragging(BUTTON) {
+    final Dragging drag = new Dragging(BUTTON) {
 
         @Override
         protected boolean startDrag(Finger f) {

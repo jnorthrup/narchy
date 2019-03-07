@@ -408,7 +408,7 @@ public class NARio extends NAgentX {
             g.resolution(0.1f);
         });*/
 
-        window(NARui.beliefCharts(nar, X.pos, X.neg, Y.pos, Y.neg), 700, 700);
+        window(NARui.beliefCharts(List.of(X.pos, X.neg, Y.pos, Y.neg), nar), 700, 700);
     }
 
     int lastCoins;

@@ -1,8 +1,11 @@
 package nars.gui;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.googlecode.lanterna.input.KeyType;
 import jcog.Util;
+import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.Exe;
@@ -36,6 +39,7 @@ import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
@@ -59,7 +63,10 @@ import spacegraph.video.Draw;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -80,13 +87,17 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 public class NARui {
 
-
-    public static Surface beliefCharts(NAR nar, Object... x) {
-        return beliefCharts(List.of(x), nar);
+    public static Surface beliefChart(Termed x, NAR nar) {
+        return new Widget(new MetaFrame(new BeliefTableChart(x, nar)));
+     }
+    public static Surface beliefChart(NAR nar, Termed... x) {
+        return beliefCharts(ArrayIterator.iterable(x), nar);
     }
 
-    public static Surface beliefCharts(Iterable ii, NAR nar) {
-        return new BeliefChartsGrid(ii, nar);
+    public static Surface beliefCharts(Iterable<? extends Termed> ii, NAR nar) {
+        return new Gridding(Lists.newArrayList(Iterables.transform(ii, i -> {
+            return beliefChart(i, nar);
+        })));
     }
 
 
@@ -409,7 +420,7 @@ public class NARui {
 
     public static Surface agent(NAgent a) {
 
-        Iterable<Concept> rewards = () -> a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false)).iterator();
+        Iterable<? extends Concept> rewards = () -> a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false)).iterator();
         Iterable<? extends Concept> actions = a.actions;
 
         Menu aa = new TabMenu(Map.of(
@@ -417,8 +428,8 @@ public class NARui {
 
                 "dex", () -> new TriggeredSurface<>(
                         new Plot2D(512, Plot2D.Line)
-                                .add("Dex+0", () -> a.dexterity()/*, 0f, 1f*/),
-                        a::onFrame, Plot2D::update),
+                                .add("Dex+0", a::dexterity),
+                            a::onFrame, Plot2D::update),
 
 //                        .addAt("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
 //                        .addAt("Dex+4", () -> a.dexterity(a.now() + 4 * a.nar().dur())), a),
@@ -679,29 +690,7 @@ public class NARui {
 //    }
 
 
-    /**
-     * TODO make this a static utility method of Gridding that take a surface builder Function applied to an Iterable
-     */
-    public static class BeliefChartsGrid extends Gridding {
 
-
-        public BeliefChartsGrid(Iterable<?> ii, NAR nar) {
-            super();
-
-            List<Surface> s = StreamSupport.stream(ii.spliterator(), false)
-                    .map(x -> x instanceof Termed ? (Termed) x : null).filter(Objects::nonNull)
-                    .map(c -> new MetaFrame(new BeliefTableChart(c, nar))).collect(toList());
-
-            if (!s.isEmpty()) {
-                set(s);
-            } else {
-                set(label("(empty)"));
-            }
-
-        }
-
-
-    }
 
     //    static class NarseseJShellModel extends OmniBox.JShellModel {
 //        private final NAR nar;

@@ -26,48 +26,47 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
+ * designed to be reusable
  */
 public final class Answer implements AutoCloseable {
 
     public final static int BELIEF_MATCH_CAPACITY =
             //Param.STAMP_CAPACITY - 1;
             //Math.max(1, Param.STAMP_CAPACITY / 2);
-            Math.max(1, 2 * (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
+            Math.max(1, (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
             //3;
-
 
     public static final int BELIEF_SAMPLE_CAPACITY = 2; //Math.max(1, BELIEF_MATCH_CAPACITY / 2);
     public static final int QUESTION_SAMPLE_CAPACITY = 1;
 
-    private final FloatRank<Task> rank;
-
-
-    boolean ditherTruth = false;
-
     public final NAR nar;
-    public int triesRemain;
-    public TimeRangeFilter time;
-    public Term template = null;
 
-    //public final static ThreadLocal<MetalPool<RankedTopN>> topTasks = RankedTopN.newRankedPool();
+    /** specific term template */
+    public Term term = null;
 
     public RankedTopN<Task> tasks;
+    public TimeRangeFilter time;
     public final Predicate<Task> filter;
+    private final FloatRank<Task> rank;
 
-    /** truthpolation duration */
+    /** time to live, # of tries remain */
+    public int ttl;
+
+    /** truthpolation duration in result evidence projection */
     public int dur = 0;
+    boolean ditherTruth = false;
 
-    private Answer(int capacity, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
-        this(capacity, Math.round(Param.ANSWER_COMPLETENESS * capacity), rank, filter, nar);
+    private Answer(FloatRank<Task> rank, @Nullable Predicate<Task> filter, int capacity, NAR nar) {
+        this(rank, filter, capacity, Math.round(Param.ANSWER_COMPLETENESS * capacity), nar);
     }
 
     /** TODO filter needs to be more clear if it refers to the finished task (if dynamic) or a component in creating one */
-    private Answer(int capacity, int maxTries, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
+    private Answer(FloatRank<Task> rank, @Nullable Predicate<Task> filter, int capacity, int maxTries, NAR nar) {
         this.nar = nar;
         this.tasks = //TopN.pooled(topTasks, capacity, this.rank = rank.filter(filter));
                 new RankedTopN<>(new Task[capacity], this.rank = rank.filter(filter));
         this.filter = filter;
-        this.triesRemain = maxTries;
+        this.ttl = maxTries;
     }
 
     /**
@@ -162,7 +161,7 @@ public final class Answer implements AutoCloseable {
 
         FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template);
 
-        return new Answer(capacity, r, filter, nar)
+        return new Answer(r, filter, capacity, nar)
                 .time(start, end)
                 .template(template);
     }
@@ -185,7 +184,7 @@ public final class Answer implements AutoCloseable {
     }
 
     public Answer template(Term template) {
-        this.template = template;
+        this.term = template;
         return this;
     }
 
@@ -526,7 +525,7 @@ public final class Answer implements AutoCloseable {
      *  a false return value should signal a stop to any iteration supplying results */
     public final boolean tryAccept(Task t) {
         if (time.accept(t.start(), t.end())) {
-            int remain = --triesRemain;
+            int remain = --ttl;
             if (remain >= 0) {
                 if (filter == null || filter.test(t)) {
                     accept(t);
@@ -548,7 +547,7 @@ public final class Answer implements AutoCloseable {
     }
 
     public boolean active() {
-        return triesRemain > 0;
+        return ttl > 0;
     }
 
     public final Random random() {

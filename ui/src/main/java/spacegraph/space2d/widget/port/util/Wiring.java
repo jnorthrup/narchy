@@ -5,7 +5,7 @@ import jcog.reflect.ExtendedCastGraph;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerDragging;
+import spacegraph.input.finger.Dragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.port.Wire;
@@ -20,7 +20,7 @@ import java.util.function.Function;
 /**
  * the process of drawing a wire between two surfaces
  */
-public class Wiring extends FingerDragging {
+public class Wiring extends Dragging {
 
     final static ExtendedCastGraph CAST = new ExtendedCastGraph();
     static {

@@ -4,9 +4,9 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-public class EternalNALTask extends NALTask {
+public class EternalTask extends NALTask {
 
-    public EternalNALTask(Term term, byte punc, @Nullable Truth truth, long creation, long[] stamp) {
+    public EternalTask(Term term, byte punc, @Nullable Truth truth, long creation, long[] stamp) {
         super(term, punc, truth, ETERNAL, ETERNAL, stamp, creation);
     }
 
@@ -35,8 +35,7 @@ public class EternalNALTask extends NALTask {
         return true;
     }
 
-    @Override
-    public final float evi(long when, int dur) {
+    @Override public final float evi(long when, int dur) {
         return truth().evi();
     }
 
@@ -47,6 +46,11 @@ public class EternalNALTask extends NALTask {
 
     @Override
     public final long minTimeTo(long a, long b) {
+        return 0;
+    }
+
+    @Override
+    public final long maxTimeTo(long x) {
         return 0;
     }
 

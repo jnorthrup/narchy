@@ -32,7 +32,7 @@ public abstract class NALTask extends UnitPri implements Task {
 
     public static NALTask the(Term c, byte punct, Truth tr, long creation, long start, long end, long[] evidence) {
         if (start == ETERNAL) {
-            return new EternalNALTask(c, punct, tr, creation, evidence);
+            return new EternalTask(c, punct, tr, creation, evidence);
         } else {
             return new GenericNALTask(c, punct, tr, creation, start, end, evidence);
         }

@@ -31,9 +31,6 @@ public interface EvidenceEvaluator {
         return w->evi(w,dur);
     }
 
-
-
-
     final class EternalEvidenceEvaluator implements EvidenceEvaluator {
         private final float evi;
 
@@ -85,7 +82,7 @@ public interface EvidenceEvaluator {
 
         @Override
         protected long dt(long when) {
-            return LongInterval.minTimeOutside(when, s, e);
+            return LongInterval.minTimeTo(when, s, e);
         }
 
 

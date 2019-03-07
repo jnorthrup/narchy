@@ -174,7 +174,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
                     for (BeliefTable b : goalTables) {
                         if (!(b instanceof CuriosityGoalTable)) {
-                            a.triesRemain = limit;
+                            a.ttl = limit;
                             a.match(b);
                         }
                     }

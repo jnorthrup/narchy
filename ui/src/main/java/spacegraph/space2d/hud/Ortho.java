@@ -52,7 +52,7 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     public final v2 scale = new v2(1, 1);
 
     public final Camera cam;
-    private final float camZmin = 5;
+    private final float camZmin = 1;
     private float camZmax = 640000;
     private float camXmin = -1, camXmax = +1;
     private float camYmin = -1, camYmax = +1;
@@ -62,13 +62,10 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     /** parent */
     public final JoglSpace space;
 
-    /** child */
-    S surface;
-
+    S content;
 
 //    /** finger position local to this layer/camera */
 //    public final v2 fingerPos = new v2();
-
 
     public Ortho(JoglSpace space, S content, NewtKeyboard keyboard) {
         super();
@@ -79,15 +76,15 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 
         this.keyboard = keyboard;
 
-        setSurface(content);
+        setContent(content);
 
         start(space);
     }
 
 
-    public void setSurface(S content) {
+    public void setContent(S content) {
         synchronized (this) {
-            S oldSurface = this.surface;
+            S oldSurface = this.content;
             if (oldSurface != null) {
                 if (oldSurface == content) {
                     return;//no change
@@ -95,9 +92,9 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
                 oldSurface.stop();
             }
 
-            this.surface = content;
-            if (surface.parent == null)
-                surface.start(this);
+            this.content = content;
+            if (this.content.parent == null)
+                this.content.start(this);
         }
 
         layout();
@@ -110,11 +107,11 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         int H = space.io.window.getHeight();
         if (posChanged(RectFloat.WH( W, H))) {
 
-            float camZ = targetDepth(Math.max(W, H));
+            float camZ = targetDepth(Math.min(W, H));
             camZmax = camZ;
 
             if (autosize()) {
-                surface.pos(bounds);
+                content.pos(bounds);
                 cam.set(bounds.w / 2f, bounds.h / 2f, camZ);
             }
 
@@ -126,14 +123,13 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     @Override public final void compile(SurfaceRender render) {
 
         float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
-        float s = zoom * Math.max(w(), h());
+        float s = zoom * Math.min(w(), h());
 
-        render.compile(cam, scale.set(s, s), surface);
+        render.compile(cam, scale.set(s, s), content);
     }
 
     @Override
     public void paint(GL2 gl, SurfaceRender r) {
-        //gl.glLoadIdentity();
 
         gl.glPushMatrix();
 
@@ -210,8 +206,8 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
             animate(cam);
 
 
-            if (surface.parent == null)
-                surface.start(this);
+            if (content.parent == null)
+                content.start(this);
 
             starting();
         }
@@ -306,13 +302,30 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin);
     }
 
+    /** choose best zoom radius for the target rectangle according to current view aspect ratio */
+    private float targetDepth(float w, float h, float margin) {
+        float d = Math.max(w, h);
+//        if (((((float) pw()) / ph()) >= 1) == ((w / h) >= 1))
+//            d = h; //limit by height
+//        else
+//            d = w; //limit by width
+
+        return targetDepth(d * (1+margin));
+    }
+
+    public final int pw() {
+        return this.space.io.getWidth();
+    }
+    public final int ph() {
+        return this.space.io.getHeight();
+    }
 
     private float targetDepth(float viewDiameter) {
         return (float) ((viewDiameter * sin(Math.PI / 2 - focusAngle / 2)) / sin(focusAngle / 2));
     }
 
     private void zoom(float x, float y, float sx, float sy, float margin) {
-        zoom(x, y, targetDepth( /*Math.max(sx, sy)*/ (float) (Math.sqrt(sx * sx + sy * sy) * (1 + margin))));
+        zoom(x, y, targetDepth(sx, sy, margin));
     }
 
     public final void zoom(v3 v) {
@@ -353,19 +366,19 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     public boolean stop() {
         synchronized (this) {
             stopping();
-            assert (surface.parent == this);
-            return surface.stop();
+            assert (content.parent == this);
+            return content.stop();
         }
     }
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        o.accept(surface);
+        o.accept(content);
     }
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        return o.test(surface);
+        return o.test(content);
     }
 
     @Override
@@ -422,7 +435,7 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 
 
     public final S the() {
-        return surface;
+        return content;
     }
 
 

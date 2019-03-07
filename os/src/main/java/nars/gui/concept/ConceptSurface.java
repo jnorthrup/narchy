@@ -53,7 +53,7 @@ public class ConceptSurface extends TabMenu {
 ////                        }
 //                    });
 //                },
-                "beliefs", () -> NARui.beliefCharts(n, n.conceptualizeDynamic(x)),
+                "beliefs", () -> NARui.beliefChart(n.conceptualizeDynamic(x), n),
 //                        "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
 //                "tasklinks", () -> new LabeledPane("TaskLinks", new BagView(n.concept(x).tasklinks(), n)),
                 "goal", () -> {

@@ -14,10 +14,8 @@ import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
@@ -27,7 +25,6 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.video.Draw;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -51,7 +48,8 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private long start, end;
     private int dur;
 
-    static final int truthPrecision = 3;
+    /** how much evidence to include in result */
+    static final int truthPrecision = 6;
 
     /** in durs */
     public final FloatRange timeShift = new FloatRange(0, -64, +64);
@@ -62,9 +60,9 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     /** truth duration */
     public final FloatRange truthDur = new FloatRange(1, 0, 4);
 
-    public final AtomicBoolean visBelief = new AtomicBoolean(true);
-    public final AtomicBoolean visGoal = new AtomicBoolean(true);
-    public final AtomicBoolean visPri = new AtomicBoolean(true);
+    public final AtomicBoolean beliefs = new AtomicBoolean(true);
+    public final AtomicBoolean goals = new AtomicBoolean(true);
+    //public final AtomicBoolean pris = new AtomicBoolean(true);
 
 
 
@@ -137,7 +135,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         return false;
     }
 
-    final FingerDragging affect = new FingerDragging(AFFECT_CONCEPT_BUTTON) {
+    final Dragging affect = new Dragging(AFFECT_CONCEPT_BUTTON) {
         @Override
         protected boolean drag(Finger f) {
 //            updateTouchedConcept(f);
@@ -148,12 +146,9 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             }
             return false;
         }
-
-
     };
 
     private void updateTouchedConcept(Finger finger) {
-
         if (finger == null) {
             touchConcept = null;
         } else {
@@ -179,27 +174,17 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
     @Override
-    public boolean start(@Nullable SurfaceBase parent) {
-        if (super.start(parent)) {
-            on = DurService.on(nar, this::accept);
-            return true;
-        }
-        return false;
+    protected void starting() {
+        super.starting();
+        on = DurService.on(nar, this::accept);
     }
 
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            if (on != null) {
-                on.off();
-                this.on = null;
-            }
-            return true;
-        }
-        return false;
+    protected void stopping() {
+        on.off();
+        this.on = null;
+        super.stopping();
     }
-
-
 
     private void accept(NAR nn) {
         dur = nn.dur();
@@ -233,14 +218,14 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         Term template =
                 null; //s.target;
 
-        if (visBelief.get()) {
+        if (beliefs.get()) {
             Truth b = s.beliefs().truth(start, end, template, null, truthPrecision, _truthDur, nar);
             bf = b != null ? b.freq() : noise();
         }
 
         R = bf * 0.75f; G = bf * 0.75f; B = bf * 0.75f;
 
-        if (visGoal.get()) {
+        if (goals.get()) {
             Truth d = s.goals().truth(start, end, template, null, truthPrecision, _truthDur, nar);
             if (d != null) {
                 float f = d.expectation();
@@ -254,10 +239,10 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         }
 
 
-        if (visPri.get()) {
-            float pri = nar.concepts.pri(s, 0);
-            B += 0.25f * pri;
-        }
+//        if (pris.get()) {
+//            float pri = nar.concepts.pri(s, 0);
+//            B += 0.25f * pri;
+//        }
 
         return Draw.rgbInt(
                 Util.unitize(R), Util.unitize(G), Util.unitize(B)
@@ -327,13 +312,12 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
                 goalCheckBox(view, "Goal+", 1f),
                 goalCheckBox(view, "Goal+-", 0.5f),
                 goalCheckBox(view, "Goal-", 0f)
-            ), new ObjectSurface<>(List.of(view.visBelief, view.visGoal, view.visPri, view.timeShift))
+            ), new ObjectSurface<>(view)
                     //TODO attn node plot: supply/demand
                     //new FloatSlider("Supply", view.sensor.attn.supply)
             );
         }
 
-        @NotNull
         public CheckBox goalCheckBox(VectorSensorView view, String s, float v) {
             return new CheckBox(s, () -> {
                 view.onConceptTouch((c) -> {

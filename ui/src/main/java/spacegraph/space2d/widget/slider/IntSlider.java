@@ -19,6 +19,8 @@ public class IntSlider extends FloatSlider {
         this.labelText = label;
     }
 
+
+
 //    protected FloatSliderModel slider(float v, float min, float max) {
 //        return new MyDefaultFloatSlider(v, min, max);
 //    }

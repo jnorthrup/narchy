@@ -73,7 +73,7 @@ public class DynTaskify extends TaskList {
 
     @Nullable
     public static Task task(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
-        Term template = a.template;
+        Term template = a.term;
         DynTaskify d = eval(template, model, beliefOrGoal, a);
         if (d == null)
             return null;
