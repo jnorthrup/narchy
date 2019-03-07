@@ -29,7 +29,6 @@ import nars.link.TaskLink;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Introduction;
-import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
@@ -448,11 +447,13 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8
+        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 6, 6, "motivation.nal"));
+        bd1.timing = new ActionTiming(n);
+
+        BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8
                // ,"relation_introduction.nal"
-               , "motivation.nal"
         ));
-        bd.timing = new ActionTiming(n);
+        //bd2.timing = new ActionTiming(n);
 //        bd.tasklinksPerIteration.set(8);
         //bd.timing = bd.timing; //default
 

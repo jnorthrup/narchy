@@ -4,8 +4,6 @@ import jcog.exe.Can;
 import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
@@ -107,25 +105,12 @@ abstract public class Causable extends NARService {
      */
     protected abstract void next(NAR n, BooleanSupplier kontinue);
 
-//    final int nextCounted(NAR n, BooleanSupplier kontinue) {
-//        final int[] count = {1};
-//        next(n, ()-> {
-//            if (kontinue.getAsBoolean()) {
-//                count[0]++;
-//                return true;
-//            }
-//            return false;
-//        });
-//        return count[0];
-//    }
 
     /**
      * returns a system estimated instantaneous-sampled value of invoking this. between 0..1.0
      */
     public abstract float value();
 
-    final static Logger logger = LoggerFactory.getLogger(Causable.class);
+//    final static Logger logger = LoggerFactory.getLogger(Causable.class);
 
-    public final void runUntil(long when, NAR n) {
-    }
 }

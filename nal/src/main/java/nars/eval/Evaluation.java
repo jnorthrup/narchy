@@ -361,7 +361,7 @@ public class Evaluation {
 
     private void ensureReady() {
         if (v == null) {
-            v = new Versioning<>(Param.UnificationStackMax, Param.EVALUATION_TTL);
+            v = new Versioning<>(Param.UnificationStackMax, Param.TASK_EVALUATION_TTL);
             subst = new VersionMap<>(v);
             termutator = new FasterList(1);
         }

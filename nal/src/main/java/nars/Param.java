@@ -103,7 +103,7 @@ public abstract class Param {
 
     public static final boolean TERMIFY_TRANSFORM_LAZY = true;
 
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 
 //    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
@@ -117,7 +117,7 @@ public abstract class Param {
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
 
     /** TODO needs tested whether recursive Unification inherits TTL */
-    public static final int EVALUATION_TTL = 32;
+    public static final int TASK_EVALUATION_TTL = 32;
 
 //    /** within how many durations a difference in dt is acceptable for target unification */
 //    public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 1f;
@@ -477,8 +477,8 @@ public abstract class Param {
         float falloffDurs =
                 //1;
                 //1.618f; //phi
-                2; //nyquist
-                //4;
+                //2; //nyquist
+                4;
                 //dur;
                 //8;
                 //64;

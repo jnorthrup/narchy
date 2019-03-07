@@ -32,16 +32,19 @@ abstract public class MultiExec extends UniExec {
     private final Valuator valuator;
 
 
-
     protected long threadWorkTimePerCycle, threadIdleTimePerCycle;
 
-    /** global sleep nap period */
+    /**
+     * global sleep nap period
+     */
     private static final long NapTime = 2 * 1000 * 1000; //on the order of ~1ms
 
     static private final float queueLatencyMeasurementProbability = 0.05f;
 
-    /** proportion of time spent in forced curiosity */
-    private float explorationRate = 0.1f;
+    /**
+     * proportion of time spent in forced curiosity
+     */
+    private float explorationRate = 0.2f;
 
 
     protected long cycleNS;
@@ -91,7 +94,7 @@ abstract public class MultiExec extends UniExec {
 
     private void updateTiming() {
         cycleNS = nar.loop.periodNS();
-        if(cycleNS < 0) {
+        if (cycleNS < 0) {
             //paused
             threadIdleTimePerCycle = NapTime;
         } else {
@@ -138,13 +141,13 @@ abstract public class MultiExec extends UniExec {
 
             float vr;
             long tUsed = s.used();
-            if (tUsed  <= 0) {
+            if (tUsed <= 0) {
                 s.value = Float.NaN;
                 vr = 0;
             } else {
                 float v = Math.max(0, s.value = c.value());
-                double cyclesUsed = ((double)tUsed) / cycleNS;
-                vr = (float)(v / (1 + cyclesUsed));
+                double cyclesUsed = ((double) tUsed) / cycleNS;
+                vr = (float) (v / (1 + cyclesUsed));
                 assert (vr == vr);
             }
 
@@ -169,7 +172,7 @@ abstract public class MultiExec extends UniExec {
             });
         } else {
             //FLAT
-            float p = 1f/n;
+            float p = 1f / n;
             cpu.forEach(s -> s.pri(p));
         }
 
@@ -205,7 +208,7 @@ abstract public class MultiExec extends UniExec {
             b.forEach(this::executeNow);
         } else {
 
-            float granularity = 1 * (concurrency/2f);
+            float granularity = 1 * (concurrency / 2f);
             int chunkSize = Math.max(1, (int) Math.min(concurrency, b.size() / (granularity)));
 
             (((FasterList<?>) b).chunkView(chunkSize))
@@ -271,6 +274,9 @@ abstract public class MultiExec extends UniExec {
 
         private final class Worker implements Runnable, Off {
 
+            private long subCycleMinNS = 50_000;
+            private long subCycleMaxNS;
+
             private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
 
             TimedLink.MyTimedLink[] play = new TimedLink.MyTimedLink[0];
@@ -283,11 +289,11 @@ abstract public class MultiExec extends UniExec {
             int i = 0;
             long prioLast = ETERNAL;
             private int n;
-            private long subCycleMin, subCycleMax;
+
             private long prioritizeEveryCycles;
 
             Worker() {
-                 rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
+                rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
             }
 
             @Override
@@ -309,11 +315,11 @@ abstract public class MultiExec extends UniExec {
             private long work() {
                 long workStart = nanoTime();
 
-                float granularity =
-                    Math.max(1, concurrency() + 1);
-                    //Math.max(1, concurrency() - 1);
-                    //concurrency() / 2f;
-                    //1;
+                float workGranularity =
+                        //Math.max(1, concurrency() + 1);
+                        Math.max(1, concurrency() - 1);
+                //concurrency() / 2f;
+                //1;
                 float throttle = nar.loop.throttle.floatValue();
 
                 do {
@@ -324,7 +330,7 @@ abstract public class MultiExec extends UniExec {
                     int batchSize =
                             Util.lerp(throttle,
                                     available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                                    Math.max(1, (int) ((available / Math.max(1, granularity))))
+                                    Math.max(1, (int) ((available / Math.max(1, workGranularity))))
                             );
 
                     int drained = in.remove(schedule, batchSize);
@@ -352,7 +358,7 @@ abstract public class MultiExec extends UniExec {
                 if (now > prioLast + prioritizeEveryCycles) {
                     prioritizeEveryCycles =
                             nar.dur(); //update current dur
-                            //2 * nar.dtDither();
+                    //2 * nar.dtDither();
 
                     prioLast = now;
                     prioritize(threadWorkTimePerCycle);
@@ -372,44 +378,41 @@ abstract public class MultiExec extends UniExec {
 
                     Causable c = s.can;
 
-                    boolean playing = false;
+                    boolean played = false;
                     if (sTime <= 0 || c.sleeping()) {
 
                     } else {
 
                         boolean singleton = c.singleton();
-                        if (!singleton || c.busy.weakCompareAndSetAcquire(false, true)) {
+                        if (!singleton || c.busy.compareAndSet(false, true)) {
 
                             long before = nanoTime();
 
-                            long runtimeNS = Math.min(until - before, Math.min(sTime, subCycleMax));
+                            long runtimeNS = Math.min(until - before, Math.min(sTime, subCycleMaxNS));
 
-                            if (runtimeNS > 0) {
-                                playing = true;
-                                deadline = before + runtimeNS;
-                                try {
+                            try {
+
+                                if (runtimeNS > 0) {
+                                    deadline = before + runtimeNS;
+
                                     c.next(nar, deadlineFn);
-                                } catch (Throwable t) {
-                                    logger.error("{} {}", this, t);
+
+                                    played = true;
+                                    after = nanoTime();
+                                    s.use(after - before);
                                 }
-                                after = nanoTime();
-                                s.use(after - before);
+                            } catch (Throwable t) {
+                                logger.error("{} {}", this, t);
+                            } finally {
+                                if (singleton)
+                                    c.busy.set(false);
                             }
 
-                            if (singleton) {
-                                //c.busy.set(false);
-                                c.busy.setRelease(false);
-                            }
                         }
                     }
 
-                    if (!playing) {
-                        if (++skip == n) {
-//                            after = nanoTime(); //safety
-//                            skip = 0;
-                            break; //reschedule
-                        }
-                    }
+                    if (!played && ++skip == n)
+                        break; //go to work early
 
                 } while ((until > after) && queueSafe());
 //                System.out.println(
@@ -427,8 +430,7 @@ abstract public class MultiExec extends UniExec {
 //                /** expected time will be equal to or less than the max due to various overheads on resource constraints */
 //                double expectedWorkTimeNS = (((double)workTimeNS) * expectedWorkTimeFactor); //TODO meter and predict
 
-                subCycleMin = 1; //Math.max(1, Math.round(cycleNS / (n * granularity)));
-                subCycleMax = Math.max(subCycleMin, Math.round(cycleNS/ (n * granularity)));
+                subCycleMaxNS = (long) (cycleNS / granularity);
 
                 if (play.length != n) {
                     //TODO more careful test for change
@@ -444,13 +446,13 @@ abstract public class MultiExec extends UniExec {
                 //schedule
                 //TODO Util.max((TimedLink.MyTimedLink m) -> m.time, play);
                 long minTime = -Util.max((TimedLink.MyTimedLink x) -> -x.time, play);
-                long existingTime = Util.sum((TimedLink.MyTimedLink x) -> Math.max(0,x.time), play);
+                long existingTime = Util.sum((TimedLink.MyTimedLink x) -> Math.max(0, x.time), play);
                 long remainingTime = workTimeNS - existingTime;
-                if (remainingTime > subCycleMin) {
+                if (remainingTime > subCycleMinNS) {
                     long shift = minTime < 0 ? 1 - minTime : 0;
                     for (TimedLink.MyTimedLink m : play) {
                         int t = Math.round(shift + remainingTime * m.pri());
-                        m.add(Math.max(subCycleMin, t), -workTimeNS, +workTimeNS);
+                        m.add(Math.max(subCycleMinNS, t), -workTimeNS, +workTimeNS);
                     }
                 }
             }
@@ -503,10 +505,12 @@ abstract public class MultiExec extends UniExec {
             return null;
         }
 
-        /** measure queue latency "ping" */
+        /**
+         * measure queue latency "ping"
+         */
         static void queueLatency(long start, long end, NAR n) {
             long latencyNS = end - start;
-            double cycles = latencyNS / ((double)(n.loop.periodNS() / n.exe.concurrency()));
+            double cycles = latencyNS / ((double) (n.loop.periodNS() / n.exe.concurrency()));
             if (cycles > 0.5) {
                 logger.info("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(cycles));
             }
