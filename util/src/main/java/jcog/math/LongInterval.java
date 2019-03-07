@@ -199,17 +199,15 @@ public interface LongInterval {
 
         //assert (b >= a): a + " > " + b;
 
-        if (a == ETERNAL) {
-            
+        if (a == ETERNAL)
             return 0;
-        }
 
         long s = start();
         if (s == ETERNAL)
             return 0;
 
         long e = end();
-        if (intersects(a, b)) {
+        if (Longerval.intersects(a, b, s, e)) {
             return 0; 
         } else {
             long sa = Math.abs(s - a);

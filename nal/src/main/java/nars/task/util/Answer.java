@@ -143,7 +143,7 @@ public final class Answer implements AutoCloseable {
 //                return r; //TODO make sure that the long cast to float is ok
 //            };
         } else {
-            return b -> -b.minTimeTo(targetStart); // -b.range()/tableDur;
+            return x -> -x.minTimeTo(targetStart); // -b.range()/tableDur;
         }
     }
 
