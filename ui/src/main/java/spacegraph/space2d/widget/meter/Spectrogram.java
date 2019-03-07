@@ -1,4 +1,4 @@
-package nars.gui;
+package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.IntRange;
@@ -7,7 +7,6 @@ import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 

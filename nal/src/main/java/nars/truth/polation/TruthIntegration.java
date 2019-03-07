@@ -77,12 +77,25 @@ public class TruthIntegration {
             } else if (qStart <= tStart && qEnd >= tEnd) {
                 //question contains task
 
-                return LongFloatTrapezoidalIntegrator.sum(ee,
-                                qStart,
-                                (qStart + tStart)/2, //supersample
-                                tStart, tEnd,   //internal to task.  supersample not necessary unless task is not uniform
-                                (tEnd + qEnd)/2, //supersample
-                                qEnd);
+//                if (qStart == tStart) {
+//                    //HACK collapse point
+//                    return LongFloatTrapezoidalIntegrator.sumSort(ee,
+//                           qStart,
+//                            tStart, tEnd,   //internal to task.  supersample not necessary unless task is not uniform
+//                            Math.min(tEnd + 1, qEnd),//task edge supersample
+//                            (tEnd + qEnd) / 2, //supersample
+//                            qEnd);
+//
+//                } else {
+                    return LongFloatTrapezoidalIntegrator.sumSort(ee,
+                            qStart,
+                            (qStart + tStart) / 2, //supersample
+                            Math.max(qStart, tStart - 1), //task rising edge supersample
+                            tStart, tEnd,   //internal to task.  supersample not necessary unless task is not uniform
+                            Math.min(tEnd + 1, qEnd),//task falling edge supersample
+                            (tEnd + qEnd) / 2, //supersample
+                            qEnd);
+//                }
 
             } else {
                 //MESSY INTERSECTION
@@ -97,20 +110,22 @@ public class TruthIntegration {
 
                 } else if (qStart >= tStart && qEnd <= tEnd) {
                     assert(qEnd <= tEnd);
-                    //starts before the task
+                    //starts before the task and ends in it
                     return LongFloatTrapezoidalIntegrator.sum(ee,
                             qStart,
-                            (qStart+tEnd)/2, //supersample
-                            tEnd,
-                            (tEnd+qEnd)/2, //supersample
+                            (qStart+tStart)/2, //supersample
+                            Math.max(qStart, tStart - 1), //task rising edge supersample
+                            tStart,
                             qEnd
                     );
-                } else if (tStart <= qStart && qEnd >= tEnd) {
+                } else if (qStart >= tStart && qStart <= tEnd && qEnd >= tEnd) {
                     //tstart, qstart, qend
+                    //finishes after the task
                     return LongFloatTrapezoidalIntegrator.sum(ee,
-                            tStart,
-                            (qStart+tStart)/2, //supersample
                             qStart,
+                            tEnd,
+                            Math.min(tEnd + 1, qEnd),//task falling edge supersample
+                            Math.max(qEnd, (tEnd+qEnd)/2), //supersample
                             qEnd
                     );
                 } else if (tStart >= qStart && qEnd <= tEnd) {
@@ -119,7 +134,6 @@ public class TruthIntegration {
                             qStart,
                             (qStart+tStart)/2, //supersample
                             tStart,
-                            (tStart+qEnd)/2, //supersample
                             qEnd
                     );
                 } else

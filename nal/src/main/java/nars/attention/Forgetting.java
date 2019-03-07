@@ -24,9 +24,10 @@ abstract public class Forgetting {
                 int cap = b.capacity();
                 if (cap > 0) {
 
-                    float pressure = depressurize(b, depressurizationRate);
+                    float pressure = depressurize(b, depressurizationRate); assert(pressure == pressure);
 
-                    float mass = b.mass();
+                    float mass = b.mass(); assert(mass == mass);
+
                     if (mass > Float.MIN_NORMAL) {
 
                         Consumer eachMustForgetPct = forget(temperature, size, cap, pressure, mass);

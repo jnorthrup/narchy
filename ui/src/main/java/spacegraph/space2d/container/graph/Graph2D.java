@@ -69,12 +69,11 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
     };
 
-    final MRUMap<X, NodeVis<X>> nodeCache = new MRUMap<X,NodeVis<X>>(8 * 1024) {
+    final MRUMap<X, NodeVis<X>> nodeCache = new MRUMap<>(8 * 1024) {
         @Override
         protected void onEvict(Map.Entry<X, NodeVis<X>> entry) {
-
             NodeVis<X> s = entry.getValue();
-            if (s.id==null)
+            if (s.id == null)
                 s.stop();
         }
     }; //TODO set capacity good
@@ -255,9 +254,11 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     @Override
     protected void stopping() {
-        nodeCache.values().forEach(Container::stop);
-        nodeCache.clear();
-        edgePool.delete();
+        //synchronized (nodeCache) {
+            nodeCache.values().forEach(Container::stop);
+            nodeCache.clear();
+            edgePool.delete();
+        //}
     }
 
     private void updateNodes(Iterable<X> nodes, boolean addOrReplace) {

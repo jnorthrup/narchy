@@ -84,7 +84,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
     final ScatterPlotModel<X> model;
 
 
-    private float extentUpdatePeriodS = 0.1f;
+    private float extentUpdatePeriodS = 0.3f;
     final RectAnimator extent =
             new RectAnimator.ExponentialRectAnimator(new MutableRectFloat());
 
@@ -134,6 +134,8 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                             minVis,
                             w,h
                     ));
+
+                    node.move(w/2, h/2); //HACK wtf why is this necessary
 
                     node.pri = model.pri(id);
 

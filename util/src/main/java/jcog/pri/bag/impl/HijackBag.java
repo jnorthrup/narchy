@@ -122,7 +122,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public void pressurize(float f) {
-        PRESSURE.add(this, f);
+        if (f == f)
+            PRESSURE.add(this, f);
     }
 
     @Override

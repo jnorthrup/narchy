@@ -136,7 +136,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     @Override
     public void pressurize(float f) {
-        PRESSURE.add(this, f);
+        if (f == f)
+            PRESSURE.add(this, f);
     }
 
     /**

@@ -197,16 +197,12 @@ public abstract class Param {
             //1.618f; //goldenratio
             //2;
 
-    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = false;
+    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = true;
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
     public static long TASK_RANGE_LIMIT = (1L << 61) /* estimate */;
 
-    public static int TRUTH_INTEGRATION_SUPERSAMPLING =
-            //0 //no super-sampling
-            1   //1 additional mid-point inserted
-    ;
 
     /**
      * maximum time (in durations) that a signal task can stretch the same value

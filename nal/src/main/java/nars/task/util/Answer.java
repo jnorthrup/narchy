@@ -32,7 +32,7 @@ public final class Answer implements AutoCloseable {
     public final static int BELIEF_MATCH_CAPACITY =
             //Param.STAMP_CAPACITY - 1;
             //Math.max(1, Param.STAMP_CAPACITY / 2);
-            Math.max(1, (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
+            Math.max(1, 2 * (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
             //3;
 
 

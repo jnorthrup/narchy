@@ -10,9 +10,20 @@ public class LongFloatTrapezoidalIntegrator {
 
     private long xPrev = Long.MIN_VALUE;
     private float yPrev = Float.NaN;
-    private float sum = Float.NaN;
+    private double sum = Float.NaN;
 
-    public static float sum(long[] x, LongToFloatFunction each) {
+
+    /** pre-sorts the input array */
+    public final static float sumSort(LongToFloatFunction y, long... xNexts) {
+        if (xNexts.length > 1)
+            Arrays.sort(xNexts);
+        return sum(y, xNexts);
+    }
+
+    public final static float sum(LongToFloatFunction each, long... x) {
+
+        //return new LongFloatTrapezoidalIntegrator().sample(each, x).sum();
+
         switch (x.length) {
             case 0:
                 return 0;
@@ -26,34 +37,23 @@ public class LongFloatTrapezoidalIntegrator {
                     long range = b-a;
                     if (range < 0)
                         throw new WTF("x must be monotonically increasing");
-                    return (each.valueOf(a) + each.valueOf(b)) / 2 * (range + 1);
+                    return (float)((each.valueOf(a) + each.valueOf(b)) / 2.0 * (range + 1));
                 }
             }
             //TODO 3-ary case?
             default:
-                LongFloatTrapezoidalIntegrator t = new LongFloatTrapezoidalIntegrator();
-                for (int i = 0; i < x.length; i++) {
-                    long xi = x[i];
-                    t.sample(xi, each.valueOf(xi));
-                }
-                return t.sum();
+                return new LongFloatTrapezoidalIntegrator().sample(each, x).sum();
         }
-    }
 
-
-    public final static float sumPreSort(LongToFloatFunction y, long... xNexts) {
-        if (xNexts.length > 1)
-            Arrays.sort(xNexts);
-        return sum(y, xNexts);
-    }
-
-    public final static float sum(LongToFloatFunction y, long... xNexts) {
-        return new LongFloatTrapezoidalIntegrator().sample(y, xNexts).sum();
     }
 
     public final LongFloatTrapezoidalIntegrator sample(LongToFloatFunction y, long... xNexts) {
-        for (long x : xNexts)
-            sample(x, y.valueOf(x));
+        long xPrev = Long.MIN_VALUE;
+        for (long xNext : xNexts) {
+            if (xPrev == xNext)
+                continue;
+            sample(xNext, y.valueOf(xPrev = xNext));
+        }
         return this;
     }
 
@@ -64,26 +64,26 @@ public class LongFloatTrapezoidalIntegrator {
     }
 
     public void sample(long xNext, float yNext) {
+        if (!Float.isFinite(yNext))
+            throw new WTF("y must be finite");
+
         boolean first = yPrev!=yPrev;
 
             //first value
         if (!first) {
             //subsequent value
-            if (xNext < xPrev)
-                throw new WTF("x must be monotonically increasing");
             if (xNext == xPrev)
                 return; //no effect, same point. assume same y-value
+            if (xNext < xPrev)
+                throw new WTF("x must be monotonically increasing");
         }
-
-        if (!Float.isFinite(yNext))
-            throw new WTF("y must be finite");
 
         if (!first) {
             //accumulate sum
             if (sum!=sum)
                 sum = 0; //initialize first summation
             long dt = xNext - xPrev;
-            sum += (yNext + yPrev) / 2 * (dt + 1);
+            sum += (yNext + yPrev) / 2.0 * (dt + 1);
         }
 
         this.xPrev = xNext; this.yPrev = yNext;
@@ -95,7 +95,7 @@ public class LongFloatTrapezoidalIntegrator {
             //zero or 1 points
             return xPrev;
         }
-        return sum;
+        return (float) sum;
     }
 //        /**
 //         //     * https:

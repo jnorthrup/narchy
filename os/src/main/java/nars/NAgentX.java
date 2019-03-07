@@ -22,7 +22,7 @@ import nars.exe.MultiExec;
 import nars.exe.Valuator;
 import nars.gui.DurSurface;
 import nars.gui.NARui;
-import nars.gui.Spectrogram;
+import spacegraph.space2d.widget.meter.Spectrogram;
 import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
 import nars.link.TaskLink;
@@ -394,17 +394,14 @@ abstract public class NAgentX extends NAgent {
         ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
-        float p =
-                0.25f;
-                //0.02f;
-        
-        n.beliefPriDefault.set(1f * p);
-        n.goalPriDefault.set(2f * p);
-        n.questionPriDefault.set(0.1f * p);
-        n.questPriDefault.set(0.1f * p);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefPriDefault.set(0.1);
+        n.goalPriDefault.set(0.5f);
+        n.questionPriDefault.set(0.02f);
+        n.questPriDefault.set(0.02f);
+
+        n.beliefConfDefault.set(0.8f);
+        n.goalConfDefault.set(0.8f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 

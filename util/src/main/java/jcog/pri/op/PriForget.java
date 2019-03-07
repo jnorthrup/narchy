@@ -55,7 +55,7 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
 
     @Nullable
     public static Consumer<? extends Prioritizable> forgetIdeal(float rate, float idealPri, int size, int cap, float pressure, float mass) {
-        float excess = pressure + Math.max(0, mass  - (size * idealPri));
+        float excess = pressure + Math.max(0, mass - (size * idealPri));
         float eachMustForgetPct =
                 rate * (excess / mass);
 
