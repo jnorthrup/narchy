@@ -100,7 +100,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             default:
                 float[] w = new float[s];
                 MutableRoulette r = new MutableRoulette(w, (c) -> 0, a.random());
-                Task nextTask = null;
+                Task nextTask;
                 do {
                     int c = r.next();
                     if (c < 0)

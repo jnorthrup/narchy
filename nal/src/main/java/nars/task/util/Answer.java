@@ -62,7 +62,7 @@ public final class Answer implements AutoCloseable {
      * truthpolation duration in result evidence projection
      */
     public int dur = 0;
-    boolean ditherTruth = false;
+    public boolean ditherTruth = false;
 
     private Answer(FloatRank<Task> rank, @Nullable Predicate<Task> filter, int capacity, NAR nar) {
         this(rank, filter, capacity, Math.round(Param.ANSWER_COMPLETENESS * capacity), nar);
@@ -295,6 +295,10 @@ public final class Answer implements AutoCloseable {
         return this;
     }
 
+    public Task task(boolean topOrSample, boolean forceProject, boolean dither) {
+        return task(topOrSample, forceProject, dither, dither);
+    }
+
     /**
      * matches, and projects to the specified time-range if necessary
      * note: if forceProject, the result may be null if projection doesnt succeed.
@@ -303,8 +307,10 @@ public final class Answer implements AutoCloseable {
      * <p>
      * clears the cache and tasks before returning
      */
-    public Task task(boolean topOrSample, boolean forceProject) {
+    public Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth, boolean ditherTime) {
         try {
+            ditherTruth(ditherTruth); //enable/disable truth dithering
+
             int s = tasks.size();
 
             if (s == 0)
@@ -340,24 +346,18 @@ public final class Answer implements AutoCloseable {
                 }
             }
 
-            if (t.evi() < eviMin())
+            float eviMin = eviMin();
+            if (t.evi() < eviMin)
                 return null;
 
             if (forceProject) { //dont bother sub-projecting eternal here.
                 long ss = time.start;
                 if (ss != ETERNAL) { //dont eternalize here
-                    long tStart = t.start();
-                    if (tStart != ETERNAL) {
-                        if (tStart != ss) {
-                            long ee = time.end;
-                            if (t.end() != ee) {
-                                @Nullable Task t2 = Task.project(t, ss, ee, true, ditherTruth, false, eviMin(), nar);
-                                if (t2 == null || t2.evi() < eviMin())
-                                    return null;
-                                t = t2;
-                            }
-                        }
-                    }
+                    long ee = time.end;
+                    @Nullable Task t2 = Task.project(t, ss, ee, eviMin, ditherTime, this.ditherTruth, nar);
+                    if (t2 == null)
+                        return null;
+                    t = t2;
                 }
             }
 

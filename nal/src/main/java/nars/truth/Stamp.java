@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.IntFunction;
 import java.util.function.LongPredicate;
-import java.util.function.Supplier;
 
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;

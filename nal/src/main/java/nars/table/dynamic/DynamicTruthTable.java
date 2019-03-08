@@ -1,6 +1,5 @@
 package nars.table.dynamic;
 
-import nars.Task;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.truth.dynamic.AbstractDynamicTruth;
@@ -23,17 +22,10 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 
     @Override
     public final void match(Answer a) {
-
         if (a.term == null)
-            a.term = term;
-
-        Task tt = DynTaskify.task(model, beliefOrGoal, a);
-        if (tt != null)
-            a.tryAccept(tt);
+            a.term = term; //use default concept term
+        DynTaskify.task(model, beliefOrGoal, a);
     }
-
-
-
 
 
 //    @Override

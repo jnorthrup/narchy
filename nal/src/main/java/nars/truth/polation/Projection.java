@@ -12,8 +12,6 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.task.Tasked;
-import nars.task.proxy.SpecialTruthAndOccurrenceTask;
-import nars.task.util.TaskBuffer;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.util.Intermpolate;

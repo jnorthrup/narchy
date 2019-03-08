@@ -17,7 +17,7 @@ import java.util.List;
  */
 abstract public class AbstractDynamicTruth {
 
-    abstract public Truth truth(TaskList var1, NAR nar);
+    abstract public Truth truth(TaskList var1, /* eviMin, */ NAR nar);
 
     public final boolean evalComponents(Answer a, ObjectLongLongPredicate<Term> each) {
         return evalComponents(a.term, a.time.start, a.time.end, each);

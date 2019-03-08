@@ -70,11 +70,11 @@ public class DynTaskify extends TaskList {
 
 
     @Nullable
-    public static Task task(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
+    public static void task(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
 
         DynTaskify d = new DynTaskify(model, beliefOrGoal, a);
         if (!model.evalComponents(a, d::evalComponent))
-            return null; //fail
+            return; //fail
 
         long s, e;
 
@@ -113,7 +113,7 @@ public class DynTaskify extends TaskList {
 
                 long[] u = Tense.merge(d);
                 if (u == null)
-                    return null;
+                    return;
 
                 s = u[0];
                 e = u[1];
@@ -123,14 +123,13 @@ public class DynTaskify extends TaskList {
         }
 
 
-
         NAR nar = a.nar;
         Term template = a.term;
         Term term = model.reconstruct(template, d, nar, s, e);
         if (term == null || term instanceof Bool || !term.unneg().op().taskable) { //quick tests
             if (Param.DEBUG)
                 throw new WTF("could not reconstruct: " + template + ' ' + d);
-            return null;
+            return;
         }
 
 
@@ -138,12 +137,15 @@ public class DynTaskify extends TaskList {
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
             Task x = d.get(i);
             long shift = absolute || x.isEternal() ? 0 : x.start()-earliest;
-            long ss = s + shift;
-            long ee = e + shift;
+            long ss = s + shift, ee = e + shift;
             if (x.start() != ss || x.end() != ee) {
-                Task tt = Task.project(x, ss, ee, a.nar);
+                Task tt = Task.project(x, ss, ee,
+                        0, /* use no evidence threshold while accumulating sub-evidence */
+                        false,
+                        Param.DYNAMIC_TRUTH_TASK_TIME_DITHERING,
+                        a.nar);
                 if (tt == null)
-                    return null;
+                    return;
                 d.setFast(i, tt);
             }
         }
@@ -152,9 +154,29 @@ public class DynTaskify extends TaskList {
         Truth t = model.truth(d, nar);
         //t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
         if (t == null)
-            return null;
+            return;
 
-        return d.merge(term, t, d::stamp, beliefOrGoal, s, e, nar);
+        /** interpret the presence of truth dithering as an indication this is producng something for 'external' usage,
+         *  and in which case, also dither time
+         */
+        boolean internalOrExternal = !a.ditherTruth;
+        if (!internalOrExternal) {
+            //dither and limit truth
+            t = t.dither(a.nar);
+            if (t == null)
+                return;
+
+            //dither time
+            if (s!=ETERNAL) {
+                int dtDither = a.nar.dtDither();
+                s = Tense.dither(s, dtDither);
+                e = Tense.dither(e, dtDither);
+            }
+        }
+
+        Task y = d.merge(term, t, d::stamp, beliefOrGoal, s, e, nar);
+        if (y!=null)
+            a.tryAccept(y);
     }
 
     private boolean evalComponent(Term subTerm, long subStart, long subEnd) {

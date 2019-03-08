@@ -54,7 +54,7 @@ class BeliefTableTest {
 
         BeliefTable beliefs = b.concept().beliefs();
 
-        assertEquals(0.5, beliefs.match0(ETERNAL, null, n).conf(), 0.001);
+        assertEquals(0.5, beliefs.match(ETERNAL, ETERNAL, null, 0, n).conf(), 0.001);
         Truth bt = n.beliefTruth(b, n.time());
         assertNotNull(bt);
         assertEquals(0.5, bt.conf(), 0.001);
@@ -64,20 +64,20 @@ class BeliefTableTest {
         n.run();
         b.print();
         assertEquals(3 /* revision */, beliefs.size());
-        assertEquals(0.669, beliefs.match0(ETERNAL, null, n).conf(), 0.01);
+        assertEquals(0.669, beliefs.match(ETERNAL, ETERNAL, null, 0, n).conf(), 0.01);
 
         b.believe(1.0f, 0.5f);
         n.run();
         b.print();
         assertEquals(5, beliefs.size());
         @NotNull BeliefTable bb = beliefs;
-        assertEquals(0.75, bb.match0(ETERNAL, null, n).conf(), 0.001);
+        assertEquals(0.75, bb.match(ETERNAL, ETERNAL, null, 0, n).conf(), 0.001);
         assertEquals(0.75, n.beliefTruth(b, n.time()).conf(), 0.01);
 
         b.believe(1.0f, 0.5f);
         n.run();
         b.print();
-        assertEquals(0.79, beliefs.match0(ETERNAL, null, n).conf(), 0.2);
+        assertEquals(0.79, beliefs.match(ETERNAL, ETERNAL, null, 0, n).conf(), 0.2);
         assertEquals(7, beliefs.size());
 
     }
@@ -124,7 +124,7 @@ class BeliefTableTest {
             float fExpected = freqPattern[i];
             assertEquals(fExpected, truth.freq(), 0.01f, "exact truth @" + w + " == " + fExpected);
 
-            Task match = table.match0(w, null, n);
+            Task match = table.match(w, w, null, 0, n);
             assertEquals(fExpected, match.freq(), 0.01f, "exact belief @" + w + " == " + fExpected);
         }
 

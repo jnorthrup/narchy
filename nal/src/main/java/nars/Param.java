@@ -26,6 +26,7 @@ public abstract class Param {
 
     public static final int COMMON_VAR_MAX = 5;
 
+
     static {
         Op.terms =
                 //HeapTermBuilder.the;
@@ -400,6 +401,9 @@ public abstract class Param {
 
     public static final boolean DEBUG_TASK_LOG = true;
 
+
+
+
     /**
      * internal granularity which truth components are rounded to
      */
@@ -417,6 +421,7 @@ public abstract class Param {
      */
     public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON * 2;
 
+    public static final boolean DYNAMIC_TRUTH_TASK_TIME_DITHERING = true;
 
     /**
      * truth confidence threshold necessary to form tasks

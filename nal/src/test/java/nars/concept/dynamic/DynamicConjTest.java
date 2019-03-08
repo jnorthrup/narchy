@@ -243,11 +243,11 @@ class DynamicConjTest {
 
 
         int dur = 0;
-        assertEquals(0.81f, xtable.answer(0, 0, $("((x) &&+4 (y))"), dur, n).conf(), 0.05f);
-        assertEquals(0.74f, xtable.answer(0, 0, $("((x) &&+6 (y))"), dur, n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.answer(0, 0, $("((x) &&+2 (y))"), dur, n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.answer(0, 0, $("((x) &&+0 (y))"), dur, n).conf(), 0.07f);
-        assertEquals(0.62f, xtable.answer(0, 0, $("((x) &&-32 (y))"), dur, n).conf(), 0.2f);
+        assertEquals(0.81f, xtable.answer((long) 0, (long) 0, $("((x) &&+4 (y))"), null, dur, n).conf(), 0.05f);
+        assertEquals(0.74f, xtable.answer((long) 0, (long) 0, $("((x) &&+6 (y))"), null, dur, n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.answer((long) 0, (long) 0, $("((x) &&+2 (y))"), null, dur, n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.answer((long) 0, (long) 0, $("((x) &&+0 (y))"), null, dur, n).conf(), 0.07f);
+        assertEquals(0.62f, xtable.answer((long) 0, (long) 0, $("((x) &&-32 (y))"), null, dur, n).conf(), 0.2f);
 
         //TODO test dur = 1, 2, ... etc
 
@@ -379,12 +379,12 @@ class DynamicConjTest {
         {
             Term xyz = $("((x &| y) &&+2 (x &| z))");
             assertEq("((y &&+2 z)&&x)", xyz);
-            Task t = xtable.answer(0, 0, xyz, dur, n);
+            Task t = xtable.answer((long) 0, (long) 0, xyz, null, dur, n);
             assertEquals(1f, t.freq(), 0.05f);
             assertEquals(0.81f, t.conf(), 0.4f);
         }
         {
-            Task t = xtable.answer(0, 0, $("((x && y) &&+2 (x && z))"), dur, n);
+            Task t = xtable.answer((long) 0, (long) 0, $("((x && y) &&+2 (x && z))"), null, dur, n);
             assertEquals(1f, t.freq(), 0.05f);
             assertEquals(0.81f, t.conf(), 0.4f);
         }

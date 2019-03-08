@@ -257,18 +257,13 @@ public class Premise implements Comparable<Premise> {
     private Task tryMatch(Term beliefTerm, BeliefTable bb, Derivation d) {
         long[] focus = timeFocus(beliefTerm, d);
 
-        NAR nar = d.nar;
-        //Tense.dither(focus, nar);
-
         Predicate<Task> beliefFilter =
                 beliefTerm.equalsRoot(task.term()) ?
                     beliefFilter() :
                     null;
 
-        return bb.
-                match(focus[0], focus[1], beliefTerm, beliefFilter, nar.dur(), nar);
-                //sample(focus[0], focus[1], beliefTerm, beliefFilter, nar);
-                  //answer(focus[0], focus[1], beliefTerm, beliefFilter, nar);
+        return bb.matching(focus[0], focus[1], beliefTerm, beliefFilter, d.dur, d.nar)
+                    .task(true, false, true);
     }
 
 
@@ -283,18 +278,10 @@ public class Premise implements Comparable<Premise> {
         } else {
             te = task.end();
         }
-        Task match = answerTable.answer(ts, te, beliefTerm, d.nar.dur(), d.nar);
+        Task match = answerTable.matching(ts, te, beliefTerm,
+                null, d.dur, d.nar)
+                .task(true, false, false);
 
-//        long qStart = task.start();
-//        //int limit = qStart == ETERNAL ? Answer.TASK_LIMIT_ETERNAL_QUESTION : Answer.TASK_LIMIT_DEFAULT;
-//        Task match =
-//                Answer.relevance(true, limit,
-//                        qStart, task.end(),
-//                        beliefTerm, null /*beliefFilter*/, d.nar)
-//                        //.ditherTruth(true)
-//                        .match(answerTable)
-//
-//                        .task(true, true, true);
 
         if (match != null) {
             //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";

@@ -90,15 +90,11 @@ public interface TaskTable {
 //        throw new TODO();
 //    }
 
-    @Nullable
-    @Deprecated default Task match0(long when, Term template, NAR nar) {
-        return match(when, when, template, 0, nar);
-    }
-
     @Nullable default Task match(long start, long end, Term template, int dur, NAR nar) { return match(start, end, template, null, dur, nar); }
 
     @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
-        return !isEmpty() ? matching(start, end, template, filter, dur, nar).task(true, false) : null;
+        return !isEmpty() ? matching(start, end, template, filter, dur, nar)
+                .task(true, false, false) : null;
     }
 
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
@@ -110,13 +106,9 @@ public interface TaskTable {
     }
 
 
-    @Nullable default Task answer(long start, long end, Term template, int dur, NAR n) {
-        return answer(start, end, template, null, dur, n);
-    }
-
     @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, int dur, NAR n) {
         return !isEmpty() ? matching(start, end, template, filter, dur, n)
-                .task(true, true) : null;
+                .task(true, true, false) : null;
     }
 
     default Task sample(long start, long end, Term template, NAR nar) {
@@ -130,7 +122,8 @@ public interface TaskTable {
 
         boolean isBeliefOrGoal = !(this instanceof QuestionTable);
 
-        boolean dither = true;
+        /* use as-is */
+        final boolean dither = false;
 
         filter = dither &&isBeliefOrGoal ? filterConfMin(filter, nar) : filter;
 
@@ -139,7 +132,7 @@ public interface TaskTable {
                 start, end, template, filter, nar)
             .ditherTruth(dither)
             .sample(this)
-            .task(false, false);
+            .task(false, false, false);
 
 //        return matching(start, end, template, filter, nar).task(false, false, false);
 

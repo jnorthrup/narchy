@@ -3,7 +3,6 @@ package nars;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.math.Longerval;
 import jcog.pri.UnitPrioritizable;
 import nars.control.op.Perceive;
 import nars.subterm.Subterms;
@@ -404,44 +403,63 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
 
-    @Nullable static Task project(Task t, long start, long end, NAR n) {
-        return project(t, start, end, false, false, false, n);
+    /** start!=ETERNAL */
+    @Nullable static Task project(Task t, long start, long end, float eviMin, boolean ditherTruth, boolean ditherTime, NAR n) {
+
+        if (t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
+            return t;
+
+        Truth tt;
+        if (t.isBeliefOrGoal()) {
+            tt = t.truth(start, end, n.dur());
+            if (tt == null || tt.evi() < eviMin)
+                return null;
+
+            if (ditherTruth) {
+                Truth ttd = tt.dither(n);
+                if (ttd == null || ttd.evi() < eviMin)
+                    return null;
+                tt = ttd;
+            }
+
+            tt = tt;
+        } else {
+            tt = null;
+        }
+
+        return new SpecialTruthAndOccurrenceTask(t, start, end, false, tt);
     }
 
-    @Nullable static Task project(Task t, long start, long end, boolean trimIfIntersects, boolean ditherTruth, boolean negated, NAR n) {
-        return project(t, start, end, trimIfIntersects, ditherTruth, negated, 0, n);
-    }
-
-    @Nullable static Task project(Task t, long start, long end, boolean trimIfIntersects, boolean ditherTruth, boolean negated, float eviMin, NAR n) {
+    @Deprecated @Nullable static Task project(Task t, long start, long end, boolean ditherTruth, boolean negated, float eviMin, NAR n) {
         if (!negated && t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
             return t;
 
-        if (trimIfIntersects) {
-            @Nullable long[] intersection = Longerval.intersectionArray(start, end, t.start(), t.end());
-            if (intersection != null) {
-
-                start = intersection[0];
-                end = intersection[1];
-            }
-
-//            start = Tense.dither(start, n);
-//            end = Tense.dither(end, n);
-        }
+//        if (trimIfIntersects) {
+//            @Nullable long[] intersection = Longerval.intersectionArray(start, end, t.start(), t.end());
+//            if (intersection != null) {
+//
+//                start = intersection[0];
+//                end = intersection[1];
+//            }
+//
+////            start = Tense.dither(start, n);
+////            end = Tense.dither(end, n);
+//        }
 
 
         Truth tt;
         if (t.isBeliefOrGoal()) {
             tt = t.truth(start, end, n.dur());
-            if (tt == null)
+            if (tt == null || tt.evi() < eviMin)
                 return null;
 
             if (ditherTruth) {
-                tt = tt.dither(n);
-                if (tt == null)
+                Truth ttd = tt.dither(n);
+                if (ttd == null || ttd.evi() < eviMin)
                     return null;
+                tt = ttd;
             }
-            if (eviMin > 0 && tt.evi() < eviMin)
-                return null;
+
             tt = tt.negIf(negated);
         } else {
             tt = null;
