@@ -21,10 +21,7 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
-
 import static java.lang.Float.NaN;
-import static nars.Op.ATOM;
 import static nars.time.Tense.TIMELESS;
 
 /**
@@ -63,14 +60,6 @@ public class SensorBeliefTables extends BeliefTables {
 
     protected TaskLink.GeneralTaskLink newTaskLink(Term term) {
         Term src = term;
-
-        //TEMPORARY
-        Set<Term> atoms = term.subterms().recurseSubtermsToSet(ATOM);
-        if (atoms.size() == 1) {
-            //unique atom
-            src = atoms.iterator().next();
-        }
-
         return new TaskLink.GeneralTaskLink(src);
     }
 

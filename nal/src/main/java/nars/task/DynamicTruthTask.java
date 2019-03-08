@@ -17,31 +17,30 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 
-public class DynamicTruthTask extends UnevaluatedTask /*NALTask*/{
+public class DynamicTruthTask extends UnevaluatedTask /*NALTask*/ {
 
     public DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, Timed n, long start, long end, long[] stamp) throws TaskException {
         super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, n.time(), start, end, stamp);
 
-        assert(c.op() != NEG): c + " is invalid task content op (NEG)";
+        assert (c.op() != NEG) : c + " is invalid task content op (NEG)";
     }
 
-    public static NALTask Task(Term content, Truth t, Function<Random, long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
+    @Nullable
+    public static NALTask task(Term content, Truth t, Function<Random, long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
         if (content.op() == NEG) {
             content = content.unneg();
             t = t.neg();
         }
 
-        @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
+        ObjectBooleanPair<Term> r = Task.tryContent(
                 content,
                 beliefOrGoal ? BELIEF : GOAL, !Param.DEBUG_EXTRA);
-        if (r == null)
-            return null;
 
-        return new DynamicTruthTask(
+        return r!=null ? new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
                 t.negIf(r.getTwo()),
                 nar, start, end,
-                stamp.apply(nar.random()));
+                stamp.apply(nar.random())) : null;
     }
 
     @Override

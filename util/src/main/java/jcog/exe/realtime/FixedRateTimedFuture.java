@@ -1,5 +1,7 @@
 package jcog.exe.realtime;
 
+import jcog.WTF;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FixedRateTimedFuture extends AbstractTimedRunnable {
@@ -48,7 +50,8 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
                         super.execute(t);
                     }
                     reset(t.resolution, t.wheels); //TODO time since last
-                    t._schedule(this);
+                    if (!t.reschedule(this))
+                        throw new WTF("unscheduled: " + this); //TODO HACK
                 }
             } finally {
                 pending.set(false);

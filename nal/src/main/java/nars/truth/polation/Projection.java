@@ -98,7 +98,6 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
             if ((tc.evi = evi(task)) >= eviMin) {
                 tc.freq = task.freq(start, end);
             } else {
-                evi(task);//TEMPORARY
                 return null;
             }
         }

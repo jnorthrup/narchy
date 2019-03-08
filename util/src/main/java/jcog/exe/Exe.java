@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jcog.data.list.MetalConcurrentQueue;
-import jcog.exe.realtime.AdmissionQueueWheelModel;
+import jcog.exe.realtime.ConcurrentQueueWheelModel;
 import jcog.exe.realtime.HashedWheelTimer;
 import jcog.net.UDPeer;
 import org.jetbrains.annotations.Nullable;
@@ -28,9 +28,9 @@ public enum Exe {;
      * global timer
      */
     private static volatile HashedWheelTimer timer = new HashedWheelTimer(
-            new AdmissionQueueWheelModel(8,
-                    TimeUnit.MILLISECONDS.toNanos(1)
-            ),
+            //new AdmissionQueueWheelModel(8, TimeUnit.MILLISECONDS.toNanos(1))
+            new ConcurrentQueueWheelModel(64, 16, TimeUnit.MILLISECONDS.toNanos(1))
+            ,
             HashedWheelTimer.WaitStrategy.SleepWait,
             //HashedWheelTimer.WaitStrategy.YieldingWait,
             Exe::invoke);

@@ -103,7 +103,7 @@ public abstract class Param {
 
     public static final boolean TERMIFY_TRANSFORM_LAZY = true;
 
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 
 //    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
@@ -111,7 +111,7 @@ public abstract class Param {
     public static final boolean INT_CONCEPTUALIZABLE = false;
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -172,8 +172,8 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        (t,b)->Util.unitize(t+b);
-        //Util::or;
+        //(t,b)->Util.unitize(t+b);
+        Util::or;
         //Math::max;
         //Util::and;
         //Util::mean;
@@ -480,8 +480,8 @@ public abstract class Param {
         float falloffDurs =
                 //1;
                 //1.618f; //phi
-                2; //nyquist
-                //4;
+                //2; //nyquist
+                4;
                 //dur;
                 //8;
                 //64;

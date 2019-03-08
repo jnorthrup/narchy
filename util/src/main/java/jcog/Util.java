@@ -2698,4 +2698,9 @@ public enum Util {
     }
 
 
+    public static int longToInt(long x) {
+        if (x > Integer.MAX_VALUE-1 || x < Integer.MIN_VALUE+1)
+            throw new NumberException("long exceeds int capacity", x);
+        return (int)x;
+    }
 }

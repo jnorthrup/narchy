@@ -244,9 +244,7 @@ public enum Tense {
             return DTERNAL; //HACK
         if (occ == TIMELESS)
             return XTERNAL; //HACK
-        if (occ > Integer.MAX_VALUE-1 || occ < Integer.MIN_VALUE+1)
-            throw new WTF(occ + " can not be DT");
-        return (int)occ;
+        return Util.longToInt(occ);
     }
 
     /** computes an ideal range of time for a merge or revision of tasks.

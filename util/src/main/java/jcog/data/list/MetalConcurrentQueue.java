@@ -28,6 +28,7 @@ import jcog.Util;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -55,9 +56,9 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
     // the sequence number of the start of the queue
     final AtomicInteger
             head = new AtomicInteger(),
-            headCursor = new AtomicInteger(),
+            nextHead = new AtomicInteger(),
             tail = new AtomicInteger(),
-            tailCursor = new AtomicInteger()
+            nextTail = new AtomicInteger()
     ;
 
 
@@ -84,12 +85,10 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         }
     }
 
-    public int tail() {
-        return tail.getOpaque();
-    }
+    public final int tail() { return tail.getAcquire(); }
 
     public final int head() {
-        return head.getOpaque();
+        return head.getAcquire();
     }
 
 
@@ -158,32 +157,37 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
         int cap = capacity();
         for (; ; ) {
-            final int tailSeq = tail.getAcquire();
+            final int tail = tail();
             // never offer onto the slot that is currently being polled off
-            final int queueStart = tailSeq - cap;
+            final int queueStart = tail - cap;
 
             // will this sequence exceed the capacity
-            if (head.getAcquire() > queueStart) {
+            if (head() > queueStart) {
                 // does the sequence still have the expected
                 // value
-                if (tailCursor.compareAndSet(tailSeq, tailSeq + 1)) {
+                if (canTake(tail, 1)) {
 
                     // tailSeq is valid and got access without contention
-                    set(i(tailSeq, cap), x);
+                    set(i(tail, cap), x);
 
-                    tail.setRelease(tailSeq + 1);
+                    take(tail, 1);
 
                     return true;
 
                 } // else - sequence misfire, somebody got our spot, try again
-            } else {
+            } else
                 // exceeded capacity
                 return false;
-            }
+
 
             spin = progressiveYield(spin);
         }
     }
+
+    private boolean canTake(int tail, int n) {
+        return this.nextTail.compareAndSet(tail, tail + n);
+    }
+
 
     private int i(int x) {
         return i(x, capacity());
@@ -210,27 +214,31 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         int cap = capacity();
 
         for (; ; ) {
-            final int head = this.head.getAcquire();
+            final int head = this.head();
             // is there data for us to poll
-            if (tail.getAcquire() > head) {
-                // check if we can update the sequence
-                if (headCursor.compareAndSet(head, head + 1)) {
+            if (tail() <= head)
+                return null; // do not notify - additional capacity is not yet available
 
-                    final X pollObj = getAndSet(i(head, cap), null);
+            // check if we can update the sequence
+            if (canPut(head, 1)) {
 
-                    this.head.setRelease(head + 1);
+                final X pollObj = getAndSet(i(head, cap), null);
 
-                    return pollObj;
+                put(head, 1);
 
-                } // else - somebody else is reading this spot already: retry
-            } else {
-                return null;
-                // do not notify - additional capacity is not yet available
-            }
+                return pollObj;
+
+            } // else - somebody else is reading this spot already: retry
 
             // this is the spin waiting for access to the queue
             spin = progressiveYield(spin);
+
+            //continue
         }
+    }
+
+    public boolean canPut(int head, int n) {
+        return this.nextHead.compareAndSet(head, head + n);
     }
 
     @Override
@@ -277,22 +285,22 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
         int cap = capacity();
         for (; ; ) {
-            final int pollPos = head.getAcquire(); // prepare to qualify?
+            final int headPos = head(); // prepare to qualify?
             // is there data for us to poll
             // note we must take a difference in values here to guard against
             // integer overflow
-            final int nToRead = Math.min((tail.getAcquire() - pollPos), maxElements);
-            if (nToRead > 0) {
+            final int r = Math.min((tail() - headPos), maxElements);
+            if (r > 0) {
                 // if we still control the sequence, update and return
-                if(headCursor.compareAndSet(pollPos,  pollPos+nToRead)) {
-                    int n = i(pollPos, cap);
-                    for (int i = 0; i < nToRead; i++) {
+                if(canPut(headPos, r)) {
+                    int n = i(headPos, cap);
+                    for (int i = 0; i < r; i++) {
                         x[i] = getAndSet(n, null);
                         if (++n == cap) n = 0;
                     }
 
-                    head.setRelease(pollPos+nToRead);
-                    return nToRead;
+                    put(headPos, r);
+                    return r;
                 } else {
                     spin = progressiveYield(spin); // wait for access
                 }
@@ -305,8 +313,23 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
         }
     }
+
+    private void take(int tail, int n) {
+        this.tail.setRelease(tail + n);
+    }
+
+    private void put(int head, int n) {
+        //TODO attempt to set head=tail=0 if size is now zero. this returns the queue to a canonical starting position and might improve cpu caching
+        this.head.setRelease(head + n);
+    }
+
     public int clear(Consumer<X> each) {
         return clear(each, -1);
+    }
+
+    /** TODO make a custom clear impl, avoiding lambda */
+    public <Y> int clear(BiConsumer<X,Y> each, Y param) {
+        return clear((x)->each.accept(x, param));
     }
 
 //    public int clear(Consumer<X> each, int limit) {
@@ -326,35 +349,28 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         if (s == 0)
             return 0;
 
-        int spin = 0;
-
-        int cap = capacity();
+        int spin = 0, cap = capacity();
         for (; ; ) {
-            final int pollPos = head.getAcquire(); // prepare to qualify?
+            final int head = head(); // prepare to qualify?
             // is there data for us to poll
-            // note we must take a difference in values here to guard against
-            // integer overflow
-            final int nToRead = Math.min((tail.getAcquire() - pollPos), s);
-            if (nToRead > 0) {
-                // if we still control the sequence, update and return
-                if(headCursor.weakCompareAndSetAcquire(pollPos,  pollPos+nToRead)) {
-                    int n = i(pollPos, cap);
-                    for (int i = 0; i < nToRead; i++) {
-                        each.accept( getAndSet(n++, null) );
-                        if (n == cap) n = 0;
-                    }
+            // we must take a difference in values here to guard against integer overflow
+            final int r = Math.min((tail() - head), s);
+            if (r <= 0)
+                return 0; // nothing to read now
 
-                    head.addAndGet(nToRead);
-                    return nToRead;
-                } else {
-                    spin = progressiveYield(spin); // wait for access
+            // if we still control the sequence, update and return
+            if(canPut(head, r)) {
+                int n = i(head, cap);
+                for (int i = 0; i < r; i++) {
+                    each.accept( getAndSet(n, null) );
+                    if (++n == cap) n = 0;
                 }
 
+                this.head.addAndGet(r);
+                return n;
+            } else
+                spin = progressiveYield(spin); // wait for access
 
-            } else {
-                // nothing to read now
-                return 0;
-            }
 
         }
     }

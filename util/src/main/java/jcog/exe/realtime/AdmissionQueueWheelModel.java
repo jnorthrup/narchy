@@ -1,18 +1,15 @@
 package jcog.exe.realtime;
 
-import jcog.TODO;
 import jcog.data.list.MetalConcurrentQueue;
 
 import java.util.ArrayDeque;
-import java.util.Iterator;
 import java.util.Queue;
-import java.util.function.Consumer;
 
 /**
  * uses central concurrent admission queue which is drained each cycle.
  * the wheel queues are (hopefully fast) ArrayDeque's safely accessed from one thread only
  */
-public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel implements Consumer<TimedFuture<?>> {
+public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
 
     /** capacity of incoming admission queue (not the entire wheel) */
     final static int ADMISSION_CAPACITY = 4096;
@@ -20,8 +17,7 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel implem
     final MetalConcurrentQueue<TimedFuture<?>> incoming = new MetalConcurrentQueue<>(ADMISSION_CAPACITY);
 
     final Queue<TimedFuture<?>>[] wheel;
-    private transient int c;
-    private HashedWheelTimer timer;
+
 
 //    /** where incoming temporarily drains to */
 //    final TimedFuture[] coming = new TimedFuture[ADMISSION_CAPACITY];
@@ -37,18 +33,16 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel implem
 
     @Override
     public void restart(HashedWheelTimer h) {
-        this.timer = h;
+
     }
 
-    @Override
-    public final void accept(TimedFuture<?> x) {
-        schedule(x, c, timer);
-    }
 
-    @Override
-    public int run(int c) {
-        this.c = c;
-        if (incoming.clear(this) > 0)
+    /**
+     * HACK TODO note this method isnt fair because it implicitly prioritizes 'tenured' items that were inserted and remained.
+     * instead it should behave like ConcurrentQueueWheelModel's impl
+     */
+    @Override public int run(int c, HashedWheelTimer timer) {
+        if (incoming.clear(this::out, timer) > 0)
             timer.assertRunning();
 
         Queue<TimedFuture<?>> q = wheel[c];
@@ -71,27 +65,45 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel implem
                 break;
             }
             default: {
-                
-                Iterator<TimedFuture<?>> i = q.iterator();
 
-                int remain = n;
-                while (remain-- > 0) {
 
-                    TimedFuture<?> r = i.next();
-
+                //Fair
+                for (int remain = n; remain > 0; remain--) {
+                    TimedFuture<?> r = q.poll();
                     switch (r.state()) {
                         case CANCELLED:
-                            i.remove();
                             break;
                         case READY:
-                            i.remove();
                             r.execute(timer);
                             break;
                         case PENDING:
-                            break; 
+                            q.offer(r);
+                            break;
                     }
-
                 }
+
+
+                //Unfair:
+//                Iterator<TimedFuture<?>> i = q.iterator();
+//
+//                int remain = n;
+//                while (remain-- > 0) {
+//
+//                    TimedFuture<?> r = i.next();
+//
+//                    switch (r.state()) {
+//                        case CANCELLED:
+//                            i.remove();
+//                            break;
+//                        case READY:
+//                            i.remove();
+//                            r.execute(timer);
+//                            break;
+//                        case PENDING:
+//                            break;
+//                    }
+//
+//                }
             }
         }
 
@@ -100,7 +112,7 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel implem
     }
 
     @Override
-    public boolean canExit() {
+    public boolean isEmpty() {
         return incoming.isEmpty();
     }
 
@@ -113,20 +125,14 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel implem
         return sum;
     }
 
-    @Override public void schedule(TimedFuture<?> r) {
-        if (r.state()==TimedFuture.Status.CANCELLED)
-            throw new RuntimeException("scheduling an already cancelled task");
 
-        boolean added = incoming.offer(r);
-        if (!added)
-            throw new RuntimeException("incoming queue overloaded");
 
+    @Override public boolean accept(TimedFuture<?> r, HashedWheelTimer t) {
+        return incoming.offer(r);
     }
 
-    @Override public void reschedule(int wheel, TimedFuture r) {
-        if (!this.wheel[wheel].offer(r)) {
-            throw new TODO("grow wheel capacity");
-        }
+    @Override public boolean reschedule(int wheel, TimedFuture r) {
+        return this.wheel[wheel].offer(r);
     }
 
 

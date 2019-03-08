@@ -276,7 +276,7 @@ abstract public class NAgentX extends NAgent {
 
         MetaAgent meta = new MetaAgent(a);
 
-        //window(AttentionUI.attentionGraph(n, a), 600, 600);
+        window(AttentionUI.attentionGraph(n, a), 600, 600);
 
         window(new Gridding(NARui.agent(a), NARui.top(n)), 800, 500);
 
@@ -447,11 +447,12 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 6, 6, "motivation.nal"));
+        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 6, 6,
+                "motivation.nal"));
         bd1.timing = new ActionTiming(n);
 
         BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8
-               // ,"relation_introduction.nal"
+                ,"relation_introduction.nal", "motivation.nal"
         ));
         //bd2.timing = new ActionTiming(n);
 //        bd.tasklinksPerIteration.set(8);

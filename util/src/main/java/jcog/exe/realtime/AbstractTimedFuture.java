@@ -16,10 +16,10 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
 
     @Override
     public Status state() {
-        if (rounds--<=0) {
+        if (rounds--<=0)
             return Status.READY;
-        }
-        return Status.PENDING;
+        else
+            return Status.PENDING;
     }
 
     @Override

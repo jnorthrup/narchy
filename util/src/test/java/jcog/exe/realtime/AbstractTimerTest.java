@@ -18,10 +18,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 abstract class AbstractTimerTest {
 
-    private final HashedWheelTimer timer = new HashedWheelTimer(
-                    new AdmissionQueueWheelModel(8,
-                    TimeUnit.MILLISECONDS.toNanos(1)/4),
-                    waitStrategy());
+    private final HashedWheelTimer timer;
+
+    {
+        long resolution = TimeUnit.MILLISECONDS.toNanos(1)/4;
+        int wheels = 8;
+
+        HashedWheelTimer.WheelModel q = model(resolution, wheels);
+
+
+        timer = new HashedWheelTimer(q, waitStrategy());
+    }
+
+    protected HashedWheelTimer.WheelModel model(long resolution, int wheels) {
+        AdmissionQueueWheelModel admissionQueue = new AdmissionQueueWheelModel(wheels, resolution);
+        return admissionQueue;
+    }
 
     protected abstract HashedWheelTimer.WaitStrategy waitStrategy();
 
@@ -64,7 +76,7 @@ abstract class AbstractTimerTest {
     @Test
     void scheduleOneShotCallableTest() throws InterruptedException {
         AtomicInteger i = new AtomicInteger(1);
-        timer.schedule(() -> {
+        ScheduledFuture<String> future = timer.schedule(() -> {
                     i.decrementAndGet();
                     return "Hello";
                 },
@@ -76,7 +88,7 @@ abstract class AbstractTimerTest {
     }
 
     @Test
-    void testOneShotCallableFuture() throws InterruptedException, TimeoutException, ExecutionException {
+    void testOneShotCallableFuture() throws InterruptedException, ExecutionException, TimeoutException {
         AtomicInteger i = new AtomicInteger(1);
         long start = System.currentTimeMillis();
         assertEquals("Hello", timer.schedule(() -> {
@@ -85,9 +97,12 @@ abstract class AbstractTimerTest {
                 },
                 100,
                 TimeUnit.MILLISECONDS)
-                .get(1, TimeUnit.SECONDS));
+                .get(250, TimeUnit.MILLISECONDS));
+
         long end = System.currentTimeMillis();
+
         assertTrue(end - start >= 100);
+//        assertTrue(end - start < 300);
     }
 
     @Test

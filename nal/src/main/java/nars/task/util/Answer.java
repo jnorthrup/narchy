@@ -124,11 +124,12 @@ public final class Answer implements AutoCloseable {
 
     }
 
+    static final FloatFunction<TaskRegion> EviAbsolute = x -> -(x instanceof Task ? TruthIntegration.evi((Task) x) : (x.confMax() * x.range()));
 
     public static FloatFunction<TaskRegion> temporalDistanceFn(TimeRange target) {
         long targetStart = target.start;
         if (targetStart == ETERNAL) {
-            return x -> -(x instanceof Task ? TruthIntegration.evi((Task)x) : (x.confMax() * x.range()));
+            return EviAbsolute;
         } else if (targetStart != target.end) {
             //return b -> -(Util.mean(b.minTimeTo(a.start), b.minTimeTo(a.end))) -b.range()/tableDur;
             //return b -> -(Util.mean(b.midTimeTo(a.start), b.minTimeTo(a.end))); // -b.range()/tableDur;
@@ -314,7 +315,6 @@ public final class Answer implements AutoCloseable {
                             case GOAL: {
                                 t = newTask();
                                 if (t==null) {
-//                                    newTask(); //Temporary
                                     return null;
                                 }
 

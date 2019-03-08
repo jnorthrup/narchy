@@ -14,6 +14,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.container.grid.Gridding;
@@ -106,8 +107,12 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
     }
 
 
-    public Windo add(Surface x) {
-        Windo w = add(x, xx -> new DependentWindow(windowContent(xx)));
+    public final Windo add(Surface x) {
+        return addUndecorated(windowContent(x));
+    }
+
+    public Windo addUndecorated(Surface x) {
+        Windo w = add(x, xx -> new DependentWindow(x));
         return w;
     }
 
@@ -177,6 +182,38 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
         Container y = add(x);
         y.size(w, h);
         return y;
+    }
+
+    public void addBox(float cx, float cy, float wo, float ho, float thick) {
+        //Draw.rectFrame();
+
+
+//        float wi = wo - thick, hi = ho - thick;
+
+        //N
+        //Draw.rect(cx-wo/2, cy-ho/2, wo, vthick, gl );
+        Windo top = addUndecorated(new EmptySurface())
+                .posRel(cx, cy+ho/2, wo, thick)
+                .fixed(true);
+        //S
+        //Draw.rect(cx-wo/2, cy+ho/2 - vthick, wo, vthick, gl );
+        Windo bottom = addUndecorated(new EmptySurface())
+                .posRel(cx, cy+-ho/2, wo, thick)
+                .fixed(true);
+
+//        float hthick = (wo - wi) / 2;
+        //W
+        //Draw.rect(cx-wo/2, cy - hi/2, hthick, hi, gl );
+        Windo left = addUndecorated(new EmptySurface())
+                .posRel(cx+-wo/2, cy, thick, ho)
+                .fixed(true);
+        //E
+        //Draw.rect(cx+wo/2 - hthick, cy - hi/2, hthick, hi, gl );
+        Windo right = addUndecorated(new EmptySurface())
+                .posRel(cx+wo/2, cy, thick, ho)
+                .fixed(true);
+
+
     }
 
 

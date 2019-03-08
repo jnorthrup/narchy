@@ -204,10 +204,6 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 //        }
 
 
-        //TEMPORARY
-//        if (task!=null && task.isInput() && !(task instanceof SignalTask)) {
-//            link.priMax(task.priElseZero()); //boost
-//        }
 
         return null;
     }

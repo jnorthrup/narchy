@@ -1,5 +1,3 @@
-
-
 rootProject.name = 'narchy'
 include ':util'
 include ':ui'
@@ -10,13 +8,3 @@ include ':os'
 include ':lab'
 include ':app'
 include ':test'
-
-//project(':util').projectDir = "$rootDir/util" as File
-//project(':ui').projectDir = "$rootDir/ui" as File
-//project(':logic').projectDir = "$rootDir/logic" as File
-//project(':gp').projectDir = "$rootDir/gp" as File
-//project(':nal').projectDir = "$rootDir/nal" as File
-//project(':app').projectDir = "$rootDir/app" as File
-//project(':lab').projectDir = "$rootDir/lab" as File
-
-

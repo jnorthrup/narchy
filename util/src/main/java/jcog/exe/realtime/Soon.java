@@ -21,6 +21,11 @@ abstract public class Soon extends AbstractTimedFuture<Object> {
     }
 
     @Override
+    public boolean isPeriodic() {
+        return false;
+    }
+
+    @Override
     public boolean isCancelled() {
         return false;
     }

@@ -4,15 +4,20 @@ import java.util.concurrent.Callable;
 
 public class OneTimedFuture<T> extends AbstractTimedCallable<T> {
 
-    private final int firstFireOffset;
+    private final int offset;
 
-    public OneTimedFuture(int firstFireOffset, int rounds, Callable<T> callable) {
+    public OneTimedFuture(int offset, int rounds, Callable<T> callable) {
         super(rounds, callable);
-        this.firstFireOffset = firstFireOffset;
+        this.offset = offset;
     }
 
     @Override
     public final int offset(long resolution) {
-        return firstFireOffset;
+        return (int) (offset % resolution);
+    }
+
+    @Override
+    public boolean isPeriodic() {
+        return false;
     }
 }

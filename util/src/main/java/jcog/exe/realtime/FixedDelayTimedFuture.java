@@ -1,5 +1,7 @@
 package jcog.exe.realtime;
 
+import jcog.Util;
+
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
@@ -15,18 +17,20 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
     protected long periodNS;
     @Deprecated private final int wheels;
     @Deprecated private final long resolution;
+    private int phase;
 
-    public FixedDelayTimedFuture(int rounds,
+    public FixedDelayTimedFuture(
                                  Callable<T> callable,
                                  long periodNS,
                                  long resolution,
                                  int wheels,
                                  Consumer<TimedFuture<?>> rescheduleCallback) {
-        super(rounds, callable);
+        super(0, callable);
         this.periodNS = periodNS;
         this.resolution = resolution;
         this.wheels = wheels;
         this.rescheduleCallback = rescheduleCallback;
+        this.phase = Util.longToInt((1 + (periodNS / (resolution * wheels))) % resolution);
         reset();
     }
 
@@ -37,15 +41,19 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
 
 
     @Override public int offset(long resolution) {
-        return (int) Math.round(((double)Math.max(resolution, periodNS)) / resolution);
+        //return (int) Math.round(((double)Math.max(resolution, periodNS)) / resolution);
+        //return (int) (periodNS % resolution);
+        return phase;
     }
 
-
     public void reset() {
-        this.rounds = (int)
-                Math.min(Integer.MAX_VALUE-1,
-                        Math.round((((double)periodNS)/(resolution* wheels)))
-                );
+        this.rounds = roundsPeriod();
+    }
+
+    @Deprecated private int roundsPeriod() {
+        return (int) Math.min(Integer.MAX_VALUE-1,
+                Math.round((((double)periodNS)/(resolution* wheels)))
+        );
     }
 
     @Override

@@ -60,6 +60,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     float timeScale = 1f;
     static final float minDimension = 0.5f;
     static final float scaling = 10f;
+    static final float SHAPE_SIZE_EPSILON = Settings.EPSILON;
 
     public static class PhySurface<S extends Surface> {
         public final S surface;
@@ -76,15 +77,23 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             body.setData(surface);
         }
 
+        private transient float prw, prh;
         void pre(Dynamics2D physics) {
             RectFloat r = surface.bounds;
 //
-            //TODO
-//                if (!Util.equals(r.w, physBounds.w, SHAPE_SIZE_EPSILON) ||
-//                        !Util.equals(r.h, physBounds.h, SHAPE_SIZE_EPSILON)) {
-            body.updateFixtures((f) -> f.setShape(
-                shape.setAsBox(r.w / 2 / scaling, r.h / 2 / scaling)
-            ));
+
+            float nrw = r.w;
+            float nrh = r.h;
+
+            if (!Util.equals(nrw, prw, SHAPE_SIZE_EPSILON) ||
+                    !Util.equals(nrh, prh, SHAPE_SIZE_EPSILON)) {
+
+                prw = nrw;
+                prh = nrh;
+                body.updateFixtures((f) -> {
+                    f.setShape(shape.setAsBox(nrw / 2 / scaling, nrh / 2 / scaling));
+                });
+            }
 
             v2 target = new v2(r.cx() / scaling, r.cy() / scaling);
 

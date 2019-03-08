@@ -1,5 +1,6 @@
 package jcog.exe.realtime;
 
+import jcog.TODO;
 import jcog.Texts;
 import jcog.Util;
 import org.slf4j.Logger;
@@ -117,7 +118,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
             while ((c = cursor.getAndAccumulate(wheels, (cc, w) -> (cc + 1) % w)) >= 0) {
 
-                if (model.run(c) == 0) {
+                if (model.run(c, this) == 0) {
                     if (empties++ >= wheels * SLEEP_EPOCHS)
                         break;
 
@@ -129,7 +130,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 deadline = await(deadline);
             }
         }
-        while (cursor.getOpaque() >= 0 && !model.canExit() && !cursor.compareAndSet(c, -1));
+        while (cursor() >= 0 && !model.isEmpty() && !cursor.compareAndSet(c, -1));
 
         loop = null;
 
@@ -187,17 +188,32 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
     public final <D> TimedFuture<D> schedule(TimedFuture<D> r) {
-        model.schedule(r);
+        if (r.state()==TimedFuture.Status.CANCELLED)
+            throw new RuntimeException("scheduling an already cancelled task");
+
+        boolean ok = model.accept(r, this);
+        if (!ok)
+            reject(r);
+
         assertRunning();
         return r;
     }
 
-    protected final void _schedule(TimedFuture<?> r) {
-        int c = cursor.get();
+    protected <X> void reject(TimedFuture<X> r) {
+        logger.error("unscheduled {}", r);
+    }
+
+    protected final boolean reschedule(TimedFuture<?> r) {
+        assertRunning();
+        int c = cursor();
         if (c >= 0) {
-            model.reschedule(idx(c + r.offset(model.resolution) + 1), r);
-            assertRunning();
+            if (!model.reschedule(idx(c + r.offset(model.resolution) + 1), r)) {
+                reject(r);
+                return false;
+            }
+            return true;
         }
+        return false;
     }
 
     /**
@@ -207,15 +223,23 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         return cursor % wheels;
     }
 
+    public int cursor() {
+        return cursor.getOpaque();
+    }
+
+//    public final int idxCursor(int delta) {
+//        return idx(cursor() + delta);
+//    }
+
     @Override
-    public TimedFuture<?> schedule(Runnable runnable,
+    public ScheduledFuture<?> schedule(Runnable runnable,
                                    long period,
                                    TimeUnit timeUnit) {
         return scheduleOneShot(NANOSECONDS.convert(period, timeUnit), constantlyNull(runnable));
     }
 
     @Override
-    public <V> TimedFuture<V> schedule(Callable<V> callable, long period, TimeUnit timeUnit) {
+    public <V> ScheduledFuture<V> schedule(Callable<V> callable, long period, TimeUnit timeUnit) {
         return scheduleOneShot(NANOSECONDS.convert(period, timeUnit), callable);
     }
 
@@ -271,13 +295,13 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     @Override
     public boolean isShutdown() {
-        return cursor.getOpaque() >= 0 &&
+        return cursor() >= 0 &&
                 (!(executor instanceof ExecutorService) || ((ExecutorService) this.executor).isShutdown());
     }
 
     @Override
     public boolean isTerminated() {
-        return cursor.getOpaque() >= 0 &&
+        return cursor() >= 0 &&
                 (!(executor instanceof ExecutorService) || ((ExecutorService) this.executor).isTerminated());
     }
 
@@ -323,19 +347,24 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     /**
      * INTERNALS
      */
-    @Deprecated
-    private <V> TimedFuture<V> scheduleOneShot(long firstDelay, Callable<V> callable) {
+    private <V> ScheduledFuture<V> scheduleOneShot(long delayNS, Callable<V> callable) {
 
-        if (firstDelay < resolution) {
-
-            firstDelay = resolution;
+        if (delayNS <= resolution/2) {
+            //immediate
+            ImmediateFuture<V> f = new ImmediateFuture<>(callable);
+            executor.execute(f);
+            return f;
+        } else if (delayNS < resolution) {
+            //round-up
+            delayNS = resolution;
         }
 
-        int firstFireOffset = (int) (firstDelay / resolution);
-        int firstFireRounds = Math.round(((float) firstDelay) / (resolution * wheels));
 
-        TimedFuture<V> r = new OneTimedFuture<>(firstFireOffset + 1, firstFireRounds, callable);
-        return schedule(r);
+        long cycleLen = wheels * resolution;
+        int rounds = (int) (delayNS / cycleLen);
+        int firstFireOffset = Util.longToInt( delayNS - rounds * cycleLen );
+
+        return schedule(new OneTimedFuture(firstFireOffset + 1, rounds, callable));
     }
 
 
@@ -371,12 +400,12 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         assert (recurringTimeout >= resolution) : "Cannot schedule tasks for amount of time less than timer precision.";
 
 
-        FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<>(0,
+        FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<>(
                 callable,
                 recurringTimeout, resolution, wheels,
                 this::schedule);
 
-        if (firstDelay > 0) {
+        if (firstDelay > resolution) {
             scheduleOneShot(firstDelay, () -> {
                 schedule(r);
                 return null;
@@ -456,6 +485,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         return model.size();
     }
 
+    /** scheduler implementation */
     abstract static class WheelModel {
         public final int wheels;
         public final long resolution;
@@ -463,6 +493,10 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         protected WheelModel(int wheels, long resolution) {
             this.wheels = wheels;
             this.resolution = resolution;
+        }
+
+        public final void out(TimedFuture<?> x, HashedWheelTimer timer) {
+            schedule(x, timer.cursor(), timer);
         }
 
         public final int idx(int cursor) {
@@ -474,34 +508,99 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
          * used in part to determine if the entire wheel is empty.
          *
          */
-        abstract public int run(int wheel);
+        abstract public int run(int wheel, HashedWheelTimer timer);
 
-        abstract public void schedule(TimedFuture<?> r);
+        /** return false if unable to schedule */
+        abstract public boolean accept(TimedFuture<?> r, HashedWheelTimer hashedWheelTimer);
 
-        abstract public void reschedule(int wheel, TimedFuture r);
+        /** return false if unable to reschedule */
+        abstract public boolean reschedule(int wheel, TimedFuture r);
 
-        public final void schedule(TimedFuture r, int c, Executor timer) {
+        public final boolean schedule(TimedFuture r, int c, HashedWheelTimer timer) {
             int offset = r.offset(resolution);
             if (offset > -1 || r.isPeriodic()) {
-                reschedule(idx(c + offset + 1), r);
+                if (!reschedule(idx(c + offset + 1), r))
+                    return false;
             } else {
                 timer.execute(r);
             }
+            return false;
         }
 
         /**
-         * number of tasks currently in the wheel
+         * estimated number of tasks currently in the wheel
          */
         abstract public int size();
 
         /**
          * allows the model to interrupt the wheel before it decides to sleep
          */
-        abstract public boolean canExit();
+        abstract public boolean isEmpty();
 
         public void restart(HashedWheelTimer h) {
 
         }
     }
 
+    private static class ImmediateFuture<V> implements ScheduledFuture<V>, Runnable {
+        private Callable<V> callable;
+        private Object result = this;
+
+        public ImmediateFuture(Callable<V> callable) {
+            this.callable = callable;
+        }
+
+        @Override
+        public long getDelay(TimeUnit timeUnit) {
+            return 0;
+        }
+
+        @Override
+        public int compareTo(Delayed delayed) {
+            throw new TODO();
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            Callable<V> c = callable;
+            if (c != null) {
+                result = null;
+                callable = null;
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return result==this && callable==null;
+        }
+
+        @Override
+        public boolean isDone() {
+            return result!=this;
+        }
+
+        @Override
+        public V get() {
+            Object r = this.result;
+            if (r == this)
+                return null;
+            return (V) r;
+        }
+
+        @Override
+        public V get(long l, TimeUnit timeUnit)  {
+            return AbstractTimedCallable.poll(this, l, timeUnit);
+        }
+
+        @Override
+        public void run() {
+            try {
+                result = callable.call();
+            } catch (Exception e) {
+                result = e;
+            }
+        }
+    }
 }

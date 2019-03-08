@@ -2,6 +2,7 @@ package jcog.learn.pid;
 
 import org.junit.jupiter.api.Test;
 
+import static jcog.Texts.n4;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MiniPIDTest {
@@ -19,32 +20,19 @@ class MiniPIDTest {
         double target = 100;
 
         double actual = 0;
-        double output = 0;
+        double output;
 
         miniPID.setpoint(0);
         miniPID.setpoint(target);
 
-        
-
-        
         for (int i = 0; i < 200; i++) {
-
-            
 
             if (i == 60)
                 target = 50;
 
-            
-            
-
             output = miniPID.out(actual, target);
-            actual = actual + output;
-
-            
-            
-            
-
-            
+            actual += output;
+            System.out.println(n4(output) + " " + n4(actual));
         }
         assertTrue(Math.abs(target - actual) < 0.05f);
     }

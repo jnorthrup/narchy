@@ -297,9 +297,7 @@ public class GraphEditTest {
         public static void main(String[] args) {
             GraphEdit w = GraphEdit.window(1000, 1000);
 
-            w.add(new Windo())
-                    .posRel(0.25f,0.25f,0.25f,0.6f)
-                    .fixed(true);
+            w.addBox(0f, 0f, 0.2f, 0.2f, 0.01f);
 
             Windo x = w.add(
                     //new OKSurface("NOT OK")

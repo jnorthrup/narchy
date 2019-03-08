@@ -342,9 +342,11 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
 
-    public RectFloat rel(float cx, float cy, float pctX, float pctY) {
+    public RectFloat rel(float cx, float cy, float pctW, float pctH) {
         float ww = this.w, hh = this.h;
-        return XYWH( x + cx * ww, y + cy * hh, ww * pctX, hh * pctY);
+        float nw = ww * pctW;
+        float nh = hh * pctH;
+        return X0Y0WH( x + cx * ww, y + cy * hh, nw, nh);
     }
 
     public v2 midPoint(RectFloat o) {

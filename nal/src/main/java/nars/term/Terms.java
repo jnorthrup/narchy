@@ -77,7 +77,6 @@ public enum Terms {
         }
         int bc = b.compareTo(c);
         if (bc == 0) {
-            //assert(a.compareTo(b) < 0); //temporary
             return new Term[]{a, b}; //b=c so just combine a and b
         } else if (bc > 0) {
             Term x = b;
@@ -85,7 +84,6 @@ public enum Terms {
             c = x;
             int ab2 = a.compareTo(b);
             if (ab2 == 0) {
-                //assert(a.compareTo(c) < 0); //temporary
                 return new Term[]{a, c};
             } else if (ab2 > 0) {
                 Term y = a;

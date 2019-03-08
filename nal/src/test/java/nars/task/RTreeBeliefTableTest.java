@@ -265,11 +265,12 @@ class RTreeBeliefTableTest {
         print("shouldOscillateOutwardFromMidpoint", shouldOscillateOutwardFromMidpoint);
     }
 
-    static List<TaskRegion> seek(RTreeBeliefTable table, long s, long e) {
-        List<TaskRegion> seq = new FasterList(table.capacity());
+    @Deprecated static List<TaskRegion> seek(RTreeBeliefTable table, long s, long e) {
+        int c = table.capacity();
+        List<TaskRegion> seq = new FasterList(c);
         table.read(t->{
             HyperIterator<TaskRegion> h = new HyperIterator(t.model,
-                    new TaskRegion[32],
+                    new TaskRegion[Math.min(c, 32)],
                     Answer.temporalDistanceFn( new TimeRange(s, e)));
             while (h.hasNext()) {
                 seq.add(h.next());

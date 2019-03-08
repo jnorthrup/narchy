@@ -13,9 +13,7 @@ import jcog.Util;
  * @see http:
  */
 public class MiniPID {
-    
-    
-    
+
 
     private double P;
     private double I;
@@ -43,9 +41,6 @@ public class MiniPID {
 
     private double setpointRange = 0;
 
-    
-    
-    
 
     /**
      * Create a MiniPID class object.
@@ -79,9 +74,18 @@ public class MiniPID {
         checkSigns();
     }
 
-    
-    
-    
+    /**
+     * Test if the value is within the min and max, inclusive
+     *
+     * @param value to test
+     * @param min   Minimum value of range
+     * @param max   Maximum value of range
+     * @return true if value is within range, false otherwise
+     */
+    private static boolean isInclusive(double value, double min, double max) {
+
+        return (min < value) && (value < max);
+    }
 
     /**
      * Configure the Proportional gain parameter. <br>
@@ -107,7 +111,7 @@ public class MiniPID {
      * @param i New gain value for the Integral term
      * @see {@link #setMaxIOutput(double) setMaxIOutput} for how to restrict
      */
-    public void setI(double i) {
+    private void setI(double i) {
         if (I != 0) {
             errSum = errSum * I / i;
         }
@@ -116,10 +120,8 @@ public class MiniPID {
         }
         I = i;
         checkSigns();
-        
-        
-        
-        
+
+
     }
 
     /**
@@ -167,8 +169,8 @@ public class MiniPID {
     public void setPID(double p, double i, double d) {
         P = p;
         D = d;
-        
-        
+
+
         setI(i);
         checkSigns();
     }
@@ -186,8 +188,8 @@ public class MiniPID {
         P = p;
         D = d;
         F = f;
-        
-        
+
+
         setI(i);
         checkSigns();
     }
@@ -198,10 +200,9 @@ public class MiniPID {
      *
      * @param maximum. Units are the same as the expected output value
      */
-    public void setMaxIOutput(double maximum) {
-        
-        
-        
+    private void setMaxIOutput(double maximum) {
+
+
         maxIOutput = maximum;
         if (I != 0) {
             errMax = maxIOutput / I;
@@ -223,15 +224,16 @@ public class MiniPID {
      * Specify a  maximum output.
      * When two inputs specified, output range is configured to
      * <b>[minimum, maximum]</b>
-     *  @param minimum possible output value
+     *
+     * @param minimum possible output value
      * @param maximum possible output value
      */
-    public MiniPID outLimit(double minimum, double maximum) {
+    private MiniPID outLimit(double minimum, double maximum) {
         if (maximum < minimum) return null;
         outMax = maximum;
         outMin = minimum;
 
-        
+
         if (maxIOutput == 0 || maxIOutput > (maximum - minimum)) {
             setMaxIOutput(maximum - minimum);
         }
@@ -246,10 +248,6 @@ public class MiniPID {
     public void setDirection(boolean reversed) {
         this.reversed = reversed;
     }
-
-    
-    
-    
 
     /**
      * Configure setpoint for the PID calculations<br>
@@ -299,7 +297,7 @@ public class MiniPID {
      * @return calculated output value for driving the system
      * @see MiniPID#setSetpoint()
      */
-    public double out(double actual) {
+    private double out(double actual) {
 
         double output;
         double Poutput;
@@ -321,8 +319,6 @@ public class MiniPID {
         Poutput = P * error;
 
 
-
-
         if (initialIter) {
             lastActual = actual;
             outPrev = Poutput + Foutput;
@@ -330,13 +326,8 @@ public class MiniPID {
         }
 
 
-
-
         Doutput = -D * (actual - lastActual);
         lastActual = actual;
-
-
-
 
 
         Ioutput = I * errSum;
@@ -348,10 +339,8 @@ public class MiniPID {
         output = Foutput + Poutput + Ioutput + Doutput;
 
 
-        if (outMin != outMax && !isInclusive(output, outMin, outMax)) {
+        if (!Util.equals(outMin, outMax) && !isInclusive(output, outMin, outMax)) {
             errSum = error;
-
-
 
 
         } else if (outRampRate != 0 && !isInclusive(output, outPrev - outRampRate, outPrev + outRampRate)) {
@@ -369,7 +358,7 @@ public class MiniPID {
         if (outRampRate != 0) {
             output = Util.clamp(output, outPrev - outRampRate, outPrev + outRampRate);
         }
-        if (outMin != outMax) {
+        if (!Util.equals(outMin, outMax)) {
             output = Util.clamp(output, outMin, outMax);
         }
         if (outFilter != 0) {
@@ -436,30 +425,17 @@ public class MiniPID {
         }
     }
 
-
-    /**
-     * Test if the value is within the min and max, inclusive
-     *
-     * @param value to test
-     * @param min   Minimum value of range
-     * @param max   Maximum value of range
-     * @return true if value is within range, false otherwise
-     */
-    private static boolean isInclusive(double value, double min, double max) {
-        return (min < value) && (value < max);
-    }
-
     /**
      * To operate correctly, all PID parameters require the same sign
      * This should align with the {@literal}reversed value
      */
     private void checkSigns() {
-        if (reversed) {  
+        if (reversed) {
             if (P > 0) P *= -1;
             if (I > 0) I *= -1;
             if (D > 0) D *= -1;
             if (F > 0) F *= -1;
-        } else {  
+        } else {
             if (P < 0) P *= -1;
             if (I < 0) I *= -1;
             if (D < 0) D *= -1;
@@ -467,7 +443,7 @@ public class MiniPID {
         }
     }
 
-    public float outFloat() {
-        return (float) out();
-    }
+//    public float outFloat() {
+//        return (float) out();
+//    }
 }

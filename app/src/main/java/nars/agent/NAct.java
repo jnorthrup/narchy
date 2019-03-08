@@ -269,8 +269,8 @@ public interface NAct {
 
     default QFunction q() {
         return
-                //QFunction.GoalFreq;
-                QFunction.GoalExp;
+                QFunction.GoalFreq;
+                //QFunction.GoalExp;
                 //QFunction.GoalFreqMinBeliefFreq;
                 //QFunction.GoalExpMinBeliefExp;
     }

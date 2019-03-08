@@ -1,29 +1,24 @@
 package jcog.exe.realtime;
 
-import jcog.Util;
+import jcog.WTF;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-abstract public class AbstractTimedCallable<T> extends AbstractTimedFuture<T> {
-    static final int DEFAULT_TIMEOUT_POLL_PERIOD_MS = 10;
+import static jcog.Util.sleepMS;
 
-    private final Callable<T> callable;
-    private volatile Object result = null;
+abstract public class AbstractTimedCallable<X> extends AbstractTimedFuture<X> {
+    static final int DEFAULT_TIMEOUT_POLL_PERIOD_MS = 2;
+
+    private final Callable<X> callable;
+    private volatile Object result = this;
     protected /*volatile*/ Status status = Status.PENDING;
 
-    protected AbstractTimedCallable(int rounds, Callable<T> callable) {
+    protected AbstractTimedCallable(int rounds, Callable<X> callable) {
         super(rounds);
         this.callable = callable;
-    }
-
-    @Override
-    public final Status state() {
-        Status s = status;
-        if (s == Status.PENDING && rounds--<=0) {
-            return Status.READY;
-        }
-        return s;
     }
 
     @Override
@@ -41,38 +36,57 @@ abstract public class AbstractTimedCallable<T> extends AbstractTimedFuture<T> {
 
     @Override
     public boolean isDone() {
-        return result!=null;
+        return result!=this;
     }
 
     @Override
     public void run() {
         try {
-            Object r = callable.call();
-            if (r == null)
-                r = this;
-            this.result = r;
+
+            this.result = callable.call();
+
         } catch (Exception e) {
             result = e;
         }
     }
 
     @Override
-    public T get() {
+    public X get() {
         Object r = result;
-        return r == this ? null : (T) r;
+        return r == this ? null : (X) r;
     }
 
     @Override
-    public T get(long timeout, TimeUnit unit) {
-        T r;
+    public X get(long timeout, TimeUnit unit) {
+        return poll(this, timeout, unit);
+    }
 
-        long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
-        while ((r = get()) == null) {
-            Util.sleepMS(DEFAULT_TIMEOUT_POLL_PERIOD_MS);
-            if (System.currentTimeMillis() >= deadline)
+    public static  <X> X poll(Future<X> f, long timeout, TimeUnit unit) {
+        X r;
+
+        long deadline = System.nanoTime() + unit.toNanos(timeout);
+
+        do {
+
+            try {
+                r = f.get();
+            } catch (InterruptedException e) {
                 break;
-        }
-        return r == this ? null : r;
+            } catch (ExecutionException e) {
+                throw new WTF(e);
+            }
+
+            if (r != null)
+                return r;
+            else {
+                //TODO abstract sleep strategy
+                sleepMS(DEFAULT_TIMEOUT_POLL_PERIOD_MS);
+                //Util.pauseNextIterative( );
+            }
+
+        } while (System.nanoTime() < deadline);
+
+        return null;
     }
 
 }
