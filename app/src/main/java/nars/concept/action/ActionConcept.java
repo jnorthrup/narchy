@@ -7,7 +7,7 @@ import nars.attention.AttnBranch;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.action.curiosity.CuriosityTask;
-import nars.concept.sensor.Sensor;
+import nars.concept.sensor.AgentLoop;
 import nars.control.MetaGoal;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 
-public abstract class ActionConcept extends TaskConcept implements Sensor, PermanentConcept {
+public abstract class ActionConcept extends TaskConcept implements AgentLoop, PermanentConcept {
 
     public final AttnBranch attn;
 

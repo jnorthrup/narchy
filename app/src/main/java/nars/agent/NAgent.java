@@ -20,7 +20,7 @@ import nars.concept.action.AbstractGoalActionConcept;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.DefaultCuriosity;
-import nars.concept.sensor.Sensor;
+import nars.concept.sensor.AgentLoop;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.control.NARService;
@@ -64,7 +64,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final AtomicBoolean trace = new AtomicBoolean(false);
 
-    public final FastCoWList<Sensor> sensors = new FastCoWList<>(Sensor[]::new);
+    public final FastCoWList<AgentLoop> sensors = new FastCoWList<>(AgentLoop[]::new);
 
     public final FastCoWList<ActionConcept> actions = new FastCoWList<>(ActionConcept[]::new);
 
@@ -167,7 +167,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //    }
 
     @Override
-    public final <S extends Sensor> S addSensor(S s) {
+    public final <S extends AgentLoop> S addSensor(S s) {
         //TODO check for existing
         sensors.add(s);
         addAttention(attnSensor, s);
@@ -539,12 +539,12 @@ public class NAgent extends NARService implements NSense, NAct {
             if (a instanceof AbstractGoalActionConcept)
                 ((AbstractGoalActionConcept) a).curiosity(curiosity);
 
-            a.sense(prev, now, nar);
+            a.act(prev, now, nar);
         }
     }
 
     protected void sense(long prev, long now) {
-        sensors.forEach(s -> s.sense(prev, now, nar));
+        sensors.forEach(s -> s.act(prev, now, nar));
         rewards.forEach(r -> r.update(prev, now));
     }
 

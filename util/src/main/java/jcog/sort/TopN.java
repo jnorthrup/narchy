@@ -7,6 +7,7 @@ import jcog.math.FloatSupplier;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -112,7 +113,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
 
-    public final boolean add(/*@NotNull */X e) {
+    public final boolean add(@NotNull X e) {
         int r = add(e, this);
         if (r >= 0) {
             commit();
@@ -185,7 +186,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         return size() == capacity() ? minValue() : NEGATIVE_INFINITY;
     }
 
-    public X top() {
+    public final X top() {
         return isEmpty() ? null : get(0);
     }
 
@@ -216,14 +217,14 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 //        return removed;
 //    }
 
-    public boolean isFull() {
+    public final boolean isFull() {
         return size() >= capacity();
     }
 
     /**
      * 0 < thresh <= 1
      */
-    private boolean isFull(float thresh) {
+    private final boolean isFull(float thresh) {
         return (size() >= capacity() * thresh);
     }
 
@@ -237,18 +238,6 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         return getRoulette(rng, rank);
     }
 
-//    /**
-//     * note: this assumes the ranking function operates in a range >= 0 so that by choosing a roulette weight 0 it should be skipped
-//     * and not surprise the roulette like a value of NEGATIVE_INFINITY or NaN *will*.
-//     */
-//    @Nullable
-//    public X getRoulette(Random rng, Predicate<X> filter) {
-//        return getRoulette(rng, (X x, float min) -> {
-//            if (!filter.test(x))
-//                return 0;
-//            return rank.rank(x);
-//        });
-//    }
 
     /**
      * roulette select
@@ -258,13 +247,14 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         int n = size();
         if (n == 0)
             return null;
+        if (n == 1)
+            return get(0);
+
         IntToFloatFunction select = i -> anyRank.rank(get(i));
         return get( //n < 8 ?
                 this instanceof RankedTopN ?
                     Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache
                     Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
-                // :
-                // Roulette.selectRoulette(n, select, rng)
         );
 
     }

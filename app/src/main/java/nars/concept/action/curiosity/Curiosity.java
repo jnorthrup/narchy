@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import static nars.Op.GOAL;
+
 /** a curiosity configuration which can be shared by multiple AbstractGoalActionConcept's */
 @Skill({"Curiosity", "Central_pattern_generator","Phantom_limb"})
 public class Curiosity {
@@ -89,9 +91,9 @@ public class Curiosity {
         float curiConf =
                 //nar.confMin.floatValue();
                 //nar.confMin.floatValue() * 2;
-                nar.confMin.floatValue() * 4;
+                //nar.confMin.floatValue() * 4;
                 //Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);
-                //nar.confDefault(GOAL)/4;
+                nar.confDefault(GOAL)/4;
                 //nar.confDefault(GOAL)/3;
                 //nar.confDefault(GOAL)/2;
                 //nar.confDefault(GOAL)/3;

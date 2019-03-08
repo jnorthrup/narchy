@@ -194,9 +194,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     @Override
-    public void sense(long last, long now, NAR nar) {
+    public void act(long last, long now, NAR nar) {
         src.update();
-        super.sense(last, now, nar);
+        super.act(last, now, nar);
     }
 
     public final TaskConcept get(int x, int y) {

@@ -4,14 +4,17 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.term.Termed;
 
-/** base interface for a sensor that consists of one or a group of concepts, sharing:
+/**
+ * base interface for a repeatedly invoked procedure context
+ * consisting of one or a group of concepts, sharing:
  *          resolution
  *          priority
  *          cause channel
- *  */
-public interface Sensor extends Termed {
+ **/
+public interface AgentLoop extends Termed {
 
-    void sense(long last, long now, NAR nar);
+    /** run an update procedure, for the provided time period */
+    void act(long last, long now, NAR nar);
 
     /** numeric resolution of scalar signals */
     FloatRange resolution();

@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
 
-abstract public class AbstractSensor extends NARService implements Sensor {
+abstract public class AbstractSensor extends NARService implements AgentLoop {
 
     private final FloatRange res;
 

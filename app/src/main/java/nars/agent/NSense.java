@@ -11,9 +11,9 @@ import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.concept.action.BiPolarAction;
+import nars.concept.sensor.AgentLoop;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.SelectorSensor;
-import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -69,7 +69,7 @@ public interface NSense {
 
 
 
-    <S extends Sensor> S addSensor(S s);
+    <S extends AgentLoop> S addSensor(S s);
 
     /**
      * interpret an int as a selector between enumerated values
@@ -306,7 +306,7 @@ public interface NSense {
         pn.pos.attn.reparent(pn.attn);
         pn.neg.attn.reparent(pn.attn);
 
-        onFrame(x -> pn.sense(a.prev, a.now, a.nar()));
+        onFrame(x -> pn.act(a.prev, a.now, a.nar()));
         return pn;
     }
 

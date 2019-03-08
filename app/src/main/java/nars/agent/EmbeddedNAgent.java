@@ -5,7 +5,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.concept.action.SwitchAction;
-import nars.concept.sensor.Sensor;
+import nars.concept.sensor.AgentLoop;
 import nars.term.Term;
 
 import java.util.stream.IntStream;
@@ -20,7 +20,7 @@ public class EmbeddedNAgent extends Agent {
 
     private final NAgent env;
     final float[] senseValue;
-    private final Sensor[] sense;
+    private final AgentLoop[] sense;
     private final SwitchAction act;
     private int nextAction = -1;
     private float nextReward = Float.NaN;
@@ -47,7 +47,7 @@ public class EmbeddedNAgent extends Agent {
 
         this.sense = IntStream.range(0, inputs).mapToObj(i->
             env.sense($.inh($.the(i), env.id), ()-> senseValue[i])
-        ).toArray(Sensor[]::new);
+        ).toArray(AgentLoop[]::new);
 
         this.env.addSensor(act = new SwitchAction(n, (a) -> {
                 nextAction = a;

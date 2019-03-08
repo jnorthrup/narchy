@@ -93,7 +93,7 @@ class DigitizedScalarTest {
 
 
             x.set(v);
-            xc.sense(n.time() - n.dur(), n.time(), n);
+            xc.act(n.time() - n.dur(), n.time(), n);
             n.run(1);
 
             System.out.println("\n" + n.time() + " x=" + x);

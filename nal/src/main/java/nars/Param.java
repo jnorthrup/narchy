@@ -198,9 +198,9 @@ public abstract class Param {
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
      */
-    public final static float SIGNAL_STRETCH_LIMIT_DURS = 16;
+    public final static float SIGNAL_STRETCH_LIMIT_DURS = 8;
 
-    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = false;
+    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = true;
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */

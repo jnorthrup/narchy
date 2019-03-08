@@ -7,6 +7,7 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.agent.Reward;
 import nars.concept.sensor.AbstractSensor;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
@@ -121,8 +122,7 @@ public class ArkaNAR extends NAgentX {
         }));*/
 
 
-
-        rewardNormalized("score", -1, +1, ()->{
+        Reward s = rewardNormalized("score", -1, +1, () -> {
             noid.BALL_VELOCITY = ballSpeed.floatValue();
             float nextScore = noid.next();
             float dReward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
@@ -131,6 +131,7 @@ public class ArkaNAR extends NAgentX {
             //return dReward;
             return dReward != 0 ? dReward : Float.NaN;
         });
+        s.setDefault($.t(0.5f, 0.5f));
 
         /*actionTriState*/
 

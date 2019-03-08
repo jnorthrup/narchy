@@ -1,5 +1,6 @@
 package nars.agent;
 
+import jcog.Skill;
 import jcog.Util;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
@@ -259,11 +260,44 @@ public interface NAct {
         return actionPushButtonMutex(l, r,
                     x->{ L.value(x); return x; },
                     x->{ R.value(x); return x; },
-                thresh);
+                thresh, q());
     }
 
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R) {
-        return actionPushButtonMutex(l, r, L, R, midThresh());
+        return actionPushButtonMutex(l, r, L, R, midThresh(), q());
+    }
+
+    default QFunction q() {
+        return
+                //QFunction.GoalFreq;
+                QFunction.GoalExp;
+                //QFunction.GoalFreqMinBeliefFreq;
+                //QFunction.GoalExpMinBeliefExp;
+    }
+
+    /**
+     *
+     *  determines a scalar value in range 0..1.0 representing the 'q' motivation for
+     *  the given belief and goal truth
+     */
+    @FunctionalInterface @Skill("Q_Learning") interface QFunction {
+        float q(@Nullable Truth belief, @Nullable Truth goal);
+
+        QFunction GoalFreq = (b,g)-> g != null ? g.freq() : 0f;
+        QFunction GoalExp = (b,g)-> g != null ? g.expectation() : 0f;
+
+        QFunction GoalExpMinBeliefExp = (b,g)-> {
+            if (b==null) {
+                return GoalExp.q(b, g);
+            } else {
+                if (g == null) {
+                    return 0; //TODO this could also be a way to introduce curiosity
+                } else {
+                    return Util.unitize((g.expectation() - b.expectation())/2f + 0.5f);
+                }
+            }
+        };
+
     }
 
     /**
@@ -272,11 +306,9 @@ public interface NAct {
      * http://www.freepatentsonline.com/4990796.html
      * https://en.wikipedia.org/wiki/Three-state_logic
      */
-    default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh) {
+    default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh, QFunction Q) {
 
-        boolean freqOrExp =
-                true;
-                //false;
+
 
         float[] lr = new float[]{0f, 0f};
 
@@ -287,16 +319,16 @@ public interface NAct {
 
         NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
-            float ll = g != null ? (freqOrExp ? g.freq() : g.expectation()) : 0f;
+            float q = Q.q(b,g);
 
 
             float t = thresh.asFloat();
-            boolean x = (ll > t) && lr[1] <= t; //(ll - lr[1] > compareThresh);
+            boolean x = (q > t) && lr[1] <= t; //(ll - lr[1] > compareThresh);
             boolean y = L.accept(x);
 //            if (x && !y) ll = t;
             lr[0] =
                     //ll;
-                    x ? ll : 0;
+                    x ? q : 0;
                     //(x && y) ? ll : 0;
                     //y ? ll : 0;
 
@@ -312,15 +344,14 @@ public interface NAct {
 
         });
         GoalActionConcept RA = action(r, (b, g) -> {
-            float rr = g != null ? (freqOrExp ? g.freq() : g.expectation()) : 0f;
-
+            float q = Q.q(b,g);
 
             float t = thresh.asFloat();
-            boolean x = (rr > t) && lr[0] <= t;// (rr - lr[0] > compareThresh);
+            boolean x = (q > t) && lr[0] <= t;// (rr - lr[0] > compareThresh);
             boolean y = R.accept(x);
 //            if (x && !y) rr = t;
             lr[1] = //rr;
-                    x ? rr : 0;
+                    x ? q : 0;
                     //(x && y) ? rr : 0;
                     //y ? rr : 0;
 

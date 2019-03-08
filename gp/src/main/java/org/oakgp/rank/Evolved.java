@@ -43,10 +43,6 @@ public final class Evolved extends NLink<Node> {
         }
     }
 
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
 
 //    @Override
 //    public int compareTo(Evolved o) {

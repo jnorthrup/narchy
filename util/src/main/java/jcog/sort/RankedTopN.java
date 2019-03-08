@@ -3,6 +3,7 @@ package jcog.sort;
 import jcog.Util;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -56,7 +57,7 @@ public class RankedTopN<X> extends TopN<X> {
 //        setCapacity(capacity);
 //    }
 
-    public RankedTopN(X[] buffer, FloatFunction<X> ranking) {
+    public RankedTopN(X[] buffer, @NotNull FloatFunction<X> ranking) {
         this(buffer, FloatRank.the(ranking));
     }
 
