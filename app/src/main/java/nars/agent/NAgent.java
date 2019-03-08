@@ -482,28 +482,28 @@ public class NAgent extends NARService implements NSense, NAct {
      */
     protected final void next() {
 
+        int frameDur = frameTrigger.dur();
+
+        long now = nar.time();
+        long prev = this.now;
+        if (prev == ETERNAL)
+            prev = now - frameDur; //start
+        else if (now <= prev)
+            return; //too learly
+
+        long next =
+                //(Math.max(now, frameTrigger.next(now)), d);
+                Math.max(now+1, frameTrigger.next(now));
+
+        this.prev = prev;
+        this.now = now;
+        this.next = next;
+        assert(prev <now && now < next);
+
         if (!enabled.getOpaque() || !busy.compareAndSet(false, true))
             return;
 
         try {
-
-
-            int frameDur = frameTrigger.dur();
-
-            long now = nar.time();
-            long prev = this.prev;
-            if (prev == ETERNAL)
-                prev = now - frameDur; //start
-            else if (now <= prev)
-                return; //too learly
-
-            long next =
-                        //(Math.max(now, frameTrigger.next(now)), d);
-                        Math.max(now, frameTrigger.next(now));
-
-
-            this.now = now;
-            this.next = next;
 
             float pg = nar.priDefault(GOAL);
             float pb = nar.priDefault(BELIEF);
@@ -514,7 +514,6 @@ public class NAgent extends NARService implements NSense, NAct {
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);
 
-            this.prev = this.now;
 
             if (trace.getOpaque())
                 logger.info(summary());

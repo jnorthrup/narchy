@@ -44,7 +44,7 @@ abstract public class MultiExec extends UniExec {
     /**
      * proportion of time spent in forced curiosity
      */
-    private float explorationRate = 0.2f;
+    private float explorationRate = 0.05f;
 
 
     protected long cycleNS;
@@ -224,7 +224,7 @@ abstract public class MultiExec extends UniExec {
         final int threads;
         final boolean affinity;
 
-        double granularity = 4;
+        double granularity = 8;
 
         final AffinityExecutor exe = new AffinityExecutor();
         private List<Worker> workers;

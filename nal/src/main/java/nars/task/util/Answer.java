@@ -34,7 +34,7 @@ public final class Answer implements AutoCloseable {
             //Param.STAMP_CAPACITY - 1;
             //Math.max(1, Param.STAMP_CAPACITY / 2);
             Math.max(1, 2 * (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
-            //3;
+    //3;
     public final static int QUESTION_MATCH_CAPACITY = 1;
 
     public static final int BELIEF_SAMPLE_CAPACITY = 2; //Math.max(1, BELIEF_MATCH_CAPACITY / 2);
@@ -42,7 +42,9 @@ public final class Answer implements AutoCloseable {
 
     public final NAR nar;
 
-    /** specific term template */
+    /**
+     * specific term template
+     */
     public Term term = null;
 
     public RankedTopN<Task> tasks;
@@ -50,10 +52,14 @@ public final class Answer implements AutoCloseable {
     public final Predicate<Task> filter;
     private final FloatRank<Task> rank;
 
-    /** time to live, # of tries remain */
+    /**
+     * time to live, # of tries remain
+     */
     public int ttl;
 
-    /** truthpolation duration in result evidence projection */
+    /**
+     * truthpolation duration in result evidence projection
+     */
     public int dur = 0;
     boolean ditherTruth = false;
 
@@ -61,7 +67,9 @@ public final class Answer implements AutoCloseable {
         this(rank, filter, capacity, Math.round(Param.ANSWER_COMPLETENESS * capacity), nar);
     }
 
-    /** TODO filter needs to be more clear if it refers to the finished task (if dynamic) or a component in creating one */
+    /**
+     * TODO filter needs to be more clear if it refers to the finished task (if dynamic) or a component in creating one
+     */
     private Answer(FloatRank<Task> rank, @Nullable Predicate<Task> filter, int capacity, int maxTries, NAR nar) {
         this.nar = nar;
         this.tasks = //TopN.pooled(topTasks, capacity, this.rank = rank.filter(filter));
@@ -83,12 +91,12 @@ public final class Answer implements AutoCloseable {
         float pastDiscount = 1f - (presentAndFutureBoost - 1f);
         return (Task x) -> {
             float evi =
-                //x.evi(now, dur, min);
-                x.evi(); //avg
+                    //x.evi(now, dur, min);
+                    x.evi(); //avg
 
             long e = x.end();
             long range = (e - x.start());
-            float adjRange = (1+range)/(1f + max(0,(x.maxTimeTo(now) - range/2f))); //proportional to max time distance. so it can't constantly grow and maintain same strength
+            float adjRange = (1 + range) / (1f + max(0, (x.maxTimeTo(now) - range / 2f))); //proportional to max time distance. so it can't constantly grow and maintain same strength
             return (e < futureThresh ? pastDiscount : 1f) *
                     //evi * range;
                     //evi;
@@ -96,9 +104,9 @@ public final class Answer implements AutoCloseable {
                     //evi * x.originality();
                     //evi * x.originality() * range;
                     evi
-                        * adjRange
-                        //* (1f/(1+x.term().volume())) //TODO only if table for temporable concept
-                        //* x.originality()
+                    * adjRange
+                    //* (1f/(1+x.term().volume())) //TODO only if table for temporable concept
+                    //* x.originality()
                     ;
         };
 
@@ -111,11 +119,13 @@ public final class Answer implements AutoCloseable {
 //        };
     }
 
-    /** sorts nearest to the end of a list */
+    /**
+     * sorts nearest to the end of a list
+     */
     public FloatFunction<TaskRegion> temporalDistanceFn() {
 
         TimeRange target;
-        if (time.start==ETERNAL)
+        if (time.start == ETERNAL)
             target = new TimeRange(nar.time()); //prefer closer to the current time
         else
             target = time;
@@ -169,7 +179,6 @@ public final class Answer implements AutoCloseable {
     }
 
 
-
     static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
 
         FloatRank<Task> strength =
@@ -177,7 +186,7 @@ public final class Answer implements AutoCloseable {
                         beliefStrength(start, end) : questionStrength(start, end);
 
         FloatRank<Task> r;
-        if (template == null || !template.hasAny(Temporal) || template.equals(template.concept()) /* <- means it will match anything */ ) {
+        if (template == null || !template.hasAny(Temporal) || template.equals(template.concept()) /* <- means it will match anything */) {
             r = strength;
         } else {
             r = complexTaskStrength(strength, template);
@@ -253,25 +262,29 @@ public final class Answer implements AutoCloseable {
                         (t, m) -> {
                             float pri = t.pri(); // * t.originality();
                             if (pri == pri && pri > m)
-                                return pri / (1f + t.minTimeTo(start, end) );
+                                return pri / (1f + t.minTimeTo(start, end));
                             return Float.NaN;
                         };
 
     }
 
 
-    /** TODO use FloatRank min */
+    /**
+     * TODO use FloatRank min
+     */
     public static FloatRank<Task> eternalTaskStrength() {
-        return (x,min) -> (x.isEternal() ? x.evi() : x.eviEternalized() * x.range())
+        return (x, min) -> (x.isEternal() ? x.evi() : x.eviEternalized() * x.range())
                 //* x.originality()
                 ;
     }
 
-    /** TODO use FloatRank min */
+    /**
+     * TODO use FloatRank min
+     */
     public static FloatRank<Task> temporalTaskStrength(long start, long end) {
         //long dur = Math.max(1,(1 + (end-start))/2);
         //return (x,min) -> TruthIntegration.evi(x, start, end, dur /*1*/ /*0*/)
-        return (x,min) -> TruthIntegration.evi(x, start, end, 1)
+        return (x, min) -> TruthIntegration.evi(x, start, end, 1)
                 //* x.originality()
                 ;
     }
@@ -292,73 +305,75 @@ public final class Answer implements AutoCloseable {
     public Task task(boolean topOrSample, boolean forceProject) {
         try {
             int s = tasks.size();
+
+            if (s == 0)
+                return null;
+
+            @Nullable Task root = tasks.first();
+
+            if (s == 1)
+                return root;
+
             Task t;
-            switch (s) {
-                case 0:
-                    t = null;
-                    break;
-                case 1:
-                    t = tasks.first();
-                    break;
-                default: {
-                    if (!topOrSample) {
-                        t = tasks.getRoulette(random());
-                        assert(!forceProject);
 
-                    } else {
-                        //compare alternate roots, as they might match better with tasks below
+            if (!topOrSample) {
+                t = tasks.getRoulette(random());
+                assert (!forceProject);
+
+            } else {
+                //compare alternate roots, as they might match better with tasks below
 
 
-                        @Nullable Task root = tasks.first();
-                        switch (root.punc()) {
-                            case BELIEF:
-                            case GOAL: {
-                                t = newTask();
-                                if (t==null) {
-                                    return null;
-                                }
-
-                                if (t.evi() < eviMin())
-                                    return null;
-                                if (forceProject && !t.isEternal()) { //dont bother sub-projecting eternal here.
-                                    long ss = time.start;
-                                    if (ss != ETERNAL) { //dont eternalize here
-                                        long ee = time.end;
-                                        if (/*t.isEternal() || */!t.containedBy(ss, ee)) {
-                                            t = Task.project(t, ss, ee, true, ditherTruth, false, eviMin(), nar);
-                                        }
-                                    }
-                                }
-
-                            }
-                            break;
-                            case QUESTION:
-                            case QUEST:
-                                throw new UnsupportedOperationException();
-                                //break;
-                            default:
-                                throw new UnsupportedOperationException();
-                        }
+                switch (root.punc()) {
+                    case BELIEF:
+                    case GOAL: {
+                        t = newTask();
                     }
-
                     break;
+                    case QUESTION:
+                    case QUEST:
+                        throw new UnsupportedOperationException();
+                        //break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
+            }
+
+
+            t = Truth.stronger(t, tasks.first());
+
+            if (t.evi() < eviMin())
+                return null;
+
+            if (forceProject && !t.isEternal()) { //dont bother sub-projecting eternal here.
+                long ss = time.start;
+                if (ss != ETERNAL) { //dont eternalize here
+                    long ee = time.end;
+                    if (/*t.isEternal() || */!t.containedBy(ss, ee)) {
+                        @Nullable Task t2 = Task.project(t, ss, ee, true, ditherTruth, false, eviMin(), nar);
+                        if (t2 == null || t2.evi() < eviMin())
+                            return null;
+                        t = t2;
+                    }
                 }
             }
 
             return t;
+
         } finally {
             close();
         }
+
     }
 
     private Task newTask() {
         int n = tasks.size();
-        assert(n > 0);
+        assert (n > 0);
 
         Task root = tasks.first();
         if (n == 1) {
             return root;
-        } else  {
+        } else {
             Projection all = tryMerge();
             if (all == null)
                 return null;
@@ -386,7 +401,7 @@ public final class Answer implements AutoCloseable {
 
             if (s == 1) {
                 Task only = tasks.get(0);
-                if (only.isEternal() || (only.start()==time.start && only.end()==time.end)) {
+                if (only.isEternal() || (only.start() == time.start && only.end() == time.end)) {
                     Truth trEte = only.truth();
                     return (trEte.evi() < eviMin()) ? null : trEte;
                 }
@@ -397,8 +412,8 @@ public final class Answer implements AutoCloseable {
                 return null;
 
             Projection tp = p.filtered();
-            if (tp!=null) {
-                assert(!ditherTruth);
+            if (tp != null) {
+                assert (!ditherTruth);
                 return tp.truth(eviMin(), nar);
             }
         } finally {
@@ -408,19 +423,21 @@ public final class Answer implements AutoCloseable {
         return null;
     }
 
-    @Nullable private Projection tryMerge() {
+    @Nullable
+    private Projection tryMerge() {
 
         Projection p = truthpolation(taskList());
 
-        if (p.filterCyclic(true)==null)
+        if (p.filterCyclic(true) == null)
             return null;
 
-        assert(!p.isEmpty());
+        assert (!p.isEmpty());
 
         return p;
     }
 
-    @Nullable private Task newTask(@Nullable Projection tp, boolean beliefOrGoal) {
+    @Nullable
+    private Task newTask(@Nullable Projection tp, boolean beliefOrGoal) {
 
         if (tp == null)
             return null;
@@ -434,12 +451,13 @@ public final class Answer implements AutoCloseable {
     }
 
 
-
-    @Nullable public Projection truthpolation() {
+    @Nullable
+    public Projection truthpolation() {
         return truthpolation(taskList());
     }
 
-    @Nullable public TaskList taskList() {
+    @Nullable
+    public TaskList taskList() {
         int t = tasks.size();
         if (t == 0)
             return null;
@@ -453,19 +471,19 @@ public final class Answer implements AutoCloseable {
         if (tt == null)
             return null;
 
-        assert(!tt.isEmpty());
+        assert (!tt.isEmpty());
 
         long s = tt.start(), e;
 
-        if (s!=ETERNAL) {
+        if (s != ETERNAL) {
             e = tt.end();
             TimeRangeFilter t = this.time;
             long ts = t.start;
-            if (ts !=ETERNAL) {
+            if (ts != ETERNAL) {
 //                if (!trim) {
-                    //project to the question time range
-                    s = t.start;
-                    e = t.end;
+                //project to the question time range
+                s = t.start;
+                e = t.end;
 //                } else {
 //
 //                    //shrinkwrap
@@ -480,9 +498,9 @@ public final class Answer implements AutoCloseable {
 //                    }
 //                }
 
-             } else {
-                 //use the answered time range
-             }
+            } else {
+                //use the answered time range
+            }
         } else {
             e = ETERNAL;
         }
@@ -497,6 +515,7 @@ public final class Answer implements AutoCloseable {
         t.match(this);
         return this;
     }
+
     public final Answer sample(TaskTable t) {
         t.sample(this);
         return this;
@@ -523,7 +542,7 @@ public final class Answer implements AutoCloseable {
 //    }
 
     public void close() {
-        if (tasks!=null) {
+        if (tasks != null) {
             //TopN.unpool(topTasks, tasks);
             tasks = null;
         }
@@ -539,12 +558,15 @@ public final class Answer implements AutoCloseable {
         return tasks.isEmpty();
     }
 
-    @Nullable public Task any() {
+    @Nullable
+    public Task any() {
         return isEmpty() ? null : tasks.top();
     }
 
-    /** consume a limited 'tries' iteration. also applies the filter.
-     *  a false return value should signal a stop to any iteration supplying results */
+    /**
+     * consume a limited 'tries' iteration. also applies the filter.
+     * a false return value should signal a stop to any iteration supplying results
+     */
     public final boolean tryAccept(Task t) {
         if (time.accept(t.start(), t.end())) {
             int remain = --ttl;
@@ -560,10 +582,10 @@ public final class Answer implements AutoCloseable {
     }
 
     private void accept(Task task) {
-        assert(task!=null);
+        assert (task != null);
 
         //if (tasks.capacity() == 1 || !(((CachedFloatFunction)(tasks.rank)).containsKey(task))) {
-            //if (time == null || time.accept(task.start(), task.end())) {
+        //if (time == null || time.accept(task.start(), task.end())) {
         tasks.add(task);
         //}
     }
@@ -584,7 +606,7 @@ public final class Answer implements AutoCloseable {
     }
 
     public Answer dur(int dur) {
-        if (this.dur!=dur) {
+        if (this.dur != dur) {
             this.dur = dur;
             //time(time.start, time.end); //update the time filter
         }

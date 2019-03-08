@@ -9,12 +9,6 @@ public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
     int rounds();
 
 
-    /**
-     * Reset the Registration
-     */
-    void reset(long resolution, int wheels);
-
-
     Status state();
 
     /**

@@ -93,7 +93,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     @Override
-    protected boolean isReady() {
+    protected final boolean isReady() {
         return !executing.getOpaque();
     }
 

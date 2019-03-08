@@ -5,7 +5,8 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.NoSuchElementException;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * BFS that descends through RTree visiting nodes and leaves in an order determined
@@ -40,17 +41,29 @@ public class HyperIterator<X> implements AutoCloseable {
 //                    }
 //            );
 
-    public static <X> void iterate(ConcurrentRTree<X> tree, int capacity, FloatFunction<HyperRegion> rank, Consumer<HyperIterator<X>> with) {
+    public static <X> void iterate(ConcurrentRTree<X> tree, int capacity, Supplier<FloatFunction<X>> rank, Predicate<X> whle) {
 
-        try (HyperIterator<X> h = new HyperIterator(tree.model(), new Object[capacity], rank)) {
-            tree.read((t) -> {
-                Node<X> r = t.root();
-                if (r!=null) {
-                    h.start(r);
-                    with.accept(h);
+
+        tree.read(t -> {
+            int s = t.size();
+            switch (s) {
+                case 0:
+                    return;
+                case 1:
+                    t.forEach(whle::test);
+                default: {
+                    try (HyperIterator<X> h = new HyperIterator(tree.model(), new Object[Math.min(s, capacity)], rank.get())) {
+                        Node<X> r = t.root();
+                        //if (r != null) {
+                            h.start(r);
+                            while (h.hasNext() && whle.test(h.next())) {
+                            }
+                        //}
+                    }
                 }
-            });
-        }
+            }
+        });
+
 
     }
 
@@ -114,6 +127,7 @@ public class HyperIterator<X> implements AutoCloseable {
         }
 
     }
+
     /**
      * surveys the contents of the node, producing a new 'stack frame' for navigation
      */

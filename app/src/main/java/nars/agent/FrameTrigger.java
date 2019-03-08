@@ -35,7 +35,9 @@ abstract public class FrameTrigger {
     /** estimate the time of the next cycle */
     abstract public long next(long now);
 
-    /** measured in realtime */
+    /** measured in realtime
+     * TODO async loop for extended sleep periods
+     * */
     public static class FPS extends FrameTrigger {
 
         private transient final float initialFPS;

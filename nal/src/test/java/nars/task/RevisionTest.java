@@ -99,7 +99,7 @@ public class RevisionTest {
     }
 
     @Test void testNonAdjacentTasks() throws Narsese.NarseseException {
-        if (Param.TASK_REVISION_ALLOW_DILUTE_UNION) { //HACK requires truth dilution to be enabled, which ideally will be controlled on a per-revision basis. not statically
+        if (Param.REVISION_ALLOW_DILUTE_UNION) { //HACK requires truth dilution to be enabled, which ideally will be controlled on a per-revision basis. not statically
             NAR n = NARS.shell();
 
             Task t01 = t(1, 0.9f, 0, 1).apply(n);
@@ -750,7 +750,7 @@ public class RevisionTest {
         Task ab = Revision.merge(a, b, n);
         p(ab);
         assertTrue(ab.conf() == a.conf());
-        if (Param.TASK_REVISION_ALLOW_DILUTE_UNION) {
+        if (Param.REVISION_ALLOW_DILUTE_UNION) {
             Task ac = Revision.merge(a, c, n);
             p(ac);
             assertTrue(ac.conf() < ab.conf(), () -> ac + " must have less conf than " + ab);

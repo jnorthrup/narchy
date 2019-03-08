@@ -232,19 +232,14 @@ public class Remember extends AbstractTask {
 
         @Nullable Task r = rememberMerged(prev, next);
         if (r != null) {
-            long dDurCycles = Math.max(0, next.creation() - prev.creation());
-            float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dur()));
-            r = rememberFilter(prev, next, r, dPri, dCreationDurs);
-
+            if (rememberFilter(prev, next, r, dPri, n))
+                remember(r);
+            else
+                input = null;
         }
-        if (r != null)
-            remember(r);
-        else
-            input = null;
 
-        if (!identity && r == null) {
+        if (!identity && r == null)
             forget(next);
-        }
 
         done = true;
     }
@@ -255,20 +250,23 @@ public class Remember extends AbstractTask {
      * @param dCreationDurs (creation(next) - creation(prev))/durCycles
      */
     @Nullable
-    protected Task rememberFilter(Task prev, Task next, Task remembered, float dPri, float dCreationDurs) {
+    protected boolean rememberFilter(Task prev, Task next, Task remembered, float dPri, NAR n) {
+
+        long dDurCycles = Math.max(0, next.creation() - prev.creation());
+        float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dur()));
 
         if (next==remembered && next.isInput())
-            return remembered;
+            return true;
 
         if (dCreationDurs > Param.REMEMBER_REPEAT_THRESH_DURS) {
             prev.setCreation(next.creation());
-            return remembered;
+            return true;
         }
 
-        if (dPri >= Param.REMEMBER_REPEAT_PRI_THRESHOLD)
-            return remembered;
+        if (dPri > Param.REMEMBER_REPEAT_PRI_THRESHOLD)
+            return true;
 
-        return null;
+        return false;
     }
 
     /**

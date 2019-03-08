@@ -19,6 +19,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static jcog.exe.Exe.UDPeerProfiler.logger;
+
 /**
  * static execution context: JVM-global dispatch, logging, profiling, etc.
  */
@@ -58,7 +60,8 @@ public enum Exe {;
         return executor;
     }
 
-    public static void setExecutor(Executor e) {
+    public static synchronized void setExecutor(Executor e) {
+        logger.info("global executor = {} ", e);
         executor = e;
     }
 

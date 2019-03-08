@@ -201,6 +201,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     protected <X> void reject(TimedFuture<X> r) {
         logger.error("unscheduled {}", r);
+        r.cancel(false);
     }
 
     protected final boolean reschedule(TimedFuture<?> r) {
@@ -251,7 +252,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     public void scheduleAtFixedRate(FixedRateTimedFuture f, long period, TimeUnit unit) {
         f.init(NANOSECONDS.convert(period, unit), resolution, wheels);
-        schedule(f);
+        reschedule(f);
     }
 
     @Override

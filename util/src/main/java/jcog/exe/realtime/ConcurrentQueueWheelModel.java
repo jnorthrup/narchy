@@ -42,6 +42,9 @@ public class ConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
                     break; //<--- ideally most common path
             }
         } else {
+
+            //TODO if n=2 and the previous or next queue is empty try moving one of the items there. this will distribute items across wheels so each has an ideal 0 or 1 size
+
             for (int i = 0; i < n; i++) {
                 TimedFuture r = q.poll();
                 switch (r.state()) {

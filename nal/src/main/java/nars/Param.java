@@ -197,10 +197,12 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
+     *
+     * TODO make this a per-sensor implementation cdecision
      */
-    public final static float SIGNAL_STRETCH_LIMIT_DURS = 8;
+    public final static float SIGNAL_STRETCH_LIMIT_DURS = 2;
 
-    public static final boolean TASK_REVISION_ALLOW_DILUTE_UNION = true;
+    public static final boolean REVISION_ALLOW_DILUTE_UNION = false;
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
@@ -219,7 +221,7 @@ public abstract class Param {
             2f;
 
     /** 0..1.0: how much to reduce a signal which hasnt changed (in proportion to change significance) */
-    public static final float SIGNAL_UNSURPRISING_FACTOR = 0.25f;
+    public static final float SIGNAL_UNSURPRISING_FACTOR = 0.1f;
 
 
     /** may cause unwanted "sticky" event conflation. may only be safe when the punctuation of the task in which the event contained is the same */

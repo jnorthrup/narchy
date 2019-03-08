@@ -22,11 +22,6 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
             return Status.PENDING;
     }
 
-    @Override
-    public void reset(long resolution, int wheels) {
-        throw new RuntimeException("One Shot Registrations can not be rescheduled");
-    }
-
 
     @Override
     abstract public int offset(long resolution);

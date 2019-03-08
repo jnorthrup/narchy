@@ -458,7 +458,7 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
 
 
     /** TODO extend TaskList as TruthTaskList storing evi,freq pairs of floats in a compact float[] */
-    @Deprecated protected static class TaskComponent implements Tasked {
+    @Deprecated public static class TaskComponent implements Tasked {
         final Task task;
 
         /**

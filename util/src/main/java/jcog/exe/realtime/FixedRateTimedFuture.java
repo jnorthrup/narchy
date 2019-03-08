@@ -1,9 +1,5 @@
 package jcog.exe.realtime;
 
-import jcog.WTF;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class FixedRateTimedFuture extends AbstractTimedRunnable {
 
     int offset;
@@ -18,14 +14,14 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
 
     public FixedRateTimedFuture(int rounds,
                                 Runnable callable,
-                                long recurringTimeout, long resolution, int wheelSize) {
+                                long recurringTimeout, long resolution, int wheels) {
         super(rounds, callable);
-        init(recurringTimeout, resolution, wheelSize);
+        init(recurringTimeout, resolution, wheels);
     }
 
-    public void init(long recurringTimeout, long resolution, int wheelSize) {
+    public void init(long recurringTimeout, long resolution, int wheels) {
         this.periodNS = recurringTimeout;
-        reset(resolution, wheelSize);
+        reset(wheels, resolution);
     }
 
     @Override
@@ -39,42 +35,26 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
         return true;
     }
 
-    private final AtomicBoolean pending = new AtomicBoolean();
-
     @Override
     public void execute(HashedWheelTimer t) {
-        if (pending.compareAndSet(false, true)) {
-            try {
-                if (!isCancelled()) {
-                    if (isReady()) {
-                        super.execute(t);
-                    }
-                    reset(t.resolution, t.wheels); //TODO time since last
-                    if (!t.reschedule(this))
-                        throw new WTF("unscheduled: " + this); //TODO HACK
-                }
-            } finally {
-                pending.set(false);
-            }
-        }
 
+        if (!isCancelled()) {
+            if (isReady())
+                super.execute(t);
+
+            reset(t.wheels, t.resolution);
+
+            t.reschedule(this);
+        }
     }
 
-    /** override for returning false to pause automatic rescheduling */
-    protected boolean isReady() {
+    /**
+     * override for returning false to pause automatic rescheduling
+     * TODO this interface method isnt needed; just use cancel and re-schedule to resume
+     */
+    @Deprecated protected boolean isReady() {
         return true;
     }
-
-//    @Override
-//    public void run() {
-//        if (pending.compareAndSet(true, false)) { //coalesce
-//            //System.out.println(" run " + this);
-//            super.run();
-//        } else {
-//            //elide
-//            //System.out.println("skip " + this);
-//        }
-//    }
 
     @Override
     public final boolean isPeriodic() {
@@ -93,11 +73,12 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
         return offset;
     }
 
-    public final void reset(long resolution, int wheels) {
+    protected void reset(int wheels, long resolution) {
         int steps = (int) Math.round(((double) periodNS) / resolution);
+
         this.rounds = Math.min(Integer.MAX_VALUE - 1,
-                        (steps / wheels)
-                );
+                (steps / wheels)
+        );
         this.offset = steps % wheels;
     }
 

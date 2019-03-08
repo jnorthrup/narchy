@@ -116,7 +116,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             y = y * (1 - conf);
             //-Param.evi(c2wSafe(conf),  timeDist, perceptDur);
-            ;
             if (y < min)
                 return Float.NaN;
 
@@ -176,22 +175,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
     @Override
-    public void match(Answer a) {
+    public final void match(Answer a) {
 
-        int s = size();
-        if (s == 0)
-            return;
-
-        if (s == 1) {
-            whileEach((Predicate<TaskRegion>) (n) -> a.tryAccept((Task) n));
-            return;
-        }
-
-        FloatFunction timeDist = a.temporalDistanceFn();
-
-        HyperIterator.iterate(this, RTreeBeliefTable.CURSOR_CAPACITY,
-            timeDist, i->{ while (i.hasNext() && a.tryAccept((Task) i.next())) { } });
-
+        HyperIterator.iterate(this,
+                RTreeBeliefTable.CURSOR_CAPACITY,
+                a::temporalDistanceFn,
+                n->a.tryAccept((Task)n)
+        );
     }
 
     @Override
@@ -205,9 +195,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (r.input.isEternal())
             return;
 
-        if (capacity == 0) {
+        if (capacity == 0)
             return;
-        }
 
         /** buffer removal handling until outside of the locked section */
 
