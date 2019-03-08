@@ -7,6 +7,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.table.TaskTable;
+import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
 import nars.truth.Truth;
@@ -327,7 +328,7 @@ public final class Answer implements AutoCloseable {
                 switch (root.punc()) {
                     case BELIEF:
                     case GOAL: {
-                        t = newTask();
+                        t = Truth.stronger(newTask(), tasks.first());
                     }
                     break;
                     case QUESTION:
@@ -339,21 +340,23 @@ public final class Answer implements AutoCloseable {
                 }
             }
 
-
-            t = Truth.stronger(t, tasks.first());
-
             if (t.evi() < eviMin())
                 return null;
 
-            if (forceProject && !t.isEternal()) { //dont bother sub-projecting eternal here.
+            if (forceProject) { //dont bother sub-projecting eternal here.
                 long ss = time.start;
                 if (ss != ETERNAL) { //dont eternalize here
-                    long ee = time.end;
-                    if (/*t.isEternal() || */!t.containedBy(ss, ee)) {
-                        @Nullable Task t2 = Task.project(t, ss, ee, true, ditherTruth, false, eviMin(), nar);
-                        if (t2 == null || t2.evi() < eviMin())
-                            return null;
-                        t = t2;
+                    long tStart = t.start();
+                    if (tStart != ETERNAL) {
+                        if (tStart != ss) {
+                            long ee = time.end;
+                            if (t.end() != ee) {
+                                @Nullable Task t2 = Task.project(t, ss, ee, true, ditherTruth, false, eviMin(), nar);
+                                if (t2 == null || t2.evi() < eviMin())
+                                    return null;
+                                t = t2;
+                            }
+                        }
                     }
                 }
             }
@@ -447,7 +450,17 @@ public final class Answer implements AutoCloseable {
             return null;
 
         //HACK TODO do this without creating a temporary TaskList
-        return tp.task(taskList(), tt, beliefOrGoal, nar);
+        if (tp.size()==1) {
+            //proxy to the individual task being projected
+            Task only = tp.get(0).task();
+            if (!only.isEternal() && (only.start()!=tp.start() || only.end()!=tp.end()) )
+                return new SpecialTruthAndOccurrenceTask(only,
+                    tp.start(), tp.end(), false, tt);
+            else
+                return only; //as-is
+        } else {
+            return tp.list().merge(tp.term, tt, tp::stamper, beliefOrGoal, tp.start(), tp.end(), nar);
+        }
     }
 
 

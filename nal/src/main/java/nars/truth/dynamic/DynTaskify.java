@@ -154,7 +154,7 @@ public class DynTaskify extends TaskList {
         if (t == null)
             return null;
 
-        return d.task(term, t, d::stamp, beliefOrGoal, s, e, nar);
+        return d.merge(term, t, d::stamp, beliefOrGoal, s, e, nar);
     }
 
     private boolean evalComponent(Term subTerm, long subStart, long subEnd) {

@@ -14,8 +14,6 @@ import nars.truth.Truthed;
 import nars.truth.polation.Projection;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
@@ -82,10 +80,6 @@ public enum Revision {;
 //        return x;
 //    }
 
-    /** might be useful in lazily prioritizing or parallelizing somehow */
-    public static Task merge(Supplier<TaskRegion> x, Supplier<TaskRegion> y, NAR nar) {
-        return merge(x::get, y::get, nar);
-    }
 
     /**
      * 2-ary merge with quick overlap filter

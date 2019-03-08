@@ -12,6 +12,8 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.task.Tasked;
+import nars.task.proxy.SpecialTruthAndOccurrenceTask;
+import nars.task.util.TaskBuffer;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
@@ -440,11 +442,7 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         forEach(TaskComponent::invalidate);
     }
 
-    public final Task task(TaskList d, Truth tt, boolean beliefOrGoal, NAR nar) {
-        return d.task(term, tt, this::stamper, beliefOrGoal, start(), end(), nar);
-    }
-
-    private long[] stamper(Random rng) {
+    public long[] stamper(Random rng) {
         @Nullable MetalLongSet s = Stamp.toMutableSet(
                 Param.STAMP_CAPACITY,
                 i->get(i).task.stamp(),
@@ -454,6 +452,16 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         } else {
             return s.toSortedArray();
         }
+    }
+
+    @Deprecated public TaskList list() {
+        int thisSize;
+        TaskList t = new TaskList(thisSize = this.size());
+        for (int i = 0; i < thisSize; i++) {
+            TaskComponent x = this.get(i);
+            t.add(x.task);
+        }
+        return t;
     }
 
 

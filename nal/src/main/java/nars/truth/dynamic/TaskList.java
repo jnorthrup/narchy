@@ -99,7 +99,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     }
 
 
-    public final Task task(Term content, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
+    public final Task merge(Term content, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
 
         NALTask dyn = DynamicTruthTask.task(content, t, stamp, beliefOrGoal, start, end, nar);
         if(dyn==null)
