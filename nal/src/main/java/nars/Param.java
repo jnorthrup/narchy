@@ -129,7 +129,7 @@ public abstract class Param {
     public static final int TASK_EVAL_FORK_ATTEMPT_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity */
-    public static final float ANSWER_COMPLETENESS = 2f;
+    public static final float ANSWER_COMPLETENESS = 1f;
 
 //    public static final boolean DERIVE_AUTO_IMAGE_NORMALIZE = true;
 
@@ -187,16 +187,16 @@ public abstract class Param {
     /** novelty threshold: >=0; higher values decrease the rate at which repeated tasks can be reactivated */
     public static final float REMEMBER_REPEAT_THRESH_DURS = 1f;
 
-    public static final boolean REVISION_ALLOW_DILUTE_UNION = false;
+//    public static final boolean REVISION_ALLOW_DILUTE_UNION = false;
 
-    /** restrains revision's ability to stretch evidence across time:
-     * as a factor of the maximum of the ranges of the tasks involved in the revision */
-    public static final float REVISION_UNION_THRESHOLD =
-            //0.5f;
-            //1;
-            //1.5f;
-            //1.618f; //goldenratio
-            2;
+//    /** restrains revision's ability to stretch evidence across time:
+//     * as a factor of the maximum of the ranges of the tasks involved in the revision */
+//    public static final float REVISION_UNION_THRESHOLD =
+//            0.5f;
+//            //1;
+//            //1.5f;
+//            //1.618f; //goldenratio
+//            //2;
 
     /**
      * maximum time (in durations) that a signal task can stretch the same value
@@ -265,12 +265,10 @@ public abstract class Param {
      * TTL = 'time to live'
      */
     public static final int TermutatorSearchTTL = 4;
-    public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
+    public static final int TermUnifyForkMax = 3;
+    public final IntRange deriveBranchTTL = new IntRange(32 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
-    public static final int TTL_CONJ_BEFORE_AFTER = 4;
 
     /**
      * for NALTest's: extends the time all unit tests are allowed to run for.
@@ -280,11 +278,13 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 3;
+    public static final int TIMEGRAPH_ITERATIONS = 2;
 
 
     @Range(min = 0, max = 64)
     public static final int TTL_BRANCH = 1;
+
+    public static final int TTL_CONJ_BEFORE_AFTER = 0;
 
     /**
      * cost of executing a termute permutation

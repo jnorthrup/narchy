@@ -9,11 +9,11 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.util.Image;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_DEP;
 import static nars.term.atom.Bool.Null;
+import static nars.term.util.Image.imageNormalize;
 
 /**
  * substituteIfUnifies....(target, varFrom, varTo)
@@ -85,13 +85,8 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
     @Override
     public Term apply(Evaluation e, /*@NotNull*/ Subterms a) {
 
-//        if (a.hasAny(Op.VAR_PATTERN))
-//            return Null; //result not fully unified; though there may be a chance it could be eliminated here without even having an assigned value
-
         boolean strict = false;
         int var = Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
-        //@Nullable Op op = null;
-
 
         int pp = a.subs();
         if (pp < 3)
@@ -112,9 +107,7 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
         /** target being transformed if x unifies with y */
         Term c = a.sub(0);
 
-
         Term x = a.sub(1);
-
 
         Term y = a.sub(2);
 
@@ -124,36 +117,34 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
         }
 
         Term output;
-//        if (c.equals(x)) {
-//
-//            output = y;
-//
-//        } else {
 
         boolean tryUnify = (x.hasAny(var) || y.hasAny(var));
 
         if (tryUnify) {
-            int ttl = Math.max(1, parent.nar.subUnifyTTLMax.intValue() - 1);
-            x = Image.imageNormalize(x);
-            y = Image.imageNormalize(y);
-            output = u.unifySubst(x, y, c, ttl, var, strict);
-            parent.use(1 + ttl - u.ttl);
+            int subTTL = Math.max(parent.ttl, 0);
+            if (subTTL == 0)
+                return Null;
+
+            u.setTTL(subTTL);
+
+            output = u.unifySubst(imageNormalize(x), imageNormalize(y), c, var, strict);
+
+            parent.use( subTTL - u.ttl);
+
         } else {
             output = null;
         }
 
-//        }
-
         return (output == null || (strict && c.equals(output))) ? Null : output;
     }
 
-    public boolean transformed() {
-        if (u.result!=null && u.xy.size() > 0) {
-            u.result = null;
-            return true;
-        }
-        return false;
-    }
+//    public boolean transformed() {
+//        if (u.result!=null && u.xy.size() > 0) {
+//            u.result = null;
+//            return true;
+//        }
+//        return false;
+//    }
 
     public final class MySubUnify extends SubUnify {
 
@@ -209,12 +200,10 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
         }
 
         @Nullable
-        Term unifySubst(Term x, Term y, @Nullable Term transformed, int ttl) {
+        Term unifySubst(Term x, Term y, @Nullable Term transformed) {
             this.transformed = transformed;
             this.result = null;
 
-            setTTL(ttl);
-            assert (ttl > 0);
 
             unify(x, y);
 
@@ -222,9 +211,9 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
         }
 
         @Nullable
-        public Term unifySubst(Term x, Term y, Term transformed, int ttl, int var, boolean strict) {
+        public Term unifySubst(Term x, Term y, Term transformed, int var, boolean strict) {
             reset(var, strict);
-            return unifySubst(x, y, transformed, ttl);
+            return unifySubst(x, y, transformed);
         }
     }
 

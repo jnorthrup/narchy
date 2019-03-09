@@ -398,8 +398,10 @@ public final class Answer implements AutoCloseable {
                 return null;
 
             if (s == 1) {
+                //simple case where the projected time is exactly right
                 Task only = tasks.get(0);
-                if (only.isEternal() || (only.start() == time.start && only.end() == time.end)) {
+                long onlyStart = only.start();
+                if ((onlyStart==ETERNAL) || (onlyStart == time.start && only.end() == time.end)) {
                     Truth trEte = only.truth();
                     return (trEte.evi() < eviMin()) ? null : trEte;
                 }
@@ -495,7 +497,7 @@ public final class Answer implements AutoCloseable {
         } else {
             e = ETERNAL;
         }
-
+        //TODO tt.focus(s, e)
         TruthProjection tp = nar.projection(s, e, dur);
         tp.ensureCapacity(tt.size());
         tt.forEach(tp::add);

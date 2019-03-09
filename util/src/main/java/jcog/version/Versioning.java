@@ -143,8 +143,8 @@ public class Versioning<X> {
         return ttl > 0;
     }
 
-    public final void setTTL(int ttl) {
-//        assert (ttl > 0);
+    public void setTTL(int ttl) {
+        assert (ttl > 0);
         this.ttl = ttl;
     }
 

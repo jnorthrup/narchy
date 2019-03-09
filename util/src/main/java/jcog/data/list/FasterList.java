@@ -235,6 +235,18 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
+    public int indexOf(Predicate<X> p) {
+        int s = size;
+        if (s > 0) {
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                if (p.test(items[i]))
+                    return i;
+            }
+        }
+        return -1;
+    }
+
     @Override
     public int indexOf(/*@NotNull*/ Object object) {
 

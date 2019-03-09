@@ -1,11 +1,11 @@
 package nars.subterm;
 
-import nars.$;
 import nars.term.Term;
 import nars.term.util.TermTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
+import static nars.$.$$$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -61,7 +61,7 @@ public class MappedSubtermsTest {
             assertEquals("(0,0,0,0)", s.toString());
         }
         {
-            Subterms s = new RemappedSubterms.RepeatedSubterms($.$$$("#a"), 3);
+            Subterms s = new RemappedSubterms.RepeatedSubterms($$$("#a"), 3);
             assertEquals(RemappedSubterms.RepeatedSubterms.class, s.getClass());
             assertEquals(3, s.subs());
             assertEquals(3, s.vars());
@@ -72,5 +72,13 @@ public class MappedSubtermsTest {
             assertEquals(1, s.complexity());
             assertEquals("(#a,#a,#a)", s.toString());
         }
+    }
+    @Test void testBiSubtermWeird() {
+        Term allegedTarget = $$$("( &&+- ,(--,##2#4),_1,##2#4,$1)");
+        Subterms base = new BiSubterm(allegedTarget, $$$("$1"));
+        assertEquals("(( &&+- ,(--,##2#4),_1,##2#4,$1),$1)", base.toString());
+
+        Term target = $$$("( &&+- ,(--,##2#4),_1,##2#4,$1)");
+        assertEquals(0, base.indexOf(target));
     }
 }

@@ -53,21 +53,21 @@ public class RevisionTest {
     }
 
     @Test void testCoincidentTasks() throws Narsese.NarseseException {
-        Task t01 = merge(n, t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 0, 0).apply(n));
+        Task t01 = merge(t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 0, 0).apply(n), n);
         assertNotNull(t01);
         assertEquals("(b-->a). 0 %1.0;.95%", t01.toStringWithoutBudget());
         assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
     }
 
     @Test void testPartiallyCoincidentTasks() throws Narsese.NarseseException {
-        Task t01 = merge(n, t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 0, 1).apply(n));
+        Task t01 = merge(t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 0, 1).apply(n), n);
         assertNotNull(t01);
         assertEquals("(b-->a). 0⋈1 %1.0;.93%", t01.toStringWithoutBudget());
         assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
     }
 
     @Test void testAdjacentTasks() throws Narsese.NarseseException {
-        Task t01 = merge(n, t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 1, 1).apply(n));
+        Task t01 = merge(t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 1, 1).apply(n), n);
         assertNotNull(t01);
         assertEquals("(b-->a). 0⋈1 %1.0;.90%", t01.toStringWithoutBudget());
         assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
@@ -90,7 +90,7 @@ public class RevisionTest {
     }
 
     @Test void testNonAdjacentTasks() throws Narsese.NarseseException {
-        if (Param.REVISION_ALLOW_DILUTE_UNION) { //HACK requires truth dilution to be enabled, which ideally will be controlled on a per-revision basis. not statically
+//        if (Param.REVISION_ALLOW_DILUTE_UNION) { //HACK requires truth dilution to be enabled, which ideally will be controlled on a per-revision basis. not statically
             NAR n = NARS.shell();
 
             Task t01 = t(1, 0.9f, 0, 1).apply(n);
@@ -101,24 +101,24 @@ public class RevisionTest {
             Task t100_102 = t(1, 0.9f, 100, 102).apply(n);
 
             //evidence density
-            Task a = merge(n, t01, t45);
-            Task b = merge(n, t02, t45);
-            Task c = merge(n, t03, t45);
+            Task a = merge(t01, t45, n);
+            Task b = merge(t02, t45, n);
+            Task c = merge(t03, t45, n);
             assertNotNull(a);
             assertNotNull(b);
             assertTrue(a.evi() < b.evi());
             assertNotNull(c);
             assertTrue(b.evi() < c.evi());
 
-            assertEquals("(b-->a). 0⋈102 %1.0;.34%", merge(n, t02, t100_102).toStringWithoutBudget());
+            assertEquals("(b-->a). 0⋈102 %1.0;.34%", merge(t02, t100_102, n).toStringWithoutBudget());
 
-            assertEquals("(b-->a). 0⋈5 %1.0;.91%", merge(n, t03, t35).toStringWithoutBudget());
-            assertEquals("(b-->a). 0⋈5 %1.0;.90%", merge(n, t02, t35).toStringWithoutBudget());
-        }
+            assertEquals("(b-->a). 0⋈5 %1.0;.91%", merge(t03, t35, n).toStringWithoutBudget());
+            assertEquals("(b-->a). 0⋈5 %1.0;.90%", merge(t02, t35, n).toStringWithoutBudget());
+//        }
 
     }
 
-    private Task merge(NAR n, Task t01, Task t45) {
+    private Task merge(Task t01, Task t45, NAR n) {
         return Revision.merge(n, false, t01, t45).getOne();
     }
 
@@ -739,17 +739,17 @@ public class RevisionTest {
         Task b = n.believe(x, 2, 1f);
         Task c = n.believe(x, 3, 1f);
 //        Task d = n.believe(x, 8, 1f);
-        Task aa = merge(n, a, a2);
+        Task aa = merge(a, a2, n);
         p(aa);
         assertTrue(aa.conf() > a.conf());
-        Task ab = merge(n, a, b);
+        Task ab = merge(a, b, n);
         p(ab);
         assertTrue(ab.conf() == a.conf());
-        if (Param.REVISION_ALLOW_DILUTE_UNION) {
-            Task ac = merge(n, a, c);
+//        if (Param.REVISION_ALLOW_DILUTE_UNION) {
+            Task ac = merge(a, c, n);
             p(ac);
             assertTrue(ac.conf() < ab.conf(), () -> ac + " must have less conf than " + ab);
-        }
+//        }
 //        Task ad = Revision.merge(a, d, n);
 //        p(ad);
 //        assertTrue(ad.conf() < ac.conf());

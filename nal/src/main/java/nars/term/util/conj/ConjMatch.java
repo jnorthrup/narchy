@@ -171,7 +171,7 @@ public class ConjMatch {
 
                     s.reset(varBits, false);
 
-                    Term yy = s.unifySubst(xx, event, xx, ttl, varBits, false);
+                    Term yy = s.unifySubst(xx, event, xx, varBits, false);
                     if (yy!=null) {
                         if (yy == False)
                             continue; //fail

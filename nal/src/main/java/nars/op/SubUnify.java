@@ -39,6 +39,12 @@ public class SubUnify extends Unify {
         return super.clear();
     }
 
+    @Override
+    public void setTTL(int ttl) {
+        live = (ttl > 0);
+        super.setTTL(ttl);
+    }
+
     /**
      * terminate after the first match
      */
@@ -49,6 +55,7 @@ public class SubUnify extends Unify {
             Term result = apply(transformed);
             if (result != null && result != Null && tryMatch(result)) {
 
+                use(1);
                 this.result = result;
 
                 stop();

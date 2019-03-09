@@ -29,24 +29,28 @@ public class LinearTruthProjection extends TruthProjection {
     @Nullable
     public Truth truth(float eviMin, NAR nar) {
 
+        if (active() == 0)
+            return null;
+
         double eviFactor = 1f;
         if (nar != null) {
 
-            eviFactor *= intermpolate(nar);
+            eviFactor *= intermpolateAndCull(nar);
             if (eviFactor < ScalarValue.EPSILON)
                 return null;
-        }
 
-        int s = size();
-        if (s == 0)
-            return null;
+            if (active() == 0)
+                return null;
+        }
 
         double wFreqSum = 0, wSum = 0, eSum = 0;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
             TaskComponent x = get(i);
 
             float e = x.evi;
-            assert(e==e);
+            if (e!=e)
+                continue;
+
             eSum += e;
 
             float w = e;

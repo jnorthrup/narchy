@@ -259,23 +259,26 @@ public enum Tense {
     @Nullable
     public static long[] merge(int dtDither, Iterable<? extends TaskRegion> tasks) {
         long[] u = Tense.union(tasks);
-        long unionRange = Tense.dither(u[1], dtDither) - Tense.dither(u[0], dtDither);
-        if (unionRange > Math.ceil(Param.REVISION_UNION_THRESHOLD * Util.max(t -> t.start()==ETERNAL ?  0 : t.range(), tasks))) {
-
-            //too sparse: settle for more potent intersection if exists
-
-            long[] i = Tense.intersect(tasks);
-            if (i!=null)
-                return i;
-
-            if (!Param.REVISION_ALLOW_DILUTE_UNION)
-                return null;
-            //else: resort to dilute union
-        }
+//        long unionRange = u[1] - u[0];
+//        float rangeThreshold = Param.REVISION_UNION_THRESHOLD;
+//        if (unionRange > Math.ceil(rangeThreshold * Util.max(t -> t.start()==ETERNAL ?  0 : t.range(), tasks))) {
+//
+//            //too sparse: settle for more potent intersection if exists
+//
+//            if (rangeThreshold < 1f) {
+//                long[] i = Tense.intersect(tasks);
+//                if (i != null)
+//                    return Tense.dither(i, dtDither);
+//            }
+//
+//            if (!Param.REVISION_ALLOW_DILUTE_UNION)
+//                return null;
+//            //else: resort to dilute union
+//        }
 
         //TODO handle cases where N>2 and a mix of union/intersect is valid
 
-        return u;
+        return Tense.dither(u, dtDither);
     }
 
     public static void assertDithered(TaskRegion x, int d) {

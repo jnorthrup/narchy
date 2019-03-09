@@ -13,7 +13,7 @@ import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TruthPolationTest {
+class TruthProjectionTest {
 
     int serial = 0;
     static final Term x = $$("x");

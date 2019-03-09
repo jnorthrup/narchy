@@ -60,10 +60,12 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     /**
      * computes the final truth value
      */
-    @Nullable public abstract Truth truth(float eviMin, NAR nar);
+    @Nullable
+    public abstract Truth truth(float eviMin, NAR nar);
 
-    @Nullable public final Truth truth(float eviMin, boolean dither, NAR nar) {
-        Truth t  = truth(eviMin, nar);
+    @Nullable
+    public final Truth truth(float eviMin, boolean dither, NAR nar) {
+        Truth t = truth(eviMin, nar);
         if (t == null)
             return null;
         if (dither) {
@@ -83,7 +85,6 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
 
-
     @Override
     protected final TaskComponent[] newArray(int newCapacity) {
         return new TaskComponent[newCapacity];
@@ -91,21 +92,14 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
 
     @Nullable
-    protected final TaskComponent update(int i) {
-        return update(get(i), Float.MIN_NORMAL);
-    }
-
-    @Nullable
-    protected TaskComponent update(TaskComponent tc, float eviMin) {
-        if (!tc.valid()) {
-            float e = tc.evi = evi(tc.task);
-            if (e!=e || e <= eviMin)
-                return null;
+    protected boolean update(TaskComponent tc, boolean force) {
+        float e = tc.evi;
+        if (force || (e!=e)) {
+            tc.evi = e = evi(tc.task);
         }
-
-        return tc.evi >= eviMin ? tc :
-                null;
+        return e==e;
     }
+
 
     protected float evi(Task task) {
         if (start == ETERNAL) {
@@ -125,14 +119,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     @Nullable
     public final MetalLongSet commit(boolean provideStamp, int minResults) {
 
-        int s;
-        if ((s = size()) < minResults) return null;
 
-        refocus();
-        update();
-        cull();
+        if (size() < minResults) return null;
 
-        if ((s = size()) < minResults) return null;
+        int s = refocus();
+        if (s < minResults) return null;
         else if (s == 1) {
             return only(provideStamp);
         } else {
@@ -140,17 +131,28 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             return provideStamp ? e : null;
         }
     }
+    public int active() {
+        return count(TaskComponent::valid);
+    }
 
-    private void update() {
+    private int update(boolean force) {
         int s = size();
-        for (int i = 0; i < s; i++)
-            update(i);
-        sortByEvidence();
+        if (s > 0) {
+            int count = 0;
+            for (int i = 0; i < s; i++) {
+                if (update(get(i), force))
+                    count++;
+            }
+            if (count > 0)
+                sortByEvidence();
+            return count;
+        }
+        return 0;
     }
 
     private MetalLongSet filterCyclicN(int minComponents) {
 
-        assert(minComponents >= 1);
+        assert (minComponents >= 1);
 
         int ss = size();
 
@@ -160,11 +162,17 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             if (e == null) {
                 e = new MetalLongSet(Param.STAMP_CAPACITY); //first iteration
             } else {
+                //2nd iteration, or after
+
+                int activeRemain = refocus();
+                if (activeRemain < minComponents) {
+                    //OOPS
+                    // TODO undo
+                    return null;
+                }
                 e.clear();
-                refocus(); //2nd iteration, or after
             }
 
-            update();
 
             int weakestConflict = Integer.MIN_VALUE, strongestConflict = Integer.MAX_VALUE;
             for (int i = ss - 1; i >= 0; i--) {
@@ -237,9 +245,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         sortThisByFloat(tc -> -tc.evi); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
     }
 
-    /** a one-for-all and all-for-one decision */
+    /**
+     * a one-for-all and all-for-one decision
+     */
     private void oneForAll(int conflict) {
-        if (size()==2) {
+        if (size() == 2) {
             removeFast(1); //the weaker will obviously be the 1th one regardless
             return;
         }
@@ -261,20 +271,22 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         double e = 0;
         int n = size();
         for (int i = 0; i < n; i++) {
-            if (i!=task) {
+            if (i != task) {
                 TaskComponent c = get(i);
                 float ce = c.evi;
-                if (ce==ce)
+                if (ce == ce)
                     e += ce;
             }
         }
         return e;
     }
 
-    @Nullable
     private MetalLongSet only(boolean provideStamp) {
-        assert(valid(0));
-        return provideStamp ? Stamp.toMutableSet(get(0).task) : null;
+        return provideStamp ? Stamp.toMutableSet(get(firstValidIndex()).task) : null;
+    }
+
+    protected int firstValidIndex() {
+        return indexOf(TaskComponent::valid);
     }
 
     public final boolean valid(int i) {
@@ -304,11 +316,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return this;
     }
 
-    float intermpolate(NAR nar) {
-        int thisSize = this.size();
-        if (thisSize == 0) return 0;
+    float intermpolateAndCull(NAR nar) {
 
-        Term first = get(0).task.term();
+        int root = firstValidIndex();
+        int thisSize = size();
+        Term first = get(root).task.term();
         if (thisSize == 1 || !first.hasAny(Op.Temporal)) {
             //assumes that all the terms are from the same concept.  so if the first target has no temporal components the rest should not either.
             this.term = first;
@@ -316,19 +328,20 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         }
 
 
-
         MetalBitSet matchingFirst = MetalBitSet.bits(thisSize);
-        matchingFirst.set(0);
-        for (int i = 1; i < thisSize; i++) {
+        matchingFirst.set(root);
+        for (int i = firstValidIndex()+1; i < thisSize; i++) {
             TaskComponent t = this.get(i);
-            Term ttt = t.task.term();
-            if (first.equals(ttt))
-                matchingFirst.set(i);
+            if (t.valid()) {
+                Term ttt = t.task.term();
+                if (first.equals(ttt))
+                    matchingFirst.set(i);
+            }
         }
         if (matchingFirst.cardinality() > 1) {
             this.term = first;
             //exact matches are present.  remove those which are not
-            for (int i = 1; i < thisSize; i++)
+            for (int i = firstValidIndex()+1; i < thisSize; i++)
                 if (!matchingFirst.get(i))
                     set(i, null);
             removeNulls();
@@ -354,7 +367,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 if (Task.validTaskTerm(ab)) {
 
                     this.term = ab;
-                    removeAbove(1+1);  assert(size()==2);
+                    removeAbove(1 + 1);
+                    assert (size() == 2);
                     //return 1 - dtDiff * 0.5f; //half discounted
                     //return 1 - dtDiff;
                     return 1; //no discount for difference
@@ -365,7 +379,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
 
             //last option: remove all except the first
-            removeAbove(1); assert(size()==1);
+            removeAbove(1);
+            assert (size() == 1);
             this.term = a;
             return 1;
 
@@ -408,24 +423,24 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return end;
     }
 
-    private void cull() {
-        removeIf(x -> update(x, Float.MIN_NORMAL) == null);
-    }
+//    private void cull() {
+//        removeIf(x -> update(x, Float.MIN_NORMAL) == null);
+//    }
 
 
     /**
      * aka "shrinkwrap", or "trim". use after filtering cyclic.
      * adjust start/end to better fit the (remaining) task components and minimize temporalizing truth dilution.
      * if the start/end has changed, then evidence for each will need recalculated
-     * returns true if the evidences have changed.
-     *  */
-    private boolean refocus() {
+     * returns the number of active tasks
+     */
+    private int refocus() {
         long[] se;
         if (size() > 1) {
             se = Tense.union(Iterables.transform(this, (TaskComponent x) -> x.task));
         } else {
             TruthProjection.TaskComponent only = getFirst();
-            se = new long[] { only.task.start(), only.task.end() };
+            se = new long[]{only.task.start(), only.task.end()};
         }
 
         if (se[0] != ETERNAL) {
@@ -436,13 +451,17 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 se[1] = Math.max(start, Math.min(end, se[1]));
             }
         }
-        if (se[0]!=start || se[1]!=end) {
+        if (se[0] != start || se[1] != end) {
             invalidate();
+
             start = se[0];
             end = se[1];
-            return true;
+
+            return update(true);
+        } else {
+            return update(false);
         }
-        return false;
+
     }
 
     private void invalidate() {
@@ -452,7 +471,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     public long[] stamper(Random rng) {
         @Nullable MetalLongSet s = Stamp.toMutableSet(
                 Param.STAMP_CAPACITY,
-                i->get(i).task.stamp(),
+                i -> get(i).task.stamp(),
                 size()); //calculate stamp after filtering and after intermpolation filtering
         if (s.size() > Param.STAMP_CAPACITY) {
             return Stamp.sample(Param.STAMP_CAPACITY, s, rng);
@@ -461,23 +480,36 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         }
     }
 
-    @Deprecated public TaskList list() {
+    @Deprecated
+    public TaskList list() {
         int thisSize;
         TaskList t = new TaskList(thisSize = this.size());
         for (int i = 0; i < thisSize; i++) {
             TaskComponent x = this.get(i);
-            t.add(x.task);
+            if (x.valid())
+                t.add(x.task);
+            else
+                System.out.println("skipped");
         }
         return t;
     }
 
     public void forEachTask(Consumer<Task> each) {
-        forEachWith((x, e)->e.accept(x.task), each);
+        forEachWith((x, e) -> {
+            if (x.valid()) {
+                e.accept(x.task);
+            } else {
+                System.out.println("skipped");
+            }
+        }, each);
     }
 
 
-    /** TODO extend TaskList as TruthTaskList storing evi,freq pairs of floats in a compact float[] */
-    @Deprecated public static class TaskComponent implements Tasked {
+    /**
+     * TODO extend TaskList as TruthTaskList storing evi,freq pairs of floats in a compact float[]
+     */
+    @Deprecated
+    public static class TaskComponent implements Tasked {
         final Task task;
 
         /**
