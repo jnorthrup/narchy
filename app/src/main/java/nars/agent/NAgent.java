@@ -86,7 +86,6 @@ public class NAgent extends NARService implements NSense, NAct {
         @Nullable Task get(long prev, long now, long next);
     }
 
-//    @Deprecated private final FastCoWList<ReinforcedTask> always = new FastCoWList<>(ReinforcedTask[]::new);
 
     @Deprecated
     private ConsumerX<ITask> in = null;
@@ -140,6 +139,39 @@ public class NAgent extends NARService implements NSense, NAct {
         nar.on(this);
     }
 
+
+    /**
+     * dexterity = sum(evidence(action))
+     * evidence/confidence in action decisions, current measurement */
+    public float dexterity() {
+        int n = actions.size();
+        if (n == 0)
+            return 0;
+
+        final double[] m = {0};
+        actions.forEach(a -> {
+            m[0] += a.dexterity();
+        });
+
+        return (float)m[0];
+    }
+
+    /**
+     * happiness = sum( 1 - abs(rewardBeliefExp - rewardGoalExp) )
+     * avg reward satisfaction, current measurement */
+    public float happiness() {
+        //1 - abs(belief-goal)
+        //    freq or expectation ??
+        throw new TODO();
+    }
+
+    /**
+     *  proficiency = happiness * dexterity
+     *  current measurement
+     *  professional satori */
+    public float proficiency() {
+        throw new TODO();
+    }
 
     @Override
     public final <A extends ActionConcept> A addAction(A c) {
@@ -590,18 +622,6 @@ public class NAgent extends NARService implements NSense, NAct {
 //        return (float) (m[0] / n);
 //    }
 
-    public float dexterity() {
-        int n = actions.size();
-        if (n == 0)
-            return 0;
-
-        final double[] m = {0};
-        actions.forEach(a -> {
-            m[0] += a.dexterity();
-        });
-
-        return (float) (m[0] / n);
-    }
 
     public Off onFrame(Consumer/*<NAR>*/ each) {
         return eventFrame.on(each);

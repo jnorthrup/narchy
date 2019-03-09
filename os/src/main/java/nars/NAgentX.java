@@ -223,7 +223,7 @@ abstract public class NAgentX extends NAgent {
                         //CaffeineIndex.soft()
 
                         new CaffeineIndex(
-                            192 * 1024
+                            64 * 1024
                     //96 * 1024
 //                                64 * 1024
 ////                                //32 * 1024

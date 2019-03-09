@@ -11,5 +11,17 @@
    //         #R[(A --> [C]) (B --> C) |- ((* A B) --> (* [C] C)) :post (:t/intersection)]
    //         #R[(A --> C) (B --> [C]) |- ((* A B) --> (* C [C])) :post (:t/intersection)]
 
-   ((A-->X) && (B-->X)), X, neq(A,B)        |- (polarize(((A-->X) && (B-->X)), task)-->X), (Belief:StructuralDeductionDepolarized)
-   ((A<->X) && (B<->X)), X, neq(A,B)        |- (polarize(((A<->X) && (B<->X)), task)<->X), (Belief:StructuralDeductionDepolarized)
+//TODO make a conj factoring predicate to reduce this to single rule
+   ((A-->X) && (B-->X)), X        |-       (    polarize((  (A-->X) &&   (B-->X)), task)-->X), (Belief:StructuralDeductionDepolarized)
+     (  (A-->X) && --(B-->X)), X        |- (    polarize((  (A-->X) && --(B-->X)), task)-->X), (Belief:StructuralDeductionDepolarized)
+     (--(A-->X) && --(B-->X)), X        |- (    polarize((--(A-->X) && --(B-->X)), task)-->X), (Belief:StructuralDeductionDepolarized)
+   ((X-->A) && (X-->B)), X              |- (X-->polarize((  (X-->A) &&   (X-->B)), task)),     (Belief:StructuralDeductionDepolarized)
+     (  (X-->A) && --(X-->B)), X        |- (X-->polarize((  (X-->A) && --(X-->B)), task)),     (Belief:StructuralDeductionDepolarized)
+     (--(X-->A) && --(X-->B)), X        |- (X-->polarize((--(X-->A) && --(X-->B)), task)),     (Belief:StructuralDeductionDepolarized)
+   ((A<->X) && (B<->X)), X              |- (polarize((  (A<->X) &&   (B<->X)), task)<->X), (Belief:StructuralDeductionDepolarized)
+     (  (A<->X) && --(B<->X)), X        |- (polarize((  (A<->X) && --(B<->X)), task)<->X), (Belief:StructuralDeductionDepolarized)
+     (--(A<->X) && --(B<->X)), X        |- (polarize((--(A<->X) && --(B<->X)), task)<->X), (Belief:StructuralDeductionDepolarized)
+   ((X-->A) && (B-->X)), X              |- (polarize((  (X-->A) &&   (B-->X)), task)<->X), (Belief:StructuralDeductionDepolarized)
+     (  (X-->A) && --(B-->X)), X        |- (polarize((  (X-->A) && --(B-->X)), task)<->X), (Belief:StructuralDeductionDepolarized)
+     (--(X-->A) &&   (B-->X)), X        |- (polarize((--(X-->A) &&   (B-->X)), task)<->X), (Belief:StructuralDeductionDepolarized)
+     (--(X-->A) && --(B-->X)), X        |- (polarize((--(X-->A) && --(B-->X)), task)<->X), (Belief:StructuralDeductionDepolarized)

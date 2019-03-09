@@ -296,16 +296,33 @@ abstract public class MultiExec extends UniExec {
                 rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
             }
 
-            @Override
-            public void run() {
+            public void run0() {
 
                 while (alive) {
 
                     long workTime = work();
 
-                    long playTime = threadWorkTimePerCycle - workTime;
+                    long playTime =
+                            threadWorkTimePerCycle - workTime;
+                            //threadWorkTimePerCycle;
                     if (playTime > 0)
                         play(playTime);
+
+                    sleep();
+                }
+            }
+            @Override
+            public void run() {
+
+                while (alive) {
+
+                    long playTime =
+                            threadWorkTimePerCycle;
+
+                    if (playTime > 0)
+                        play(playTime);
+
+                    work();
 
                     sleep();
                 }
@@ -320,18 +337,18 @@ abstract public class MultiExec extends UniExec {
                         Math.max(1, concurrency() - 1);
                 //concurrency() / 2f;
                 //1;
-                float throttle = nar.loop.throttle.floatValue();
+//                float throttle = nar.loop.throttle.floatValue();
 
                 do {
                     int available = in.size(); //in.capacity();
                     if (available == 0)
                         break;
 
-                    int batchSize =
-                            Util.lerp(throttle,
-                                    available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                                    Math.max(1, (int) ((available / Math.max(1, workGranularity))))
-                            );
+                    int batchSize = //Util.lerp(throttle,
+                                    //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
+                                    (int)Math.ceil((available / workGranularity))
+                            //)
+                    ;
 
                     int drained = in.remove(schedule, batchSize);
                     if (drained > 0)
@@ -361,7 +378,7 @@ abstract public class MultiExec extends UniExec {
                     //2 * nar.dtDither();
 
                     prioLast = now;
-                    prioritize(threadWorkTimePerCycle);
+                    prioritize(threadWorkTimePerCycle * prioritizeEveryCycles);
                 }
 
                 long start = nanoTime();
@@ -448,13 +465,13 @@ abstract public class MultiExec extends UniExec {
                 long minTime = -Util.max((TimedLink.MyTimedLink x) -> -x.time, play);
                 long existingTime = Util.sum((TimedLink.MyTimedLink x) -> Math.max(0, x.time), play);
                 long remainingTime = workTimeNS - existingTime;
-                if (remainingTime > subCycleMinNS) {
+//                if (remainingTime > subCycleMinNS) {
                     long shift = minTime < 0 ? 1 - minTime : 0;
                     for (TimedLink.MyTimedLink m : play) {
                         int t = Math.round(shift + remainingTime * m.pri());
                         m.add(Math.max(subCycleMinNS, t), -workTimeNS, +workTimeNS);
                     }
-                }
+//                }
             }
 
             private boolean deadline() {
