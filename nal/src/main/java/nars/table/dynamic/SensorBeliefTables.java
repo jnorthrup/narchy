@@ -5,6 +5,7 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
+import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -18,7 +19,6 @@ import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Float.NaN;
@@ -295,10 +295,10 @@ public class SensorBeliefTables extends BeliefTables {
      */
     private final class MyRTreeBeliefTable extends RTreeBeliefTable {
 
-        @Override protected FloatFunction<Task> taskSurviveValue(boolean beliefOrGoal, int dur, long now) {
-            FloatFunction<Task> base = super.taskSurviveValue(beliefOrGoal, dur, now);
-            return (t) -> {
-                float v = base.floatValueOf(t);
+        @Override protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, int dur) {
+            FloatRank<Task> base = super.taskStrength(beliefOrGoal, now, dur);
+            return (t,min) -> {
+                float v = base.rank(t, min);
                 if (v == v) {
                     long ss = series.start(), se = series.end();
                     if (ss!=TIMELESS && se!=TIMELESS) {

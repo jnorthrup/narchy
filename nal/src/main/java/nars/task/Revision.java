@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.data.iterator.ArrayIterator;
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
 import nars.Param;
@@ -12,17 +11,19 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.polation.Projection;
+import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.truth.func.TruthFunctions.c2wSafe;
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
  * Truth/Task Revision & Projection (Revection)
  */
 public enum Revision {;
 
-    @Nullable
-    public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
+    /** fundamental eternal revision */
+    @Nullable public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
 
         float ae = a.evi();
         float be = b.evi();
@@ -39,55 +40,8 @@ public enum Revision {;
 
 
     public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b) {
+
         return revise(a, b, 1f, 0f);
-    }
-
-
-    //    /** merge occurrence */
-//    public static long merge(long at, long bt, float aProp, NAR nar) {
-//        long dt;
-//        long diff = Math.abs(at - bt);
-//        if (diff == 1) {
-//            return choose(at, bt, aProp, nar.random());
-//        }
-//        if ((float) diff /nar.dur() <= nar.intermpolationRangeLimit.floatValue()) {
-//            //merge if within a some number of durations
-//            dt = Util.lerp(aProp, bt, at);
-//        } else {
-//            dt = ETERNAL;
-//        }
-//        return dt;
-//    }
-
-    //    static Term choose(Term a, Term b, float aProp, /*@NotNull*/ Random rng) {
-//        return (rng.nextFloat() < aProp) ? a : b;
-//    }
-//    static int choose(int a, int b, float aProp, /*@NotNull*/ Random rng) {
-//        return rng.nextFloat() < aProp ? a : b;
-//    }
-//
-//    static long choose(long a, long b, float aProp, /*@NotNull*/ Random rng) {
-//        return rng.nextFloat() < aProp ? a : b;
-//    }
-
-//    /*@NotNull*/
-//    public static Term[] choose(/*@NotNull*/ Term[] a, Term[] b, float aBalance, /*@NotNull*/ Random rng) {
-//        int l = a.length;
-//        Term[] x = new Term[l];
-//        for (int i = 0; i < l; i++) {
-//            x[i] = choose(a[i], b[i], aBalance, rng);
-//        }
-//        return x;
-//    }
-
-
-    /**
-     * 2-ary merge with quick overlap filter
-     */
-    public static Task merge(TaskRegion x, TaskRegion y, NAR nar) {
-
-        return Stamp.overlaps((Task) x, (Task) y) ? null : merge(nar, x, y);
-
     }
 
 
@@ -98,13 +52,22 @@ public enum Revision {;
      * this is so a merge construction can be attempted without actually being budgeted
      * <p>
      * also cause merge is deferred in the same way
+     * @return
      */
-    @Nullable
-    static Task merge(NAR nar, TaskRegion... tasks) {
+    public static <T extends TaskRegion> Pair<Task, Projection> merge(NAR nar, boolean dither, T... tasks) {
+
 
         assert (tasks.length > 1);
 
-        long[] u = Tense.merge(ArrayIterator.iterable(tasks));
+        //quick 2-ary stamp pre-filter
+        //return Stamp.overlaps((Task) x, (Task) y) ? null : merge(nar, x, y);
+        if (tasks.length == 2) {
+            if (Stamp.overlapsAny(tasks[0].task(), tasks[1].task()))
+                return null;
+        }
+
+
+        long[] u = Tense.merge(dither ? nar.dtDither() : 0, tasks);
         if (u == null)
             return null;
 
@@ -116,22 +79,19 @@ public enum Revision {;
 
         assert(T.size()>=2);
 
-        Truth truth = T.truth(c2wSafe(nar.confMin.floatValue()), nar);
+        Truth truth = T.truth(c2wSafe(nar.confMin.floatValue()), dither, nar);
         if (truth == null)
             return null;
 
-        Truth cTruth = truth.dither(nar);
-        if (cTruth == null)
-            return null;
-
         byte punc = T.punc();
-        return Task.tryTask(T.term, punc, cTruth, (c, tr) ->
+        Task y = Task.tryTask(T.term, punc, truth, (c, tr) ->
                 new UnevaluatedTask(c, punc,
                         tr,
                         nar.time(), T.start(), T.end(),
                         Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
                 )
         );
+        return pair(y, T);
     }
 
 

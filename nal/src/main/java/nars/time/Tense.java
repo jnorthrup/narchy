@@ -2,6 +2,7 @@ package nars.time;
 
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.iterator.ArrayIterator;
 import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import nars.NAR;
@@ -247,13 +248,18 @@ public enum Tense {
         return Util.longToInt(occ);
     }
 
+    @Nullable
+    public static long[] merge(int dtDither, TaskRegion[] tasks) {
+        return merge(dtDither, ArrayIterator.iterable(tasks));
+    }
+
     /** computes an ideal range of time for a merge or revision of tasks.
      * assumes that at least one of the items is non-eternal.
      * */
     @Nullable
-    public static long[] merge(Iterable<? extends TaskRegion> tasks) {
+    public static long[] merge(int dtDither, Iterable<? extends TaskRegion> tasks) {
         long[] u = Tense.union(tasks);
-        long unionRange = u[1] - u[0];
+        long unionRange = Tense.dither(u[1], dtDither) - Tense.dither(u[0], dtDither);
         if (unionRange > Math.ceil(Param.REVISION_STRETCH_LIMIT_PROPORTION * Util.max(t -> t.start()==ETERNAL ?  0 : t.range(), tasks))) {
 
             //too sparse: settle for more potent intersection if exists

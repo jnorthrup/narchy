@@ -126,10 +126,10 @@ public abstract class Param {
 //    public static final boolean LINK_VARIABLE_UNIFIED_PREMISE = false;
 
     public static final int TASK_EVAL_FORK_LIMIT = 8;
-    public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
+    public static final int TASK_EVAL_FORK_ATTEMPT_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity */
-    public static final float ANSWER_COMPLETENESS = 2f;
+    public static final float ANSWER_COMPLETENESS = 1f;
 
 //    public static final boolean DERIVE_AUTO_IMAGE_NORMALIZE = true;
 
@@ -236,7 +236,7 @@ public abstract class Param {
 
     /** whether timegraph should not return solutions with volume significantly less than the input's.
      *  set 0 to disable the filter */
-    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.1f;
+    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.25f;
 
     /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
     public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
@@ -263,7 +263,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -277,7 +277,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 2;
+    public static final int TIMEGRAPH_ITERATIONS = 3;
 
 
     @Range(min = 0, max = 64)
@@ -421,7 +421,7 @@ public abstract class Param {
      */
     public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON * 2;
 
-    public static final boolean DYNAMIC_TRUTH_TASK_TIME_DITHERING = true;
+    public static final boolean DYNAMIC_TRUTH_TASK_TIME_DITHERING = false;
 
     /**
      * truth confidence threshold necessary to form tasks

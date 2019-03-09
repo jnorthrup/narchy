@@ -1,14 +1,15 @@
 package nars.table.temporal;
 
 import jcog.Skill;
+import jcog.Util;
+import jcog.pri.Prioritized;
 import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
-import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
-import nars.truth.polation.TruthIntegration;
+import nars.truth.polation.Projection;
 
 import java.util.function.Predicate;
 
@@ -41,31 +42,35 @@ public interface TemporalBeliefTable extends BeliefTable {
         });
     }
 
-    static void fundMerge(Task xy, Remember r, Task x, Task y) {
+    static void budget(Projection sources, Task xy) {
+
+        Task[] tr = Util.map(Projection.TaskComponent::task, new Task[sources.size()], sources.array());
+
+        ((NALTask)xy).cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), tr));
+
+        float priSum = Util.sum(Prioritized::priElseZero, tr);
+        float priMean = priSum/tr.length; //mean
+        xy.priAdd(priMean);
+
+//        //factor in the evidence loss (and originality?) loss to reduce priority
+//        float exy = TruthIntegration.evi(xy);
+//        long xys = xy.start();
+//        long xye = xy.end();
+//        float eXplusY = sources.TruthIntegration.evi(x, xys, xye, 0) + TruthIntegration.evi(y, xys, xye, 0);
+//
+//        //assert(eXplusY >= exy);
+//        float pFactor = Math.min(1, exy / eXplusY);
+//
+//        //assert(pFactor <= 1f);
+//        //float oxy = xy.originality();
+//        //float px = Util.unitize(exy/ eviInteg(x) ); // * (oxy * x.originality()));
+//        //float py = Util.unitize(exy/ eviInteg(y) ); // * (oxy * y.originality()));
+//        xy.take(x, pFactor/2, false, false);
+//        r.forget(x);
+//        xy.take(y, pFactor/2, false, false);
+//        r.forget(y);
 
 
-        ((NALTask)xy).cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), x, y));
-
-        //factor in the evidence loss (and originality?) loss to reduce priority
-        float exy = TruthIntegration.evi(xy);
-        long xys = xy.start();
-        long xye = xy.end();
-        float eXplusY = TruthIntegration.evi(x, xys, xye, 0) + TruthIntegration.evi(y, xys, xye, 0);
-
-        //assert(eXplusY >= exy);
-        float pFactor = Math.min(1, exy / eXplusY);
-
-        //assert(pFactor <= 1f);
-        //float oxy = xy.originality();
-        //float px = Util.unitize(exy/ eviInteg(x) ); // * (oxy * x.originality()));
-        //float py = Util.unitize(exy/ eviInteg(y) ); // * (oxy * y.originality()));
-        xy.take(x, pFactor/2, false, false);
-        r.forget(x);
-        xy.take(y, pFactor/2, false, false);
-        r.forget(y);
-
-
-        r.remember(xy);
     }
 
 

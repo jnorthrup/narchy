@@ -53,30 +53,21 @@ public class RevisionTest {
     }
 
     @Test void testCoincidentTasks() throws Narsese.NarseseException {
-        Task t01 = Revision.merge(
-                t(1, 0.9f, 0, 0).apply(n),
-                t(1, 0.9f, 0, 0).apply(n),
-                n);
+        Task t01 = merge(n, t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 0, 0).apply(n));
         assertNotNull(t01);
         assertEquals("(b-->a). 0 %1.0;.95%", t01.toStringWithoutBudget());
         assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
     }
 
     @Test void testPartiallyCoincidentTasks() throws Narsese.NarseseException {
-        Task t01 = Revision.merge(
-                t(1, 0.9f, 0, 0).apply(n),
-                t(1, 0.9f, 0, 1).apply(n),
-                n);
+        Task t01 = merge(n, t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 0, 1).apply(n));
         assertNotNull(t01);
         assertEquals("(b-->a). 0⋈1 %1.0;.93%", t01.toStringWithoutBudget());
         assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
     }
 
     @Test void testAdjacentTasks() throws Narsese.NarseseException {
-        Task t01 = Revision.merge(
-                t(1, 0.9f, 0, 0).apply(n),
-                t(1, 0.9f, 1, 1).apply(n),
-                n);
+        Task t01 = merge(n, t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 1, 1).apply(n));
         assertNotNull(t01);
         assertEquals("(b-->a). 0⋈1 %1.0;.90%", t01.toStringWithoutBudget());
         assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
@@ -87,10 +78,10 @@ public class RevisionTest {
      * result is best excluded.
      */
     @Test void testOverlapConflict() throws Narsese.NarseseException {
-        Task t = Revision.merge(n,
+        Task t = Revision.merge(n, true,
                 t(0, 0.71f, 0, 0).evidence(1,2).apply(n),
                 t(1, 0.7f, 0, 0).evidence(1).apply(n),
-                t(1, 0.7f, 0, 0).evidence(2).apply(n));
+                t(1, 0.7f, 0, 0).evidence(2).apply(n)).getOne();
 
         assertNotNull(t);
         assertEquals("(b-->a). 0 %1.0;.82%", t.toStringWithoutBudget());
@@ -110,21 +101,25 @@ public class RevisionTest {
             Task t100_102 = t(1, 0.9f, 100, 102).apply(n);
 
             //evidence density
-            Task a = Revision.merge(t01, t45, n);
-            Task b = Revision.merge(t02, t45, n);
-            Task c = Revision.merge(t03, t45, n);
+            Task a = merge(n, t01, t45);
+            Task b = merge(n, t02, t45);
+            Task c = merge(n, t03, t45);
             assertNotNull(a);
             assertNotNull(b);
             assertTrue(a.evi() < b.evi());
             assertNotNull(c);
             assertTrue(b.evi() < c.evi());
 
-            assertEquals("(b-->a). 0⋈102 %1.0;.34%", Revision.merge(t02, t100_102, n).toStringWithoutBudget());
+            assertEquals("(b-->a). 0⋈102 %1.0;.34%", merge(n, t02, t100_102).toStringWithoutBudget());
 
-            assertEquals("(b-->a). 0⋈5 %1.0;.91%", Revision.merge(t03, t35, n).toStringWithoutBudget());
-            assertEquals("(b-->a). 0⋈5 %1.0;.90%", Revision.merge(t02, t35, n).toStringWithoutBudget());
+            assertEquals("(b-->a). 0⋈5 %1.0;.91%", merge(n, t03, t35).toStringWithoutBudget());
+            assertEquals("(b-->a). 0⋈5 %1.0;.90%", merge(n, t02, t35).toStringWithoutBudget());
         }
 
+    }
+
+    private Task merge(NAR n, Task t01, Task t45) {
+        return Revision.merge(n, false, t01, t45).getOne();
     }
 
 
@@ -744,14 +739,14 @@ public class RevisionTest {
         Task b = n.believe(x, 2, 1f);
         Task c = n.believe(x, 3, 1f);
 //        Task d = n.believe(x, 8, 1f);
-        Task aa = Revision.merge(a, a2, n);
+        Task aa = merge(n, a, a2);
         p(aa);
         assertTrue(aa.conf() > a.conf());
-        Task ab = Revision.merge(a, b, n);
+        Task ab = merge(n, a, b);
         p(ab);
         assertTrue(ab.conf() == a.conf());
         if (Param.REVISION_ALLOW_DILUTE_UNION) {
-            Task ac = Revision.merge(a, c, n);
+            Task ac = merge(n, a, c);
             p(ac);
             assertTrue(ac.conf() < ab.conf(), () -> ac + " must have less conf than " + ab);
         }

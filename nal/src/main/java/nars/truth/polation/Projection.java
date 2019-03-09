@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Random;
+import java.util.function.Consumer;
 
 import static java.lang.Float.NaN;
 import static nars.term.util.Intermpolate.dtDiff;
@@ -61,7 +62,7 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
      */
     @Nullable public abstract Truth truth(float eviMin, NAR nar);
 
-    @Nullable public Truth truth(float eviMin, boolean dither, NAR nar) {
+    @Nullable public final Truth truth(float eviMin, boolean dither, NAR nar) {
         Truth t  = truth(eviMin, nar);
         if (t == null)
             return null;
@@ -83,23 +84,23 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
 
 
 
-
-    @Nullable
-    final TaskComponent update(int i, float eviMin) {
-        return update(get(i), eviMin);
+    @Override
+    protected final TaskComponent[] newArray(int newCapacity) {
+        return new TaskComponent[newCapacity];
     }
+
+
+//    @Nullable
+//    final TaskComponent update(int i, float eviMin) {
+//        return update(get(i), eviMin);
+//    }
 
     @Nullable
     private TaskComponent update(TaskComponent tc, float eviMin) {
-        if (!tc.isComputed()) {
-
-            Task task = tc.task;
-
-            if ((tc.evi = evi(task)) >= eviMin) {
-                tc.freq = task.freq(start, end);
-            } else {
+        if (!tc.valid()) {
+            float e = tc.evi = evi(tc.task);
+            if (e!=e || e <= eviMin)
                 return null;
-            }
         }
 
         return tc.evi >= eviMin ? tc :
@@ -396,13 +397,18 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         return end;
     }
 
+    private void cull() {
+        removeIf(x -> update(x, Float.MIN_NORMAL) == null);
+    }
+
+
     /**
      * aka "shrinkwrap", or "trim". use after filtering cyclic.
      * adjust start/end to better fit the (remaining) task components and minimize temporalizing truth dilution.
      * if the start/end has changed, then evidence for each will need recalculated
      * returns true if the evidences have changed.
      *  */
-    public boolean refocus() {
+    private boolean refocus() {
         long[] se;
         if (size() > 1) {
             se = Tense.union(Iterables.transform(this, (TaskComponent x) -> x.task));
@@ -428,12 +434,12 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         return false;
     }
 
-    protected void validate() {
-        if (start == ETERNAL)
-            refocus();
-
-        removeIf(x -> update(x, Float.MIN_NORMAL) == null);
+    @Deprecated protected void validate() {
+        cull();
+        refocus();
+        cull();
     }
+
 
 
     private void invalidateEvi() {
@@ -462,6 +468,10 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         return t;
     }
 
+    public void forEachTask(Consumer<Task> each) {
+        forEachWith((x, e)->e.accept(x.task), each);
+    }
+
 
     /** TODO extend TaskList as TruthTaskList storing evi,freq pairs of floats in a compact float[] */
     @Deprecated public static class TaskComponent implements Tasked {
@@ -471,7 +481,6 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
          * NaN if not yet computed
          */
         float evi = NaN;
-        float freq = NaN;
 
         TaskComponent(Task task) {
             this.task = task;
@@ -479,12 +488,11 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
 
         @Override
         public String toString() {
-            return evi + "," + freq + '=' + task;
+            return task + "=" + evi;
         }
 
-        boolean isComputed() {
-            float f = freq;
-            return f == f;
+        boolean valid() {
+            return evi == evi;
         }
 
         @Override
@@ -493,7 +501,7 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         }
 
         public void invalidate() {
-            evi = freq = Float.NaN;
+            evi = Float.NaN;
         }
     }
 

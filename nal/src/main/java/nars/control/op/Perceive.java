@@ -180,7 +180,7 @@ public enum Perceive { ;
                     return false; //done, enough forks
             }
 
-            return tried < Param.TASK_EVAL_TRY_LIMIT;
+            return tried < Param.TASK_EVAL_FORK_ATTEMPT_LIMIT;
         }
 
         @Override

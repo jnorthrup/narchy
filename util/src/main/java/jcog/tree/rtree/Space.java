@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 /**
  * Created by jcovert on 12/30/15.
  */
-public interface Space<T> extends Nodelike<T> {
+public interface Space<X> extends Nodelike<X> {
 
     /**
      * Update entry in tree
@@ -42,7 +42,7 @@ public interface Space<T> extends Nodelike<T> {
      * @param told - Entry to update
      * @param tnew - Entry to update it to
      */
-    boolean replace(final T told, final T tnew);
+    boolean replace(final X told, final X tnew);
 
     /**
      * Get the number of entries in the tree
@@ -51,11 +51,11 @@ public interface Space<T> extends Nodelike<T> {
      */
     int size();
 
-    boolean OR(Predicate<T> o);
+    boolean OR(Predicate<X> o);
 
-    boolean AND(Predicate<T> o);
+    boolean AND(Predicate<X> o);
 
-    void forEach(Consumer<? super T> consumer);
+    void forEach(Consumer<? super X> consumer);
 
     enum BoundsMatch {
         //TODO meet, equal, disjoint, etc...
@@ -105,12 +105,12 @@ public interface Space<T> extends Nodelike<T> {
     /**
      * continues finding intersecting regions until the predicate returns false
      */
-    boolean intersectsWhile(HyperRegion rect, Predicate<T> t);
+    boolean intersectsWhile(HyperRegion rect, Predicate<X> t);
 
     /**
      * continues finding containing regions until the predicate returns false
      */
-    boolean containsWhile(HyperRegion rect, Predicate<T> t);
+    boolean containsWhile(HyperRegion rect, Predicate<X> t);
 
     /**
      * Search for entries intersecting given bounding rect
@@ -120,12 +120,12 @@ public interface Space<T> extends Nodelike<T> {
      * @return Number of results found
      */
     @Deprecated
-    int containedToArray(final HyperRegion rect, final T[] t);
+    int containedToArray(final HyperRegion rect, final X[] t);
 
 
     Stats stats();
 
-    boolean contains(T t);
+    boolean contains(X t);
 
     default boolean isEmpty() {
         return size() == 0;
@@ -139,12 +139,12 @@ public interface Space<T> extends Nodelike<T> {
      * @param t Data entry to be added
      * @return whether the item was added, or false if it wasn't (ex: duplicate or some other prohibition)
      */
-    boolean add(final T t);
+    boolean add(final X t);
 
     /**
      * adds, deferred if necessary until un-busy
      */
-    default void addAsync(T t) {
+    default void addAsync(X t) {
         throw new UnsupportedOperationException();
     }
 
@@ -154,25 +154,25 @@ public interface Space<T> extends Nodelike<T> {
      * @param x Data entry to be removed
      * @return whether the item was added, or false if it wasn't (ex: duplicate or some other prohibition)
      */
-    boolean remove(/*@NotNull*/ final T x);
+    boolean remove(/*@NotNull*/ final X x);
 
 
     /**
      * removes, deferred if necessary until un-busy
      */
-    default void removeAsync(T x) {
+    default void removeAsync(X x) {
         throw new UnsupportedOperationException();
     }
 
 
-    Node<T> root();
+    Node<X> root();
 
 
-    HyperRegion bounds(T task);
+    HyperRegion bounds(X task);
 
-    Stream<T> stream();
+    Stream<X> stream();
 
-    default Iterator<T> iterator() {
+    default Iterator<X> iterator() {
         int s = size();
         if (s == 0)
             return Collections.emptyIterator();
@@ -184,10 +184,10 @@ public interface Space<T> extends Nodelike<T> {
 //        return snapshot.iterator();
     }
 
-    default List<T> asList() {
+    default List<X> asList() {
         int s = size();
         if (s > 0) {
-            List<T> l = new FasterList<>(s);
+            List<X> l = new FasterList<>(s);
             this.forEach(l::add);
             return l;
         } else {

@@ -38,7 +38,7 @@ import java.util.stream.Stream;
  * Created by jcairns on 4/30/15.
  * <p>
  */
-public final class Leaf<X> extends AbstractNode<X> {
+public class Leaf<X> extends AbstractNode<X> {
 
     public final X[] data;
 
@@ -47,7 +47,7 @@ public final class Leaf<X> extends AbstractNode<X> {
         this((X[]) new Object[mMax]);
     }
 
-    private Leaf(X[] arrayInit) {
+    public Leaf(X[] arrayInit) {
         this.bounds = null;
         this.data = arrayInit;
         this.size = 0;

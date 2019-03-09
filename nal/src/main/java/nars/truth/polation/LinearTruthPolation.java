@@ -85,7 +85,7 @@ public class LinearTruthPolation extends Projection {
             //e * (1 + (2*Math.abs(f-0.5f))); /* 2:1 compression polarity partial weighting */
             wSum += w;
 
-            float f = x.freq;
+            float f = x.task().freq(start, end);
             wFreqSum += w * f;
         }
 

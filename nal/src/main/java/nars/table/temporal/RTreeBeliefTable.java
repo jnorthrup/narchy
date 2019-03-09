@@ -3,10 +3,10 @@ package nars.table.temporal;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.sort.FloatRank;
-import jcog.sort.RankedTopN;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.AxialSplitLeaf;
+import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
@@ -16,7 +16,10 @@ import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
+import nars.time.Tense;
+import nars.truth.polation.Projection;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -261,11 +264,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         FloatFunction<Task> taskStrength = null;
         FloatRank<TaskRegion> leafRegionWeakness = null;
         int e = 0, cap;
-        int dur = nar.dur();
         long now = nar.time();
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
-                taskStrength = taskSurviveValue(beliefOrGoal, dur, now);
+                taskStrength = taskStrength(beliefOrGoal, now, Math.max(1,Tense.occToDT(tableDur()/2)));
                 leafRegionWeakness = regionWeakness(now, beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
             }
             if (!compress(treeRW,  /** only limit by inputRegion on first iter */
@@ -280,11 +282,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     /** decides the value of keeping a task, used in compression decision */
-    protected FloatFunction<Task> taskSurviveValue(boolean beliefOrGoal, int dur, long now) {
-        return Answer.taskStrengthWithFutureBoost(now, now - dur,
-                beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
-                dur
-        );
+    protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, int dur) {
+        //return FloatRank.the(t->t.evi(now, dur));
+
+        return Answer.beliefStrength(now-dur, now+dur);
+
+//        return Answer.taskStrengthWithFutureBoost(now, now - dur,
+//                beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
+//                dur
+//        );
     }
 
     /**
@@ -336,72 +342,27 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         float valueEvictWeakest = -taskStrength.floatValueOf(W);
 
         float valueMergeLeaf = NEGATIVE_INFINITY;
-        Task A, B, AB;
+        Pair<Task, Projection> AB;
         if (!mergeableLeaf.isEmpty()) {
-            Leaf<TaskRegion> m = mergeableLeaf.the;
-
-            short n = m.size;
-            if (n > 2) {
-                RankedTopN<Task> mmm = new RankedTopN<>(new Task[3], taskStrength);
-                for (int i = 0; i < n; i++)
-                    mmm.add((Task) m.get(i));
-
-                Task[] mm = mmm.toArrayIfSameSizeOrRecycleIfAtCapacity(new Task[3]);
-                mmm.clear();
-
-                AB = tryMerge(mm[0], mm[1], nar);
-                if (AB!=null) { A = mm[0]; B = mm[1]; }
-                else {
-                    AB = tryMerge(mm[0], mm[2], nar);
-                    if (AB!=null) { A = mm[0]; B = mm[2]; }
-                    else {
-                        AB = tryMerge(mm[1], mm[2], nar);
-                        if (AB != null) { A = mm[1]; B = mm[2]; }
-                        else {
-                            A = B = null;
-                        }
-                    }
-                }
-
-//                Top<Task> w = new Top<>(weakest.rank);
-//                m.forEach(x -> w.accept((Task) x));
-//                a = w.the;
-//                Top<TaskRegion> mw = new Top<>(Answer.mergeability(w.the));
-//                m.forEach(x -> { if (x!=a) { mw.accept( x); } });
-//                b = mw.the;
-            } else if (n == 2) {
-                A = (Task) m.get(0);
-                B = (Task) m.get(1);
-                AB = tryMerge(A, B, nar);
-            } else {
-                throw new UnsupportedOperationException("should not have chosen leaf with size < 2");
-            }
-
-//            if (a == I || b == I) {
-//                A = B = null; //HACK
-//            } else {
-            //A or B may be 'I'
-
-            if (AB!=null) {
-                valueMergeLeaf =
-                        +taskStrength.floatValueOf(AB)
-                                - taskStrength.floatValueOf(A)
-                                - taskStrength.floatValueOf(B)
-                ;
-            }
-
+            AB = Revision.merge(nar, true,
+                    ArrayUtils.removeNulls(mergeableLeaf.get().data, TaskRegion[]::new) //HACK
+            );
+            if (AB!=null)
+                valueMergeLeaf = taskStrength.floatValueOf(AB.getOne());
         } else {
-            A = B = AB = null;
+            AB = null;
         }
 
         if (valueMergeLeaf > valueEvictWeakest) {
             //merge leaf
-            if (treeRW.remove(A) && treeRW.remove(B)) {
-                if (treeRW.add(AB)) {
-                    TemporalBeliefTable.fundMerge(AB, r, A, B);
-                } //else: possibly already contained the merger
-                return true;
-            }
+            Task m = AB.getOne();
+            if (treeRW.add(m)) {
+                Projection merge = AB.getTwo();
+                TemporalBeliefTable.budget(merge, m);
+                merge.forEachTask(treeRW::remove);
+                r.remember(m);
+            } //else: possibly already contained the merger?
+            return true;
         } else {
             //evict weakest
             if (treeRW.remove(W)) {
@@ -413,26 +374,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         throw new UnsupportedOperationException();
     }
 
-    @Nullable private static Task tryMerge(Task A, Task B, NAR nar) {
-        Task AB = revise(A, B, nar);
-        if (AB != null && (!AB.equals(A) /*&& !AB.equals(B)*/))
-            return AB;
-        else
-            return null;
-    }
-
-    @Nullable
-    protected static Task revise(@Nullable Task x, Task y, NAR nar) {
-        return Revision.merge(x, y, nar);
-    }
-
-//    private static float mergeScoreFactor(Task a, Task b) {
-//        float dFreq = Math.abs(a.freq() - b.freq());
-////        if (dFreq > 0.5f)
-//            return 1 / (1 + dFreq);
-////        else
-//            return 1;
-//    }
 
 
     @Override
@@ -538,6 +479,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             return taskRegion;
         }
 
+        @Override
+        public Leaf<TaskRegion> newLeaf() {
+            return new Leaf<>(new TaskRegion[max]);
+        }
 
         /**
          * HACK store merge notifications
