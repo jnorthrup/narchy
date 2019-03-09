@@ -37,7 +37,7 @@ public class MiniPID {
     private double outRampRate = 0;
     private double outPrev = 0;
 
-    private double outFilter = 0;
+    private double outMomentum = 0;
 
     private double setpointRange = 0;
 
@@ -228,7 +228,7 @@ public class MiniPID {
      * @param minimum possible output value
      * @param maximum possible output value
      */
-    private MiniPID outLimit(double minimum, double maximum) {
+    public MiniPID outLimit(double minimum, double maximum) {
         if (maximum < minimum) return null;
         outMax = maximum;
         outMin = minimum;
@@ -244,9 +244,11 @@ public class MiniPID {
      * Set the operating direction of the PID controller
      *
      * @param reversed Set true to reverse PID output
+     * @return
      */
-    public void setDirection(boolean reversed) {
+    public MiniPID reversed() {
         this.reversed = reversed;
+        return this;
     }
 
     /**
@@ -361,8 +363,8 @@ public class MiniPID {
         if (!Util.equals(outMin, outMax)) {
             output = Util.clamp(output, outMin, outMax);
         }
-        if (outFilter != 0) {
-            output = outPrev * outFilter + output * (1 - outFilter);
+        if (outMomentum != 0) {
+            output = outPrev * outMomentum + output * (1 - outMomentum);
         }
 
 
@@ -419,9 +421,9 @@ public class MiniPID {
      *
      * @param output valid between [0..1), meaning [current output only.. historical output only)
      */
-    public void setOutFilter(double strength) {
+    public void setOutMomentum(double strength) {
         if (strength == 0 || isInclusive(strength, 0, 1)) {
-            outFilter = strength;
+            outMomentum = strength;
         }
     }
 

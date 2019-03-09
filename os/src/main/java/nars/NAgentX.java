@@ -3,7 +3,9 @@ package nars;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.exe.Loop;
+import jcog.learn.pid.MiniPID;
 import jcog.learn.ql.HaiQae;
+import jcog.math.FloatRange;
 import jcog.pri.bag.Bag;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
@@ -32,6 +34,7 @@ import nars.op.Introduction;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
+import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.clock.RealTime;
@@ -477,6 +480,7 @@ abstract public class NAgentX extends NAgent {
 
         window(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
 
+        inputInjectionPID(n);
 
 //        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
 //                t->!t.isInput(),
@@ -527,6 +531,27 @@ abstract public class NAgentX extends NAgent {
 //        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);
 
 
+    }
+
+    static void inputInjectionQ(NAR n) {
+        //TODO
+    }
+    static void inputInjectionPID(NAR n) {
+        //perception injection control
+        MiniPID pid = new MiniPID(0.01, 0.01, 0.002);
+        pid.outLimit(-1, +1);
+        pid.setSetpointRange(+1);
+        //pid.setOutRampRate(0.5);
+
+        FloatRange valve = ((TaskBuffer.BagTaskBuffer) n.input).valve;
+        //DurService.on(n,
+        n.onCycle(
+        ()->{
+            double vol = n.input.volume();
+            double nextV = pid.out(1-vol,0.5);
+//                System.out.println(nextV);
+            valve.set(Util.unitize(nextV ));
+        });
     }
 
 

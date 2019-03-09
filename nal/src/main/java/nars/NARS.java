@@ -120,14 +120,16 @@ public class NARS {
 
                 n.termVolumeMax.set(26);
 
+                n.input.capacity.set(64);
+
                 ((AbstractConceptIndex)n.concepts).activeCapacity.set(128);
                 ((AbstractConceptIndex)n.concepts).activationRate.set(1f);
                 ((AbstractConceptIndex)n.concepts).forgetRate.set(0.1f);
 
                 n.beliefPriDefault.set(0.1f);
                 n.goalPriDefault.set(0.1f);
-                n.questionPriDefault.set(0.03f);
-                n.questPriDefault.set(0.03f);
+                n.questionPriDefault.set(0.02f);
+                n.questPriDefault.set(0.02f);
 
 
             });

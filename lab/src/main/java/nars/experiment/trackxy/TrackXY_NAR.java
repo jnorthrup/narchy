@@ -2,7 +2,9 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.learn.pid.MiniPID;
 import jcog.math.FloatNormalized;
+import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
@@ -17,6 +19,7 @@ import nars.gui.sensor.VectorSensorView;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
+import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import nars.time.clock.RealTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
@@ -336,6 +339,8 @@ public class TrackXY_NAR extends NAgentX {
 //                    return newEvent.isGoal();
 //                }
             };
+
+
 
 //            ConjClustering cjB = new ConjClustering(n, BELIEF,
 //                    //x -> true,

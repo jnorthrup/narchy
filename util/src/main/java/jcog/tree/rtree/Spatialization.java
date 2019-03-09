@@ -27,7 +27,7 @@ public class Spatialization<X> {
         return bounds.apply(x);
     }
 
-    @Deprecated public Leaf<X> newLeaf() {
+    @Deprecated public final Leaf<X> newLeaf() {
         return newLeaf(max);
     }
     public Leaf<X> newLeaf(int capacity) {

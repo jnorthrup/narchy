@@ -201,7 +201,7 @@ public abstract class Param {
      *
      * TODO make this a per-sensor implementation cdecision
      */
-    public final static float SIGNAL_STRETCH_LIMIT_DURS = 2;
+    public final static float SIGNAL_STRETCH_LIMIT_DURS = 8;
 
     public static final boolean REVISION_ALLOW_DILUTE_UNION = false;
 

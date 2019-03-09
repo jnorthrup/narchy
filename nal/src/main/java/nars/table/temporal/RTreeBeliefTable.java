@@ -6,7 +6,6 @@ import jcog.sort.FloatRank;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.LinearSplitLeaf;
-import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
@@ -23,6 +22,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -348,9 +348,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         float valueMergeLeaf = NEGATIVE_INFINITY;
         Pair<Task, Projection> AB;
         if (!mergeableLeaf.isEmpty()) {
+            Leaf<TaskRegion> ab = mergeableLeaf.get();
             AB = Revision.merge(nar, true,
-                    ArrayUtils.removeNulls(mergeableLeaf.get().data, TaskRegion[]::new) //HACK
-            );
+                    ab.size == ab.data.length ? ab.data : Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
             if (AB!=null) {
                 valueMergeLeaf = (float) (
                         +taskStrength.floatValueOf(AB.getOne())
@@ -491,8 +491,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
         @Override
-        public Leaf<TaskRegion> newLeaf() {
-            return new Leaf<>(new TaskRegion[max]);
+        public Leaf<TaskRegion> newLeaf(int capacity) {
+            return new Leaf<>(new TaskRegion[capacity]);
         }
 
         /**
