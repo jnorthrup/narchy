@@ -3,6 +3,7 @@ package nars.task.util;
 import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
 import jcog.util.ArrayUtils;
+import nars.Param;
 import nars.Task;
 import nars.task.Tasked;
 import nars.truth.func.TruthFunctions;
@@ -81,13 +82,13 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     @Override
     default double cost(final int dim) {
-        switch(dim) {
+        switch (dim) {
             case 0:
-                return ((float) range(0)) * TIME_COST;
+                return (1+((float) range(0))) * TIME_COST;
             case 1:
-                return ((float) range(1)) * FREQ_COST;
+                return Math.max(Param.TRUTH_EPSILON, (float) range(1)) * FREQ_COST;
             case 2:
-                return ((float) range(2)) * CONF_COST;
+                return Math.max(Param.TRUTH_EPSILON, (float) range(2)) * CONF_COST;
         }
         throw new UnsupportedOperationException();
     }
@@ -109,66 +110,42 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         return 3;
     }
 
+
     @Override
     default TaskRegion mbr(HyperRegion r) {
-        if (this == r || contains(r))
+        if (this == r)
             return this;
         else {
-
-            if (r instanceof Task) {
-
-                Task er = (Task) r;
-                float ef = er.freq();
-                float ec = er.conf();
-                long es = er.start();
-                long ee = er.end();
-                if (this instanceof Task) {
-                    Task tr = (Task) this;
-                    float tf = tr.freq();
-                    float f0, f1;
-
-
-                    if (tf <= ef) {
-                        f0 = tf;
-                        f1 = ef;
-                    } else {
-                        f0 = ef;
-                        f1 = tf;
-                    }
-                    float c0;
-                    float c1;
-                    float tc = tr.conf();
-                    if (tc <= ec) {
-                        c0 = tc;
-                        c1 = ec;
-                    } else {
-                        c0 = ec;
-                        c1 = tc;
-                    }
-                    return new TasksRegion(Math.min(start(), es), Math.max(end(), ee),
-                            f0, f1, c0, c1
-                    );
-                } else {
-                    return new TasksRegion(
-                            Math.min(start(), es), Math.max(end(), ee),
-                            Math.min(coordF(1, false), ef),
-                            Math.max(coordF(1, true), ef),
-                            Math.min(coordF(2, false), ec),
-                            Math.max(coordF(2, true), ec)
-                    );
-                }
-            } else {
-                TaskRegion er = (TaskRegion) r;
-                return new TasksRegion(
-                        Math.min(start(), er.start()), Math.max(end(), er.end()),
-                        Math.min(coordF(1, false), er.coordF(1, false)),
-                        Math.max(coordF(1, true), er.coordF(1, true)),
-                        Math.min(coordF(2, false), er.coordF(2, false)),
-                        Math.max(coordF(2, true), er.coordF(2, true))
-                );
-            }
+            return mbr(this, (TaskRegion) r);
         }
     }
+
+    public static TasksRegion mbr(TaskRegion r, Task x) {
+        return TasksRegion.mbr(r, x.start(), x.end(), x.freq(), x.conf());
+    }
+
+    static TaskRegion mbr(TaskRegion x, TaskRegion y) {
+        if (y instanceof Task) {
+            assert(!(x instanceof Task)): "mbr(task,task) should force creation of TasksRegion";
+            return TaskRegion.mbr(x, (Task) y);
+        }
+
+        TasksRegion z = new TasksRegion(
+                Math.min(x.start(), y.start()), Math.max(x.end(), y.end()),
+                Math.min(x.coordF(1, false), y.coordF(1, false)),
+                Math.max(x.coordF(1, true), y.coordF(1, true)),
+                Math.min(x.coordF(2, false), y.coordF(2, false)),
+                Math.max(x.coordF(2, true), y.coordF(2, true))
+        );
+        if (x instanceof TasksRegion && z.equals(x))
+            return x; //contains or equals y
+        else if (y instanceof TasksRegion && z.equals(y))
+            return y; //contained by y
+        else
+            return z; //enlarged (intersecting or disjoint)
+    }
+
+
 
     @Override
     default boolean intersects(HyperRegion x) {

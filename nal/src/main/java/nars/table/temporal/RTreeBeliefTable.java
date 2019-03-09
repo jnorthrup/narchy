@@ -47,6 +47,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
               new LinearSplitLeaf() {
                 /* TODO tune */
               };
+//              new QuadraticSplitLeaf() {
+//                /* TODO tune */
+//              };
 
 
     private static final int CURSOR_CAPACITY = 32;

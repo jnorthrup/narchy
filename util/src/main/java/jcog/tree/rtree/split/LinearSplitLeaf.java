@@ -30,7 +30,7 @@ import jcog.tree.rtree.*;
 public class LinearSplitLeaf<T> implements Split<T> {
 
     @Override
-    public Node<T> split(T t, Leaf<T> leaf, Spatialization<T> model) {
+    public Node<T> split(T t, Leaf<T> leaf, Spatialization<T> m) {
 
 
 
@@ -38,79 +38,73 @@ public class LinearSplitLeaf<T> implements Split<T> {
         final int MAX = 1;
         final int NRANGE = 2;
         T[] data = leaf.data;
-        final int nD = model.bounds(data[0]).dim();
-        final int[][][] rIndex = new int[nD][NRANGE][NRANGE];
+        final int nD = m.bounds(data[0]).dim();
+        final int[][][] r = new int[nD][NRANGE][NRANGE];
 
         final double[] separation = new double[nD];
 
         short size = leaf.size;
         for (int d = 0; d < nD; d++) {
-
-
+            int[][] rd = r[d];
             for (int j = 1; j < size; j++) {
-                int[][] rd = rIndex[d];
+                int[][] ii = rd;
 
-                HyperRegion rj = model.bounds(data[j]);
+                HyperRegion rj = m.bounds(data[j]);
+
                 double rjMin = rj.coord(d, false);
-                if (model.bounds(data[rd[MIN][MIN]]).coord(d, false) > rjMin) {
-                    rd[MIN][MIN] = j;
-                }
-
-                if (model.bounds(data[rd[MIN][MAX]]).coord(d, false) < rjMin) {
-                    rd[MIN][MAX] = j;
-                }
+                int[] iiMin = ii[MIN];
+                if (m.bounds(data[iiMin[MIN]]).coord(d, false) > rjMin) iiMin[MIN] = j;
+                if (m.bounds(data[iiMin[MAX]]).coord(d, false) < rjMin) iiMin[MAX] = j;
 
                 double rjMax = rj.coord(d, true);
-                if (model.bounds(data[rd[MAX][MIN]]).coord(d, true) > rjMax) {
-                    rd[MAX][MIN] = j;
-                }
-
-                if (model.bounds(data[rd[MAX][MAX]]).coord(d, true) < rjMax) {
-                    rd[MAX][MAX] = j;
-                }
+                int[] iiMax = ii[MAX];
+                if (m.bounds(data[iiMax[MIN]]).coord(d, true) > rjMax) iiMax[MIN] = j;
+                if (m.bounds(data[iiMax[MAX]]).coord(d, true) < rjMax) iiMax[MAX] = j;
             }
 
 
-            final double width = model.bounds(data[rIndex[d][MAX][MAX]]).
-                    distance(model.bounds(data[rIndex[d][MIN][MIN]]), d, true, false);
+            final double width = Math.abs(
+                    m.bounds(data[rd[MAX][MAX]]).coord(d, true) -
+                    m.bounds(data[rd[MIN][MIN]]).coord(d, false)
+            );
 
-
-            separation[d] = model.bounds(data[rIndex[d][MAX][MIN]]).distance(model.bounds(data[rIndex[d][MIN][MAX]]), d, true, false) / width;
+            separation[d] = Math.abs(
+                    m.bounds(data[rd[MAX][MIN]]).coord(d, true) -
+                    m.bounds(data[rd[MIN][MAX]]).coord(d, false)
+            ) / width;
         }
 
-        int r1Ext = rIndex[0][MAX][MIN], r2Ext = rIndex[0][MIN][MAX];
-        double highSep = separation[0];
-        for (int d = 1; d < nD; d++) {
-            if (highSep < separation[d]) {
-                highSep = separation[d];
-                r1Ext = rIndex[d][MAX][MIN];
-                r2Ext = rIndex[d][MIN][MAX];
+        int r1Ext = -1, r2Ext = -1;
+        double sepMax = Double.NEGATIVE_INFINITY;
+        for (int d = 0; d < nD; d++) {
+            if (sepMax < separation[d]) {
+                sepMax = separation[d];
+                r1Ext = r[d][MAX][MIN];
+                r2Ext = r[d][MIN][MAX];
             }
         }
 
         if (r1Ext == r2Ext) {
-
             r1Ext = 0;
             r2Ext = size - 1;
         }
 
-        final Leaf<T> l1Node = model.newLeaf();
-        final Leaf<T> l2Node = model.newLeaf();
-
+        final Leaf<T> l1Node = m.newLeaf();
         boolean[] dummy = new boolean[1];
-        l1Node.add(data[r1Ext], true, model, dummy);
+        l1Node.add(data[r1Ext], true, m, dummy);
+
+        final Leaf<T> l2Node = m.newLeaf();
         dummy[0] = false;
-        l2Node.add(data[r2Ext], true, model, dummy);
+        l2Node.add(data[r2Ext], true, m, dummy);
 
         for (int i = 0; i < size; i++) {
-            if ((i != r1Ext) && (i != r2Ext)) {
-                leaf.transfer(l1Node, l2Node, data[i], model);
-            }
+            if ((i != r1Ext) && (i != r2Ext))
+                leaf.transfer(l1Node, l2Node, data[i], m);
         }
 
-        leaf.transfer(l1Node, l2Node, t, model);
+        leaf.transfer(l1Node, l2Node, t, m);
 
-        return model.newBranch(l1Node, l2Node);
+        return m.newBranch(l1Node, l2Node);
     }
 
 

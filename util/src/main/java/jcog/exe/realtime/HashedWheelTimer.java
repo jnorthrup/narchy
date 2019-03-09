@@ -36,7 +36,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     /**
      * how many epochs can pass while empty before the thread attempts to end (going into a re-activatable sleep mode)
      */
-    static final int SLEEP_EPOCHS = 128;
+    static final int SLEEP_EPOCHS = 1024;
 
     transient private boolean daemon = false;
 
@@ -234,19 +234,19 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     @Override
     public ScheduledFuture<?> schedule(Runnable runnable,
-                                   long period,
+                                   long delayNS,
                                    TimeUnit timeUnit) {
-        return scheduleOneShot(NANOSECONDS.convert(period, timeUnit), constantlyNull(runnable));
+        return scheduleOneShot(NANOSECONDS.convert(delayNS, timeUnit), constantlyNull(runnable));
     }
 
     @Override
-    public <V> ScheduledFuture<V> schedule(Callable<V> callable, long period, TimeUnit timeUnit) {
-        return scheduleOneShot(NANOSECONDS.convert(period, timeUnit), callable);
+    public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delayNS, TimeUnit timeUnit) {
+        return scheduleOneShot(NANOSECONDS.convert(delayNS, timeUnit), callable);
     }
 
     @Override
-    public FixedRateTimedFuture scheduleAtFixedRate(Runnable runnable, long initialDelay, long period, TimeUnit unit) {
-        return scheduleFixedRate(NANOSECONDS.convert(period, unit), NANOSECONDS.convert(initialDelay, unit),
+    public FixedRateTimedFuture scheduleAtFixedRate(Runnable runnable, long delayNS, long periodNS, TimeUnit unit) {
+        return scheduleFixedRate(NANOSECONDS.convert(periodNS, unit), NANOSECONDS.convert(delayNS, unit),
                 runnable);
     }
 

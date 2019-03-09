@@ -1,5 +1,7 @@
 package nars.task.util;
 
+import jcog.TODO;
+import jcog.Util;
 import nars.Task;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,23 +15,58 @@ import java.util.Arrays;
  */
 public final class TasksRegion implements TaskRegion {
 
-
-    private final long start;
-    private final long end;
-
-    private final float freqMin;
-    private final float freqMax;
-    private final float confMin;
-    private final float confMax;
+    private final long start, end;
+    private final float freqMin, freqMax;
+    private final float confMin, confMax;
 
 
-    public TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {
+
+
+
+    protected TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {
         this.start = start;
         this.end = end;
         this.freqMin = freqMin;
         this.freqMax = freqMax;
         this.confMin = confMin;
         this.confMax = confMax;
+    }
+
+    public static TasksRegion mbr(TaskRegion r, long xs, long xe, float ef, float ec) {
+        if (r instanceof Task) {
+            Task tr = (Task)r;
+            float trf = tr.freq(), trc = tr.conf();
+            return new TasksRegion(
+                    Math.min(r.start(), xs), Math.max(r.end(), xe),
+                    Math.min(trf, ef),
+                    Math.max(trf, ef),
+                    Math.min(trc, ec),
+                    Math.max(trc, ec)
+            );
+        } else {
+            return new TasksRegion(
+                    Math.min(r.start(), xs), Math.max(r.end(), xe),
+                    Math.min(r.coordF(1, false), ef),
+                    Math.max(r.coordF(1, true), ef),
+                    Math.min(r.coordF(2, false), ec),
+                    Math.max(r.coordF(2, true), ec)
+            );
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        throw new TODO();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof TasksRegion)) return false;
+        TasksRegion r = (TasksRegion)obj;
+        return start==r.start() && end==r.end() &&
+                Util.equals(freqMin, r.freqMin) && Util.equals(freqMax, r.freqMax) &&
+                Util.equals(confMin, r.confMin) && Util.equals(confMax, r.confMax);
     }
 
     @Override

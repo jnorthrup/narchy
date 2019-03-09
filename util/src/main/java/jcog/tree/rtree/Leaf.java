@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -326,12 +327,12 @@ public class Leaf<X> extends AbstractNode<X> {
         double tCost = xReg.cost();
 
         final HyperRegion aReg = a.bounds();
-        final HyperRegion aMbr = aReg!=null ? aReg.mbr(xReg) : xReg;
+        final HyperRegion aMbr = aReg!=null ? xReg.mbr(aReg) : xReg;
         double axCost = aMbr.cost();
         final double aCostInc = Math.max(axCost - ((/*aReg!=null ? */aReg.cost() /*: 0*/) + tCost), 0.0);
 
         final HyperRegion bReg = b.bounds();
-        final HyperRegion bMbr = bReg.mbr(xReg);
+        final HyperRegion bMbr = xReg.mbr(bReg);
         double bxCost = bMbr.cost();
         final double bCostInc = Math.max(bxCost - ((/*bReg!=null ? */ bReg.cost()/* : 0*/) + tCost), 0.0);
 

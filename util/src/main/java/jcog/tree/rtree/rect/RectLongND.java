@@ -156,7 +156,6 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         return maxOrMin ? max.coord[dimension] : min.coord[dimension];
     }
 
-    @Override
     public double distance(HyperRegion X, int dim, boolean maxOrMin, boolean XmaxOrMin) {
         return max.coord[dim] - min.coord[dim];
     }

@@ -40,6 +40,11 @@ public interface HyperRegion {
     HyperRegion mbr(HyperRegion r);
 
 
+    /** can be used by implementations to provide a faster bulk mbr procedure */
+    default <X extends HyperRegion> Function<X,HyperRegion> mbrBuilder() {
+        return this::mbr;
+    }
+
     static <X> HyperRegion mbr(Function<X, HyperRegion> builder, X[] rect, short size) {
         assert (size > 0);
         HyperRegion bounds = builder.apply(rect[0]);
@@ -197,44 +202,6 @@ public interface HyperRegion {
         }
         return p;
     }
-
-
-
-
-
-    /**
-     * gets the distance along a certain dimension from this region's to another's extrema
-     */
-    default double distance(HyperRegion X, int dim, boolean maxOrMin, boolean XmaxOrMin) {
-        if(this == X)
-            return 0;
-        return Math.abs(
-                coord(dim, maxOrMin) - X.coord(dim, XmaxOrMin)
-        );
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

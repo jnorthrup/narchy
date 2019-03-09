@@ -299,11 +299,13 @@ abstract class AbstractTimerTest {
     }
 
     @Test
-    void testScheduleTimeoutShouldRunAfterDelay() throws InterruptedException {
+    void testScheduleTimeoutShouldRunAfterDelay() {
         final CountDownLatch barrier = new CountDownLatch(1);
-        final Future timeout = timer.schedule(barrier::countDown, 1, TimeUnit.SECONDS);
-        assertTrue(barrier.await(2, TimeUnit.SECONDS));
+        final Future timeout = timer.schedule(barrier::countDown, 100, TimeUnit.MILLISECONDS);
+        //assertTrue(barrier.await(2, TimeUnit.SECONDS));
+        Util.sleepMS(200);
         assertTrue(timeout.isDone(), "should expire");
+        assertEquals(0, barrier.getCount());
     }
 
 

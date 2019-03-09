@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.pri.UnitPrioritizable;
+import jcog.tree.rtree.HyperRegion;
 import nars.control.op.Perceive;
 import nars.subterm.Subterms;
 import nars.task.DerivedTask;
@@ -14,6 +15,7 @@ import nars.task.proxy.SpecialNegatedTermTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
+import nars.task.util.TasksRegion;
 import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Bool;
@@ -35,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static nars.Op.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -71,9 +74,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
             return false;
 
         if (p == BELIEF || p == GOAL) {
-            Truth at = a.truth();
-            Truth bt = b.truth();
-            if (!at.equals(bt)) return false;
+            if (!a.truth().equals(b.truth())) return false;
         }
 
         long[] evidence = a.stamp();
@@ -86,6 +87,53 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
 
         return a.term().equals(b.term());
+    }
+
+    @Override
+    default <X extends HyperRegion> Function<X, HyperRegion> mbrBuilder() {
+        long s = start(), e = end();
+        float tf = freq(), tc = conf();
+        return y ->
+                TasksRegion.mbr((TaskRegion)y, s, e, tf, tc);
+//        {
+//
+//            if (y instanceof Task) {
+//
+//                Task ty = (Task) y;
+//                float ef = ty.freq(), ec = ty.conf();
+//                long es = ty.start(), ee = ty.end();
+//
+//                float f0, f1;
+//                if (tf <= ef) {
+//                    f0 = tf;
+//                    f1 = ef;
+//                } else {
+//                    f0 = ef;
+//                    f1 = tf;
+//                }
+//                float c0;
+//                float c1;
+//                if (tc <= ec) {
+//                    c0 = tc;
+//                    c1 = ec;
+//                } else {
+//                    c0 = ec;
+//                    c1 = tc;
+//                }
+//                return new TasksRegion(Math.min(s, es), Math.max(e, ee),
+//                        f0, f1, c0, c1
+//                );
+//
+//            } else {
+//                return TaskRegion.mbr((TaskRegion)y, this);
+//            }
+//
+//        };
+    }
+
+    @Override
+    default TaskRegion mbr(HyperRegion y) {
+        return TaskRegion.mbr((TaskRegion)y, (Task)this);
     }
 
     /**
@@ -403,8 +451,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
 
-    /** start!=ETERNAL */
-    @Nullable static Task project(Task t, long start, long end, float eviMin, boolean ditherTruth, boolean ditherTime, NAR n) {
+    /**
+     * start!=ETERNAL
+     */
+    @Nullable
+    static Task project(Task t, long start, long end, float eviMin, boolean ditherTruth, boolean ditherTime, NAR n) {
 
         if (t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
             return t;
@@ -430,7 +481,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return new SpecialTruthAndOccurrenceTask(t, start, end, false, tt);
     }
 
-    @Deprecated @Nullable static Task project(Task t, long start, long end, boolean ditherTruth, boolean negated, float eviMin, NAR n) {
+    @Deprecated
+    @Nullable
+    static Task project(Task t, long start, long end, boolean ditherTruth, boolean negated, float eviMin, NAR n) {
         if (!negated && t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
             return t;
 

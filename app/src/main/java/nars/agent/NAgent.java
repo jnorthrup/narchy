@@ -156,6 +156,11 @@ public class NAgent extends NARService implements NSense, NAct {
         return (float)m[0];
     }
 
+    public float dexterityMean() {
+        return dexterity()/actions.size();
+    }
+
+
     /**
      * happiness = sum( 1 - abs(rewardBeliefExp - rewardGoalExp) )
      * avg reward satisfaction, current measurement */

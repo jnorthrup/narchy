@@ -187,14 +187,17 @@ public abstract class Param {
     /** novelty threshold: >=0; higher values decrease the rate at which repeated tasks can be reactivated */
     public static final float REMEMBER_REPEAT_THRESH_DURS = 1f;
 
+    public static final boolean REVISION_ALLOW_DILUTE_UNION = false;
+
     /** restrains revision's ability to stretch evidence across time:
      * as a factor of the maximum of the ranges of the tasks involved in the revision */
-    public static final float REVISION_STRETCH_LIMIT_PROPORTION =
+    public static final float REVISION_UNION_THRESHOLD =
             //0.5f;
-            1;
+            //1;
             //1.5f;
             //1.618f; //goldenratio
-            //2;
+            2;
+
     /**
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
@@ -203,7 +206,7 @@ public abstract class Param {
      */
     public final static float SIGNAL_STRETCH_LIMIT_DURS = 8;
 
-    public static final boolean REVISION_ALLOW_DILUTE_UNION = false;
+
 
     /** maximum span of a Task, in cycles.
      *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */

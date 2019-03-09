@@ -22,15 +22,17 @@ package jcog.tree.rtree.split;
 
 import jcog.tree.rtree.*;
 
+import java.util.function.Function;
+
 /**
  * Guttmann's Quadratic split
  * <p>
  * Created by jcairns on 5/5/15.
  */
-public final class QuadraticSplitLeaf<T> implements Split<T> {
+public class QuadraticSplitLeaf<X> implements Split<X> {
 
     @Override
-    public Node<T> split(T t, Leaf<T> leaf, Spatialization<T> model) {
+    public Node<X> split(X x, Leaf<X> leaf, Spatialization<X> model) {
 
 
 
@@ -39,13 +41,14 @@ public final class QuadraticSplitLeaf<T> implements Split<T> {
         double minCost = Double.MIN_VALUE;
         short size = leaf.size;
         int r1Max = 0, r2Max = size - 1;
-        T[] data = leaf.data;
+        X[] data = leaf.data;
         for (int i = 0; i < size; i++) {
             HyperRegion ii = model.bounds(data[i]);
+            double iic = ii.cost();
+            Function<HyperRegion, HyperRegion> iiMbr = ii.mbrBuilder();
             for (int j = i + 1; j < size; j++) {
                 HyperRegion jj = model.bounds(data[j]);
-                final HyperRegion mbr = ii.mbr(jj);
-                final double cost = mbr.cost() - (ii.cost() + jj.cost());
+                final double cost = iiMbr.apply(jj).cost() - (iic + jj.cost());
                 if (cost > minCost) {
                     r1Max = i;
                     r2Max = j;
@@ -55,10 +58,10 @@ public final class QuadraticSplitLeaf<T> implements Split<T> {
         }
 
 
-        final Leaf<T> l1Node = model.newLeaf();
-        final Leaf<T> l2Node = model.newLeaf();
+        final Leaf<X> l1Node = model.newLeaf();
         boolean[] dummy = new boolean[1];
         l1Node.add(data[r1Max], true, model, dummy);
+        final Leaf<X> l2Node = model.newLeaf();
         dummy[0] = false;
         l2Node.add(data[r2Max], true, model, dummy);
 
@@ -67,7 +70,7 @@ public final class QuadraticSplitLeaf<T> implements Split<T> {
                 leaf.transfer(l1Node, l2Node, data[i], model);
         }
 
-        leaf.transfer(l1Node, l2Node, t, model);
+        leaf.transfer(l1Node, l2Node, x, model);
 
         return model.newBranch(l1Node, l2Node);
     }

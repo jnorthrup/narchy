@@ -260,7 +260,7 @@ public enum Tense {
     public static long[] merge(int dtDither, Iterable<? extends TaskRegion> tasks) {
         long[] u = Tense.union(tasks);
         long unionRange = Tense.dither(u[1], dtDither) - Tense.dither(u[0], dtDither);
-        if (unionRange > Math.ceil(Param.REVISION_STRETCH_LIMIT_PROPORTION * Util.max(t -> t.start()==ETERNAL ?  0 : t.range(), tasks))) {
+        if (unionRange > Math.ceil(Param.REVISION_UNION_THRESHOLD * Util.max(t -> t.start()==ETERNAL ?  0 : t.range(), tasks))) {
 
             //too sparse: settle for more potent intersection if exists
 

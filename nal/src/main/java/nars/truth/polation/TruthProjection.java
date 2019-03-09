@@ -200,19 +200,13 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 if (strongestConflict == weakestConflict) {
                     //it is only conflict present in this set.
                     // eliminate it if the sum of the other evidences are greater
-                    if (minComponents <= 1)
-                        oneForAll(strongestConflict);
-                    else
-                        removeFast(strongestConflict);
+                    cull(minComponents, strongestConflict);
                 } else {
 
                     //TODO try evaluating the truth by removing each of the conflicting tasks
 
                     //for now, try removing the weakestConflict and repeat
-                    if (minComponents <= 1)
-                        oneForAll(weakestConflict);
-                    else
-                        removeFast(weakestConflict);
+                    cull(minComponents, weakestConflict);
 
                     //TODO early exit possible here if weakestConflict == 0, then 'e' will be correct for return in some cases
                 }
@@ -230,6 +224,13 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
         return null;
 
+    }
+
+    private void cull(int minComponents, int conflict) {
+        if (minComponents <= 1)
+            oneForAll(conflict);
+        else
+            removeFast(conflict);
     }
 
     private void sortByEvidence() {
