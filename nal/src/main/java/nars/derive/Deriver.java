@@ -56,7 +56,7 @@ abstract public class Deriver extends Causable {
 //    protected final Consumer<Predicate<Activate>> source;
 
     public DerivePri pri;
-    public TaskBuffer output;
+    public TaskBuffer out;
     private Offs outputOffs;
 
 //    public final IntRange tasklinkSpread =  new IntRange(Param.TaskLinkSpreadDefault, 1, 32);
@@ -154,14 +154,14 @@ abstract public class Deriver extends Causable {
     }
 
     public synchronized Deriver output(ConsumerX<ITask> target, TaskBuffer out, boolean cycleOrDur) {
-        TaskBuffer prev = this.output;
+        TaskBuffer prev = this.out;
         if (prev!=null) {
             if (prev == out) return this; //same instance
         }
         if (this.outputOffs!=null)
             this.outputOffs.clear();
 
-        this.output = out;
+        this.out = out;
 
         if (out!=null && out.synchronous()) {
             Consumer<NAR> p = nn -> out.commit(nn.time(), target);

@@ -111,7 +111,7 @@ public class NARS {
             ;
 
             if (nal > 0)
-                withNAL(new TaskBuffer.BagTaskBuffer(64, 0.5f), 1, nal);
+                withNAL(new TaskBuffer.BagTaskBuffer(128, 0.25f), 1, nal);
 
             if (nal >= 7) {
                 then((nn)->new STMLinkage(nn, 1));

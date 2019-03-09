@@ -44,6 +44,8 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
     private final DoubleClicking doubleClicking;
 
+    public final v2 windoSizeMinRel = new v2(0.05f, 0.05f); //visible
+
     public GraphEdit() {
         super();
         doubleClicking = new DoubleClicking(0, this::doubleClick, this);
@@ -214,6 +216,11 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
                 .fixed(true);
 
 
+    }
+
+    /** sub-window minimum size, relative to the workspace */
+    public void windoSizeMinRel(float w, float h) {
+        windoSizeMinRel.set(w,h);
     }
 
 

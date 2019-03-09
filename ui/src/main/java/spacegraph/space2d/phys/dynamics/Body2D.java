@@ -404,7 +404,7 @@ public class Body2D extends Transform {
      */
     public final boolean setTransform(v2 position, float angle, float epsilon) {
 
-        if (getPosition().equals(position, epsilon) && Util.equals(angle, getAngle(), epsilon))
+        if (pos.equals(position, epsilon) && Util.equals(angle, getAngle(), epsilon))
             return false;
 
         W.invoke(() -> {

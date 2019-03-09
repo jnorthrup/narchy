@@ -25,6 +25,10 @@ public class MetaFrame extends Bordering implements HudHover {
         super();
     }
 
+    public MetaFrame(Object o) {
+        this(new ObjectSurface(o));
+    }
+
     public MetaFrame(Surface surface) {
         super(surface);
     }

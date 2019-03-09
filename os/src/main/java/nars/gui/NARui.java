@@ -559,9 +559,12 @@ public class NARui {
         });
     }
 
-    public static Surface taskBufferPanel(TaskBuffer b, NAR n) {
+    public static Surface taskBufferView(TaskBuffer b, NAR n) {
         Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::volume, 0, 1);
-        return DurSurface.get(new Gridding(new ObjectSurface<>(b), plot), n, plot::update);
+        return new Gridding(
+                DurSurface.get(plot, n, plot::update),
+                new MetaFrame(b)
+        );
     }
 
 //    @Deprecated public static void agentOld(NAgent a) {

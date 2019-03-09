@@ -43,6 +43,7 @@ import java.util.function.ObjLongConsumer;
 import static spacegraph.space2d.container.Bordering.E;
 import static spacegraph.space2d.container.Bordering.S;
 import static spacegraph.space2d.container.grid.Gridding.PHI;
+import static spacegraph.space2d.phys.common.MathUtils.max;
 
 /**
  * TODO
@@ -78,12 +79,13 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         private transient float prw, prh;
-        void pre(Dynamics2D physics) {
-            RectFloat r = surface.bounds;
-//
-
+        void pre(Dynamics2D physics, RectFloat r) {
+            float ncx = r.cx();
+            float ncy = r.cy();
             float nrw = r.w;
             float nrh = r.h;
+
+            boolean resized = false, moved = false;
 
             if (!Util.equals(nrw, prw, SHAPE_SIZE_EPSILON) ||
                     !Util.equals(nrh, prh, SHAPE_SIZE_EPSILON)) {
@@ -93,14 +95,15 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                 body.updateFixtures((f) -> {
                     f.setShape(shape.setAsBox(nrw / 2 / scaling, nrh / 2 / scaling));
                 });
+                resized = true;
             }
 
-            v2 target = new v2(r.cx() / scaling, r.cy() / scaling);
+            if (body.setTransform(new v2(ncx / scaling, ncy / scaling), 0, Spatialization.EPSILONf)) {
+                moved = true;
+            }
 
-            if (body.setTransform(target, 0, Spatialization.EPSILONf)) {
+            if (resized || moved)
                 body.setAwake(true);
-            }
-
         }
 
         void post(Dynamics2D physics) {
@@ -147,12 +150,12 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         @Override
-        void pre(Dynamics2D physics) {
+        void pre(Dynamics2D physics, RectFloat bounds) {
 
 
             body.setType(surface.fixed() ? BodyType.STATIC : BodyType.DYNAMIC,
                     physics);
-            super.pre(physics);
+            super.pre(physics, bounds);
 
         }
 
@@ -172,17 +175,50 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     @Override
     public Surface starting(GraphEdit g) {
-        loop = g.root().animate(this::update);
+        loop = g.root().animate((dt)->{
+            update(g, dt);
+            return true;
+        });
         return
                 new Dyn2DRenderer(true, true, true);
         //new EmptySurface();
     }
 
-    protected boolean update(float dt) {
-        w.forEachValue(ww -> ww.pre(physics));
+    private transient RectFloat fence;
+    float wMin, hMin;
+    protected void update(GraphEdit g, float dt) {
+        wMin = g.windoSizeMinRel.x * g.w();
+        hMin = g.windoSizeMinRel.y * g.h();
+        fence = g.bounds;
+            //.scale(0.5f);
+
+        w.forEachValue(ww -> ww.pre(physics, preBounds(ww.surface)));
         physics.step(dt * timeScale, velIter, posIter);
         w.forEachValue(ww -> ww.post(physics));
-        return true;
+    }
+
+    /** apply any preprocessing of bounds before entry to the physics engine (and affecting its possible feedback after it finishes)
+     * @param r*/
+    private RectFloat preBounds(Surface r) {
+        RectFloat b = preBoundsPos(preBoundsSize(r.bounds));
+        r.pos(b);
+        return b;
+    }
+
+    private RectFloat preBoundsPos(RectFloat x) {
+        return x.move(
+                    Math.min(fence.w - x.right(), Math.max(0, -x.left())),
+                    Math.min(fence.h - x.top(), Math.max(0, -x.bottom())));
+    }
+
+    private RectFloat preBoundsSize(RectFloat r) {
+        float rw = r.w; if (rw != rw) rw = 0;
+        float rh = r.h; if (rh != rh) rh = 0;
+        float nw = Util.clamp(rw, wMin, fence.w), nh = Util.clamp(rh, hMin, fence.h);
+        if (!Util.equals(r.w, nw, SHAPE_SIZE_EPSILON) || !Util.equals(r.h, nh, SHAPE_SIZE_EPSILON))
+            return r.size(nw, nh);
+        else
+            return r;
     }
 
     @Override

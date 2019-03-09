@@ -2,9 +2,7 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.pid.MiniPID;
 import jcog.math.FloatNormalized;
-import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
@@ -63,9 +61,7 @@ public class TrackXY_NAR extends NAgentX {
 
     final public AtomicBoolean trainer = new AtomicBoolean(false);
 
-
-    //final public AtomicBoolean log = new AtomicBoolean(true);
-
+    final public AtomicBoolean log = new AtomicBoolean(true);
 
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super("trackXY",
@@ -152,7 +148,7 @@ public class TrackXY_NAR extends NAgentX {
 //            @Override
 //            public void print(String s) {
 //                super.print(s);
-//                Util.sleepMS(200);
+//                Util.sleepMS(1);
 //            }
 //        }, (t)->log.getOpaque() /*&& t instanceof Task && ((Task)t).isGoal()*/);
 
@@ -178,7 +174,105 @@ public class TrackXY_NAR extends NAgentX {
 
     public static void main(String[] args) {
 
-        NAR n = newNAR();
+        NARS nb = new NARS.DefaultNAR(0, true)
+                .exe(new UniExec(1, 2 /* force concurrent */))
+                .time(new RealTime.MS().dur(durMS))
+                //.time(new CycleTime().dur(dur))
+                .index(
+                        new CaffeineIndex(4 * 1024 * 10)
+                        //new HijackConceptIndex(4 * 1024, 4)
+                );
+
+
+        NAR n = nb.get();
+
+//        Param.DEBUG = true;
+//        n.run(10); //skip:
+//        n.onTask((t)->{
+//            if (!t.isEternal() && t.range() > n.time()) {
+//                System.err.println("long-range:\n" + t.proof());
+//            }
+//        });
+
+//        n.beliefConfDefault.setAt(0.5f);
+//        n.goalConfDefault.setAt(0.5f);
+
+
+        n.goalPriDefault.set(0.5f);
+        n.beliefPriDefault.set(0.1f);
+        n.questionPriDefault.set(0.05f);
+        n.questPriDefault.set(0.05f);
+
+
+//        n.freqResolution.setAt(0.1f);
+//        n.confResolution.setAt(0.05f);
+
+
+        //n.freqResolution.setAt(0.04f);
+
+        n.termVolumeMax.set(volMax);
+        n.dtDither.set(Math.max(1, durMS));
+
+
+        Deriver d = new BatchDeriver(Derivers.nal(n,
+                6, 8
+                //"induction.goal.nal"
+                //1, 8
+                //2, 8
+                , "motivation.nal"
+        ), new TaskBuffer.BagTaskBuffer(64, 0.5f)) {
+//                    @Override
+//                    public float puncFactor(byte conclusion) {
+//                        return conclusion == GOAL ? 1 : 0.01f; //super.puncFactor(conclusion);
+//                    }
+        };
+
+
+        ((BatchDeriver) d).tasklinksPerIteration.set(derivationStrength);
+
+
+        new STMLinkage(n, 1) {
+//                @Override
+//                public boolean keep(Task newEvent) {
+//                    return newEvent.isGoal();
+//                }
+        };
+
+
+//            ConjClustering cjB = new ConjClustering(n, BELIEF,
+//                    //x -> true,
+//                    Task::isInput,
+//                    2, 8);
+
+
+//            window(new Gridding(
+//                    new AutoSurface(d),
+//                    new AutoSurface(cjB)
+//
+//            ), 400, 300);
+
+        //n.log();
+
+        //Param.DEBUG = true;
+        n.onTask(tt -> {
+//                if (tt instanceof DerivedTask && tt.isGoal()) {
+//                    //if (n.concept(tt) instanceof ActionConcept)
+//                    System.out.println(tt.proof());
+////                    Term ttt = tt.target();
+////                    if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
+////                        boolean l = ttt.toString().equals("left");
+////                        boolean r = ttt.toString().equals("right");
+////                        if (l || r) {
+////
+////                            float wantsDir = l ? -1 : +1;
+////                            float needsDir = a.track.tx - a.track.cx;
+////
+////                            String summary = (Math.signum(wantsDir)==Math.signum(needsDir)) ? "OK" : "WRONG";
+////                            System.err.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+////                        }
+////                    }
+//                }
+        }, GOAL);
 
         //final int W = 3, H = 1;
         final int W = 4, H = 4;
@@ -233,8 +327,33 @@ public class TrackXY_NAR extends NAgentX {
 //        }
 
 
-        if (gui)
-            gui(n, a);
+        if (gui) {
+            n.runLater(() -> {
+
+                GraphEdit g = GraphEdit.window(800, 800);
+                g.windoSizeMinRel(0.1f, 0.1f);
+
+                g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
+                g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
+
+                g.add(NARui.taskBufferView(d.out, n));
+
+                //window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
+//            window.addAt(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
+
+                if (a.cam != null) {
+                    g.add(Splitting.column(new VectorSensorView(a.cam, n) {
+                        @Override
+                        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+                            super.paint(gl, surfaceRender);
+                            RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
+                            gl.glColor4f(1, 0, 0, 0.9f);
+                            Draw.rect(at.move(x(), y(), 0.01f), gl);
+                        }
+                    }.withControls(), 0.1f, new ObjectSurface<>(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
+                }
+            });
+        }
 
         n.run(experimentTime);
 
@@ -246,139 +365,6 @@ public class TrackXY_NAR extends NAgentX {
         //n.conceptsActive().forEach(System.out::println);
 
         //n.tasks().forEach(System.out::println);
-    }
-
-    public static void gui(NAR n, TrackXY_NAR a) {
-        n.runLater(() -> {
-
-            GraphEdit window = GraphEdit.window(800, 800);
-
-            window.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
-            window.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
-
-            //window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
-//            window.addAt(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
-
-            if (a.cam != null) {
-                window.add(Splitting.column(new VectorSensorView(a.cam, n) {
-                    @Override
-                    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                        super.paint(gl, surfaceRender);
-                        RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
-                        gl.glColor4f(1, 0, 0, 0.9f);
-                        Draw.rect(at.move(x(), y(), 0.01f), gl);
-                    }
-                }.withControls(), 0.1f, new ObjectSurface<>(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
-            }
-        });
-    }
-
-    static NAR newNAR() {
-        NARS nb = new NARS.DefaultNAR(0, true)
-                .exe(new UniExec(1, 2 /* force concurrent */))
-                .time(new RealTime.MS().dur(durMS))
-                //.time(new CycleTime().dur(dur))
-                .index(
-                        new CaffeineIndex(4 * 1024 * 10)
-                        //new HijackConceptIndex(4 * 1024, 4)
-                );
-
-
-        NAR n = nb.get();
-
-//        Param.DEBUG = true;
-//        n.run(10); //skip:
-//        n.onTask((t)->{
-//            if (!t.isEternal() && t.range() > n.time()) {
-//                System.err.println("long-range:\n" + t.proof());
-//            }
-//        });
-
-//        n.beliefConfDefault.setAt(0.5f);
-//        n.goalConfDefault.setAt(0.5f);
-
-
-        n.goalPriDefault.set(0.5f);
-       n.beliefPriDefault.set(0.1f);
-        n.questionPriDefault.set(0.05f);
-        n.questPriDefault.set(0.05f);
-
-
-//        n.freqResolution.setAt(0.1f);
-//        n.confResolution.setAt(0.05f);
-
-
-        //n.freqResolution.setAt(0.04f);
-
-        n.termVolumeMax.set(volMax);
-        n.dtDither.set(Math.max(1, durMS));
-
-        {
-
-
-            Deriver d = new BatchDeriver(Derivers.nal(n,
-                    6, 8
-                    //"induction.goal.nal"
-                    //1, 8
-                    //2, 8
-                    , "motivation.nal"
-            )) {
-//                    @Override
-//                    public float puncFactor(byte conclusion) {
-//                        return conclusion == GOAL ? 1 : 0.01f; //super.puncFactor(conclusion);
-//                    }
-            };
-
-
-            ((BatchDeriver) d).tasklinksPerIteration.set(derivationStrength);
-
-
-            new STMLinkage(n, 1) {
-//                @Override
-//                public boolean keep(Task newEvent) {
-//                    return newEvent.isGoal();
-//                }
-            };
-
-
-
-//            ConjClustering cjB = new ConjClustering(n, BELIEF,
-//                    //x -> true,
-//                    Task::isInput,
-//                    2, 8);
-
-
-//            window(new Gridding(
-//                    new AutoSurface(d),
-//                    new AutoSurface(cjB)
-//
-//            ), 400, 300);
-
-            //n.log();
-
-            //Param.DEBUG = true;
-            n.onTask(tt -> {
-//                if (tt instanceof DerivedTask && tt.isGoal()) {
-//                    //if (n.concept(tt) instanceof ActionConcept)
-//                    System.out.println(tt.proof());
-////                    Term ttt = tt.target();
-////                    if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
-////                        boolean l = ttt.toString().equals("left");
-////                        boolean r = ttt.toString().equals("right");
-////                        if (l || r) {
-////
-////                            float wantsDir = l ? -1 : +1;
-////                            float needsDir = a.track.tx - a.track.cx;
-////
-////                            String summary = (Math.signum(wantsDir)==Math.signum(needsDir)) ? "OK" : "WRONG";
-////                            System.err.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
-////                        }
-////                    }
-//                }
-            }, GOAL);
-
-        }
-        return n;
     }
 
 

@@ -313,14 +313,13 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public RectFloat scale(float s) {
-        if (Util.equals(s, 1, EPSILON))
-            return this;
-        else
-            return RectFloat.X0Y0WH(left(), bottom(), w * s, h * s);
+        return !Util.equals(s, 1, EPSILON) ?
+                RectFloat.X0Y0WH(left(), bottom(), w * s, h * s) : this;
     }
 
-    public RectFloat scalePosSize(float sw, float sh) {
-        return RectFloat.X0Y0WH(left() * sw, bottom() * sh, w * sw, h * sh);
+    public RectFloat scale(float sw, float sh) {
+        return !Util.equals(sw, 1, EPSILON) || !Util.equals(sh, 1, EPSILON) ?
+                RectFloat.X0Y0WH(left(), bottom(), w * sw, h * sh) : this;
     }
 
     public float radius() {
