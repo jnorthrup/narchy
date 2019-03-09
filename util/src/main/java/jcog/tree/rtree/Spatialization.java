@@ -27,8 +27,11 @@ public class Spatialization<X> {
         return bounds.apply(x);
     }
 
-    public Leaf<X> newLeaf() {
-        return new Leaf<>(max);
+    @Deprecated public Leaf<X> newLeaf() {
+        return newLeaf(max);
+    }
+    public Leaf<X> newLeaf(int capacity) {
+        return new Leaf<>(capacity);
     }
 
     public Node<X> newBranch(Leaf<X> a, Leaf<X> b) {
@@ -56,7 +59,7 @@ public class Spatialization<X> {
     }
 
     public final Leaf<X> transfer(ObjectDoublePair<X>[] sortedMbr, int from, int to) {
-        final Leaf<X> l = newLeaf();
+        final Leaf<X> l = newLeaf(to-from);
         for (int i = from; i < to; i++)
             l.add(sortedMbr[i].getOne(), true, this, new boolean[] { false });
         return l;

@@ -89,7 +89,7 @@ public class Branch<X> extends AbstractNode<X> {
      * @param n node to be added (can be leaf or branch)
      * @return position of the added node
      */
-    public int addChild(final Node<X> n) {
+    int addChild(final Node<X> n) {
         if (size < data.length) {
             data[size++] = n;
 

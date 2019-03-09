@@ -27,7 +27,7 @@ import jcog.tree.rtree.*;
  * <p>
  * Created by jcairns on 5/5/15.
  */
-public final class LinearSplitLeaf<T> implements Split<T> {
+public class LinearSplitLeaf<T> implements Split<T> {
 
     @Override
     public Node<T> split(T t, Leaf<T> leaf, Spatialization<T> model) {

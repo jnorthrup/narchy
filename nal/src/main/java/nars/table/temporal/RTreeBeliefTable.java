@@ -5,7 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.sort.FloatRank;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
-import jcog.tree.rtree.split.AxialSplitLeaf;
+import jcog.tree.rtree.split.LinearSplitLeaf;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Task;
@@ -38,8 +38,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             1f;
             //2f;
 
-    private static final int MAX_TASKS_PER_LEAF = 3;
-    private static final Split SPLIT = AxialSplitLeaf.the;
+    private static final int MAX_TASKS_PER_LEAF = 4;
+
+    private static final Split SPLIT =
+//            new AxialSplitLeaf() {
+//                /* TODO tune */
+//            };
+              new LinearSplitLeaf() {
+                /* TODO tune */
+              };
+
 
     private static final int CURSOR_CAPACITY = 32;
 
@@ -267,7 +275,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         long now = nar.time();
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
-                taskStrength = taskStrength(beliefOrGoal, now, Math.max(1,Tense.occToDT(tableDur()/2)));
+                taskStrength = taskStrength(beliefOrGoal, now, Math.max(1,Tense.occToDT(tableDur())));
                 leafRegionWeakness = regionWeakness(now, beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
             }
             if (!compress(treeRW,  /** only limit by inputRegion on first iter */
@@ -333,12 +341,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                                          Remember r,
                                          NAR nar) {
 
-        Task W = //(weakest != null && weakest.the != null) ? weakest.the : A; //not valid due to mergeability heuristic not necessarily the same as weakness
-                //(weakest != null ? weakest.the : null);
-            weakest.the;
-            //assert(I == null || W == null || !I.equals(W));
-//        if (W == null)
-//            return false;
+        Task W = weakest.the;
+
         float valueEvictWeakest = -taskStrength.floatValueOf(W);
 
         float valueMergeLeaf = NEGATIVE_INFINITY;
@@ -347,8 +351,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             AB = Revision.merge(nar, true,
                     ArrayUtils.removeNulls(mergeableLeaf.get().data, TaskRegion[]::new) //HACK
             );
-            if (AB!=null)
-                valueMergeLeaf = taskStrength.floatValueOf(AB.getOne());
+            if (AB!=null) {
+                valueMergeLeaf = (float) (
+                        +taskStrength.floatValueOf(AB.getOne())
+                        -AB.getTwo().sumOfFloat((Projection.TaskComponent tv)->
+                                taskStrength.floatValueOf(tv.task()))
+                );
+            }
         } else {
             AB = null;
         }
@@ -356,10 +365,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (valueMergeLeaf > valueEvictWeakest) {
             //merge leaf
             Task m = AB.getOne();
+            Projection merge = AB.getTwo();
+            TemporalBeliefTable.budget(merge, m);
+            merge.forEachTask(treeRW::remove);
             if (treeRW.add(m)) {
-                Projection merge = AB.getTwo();
-                TemporalBeliefTable.budget(merge, m);
-                merge.forEachTask(treeRW::remove);
                 r.remember(m);
             } //else: possibly already contained the merger?
             return true;
@@ -375,11 +384,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
 
-
-    @Override
-    public long tableDur() {
+    /**
+     * this is the range as a radius then further subdivided
+     * to represent half inside the super-duration, half outside the super-duration
+     */
+    @Override public long tableDur() {
         TaskRegion root = bounds();
-        return root == null ? 0 : root.range();
+        return root == null ? 0 : 1 + root.range()/2/2;
     }
 
 
