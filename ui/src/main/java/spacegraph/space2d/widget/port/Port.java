@@ -72,6 +72,9 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     public Port<X> on(Consumer<? super X> i) {
         return on((Wire w, X x) -> i.accept(x));
     }
+    public Port<X> on(Runnable i) {
+        return on((w,x)->i.run());
+    }
 
     public Port<X> specify(Supplier<X> proto) {
         this.specifyHow = proto;

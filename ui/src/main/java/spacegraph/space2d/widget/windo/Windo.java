@@ -264,6 +264,11 @@ public class Windo extends MutableUnitContainer {
         return posRel(cx, cy, pct, pct);
     }
 
+    public Windo sizeRel(float pctX, float pctY) {
+        GraphEdit p = parent(GraphEdit.class);
+        return p!=null ? (Windo) size(p.w() * pctX, p.h() * pctY) : null;
+    }
+
     public Windo posRel(float cx, float cy, float pctX, float pctY) {
         GraphEdit p = parent(GraphEdit.class);
         return p!=null ? posRel(p, cx, cy, pctX, pctY) : null;

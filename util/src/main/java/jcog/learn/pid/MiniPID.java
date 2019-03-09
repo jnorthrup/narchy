@@ -1,6 +1,7 @@
 package jcog.learn.pid;
 
 import jcog.Util;
+import jcog.math.FloatRange;
 
 /**
  * Small, easy to use PID implementation with advanced controller capability.<br>
@@ -15,10 +16,10 @@ import jcog.Util;
 public class MiniPID {
 
 
-    private double P;
-    private double I;
-    private double D;
-    private double F = 0;
+    public final FloatRange P = new FloatRange(0.5f, 0, +1);
+    public final FloatRange I = new FloatRange(0.5f, 0, +1);
+    public final FloatRange D = new FloatRange(0.5f, 0, +1);
+    public final FloatRange F = new FloatRange(0, 0, 100);
 
     private double maxIOutput = 0;
     private double errMax = 0;
@@ -28,6 +29,7 @@ public class MiniPID {
     private double outMin = 0;
 
     private double setpoint = 0;
+    private double setpointRange = 0;
 
     private double lastActual = 0;
 
@@ -39,7 +41,6 @@ public class MiniPID {
 
     private double outMomentum = 0;
 
-    private double setpointRange = 0;
 
 
     /**
@@ -51,9 +52,9 @@ public class MiniPID {
      * @param d Derivative gain. Responds quickly to large changes in error. Small values prevents P and I terms from causing overshoot.
      */
     public MiniPID(double p, double i, double d) {
-        P = p;
-        I = i;
-        D = d;
+        p(p);
+        i(i);
+        d(d);
         checkSigns();
     }
 
@@ -67,10 +68,10 @@ public class MiniPID {
      * @param f Feed-forward gain. Open loop "best guess" for the output should be. Only useful if setpoint represents a rate.
      */
     public MiniPID(double p, double i, double d, double f) {
-        P = p;
-        I = i;
-        D = d;
-        F = f;
+        p(p);
+        i(i);
+        d(d);
+        f(f);
         checkSigns();
     }
 
@@ -97,8 +98,8 @@ public class MiniPID {
      *
      * @param p Proportional gain. Affects output according to <b>output+=P*(setpoint-current_value)</b>
      */
-    public void setP(double p) {
-        P = p;
+    public void p(double p) {
+        P.set(p);
         checkSigns();
     }
 
@@ -111,17 +112,16 @@ public class MiniPID {
      * @param i New gain value for the Integral term
      * @see {@link #setMaxIOutput(double) setMaxIOutput} for how to restrict
      */
-    private void setI(double i) {
+    private void i(double i) {
+        float I = this.I.floatValue();
         if (I != 0) {
             errSum = errSum * I / i;
         }
         if (maxIOutput != 0) {
             errMax = maxIOutput / i;
         }
-        I = i;
+        this.I.set(i);
         checkSigns();
-
-
     }
 
     /**
@@ -139,8 +139,8 @@ public class MiniPID {
      *
      * @param d New gain value for the Derivative term
      */
-    public void setD(double d) {
-        D = d;
+    public void d(double d) {
+        this.D.set(d);
         checkSigns();
     }
 
@@ -153,8 +153,8 @@ public class MiniPID {
      *
      * @param f Feed forward gain.
      */
-    public void setF(double f) {
-        F = f;
+    public void f(double f) {
+        this.F.set(f);
         checkSigns();
     }
 
@@ -167,11 +167,9 @@ public class MiniPID {
      * @param d Derivative gain. Responds quickly to large changes in error. Small values prevents P and I terms from causing overshoot.
      */
     public void setPID(double p, double i, double d) {
-        P = p;
-        D = d;
-
-
-        setI(i);
+        p(p);
+        d(d);
+        i(i);
         checkSigns();
     }
 
@@ -185,12 +183,10 @@ public class MiniPID {
      * @param f Feed-forward gain. Open loop "best guess" for the output should be. Only useful if setpoint represents a rate.
      */
     public void setPID(double p, double i, double d, double f) {
-        P = p;
-        D = d;
-        F = f;
-
-
-        setI(i);
+        p(p);
+        d(d);
+        f(f);
+        i(i);
         checkSigns();
     }
 
@@ -204,8 +200,8 @@ public class MiniPID {
 
 
         maxIOutput = maximum;
-        if (I != 0) {
-            errMax = maxIOutput / I;
+        if (i() != 0) {
+            errMax = maxIOutput / i();
         }
     }
 
@@ -299,7 +295,7 @@ public class MiniPID {
      * @return calculated output value for driving the system
      * @see MiniPID#setSetpoint()
      */
-    private double out(double actual) {
+    public double out(double actual) {
 
         double output;
         double Poutput;
@@ -315,10 +311,10 @@ public class MiniPID {
         double error = setpoint - actual;
 
 
-        Foutput = F * setpoint;
+        Foutput = f() * setpoint;
 
 
-        Poutput = P * error;
+        Poutput = p() * error;
 
 
         if (initialIter) {
@@ -328,11 +324,11 @@ public class MiniPID {
         }
 
 
-        Doutput = -D * (actual - lastActual);
+        Doutput = -d() * (actual - lastActual);
         lastActual = actual;
 
 
-        Ioutput = I * errSum;
+        Ioutput = i() * errSum;
         if (maxIOutput != 0) {
             Ioutput = Util.clamp(Ioutput, -maxIOutput, maxIOutput);
         }
@@ -433,16 +429,32 @@ public class MiniPID {
      */
     private void checkSigns() {
         if (reversed) {
-            if (P > 0) P *= -1;
-            if (I > 0) I *= -1;
-            if (D > 0) D *= -1;
-            if (F > 0) F *= -1;
+            if (p() > 0) p(p() * -1);
+            if (i() > 0) i(i() * -1);
+            if (d() > 0) d(d() * -1);
+            if (f() > 0) f(f() * -1);
         } else {
-            if (P < 0) P *= -1;
-            if (I < 0) I *= -1;
-            if (D < 0) D *= -1;
-            if (F < 0) F *= -1;
+            if (p() < 0) p(p() * -1);
+            if (i() < 0) i(i() * -1);
+            if (d() < 0) d(d() * -1);
+            if (f() < 0) f(f() * -1);
         }
+    }
+
+    public double p() {
+        return P.doubleValue();
+    }
+
+    public double i() {
+        return I.doubleValue();
+    }
+
+    public double d() {
+        return D.doubleValue();
+    }
+
+    public double f() {
+        return F.doubleValue();
     }
 
 //    public float outFloat() {

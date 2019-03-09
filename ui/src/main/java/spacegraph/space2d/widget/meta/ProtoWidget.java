@@ -149,7 +149,7 @@ public class ProtoWidget extends Bordering {
 
         add("MLP", TODO, "Control");
         add("QLearn", TODO, "Control");
-        add("PID", TODO, "Control");
+        add("PID", PIDChip::new, "Control");
 
         add("Text", LabeledPort::generic, "Meter");
         add("Plot", PlotChip::new, "Meter"); //Line, Bar plots
@@ -212,7 +212,6 @@ public class ProtoWidget extends Bordering {
                 case "Audio":
                     icon = "volume-up";
                     break;
-
                 case "Signal":
                     icon = "sliders";
                     break;

@@ -77,7 +77,7 @@ public class AutoBuilder<X, Y> {
         //TODO
     }
 
-    public final Map<Class, BiFunction<X, Object /* relation */, Y>> onClass = new ConcurrentHashMap<>();
+    public final Map<Class, BiFunction<? super X, Object /* relation */, Y>> onClass = new ConcurrentHashMap<>();
     public final Map<Predicate, Function<X, Y>> onCondition = new ConcurrentHashMap<>();
     final AutoBuilding<X, Y> building;
     private final int maxDepth;
@@ -103,7 +103,7 @@ public class AutoBuilder<X, Y> {
         List<Pair<X, Iterable<Y>>> target = new FasterList<>();
 
 
-        FasterList<BiFunction<X, Object, Y>> builders = new FasterList();
+        FasterList<BiFunction<? super X, Object, Y>> builders = new FasterList();
 
 //        {
 //            if (!onCondition.isEmpty()) {
@@ -135,7 +135,7 @@ public class AutoBuilder<X, Y> {
         return building.build(target, root, relation);
     }
 
-    private void classBuilders(X x, FasterList<BiFunction<X, Object, Y>> ll) {
+    private void classBuilders(X x, FasterList<BiFunction<? super X, Object, Y>> ll) {
         Class<?> xc = x.getClass();
 //        Function<X, Y> exact = onClass.get(xc);
 //        if (exact!=null)
@@ -202,8 +202,8 @@ public class AutoBuilder<X, Y> {
         return seen.add(x);
     }
 
-    public AutoBuilder<X, Y> on(Class c, BiFunction<X, Object, Y> each) {
-        onClass.put(c, each);
+    public <C extends X> AutoBuilder<X, Y> on(Class<C> c, BiFunction<C, Object, Y> each) {
+        onClass.put(c, (BiFunction<? super X, Object, Y>) each);
         return this;
     }
 

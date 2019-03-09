@@ -313,7 +313,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         private final FloatSupplier knob;
 
         public FloatProportionalSlider(String label, FloatSupplier min, FloatSupplier knob, FloatSupplier max, boolean hOrV) {
-            super(label, new FloatSlider.FloatSliderModel() {
+            super(new FloatSliderModel() {
                     @Override
                     public float min() {
                         return min.asFloat();
@@ -323,7 +323,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
                     public float max() {
                         return max.asFloat();
                     }
-                }
+                }, label
             );
 
             this.knob = knob;

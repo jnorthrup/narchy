@@ -1,10 +1,16 @@
 package nars.control;
 
+import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloat;
+import jcog.event.Off;
+import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.task.AbstractTask;
 import nars.term.Term;
+import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.impl.tuple.Tuples;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +98,25 @@ abstract public class DurService extends NARService  {
                 return r.toString();
             }
         };
+    }
+
+    /** creates a duration-cached float range that is automatically destroyed when its parent context is */
+    public static FloatRange cache(FloatSupplier o, float min, float max, DurService parent, @Deprecated NAR nar) {
+        Pair<FloatRange, Off> p = cache(o, min, max, 1, nar);
+        parent.on(p.getTwo());
+        return p.getOne();
+    }
+
+    public static Pair<FloatRange, Off> cache(FloatSupplier o, float min, float max, float durPeriod, NAR n) {
+        assert(min < max);
+        FloatRange r = new FloatRange((min + max) / 2, min, max);
+        DurService d = DurService.on(n, () -> {
+            r.set(
+                Util.clampSafe(o.asFloat(), min, max)
+            );
+        });
+        d.durs(durPeriod);
+        return Tuples.pair(r, d);
     }
 
     /** set period (in durations) */

@@ -47,13 +47,13 @@ public class WidgetTest {
             ,
             "Dialog", () -> grid(
                         new TextEdit0("xyz").show(),
-                        new FloatSlider("Level", 0, 0.25f, 1),
+                        new FloatSlider(0, 0.25f, 1, "Level"),
                         new ButtonSet(ButtonSet.Mode.One, new CheckBox("X"), new CheckBox("y"), new CheckBox("z"))
                     ),
             "Slider", () -> grid(
                     Splitting.row(
-                            grid(new FloatSlider("solid slider", .25f  /* pause */, 0, 1),
-                                    new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.KnobHoriz)),
+                            grid(new FloatSlider(.25f, 0, 1, "solid slider"   /* pause */),
+                                    new FloatSlider(0.75f, 0, 1, "knob slider").type(SliderModel.KnobHoriz)),
                             0.9f,
                             new FloatSlider(0.33f, 0, 1).type(SliderModel.KnobVert)
                     ),

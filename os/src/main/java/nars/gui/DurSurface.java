@@ -33,6 +33,8 @@ abstract public class DurSurface<S extends Surface> extends AbstractTriggeredSur
         return this;
     }
 
+    public DurService service() { return on; }
+
     public static DurSurface get(Surface x, NAR n, Runnable eachDur) {
         return get(x, n, (nn)->eachDur.run());
     }

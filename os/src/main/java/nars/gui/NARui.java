@@ -20,6 +20,7 @@ import nars.Task;
 import nars.agent.NAgent;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
+import nars.control.DurService;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
@@ -54,6 +55,7 @@ import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.meta.TriggeredSurface;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.meter.ScatterPlot2D;
+import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.slider.FloatGuage;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -561,9 +563,16 @@ public class NARui {
 
     public static Surface taskBufferView(TaskBuffer b, NAR n) {
         Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::volume, 0, 1);
+        DurSurface plotSurface = DurSurface.get(plot, n, plot::update);
         return new Gridding(
-                DurSurface.get(plot, n, plot::update),
-                new MetaFrame(b)
+                plotSurface,
+                new MetaFrame(b),
+                new Gridding(
+                    new FloatRangePort(
+                        DurService.cache(b::volume, 0, 1, 1, n).getOne(),
+                    "volume"
+                    )
+                )
         );
     }
 

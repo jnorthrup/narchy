@@ -15,6 +15,15 @@ public class FloatPort extends TypedPort<Float> implements FloatSupplier {
         super(Float.class);
     }
 
+    @Override
+    public boolean recv(Wire from, Float s) {
+        if (super.recv(from, s)) {
+            curValue.set(s);
+            return true;
+        }
+        return false;
+    }
+
     public boolean out(Float nextValue) {
         if (curValue.getAndSet(nextValue)!=nextValue) {
             return super.out(nextValue);

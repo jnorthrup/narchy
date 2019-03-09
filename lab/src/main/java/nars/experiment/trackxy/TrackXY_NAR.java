@@ -2,6 +2,7 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.learn.pid.MiniPID;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import jcog.test.control.TrackXY;
@@ -23,6 +24,7 @@ import nars.time.clock.RealTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.widget.chip.PIDChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
@@ -215,9 +217,9 @@ public class TrackXY_NAR extends NAgentX {
 
 
         Deriver d = new BatchDeriver(Derivers.nal(n,
-                6, 8
+                //6, 8
                 //"induction.goal.nal"
-                //1, 8
+                1, 8
                 //2, 8
                 , "motivation.nal"
         ), new TaskBuffer.BagTaskBuffer(64, 0.5f)) {
@@ -331,12 +333,13 @@ public class TrackXY_NAR extends NAgentX {
             n.runLater(() -> {
 
                 GraphEdit g = GraphEdit.window(800, 800);
-                g.windoSizeMinRel(0.1f, 0.1f);
+                g.windoSizeMinRel(0.02f, 0.02f);
 
                 g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
                 g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
 
-                g.add(NARui.taskBufferView(d.out, n));
+                g.add(NARui.taskBufferView(d.out, n)).sizeRel(0.25f,0.25f);
+                g.add(new PIDChip(new MiniPID(0.01, 0.01, 0.01))).sizeRel(0.1f,0.1f);
 
                 //window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 //            window.addAt(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);

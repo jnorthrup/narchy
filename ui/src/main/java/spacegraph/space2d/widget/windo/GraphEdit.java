@@ -150,6 +150,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
             w.layout();
         });
     }
+
     public @Nullable Container get(Surface t) {
         return getValue(t);
     }
@@ -288,13 +289,10 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
         super.forEach(each);
     }
 
-
-
     public Iterable<FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire>> edges(Surface s) {
         Node<spacegraph.space2d.Surface, Wire> n = links.node(s);
         return n != null ? n.edges(true, true) : List.of();
     }
-
 
     @Override
     public Surface finger(Finger finger) {
@@ -308,19 +306,12 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
             doubleClicking.reset();
         }
 
-
-//        if (finger.tryFingering(jointDrag))
-//            return this;
-
-
-        return s != null ? s : null;
-
+        return s;
     }
 
     protected void doubleClick(v2 pos) {
-        float h = 100;
-        float w = 100;
-        Container z = add(
+
+        Windo z = add(
                 new WizardFrame(new ProtoWidget()) {
                     @Override
                     protected void become(Surface next) {
@@ -335,7 +326,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
                     }
                 });
-        z.pos(RectFloat.XYWH(pos.x, pos.y, w, h));
+        z.pos(RectFloat.XYWH(pos.x, pos.y, 0.1f*w(), 0.1f*h()));
         z.root().zoomNext(z);
     }
 
@@ -362,14 +353,6 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
 
     /**
-     * returns the grip window
-     */
-    private Link link(Wire w) {
-        return physics.link(w);
-    }
-
-
-    /**
      * undirected link
      */
     @Nullable
@@ -378,22 +361,13 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
         Surface aa = wire.a, bb = wire.b;
 
         synchronized (links) {
-
-            NodeGraph.MutableNode<Surface, Wire> A = links.addNode(aa);
-            NodeGraph.MutableNode<Surface, Wire> B = links.addNode(bb);
-            if (!links.addEdge(A, wire, B)) {
-                //already exists
-                return null;
-            }
-
+            if (!links.addEdge(links.addNode(aa), wire, links.addNode(bb)))
+                return null; //already exists
         }
 
-        physics.invokeLater(()->
-            link(wire)
-        );
+        physics.invokeLater(() -> physics.link(wire));
 
         return wire;
-
     }
 
     //protected Wire removeWire(Surface source, Surface target) {

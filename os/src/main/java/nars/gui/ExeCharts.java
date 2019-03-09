@@ -14,7 +14,6 @@ import nars.control.MetaGoal;
 import nars.exe.NARLoop;
 import nars.exe.UniExec;
 import nars.exe.UniExec.TimedLink;
-import nars.task.util.TaskBuffer;
 import nars.time.clock.RealTime;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
@@ -28,7 +27,6 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.EnumSwitch;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.LoopPanel;
-import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatSlider;
@@ -60,7 +58,7 @@ public class ExeCharts {
                 ),
                 s, Draw::colorBipolar);
 
-        return Splitting.column(DurSurface.get(bmp, nar), 0.05f, new FloatSlider("Display Gain", gain));
+        return Splitting.column(DurSurface.get(bmp, nar), 0.05f, new FloatSlider(gain, "Display Gain"));
     }
 
     public static Surface metaGoalControls(NAR n) {
@@ -273,7 +271,7 @@ public class ExeCharts {
                 add(
                         new IntSlider("Dur(ms)", durMS)
                                 .on(durMS->nar.time.dur(Math.max((int)Math.round(durMS), 1))),
-                        new FloatSlider("Throttle", loop.throttle)
+                        new FloatSlider(loop.throttle, "Throttle")
                 );
             } else {
 

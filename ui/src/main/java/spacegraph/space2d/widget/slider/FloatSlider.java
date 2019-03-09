@@ -32,16 +32,16 @@ public class FloatSlider extends Widget {
         this(new FloatRange(v, min, max));
     }
 
-    public FloatSlider(String label, float v, float min, float max) {
+    public FloatSlider(float v, float min, float max, String label) {
         this(v, min, max);
         this.labelText = label;
     }
 
-    public FloatSlider(String label, FloatRange f) {
+    public FloatSlider(FloatRange f, String label) {
         this(f);
         this.labelText = label;
     }
-    public FloatSlider(String label, FloatSliderModel f) {
+    public FloatSlider(FloatSliderModel f, String label) {
         this(f);
         this.labelText = label;
     }

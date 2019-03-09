@@ -19,7 +19,7 @@ import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.EnumSwitch;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -102,17 +102,28 @@ public class ObjectSurface<X> extends MutableUnitContainer {
     }
 
     private void initDefaults() {
-        builder.on(FloatRange.class, (x,relation)-> new MySlider((FloatRange) x, objLabel(x,relation)));
-        builder.on(Runnable.class, (x,relation)-> new PushButton(objLabel(x, relation), (Runnable) x));
-        builder.on(AtomicBoolean.class, (x,relation) -> new MyAtomicBooleanCheckBox(objLabel(x,relation), (AtomicBoolean) x));
+        builder.on(FloatRange.class, (FloatRange x, Object relation)->
+            //new LabeledPane(
+                new FloatRangePort(x, objLabel(x,relation))
+                //{
+                    //public String text() {
+                        //return k + '=' + super.text();
+                    //}
+                //}
+                //new MySlider((FloatRange) x, objLabel(x,relation))
+            //)
+        );
+        builder.on(IntRange.class,  (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
 
-        builder.on(MutableEnum.class, (x, relation) -> EnumSwitch.newSwitch((MutableEnum) x, relationLabel(relation)));
-        builder.on(IntRange.class,  (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider((IntRange) x, relationLabel(relation)) : null);
+        builder.on(Runnable.class, (x,relation)-> new PushButton(objLabel(x, relation), x));
+        builder.on(AtomicBoolean.class, (x,relation) -> new MyAtomicBooleanCheckBox(objLabel(x,relation), x));
 
-        builder.on(String.class, (x, relation) -> new VectorLabel((String)x)); //TODO support multi-line word wrap etc
+        builder.on(MutableEnum.class, (x, relation) -> EnumSwitch.newSwitch(x, relationLabel(relation)));
+
+        builder.on(String.class, (x, relation) -> new VectorLabel(x)); //TODO support multi-line word wrap etc
 
         builder.on(Collection.class, (x, relation) -> {
-            Collection cx = (Collection) x;
+            Collection cx = x;
             if (cx.isEmpty())
                 return null;
 
@@ -247,20 +258,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
     }
 
 
-    private static class MySlider extends FloatSlider {
-        private final String k;
 
-        MySlider(FloatRange p, String k) {
-            super(p);
-            this.k = k;
-        }
-
-
-        @Override
-        public String text() {
-            return k + '=' + super.text();
-        }
-    }
 
     private static class MyIntSlider extends IntSlider {
         private final String k;
