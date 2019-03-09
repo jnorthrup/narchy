@@ -26,6 +26,10 @@ public final class PreciseTruth extends DiscreteTruth {
         return byFreqConfEvi(freq, conf, c2wSafe(conf));
     }
 
+    public static PreciseTruth byEvi(double freq, double evi) {
+        return byEvi((float)freq, (float)evi);
+    }
+
     public static PreciseTruth byEvi(float freq, float evi) {
         return byFreqConfEvi(freq, w2cSafe(evi), evi);
     }

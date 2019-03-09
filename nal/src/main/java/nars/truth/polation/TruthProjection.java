@@ -37,7 +37,7 @@ import static nars.time.Tense.ETERNAL;
  */
 @Paper
 @Skill({"Interpolation", "Extrapolation"})
-abstract public class Projection extends FasterList<Projection.TaskComponent> {
+abstract public class TruthProjection extends FasterList<TruthProjection.TaskComponent> {
 
     public long start, end;
     int dur;
@@ -48,7 +48,7 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
      */
     public Term term = null;
 
-    Projection(long start, long end, int dur) {
+    TruthProjection(long start, long end, int dur) {
         super(0);
         this.start = start;
         this.end = end;
@@ -90,13 +90,13 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
     }
 
 
-//    @Nullable
-//    final TaskComponent update(int i, float eviMin) {
-//        return update(get(i), eviMin);
-//    }
+    @Nullable
+    protected final TaskComponent update(int i) {
+        return update(get(i), Float.MIN_NORMAL);
+    }
 
     @Nullable
-    private TaskComponent update(TaskComponent tc, float eviMin) {
+    protected TaskComponent update(TaskComponent tc, float eviMin) {
         if (!tc.valid()) {
             float e = tc.evi = evi(tc.task);
             if (e!=e || e <= eviMin)
@@ -117,38 +117,35 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         }
     }
 
-    public final Projection filtered() {
-        filterCyclic(false);
-        return this;
-    }
-
-    @Nullable
-    public final MetalLongSet filterCyclic(boolean provideStamp) {
-        return filterCyclic(provideStamp, 1);
-    }
 
     /**
      * removes the weakest components sharing overlapping evidence with stronger ones.
      * should be called after all entries are added
      */
     @Nullable
-    public final MetalLongSet filterCyclic(boolean provideStamp, int minResults) {
+    public final MetalLongSet commit(boolean provideStamp, int minResults) {
 
         int s;
         if ((s = size()) < minResults) return null;
-        else if (s == 1) return only(provideStamp);
 
-        validate();
+        refocus();
+        update();
+        cull();
 
         if ((s = size()) < minResults) return null;
         else if (s == 1) {
             return only(provideStamp);
         } else {
             MetalLongSet e = filterCyclicN(minResults);
-            if (size()!=s)
-                refocus();
             return provideStamp ? e : null;
         }
+    }
+
+    private void update() {
+        int s = size();
+        for (int i = 0; i < s; i++)
+            update(i);
+        sortByEvidence();
     }
 
     private MetalLongSet filterCyclicN(int minComponents) {
@@ -159,18 +156,22 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
 
         MetalLongSet e = null;
         do {
+
             if (e == null) {
-                e = new MetalLongSet(Param.STAMP_CAPACITY);
+                e = new MetalLongSet(Param.STAMP_CAPACITY); //first iteration
             } else {
                 e.clear();
-                refocus();
+                refocus(); //2nd iteration, or after
             }
 
-            sortByEvidence();
+            update();
 
             int weakestConflict = Integer.MIN_VALUE, strongestConflict = Integer.MAX_VALUE;
             for (int i = ss - 1; i >= 0; i--) {
-                Task ii = get(i).task;
+                TaskComponent c = get(i);
+                if (!c.valid())
+                    continue;
+                Task ii = c.task;
                 long[] iis = ii.stamp();
                 if (i < ss - 1) {
                     if (Stamp.overlapsAny(e, iis)) {
@@ -259,18 +260,27 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         double e = 0;
         int n = size();
         for (int i = 0; i < n; i++) {
-            if (i!=task)
-                e += get(i).evi;
+            if (i!=task) {
+                TaskComponent c = get(i);
+                float ce = c.evi;
+                if (ce==ce)
+                    e += ce;
+            }
         }
         return e;
     }
 
     @Nullable
     private MetalLongSet only(boolean provideStamp) {
+        assert(valid(0));
         return provideStamp ? Stamp.toMutableSet(get(0).task) : null;
     }
 
-    public final Projection add(Tasked... tasks) {
+    public final boolean valid(int i) {
+        return get(i).valid();
+    }
+
+    public final TruthProjection add(Tasked... tasks) {
         ensureCapacity(tasks.length);
         for (Tasked t : tasks) {
             add(t); //if (t != null)
@@ -278,17 +288,17 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         return this;
     }
 
-    private Projection add(Iterable<? extends Tasked> tasks) {
+    private TruthProjection add(Iterable<? extends Tasked> tasks) {
         tasks.forEach(this::add);
         return this;
     }
 
-    public final Projection add(Collection<? extends Tasked> tasks) {
+    public final TruthProjection add(Collection<? extends Tasked> tasks) {
         ensureCapacity(tasks.size());
         return add((Iterable) tasks);
     }
 
-    public final Projection add(Tasked tt) {
+    public final TruthProjection add(Tasked tt) {
         add(tt.task());
         return this;
     }
@@ -413,7 +423,7 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         if (size() > 1) {
             se = Tense.union(Iterables.transform(this, (TaskComponent x) -> x.task));
         } else {
-            Projection.TaskComponent only = getFirst();
+            TruthProjection.TaskComponent only = getFirst();
             se = new long[] { only.task.start(), only.task.end() };
         }
 
@@ -426,7 +436,7 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
             }
         }
         if (se[0]!=start || se[1]!=end) {
-            invalidateEvi();
+            invalidate();
             start = se[0];
             end = se[1];
             return true;
@@ -434,15 +444,7 @@ abstract public class Projection extends FasterList<Projection.TaskComponent> {
         return false;
     }
 
-    @Deprecated protected void validate() {
-        cull();
-        refocus();
-        cull();
-    }
-
-
-
-    private void invalidateEvi() {
+    private void invalidate() {
         forEach(TaskComponent::invalidate);
     }
 

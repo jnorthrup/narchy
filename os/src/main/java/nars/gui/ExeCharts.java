@@ -14,6 +14,7 @@ import nars.control.MetaGoal;
 import nars.exe.NARLoop;
 import nars.exe.UniExec;
 import nars.exe.UniExec.TimedLink;
+import nars.task.util.TaskBuffer;
 import nars.time.clock.RealTime;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
@@ -114,11 +115,6 @@ public class ExeCharts {
                 metaGoalPlot(n),
                 metaGoalControls(n)
         );
-    }
-
-    public static Surface taskBufferPanel(NAR n) {
-        Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", n.input::volume, 0, 1);
-        return DurSurface.get(new Gridding(new ObjectSurface<>(n.input), plot), n, plot::update);
     }
 
     static class CausableWidget extends Widget {

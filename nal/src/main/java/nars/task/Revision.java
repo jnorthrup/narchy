@@ -10,7 +10,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import nars.truth.polation.Projection;
+import nars.truth.polation.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +54,7 @@ public enum Revision {;
      * also cause merge is deferred in the same way
      * @return
      */
-    public static <T extends TaskRegion> Pair<Task, Projection> merge(NAR nar, boolean dither, T... tasks) {
+    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAR nar, boolean dither, T... tasks) {
 
 
         assert (tasks.length > 1);
@@ -71,9 +71,9 @@ public enum Revision {;
         if (u == null)
             return null;
 
-        Projection T = nar.projection(u[0], u[1], 0).add(tasks);
+        TruthProjection T = nar.projection(u[0], u[1], 0).add(tasks);
 
-        MetalLongSet stamp = T.filterCyclic(true, 2);
+        MetalLongSet stamp = T.commit(true, 2);
         if (stamp == null)
             return null;
 

@@ -391,7 +391,6 @@ abstract public class NAgentX extends NAgent {
         n.confMin.set(0.01f);
         n.termVolumeMax.set(28);
 
-        n.input.capacity.set(512);
 
         ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
@@ -449,14 +448,18 @@ abstract public class NAgentX extends NAgent {
 //        bd.tasklinksPerIteration.set(8);
 
 
+        TaskBuffer.BagTaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 0.5f);
 
         BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 6, 6,
-                "motivation.nal"));
+                "motivation.nal"), injection);
         bd1.timing = new ActionTiming(n);
 
         BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8
-                ,"relation_introduction.nal", "motivation.nal"
-        ));
+                ,"relation_introduction.nal", "motivation.nal", "nal4.sect.nal"
+        ), injection);
+
+        inputInjectionPID(injection, n);
+
         //bd2.timing = new ActionTiming(n);
 //        bd.tasklinksPerIteration.set(8);
         //bd.timing = bd.timing; //default
@@ -480,7 +483,7 @@ abstract public class NAgentX extends NAgent {
 
         window(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
 
-        inputInjectionPID(n);
+
 
 //        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
 //                t->!t.isInput(),
@@ -536,18 +539,19 @@ abstract public class NAgentX extends NAgent {
     static void inputInjectionQ(NAR n) {
         //TODO
     }
-    static void inputInjectionPID(NAR n) {
+    /** https://www.controlglobal.com/blogs/controltalkblog/how-to-avoid-a-common-pid-tuning-mistake-tips/ */
+    static void inputInjectionPID(TaskBuffer b, NAR n) {
         //perception injection control
         MiniPID pid = new MiniPID(0.01, 0.01, 0.002);
         pid.outLimit(-1, +1);
         pid.setSetpointRange(+1);
         //pid.setOutRampRate(0.5);
 
-        FloatRange valve = ((TaskBuffer.BagTaskBuffer) n.input).valve;
+        FloatRange valve = ((TaskBuffer.BagTaskBuffer) b).valve;
         //DurService.on(n,
         n.onCycle(
         ()->{
-            double vol = n.input.volume();
+            double vol = b.volume();
             double nextV = pid.out(1-vol,0.5);
 //                System.out.println(nextV);
             valve.set(Util.unitize(nextV ));

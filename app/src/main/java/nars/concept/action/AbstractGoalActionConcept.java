@@ -20,7 +20,7 @@ import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.polation.Projection;
+import nars.truth.polation.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -175,9 +175,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
                     //TODO my truthpolation .stamp()'s and .cause()'s for clues
 
-                    Projection organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
+                    TruthProjection organic = a.truthpolation(); //Math.round(actionWindowDexDurs *dur));
                     if (organic != null) {
-                        @Nullable Truth maybeNextActionDex = organic.filtered().truth();
+                        @Nullable Truth maybeNextActionDex = organic.truth();
                         if (next == null)
                             next = maybeNextActionDex;
                         else
@@ -271,9 +271,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
             @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
             try (Answer a = Answer.
                     relevance(true, 2, s, e, term, null, n).match(curiTable).dur(curiDur)) {
-                Projection curi = a.truthpolation(); //Math.round(actionWindowCuriDurs * dur));
+                TruthProjection curi = a.truthpolation(); //Math.round(actionWindowCuriDurs * dur));
                 if (curi != null) {
-                    actionCuri = curi.filtered().truth();
+                    actionCuri = curi.truth();
                 } else
                     actionCuri = null;
             }

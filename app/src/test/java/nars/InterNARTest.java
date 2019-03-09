@@ -1,6 +1,7 @@
 package nars;
 
 import jcog.Util;
+import nars.task.util.TaskBuffer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -50,8 +51,8 @@ public class InterNARTest {
         int preCycles = 1;
         int postCycles = 64;
 
-        NAR a = NARS.realtime(NAR_FPS).withNAL(1, 1).get().named("a");
-        NAR b = NARS.realtime(NAR_FPS).withNAL(1, 1).get().named("b");
+        NAR a = NARS.realtime(NAR_FPS).withNAL(new TaskBuffer.MapTaskBuffer(32), 1, 1).get().named("a");
+        NAR b = NARS.realtime(NAR_FPS).withNAL(new TaskBuffer.MapTaskBuffer(32), 1, 1).get().named("b");
 
         a.termVolumeMax.set(volMax);
         b.termVolumeMax.set(volMax);

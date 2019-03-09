@@ -384,8 +384,8 @@ public class Derivation extends PreDerivation {
                 taskPri :
                 Param.DerivationPri.apply(taskPri, pri(belief));
 
-        if (Param.INPUT_BUFFER_PRI_BACKPRESSURE && Math.max(priDouble, priSingle) < nar.input.priMin() /* TODO cache */)
-            return false;
+//        if (Param.INPUT_BUFFER_PRI_BACKPRESSURE && Math.max(priDouble, priSingle) < nar.input.priMin() /* TODO cache */)
+//            return false;
 
         this.priSingle = priSingle;
         this.priDouble = priDouble;
@@ -624,9 +624,8 @@ public class Derivation extends PreDerivation {
     }
 
     public final Task add(Task t) {
-        return nar.input.add(t);
+        return deriver.output.add(t);
     }
-
 
     public boolean concTruthEviMul(float ratio, boolean eternalize) {
         float e = ratio * concTruth.evi();

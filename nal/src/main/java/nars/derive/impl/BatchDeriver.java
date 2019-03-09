@@ -2,20 +2,18 @@ package nars.derive.impl;
 
 import jcog.math.IntRange;
 import jcog.pri.bag.Bag;
-import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.Premise;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.premise.PremiseRuleProto;
 import nars.index.concept.AbstractConceptIndex;
 import nars.link.TaskLink;
+import nars.task.util.TaskBuffer;
 import nars.term.Term;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 
@@ -27,13 +25,14 @@ public class BatchDeriver extends Deriver {
 
 
     public BatchDeriver(PremiseDeriverRuleSet rules) {
-        this(rules, rules.nar);
+        this(rules, new TaskBuffer.DirectTaskBuffer(rules.nar.exe));
     }
 
-    public BatchDeriver(Set<PremiseRuleProto> rules, NAR nar) {
-        super(rules, nar);
+    public BatchDeriver(PremiseDeriverRuleSet rules, TaskBuffer out) {
+        super(rules, rules.nar);
+        this.nar = rules.nar;
+        output(rules.nar.exe, out, true);
     }
-
 
     @Override
     protected final void derive(Derivation d, BooleanSupplier kontinue) {

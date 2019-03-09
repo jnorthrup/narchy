@@ -3,6 +3,7 @@ package nars.term.index;
 import nars.*;
 import nars.index.concept.*;
 import nars.subterm.Subterms;
+import nars.task.util.TaskBuffer;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
@@ -22,7 +23,7 @@ class ConceptIndexTest {
 
     public static void testIndex(@NotNull ConceptIndex i) throws Narsese.NarseseException {
 
-        NAR t = new NARS().index(i).withNAL(1,1).get();
+        NAR t = new NARS().index(i).withNAL(new TaskBuffer.MapTaskBuffer(64),1,1).get();
 
         //testTermSharing(i);
         testTaskConceptSharing(t);

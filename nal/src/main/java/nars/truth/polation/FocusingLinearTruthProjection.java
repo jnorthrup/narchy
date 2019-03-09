@@ -7,7 +7,7 @@ import nars.Task;
  * 'focusing' or 'narrowing' the duration if components contribute
  * truth within or nearer than it.
  */
-public class FocusingLinearTruthPolation extends LinearTruthPolation {
+public class FocusingLinearTruthProjection extends LinearTruthProjection {
 
 
     private final static int minDur =
@@ -15,7 +15,7 @@ public class FocusingLinearTruthPolation extends LinearTruthPolation {
             //1;
 
 
-    public FocusingLinearTruthPolation(long start, long end, int dur) {
+    public FocusingLinearTruthProjection(long start, long end, int dur) {
         super(start, end, dur);
     }
 

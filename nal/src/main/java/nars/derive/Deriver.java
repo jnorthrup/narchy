@@ -1,23 +1,29 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.event.Offs;
 import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.DerivePri;
 import nars.control.Cause;
+import nars.control.DurService;
+import nars.control.channel.ConsumerX;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.exe.Causable;
+import nars.task.ITask;
+import nars.task.util.TaskBuffer;
 import nars.term.Term;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -50,6 +56,9 @@ abstract public class Deriver extends Causable {
 //    protected final Consumer<Predicate<Activate>> source;
 
     public DerivePri pri;
+    public TaskBuffer output;
+    private Offs outputOffs;
+
 //    public final IntRange tasklinkSpread =  new IntRange(Param.TaskLinkSpreadDefault, 1, 32);
 
 
@@ -143,6 +152,31 @@ abstract public class Deriver extends Causable {
     public final short[] what(PreDerivation d) {
         return rules.planner.apply(d);
     }
+
+    public synchronized Deriver output(ConsumerX<ITask> target, TaskBuffer out, boolean cycleOrDur) {
+        TaskBuffer prev = this.output;
+        if (prev!=null) {
+            if (prev == out) return this; //same instance
+        }
+        if (this.outputOffs!=null)
+            this.outputOffs.clear();
+
+        this.output = out;
+
+        if (out!=null && out.synchronous()) {
+            Consumer<NAR> p = nn -> out.commit(nn.time(), target);
+            this.outputOffs = new Offs((cycleOrDur) ?
+                    nar.onCycle(p)
+                    :
+                    DurService.on(nar, p), nar.eventClear.on(this::clear)
+            );
+        }
+
+        return this;
+    }
+
+
+
 }
 
 

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class NAL7ImplProjectionTest {
+class NAL7ImplTruthProjectionTest {
 
     @Test
     void test1() {

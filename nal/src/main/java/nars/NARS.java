@@ -14,6 +14,7 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.ConceptIndex;
 import nars.index.concept.SimpleConceptIndex;
 import nars.op.stm.STMLinkage;
+import nars.task.util.TaskBuffer;
 import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
@@ -89,10 +90,10 @@ public class NARS {
     /**
      * adds a deriver with the standard rules for the given range (inclusive) of NAL levels
      */
-    @Deprecated public NARS withNAL(int minLevel, int maxLevel) {
+    @Deprecated public NARS withNAL(TaskBuffer buffer, int minLevel, int maxLevel) {
         return then((n)->
-                new BatchDeriver(Derivers.nal(n, minLevel, maxLevel))
-        );
+                new BatchDeriver(Derivers.nal(n, minLevel, maxLevel), buffer)
+            );
     }
     /**
      * generic defaults
@@ -110,7 +111,7 @@ public class NARS {
             ;
 
             if (nal > 0)
-                withNAL(1, nal);
+                withNAL(new TaskBuffer.BagTaskBuffer(64, 0.5f), 1, nal);
 
             if (nal >= 7) {
                 then((nn)->new STMLinkage(nn, 1));
@@ -119,8 +120,6 @@ public class NARS {
             then((n)->{
 
                 n.termVolumeMax.set(26);
-
-                n.input.capacity.set(64);
 
                 ((AbstractConceptIndex)n.concepts).activeCapacity.set(128);
                 ((AbstractConceptIndex)n.concepts).activationRate.set(1f);

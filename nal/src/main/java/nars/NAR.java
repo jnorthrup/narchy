@@ -40,7 +40,6 @@ import nars.table.BeliefTable;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.util.TaskBuffer;
 import nars.task.util.TaskException;
 import nars.task.util.TaskTopic;
 import nars.term.Functor;
@@ -134,9 +133,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public final Evaluator evaluator = new Evaluator(this::axioms);
 
-    public final TaskBuffer input;
-
-
     public NAR(ConceptIndex concepts, Exec exe, Attention attn, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
 
         this.random = rng;
@@ -164,12 +160,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         on(this.attn);
 
 
-        input =
-                //new TaskBuffer.DirectTaskBuffer(exe::input);
-                new TaskBuffer.BagTaskBuffer(512, 0.5f);
-        //new DerivedTasks.DerivedTasksMap(4096);
-        //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
-        onCycle(n -> input.commit(n.time(), exe));
 
         this.loop = new NARLoop(this);
         exe.start(this);
@@ -299,9 +289,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             stop();
 
             clear();
-
-            input.clear();
-
             time.clear(this);
             time.reset();
 

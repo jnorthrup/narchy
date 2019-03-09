@@ -39,7 +39,7 @@ class RuleInductionTest {
                 "B, A, --is(A,\"==>\"),--is(B,\"==>\"), neq(A,B) |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Sequence)"
 
 
-        ), n);
+        ));
         new STMLinkage(n, 1);
 
         d.tasklinksPerIteration.set(2);

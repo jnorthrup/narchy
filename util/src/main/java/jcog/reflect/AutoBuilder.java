@@ -1,7 +1,10 @@
 package jcog.reflect;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
+import jcog.TODO;
 import jcog.data.list.FasterList;
+import jcog.math.MutableInteger;
 import jcog.util.Reflect;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -21,20 +24,64 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class AutoBuilder<X, Y> {
 
+    /** essentially a decomposition of a subject into its components,
+     *  include a descriptive relations to each */
+    public interface Deduce<R,X> extends Iterable<Pair<R,X>> {
+
+    }
+
+    public static class DeduceFields<X,R,Y> implements Deduce<R,Y> {
+
+        private final X source;
+
+        public DeduceFields(X source) {
+            this.source = source;
+        }
+
+        @Override
+        public Iterator<Pair<R, Y>> iterator() {
+            throw new TODO();
+        }
+    }
+
+    /** for Iterable's incl. Collections */
+    public static class DeduceIterable<X> implements Deduce<MutableInteger,X> {
+
+        private final Iterable<X> i;
+
+        public DeduceIterable(Iterable<X> i) {
+            this.i = i;
+        }
+        @Override
+        public Iterator<Pair<MutableInteger, X>> iterator() {
+            throw new TODO();
+        }
+    }
+
+    public static class DeduceMap<X,Y> implements Deduce<X,Y> {
+
+        private final Map<X, Y> m;
+
+        public DeduceMap(Map<X,Y> m) {
+            this.m = m;
+        }
+
+        @Override
+        public Iterator<Pair<X, Y>> iterator() {
+            return Iterators.transform(m.entrySet().iterator(), (x) -> pair(x.getKey(), x.getValue()));
+        }
+    }
+
+    /** inverse of deduce, somehow */
+    public interface Induce {
+        //TODO
+    }
+
     public final Map<Class, BiFunction<X, Object /* relation */, Y>> onClass = new ConcurrentHashMap<>();
     public final Map<Predicate, Function<X, Y>> onCondition = new ConcurrentHashMap<>();
     final AutoBuilding<X, Y> building;
     private final int maxDepth;
     private final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
-
-//    private List<Pair<X, Y>> collectElements(Iterable<?> x, int depth) {
-//        List<Pair<X,Iterable<Y>>> m = new FasterList();
-//        for (Object o : x) {
-//            collect((X)o, m, depth);
-//        }
-//        return m;
-//    }
-
 
     public AutoBuilder(int maxDepth, AutoBuilding<X, Y> building) {
         this.building = building;
@@ -165,6 +212,7 @@ public class AutoBuilder<X, Y> {
         return this;
     }
 
+    /** TODO use Deduce interface */
     @FunctionalInterface
     public interface AutoBuilding<X, Y> {
         Y build(List<Pair<X, Iterable<Y>>> target, @Nullable X obj, @Nullable Object context);

@@ -6,18 +6,14 @@ import jcog.data.list.FasterList;
 import jcog.math.v2;
 import nars.$;
 import nars.NAR;
-import nars.NARS;
 import nars.Task;
 import nars.control.NARService;
-import nars.gui.graph.TasksView;
-import nars.op.stm.STMLinkage;
 import nars.task.NALTask;
 import nars.time.clock.RealTime;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import spacegraph.space2d.container.graph.Timeline2D;
 
 import java.io.IOException;
 import java.net.URL;
@@ -26,7 +22,6 @@ import java.util.List;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static spacegraph.SpaceGraph.window;
 
 /**
  * weather and meteorlogical model
@@ -164,30 +159,30 @@ public class Weather extends NARService {
     }
 
 
-    public static void main(String[] args) {
-        NAR n = NARS.realtime(1f).withNAL(1,8).get();
-
-//        Param.DEBUG = true;
-
-        new STMLinkage(n, 1);
-        //new Arithmeticize.ArithmeticIntroduction(n, 32);
-
-        Weather w = new Weather(n, -75, 38);
-        w.events.forEach(System.out::println);
-
-        n.run(4);
-
-        List<Task> tasks = w.events;
-        Iterable<Task> allTasks = ()->n.tasks().iterator();
-
-        allTasks.forEach(t -> {
-            System.out.println(t.proof());
-        });
-
-        Timeline2D t = TasksView.timeline(allTasks).view(n.time()-3600*1000,n.time()+3600*1000);
-
-
-        window(t.withControls(), 800, 800);
-
-    }
+//    public static void main(String[] args) {
+//        NAR n = NARS.realtime(1f).withNAL(1,8).get();
+//
+////        Param.DEBUG = true;
+//
+//        new STMLinkage(n, 1);
+//        //new Arithmeticize.ArithmeticIntroduction(n, 32);
+//
+//        Weather w = new Weather(n, -75, 38);
+//        w.events.forEach(System.out::println);
+//
+//        n.run(4);
+//
+//        List<Task> tasks = w.events;
+//        Iterable<Task> allTasks = ()->n.tasks().iterator();
+//
+//        allTasks.forEach(t -> {
+//            System.out.println(t.proof());
+//        });
+//
+//        Timeline2D t = TasksView.timeline(allTasks).view(n.time()-3600*1000,n.time()+3600*1000);
+//
+//
+//        window(t.withControls(), 800, 800);
+//
+//    }
 }

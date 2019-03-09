@@ -5,7 +5,7 @@
 
 
 #  TOOLCHAIN=clang
-CXX="/usr/bin/g++-9" CC="/usr/bin/gcc-9" BUILD_CC="/usr/bin/gcc-9" BUILD_CXX="/usr/bin/g++-9" JDK="/home/me/jdk-12" ./configure \
+CXX="/usr/bin/g++" CC="/usr/bin/gcc" BUILD_CC="/usr/bin/gcc" BUILD_CXX="/usr/bin/g++" JDK="/home/me/jdk12" ./configure \
     --with-toolchain-type="gcc" \
 	--with-boot-jdk="/home/me/jdk-12" \
 	--disable-hotspot-gtest \
@@ -17,4 +17,4 @@ CXX="/usr/bin/g++-9" CC="/usr/bin/gcc-9" BUILD_CC="/usr/bin/gcc-9" BUILD_CXX="/u
     --enable-full-docs=no \
     --with-native-debug-symbols=none
     
-time make jdk
+time remake jdk

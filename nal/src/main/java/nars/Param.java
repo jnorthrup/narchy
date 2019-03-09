@@ -12,8 +12,8 @@ import nars.term.atom.Atom;
 import nars.term.util.builder.MemoizingTermBuilder;
 import nars.term.util.transform.Conceptualization;
 import nars.term.util.transform.Retemporalize;
-import nars.truth.polation.LinearTruthPolation;
-import nars.truth.polation.Projection;
+import nars.truth.polation.LinearTruthProjection;
+import nars.truth.polation.TruthProjection;
 
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
@@ -252,8 +252,8 @@ public abstract class Param {
     /**
      * provides an instance of the default truthpolation implementation
      */
-    public Projection projection(long start, long end, int dur) {
-        return new LinearTruthPolation(start, end, dur);
+    public TruthProjection projection(long start, long end, int dur) {
+        return new LinearTruthProjection(start, end, dur);
         //return new FocusingLinearTruthPolation(start, end, dur);
     }
 

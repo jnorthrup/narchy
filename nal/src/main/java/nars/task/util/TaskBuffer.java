@@ -36,6 +36,11 @@ import static nars.Op.*;
 abstract public class TaskBuffer implements Consumer<ITask> {
 
 
+    /** whether the implementation needs periodic updating  */
+    public boolean synchronous() {
+        return false;
+    }
+
     /**
      * returns the input task, or the existing task if a pending duplicate was present
      */
@@ -201,6 +206,11 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                 ii.remove();
             }
         }
+
+        @Override
+        public boolean synchronous() {
+            return true;
+        }
     }
 
 
@@ -265,6 +275,11 @@ abstract public class TaskBuffer implements Consumer<ITask> {
             return tasks.size();
         }
 
+        @Override
+        public boolean synchronous() {
+            return true;
+        }
+
         //            @Override
 //            protected boolean fastMergeMaxReject() {
 //                return true;
@@ -308,8 +323,6 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         private transient long prev = Long.MIN_VALUE;
 
-
-
         /**
          * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
          * input may happen concurrently (draining the bag) while inputs are inserted from another thread.
@@ -343,8 +356,6 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                 prev = now;
 
                 tasks.setCapacity(capacity.intValue());
-
-
                 tasks.commit(null);
 
                 int s = tasks.size();
@@ -353,61 +364,49 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
                 int n = Math.min(s, batchSize(dt));
                 if (n > 0) {
-
-
                     int c = target.concurrency();
                     if (c <= 1) {
                         tasks.pop(null, n, target::input);
                     } else {
-                        //concurrency > 1
-                        int nEach = (int) Math.ceil(((float) n) / (c - 1));
-                        for (int i = 0; i < c && n > 0; i++) {
-
-                            ((Exec) target)/*HACK*/.input((nn) -> {
-
-                                FasterList batch = BagTaskBuffer.batch.get();
-                                Bag<ITask, ITask> t = tasks;
-
-                                if  (t instanceof BufferedBag)
-                                    t = ((BufferedBag)t).bag;
-
-                                if (t instanceof ArrayBag) {
-                                    ((ArrayBag) t).popBatch(nEach, batch::add);
-                                } else {
-                                    t.pop(null, nEach, batch::add); //per item.. may be slow
-                                }
-
-                                if (!batch.isEmpty()) {
-                                    if (batch.size() > 2)
-                                        batch.sortThis(sloppySorter);
-                                    ITask.run(batch, nn);
-                                    batch.clear();
-                                }
-                            });
-                            n -= nEach;
-                        }
-
-
-//                            int m = batch.size();
-//                            switch (m) {
-//                                case 0:
-//                                    break;
-//                                case 1:
-//                                    target.accept(batch.get(0));
-//                                    break;
-//                                default:
-//                                    if (m > 2)
-//                                        batch.sortThis(sloppySorter);
-//                                    break;
-//                            }
-
-//                            batch.forEach(target::input);
+                        popChunked((Exec) target, n, c);
                     }
                 }
 
             } finally {
                 busy.set(false);
             }
+
+        }
+
+        public void popChunked(Exec target, int n, int c) {
+            //concurrency > 1
+            int nEach = (int) Math.ceil(((float) n) / (c - 1));
+            for (int i = 0; i < c && n > 0; i++) {
+
+                target/*HACK*/.input((nn) -> {
+
+                    FasterList batch = BagTaskBuffer.batch.get();
+                    Bag<ITask, ITask> t = tasks;
+
+                    if  (t instanceof BufferedBag)
+                        t = ((BufferedBag)t).bag;
+
+                    if (t instanceof ArrayBag) {
+                        ((ArrayBag) t).popBatch(nEach, batch::add);
+                    } else {
+                        t.pop(null, nEach, batch::add); //per item.. may be slow
+                    }
+
+                    if (!batch.isEmpty()) {
+                        if (batch.size() > 2)
+                            batch.sortThis(sloppySorter);
+                        ITask.run(batch, nn);
+                        batch.clear();
+                    }
+                });
+                n -= nEach;
+            }
+
 
         }
 
@@ -430,6 +429,8 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                     v * tasks.capacity()
             ));
         }
+
+
     }
 
 
@@ -490,7 +491,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         @Override
         public void commit(long now, ConsumerX<ITask> target) {
-            //TODO parallelize
+            //TODO parallelize option
 
             int c = Math.max(1, capacity.intValue() / ALL.length);
             for (TaskBuffer x : ALL) {
@@ -498,7 +499,6 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                 x.commit(now, target);
             }
         }
-
 
         @Override
         public int size() {

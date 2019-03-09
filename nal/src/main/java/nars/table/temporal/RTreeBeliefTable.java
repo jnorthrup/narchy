@@ -16,7 +16,7 @@ import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import nars.time.Tense;
-import nars.truth.polation.Projection;
+import nars.truth.polation.TruthProjection;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -346,7 +346,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         float valueEvictWeakest = -taskStrength.floatValueOf(W);
 
         float valueMergeLeaf = NEGATIVE_INFINITY;
-        Pair<Task, Projection> AB;
+        Pair<Task, TruthProjection> AB;
         if (!mergeableLeaf.isEmpty()) {
             Leaf<TaskRegion> ab = mergeableLeaf.get();
             AB = Revision.merge(nar, true,
@@ -354,7 +354,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (AB!=null) {
                 valueMergeLeaf = (float) (
                         +taskStrength.floatValueOf(AB.getOne())
-                        -AB.getTwo().sumOfFloat((Projection.TaskComponent tv)->
+                        -AB.getTwo().sumOfFloat((TruthProjection.TaskComponent tv)->
                                 taskStrength.floatValueOf(tv.task()))
                 );
             }
@@ -365,7 +365,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (valueMergeLeaf > valueEvictWeakest) {
             //merge leaf
             Task m = AB.getOne();
-            Projection merge = AB.getTwo();
+            TruthProjection merge = AB.getTwo();
             TemporalBeliefTable.budget(merge, m);
             merge.forEachTask(treeRW::remove);
             if (treeRW.add(m)) {

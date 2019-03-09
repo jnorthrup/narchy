@@ -9,7 +9,7 @@ import nars.control.CauseMerge;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
-import nars.truth.polation.Projection;
+import nars.truth.polation.TruthProjection;
 
 import java.util.function.Predicate;
 
@@ -42,9 +42,9 @@ public interface TemporalBeliefTable extends BeliefTable {
         });
     }
 
-    static void budget(Projection sources, Task xy) {
+    static void budget(TruthProjection sources, Task xy) {
 
-        Task[] tr = Util.map(Projection.TaskComponent::task, new Task[sources.size()], sources.array());
+        Task[] tr = Util.map(TruthProjection.TaskComponent::task, new Task[sources.size()], sources.array());
 
         ((NALTask)xy).cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), tr));
 

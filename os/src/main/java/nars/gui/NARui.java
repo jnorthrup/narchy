@@ -25,6 +25,7 @@ import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.index.concept.AbstractConceptIndex;
 import nars.op.stm.ConjClustering;
+import nars.task.util.TaskBuffer;
 import nars.term.Termed;
 import nars.truth.Truth;
 import nars.util.MemorySnapshot;
@@ -133,7 +134,7 @@ public class NARui {
 
     public static HashMap<String, Supplier<Surface>> menu(NAR n) {
         Map<String, Supplier<Surface>> m = Map.of(
-                "inp", () -> ExeCharts.taskBufferPanel(n),
+                //"inp", () -> taskBufferPanel(n),
                 //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
                 "nar", () -> new ObjectSurface<>(n),
                 "exe", () -> ExeCharts.exePanel(n),
@@ -556,6 +557,11 @@ public class NARui {
             s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
 
         });
+    }
+
+    public static Surface taskBufferPanel(TaskBuffer b, NAR n) {
+        Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::volume, 0, 1);
+        return DurSurface.get(new Gridding(new ObjectSurface<>(b), plot), n, plot::update);
     }
 
 //    @Deprecated public static void agentOld(NAgent a) {
