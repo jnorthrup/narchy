@@ -656,7 +656,7 @@ public class Occurrify extends TimeGraph {
 
 
                     if (r > 0 && d.concTruth != null) {
-                        //decrease evidence by proportion of time expanded
+                        //HACK decrease evidence by proportion of time expanded
                         float ratio = (float) (((double) d._task.range()) / (1 + o[1] - o[0]));
                         if (!d.concTruthEviMul(ratio, false))
                             return null;

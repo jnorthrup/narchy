@@ -36,10 +36,10 @@ import static nars.Op.*;
 abstract public class TaskBuffer implements Consumer<ITask> {
 
 
-    /** whether the implementation needs periodic updating  */
-    public boolean synchronous() {
-        return false;
-    }
+    /** returns
+     *      true if the implementation will manage async target suppliying,
+     *      false if it needs periodic flushing */
+    abstract public boolean async(ConsumerX<ITask> target);
 
     /**
      * returns the input task, or the existing task if a pending duplicate was present
@@ -108,10 +108,9 @@ abstract public class TaskBuffer implements Consumer<ITask> {
      */
     public static class DirectTaskBuffer extends TaskBuffer {
 
-        private final Consumer<ITask> each;
+        private Consumer<ITask> each = null;
 
-        public DirectTaskBuffer(Consumer<ITask> each) {
-            this.each = each;
+        public DirectTaskBuffer() {
         }
 
         @Override
@@ -121,6 +120,12 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                 return null;
             else
                 return x;
+        }
+
+        @Override
+        public boolean async(ConsumerX<ITask> target) {
+            each = target;
+            return true;
         }
 
         @Override
@@ -167,7 +172,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         public MapTaskBuffer(int initialCapacity) {
             capacity.set(initialCapacity);
-            tasks = new ConcurrentHashMap<>(initialCapacity, 0.99f);
+            tasks = new ConcurrentHashMap<>(initialCapacity, 1f);
         }
 
         @Override
@@ -186,13 +191,13 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public <T extends ITask> T add(T n) {
+        public final <T extends ITask> T add(T n) {
             ITask p = tasks.putIfAbsent(n, n);
             if (p != null) {
                 merge(p, n);
                 return (T) p;
-            }
-            return n;
+            } else
+                return n;
         }
 
         /**
@@ -208,8 +213,8 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public boolean synchronous() {
-            return true;
+        public boolean async(ConsumerX<ITask> target) {
+            return false;
         }
     }
 
@@ -228,8 +233,8 @@ abstract public class TaskBuffer implements Consumer<ITask> {
          */
         public final Bag<ITask, ITask> tasks = new BufferedBag.SimpleBufferedBag<>(
                 new PriArrayBag<ITask>(PriMerge.max,
-                        new HashMap()
-                        //new UnifiedMap()
+                        new HashMap(0, 0.5f)
+                        //new UnifiedMap<>(0, 0.5f)
                 ) {
                     @Override
                     protected float merge(ITask existing, ITask incoming) {
@@ -276,8 +281,8 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public boolean synchronous() {
-            return true;
+        public final boolean async(ConsumerX<ITask> target) {
+            return false;
         }
 
         //            @Override
@@ -448,6 +453,11 @@ abstract public class TaskBuffer implements Consumer<ITask> {
             ALL = new TaskBuffer[]{belief, goal, question, quest};
 
             this.capacity.set(capacity);
+        }
+
+        @Override
+        public boolean async(ConsumerX<ITask> target) {
+            return false;
         }
 
         @Override

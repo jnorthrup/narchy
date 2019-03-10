@@ -7,6 +7,7 @@ public abstract class Agent {
 
     public final int inputs;
     public final int actions;
+    private int lastDecision = -1;
 
     protected Agent(int inputs, int actions) {
         this.inputs = inputs;
@@ -14,14 +15,32 @@ public abstract class Agent {
     }
 
 
+    /** assumes the previous action decided had ideal compliance of the motor system and so no
+     * transformation or reduction or noise etc was experienced.
+     */
+    public final int act(float reward, float[] nextInput) {
+        return act(null, reward, nextInput);
+    }
+
+    public final int act(float[] actionFeedback, float reward, float[] input) {
+        if (actionFeedback == null) {
+            actionFeedback = new float[actions];
+            if (lastDecision > 0)
+                actionFeedback[lastDecision] = +1.0f;
+        }
+        int decided = decide(actionFeedback, reward, input);
+        this.lastDecision = decided;
+        return decided;
+    }
+
     /**
      *
      * @param actionFeedback actions actually acted in previous cycle
      * @param reward reward associated with the previous cycle's actions
-     * @param nextObservation next sensory observation
+     * @param input next sensory observation
      * @return decision of which action to want for the next cycle
      */
-    public abstract int act(float[] actionFeedback, float reward, float[] nextObservation);
+    protected abstract int decide(float[] actionFeedback, float reward, float[] input);
 
 //    /** for reporting action vectors, when implementation supports. otherwise it will be a zero vector except one chosen entry
 //     * by the basic markov process act() method */

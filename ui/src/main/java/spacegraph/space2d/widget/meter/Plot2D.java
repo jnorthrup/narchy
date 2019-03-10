@@ -35,7 +35,7 @@ public class Plot2D extends Widget {
         synchronized (series) {
             if (on != null)
                 on.off();
-            this.on = trigger.apply(this::update);
+            this.on = trigger.apply(this::commit);
         }
         return this;
     }
@@ -249,7 +249,7 @@ public class Plot2D extends Widget {
     private void paintUnit(GL2 gl) {
 
         if (requireUpdate) {
-            update();
+            commit();
             requireUpdate = false;
         }
 
@@ -464,7 +464,7 @@ public class Plot2D extends Widget {
         return (v == v ? ((v - minValue) / range) : (0.5f)) /numLanes + (((float)lane)/numLanes);
     }
 
-    public void update() {
+    public void commit() {
         synchronized (series) {
 
 

@@ -25,11 +25,6 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
         this.forgetRate = forgetRate;
     }
 
-    @Override
-    protected final TaskLink keyInternal(TaskLink c) {
-        return c;
-    }
-
     public void forget(NAR nar) {
 
         commit(nar.attn.forgetting.forget(this, 1f, forgetRate.asFloat()));

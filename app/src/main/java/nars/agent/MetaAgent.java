@@ -7,12 +7,15 @@ import nars.$;
 import nars.NAR;
 import nars.attention.AttNode;
 import nars.concept.action.GoalActionConcept;
+import nars.index.concept.AbstractConceptIndex;
 import nars.term.atom.Atomic;
 
 /** supraself agent metavisor */
 public class MetaAgent {
 
-    static final Atomic curiosity = Atomic.the("curi"), enable = Atomic.the("enable"), duration = Atomic.the("dur");
+    static final Atomic curiosity = Atomic.the("curi"),
+            forget = Atomic.the("forget"),
+            enable = Atomic.the("enable"), duration = Atomic.the("dur");
 
     final AttNode attn;
     private final NAgent agent;
@@ -21,6 +24,7 @@ public class MetaAgent {
     private final GoalActionConcept enableAction;
     private final Reward enableReward;
     private final GoalActionConcept durAction;
+    private final GoalActionConcept forgetAction;
 
     private int disableCountDown = 0;
     private final int disableThreshold = 4;
@@ -52,9 +56,13 @@ public class MetaAgent {
             a.curiosity.rate.set(curiosity(c));
             return c;
         });
-        curiosityAction.resolution(0.05f);
         curiosityAction.attn.reparent(attn);
 
+        forgetAction = a.actionUnipolar($.inh(a.id,forget), (c)->{
+            ((AbstractConceptIndex)a.nar().concepts).forgetRate.set(Util.lerp(c, 0.01f, 0.99f));
+            return c;
+        });
+        forgetAction.attn.reparent(attn);
 
 
         if (allowPause) {

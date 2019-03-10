@@ -31,10 +31,12 @@ public class PriBuffer<Y> {
     public final PriMerge merge;
 
     public PriBuffer(PriMerge merge) {
-        this(merge, new java.util.concurrent.ConcurrentHashMap(512));
+        this(merge, new java.util.concurrent.ConcurrentHashMap<>(0, 0.5f));
     }
     public PriBuffer(PriMerge merge, boolean concurrent) {
-        this(merge, concurrent ? new java.util.concurrent.ConcurrentHashMap() : new LinkedHashMap() );
+        this(merge, concurrent ?
+                new java.util.concurrent.ConcurrentHashMap<>(0, 0.5f) :
+                new LinkedHashMap<>(0, 0.5f) );
     }
     public PriBuffer(PriMerge merge, Map<Y, Prioritizable> items) {
         this.merge = merge;
@@ -55,28 +57,28 @@ public class PriBuffer<Y> {
         return items.isEmpty(); /* && termlink.isEmpty();*/
     }
 
-    public void put(Y x, float pri) {
-        put(x, pri, null);
+    public Y put(Y x, float pri) {
+        return put(x, pri, null);
     }
 
-    public void put(Y y, float pri, @Nullable OverflowDistributor<Y> overflow) {
+    public Y put(Y y, float pri, @Nullable OverflowDistributor<Y> overflow) {
+        return putRaw(y, pri, overflow);
+    }
+
+    private Y putRaw(Y x, float pri, @Nullable OverflowDistributor<Y> overflow) {
+        //if (pri!=pri) return x;
         assert(pri == pri); //        if (pri!=pri)     return null;
-
-        putRaw(y, pri, overflow);
-    }
-
-    private void putRaw(Y x, float pri, @Nullable OverflowDistributor<Y> overflow) {
-        if (pri!=pri)
-            return;
 
         Prioritizable y = items.compute(x, x instanceof Prioritizable ?
                 (xx, px) -> px != null ? px : (Prioritizable) xx :
                 (xx, px) -> px != null ? px : new UnitPri(Float.NaN)
         );
 
-        if (y != x)
+        if (y != x) {
             merge(y, x, pri, overflow);
-
+            return (Y) y;
+        }
+        return x;
     }
 
     protected void merge(Prioritizable existing, Y incoming, float pri, OverflowDistributor<Y> overflow) {

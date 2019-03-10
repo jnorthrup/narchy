@@ -619,6 +619,17 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     }
 
+    @Override
+    public final Y get(Object key) {
+        Y y = super.get(key);
+        //check that it's the right element, because the map may not be thread-safe
+//        if (y!=null && !(map instanceof ConcurrentMap)) {
+//            if (!key.equals(key(y))) {
+//                return null; //wasn't it.
+//            }
+//        }
+        return y;
+    }
 
 //    protected boolean fastMergeMaxReject() {
 //        return false;
@@ -627,7 +638,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     /**
      * will not need to be sorted after calling this; the index is automatically updated
      */
-    private Y merge(Y existing, Y incoming,  @Nullable NumberX overflow) {
+    public Y merge(Y existing, Y incoming,  @Nullable NumberX overflow) {
 
 
 //        int posBefore = items.indexOf(existing, this, true);

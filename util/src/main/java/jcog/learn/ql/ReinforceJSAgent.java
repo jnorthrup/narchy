@@ -82,9 +82,9 @@ public abstract class ReinforceJSAgent extends Agent {
 
     abstract String getAgentInitCode(int inputs, int actions);
 
-    @Override public int act(float[] actionFeedback, float prevReward, float... nextInputs) {
+    @Override public int decide(float[] actionFeedback, float prevReward, float... input) {
         try {
-            Number a = (Number) js.invokeFunction("act", nextInputs, prevReward);
+            Number a = (Number) js.invokeFunction("act", input, prevReward);
             return a.intValue();
         } catch (Exception e) {
             e.printStackTrace();

@@ -196,7 +196,8 @@ public class Taskify extends ProxyTerm {
 
 
         int cost;
-        if (d.add(t) != t) {
+        Task u = d.add(t);
+        if (u != t) {
 
             d.nar.emotion.deriveFailDerivationDuplicate.increment();
             cost = Param.TTL_DERIVE_TASK_REPEAT;

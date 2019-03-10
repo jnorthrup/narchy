@@ -432,7 +432,7 @@ public class NARui {
                 "dex", () -> new TriggeredSurface<>(
                         new Plot2D(512, Plot2D.Line)
                                 .add("Dex+0", a::dexterityMean),
-                            a::onFrame, Plot2D::update),
+                            a::onFrame, Plot2D::commit),
 
 //                        .addAt("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
 //                        .addAt("Dex+4", () -> a.dexterity(a.now() + 4 * a.nar().dur())), a),
@@ -563,7 +563,7 @@ public class NARui {
 
     public static Surface taskBufferView(TaskBuffer b, NAR n) {
         Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::volume, 0, 1);
-        DurSurface plotSurface = DurSurface.get(plot, n, plot::update);
+        DurSurface plotSurface = DurSurface.get(plot, n, plot::commit);
         return new Gridding(
                 plotSurface,
                 new MetaFrame(b),

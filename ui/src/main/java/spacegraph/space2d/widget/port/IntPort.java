@@ -32,6 +32,12 @@ public class IntPort extends EditablePort<Integer> {
                 i.accept(I);
         });
     }
+
+    public IntPort(int initialValue) {
+        this();
+        value.set(initialValue);
+    }
+
     public int get() {
         return value.getOpaque();
     }

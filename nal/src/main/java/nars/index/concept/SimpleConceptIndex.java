@@ -17,7 +17,7 @@ public class SimpleConceptIndex extends MapConceptIndex {
     }
 
     public SimpleConceptIndex(int capacity, boolean threadSafe) {
-        this(capacity*2, 0.99f, threadSafe);
+        this(capacity*2, 1f, threadSafe);
     }
 
     protected SimpleConceptIndex(int capacity, float loadFactor, boolean threadSafe) {

@@ -25,7 +25,7 @@ public class BatchDeriver extends Deriver {
 
 
     public BatchDeriver(PremiseDeriverRuleSet rules) {
-        this(rules, new TaskBuffer.DirectTaskBuffer(rules.nar.exe));
+        this(rules, new TaskBuffer.DirectTaskBuffer());
     }
 
     public BatchDeriver(PremiseDeriverRuleSet rules, TaskBuffer out) {

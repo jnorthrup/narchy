@@ -31,9 +31,8 @@ public class MiniPID {
     private double setpoint = 0;
     private double setpointRange = 0;
 
-    private double lastActual = 0;
+    private double lastActual = Double.NaN;
 
-    private boolean initialIter = true;
     private boolean reversed = false;
 
     private double outRampRate = 0;
@@ -317,10 +316,10 @@ public class MiniPID {
         Poutput = p() * error;
 
 
+        boolean initialIter = (lastActual!=lastActual);
         if (initialIter) {
             lastActual = actual;
             outPrev = Poutput + Foutput;
-            initialIter = false;
         }
 
 
@@ -375,7 +374,7 @@ public class MiniPID {
      * external forces.
      */
     public void reset() {
-        initialIter = true;
+        lastActual = Double.NaN;
         errSum = 0;
     }
 
@@ -441,23 +440,20 @@ public class MiniPID {
         }
     }
 
-    public double p() {
+    public final double p() {
         return P.doubleValue();
     }
 
-    public double i() {
+    public final double i() {
         return I.doubleValue();
     }
 
-    public double d() {
+    public final double d() {
         return D.doubleValue();
     }
 
-    public double f() {
+    public final double f() {
         return F.doubleValue();
     }
 
-//    public float outFloat() {
-//        return (float) out();
-//    }
 }

@@ -60,6 +60,9 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
         pos(bounds);
     }
 
+    //TODO use weakref's
+    @Deprecated public static final MapNodeGraph<Surface, Wire> staticLinks = new MapNodeGraph<>();
+
     /**
      * TODO use more efficient graph representation
      * TODO encapsulate so its private

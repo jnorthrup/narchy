@@ -1,12 +1,14 @@
 package nars;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.exe.Loop;
-import jcog.learn.pid.MiniPID;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatRange;
 import jcog.pri.bag.Bag;
+import jcog.signal.tensor.ArrayTensor;
+import jcog.signal.tensor.RingBufferTensor;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -42,8 +44,14 @@ import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
+import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.meter.Spectrogram;
+import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
 
 import java.awt.*;
@@ -57,6 +65,7 @@ import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
+import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -454,11 +463,17 @@ abstract public class NAgentX extends NAgent {
                 "motivation.nal"), injection);
         bd1.timing = new ActionTiming(n);
 
-        BatchDeriver bd2 = new BatchDeriver(Derivers.nal(n, 1, 8
-                ,"relation_introduction.nal", "motivation.nal", "nal4.sect.nal"
-        ), injection);
+        BatchDeriver bdLow = new BatchDeriver(Derivers.nal(n,
+                1, 4,
+                "nal4.sect.nal"),
+                injection);
 
-        inputInjectionPID(injection, n);
+        BatchDeriver bdHigh = new BatchDeriver(Derivers.nal(n,
+                6, 8,
+                "relation_introduction.nal", "motivation.nal"),
+                injection);
+
+//        inputInjectionPID(injection, n);
 
         //bd2.timing = new ActionTiming(n);
 //        bd.tasklinksPerIteration.set(8);
@@ -536,26 +551,128 @@ abstract public class NAgentX extends NAgent {
 
     }
 
-    static void inputInjectionQ(NAR n) {
-        //TODO
-    }
+//    static void inputInjectionQ(NAR n) {
+//        //TODO
+//    }
     /** https://www.controlglobal.com/blogs/controltalkblog/how-to-avoid-a-common-pid-tuning-mistake-tips/ */
     static void inputInjectionPID(TaskBuffer b, NAR n) {
         //perception injection control
-        MiniPID pid = new MiniPID(0.01, 0.01, 0.002);
-        pid.outLimit(-1, +1);
-        pid.setSetpointRange(+1);
+//        MiniPID pid = new MiniPID(0.01, 0.01, 0.002);
+//        pid.outLimit(-1, +1);
+//        pid.setSetpointRange(+1);
+//        pid.f(100);
+
         //pid.setOutRampRate(0.5);
 
         FloatRange valve = ((TaskBuffer.BagTaskBuffer) b).valve;
         //DurService.on(n,
-        n.onCycle(
-        ()->{
-            double vol = b.volume();
-            double nextV = pid.out(1-vol,0.5);
-//                System.out.println(nextV);
-            valve.set(Util.unitize(nextV ));
+//        n.onCycle(
+//        ()->{
+//            double vol = b.volume();
+//            double nextV = pid.out(vol,0.5);
+////                System.out.println(nextV);
+//            valve.set(Util.unitize(nextV ));
+//        });
+
+        GraphEdit<Surface> g = GraphEdit.window(800, 800);
+        g.add(NARui.taskBufferView(b, n)).sizeRel(0.75f,0.25f);
+        //g.add(new PIDChip(pid)).sizeRel(0.2f,0.2f);
+
+        RingBufferTensor history = new RingBufferTensor(3, 8);
+        HaiQae q = new HaiQae(history.volume(), 32,5);
+        float[] in = new float[q.ae.inputs()];
+        Plot2D plot;
+        Gridding inner = new Gridding(
+                new ObjectSurface(q),
+                new Gridding(VERTICAL,
+                        new PaintUpdateMatrixView(in),
+                        new PaintUpdateMatrixView(q.ae.x),
+                        new PaintUpdateMatrixView(q.ae.W),
+                        new PaintUpdateMatrixView(q.ae.y)
+                ),
+                new Gridding(VERTICAL,
+                        new PaintUpdateMatrixView(q.q),
+                        new PaintUpdateMatrixView(q.et)
+                ),
+                plot = new Plot2D(100, Plot2D.Line)
+        );
+//        hw.add(LabeledPane.the("input", new TypedPort<>(float[].class, (i) -> {
+//            System.arraycopy(i, 0, in, 0, i.length);
+//        })));
+        //hw.add(LabeledPane.the("act", new IntPort(q.actions)));
+
+
+
+        g.add(LabeledPane.the("Q", inner)).sizeRel(0.2f, 0.2f);
+
+
+        AtomicDouble rewardSum = new AtomicDouble();
+        plot.add("Reward", ()->{
+            return rewardSum.getAndSet(0); //clear
         });
+
+
+        n.onCycle(
+        //DurService.on(n,
+                new Runnable() {
+
+            private float[] sense;
+            float dv = 0.1f;
+
+            @Override
+            public void run() {
+
+                float v = b.volume();
+                float reward =
+                        //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
+                        (float) (Math.log(n.emotion.busyVol.floatValue())/5f);
+                rewardSum.addAndGet(reward);
+                plot.commit();
+
+                float x = ((TaskBuffer.BagTaskBuffer) b).valve.floatValue();
+                sense = history.commit(new ArrayTensor(new float[]{
+                        x, v, 0.5f + 0.5f * Util.tanhFast((float) -Math.log(dv))
+                })).snapshot(sense);
+
+
+                int decision = q.act(reward, sense);
+                float w = x;
+                switch (decision) {
+                    case 0: //nothing
+                        break;
+                    case 1:
+                        w = Math.max(0, x - dv);
+                        break;
+                    case 2:
+                        w = Math.min(1, x + dv);
+                        break;
+                    case 3:
+                        dv = Math.max(0.001f, dv - dv*dv);
+                        break;
+                    case 4:
+                        dv = Math.min(0.2f, dv + dv*dv);
+                        break;
+//                case 0: valve.set(0); break;
+//                case 1: valve.set(0.5); break;
+//                case 2: valve.set(1); break;
+                }
+                valve.set(w);
+            }
+        });
+
+        //Loop.of(() -> {
+
+            //int a = q.act(new float[] { (((float) Math.random()) - 0.5f) * 2, in);
+            //outs.out(a);
+//            int n = outs.size();
+//            for (int i = 0; i < n; i++) {
+//                outs.out(i, (i == a));
+//            }
+        //}).setFPS(25);
+
+//        SwitchChip outDemultiplexer = new SwitchChip (4);
+//        p.addAt(outDemultiplexer).pos(450, 450, 510, 510);
+
     }
 
 

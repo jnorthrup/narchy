@@ -36,7 +36,7 @@ public class BagView<X extends Prioritized> extends TabMenu {
                                     .add("Pressure", bag::pressure)
                                     ;
 
-                            return DurSurface.get(budgetChart, nar, budgetChart::update);
+                            return DurSurface.get(budgetChart, nar, budgetChart::commit);
                         },
                         "histo", () -> bagHistogram(bag::iterator, 20, nar),
                         "treechart", () -> {

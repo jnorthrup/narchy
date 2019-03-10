@@ -95,8 +95,8 @@ public class LoopPanel extends Gridding {
                     fps.set(g);
                     fpsLabel.set(g);
                 }
-                cycleTimePlot.update();
-                heapPlot.update();
+                cycleTimePlot.commit();
+                heapPlot.commit();
             } else {
                 if (loop.isRunning()) {
 

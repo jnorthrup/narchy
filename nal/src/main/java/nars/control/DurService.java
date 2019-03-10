@@ -14,7 +14,6 @@ import org.eclipse.collections.impl.tuple.Tuples;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -35,7 +34,7 @@ abstract public class DurService extends NARService  {
     /** when the last cycle ended */
     private volatile long lastStarted = Long.MIN_VALUE;
     //private volatile long lastFinished = Long.MIN_VALUE;
-    private final AtomicBoolean busy = new AtomicBoolean(false);
+    //private final AtomicBoolean busy = new AtomicBoolean(false);
 
 
     protected DurService(NAR n, float durs) {
@@ -138,10 +137,10 @@ abstract public class DurService extends NARService  {
 
     private void run() {
 
-        if (!busy.compareAndSet(false, true))
-            return;
+//        if (!busy.compareAndSet(false, true))
+//            return;
 
-        try {
+//        try {
 
             long lastStarted = this.lastStarted;
 
@@ -155,10 +154,10 @@ abstract public class DurService extends NARService  {
 
             scheduleNext( atStart );
 
-        }  finally {
-
-            busy.set(false);
-        }
+//        }  finally {
+//
+//            busy.set(false);
+//        }
     }
 
     private transient long next = TIMELESS;

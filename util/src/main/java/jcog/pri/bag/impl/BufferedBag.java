@@ -12,21 +12,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /** concurrent buffering bag wrapper */
-abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
+abstract public class BufferedBag<X,B,Y extends Prioritizable> extends ProxyBag<X,Y> {
 
     final AtomicBoolean busy = new AtomicBoolean(false);
 
-    public final PriBuffer<B> buffer;
+    /** pre-bag accumulating buffer */
+    public final PriBuffer<B> pre;
 
-    public BufferedBag(Bag<X, Y> bag, PriBuffer<B> buffer) {
+    public BufferedBag(Bag<X, Y> bag, PriBuffer<B> pre) {
         super(bag);
-        this.buffer = buffer;
+        this.pre = pre;
     }
 
 
     @Override
     public void clear() {
-        buffer.clear();
+        pre.clear();
         super.clear();
     }
 
@@ -39,8 +40,8 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
 
                     bag.commit(update);
 
-                    if (!buffer.isEmpty()) {
-                        buffer.update(this::putInternal);
+                    if (!pre.isEmpty()) {
+                        pre.update(this::putInternal);
                         bag.commit(null); //force sort after
                     }
 
@@ -62,8 +63,7 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
     }
 
     @Override public final Y put(Y x) {
-        put((B)x, ((Prioritized)x).pri());
-        return x;
+        return (Y)put((B)x, ((Prioritized)x).pri());
     }
 
     @Override
@@ -71,14 +71,18 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
         return put(b);
     }
 
-    public final void put(B x, float p) {
-        if (p==p)
-            buffer.put(x, p);
+    public final B put(B x, float p) {
+        Y yBag = bag.get(x);
+        if (yBag!=null) {
+            ((ArrayBag)bag).merge(yBag, (Prioritizable)x, null);
+            return (B) yBag;
+        } else
+            return pre.put(x, p);
     }
 
     @Override
     public final boolean isEmpty() {
-        return bag.isEmpty() && buffer.isEmpty();
+        return bag.isEmpty() && pre.isEmpty();
     }
 
     /** internal put: custom adaptation can be implemented in subclasses */
@@ -88,30 +92,14 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
         public DefaultBufferedBag(Bag<X,Y> activates, PriBuffer<B> conceptPriBuffer) {
             super(activates, conceptPriBuffer);
         }
-//        private float min;
-
-//        @Override
-//        public Bag<X,Y> commit(Consumer<Y> update) {
-////            min = bag.size() >= bag.capacity() ? bag.priMin() : 0;
-//            return super.commit(update);
-//        }
 
         @Override
         public void putInternal(B b, float pri) {
-//            if (min <= ScalarValue.EPSILON  ||  (pri >= min || bag.contains(keyInternal(b)))) {
-                //Prioritizable b will need its pri set with the provided pri that may not match, having accumulated since its first insertion
                 Y y = valueInternal(b, pri);
                 bag.putAsync(y);
-//            } else {
-//                //System.out.println("ignored: " + c + " "+n4(pri));
-//                bag.pressurize(pri);
-//            }
         }
 
-
         protected abstract Y valueInternal(B b, float pri);
-
-        protected abstract X keyInternal(B c);
 
     }
 
@@ -125,10 +113,6 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
             return c;
         }
 
-        @Override
-        protected X keyInternal(Y c) {
-            return bag.key(c);
-        }
 
     }
 

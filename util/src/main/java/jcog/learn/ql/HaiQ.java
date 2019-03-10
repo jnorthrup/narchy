@@ -75,7 +75,7 @@ public class HaiQ extends Agent {
         q = new float[inputs][actions];
         et = new float[inputs][actions];
 
-        setQ(0.1f, 0.5f, 0.75f);
+        setQ(0.02f, 0.5f, 0.75f);
         rng = new XoRoShiRo128PlusRandom(1);
 
 
@@ -177,8 +177,7 @@ public class HaiQ extends Agent {
      * main control function
      */
     @Override
-    public int act(float[] actionFeedback, float reward, float[] input) {
-
+    public int decide(float[] actionFeedback, float reward, float[] input) {
         return learn(actionFeedback, perceive(input), reward);
     }
 

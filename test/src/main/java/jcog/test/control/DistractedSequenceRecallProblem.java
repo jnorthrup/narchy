@@ -441,7 +441,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
         updateReward();
 
-        int nextAction = a.act(null /* TODO */, reward, state.data);
+        int nextAction = a.act(reward, state.data);
         actions.fill(0);
         actions.setAt(1f, nextAction);
 

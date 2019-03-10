@@ -27,7 +27,7 @@ public class OneObviousChoice extends AbstractAgentTest {
         float nextReward = 0;
         IntIntHashMap acts = new IntIntHashMap();
         for (int i = 0; i < cycles; i++) {
-            int action = agent.act(null /* TODO */, nextReward, new float[]{r.nextFloat()});
+            int action = agent.act(nextReward, new float[]{r.nextFloat()});
 
             acts.addToValue(action, 1);
             switch (action) {

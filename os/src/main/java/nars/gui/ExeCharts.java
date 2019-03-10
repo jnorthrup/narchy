@@ -103,8 +103,8 @@ public class ExeCharts {
         Plot2D busy = new Plot2D(plotHistory, Plot2D.BarLanes)
                 .add("Busy", n.emotion.busyVol::getSum);
         return grid(
-                DurSurface.get(exeQueue, n, exeQueue::update),
-                DurSurface.get(busy, n, busy::update)
+                DurSurface.get(exeQueue, n, exeQueue::commit),
+                DurSurface.get(busy, n, busy::commit)
         );
     }
 
@@ -193,7 +193,7 @@ public class ExeCharts {
                 }),
                 new PushButton("Clear", ()->pp.series.forEach(Plot2D.Series::clear))
         );
-        return DurSurface.get(Splitting.column(pp, 0.1f, controls), nar, pp::update);
+        return DurSurface.get(Splitting.column(pp, 0.1f, controls), nar, pp::commit);
     }
 
     public static Surface focusPanel(NAR nar) {

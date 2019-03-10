@@ -29,7 +29,7 @@ public class InputMatchesChoice extends AbstractAgentTest {
 
             boolean which = rng.nextBoolean();
 
-            int action = agent.act(null /*TODO */, nextReward, new float[]{which ? 1 : 0, which ? 0 : 1} );
+            int action = agent.act(nextReward, new float[]{which ? 1 : 0, which ? 0 : 1} );
 
             acts.addToValue(action, 1);
 

@@ -144,8 +144,6 @@ abstract public class Deriver extends Causable {
         return v;
     }
 
-
-
     @Deprecated
     private static final AtomicInteger serial = new AtomicInteger();
 
@@ -158,18 +156,22 @@ abstract public class Deriver extends Causable {
         if (prev!=null) {
             if (prev == out) return this; //same instance
         }
-        if (this.outputOffs!=null)
-            this.outputOffs.clear();
+        if (this.outputOffs!=null) {
+            this.outputOffs.off();
+            this.outputOffs = null;
+        }
 
         this.out = out;
 
-        if (out!=null && out.synchronous()) {
-            Consumer<NAR> p = nn -> out.commit(nn.time(), target);
-            this.outputOffs = new Offs((cycleOrDur) ?
-                    nar.onCycle(p)
-                    :
-                    DurService.on(nar, p), nar.eventClear.on(this::clear)
-            );
+        if (out!=null) {
+            if (!out.async(target)) {
+                Consumer<NAR> p = nn -> out.commit(nn.time(), target);
+                this.outputOffs = new Offs((cycleOrDur) ?
+                        nar.onCycle(p)
+                        :
+                        DurService.on(nar, p), nar.eventClear.on(this::clear)
+                );
+            }
         }
 
         return this;

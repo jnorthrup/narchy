@@ -111,7 +111,11 @@ public class NARS {
             ;
 
             if (nal > 0)
-                withNAL(new TaskBuffer.BagTaskBuffer(128, 0.25f), 1, nal);
+                withNAL(
+                        new TaskBuffer.BagTaskBuffer(32, 0.5f),
+                        //new TaskBuffer.MapTaskBuffer(64),
+                        //new TaskBuffer.DirectTaskBuffer(),
+                        1, nal);
 
             if (nal >= 7) {
                 then((nn)->new STMLinkage(nn, 1));
@@ -167,8 +171,8 @@ public class NARS {
                         //beliefs tmp
                         curve(termVolume,
                                 1, 64,
-                                16, 32,
-                                32, 8
+                                16, 48,
+                                32, 16
                         ),
                         //goals ete
                         curve(termVolume,
@@ -179,8 +183,8 @@ public class NARS {
                         //goals tmp
                         curve(termVolume,
                                 1, 64,
-                                16, 32,
-                                32, 8
+                                16, 48,
+                                32, 16
                         ),
                         //questions
                         curve(termVolume,

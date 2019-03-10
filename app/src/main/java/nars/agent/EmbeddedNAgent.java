@@ -60,11 +60,11 @@ public class EmbeddedNAgent extends Agent {
     }
 
     @Override
-    public int act(float[] actionFeedback, float reward, float[] nextObservation) {
+    public int decide(float[] actionFeedback, float reward, float[] input) {
 
         this.nextReward = reward;
 
-        arraycopy(nextObservation, 0, senseValue, 0, senseValue.length);
+        arraycopy(input, 0, senseValue, 0, senseValue.length);
 
         env.nar().run(DUR_CYCLES);
 

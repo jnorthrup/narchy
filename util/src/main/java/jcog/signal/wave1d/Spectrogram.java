@@ -20,7 +20,7 @@ public class Spectrogram {
 
         this.inWave = new ArrayTensor(new float[(int) Math.ceil(sampleTime * sampleRate)]);
         dft = new SlidingDFTTensor(inWave, fftSize, true);
-        freq = (RingBufferTensor) RingBufferTensor.get(dft, history);
+        freq = new RingBufferTensor(dft.volume(), history);
 
 
     }
@@ -35,7 +35,7 @@ public class Spectrogram {
         try {
             in.peekLast(inWave.data);
             dft.updateNormalized();
-            freq.snapshot();
+            freq.commit(dft);
             return true;
         } finally {
             busy.set(false);

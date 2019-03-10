@@ -4,20 +4,14 @@ import jcog.signal.Tensor;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
 public class RingBufferTensor extends ArrayTensor {
-    private final Tensor t;
     public final int segment;
     private final int num;
     int target;
 
-    public static Tensor get(Tensor t, int history) {
-        if (history == 1) return t;
-        return new RingBufferTensor(t, history);
-    }
 
-    RingBufferTensor(Tensor t, int history) {
-        super(t.volume() * history);
-        this.t = t;
-        this.segment = t.volume();
+    public RingBufferTensor(int volume, int history) {
+        super(volume * history);
+        this.segment = volume;
         this.num = history;
     }
 
@@ -36,6 +30,7 @@ public class RingBufferTensor extends ArrayTensor {
         assert(start == 0);
         assert(end==volume());
         int k = 0;
+        int target = this.target;
         for (int i = 0; i < num; i++) {
             int ts = target * segment;
             for (int j = 0; j < segment; j++) {
@@ -45,12 +40,27 @@ public class RingBufferTensor extends ArrayTensor {
         }
     }
 
-
-    @Override
-    public float[] snapshot() {
-        //t.get();
+    public RingBufferTensor commit(Tensor t) {
+        //synchronized (data) {
         t.writeTo(data, target * segment);
         if (++target == num) target = 0;
-        return data;
+
+        //}
+        return this;
+    }
+
+    public float[] snapshot() {
+        return snapshot(new float[volume()]);
+    }
+
+    public float[] snapshot(float[] output) {
+        if (output==null || output.length != volume())
+            output = new float[volume()];
+        writeTo(output);
+        return output;
+    }
+
+    public float[] commitToArray(Tensor t) {
+        return commit(t).snapshot();
     }
 }

@@ -241,7 +241,12 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     protected void starting() {
         super.starting();
 
-        this.node = parent(GraphEdit.class).links.addNode(this);
+        GraphEdit graph = parent(GraphEdit.class);
+        if (graph!=null)
+            this.node = graph.links.addNode(this);
+        else
+            this.node = GraphEdit.staticLinks.addNode(this); //HACK
+
         IntObjectProcedure<Port<X>> u = this.updater;
         if (u != null)
             u.value(0, this);

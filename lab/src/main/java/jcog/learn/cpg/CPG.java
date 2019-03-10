@@ -174,7 +174,7 @@ public class CPG {
 
             nextOutput.set( n.y );
 
-            p.update();
+            p.commit();
         }
 
 
