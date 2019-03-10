@@ -74,7 +74,12 @@ abstract public class BufferedBag<X,B,Y extends Prioritizable> extends ProxyBag<
     public final B put(B x, float p) {
         Y yBag = bag.get(x);
         if (yBag!=null) {
-            ((ArrayBag)bag).merge(yBag, (Prioritizable)x, null);
+            //HACK
+            if (bag instanceof ArrayBag) ((ArrayBag)bag).merge(yBag, (Prioritizable)x, null);
+            else if (bag instanceof HijackBag) ((HijackBag)bag).merge(yBag, x, null);
+            else
+                throw new UnsupportedOperationException();
+
             return (B) yBag;
         } else
             return pre.put(x, p);

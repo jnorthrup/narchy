@@ -20,6 +20,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -52,7 +53,8 @@ public abstract class TaskLeak extends Causable {
         this(
                 new BufferSource(
                         new BufferedBag.SimpleBufferedBag<>(
-                                new PLinkArrayBag<>(PriMerge.max, capacity), new PriBuffer(PriMerge.max))
+                                new PLinkArrayBag<>(capacity, PriMerge.max, new ConcurrentHashMap<>(capacity, 0.5f)),
+                                new PriBuffer(PriMerge.max))
                 )
                 , n, puncs
         );

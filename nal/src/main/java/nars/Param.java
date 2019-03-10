@@ -24,7 +24,6 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
 public abstract class Param {
 
 
-    public static final int COMMON_VAR_MAX = 5;
 
 
     static {
@@ -248,9 +247,7 @@ public abstract class Param {
     public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
 
 
-    /** (unsafe) true should theoreticaly be faster,
-     * at the risk of budgeting inaccuracies and unfairly neglected lost derivations */
-    public static final boolean INPUT_BUFFER_PRI_BACKPRESSURE = false;
+    public static final int COMMON_VAR_MAX = 5;
 
     /**
      * provides an instance of the default truthpolation implementation
@@ -499,7 +496,8 @@ public abstract class Param {
         double decayTime = falloffDurs * dur;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        e = (float)(evi / (1.0 + Util.sqr(dt / decayTime )));
+        //e = (float)(evi / (1.0 + Util.sqr(dt / decayTime )));
+        e = (float)(evi / (1.0 + Util.sqr(dt / dur ) / falloffDurs));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
         //TODO

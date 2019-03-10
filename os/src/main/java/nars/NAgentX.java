@@ -32,6 +32,7 @@ import nars.link.TaskLink;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Introduction;
+import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
@@ -403,10 +404,10 @@ abstract public class NAgentX extends NAgent {
         n.attn.activeCapacity.set(1024);
 
 
-        n.beliefPriDefault.set(0.1f);
-        n.goalPriDefault.set(0.25f);
-        n.questionPriDefault.set(0.05f);
-        n.questPriDefault.set(0.05f);
+        n.beliefPriDefault.set(0.01f);
+        n.goalPriDefault.set(0.025f);
+        n.questionPriDefault.set(0.005f);
+        n.questPriDefault.set(0.005f);
 
         n.beliefConfDefault.set(0.75f);
         n.goalConfDefault.set(0.75f);
@@ -518,8 +519,8 @@ abstract public class NAgentX extends NAgent {
         //Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 
-//        new Inperience.Believe(8, n);
-//        new Inperience.Want(8, n);
+        new Inperience.Believe(8, n);
+        new Inperience.Want(8, n);
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
 

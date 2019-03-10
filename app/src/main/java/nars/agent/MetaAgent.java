@@ -59,11 +59,11 @@ public class MetaAgent {
         curiosityAction.attn.reparent(attn);
 
 
-        forgetAction = a.actionDial($.inh(a.id,forget), n.attn.forgetRate, 100);
+        forgetAction = a.actionDial($.inh(a.id,forget), n.attn.forgetRate, 40);
         forgetAction[0].attn.reparent(attn); //HACK
         forgetAction[1].attn.reparent(attn);//HACK
 
-        priAction = a.actionDial($.inh(a.id,pri), a.pri, 100);
+        priAction = a.actionDial($.inh(a.id,pri), a.pri, 40);
         priAction[0].attn.reparent(attn);//HACK
         priAction[1].attn.reparent(attn); //HACK
 

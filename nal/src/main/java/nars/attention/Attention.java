@@ -69,8 +69,7 @@ public abstract class Attention extends DurService implements Sampler<TaskLink> 
         active = new TaskLinkBag(
                 arrayBag(),
                 //hijackBag(),
-                forgetRate,
-                nar.exe.concurrent());
+                forgetRate);
 
         active.setCapacity(activeCapacity.intValue());
 

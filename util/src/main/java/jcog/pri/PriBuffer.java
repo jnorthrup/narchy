@@ -66,8 +66,8 @@ public class PriBuffer<Y> {
     }
 
     private Y putRaw(Y x, float pri, @Nullable OverflowDistributor<Y> overflow) {
-        //if (pri!=pri) return x;
-        assert(pri == pri); //        if (pri!=pri)     return null;
+        if (pri != pri)
+            return null;
 
         Prioritizable y = items.compute(x, x instanceof Prioritizable ?
                 (xx, px) -> px != null ? px : (Prioritizable) xx :

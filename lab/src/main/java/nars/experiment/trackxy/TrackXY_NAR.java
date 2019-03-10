@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
-import jcog.reflect.AutoBuilder;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
@@ -27,7 +26,6 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.chip.PIDChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
 
@@ -335,9 +333,13 @@ public class TrackXY_NAR extends NAgentX {
 
                 GraphEdit g = GraphEdit.window(800, 800);
                 g.windoSizeMinRel(0.02f, 0.02f);
-                g.build(a, new AutoBuilder<>(2, (context, features, obj) -> {
-                        return new TextEdit(features.toString());
-                }));
+
+//                g.build(a, new AutoBuilder<>(2, (context, features, obj) -> {
+//                        //return new TextEdit(features.toString());
+//                    //g.add(new ObjectSurface(features)).sizeRel(0.1f,0.1f);
+//                    return features.isEmpty() ? new ObjectSurface(obj) : new ObjectSurface(features, 2);
+//                })).sizeRel(0.2f, 0.2f);
+
                 g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
                 g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
                 g.add(NARui.taskBufferView(d.out, n)).sizeRel(0.25f,0.25f);
