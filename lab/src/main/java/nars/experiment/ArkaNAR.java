@@ -121,10 +121,11 @@ public class ArkaNAR extends NAgentX {
             return $.t(paddleSpeed, nar.confidenceDefault('.'));
         }));*/
 
+        onFrame(noid::next);
 
         Reward s = rewardNormalized("score", -1, +1, () -> {
             noid.BALL_VELOCITY = ballSpeed.floatValue();
-            float nextScore = noid.next();
+            float nextScore = noid.score;
             float dReward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
             this.prevScore = nextScore;
 

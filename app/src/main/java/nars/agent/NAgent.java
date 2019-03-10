@@ -106,7 +106,6 @@ public class NAgent extends NARService implements NSense, NAct {
     public NAgent(Term id, FrameTrigger frameTrigger, NAR nar) {
         super(id);
         this.nar = nar;
-
         this.attn = new AttNode(id);
         this.attnAction = new AttNode($.func("action", id) );
         attnAction.parent(attn);
@@ -115,11 +114,10 @@ public class NAgent extends NARService implements NSense, NAct {
         this.attnReward = new AttNode($.func("reward", id) );
         attnReward.parent(attn);
 
-
-
-
         this.frameTrigger = frameTrigger;
-        this.prev = this.now = ETERNAL;
+        this.prev = ETERNAL;
+        this.now = nar.time();
+
 //
 //        actReward = new AttnDistributor(
 //                Iterables.concat(
@@ -519,26 +517,29 @@ public class NAgent extends NARService implements NSense, NAct {
      */
     protected final void next() {
 
-        int frameDur = frameTrigger.dur();
+        if (!enabled.getOpaque())
+            return;
+
+        if (!busy.compareAndSet(false, true))
+            return;
 
         long now = nar.time();
         long prev = this.now;
-        if (prev == ETERNAL)
-            prev = now - frameDur; //start
-        else if (now <= prev)
+        assert(prev!=ETERNAL);
+
+        if (now < prev)
             return; //too learly
 
         long next =
                 //(Math.max(now, frameTrigger.next(now)), d);
-                Math.max(now+1, frameTrigger.next(now));
+                Math.max(now, frameTrigger.next(now));
 
         this.prev = prev;
         this.now = now;
         this.next = next;
-        assert(prev <now && now < next);
+        assert(prev <= now && now < next);
 
-        if (!enabled.getOpaque() || !busy.compareAndSet(false, true))
-            return;
+
 
         try {
 

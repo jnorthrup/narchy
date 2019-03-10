@@ -304,13 +304,14 @@ abstract public class MultiExec extends UniExec {
 
                     long playTime =
                             threadWorkTimePerCycle - workTime;
-                            //threadWorkTimePerCycle;
+                    //threadWorkTimePerCycle;
                     if (playTime > 0)
                         play(playTime);
 
                     sleep();
                 }
             }
+
             @Override
             public void run() {
 
@@ -345,10 +346,10 @@ abstract public class MultiExec extends UniExec {
                         break;
 
                     int batchSize = //Util.lerp(throttle,
-                                    //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                                    (int)Math.ceil((available / workGranularity))
+                            //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
+                            (int) Math.ceil((available / workGranularity))
                             //)
-                    ;
+                            ;
 
                     int drained = in.remove(schedule, batchSize);
                     if (drained > 0)
@@ -403,28 +404,30 @@ abstract public class MultiExec extends UniExec {
                         boolean singleton = c.singleton();
                         if (!singleton || c.busy.compareAndSet(false, true)) {
 
-                            long before = nanoTime();
-
-                            long runtimeNS = Math.min(until - before, Math.min(sTime, subCycleMaxNS));
-
                             try {
+                                long before = nanoTime();
 
+                                long runtimeNS = Math.min(until - before, Math.min(sTime, subCycleMaxNS));
                                 if (runtimeNS > 0) {
-                                    deadline = before + runtimeNS;
 
-                                    c.next(nar, deadlineFn);
+                                    try {
+
+                                        deadline = before + runtimeNS;
+                                        c.next(nar, deadlineFn);
+                                    } catch (Throwable t) {
+                                        logger.error("{} {}", this, t);
+                                    }
 
                                     played = true;
                                     after = nanoTime();
                                     s.use(after - before);
+
                                 }
-                            } catch (Throwable t) {
-                                logger.error("{} {}", this, t);
+
                             } finally {
                                 if (singleton)
                                     c.busy.set(false);
                             }
-
                         }
                     }
 
@@ -466,11 +469,11 @@ abstract public class MultiExec extends UniExec {
                 long existingTime = Util.sum((TimedLink.MyTimedLink x) -> Math.max(0, x.time), play);
                 long remainingTime = workTimeNS - existingTime;
 //                if (remainingTime > subCycleMinNS) {
-                    long shift = minTime < 0 ? 1 - minTime : 0;
-                    for (TimedLink.MyTimedLink m : play) {
-                        int t = Math.round(shift + remainingTime * m.pri());
-                        m.add(Math.max(subCycleMinNS, t), -workTimeNS, +workTimeNS);
-                    }
+                long shift = minTime < 0 ? 1 - minTime : 0;
+                for (TimedLink.MyTimedLink m : play) {
+                    int t = Math.round(shift + remainingTime * m.pri());
+                    m.add(Math.max(subCycleMinNS, t), -workTimeNS, +workTimeNS);
+                }
 //                }
             }
 

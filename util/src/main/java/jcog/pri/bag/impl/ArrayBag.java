@@ -619,17 +619,17 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     }
 
-    @Override
-    public final Y get(Object key) {
-        Y y = super.get(key);
-        //check that it's the right element, because the map may not be thread-safe
-//        if (y!=null && !(map instanceof ConcurrentMap)) {
-//            if (!key.equals(key(y))) {
-//                return null; //wasn't it.
-//            }
-//        }
-        return y;
-    }
+//    @Override
+//    public final Y get(Object key) {
+//        Y y = super.get(key);
+//        //check that it's the right element, because the map may not be thread-safe
+////        if (y!=null && !(map instanceof ConcurrentMap)) {
+////            if (!key.equals(key(y))) {
+////                return null; //wasn't it.
+////            }
+////        }
+//        return y;
+//    }
 
 //    protected boolean fastMergeMaxReject() {
 //        return false;

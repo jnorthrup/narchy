@@ -12,8 +12,8 @@ import nars.Param;
 import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
 import nars.term.Termed;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
+import java.util.HashMap;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -103,8 +103,10 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {
 
         public TaskLinkArrayBag(int initialCapacity) {
-            super(initialCapacity, Param.tasklinkMerge, new UnifiedMap<>
-                    (initialCapacity, 1f));
+            super(initialCapacity, Param.tasklinkMerge,
+                    //new UnifiedMap<>
+                    new HashMap
+                        (initialCapacity, 0.5f));
         }
 
         @Override

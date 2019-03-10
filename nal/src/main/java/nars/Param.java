@@ -129,7 +129,7 @@ public abstract class Param {
     public static final int TASK_EVAL_FORK_ATTEMPT_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity */
-    public static final float ANSWER_COMPLETENESS = 1f;
+    public static final float ANSWER_COMPLETENESS = 2f;
 
 //    public static final boolean DERIVE_AUTO_IMAGE_NORMALIZE = true;
 
@@ -490,8 +490,8 @@ public abstract class Param {
         float falloffDurs =
                 //1;
                 //1.618f; //phi
-                2; //nyquist
-                //4;
+                //2; //nyquist
+                4;
                 //dur;
                 //8;
                 //64;

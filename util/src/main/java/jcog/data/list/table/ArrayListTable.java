@@ -111,7 +111,7 @@ abstract public class ArrayListTable<K, V> implements Table<K, V> {
         return removed;
     }
 
-    public V get(Object key) {
+    public final V get(Object key) {
         return map.get(key);
     }
 

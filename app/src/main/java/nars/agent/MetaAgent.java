@@ -29,7 +29,7 @@ public class MetaAgent {
 //    private final GoalActionConcept priAction;
 
     private int disableCountDown = 0;
-    private final int disableThreshold = 4;
+    private final int disableThreshold = 2;
     private final long disablePeriod = 4;
 
 
@@ -38,7 +38,7 @@ public class MetaAgent {
 
     float curiMax = 0.2f;
     float curiMinOld = 0.01f,
-            curiMinYoung = 0.04f;
+          curiMinYoung = 0.04f;
 
 
     private final GoalActionConcept curiosityAction;
@@ -89,7 +89,7 @@ public class MetaAgent {
             //enableAction = n.actionToggle($.func(enable, n.id), (e)->{
                 //TODO integrate and threshold, pause for limited time
                 if (!e) {
-                    if (disableCountDown++ > disableThreshold) {
+                    if (disableCountDown++ >= disableThreshold) {
                         a.enabled.set(false);
                         nar.runAt(nar.time() + disablePeriod * nar.dur(), ()-> {
                             //re-enable
@@ -97,6 +97,7 @@ public class MetaAgent {
                         });
                     }
                 } else {
+                    a.enabled.set(true);
                     disableCountDown = 0;
                 }
             });

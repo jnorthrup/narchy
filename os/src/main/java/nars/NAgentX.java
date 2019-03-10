@@ -392,8 +392,8 @@ abstract public class NAgentX extends NAgent {
 
     public static void config(NAR n) {
         n.dtDither.set(
-                //10
-                20
+                10
+                //20
                 //40
         );
 
@@ -405,18 +405,18 @@ abstract public class NAgentX extends NAgent {
         ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
 
 
-        n.beliefPriDefault.set(0.25f);
+        n.beliefPriDefault.set(0.1f);
         n.goalPriDefault.set(0.5f);
         n.questionPriDefault.set(0.05f);
         n.questPriDefault.set(0.05f);
 
-        n.beliefConfDefault.set(0.85f);
-        n.goalConfDefault.set(0.85f);
+        n.beliefConfDefault.set(0.5f);
+        n.goalConfDefault.set(0.75f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.1f);
+        n.emotion.want(MetaGoal.Desire, 0.2f);
 
         n.emotion.want(MetaGoal.Action, +1f);
 

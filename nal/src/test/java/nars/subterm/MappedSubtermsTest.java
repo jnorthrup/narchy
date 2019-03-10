@@ -2,6 +2,7 @@ package nars.subterm;
 
 import nars.term.Term;
 import nars.term.util.TermTest;
+import nars.term.var.CommonVariable;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -80,5 +81,29 @@ public class MappedSubtermsTest {
 
         Term target = $$$("( &&+- ,(--,##2#4),_1,##2#4,$1)");
         assertEquals(0, base.indexOf(target));
+
+        /*
+        ( &&+- ,(--,($1-->_1)),(--,##2#5),##2#5) (&&[TemporalCachedCompound] c5,v8,dt=2147483647,dtRange=0 110000010000111)
+          (--,($1-->_1)) (--[Neg] c3,v4,dt=-2147483648,dtRange=0 100000000000111)
+            ($1-->_1) (-->[SimpleCachedCompound] c2,v3,dt=-2147483648,dtRange=0 100000000000101)
+              $1 ($[VarIndep] c0,v1,dt=-2147483648,dtRange=0 100000000000000)
+              _1 (.[Anom] c1,v1,dt=-2147483648,dtRange=0 1)
+          (--,##2#5) (--[Neg] c1,v2,dt=-2147483648,dtRange=0 10000000000010)
+            ##2#5 (#[CommonVariable] c0,v1,dt=-2147483648,dtRange=0 10000000000000)
+          ##2#5 (#[CommonVariable] c0,v1,dt=-2147483648,dtRange=0 10000000000000)
+
+        ( &&+- ,(--,($1-->_1)),(--,##2#5),##2#5) (&&[TemporalCachedCompound] c5,v8,dt=2147483647,dtRange=0 110000010000111)
+          (--,($1-->_1)) (--[Neg] c3,v4,dt=-2147483648,dtRange=0 100000000000111)
+            ($1-->_1) (-->[SimpleCachedCompound] c2,v3,dt=-2147483648,dtRange=0 100000000000101)
+              $1 ($[VarIndep] c0,v1,dt=-2147483648,dtRange=0 100000000000000)
+              _1 (.[Anom] c1,v1,dt=-2147483648,dtRange=0 1)
+          (--,##2#5) (--[Neg] c1,v2,dt=-2147483648,dtRange=0 10000000000010)
+            ##2#5 (#[CommonVariable] c0,v1,dt=-2147483648,dtRange=0 10000000000000)
+          ##2#5 (#[CommonVariable] c0,v1,dt=-2147483648,dtRange=0 10000000000000)
+     */
+        assertTrue($$("##2#5") instanceof CommonVariable);
+        assertTrue($$("##2#5").equals($$("##2#5")));
+        assertTrue($$("##2#5").neg().equals($$("##2#5").neg()));
+        assertTrue($$("--##2#5").unneg().equals($$("--##2#5").unneg()));
     }
 }

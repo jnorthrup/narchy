@@ -33,7 +33,7 @@ public class Spatialization<X> {
         return new Leaf<>(capacity);
     }
 
-    public Node<X> newBranch(Leaf<X> a, Leaf<X> b) {
+    public Branch<X> newBranch(Leaf<X> a, Leaf<X> b) {
         return new Branch<>(max, a, b);
     }
 
