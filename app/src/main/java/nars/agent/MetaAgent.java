@@ -21,17 +21,15 @@ public class MetaAgent {
     private final NAgent agent;
     private final long start;
 
-    private final GoalActionConcept enableAction;
-    private final Reward enableReward;
+    public final GoalActionConcept enableAction;
+    public final Reward enableReward;
     //private final GoalActionConcept durAction;
-    private final GoalActionConcept[] forgetAction;
-//    private final GoalActionConcept priAction;
+    public final GoalActionConcept[] forgetAction;
+    public final GoalActionConcept[] priAction;
 
     private int disableCountDown = 0;
-    private final int disableThreshold = 2;
+    private final int disableThreshold = 1;
     private final long disablePeriod = 4;
-
-
 
     int startupDurs = 5000;
 
@@ -61,24 +59,13 @@ public class MetaAgent {
         curiosityAction.attn.reparent(attn);
 
 
-        forgetAction = a.actionStep($.inh(a.id,forget), (c)->{
-            float delta = 0.1f;
-        //forgetAction = a.actionUnipolar($.inh(a.id,forget), (c)->{
-            //n.attn.forgetRate.set(Util.lerp(c, n.attn.forgetRate.min, n.attn.forgetRate.max));
-            //n.attn.forgetRate.set(Util.lerp(c, n.attn.forgetRate.min, n.attn.forgetRate.max));
-            n.attn.forgetRate.set(Util.clamp(n.attn.forgetRate.get()+c*delta, n.attn.forgetRate.min, n.attn.forgetRate.max));
+        forgetAction = a.actionDial($.inh(a.id,forget), n.attn.forgetRate, 100);
+        forgetAction[0].attn.reparent(attn); //HACK
+        forgetAction[1].attn.reparent(attn);//HACK
 
-            //return c;
-        });
-        forgetAction[0].attn.reparent(attn);
-        forgetAction[1].attn.reparent(attn);
-        //int initialDur = nar.dur();
-
-//            priAction = a.actionUnipolar($.func(pri, a.id), (d)->{
-//                a.pri.set(1+((d-0.5f)));
-//                return d;
-//            });
-//        priAction.attn.reparent(attn);
+        priAction = a.actionDial($.inh(a.id,pri), a.pri, 100);
+        priAction[0].attn.reparent(attn);//HACK
+        priAction[1].attn.reparent(attn); //HACK
 
         if (allowPause) {
 

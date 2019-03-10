@@ -57,12 +57,11 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final FrameTrigger frameTrigger;
 
-    public final FloatRange pri = new FloatRange(1f, 0, 32f);
+    public final FloatRange pri = new FloatRange(1f, 0, 2f);
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
     private final AtomicBoolean busy = new AtomicBoolean(false);
-
-    public final AtomicBoolean trace = new AtomicBoolean(false);
+    private final AtomicBoolean trace = new AtomicBoolean(false);
 
     public final FastCoWList<AgentLoop> sensors = new FastCoWList<>(AgentLoop[]::new);
 

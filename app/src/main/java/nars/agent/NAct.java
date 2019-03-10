@@ -2,6 +2,7 @@ package nars.agent;
 
 import jcog.Skill;
 import jcog.Util;
+import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import nars.$;
@@ -276,6 +277,22 @@ public interface NAct {
                 //QFunction.GoalExpMinBeliefExp;
     }
 
+    /** creates a pair of up/down buttons for discretely incrementing and decrementing a value within a given range */
+    default GoalActionConcept[] actionDial(Term base, FloatRange x, int steps) {
+        float delta = 1f/steps;
+        return actionStep(base, (c)->{
+            float before = x.get();
+            float next = Util.clamp(before + c * delta, x.min, x.max);
+            if (!Util.equals(before, next, delta/4f)) {
+                x.set(next);
+                return true;
+            }
+            return false;
+        });
+
+    }
+
+
     /**
      *
      *  determines a scalar value in range 0..1.0 representing the 'q' motivation for
@@ -326,10 +343,10 @@ public interface NAct {
             float t = thresh.asFloat();
             boolean x = (q > t) && lr[1] <= t; //(ll - lr[1] > compareThresh);
             boolean y = L.accept(x);
-//            if (x && !y) ll = t;
             lr[0] =
                     //ll;
-                    x ? q : 0;
+                    //x ? q : 0;
+                    (x && y) ? q : 0;
                     //(x && y) ? ll : 0;
                     //y ? ll : 0;
 
@@ -350,9 +367,9 @@ public interface NAct {
             float t = thresh.asFloat();
             boolean x = (q > t) && lr[0] <= t;// (rr - lr[0] > compareThresh);
             boolean y = R.accept(x);
-//            if (x && !y) rr = t;
             lr[1] = //rr;
-                    x ? q : 0;
+                    //x ? q : 0;
+                    (x && y) ? q : 0;
                     //(x && y) ? rr : 0;
                     //y ? rr : 0;
 
@@ -448,14 +465,22 @@ public interface NAct {
     }
 
     default GoalActionConcept[] actionStep(Term s, IntProcedure each) {
-        float thresh = 0.33f;
-        return actionPushButtonMutex($.inh(s, NEG), $.inh(s, PLUS), (ifNeg)->{
-            if (ifNeg) each.accept(-1);
-        }, (ifPos)->{
-            if (ifPos) each.accept(+1);
-        }, ()->thresh);
+        return actionStep(s, (e)->{
+            each.accept(e);
+            return true;
+        });
     }
 
+    default GoalActionConcept[] actionStep(Term s, IntPredicate each) {
+        float thresh = 4/6f;
+        return actionPushButtonMutex(
+            $.inh(s, NEG), $.inh(s, PLUS),
+            ifNeg -> ifNeg && each.test(-1),
+            ifPos -> ifPos && each.test(+1),
+            ()->thresh,
+            q()
+        );
+    }
 
     /**
      * update function receives a value in 0..1.0 corresponding directly to the present goal frequency

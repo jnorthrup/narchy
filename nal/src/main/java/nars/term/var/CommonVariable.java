@@ -2,10 +2,11 @@ package nars.term.var;
 
 import com.google.common.base.Joiner;
 import jcog.WTF;
-import jcog.data.set.ArrayUnenforcedSortedSet;
 import nars.Op;
 import nars.Param;
+import nars.subterm.AnonVector;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.Variable;
 import nars.unify.Unify;
 
@@ -16,9 +17,10 @@ import static nars.term.atom.Bool.Null;
 
 public final class CommonVariable extends UnnormalizedVariable {
 
-    public final SortedSet<Variable> vars;
+    /** stored sorted */
+    public final AnonVector vars;
 
-    public static CommonVariable common(Variable A, Variable B) {
+    public static Variable common(Variable A, Variable B) {
         int cmp = A.compareTo(B);
         assert(cmp!=0);
         if (cmp > 0) {
@@ -29,33 +31,54 @@ public final class CommonVariable extends UnnormalizedVariable {
 
         Op op = A.op();
 
-        if (!(A instanceof CommonVariable) && !(B instanceof CommonVariable)) {
-            return new CommonVariable(op, ArrayUnenforcedSortedSet.the(A, B));
+        AnonVector z;
+        boolean ac = A instanceof CommonVariable;
+        boolean bc = B instanceof CommonVariable;
+        if (!ac && !bc) {
+            z = new AnonVector(Terms.sorted(A, B));
         } else {
-            SortedSet<Variable> v = new TreeSet();
-            if (A instanceof CommonVariable)
-                v.addAll(((CommonVariable)A).vars);
-            else
-                v.add(A);
-            if (B instanceof CommonVariable)
-                v.addAll(((CommonVariable)B).vars);
-            else
-                v.add(B);
-            if (v.size() <= 2)
+            TreeSet<Term> t = new TreeSet<Term>();
+
+            if (ac && bc) {
+                ((CommonVariable) A).vars.forEach(t::add);
+                ((CommonVariable) B).vars.forEach(t::add);
+            } else {
+
+                CommonVariable C;
+                Variable V;
+                if (ac) {
+                    C = ((CommonVariable) A);
+                    V = B;
+                } else {
+                    C = ((CommonVariable) B);
+                    V = A;
+                }
+                C.vars.forEach(t::add);
+                if (!t.add(V))
+                    return C; //subsumed
+            }
+
+            if (t.size() <= 2)
                 throw new WTF();
-//            try (DynBytes k = RecycledDynBytes.tmpKey()) {
-//                assert (k.len == 0);
-//                for (Variable vv : v)
-//                    k.write(vv.bytes());
-//                byte[] key = k.arrayCopy();
-//                return new CommonVariable(op, v, key);
-//            }
-             return new CommonVariable(op, v);
+
+            z = new AnonVector(t.toArray(Op.EmptyTermArray));
+
+            if (ac && ((CommonVariable)A).vars.equals(z))
+                return A; //subsumed
+            if (bc && ((CommonVariable)B).vars.equals(z))
+                return B; //subsumed
+
         }
+        return new CommonVariable(op, z);
     }
 
-    CommonVariable(/*@NotNull*/ Op type, SortedSet<Variable> vars) {
+    /** vars must be sorted */
+    private CommonVariable(/*@NotNull*/ Op type, AnonVector vars) {
         super(type, key(type, vars));
+        if (Param.DEBUG) {
+            for (Term t : vars)
+                if (!t.the()) throw new WTF();
+        }
         this.vars = vars;
                 //commonVariableKey(type, x, y) /* include trailing so that if a common variable gets re-commonalized, it wont become confused with repeats in an adjacent variable */);
     }
@@ -70,13 +93,12 @@ public final class CommonVariable extends UnnormalizedVariable {
         if (s.size() < 2 || s.size() > Param.COMMON_VAR_MAX)
             return Null;
 
-        Op o = s.first().op();
-        return new CommonVariable(o, s);
+        return new CommonVariable(s.first().op(), new AnonVector(s.toArray(Op.EmptyTermArray)));
     }
 
     @Override
     public boolean the() {
-        for (Variable v : vars)
+        for (Term v : vars)
             if (!v.the())
                 return false;
         return true;
@@ -88,7 +110,10 @@ public final class CommonVariable extends UnnormalizedVariable {
     }
 
 
-    static String key(Op o, SortedSet<Variable> vars) {
+    static String key(Op o, Iterable<Term> vars) {
+        return o + Joiner.on("").join(vars);
+    }
+    static String key(Op o, Term[] vars) {
         return o + Joiner.on("").join(vars);
     }
 

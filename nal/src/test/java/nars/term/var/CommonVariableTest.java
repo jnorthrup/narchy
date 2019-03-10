@@ -3,6 +3,7 @@ package nars.term.var;
 import nars.$;
 import nars.io.IO;
 import nars.term.Variable;
+import nars.term.atom.Atomic;
 import nars.unify.UnifyAny;
 import org.junit.jupiter.api.Test;
 
@@ -27,19 +28,23 @@ class CommonVariableTest {
     @Test
     void commonVariableTest1() {
 
-        CommonVariable  p1p2 = common(p1, p2);
+
+        Variable p1p2 = common(p1, p2);
         assertEquals("##1#2", p1p2.toString());
         assertSerialize(p1p2);
 
-        CommonVariable  p2p1 = common(p2, p1);
+        assertSame(p1p2, common(p1, p1p2)); //subsumed, same instance
+
+        Variable  p2p1 = common(p2, p1);
         assertEquals("##1#2", p2p1.toString());
         assertSerialize(p2p1);
 
-        CommonVariable p2p3p1 = common(p2,  common(p3, p1));
+        Variable p2p3p1 = common(p2,  common(p3, p1));
         assertEquals("##1#2#3", p2p3p1.toString());
         assertSerialize(p2p3p1);
 
     }
+
     @Test
     void testInvalid() {
         assertThrows(Throwable.class, ()-> {
@@ -58,19 +63,19 @@ class CommonVariableTest {
     @Test
     void CommonVariableOfCommonVariable() {
 
-        CommonVariable c123 = common( c12,  p3);
+        Variable c123 = common( c12,  p3);
         assertSerialize(c123);
 
         assertEquals("##1#2#3 class nars.term.var.CommonVariable", (c123 + " " + c123.getClass()));
 
 
-        CommonVariable c1232 = common(c123, p2);
+        Variable c1232 = common(c123, p2);
         assertSerialize(c123);
         assertEquals("##1#2#3", c1232.toString());
 
     }
 
-    private static void assertSerialize(CommonVariable c123) {
+    private static void assertSerialize(Atomic c123) {
         byte[] bb = c123.bytes();
         assertEq(
                 c123,

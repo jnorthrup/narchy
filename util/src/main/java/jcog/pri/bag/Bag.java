@@ -315,7 +315,6 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
     @Override
     void setCapacity(int c);
 
-    @NotNull
     default float[] histogram(float[] x) {
         int bins = x.length;
         forEach(budget -> {
@@ -336,7 +335,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
 
 
     default Iterable<V> commit() {
-        return commit(forget(PriForget.FORGET_TEMPERATURE_DEFAULT));
+        return commit(forget(1));
     }
 
     /**

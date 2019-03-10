@@ -37,7 +37,7 @@ public abstract class Attention extends DurService implements Sampler<TaskLink> 
     @Deprecated
     public final FloatRange activationRate = new FloatRange(1f, Param.tasklinkMerge == plus ? ScalarValue.EPSILON : 1, 1);
 
-    public final FloatRange forgetRate = new FloatRange(0.5f,  -1f /* 0 */, 1f /* 2f */);
+    public final FloatRange forgetRate = new FloatRange(0.1f,  0, 1f /* 2f */);
 
 
     public final IntRange activeCapacity = new IntRange(256, 0, 2024) {

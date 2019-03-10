@@ -10,14 +10,22 @@ import java.util.function.Consumer;
  * decreases priority at a specified rate which is diminished in proportion to a budget's quality
  * so that high quality results in slower priority loss
  */
-public class PriForget<P extends Prioritizable> implements Consumer<P> {
+public enum PriForget { ;
 
-    public static final float FORGET_TEMPERATURE_DEFAULT = 1f;
+    public static final class PriMult<P extends Prioritizable> implements Consumer<P> {
 
-    public final float mult;
+        public static final float FORGET_TEMPERATURE_DEFAULT = 1f;
 
-    public PriForget(float pctToRemove) {
-        this.mult = 1 - pctToRemove;
+        public final float mult;
+
+        public PriMult(float factor) {
+            this.mult = factor;
+        }
+
+        @Override
+        public void accept(P x) {
+            x.priMult(mult);
+        }
     }
 
 
@@ -47,7 +55,7 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
             //Util.unitize(pressure * temperature / mass);
 
             if (factor > cap * ScalarValue.EPSILON) {
-                return new PriForget<>(decayRate);
+                return new PriMult<>(1-decayRate);
             }
         }
         return null;
@@ -61,18 +69,14 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
                 )
         ;
         float eachMustForgetPct =
-                rate * (excess / mass);
+                rate * (excess / (excess + mass));
 
             if (eachMustForgetPct * mass / size > ScalarValue.EPSILONsqrt) {
-                return new PriForget<>(eachMustForgetPct);
+                return new PriMult<>(1-eachMustForgetPct);
             }
 
         return null;
     }
 
-    @Override
-    public void accept(P x) {
-        x.priMult(mult);
-    }
 
 }

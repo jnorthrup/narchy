@@ -4,7 +4,6 @@ import jcog.lab.DefaultScientist;
 import jcog.lab.Lab;
 import jcog.lab.Opti;
 import jcog.lab.Optilive;
-import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.NARS;
 import nars.nal.nal1.NAL1Test;
@@ -45,15 +44,15 @@ class NARTestOptimize {
                 n.random();
                 return n;
             })
-//                .var("attnCapacity", 4, 128, 8,
-//                        (NAR n, int i) -> n.attn.active.setCapacity(i))
+                .var("attnCapacity", 4, 128, 8,
+                        (NAR n, int i) -> n.attn.active.setCapacity(i))
 
 //                .var("ttlMax", 1 * Param.TTL_MIN, 8 * Param.TTL_MIN, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.setAt(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
-                .var("conceptActivation", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-                        (NAR n, float f) -> n.attn.activationRate.set(f))
+//                .var("conceptActivation", ScalarValue.EPSILONsqrt, 1f, 0.1f,
+//                        (NAR n, float f) -> n.attn.activationRate.set(f))
 //                .var("linkActivation", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.taskLinkActivation.setAt(f))
 //                .var("forgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
