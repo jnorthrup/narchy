@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /** additionally caches subterm vectors */
-public class MapConceptIndex extends MaplikeConceptIndex {
+public class MapConceptIndex extends ConceptIndex {
 
     protected final Map<Term,Termed> intern;
 
@@ -52,7 +52,6 @@ public class MapConceptIndex extends MaplikeConceptIndex {
 
     @Override
     public void clear() {
-        super.clear();
         intern.clear();
     }
 

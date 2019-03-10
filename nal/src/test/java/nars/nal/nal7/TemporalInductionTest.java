@@ -1,15 +1,12 @@
 package nars.nal.nal7;
 
-import jcog.math.FloatSupplier;
-import jcog.signal.meter.TemporalMetrics;
-import jcog.signal.meter.event.DoubleMeter;
-import nars.*;
-import nars.concept.Concept;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
+import nars.Task;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
-import nars.term.Term;
 import nars.test.TestNAR;
-import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -197,66 +194,66 @@ class TemporalInductionTest {
         return a.intValue();
     }
 
-    static class PriMeter extends DoubleMeter {
-
-        private final FloatSupplier getter;
-
-        PriMeter(NAR n, String id) {
-            super("pri(" + id + ")", true);
-            Term term = $.$$(id);
-            this.getter = ()->{
-                Concept cc = n.concept(term);
-                if (cc == null)
-                    return 0;
-                return n.concepts.pri(cc, 0);
-            };
-        }
-
-        @Override
-        public DoubleMeter reset() {
-            set(getter.asFloat());
-            return this;
-        }
-
-
-    }
-    /**
-     * higher-level rules learned from events, especially repeatd
-     * events, "should" ultimately accumulate a higher priority than
-     * the events themselves.
-     */
-    @Test
-    void testPriorityOfInductedRulesVsEventsThatItLearnedFrom() {
-        NAR n = NARS.tmp();
-
-        n.beliefPriDefault.set(0.1f);
-        
-
-
-        TemporalMetrics m = new TemporalMetrics(1024);
-        n.onCycle(()->m.update(n.time()));
-
-        m.add(new PriMeter(n,"(0)"));
-        m.add(new PriMeter(n,"(1)"));
-        m.add(new PriMeter(n,"(2)"));
-        m.add(new PriMeter(n,"((0) && (1))"));
-        m.add(new PriMeter(n,"((0) ==> (1))"));
-        m.add(new PriMeter(n,"((1) && (2))"));
-        m.add(new PriMeter(n,"((1) ==> (2))"));
-
-
-        
-        int loops = 32, eventsPerLoop = 3, delayBetweenEvents = 2;
-        for (int i = 0; i < loops; i++) {
-            for (int j = 0; j < eventsPerLoop; j++) {
-                n.believe($.p(j), Tense.Present);
-                n.run(delayBetweenEvents);
-            }
-        }
-
-
-        m.printCSV4(System.out);
-    }
+//    static class PriMeter extends DoubleMeter {
+//
+//        private final FloatSupplier getter;
+//
+//        PriMeter(NAR n, String id) {
+//            super("pri(" + id + ")", true);
+//            Term term = $.$$(id);
+//            this.getter = ()->{
+//                Concept cc = n.concept(term);
+//                if (cc == null)
+//                    return 0;
+//                return n.concepts.pri(cc, 0);
+//            };
+//        }
+//
+//        @Override
+//        public DoubleMeter reset() {
+//            set(getter.asFloat());
+//            return this;
+//        }
+//
+//
+//    }
+//    /**
+//     * higher-level rules learned from events, especially repeatd
+//     * events, "should" ultimately accumulate a higher priority than
+//     * the events themselves.
+//     */
+//    @Test
+//    void testPriorityOfInductedRulesVsEventsThatItLearnedFrom() {
+//        NAR n = NARS.tmp();
+//
+//        n.beliefPriDefault.set(0.1f);
+//
+//
+//
+//        TemporalMetrics m = new TemporalMetrics(1024);
+//        n.onCycle(()->m.update(n.time()));
+//
+//        m.add(new PriMeter(n,"(0)"));
+//        m.add(new PriMeter(n,"(1)"));
+//        m.add(new PriMeter(n,"(2)"));
+//        m.add(new PriMeter(n,"((0) && (1))"));
+//        m.add(new PriMeter(n,"((0) ==> (1))"));
+//        m.add(new PriMeter(n,"((1) && (2))"));
+//        m.add(new PriMeter(n,"((1) ==> (2))"));
+//
+//
+//
+//        int loops = 32, eventsPerLoop = 3, delayBetweenEvents = 2;
+//        for (int i = 0; i < loops; i++) {
+//            for (int j = 0; j < eventsPerLoop; j++) {
+//                n.believe($.p(j), Tense.Present);
+//                n.run(delayBetweenEvents);
+//            }
+//        }
+//
+//
+//        m.printCSV4(System.out);
+//    }
 
 
 }

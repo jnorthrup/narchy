@@ -7,7 +7,6 @@ import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.Premise;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.index.concept.AbstractConceptIndex;
 import nars.link.TaskLink;
 import nars.task.util.TaskBuffer;
 import nars.term.Term;
@@ -65,7 +64,7 @@ public class BatchDeriver extends Deriver {
         Collection<Premise> premises = d.premiseBuffer;
         premises.clear();
 
-        Bag<TaskLink, TaskLink> tasklinks = ((AbstractConceptIndex) nar.concepts).active;
+        Bag<TaskLink, TaskLink> tasklinks = nar.attn.active;
 
 //        tasklinks.print(); System.out.println();
 

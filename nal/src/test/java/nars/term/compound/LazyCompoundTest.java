@@ -58,8 +58,7 @@ class LazyCompoundTest {
 
     @Test
     void testTransform1() {
-        String x = "((_1) ==>+- (_1))";
-        assertEquals(x, nullTransform.applyCompoundLazy($$(x)).toString());
+        assertLazyTransforms("((_1) ==>+- (_1))");
     }
 
     @Test void testTransform2() {
@@ -77,8 +76,15 @@ class LazyCompoundTest {
     }
 
     @Test void testEmptyProd() {
-        String x = "x(intValue,(),3)";
-        assertEquals(x, nullTransform.applyCompoundLazy($$(x)).toString());
-
+        assertLazyTransforms("x(intValue,(),3)");
     }
+    @Test void testAtomFunc() {
+        assertLazyTransforms("x(a)");
+    }
+
+    static private void assertLazyTransforms(String x) {
+        assertEquals(x, nullTransform.applyCompoundLazy($$(x)).toString());
+    }
+
+
 }

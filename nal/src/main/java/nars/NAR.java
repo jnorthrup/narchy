@@ -1028,7 +1028,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Deprecated
     public final Stream<Activate> conceptsActive() {
         //HACK could be better
-        return concepts.active().flatMap(x -> Stream.of(x.source(), x.target()))
+        return attn.active.stream().flatMap(x -> Stream.of(x.source(), x.target()))
                 .distinct()
                 .map(this::concept)
                 .filter(Objects::nonNull).map(c -> new Activate(c, 1));

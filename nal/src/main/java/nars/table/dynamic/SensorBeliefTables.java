@@ -10,7 +10,6 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.op.Remember;
-import nars.index.concept.AbstractConceptIndex;
 import nars.link.TaskLink;
 import nars.table.BeliefTables;
 import nars.table.temporal.RTreeBeliefTable;
@@ -280,7 +279,7 @@ public class SensorBeliefTables extends BeliefTables {
         TaskLink.link(tasklink, n);
 
         if (delta > ScalarValue.EPSILON)
-            ((AbstractConceptIndex)n.concepts).active.bag.pressurize(delta); //HACK
+            n.attn.active.bag.pressurize(delta); //HACK
 
         if (prev!=next)
             n.eventTask.emit(next);

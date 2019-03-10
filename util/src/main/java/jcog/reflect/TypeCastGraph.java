@@ -62,6 +62,8 @@ public class TypeCastGraph
 
     private static final Logger logger = Logger.getLogger(TypeCastGraph.class.getName());
 
+    private static final int PATH_CAPACITY = 64;
+
 //    private static final int findPathMinimum = 1;
 
     protected final ClassSet classes = new ClassSet();
@@ -276,6 +278,7 @@ public class TypeCastGraph
 //            });
 
         pfinder = new PathFinder(
+                PATH_CAPACITY,
                 this,
                 from,
                 Path.Direction.AB,

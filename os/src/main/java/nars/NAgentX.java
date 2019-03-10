@@ -27,7 +27,6 @@ import nars.exe.MultiExec;
 import nars.exe.Valuator;
 import nars.gui.DurSurface;
 import nars.gui.NARui;
-import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.CaffeineIndex;
 import nars.link.TaskLink;
 import nars.op.Arithmeticize;
@@ -206,7 +205,7 @@ abstract public class NAgentX extends NAgent {
                         new Valuator.DefaultValuator(0.9f),
                         //new Valuator.AEValuator(new XoRoShiRo128PlusRandom()),
 
-                        threads <= 0 ? Util.concurrencyExcept(2) : threads,
+                        threads <= 0 ? Util.concurrencyExcept(1) : threads,
 
                         false/* affinity */))
 
@@ -286,13 +285,13 @@ abstract public class NAgentX extends NAgent {
 //        senseReward.timing = new ActionTiming(n);
 
 
-        MetaAgent meta = new MetaAgent(a, true);
+        MetaAgent meta = new MetaAgent(a, false);
 
         window(AttentionUI.attentionGraph(n, a), 600, 600);
 
         window(new Gridding(NARui.agent(a), NARui.top(n)), 800, 500);
 
-        final Bag<?,TaskLink> active = ((AbstractConceptIndex) n.concepts).active;
+        final Bag<?,TaskLink> active = n.attn.active;
         int c = active.capacity();
         int history = 64;
         int width = c;
@@ -401,16 +400,16 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(28);
 
 
-        ((AbstractConceptIndex)n.concepts).activeCapacity.set(512);
-        ((AbstractConceptIndex)n.concepts).activationRate.set(1); //HACK TODO based on active bag capacity
+        n.attn.activeCapacity.set(1024);
+        n.attn.activationRate.set(1); //HACK TODO based on active bag capacity
 
 
         n.beliefPriDefault.set(0.1f);
-        n.goalPriDefault.set(0.5f);
+        n.goalPriDefault.set(0.25f);
         n.questionPriDefault.set(0.05f);
         n.questPriDefault.set(0.05f);
 
-        n.beliefConfDefault.set(0.5f);
+        n.beliefConfDefault.set(0.75f);
         n.goalConfDefault.set(0.75f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens

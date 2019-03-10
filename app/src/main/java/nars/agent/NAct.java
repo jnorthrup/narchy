@@ -15,6 +15,7 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntConsumer;
@@ -444,6 +445,15 @@ public interface NAct {
 
     default GoalActionConcept actionUnipolar(Term s, FloatToFloatFunction update) {
         return actionUnipolar(s, true, (x) -> Float.NaN, update);
+    }
+
+    default GoalActionConcept[] actionStep(Term s, IntProcedure each) {
+        float thresh = 0.33f;
+        return actionPushButtonMutex($.inh(s, NEG), $.inh(s, PLUS), (ifNeg)->{
+            if (ifNeg) each.accept(-1);
+        }, (ifPos)->{
+            if (ifPos) each.accept(+1);
+        }, ()->thresh);
     }
 
 

@@ -23,10 +23,10 @@
  */
 package jcog.reflect.graph;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import jcog.sort.FloatRank;
+import jcog.sort.RankedTopN;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,8 +43,8 @@ import java.util.logging.Logger;
  * @param <E> Тип ребра
  * @author gocha
  */
-public class PathFinder<N, E> implements Iterator<Path<N, E>> {
-    //<editor-fold defaultstate="collapsed" desc="log Функции">
+public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
+
     private static final Logger logger = Logger.getLogger(PathFinder.class.getName());
     /**
      * Граф в котором производится поиск
@@ -54,12 +54,8 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
      * Направление движения
      */
     protected Path.Direction direction;
-    /**
-     * Список путей используемых в поиске.
-     * Используются их конечные вершины.
-     */
-    protected List<Path<N, E>> paths;
-    protected Comparator<Path<N, E>> comparator;
+
+
 
     /**
      * Конструктор
@@ -70,11 +66,13 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
      * @param getWeight Получение веса ребра, вес должен быть положительным или равен нулю
      */
     public PathFinder(
+            int capacity,
             SingleDirectedGraph<N, E> graph,
             N start,
             Path.Direction direction,
             Function<Edge<N, E>, Double> getWeight
     ) {
+        super(new Path[capacity], FloatRank.the(rank(getWeight)));
         if (getWeight == null) throw new IllegalArgumentException("getWeight==null");
         if (start == null) throw new IllegalArgumentException("start==null");
         if (direction == null) throw new IllegalArgumentException("direction==null");
@@ -82,8 +80,6 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
 
         this.graph = graph;
         this.direction = direction;
-        this.paths = createPathsList();
-        this.comparator = createComparatorFrom(getWeight);
         //this.validator = createValidtor();
 
         Iterable<Edge<N, E>> next = getNextEdges(start);
@@ -93,9 +89,8 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
             //bp = bp.addAt(e);
             bp = bp.start(start);
             bp = bp.join(GraphTools.secondNode(e, direction), e.getEdge());
-            paths.add(bp);
+            add(bp);
         }
-        paths.sort(comparator);
     }
 
     /**
@@ -107,11 +102,13 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
      * @param comparator Сравнение длины путей
      */
     public PathFinder(
+            int capacity,
             SingleDirectedGraph<N, E> graph,
             N start,
             Path.Direction direction,
-            Comparator<Path<N, E>> comparator
+            FloatRank<Path<N, E>> comparator
     ) {
+        super(new Path[capacity], comparator);
         if (graph == null) {
             throw new IllegalArgumentException("graph==null");
         }
@@ -127,8 +124,6 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
 
         this.graph = graph;
         this.direction = direction;
-        this.paths = createPathsList();
-        this.comparator = comparator;
         //this.validator = createValidtor();
 
         Iterable<Edge<N, E>> next = getNextEdges(start);
@@ -136,9 +131,8 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
             Path<N, E> bp = createPath(/*direction*/);
             bp = bp.start(start);
             bp = bp.join(GraphTools.secondNode(e, direction), e.getEdge());
-            paths.add(bp);
+            add(bp);
         }
-        paths.sort(comparator);
     }
 
     private static void logFiner(String message, Object... args) {
@@ -147,21 +141,21 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
 
     //</editor-fold>
 
-    /**
-     * Полчение веса пути
-     *
-     * @param path      Путь
-     * @param getWeight Получение веса ребра
-     * @return Вес пути
-     */
-    protected double getIntWeightOf(Path<N, E> path, Function<Edge<N, E>, Double> getWeight) {
-        double w = 0;
-        for (Edge<N, E> e : path.fetch(0, path.nodeCount())) {
-            double we = getWeight.apply(e);
-            w += we;
-        }
-        return w;
-    }
+//    /**
+//     * Полчение веса пути
+//     *
+//     * @param path      Путь
+//     * @param getWeight Получение веса ребра
+//     * @return Вес пути
+//     */
+//    protected double getIntWeightOf(Path<N, E> path, Function<Edge<N, E>, Double> getWeight) {
+//        double w = 0;
+//        for (Edge<N, E> e : path.fetch(0, path.nodeCount())) {
+//            double we = getWeight.apply(e);
+//            w += we;
+//        }
+//        return w;
+//    }
 
     /**
      * Создание Comparator для пути
@@ -169,24 +163,10 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
      * @param getWeight Получение веса ребра
      * @return Comparator
      */
-    protected Comparator<Path<N, E>> createComparatorFrom(Function<Edge<N, E>, Double> getWeight) {
-        final Function<Edge<N, E>, Double> fgetWeight = getWeight;
-        return (p1, p2) -> {
-            if (p1 == p2) return 0;
-            double w1 = getIntWeightOf(p1, fgetWeight);
-            double w2 = getIntWeightOf(p2, fgetWeight);
-            return w1 == w2 ? 0 : (w1 < w2 ? -1 : 1);
-        };
+    protected static <N,E> FloatFunction<Path<N, E>> rank(Function<Edge<N, E>, Double> getWeight) {
+        return p -> (float)p.sum(getWeight::apply);
     }
 
-    /**
-     * Создает список путей
-     *
-     * @return Список путей
-     */
-    protected List<Path<N, E>> createPathsList() {
-        return new ArrayList<>();
-    }
 
     /**
      * Создаает путь
@@ -255,43 +235,34 @@ public class PathFinder<N, E> implements Iterator<Path<N, E>> {
     /* (non-Javadoc)
      * @see java.util.Iterator
      */
-    @Override
     public boolean hasNext() {
-        return paths != null && !paths.isEmpty();
+        return !isEmpty();
     }
 
     /* (non-Javadoc)
      * @see java.util.Iterator
      */
-    @Override
     public Path<N, E> next() {
-        if (paths == null || paths.isEmpty()) return null;
+        if (isEmpty()) return null;
 
-        Path<N, E> p = paths.remove(0);
+        Path<N, E> p = pop();
 
         if (p.nodeCount() > 0) {
             N last = p.node(-1);
             if (!p.hasCycles()) {
                 Iterable<Edge<N, E>> next = getNextEdges(last);
 
-                for (Edge<N, E> e : next) {
-                    paths.add(append(p, e));
-                }
+                for (Edge<N, E> e : next)
+                    add(append(p, e));
+
             } else {
                 logFiner("cycle detected");
             }
         }
 
-        paths.sort(comparator);
-
         return p;
     }
 
-    /* (non-Javadoc)
-     * @see java.util.Iterator
-     */
-    @Override
-    public void remove() {
-//        throw new UnsupportedOperationException("Not supported yet.");
-    }
+
+
 }

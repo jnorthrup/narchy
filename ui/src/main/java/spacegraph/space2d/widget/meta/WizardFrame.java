@@ -47,7 +47,7 @@ public class WizardFrame extends Splitting {
         }
     }
 
-    protected void become(Surface next) {
+    protected final void become(Surface next) {
         B(next);
     }
 

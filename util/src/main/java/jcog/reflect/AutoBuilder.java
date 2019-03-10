@@ -92,12 +92,12 @@ public class AutoBuilder<X, Y> {
      * builds the root item's representation
      */
     public final Y build(X root) {
-        return build(root, null, null, 0);
+        return build(root, null, null, root, 0);
     }
 
     @Nullable
-    protected Y build(X root, @Nullable Y parentRepr, @Nullable Object relation, int depth) {
-        if (!add(root))
+    protected <C> Y build(C root, @Nullable Y parentRepr, Object relation, @Nullable X obj, int depth) {
+        if (!add(obj))
             return null; //cycle
 
         List<Pair<X, Iterable<Y>>> target = new FasterList<>();
@@ -118,21 +118,21 @@ public class AutoBuilder<X, Y> {
 //        }
 
         {
-            classBuilders(root, builders); //TODO check subtypes/supertypes etc
+            classBuilders(obj, builders); //TODO check subtypes/supertypes etc
             if (!builders.isEmpty()) {
-                Iterable<Y> yy = () -> builders.stream().map(b -> b.apply(root, relation)).filter(Objects::nonNull).iterator();
-                target.add(pair(root, yy));
+                Iterable<Y> yy = () -> builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull).iterator();
+                target.add(pair(obj, yy));
             }
         }
 
         //if (bb.isEmpty()) {
         if (depth <= maxDepth) {
-            collectFields(root, parentRepr, target, depth + 1);
+            collectFields(root, obj, parentRepr, target, depth + 1);
         }
         //}
 
 
-        return building.build(target, root, relation);
+        return building.build(root, target, obj);
     }
 
     private void classBuilders(X x, FasterList<BiFunction<? super X, Object, Y>> ll) {
@@ -153,7 +153,7 @@ public class AutoBuilder<X, Y> {
         seen.clear();
     }
 
-    private void collectFields(X x, Y parentRepr, Collection<Pair<X, Iterable<Y>>> target, int depth) {
+    private <C> void collectFields(C c, X x, Y parentRepr, Collection<Pair<X, Iterable<Y>>> target, int depth) {
 
         Class cc = x.getClass();
         Reflect.on(cc).fields(true, false, false).forEach((s, ff) -> {
@@ -162,7 +162,7 @@ public class AutoBuilder<X, Y> {
                 Object xf = f.get(x);
                 if (xf != null && xf != x) {
                     X z = (X) xf;
-                    Y w = build(z, parentRepr, f, depth);
+                    Y w = build(c, parentRepr, f, z, depth);
                     if (w != null)
                         target.add(pair(z, List.of(w)));
                 }
@@ -215,6 +215,6 @@ public class AutoBuilder<X, Y> {
     /** TODO use Deduce interface */
     @FunctionalInterface
     public interface AutoBuilding<X, Y> {
-        Y build(List<Pair<X, Iterable<Y>>> target, @Nullable X obj, @Nullable Object context);
+        Y build(Object context, List<Pair<X, Iterable<Y>>> features, X obj);
     }
 }

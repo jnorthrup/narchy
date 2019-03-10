@@ -10,7 +10,6 @@ import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.exe.Exec;
 import nars.exe.UniExec;
-import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.ConceptIndex;
 import nars.index.concept.SimpleConceptIndex;
 import nars.op.stm.STMLinkage;
@@ -125,9 +124,9 @@ public class NARS {
 
                 n.termVolumeMax.set(26);
 
-                ((AbstractConceptIndex)n.concepts).activeCapacity.set(128);
-                ((AbstractConceptIndex)n.concepts).activationRate.set(1f);
-                ((AbstractConceptIndex)n.concepts).forgetRate.set(0.1f);
+                n.attn.activeCapacity.set(128);
+                n.attn.activationRate.set(1f);
+                n.attn.forgetRate.set(0.1f);
 
                 n.beliefPriDefault.set(0.1f);
                 n.goalPriDefault.set(0.1f);

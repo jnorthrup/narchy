@@ -183,7 +183,7 @@ public enum Tense {
         long start = MAX_VALUE, end = Long.MIN_VALUE;
         
         for (TaskRegion x : t) {
-//            if (x == null) continue;
+            if (x == null) continue;
             long xs = x.start();
             if (xs != ETERNAL) {
                 start = Math.min(xs, start);

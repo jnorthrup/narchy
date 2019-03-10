@@ -1,25 +1,24 @@
 package nars.index.concept;
 
 import jcog.WTF;
-import jcog.pri.bag.Sampler;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
  *
  */
-public abstract class ConceptIndex implements Sampler<TaskLink> {
+public abstract class ConceptIndex {
 
 
     public NAR nar;
@@ -154,11 +153,12 @@ public abstract class ConceptIndex implements Sampler<TaskLink> {
 //        }
     }
 
-    public abstract Stream<TaskLink> active();
+    /** useful for map-like impl */
+    public static final BiFunction<? super Termed, ? super Termed, ? extends Termed> setOrReplaceNonPermanent = (prev, next) -> {
+        if (prev instanceof PermanentConcept && !(next instanceof PermanentConcept))
+            return prev;
+        return next;
+    };
 
-//    @Deprecated public abstract void activate(Concept c, float pri);
-
-    /** the current priority value of the concept */
-    public abstract float pri(Termed concept, float ifMissing);
 
 }

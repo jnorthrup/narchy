@@ -1,7 +1,6 @@
 package jcog.sort;
 
 import jcog.data.list.FasterList;
-import jcog.data.pool.MetalPool;
 import jcog.decide.Roulette;
 import jcog.math.FloatSupplier;
 import jcog.util.ArrayUtils;
@@ -37,7 +36,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     public TopN(X[] target) {
         this.items = target;
-
+        setCapacity(target.length);
     }
 
     public TopN() {
@@ -53,7 +52,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     public TopN(X[] target, FloatRank<X> rank) {
         this(target);
-        rank(rank, target.length);
+        rank(rank);
     }
 
     @Override
@@ -62,13 +61,18 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         min = NEGATIVE_INFINITY;
     }
 
-    public TopN<X> rank(FloatRank<X> rank, int capacity) {
+    public TopN<X> rank(FloatRank<X> rank) {
+        this.rank = rank;
+        return this;
+    }
+
+    @Deprecated public final TopN<X> rank(FloatRank<X> rank, int capacity) {
         this.rank = rank;
         //if (capacity > 0)
             setCapacity(capacity);
+            return rank(rank);
 //        else
 //            this.capacity = 0; //HACK
-        return this;
     }
 
     public void setCapacity(int capacity) {
@@ -268,71 +272,6 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         return -rank.rank(x, min);
     }
 
-//
-//    public static <X> ThreadLocal<MetalPool<TopN<X>>> newPool(IntFunction<X[]> arrayBuilder) {
-//        return MetalPool.threadLocal(() -> {
-//            int initialCapacity = 32;
-//            return new TopN<>(arrayBuilder.apply(initialCapacity), new CachedFloatFunction<>(initialCapacity * 2, x -> Float.NaN));
-//        });
-//    }
-
-    //    /**
-//     * default pool
-//     */
-//    public final static ThreadLocal<MetalPool<TopN<Object>>> pool = TopN.newPool(Object[]::new);
-
-//    public static TopN pooled(int capacity, FloatFunction rank) {
-//        return pooled(capacity, capacity > 1, rank);
-//    }
-//
-//    public static TopN pooled(int capacity, boolean cache, FloatFunction rank) {
-//        return pooled(pool, capacity, cache, rank, Object[]::new);
-//    }
-
-//    public static <X> TopN<X> pooled(ThreadLocal<MetalPool<TopN<X>>> pool, int capacity, FloatFunction<X> rank, IntFunction<Object[]> arrayBuilder) {
-//        return pooled(pool, capacity, capacity > 1, rank, arrayBuilder);
-//    }
-
-//    public static <X> TopN<X> pooled(ThreadLocal<MetalPool<TopN<X>>> pool, int capacity, boolean cache, FloatFunction<X> rank, IntFunction<Object[]> arrayBuilder) {
-//        if (!cache) {
-//            return new TopN(arrayBuilder.apply(1), rank);
-//        } else {
-//            TopN t = pool.get().get();
-//            ((CachedFloatFunction) t.rank).value(rank);
-//            if (t.items.length < capacity)
-//                t.items = arrayBuilder.apply(capacity);
-//            return t;
-//        }
-//    }
-
-    public static <X> RankedTopN<X> pooled(ThreadLocal<MetalPool<RankedTopN>> pool, int capacity, FloatFunction<X> rank) {
-        return pooled(pool, capacity, FloatRank.the(rank));
-    }
-
-    public static <X> RankedTopN<X> pooled(ThreadLocal<MetalPool<RankedTopN>> pool, int capacity, FloatRank<X> rank) {
-        RankedTopN<X> t = pool.get().get();
-        t.rank(rank, capacity);
-        return t;
-    }
-
-//    public static void unpool(TopN<Object> t) {
-//        unpool(pool, t);
-//    }
-
-//    public static <X> void unpool(ThreadLocal<MetalPool<TopN<X>>> pool, TopN<X> t) {
-//        if (!(t.rank instanceof CachedFloatFunction))
-//            return; //wasnt from the pool
-//
-//        t.clear();
-//        ((CachedFloatFunction) t.rank).value(r -> Float.NaN);
-//        pool.get().put(t);
-//    }
-
-    public static void unpool(ThreadLocal<MetalPool<RankedTopN>> pool, RankedTopN t) {
-        t.clear();
-        t.rank = null;
-        pool.get().put(t);
-    }
 
     public void compact(float thresh) {
         int s = size();

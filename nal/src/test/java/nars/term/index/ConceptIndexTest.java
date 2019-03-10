@@ -97,7 +97,7 @@ class ConceptIndexTest {
     }
 
     private static void testCommonPrefix(boolean direction) {
-        MaplikeConceptIndex i = (MaplikeConceptIndex) (NARS.shell().concepts);
+        MapConceptIndex i = (MapConceptIndex) (NARS.shell().concepts);
         Atomic sui = Atomic.the("substituteIfUnifies");
         Atomic su = Atomic.the("substitute");
 

@@ -24,6 +24,7 @@
 package jcog.reflect.graph;
 
 import java.util.List;
+import java.util.function.ToDoubleFunction;
 
 /**
  * Описывает путь в графе
@@ -151,6 +152,16 @@ public interface Path<N, E> {
      * @return Под путь
      */
     Path<N, E> segment(int beginIdx, int endExc);
+
+
+    default double sum(ToDoubleFunction<Edge<N, E>> v) {
+        double s = 0;
+        for (Edge<N, E> e : fetch(0, nodeCount())) {
+            double we = v.applyAsDouble(e);
+            s += we;
+        }
+        return s;
+    }
 
     /**
      * Описывает напарвления движения

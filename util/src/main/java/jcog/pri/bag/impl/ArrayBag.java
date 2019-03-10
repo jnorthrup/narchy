@@ -15,10 +15,10 @@ import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriMerge;
 import jcog.signal.wave1d.ArrayHistogram;
 import jcog.sort.SortedArray;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -49,8 +49,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     protected ArrayBag(PriMerge mergeFunction, int capacity) {
         this(mergeFunction,
-                new HashMap<>(capacity, 0.99f)
-                //new UnifiedMap<>(capacity, 0.99f)
+                //new HashMap<>(capacity, 0.5f)
+                new UnifiedMap<>(capacity, 1f)
         );
         setCapacity(capacity);
     }

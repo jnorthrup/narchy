@@ -210,7 +210,7 @@ public abstract class TaskLeak extends Causable {
 
             when = focus();
 
-            nar.concepts.sample(rng, (Predicate<? super TaskLink>)(c)->{
+            nar.attn.sample(rng, (Predicate<? super TaskLink>)(c)->{
 
                 if (c == null) return false; //TODO can this even happen
 

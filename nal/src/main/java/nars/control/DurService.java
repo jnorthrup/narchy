@@ -54,6 +54,11 @@ abstract public class DurService extends NARService  {
         this(nar, 1f);
     }
 
+    /** if using this constructor, a subclass must call nar.on(this) manually */
+    protected DurService() {
+        this((NAR)null);
+    }
+
     /**
      * simple convenient adapter for Runnable's
      */

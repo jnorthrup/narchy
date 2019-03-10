@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class ProxyConceptIndex extends MaplikeConceptIndex {
+public class ProxyConceptIndex extends ConceptIndex {
     final ConceptIndex ref;
 
     public ProxyConceptIndex(ConceptIndex ref) {
@@ -28,6 +28,10 @@ public class ProxyConceptIndex extends MaplikeConceptIndex {
         ref.set(src, target);
     }
 
+    @Override
+    public void clear() {
+
+    }
 
     @Override
     public int size() {

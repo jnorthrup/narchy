@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  * concurrent radix tree index
  * TODO restore byte[] sequence writing that doesnt prepend atom length making leaves unfoldable by natural ordering
  */
-public class TreeConceptIndex extends AbstractConceptIndex implements Consumer<NAR> {
+public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
     float maxFractionThatCanBeRemovedAtATime = 0.05f;
     float descentRate = 0.5f;
@@ -186,7 +186,6 @@ public class TreeConceptIndex extends AbstractConceptIndex implements Consumer<N
 
     @Override
     public void clear() {
-        super.clear();
         concepts.clear();
     }
 

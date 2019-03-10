@@ -7,7 +7,6 @@ import nars.$;
 import nars.NAR;
 import nars.attention.AttNode;
 import nars.concept.action.GoalActionConcept;
-import nars.index.concept.AbstractConceptIndex;
 import nars.term.atom.Atomic;
 
 /** supraself agent metavisor */
@@ -25,7 +24,7 @@ public class MetaAgent {
     private final GoalActionConcept enableAction;
     private final Reward enableReward;
     //private final GoalActionConcept durAction;
-    private final GoalActionConcept forgetAction;
+    private final GoalActionConcept[] forgetAction;
 //    private final GoalActionConcept priAction;
 
     private int disableCountDown = 0;
@@ -52,7 +51,8 @@ public class MetaAgent {
         this.attn = new AttNode(this);
         attn.parent(a.attnReward);
 
-        NAR nar = a.nar();
+        NAR n = a.nar();
+        NAR nar = n;
         start = nar.time();
         curiosityAction = a.actionUnipolar($.inh(a.id,curiosity), (c)->{
             a.curiosity.rate.set(curiosity(c));
@@ -60,11 +60,18 @@ public class MetaAgent {
         });
         curiosityAction.attn.reparent(attn);
 
-        forgetAction = a.actionUnipolar($.inh(a.id,forget), (c)->{
-            ((AbstractConceptIndex)a.nar().concepts).forgetRate.set(Util.lerp(c, 0.01f, 0.99f));
-            return c;
+
+        forgetAction = a.actionStep($.inh(a.id,forget), (c)->{
+            float delta = 0.1f;
+        //forgetAction = a.actionUnipolar($.inh(a.id,forget), (c)->{
+            //n.attn.forgetRate.set(Util.lerp(c, n.attn.forgetRate.min, n.attn.forgetRate.max));
+            //n.attn.forgetRate.set(Util.lerp(c, n.attn.forgetRate.min, n.attn.forgetRate.max));
+            n.attn.forgetRate.set(Util.clamp(n.attn.forgetRate.get()+c*delta, n.attn.forgetRate.min, n.attn.forgetRate.max));
+
+            //return c;
         });
-        forgetAction.attn.reparent(attn);
+        forgetAction[0].attn.reparent(attn);
+        forgetAction[1].attn.reparent(attn);
         //int initialDur = nar.dur();
 
 //            priAction = a.actionUnipolar($.func(pri, a.id), (d)->{

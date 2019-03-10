@@ -297,15 +297,15 @@ public class GraphEditTest {
         public static void main(String[] args) {
             GraphEdit w = GraphEdit.window(1000, 1000);
 
-            w.addBox(0f, 0f, 0.2f, 0.2f, 0.01f);
+            //w.addBox(0f, 0f, 0.2f, 0.2f, 0.01f);
 
             Windo x = w.add(
                     //new OKSurface("NOT OK")
-                    new XYSlider()
-            ).posRel(0.5f, 0.5f, 0.25f, 0.25f);
+                    new XYSlider().chip()
+            ).posRel(0.5f, 0.5f, 0.1f, 0.1f);
 
-            for (int i = 0; i < 10; i++) {
-                Windo y = w.addWeak(new TogglePort()).posRel(x, -0.5f, 0.5f, 0.08f, 0.08f);
+            for (int i = 0; i < 3; i++) {
+                Windo y = w.addWeak(new TogglePort()).posRel(x, -0.5f, 0.5f, 0.05f, 0.05f);
 
                 w.addWire(new Wire(x.the(), y.the()));
             }

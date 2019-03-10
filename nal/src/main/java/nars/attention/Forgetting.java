@@ -29,19 +29,13 @@ abstract public class Forgetting {
                     float mass = b.mass(); assert(mass == mass);
 
                     if (mass > Float.MIN_NORMAL) {
-
-                        Consumer eachMustForgetPct = forget(temperature, size, cap, pressure, mass);
-
-                        if (eachMustForgetPct != null)
-                            return eachMustForgetPct;
-
+                        return forget(temperature, size, cap, pressure, mass);
                     }
                 }
             }
         }
 
         return null;
-
     }
 
     static protected float depressurize(Pressurizable b, float temperature) {

@@ -15,9 +15,6 @@ import java.util.function.Supplier;
  */
 public class HyperIterator<X> implements AutoCloseable {
 
-
-    //private static final ThreadLocal<MetalPool<RankedTopN>> pool = RankedTopN.newRankedPool();
-
     /**
      * next available item
      */
@@ -31,15 +28,6 @@ public class HyperIterator<X> implements AutoCloseable {
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
      */
     final RankedTopN<Object> plan;
-
-
-    //                    new DequePool() {
-//                        @Override
-//                        public TopN create() {
-//                            return new TopN(32, (x)->0);
-//                        }
-//                    }
-//            );
 
     public static <X> void iterate(ConcurrentRTree<X> tree, int capacity, Supplier<FloatFunction<X>> rank, Predicate<X> whle) {
 

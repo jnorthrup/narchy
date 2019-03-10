@@ -5,7 +5,6 @@ import jcog.math.IntRange;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.control.DurService;
-import nars.index.concept.AbstractConceptIndex;
 import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
 
@@ -22,7 +21,7 @@ public class PuncNoise extends DurService {
 
     @Override
     protected void run(NAR n, long dt) {
-        TaskLinkBag b = ((AbstractConceptIndex) n.concepts).active;
+        TaskLinkBag b = nar.attn.active;
         if (b!=null) {
             int i = Math.min(b.size(), tasklinksPerDuration.intValue());
             if (i > 0)

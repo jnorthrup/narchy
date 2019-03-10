@@ -1,11 +1,13 @@
 package spacegraph.space2d.widget.port.util;
 
 import jcog.Util;
+import jcog.math.v2;
+import jcog.math.v3;
 import jcog.reflect.ExtendedCastGraph;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
-import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Dragging;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.port.Wire;
@@ -34,6 +36,13 @@ public class Wiring extends Dragging {
         CAST.set(Double.class, Float.class, (Function<Double,Float>)(Double::floatValue)); //1-element
 
         CAST.set(float[].class, double[].class, (Function<float[], double[]>) Util::toDouble);
+
+        CAST.set(v2.class, Double.class, (Function<v2, Double>)(v -> Math.sqrt(Util.sqr(v.x)+Util.sqr(v.y))) ); //default scalar value projection
+
+        CAST.set(v2.class, float[].class, (Function<v2, float[]>)(v -> new float[] { v.x, v.y }) );
+        CAST.set(v3.class, float[].class, (Function<v3, float[]>)(v -> new float[] { v.x, v.y, v.z }) );
+        CAST.set(v2.class, v3.class, (Function<v2, v3>)(v -> new v3( v.x, v.y, 0)) );
+
         CAST.set(float[].class, Tensor.class, (Function<float[],Tensor>)(ArrayTensor::new));
         CAST.set(double[].class, float[].class, (Function<double[], float[]>)Util::toFloat);
         CAST.set(Float.class, float[].class, (Function<Float,float[]>)(v -> v!=null ? new float[] { v } : new float[] { Float.NaN } )); //1-element

@@ -3,9 +3,9 @@ package spacegraph.space2d.widget.port;
 import jcog.math.FloatRange;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.port.util.Wiring;
 import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.space2d.widget.text.LabeledPane;
 
 import javax.annotation.Nullable;
 
@@ -14,6 +14,7 @@ public class FloatRangePort extends FloatPort {
     //private static final float EPSILON = 0.001f;
 
     public final FloatRange f;
+    private boolean autoUpdate = true; //TODO configurable rate
 
     public FloatRangePort(float val, float min, float max) {
         this(new FloatRange(val, min, max));
@@ -26,9 +27,9 @@ public class FloatRangePort extends FloatPort {
         super();
         this.f = f;
 
-        FloatSlider s = new FloatSlider(f, label).on((FloatProcedure) FloatRangePort.this::out);
+        FloatSlider s = new FloatSlider(f).on((FloatProcedure) FloatRangePort.this::out);
 
-        set(new Gridding(s).margin(0.1f));
+        set(LabeledPane.the(label, s));
 
     }
 
@@ -37,18 +38,18 @@ public class FloatRangePort extends FloatPort {
         throw new UnsupportedOperationException();
     }
 
-    /** HACK */
-    @Override public boolean prePaint(SurfaceRender r) {
-        if (super.prePaint(r)) {
+    @Override
+    protected void compile(SurfaceRender r) {
+        if (autoUpdate) {
             if (active())
-                GET();
-            return true;
+                LOAD();
         }
-        return false;
+        super.compile(r);
     }
 
-    public void GET() {
-        synchronized(f) {
+
+    private void LOAD() {
+        synchronized (f) {
             out(f.floatValue());
         }
     }

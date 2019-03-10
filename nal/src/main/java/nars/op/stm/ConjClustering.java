@@ -16,7 +16,6 @@ import nars.control.CauseMerge;
 import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
-import nars.index.concept.AbstractConceptIndex;
 import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
 import nars.task.util.TaskException;
@@ -225,7 +224,7 @@ public class ConjClustering extends Causable {
     }
 
     protected float forgetRate() {
-        return ((AbstractConceptIndex)nar().concepts).forgetRate.floatValue();
+        return nar.attn.forgetRate.floatValue();
         //return 1f;
         //return 0.9f;
         //return 0.75f;

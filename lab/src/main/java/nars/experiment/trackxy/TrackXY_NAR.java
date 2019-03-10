@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
+import jcog.reflect.AutoBuilder;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
@@ -26,6 +27,7 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.chip.PIDChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
 
@@ -33,7 +35,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
-import static nars.Op.GOAL;
 import static nars.Op.IMPL;
 
 public class TrackXY_NAR extends NAgentX {
@@ -256,7 +257,7 @@ public class TrackXY_NAR extends NAgentX {
         //n.log();
 
         //Param.DEBUG = true;
-        n.onTask(tt -> {
+//        n.onTask(tt -> {
 //                if (tt instanceof DerivedTask && tt.isGoal()) {
 //                    //if (n.concept(tt) instanceof ActionConcept)
 //                    System.out.println(tt.proof());
@@ -274,7 +275,7 @@ public class TrackXY_NAR extends NAgentX {
 ////                        }
 ////                    }
 //                }
-        }, GOAL);
+//        }, GOAL);
 
         //final int W = 3, H = 1;
         final int W = 4, H = 4;
@@ -334,10 +335,11 @@ public class TrackXY_NAR extends NAgentX {
 
                 GraphEdit g = GraphEdit.window(800, 800);
                 g.windoSizeMinRel(0.02f, 0.02f);
-
+                g.build(a, new AutoBuilder<>(2, (context, features, obj) -> {
+                        return new TextEdit(features.toString());
+                }));
                 g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
                 g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
-
                 g.add(NARui.taskBufferView(d.out, n)).sizeRel(0.25f,0.25f);
                 g.add(new PIDChip(new MiniPID(0.01, 0.01, 0.01))).sizeRel(0.1f,0.1f);
 

@@ -83,8 +83,8 @@ public enum PremiseDeriverCompiler {
                 rootBranches,
 
                 //DeriverPlanner.DirectDeriverPlanner
-                //new DeriverRules.CentrallyMemoizedDeriverPlanner()
-                DeriverPlanner.ConceptMetaMemoizer
+                new DeriverPlanner.CentralMemoizer()
+                //DeriverPlanner.ConceptMetaMemoizer
         );
     }
 

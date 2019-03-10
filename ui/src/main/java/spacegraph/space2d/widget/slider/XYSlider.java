@@ -12,15 +12,12 @@ import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.hud.HudHover;
-import spacegraph.space2d.widget.port.FloatPort;
+import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import static jcog.Texts.n4;
-import static spacegraph.space2d.container.Bordering.E;
-import static spacegraph.space2d.container.Bordering.S;
 
 /**
  * Created by me on 6/26/16.
@@ -124,10 +121,12 @@ public class XYSlider extends Surface implements HudHover  {
     @Override
     public Surface finger(Finger f) {
         if (f.tryFingering(drag)) {
+            return this;
         } else if (f.pressing(drag.button)) {
             setPoint(f);
+            return this;
         }
-        return this;
+        return null;
     }
 
 
@@ -185,17 +184,14 @@ public class XYSlider extends Surface implements HudHover  {
     }
 
     public Surface chip() {
-        FloatPort px = new FloatPort();
-        FloatPort py = new FloatPort();
-        on((x,y)->{
-            px.out(x);
-            py.out(y);
-        });
+//        FloatPort px = new FloatPort();
+//        FloatPort py = new FloatPort();
+//        b.set(S, px, 0.1f);
+//        b.set(E, py, 0.1f);
+        TypedPort<v2> b = new TypedPort<>(v2.class);
+        on((x,y)-> b.out(()->knob));
+        b.set(this);
 
-        Bordering b = new Bordering();
-        b.center(this);
-        b.set(S, px, 0.1f);
-        b.set(E, py, 0.1f);
         return b;
     }
 }

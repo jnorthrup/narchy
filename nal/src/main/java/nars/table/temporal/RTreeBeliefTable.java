@@ -52,7 +52,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //              };
 
 
-    private static final int CURSOR_CAPACITY = 32;
+    private static final int CURSOR_CAPACITY = 128;
 
 
     protected int capacity;
@@ -72,7 +72,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             Leaf l = (Leaf) next;
             Object[] data = l.data;
-            for (int i = 0, dataLength = l.size; i < dataLength; i++) {
+            short s = l.size;
+            for (int i = 0; i < s; i++) {
                 Task x = (Task) data[i];
                 if (x.isDeleted()) {
 
@@ -88,18 +89,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                    closest.accept(x);
             }
 
-            if (l.size >= 2)
+            if (s >= 2)
                 mergeableLeaf.accept(l);
 
         } else {
-
-            Branch b = (Branch) next;
-            Node[] bd = b.data;
-            for (int i = 0, dataLength = b.size; i < dataLength; i++) {
-                Node bb = bd[i];
-                if (!findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf))
-                    return false;
-            }
+            return ((Branch<TaskRegion>) next).ANDlocal((bb) -> findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf));
         }
 
         return true;

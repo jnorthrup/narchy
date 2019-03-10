@@ -237,6 +237,13 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return out(this, x);
     }
 
+    public boolean out(Supplier<X> x) {
+        if (active()) {
+            return this.out(x.get());
+        }
+        return false;
+    }
+
     @Override
     protected void starting() {
         super.starting();
@@ -266,9 +273,6 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     }
 
 
-    /**
-     * TODO Supplier-called version of this
-     */
     protected final boolean out(Port<?> sender, X x) {
         if (enabled) {
             Node<spacegraph.space2d.Surface, Wire> n = this.node;

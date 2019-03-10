@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import com.jogamp.opengl.GL2;
 import jcog.data.graph.*;
 import jcog.math.v2;
+import jcog.reflect.AutoBuilder;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
@@ -189,42 +190,47 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
         y.size(w, h);
         return y;
     }
-
-    public void addBox(float cx, float cy, float wo, float ho, float thick) {
-        //Draw.rectFrame();
-
-
-//        float wi = wo - thick, hi = ho - thick;
-
-        //N
-        //Draw.rect(cx-wo/2, cy-ho/2, wo, vthick, gl );
-        Windo top = addUndecorated(new EmptySurface())
-                .posRel(cx, cy+ho/2, wo, thick)
-                .fixed(true);
-        //S
-        //Draw.rect(cx-wo/2, cy+ho/2 - vthick, wo, vthick, gl );
-        Windo bottom = addUndecorated(new EmptySurface())
-                .posRel(cx, cy+-ho/2, wo, thick)
-                .fixed(true);
-
-//        float hthick = (wo - wi) / 2;
-        //W
-        //Draw.rect(cx-wo/2, cy - hi/2, hthick, hi, gl );
-        Windo left = addUndecorated(new EmptySurface())
-                .posRel(cx+-wo/2, cy, thick, ho)
-                .fixed(true);
-        //E
-        //Draw.rect(cx+wo/2 - hthick, cy - hi/2, hthick, hi, gl );
-        Windo right = addUndecorated(new EmptySurface())
-                .posRel(cx+wo/2, cy, thick, ho)
-                .fixed(true);
-
-
-    }
+//
+//    public void addBox(float cx, float cy, float wo, float ho, float thick) {
+//        //Draw.rectFrame();
+//
+//
+////        float wi = wo - thick, hi = ho - thick;
+//
+//        //N
+//        //Draw.rect(cx-wo/2, cy-ho/2, wo, vthick, gl );
+//        Windo top = addUndecorated(new EmptySurface())
+//                .posRel(cx, cy+ho/2, wo, thick)
+//                .fixed(true);
+//        //S
+//        //Draw.rect(cx-wo/2, cy+ho/2 - vthick, wo, vthick, gl );
+//        Windo bottom = addUndecorated(new EmptySurface())
+//                .posRel(cx, cy+-ho/2, wo, thick)
+//                .fixed(true);
+//
+////        float hthick = (wo - wi) / 2;
+//        //W
+//        //Draw.rect(cx-wo/2, cy - hi/2, hthick, hi, gl );
+//        Windo left = addUndecorated(new EmptySurface())
+//                .posRel(cx+-wo/2, cy, thick, ho)
+//                .fixed(true);
+//        //E
+//        //Draw.rect(cx+wo/2 - hthick, cy - hi/2, hthick, hi, gl );
+//        Windo right = addUndecorated(new EmptySurface())
+//                .posRel(cx+wo/2, cy, thick, ho)
+//                .fixed(true);
+//
+//
+//    }
 
     /** sub-window minimum size, relative to the workspace */
     public void windoSizeMinRel(float w, float h) {
         windoSizeMinRel.set(w,h);
+    }
+
+    public <X,Z extends S> Windo build(X value, AutoBuilder<X, Z> builder) {
+        Z z = builder.build(value);
+        return add(z);
     }
 
 
@@ -316,18 +322,18 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
         Windo z = add(
                 new WizardFrame(new ProtoWidget()) {
-                    @Override
-                    protected void become(Surface next) {
-                        super.become(next);
-
-                        //GraphEdit pp = parent(GraphEdit.class);
-//                        if (next instanceof ProtoWidget) {
-//                            pp.setCollidable(false);
-//                        } else {
-//                            pp.setCollidable(true);
-//                        }
-
-                    }
+//                    @Override
+//                    protected void become(Surface next) {
+//                        super.become(next);
+//
+//                        //GraphEdit pp = parent(GraphEdit.class);
+////                        if (next instanceof ProtoWidget) {
+////                            pp.setCollidable(false);
+////                        } else {
+////                            pp.setCollidable(true);
+////                        }
+//
+//                    }
                 });
         z.pos(RectFloat.XYWH(pos.x, pos.y, 0.1f*w(), 0.1f*h()));
         z.root().zoomNext(z);

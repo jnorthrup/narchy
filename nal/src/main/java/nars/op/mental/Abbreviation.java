@@ -15,7 +15,6 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
-import nars.index.concept.AbstractConceptIndex;
 import nars.link.TaskLink;
 import nars.subterm.Subterms;
 import nars.task.ITask;
@@ -258,7 +257,7 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
     protected void next(NAR n, BooleanSupplier kontinue) {
         do {
 
-            TaskLink a = ((AbstractConceptIndex)n.concepts).active.sample(n.random());
+            TaskLink a = nar.attn.sample(n.random());
             if (a == null)
                 break;
 

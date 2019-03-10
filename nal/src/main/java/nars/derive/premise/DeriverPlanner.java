@@ -17,11 +17,11 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
     /** memory-less, evaluated exhaustively each */
     DeriverPlanner DirectDeriverPlanner = DeriverRules::what;
 
-    final class CentrallyMemoizedDeriverPlanner implements DeriverPlanner {
+    final class CentralMemoizer implements DeriverPlanner {
 
         public final ByteHijackMemoize<PremiseKey, short[]> whats;
 
-        public CentrallyMemoizedDeriverPlanner() {
+        public CentralMemoizer() {
             whats = Memoizers.the.memoizeByte(this + "_what",
                     Memoizers.DEFAULT_MEMOIZE_CAPACITY*2,
                     d-> DeriverRules.what(d.x));

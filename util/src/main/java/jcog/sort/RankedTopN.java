@@ -13,32 +13,8 @@ import java.util.Arrays;
 public class RankedTopN<X> extends TopN<X> {
 
     /** cached rank/strength/weight/value table; maintained to be synchronized with the items array */
-    private float[] value = null;
+    private float[] value;
 
-
-//    static final ThreadLocal<MetalPool<Ranked>> rr = ThreadLocal.withInitial(()->new MetalPool<>() {
-//        @Override
-//        public Ranked create() {
-//            return new Ranked();
-//        }
-//
-//        @Override
-//        public void put(Ranked i) {
-//            i.clear();
-//            super.put(i);
-//        }
-//
-//        @Override
-//        public void put(Ranked[] items, int size) {
-//            for (int i = 0; i < size; i++)
-//                items[i].clear();
-//            super.put(items, size);
-//        }
-//    });
-
-//    public RankedTopN(IntFunction<Ranked<X>[]> arrayBuilder, int initialCapacity) {
-//        this(arrayBuilder.apply(initialCapacity));
-//    }
 
     public RankedTopN(X[] items) {
         super(items);
@@ -46,10 +22,10 @@ public class RankedTopN<X> extends TopN<X> {
 
     @Override
     public final void setCapacity(int capacity) {
-        if (capacity != capacity()) {
-            super.setCapacity(capacity);
+        super.setCapacity(capacity);
+
+        if (value==null || value.length!=capacity)
             value = value !=null ? Arrays.copyOf(value, capacity) : new float[capacity];
-        }
     }
 
 //    public RankedTopN(int capacity) {
@@ -63,7 +39,7 @@ public class RankedTopN<X> extends TopN<X> {
 
     public RankedTopN(X[] buffer, FloatRank<X> ranking) {
         this(buffer);
-        rank(ranking, buffer.length);
+        rank(ranking);
     }
 
 //    public static ThreadLocal<MetalPool<RankedTopN>> newRankedPool() {

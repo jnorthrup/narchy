@@ -18,13 +18,13 @@ import nars.NAR;
 import nars.Narsese;
 import nars.Task;
 import nars.agent.NAgent;
+import nars.attention.Attention;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.control.DurService;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
-import nars.index.concept.AbstractConceptIndex;
 import nars.op.stm.ConjClustering;
 import nars.task.util.TaskBuffer;
 import nars.term.Termed;
@@ -172,13 +172,13 @@ public class NARui {
     @NotNull
     public static Surface priView(NAR n) {
 
-        AbstractConceptIndex cc = (AbstractConceptIndex) n.concepts;
+        Attention cc = n.attn;
 
 
         return Splitting.row(new BagView<>(cc.active, n), 0.8f,
                 new Gridding(
                         new XYSlider(cc.forgetRate,
-                                ((AbstractConceptIndex) n.concepts).activationRate
+                                cc.activationRate
                                 //.subRange(1/1000f, 1/2f)
                         ) {
                             @Override

@@ -282,7 +282,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     private MetalLongSet only(boolean provideStamp) {
-        return provideStamp ? Stamp.toMutableSet(get(firstValidIndex()).task) : null;
+        return provideStamp ? Stamp.toMutableSet(firstValid().task) : null;
+    }
+
+    private TaskComponent firstValid() {
+        return get(firstValidIndex());
     }
 
     protected int firstValidIndex() {
@@ -427,6 +431,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 //        removeIf(x -> update(x, Float.MIN_NORMAL) == null);
 //    }
 
+    boolean allInvalid() {
+        return !this.anySatisfy(TaskComponent::valid);
+    }
 
     /**
      * aka "shrinkwrap", or "trim". use after filtering cyclic.
@@ -436,10 +443,15 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      */
     private int refocus() {
         long[] se;
-        if (size() > 1) {
-            se = Tense.union(Iterables.transform(this, (TaskComponent x) -> x.task));
+        boolean allInvalid = allInvalid(); //uninitialized or not
+
+        if ((allInvalid ? size() : active()) > 1) {
+            se = Tense.union(Iterables.transform(this,
+                    allInvalid ?
+                            ((TaskComponent x)->x.task) :
+                            ((TaskComponent x) -> x.valid() ? x.task : null)));
         } else {
-            TruthProjection.TaskComponent only = getFirst();
+            TruthProjection.TaskComponent only = allInvalid ? getFirst() : firstValid();
             se = new long[]{only.task.start(), only.task.end()};
         }
 
@@ -451,8 +463,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 se[1] = Math.max(start, Math.min(end, se[1]));
             }
         }
-        if (se[0] != start || se[1] != end) {
-            invalidate();
+        if (allInvalid || (se[0] != start || se[1] != end)) {
+            if (!allInvalid)
+                invalidate();
 
             start = se[0];
             end = se[1];

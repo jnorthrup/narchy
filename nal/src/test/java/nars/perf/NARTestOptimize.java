@@ -7,7 +7,6 @@ import jcog.lab.Optilive;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.NARS;
-import nars.index.concept.AbstractConceptIndex;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal3.NAL3Test;
 import nars.nal.nal5.NAL5Test;
@@ -54,7 +53,7 @@ class NARTestOptimize {
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
                 .var("conceptActivation", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-                        (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).activationRate.set(f))
+                        (NAR n, float f) -> n.attn.activationRate.set(f))
 //                .var("linkActivation", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.taskLinkActivation.setAt(f))
 //                .var("forgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,

@@ -372,7 +372,24 @@ public class Branch<X> extends AbstractNode<X> {
         }
         return true;
     }
-
+    public boolean ANDlocal(Predicate<Node<X>> p) {
+        Node<X>[] n = this.data;
+        short s = this.size;
+        for (int i = 0; i < s; i++) {
+            if (!p.test(n[i]))
+                return false;
+        }
+        return true;
+    }
+    public boolean ORlocal(Predicate<Node<X>> p) {
+        Node<X>[] n = this.data;
+        short s = this.size;
+        for (int i = 0; i < s; i++) {
+            if (p.test(n[i]))
+                return true;
+        }
+        return false;
+    }
 
     @Override
     public boolean OR(Predicate<X> p) {
