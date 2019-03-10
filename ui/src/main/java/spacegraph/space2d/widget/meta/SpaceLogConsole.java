@@ -4,7 +4,6 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.SimpleTheme;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.ConsoleGUI;
 import spacegraph.space2d.widget.console.TextEdit0;
@@ -31,16 +30,12 @@ public class SpaceLogConsole extends Gridding implements SpaceLogger {
     }
 
     @Override
-    public boolean start(SurfaceBase parent) {
-        if (super.start(parent)) {
-
+    protected void starting() {
+        super.starting();
             textGUI = new TextEdit0(text);
 
             set(textGUI);
-            return true;
         }
-        return false;
-    }
 
     @Override
     public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {

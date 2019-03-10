@@ -3,7 +3,6 @@ package jcog.tree.rtree;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import jcog.tree.rtree.split.LinearSplitLeaf;
 import jcog.tree.rtree.split.QuadraticSplitLeaf;
-import org.eclipse.collections.api.tuple.primitive.ObjectDoublePair;
 
 import java.util.function.Function;
 
@@ -35,17 +34,7 @@ public class Spatialization<X> {
     }
 
     public Node<X> newBranch(Leaf<X> a, Leaf<X> b) {
-//        int as = a.size();
-//        int bs = b.size();
-//        if (as + bs <= max) {
-//            //merge two leaves but doesnt seem to happen
-//            Leaf<X> l = new Leaf(max);
-//            System.arraycopy(a.data, 0, l.data, 0, as);
-//            System.arraycopy(b.data, as, l.data, as, bs);
-//            return l;
-//        } else {
-            return new Branch<>(max, a, b);
-//        }
+        return new Branch<>(max, a, b);
     }
 
     public Node<X> split(X x, Leaf<X> leaf) {
@@ -58,11 +47,8 @@ public class Spatialization<X> {
         //default: do nothing
     }
 
-    public final Leaf<X> transfer(ObjectDoublePair<X>[] sortedMbr, int from, int to) {
-        final Leaf<X> l = newLeaf(to-from);
-        for (int i = from; i < to; i++)
-            l.add(sortedMbr[i].getOne(), true, this, new boolean[] { false });
-        return l;
+    public Leaf<X> transfer(X[] sortedMbr, int from, int to) {
+        return new Leaf<>(this, sortedMbr, from, to);
     }
 
     public double epsilon() {

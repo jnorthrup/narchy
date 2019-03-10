@@ -562,7 +562,7 @@ public class Plot2D extends Widget {
                 update = !bmp.updateIfNotShowing(); //keep updating till updated
             }
 
-            bmp.paintMatrix(g);
+            bmp.paint(g, null);
         }
 
         @Override

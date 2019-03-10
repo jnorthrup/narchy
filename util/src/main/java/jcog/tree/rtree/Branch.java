@@ -43,22 +43,18 @@ public class Branch<X> extends AbstractNode<X> {
 
     public final Node<X>[] data;
 
-    public Branch(int cap) {
-        this.bounds = null;
-        this.size = 0;
-        this.data = new Node[cap];
-    }
+//    public Branch(int cap) {
+//        this.bounds = null;
+//        this.size = 0;
+//        this.data = new Node[cap];
+//    }
 
-    protected Branch(int cap, Leaf<X> a, Leaf<X> b) {
-        this(cap);
+    protected Branch(int cap, Node... data) {
         assert (cap >= 2);
-        assert (a != b);
-        data[0] = a;
-        data[1] = b;
-        this.size = 2;
-        this.bounds = a.bounds.mbr(b.bounds);
+        this.data = data.length == cap ? data : Arrays.copyOf(data, cap); //TODO assert all data are unique; cache hash?
+        this.size = (short) data.length;
+        this.bounds = HyperRegion.mbr(Node::bounds, data);
     }
-
 
     @Override
     public boolean contains(X x, HyperRegion b, Spatialization<X> model) {

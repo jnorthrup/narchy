@@ -5,7 +5,6 @@ import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 
@@ -32,23 +31,16 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
 
 
     @Override
-    public boolean start(SurfaceBase parent) {
-        if (super.start(parent)) {
-            model.start(this);
-            return true;
-        }
-        return false;
+    protected void starting() {
+        super.starting();
+        model.start(this);
     }
 
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            model.stop(this);
-            return true;
-        }
-        return false;
+    protected void stopping() {
+        model.stop(this);
+        super.stopping();
     }
-
 
     @Override
     protected void hide(X x, Surface s) {

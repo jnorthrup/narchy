@@ -9,6 +9,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.video.Tex;
+import spacegraph.video.TexSurface;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -27,7 +28,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
 
 
     private Dimension pixelSize;
-    private Tex.TexSurface tex;
+    private TexSurface tex;
 
     public static void main(String[] args) throws IOException, JSchException {
 
@@ -416,7 +417,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
     @Override
     public void redraw(int x, int y, int width, int height) {
         //repaint(x, y, width, height);
-        tex.update(img);
+        tex.set(img);
     }
 
 

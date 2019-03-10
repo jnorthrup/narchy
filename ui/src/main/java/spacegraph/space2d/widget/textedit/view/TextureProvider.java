@@ -67,7 +67,7 @@ public final class TextureProvider {
                     if ((ttt = tt.texture) == null) {
                         BufferedImage charTex = getTexture(c, FONT_BITMAP_WIDTH, FONT_BITMAP_HEIGHT);
                         tt.commit(gl);
-                        tt.update(charTex);
+                        tt.set(charTex);
                         tt.commit(gl); //HACK
                         if (tt.texture == null)
                             throw new WTF();

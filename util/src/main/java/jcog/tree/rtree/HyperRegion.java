@@ -45,6 +45,15 @@ public interface HyperRegion {
         return this::mbr;
     }
 
+
+    static HyperRegion mbr(Spatialization model, Object[] rect) {
+        return mbr((Function<Object, HyperRegion>) model::bounds, rect, (short) rect.length);
+    }
+
+    static <X> HyperRegion mbr(Function<X, HyperRegion> builder, X[] rect) {
+        return mbr(builder, rect, (short) rect.length);
+    }
+
     static <X> HyperRegion mbr(Function<X, HyperRegion> builder, X[] rect, short size) {
         assert (size > 0);
         HyperRegion bounds = builder.apply(rect[0]);
@@ -56,10 +65,12 @@ public interface HyperRegion {
         return bounds;
     }
 
-    /**
-     * warning, the array may contain nulls. in which case, break because these will be at the end
-     */
+
     default HyperRegion mbr(HyperRegion[] rect) {
+        return HyperRegion.MBR(rect);
+    }
+
+    static HyperRegion MBR(HyperRegion[] rect) {
         HyperRegion bounds = rect[0];
         for (int k = 1; k < rect.length; k++) {
             HyperRegion r = rect[k];

@@ -137,7 +137,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         if (needUpdate.compareAndSet(true, false)) {
             if (ensureBufferSize()) {
                 renderText();
-                if (!tex.update(backbuffer)) {
+                if (!tex.set(backbuffer)) {
                     needUpdate.set(true); //try again
                 }
             }

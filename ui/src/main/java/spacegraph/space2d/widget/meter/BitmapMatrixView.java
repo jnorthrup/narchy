@@ -13,6 +13,7 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.Point2i;
 import spacegraph.video.Draw;
 import spacegraph.video.Tex;
+import spacegraph.video.TexSurface;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -28,7 +29,7 @@ import static jcog.Util.clampSafe;
  * 1D/2D bitmap viewer with parametric coloring.
  * updated and displayed as a bitmap texture
  */
-public class BitmapMatrixView extends Tex.TexSurface {
+public class BitmapMatrixView extends TexSurface {
 
     public final int w;
     public final int h;
@@ -228,7 +229,7 @@ public class BitmapMatrixView extends Tex.TexSurface {
 
         view.color(buf, pix);
 
-        return tex.update(buf);
+        return tex.set(buf);
     }
 
     public boolean alpha() {

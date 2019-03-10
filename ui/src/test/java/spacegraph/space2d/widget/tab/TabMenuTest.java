@@ -7,7 +7,7 @@ import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 
 import java.util.Map;
 
-class TabPaneTest {
+class TabMenuTest {
     public static class TestDefault {
         public static void main(String[] args) {
             SpaceGraph.window(new TabMenu(Map.of(

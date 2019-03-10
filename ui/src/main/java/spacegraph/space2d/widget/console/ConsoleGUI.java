@@ -12,8 +12,6 @@ import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminalListener;
 import jcog.event.Off;
-import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.SurfaceBase;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -78,91 +76,78 @@ public class ConsoleGUI extends ConsoleTerminal {
             new TextColor.RGB(15,15,15));
 
     @Override
-    public boolean start(@Nullable SurfaceBase parent) {
-        if (super.start(parent)) {
+    protected void starting() {
 
-            term.addVirtualTerminalListener(listener = new VirtualTerminalListener() {
+        super.starting();
 
-
-                @Override
-                public void onFlush() {
-                    text.invalidate();
-                }
-
-                @Override
-                public void onBell() {
-
-                }
-
-                @Override
-                public void onClose() {
-                }
-
-                @Override
-                public void onResized(Terminal terminal, TerminalSize terminalSize) {
-                    text.invalidate();
-                }
-            });
-
-            text.invalidate();
+        term.addVirtualTerminalListener(listener = new VirtualTerminalListener() {
 
 
+            @Override
+            public void onFlush() {
+                text.invalidate();
+            }
 
-            try {
+            @Override
+            public void onBell() {
 
-                screen = new TerminalScreen(term);
-                screen.startScreen();
+            }
+
+            @Override
+            public void onClose() {
+            }
+
+            @Override
+            public void onResized(Terminal terminal, TerminalSize terminalSize) {
+                text.invalidate();
+            }
+        });
+
+        text.invalidate();
 
 
+        try {
 
-                gui = new MultiWindowTextGUI(MyStupidGUIThread::new, screen);
-
-
-
-
+            screen = new TerminalScreen(term);
+            screen.startScreen();
 
 
-                
+            gui = new MultiWindowTextGUI(MyStupidGUIThread::new, screen);
 
-                window = new BasicWindow();
-                window.setPosition(new TerminalPosition(0, 0));
+
+            window = new BasicWindow();
+            window.setPosition(new TerminalPosition(0, 0));
 
 //                TerminalSize size = term.getTerminalSize();
 //                window.setSize(new TerminalSize(size.getColumns() , size.getRows() ));
 
-                window.setHints(List.of(Window.Hint.FULL_SCREEN, Window.Hint.NO_DECORATIONS));
+            window.setHints(List.of(Window.Hint.FULL_SCREEN, Window.Hint.NO_DECORATIONS));
 
-                window.setTheme(DARK);
-                window.setEnableDirectionBasedMovements(true);
-
-
+            window.setTheme(DARK);
+            window.setEnableDirectionBasedMovements(true);
 
 
+            gui.addWindow(window);
+            gui.setActiveWindow(window);
+            gui.setEOFWhenNoWindows(true);
 
-                gui.addWindow(window);
-                gui.setActiveWindow(window);
-                gui.setEOFWhenNoWindows(true);
+            init(window);
 
-                init(window);
-
-                TextGUIThread guiThread = gui.getGUIThread();
-                updates = root().onUpdate((s) -> {
-                    try {
-                        guiThread.processEventsAndUpdate();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+            TextGUIThread guiThread = gui.getGUIThread();
+            updates = root().onUpdate((s) -> {
+                try {
+                    guiThread.processEventsAndUpdate();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
 
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return false;
-    }
 
+    }
 
     @Override
     public boolean stop() {

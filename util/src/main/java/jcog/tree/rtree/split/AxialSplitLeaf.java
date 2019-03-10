@@ -22,10 +22,9 @@ package jcog.tree.rtree.split;
 
 import jcog.tree.rtree.*;
 import jcog.util.ArrayUtils;
-import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
-import org.eclipse.collections.api.tuple.primitive.ObjectDoublePair;
+import org.eclipse.collections.api.block.function.primitive.IntToDoubleFunction;
 
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
+import java.util.Arrays;
 
 /**
  * Fast RTree split suggested by Yufei Tao taoyf@cse.cuhk.edu.hk
@@ -34,7 +33,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * <p>
  * Created by jcairns on 5/5/15.
  */
-public final class AxialSplitLeaf<X> implements Split<X> {
+public class AxialSplitLeaf<X> implements Split<X> {
 
     /** default stateless instance which can be re-used */
     public static final Split<?> the = new AxialSplitLeaf<>();
@@ -65,26 +64,22 @@ public final class AxialSplitLeaf<X> implements Split<X> {
         final int splitDimension = axis;
 
         short size = (short) (leaf.size+1);
-        ObjectDoublePair<X>[] sorted = new ObjectDoublePair[size];
         X[] ld = leaf.data;
+        X[] obj = Arrays.copyOf(ld, size); //? X[] obj = (X[]) Array.newInstance(leaf.data.getClass(), size);
+        obj[size-1] = x;
+
+        double[] strength = new double[size];
         for (int i = 0; i < size; i++) {
             X li = i < size-1 ? ld[i] : x;
             double c = model.bounds(li).center(splitDimension); //TODO secondary sort by range
-            sorted[i] = pair(li, -c /* negative since the ArrayUtils.sort below is descending */);
+            strength[i] = -c;
         }
 
         if (size > 1)
-            ArrayUtils.sort(sorted, (DoubleFunction<ObjectDoublePair>) ObjectDoublePair::getTwo);
+            ArrayUtils.sort(obj, 0, size-1, (IntToDoubleFunction) i->strength[i]);
 
-
-
-
-
-        
-        final Leaf<X> l1Node = model.transfer(sorted, 0, size/2);
-        final Leaf<X> l2Node = model.transfer(sorted, size / 2, size);
-
-
+        final Leaf<X> l1Node = model.transfer(obj, 0, size/2);
+        final Leaf<X> l2Node = model.transfer(obj, size / 2, size);
 
         //assert (l1Node.size()+l2Node.size() == size);
 

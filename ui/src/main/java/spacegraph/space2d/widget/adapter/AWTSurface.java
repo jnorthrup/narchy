@@ -3,12 +3,10 @@ package spacegraph.space2d.widget.adapter;
 import com.jogamp.newt.event.KeyEvent;
 import jcog.event.Off;
 import jcog.math.v2;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.input.key.impl.Keyboard;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.util.AWTCamera;
 import spacegraph.video.Tex;
@@ -39,9 +37,6 @@ public class AWTSurface extends Widget implements KeyPressed {
     }
 
 
-
-
-
     private Component component;
     private final Tex tex = new Tex();
     private final Dimension psize;
@@ -62,66 +57,54 @@ public class AWTSurface extends Widget implements KeyPressed {
 
     }
 
-
     @Override
-    public boolean start(@Nullable SurfaceBase parent) {
-        if (super.start(parent)) {
+    protected void starting() {
 
+        super.starting();
 
-            if (component instanceof JFrame) {
-                component.setVisible(false);
-                component = ((RootPaneContainer) component).getRootPane();
-            }
-
-
-            Window frame = new MyFrame();
-
-
-
-            
-
-
-            component.addNotify();
-
-
-            
-            component.setPreferredSize(psize);
-            
-            component.setSize(psize);
-            frame.pack();
-
-            component.setVisible(true);
-
-            
-
-            component.validate();
-
-
-            set(tex.view());
-
-
-            AtomicBoolean busy = new AtomicBoolean(false);
-            ons = root().onUpdate(w -> {
-
-                if (!busy.compareAndSet(false, true))
-                    return;
-
-                
-                SwingUtilities.invokeLater(()->{
-                    try {
-                        buffer = AWTCamera.get(component, buffer);
-                        tex.update(buffer);
-                    } finally {
-                        busy.set(false);
-                    }
-                });
-
-            });
-
-            return true;
+        if (component instanceof JFrame) {
+            component.setVisible(false);
+            component = ((RootPaneContainer) component).getRootPane();
         }
 
-        return false;
+
+        Window frame = new MyFrame();
+
+
+        component.addNotify();
+
+
+        component.setPreferredSize(psize);
+
+        component.setSize(psize);
+        frame.pack();
+
+        component.setVisible(true);
+
+
+        component.validate();
+
+
+        set(tex.view());
+
+
+        AtomicBoolean busy = new AtomicBoolean(false);
+        ons = root().onUpdate(w -> {
+
+            if (!busy.compareAndSet(false, true))
+                return;
+
+
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    buffer = AWTCamera.get(component, buffer);
+                    tex.set(buffer);
+                } finally {
+                    busy.set(false);
+                }
+            });
+
+        });
     }
 
     @Override
@@ -190,13 +173,6 @@ public class AWTSurface extends Widget implements KeyPressed {
         }
 
 
-
-
-
-
-
-
-
         return false;
     }
 
@@ -210,7 +186,9 @@ public class AWTSurface extends Widget implements KeyPressed {
     }
 
 
-    /** TODO re-test */
+    /**
+     * TODO re-test
+     */
     public void awtFinger(Finger finger) {
         boolean wasTouching = false; //isTouched();
 
@@ -225,7 +203,7 @@ public class AWTSurface extends Widget implements KeyPressed {
                 ));
             }
             lpx = lpy = -1;
-            return; 
+            return;
         }
 
         v2 rp = finger.relativePos(this);
@@ -244,7 +222,6 @@ public class AWTSurface extends Widget implements KeyPressed {
         }
 
 
-        
         Component target = SwingUtilities.getDeepestComponentAt(this.component, px, py);
         if (target == null)
             target = this.component;
@@ -253,7 +230,6 @@ public class AWTSurface extends Widget implements KeyPressed {
             py -= target.getY();
         }
 
-        
 
         if (finger.pressing(0) && !finger.prevButtonDown.get(0)) {
             handle(new MouseEvent(target,
@@ -277,9 +253,9 @@ public class AWTSurface extends Widget implements KeyPressed {
 
         boolean moved = lpx != px || lpy != py;
 
-        
+
         if (finger.pressing(0)) {
-            
+
             if (moved && finger.prevButtonDown.get(0)) {
                 handle(new MouseEvent(target,
                         MouseEvent.MOUSE_DRAGGED,
@@ -292,8 +268,7 @@ public class AWTSurface extends Widget implements KeyPressed {
 
 
                 myFocus = target;
-                
-                
+
 
             }
         } else {
@@ -306,15 +281,10 @@ public class AWTSurface extends Widget implements KeyPressed {
             }
         }
 
-        
+
     }
 
     private void handle(AWTEvent e) {
-
-
-
-
-
 
 
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(e);
@@ -335,27 +305,6 @@ public class AWTSurface extends Widget implements KeyPressed {
         public boolean isFocusable() {
             return true;
         }
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         @Override

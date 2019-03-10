@@ -11,7 +11,6 @@ import jcog.reflect.AutoBuilder;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
@@ -35,13 +34,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ObjectSurface<X> extends MutableUnitContainer {
 
-    private static final AutoBuilder.AutoBuilding<Object,Surface>  DefaultObjectSurfaceBuilder = (List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj, @Nullable Object context) -> {
-        List<Surface> outer =  new FasterList<>(target.size());
+    private static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj, @Nullable Object context) -> {
+        List<Surface> outer = new FasterList<>(target.size());
         for (Pair<Object, Iterable<Surface>> p : target) {
             //Object o = p.getOne();
             List<Surface> cx = Lists.newArrayList(p.getTwo());
-            switch(cx.size()) {
-                case 0: break; //TODO shouldnt happen
+            switch (cx.size()) {
+                case 0:
+                    break; //TODO shouldnt happen
                 case 1:
                     outer.add(cx.get(0));
                     break;
@@ -53,7 +53,8 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         }
 
         switch (outer.size()) {
-            case 0: return null;
+            case 0:
+                return null;
             case 1:
                 //outer.add(new Scale(cx.get(0), Widget.marginPctDefault));
                 return outer.get(0);
@@ -84,11 +85,12 @@ public class ObjectSurface<X> extends MutableUnitContainer {
     public ObjectSurface(X x) {
         this(x, 1);
     }
+
     public ObjectSurface(X x, int depth) {
         this(x, DefaultObjectSurfaceBuilder, depth);
     }
 
-    public ObjectSurface(X x, AutoBuilder.AutoBuilding<Object,Surface> builder, int maxDepth) {
+    public ObjectSurface(X x, AutoBuilder.AutoBuilding<Object, Surface> builder, int maxDepth) {
         this(x, new AutoBuilder<>(maxDepth, builder));
     }
 
@@ -102,21 +104,21 @@ public class ObjectSurface<X> extends MutableUnitContainer {
     }
 
     private void initDefaults() {
-        builder.on(FloatRange.class, (FloatRange x, Object relation)->
-            //new LabeledPane(
-                new FloatRangePort(x, objLabel(x,relation))
+        builder.on(FloatRange.class, (FloatRange x, Object relation) ->
+                        //new LabeledPane(
+                        new FloatRangePort(x, objLabel(x, relation))
                 //{
-                    //public String text() {
-                        //return k + '=' + super.text();
-                    //}
+                //public String text() {
+                //return k + '=' + super.text();
+                //}
                 //}
                 //new MySlider((FloatRange) x, objLabel(x,relation))
-            //)
+                //)
         );
-        builder.on(IntRange.class,  (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
+        builder.on(IntRange.class, (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
 
-        builder.on(Runnable.class, (x,relation)-> new PushButton(objLabel(x, relation), x));
-        builder.on(AtomicBoolean.class, (x,relation) -> new MyAtomicBooleanCheckBox(objLabel(x,relation), x));
+        builder.on(Runnable.class, (x, relation) -> new PushButton(objLabel(x, relation), x));
+        builder.on(AtomicBoolean.class, (x, relation) -> new MyAtomicBooleanCheckBox(objLabel(x, relation), x));
 
         builder.on(MutableEnum.class, (x, relation) -> EnumSwitch.newSwitch(x, relationLabel(relation)));
 
@@ -134,7 +136,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
                     continue;
 
                 Surface yyy = builder.build(cxx);
-                if (yyy!=null)
+                if (yyy != null)
                     yy.add(yyy); //TODO depth, parent, ..
             }
             if (yy.isEmpty())
@@ -152,7 +154,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
     }
 
     public String objLabel(Object x, Object relation) {
-        return relation==null ? x.toString() : relationLabel(relation);
+        return relation == null ? x.toString() : relationLabel(relation);
     }
 
     public String relationLabel(@Nullable Object relation) {
@@ -166,17 +168,12 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 
 
     @Override
-    public boolean start(@Nullable SurfaceBase parent) {
+    protected void starting() {
+        super.starting();
 
-        if (super.start(parent)) {
+        builder.clear();
 
-            builder.clear();
-
-            set(builder.build(obj));
-
-            return true;
-        }
-        return false;
+        set(builder.build(obj));
     }
 
     protected String label(X obj) {
@@ -236,17 +233,20 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             Draw.rect(bounds, gl);
         }
 
-        @Override @Nullable protected Surface label() {
+        @Override
+        @Nullable
+        protected Surface label() {
             String s;
             if (context instanceof Field) {
-                s = ((Field)context).getName();
+                s = ((Field) context).getName();
             } else {
                 s = context != null ? context.toString() : (instance != null ? instance.toString() : null);
             }
 
             Surface provided = super.label();
-            if (s == null) { return provided; }
-            else  {
+            if (s == null) {
+                return provided;
+            } else {
                 VectorLabel l = new VectorLabel(s);
                 if (provided == null) return l;
                 else return Splitting.row(l, 0.3f, provided);
@@ -256,8 +256,6 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 
         //TODO other inferred features
     }
-
-
 
 
     private static class MyIntSlider extends IntSlider {

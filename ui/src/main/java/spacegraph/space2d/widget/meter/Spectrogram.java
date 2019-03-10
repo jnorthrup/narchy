@@ -24,7 +24,7 @@ public class Spectrogram extends Surface implements BitmapMatrixView.ViewFunctio
     private final IntRange T = new IntRange(1, 1, 512);
 
     /** N item axis capacity ("bins", "states", "frequencies", etc..) */
-    private final IntRange N = new IntRange(1, 1, 512);
+    public final IntRange N = new IntRange(0, 0, 512);
 
 
     /** TODO abstract, and other visualization options (z-curve, etc) */
@@ -146,25 +146,21 @@ public class Spectrogram extends Surface implements BitmapMatrixView.ViewFunctio
         });
     }
 
-    @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
-    }
-
-    public final <X> void next(Iterable<X> items, ToIntFunction<X> colorFn) {
-        Iterator<X> ii = items.iterator();
-        //int j = 0;
-//        //could be black, white, any color, or noise
-//        protected int colorMissing() {
-//            return 0;
-//        }
-        next((i)->{
-            if (ii.hasNext())
-                return colorFn.applyAsInt(ii.next());
-            else
-                return 0;
-        });
-    }
+//    public final <X> void next(Iterable<X> items, ToIntFunction<X> colorFn) {
+//        Iterator<X> ii = items.iterator();
+//        //int j = 0;
+////        //could be black, white, any color, or noise
+////        protected int colorMissing() {
+////            return 0;
+////        }
+//        next((i)->{
+//            if (ii.hasNext())
+//                return colorFn.applyAsInt(ii.next());
+//            else
+//                return 0;
+//        });
+//    }
 
     private class MyBitmapMatrixView extends BitmapMatrixView {
         private float px1, py1, px2, py2;

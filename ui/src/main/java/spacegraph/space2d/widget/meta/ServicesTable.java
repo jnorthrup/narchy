@@ -6,7 +6,6 @@ import jcog.service.Service;
 import jcog.service.Services;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
@@ -39,24 +38,16 @@ public class ServicesTable extends Gridding implements GridModel, GridRenderer {
         set(new ScrollXY<>(new DynGrid<>(this, this)).view(0, 0, 2, 16));
     }
 
-    @Override
-    public boolean start(SurfaceBase parent) {
-        if (super.start(parent)) {
+    @Override protected void starting() {  super.starting();
             updater = context.change.on(this::update);
             update();
-            return true;
-        }
-        return false;
     }
 
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            updater.off();
-            updater = null;
-            return true;
-        }
-        return false;
+    protected void stopping() {
+        updater.off();
+        updater = null;
+        super.stopping();
     }
 
     @Override

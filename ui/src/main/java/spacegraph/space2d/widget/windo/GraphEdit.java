@@ -44,7 +44,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
     private final DoubleClicking doubleClicking;
 
-    public final v2 windoSizeMinRel = new v2(0.05f, 0.05f); //visible
+    public final v2 windoSizeMinRel = new v2(0.005f, 0.005f); //visible
 
     public GraphEdit() {
         super();

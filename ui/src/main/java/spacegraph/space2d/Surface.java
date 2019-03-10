@@ -177,6 +177,10 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return false;
     }
 
+    /** TODO */
+    public String term() {
+        return toString();
+    }
 
     protected void starting() {
         //for implementing in subclasses

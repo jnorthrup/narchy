@@ -5,7 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.sort.FloatRank;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
-import jcog.tree.rtree.split.LinearSplitLeaf;
+import jcog.tree.rtree.split.AxialSplitLeaf;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
@@ -38,15 +38,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             1f;
             //2f;
 
-    private static final int MAX_TASKS_PER_LEAF = 4;
+    private static final int MAX_TASKS_PER_LEAF = 3;
 
     private static final Split SPLIT =
-//            new AxialSplitLeaf() {
-//                /* TODO tune */
-//            };
-              new LinearSplitLeaf() {
+            new AxialSplitLeaf() {
                 /* TODO tune */
-              };
+            };
+//              new LinearSplitLeaf() {
+//                /* TODO tune */
+//              };
 //              new QuadraticSplitLeaf() {
 //                /* TODO tune */
 //              };

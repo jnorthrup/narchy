@@ -177,18 +177,6 @@ public abstract class NALTask extends UnitPri implements Task {
         }
     }
 
-    @Override
-    public final double range(int dim) {
-        switch (dim) {
-            case 0:
-                return end() - start();
-            case 1:
-            case 2:
-                return 0;
-            default:
-                throw new UnsupportedOperationException();
-        }
-    }
 
     /**
      * extended: with meta table

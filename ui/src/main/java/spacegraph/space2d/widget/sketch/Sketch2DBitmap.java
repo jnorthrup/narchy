@@ -47,7 +47,7 @@ public class Sketch2DBitmap extends Surface implements MenuSupplier {
      * must call this to re-generate texture so it will display
      */
     private void update() {
-        bmp.update(buf);
+        bmp.set(buf);
     }
 
 

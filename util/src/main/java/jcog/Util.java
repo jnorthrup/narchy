@@ -1683,9 +1683,10 @@ public enum Util {
      * see: https:
      */
     public static void pauseNextIterative(int previousContiguousPauses) {
-        if (previousContiguousPauses < 256) {
-            return;
-        } else if (previousContiguousPauses < 512) {
+//        if (previousContiguousPauses < 256) {
+//            return;
+        //} else
+        if (previousContiguousPauses < 512) {
             onSpinWait();
         } else if (previousContiguousPauses < 1024) {
 

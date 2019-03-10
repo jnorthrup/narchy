@@ -286,7 +286,7 @@ abstract public class NAgentX extends NAgent {
 //        senseReward.timing = new ActionTiming(n);
 
 
-        MetaAgent meta = new MetaAgent(a);
+        MetaAgent meta = new MetaAgent(a, true);
 
         window(AttentionUI.attentionGraph(n, a), 600, 600);
 

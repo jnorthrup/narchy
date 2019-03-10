@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CheckBox extends ToggleButton {
 
     private String text;
-    private final VectorLabel label;
+    public final VectorLabel label;
 
     public CheckBox(String text) {
         this.text = text;
@@ -30,6 +30,11 @@ public class CheckBox extends ToggleButton {
     public CheckBox(String text, BooleanProcedure b) {
         this(text);
         on((a, e) -> b.value(e));
+    }
+
+    @Override
+    public String term() {
+        return "\"" + text + "\"";
     }
 
     public CheckBox(String text, ObjectBooleanProcedure<ToggleButton> on) {

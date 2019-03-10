@@ -5,7 +5,6 @@ import nars.concept.Concept;
 import nars.control.DurService;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 
 abstract public class ConceptView extends MutableUnitContainer {
@@ -19,35 +18,25 @@ abstract public class ConceptView extends MutableUnitContainer {
 
         this.term = t;
         this.nar = n;
-
-
     }
 
     abstract protected void update();
 
-    @Nullable
-    public Concept concept() {
+    @Nullable protected Concept concept() {
         return nar.concept(term);
     }
 
     @Override
-    public boolean start(@Nullable SurfaceBase parent) {
-        if (super.start(parent)) {
-            on = DurService.on(nar, this::update);
-            return true;
-        }
-        return false;
+    protected void starting() {
+        super.starting();
+        on = DurService.on(nar, this::update);
     }
 
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            if (on != null) {
-                on.off();
-                on = null;
-            }
-            return true;
-        }
-        return false;
+    protected void stopping() {
+        on.off();
+        on = null;
+        super.stopping();
     }
+
 }

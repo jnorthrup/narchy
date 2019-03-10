@@ -246,7 +246,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
             g.dispose();
 
             t.commit(io.gl);  //HACK
-            t.update(bi);  //HACK
+            t.set(bi);  //HACK
             t.commit(io.gl);  //HACK
 
             tHv = t.texture;

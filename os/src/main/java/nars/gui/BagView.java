@@ -7,7 +7,6 @@ import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.control.DurService;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.grid.Gridding;
@@ -54,23 +53,16 @@ public class BagView<X extends Prioritized> extends TabMenu {
                                 DurService on;
 
                                 @Override
-                                public boolean start(SurfaceBase parent) {
-                                    if (super.start(parent)) {
-                                        on = DurService.on(nar, (Runnable) this::update);
-                                        return true;
-                                    }
-                                    return false;
+                                protected void starting() {
+                                    super.starting();
+                                    on = DurService.on(nar, (Runnable) this::update);
                                 }
 
-
                                 @Override
-                                public boolean stop() {
-                                    if (super.stop()) {
-                                        on.off();
-                                        on = null;
-                                        return true;
-                                    }
-                                    return false;
+                                protected void stopping() {
+                                    on.off();
+                                    on = null;
+                                    super.stopping();
                                 }
                             };
                             return b;

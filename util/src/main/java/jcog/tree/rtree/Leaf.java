@@ -49,9 +49,15 @@ public class Leaf<X> extends AbstractNode<X> {
     }
 
     public Leaf(X[] arrayInit) {
-        this.bounds = null;
         this.data = arrayInit;
         this.size = 0;
+        this.bounds = null;
+    }
+
+    public Leaf(Spatialization<X> model, X[] sortedMbr, int from, int to) {
+        this.data = Arrays.copyOfRange(sortedMbr, from, to);
+        this.size = (short) data.length;
+        this.bounds = HyperRegion.mbr(model, data);
     }
 
     @Override

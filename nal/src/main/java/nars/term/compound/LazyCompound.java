@@ -305,6 +305,8 @@ public class LazyCompound {
             Term y;
             if ((y = getNext(b, ii, range)) == Null)
                 return null;
+            if (y == null)
+                throw new NullPointerException(); //WTF
 
             if (y instanceof EllipsisMatch) {
                 //expand
@@ -325,8 +327,6 @@ public class LazyCompound {
             } else {
                 if (t == null)
                     t = new Term[n];
-                if (y == null)
-                    throw new NullPointerException(); //WTF
                 t[i++] = y;
             }
         }

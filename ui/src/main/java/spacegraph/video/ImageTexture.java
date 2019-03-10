@@ -106,10 +106,13 @@ public class ImageTexture extends Tex {
 
                     textureData = textureCache.apply(key);
 
+                    loading.set(false);
+
                     if (textureData == null)
                         throw new NullPointerException(); //TODO logger.warn
 
                 });
+
 
             }
             if (textureData!=null) {

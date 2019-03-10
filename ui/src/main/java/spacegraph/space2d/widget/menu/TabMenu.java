@@ -10,6 +10,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaHover;
+import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.LinkedHashMap;
@@ -25,7 +26,8 @@ public class TabMenu extends Menu {
     private final Splitting wrap;
     private final Function<String, ToggleButton> buttonBuilder;
 
-    private static final float CONTENT_VISIBLE_SPLIT = 0.9f;
+    private static final float MenuContentRatio = 0.9f;
+
     private Map<String,ToggleButton> items = new LinkedHashMap();
 
     public TabMenu(Map<String, Supplier<Surface>> options) {
@@ -63,7 +65,7 @@ public class TabMenu extends Menu {
         return this;
     }
 
-    void toggle(Supplier<Surface> creator, boolean onOrOff, Surface[] created, boolean inside) {
+    void toggle(ToggleButton button, Supplier<Surface> creator, boolean onOrOff, Surface[] created, boolean inside) {
         Surface cx;
         if (onOrOff) {
             try {
@@ -78,6 +80,15 @@ public class TabMenu extends Menu {
         } else {
             cx = null;
         }
+        if (cx==null) cx = new VectorLabel("null");
+
+        //wrap/decorate
+
+        //VectorLabel label = ((ToggleButton) button).label;
+
+//        if (label!=null)
+            cx = LabeledPane.the(button.term() /*buttonBuilder.apply(label.text())*/, cx);
+
         synchronized(TabMenu.this) {
 
             if (onOrOff) {
@@ -113,28 +124,30 @@ public class TabMenu extends Menu {
 
     public Surface toggle(Function<String, ToggleButton> buttonBuilder, String label, Supplier<Surface> creator) {
         final Surface[] created = {null};
-        ObjectBooleanProcedure<ToggleButton> toggleInside = (cb, onOrOff) -> {
-            toggle(creator, onOrOff, created, true);
+        ObjectBooleanProcedure<ToggleButton> toggleInside = (button, onOrOff) -> {
+            toggle(button, creator, onOrOff, created, true);
         };
 
-        Runnable toggleOutside = () -> {
+        Runnable spawnOutside = () -> {
             //Exe.invokeLater(()->{
-            toggle(creator, true, created, false);
+            toggle(null, creator, true, created, false);
             //});
         };
 
         ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);
         items.put(label, bb);
-        PushButton cc = PushButton.awesome("external-link").click(toggleOutside);
+        PushButton cc = PushButton.awesome("external-link").click(spawnOutside);
 
         //return Splitting.row(bb, 0.75f, new AspectAlign(cc, AspectAlign.Align.RightTop,1, 0.75f));
 
-        AspectAlign ccc = new AspectAlign(cc, 1, AspectAlign.Align.TopRight, 0.15f, 0.15f);
+        AspectAlign ccc = new AspectAlign(cc, 1, AspectAlign.Align.TopRight, 0.25f, 0.25f);
         return new MetaHover(bb, ()->ccc);
+        //return new Stacking(cc, ccc);
+
     }
 
     protected void split() {
-        wrap.split(CONTENT_VISIBLE_SPLIT);
+        wrap.split(MenuContentRatio);
     }
 
     protected void unsplit() {

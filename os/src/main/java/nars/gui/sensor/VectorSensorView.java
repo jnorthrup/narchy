@@ -16,7 +16,6 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.ButtonSet;
@@ -265,24 +264,16 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         private final AtomicReference<Runnable> next = new AtomicReference<>();
 
         @Override
-        public boolean start(SurfaceBase parent) {
-            if (super.start(parent)) {
-                on = DurService.on(view.nar, this::commit);
-                return true;
-            }
-            return false;
+        protected void starting() {
+            super.starting();
+            on = DurService.on(view.nar, this::commit);
         }
 
         @Override
-        public boolean stop() {
-
-            if (super.stop()) {
-                on.off();
-                on = null;
-                return true;
-            }
-            return false;
-
+        protected void stopping() {
+            on.off();
+            on = null;
+            super.stopping();
         }
 
         protected void commit() {

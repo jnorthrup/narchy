@@ -34,6 +34,10 @@ public class VectorLabel extends EmptyContainer {
     }
 
 
+    public VectorLabel clone() {
+        return new VectorLabel(text); //TODO color, thickness, etc
+    }
+
     @Override
     protected void doLayout(int dtMS) {
 

@@ -5,6 +5,7 @@ import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
 import jcog.math.IntRange;
 import jcog.signal.Tensor;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -118,16 +119,21 @@ public class Cluster2DChip extends Bordering {
     @Override
     protected void starting() {
         super.starting();
-        update = root().animate((dt) -> {
-            //if (visible()) {
-                centroids.set(g.nodeStream());
-            //}
-//            for (Centroid c : g.centroids) {
-//                float a = (float) (1.0 / (1 + c.localError()));
-//                ae.put(Util.toFloat(c.getDataRef()), a * 0.05f, 0.001f, 0, false);
-//            }
-            return true;
-        });
+//        update = root().animate((dt) -> {
+//            //if (visible()) {
+//            //}
+////            for (Centroid c : g.centroids) {
+////                float a = (float) (1.0 / (1 + c.localError()));
+////                ae.put(Util.toFloat(c.getDataRef()), a * 0.05f, 0.001f, 0, false);
+////            }
+//            return true;
+//        });
+    }
+
+    @Override
+    protected void compile(SurfaceRender r) {
+        centroids.set(g.nodeStream());
+        super.compile(r);
     }
 
     @Override

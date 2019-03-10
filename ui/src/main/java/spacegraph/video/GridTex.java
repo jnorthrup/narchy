@@ -33,7 +33,7 @@ public class GridTex extends Surface {
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
         if (tex.texture == null) {
-            tex.update(rr128, 128, 128);
+            tex.set(rr128, 128, 128);
         }
 
         tex.paint(gl, bounds, repeatScale);

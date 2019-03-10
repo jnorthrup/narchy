@@ -8769,6 +8769,21 @@ public enum ArrayUtils {
 
     }
 
+    public static <X> void sort(X[] a, int left, int right /* inclusive */, IntToDoubleFunction v) {
+
+        for (int i = left, j = i; i < right; j = ++i) {
+            X ai = a[i + 1];
+            double vai = v.valueOf(i+1);
+            while (vai > v.valueOf(j)) {
+                a[j + 1] = a[j];
+                if (j-- == left)
+                    break;
+            }
+            a[j + 1] = ai;
+        }
+
+    }
+
     public static void sort(byte[] a, int left, int right /* inclusive */, ByteToByteFunction v) {
 
 

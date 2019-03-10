@@ -40,7 +40,7 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
     public final void forEach(Consumer<Surface> o) {
 
         S t = the();
-        assert(t!=null);
+        //assert(t!=null);
         //if (t!=null) {
             o.accept(t);
         //}

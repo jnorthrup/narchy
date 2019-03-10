@@ -11,6 +11,7 @@ import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
 import jcog.signal.wave1d.HaarWaveletTensor;
 import jcog.signal.wave1d.SlidingDFTTensor;
+import jcog.signal.wave1d.Spectrogram;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -154,7 +155,7 @@ public class ProtoWidget extends Bordering {
         add("Text", LabeledPort::generic, "Meter");
         add("Plot", PlotChip::new, "Meter"); //Line, Bar plots
         add("Wave", PlotChip::new, "Meter"); //waveform view
-        add("Spectrogram", PlotChip::new, "Meter"); //frequency domain view
+        add("Spectrogram", ()->new SpectrogramChip(), "Meter"); //frequency domain view
         add("MatrixView", ()-> new MatrixViewChip(), "Meter");
         add("Cluster2D", Cluster2DChip::new, "Meter");
         add("Histogram", TODO, "Meter"); //accepts scalar and an integer # of bins
@@ -177,6 +178,7 @@ public class ProtoWidget extends Bordering {
 
         add("CPU", TODO, "Data"); //cpu/memory/disk/network information
 
+        //add("WidgetTest", ()->new WidgetTest(), "Reality");
     }};
 
     public ProtoWidget() {
@@ -234,7 +236,9 @@ public class ProtoWidget extends Bordering {
         }));
 
         Exe.invokeLater(()->{
+
             User u = new User();
+
             library.byName.forEach((t,v)->{
                 u.put(t, t);
             });

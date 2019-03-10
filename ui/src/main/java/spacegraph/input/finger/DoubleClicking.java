@@ -13,7 +13,7 @@ public class DoubleClicking {
 
     /** accepts the mouse point where clicked */
     private final Consumer<v2> onDoubleClick;
-    private final Surface target;
+    private final Surface clicked;
 
     private v2 doubleClickSpot = null;
 
@@ -23,23 +23,21 @@ public class DoubleClicking {
     /** in milliseconds */
     private long doubleClickTime = Long.MIN_VALUE;
 
-    private int count = 0;
 
-    public DoubleClicking(int button, Consumer<v2> doubleClicked, Surface target) {
-        this.target = target;
+    public DoubleClicking(int button, Consumer<v2> doubleClicked, Surface clicked) {
+        this.clicked = clicked;
         this.button = button;
         this.onDoubleClick = doubleClicked;
     }
 
 
-    public boolean update(Finger finger) {
-        if (!_update(finger)) {
-            if (count > 0)
-                reset();
-            return false;
-        }
-        return true;
-    }
+//    public boolean update(Finger finger) {
+//        if (finger.clickedNow(button, clicked)) {
+//
+//        }
+//    }
+
+
 
     public void reset() {
         doubleClickSpot = null;
@@ -47,12 +45,13 @@ public class DoubleClicking {
         count = 0;
     }
 
-    private boolean _update(Finger finger) {
+    int count = 0;
+    public boolean update(Finger finger) {
         //        if (finger!=null)
 //            System.out.println(finger.buttonSummary());
 
 
-        if (finger == null || !finger.clickedNow(button, target))
+        if (!finger.clickedNow(button, clicked))
             return count > 0; //could be in-between presses
 
         count++;
@@ -62,12 +61,17 @@ public class DoubleClicking {
         if (count == 2) {
 
             if (doubleClickSpot!=null) {
-                if (System.nanoTime() - doubleClickTime > maxDoubleClickTimeNS)
+                if (System.nanoTime() - doubleClickTime > maxDoubleClickTimeNS) {
+                    reset();
                     return false; //too long
+                }
             }
 
-            if (doubleClickSpot!=null && !doubleClickSpot.equals(downHit, PIXEL_DISTANCE_THRESHOLD))
+            if (doubleClickSpot!=null && !doubleClickSpot.equals(downHit, PIXEL_DISTANCE_THRESHOLD)) {
+                reset();
                 return false; //not on same point
+            }
+
 
 
             reset();

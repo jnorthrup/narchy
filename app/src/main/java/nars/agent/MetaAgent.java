@@ -15,6 +15,7 @@ public class MetaAgent {
 
     static final Atomic curiosity = Atomic.the("curi"),
             forget = Atomic.the("forget"),
+            pri = Atomic.the("pri"),
             enable = Atomic.the("enable"), duration = Atomic.the("dur");
 
     final AttNode attn;
@@ -23,8 +24,9 @@ public class MetaAgent {
 
     private final GoalActionConcept enableAction;
     private final Reward enableReward;
-    private final GoalActionConcept durAction;
+    //private final GoalActionConcept durAction;
     private final GoalActionConcept forgetAction;
+//    private final GoalActionConcept priAction;
 
     private int disableCountDown = 0;
     private final int disableThreshold = 4;
@@ -63,17 +65,23 @@ public class MetaAgent {
             return c;
         });
         forgetAction.attn.reparent(attn);
+        //int initialDur = nar.dur();
 
+//            priAction = a.actionUnipolar($.func(pri, a.id), (d)->{
+//                a.pri.set(1+((d-0.5f)));
+//                return d;
+//            });
+//        priAction.attn.reparent(attn);
 
         if (allowPause) {
 
             //TODO control the agent dur, not the entire NAR
-            int initialDur = nar.dur();
-            durAction = a.actionUnipolar($.func(duration, a.id), (d)->{
-                nar.time.dur(dur(initialDur,d));
-                return d;
-            });
-            durAction.attn.reparent(attn);
+//            int initialDur = nar.dur();
+//            durAction = a.actionUnipolar($.func(duration, a.id), (d)->{
+//                nar.time.dur(dur(initialDur,d));
+//                return d;
+//            });
+//            durAction.attn.reparent(attn);
 
 
             //TODO agent enable
@@ -102,7 +110,8 @@ public class MetaAgent {
             enableAction = null;
             enableReward = null;
 
-            durAction = null;
+
+//            durAction = null;
         }
 
         //TODO duration control

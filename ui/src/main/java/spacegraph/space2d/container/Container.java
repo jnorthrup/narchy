@@ -26,7 +26,7 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public boolean start(SurfaceBase parent) {
+    public final boolean start(SurfaceBase parent) {
         if (super.start(parent)) {
             layout();
             return true;
@@ -141,7 +141,7 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public boolean stop() {
+    public /* final */ boolean stop() {
         if (super.stop()) {
             forEach(Surface::stop);
             //TODO: clear();

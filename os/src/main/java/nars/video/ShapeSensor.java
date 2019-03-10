@@ -239,7 +239,7 @@ public class ShapeSensor extends NARService {
         for (int i = 0, dataLength = data.length; i < dataLength; i++) {
             data[i] = (byte) (data[i] * 255);
         }
-        filteredRGB = filteredTex.update(filteredShown, filteredRGB);
+        filteredRGB = filteredTex.set(filteredShown, filteredRGB);
 
 
         

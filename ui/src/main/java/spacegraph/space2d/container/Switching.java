@@ -1,8 +1,6 @@
 package spacegraph.space2d.container;
 
-import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -69,26 +67,16 @@ public class Switching extends Container {
         return this;
     }
 
-    @Override
-    public boolean start(@Nullable SurfaceBase parent) {
-        if (super.start(parent)) {
-
+    @Override protected void starting() {  super.starting();
                 if (!current.start(this))
                     throw new RuntimeException();
-
-
-            return true;
-        }
-        return false;
     }
 
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            current.stop();
-            return true;
-        }
-        return false;
+    protected void stopping() {
+        current.stop();
+        current = null;
+        super.stopping();
     }
 
     @Override
