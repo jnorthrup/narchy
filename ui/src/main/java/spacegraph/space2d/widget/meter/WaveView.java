@@ -68,13 +68,13 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
 
         @Override
         protected boolean startDrag(Finger f) {
-            selectStart = sample(f.posRel(WaveView.this).x);
+            selectStart = sample(f.posGlobal(WaveView.this).x);
             return true;
         }
 
         @Override
         protected boolean drag(Finger f) {
-            selectEnd = sample(f.posRel(WaveView.this).x);
+            selectEnd = sample(f.posGlobal(WaveView.this).x);
             return true;
         }
     };

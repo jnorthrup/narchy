@@ -112,7 +112,7 @@ abstract public class Container extends Surface {
             Surface[] found = new Surface[1];
 
 
-            v2 fp = finger.posPixel; //posRel(this);
+            v2 fp = finger.posGlobal(this);
 
             whileEachReverse(c -> {
 

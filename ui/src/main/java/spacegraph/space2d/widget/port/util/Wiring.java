@@ -107,7 +107,7 @@ public class Wiring extends Dragging {
             updateEnd(f);
         }
 
-        pathVis.add(f.posRel(pathVis), 64);
+        pathVis.add(f.posGlobal(pathVis), 64);
 
         return true;
     }

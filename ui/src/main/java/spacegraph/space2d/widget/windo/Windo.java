@@ -124,12 +124,12 @@ public class Windo extends MutableUnitContainer {
     }
 
     protected boolean fingeringBounds(Finger finger) {
-        v2 f = finger.posRel(this);
+        v2 f = finger.posGlobal(this);
         return bounds.contains(f.x, f.y);
     }
 
     protected v2 windowHitPointRel(Finger finger) {
-        return finger.posRel(this);
+        return finger.posGlobal(this);
     }
 
 

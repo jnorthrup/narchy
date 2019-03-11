@@ -93,8 +93,7 @@ public class SliderModel extends Surface {
     }
 
     private void setPoint(Finger f) {
-        v2 hitPoint = f.posRel(SliderModel.this);
-        setPoint(ui.p(hitPoint));
+        setPoint(ui.p(bounds.unitize(f.posGlobal(this))));
     }
 
     private void setPoint(float pNext) {

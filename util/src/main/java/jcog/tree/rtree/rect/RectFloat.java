@@ -355,4 +355,9 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public v2 center() {
         return new v2(cx(), cy());
     }
+
+    /** relative unit-scale position of the global point */
+    public v2 unitize(v2 v) {
+        return new v2((v.x - left())/w, (v.y - bottom()/h));
+    }
 }

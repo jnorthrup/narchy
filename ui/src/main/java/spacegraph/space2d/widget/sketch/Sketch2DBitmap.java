@@ -59,7 +59,7 @@ public class Sketch2DBitmap extends Surface implements MenuSupplier {
 
 
         if (finger!=null) {
-            v2 hitPoint = finger.posRel(this);
+            v2 hitPoint = finger.posGlobal(this);
             if (hitPoint.inUnit() && finger.pressing(0)) {
 
 

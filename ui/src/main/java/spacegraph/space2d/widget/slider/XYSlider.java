@@ -108,7 +108,7 @@ public class XYSlider extends Surface implements HudHover  {
     };
 
     private void setPoint(Finger f) {
-        v2 hitPoint = f.posRel(XYSlider.this);
+        v2 hitPoint = f.posGlobal(XYSlider.this);
         if (hitPoint.inUnit()) {
             pressing = true;
             if (!Util.equals(knob.x, hitPoint.x) || !Util.equals(knob.y, hitPoint.y)) {

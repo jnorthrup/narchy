@@ -4,7 +4,6 @@ import com.jogamp.opengl.GL2;
 import jcog.data.atomic.AtomicFloat;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.math.v2;
-import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -117,12 +116,13 @@ abstract public class Finger {
         return touching.getOpaque();
     }
 
-    private static v2 relative(v2 x, Surface c) {
-        v2 y = new v2(x);
-        RectFloat b = c.bounds;
-        y.sub(b.x, b.y);
-        y.scaled(1f / b.w, 1f / b.h);
-        return y;
+    private v2 relative(v2 x, Ortho o) {
+        return o.cam.screenToWorld(x);
+//        v2 y = new v2(x);
+//        RectFloat b = c.bounds;
+//        y.sub(b.x, b.y);
+//        y.scaled(1f / b.w, 1f / b.h);
+//        return y;
     }
 
     /**
@@ -278,7 +278,7 @@ abstract public class Finger {
 //        System.out.println(pressing(i) + "<-" + wasPressed(i));
 
         if (releasedNow(button) && !_dragging(button)) {
-            if (c==null || posRel(c).inUnit()) {
+            if (c==null || c.bounds.contains(posGlobal(c))) {
                 commitButton(button); //absorb the event
                 return true;
             }
@@ -328,12 +328,10 @@ abstract public class Finger {
 //        return fingering.get() != Fingering.Null;
 //    }
 
-    public v2 posRel(Surface c) {
-
-
+    public v2 posGlobal(Surface c) {
         Ortho orthoParent = c.parent(Ortho.class);
         if (orthoParent!=null)
-            return relative( orthoParent.posOrtho, c);
+            return relative( posPixel, orthoParent);
         else
             return posPixel;
     }
