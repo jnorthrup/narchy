@@ -46,8 +46,9 @@ public class MetaAgent {
 
     public MetaAgent(NAgent a, boolean allowPause) {
         this.agent = a;
+
         this.attn = new AttNode(this);
-        attn.parent(a.attnReward);
+        attn.parent(a.attnReward /* HACK */);
 
         NAR n = a.nar();
         NAR nar = n;

@@ -1,6 +1,7 @@
 package nars.agent;
 
 import jcog.Skill;
+import jcog.TODO;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
@@ -277,7 +278,16 @@ public interface NAct {
                 //QFunction.GoalExpMinBeliefExp;
     }
 
-    /** creates a pair of up/down buttons for discretely incrementing and decrementing a value within a given range */
+    /** adjusts increment/decrement rate according to provided curve;
+     *    ex: short press moves in small steps, but pressing longer scans faster
+     */
+    default GoalActionConcept[] actionDial(Term base, FloatRange x, FloatToFloatFunction dursPressedToIncrement) {
+        throw new TODO();
+    }
+
+    /** discrete rotary dial:
+     *    a pair of up/down buttons for discretely incrementing and decrementing a value within a given range
+     */
     default GoalActionConcept[] actionDial(Term base, FloatRange x, int steps) {
         float delta = 1f/steps;
         return actionStep(base, (c)->{

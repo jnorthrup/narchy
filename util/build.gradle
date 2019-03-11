@@ -6,11 +6,18 @@ dependencies {
     
     compile group: 'org.jetbrains', name: 'annotations', version: '17.0.0'
 
+    compile group: 'org.ow2.asm', name: 'asm-commons', version: '7.1'
+    compile group: 'com.google.guava', name: 'guava', version: '27.1-jre'
+
     compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '10.0.0.M2'
+
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
 
     compile(group: 'com.conversantmedia', name: 'disruptor', version: '1.2.15') {
         exclude(module:'slf4j-api')
     }
+
     compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
 
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'
@@ -20,17 +27,10 @@ dependencies {
         exclude(module: 'commons-lang3')
         exclude(module: 'guava')
     }
-    compile group: 'com.google.guava', name: 'guava', version: '27.0.1-jre'
-    compile group: 'org.ow2.asm', name: 'asm-commons', version: '7.1'
 
     compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.10'
 
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
-
-
-
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
 
     compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.7.1'
 
@@ -61,7 +61,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2
     compile group: 'org.apache.commons', name: 'commons-vfs2', version: '2.3'
     
-    compile group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.31.0'
+    compile group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.32.0'
 //    testCompile group: 'tech.tablesaw', name: 'tablesaw-jsplot', version: '0.31.0'
 
     // https://mvnrepository.com/artifact/net.openhft/zero-allocation-hashing

@@ -502,8 +502,6 @@ public final class Answer implements AutoCloseable {
         tp.ensureCapacity(tt.size());
         tt.forEach(tp::add);
 
-        tp.commit(false, 1);
-
         return tp;
     }
 
@@ -539,7 +537,7 @@ public final class Answer implements AutoCloseable {
 
     public void close() {
         if (tasks != null) {
-            //TopN.unpool(topTasks, tasks);
+            tasks.clear();
             tasks = null;
         }
     }

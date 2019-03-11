@@ -401,7 +401,7 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(28);
 
 
-        n.attn.activeCapacity.set(1024);
+        n.attn.activeCapacity.set(2048);
 
 
         n.beliefPriDefault.set(0.01f);
@@ -415,7 +415,7 @@ abstract public class NAgentX extends NAgent {
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.2f);
+        n.emotion.want(MetaGoal.Desire, 0.4f);
 
         n.emotion.want(MetaGoal.Action, +1f);
 

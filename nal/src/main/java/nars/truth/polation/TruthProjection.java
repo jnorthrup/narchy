@@ -115,6 +115,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         if (size() < minResults) return null;
 
         int s = refocus();
+
         if (s < minResults) return null;
         else if (s == 1) {
             return only(provideStamp);

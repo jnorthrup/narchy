@@ -59,7 +59,7 @@ public enum Roulette {
             for (int i = 0; i < weightCount; i++) {
                 float wi = weight.valueOf(i);
                 if (wi < 0)
-                    throw new WTF();
+                    wi=0; //throw new WTF();
                 w[i] = wi;
             }
             return selectRoulette(weightCount, i -> w[i], rng);

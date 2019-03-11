@@ -4,7 +4,6 @@ import jcog.event.Offs;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.ScalarValue;
-import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
@@ -68,8 +67,8 @@ public abstract class Attention extends DurService implements Sampler<TaskLink> 
         super.starting(nar);
 
         active = new TaskLinkBag(
-                arrayBag(),
-                //hijackBag(),
+                new TaskLinkArrayBag(activeCapacity.intValue()),
+                //new TaskLinkHijackBag(activeCapacity.intValue(), 3),
                 forgetRate);
 
         active.setCapacity(activeCapacity.intValue());
@@ -141,14 +140,6 @@ public abstract class Attention extends DurService implements Sampler<TaskLink> 
         protected PriMerge merge() {
             return Param.tasklinkMerge;
         }
-    }
-
-    public PriHijackBag<TaskLink, TaskLink> hijackBag() {
-        return new TaskLinkHijackBag(activeCapacity.intValue(), 3);
-    }
-    protected Bag<TaskLink, TaskLink> arrayBag() {
-        int c = activeCapacity.intValue();
-        return new TaskLinkArrayBag(c);
     }
 
 

@@ -17,7 +17,7 @@ public class AttNode extends AtomicTreeNode<AttNode> {
     private final Term id;
 
     /** boost, relative among peers */
-    public final FloatRange boost = new FloatRange(1f, 0.01f, 2f);
+    public final FloatRange factor = new FloatRange(1f, 0.01f, 2f);
 
     /** advised priority value  */
     public final Pri pri = new Pri(0);
@@ -67,7 +67,7 @@ public class AttNode extends AtomicTreeNode<AttNode> {
 
     @Override
     public String toString() {
-        return id + " pri=" + pri + " boost=" + boost;
+        return id + " pri=" + pri + " boost=" + factor;
     }
 
     public Stream<Concept> concepts(NAR nar) {
@@ -100,6 +100,6 @@ public class AttNode extends AtomicTreeNode<AttNode> {
         this.pri.pri(pri);
         float priEach = pri * elementFraction(size());
         //TODO local boost's
-        childrenStream().forEach(c -> c.update(c.boost.floatValue() * priEach));
+        childrenStream().forEach(c -> c.update(c.factor.floatValue() * priEach));
     }
 }

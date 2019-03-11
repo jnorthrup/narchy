@@ -16,6 +16,9 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
     plus {
         @Override float merge(float e, float i) {  return e + i; }
     },
+    minus {
+        @Override float merge(float e, float i) {  return e - i; }
+    },
     avg {
         @Override float merge(float e, float i) {  return (e + i)/2; }
     },

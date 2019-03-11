@@ -24,9 +24,7 @@ import nars.concept.sensor.AgentLoop;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.control.NARService;
-import nars.control.channel.ConsumerX;
 import nars.link.Activate;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
@@ -515,35 +513,32 @@ public class NAgent extends NARService implements NSense, NAct {
         if (!busy.compareAndSet(false, true))
             return;
 
-        long now = nar.time();
-        long prev = this.now;
-        assert(prev!=ETERNAL);
-
-        if (now < prev)
-            return; //too learly
-
-        long next =
-                //(Math.max(now, frameTrigger.next(now)), d);
-                Math.max(now, frameTrigger.next(now));
-
-        this.prev = prev;
-        this.now = now;
-        this.next = next;
-        assert(prev <= now && now < next);
-
-
-
         try {
+            long now = nar.time();
+            long prev = this.now;
+            assert(prev!=ETERNAL);
 
-            float pg = nar.priDefault(GOAL);
-            float pb = nar.priDefault(BELIEF);
-            attnAction.boost.set((pb+pg)/2 * actions.size());
-            attnReward.boost.set(pg * rewards.size());
-            attnSensor.boost.set(pb * sensors.size());
+            if (now < prev)
+                return; //too learly
+
+            long next =
+                    //(Math.max(now, frameTrigger.next(now)), d);
+                    Math.max(now, frameTrigger.next(now));
+
+            this.prev = prev;
+            this.now = now;
+            this.next = next;
+            assert(prev <= now && now < next);
+
+
+            float pb = nar.priDefault(BELIEF), pg = nar.priDefault(GOAL);
+            //TODO adjustable balance
+            attnSensor.factor.set(pb);
+            attnAction.factor.set(pg);
+            attnReward.factor.set((pb+pg));
             attn.update(pri.floatValue() /* external pri boost */);
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);
-
 
             if (trace.getOpaque())
                 logger.info(summary());

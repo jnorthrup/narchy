@@ -35,7 +35,7 @@ public class AttentionUI {
                             e.color(0.5f, 0.5f, 0.5f);
                         });
                         float s = node.id.pri.pri();
-                        float d = 0.5f * node.id.boost.floatValue();
+                        float d = 0.5f * node.id.factor.floatValue();
 //                            float r = Math.min(1, s/d);
                         node.color(Math.min(d, 1), Math.min(s, 1), 0);
                         if (!(node.the() instanceof NodeUI)) {

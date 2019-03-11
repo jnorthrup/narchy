@@ -14,7 +14,7 @@ import nars.term.util.Intermpolate;
 import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.polation.FocusingLinearTruthProjection;
+import nars.truth.polation.LinearTruthProjection;
 import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ public class RevisionTest {
 
 
         assertEquals(Revision.revise(a, b),
-                new FocusingLinearTruthProjection(0, 0, n.dur())
+                new LinearTruthProjection(0, 0, n.dur())
                         .add(Lists.newArrayList(a.apply(n), b.apply(n)))
                         .truth());
     }
@@ -129,7 +129,7 @@ public class RevisionTest {
         TaskBuilder b = t(0f, 0.5f, 4).evidence(2);
 
         int dur = 9;
-        Truth pt = new FocusingLinearTruthProjection(0, 0, dur).add(Lists.newArrayList(a.apply(n), b.apply(n))).truth();
+        Truth pt = new LinearTruthProjection(0, 0, dur).add(Lists.newArrayList(a.apply(n), b.apply(n))).truth();
         @Nullable Truth rt = Revision.revise(a, b);
 
         assertEquals(pt.freq(), rt.freq(), 0.01f);
@@ -142,7 +142,7 @@ public class RevisionTest {
     void testRevisionEquivalence2Instant() throws Narsese.NarseseException {
         TaskBuilder a = t(1f, 0.5f, 0);
         TaskBuilder b = t(0f, 0.5f, 0);
-        assertEquals(Revision.revise(a, b), new FocusingLinearTruthProjection(0, 0, 1).add(Lists.newArrayList(a.apply(n), b.apply(n))).truth());
+        assertEquals(Revision.revise(a, b), new LinearTruthProjection(0, 0, 1).add(Lists.newArrayList(a.apply(n), b.apply(n))).truth());
     }
 
     @Test
@@ -154,19 +154,19 @@ public class RevisionTest {
         Task b = t(0f, 0.9f, 6).apply(n);
         for (int i = 0; i < 10; i++) {
             System.out.println(i + " " +
-                    new FocusingLinearTruthProjection(i, i, dur).add(Lists.newArrayList(a, b)).truth());
+                    new LinearTruthProjection(i, i, dur).add(Lists.newArrayList(a, b)).truth());
         }
 
         System.out.println();
 
-        Truth ab2 = new FocusingLinearTruthProjection(3, 3, dur).add(Lists.newArrayList(a, b)).truth();
+        Truth ab2 = new LinearTruthProjection(3, 3, dur).add(Lists.newArrayList(a, b)).truth();
         assertTrue(ab2.conf() >= 0.5f);
 
-        Truth abneg1 = new FocusingLinearTruthProjection(3, 3, dur).add(Lists.newArrayList(a, b)).truth();
+        Truth abneg1 = new LinearTruthProjection(3, 3, dur).add(Lists.newArrayList(a, b)).truth();
         assertTrue(abneg1.freq() > 0.6f);
         assertTrue(abneg1.conf() >= 0.5f);
 
-        Truth ab5 = new FocusingLinearTruthProjection(6, 6, dur).add(Lists.newArrayList(a, b)).truth();
+        Truth ab5 = new LinearTruthProjection(6, 6, dur).add(Lists.newArrayList(a, b)).truth();
         assertTrue(ab5.freq() < 0.35f);
         assertTrue(ab5.conf() >= 0.5f);
     }
@@ -180,7 +180,7 @@ public class RevisionTest {
         Task e = t(0f, 0.1f, 7).evidence(5).apply(n);
 
         for (int i = 0; i < 15; i++) {
-            System.out.println(i + " " + new FocusingLinearTruthProjection(i, i, 1).add(Lists.newArrayList(a, b, c, d, e)).truth());
+            System.out.println(i + " " + new LinearTruthProjection(i, i, 1).add(Lists.newArrayList(a, b, c, d, e)).truth());
         }
 
     }

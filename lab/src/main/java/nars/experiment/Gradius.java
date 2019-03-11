@@ -89,10 +89,10 @@ public class Gradius extends NAgentX {
                     int jj = j;
                     //Term subSection = $.p(id, $.the(ii), $.the(jj));
                     Bitmap2DSensor c = senseCamera((x, y) ->
-                                    $.inh($.p(
-                                            $.the(ii), $.the(jj),
-                                            $.the(x), $.the(y)
-                                    ), id),
+                                    $.inh(
+                                            $.p($.the(x), $.the(y)),
+                                            $.p(id, $.the(ii), $.the(jj))
+                                    ),
                             //$.p(
                             //$.inh(
 //                                        $.p(x, y),

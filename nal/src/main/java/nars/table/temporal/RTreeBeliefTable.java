@@ -398,8 +398,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     @Override
     public void clear() {
         write(t -> {
-            //t.forEach(r -> ((Task)r).delete());
-            t.clear();
+            if (!t.isEmpty()) {
+                t.forEach(r -> ((Task) r).delete());
+                t.clear();
+            }
         });
     }
 

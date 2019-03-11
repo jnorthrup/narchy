@@ -5,10 +5,7 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
-import jcog.pri.ScalarValue;
-import jcog.pri.UnitPri;
-import jcog.pri.UnitPrioritizable;
-import jcog.pri.Weight;
+import jcog.pri.*;
 import jcog.pri.bag.Bag;
 import jcog.pri.op.PriMerge;
 import jcog.signal.tensor.AtomicArrayTensor;
@@ -224,6 +221,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         return -1;
     }
 
+    float take(byte punc, float howMuch);
+
     default boolean isSelf() {
         return source().equals(target());
     }
@@ -295,15 +294,21 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
             if (u != null && !u.equals(t)) {
 
+
                 float subRate =
                         //1f;
                         //1f/(t.volume());
-                        (float) (1f/(Math.sqrt(t.complexity())));
-                float subLink =
-                        1/2f * subRate;
-                        //1f;
-                TaskLink.linkSafe(s, u, punc, p * subLink, nar); //forward (hop)
-                TaskLink.linkSafe(u, t, punc, p * subLink, nar); //reverse (adjacent)
+                        (float) (1f/(Math.sqrt(s.volume())));
+
+
+                float inflation = 1; //TODO test inflation<1
+                float want = 2 * p * subRate / 2;
+                float got =
+                        inflation < 1 ? Util.lerp(inflation, take(punc, want*inflation), want) : want;
+
+                //CHAIN
+                TaskLink.linkSafe(s, u, punc, got/2, nar); //forward (hop)
+                TaskLink.linkSafe(u, t, punc, got/2, nar); //reverse (adjacent)
 
                 if (self)
                     t = u;
@@ -425,7 +430,12 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
         }
 
 
-            private void assertAccurate() {
+        @Override
+        public float take(byte punc, float howMuch) {
+            return Math.max(ScalarValue.EPSILON, -priMergeGetDelta(punc, howMuch, PriMerge.minus));
+        }
+
+        private void assertAccurate() {
             if (Param.DEBUG) {
                 if (!Util.equals(priElseZero(), punc.sumValues() / 4f, ScalarValue.EPSILON * 2))
                     throw new WTF();

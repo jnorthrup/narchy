@@ -62,6 +62,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     private static final int PUT_ATTEMPTS = 2;
 
+    private static final boolean VICTIM_NOISE = true;
+
+
     /**
      * id unique to this bag instance, for use in treadmill
      */
@@ -320,7 +323,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     for (int i = start, j = reprobes; j > 0; j--) {
                         V v = map.getAcquire(i);
                         if (v != null && keyEquals(k, kHash, v)) {
-                            if (map.weakCompareAndSetRelease(i, v, null)) {
+                            if (map.compareAndExchangeRelease(i, v, null)==v) {
                                 toReturn = toRemove = v;
                                 break;
                             }
@@ -338,7 +341,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                         for (int i = start, j = reprobes; j > 0; j--) {
 
-                            V v = map.getAcquire(i);
+                            V v = map.get(i);
                             if (v == null) {
                                 if (victimPri > NEGATIVE_INFINITY) {
                                     victimIndex = i;
@@ -355,7 +358,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                                 if (next != v) {
                                     if (next == null)
                                         throw new NullPointerException();
-                                    if (!map.compareAndSet(i, v, next)) {
+                                    if (map.compareAndExchangeRelease(i, v, next)!=v) {
 //                                        throw new WTF("merge mismatch: " + v);
 //                                        //the previous value likely got hijacked by another thread
 //                                        //restart?
@@ -370,7 +373,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                             } else {
                                 if (victimPri > NEGATIVE_INFINITY) {
                                     float pp;
-                                    if ((pp = priElseNegInfinity(v)) < victimPri) {
+                                    if (chooseVictim(pp = priElseNegInfinity(v), victimPri)) {
                                         victimPri = pp;
                                         victimValue = v;
                                         victimIndex = i;
@@ -396,6 +399,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                                 }
                             }
                         }
+
+                        if (retriesRemain>0)
+                            victimPri *= 1-(1f/reprobes); //weaken
 
                     } while (--retriesRemain>0);
 
@@ -440,6 +446,20 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
 
         return toReturn;
+    }
+
+    protected boolean chooseVictim(float potentialVictimPri, float currentVictimPri) {
+
+        //OPTIONAL: victim noise
+        //      causes insertion to underestimate the priority allowing disproportionate replacement
+        //      in some low probability of cases, allowing more item churn
+        if (VICTIM_NOISE) {
+            float victimNoise = 1 / (reprobes * reprobes);
+            currentVictimPri *= victimNoise > 0 ? (1 - (random().nextFloat() * victimNoise)) : 1;
+        }
+
+
+        return (potentialVictimPri < currentVictimPri);
     }
 
     private float priElseNegInfinity(V x) {
@@ -552,17 +572,17 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      *
      */
     @Override
-    public final V put(/*@NotNull*/ V v,  /* TODO */ NumberX overflowing) {
+    public final V put(/*@NotNull*/ V potentialVictimPri,  /* TODO */ NumberX overflowing) {
 
-        K k = key(v);
+        K k = key(potentialVictimPri);
         if (k == null)
             return null;
 
 
-        V x = update(k, v, PUT, overflowing);
+        V x = update(k, potentialVictimPri, PUT, overflowing);
 
         if (x == null)
-            onReject(v);
+            onReject(potentialVictimPri);
 
         return x;
     }
@@ -707,18 +727,18 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         }
     }
 
-    private void evict(AtomicReferenceArray<V> map, int i, V v) {
-        evict(map, i, v, true);
+    private void evict(AtomicReferenceArray<V> map, int i, V potentialVictimPri) {
+        evict(map, i, potentialVictimPri, true);
     }
 
-    private void evict(AtomicReferenceArray<V> map, int i, V v, boolean updateSize) {
-        if (map.compareAndSet(i, v, null)) {
+    private void evict(AtomicReferenceArray<V> map, int i, V potentialVictimPri, boolean updateSize) {
+        if (map.compareAndSet(i, potentialVictimPri, null)) {
 
             //if the map is still active
             if (this.map == map) {
                 if (updateSize)
                     SIZE.getAndDecrement(this);
-                onRemove(v);
+                onRemove(potentialVictimPri);
             }
         }
     }
