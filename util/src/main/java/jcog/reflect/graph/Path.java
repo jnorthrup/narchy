@@ -24,7 +24,6 @@
 package jcog.reflect.graph;
 
 import jcog.data.graph.FromTo;
-import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 
 import java.util.List;

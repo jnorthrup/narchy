@@ -51,7 +51,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     private static final Object DeletedKey = new Object();
 
-    private static final float MapFillFactor = 0.66f;
+    private final float MapFillFactor;
 
     private static final int DefaultExpectedItems = 1024;
     private static final int DefaultConcurrencyLevel = Runtime.getRuntime().availableProcessors();
@@ -67,17 +67,21 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     }
 
     public ConcurrentOpenHashMap(int expectedItems, int concurrencyLevel) {
+        this(expectedItems, concurrencyLevel, 2/3f);
+    }
+
+    public ConcurrentOpenHashMap(int expectedItems, int concurrencyLevel, float MapFillFactor) {
         checkArgument(expectedItems > 0);
         checkArgument(concurrencyLevel > 0);
         checkArgument(expectedItems >= concurrencyLevel);
 
         int numSections = concurrencyLevel;
         int perSectionExpectedItems = expectedItems / numSections;
-        int perSectionCapacity = (int) (perSectionExpectedItems / MapFillFactor);
+        int perSectionCapacity = (int) (perSectionExpectedItems / (this.MapFillFactor = MapFillFactor));
         this.sections = (Section<K, V>[]) new Section[numSections];
 
         for (int i = 0; i < numSections; i++) {
-            sections[i] = new Section<>(perSectionCapacity);
+            sections[i] = new Section<>(perSectionCapacity, MapFillFactor);
         }
     }
 
@@ -219,7 +223,8 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     
     @SuppressWarnings("serial")
     private static final class Section<K, V> extends StampedLock {
-        
+
+        private final float MapFillFactor;
         private AtomicReferenceArray table;
 
         private int capacity;
@@ -227,12 +232,12 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         private final AtomicInteger usedBuckets = new AtomicInteger();
         private int resizeThreshold;
 
-        Section(int capacity) {
+        Section(int capacity, float MapFillFactor) {
             this.capacity = alignToPowerOfTwo(capacity);
             this.table = new AtomicReferenceArray(2 * this.capacity);
             this.size.set(0);
             this.usedBuckets.set(0);
-            this.resizeThreshold = (int) (this.capacity * MapFillFactor);
+            this.resizeThreshold = (int) (this.capacity * (this.MapFillFactor = MapFillFactor));
         }
 
         V get(K key, int keyHash) {

@@ -35,6 +35,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class AbstractGoalActionConcept extends ActionConcept {
 
+    private static final long CURIOSITY_TASK_RANGE_DURS = 2;
+
 //    private static final Logger logger = LoggerFactory.getLogger(AbstractGoalActionConcept.class);
 
     @Nullable
@@ -251,10 +253,11 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 if (curiosity.goal.getOpaque()) {
                     long lastCuriosity = curiosityTable.series.end();
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
-                    long curiEnd = Math.max(curiStart, e);
+                    int dither = n.dtDither();
+                    long curiEnd = curiStart + Math.max(dither, Math.round((now-prev)*CURIOSITY_TASK_RANGE_DURS * n.random().nextFloat())); //(1 + (curiosity.Math.max(curiStart, e);
 
-                    curiStart = Tense.dither(curiStart, n);
-                    curiEnd = Tense.dither(curiEnd, n);
+                    curiStart = Tense.dither(curiStart, dither);
+                    curiEnd = Tense.dither(curiEnd, dither);
 
                     n.input(
                             curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)

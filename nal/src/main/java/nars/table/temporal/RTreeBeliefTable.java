@@ -38,7 +38,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             1f;
             //2f;
 
-    private static final int MAX_TASKS_PER_LEAF = 5;
+    private static final int MAX_TASKS_PER_LEAF = 3;
 
     private static final Split SPLIT =
 //            new AxialSplitLeaf() {  //AXIAL SPLIT IS PROBABLY BAD FOR THIS UNLESS A LEAF ENDS UP BEING SPLIT IN A CERTAIN WAY
@@ -272,7 +272,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         long now = nar.time();
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
-                taskStrength = taskStrength(beliefOrGoal, now, Math.max(1,Tense.occToDT(tableDur())));
+                taskStrength = taskStrength(beliefOrGoal, now, nar.dur(), Tense.occToDT(tableDur()));
                 leafRegionWeakness = regionWeakness(now, beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
             }
             if (!compress(treeRW,  /** only limit by inputRegion on first iter */
@@ -287,10 +287,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     /** decides the value of keeping a task, used in compression decision */
-    protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, int dur) {
+    protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, int narDur, int tableDur) {
         //return FloatRank.the(t->t.evi(now, dur));
-
-        return Answer.temporalTaskStrength(now-dur, now+dur);
+        return Answer.temporalTaskStrength(now-narDur/2, now+narDur/2, tableDur);
 
 //        return Answer.taskStrengthWithFutureBoost(now, now - dur,
 //                beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
@@ -329,13 +328,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         Pair<Task, TruthProjection> AB;
         if (!mergeableLeaf.isEmpty()) {
             Leaf<TaskRegion> ab = mergeableLeaf.get();
-            AB = Revision.merge(nar, true,
-                    ab.size == ab.data.length ? ab.data : Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
+            AB = Revision.merge(nar, true, Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
             if (AB!=null) {
                 valueMergeLeaf = (float) (
                         +taskStrength.floatValueOf(AB.getOne())
                         -AB.getTwo().sumOfFloat(t -> {
-                            if (t!=t)
+                            if (!t.valid())
                                 return 0; //a task not included in revision
                             else
                                 return taskStrength.floatValueOf(t.task());
@@ -374,7 +372,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      */
     @Override public long tableDur() {
         TaskRegion root = bounds();
-        return root == null ? 0 : 1 + root.range()/2/2;
+        return root == null ? 0 : 1 + root.range()/2;
     }
 
 

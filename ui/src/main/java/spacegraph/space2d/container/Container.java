@@ -111,7 +111,8 @@ abstract public class Container extends Surface {
 
             Surface[] found = new Surface[1];
 
-            v2 fp = finger.posOrtho;
+
+            v2 fp = finger.posPixel; //posRel(this);
 
             whileEachReverse(c -> {
 
@@ -169,5 +170,9 @@ abstract public class Container extends Surface {
 
     public abstract boolean whileEachReverse(Predicate<Surface> o);
 
+
+    public final void forEachReverse(Consumer<Surface> each) {
+        whileEachReverse((s)->{each.accept(s); return true;});
+    }
 
 }

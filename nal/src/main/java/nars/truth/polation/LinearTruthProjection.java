@@ -1,5 +1,6 @@
 package nars.truth.polation;
 
+import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.truth.PreciseTruth;
@@ -21,19 +22,15 @@ public class LinearTruthProjection extends TruthProjection {
         super(start, end, dur);
     }
 
-    public final Truth truth(NAR nar) {
-        return truth(Float.MIN_NORMAL, nar);
-    }
-
     @Override
     @Nullable
-    public Truth truth(float eviMin, boolean dither, NAR nar) {
+    public Truth truth(float eviMin, boolean dither, boolean tCrop, NAR nar) {
 
         if (active() == 0) {
             if (size()==0)
                 return null;
             else {
-                commit(false, 1);
+                commit(false, tCrop,1);
                 if (active()==0)
                     return null;
             }
@@ -51,6 +48,7 @@ public class LinearTruthProjection extends TruthProjection {
         }
 
         double wFreqSum = 0, wSum = 0, eSum = 0;
+//        double wFreqPos = 0, wFreqNeg = 0;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
             TaskComponent x = get(i);
 
@@ -68,6 +66,7 @@ public class LinearTruthProjection extends TruthProjection {
 
             double f = x.task().freq(start, end);
             wFreqSum += w * f;
+//            if (f >= 0.5f) wFreqPos += w * (1-f)*2; else wFreqNeg += w * (0.5 - f)*2;
         }
 
         if (wSum < Float.MIN_NORMAL)
@@ -86,6 +85,11 @@ public class LinearTruthProjection extends TruthProjection {
         }
 
         double F = (float)wFreqSum / wSum;
+
+//        double F2 = (((wFreqPos - wFreqNeg) / (wFreqPos+wFreqNeg)/ wSum + 1)/2 ) ;
+//        if (!Util.equals(F,F2))
+//            System.out.println(F + " "+ F2);
+
         return dither ? Truth.theDithered((float)F, (float)eAvg, nar) : PreciseTruth.byEvi(F, eAvg);
     }
 

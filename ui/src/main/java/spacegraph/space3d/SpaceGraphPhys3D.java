@@ -105,8 +105,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
 
         dyn = new Dynamics3D<>(dispatcher, broadphase, this);
 
-        io.onUpdate((dt) -> {
-            update(Math.round(io.dtS * 1000.0));
+        display.onUpdate((dt) -> {
+            update(Math.round(display.dtS * 1000.0));
             return true;
         });
     }
@@ -128,8 +128,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
     protected void initInput() {
 
 
-        io.addMouseListenerPost(new FPSLook(this));
-        io.addMouseListenerPost(new OrbSpaceMouse(this, new Finger(3) {
+        display.addMouseListenerPost(new FPSLook(this));
+        display.addMouseListenerPost(new OrbSpaceMouse(this, new Finger(3) {
             /* TODO */
         }));
 
@@ -179,7 +179,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
 
             dyn.update(
 
-                    Math.max(dtMS / 1000f, 1000000f / io.renderFPS)
+                    Math.max(dtMS / 1000f, 1000000f / display.renderFPS)
                             / 1000000.f, maxSubsteps
 
             );
@@ -191,17 +191,17 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
     protected void renderVolume(int dtMS) {
 
 
-        forEach(s -> s.renderAbsolute(io.gl, dtMS));
+        forEach(s -> s.renderAbsolute(display.gl, dtMS));
 
         forEach(s -> s.forEachBody(body -> {
 
-            io.gl.glPushMatrix();
+            display.gl.glPushMatrix();
 
-            Draw.transform(io.gl, body.transform);
+            Draw.transform(display.gl, body.transform);
 
-            s.renderRelative(io.gl, body, dtMS);
+            s.renderRelative(display.gl, body, dtMS);
 
-            io.gl.glPopMatrix();
+            display.gl.glPopMatrix();
 
         }));
 
@@ -225,8 +225,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
             );
             Draw.glu.gluQuadricTexture(quad, true);
         }
-        io.gl.glColor3f(1f, 1f, 1f);
-        io.gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT_AND_DIFFUSE,
+        display.gl.glColor3f(1f, 1f, 1f);
+        display.gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT_AND_DIFFUSE,
                 //new float[] { 10.0f , 10.0f , 10.0f , 1.0f },
                 new float[]{1.0f, 1.0f, 1.0f, 1.0f},
                 0);
@@ -245,24 +245,24 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
             }
             g.dispose();
 
-            t.commit(io.gl);  //HACK
+            t.commit(display.gl);  //HACK
             t.set(bi);  //HACK
-            t.commit(io.gl);  //HACK
+            t.commit(display.gl);  //HACK
 
             tHv = t.texture;
         }
-        tHv.enable(io.gl);
-        tHv.bind(io.gl);
+        tHv.enable(display.gl);
+        tHv.bind(display.gl);
 
-        io.gl.glPushMatrix();
+        display.gl.glPushMatrix();
 //        gl.glLoadIdentity();
 //        gl.glTranslatef(camPos.x, camPos.y, camPos.z);
 
 
         Draw.glu.gluSphere(quad, 1000.0f, 9, 9);
-        io.gl.glPopMatrix();
+        display.gl.glPopMatrix();
 
-        tHv.disable(io.gl);    ////TTTTTTTTTTTTTTT
+        tHv.disable(display.gl);    ////TTTTTTTTTTTTTTT
     }
 
     private DynamicListSpace<X> add(Spatial<X>... s) {

@@ -42,7 +42,7 @@ abstract public class BufferedBag<X,B,Y extends Prioritizable> extends ProxyBag<
 
                     if (!pre.isEmpty()) {
                         pre.update(this::putInternal);
-                        bag.commit(null); //force sort after
+                        //bag.commit(null); //force sort after
                     }
 
 //                    buffer.update(this::putInternal);

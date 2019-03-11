@@ -39,8 +39,7 @@ public class NARService extends Service<NAR> implements TermedDelegate {
     }
 
     protected NARService(@Nullable Term id) {
-        this.id = id != null ? id :
-                $.identity(this);
+        this.id = id != null ? id : $.identity(this);
     }
 
     /** attach a handler.  should only be called in starting() implementations */

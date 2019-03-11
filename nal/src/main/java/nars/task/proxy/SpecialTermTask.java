@@ -15,9 +15,8 @@ public class SpecialTermTask extends TaskProxy {
 
     private final Term term;
 
-
     public SpecialTermTask(Term term, Task task) {
-        super(task instanceof SpecialTermTask ?
+        super(task.getClass() == SpecialTermTask.class ? //but not subclasses!
                 ((SpecialTermTask)task).task  //unwrap to core
                 :
                 task);

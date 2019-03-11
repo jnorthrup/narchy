@@ -279,11 +279,16 @@ public final class Answer implements AutoCloseable {
                 ;
     }
 
+
+    public static FloatRank<Task> temporalTaskStrength(long start, long end) {
+        int dur = Tense.occToDT(1 + (end-start)); //half the range
+        return temporalTaskStrength(start, end, dur);
+    }
+
     /**
      * TODO use FloatRank min
      */
-    public static FloatRank<Task> temporalTaskStrength(long start, long end) {
-        int dur = Tense.occToDT(1 + (end-start)/2); //half the range
+    public static FloatRank<Task> temporalTaskStrength(long start, long end, int dur) {
         return (x, min) -> TruthIntegration.evi(x, start, end, dur)
                 //* x.originality()
                 ;
@@ -397,20 +402,21 @@ public final class Answer implements AutoCloseable {
             if (s == 0)
                 return null;
 
-            if (s == 1) {
-                //simple case where the projected time is exactly right
-                Task only = tasks.get(0);
-                long onlyStart = only.start();
-                if ((onlyStart==ETERNAL) || (onlyStart == time.start && only.end() == time.end)) {
-                    Truth trEte = only.truth();
-                    return (trEte.evi() < eviMin()) ? null : trEte;
-                }
-            }
+//            if (s == 1) {
+//                //simple case where the projected time is exactly right
+//                //TODO dither if dither
+//                Task only = tasks.get(0);
+//                long onlyStart = only.start();
+//                if ((onlyStart==ETERNAL) || (onlyStart == time.start && only.end() == time.end)) {
+//                    Truth trEte = only.truth();
+//                    return (trEte.evi() < eviMin()) ? null : trEte;
+//                }
+//            }
 
-            TruthProjection tp = truthpolation();
+            TruthProjection tp = truthpolation(taskList());
             if (tp != null) {
                 assert (!ditherTruth);
-                return tp.truth(eviMin(), nar);
+                return tp.truth(eviMin(), false, false /* give the value at specified range, no matter how sparse */, nar);
             }
         } finally {
             close();
@@ -426,7 +432,7 @@ public final class Answer implements AutoCloseable {
         if (tp == null)
             return null;
 
-        @Nullable Truth tt = tp.truth(eviMin(), ditherTruth, nar);
+        @Nullable Truth tt = tp.truth(eviMin(), ditherTruth, true, nar);
         if (tt == null)
             return null;
 
@@ -446,11 +452,6 @@ public final class Answer implements AutoCloseable {
 
 
     @Nullable
-    public TruthProjection truthpolation() {
-        return truthpolation(taskList());
-    }
-
-    @Nullable
     public TaskList taskList() {
         int t = tasks.size();
         if (t == 0)
@@ -466,38 +467,42 @@ public final class Answer implements AutoCloseable {
         if (tt == null)
             return null;
 
-        long s = tt.start(), e;
-
-        if (s != ETERNAL) {
-            e = tt.end();
-            TimeRangeFilter t = this.time;
-            long ts = t.start;
-            if (ts != ETERNAL) {
-//                if (!trim) {
-                //project to the question time range
-                s = t.start;
-                e = t.end;
-//                } else {
+//        long s = tt.start(), e;
+//        if (s != ETERNAL) {
+//            e = tt.end();
+//            TimeRangeFilter t = this.time;
+//            long ts = t.start;
+//            if (ts != ETERNAL) {
+////                if (!trim) {
+//                //project to the question time range
+//                s = t.start;
+//                e = t.end;
+////                } else {
+////
+////                    //shrinkwrap
+////                    if (Longerval.contains(t.start, t.end, s, e)) {
+////                        //long s0 = s, e0 = e;
+////                        s = Math.max(ts, s);
+////                        e = Math.min(Math.max(s, t.end), e);
+//////                        if (s0 != s || e0 != e) {
+//////                            if (e == s)
+//////                                System.out.println(s0 + ".." + e0 + " -> " + s + ".." + e + "\td=" + ((e - s) - (e0 - s0)));
+//////                        }
+////                    }
+////                }
 //
-//                    //shrinkwrap
-//                    if (Longerval.contains(t.start, t.end, s, e)) {
-//                        //long s0 = s, e0 = e;
-//                        s = Math.max(ts, s);
-//                        e = Math.min(Math.max(s, t.end), e);
-////                        if (s0 != s || e0 != e) {
-////                            if (e == s)
-////                                System.out.println(s0 + ".." + e0 + " -> " + s + ".." + e + "\td=" + ((e - s) - (e0 - s0)));
-////                        }
-//                    }
-//                }
-
-            } else {
-                //use the answered time range
-            }
-        } else {
-            e = ETERNAL;
+//            } else {
+//                //use the answered time range
+//            }
+//        } else {
+//            e = ETERNAL;
+//        }
+        long s = time.start, e = time.end;
+        if (s == ETERNAL) {
+            //auto-crop if currently eternal
+            s = tt.start();
+            e = tt.end();
         }
-        //TODO tt.focus(s, e)
         TruthProjection tp = nar.projection(s, e, dur);
         tp.ensureCapacity(tt.size());
         tt.forEach(tp::add);
@@ -536,10 +541,10 @@ public final class Answer implements AutoCloseable {
 //    }
 
     public void close() {
-        if (tasks != null) {
-            tasks.clear();
+//        if (tasks != null) {
+//            tasks.clear();
             tasks = null;
-        }
+//        }
     }
 
     public Answer time(TimeRangeFilter time) {

@@ -1,8 +1,6 @@
 package nars.truth.dynamic;
 
 import jcog.Paper;
-import jcog.Util;
-import jcog.WTF;
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
 import nars.Op;
@@ -13,18 +11,12 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
-import nars.term.atom.Bool;
-import nars.time.Tense;
 import nars.truth.Stamp;
-import nars.truth.Truth;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.time.Tense.XTERNAL;
-import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 
 /**
  * Dynamic Taskify

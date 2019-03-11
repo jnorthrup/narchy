@@ -3,17 +3,12 @@ package spacegraph.video;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.math.FloatUtil;
-import jcog.data.list.FastCoWList;
 import jcog.event.Off;
 import jcog.math.v3;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.hud.Ortho;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
 
@@ -36,7 +31,7 @@ abstract public class JoglSpace {
     /**
      * the hardware input/output implementation
      */
-    public final JoglWindow io;
+    public final JoglWindow display;
 
     public final v3 camPos, camFwd, camUp;
     private final float[] mat4f = new float[16];
@@ -44,8 +39,8 @@ abstract public class JoglSpace {
     private final float cameraSpeed = 100f, cameraRotateSpeed = cameraSpeed;
 
 
-    public final FastCoWList<Surface> layers = new FastCoWList(Surface[]::new);
-    private final Queue<Runnable> pending = new ConcurrentLinkedQueue();
+
+    protected final Queue<Runnable> pending = new ConcurrentLinkedQueue();
 
     public float top, bottom, left, right, aspect, tanFovV;
 
@@ -55,39 +50,15 @@ abstract public class JoglSpace {
 
 
     public JoglSpace() {
-        io = new MyJoglWindow();
+        display = new MyJoglWindow();
 
-        io.onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
-        io.onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed)));
-        io.onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed)));
+        display.onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
+        display.onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed)));
+        display.onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed)));
+
     }
 
-    /**
-     * dummy root node for layers to have a non-null parent
-     */
-    final Surface root = new EmptySurface();
-
-    public JoglSpace add(Surface layer) {
-
-        pending.add(() -> {
-            JoglSpace.this.layers.add(layer);
-//            if (layer instanceof Ortho)
-//                ((Ortho) layer).start(JoglSpace.this);
-//            else
-                layer.start(root);
-        });
-        return JoglSpace.this;
-    }
-
-    public void onReady(Runnable r) { pending.add(r); }
-
-    public boolean remove(Surface layer) {
-        if (JoglSpace.this.layers.remove(layer)) {
-            layer.stop();
-            return true;
-        }
-        return false;
-    }
+    public void later(Runnable r) { pending.add(r); }
 
     private void flush() {
         pending.removeIf((x) -> {
@@ -120,9 +91,9 @@ abstract public class JoglSpace {
 
     protected void initInput() {
 
-        io.addKeyListener(new WindowKeyControls(JoglSpace.this));
+        display.addKeyListener(new WindowKeyControls(JoglSpace.this));
 
-        io.addKeyListener(new KeyXYZ(JoglSpace.this));
+        display.addKeyListener(new KeyXYZ(JoglSpace.this));
 
     }
 
@@ -146,44 +117,14 @@ abstract public class JoglSpace {
     public final SurfaceRender rendering = new SurfaceRender();
 
 
-    private void renderOrthos(int dtMS) {
+    protected void renderOrthos(int dtMS) {
 
-        int facialsSize = layers.size();
-        if (facialsSize > 0) {
-
-            GL2 gl = io.gl;
-
-
-            int w = io.window.getWidth(), h = io.window.getHeight();
-            rendering.restart(w, h, dtMS);
-
-            gl.glViewport(0, 0, w, h);
-            gl.glMatrixMode(GL_PROJECTION);
-            gl.glLoadIdentity();
-
-
-            gl.glOrtho(0, w, 0, h, -1.5, 1.5);
-
-
-            gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-
-
-            gl.glDisable(GL2.GL_DEPTH_TEST);
-
-
-            for (Surface/*Root*/ l : layers) {
-                l.render(gl, rendering);
-            }
-
-
-            gl.glEnable(GL2.GL_DEPTH_TEST);
-        }
     }
 
 
     private void clear() {
         //view.clearMotionBlur(0.5f);
-        io.clearComplete();
+        display.clearComplete();
 
     }
 
@@ -195,14 +136,14 @@ abstract public class JoglSpace {
     private void perspective() {
 
 
-        if (io.gl == null)
+        if (display.gl == null)
             return;
 
-        io.gl.glMatrixMode(GL_PROJECTION);
-        io.gl.glLoadIdentity();
+        display.gl.glMatrixMode(GL_PROJECTION);
+        display.gl.glLoadIdentity();
 
 
-        float aspect = ((float) io.window.getWidth()) / io.window.getHeight();
+        float aspect = ((float) display.window.getWidth()) / display.window.getHeight();
 
         JoglSpace.this.aspect = aspect;
 
@@ -214,7 +155,7 @@ abstract public class JoglSpace {
         left = -right;
 
 
-        io.gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
+        display.gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
 
 
         Draw.glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,
@@ -222,26 +163,26 @@ abstract public class JoglSpace {
                 camUp.x, camUp.y, camUp.z);
 
 
-        io.gl.glMatrixMode(GL_MODELVIEW);
-        io.gl.glLoadIdentity();
+        display.gl.glMatrixMode(GL_MODELVIEW);
+        display.gl.glLoadIdentity();
 
 
     }
 
     public final Off onUpdate(Consumer<JoglWindow> c) {
-        return io.onUpdate(c);
+        return display.onUpdate(c);
     }
 
     public final Off onUpdate(Animated c) {
-        return io.onUpdate(c);
+        return display.onUpdate(c);
     }
 
     public final Off onUpdate(Runnable c) {
-        return io.onUpdate(c);
+        return display.onUpdate(c);
     }
 
     public final GL2 gl() {
-        return io.gl;
+        return display.gl;
     }
 
 
@@ -312,15 +253,15 @@ abstract public class JoglSpace {
 
         @Override
         protected void update() {
-            int w = io.window.getWidth(), h = io.window.getHeight();
-            rendering.clear();
+            int w = display.window.getWidth(), h = display.window.getHeight();
+
             rendering.restart(w, h);
-            for (Surface/*Root*/ l : layers) {
-                if (l instanceof Ortho) {
-                    ((Ortho) l).compile(rendering);
-                }
-            }
-            //System.out.println(rendering);
+            JoglSpace.this.update(rendering);
+//            for (Surface/*Root*/ l : layers.children()) {
+//                if (l instanceof Ortho) {
+//                    ((Ortho) l).compile(rendering);
+//                }
+//            }
         }
 
         @Override
@@ -332,6 +273,10 @@ abstract public class JoglSpace {
 
         }
 
+
+    }
+
+    protected void update(SurfaceRender rendering) {
 
     }
 

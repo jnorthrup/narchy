@@ -5,7 +5,10 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
-import jcog.pri.*;
+import jcog.pri.ScalarValue;
+import jcog.pri.UnitPri;
+import jcog.pri.UnitPrioritizable;
+import jcog.pri.Weight;
 import jcog.pri.bag.Bag;
 import jcog.pri.op.PriMerge;
 import jcog.signal.tensor.AtomicArrayTensor;
@@ -17,6 +20,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.derive.Derivation;
+import nars.table.TaskTable;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
@@ -25,7 +29,6 @@ import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
-import java.util.function.Function;
 
 import static jcog.Util.assertFinite;
 import static nars.Op.*;
@@ -38,7 +41,7 @@ import static nars.time.Tense.ETERNAL;
  * <p>
  * note: seems to be important for Tasklink to NOT implement Termed when use with common Map's with Termlinks
  */
-public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
+public interface TaskLink extends UnitPrioritizable {
 
     TaskLink[] EmptyTaskLinkArray = new TaskLink[0];
 
@@ -101,16 +104,15 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
      */
     byte priPunc(Random rng);
 
-    default long when() {
-        return ETERNAL;
+    default byte puncSample(Random rng) {
+        return priPunc(rng);
     }
 
-    default Task apply(NAR n) {
-        return apply(n, priPunc(n.random()));
+    @Nullable default /* final */Task get(long start, long end, NAR n) {
+        return get(puncSample(n.random()), start, end, n);
     }
 
-    @Nullable
-    default Task apply(NAR n, byte punc) {
+    @Nullable default Task get(byte punc, long start, long end, NAR n) {
         Term x = source();
 
         boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
@@ -122,13 +124,13 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             delete();
         else {
 
-            long start, end;
-            start = end = when();
-
-            Task y = c.table(punc).
-                    sample
-                    //match
-                            (start, end, x, n);
+            TaskTable table = c.table(punc);
+            Task y;
+            if (beliefOrGoal) {
+                y = table.match(start, end, x, n.dur(), n);
+            } else {
+                y = table.sample(start, end, x, n);
+            }
 
             if (y == null) {
                 if (!beliefOrGoal) {

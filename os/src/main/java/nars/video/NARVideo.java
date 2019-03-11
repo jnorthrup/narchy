@@ -51,7 +51,7 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
         protected void stopping(NAR nar) {
             synchronized (cam) {
                 if (surfaceWindow != null)
-                    surfaceWindow.io.off();
+                    surfaceWindow.display.off();
 
                 surface = new Gridding();
                 c.stop();

@@ -294,8 +294,8 @@ public class SensorBeliefTables extends BeliefTables {
      */
     private final class MyRTreeBeliefTable extends RTreeBeliefTable {
 
-        @Override protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, int dur) {
-            FloatRank<Task> base = super.taskStrength(beliefOrGoal, now, dur);
+        @Override protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, int narDur, int tableDur) {
+            FloatRank<Task> base = super.taskStrength(beliefOrGoal, now, narDur, tableDur);
             return (t,min) -> {
                 float v = base.rank(t, min);
                 if (v == v) {
@@ -304,7 +304,7 @@ public class SensorBeliefTables extends BeliefTables {
                         long l = Longerval.intersectLength(t.start(), t.end(), ss, se);
                         if (l > 0) {
                             //discount the rank in proportion to how much of the task overlaps with the series
-                            float overlap = Util.unitizeSafe(l / ((float) t.range()));
+                            float overlap = (float) Util.unitizeSafe(l / ((double) t.range()));
                             v *= (1-overlap);
                         }
                     }

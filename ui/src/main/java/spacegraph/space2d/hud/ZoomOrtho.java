@@ -19,54 +19,13 @@ public class ZoomOrtho extends Ortho {
 
     public final static short PAN_BUTTON = 0;
     private final static short MOVE_WINDOW_BUTTON = 1;
+
     private float wheelZoomRate = 0.5f;
 
     public ZoomOrtho(JoglSpace space, Surface content, Finger finger, NewtKeyboard keyboard) {
         super(space, content, keyboard);
-
-        animate(new Animated() {
-
-            long lastTouchStart = Long.MIN_VALUE;
-            final static long hoverDelayMS = 100;
-            Surface prevTouch = null;
-            Surface hover = null;
-
-            @Override
-            public boolean animate(float w) {
-
-                Surface nextTouch = finger.touching();
-                if (nextTouch!=null)
-                    nextTouch = (Surface) nextTouch.parent(HudHover.class);
-
-                if (nextTouch != prevTouch) {
-
-                    if (hover!=null) {
-                        hover.remove();
-                        hover = null;
-                    }
-
-                    if (nextTouch instanceof HudHover) {
-                        this.lastTouchStart = System.currentTimeMillis();
-                        this.prevTouch = nextTouch;
-                    } else{
-                        this.prevTouch = null;
-                    }
-                }
-
-                Surface t = this.prevTouch;
-                if (t!=null && hover == null && System.currentTimeMillis() - lastTouchStart > hoverDelayMS) {
-                    hover = ((HudHover) t).hover(cam.worldToScreen(t), finger);
-                    if (hover == null)
-                        this.prevTouch = null;
-                    else {
-                        hud().add(hover);
-                    }
-                }
-
-                return true;
-            }
-        });
     }
+
 
     @Override
     public Surface finger(Finger finger) {
@@ -80,14 +39,17 @@ public class ZoomOrtho extends Ortho {
                 zoomDelta(finger, dy * wheelZoomRate);
         }
 
-        if (f!=null) {
-
+//        if (corner(finger.posPixel)) {
+//            System.out.println("corner " + menu.bounds);
+//        } else {
             if (f != null && finger.clickedNow(2 /*right button*/)) {
                 /** auto-zoom */
                 zoomNext(f);
             }
+//        }
 
-        }
+
+
 
 
 //        if (f!=null && finger.pressedNow(1)) {
@@ -119,8 +81,16 @@ public class ZoomOrtho extends Ortho {
         return f;
     }
 
-    private MutableListContainer hud() {
-        return (MutableListContainer) ((space.layers).get(3)); //HACK
+    float CORNER_RADIUS = 4;
+    private boolean corner(v2 p) {
+        //TODO other 3 corners
+        return (p.x < CORNER_RADIUS && p.y  < CORNER_RADIUS);
+    }
+
+
+    @Deprecated
+    public MutableListContainer hud() {
+        return (MutableListContainer) ((MutableListContainer) content).get(3); //HACK
     }
 
     private final Fingering fingerContentPan = new FingerMoveWindow(PAN_BUTTON) {
@@ -165,7 +135,7 @@ public class ZoomOrtho extends Ortho {
         protected boolean startDrag(Finger f) {
 
 
-            windowStart.set(space.io.getX(), space.io.getY());
+            windowStart.set(space.display.getX(), space.display.getY());
             //System.out.println("window start=" + windowStart);
             return super.startDrag(f);
         }
@@ -180,7 +150,7 @@ public class ZoomOrtho extends Ortho {
         public void move(float dx, float dy) {
 
 
-            space.io.setPosition(
+            space.display.setPosition(
                     Math.round(windowStartX + dx),
                     Math.round(windowStartY - dy));
         }
@@ -199,7 +169,7 @@ public class ZoomOrtho extends Ortho {
 
         @Override
         protected boolean startDrag(Finger f) {
-            windowStart.set(space.io.getX(), space.io.getY());
+            windowStart.set(space.display.getX(), space.display.getY());
             //System.out.println("window start=" + windowStart);
             return super.startDrag(f);
         }
@@ -220,6 +190,56 @@ public class ZoomOrtho extends Ortho {
     }
 
 
+    private class DelayedHover implements Animated {
+
+        private final Finger finger;
+        long lastTouchStart;
+        final static long hoverDelayMS = 100;
+        Surface prevTouch;
+        Surface hover;
+
+        public DelayedHover(Finger finger) {
+            this.finger = finger;
+            lastTouchStart = Long.MIN_VALUE;
+            prevTouch = null;
+            hover = null;
+        }
+
+        @Override
+        public boolean animate(float w) {
+
+            Surface nextTouch = finger.touching();
+            if (nextTouch!=null)
+                nextTouch = (Surface) nextTouch.parent(HudHover.class);
+
+            if (nextTouch != prevTouch) {
+
+                if (hover!=null) {
+                    hover.remove();
+                    hover = null;
+                }
+
+                if (nextTouch instanceof HudHover) {
+                    this.lastTouchStart = System.currentTimeMillis();
+                    this.prevTouch = nextTouch;
+                } else{
+                    this.prevTouch = null;
+                }
+            }
+
+            Surface t = this.prevTouch;
+            if (t!=null && hover == null && System.currentTimeMillis() - lastTouchStart > hoverDelayMS) {
+                hover = ((HudHover) t).hover(cam.worldToScreen(t), finger);
+                if (hover == null)
+                    this.prevTouch = null;
+                else {
+                    hud().add(hover);
+                }
+            }
+
+            return true;
+        }
+    }
 }
 
 

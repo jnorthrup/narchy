@@ -68,9 +68,15 @@ public class BatchDeriver extends Deriver {
 
 //        tasklinks.print(); System.out.println();
 
+        long now = nar.time();
+        int dur = nar.dur();
+        long start = now - dur/2;
+        long end = now + dur/2;
+
         tasklinks.sample(d.random, tasklinksPerIteration.intValue(), tasklink->{
+
             for (int i = 0; i < tlAttempts; i++) {
-                Task task = tasklink.apply(nar);
+                Task task = tasklink.get(start, end, nar);
                 if (task != null) {
                     Term term = tasklink.term(task, d);
                     if (term != null)

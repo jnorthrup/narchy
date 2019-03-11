@@ -31,7 +31,7 @@ public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
         this.space = g;
 
 
-        on = g.io.onUpdate(this);
+        on = g.display.onUpdate(this);
     }
 
     @Override

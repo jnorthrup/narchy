@@ -28,13 +28,13 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
     }
 
     private void _set(Surface next) {
+        if (the==next)
+            return;
+
         if (the!=null)
             the.stop();
 
-
-
         the = next;
-
 
         if (parent!=null) {
             next.start(this);

@@ -125,7 +125,7 @@ public class NARS {
                 n.termVolumeMax.set(26);
 
                 n.attn.activeCapacity.set(128);
-                n.attn.forgetRate.set(0.1f);
+                n.attn.forgetRate.set(0.01f);
 
                 n.beliefPriDefault.set(0.1f);
                 n.goalPriDefault.set(0.1f);

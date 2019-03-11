@@ -45,15 +45,19 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
             o.accept(t);
         //}
     }
-
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        return o.test(the());
+        S content = the();
+        if (content instanceof Container)  return ((Container)content).whileEach(o);
+        else return o.test(content);
     }
 
     @Override
-    public final boolean whileEachReverse(Predicate<Surface> o) {
-        return whileEach(o);
+    public boolean whileEachReverse(Predicate<Surface> o) {
+        S content = the();
+        if (content instanceof Container)  return ((Container)content).whileEachReverse(o);
+        else return o.test(content);
     }
+
 
 }

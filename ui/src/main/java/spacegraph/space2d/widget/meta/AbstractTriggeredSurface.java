@@ -18,6 +18,7 @@ abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitCo
 
     protected final void updateIfShowing() {
         if (showing()) {
+            //((ZoomOrtho)root()).space.io.window.getScreenIndex()
             update();
         }
     }

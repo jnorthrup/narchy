@@ -4,8 +4,8 @@ import jcog.Util;
 import jcog.pri.ScalarValue;
 import jcog.signal.buffer.CircularFloatBuffer;
 import spacegraph.audio.AudioBuffer;
-import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Dragging;
+import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.MenuSupplier;
@@ -68,13 +68,13 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
 
         @Override
         protected boolean startDrag(Finger f) {
-            selectStart = sample(f.posOrtho.x);
+            selectStart = sample(f.posRel(WaveView.this).x);
             return true;
         }
 
         @Override
         protected boolean drag(Finger f) {
-            selectEnd = sample(f.posOrtho.x);
+            selectEnd = sample(f.posRel(WaveView.this).x);
             return true;
         }
     };

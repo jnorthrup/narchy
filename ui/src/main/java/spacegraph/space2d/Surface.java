@@ -233,9 +233,8 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
             showing = (visible() && (!clipBounds || r.visible(bounds)));
         }
 
-        if (showing) {
+        if (showing)
             compile(r);
-        }
     }
 
     protected void compile(SurfaceRender r) {
@@ -246,11 +245,6 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         if (showing = visible(r))
             paint(gl, r);
     }
-
-
-
-
-
 
     public Surface hide() {
         visible = false;

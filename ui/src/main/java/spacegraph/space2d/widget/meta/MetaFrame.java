@@ -11,7 +11,7 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.hud.HudHover;
-import spacegraph.space2d.hud.Ortho;
+import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 
@@ -218,7 +218,7 @@ public class MetaFrame extends Bordering implements HudHover {
     }
 
     private MutableListContainer hud() {
-        return (MutableListContainer) parent(Ortho.class).space.layers.get(3);
+        return (MutableListContainer) parent(ZoomOrtho.class).hud().get(3);
     }
 
 

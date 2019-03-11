@@ -117,7 +117,7 @@ public class NARio extends NAgentX {
         );
 
         AttNode tileAttnGroup = new AttNode(tileSensors);
-        tileAttnGroup.parent(attn);
+        tileAttnGroup.parent(attnSensor);
         for (SelectorSensor s : tileSensors)
             s.attn.reparent(tileAttnGroup);
 

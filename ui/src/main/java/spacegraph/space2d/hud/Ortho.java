@@ -3,44 +3,34 @@ package spacegraph.space2d.hud;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
 import com.jogamp.newt.event.WindowUpdateEvent;
-import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.math.v2;
 import jcog.math.v3;
 import jcog.tree.rtree.rect.RectFloat;
-import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.SurfaceRoot;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.unit.AbstractUnitContainer;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.JoglSpace;
-import spacegraph.video.JoglWindow;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import static java.lang.Math.sin;
-import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
  * orthographic widget adapter. something which goes on the "face" of a HUD ("head"s-up-display)
  */
-public class Ortho<S extends Surface> extends Container implements SurfaceRoot, WindowListener, KeyPressed {
+public class Ortho<S extends Surface> extends AbstractUnitContainer implements WindowListener, KeyPressed {
 
     @Deprecated private final NewtKeyboard keyboard;
 
-    private final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
 
     private static final int ZOOM_STACK_MAX = 8;
     private final Deque<v3> zoomStack = new ArrayDeque();
@@ -59,6 +49,7 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     private final float zoomMargin = 0.1f;
     private final static float focusAngle = (float) Math.toRadians(45);
 
+    @Deprecated public v2 posOrtho = new v2(0,0);
     /** parent */
     public final JoglSpace space;
 
@@ -77,8 +68,6 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         this.keyboard = keyboard;
 
         setContent(content);
-
-        start(space);
     }
 
 
@@ -103,8 +92,8 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 
     @Override
     public void windowResized(WindowEvent e) {
-        int W = space.io.window.getWidth();
-        int H = space.io.window.getHeight();
+        int W = space.display.window.getWidth();
+        int H = space.display.window.getHeight();
         if (posChanged(RectFloat.WH( W, H))) {
 
             float camZ = targetDepth(Math.min(W, H));
@@ -119,49 +108,39 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         }
     }
 
+    @Override
+    public Surface finger(Finger finger) {
+
+        /*finger(this,*/posOrtho.set(cam.screenToWorld(finger.posPixel));
+        //System.out.println(posPixel + " pixel -> " + posOrtho + " world");
+
+        return super.finger(finger);
+    }
 
     @Override public final void compile(SurfaceRender render) {
 
-        float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
-        float s = zoom * Math.min(w(), h());
+        render.on((gl)->{
 
-        render.compile(cam, scale.set(s, s), content);
-    }
+            float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
+            float s = zoom * Math.min(w(), h());
 
-    @Override
-    public void paint(GL2 gl, SurfaceRender r) {
+            render.set(cam, scale.set(s, s));
 
-        gl.glPushMatrix();
+            gl.glPushMatrix();
 
-        gl.glScalef(scale.x, scale.y, 1);
-        gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
+            gl.glScalef(scale.x, scale.y, 1);
+            gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
+        });
 
-        r.render(gl);
+        content.recompile(render);
 
-        gl.glPopMatrix();
-    }
-
-
-    @Override
-    protected void doLayout(int dtMS) {
-
+        render.on((gl)->{
+           gl.glPopMatrix();
+        });
     }
 
     protected boolean autosize() {
         return false;
-    }
-
-    @Override
-    public Object the(String key) {
-        synchronized (singletons) {
-            Pair<Object, Runnable> x = singletons.get(key);
-            return x == null ? null : x.getOne();
-        }
-    }
-
-    @Override
-    public Off onUpdate(Consumer<JoglWindow> c) {
-        return space.onUpdate(c);
     }
 
     public Off animate(Animated c) {
@@ -173,33 +152,17 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     }
 
     @Override
-    public void the(String key, Object added, Runnable onRemove) {
-        synchronized (singletons) {
-
-            Pair<Object, Runnable> removed = null;
-            if (added == null) {
-                assert (onRemove == null);
-                removed = singletons.remove(key);
-            } else {
-                removed = singletons.put(key, pair(added, onRemove));
-            }
-
-            if (removed != null) {
-                if (removed.getOne() == added) {
-
-                } else {
-                    removed.getTwo().run();
-                }
-            }
-        }
+    protected void starting() {
+        super.starting();
+        start( ((JoglSpace) root()) );
     }
 
-    public void start(JoglSpace s) {
+    protected void start(JoglSpace s) {
         synchronized (this) {
 
-            s.io.addWindowListener(this);
+            s.display.addWindowListener(this);
 
-            s.io.addKeyListener(keyboard);
+            s.display.addKeyListener(keyboard);
 
             windowResized(null);
 
@@ -209,16 +172,8 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
             if (content.parent == null)
                 content.start(this);
 
-            starting();
         }
 
-    }
-
-
-
-    @Override
-    public SurfaceRoot root() {
-        return this;
     }
 
     @Override
@@ -314,10 +269,10 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     }
 
     public final int pw() {
-        return this.space.io.getWidth();
+        return this.space.display.getWidth();
     }
     public final int ph() {
-        return this.space.io.getHeight();
+        return this.space.display.getHeight();
     }
 
     private float targetDepth(float viewDiameter) {
@@ -372,34 +327,9 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     }
 
     @Override
-    public void forEach(Consumer<Surface> o) {
-        o.accept(content);
-    }
-
-    @Override
-    public boolean whileEach(Predicate<Surface> o) {
-        return o.test(content);
-    }
-
-    @Override
-    public boolean whileEachReverse(Predicate<Surface> o) {
-        return whileEach(o);
-    }
-
-
-
-    @Override
     public void windowRepaint(WindowUpdateEvent e) {
         visible = true;
     }
-
-    @Override
-    public boolean keyFocus(Surface s) {
-        return keyboard.focus(s);
-    }
-
-
-
 
 
 //    /**
@@ -421,19 +351,6 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 //    }
 
 
-    @Override
-    public boolean visible() {
-        return visible;
-    }
-
-    @Override
-    public int childrenCount() {
-        return 1;
-    }
-
-
-
-
     public final S the() {
         return content;
     }
@@ -442,7 +359,7 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     public class Camera extends AnimVector3f {
 
         /** TODO atomic */
-        private float CAM_RATE = 3f;
+        private final float CAM_RATE = 3f;
 
         {
             setDirect(0, 0, 1); //(camZmin + camZmax) / 2);

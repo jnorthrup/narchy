@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.meter;
 
-import com.jogamp.opengl.GL2;
 import jcog.math.IntRange;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
@@ -11,7 +10,6 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.function.ToIntFunction;
 
 /** displays something resembling a "spectrogram" to represent the changing contents of a bag

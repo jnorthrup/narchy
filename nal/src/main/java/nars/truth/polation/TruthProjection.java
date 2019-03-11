@@ -61,12 +61,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * computes the final truth value
      */
     @Nullable
-    public abstract Truth truth(float eviMin, boolean dither, NAR nar);
-
-    @Nullable
-    public final Truth truth(float eviMin, NAR nar) {
-        return truth(eviMin, false, nar);
-    }
+    public abstract Truth truth(float eviMin, boolean dither, boolean tCrop, NAR nar);
 
     public final boolean add(TaskRegion t) {
         return add(t.task());
@@ -109,18 +104,21 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * should be called after all entries are added
      */
     @Nullable
-    public final MetalLongSet commit(boolean provideStamp, int minResults) {
+    public final MetalLongSet commit(boolean provideStamp, boolean tCrop, int minResults) {
 
 
         if (size() < minResults) return null;
 
-        int s = refocus();
+        /** dont crop initially. instead, decide the crop, if any, based on the discovered tasks */
+        int s = refocus(false);
 
-        if (s < minResults) return null;
+        if (s < minResults)
+            return null;
         else if (s == 1) {
+            refocus(tCrop);
             return only(provideStamp);
         } else {
-            MetalLongSet e = filterCyclicN(minResults);
+            MetalLongSet e = filterCyclicN(minResults, tCrop || start==ETERNAL);
             return provideStamp ? e : null;
         }
     }
@@ -143,7 +141,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return 0;
     }
 
-    private MetalLongSet filterCyclicN(int minComponents) {
+    private MetalLongSet filterCyclicN(int minComponents, boolean tCrop) {
 
         assert (minComponents >= 1);
 
@@ -157,7 +155,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             } else {
                 //2nd iteration, or after
 
-                int activeRemain = refocus();
+                int activeRemain = refocus(tCrop);
                 if (activeRemain < minComponents) {
                     //OOPS
                     // TODO undo
@@ -198,11 +196,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 removeLastFast();
                 return e;
             } else {
-                if (strongestConflict == weakestConflict) {
-                    //it is only conflict present in this set.
-                    // eliminate it if the sum of the other evidences are greater
-                    cull(minComponents, strongestConflict);
-                } else {
+//                if (strongestConflict == weakestConflict) {
+//                    //it is only conflict present in this set.
+//                    // eliminate it if the sum of the other evidences are greater
+//                    cull(minComponents, strongestConflict);
+//                } else {
 
                     //TODO try evaluating the truth by removing each of the conflicting tasks
 
@@ -210,7 +208,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                     cull(minComponents, weakestConflict);
 
                     //TODO early exit possible here if weakestConflict == 0, then 'e' will be correct for return in some cases
-                }
+//                }
 
             }
 
@@ -228,9 +226,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     private void cull(int minComponents, int conflict) {
-        if (minComponents <= 1)
-            oneForAll(conflict);
-        else
+//        if (minComponents <= 1)
+//            oneForAll(conflict);
+//        else
             removeFast(conflict);
     }
 
@@ -238,41 +236,41 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         sortThisByFloat(tc -> -tc.evi); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
     }
 
-    /**
-     * a one-for-all and all-for-one decision
-     */
-    private void oneForAll(int conflict) {
-        if (size() == 2) {
-            removeFast(1); //the weaker will obviously be the 1th one regardless
-            return;
-        }
-        TaskComponent cc = get(conflict);
-        if (cc.evi < eviSumExcept(conflict)) {
-            removeFast(conflict);
-        } else {
-            //remove all except strongest conflict
-            clear();
-            add(cc);
-        }
-    }
-
-    public double eviSum() {
-        return eviSumExcept(-1);
-    }
-
-    public double eviSumExcept(int task) {
-        double e = 0;
-        int n = size();
-        for (int i = 0; i < n; i++) {
-            if (i != task) {
-                TaskComponent c = get(i);
-                float ce = c.evi;
-                if (ce == ce)
-                    e += ce;
-            }
-        }
-        return e;
-    }
+//    /**
+//     * a one-for-all and all-for-one decision
+//     */
+//    private void oneForAll(int conflict) {
+//        if (size() == 2) {
+//            removeFast(1); //the weaker will obviously be the 1th one regardless
+//            return;
+//        }
+//        TaskComponent cc = get(conflict);
+//        if (cc.evi < eviSumExcept(conflict)) {
+//            removeFast(conflict);
+//        } else {
+//            //remove all except strongest conflict
+//            clear();
+//            add(cc);
+//        }
+//    }
+//
+//    public double eviSum() {
+//        return eviSumExcept(-1);
+//    }
+//
+//    public double eviSumExcept(int task) {
+//        double e = 0;
+//        int n = size();
+//        for (int i = 0; i < n; i++) {
+//            if (i != task) {
+//                TaskComponent c = get(i);
+//                float ce = c.evi;
+//                if (ce == ce)
+//                    e += ce;
+//            }
+//        }
+//        return e;
+//    }
 
     private MetalLongSet only(boolean provideStamp) {
         return provideStamp ? Stamp.toMutableSet(firstValid().task) : null;
@@ -395,8 +393,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
 
     @Nullable
-    public final Truth truth() {
-        return truth(Float.MIN_NORMAL, null);
+    @Deprecated public final Truth truth() {
+        return truth(Float.MIN_NORMAL, false, false, null);
     }
 
 
@@ -426,7 +424,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * if the start/end has changed, then evidence for each will need recalculated
      * returns the number of active tasks
      */
-    private int refocus() {
+    private int refocus(boolean tCrop) {
         long[] se;
         boolean allInvalid = allInvalid(); //uninitialized or not
 
@@ -444,14 +442,15 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             if (start == ETERNAL) {
                 //override eternal range with the calculated union
             } else {
-                se[0] = Math.min(end, Math.max(start, se[0]));
-                se[1] = Math.max(start, Math.min(end, se[1]));
+                if (tCrop && end-start>1) {
+                    //crop start/stop to narrower window containing the tasks
+                    se[0] = Math.max(start, se[0]);
+                    se[1] = Math.max(se[0], Math.min(end, se[1]));
+                    assert(se[1] >= se[0]);
+                }
             }
         }
         if (allInvalid || (se[0] != start || se[1] != end)) {
-            if (!allInvalid)
-                invalidate();
-
             start = se[0];
             end = se[1];
 
@@ -524,7 +523,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             return task + "=" + evi;
         }
 
-        boolean valid() {
+        public boolean valid() {
             return evi == evi;
         }
 

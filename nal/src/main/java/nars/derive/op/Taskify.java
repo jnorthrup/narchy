@@ -144,17 +144,14 @@ public class Taskify extends ProxyTerm {
 
         long S, E;
         if (d.concOcc != null && d.concOcc[0] != ETERNAL) {
-            long s = d.concOcc[0], e = d.concOcc[1];
-            assert (e >= s) : "task has reversed occurrence: " + s + ".." + e;
 
-            //dither time
             int dither = d.ditherDT;
-            S = Tense.dither(s, dither);
-            E = Tense.dither(e, dither);
+            if (dither > 1)
+                Tense.dither(d.concOcc, dither);
 
-//            if ((1+E-S)-dither*2 > Math.max((d._task.isEternal() ? 0 : d._task.range()), d._belief!=null ? (d._belief.isEternal() ? 0 : d._belief.range()) : 0))
-//                throw new WTF("hyperinflation of temporal evidence");
+            S = d.concOcc[0]; E = d.concOcc[1];
 
+            assert (S <= E) : "task has reversed occurrence: " + S + ".." + E;
         } else {
             S = E = ETERNAL;
         }
@@ -253,10 +250,11 @@ public class Taskify extends ProxyTerm {
 
 
     protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Task parent, NAR n) {
-        if (parent.isDeleted())
-            return false;
 
         if (FILTER_SIMILAR_DERIVATIONS) {
+
+            if (parent.isDeleted())
+                return false;
 
             if (parent.punc() == punc) {
                 if (parent.term().equals(derived.term())) { //TODO test for dtDiff

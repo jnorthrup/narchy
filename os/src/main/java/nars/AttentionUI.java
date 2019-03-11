@@ -23,24 +23,29 @@ public class AttentionUI {
         }
     }
 
+//    public static GraphEdit serviceGraph(NAR n, NAgent a) {
+//        GraphEdit<Surface> g = GraphEdit.window(800, 500);
+//        g.add(new ExpandingChip(a.toString(), (x)->{
+//            new ObjectSurface(a).forEach
+//        }));
+//        return g;
+//    }
+
     public static Surface attentionGraph(NAR n, NAgent a) {
         AttNode aa = a.attn;
         Graph2D<AttNode> aaa = new Graph2D<AttNode>()
-                .render(new Graph2D.Graph2DRenderer<AttNode>() {
-                    @Override
-                    public void node(Graph2D.NodeVis<AttNode> node, Graph2D.GraphEditing<AttNode> graph) {
-                        node.id.children.forEach(c -> {
-                            Graph2D.EdgeVis<AttNode> e = graph.edge(node, c);
-                            e.weight(1f);
-                            e.color(0.5f, 0.5f, 0.5f);
-                        });
-                        float s = node.id.pri.pri();
-                        float d = 0.5f * node.id.factor.floatValue();
+                .render((Graph2D.Graph2DRenderer<AttNode>) (node, graph) -> {
+                    node.id.children.forEach(c -> {
+                        Graph2D.EdgeVis<AttNode> e = graph.edge(node, c);
+                        e.weight(1f);
+                        e.color(0.5f, 0.5f, 0.5f);
+                    });
+                    float s = node.id.pri.pri();
+                    float d = 0.5f * node.id.factor.floatValue();
 //                            float r = Math.min(1, s/d);
-                        node.color(Math.min(d, 1), Math.min(s, 1), 0);
-                        if (!(node.the() instanceof NodeUI)) {
-                            node.set(new NodeUI(node.id));
-                        }
+                    node.color(Math.min(d, 1), Math.min(s, 1), 0);
+                    if (!(node.the() instanceof NodeUI)) {
+                        node.set(new NodeUI(node.id));
                     }
                 })
                 .update(new ForceDirected2D<>() {

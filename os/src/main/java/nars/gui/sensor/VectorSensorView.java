@@ -48,7 +48,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private int dur;
 
     /** how much evidence to include in result */
-    static final int truthPrecision = 6;
+    static final int truthPrecision = 8;
 
     /** in durs */
     public final FloatRange timeShift = new FloatRange(0, -64, +64);

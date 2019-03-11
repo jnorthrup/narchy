@@ -3,6 +3,7 @@ package nars.attention;
 import jcog.event.Offs;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.pri.PriBuffer;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
@@ -16,7 +17,6 @@ import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
 
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import static jcog.pri.op.PriMerge.plus;
@@ -68,7 +68,7 @@ public abstract class Attention extends DurService implements Sampler<TaskLink> 
 
         active = new TaskLinkBag(
                 new TaskLinkArrayBag(activeCapacity.intValue()),
-                //new TaskLinkHijackBag(activeCapacity.intValue(), 3),
+                //new TaskLinkHijackBag(activeCapacity.intValue(), 5),
                 forgetRate);
 
         active.setCapacity(activeCapacity.intValue());
@@ -111,7 +111,7 @@ public abstract class Attention extends DurService implements Sampler<TaskLink> 
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {
 
         public TaskLinkArrayBag(int initialCapacity) {
-            super(Param.tasklinkMerge, initialCapacity, new ConcurrentHashMap(initialCapacity, 0.5f));
+            super(Param.tasklinkMerge, initialCapacity, PriBuffer.newConcurrentMap());
         }
 
         @Override

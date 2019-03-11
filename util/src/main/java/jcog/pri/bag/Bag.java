@@ -5,7 +5,6 @@ import jcog.data.NumberX;
 import jcog.data.list.table.Table;
 import jcog.pri.op.PriForget;
 import jcog.util.FloatFloatToFloatFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;

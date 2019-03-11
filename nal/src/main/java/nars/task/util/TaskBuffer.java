@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -172,7 +171,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         public MapTaskBuffer(int initialCapacity) {
             capacity.set(initialCapacity);
-            tasks = new ConcurrentHashMap<>(initialCapacity, 1f);
+            tasks = PriBuffer.newConcurrentMap();
         }
 
         @Override

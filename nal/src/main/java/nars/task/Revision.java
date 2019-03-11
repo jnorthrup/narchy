@@ -73,13 +73,13 @@ public enum Revision {;
 
         TruthProjection p = nar.projection(u[0], u[1], 0).add(tasks);
 
-        MetalLongSet stamp = p.commit(true, 2);
+        MetalLongSet stamp = p.commit(true, true,2);
         if (stamp == null)
             return null;
 
         assert(p.size()>=2);
 
-        Truth truth = p.truth(c2wSafe(nar.confMin.floatValue()), dither, nar);
+        Truth truth = p.truth(c2wSafe(nar.confMin.floatValue()), dither, true, nar);
         if (truth == null)
             return null;
 

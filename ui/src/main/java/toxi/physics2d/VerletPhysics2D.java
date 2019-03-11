@@ -27,7 +27,6 @@
 
 package toxi.physics2d;
 
-import jcog.TODO;
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
 import jcog.tree.rtree.rect.RectFloat;

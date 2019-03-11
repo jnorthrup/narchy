@@ -35,4 +35,5 @@ public class SpecialTruthAndOccurrenceTask extends SpecialOccurrenceTask {
         return truth;
     }
 
+
 }

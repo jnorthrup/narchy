@@ -15,7 +15,7 @@ public enum SpaceGraph { ;
     public static JoglSpace window(Surface s, int w, int h) {
         JoglSpace win = new SpaceGraphFlat(s);
         if (w > 0 && h > 0) {
-            win.io.show(w, h);
+            win.display.show(w, h);
         }
         return win;
     }
@@ -24,11 +24,11 @@ public enum SpaceGraph { ;
     public static JoglSpace window(Object o, int w, int h) {
         if (o instanceof JoglSpace) {
             JoglSpace s = (JoglSpace) o;
-            s.io.show(w, h);
+            s.display.show(w, h);
             return s;
         } else if (o instanceof Spatial) {
             SpaceGraphPhys3D win = new SpaceGraphPhys3D(((Spatial) o));
-            win.io.show(w, h);
+            win.display.show(w, h);
             return win;
         } else if (o instanceof Surface) {
             return window(((Surface) o), w, h);

@@ -7,7 +7,6 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.bag.leak.TaskLeakTransform;
-import nars.concept.Concept;
 import nars.control.CauseMerge;
 import nars.task.signal.SignalTask;
 import nars.term.Compound;
@@ -133,7 +132,49 @@ abstract public class Inperience extends TaskLeakTransform {
         }
     };
 
+    public static Term reifyQuestion(Term x, byte punc, NAR nar) {
+        x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+        x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.apply(x) : x;
+        if (x instanceof Bool) return Bool.Null;
 
+        x = Image.imageNormalize(x);
+
+        return $.funcImg(punc == QUESTION ? wonder : evaluate, nar.self(), Described.apply(x));
+    }
+
+    public static Term reifyBeliefOrGoal(Task t, NAR nar) {
+        Term x = Image.imageNormalize(t.term());
+//        Concept c = nar.conceptualizeDynamic(tt.unneg());
+//        if (c == null)
+//            return Bool.Null;
+
+        Term self = nar.self();
+
+        Atomic verb;
+        Term y;
+        if (t.punc() == BELIEF) {
+//                Task belief =
+//                        t;
+//                        //c.table(BELIEF).answer(t.start(), t.end(), tt, null, nar);
+
+            y = //belief != null ? Described.transform(belief.target().negIf(belief.isNegative())) :
+                    Described.apply(x);
+            verb = believe;
+        } else {
+//                Task goal = t;
+//                        //c.table(GOAL).answer(t.start(), t.end(), tt.unneg(), null, nar);
+
+            y = //goal!=null ? Described.transform(goal.target().negIf(goal.isNegative())) :
+                    Described.apply(x);
+
+            verb = want;
+//                else {
+//
+//                    return CONJ.the(want, 0, $.func(believe, self, bb.negIf(belief.isNegative())));
+//                }
+        }
+        return $.funcImg(verb, self, y.negIf(t.isNegative()));
+    }
 
 
     public static class Believe extends Inperience {
@@ -173,39 +214,8 @@ abstract public class Inperience extends TaskLeakTransform {
             if (!tt.op().taskable)
                 return Bool.Null;
 
-            return reifyBeliefOrGoal(t, Image.imageNormalize(tt), nar);
+            return reifyBeliefOrGoal(t,  nar);
         }
-
-        @Deprecated private static Term reifyBeliefOrGoal(Task t, Term tt, NAR nar) {
-            Concept c = nar.conceptualizeDynamic(tt.unneg());
-            if (c == null)
-                return Bool.Null;
-
-            Term self = nar.self();
-
-            if (t.punc() == BELIEF) {
-//                Task belief =
-//                        t;
-//                        //c.table(BELIEF).answer(t.start(), t.end(), tt, null, nar);
-
-                Term bb = //belief != null ? Described.transform(belief.target().negIf(belief.isNegative())) :
-                        Described.apply(tt);
-                return $.funcImg(believe, self, bb);
-            } else {
-//                Task goal = t;
-//                        //c.table(GOAL).answer(t.start(), t.end(), tt.unneg(), null, nar);
-
-                Term gg = //goal!=null ? Described.transform(goal.target().negIf(goal.isNegative())) :
-                        Described.apply(tt);
-                return $.funcImg(want, self, gg);
-
-//                else {
-//
-//                    return CONJ.the(want, 0, $.func(believe, self, bb.negIf(belief.isNegative())));
-//                }
-            }
-        }
-
 
 
     }
@@ -230,16 +240,6 @@ abstract public class Inperience extends TaskLeakTransform {
         @Override
         public boolean acceptTask(Task t) {
             return true;
-        }
-
-        private static Term reifyQuestion(Term x, byte punc, NAR nar) {
-            x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-            x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.apply(x) : x;
-            if (x instanceof Bool) return Bool.Null;
-
-            x = Image.imageNormalize(x);
-
-            return $.funcImg(punc == QUESTION ? wonder : evaluate, nar.self(), Described.apply(x));
         }
 
         @Override

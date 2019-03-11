@@ -11,7 +11,6 @@ import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
 import jcog.signal.wave1d.HaarWaveletTensor;
 import jcog.signal.wave1d.SlidingDFTTensor;
-import jcog.signal.wave1d.Spectrogram;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;

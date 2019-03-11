@@ -14,7 +14,6 @@ import nars.concept.NodeConcept;
 import nars.term.Term;
 
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLink> {
@@ -43,7 +42,7 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
     private static class TaskLinkBuffer extends PriBuffer<TaskLink> {
 
         public TaskLinkBuffer(PriMerge merge) {
-            super(merge, new ConcurrentHashMap(0, 0.5f));
+            super(merge, PriBuffer.newConcurrentMap());
         }
 
         @Override

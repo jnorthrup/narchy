@@ -26,7 +26,7 @@ public class FingerResizeSurface extends FingerResize {
 
     @Override
     protected v2 pos(Finger finger) {
-        return finger.posOrtho.clone();
+        return finger.posRel(resizing);
     }
 
     @Override

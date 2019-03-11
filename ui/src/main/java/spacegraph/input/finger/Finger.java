@@ -32,7 +32,6 @@ abstract public class Finger {
 
     public final v2 posPixel = new v2(), posScreen = new v2();
 
-    @Deprecated /* HACK */ /* TEMPORARY */ public final v2 posOrtho = new v2(0,0);
 
 
     /**
@@ -279,7 +278,7 @@ abstract public class Finger {
 //        System.out.println(pressing(i) + "<-" + wasPressed(i));
 
         if (releasedNow(button) && !_dragging(button)) {
-            if (c==null || relative(posOrtho, c).inUnit()) {
+            if (c==null || posRel(c).inUnit()) {
                 commitButton(button); //absorb the event
                 return true;
             }
@@ -329,8 +328,14 @@ abstract public class Finger {
 //        return fingering.get() != Fingering.Null;
 //    }
 
-    public v2 relativePos(Surface c) {
-        return relative(posOrtho, c);
+    public v2 posRel(Surface c) {
+
+
+        Ortho orthoParent = c.parent(Ortho.class);
+        if (orthoParent!=null)
+            return relative( orthoParent.posOrtho, c);
+        else
+            return posPixel;
     }
 
 

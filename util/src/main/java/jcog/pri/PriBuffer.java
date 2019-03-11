@@ -35,13 +35,24 @@ public class PriBuffer<Y> {
     }
     public PriBuffer(PriMerge merge, boolean concurrent) {
         this(merge, concurrent ?
-                new java.util.concurrent.ConcurrentHashMap<>(0, 0.5f) :
+                newConcurrentMap():
                 new LinkedHashMap<>(0, 0.5f) );
     }
     public PriBuffer(PriMerge merge, Map<Y, Prioritizable> items) {
         this.merge = merge;
         this.items = items;
     }
+
+    /** returns concurrent map for use in bags and buffers */
+    public static Map newConcurrentMap() {
+        return
+            //new NonBlockingHashMap();
+            new java.util.concurrent.ConcurrentHashMap<>(0, 0.75f);
+            //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f);
+            //new CustomConcurrentHashMap(64);
+            //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0);
+    }
+
 
 //    /** implements a plus merge (with collected refund)
 //     * TODO detect priority clipping (@1.0) statistic

@@ -124,12 +124,12 @@ public class Windo extends MutableUnitContainer {
     }
 
     protected boolean fingeringBounds(Finger finger) {
-        v2 f = finger.posOrtho;
+        v2 f = finger.posRel(this);
         return bounds.contains(f.x, f.y);
     }
 
     protected v2 windowHitPointRel(Finger finger) {
-        return finger.relativePos(this);
+        return finger.posRel(this);
     }
 
 
@@ -177,8 +177,7 @@ public class Windo extends MutableUnitContainer {
 //        v2 mousePos = root.fingerPos;
 //        float pmx = mousePos.x, pmy = mousePos.y;
 
-        posGlobal = finger.posOrtho;
-
+        posGlobal = finger.posScreen;
     }
 
     protected void postpaint(GL2 gl) {

@@ -18,8 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-import static nars.Op.GOAL;
-
 /** a curiosity configuration which can be shared by multiple AbstractGoalActionConcept's */
 @Skill({"Curiosity", "Central_pattern_generator","Phantom_limb"})
 public class Curiosity {

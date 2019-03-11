@@ -43,7 +43,6 @@ import java.util.function.ObjLongConsumer;
 import static spacegraph.space2d.container.Bordering.E;
 import static spacegraph.space2d.container.Bordering.S;
 import static spacegraph.space2d.container.grid.Gridding.PHI;
-import static spacegraph.space2d.phys.common.MathUtils.max;
 
 /**
  * TODO

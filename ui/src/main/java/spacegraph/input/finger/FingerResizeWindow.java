@@ -32,7 +32,7 @@ public class FingerResizeWindow extends FingerResize {
     @Override
     protected RectFloat size() {
 
-        GLWindow ww = this.space.io.window;
+        GLWindow ww = this.space.display.window;
         return RectFloat.XYXY(ww.getX(), ww.getY(), ww.getX()+ww.getWidth(),ww.getY()+ww.getHeight());
     }
 
@@ -48,7 +48,7 @@ public class FingerResizeWindow extends FingerResize {
         if (h < MIN_HEIGHT)
             return;
 
-        space.io.setPositionAndSize(Math.round(x1), Math.round(y1), w, h);
+        space.display.setPositionAndSize(Math.round(x1), Math.round(y1), w, h);
     }
 
 }

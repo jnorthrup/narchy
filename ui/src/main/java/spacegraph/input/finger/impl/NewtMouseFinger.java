@@ -5,8 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRoot;
-import spacegraph.space2d.hud.Ortho;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 
@@ -20,15 +18,14 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
     private final JoglSpace space;
 
     final AtomicBoolean updating = new AtomicBoolean(false);
-    @Nullable private transient Ortho ortho;
     protected Surface touchNext;
 
     public NewtMouseFinger(JoglSpace s) {
         super(MAX_BUTTONS);
         this.space = s;
 
-        s.onReady(()->{
-            JoglWindow win = s.io;
+        s.later(()->{
+            JoglWindow win = s.display;
             if (win.window.hasFocus())
                 focused.set(true);
 
@@ -38,25 +35,15 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         });
     }
 
-    /** called for each layer */
-    public void touch(Surface s) {
-
-        SurfaceRoot rootRoot = s.root();
-        if (rootRoot instanceof Ortho) {
-            this.ortho = (Ortho) rootRoot;
-            this.posOrtho.set(ortho.cam.screenToWorld(posPixel));
-            //System.out.println(posPixel + " pixel -> " + posOrtho + " world");
-        } else {
-            this.ortho = null;
-            this.posOrtho.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-        }
+    /** called for each layer. returns true if continues down to next layer */
+    public boolean touch(Surface s) {
 
         Fingering ff = this.fingering.get();
 
         if (this.touchNext ==null) {
             this.touchNext = (ff == Fingering.Null || ff.escapes()) ? s.finger(this) : touching.get();
         }
-
+        return touchNext==null;
     }
 
     protected void update() {
@@ -67,10 +54,9 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         try {
             touchNext = null;
 
-            ((SpaceGraphFlat) this.space).layers.reverseForEach(this::touch);
+            ((SpaceGraphFlat) this.space).layers.whileEachReverse(this::touch);
 
             Surface touchNext = this.touchNext;
-
 
             Fingering ff = this.fingering.get();
 
@@ -94,7 +80,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     private boolean update(boolean moved, MouseEvent e, short[] buttonsDown) {
 
-        JoglWindow win = space.io;
+        JoglWindow win = space.display;
 
         if (moved) {
             int pmx = e.getX(), pmy = win.getHeight() - e.getY();
