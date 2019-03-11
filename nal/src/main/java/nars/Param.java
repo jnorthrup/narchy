@@ -160,9 +160,9 @@ public abstract class Param {
     public static boolean DEBUG_ENSURE_DITHERED_DT = false;
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.max;
+            //PriMerge.max;
             //PriMerge.plus;
-            //PriMerge.or;
+            PriMerge.or;
             //PriMerge.avgGeoFast;
 
 
@@ -172,8 +172,8 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        //(t,b)->Util.unitize(t+b);
-        Util::or;
+        (t,b)->Util.unitize(t+b);
+        //Util::or;
         //Math::max;
         //Util::and;
         //Util::mean;
@@ -497,7 +497,7 @@ public abstract class Param {
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
         //e = (float)(evi / (1.0 + Util.sqr(dt / decayTime )));
-        e = (float)(evi / (1.0 + Util.sqr(dt / dur ) / falloffDurs));
+        e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
         //TODO

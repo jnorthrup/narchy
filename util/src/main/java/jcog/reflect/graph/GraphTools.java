@@ -25,35 +25,37 @@
 package jcog.reflect.graph;
 
 
+import jcog.data.graph.FromTo;
+
 /**
  * Инстуремент для работы с графами
  *
  * @author nt.gocha@gmail.com
  */
 public class GraphTools {
-    public static <N, E> N firstNode(Edge<N, E> edge, final Path.Direction d) {
+    public static <N, E> N firstNode(FromTo<jcog.data.graph.Node<N,E>,E> edge, final Path.Direction d) {
         if (d == null) throw new IllegalArgumentException("d == null");
         if (edge == null) throw new IllegalArgumentException("edge == null");
 
         switch (d) {
             case AB:
-                return edge.getNodeA();
+                return edge.from().id();
             case BA:
-                return edge.getNodeB();
+                return edge.to().id();
         }
 
         return null;
     }
 
-    public static <N, E> N secondNode(Edge<N, E> edge, final Path.Direction d) {
+    public static <N, E> N secondNode(FromTo<jcog.data.graph.Node<N,E>,E> edge, final Path.Direction d) {
         if (d == null) throw new IllegalArgumentException("d == null");
         if (edge == null) throw new IllegalArgumentException("edge == null");
 
         switch (d) {
             case AB:
-                return edge.getNodeB();
+                return edge.to().id();
             case BA:
-                return edge.getNodeA();
+                return edge.from().id();
         }
 
         return null;

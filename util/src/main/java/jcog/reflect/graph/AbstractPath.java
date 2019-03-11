@@ -23,6 +23,9 @@
  */
 package jcog.reflect.graph;
 
+import jcog.data.graph.FromTo;
+import jcog.data.graph.MapNodeGraph;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,20 +44,13 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
      */
     protected Path.Direction direction = Path.Direction.AB;
 
-    public AbstractPath() {
+    protected MapNodeGraph<N, E> graph;
+
+    public AbstractPath(MapNodeGraph<N, E> graph) {
+        this.graph = graph;
     }
 
-    public AbstractPath(AbstractPath<N, E> sample) {
-        if (sample != null) {
-            this.direction = sample.direction;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see Path
-     */
-    @Override
-    abstract public Path<N, E> clone();
+    abstract public AbstractPath<N,E> clone();
 
     @Override
     public E edge(int beginIndex, int endIndex) {
@@ -88,11 +84,13 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
 
         if (andiff == 1) {
             int minidx = Math.min(beginIdx, endExc);
-            if (minidx < 0 || minidx >= ncnt) return clone().clear();
-            return clone().clear().start(node(minidx));
+            if (minidx < 0 || minidx >= ncnt)
+                return clone().clear();
+
+            return spawn(node(minidx));
         }
 
-        List<Edge<N, E>> edges = fetch(beginIdx, endExc);
+        List<FromTo<jcog.data.graph.Node<N,E>,E>> edges = fetch(beginIdx, endExc);
 
         Path<N, E> path = clone().clear();
 
@@ -101,16 +99,16 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
 
             if (esize == 1) {
                 path = path.
-                        start(edges.get(0).getNodeA()).
-                        join(edges.get(0).getNodeB(), edges.get(0).getEdge())
+                        spawn(edges.get(0).from().id()).
+                        append(edges.get(0).id(), edges.get(0).to().id())
                 ;
             } else if (esize > 1) {
                 path = path.
-                        start(edges.get(0).getNodeA()).
-                        join(edges.get(0).getNodeB(), edges.get(0).getEdge())
+                        spawn(edges.get(0).from().id()).
+                        append(edges.get(0).id(), edges.get(0).to().id())
                 ;
                 for (int ei = 1; ei < esize; ei++) {
-                    path = path.join(edges.get(ei).getNodeB(), edges.get(ei).getEdge());
+                    path = path.append(edges.get(ei).id(), edges.get(ei).to().id());
                 }
             }
         }

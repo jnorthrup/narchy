@@ -9,14 +9,13 @@ import jcog.signal.tensor.ArrayTensor;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.port.TypedPort;
+import spacegraph.space2d.widget.port.Port;
 import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.shape.PathSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.util.Path2D;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -24,7 +23,7 @@ import java.util.function.Function;
  */
 public class Wiring extends Dragging {
 
-    final static ExtendedCastGraph CAST = new ExtendedCastGraph();
+    public final static ExtendedCastGraph CAST = new ExtendedCastGraph();
     static {
 
         CAST.set(Boolean.class, Integer.class, (Function<Boolean, Integer>) (i)->i ? 1 : 0);
@@ -113,12 +112,12 @@ public class Wiring extends Dragging {
         return true;
     }
 
-    private GraphEdit graph() {
+    private final GraphEdit graph() {
         return start.parent(GraphEdit.class);
     }
 
     @Override
-    public void stop(Finger finger) {
+    public final void stop(Finger finger) {
 
 
         if (end != null) {
@@ -139,47 +138,16 @@ public class Wiring extends Dragging {
 
     }
 
-
-
-    private Wire typeAdapt(Wire w, GraphEdit wall) {
-        if (w.a instanceof TypedPort && w.b instanceof TypedPort) {
-
-            //TODO lazy construct and/or cache these
-
-            //apply type checking and auto-conversion if necessary
-            Class aa = ((TypedPort) w.a).type;
-            Class bb = ((TypedPort) w.b).type;
-            if (aa.equals(bb)) {
-                //ok
-            } else {
-
-                List<Function> ab = CAST.convertors(aa, bb);
-                List<Function> ba = CAST.convertors(bb, aa);
-
-                if (!ab.isEmpty() || !ba.isEmpty()) {
-                    w = new AdaptingWire(w, ab, ba);
-                }
-
-
-            }
-
-        }
-        return w;
-    }
-
-
     protected boolean tryWire() {
-        GraphEdit wall = graph();
 
-        Wire wire = typeAdapt(new Wire(start, end), wall);
-        if (!wire.connectable())
-            return false;
+        if (Port.connectable((Port)start, (Port)end)) {
 
-        if (wire == wall.addWire(wire)) {
+            GraphEdit g = graph();
 
+            Wire wire = g.addWire(new Wire(start, end));
             wire.connected();
 
-            start.root().debug(start, 1, () -> "wire(" + wall + ",(" + start + ',' + end + "))");
+            start.root().debug(start, 1, wire);
 
             return true;
         }
@@ -195,19 +163,13 @@ public class Wiring extends Dragging {
                 end = null;
             } else {
 
-                if (end instanceof Wireable) {
+                if (end instanceof Wireable)
                     ((Wireable) end).onWireIn(this, false);
-                }
 
-                if (nextEnd instanceof Wireable) {
 
-                    if (((Wireable) nextEnd).onWireIn(this, true)) {
-                        this.end = nextEnd;
-                    } else {
-                        this.end = null;
-                    }
+                if (nextEnd instanceof Wireable)
+                    this.end = ((Wireable) nextEnd).onWireIn(this, true) ? nextEnd : null;
 
-                }
             }
         }
     }

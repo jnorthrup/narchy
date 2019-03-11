@@ -12,7 +12,7 @@ public class PriReferenceArrayBag<X,Y extends PriReference<X>> extends ArrayBag<
     }
 
     public PriReferenceArrayBag(int cap, PriMerge mergeFunction, Map<X, Y> map) {
-        super(cap, mergeFunction, map);
+        super(mergeFunction, cap, map);
     }
 
     @Override

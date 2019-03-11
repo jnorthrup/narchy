@@ -1,18 +1,21 @@
 package jcog.data.graph;
 
 import jcog.Util;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * immutable directed edge with cached hashcode
  */
 public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
 
-    private final int hash;
-    private final E id;
     public final Node<N,E> from, to;
+    @Nullable private final E id;
+    private final int hash;
 
-    public ImmutableDirectedEdge(Node<N, E> from, E id, Node<N, E> to) {
-        this.hash = Util.hashCombine(id.hashCode(), from.hashCode(), to.hashCode());
+    public ImmutableDirectedEdge(Node<N, E> from, @Nullable E id, Node<N, E> to) {
+        this.hash = Util.hashCombine((id!=null ? id.hashCode() : 0), from.hashCode(), to.hashCode());
         this.id = id;
         this.from = from;
         this.to = to;
@@ -43,7 +46,7 @@ public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
         if (this == obj) return true;
         if (hash!=obj.hashCode() || !(obj instanceof FromTo)) return false;
         ImmutableDirectedEdge ee = (ImmutableDirectedEdge) obj;
-        return from == ee.from && to == ee.to && id.equals(ee.id);
+        return from == ee.from && to == ee.to && Objects.equals(id, ee.id);
     }
 
     public boolean isSelfLoop() {

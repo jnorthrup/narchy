@@ -10,10 +10,11 @@ import nars.table.TaskTable;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.dynamic.TaskList;
-import nars.truth.polation.TruthProjection;
 import nars.truth.polation.TruthIntegration;
+import nars.truth.polation.TruthProjection;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -282,9 +283,8 @@ public final class Answer implements AutoCloseable {
      * TODO use FloatRank min
      */
     public static FloatRank<Task> temporalTaskStrength(long start, long end) {
-        //long dur = Math.max(1,(1 + (end-start))/2);
-        //return (x,min) -> TruthIntegration.evi(x, start, end, dur /*1*/ /*0*/)
-        return (x, min) -> TruthIntegration.evi(x, start, end, 1)
+        int dur = Tense.occToDT(1 + (end-start)/2); //half the range
+        return (x, min) -> TruthIntegration.evi(x, start, end, dur)
                 //* x.originality()
                 ;
     }

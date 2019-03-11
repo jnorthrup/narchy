@@ -36,7 +36,7 @@ public class ClassSet extends HashSet<Class> {
      * Конструктор
      */
     public ClassSet() {
-        super(new TreeSet<>(new ClassHeirarchyComparer()));
+        super(new TreeSet<>(new ClassHierarchyComparer()));
     }
 
     /**
@@ -45,7 +45,7 @@ public class ClassSet extends HashSet<Class> {
      * @param inverse true - в порядке от дочернего к родит; false - от родител. к дочернему
      */
     public ClassSet(boolean inverse) {
-        super(new TreeSet<>(new ClassHeirarchyComparer(inverse)));
+        super(new TreeSet<>(new ClassHierarchyComparer(inverse)));
     }
 
     /**
@@ -55,7 +55,7 @@ public class ClassSet extends HashSet<Class> {
      * @param itr     Начальное наполнение
      */
     public ClassSet(boolean inverse, Iterable<Class> itr) {
-        super(new TreeSet<>(new ClassHeirarchyComparer(inverse)));
+        super(new TreeSet<>(new ClassHierarchyComparer(inverse)));
         if (itr != null) {
             for (Class cls : itr) {
                 if (cls != null) {
@@ -197,7 +197,7 @@ public class ClassSet extends HashSet<Class> {
     /**
      * Стравивает два класса на предмет иерархии.
      */
-    public static class ClassHeirarchyComparer implements Comparator<Class> {
+    public static class ClassHierarchyComparer implements Comparator<Class> {
         /**
          * true - в порядке от дочернего к родит; false - от родител. к дочернему
          */
@@ -208,14 +208,14 @@ public class ClassSet extends HashSet<Class> {
          *
          * @param inverse true - в порядке от дочернего к родит; false - от родител. к дочернему
          */
-        public ClassHeirarchyComparer(boolean inverse) {
+        public ClassHierarchyComparer(boolean inverse) {
             this.inverse = inverse;
         }
 
         /**
          * Конструктор, стравнивает классы в порядке от
          */
-        public ClassHeirarchyComparer() {
+        public ClassHierarchyComparer() {
             this.inverse = false;
         }
 

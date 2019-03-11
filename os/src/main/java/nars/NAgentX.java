@@ -458,16 +458,21 @@ abstract public class NAgentX extends NAgent {
 
         TaskBuffer.BagTaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 0.5f);
 
-        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 6, 6,
+        BatchDeriver bd6_actWhen = new BatchDeriver(Derivers.nal(n, 6, 6,
                 "motivation.nal"), injection);
-        bd1.timing = new ActionTiming(n);
 
-        BatchDeriver bdLow = new BatchDeriver(Derivers.nal(n,
-                1, 4,
+        BatchDeriver bd6_act = new BatchDeriver(Derivers.nal(n, 6, 6,
+                "motivation.nal"), injection);
+        bd6_act.timing = new ActionTiming(n);
+
+        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n,
+                1, 1),
+                injection);
+        BatchDeriver bd2_4 = new BatchDeriver(Derivers.nal(n,
+                2, 4,
                 "nal4.sect.nal"),
                 injection);
-
-        BatchDeriver bdHigh = new BatchDeriver(Derivers.nal(n,
+        BatchDeriver bdExtra = new BatchDeriver(Derivers.nal(n,
                 6, 8,
                 "relation_introduction.nal", "motivation.nal"),
                 injection);

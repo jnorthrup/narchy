@@ -23,6 +23,9 @@
  */
 package jcog.reflect.graph;
 
+import jcog.data.graph.FromTo;
+import jcog.data.graph.MapNodeGraph;
+
 /**
  * Описывает событие графа
  *
@@ -31,9 +34,9 @@ package jcog.reflect.graph;
  * @author GoCha
  */
 public class BasicGraphEvent<N, E> implements GraphEvent<N, E> {
-    private final Edge<N, E> _Edge;
+    private final FromTo<jcog.data.graph.Node<N,E>,E> _Edge;
     private final N _Node;
-    private final Graph<N, E> _Graph;
+    private final MapNodeGraph<N, E> _Graph;
     private final GraphAction _Action;
 
     /**
@@ -44,7 +47,7 @@ public class BasicGraphEvent<N, E> implements GraphEvent<N, E> {
      * @param node   Вершина
      * @param edge   Ребро
      */
-    public BasicGraphEvent(Graph<N, E> graph, GraphAction action, N node, Edge<N, E> edge) {
+    public BasicGraphEvent(MapNodeGraph<N, E> graph, GraphAction action, N node, FromTo<jcog.data.graph.Node<N,E>,E> edge) {
         if (action == null) {
             throw new IllegalArgumentException("action == null");
         }
@@ -62,7 +65,7 @@ public class BasicGraphEvent<N, E> implements GraphEvent<N, E> {
      * @see org.gocha.collection.graph.GraphEvent#getEdge
      */
     @Override
-    public Edge<N, E> getEdge() {
+    public FromTo<jcog.data.graph.Node<N,E>,E> getEdge() {
         return _Edge;
     }
 
@@ -78,7 +81,7 @@ public class BasicGraphEvent<N, E> implements GraphEvent<N, E> {
      * @see org.gocha.collection.graph.GraphEvent#getGraph
      */
     @Override
-    public Graph<N, E> getGraph() {
+    public MapNodeGraph<N, E> getGraph() {
         return _Graph;
     }
 

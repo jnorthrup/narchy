@@ -23,8 +23,7 @@
  */
 package jcog.reflect.graph;
 
-import java.util.Collection;
-import java.util.List;
+import jcog.data.graph.MapNodeGraph;
 
 /**
  * Однонаправленный граф. Примитивная реализация с переборными алгоритмами.
@@ -33,434 +32,190 @@ import java.util.List;
  * @param <E> Тип ребра
  * @author GoCha
  */
-public class SimpleSDGraph<N, E> implements SingleDirectedGraph<N, E> {
-    /**
-     * Фабрика
-     */
-    protected GraphFactory<N, E> factory;
+public class SimpleSDGraph<N, E> extends MapNodeGraph<N,E> {
 
-    /**
-     * Список ребр
-     */
-    protected Collection<Edge<N, E>> edges;
-
-    /**
-     * Список вершин
-     */
-    protected Collection<N> nodes;
-
-    /**
-     * Конструктор
-     */
     public SimpleSDGraph() {
-        this(new DefaultGraphFactory<>());
+        super();
     }
 
-    /**
-     * Конструктор
-     *
-     * @param factory Фабрика графа
-     */
-    public SimpleSDGraph(GraphFactory<N, E> factory) {
-        if (factory == null) {
-            throw new IllegalArgumentException("factory == null");
-        }
-        this.factory = factory;
-
-        edges = factory.createEdgePairs();
-        nodes = factory.createNodes();
+    public final void set(N a, N b, E e) {
+        addEdge(a, e, b);
     }
 
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#getNodes
-     */
     @Override
-    public Iterable<N> getNodes() {
-        return nodes;
+    public boolean addEdge(N from, E data, N to) {
+        return addEdge(addNode(from), data, addNode(to));
     }
 
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#getEdges
-     */
-    @Override
-    public Iterable<Edge<N, E>> getEdges() {
-        return edges;
-    }
+//    /**
+//     * Срабатывает при удалении ребра из графа
+//     *
+//     * @param es Ребро
+//     */
+//    protected void onEdgeRemoved(FromTo<jcog.data.graph.Node<N,E>,E> es) {
+//    }
+//
+//
+//    /**
+//     * Срабатывает при добавлении ребра в граф
+//     *
+//     * @param es Ребро
+//     */
+//    protected void onEdgeAdded(FromTo<jcog.data.graph.Node<N,E>,E> es) {
+//    }
 
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#getEdges
-     */
-    @Override
-    public List<E> getEdges(N a, N b) {
-        if (a == null) {
-            throw new IllegalArgumentException("a == null");
-        }
-        if (b == null) {
-            throw new IllegalArgumentException("b == null");
-        }
+//    /**
+//     * Удаление ребра
+//     *
+//     * @param es Ребро
+//     */
+//    protected void remove(FromTo<jcog.data.graph.Node<N,E>,E> es) {
+//        edgeRemove(es);
+//        onEdgeRemoved(es);
+//    }
 
-        E e = get(a, b);
-        if (e != null) return List.of(e);
-        return List.of();
-    }
+//    /* (non-Javadoc)
+//     * @see org.gocha.collection.graph.IGraph#addAt
+//     */
+//    @Override
+//    public void add(N node) {
+//        if (node == null) {
+//            throw new IllegalArgumentException("node == null");
+//        }
+//
+//        if (!contains(node)) {
+//            nodes.add(node);
+//            onNodeAdded(node);
+//        }
+//    }
 
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#edgesOf
-     */
-    @Override
-    public Collection<Edge<N, E>> edgesOf(N node) {
-        if (node == null) {
-            throw new IllegalArgumentException("node == null");
-        }
+//    /* (non-Javadoc)
+//     * @see org.gocha.collection.graph.IGraph#remove
+//     */
+//    @Override
+//    public void remove(N node) {
+//        if (node == null) {
+//            throw new IllegalArgumentException("node == null");
+//        }
+//
+//        Collection<Edge<N, E>> list = factory.createEdgePairs();
+//
+//        for (Edge<N, E> edge : edges) {
+//            if (edge.getNodeA().equals(node) || edge.getNodeB().equals(node)) {
+//                list.add(edge);
+//            }
+//        }
+//
+//        for (Edge<N, E> edge : list) {
+//            remove(edge);
+//        }
+//
+//        N oldNode = null;
+//        for (N n : nodes) {
+//            if (n.equals(node)) {
+//                oldNode = n;
+//                break;
+//            }
+//        }
+//        if (oldNode != null) {
+//            nodes.remove(oldNode);
+//            onNodeRemoved(oldNode);
+//        }
+//    }
 
-        Collection<Edge<N, E>> list = factory.createEdgePairs();
-        for (Edge<N, E> e : edges) {
-            if (e.getNodeA().equals(node) || e.getNodeB().equals(node)) list.add(e);
-        }
-        return list;
-    }
+//    /* (non-Javadoc)
+//     * @see org.gocha.collection.graph.IGraph#clearEdges
+//     */
+//    @Override
+//    public void clearEdges() {
+//        Collection<Edge<N, E>> oldEdges = edges;
+//        edges = factory.createEdgePairs();
+//        for (Edge<N, E> e : oldEdges) onEdgeRemoved(e);
+//        oldEdges.clear();
+//    }
+//
+//    /* (non-Javadoc)
+//     * @see org.gocha.collection.graph.IGraph#clearAll
+//     */
+//    @Override
+//    public void clearAll() {
+//        Collection<Edge<N, E>> oldEdges = edges;
+//        edges = factory.createEdgePairs();
+//        for (Edge<N, E> e : oldEdges) onEdgeRemoved(e);
+//        oldEdges.clear();
+//
+//        Collection<N> oldNodes = nodes;
+//        nodes = factory.createNodes();
+//        for (N n : oldNodes) onNodeRemoved(n);
+//        oldNodes.clear();
+//    }
+//
+//    /* (non-Javadoc)
+//     * @see org.gocha.collection.graph.SingleGraph#get
+//     */
+//    public E get(N a, N b) {
+//        return node(a).edges(false,true).
+////        if (a == null) {
+////            throw new IllegalArgumentException("a == null");
+////        }
+////        if (b == null) {
+////            throw new IllegalArgumentException("b == null");
+////        }
+////
+////        for (FromTo<Node<N, E>,E> e : edges()) {
+////            if (e.from().equals(a) && e.to().equals(b)) {
+////                return e.getEdge();
+////            }
+////        }
+////        return null;
+//    }
 
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#edgesOfNodeA
-     */
-    @Override
-    public Collection<Edge<N, E>> edgesOfNodeA(N node) {
-        if (node == null) {
-            throw new IllegalArgumentException("node == null");
-        }
 
-        Collection<Edge<N, E>> list = factory.createEdgePairs();
-        for (Edge<N, E> e : edges) {
-            if (e.getNodeA().equals(node)) list.add(e);
-        }
-        return list;
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#edgesOfNodeB
-     */
-    @Override
-    public Collection<Edge<N, E>> edgesOfNodeB(N node) {
-        if (node == null) {
-            throw new IllegalArgumentException("node == null");
-        }
-
-        Collection<Edge<N, E>> list = factory.createEdgePairs();
-        for (Edge<N, E> e : edges) {
-            if (e.getNodeB().equals(node)) list.add(e);
-        }
-        return list;
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#hasEdge
-     */
-    @Override
-    public boolean hasEdge(N a, N b) {
-        if (a == null) {
-            throw new IllegalArgumentException("a == null");
-        }
-        if (b == null) {
-            throw new IllegalArgumentException("b == null");
-        }
-
-        for (Edge<N, E> e : edges) {
-            if (e.getNodeA().equals(a) && e.getNodeB().equals(b)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#getEdge
-     */
-    @Override
-    public E getEdge(N a, N b) {
-        if (a == null) {
-            throw new IllegalArgumentException("a == null");
-        }
-        if (b == null) {
-            throw new IllegalArgumentException("b == null");
-        }
-
-        return get(a, b);
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#contains
-     */
-    @Override
-    public boolean contains(N node) {
-        if (node == null) {
-            throw new IllegalArgumentException("node == null");
-        }
-
-        return indexOf(node) >= 0;
-    }
-
-    /**
-     * Возвращает индекс вершины в списке вершин
-     *
-     * @param node Вершина
-     * @return индекс или -1 если таковой нет в списке
-     */
-    protected int indexOf(N node) {
-        if (node == null) {
-            throw new IllegalArgumentException("node == null");
-        }
-
-        int idx = -1;
-        for (N n : nodes) {
-            idx++;
-            if (n.equals(node)) return idx;
-        }
-        return -1;
-    }
-
-    /**
-     * Срабатывает при удалении вершины из графа
-     *
-     * @param node Вершина
-     */
-    protected void onNodeRemoved(N node) {
-    }
-
-    /**
-     * Срабатывает при удалении ребра из графа
-     *
-     * @param es Ребро
-     */
-    protected void onEdgeRemoved(Edge<N, E> es) {
-    }
-
-    /**
-     * Срабатывает при добавлении вершины в граф
-     *
-     * @param node Вершина
-     */
-    protected void onNodeAdded(N node) {
-    }
-
-    /**
-     * Срабатывает при добавлении ребра в граф
-     *
-     * @param es Ребро
-     */
-    protected void onEdgeAdded(Edge<N, E> es) {
-    }
-
-    /**
-     * Удаление ребра
-     *
-     * @param es Ребро
-     */
-    protected void remove(Edge<N, E> es) {
-        if (es == null) {
-            throw new IllegalArgumentException("es == null");
-        }
-
-        edges.remove(es);
-        onEdgeRemoved(es);
-    }
-
-    /**
-     * Добавление ребра
-     *
-     * @param es Ребро
-     */
-    protected void add(Edge<N, E> es) {
-        if (es == null) {
-            throw new IllegalArgumentException("es == null");
-        }
-
-        edges.add(es);
-        onEdgeAdded(es);
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#addAt
-     */
-    @Override
-    public void add(N node) {
-        if (node == null) {
-            throw new IllegalArgumentException("node == null");
-        }
-
-        if (!contains(node)) {
-            nodes.add(node);
-            onNodeAdded(node);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#remove
-     */
-    @Override
-    public void remove(N node) {
-        if (node == null) {
-            throw new IllegalArgumentException("node == null");
-        }
-
-        Collection<Edge<N, E>> list = factory.createEdgePairs();
-
-        for (Edge<N, E> edge : edges) {
-            if (edge.getNodeA().equals(node) || edge.getNodeB().equals(node)) {
-                list.add(edge);
-            }
-        }
-
-        for (Edge<N, E> edge : list) {
-            remove(edge);
-        }
-
-        N oldNode = null;
-        for (N n : nodes) {
-            if (n.equals(node)) {
-                oldNode = n;
-                break;
-            }
-        }
-        if (oldNode != null) {
-            nodes.remove(oldNode);
-            onNodeRemoved(oldNode);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#clearEdges
-     */
-    @Override
-    public void clearEdges() {
-        Collection<Edge<N, E>> oldEdges = edges;
-        edges = factory.createEdgePairs();
-        for (Edge<N, E> e : oldEdges) onEdgeRemoved(e);
-        oldEdges.clear();
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#clearAll
-     */
-    @Override
-    public void clearAll() {
-        Collection<Edge<N, E>> oldEdges = edges;
-        edges = factory.createEdgePairs();
-        for (Edge<N, E> e : oldEdges) onEdgeRemoved(e);
-        oldEdges.clear();
-
-        Collection<N> oldNodes = nodes;
-        nodes = factory.createNodes();
-        for (N n : oldNodes) onNodeRemoved(n);
-        oldNodes.clear();
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.SingleGraph#get
-     */
-    @Override
-    public E get(N a, N b) {
-        if (a == null) {
-            throw new IllegalArgumentException("a == null");
-        }
-        if (b == null) {
-            throw new IllegalArgumentException("b == null");
-        }
-
-        for (Edge<N, E> e : edges) {
-            if (e.getNodeA().equals(a) && e.getNodeB().equals(b)) {
-                return e.getEdge();
-            }
-        }
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.SingleGraph#setAt
-     */
-    @Override
-    public void set(N a, N b, E e) {
-        if (e == null) {
-            throw new IllegalArgumentException("e == null");
-        }
-        if (a == null) {
-            throw new IllegalArgumentException("a == null");
-        }
-        if (b == null) {
-            throw new IllegalArgumentException("b == null");
-        }
-
-        if (!contains(a)) add(a);
-        if (!contains(b)) add(b);
-
-        removeEdge(a, b);
-
-        Edge<N, E> newESet = factory.createEdge(a, b, e);
-        add(newESet);
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#setEdge
-     */
-    @Override
-    public void setEdge(N a, N b, E edge) {
-        if (a == null) {
-            throw new IllegalArgumentException("a == null");
-        }
-        if (edge == null) {
-            throw new IllegalArgumentException("edge == null");
-        }
-        if (b == null) {
-            throw new IllegalArgumentException("b == null");
-        }
-
-        set(a, b, edge);
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#setEdges
-     */
-    @Override
-    public void setEdges(N a, N b, Iterable<E> edges) {
-        if (edges == null) {
-            throw new IllegalArgumentException("edges == null");
-        }
-        if (a == null) {
-            throw new IllegalArgumentException("a == null");
-        }
-        if (b == null) {
-            throw new IllegalArgumentException("b == null");
-        }
-
-        removeEdge(a, b);
-
-        if (edges != null) {
-            for (E e : edges) {
-                set(a, b, e);
-            }
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.gocha.collection.graph.IGraph#removeEdge
-     */
-    @Override
-    public void removeEdge(N a, N b) {
-        if (a == null) {
-            throw new IllegalArgumentException("a == null");
-        }
-        if (b == null) {
-            throw new IllegalArgumentException("b == null");
-        }
-
-        Collection<Edge<N, E>> oldEdgeslist = factory.createEdgePairs();
-        for (Edge<N, E> e : edges) {
-            if (e.getNodeA().equals(a) && e.getNodeB().equals(b)) {
-                oldEdgeslist.add(e);
-            }
-        }
-
-        for (Edge<N, E> e : oldEdgeslist) {
-            remove(e);
-        }
-    }
+//    /* (non-Javadoc)
+//     * @see org.gocha.collection.graph.IGraph#setEdges
+//     */
+//    @Override
+//    public void setEdges(N a, N b, Iterable<E> edges) {
+//        if (edges == null) {
+//            throw new IllegalArgumentException("edges == null");
+//        }
+//        if (a == null) {
+//            throw new IllegalArgumentException("a == null");
+//        }
+//        if (b == null) {
+//            throw new IllegalArgumentException("b == null");
+//        }
+//
+//        removeEdge(a, b);
+//
+//        if (edges != null) {
+//            for (E e : edges) {
+//                set(a, b, e);
+//            }
+//        }
+//    }
+//
+//    /* (non-Javadoc)
+//     * @see org.gocha.collection.graph.IGraph#removeEdge
+//     */
+//    @Override
+//    public void removeEdge(N a, N b) {
+//        if (a == null) {
+//            throw new IllegalArgumentException("a == null");
+//        }
+//        if (b == null) {
+//            throw new IllegalArgumentException("b == null");
+//        }
+//
+//        Collection<Edge<N, E>> oldEdgeslist = factory.createEdgePairs();
+//        for (Edge<N, E> e : edges) {
+//            if (e.getNodeA().equals(a) && e.getNodeB().equals(b)) {
+//                oldEdgeslist.add(e);
+//            }
+//        }
+//
+//        for (Edge<N, E> e : oldEdgeslist) {
+//            remove(e);
+//        }
+//    }
 }

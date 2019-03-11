@@ -23,6 +23,8 @@
  */
 package jcog.reflect.graph;
 
+import jcog.data.graph.FromTo;
+
 import java.util.Collection;
 
 /**
@@ -41,14 +43,14 @@ public interface GraphFactory<N, E> {
      * @param b Вершина Б
      * @return Ребро
      */
-    Edge<N, E> createEdge(N a, N b, E e);
+    FromTo<jcog.data.graph.Node<N,E>,E> createEdge(N a, N b, E e);
 
     /**
      * Создание списка ребр с вершинами
      *
      * @return Список ребр
      */
-    Collection<Edge<N, E>> createEdgePairs();
+    Collection<FromTo<jcog.data.graph.Node<N,E>,E>> createEdgePairs();
 
     /**
      * Создаение списка вершин

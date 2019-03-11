@@ -56,10 +56,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
     ArrayBag(PriMerge mergeFunction, Map<X, Y> map) {
-        this(0, mergeFunction, map);
+        this(mergeFunction, 0, map);
     }
 
-    protected ArrayBag(@Deprecated int cap, PriMerge mergeFunction, Map<X, Y> map) {
+    protected ArrayBag(PriMerge mergeFunction, @Deprecated int cap, Map<X, Y> map) {
         super(new SortedArray<>(), map);
         this.mergeFunction = mergeFunction;
         setCapacity(cap);

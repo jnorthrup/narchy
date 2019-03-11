@@ -23,6 +23,9 @@
  */
 package jcog.reflect.graph;
 
+import jcog.data.graph.FromTo;
+import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.Node;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedTopN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -49,9 +52,10 @@ public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
     /**
      * Граф в котором производится поиск
      */
-    protected SingleDirectedGraph<N, E> graph;
+    protected MapNodeGraph<N, E> graph;
     /**
      * Направление движения
+     * TODO use boolean
      */
     protected Path.Direction direction;
 
@@ -67,10 +71,10 @@ public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
      */
     public PathFinder(
             int capacity,
-            SingleDirectedGraph<N, E> graph,
+            MapNodeGraph<N, E> graph,
             N start,
             Path.Direction direction,
-            Function<Edge<N, E>, Double> getWeight
+            Function<FromTo<Node<N,E>,E>, Double> getWeight
     ) {
         super(new Path[capacity], FloatRank.the(rank(getWeight)));
         if (getWeight == null) throw new IllegalArgumentException("getWeight==null");
@@ -82,13 +86,11 @@ public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
         this.direction = direction;
         //this.validator = createValidtor();
 
-        Iterable<Edge<N, E>> next = getNextEdges(start);
-        for (Edge<N, E> e : next) {
-            Path<N, E> bp = createPath(/*direction*/);
-
-            //bp = bp.addAt(e);
-            bp = bp.start(start);
-            bp = bp.join(GraphTools.secondNode(e, direction), e.getEdge());
+        Iterable<FromTo<Node<N,E>,E>> next = getNextEdges(start);
+        for (FromTo<Node<N,E>,E> e : next) {
+            /*direction*/
+            Path<N, E> bp = new BasicPath<>(graph,start);
+            bp = bp.append(e.id(), GraphTools.secondNode(e, direction));
             add(bp);
         }
     }
@@ -103,7 +105,7 @@ public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
      */
     public PathFinder(
             int capacity,
-            SingleDirectedGraph<N, E> graph,
+            MapNodeGraph<N, E> graph,
             N start,
             Path.Direction direction,
             FloatRank<Path<N, E>> comparator
@@ -126,11 +128,11 @@ public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
         this.direction = direction;
         //this.validator = createValidtor();
 
-        Iterable<Edge<N, E>> next = getNextEdges(start);
-        for (Edge<N, E> e : next) {
-            Path<N, E> bp = createPath(/*direction*/);
-            bp = bp.start(start);
-            bp = bp.join(GraphTools.secondNode(e, direction), e.getEdge());
+        Iterable<FromTo<Node<N,E>,E>> next = getNextEdges(start);
+        for (FromTo<Node<N,E>,E> e : next) {
+            /*direction*/
+            Path<N, E> bp = new BasicPath<>(graph, start);
+            bp = bp.append(e.id(), GraphTools.secondNode(e, direction));
             add(bp);
         }
     }
@@ -148,9 +150,9 @@ public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
 //     * @param getWeight Получение веса ребра
 //     * @return Вес пути
 //     */
-//    protected double getIntWeightOf(Path<N, E> path, Function<Edge<N, E>, Double> getWeight) {
+//    protected double getIntWeightOf(Path<N, E> path, Function<FromTo<Node<N,E>,E>, Double> getWeight) {
 //        double w = 0;
-//        for (Edge<N, E> e : path.fetch(0, path.nodeCount())) {
+//        for (FromTo<Node<N,E>,E> e : path.fetch(0, path.nodeCount())) {
 //            double we = getWeight.apply(e);
 //            w += we;
 //        }
@@ -163,20 +165,10 @@ public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
      * @param getWeight Получение веса ребра
      * @return Comparator
      */
-    protected static <N,E> FloatFunction<Path<N, E>> rank(Function<Edge<N, E>, Double> getWeight) {
-        return p -> (float)p.sum(getWeight::apply);
+    protected static <N,E> FloatFunction<Path<N, E>> rank(Function<FromTo<Node<N,E>,E>, Double> getWeight) {
+        return p -> -(float)p.sum(getWeight::apply);
     }
 
-
-    /**
-     * Создаает путь
-     *
-     * @return Путь
-     */
-    protected Path<N, E> createPath(/*Path.Direction d*/) {
-        //p = p.direction(d);
-        return new BasicPath<>();
-    }
 
     /**
      * Добавляет ребро в конец пути
@@ -185,9 +177,8 @@ public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
      * @param e    Ребро
      * @return Новый путь
      */
-    protected Path<N, E> append(Path<N, E> path, Edge<N, E> e) {
-        N n = GraphTools.secondNode(e, direction);
-        return path.join(n, e.getEdge());
+    protected Path<N, E> append(Path<N, E> path, FromTo<Node<N,E>,E> e) {
+        return path.append(e.id(), GraphTools.secondNode(e, direction));
     }
     //protected Predicate<Edge<N,E>> validator = null;
 
@@ -222,14 +213,10 @@ public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
      * @param n Вершина
      * @return Ребра/дуги направления движения.
      */
-    protected Iterable<Edge<N, E>> getNextEdges(N n) {
-        
-        /*if( validator!=null ){
-            itr = Iterators.predicate(itr, validator);
-        }*/
+    protected Iterable<FromTo<Node<N, E>,E>> getNextEdges(N n) {
         return direction.equals(Path.Direction.AB)
-                ? graph.edgesOfNodeA(n)
-                : graph.edgesOfNodeB(n);
+                ? graph.node(n).edges(false, true)
+                : graph.node(n).edges(true, false);
     }
 
     /* (non-Javadoc)
@@ -250,9 +237,9 @@ public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
         if (p.nodeCount() > 0) {
             N last = p.node(-1);
             if (!p.hasCycles()) {
-                Iterable<Edge<N, E>> next = getNextEdges(last);
+                Iterable<FromTo<Node<N,E>,E>> next = getNextEdges(last);
 
-                for (Edge<N, E> e : next)
+                for (FromTo<Node<N,E>,E> e : next)
                     add(append(p, e));
 
             } else {

@@ -61,7 +61,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
     private final AtomicBoolean busy = new AtomicBoolean(false);
-    private final AtomicBoolean trace = new AtomicBoolean(false);
+    public final AtomicBoolean trace = new AtomicBoolean(false);
 
     public final FastCoWList<AgentLoop> sensors = new FastCoWList<>(AgentLoop[]::new);
 
@@ -85,14 +85,9 @@ public class NAgent extends NARService implements NSense, NAct {
         @Nullable Task get(long prev, long now, long next);
     }
 
-
-    @Deprecated
-    private ConsumerX<ITask> in = null;
-
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
             Cycles.Interleaved;
-
 
     public NAgent(String id, NAR nar) {
         this(id, FrameTrigger.durs(1), nar);
@@ -117,7 +112,6 @@ public class NAgent extends NARService implements NSense, NAct {
         this.prev = ETERNAL;
         this.now = nar.time();
 
-//
 //        actReward = new AttnDistributor(
 //                Iterables.concat(
 //                    //() -> Iterators.singletonIterator(nar.conceptualize(target())),
@@ -343,7 +337,6 @@ public class NAgent extends NARService implements NSense, NAct {
         this.prev = nar.time();
 
 
-        this.in = nar.newChannel(this);
 
 
 

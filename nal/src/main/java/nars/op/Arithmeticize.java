@@ -36,11 +36,9 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * introduces arithmetic relationships between differing numeric subterms
  * responsible for showing the reasoner mathematical relations between
  * numbers appearing in compound terms.
- *
+ * <p>
  * TODO
- *      greater/less than comparisons
- *
- *
+ * greater/less than comparisons
  */
 @Paper
 public class Arithmeticize {
@@ -52,10 +50,10 @@ public class Arithmeticize {
     final static Variable A = $.varDep("A_"), B = $.varDep("B_");
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
-        MathFunc.add.term, MathFunc.add,
-        MathFunc.mul.term, MathFunc.mul,
-        Equal.the.term, Equal.the,
-        Equal.cmp.term, Equal.cmp
+            MathFunc.add.term, MathFunc.add,
+            MathFunc.mul.term, MathFunc.mul,
+            Equal.the.term, Equal.the,
+            Equal.cmp.term, Equal.cmp
     )::get;
 
     public static class ArithmeticIntroduction extends Introduction {
@@ -96,8 +94,8 @@ public class Arithmeticize {
 
             Term xt = xx.term();
             return Arithmeticize.apply(xt, null, nar.termVolumeMax.intValue(),
-            xx.isEternal() || (xt.op()==CONJ && xt.dt()!=0),
-                nar.random());
+                    xx.isEternal() || (xt.op() == CONJ && xt.dt() != 0),
+                    nar.random());
         }
     }
 
@@ -105,7 +103,8 @@ public class Arithmeticize {
         return apply(x, true, random);
     }
 
-    @Deprecated public static Term apply(Term x, boolean eternal, Random random) {
+    @Deprecated
+    public static Term apply(Term x, boolean eternal, Random random) {
         return apply(x, null, Param.COMPOUND_VOLUME_MAX, eternal, random);
     }
 
@@ -136,8 +135,8 @@ public class Arithmeticize {
         }
 
         IntHashSet ints = new IntHashSet(4);
-        x.recurseTerms(t->t.hasAny(Op.INT), t -> {
-            if (anon!=null && t instanceof Anom) {
+        x.recurseTerms(t -> t.hasAny(Op.INT), t -> {
+            if (anon != null && t instanceof Anom) {
                 t = anon.get(t);
             }
             if (t instanceof Int) {
@@ -151,7 +150,7 @@ public class Arithmeticize {
             return null;
 
         Term y = mods(ints)[
-                    Roulette.selectRoulette(mods(ints).length, c -> mods(ints)[c].score, random)
+                Roulette.selectRoulette(mods(ints).length, c -> mods(ints)[c].score, random)
                 ].apply(x, cdt, anon);
 
         if (y == null || y.volume() > volMax) return null;
@@ -186,9 +185,10 @@ public class Arithmeticize {
         }
     }
 
-    static final Function<IntArrayListCached,ArithmeticOp[]> cached;
+    static final Function<IntArrayListCached, ArithmeticOp[]> cached;
+
     static {
-        cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods", 8*1092, Arithmeticize::_mods);
+        cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods", 8 * 1092, Arithmeticize::_mods);
     }
 
     static ArithmeticOp[] mods(IntHashSet ii) {
@@ -196,59 +196,62 @@ public class Arithmeticize {
     }
 
     static ArithmeticOp[] _mods(IntArrayListCached iii) {
-        
-        
+
 
         int[] ii = iii.toArray();
 
         FasterList<ArithmeticOp> ops = new FasterList();
-        IntObjectHashMap<FasterList<Pair<Term, Function<Term,Term>>>> eqMods = new IntObjectHashMap<>(ii.length);
+        IntObjectHashMap<FasterList<Pair<Term, Function<Term, Term>>>> eqMods = new IntObjectHashMap<>(ii.length);
 
-        for (int aIth = 0; aIth < ii.length; aIth++) {
-            int a = ii[aIth];
-            for (int bIth = 0; bIth < ii.length; bIth++) {
-                if (aIth == bIth) continue;
+        for (int bIth = 0; bIth < ii.length; bIth++) {
+            int b = ii[bIth];
+            for (int aIth = bIth + 1; aIth < ii.length; aIth++) {
+                int a = ii[aIth];
 
-                int b = ii[bIth];
+                //if (aIth == bIth) continue;
+                assert (b < a);
 
-
-                int BMinA = b - a;
                 if (a == -b) {
-                    
+
                     maybe(eqMods, a).add(pair(
-                            Int.the(b), v-> $.func(MathFunc.mul, v,Int.NEG_ONE)
+                            Int.the(b), v -> $.func(MathFunc.mul, v, Int.NEG_ONE)
                     ));
 
 
+                } else{
+                    if (a != 0 && Math.abs(a) != 1 && b != 0 && Math.abs(b) != 1 && Util.equals(b / a, (float) b / a)) {
 
-                } else if (a!=0 && Math.abs(a)!=1 && b!=0 && Math.abs(b)!=1 && Util.equals(b/a, (float)b /a)) {
 
-                    
-                    maybe(eqMods, a).add(pair(
-                            Int.the(b), v->$.func(MathFunc.mul, v, $.the(b/a))
+                        maybe(eqMods, a).add(pair(
+                                Int.the(b), v -> $.func(MathFunc.mul, v, $.the(b / a))
+                        ));
+                    }
+
+//                    int BMinA = b - a;
+//                    maybe(eqMods, a).add(pair(
+//                            Int.the(b), v -> $.func(MathFunc.add, v, $.the(BMinA))
+//                    ));
+                    int AMinB = a - b;
+                    maybe(eqMods, b).add(pair(
+                            Int.the(a), v -> $.func(MathFunc.add, v, $.the(AMinB))
                     ));
-                } else if (a < b) {
 
-                    maybe(eqMods, a).add(pair(
-                            Int.the(b), v-> $.func(MathFunc.add, v, $.the(BMinA))
-                    ));
+                }
+
 
 //                } else if (b < a) {
 //
 //                    maybe(eqMods, b).addAt(pair(
 //                            Int.the(a), v-> $.func(MathFunc.addAt, v, $.the(a - b))
 //                    ));
-                }
 
-                if (a < b) {
+                ops.add(new CompareOp(b, a));
 
-                    ops.add(new CompareOp(a, b));
-                }
             }
         }
 
-        eqMods.keyValuesView().forEach((kv)->{
-            assert(!kv.getTwo().isEmpty());
+        eqMods.keyValuesView().forEach((kv) -> {
+            assert (!kv.getTwo().isEmpty());
             ops.add(new BaseEqualExpressionArithmeticOp(kv.getOne(), kv.getTwo().toArrayRecycled(Pair[]::new)));
         });
 
@@ -260,9 +263,7 @@ public class Arithmeticize {
     }
 
 
-
-
-    abstract static class ArithmeticOp  {
+    abstract static class ArithmeticOp {
         public static final ArithmeticOp[] EmptyArray = new ArithmeticOp[0];
         public final float score;
 
@@ -273,7 +274,7 @@ public class Arithmeticize {
         abstract Term apply(Term x, int cdt, @Nullable Anon anon);
     }
 
-    static class BaseEqualExpressionArithmeticOp extends ArithmeticOp  {
+    static class BaseEqualExpressionArithmeticOp extends ArithmeticOp {
         final int base;
         private final Pair<Term, Function<Term, Term>>[] mods;
 
@@ -286,10 +287,10 @@ public class Arithmeticize {
         @Override
         public Term apply(Term x, int cdt, @Nullable Anon anon) {
 
-            Term var = x.hasAny(A.op()) ? A : $.v(A.op(), (byte)1); //safe to use normalized var?
+            Term var = x.hasAny(A.op()) ? A : $.v(A.op(), (byte) 1); //safe to use normalized var?
 
             Term baseTerm = Int.the(base);
-            if (anon!=null)
+            if (anon != null)
                 baseTerm = anon.put(baseTerm);
 
             Term yy = x.replace(baseTerm, var);
@@ -297,7 +298,7 @@ public class Arithmeticize {
             for (Pair<Term, Function<Term, Term>> s : mods) {
                 Term s0 = s.getOne();
                 Term s1 = s.getTwo().apply(var);
-                if (anon!=null)
+                if (anon != null)
                     s0 = anon.put(s0);
                 yy = yy.replace(s0, s1);
             }
@@ -320,6 +321,7 @@ public class Arithmeticize {
 
         public CompareOp(int a, int b) {
             super(1);
+            assert (a < b);
             this.a = a;
             this.b = b;
         }

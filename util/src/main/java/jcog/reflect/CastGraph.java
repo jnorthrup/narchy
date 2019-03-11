@@ -125,7 +125,7 @@ import java.util.function.Function;
  *
  * @author Kamnev Georgiy (nt.gocha@gmail.com)
  */
-public class BaseCastGraph extends TypeCastGraph {
+public class CastGraph extends TypeCastGraph {
     //<editor-fold defaultstate="collapsed" desc="Базовые типы">
     //<editor-fold defaultstate="collapsed" desc="Числовые типы">
     //<editor-fold defaultstate="collapsed" desc="числовые примитивы integer, byte, ... Integer, Byte, ...">
@@ -1010,7 +1010,7 @@ public class BaseCastGraph extends TypeCastGraph {
     public final Function String2SqlDate = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            synchronized (BaseCastGraph.this) {
+            synchronized (CastGraph.this) {
                 //java.util.Date d = getDateFormat().parse((String)from);
                 Date d = (Date) String2Date.apply(from);
                 return new java.sql.Date(d.getTime());
@@ -1026,7 +1026,7 @@ public class BaseCastGraph extends TypeCastGraph {
     public final Function String2SqlTime = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            synchronized (BaseCastGraph.this) {
+            synchronized (CastGraph.this) {
                 Date d = (Date) String2Date.apply(from);
                 return new java.sql.Time(d.getTime());
             }
@@ -1041,7 +1041,7 @@ public class BaseCastGraph extends TypeCastGraph {
     public final Function String2SqlTimestamp = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            synchronized (BaseCastGraph.this) {
+            synchronized (CastGraph.this) {
                 Date d = (Date) String2Date.apply(from);
                 return new java.sql.Timestamp(d.getTime());
             }
@@ -1064,7 +1064,7 @@ public class BaseCastGraph extends TypeCastGraph {
     public final Function Date2String = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            synchronized (BaseCastGraph.this) {
+            synchronized (CastGraph.this) {
                 Date d = (Date) from;
                 SimpleDateFormat[] dfs = getDateFormats();
                 SimpleDateFormat df = dfs != null && dfs.length > 0 ? dfs[0] : new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ");
@@ -1080,7 +1080,7 @@ public class BaseCastGraph extends TypeCastGraph {
     public final Function String2Date = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            synchronized (BaseCastGraph.this) {
+            synchronized (CastGraph.this) {
                 SimpleDateFormat[] dfs = getDateFormats();
                 if (dfs == null) throw new IllegalStateException("date formats not setted");
                 for (SimpleDateFormat df : dfs) {
@@ -1100,22 +1100,22 @@ public class BaseCastGraph extends TypeCastGraph {
     };
     //</editor-fold>
 
-    /**
-     * Конструктор копирования
-     *
-     * @param src Исходный объект
-     */
-    public BaseCastGraph(BaseCastGraph src) {
-        super(src);
-        if (src != null) {
-            this.dateFormats = src.dateFormats;
-        }
-    }
+//    /**
+//     * Конструктор копирования
+//     *
+//     * @param src Исходный объект
+//     */
+//    public CastGraph(CastGraph src) {
+//        super(src);
+//        if (src != null) {
+//            this.dateFormats = src.dateFormats;
+//        }
+//    }
 
     /**
      * Базовый конструктор
      */
-    public BaseCastGraph() {
+    public CastGraph() {
         set(Integer.class, int.class, integer2Int);
         set(int.class, Integer.class, int2Integer);
 
@@ -1322,8 +1322,7 @@ public class BaseCastGraph extends TypeCastGraph {
             Path<Class, Function> path = findPath(cf, cto);
             if( path!=null ){
                 i++;
-                Converter<X,Y> sc = TypeCastGraph.converter(path);
-                convertors.add(sc);
+                convertors.add(new Converter(path));
             }
         }
 

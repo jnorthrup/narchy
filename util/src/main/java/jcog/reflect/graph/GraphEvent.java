@@ -23,6 +23,9 @@
  */
 package jcog.reflect.graph;
 
+import jcog.data.graph.FromTo;
+import jcog.data.graph.MapNodeGraph;
+
 /**
  * Описывает событие графа
  *
@@ -34,7 +37,7 @@ public interface GraphEvent<N, E> {
      *
      * @return Ребро
      */
-    Edge<N, E> getEdge();
+    FromTo<jcog.data.graph.Node<N,E>,E> getEdge();
 
     /**
      * Возвраащет вершину
@@ -48,7 +51,7 @@ public interface GraphEvent<N, E> {
      *
      * @return Граф
      */
-    Graph<N, E> getGraph();
+    MapNodeGraph<N, E> getGraph();
 
     /**
      * Возвраащет действие которое произошло

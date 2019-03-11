@@ -10,7 +10,6 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaHover;
-import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.LinkedHashMap;
@@ -87,7 +86,7 @@ public class TabMenu extends Menu {
         //VectorLabel label = ((ToggleButton) button).label;
 
 //        if (label!=null)
-            cx = LabeledPane.the(button.term() /*buttonBuilder.apply(label.text())*/, cx);
+//            cx = LabeledPane.the(button.term() /*buttonBuilder.apply(label.text())*/, cx);
 
         synchronized(TabMenu.this) {
 

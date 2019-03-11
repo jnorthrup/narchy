@@ -3,7 +3,10 @@ package spacegraph.space2d.widget.windo;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.jogamp.opengl.GL2;
-import jcog.data.graph.*;
+import jcog.data.graph.FromTo;
+import jcog.data.graph.ImmutableDirectedEdge;
+import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.Node;
 import jcog.math.v2;
 import jcog.reflect.AutoBuilder;
 import jcog.tree.rtree.rect.RectFloat;
@@ -15,7 +18,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
-import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.container.grid.Gridding;
@@ -25,6 +27,7 @@ import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WeakSurface;
 import spacegraph.space2d.widget.meta.WizardFrame;
+import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.windo.util.Box2DGraphEditPhysics;
@@ -376,7 +379,12 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
         physics.invokeLater(() -> physics.link(wire));
 
-        return wire;
+        return adapt(wire);
+    }
+
+    protected Wire adapt(Wire w) {
+        return TypedPort.adapt(w, this);
+        //TODO other adapters here
     }
 
     //protected Wire removeWire(Surface source, Surface target) {

@@ -290,7 +290,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, int dur) {
         //return FloatRank.the(t->t.evi(now, dur));
 
-        return Answer.beliefStrength(now-dur, now+dur);
+        return Answer.temporalTaskStrength(now-dur, now+dur);
 
 //        return Answer.taskStrengthWithFutureBoost(now, now - dur,
 //                beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
@@ -302,33 +302,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private static boolean compress(Space<TaskRegion> tree, FloatFunction<Task> taskStrength, FloatRank<TaskRegion> leafRegionWeakness, Remember
-            remember, NAR nar) {
+    private static boolean compress(Space<TaskRegion> tree, FloatFunction<Task> taskStrength, FloatRank<TaskRegion> leafRegionWeakness, Remember remember, NAR nar) {
 
+        Top<Leaf<TaskRegion>> mergeableLeaf = new Top<>((L, min1) ->
+                leafRegionWeakness.rank((TaskRegion) L.bounds(), min1));
 
-        FloatRank<Leaf<TaskRegion>> leafWeakness =
-                (L, min) -> leafRegionWeakness.rank((TaskRegion) L.bounds(), min);
+        Top<Task> weakest = new Top<>((t, min) -> -taskStrength.floatValueOf(t));
 
-        Top<Leaf<TaskRegion>> mergeableLeaf = new Top<>(leafWeakness);
-
-        FloatRank<Task> weakestTask = (t, min) -> -taskStrength.floatValueOf(t);
-
-
-        Top<Task> weakest = new Top<>(weakestTask);
-
-//        Top<TaskRegion> closest = input != null ? new Top<>(Answer.mergeability(input)) : null;
-
-
-        if (!findEvictable(tree, tree.root(), /*closest, */weakest, mergeableLeaf))
-            return true;
-
-
-        //assert (tree.size() >= cap);
-
-
-        return mergeOrDelete(tree, weakest, mergeableLeaf, taskStrength, remember, nar);
-
-
+        return !findEvictable(tree, tree.root(), /*closest, */weakest, mergeableLeaf)
+               ||
+               mergeOrDelete(tree, weakest, mergeableLeaf, taskStrength, remember, nar);
     }
 
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
@@ -351,8 +334,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (AB!=null) {
                 valueMergeLeaf = (float) (
                         +taskStrength.floatValueOf(AB.getOne())
-                        -AB.getTwo().sumOfFloat((TruthProjection.TaskComponent tv)->
-                                taskStrength.floatValueOf(tv.task()))
+                        -AB.getTwo().sumOfFloat(t -> {
+                            if (t!=t)
+                                return 0; //a task not included in revision
+                            else
+                                return taskStrength.floatValueOf(t.task());
+                        })
                 );
             }
         } else {

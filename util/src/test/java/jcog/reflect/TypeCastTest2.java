@@ -23,14 +23,16 @@
  */
 package jcog.reflect;
 
-import jcog.reflect.graph.Edge;
+import jcog.data.graph.FromTo;
+import jcog.data.list.FasterList;
 import jcog.reflect.graph.Path;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
@@ -55,8 +57,8 @@ public class TypeCastTest2 {
         
         for( Path<Class,Function> p : lp1 ){
             System.out.println("path");
-            for( Edge<Class,Function> e : p.fetch(0, p.nodeCount()) ){
-                System.out.println(""+e.getEdge());
+            for( FromTo<jcog.data.graph.Node<Class, Function>, Function> e : p.fetch(0, p.nodeCount()) ){
+                System.out.println(""+ e.id());
             }
         }
         
@@ -66,8 +68,8 @@ public class TypeCastTest2 {
         for( Path<Class,Function> p : lp2 ){
             System.out.println("path");
             //p.forEach( e -> {
-            for( Edge<Class,Function> e : p.fetch(0, p.nodeCount()) ){
-                System.out.println(""+e.getEdge());
+            for( FromTo<jcog.data.graph.Node<Class, Function>, Function> e : p.fetch(0, p.nodeCount()) ){
+                System.out.println(""+ e.id());
             }
         }
         
@@ -75,14 +77,16 @@ public class TypeCastTest2 {
         for( Path<Class,Function> p1 : lp1 ){
             // lp2.forEach( p2 -> {
             for( Path<Class,Function> p2 : lp2 ){
-                List<Function> path = new LinkedList<Function>();
+                int p1n = p1.nodeCount();
+                int p2n = p2.nodeCount();
+                FasterList<Function> path = new FasterList<Function>(p1n+p2n);
                 //p1.forEach( e1 -> { path.addAt(e1.getEdge()); } );
-                for( Edge<Class,Function> e1 : p1.fetch(0, p1.nodeCount()) ){
-                    path.add(e1.getEdge());
+                for( FromTo<jcog.data.graph.Node<Class, Function>, Function> e1 : p1.fetch(0, p1n) ){
+                    path.addWithoutResize(e1.id());
                 }
                 //p2.forEach( e2 -> { path.addAt(e2.getEdge()); } );
-                for( Edge<Class,Function> e2 : p2.fetch(0, p2.nodeCount()) ){
-                    path.add(e2.getEdge());
+                for( FromTo<jcog.data.graph.Node<Class, Function>, Function> e2 : p2.fetch(0, p2n) ){
+                    path.addWithoutResize(e2.id());
                 }
                 
                 Converter sc = new Converter( path );
@@ -91,9 +95,11 @@ public class TypeCastTest2 {
                 tc.set(String.class, int.class, sc);                
             }
         }
+
         // SequenceCaster sc = new SequenceCaster
-        
-        int v = tc.cast("1.0", int.class);
+        int v0 = tc.cast("1.0", int.class);
+        float v = tc.cast("1.0", float.class);
+        assertEquals(1f, v);
         System.out.println("v="+v);
     }
 }

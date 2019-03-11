@@ -23,7 +23,18 @@
  */
 package jcog.reflect.graph;
 
-import java.util.*;
+import jcog.data.graph.FromTo;
+import jcog.data.graph.ImmutableDirectedEdge;
+import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.Node;
+import jcog.data.list.FasterList;
+import org.eclipse.collections.api.iterator.MutableIntIterator;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Базовый путь
@@ -33,19 +44,20 @@ import java.util.*;
  * @author gocha
  */
 public class BasicPath<N, E> extends AbstractPath<N, E> {
-    protected final List<Edge<N, E>> list;
-    private volatile Map<N, Integer> countMap;
+    protected final List<FromTo<Node<N, E>,E>> list;
+    private  ObjectIntHashMap<N> countMap;
+    final N start;
 
-    public BasicPath() {
-        list = new ArrayList<>();
+    public BasicPath(MapNodeGraph<N,E> graph, N start) {
+        super(graph);
+        this.list = new FasterList<>(0);
+        this.start = start;
     }
 
-    public BasicPath(BasicPath<N, E> sample) {
-        super(sample);
-        list = new ArrayList<>();
-        if (sample != null && sample.list != null) {
-            list.addAll(sample.list);
-        }
+    public BasicPath<N,E> clone() {
+        BasicPath p = new BasicPath(graph, start);
+        p.list.addAll(list);
+        return p;
     }
 
     @Override
@@ -58,111 +70,86 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
         if (beginIndex < 0) throw new IllegalArgumentException("beginIndex<0");
         if (endIndex < 0) throw new IllegalArgumentException("endIndex<0");
 
-        List<E> l = new ArrayList<>();
         int ncnt = nodeCount();
-        if (ncnt == 0) return l; //empty
-        if (ncnt == 1) return l; //empty
+        if (ncnt == 0 || ncnt == 1) return List.of(); //empty
 
-        for (Edge<N, E> ed : fetch(beginIndex, endIndex)) {
-            l.add(ed.getEdge());
+
+        List<E> l = new ArrayList<>();
+        for (FromTo<Node<N,E>,E> ed : fetch(beginIndex, endIndex)) {
+            l.add(ed.id());
         }
 
         return l;
     }
 
     @Override
-    public List<Edge<N, E>> fetch(int beginIndex, int endIndex) {
+    public List<FromTo<Node<N,E>,E>> fetch(int from, int to) {
         int ncnt = nodeCount();
 
-        if (beginIndex < 0) {
-            if ((ncnt + beginIndex) < 0) {
-                beginIndex = 0;
-            } else {
-                beginIndex = ncnt + beginIndex;
-            }
-            //throw new IllegalArgumentException("beginIndex<0");
-        }
+        if (from < 0) from = (ncnt + from) < 0 ? 0 : ncnt + from;
 
-        if (endIndex < 0) {
-            if ((ncnt + endIndex) < 0) {
-                endIndex = ncnt;
-            } else {
-                endIndex = ncnt + endIndex;
-            }
-        }
+        if (to < 0) to = (ncnt + to) < 0 ? ncnt : ncnt + to;
 
-        List<Edge<N, E>> l = new ArrayList<>();
+        to = Math.min(list.size(), to);
 
-        if (ncnt == 0) return l; //empty
-        if (ncnt == 1) return l; //empty
+        if (ncnt == 0 || ncnt == 1) return List.of(); //empty
 
-        int dir = endIndex - beginIndex;
+        int dir = to - from;
+
+        List<FromTo<Node<N,E>,E>> l = new FasterList<>(to - from);
 
         if (dir > 0) {
-            for (int i = beginIndex; i < endIndex; i++) {
-                if (i < list.size()) {
-                    Edge<N, E> e = list.get(i);
-                    if (e != null && e.getEdge() != null) l.add(e);
-                }
+            for (int i = from; i < to; i++) {
+                //if (i < list.size()) {
+                    FromTo<Node<N,E>,E> e = list.get(i);
+                    if (e != null && e.id() != null) l.add(e);
+                //}
             }
         } else if (dir < 0) {
-            for (int i = Math.min(beginIndex, endIndex); i < Math.max(beginIndex, endIndex); i++) {
-                if (i < list.size()) {
-                    Edge<N, E> e = list.get(i);
-                    if (e != null && e.getEdge() != null) {
-                        l.add(0,
-                                new DefaultGraphFactory.MutableEdge<>(
-                                        e.getNodeB(), e.getNodeA(), e.getEdge()
-                                )
-                        );
+            for (int i = Math.min(from, to); i < Math.max(from, to); i++) {
+                //if (i < list.size()) {
+                        FromTo<Node<N,E>,E> e = list.get(i);
+                    if (e != null && e.id() != null) {
+                        l.add(0, new ImmutableDirectedEdge<>(e.to(), e.id(), e.from()));
+//                                new DefaultGraphFactory.MutableEdge<>(
+//                                        e.getNodeB(), e.getNodeA(), e.getEdge()
+//                                )
+//                        );
                     }
-                }
+                //}
             }
         }
         return l;
     }
 
     @Override
-    public BasicPath<N, E> start(N n) {
-        if (n == null) throw new IllegalArgumentException("n == null");
-
-        BasicPath<N, E> newPath = new BasicPath<>();
-        newPath.list.add(new DefaultGraphFactory.MutableEdge<>(n, null, null));
+    public BasicPath<N, E> spawn(N n) {
+        BasicPath<N, E> newPath = new BasicPath<>(graph, n);
         return newPath;
     }
 
+    protected ImmutableDirectedEdge edge(N f, E e, N t) {
+        ImmutableDirectedEdge<N,E> z = new ImmutableDirectedEdge(graph.addNode(f), e, graph.addNode(t));
+        graph.addEdge(z);
+        return z;
+    }
+
     @Override
-    public BasicPath<N, E> join(N n, E e) {
+    public BasicPath<N, E> append(E e, N n) {
         if (n == null) throw new IllegalArgumentException("n == null");
         int ncnt = nodeCount();
-        if (ncnt >= 1) {
-            if (e == null) throw new IllegalArgumentException("e == null");
-            if (ncnt == 1) {
-                BasicPath<N, E> newPath = new BasicPath<>();
-                newPath.list.add(
-                        new DefaultGraphFactory.MutableEdge<>(node(0), n, e)
-                );
-                return newPath;
-            } else {
-                BasicPath<N, E> newPath = new BasicPath<>();
-                newPath.list.addAll(this.list);
-
-                N a = node(ncnt - 1);
-                newPath.list.add(
-                        new DefaultGraphFactory.MutableEdge<>(a, n, e)
-                );
-
-                return newPath;
-            }
+        BasicPath<N, E> newPath = new BasicPath<>(graph, start);
+        N last;
+        if (ncnt == 0) {
+            last = start;
         } else {
-            return start(n);
+            last = node(ncnt - 1);
+            newPath.list.addAll(this.list);
         }
+        newPath.list.add(edge(last, e, n));
+        return newPath;
     }
 
-    @Override
-    public BasicPath<N, E> clone() {
-        return new BasicPath<>(this);
-    }
 
     @Override
     public boolean isEmpty() {
@@ -171,53 +158,52 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
 
     @Override
     public BasicPath<N, E> clear() {
-        return new BasicPath<>();
+        return new BasicPath<>(graph,start);
     }
 
     @Override
     public int count(N n) {
         if (n == null) return 0;
         int cnt = 0;
-        for (int ni = 0; ni < nodeCount(); ni++) {
-            N a = node(ni);
-            if (n.equals(a)) {
+        for (int ni = 0; ni < nodeCount(); ni++)
+            if (n.equals(node(ni)))
                 cnt++;
-            }
-        }
+
         return cnt;
     }
 
     private Set<N> nodeSet() {
-        Set<N> nset = new HashSet<>();
         int nc = nodeCount();
+        Set<N> nset = new UnifiedSet<>(nc);
         for (int ni = 0; ni < nc; ni++) {
             nset.add(node(ni));
         }
         return nset;
     }
 
-    private Map<N, Integer> getCountMap() {
+    private ObjectIntHashMap<N> getCountMap() {
         if (countMap != null) return countMap;
         synchronized (this) {
             if (countMap != null) return countMap;
-            countMap = new LinkedHashMap<>();
-            for (N n : nodeSet()) {
+
+            Set<N> ns = nodeSet();
+            countMap = new ObjectIntHashMap<>(ns.size());
+            for (N n : ns)
                 countMap.put(n, count(n));
-            }
+
             return countMap;
         }
     }
 
     @Override
     public boolean hasCycles() {
-        boolean has = false;
-        for (Integer c : getCountMap().values()) {
-            if (c != null && c > 1) {
-                has = true;
-                break;
-            }
+        MutableIntIterator vv = getCountMap().values().intIterator();
+        while (vv.hasNext()) {
+            int c = vv.next();
+            if (c > 1)
+                return true;
         }
-        return has;
+        return false;
     }
 
     @Override
@@ -227,8 +213,8 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
         int lsize = list.size();
         if (lsize < 1) return 0;
         if (lsize == 1) {
-            Edge<N, E> e = list.get(0);
-            if (e.getEdge() != null && e.getNodeB() != null) return 2;
+            FromTo<Node<N,E>,E> e = list.get(0);
+            if (e.id() != null && e.to().id() != null) return 2;
             return 1;
         }
 
@@ -244,28 +230,28 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
         }
         if (nodeIndex >= nodeCount()) return null;
         if (nodeIndex == 0) {
-            Edge<N, E> edge = list.get(0);
+            FromTo<Node<N,E>,E> edge = list.get(0);
             switch (direction) {
                 case AB:
-                    return edge.getNodeA();
+                    return edge.from().id();
                 case BA:
-                    return edge.getNodeB();
+                    return edge.to().id();
             }
         } else if (nodeIndex == 1) {
-            Edge<N, E> edge = list.get(0);
+            FromTo<Node<N,E>,E> edge = list.get(0);
             switch (direction) {
                 case AB:
-                    return edge.getNodeB();
+                    return edge.to().id();
                 case BA:
-                    return edge.getNodeA();
+                    return edge.from().id();
             }
         } else {
-            Edge<N, E> edge = list.get(nodeIndex - 1);
+            FromTo<Node<N,E>,E> edge = list.get(nodeIndex - 1);
             switch (direction) {
                 case AB:
-                    return edge.getNodeB();
+                    return edge.to().id();
                 case BA:
-                    return edge.getNodeA();
+                    return edge.from().id();
             }
         }
         return null;

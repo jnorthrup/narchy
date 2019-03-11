@@ -71,27 +71,27 @@ public enum Revision {;
         if (u == null)
             return null;
 
-        TruthProjection T = nar.projection(u[0], u[1], 0).add(tasks);
+        TruthProjection p = nar.projection(u[0], u[1], 0).add(tasks);
 
-        MetalLongSet stamp = T.commit(true, 2);
+        MetalLongSet stamp = p.commit(true, 2);
         if (stamp == null)
             return null;
 
-        assert(T.size()>=2);
+        assert(p.size()>=2);
 
-        Truth truth = T.truth(c2wSafe(nar.confMin.floatValue()), dither, nar);
+        Truth truth = p.truth(c2wSafe(nar.confMin.floatValue()), dither, nar);
         if (truth == null)
             return null;
 
-        byte punc = T.punc();
-        Task y = Task.tryTask(T.term, punc, truth, (c, tr) ->
+        byte punc = p.punc();
+        Task y = Task.tryTask(p.term, punc, truth, (c, tr) ->
                 new UnevaluatedTask(c, punc,
                         tr,
-                        nar.time(), T.start(), T.end(),
+                        nar.time(), p.start(), p.end(),
                         Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
                 )
         );
-        return pair(y, T);
+        return pair(y, p);
     }
 
 

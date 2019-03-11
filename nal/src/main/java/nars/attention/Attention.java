@@ -17,6 +17,7 @@ import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
 
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import static jcog.pri.op.PriMerge.plus;
@@ -111,7 +112,7 @@ public abstract class Attention extends DurService implements Sampler<TaskLink> 
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {
 
         public TaskLinkArrayBag(int initialCapacity) {
-            super(Param.tasklinkMerge, initialCapacity);
+            super(Param.tasklinkMerge, initialCapacity, new ConcurrentHashMap(initialCapacity, 0.5f));
         }
 
         @Override

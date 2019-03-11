@@ -23,6 +23,10 @@
  */
 package jcog.reflect.graph;
 
+import jcog.data.graph.FromTo;
+import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.Node;
+
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 
@@ -97,7 +101,7 @@ public interface Path<N, E> {
      * @param endExc     конечная (исключительно) вершина
      * @return список ребер
      */
-    List<Edge<N, E>> fetch(int beginIndex, int endExc);
+    List<FromTo<Node<N,E>,E>> fetch(int beginIndex, int endExc);
 
     /**
      * Возвращает признак что путь пустой - не содержит вершин и ребер
@@ -112,7 +116,7 @@ public interface Path<N, E> {
      * @param n Начальная вершина
      * @return новый путь
      */
-    Path<N, E> start(N n);
+    Path<N, E> spawn(N n);
 
     /**
      * Создает новый путь с добавленным ребром в конце
@@ -121,7 +125,7 @@ public interface Path<N, E> {
      * @param n Вершина
      * @return новый путь
      */
-    Path<N, E> join(N n, E e);
+    Path<N, E> append(E e, N n);
 
     /**
      * Создает новый пустой путь
@@ -154,9 +158,9 @@ public interface Path<N, E> {
     Path<N, E> segment(int beginIdx, int endExc);
 
 
-    default double sum(ToDoubleFunction<Edge<N, E>> v) {
+    default double sum(ToDoubleFunction<FromTo<Node<N,E>,E>> v) {
         double s = 0;
-        for (Edge<N, E> e : fetch(0, nodeCount())) {
+        for (FromTo<Node<N,E>,E> e : fetch(0, nodeCount())) {
             double we = v.applyAsDouble(e);
             s += we;
         }

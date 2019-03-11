@@ -6,18 +6,24 @@ import spacegraph.space2d.widget.port.Wire;
 import java.util.List;
 import java.util.function.Function;
 
+/** holds a pair of function lists */
 public class AdaptingWire extends Wire {
 
     private final List<Function> abAdapters, baAdapters;
-    /** current default strategy selection index */
-    int whichAB = -1, whichBA = -1;
+
+    /** current enabled strategy (selection index) */
+    volatile int whichAB = -1, whichBA = -1;
 
     public AdaptingWire(Wire w, List<Function> ab, List<Function> ba) {
         super(w);
-        this.abAdapters = ab.isEmpty() ? null : ab;
-        this.baAdapters = ba.isEmpty() ? null : ba;
-        whichAB = abAdapters == null ?  -1 : 0;
-        whichBA = baAdapters == null ?  -1 : 0;
+        if (!ab.isEmpty()) {
+            whichAB = 0;
+            this.abAdapters = ab;
+        } else { this.abAdapters = null; }
+        if (!ba.isEmpty()) {
+            whichBA = 0;
+            this.baAdapters = ba;
+        }else { this.baAdapters = null; }
     }
 
     @Override

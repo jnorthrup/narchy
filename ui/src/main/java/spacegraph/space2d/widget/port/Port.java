@@ -41,7 +41,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     /**
      * prototype (example) acceptor. accepts a protocol (on connect / re-connect)
      */
-    private Consumer obeyHow = null;
+    private final Consumer obeyHow = null;
 
     private IntObjectProcedure<Port<X>> updater = null;
 
@@ -68,12 +68,19 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         on(i);
     }
 
+    public static final boolean connectable(Port a, Port b) {
+        //synchronized (this) {
+        return a.connectable(b) && b.connectable(a);
+        //}
+    }
+
 
     public Port<X> on(Consumer<? super X> i) {
         return on((Wire w, X x) -> i.accept(x));
     }
+
     public Port<X> on(Runnable i) {
-        return on((w,x)->i.run());
+        return on((w, x) -> i.run());
     }
 
     public Port<X> specify(Supplier<X> proto) {
@@ -249,7 +256,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         super.starting();
 
         GraphEdit graph = parent(GraphEdit.class);
-        if (graph!=null)
+        if (graph != null)
             this.node = graph.links.addNode(this);
         else
             this.node = GraphEdit.staticLinks.addNode(this); //HACK
@@ -280,7 +287,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
                 n.edges(true, true).forEach(t -> {
                     Wire wire = t.id();
                     Port recv = ((Port) wire.other(Port.this));
-                    if (recv!=sender) //1-level cycle block
+                    if (recv != sender) //1-level cycle block
                         wire.send(this, recv, x);
                 });
                 return true;

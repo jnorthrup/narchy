@@ -27,7 +27,7 @@ public class LinearTruthProjection extends TruthProjection {
 
     @Override
     @Nullable
-    public Truth truth(float eviMin, NAR nar) {
+    public Truth truth(float eviMin, boolean dither, NAR nar) {
 
         if (active() == 0)
             return null;
@@ -78,7 +78,8 @@ public class LinearTruthProjection extends TruthProjection {
             eAvg = eSum / range;
         }
 
-        return PreciseTruth.byEvi((wFreqSum / wSum), eAvg);
+        double F = (float)wFreqSum / wSum;
+        return dither ? Truth.theDithered((float)F, (float)eAvg, nar) : PreciseTruth.byEvi(F, eAvg);
     }
 
 

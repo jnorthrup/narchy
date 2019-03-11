@@ -25,11 +25,10 @@
 package jcog.reflect;
 
 
+import jcog.data.graph.FromTo;
 import jcog.data.list.FasterList;
-import jcog.reflect.graph.Edge;
 import jcog.reflect.graph.Path;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -53,9 +52,9 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements GetWei
     public Converter(Path<Class, Function> path) {
         this.functions = new FasterList<>();
 
-        for (Edge<Class, Function> ed : path.fetch(0, path.nodeCount())) {
+        for (FromTo<jcog.data.graph.Node<Class, Function>, Function> ed : path.fetch(0, path.nodeCount())) {
             if (ed != null) {
-                this.functions.add(ed.getEdge());
+                this.functions.add(ed.id());
             }
         }
 
@@ -66,13 +65,14 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements GetWei
         attachListener();
     }
 
-    public Converter(Iterable<Function> convertors) {
-        this.functions = new ArrayList<>();
-        for (Function conv : convertors) {
-            if (conv != null) {
-                this.functions.add(conv);
-            }
-        }
+    public Converter(List<Function> convertors) {
+//        this.functions = new ArrayList<>();
+//        for (Function conv : convertors) {
+//            if (conv != null) {
+//                this.functions.add(conv);
+//            }
+//        }
+        this.functions = convertors;
 
         attachListener();
     }

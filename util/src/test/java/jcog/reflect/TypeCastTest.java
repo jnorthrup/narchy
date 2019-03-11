@@ -23,6 +23,7 @@
  */
 package jcog.reflect;
 
+import jcog.data.graph.Node;
 import jcog.reflect.graph.Path;
 import org.junit.jupiter.api.Test;
 
@@ -144,8 +145,9 @@ public class TypeCastTest {
         }
         
         int co = 0;
-        for( Class c : tcast.getNodes() ){
-            if( c.equals(clsFrom) )co++;
+        for( Node<Class,Function> c : tcast.nodes() ){
+            if( c.id().equals(clsFrom) )
+                co++;
         }
         
         assertTrue( co==0 );
@@ -171,7 +173,7 @@ public class TypeCastTest {
                 Path<Class, Function> path = bcast.findPath(cf, cto);
                 if( path!=null ){
                     i++;
-                    Converter sc = TypeCastGraph.converter(path);
+                    Converter sc = new Converter(path);
                     System.out.println(i+": "+ sc);
 
                     Object y = sc.apply("9");
@@ -187,7 +189,7 @@ public class TypeCastTest {
         System.out.println("String2byteCast");
         System.out.println("===============");
         
-        BaseCastGraph bcast = new BaseCastGraph();
+        CastGraph bcast = new CastGraph();
         byte res = bcast.cast("12", byte.class);
         byte cmpRes = 12;
         assertTrue( res==cmpRes );

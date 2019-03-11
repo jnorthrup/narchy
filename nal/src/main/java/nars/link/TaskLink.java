@@ -263,7 +263,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
 //        float pDown = 1*p, pUp = Float.NaN;
 
-        Concept ct = null;
+        Concept ct;
         boolean self = s.equals(t);
         if (t.op().conceptualizable) {
             ct = nar.conceptualize(t);
@@ -280,7 +280,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
 
                     if (t instanceof Atom) {
                         //why is this necessary
-                        if (self || d.random.nextFloat() > 1f/(1+s.volume())) {
+                        if (self || d.random.nextFloat() > 1f/(1+s.complexity())) {
                             //sample active tasklinks for a tangent match to the atom
                             u = nar.attn.active.atomTangent((NodeConcept) ct, this, d.time, d.ditherDT, d.random);
                         }
@@ -296,8 +296,9 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR, Task> {
             if (u != null && !u.equals(t)) {
 
                 float subRate =
-                        1f;
+                        //1f;
                         //1f/(t.volume());
+                        (float) (1f/(Math.sqrt(t.complexity())));
                 float subLink =
                         1/2f * subRate;
                         //1f;

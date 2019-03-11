@@ -20,18 +20,10 @@ public class Wire {
 
     public final Offs offs = new Offs();
 
-    protected Wire(Wire copy) {
-        this.a = copy.a;
-        this.aTypeHash = copy.aTypeHash;
-        this.b = copy.b;
-        this.bTypeHash = copy.bTypeHash;
-        this.hash = copy.hash;
-    }
-
     public Wire(Surface a, Surface b) {
         assert(a!=b);
         if (a.id > b.id) {
-            
+
             Surface x = b;
             b = a;
             a = x;
@@ -41,6 +33,19 @@ public class Wire {
         this.b = b;
         this.hash = Util.hashCombine(a, b);
     }
+    protected Wire(Wire copy) {
+        this.a = copy.a;
+        this.aTypeHash = copy.aTypeHash;
+        this.b = copy.b;
+        this.bTypeHash = copy.bTypeHash;
+        this.hash = copy.hash;
+    }
+
+    @Override
+    public String toString() {
+        return Wire.class.getSimpleName() + "(" + a + "," + b + ")";
+    }
+
 
     @Override
     public final boolean equals(Object obj) {
@@ -112,16 +117,6 @@ public class Wire {
     /** combined activity level */
     public final float activity(long now, long window) {
         return activity(true, now, window) + activity(false, now, window);
-    }
-
-    public final boolean connectable() {
-        if (a instanceof Port && b instanceof Port) { //HACK
-            //synchronized (this) {
-                return ((Port) a).connectable((Port) b) && ((Port) b).connectable((Port) a);
-            //}
-        }
-
-        return true;
     }
 
     public int typeHash(boolean aOrB) {

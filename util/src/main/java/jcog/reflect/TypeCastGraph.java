@@ -26,8 +26,12 @@ package jcog.reflect;
 
 
 import com.google.common.collect.Lists;
+import jcog.data.graph.FromTo;
+import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
-import jcog.reflect.graph.*;
+import jcog.reflect.graph.Path;
+import jcog.reflect.graph.PathFinder;
+import jcog.reflect.graph.SimpleSDGraph;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,9 +60,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  *
  * @author Kamnev Georgiy (nt.gocha@gmail.com)
  */
-public class TypeCastGraph
-        extends SimpleSDGraph<Class, Function>
-        implements Graph<Class, Function> {
+public class TypeCastGraph extends SimpleSDGraph<Class, Function> {
 
     private static final Logger logger = Logger.getLogger(TypeCastGraph.class.getName());
 
@@ -68,31 +70,13 @@ public class TypeCastGraph
 
     protected final ClassSet classes = new ClassSet();
 
-    protected Function<Edge<Class, Function>, Double> edgeWeightFunction = null;
+    protected Function<FromTo<jcog.data.graph.Node<Class, Function>, Function>, Double> edgeWeightFunction = null;
 
 
     /**
      * Конструктор по умолчанию
      */
     public TypeCastGraph() {
-    }
-
-    /**
-     * Конструктор копирования
-     *
-     * @param src конструктор
-     */
-    public TypeCastGraph(TypeCastGraph src) {
-        if (src != null) {
-            for (Class n : src.getNodes()) {
-                add(n);
-            }
-            for (Edge<Class, Function> e : src.getEdges()) {
-                add(e);
-            }
-            classes.addAll(src.classes);
-            this.edgeWeightFunction = src.edgeWeightFunction;
-        }
     }
 
     private static Level logLevel() {
@@ -115,10 +99,10 @@ public class TypeCastGraph
      *
      * @return конвертор ребр графа в их веса
      */
-    public static Function<Edge<Class, Function>, Double> createEdgeWeight() {
+    public static Function<FromTo<jcog.data.graph.Node<Class, Function>, Function>, Double> createEdgeWeight() {
         return
                 from -> {
-                    Object edge = from.getEdge();
+                    Object edge = from.id();
                     if (edge instanceof GetWeight)
                         return ((GetWeight) edge).getWeight();
                     return (double) 1;
@@ -162,41 +146,20 @@ public class TypeCastGraph
 //        return convs;
 //    }
 
-    /**
-     * Создание Caster для цепочки преобразований
-     *
-     * @param path цепочка преобразований
-     * @return caster
-     */
-    public static Converter converter(Path<Class, Function> path) {
-        if (path == null) throw new IllegalArgumentException("path==null");
-        return new Converter(path);
-    }
-
-    /**
-     * Клонирование
-     *
-     * @return клон
-     */
     @Override
-    public TypeCastGraph clone() {
-        return new TypeCastGraph(this);
-    }
-
-    @Override
-    protected void onNodeAdded(Class type) {
-        super.onNodeAdded(type);
-        if (type != null) {
+    protected void onAdd(Node<Class, Function> r) {
+        super.onAdd(r);
+        Class type = r.id();
+        if (type != null)
             classes.add(type);
-        }
     }
 
     @Override
-    protected void onNodeRemoved(Class type) {
-        super.onNodeRemoved(type);
-        if (type != null) {
+    protected void onRemoved(Node<Class, Function> r) {
+        Class type = r.id();
+        if (type != null)
             classes.remove(type);
-        }
+        super.onRemoved(r);
     }
 
     /**
@@ -222,7 +185,7 @@ public class TypeCastGraph
                 classes.getAssignableFrom(type, incParent, incChildren);
 
         List<Class> list = Lists.newArrayList(fromClasses);
-        list.sort(new ClassSet.ClassHeirarchyComparer(childToParent));
+        list.sort(new ClassSet.ClassHierarchyComparer(childToParent));
         return list;
     }
 
@@ -231,7 +194,7 @@ public class TypeCastGraph
      *
      * @return конвертор ребр графа в веса
      */
-    public Function<Edge<Class, Function>, Double> getEdgeWeight() {
+    public Function<FromTo<jcog.data.graph.Node<Class, Function>, Function>, Double> getEdgeWeight() {
         if (edgeWeightFunction != null) return edgeWeightFunction;
         edgeWeightFunction = createEdgeWeight();
         return edgeWeightFunction;
@@ -265,8 +228,8 @@ public class TypeCastGraph
             Class to,
             Predicate<Path<Class, Function>> filter
     ) {
-        if (from == null) throw new IllegalArgumentException("from==null");
-        if (to == null) throw new IllegalArgumentException("to==null");
+//        if (from == null) throw new IllegalArgumentException("from==null");
+//        if (to == null) throw new IllegalArgumentException("to==null");
 
         PathFinder<Class, Function> pfinder;
 //        pfinder = new PathFinder<>(
@@ -426,19 +389,21 @@ public class TypeCastGraph
                     fail(failedCastConvertor, castErrors, conv, ex);
                 }
             } else {
-                Converter scaster = converter(path);
-                scasters.add(scaster);
-                if (newSeqCasters != null) newSeqCasters.accept(scaster);
+                Converter c = new Converter(path);
+                scasters.add(c);
+                if (newSeqCasters != null)
+                    newSeqCasters.accept(c);
             }
         }
 
-        for (Converter caster : scasters) {
+        for (Converter c : scasters) {
             try {
-                Object res = caster.apply(value);
-                if (castedConvertor != null) castedConvertor.accept(caster);
+                Object res = c.apply(value);
+                if (castedConvertor != null)
+                    castedConvertor.accept(c);
                 return res;
             } catch (Throwable ex) {
-                fail(failedCastConvertor, castErrors, caster, ex);
+                fail(failedCastConvertor, castErrors, c, ex);
             }
         }
 
@@ -455,7 +420,7 @@ public class TypeCastGraph
         );
     }
 
-    private void fail(@Nullable Consumer<Pair<Function, Throwable>> failedCastConvertor, Collection<Throwable> castErrors, Function conv, Throwable ex) {
+    private static void fail(@Nullable Consumer<Pair<Function, Throwable>> failedCastConvertor, Collection<Throwable> castErrors, Function conv, Throwable ex) {
 
         if (isLogFine())
             logException(ex);

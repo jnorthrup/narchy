@@ -61,19 +61,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * computes the final truth value
      */
     @Nullable
-    public abstract Truth truth(float eviMin, NAR nar);
+    public abstract Truth truth(float eviMin, boolean dither, NAR nar);
 
     @Nullable
-    public final Truth truth(float eviMin, boolean dither, NAR nar) {
-        Truth t = truth(eviMin, nar);
-        if (t == null)
-            return null;
-        if (dither) {
-            t = t.dither(nar);
-            if (t == null || t.evi() < eviMin)
-                return null;
-        }
-        return t;
+    public final Truth truth(float eviMin, NAR nar) {
+        return truth(eviMin, false, nar);
     }
 
     public final boolean add(TaskRegion t) {
@@ -299,9 +291,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     public final TruthProjection add(Tasked... tasks) {
         ensureCapacity(tasks.length);
-        for (Tasked t : tasks) {
+        for (Tasked t : tasks)
             add(t); //if (t != null)
-        }
         return this;
     }
 
@@ -322,9 +313,10 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     float intermpolateAndCull(NAR nar) {
 
-        int root = firstValidIndex();
+        final int root = firstValidIndex();
         int thisSize = size();
-        Term first = get(root).task.term();
+        TaskComponent rootComponent = get(root);
+        Term first = rootComponent.task.term();
         if (thisSize == 1 || !first.hasAny(Op.Temporal)) {
             //assumes that all the terms are from the same concept.  so if the first target has no temporal components the rest should not either.
             this.term = first;
@@ -355,7 +347,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             //use the first successful intermpolation, if possible
 
             int tryB = 1;
-            final float e1Evi = get(0).evi;
+            final float e1Evi = rootComponent.evi;
             Term a = first;
             TaskComponent B = get(tryB);
             Term b = B.task.term();
@@ -400,14 +392,6 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return get(0).task.punc();
     }
 
-    public TaskRegion[] tasks() {
-        int size = this.size();
-        TaskRegion[] t = new TaskRegion[size];
-        for (int i = 0; i < size; i++) {
-            t[i] = get(i).task;
-        }
-        return t;
-    }
 
     @Nullable
     public final Truth truth() {
@@ -448,7 +432,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         if ((allInvalid ? size() : active()) > 1) {
             se = Tense.union(Iterables.transform(this,
                     allInvalid ?
-                            ((TaskComponent x)->x.task) :
+                            ((TaskComponent x) -> x.task) :
                             ((TaskComponent x) -> x.valid() ? x.task : null)));
         } else {
             TruthProjection.TaskComponent only = allInvalid ? getFirst() : firstValid();
