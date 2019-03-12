@@ -6,6 +6,7 @@ import nars.control.op.Remember;
 import nars.table.question.QuestionTable;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -90,9 +91,12 @@ public interface TaskTable {
 //        throw new TODO();
 //    }
 
+
+    @Nullable default Task match(When w, @Nullable Term template) { return match(w.start, w.end, template, null, w.dur, w.nar); }
+
     @Nullable default Task match(long start, long end, Term template, int dur, NAR nar) { return match(start, end, template, null, dur, nar); }
 
-    @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
+    @Deprecated @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
         return !isEmpty() ? matching(start, end, template, filter, dur, nar)
                 .task(true, false, false) : null;
     }
@@ -111,11 +115,15 @@ public interface TaskTable {
                 .task(true, true, false) : null;
     }
 
-    default Task sample(long start, long end, Term template, NAR nar) {
+    default Task sample(long start, long end, @Nullable Term template, NAR nar) {
         return sample(start, end, template, null, nar);
     }
 
-    default Task sample(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
+    default Task sample(When when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+        return sample(when.start, when.end, template, filter, when.nar);
+    }
+
+    default Task sample(long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
         if (isEmpty())
             return null;

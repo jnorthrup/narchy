@@ -21,7 +21,7 @@ import nars.agent.NAgent;
 import nars.attention.Attention;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;

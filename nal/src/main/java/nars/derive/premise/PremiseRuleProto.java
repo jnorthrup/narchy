@@ -82,7 +82,11 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
         @Override
         public String toString() {
-            return $.pFast(rule.ref, $.the(id)).toString();
+            return term().toString();
+        }
+
+        @Override public Term term() {
+            return $.pFast(rule.ref, $.the(id));
         }
 
     }

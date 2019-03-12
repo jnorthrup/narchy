@@ -8,7 +8,7 @@ import nars.NAR;
 import nars.agent.NAgent;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.VectorSensor;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;

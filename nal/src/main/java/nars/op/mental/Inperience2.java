@@ -13,6 +13,7 @@ import nars.task.ITask;
 import nars.task.proxy.SpecialPuncTermAndTruthTask;
 import nars.term.Term;
 import nars.time.Tense;
+import nars.time.When;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +44,7 @@ public class Inperience2 extends Causable {
         int dither = n.dtDither();
         long start = Tense.dither((long)Math.floor(now - window * dur/2), dither);
         long end = Tense.dither((long)Math.ceil(now + window * dur/2), dither);
+        When when = new When(start, end, dur, n);
 
         int volMax = n.termVolumeMax.intValue();
         int volMaxPre = (int) Math.max(1, Math.ceil(volMax * 0.5f));
@@ -50,7 +52,7 @@ public class Inperience2 extends Causable {
         Random rng = n.random();
         n.attn.active.sample(rng, (TaskLink tl) -> {
 
-            Task t = tl.get(start, end, n);
+            Task t = tl.get(when);
             if (t != null && t.term().volume() <= volMaxPre) {
 
                 Task u = null;

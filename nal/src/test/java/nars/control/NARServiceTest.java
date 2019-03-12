@@ -3,6 +3,7 @@ package nars.control;
 import jcog.service.Service;
 import nars.NAR;
 import nars.NARS;
+import nars.time.event.DurService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;

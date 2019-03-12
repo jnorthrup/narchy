@@ -5,7 +5,7 @@ import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
 import nars.NAR;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.Graph2D;

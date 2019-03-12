@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.Task;
 import nars.attention.DerivePri;
 import nars.control.Cause;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.control.channel.ConsumerX;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
@@ -169,7 +169,7 @@ abstract public class Deriver extends Causable {
                 this.outputOffs = new Offs((cycleOrDur) ?
                         nar.onCycle(p)
                         :
-                        DurService.on(nar, p), nar.eventClear.on(this::clear)
+                        DurService.on(nar, p)
                 );
             }
         }

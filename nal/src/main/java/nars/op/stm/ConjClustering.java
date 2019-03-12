@@ -13,7 +13,7 @@ import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
 import nars.control.CauseMerge;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
 import nars.task.NALTask;

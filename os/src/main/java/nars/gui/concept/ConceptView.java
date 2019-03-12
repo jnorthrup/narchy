@@ -2,7 +2,7 @@ package nars.gui.concept;
 
 import nars.NAR;
 import nars.concept.Concept;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.unit.MutableUnitContainer;

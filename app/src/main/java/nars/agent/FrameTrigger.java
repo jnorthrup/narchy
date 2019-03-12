@@ -3,7 +3,7 @@ package nars.agent;
 import jcog.TODO;
 import jcog.event.Off;
 import jcog.exe.Loop;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
 

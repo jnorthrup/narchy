@@ -4,7 +4,7 @@ import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
 

@@ -2,6 +2,7 @@ package nars.concept.dynamic;
 
 import nars.*;
 import nars.link.TaskLink;
+import nars.time.When;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -26,8 +27,9 @@ class DynamicTruthBeliefTableTest {
         n.run(1);
         TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink($$("(x && y)"), Op.EmptyProduct, ETERNAL, BELIEF,  1f);
         Set<Task> tasks = new HashSet();
+        When w = When.eternal(n);
         for (int i = 0; i < 10; i++)
-            tasks.add(tl.get(ETERNAL, ETERNAL, n));
+            tasks.add(tl.get(w));
         assertTrue(tasks.toString().contains("(x&&y). %0.0;.25%]"));
         tasks.forEach(System.out::println);
     }
@@ -40,8 +42,9 @@ class DynamicTruthBeliefTableTest {
         n.run(1);
         TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink($$("(x && y)"), Op.EmptyProduct, ETERNAL, BELIEF, 1f);
         Set<Task> tasks = new HashSet();
+        When w = new When(1, n);
         for (int i = 0; i < 100; i++)
-            tasks.add(tl.get(1, 1, n));
+            tasks.add(tl.get(w));
         assertTrue( tasks.toString().contains("(x &&+1 y). 1 %1.0;.81%]"), ()->tasks.toString());
         //assertEquals("[$.50 (x&|y). 1 %1.0;.74%]", tasks.toString());
 

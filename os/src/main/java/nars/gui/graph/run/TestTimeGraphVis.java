@@ -2,7 +2,6 @@ package nars.gui.graph.run;
 
 import jcog.data.graph.MapNodeGraph;
 import nars.$;
-import nars.time.Event;
 import nars.time.TimeGraph;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.widget.SimpleGraph3D;
@@ -10,10 +9,10 @@ import spacegraph.space3d.widget.SpaceWidget;
 
 import static nars.time.Tense.ETERNAL;
 
-public class TestTimeGraphVis extends SimpleGraph3D<Event> {
+public class TestTimeGraphVis extends SimpleGraph3D<TimeGraph.Event> {
 
     public TestTimeGraphVis() {
-        super((SpaceWidget<Event> n)->{
+        super((SpaceWidget<TimeGraph.Event> n)->{
             defaultVis.each(n);
 
             if (n.id instanceof TimeGraph.Absolute) {

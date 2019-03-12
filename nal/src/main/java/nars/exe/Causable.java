@@ -4,6 +4,7 @@ import jcog.exe.Can;
 import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
+import nars.time.event.InternalEvent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
@@ -111,6 +112,17 @@ abstract public class Causable extends NARService {
      */
     public abstract float value();
 
-//    final static Logger logger = LoggerFactory.getLogger(Causable.class);
+    public InternalEvent event() {
+        return new AtCause();
+    }
+
+    private class AtCause extends InternalEvent {
+
+        @Override
+        public Term term() {
+            return id;
+        }
+    }
+
 
 }

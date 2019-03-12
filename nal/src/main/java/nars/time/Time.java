@@ -3,7 +3,7 @@ package nars.time;
 import com.netflix.servo.util.Clock;
 import jcog.data.list.MetalConcurrentQueue;
 import nars.NAR;
-import nars.task.AbstractTask;
+import nars.time.event.AtTime;
 
 import javax.measure.Quantity;
 import java.io.Serializable;
@@ -11,6 +11,7 @@ import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -24,11 +25,11 @@ public abstract class Time implements Clock, Serializable {
     final AtomicLong scheduledNext = new AtomicLong(Long.MIN_VALUE);
 
     final static int MAX_INCOMING = 4 * 1024;
-    final MetalConcurrentQueue<AbstractTask.ScheduledTask> incoming =
+    final MetalConcurrentQueue<ScheduledTask> incoming =
             new MetalConcurrentQueue<>(MAX_INCOMING);
 
 
-    final PriorityQueue<AbstractTask.ScheduledTask> scheduled = new PriorityQueue<>(MAX_INCOMING /* estimate capacity */);
+    final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(MAX_INCOMING /* estimate capacity */);
 
     /**
      * busy mutex
@@ -49,6 +50,9 @@ public abstract class Time implements Clock, Serializable {
      */
     public abstract void reset();
 
+    public final Stream<ScheduledTask> events() {
+        return Stream.concat(incoming.stream(), scheduled.stream());
+    }
 
     /**
      * time elapsed since last cycle
@@ -76,12 +80,12 @@ public abstract class Time implements Clock, Serializable {
 
 
     public final void runAt(long whenOrAfter, Runnable then) {
-        runAt(new ScheduledRunnable(whenOrAfter, then));
+        runAt(new AtTime(whenOrAfter, then));
     }
 
 
-    public void runAt(AbstractTask.ScheduledTask event) {
-        long w = event.when();
+    public void runAt(ScheduledTask event) {
+        long w = event.start();
         assert(w!=ETERNAL && w!=TIMELESS);
 
         if (!incoming.offer(event)) {
@@ -95,7 +99,7 @@ public abstract class Time implements Clock, Serializable {
     /**
      * drain scheduled tasks ready to be executed
      */
-    public void schedule(Consumer<AbstractTask.ScheduledTask> each) {
+    public void schedule(Consumer<ScheduledTask> each) {
 
 
         if (scheduling.weakCompareAndSetAcquire(false, true)) {
@@ -106,14 +110,14 @@ public abstract class Time implements Clock, Serializable {
                 {
                     //fire  previously scheduled
                     if (now >= scheduledNext.getOpaque()) {
-                        AbstractTask.ScheduledTask next;
+                        ScheduledTask next;
 
-                        while (((next = scheduled.peek()) != null) && (next.when() <= now)) {
+                        while (((next = scheduled.peek()) != null) && (next.start() <= now)) {
                             each.accept(scheduled.poll()); //assert (next == actualNext);
                         }
 
                         scheduledNext.accumulateAndGet(
-                                next != null ? next.when() : Long.MAX_VALUE,
+                                next != null ? next.start() : Long.MAX_VALUE,
                                 Math::min
                         );
 
@@ -121,9 +125,9 @@ public abstract class Time implements Clock, Serializable {
                 }
                 {
                     //drain incoming queue
-                    AbstractTask.ScheduledTask next;
+                    ScheduledTask next;
                     for (; (next = incoming.poll()) != null; ) {
-                        if (next.when() <= now)
+                        if (next.start() <= now)
                             each.accept(next);
                         else
                             scheduled.offer(next);
@@ -167,23 +171,4 @@ public abstract class Time implements Clock, Serializable {
         throw new UnsupportedOperationException("Only in RealTime implementations");
     }
 
-    private static final class ScheduledRunnable extends AbstractTask.ScheduledTask {
-        private final long whenOrAfter;
-        private final Runnable then;
-
-        public ScheduledRunnable(long whenOrAfter, Runnable then) {
-            this.whenOrAfter = whenOrAfter;
-            this.then = then;
-        }
-
-        @Override
-        public long when() {
-            return whenOrAfter;
-        }
-
-        @Override
-        public void run() {
-            then.run();
-        }
-    }
 }

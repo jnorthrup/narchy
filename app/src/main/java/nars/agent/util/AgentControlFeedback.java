@@ -2,7 +2,7 @@ package nars.agent.util;
 
 import nars.NAR;
 import nars.agent.NAgent;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.util.TaskSummarizer;
 
 public class AgentControlFeedback {

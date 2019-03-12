@@ -99,11 +99,11 @@ public class NAgent extends NARService implements NSense, NAct {
         super(id);
         this.nar = nar;
         this.attn = new AttNode(id);
-        this.attnAction = new AttNode($.func("action", id) );
+        this.attnAction = new AttNode($.func("action", id));
         attnAction.parent(attn);
-        this.attnSensor = new AttNode($.func("sensor", id) );
+        this.attnSensor = new AttNode($.func("sensor", id));
         attnSensor.parent(attn);
-        this.attnReward = new AttNode($.func("reward", id) );
+        this.attnReward = new AttNode($.func("reward", id));
         attnReward.parent(attn);
 
         this.frameTrigger = frameTrigger;
@@ -131,7 +131,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
     /**
      * dexterity = sum(evidence(action))
-     * evidence/confidence in action decisions, current measurement */
+     * evidence/confidence in action decisions, current measurement
+     */
     public float dexterity() {
         int n = actions.size();
         if (n == 0)
@@ -142,17 +143,18 @@ public class NAgent extends NARService implements NSense, NAct {
             m[0] += a.dexterity();
         });
 
-        return (float)m[0];
+        return (float) m[0];
     }
 
     public float dexterityMean() {
-        return dexterity()/actions.size();
+        return dexterity() / actions.size();
     }
 
 
     /**
      * happiness = sum( 1 - abs(rewardBeliefExp - rewardGoalExp) )
-     * avg reward satisfaction, current measurement */
+     * avg reward satisfaction, current measurement
+     */
     public float happiness() {
         //1 - abs(belief-goal)
         //    freq or expectation ??
@@ -160,9 +162,10 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     /**
-     *  proficiency = happiness * dexterity
-     *  current measurement
-     *  professional satori */
+     * proficiency = happiness * dexterity
+     * current measurement
+     * professional satori
+     */
     public float proficiency() {
         throw new TODO();
     }
@@ -202,15 +205,15 @@ public class NAgent extends NARService implements NSense, NAct {
 
     static protected void addAttention(AttNode target, Object s) {
         if (s instanceof VectorSensor) {
-            ((VectorSensor)s).attn.parent(target);
+            ((VectorSensor) s).attn.parent(target);
         } else if (s instanceof Signal) {
-            ((Signal)s).attn.parent(target);
+            ((Signal) s).attn.parent(target);
         } else if (s instanceof Reward) {
-            ((Reward)s).attn.parent(target);
+            ((Reward) s).attn.parent(target);
         } else if (s instanceof ActionConcept) {
-            ((ActionConcept)s).attn.parent(target);
+            ((ActionConcept) s).attn.parent(target);
         } else if (s instanceof AttNode)
-            ((AttNode)s).parent(target);
+            ((AttNode) s).parent(target);
         else
             throw new TODO();
     }
@@ -333,9 +336,6 @@ public class NAgent extends NARService implements NSense, NAct {
         //Term id = (this.id == null) ? nar.self() : this.id;
 
         this.prev = nar.time();
-
-
-
 
 
         super.starting(nar);
@@ -516,7 +516,7 @@ public class NAgent extends NARService implements NSense, NAct {
         try {
             long now = nar.time();
             long prev = this.now;
-            assert(prev!=ETERNAL);
+            assert (prev != ETERNAL);
 
             if (now <= prev)
                 return; //too learly
@@ -528,14 +528,14 @@ public class NAgent extends NARService implements NSense, NAct {
             this.prev = prev;
             this.now = now;
             this.next = next;
-            assert(prev <= now && now < next);
+            assert (prev <= now && now < next);
 
 
             float pb = nar.priDefault(BELIEF), pg = nar.priDefault(GOAL);
             //TODO adjustable balance
             attnSensor.factor.set(pb);
             attnAction.factor.set(pg);
-            attnReward.factor.set((pb+pg));
+            attnReward.factor.set((pb + pg));
             attn.update(pri.floatValue() /* external pri boost */);
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);
@@ -551,7 +551,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
     protected void act(long prev, long now) {
         //ActionConcept[] aaa = actions.array();
-        ActionConcept[] aaa = actions.array().clone(); ArrayUtils.shuffle(aaa, random()); //HACK shuffle cloned copy for thread safety
+        ActionConcept[] aaa = actions.array().clone();
+        ArrayUtils.shuffle(aaa, random()); //HACK shuffle cloned copy for thread safety
 
 
         //curiosity conf initial setting  HACK
@@ -666,7 +667,9 @@ public class NAgent extends NARService implements NSense, NAct {
         };
     }
 
-    /** scalar summary of current reward satisfaction state */
+    /**
+     * scalar summary of current reward satisfaction state
+     */
     public final float reward() {
         float total = 0;
         for (Reward r : rewards) {

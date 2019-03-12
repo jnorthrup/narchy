@@ -14,7 +14,7 @@ import jcog.util.ArrayUtils;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.Operator;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.control.channel.ConsumerX;
 import nars.subterm.Subterms;
 import nars.task.ITask;

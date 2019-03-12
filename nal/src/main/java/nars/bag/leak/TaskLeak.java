@@ -98,20 +98,22 @@ public abstract class TaskLeak extends Causable {
 
     @Override
     protected void starting(NAR nar) {
+
+        on(nar.eventClear.on(this::clear));
+
         Off off = source.start(this, nar);
         if (off!=null)
             on(off);
     }
 
     @Override
-    public final void clear() {
-        source.clear();
-    }
-
-    @Override
     protected void next(NAR nar, BooleanSupplier kontinue) {
         volMax = nar.termVolumeMax.intValue();
         source.next(this::leak, kontinue, nar);
+    }
+
+    public void clear() {
+        source.clear();
     }
 
     public static abstract class TaskSource {

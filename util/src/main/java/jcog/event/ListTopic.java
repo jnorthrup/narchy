@@ -28,7 +28,6 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
 
         for (Consumer c: cc)
             c.accept(x);
-
     }
 
 

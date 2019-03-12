@@ -6,7 +6,7 @@ import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.concept.Concept;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.gui.NARui;
 import nars.link.TaskLink;
 import nars.term.Term;

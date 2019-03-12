@@ -87,46 +87,7 @@ public abstract class AbstractTask implements ITask, Prioritizable {
 //    }
 
 
-    public abstract static class ScheduledTask implements Runnable,Comparable<ScheduledTask> {
-
-//        public final long when;
-//        public final Runnable what;
-//
-//
-//        public SchedTask(long whenOrAfter, Runnable what) {
-//            this.when = whenOrAfter;
-//            this.what = what;
-//        }
-
-        /** when or after this task may be run next */
-        abstract public long when();
-
-        @Override
-        public String toString() {
-            return "@" + when() + ':' + super.toString();
-        }
-
-
-        @Override
-        public boolean equals(Object obj) {
-            return this == obj;
-        }
-
-        @Override
-        public int compareTo(ScheduledTask that) {
-            if (this == that) return 0;
-
-            int t = Longs.compare(when(), that.when());
-            if (t != 0) {
-                return t;
-            }
-
-            return Integer.compare(System.identityHashCode(this), System.identityHashCode(that));
-        }
-    }
-
-
-//    public static class NARTask extends AbstractTask {
+    //    public static class NARTask extends AbstractTask {
 //
 //        final Consumer run;
 //

@@ -43,7 +43,8 @@ public class STMLinkage extends NARService {
     @Override
     protected void starting(NAR nar) {
         on(
-                nar.onTask(this::accept, BELIEF, GOAL)
+            nar.onTask(this::accept, BELIEF, GOAL),
+            nar.eventClear.on((Runnable)stm::clear)
         );
     }
 
@@ -89,10 +90,6 @@ public class STMLinkage extends NARService {
         return x.isInput();
     }
 
-    @Override
-    public void clear() {
-        stm.clear();
-    }
 
     public final void accept(Task y) {
 

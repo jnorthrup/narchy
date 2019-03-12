@@ -10,7 +10,7 @@ import jcog.exe.Exe;
 import jcog.random.SplitMix64Random;
 import jcog.util.ArrayUtils;
 import nars.NAR;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;

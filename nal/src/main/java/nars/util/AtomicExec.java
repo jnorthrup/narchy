@@ -12,7 +12,7 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.Operator;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;

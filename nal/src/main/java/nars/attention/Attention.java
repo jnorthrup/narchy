@@ -1,6 +1,5 @@
 package nars.attention;
 
-import jcog.event.Offs;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.PriBuffer;
@@ -12,9 +11,9 @@ import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Param;
 import nars.attention.derive.DefaultDerivePri;
-import nars.control.DurService;
 import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
+import nars.time.event.DurService;
 
 import java.util.Random;
 import java.util.function.Function;
@@ -53,7 +52,7 @@ public abstract class Attention extends DurService implements Sampler<TaskLink> 
     public DerivePri derivePri =
             //new DirectDerivePri();
             new DefaultDerivePri();
-    private Offs ons;
+
     //new DefaultPuncWeightedDerivePri();
 
 
@@ -73,34 +72,18 @@ public abstract class Attention extends DurService implements Sampler<TaskLink> 
 
         active.setCapacity(activeCapacity.intValue());
 
-        ons = new Offs(
+        on(
+                nar.eventClear.on(active::clear),
                 nar.onCycle(active::forget),
                 nar.eventClear.on(active::clear)
         );
 
-        nar.on(this);
-    }
-
-    @Override
-    protected void stopping(NAR nar) {
-        ons.off();
-        ons = null;
-        super.stopping(nar);
     }
 
     @Override
     protected void run(NAR n, long dt) {
-
         forgetting.update(n);
         derivePri.update(n);
-
-    }
-
-
-
-    @Override
-    public void clear() {
-        active.clear();
     }
 
     @Override

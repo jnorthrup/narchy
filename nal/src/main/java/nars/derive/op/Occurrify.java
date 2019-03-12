@@ -14,7 +14,6 @@ import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.Retemporalize;
-import nars.time.Event;
 import nars.time.Tense;
 import nars.time.TimeGraph;
 import nars.truth.Truth;

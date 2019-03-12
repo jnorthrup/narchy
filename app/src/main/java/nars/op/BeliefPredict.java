@@ -9,7 +9,7 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.control.channel.BufferedCauseChannel;
 import nars.task.signal.SignalTask;
 import nars.term.Term;

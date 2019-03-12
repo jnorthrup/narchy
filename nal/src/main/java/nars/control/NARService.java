@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class NARService extends Service<NAR> implements TermedDelegate {
 
+
     static final Logger logger = LoggerFactory.getLogger(NARService.class);
 
     public final Term id;
@@ -57,11 +58,10 @@ public class NARService extends Service<NAR> implements TermedDelegate {
 
         this.nar = nar;
 
-        on(nar.eventClear.on(n -> clear()));
-
         starting(nar);
-
     }
+
+
 
     @Override
     protected final void stop(NAR nar) {
@@ -71,13 +71,6 @@ public class NARService extends Service<NAR> implements TermedDelegate {
         stopping(nar);
 
         logger.debug("stop {}", id);
-    }
-
-    /**
-     * soft-reset signal to vountarily and quickly vacuum state
-     */
-    public void clear() {
-
     }
 
 

@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 /**
  * notifies subscribers when a value is emitted (publisher)
  */
-public interface Topic<X> {
+public interface Topic<X> extends Iterable<Consumer<X>> {
 
     void enable(Consumer<X> o);
 
@@ -32,18 +32,20 @@ public interface Topic<X> {
 
 
     static Offs all(Object obj, BiConsumer<String /* fieldName*/, Object /* value */> f) {
-        return all(obj, f, (key)->true);
+        return all(obj, f, (key) -> true);
     }
 
-    /** warning this could grow large TODO use a soft cache */
-    Map<Class,Field[]> fieldCache = new ConcurrentHashMap();
+    /**
+     * warning this could grow large TODO use a soft cache
+     */
+    Map<Class, Field[]> fieldCache = new ConcurrentHashMap();
 
     static void each(Class c, Consumer<Field /* fieldName*/> f) {
         /** TODO cache the fields because reflection may be slow */
 
 
         for (Field field : fieldCache.computeIfAbsent(c, (cc) ->
-            Stream.of(cc.getFields()).filter(x -> x.getType().equals(Topic.class)).toArray(Field[]::new)
+                Stream.of(cc.getFields()).filter(x -> x.getType().equals(Topic.class)).toArray(Field[]::new)
         )) {
             f.accept(field);
         }
@@ -51,22 +53,22 @@ public interface Topic<X> {
     }
 
 
-    /** registers to all public Topic fields in an object
+    /**
+     * registers to all public Topic fields in an object
      * BiConsumer<String  fieldName, Object  value >
-     * */
+     */
     static Offs all(Object obj, BiConsumer<String, Object> f, Predicate<String> includeKey) {
 
         Offs s = new Offs();
 
         each(obj.getClass(), (field) -> {
             String fieldName = field.getName();
-            if (includeKey!=null && !includeKey.test(fieldName))
+            if (includeKey != null && !includeKey.test(fieldName))
                 return;
 
             try {
                 Topic t = ((Topic) field.get(obj));
 
-                
 
                 s.add(
                         t.on((nextValue) -> f.accept(
@@ -75,7 +77,7 @@ public interface Topic<X> {
                         )));
 
             } catch (IllegalAccessException e) {
-                f.accept( fieldName, e);
+                f.accept(fieldName, e);
             }
 
         });
@@ -85,18 +87,19 @@ public interface Topic<X> {
     }
 
 
-
-    /** TODO rename to 'out' to match Streams api */
+    /**
+     * TODO rename to 'out' to match Streams api
+     */
     void emit(X arg);
 
     default Off on(long minUpdatePeriodMS, Consumer<X> o) {
         if (minUpdatePeriodMS == 0)
             return on(o);
-        return on(System::currentTimeMillis, ()->minUpdatePeriodMS, o);
+        return on(System::currentTimeMillis, () -> minUpdatePeriodMS, o);
     }
 
     default Off on(LongSupplier time, LongSupplier minUpdatePeriod, Consumer<X> o) {
-        AtomicLong lastUpdate = new AtomicLong(time.getAsLong() - minUpdatePeriod.getAsLong() );
+        AtomicLong lastUpdate = new AtomicLong(time.getAsLong() - minUpdatePeriod.getAsLong());
         return on((x) -> {
             long now = time.getAsLong();
             if (now - lastUpdate.get() >= minUpdatePeriod.getAsLong()) {
@@ -111,24 +114,16 @@ public interface Topic<X> {
     }
 
     default Off on(Runnable o) {
-        return on((ignored)->o.run());
+        return on(new ConsumerAdapter<>(o));
     }
 
     default Off onWeak(Consumer<X> o) {
         return new AbstractOff.Weak<>(this, o);
     }
+
     default Off onWeak(Runnable o) {
-        return onWeak((ignored)->o.run());
+        return onWeak(new ConsumerAdapter<>(o));
     }
-
-
-
-
-
-
-
-
-
 
 
     int size();
@@ -140,18 +135,6 @@ public interface Topic<X> {
     void emitAsyncAndWait(X inputted, Executor e) throws InterruptedException;
 
     void emitAsync(X inputted, Executor e, Runnable onFinish);
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

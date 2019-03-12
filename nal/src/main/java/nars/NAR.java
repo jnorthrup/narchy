@@ -1,6 +1,7 @@
 package nars;
 
 
+import com.google.common.collect.Streams;
 import com.google.common.primitives.Longs;
 import jcog.Texts;
 import jcog.Util;
@@ -30,6 +31,7 @@ import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
 import nars.eval.Evaluator;
 import nars.eval.Facts;
+import nars.exe.Causable;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.index.concept.ConceptIndex;
@@ -37,7 +39,6 @@ import nars.io.IO;
 import nars.link.Activate;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
-import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
@@ -47,8 +48,13 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.time.ScheduledTask;
 import nars.time.Tense;
 import nars.time.Time;
+import nars.time.event.AtClear;
+import nars.time.event.AtCycle;
+import nars.time.event.DurService;
+import nars.time.event.InternalEvent;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.Timed;
@@ -68,6 +74,7 @@ import java.util.Set;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -147,21 +154,19 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.exe = exe;
 
-
         services = new Services<>(this, exe);
 
         this.conceptBuilder = conceptBuilder;
-
         concepts.start(this);
-        Builtin.init(this);
 
         this.emotion = new Emotion(this);
 
+        Builtin.init(this);
+
         on(this.attn);
 
-
-
         this.loop = new NARLoop(this);
+
         exe.start(this);
     }
 
@@ -947,13 +952,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * schedule a task to be executed no sooner than a given NAR time
      */
     public final void runAt(long whenOrAfter, Runnable then) {
-//        if (whenOrAfter <= time())
-//            run(then);
-//        else
         time.runAt(whenOrAfter, then);
     }
 
-    public final void runAt(AbstractTask.ScheduledTask t) {
+    public final void runAt(ScheduledTask t) {
         time.runAt(t);
     }
 
@@ -962,7 +964,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * after the end of the current frame before the next frame.
      */
     public final void runLater(Runnable t) {
-        time.runAt(time(), t);
+        runAt(time(), t);
     }
 
     /**
@@ -1528,6 +1530,31 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public final Task wants(Term content, long start, long end) {
         return answer(content, GOAL, start, end);
+    }
+
+    /** stream of all currently registered internal events */
+    public Stream<? extends InternalEvent> at() {
+        return Streams.concat(
+            Streams.stream(eventCycle).map(AtCycle::new),
+            Streams.stream(eventClear).map(AtClear::new),
+//            causes.stream(),
+            services.stream()
+                .map(s -> {
+                    if (s instanceof DurService)
+                        return ((DurService)s).event();
+                    else if (s instanceof Causable)
+                        return ((Causable)s).event();
+                    else
+                        return null;
+                })
+                .filter(Objects::nonNull),
+            time.events()
+                .filter(t -> !(t instanceof DurService.AtDur)) //HACK (these are included in service's events)
+        );
+    }
+
+    public Map<Term,List<InternalEvent>> atMap() {
+        return at().collect(Collectors.groupingBy(InternalEvent::category));
     }
 
     private class TaskChannel extends CauseChannel<ITask> {

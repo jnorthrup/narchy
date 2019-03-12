@@ -9,7 +9,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanBooleanPredicate;
 import org.junit.jupiter.api.Test;

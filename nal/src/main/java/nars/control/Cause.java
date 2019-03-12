@@ -3,6 +3,9 @@ package nars.control;
 import jcog.Util;
 import jcog.math.RecycledSummaryStatistics;
 import jcog.pri.ScalarValue;
+import nars.$;
+import nars.term.Term;
+import nars.time.event.InternalEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -24,7 +27,7 @@ import static java.util.stream.Collectors.toList;
  *
  * https://cogsci.indiana.edu/pub/parallel-terraced-scan.pdf
  */
-public class Cause implements Comparable<Cause> {
+public class Cause extends InternalEvent implements Comparable<Cause> {
 
     /**
      * current scalar utility estimate for this cause's support of the current MetaGoal's.
@@ -80,11 +83,16 @@ public class Cause implements Comparable<Cause> {
 
     public Cause(short id, @Nullable Object name) {
         this.id = id;
-        this.name = name != null ? name : id;
+        this.name = name != null ? name : this;
         credit = new Traffic[MetaGoal.values().length];
         for (int i = 0; i < credit.length; i++) {
             credit[i] = new Traffic();
         }
+    }
+
+    @Override
+    public Term term() {
+        return $.identity(name);
     }
 
     @Override

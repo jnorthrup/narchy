@@ -4,9 +4,9 @@ import com.google.common.collect.TreeBasedTable;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
-import nars.control.DurService;
 import nars.control.NARService;
 import nars.term.Term;
+import nars.time.event.DurService;
 import nars.truth.Truth;
 import nars.truth.util.TruthAccumulator;
 import org.eclipse.collections.api.tuple.Pair;
@@ -42,26 +42,22 @@ public class Vocalization extends NARService {
 
     @Override
     protected void starting(NAR nar) {
-        //nar.runLater(()->{
-            on( DurService.on(nar, ()->{
-                energy = Math.min(1f, energy + 1f/(this.durationsPerWord));
-                if (energy >= 1f) {
-                    energy = 0;
-                    next();
-                }
-            }));
-        //});
+        on(
+                DurService.on(nar, () -> {
+                    energy = Math.min(1f, energy + 1f / (this.durationsPerWord));
+                    if (energy >= 1f) {
+                        energy = 0;
+                        next();
+                    }
+                }),
+                nar.eventClear.on(this::clear)
+        );
+
     }
 
     public void speak(@Nullable Term word, long when, @Nullable Truth truth) {
         if (word == null)
             return;
-
-        
-
-
-
-
 
 
 //        if (when < nar.time() - nar.dur() * durationsPerWord) {
@@ -83,8 +79,7 @@ public class Vocalization extends NARService {
 
     }
 
-    @Override
-    public void clear() {
+    private void clear() {
         synchronized (vocalize) {
             vocalize.clear();
         }
@@ -92,22 +87,22 @@ public class Vocalization extends NARService {
 
     public boolean next() {
 
-        
+
         float dur = nar.dur() * durationsPerWord;
         long now = nar.time();
         long startOfNow = now - (int) Math.ceil(dur);
-        long endOfNow = now + (int)Math.floor(dur);
+        long endOfNow = now + (int) Math.floor(dur);
 
 
         FasterList<Pair<Term, Truth>> pending = new FasterList<>(0);
         synchronized (vocalize) {
-            
+
 
             SortedSet<Long> tt = vocalize.rowKeySet().headSet(endOfNow);
 
             if (!tt.isEmpty()) {
                 LongArrayList ll = new LongArrayList(tt.size());
-                tt.forEach(ll::add); 
+                tt.forEach(ll::add);
 
                 ll.forEach(t -> {
                     Set<Map.Entry<Term, TruthAccumulator>> entries = vocalize.row(t).entrySet();
@@ -126,32 +121,28 @@ public class Vocalization extends NARService {
             return true;
 
 
-        
         Term spoken = decide(pending);
-        if (spoken!=null)
+        if (spoken != null)
             speak.accept(spoken);
-
-
-
-
-
-
 
 
         return true;
     }
 
-    /** default greedy decider by truth expectation */
-    @Nullable private Term decide(FasterList<Pair<Term, Truth>> pending) {
-        return pending.max((a,b)->{
-           float ta = a.getTwo().expectation();
-           float tb = b.getTwo().expectation();
-           int tab = Float.compare(ta, tb);
-           if (ta > tb) {
-               return tab;
-           } else {
-               return a.getOne().compareTo(b.getOne());
-           }
+    /**
+     * default greedy decider by truth expectation
+     */
+    @Nullable
+    private Term decide(FasterList<Pair<Term, Truth>> pending) {
+        return pending.max((a, b) -> {
+            float ta = a.getTwo().expectation();
+            float tb = b.getTwo().expectation();
+            int tab = Float.compare(ta, tb);
+            if (ta > tb) {
+                return tab;
+            } else {
+                return a.getOne().compareTo(b.getOne());
+            }
         }).getOne();
     }
 }

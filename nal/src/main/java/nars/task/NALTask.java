@@ -10,6 +10,7 @@ import nars.Task;
 import nars.control.CauseMerge;
 import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.time.When;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,14 @@ public abstract class NALTask extends UnitPri implements Task {
     public long creation;
     private /*volatile*/ short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
     private volatile boolean cyclic;
+
+    public static NALTask the(Term c, byte punct, Truth tr, When when) {
+        return the(c, punct, tr, when.nar.time(), when.start, when.end, when.newStamp());
+    }
+
+    public static NALTask the(Term c, byte punct, Truth tr, When when, long[] evidence) {
+        return the(c, punct, tr, when.nar.time(), when.start, when.end, evidence);
+    }
 
     public static NALTask the(Term c, byte punct, Truth tr, long creation, long start, long end, long[] evidence) {
         if (start == ETERNAL) {

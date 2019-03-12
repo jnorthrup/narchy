@@ -2,7 +2,7 @@ package nars.gui;
 
 import jcog.event.Off;
 import nars.NAR;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.AbstractTriggeredSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;

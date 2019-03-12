@@ -26,6 +26,7 @@ import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -104,16 +105,18 @@ public interface TaskLink extends UnitPrioritizable {
      */
     byte priPunc(Random rng);
 
-    default byte puncSample(Random rng) {
+    default byte punc(Random rng) {
         return priPunc(rng);
     }
 
-    @Nullable default /* final */Task get(long start, long end, NAR n) {
-        return get(puncSample(n.random()), start, end, n);
+    @Nullable default /* final */Task get(When when) {
+        return get(punc(when.nar.random()), when);
     }
 
-    @Nullable default Task get(byte punc, long start, long end, NAR n) {
+    @Nullable default Task get(byte punc, When when) {
         Term x = source();
+
+        NAR n = when.nar;
 
         boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
         Concept c =
@@ -127,16 +130,16 @@ public interface TaskLink extends UnitPrioritizable {
             TaskTable table = c.table(punc);
             Task y;
             if (beliefOrGoal) {
-                y = table.match(start, end, x, 0 /*n.dur()*/, n);
+                y = table.match(when, null);
             } else {
-                y = table.sample(start, end, x, n);
+                y = table.sample(when, null, null);
             }
 
             if (y == null) {
                 if (!beliefOrGoal) {
                     //form question
                     if (Task.validTaskTerm(x, punc, true)) {
-                        y = NALTask.the(x, punc, null, n.time(), start, end, new long[]{n.time.nextStamp()});
+                        y = NALTask.the(x, punc, null, when);
                         y.pri(priPunc(punc));
                     }
                 }

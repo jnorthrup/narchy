@@ -28,7 +28,7 @@ import jcog.pri.Prioritized;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.control.NARService;
 import nars.link.Activate;
 import nars.op.language.NARHear;

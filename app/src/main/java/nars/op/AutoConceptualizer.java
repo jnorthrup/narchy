@@ -7,7 +7,7 @@ import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.AbstractSensor;
-import nars.control.DurService;
+import nars.time.event.DurService;
 import nars.control.channel.ConsumerX;
 import nars.table.BeliefTable;
 import nars.task.ITask;
