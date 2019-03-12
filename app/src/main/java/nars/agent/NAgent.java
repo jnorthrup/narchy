@@ -518,7 +518,7 @@ public class NAgent extends NARService implements NSense, NAct {
             long prev = this.now;
             assert(prev!=ETERNAL);
 
-            if (now < prev)
+            if (now <= prev)
                 return; //too learly
 
             long next =

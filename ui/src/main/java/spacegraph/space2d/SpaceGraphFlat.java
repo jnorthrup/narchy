@@ -1,15 +1,16 @@
 package spacegraph.space2d;
 
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.finger.impl.NewtMouseFinger;
+import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.hud.ZoomOrtho;
-import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.JoglSpace;
@@ -17,6 +18,7 @@ import spacegraph.video.JoglSpace;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
@@ -28,14 +30,24 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
     private final Finger finger;
     private final NewtKeyboard keyboard;
 
-    public final Stacking layers = new Stacking();
-    private final ZoomOrtho contentZoomed;
+    public final Stacking layers = new Stacking() {
+        @Override protected void compileChildren(SurfaceRender r) {
+            forEach(c -> {
+                float w = display.getWidth(), h = display.getHeight();
+                r.on((g,rr)-> {
+                    rr.pw = w; rr.ph = h;
+                    //rr.set(0.5f, 0.5f, 1, 1);
+                    g.glLoadIdentity();
+                });
+                c.recompile(r);
+            });
+        }
+    };
 
-    public SpaceGraphFlat(Surface content) {
+    public SpaceGraphFlat(Surface _content) {
         super();
 
-        layers.showing = true; //HACK
-        layers.clipBounds = false;
+        layers.showing = true; layers.clipBounds = false; //HACK
 
         finger = new NewtMouseFinger(this);
 
@@ -43,41 +55,25 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
 
 
 
-        contentZoomed = new ZoomOrtho(this, content, finger, keyboard);
-
-//        MutableListContainer hud = new MutableListContainer() {
-//
-//            @Override
-//            protected void paintIt(GL2 gl, SurfaceRender r) {
-//                gl.glPushMatrix();
-//                gl.glLoadIdentity();
-//            }
-//
-//
-//            @Override
-//            protected void compileAbove(SurfaceRender r) {
-//                r.on(GLMatrixFunc::glPopMatrix);
-//            }
-//
-//        };
-
-        layers.add(contentZoomed);
-        layers.add(finger.zoomBoundsSurface(contentZoomed.cam));
-        layers.add(finger.cursorSurface());
-//        //addOverlay(this.keyboard.keyFocusSurface(cam));
-//        layers.add((Surface) hud);
-
-//        {
-//            Menu menu = new Menu();
-//            menu.pos(0, 0, 200, 200);
-//            hud.add(menu);
-//        }
-
 
         later(() -> {
             display.window.setPointerVisible(false); //HACK
             layers.pos(0, 0, display.getWidth(), display.getHeight());
             layers.start(this);
+
+            ZoomOrtho content = new ZoomOrtho(this, _content, finger, keyboard);
+            layers.add(content);
+            layers.add(finger.zoomBoundsSurface(content.cam));
+            layers.add(finger.cursorSurface());
+//        //addOverlay(this.keyboard.keyFocusSurface(cam));
+//        layers.add((Surface) hud);
+
+            {
+                Menu menu = new Menu();
+                layers.add(menu);
+            }
+
+            layers.layout();
         });
     }
 
@@ -97,7 +93,14 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
 
         gl.glDisable(GL2.GL_DEPTH_TEST);
 
-        rendering.render(w, h, gl);
+        gl.glViewport(0, 0, w, h);
+        gl.glMatrixMode(GL_PROJECTION);
+        gl.glLoadIdentity();
+
+        gl.glOrtho(0, w, 0, h, -1.5, 1.5);
+        gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+
+        rendering.render(gl);
         rendering.clear();
 
         gl.glEnable(GL2.GL_DEPTH_TEST);
@@ -158,18 +161,33 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
         return this;
     }
 
-    class Menu extends Widget {
+    class Menu extends Bordering {
 
         //TODO different modes, etc
         public Menu() {
             //animate(new DelayedHover(finger));
-
-            set(new Gridding(
+            set(NW, new Gridding(
+                    new PushButton("X"),
+                    new PushButton("Y"),
+                    new PushButton("Z")
+            ));
+            set(SW, new Gridding(
+                    new PushButton("X"),
+                    new PushButton("Y"),
+                    new PushButton("Z")
+            ));
+            set(NE, new Gridding(
+                    new PushButton("X"),
+                    new PushButton("Y"),
+                    new PushButton("Z")
+            ));
+            set(SE, new Gridding(
                     new PushButton("X"),
                     new PushButton("Y"),
                     new PushButton("Z")
             ));
         }
+
     }
 
 }

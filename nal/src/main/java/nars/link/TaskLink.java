@@ -127,7 +127,7 @@ public interface TaskLink extends UnitPrioritizable {
             TaskTable table = c.table(punc);
             Task y;
             if (beliefOrGoal) {
-                y = table.match(start, end, x, n.dur(), n);
+                y = table.match(start, end, x, 0 /*n.dur()*/, n);
             } else {
                 y = table.sample(start, end, x, n);
             }

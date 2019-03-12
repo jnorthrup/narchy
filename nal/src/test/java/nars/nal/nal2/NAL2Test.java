@@ -244,7 +244,7 @@ public class NAL2Test extends NALTest {
     void set_operations() {
 
         test
-                .termVolMax(6)
+                .termVolMax(7)
                 .believe("<planetX --> {Mars,Pluto,Venus}>", 0.9f, 0.9f)
                 .believe("<planetX --> {Pluto,Saturn}>", 0.7f, 0.9f)
                 .mustBelieve(cycles, "<planetX --> {Mars,Pluto,Saturn,Venus}>", 0.97f, 0.81f)

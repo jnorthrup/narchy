@@ -36,19 +36,19 @@ abstract public class BufferedBag<X,B,Y extends Prioritizable> extends ProxyBag<
 
         if (busy.compareAndSet(false,true)) {
             try {
-                synchronized (bag) {
+                //synchronized (bag) {
 
                     bag.commit(update);
 
                     if (!pre.isEmpty()) {
                         pre.update(this::putInternal);
-                        //bag.commit(null); //force sort after
+                        bag.commit(null); //force sort after
                     }
 
 //                    buffer.update(this::putInternal);
 //                    bag.commit(update);
 
-                }
+                //}
             } finally {
                 busy.set(false);
             }

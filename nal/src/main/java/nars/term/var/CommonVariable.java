@@ -8,8 +8,11 @@ import nars.subterm.AnonVector;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
+import nars.term.anon.AnonID;
 import nars.unify.Unify;
+import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 
+import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -17,8 +20,8 @@ import static nars.term.atom.Bool.Null;
 
 public final class CommonVariable extends UnnormalizedVariable {
 
-    /** stored sorted */
-    public final AnonVector vars;
+    /** provided by a sorted AnonVector */
+    public final short[] vars;
 
     public static Variable common(Variable A, Variable B) {
         int cmp = A.compareTo(B);
@@ -37,11 +40,11 @@ public final class CommonVariable extends UnnormalizedVariable {
         if (!ac && !bc) {
             z = new AnonVector(Terms.sorted(A, B));
         } else {
-            TreeSet<Term> t = new TreeSet<Term>();
+            ShortHashSet t = new ShortHashSet();
 
             if (ac && bc) {
-                ((CommonVariable) A).vars.forEach(t::add);
-                ((CommonVariable) B).vars.forEach(t::add);
+                t.addAll(((CommonVariable) A).vars);
+                t.addAll(((CommonVariable) B).vars);
             } else {
 
                 CommonVariable C;
@@ -53,20 +56,24 @@ public final class CommonVariable extends UnnormalizedVariable {
                     C = ((CommonVariable) B);
                     V = A;
                 }
-                C.vars.forEach(t::add);
-                if (!t.add(V))
+
+                t.addAll(C.vars);
+
+                if (!t.add(AnonID.id(V)))
                     return C; //subsumed
             }
 
             if (t.size() <= 2)
                 throw new WTF();
 
-            z = new AnonVector(t.toArray(Op.EmptyTermArray));
+            short[] tt = t.toSortedArray();
 
-            if (ac && ((CommonVariable)A).vars.equals(z))
+            if (ac && Arrays.equals(tt, ((CommonVariable)A).vars))
                 return A; //subsumed
-            if (bc && ((CommonVariable)B).vars.equals(z))
+            if (bc && Arrays.equals(tt, ((CommonVariable)B).vars))
                 return B; //subsumed
+
+            z = new AnonVector(tt);
 
         }
         return new CommonVariable(op, z);
@@ -79,7 +86,7 @@ public final class CommonVariable extends UnnormalizedVariable {
             for (Term t : vars)
                 if (!t.the()) throw new WTF();
         }
-        this.vars = vars;
+        this.vars = vars.subterms;
                 //commonVariableKey(type, x, y) /* include trailing so that if a common variable gets re-commonalized, it wont become confused with repeats in an adjacent variable */);
     }
 
@@ -98,15 +105,15 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     @Override
     public boolean the() {
-        for (Term v : vars)
-            if (!v.the())
-                return false;
+//        for (Term v : vars)
+//            if (!v.the())
+//                return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return key(op(), vars);
+        return key(op(), new AnonVector(vars));
     }
 
 

@@ -64,13 +64,6 @@ public interface Variable extends Atomic {
 
             if (y instanceof Variable) {
 
-                boolean xCommon = x instanceof CommonVariable, yCommon = y instanceof CommonVariable;
-                if (yCommon && !xCommon && ((CommonVariable) y).vars.contains(x))
-                    return true; //already contained
-
-                if (xCommon && !yCommon && ((CommonVariable) x).vars.contains(y))
-                    return true; //already contained
-
                 if (u.commonVariables && u.varCommon(xOp) && u.varCommon(yOp))
                     return CommonVariable.unify((Variable) x, (Variable) y, u);
                 else if (yOp.id < xOp.id && u.varReverse(yOp))

@@ -1,7 +1,6 @@
 package spacegraph.space2d;
 
 import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.data.list.FasterList;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
@@ -9,8 +8,6 @@ import spacegraph.space2d.hud.Ortho;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-
-import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
 /** surface rendering context */
 public class SurfaceRender {
@@ -46,17 +43,11 @@ public class SurfaceRender {
         main.clear();
     }
 
-    public final void render(int w, int h, GL2 gl) {
+    public final void render(GL2 gl) {
 //        float ss = (float) Math.pow(2, Math.random() + 1);
 //        gl.glScalef(ss, ss, 1);
         //gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
         main.forEachWith((rr,ggl) -> {
-            ggl.glViewport(0, 0, w, h);
-            ggl.glMatrixMode(GL_PROJECTION);
-            ggl.glLoadIdentity();
-
-            ggl.glOrtho(0, w, 0, h, -1.5, 1.5);
-            ggl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 
             rr.accept(ggl, this);
 

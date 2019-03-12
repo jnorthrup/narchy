@@ -170,6 +170,7 @@ public class ConjMatch {
                 if (eVar || xx.hasAny(varBits)) {
 
                     s.reset(varBits, false);
+                    s.setTTL(ttl);
 
                     Term yy = s.unifySubst(xx, event, xx, varBits, false);
                     if (yy!=null) {

@@ -1,6 +1,5 @@
 package nars.truth.polation;
 
-import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.truth.PreciseTruth;
@@ -47,32 +46,32 @@ public class LinearTruthProjection extends TruthProjection {
                 return null;
         }
 
-        double wFreqSum = 0, wSum = 0, eSum = 0;
+        double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
 //        double wFreqPos = 0, wFreqNeg = 0;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
             TaskComponent x = get(i);
 
-            float e = x.evi;
+            double e = x.evi;
             if (e!=e)
                 continue;
 
+            e *= eviFactor;
             eSum += e;
 
-            float w = e;
+            //float w = e;
             //e * Math.abs(f-0.5f)*2f; /* polarity weighting */
             //e * (0.5f + Math.abs(f-0.5f)); /* polarity partial weighting */
             //e * (1 + (2*Math.abs(f-0.5f))); /* 2:1 compression polarity partial weighting */
-            wSum += w;
+            //wSum += w;
 
             double f = x.task().freq(start, end);
-            wFreqSum += w * f;
+            wFreqSum += e * f;
 //            if (f >= 0.5f) wFreqPos += w * (1-f)*2; else wFreqNeg += w * (0.5 - f)*2;
         }
 
-        if (wSum < Float.MIN_NORMAL)
-            return null;
+//        if (wSum < Float.MIN_NORMAL)
+//            return null;
 
-        eSum *= eviFactor;
         if (eSum < eviMin)
             return null;
 
@@ -82,9 +81,13 @@ public class LinearTruthProjection extends TruthProjection {
         } else {
             long range = 1 + (end - start);
             eAvg = eSum / range;
+
+            if (eAvg < eviMin)
+                return null;
         }
 
-        double F = (float)wFreqSum / wSum;
+
+        double F = (float)wFreqSum / eSum;
 
 //        double F2 = (((wFreqPos - wFreqNeg) / (wFreqPos+wFreqNeg)/ wSum + 1)/2 ) ;
 //        if (!Util.equals(F,F2))

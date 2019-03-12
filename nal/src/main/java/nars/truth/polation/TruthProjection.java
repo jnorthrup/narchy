@@ -7,6 +7,7 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
+import jcog.math.Longerval;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -233,7 +234,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     private void sortByEvidence() {
-        sortThisByFloat(tc -> -tc.evi); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
+        if (size() > 1)
+            sortThisByFloat(tc -> (tc.evi==tc.evi) ? -tc.evi : Float.POSITIVE_INFINITY); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
     }
 
 //    /**
@@ -442,8 +444,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             if (start == ETERNAL) {
                 //override eternal range with the calculated union
             } else {
-                if (tCrop && end-start>1) {
-                    //crop start/stop to narrower window containing the tasks
+                if (tCrop && Longerval.intersects(se[0], se[1], start, end)) {
+                    //crop start/stop to narrower window intersecting/containing the task union
                     se[0] = Math.max(start, se[0]);
                     se[1] = Math.max(se[0], Math.min(end, se[1]));
                     assert(se[1] >= se[0]);

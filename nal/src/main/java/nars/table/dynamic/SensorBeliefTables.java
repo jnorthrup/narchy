@@ -73,7 +73,7 @@ public class SensorBeliefTables extends BeliefTables {
         } else {
 
             if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
-                if (!x.isEternal() && series.absorbNonSignal(x)) {
+                if (!x.isEternal() && series.absorbNonSignal(x, series.start(), series.seriesEndMinDur(n))) {
                     r.reject();
                     return;
                 }
@@ -102,7 +102,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
         if (x!=null) {
-            series.clean(tables);
+            series.clean(tables, n);
             x.cause(new short[] { cause });
             remember(x, pri, n);
         } else {

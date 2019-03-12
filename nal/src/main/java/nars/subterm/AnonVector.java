@@ -22,12 +22,10 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
     /*@Stable*/
     public final short[] subterms;
 
-    private AnonVector(short[] s) {
+    public AnonVector(short[] s) {
         super(AnonID.subtermMetadata(s));
         this.subterms = s;
-        this.normalized = preNormalize();
     }
-
 
     /**
      * assumes the array contains only AnonID instances
@@ -137,7 +135,11 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
                 for (int i = 0, aLength = a.length; i < aLength; i++) //replace negative only
                     if (a[i] == fid) a[i] = tid;
             }
-            return new AnonVector(a);
+
+            AnonVector v = new AnonVector(a);
+            v.normalized = preNormalize();
+            return v;
+
         } else {
             int n = subs();
             Term[] tt = new Term[n];

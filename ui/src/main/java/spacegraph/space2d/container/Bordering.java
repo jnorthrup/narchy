@@ -152,6 +152,12 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
                     x2 = W;
                     y2 = H;
                     break;
+                case NW:
+                    x1 = 0;
+                    y1 = H - borderNorth * h2;
+                    x2 = borderWest * w2;
+                    y2 = H;
+                    break;
                 case SW:
                     x1 = 0;
                     x2 = borderWest * w2;

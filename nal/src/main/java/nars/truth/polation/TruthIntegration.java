@@ -28,9 +28,9 @@ public class TruthIntegration {
         return evi(t, t.start(), t.end(), dur);
     }
 
-    public static float evi(Task t, long[] startEnd, int dur) {
-        return evi(t, startEnd[0], startEnd[1], dur);
-    }
+//    public static float evi(Task t, long[] startEnd, int dur) {
+//        return evi(t, startEnd[0], startEnd[1], dur);
+//    }
 
     /**
      * convenience method for selecting evidence integration strategy

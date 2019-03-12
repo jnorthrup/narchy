@@ -401,7 +401,7 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(28);
 
 
-        n.attn.activeCapacity.set(512);
+        n.attn.activeCapacity.set(1024);
 
 
         n.beliefPriDefault.set(0.01f);
@@ -456,7 +456,7 @@ abstract public class NAgentX extends NAgent {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        TaskBuffer.BagTaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 0.5f);
+        TaskBuffer.BagTaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 0.25f);
 
         BatchDeriver bd6_actWhen = new BatchDeriver(Derivers.nal(n, 6, 6,
                 "motivation.nal"), injection);
@@ -472,10 +472,11 @@ abstract public class NAgentX extends NAgent {
                 2, 4,
                 "nal4.sect.nal"),
                 injection);
-        BatchDeriver bdExtra = new BatchDeriver(Derivers.nal(n,
-                6, 8,
-                "relation_introduction.nal", "motivation.nal"),
-                injection);
+
+        BatchDeriver bd6_8 = new BatchDeriver(Derivers.nal(n, 6, 8), injection);
+
+        BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n, "relation_introduction.nal", "motivation.nal"), injection);
+
 
 //        inputInjectionPID(injection, n);
 

@@ -151,6 +151,10 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 //                }
 //            }
 
+        if (exactRange) {
+            if ((e < minT) || (s > maxT)) //disjoint
+                return true; //nothing
+        }
 
         if (minT != ETERNAL && minT != TIMELESS) {
             boolean point = maxT == minT;

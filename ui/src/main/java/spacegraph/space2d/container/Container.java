@@ -83,11 +83,15 @@ abstract public class Container extends Surface {
 
             r.on(this::paintIt); //TODO if transparent this doesnt need rendered
 
-            forEach(c -> c.recompile(r));
+            compileChildren(r);
 
             compileAbove(r);
         }
 
+    }
+
+    protected void compileChildren(SurfaceRender r) {
+        forEach(c -> c.recompile(r));
     }
 
     protected void compileAbove(SurfaceRender r) {

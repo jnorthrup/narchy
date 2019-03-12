@@ -1764,7 +1764,7 @@ public enum Util {
     }
 
     public static void sleepNS(long remainingNanos) {
-        sleepNS(remainingNanos, 100 * 1000 /* uS */);
+        sleepNS(remainingNanos, 1 * 1000 );
     }
 
     public static void sleepNS(long remainingNanos, long thresholdNS) {

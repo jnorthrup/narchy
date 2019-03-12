@@ -1,6 +1,8 @@
 package nars.table.dynamic;
 
 import jcog.Util;
+import jcog.math.Longerval;
+import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.table.BeliefTable;
@@ -28,8 +30,6 @@ import static nars.time.Tense.ETERNAL;
 public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
     public final AbstractTaskSeries<T> series;
-
-
 
 
     public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
@@ -83,21 +83,21 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 //    }
 
 
-    public void clean(List<BeliefTable> tables) {
+    public void clean(List<BeliefTable> tables, NAR n) {
         if (!Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 
-        assert(beliefOrGoal);
+        assert (beliefOrGoal);
 
         long sStart = series.start(), e;
-        if (sStart != TIMELESS && (e = series.end()) != TIMELESS) {
+        if (sStart != TIMELESS && (e = seriesEndMinDur(n)) != TIMELESS) {
             long sEnd = e;
 
             List<Task> deleteAfter = new LinkedList();
             for (TaskTable b : tables) {
                 if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
                     b.forEachTask(sStart, sEnd, t -> {
-                        if (t.isDeleted() || absorbNonSignal(t)) {
+                        if (t.isDeleted() || absorbNonSignal(t, sStart, sEnd)) {
                             deleteAfter.add(t);
                         } else {
                             //System.out.println(t + " saved");
@@ -112,25 +112,32 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         }
     }
 
+    protected long seriesEndMinDur(NAR n) {
+        return series.end() - n.dur();
+    }
+
     /**
      * used for if you can cache seriesStart,seriesEnd for a batch of calls
      */
-    boolean absorbNonSignal(Task t) {
+    boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
 
 
-//        if (tStart != ETERNAL) {
+        long tStart = t.start();
+        if (tStart != ETERNAL) {
 //            if (seriesStart != TIMELESS && seriesEnd != TIMELESS /* allow prediction 'suffix' */) {
-//                if (seriesEnd >= tEnd) {
-//                //if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
+            long tEnd = t.end();
+            if (seriesEnd >= tEnd) {
+                if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
 
                     //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption
                     boolean seriesDefinedThere = !series.isEmpty(t);
 
                     return seriesDefinedThere;
 
-//                }
-//            }
-//        }
+                }
+            }
+        }
+        return false;
 
     }
 
@@ -153,6 +160,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     public final long start() {
         return series.start();
     }
+
     public final long end() {
         return series.end();
     }
@@ -188,7 +196,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             if (x instanceof SeriesTask) {
                 //TODO also involve Term?
                 Task xx = (Task) x;
-                if (hashCode()!=x.hashCode())
+                if (hashCode() != x.hashCode())
                     return false;
                 if (stamp()[0] == xx.stamp()[0] && start() == xx.start() && term().equals(xx.term()))
                     return true;

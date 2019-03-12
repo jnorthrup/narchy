@@ -204,7 +204,6 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
             this.transformed = transformed;
             this.result = null;
 
-
             unify(x, y);
 
             return result;
