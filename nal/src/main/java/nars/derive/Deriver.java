@@ -102,7 +102,7 @@ abstract public class Deriver extends Causable {
 
 
     @Override
-    protected final void next(NAR n, final BooleanSupplier kontinue) {
+    public final void next(NAR n, final BooleanSupplier kontinue) {
 
 
         derive(Derivation.derivation.get().next(this), kontinue);

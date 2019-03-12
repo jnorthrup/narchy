@@ -26,7 +26,7 @@ abstract public class Causable extends NARService {
 
     public final Can can;
 
-    final AtomicBoolean busy;
+    public final AtomicBoolean busy;
 
     private volatile long sleepUntil = TIMELESS;
     private volatile boolean sleeping;
@@ -64,7 +64,7 @@ abstract public class Causable extends NARService {
      * if false, allows multiple threads to execute this instance
      * otherwise it is like being synchronized
      */
-    protected boolean singleton() {
+    public boolean singleton() {
         return true;
     }
 
@@ -104,7 +104,7 @@ abstract public class Causable extends NARService {
      * this will remain true for the remainder of the cycle, so it can be
      * removed from the eligible execution list for the current cycle.
      */
-    protected abstract void next(NAR n, BooleanSupplier kontinue);
+    public abstract void next(NAR n, BooleanSupplier kontinue);
 
 
     /**

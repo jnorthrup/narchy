@@ -14,16 +14,16 @@ import java.util.function.BiConsumer;
 public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
 
     plus {
-        @Override float merge(float e, float i) {  return e + i; }
+        @Override public float merge(float e, float i) {  return e + i; }
     },
     minus {
-        @Override float merge(float e, float i) {  return e - i; }
+        @Override public float merge(float e, float i) {  return e - i; }
     },
     avg {
-        @Override float merge(float e, float i) {  return (e + i)/2; }
+        @Override public float merge(float e, float i) {  return (e + i)/2; }
     },
     and {
-        @Override float merge(float e, float i) {  return e * i; }
+        @Override public float merge(float e, float i) {  return e * i; }
 
         @Override
         protected boolean undelete() {
@@ -31,13 +31,13 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
         }
     },
     or {
-        @Override float merge(float e, float i) {  return Util.or(e, i); }
+        @Override public float merge(float e, float i) {  return Util.or(e, i); }
     },
     max {
-        @Override float merge(float e, float i) {  return e >= i ? e : i; }
+        @Override public float merge(float e, float i) {  return e >= i ? e : i; }
     },
     replace {
-        @Override float merge(float e, float i) {  return i; }
+        @Override public float merge(float e, float i) {  return i; }
 
         @Override
         protected boolean ignoreDeletedIncoming() {
@@ -52,7 +52,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
 
 
 
-    abstract float merge(float e, float i);
+    abstract public float merge(float e, float i);
 
     /**
      * merge 'incoming' budget (scaled by incomingScale) into 'existing'

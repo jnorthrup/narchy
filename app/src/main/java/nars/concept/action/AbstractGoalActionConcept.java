@@ -1,6 +1,7 @@
 package nars.concept.action;
 
 import jcog.data.list.FasterList;
+import jcog.math.FloatAveraged;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -85,10 +86,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return this;
     }
 
+
+    private final FloatAveraged DEXTERITY = new FloatAveraged(0.5f);
+    private transient float dexterity = 0;
+
     @Override
     public float dexterity() {
-        Truth t = this.actionDex;
-        return t != null ? w2cSafe(t.evi()) : 0;
+        return dexterity;
     }
 
 
@@ -203,6 +207,12 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         this.actionTruth = actionTruth(limit, prev, now, narDur, n);
 
+        {
+            //update dexterity
+            Truth t = this.actionDex;
+            float e = t != null ? w2cSafe(t.evi()) : 0;
+            dexterity = DEXTERITY.valueOf(e);
+        }
     }
 
     private Truth actionTruth(int limit, long prev, long now, int narDur, NAR n) {

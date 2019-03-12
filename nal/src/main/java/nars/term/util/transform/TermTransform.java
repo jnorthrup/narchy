@@ -7,7 +7,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
-import nars.unify.ellipsis.EllipsisMatch;
+import nars.term.var.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;

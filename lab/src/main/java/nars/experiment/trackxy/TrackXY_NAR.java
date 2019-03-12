@@ -12,7 +12,7 @@ import nars.agent.FrameTrigger;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
-import nars.exe.UniExec;
+import nars.exe.impl.UniExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
 import nars.index.concept.CaffeineIndex;

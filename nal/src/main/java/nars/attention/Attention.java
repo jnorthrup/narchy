@@ -3,7 +3,6 @@ package nars.attention;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.PriBuffer;
-import jcog.pri.ScalarValue;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
@@ -18,23 +17,20 @@ import nars.time.event.DurService;
 import java.util.Random;
 import java.util.function.Function;
 
-import static jcog.pri.op.PriMerge.plus;
-
 /** abstract attention economy model */
-public abstract class Attention extends DurService implements Sampler<TaskLink> {
+public class Attention extends DurService implements Sampler<TaskLink> {
 
-    public Forgetting forgetting;
-
+    public Forgetting forgetting = new Forgetting.AsyncForgetting();
     /**
      * short target memory, TODO abstract and remove
      */
     public TaskLinkBag active = null;
 
-    /**
-     * tasklink activation
-     */
-    @Deprecated
-    public final FloatRange activationRate = new FloatRange(1f, Param.tasklinkMerge == plus ? ScalarValue.EPSILON : 1, 1);
+//    /**
+//     * tasklink activation
+//     */
+//    @Deprecated
+//    public final FloatRange activationRate = new FloatRange(1f, Param.tasklinkMerge == plus ? ScalarValue.EPSILON : 1, 1);
 
     public final FloatRange forgetRate = new FloatRange(0.1f,  0, 1f /* 2f */);
 
@@ -52,30 +48,26 @@ public abstract class Attention extends DurService implements Sampler<TaskLink> 
     public DerivePri derivePri =
             //new DirectDerivePri();
             new DefaultDerivePri();
+            //new DefaultPuncWeightedDerivePri();
 
-    //new DefaultPuncWeightedDerivePri();
-
-
-    protected Attention(Forgetting forgetting) {
-        super();
-        this.forgetting = forgetting;
-    }
 
     @Override
     protected void starting(NAR nar) {
         super.starting(nar);
 
+        int c = activeCapacity.intValue();
         active = new TaskLinkBag(
-                new TaskLinkArrayBag(activeCapacity.intValue()),
-                //new TaskLinkHijackBag(activeCapacity.intValue(), 5),
-                forgetRate);
+                new TaskLinkArrayBag(c)
+                //new TaskLinkHijackBag(c, 5),
+        );
 
         active.setCapacity(activeCapacity.intValue());
 
         on(
                 nar.eventClear.on(active::clear),
-                nar.onCycle(active::forget),
-                nar.eventClear.on(active::clear)
+                nar.onCycle(() -> active.commit(
+                    forgetting.forget(active, 1f, forgetRate.floatValue()))
+                )
         );
 
     }

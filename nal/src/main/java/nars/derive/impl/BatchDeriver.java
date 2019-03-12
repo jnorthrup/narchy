@@ -1,19 +1,16 @@
 package nars.derive.impl;
 
 import jcog.math.IntRange;
-import jcog.pri.bag.Bag;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.Premise;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.link.TaskLink;
 import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import nars.time.When;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.BooleanSupplier;
 
 
@@ -39,12 +36,18 @@ public class BatchDeriver extends Deriver {
 
         int matchTTL = matchTTL(), deriveTTL = d.nar.deriveBranchTTL.intValue();
 
+        Collection<Premise> premises = d.premiseBuffer;
+
+        When w = When.now(nar);
+
         do {
 
-            Collection<Premise> pp = hypothesize(d);
-            if (!pp.isEmpty()) {
-                for (Premise p : pp)
+            hypothesize(w, premises, d);
+
+            if (!premises.isEmpty()) {
+                for (Premise p : premises)
                     p.derive(d, matchTTL, deriveTTL);
+                premises.clear();
             }
 
         } while (kontinue.getAsBoolean());
@@ -55,40 +58,22 @@ public class BatchDeriver extends Deriver {
     /**
      * forms premises
      */
-    private Collection<Premise> hypothesize(Derivation d) {
+    private void hypothesize(When w, Collection<Premise> target, Derivation d) {
 
+        int tlAttempts = termlinksPerTaskLink.intValue(); assert(tlAttempts > 0);
 
-        int tlAttempts = termlinksPerTaskLink.intValue();
-        if (tlAttempts == 0)
-            return List.of();
-
-        Collection<Premise> premises = d.premiseBuffer;
-        premises.clear();
-
-        Bag<TaskLink, TaskLink> tasklinks = nar.attn.active;
-
-//        tasklinks.print(); System.out.println();
-
-        long now = nar.time();
-        int dur = nar.dur();
-        long start = now - dur/2;
-        long end = now + dur/2;
-
-        When w = new When(start, end, dur, nar);
-
-        tasklinks.sample(d.random, tasklinksPerIteration.intValue(), tasklink->{
+        nar.attn.active.sample(d.random, tasklinksPerIteration.intValue(), tasklink->{
 
             for (int i = 0; i < tlAttempts; i++) {
                 Task task = tasklink.get(w);
                 if (task != null) {
                     Term term = tasklink.term(task, d);
                     if (term != null)
-                        premises.add(new Premise(task, term));
+                        target.add(new Premise(task, term));
                 }
             }
         });
 
-        return premises;
     }
 
 

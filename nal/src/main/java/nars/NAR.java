@@ -31,7 +31,6 @@ import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
 import nars.eval.Evaluator;
 import nars.eval.Facts;
-import nars.exe.Causable;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.index.concept.ConceptIndex;
@@ -51,10 +50,7 @@ import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
 import nars.time.Tense;
 import nars.time.Time;
-import nars.time.event.AtClear;
-import nars.time.event.AtCycle;
-import nars.time.event.DurService;
-import nars.time.event.InternalEvent;
+import nars.time.event.*;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.Timed;
@@ -1415,22 +1411,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             return c;
         }
     }
-//    @Nullable
-//    public final Concept activate(Termed t, float activationApplied) {
-//        return activate(t, activationApplied, false);
-//    }
-//    @Nullable
-//    public final Concept activate(Termed t, float activationApplied, boolean forceConceptualize) {
-//
-//        /** conceptualize regardless */
-//        Concept c = forceConceptualize ? conceptualize(t) : concept(t);
-//        if (c!=null && activationApplied >= 0) {
-//            concepts.activate(c, activationApplied);
-//        }
-//
-//        return c;
-//
-//    }
+
 
     public Stream<Service<NAR>> services() {
         return services.stream();
@@ -1524,32 +1505,25 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return new Facts(this, expMin, beliefsOrGoals);
     }
 
-    public final Task is(Term content, long start, long end) {
-        return answer(content, BELIEF, start, end);
-    }
+//    public final Task is(Term content, long start, long end) {
+//        return answer(content, BELIEF, start, end);
+//    }
 
-    public final Task wants(Term content, long start, long end) {
-        return answer(content, GOAL, start, end);
-    }
+//    public final Task wants(Term content, long start, long end) {
+//        return answer(content, GOAL, start, end);
+//    }
 
     /** stream of all currently registered internal events */
     public Stream<? extends InternalEvent> at() {
         return Streams.concat(
+            //TODO Streams.stream(eventTask).map(t -> ), // -> AtTask events
             Streams.stream(eventCycle).map(AtCycle::new),
             Streams.stream(eventClear).map(AtClear::new),
-//            causes.stream(),
             services.stream()
-                .map(s -> {
-                    if (s instanceof DurService)
-                        return ((DurService)s).event();
-                    else if (s instanceof Causable)
-                        return ((Causable)s).event();
-                    else
-                        return null;
-                })
-                .filter(Objects::nonNull),
+                .map((s) -> ((NARService)s).event()).filter(Objects::nonNull),
             time.events()
                 .filter(t -> !(t instanceof DurService.AtDur)) //HACK (these are included in service's events)
+//            causes.stream(),
         );
     }
 
@@ -1591,20 +1565,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                         } else if (currentCause[0] == ci) {
                             //replace with shared instance
                             t.cause(uniqueCause);
+                        } else {
+                            t.cause(append(currentCause, tcl));
                         }
                         break;
                     default:
-
-                        int cc = Param.causeCapacity.intValue();
-                        short[] tc = Arrays.copyOf(currentCause, Math.min(cc, tcl + 1));
-                        if (tc.length == cc) {
-                            //shift
-                            System.arraycopy(tc, 1, tc, 0, tc.length - 1);
-                            tc[tc.length - 1] = ci;
-                        } else {
-                            tc[tcl] = ci;
-                        }
-                        t.cause(tc);
+                        t.cause(append(currentCause, tcl));
                         break;
                 }
             } else if (x instanceof Remember) {
@@ -1613,6 +1579,19 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 return x != null;
 
             return true;
+        }
+
+        private short[] append(short[] currentCause, int tcl) {
+            int cc = Param.causeCapacity.intValue();
+            short[] tc = Arrays.copyOf(currentCause, Math.min(cc, tcl + 1));
+            if (tc.length == cc) {
+                //shift
+                System.arraycopy(tc, 1, tc, 0, tc.length - 1);
+                tc[tc.length - 1] = ci;
+            } else {
+                tc[tcl] = ci;
+            }
+            return tc;
         }
 
     }

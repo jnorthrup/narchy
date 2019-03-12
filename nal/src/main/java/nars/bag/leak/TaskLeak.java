@@ -108,7 +108,7 @@ public abstract class TaskLeak extends Causable {
     }
 
     @Override
-    protected void next(NAR nar, BooleanSupplier kontinue) {
+    public void next(NAR nar, BooleanSupplier kontinue) {
         volMax = nar.termVolumeMax.intValue();
         source.next(this::leak, kontinue, nar);
     }

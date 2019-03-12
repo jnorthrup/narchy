@@ -286,7 +286,7 @@ abstract public class Inperience extends TaskLeakTransform {
     final static int MIN_REIFICATION_OVERHEAD = 2 + 1 /* 1 extra to be safe */;
 
     @Override
-    protected void next(NAR nar, BooleanSupplier kontinue) {
+    public void next(NAR nar, BooleanSupplier kontinue) {
         volMaxPre = (volMaxPost = nar.termVolumeMax.intValue()) - MIN_REIFICATION_OVERHEAD;
         super.next(nar, kontinue);
     }

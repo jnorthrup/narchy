@@ -7,6 +7,7 @@ import nars.Param;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.unify.Unify;
+import nars.term.var.ellipsis.Ellipsis;
 
 import static nars.Op.NEG;
 
@@ -45,29 +46,29 @@ public interface Variable extends Atomic {
     @Override
     @Paper
     @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion"})
-    default boolean unify(Term y, Unify u) {
+    default boolean unify(Term y0, Unify u) {
 
-        if (equals(y))
+        if (equals(y0))
             return true;
 
-        return unify(u.resolve(this), u.resolvePosNeg(y), u);
-    }
-
-    static boolean unify(Term x, Term y, Unify u) {
+        Term x = u.resolve(this);
+        Term y = u.resolvePosNeg(y0);
         if (x.equals(y))
             return true;
 
         Op xOp = x.op();
         if (x instanceof Variable && u.var(xOp)) {
 
-            Op yOp = y.op();
+            if (!(x instanceof Ellipsis)) {
+                Op yOp = y.op();
 
-            if (y instanceof Variable) {
+                if (y instanceof Variable && !(y instanceof Ellipsis)) {
 
-                if (u.commonVariables && u.varCommon(xOp) && u.varCommon(yOp))
-                    return CommonVariable.unify((Variable) x, (Variable) y, u);
-                else if (yOp.id < xOp.id && u.varReverse(yOp))
-                    return u.putXY((Variable) y, x);
+                    if (u.commonVariables && (u.varCommon(xOp) || u.varCommon(yOp)))
+                        return CommonVariable.unify((Variable) x, (Variable) y, u);
+                    else if (yOp.id < xOp.id && u.varReverse(yOp))
+                        return u.putXY((Variable) y, x);
+                }
             }
 
             return u.putXY((Variable) x, y);

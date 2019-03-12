@@ -35,7 +35,7 @@ public class Inperience2 extends Causable {
     }
 
     @Override
-    protected void next(NAR n, BooleanSupplier kontinue) {
+    public void next(NAR n, BooleanSupplier kontinue) {
 
         long now = n.time();
         int dur = n.dur();

@@ -2,7 +2,9 @@ package nars.exe;
 
 import jcog.exe.InstrumentedLoop;
 import jcog.math.FloatRange;
+import nars.$;
 import nars.NAR;
+import nars.control.NARService;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,6 +16,7 @@ public class NARLoop extends InstrumentedLoop {
     private final NAR nar;
 
     public final FloatRange throttle = new FloatRange(1f, 0f, 1f);
+    private final NARService service;
 
     /**
      * starts paused; thread is not automatically created
@@ -21,6 +24,10 @@ public class NARLoop extends InstrumentedLoop {
     public NARLoop(@NotNull NAR n) {
         super();
         nar = n;
+        this.service = new NARService($.identity(this), n) {
+
+        };
+        n.on(service);
     }
 
     @Override

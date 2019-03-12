@@ -13,7 +13,7 @@ import nars.term.atom.Atomic;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.builder.TermConstructor;
 import nars.term.util.map.ByteAnonMap;
-import nars.unify.ellipsis.EllipsisMatch;
+import nars.term.var.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;

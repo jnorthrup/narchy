@@ -1,4 +1,4 @@
-package nars.exe;
+package nars.exe.impl;
 
 import jcog.Util;
 import jcog.data.list.MetalConcurrentQueue;
@@ -9,6 +9,8 @@ import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.service.Service;
 import nars.NAR;
+import nars.exe.Causable;
+import nars.exe.Exec;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -18,9 +20,9 @@ import java.util.function.Consumer;
  * single thread executor used for testing
  * TODO expand the focus abilities instead of naively executed all Can's a specific # of times per cycle
  */
-public class UniExec extends AbstractExec {
+public class UniExec extends Exec {
 
-    static final int inputQueueCapacityPerThread = 128;
+    static final int inputQueueCapacityPerThread = 256;
 
     final MetalConcurrentQueue in;
 

@@ -21,13 +21,13 @@ import nars.agent.NAgent;
 import nars.attention.Attention;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
-import nars.time.event.DurService;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.op.stm.ConjClustering;
 import nars.task.util.TaskBuffer;
 import nars.term.Termed;
+import nars.time.event.DurService;
 import nars.truth.Truth;
 import nars.util.MemorySnapshot;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -57,7 +57,6 @@ import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.meter.ScatterPlot2D;
 import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.slider.FloatGuage;
-import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
@@ -78,7 +77,6 @@ import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
-import static jcog.Texts.n4;
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.w2cSafe;
@@ -176,21 +174,25 @@ public class NARui {
         Attention cc = n.attn;
 
 
-        return Splitting.row(new BagView<>(cc.active, n), 0.8f,
+        return Splitting.row(
+                new BagView<>(cc.active, n),
+                0.8f,
                 new Gridding(
-                        new XYSlider(cc.forgetRate,
-                                cc.activationRate
+                     new ObjectSurface(
+//                        new XYSlider(
+//                                cc.activationRate
+                                cc.forgetRate
                                 //.subRange(1/1000f, 1/2f)
                         ) {
-                            @Override
-                            public String summaryX(float x) {
-                                return "forget=" + n4(x);
-                            }
-
-                            @Override
-                            public String summaryY(float y) {
-                                return "activate=" + n4(y);
-                            }
+//                            @Override
+//                            public String summaryX(float x) {
+//                                return "forget=" + n4(x);
+//                            }
+//
+//                            @Override
+//                            public String summaryY(float y) {
+//                                return "activate=" + n4(y);
+//                            }
                         },
 
                         new PushButton("Print", () -> {
@@ -205,7 +207,9 @@ public class NARui {
                             }
                         }),
                         new PushButton("Clear", () -> cc.active.clear())
-                ));
+                )
+        );
+
     }
 
     public static Surface MemEdit(NAR nar) {

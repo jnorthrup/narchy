@@ -1,4 +1,4 @@
-package nars.unify.ellipsis;
+package nars.term.var.ellipsis;
 
 import nars.$;
 import nars.Op;
@@ -7,6 +7,7 @@ import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
+import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_PATTERN;
@@ -25,6 +26,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
         this.num = target.id;
 
     }
+
 
     private static String label(NormalizedVariable target, int minArity) {
         switch (minArity) {

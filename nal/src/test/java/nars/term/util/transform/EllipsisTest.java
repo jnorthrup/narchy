@@ -12,9 +12,9 @@ import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.unify.Unify;
-import nars.unify.ellipsis.EllipsisMatch;
-import nars.unify.ellipsis.EllipsisOneOrMore;
-import nars.unify.ellipsis.EllipsisZeroOrMore;
+import nars.term.var.ellipsis.EllipsisMatch;
+import nars.term.var.ellipsis.EllipsisOneOrMore;
+import nars.term.var.ellipsis.EllipsisZeroOrMore;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
@@ -26,7 +26,7 @@ import java.util.Set;
 
 import static nars.$.$;
 import static nars.Op.VAR_PATTERN;
-import static nars.unify.ellipsis.Ellipsis.firstEllipsis;
+import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

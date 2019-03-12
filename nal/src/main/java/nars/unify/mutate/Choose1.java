@@ -6,8 +6,8 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
-import nars.unify.ellipsis.Ellipsis;
-import nars.unify.ellipsis.EllipsisMatch;
+import nars.term.var.ellipsis.Ellipsis;
+import nars.term.var.ellipsis.EllipsisMatch;
 
 import java.util.Arrays;
 import java.util.List;

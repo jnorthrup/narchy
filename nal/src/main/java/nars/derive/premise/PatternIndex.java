@@ -10,15 +10,15 @@ import nars.term.compound.PatternCompound;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.VariableNormalization;
-import nars.unify.ellipsis.Ellipsis;
-import nars.unify.ellipsis.Ellipsislike;
+import nars.term.var.ellipsis.Ellipsis;
+import nars.term.var.ellipsis.Ellipsislike;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 import static nars.Op.ATOM;
 import static nars.Op.NEG;
-import static nars.unify.ellipsis.Ellipsis.firstEllipsis;
+import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;
 
 /**
  * Index which specifically holds the target components of a deriver ruleset.

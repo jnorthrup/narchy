@@ -12,7 +12,7 @@ import nars.term.TermTestMisc;
 import nars.term.atom.Bool;
 import nars.term.util.TermException;
 import nars.term.util.transform.Retemporalize;
-import nars.unify.ellipsis.Ellipsis;
+import nars.term.var.ellipsis.Ellipsis;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;

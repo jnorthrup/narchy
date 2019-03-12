@@ -34,10 +34,7 @@ abstract public class DurService extends NARService {
      */
     private final NumberX durations = new AtomicFloat(1f);
 
-
-
-    @Deprecated
-    public InternalEvent event() {
+    @Override public InternalEvent event() {
         return at;
     }
 

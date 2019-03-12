@@ -1,7 +1,7 @@
 package nars;
 
 import jcog.data.list.FasterList;
-import nars.attention.impl.DefaultAttention;
+import nars.attention.Attention;
 import nars.concept.Concept;
 import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
@@ -9,7 +9,7 @@ import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.exe.Exec;
-import nars.exe.UniExec;
+import nars.exe.impl.UniExec;
 import nars.index.concept.ConceptIndex;
 import nars.index.concept.SimpleConceptIndex;
 import nars.op.stm.STMLinkage;
@@ -37,9 +37,13 @@ import static jcog.Util.curve;
 public class NARS {
 
     public final NAR get() {
-        NAR n = new NAR(index.get(), exec.get(),
-                new DefaultAttention(),
-                time, rng, conceptBuilder.get());
+        NAR n = new NAR(
+            index.get(),
+            exec.get(),
+            new Attention(),
+            time, rng,
+            conceptBuilder.get()
+        );
         step.forEach(x -> x.accept(n));
         n.synch();
         return n;

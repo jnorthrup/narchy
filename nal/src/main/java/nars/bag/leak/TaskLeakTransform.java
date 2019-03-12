@@ -29,7 +29,7 @@ abstract public class TaskLeakTransform extends TaskLeak  {
 
 
     @Override
-    protected void next(NAR nar, BooleanSupplier kontinue) {
+    public void next(NAR nar, BooleanSupplier kontinue) {
         if (in == null) return; //HACK
         super.next(nar, kontinue);
         //in.commit();

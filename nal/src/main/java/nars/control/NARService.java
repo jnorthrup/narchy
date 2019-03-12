@@ -7,6 +7,7 @@ import nars.$;
 import nars.NAR;
 import nars.term.Term;
 import nars.term.TermedDelegate;
+import nars.time.event.InternalEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,11 @@ public class NARService extends Service<NAR> implements TermedDelegate {
 
     protected NARService(@Nullable Term id) {
         this.id = id != null ? id : $.identity(this);
+    }
+
+    /** optional event occurrence information.  null if not applicable. */
+    @Nullable public InternalEvent event() {
+        return null;
     }
 
     /** attach a handler.  should only be called in starting() implementations */

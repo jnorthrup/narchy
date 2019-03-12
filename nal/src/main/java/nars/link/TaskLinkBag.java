@@ -1,14 +1,12 @@
 package nars.link;
 
 import jcog.TODO;
-import jcog.math.FloatSupplier;
 import jcog.pri.OverflowDistributor;
 import jcog.pri.PriBuffer;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.op.PriMerge;
-import nars.NAR;
 import nars.Param;
 import nars.concept.NodeConcept;
 import nars.term.Term;
@@ -18,17 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLink> {
 
-    private final FloatSupplier forgetRate;
-
-    public TaskLinkBag(Bag<TaskLink, TaskLink> activates, FloatSupplier forgetRate) {
+    public TaskLinkBag(Bag<TaskLink, TaskLink> activates) {
         super(activates, new TaskLinkBuffer(Param.tasklinkMerge));
-        this.forgetRate = forgetRate;
-    }
-
-    public void forget(NAR nar) {
-
-        commit(nar.attn.forgetting.forget(this, 1f, forgetRate.asFloat()));
-
     }
 
     public String id(boolean in, boolean out) {

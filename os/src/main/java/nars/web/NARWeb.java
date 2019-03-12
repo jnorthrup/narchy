@@ -14,7 +14,7 @@ import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.*;
 import nars.exe.Exec;
-import nars.exe.UniExec;
+import nars.exe.impl.UniExec;
 import nars.index.concept.ConceptIndex;
 import nars.index.concept.ProxyConceptIndex;
 import nars.task.util.TaskBuffer;

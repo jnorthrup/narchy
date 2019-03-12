@@ -25,7 +25,7 @@ public abstract class Param {
 
 
     /** return <= 0 to disable */
-    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0.5f;
+    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0.75f;
 
     static {
         Op.terms =
@@ -173,7 +173,9 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        (t,b)->Util.unitize(t+b);
+        tasklinkMerge::merge;
+        //Util::or;
+        //(t,b)->Util.unitize(t+b);
         //Util::or;
         //Math::max;
         //Util::and;
@@ -239,7 +241,7 @@ public abstract class Param {
 
     /** whether timegraph should not return solutions with volume significantly less than the input's.
      *  set 0 to disable the filter */
-    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.5f;
+    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0f;
 
     /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
     public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
@@ -274,11 +276,11 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 2f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 2;
+    public static final int TIMEGRAPH_ITERATIONS = 3;
 
 
     @Range(min = 0, max = 64)

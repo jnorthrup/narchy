@@ -9,7 +9,7 @@ import nars.term.Terms;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import nars.unify.ellipsis.Ellipsislike;
+import nars.term.var.ellipsis.Ellipsislike;
 
 import java.util.Collection;
 

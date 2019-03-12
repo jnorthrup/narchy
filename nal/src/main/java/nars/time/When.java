@@ -30,6 +30,17 @@ public class When extends TimeRange {
         return new When(Tense.ETERNAL, Tense.ETERNAL, n);
     }
 
+    /** generates a default 'now' moment: current NAR clock time with dur/2 radius.
+     *  the equal-length past and future periods comprising the extent of the present moment. */
+    public static When now(NAR nar, int dur) {
+        long now = nar.time();
+        return new When(now - dur/2, now + dur/2, dur, nar);
+    }
+
+    public static When now(NAR nar) {
+        return now(nar, nar.dur());
+    }
+
     /** creates new evidence */
     public final long[] newStamp() {
         return new long[]{nar.time.nextStamp()};

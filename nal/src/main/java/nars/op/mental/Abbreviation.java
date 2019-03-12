@@ -254,7 +254,7 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
 
 
     @Override
-    protected void next(NAR n, BooleanSupplier kontinue) {
+    public void next(NAR n, BooleanSupplier kontinue) {
         do {
 
             TaskLink a = nar.attn.sample(n.random());

@@ -23,8 +23,8 @@ import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
-import nars.exe.MultiExec;
 import nars.exe.Valuator;
+import nars.exe.impl.WorkerExec;
 import nars.gui.DurSurface;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
@@ -200,16 +200,21 @@ abstract public class NAgentX extends NAgent {
         NAR n = new NARS()
 
 //                .attention(() -> new ActiveConcepts(1024))
+                .exe(
+                //new UniExec()
 
-                //.exe(new UniExec() {
-                .exe(new MultiExec.WorkerExec(
+                new WorkerExec(
                         new Valuator.DefaultValuator(0.9f),
                         //new Valuator.AEValuator(new XoRoShiRo128PlusRandom()),
 
                         threads <= 0 ? Util.concurrencyExcept(1) : threads,
 
-                        false/* affinity */))
+                        false/* affinity */)
 
+//                new SuperExec(
+//                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads
+//                )
+            )
 //                .exe(MixMultiExec.get(
 //                            1024,
 //                             Util.concurrency()))

@@ -9,7 +9,7 @@ import nars.derive.op.Taskify;
 import nars.term.Term;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
-import nars.unify.ellipsis.Ellipsislike;
+import nars.term.var.ellipsis.Ellipsislike;
 import org.eclipse.collections.api.tuple.Pair;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;

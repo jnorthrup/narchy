@@ -157,7 +157,7 @@ public class ConjClustering extends Causable {
 
 
     @Override
-    protected /*synchronized*/ void next(NAR nar, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
+    public /*synchronized*/ void next(NAR nar, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
 
         update(nar);
 

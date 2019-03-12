@@ -1,4 +1,4 @@
-package nars.unify.ellipsis;
+package nars.term.var.ellipsis;
 
 /**
  * Marker interface

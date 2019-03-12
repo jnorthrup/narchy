@@ -88,13 +88,12 @@ public enum Roulette {
         int i = Util.bin(rng.asFloat() * count, count);
 
         int safetyLimit = count;
-        while ((distance = distance - weight.valueOf(i)) > Float.MIN_NORMAL) {
+        while ((distance = distance - Math.max(0, weight.valueOf(i))) > Float.MIN_NORMAL && --safetyLimit > 0) {
 
             if (++i == count) i = 0; //wrap-around
 
-            if (--safetyLimit==0)
-                throw new WTF();
         }
+        if (safetyLimit<0) throw new WTF();
 
         return i;
     }

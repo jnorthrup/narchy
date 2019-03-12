@@ -190,6 +190,30 @@ public abstract class Unify extends Versioning<Term> {
         return z;
     }
 
+    /** UNTESTED */
+    @Nullable public Term resolve(final Variable x, boolean store, Function<Variable,Term> resolver) {
+        //if (size == 0)
+            //TODO fast insert
+
+        Variable /*Variable*/ z = x;
+
+
+        do {
+            Term y = xy.get(z);
+            if (y==null) {
+                Term r = resolver.apply(z);
+                if (store && r!=null) {
+                    if (!putXY(x, r))
+                        return null; //fail
+                }
+                return r;
+            } else if (y instanceof Variable) {
+                z = (Variable) y;
+            } else {
+                return y;
+            }
+        } while (true);
+    }
     /**
      * default usage: invokes the match callback if successful
      */

@@ -1,4 +1,4 @@
-package nars.unify.ellipsis;
+package nars.term.var.ellipsis;
 
 import nars.$;
 import nars.term.Term;
@@ -11,19 +11,19 @@ import static nars.Op.VAR_PATTERN;
 /**
  * Created by me on 12/5/15.
  */
-public class EllipsisOneOrMore extends Ellipsis {
+public class EllipsisZeroOrMore extends Ellipsis {
 
-    public EllipsisOneOrMore(NormalizedVariable /*Variable*/ name) {
-        super(name, 1); 
+    public EllipsisZeroOrMore(NormalizedVariable /*Variable*/ name) {
+        super(name, 0);
     }
 
     @Override
     public @Nullable Variable normalizedVariable(byte vid) {
         if (vid == num) return this;
-        return new EllipsisOneOrMore($.v(op(), vid));
+        return new EllipsisZeroOrMore($.v(op(), vid));
     }
 
-    private final static int RANK = Term.opX(VAR_PATTERN, 2 /* different from normalized variables with a subOp of 0 */);
+    private final static int RANK = Term.opX(VAR_PATTERN, 4 /* different from normalized variables with a subOp of 0 */);
     @Override public int opX() { return RANK;    }
 
 }

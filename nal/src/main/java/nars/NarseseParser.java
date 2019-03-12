@@ -20,7 +20,7 @@ import nars.term.obj.QuantityTerm;
 import nars.term.var.CommonVariable;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
-import nars.unify.ellipsis.Ellipsis;
+import nars.term.var.ellipsis.Ellipsis;
 import org.jetbrains.annotations.Nullable;
 import tec.uom.se.AbstractQuantity;
 

@@ -21,7 +21,7 @@ import static nars.term.atom.Bool.Null;
 public final class CommonVariable extends UnnormalizedVariable {
 
     /** provided by a sorted AnonVector */
-    public final short[] vars;
+    @Deprecated private final short[] vars; //TODO compute dynamically from bytes()
 
     public static Variable common(Variable A, Variable B) {
         int cmp = A.compareTo(B);
