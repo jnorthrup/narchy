@@ -139,6 +139,7 @@ public class NARui {
                 //"inp", () -> taskBufferPanel(n),
                 //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
                 "nar", () -> new ObjectSurface<>(n),
+                "on", () -> new ObjectSurface(n.atMap()),
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),
                 "mem", () -> MemEdit(n),

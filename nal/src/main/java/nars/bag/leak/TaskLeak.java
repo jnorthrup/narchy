@@ -16,6 +16,7 @@ import nars.concept.Concept;
 import nars.exe.Causable;
 import nars.link.TaskLink;
 import nars.term.Term;
+import nars.time.When;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -194,7 +195,7 @@ public abstract class TaskLeak extends Causable {
         private byte[] puncs;
         int nextPunc = 0;
         private NAR nar;
-        long[] when;
+        When when;
 
         @Override
         public @Nullable Off starting(TaskLeak t, NAR n) {
@@ -231,13 +232,10 @@ public abstract class TaskLeak extends Causable {
         }
 
         /** TODO abstract */
-        protected long[] focus() {
+        protected When focus() {
             long now = nar.time();
             int dur = nar.dur();
-            return new long[] {
-                    //now - dur/2, now + dur/2
-                    now - dur, now + dur
-            };
+            return new When(now - dur, now + dur, dur, nar);
         }
 
         @Nullable private Task sample(Concept c) {
@@ -248,13 +246,13 @@ public abstract class TaskLeak extends Causable {
 
             byte[] p = this.puncs;
             for (int i = 0; i < p.length; i++) {
-                Task x = c.table(p[nextPunc]).sample(when[0], when[1], null, t ->{
+                Task x = c.table(p[nextPunc]).match(when, null, (Task t) ->{
                     Term tt = t.term();
                     if (!hasTemporal || termFilter.test(tt)) //test temporal containing target as this was not done when testing concept
                         return false;
 
                     return taskFilter.test(t);
-                }, nar);
+                }).task();
 
                 if (++nextPunc == p.length)
                     nextPunc = 0;

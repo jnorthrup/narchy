@@ -44,12 +44,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 return; //?
         }
 
-        if (!q.offer(t)) {
-            pop();
-            if (!q.offer(t)) {
-                throw new WTF(); //TODO handle better
-            }
-        }
+        q.add(t);
     }
 
     @Nullable

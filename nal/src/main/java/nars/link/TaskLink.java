@@ -138,9 +138,12 @@ public interface TaskLink extends UnitPrioritizable {
             if (y == null) {
                 if (!beliefOrGoal) {
                     //form question
-                    if (Task.validTaskTerm(x, punc, true)) {
-                        y = NALTask.the(x, punc, null, when);
-                        y.pri(priPunc(punc));
+                    float qpri = Param.TASKLINK_GENERATED_QUESTION_PRI_RATE;
+                    if (qpri > Float.MIN_NORMAL) {
+                        if (Task.validTaskTerm(x, punc, true)) {
+                            y = NALTask.the(x, punc, null, when);
+                            y.pri(priPunc(punc) * qpri);
+                        }
                     }
                 }
 

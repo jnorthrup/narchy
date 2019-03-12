@@ -1,6 +1,7 @@
 package nars.time;
 
 import com.netflix.servo.util.Clock;
+import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.MetalConcurrentQueue;
 import nars.NAR;
 import nars.time.event.AtTime;
@@ -12,9 +13,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
 
 /**
  * Time state
@@ -51,7 +49,14 @@ public abstract class Time implements Clock, Serializable {
     public abstract void reset();
 
     public final Stream<ScheduledTask> events() {
-        return Stream.concat(incoming.stream(), scheduled.stream());
+        ScheduledTask[] s;
+        synchronized (scheduled) {
+            s = scheduled.toArray(ScheduledTask[]::new);
+        }
+        return Stream.concat(
+            incoming.stream(),
+            ArrayIterator.stream(s) //a copy
+        );
     }
 
     /**
@@ -85,14 +90,13 @@ public abstract class Time implements Clock, Serializable {
 
 
     public void runAt(ScheduledTask event) {
-        long w = event.start();
-        assert(w!=ETERNAL && w!=TIMELESS);
+//        long w = event.start();
+//        assert(w!=ETERNAL && w!=TIMELESS);
 
-        if (!incoming.offer(event)) {
-            throw new RuntimeException(this + " overflow");
-        }
+        incoming.add(event);
 
-        scheduledNext.accumulateAndGet(w, Math::min);
+
+//        scheduledNext.accumulateAndGet(w, Math::min);
     }
 
 
@@ -102,18 +106,20 @@ public abstract class Time implements Clock, Serializable {
     public void schedule(Consumer<ScheduledTask> each) {
 
 
-        if (scheduling.weakCompareAndSetAcquire(false, true)) {
+        if (!scheduling.compareAndExchangeAcquire(false, true)) {
 
             try {
                 long now = now();
 
                 {
                     //fire  previously scheduled
-                    if (now >= scheduledNext.getOpaque()) {
+                    if (now >= scheduledNext.get()) {
                         ScheduledTask next;
 
-                        while (((next = scheduled.peek()) != null) && (next.start() <= now)) {
-                            each.accept(scheduled.poll()); //assert (next == actualNext);
+                        synchronized (scheduled) {
+                            while (((next = scheduled.peek()) != null) && (next.start() <= now)) {
+                                each.accept(scheduled.poll()); //assert (next == actualNext);
+                            }
                         }
 
                         scheduledNext.accumulateAndGet(
@@ -125,12 +131,17 @@ public abstract class Time implements Clock, Serializable {
                 }
                 {
                     //drain incoming queue
-                    ScheduledTask next;
-                    for (; (next = incoming.poll()) != null; ) {
-                        if (next.start() <= now)
-                            each.accept(next);
-                        else
-                            scheduled.offer(next);
+
+                    if (!incoming.isEmpty()) {
+                        synchronized (scheduled) {
+                            incoming.clear(next -> {
+                                if (next.start() <= now)
+                                    each.accept(next);
+                                else {
+                                    scheduled.offer(next);
+                                }
+                            });
+                        }
                     }
                 }
 

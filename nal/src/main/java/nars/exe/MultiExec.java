@@ -74,10 +74,10 @@ abstract public class MultiExec extends UniExec {
 
     private void executeLater(/*@NotNull */Object x) {
 
-        if (!in.offer(x)) {
-            logger.warn("{} blocked queue on: {}", this, x);
-            executeNow(x);
-        }
+        in.add(x, (xx)->{
+            logger.warn("{} blocked queue on: {}", this, xx);
+            executeNow(xx);
+        });
     }
 
 

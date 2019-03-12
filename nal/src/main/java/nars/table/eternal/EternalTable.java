@@ -82,36 +82,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         whileEach(t::tryAccept);
     }
 
-    @Override
-    public void sample(Answer a) {
-        int s = size();
-
-//            for (int i = 0; i < s; i++) {
-//                Task t = get(i);
-//                if (!a.tryAccept(t))
-//                    break;
-//            }
-        switch (s) {
-            case 0:
-                return;
-            case 1:
-                a.tryAccept(get(0));
-                return;
-            default:
-                float[] w = new float[s];
-                MutableRoulette r = new MutableRoulette(w, (c) -> 0, a.random());
-                Task nextTask;
-                do {
-                    int c = r.next();
-                    if (c < 0)
-                        break;
-                    nextTask = get(c);
-                } while (a.tryAccept(nextTask));
-                break;
-        }
-
-    }
-
     public void setTaskCapacity(int c) {
         assert (c >= 0);
 

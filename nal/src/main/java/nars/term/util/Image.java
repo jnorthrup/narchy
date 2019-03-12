@@ -193,24 +193,12 @@ public enum Image {;
         }
 
         @Override
-        public void sample(Answer m) {
-            match(m, false);
-        }
-
-        @Override
         public void match(Answer m) {
-            match(m, true);
-        }
-
-        private void match(Answer m, boolean matchOrSample) {
             BeliefTable table = table(m.nar, false);
             if (table == null)
                 return;
 
-            if (matchOrSample)
-                table.match(m);
-            else
-                table.sample(m);
+            table.match(m);
 
             int results = m.tasks.size();
             if (results > 0) {

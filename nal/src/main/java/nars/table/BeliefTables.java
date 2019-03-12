@@ -66,82 +66,82 @@ public class BeliefTables implements BeliefTable {
         }, a);
     }
 
-    @Override
-    public void sample(Answer a) {
-        int n = tables.size();
-        switch (n) {
-            case 0:
-                break;
-            case 1:
-                tables.get(0).sample(a);
-                break;
-            case 2: {
-                int i = a.random().nextInt(2);
-                tables.get(i).sample(a); //match(a);
-                if (a.active())
-                    tables.get(1 - i).sample(a);
-                break;
-            }
-            case 3: {
-                int i = a.random().nextInt(6);
-                int x, y, z;
-                switch (i) {
-                    case 0:
-                        x = 0;
-                        y = 1;
-                        z = 2;
-                        break;
-                    case 1:
-                        x = 0;
-                        y = 2;
-                        z = 1;
-                        break;
-                    case 2:
-                        x = 1;
-                        y = 0;
-                        z = 2;
-                        break;
-                    case 3:
-                        x = 1;
-                        y = 2;
-                        z = 0;
-                        break;
-                    case 4:
-                        x = 2;
-                        y = 0;
-                        z = 1;
-                        break;
-                    case 5:
-                        x = 2;
-                        y = 1;
-                        z = 0;
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-                tables.get(x).sample(a);
-                if (a.active()) {
-                    tables.get(y).sample(a);
-                    if (a.active()) {
-                        tables.get(z).sample(a);
-                    }
-                }
-                break;
-            }
-            default:
-                int[] order = new int[n];
-                for (int i = 0; i < n; i++)
-                    order[i] = i;
-                ArrayUtils.shuffle(order, a.random());
-                for (int i = 0; i < n; i++) {
-                    tables.get(order[i]).sample(a);
-                    if (!a.active())
-                        break;
-                }
-                break;
-        }
-
-    }
+//    @Override
+//    public void sample(Answer a) {
+//        int n = tables.size();
+//        switch (n) {
+//            case 0:
+//                break;
+//            case 1:
+//                tables.get(0).sample(a);
+//                break;
+//            case 2: {
+//                int i = a.random().nextInt(2);
+//                tables.get(i).sample(a); //match(a);
+//                if (a.active())
+//                    tables.get(1 - i).sample(a);
+//                break;
+//            }
+//            case 3: {
+//                int i = a.random().nextInt(6);
+//                int x, y, z;
+//                switch (i) {
+//                    case 0:
+//                        x = 0;
+//                        y = 1;
+//                        z = 2;
+//                        break;
+//                    case 1:
+//                        x = 0;
+//                        y = 2;
+//                        z = 1;
+//                        break;
+//                    case 2:
+//                        x = 1;
+//                        y = 0;
+//                        z = 2;
+//                        break;
+//                    case 3:
+//                        x = 1;
+//                        y = 2;
+//                        z = 0;
+//                        break;
+//                    case 4:
+//                        x = 2;
+//                        y = 0;
+//                        z = 1;
+//                        break;
+//                    case 5:
+//                        x = 2;
+//                        y = 1;
+//                        z = 0;
+//                        break;
+//                    default:
+//                        throw new UnsupportedOperationException();
+//                }
+//                tables.get(x).sample(a);
+//                if (a.active()) {
+//                    tables.get(y).sample(a);
+//                    if (a.active()) {
+//                        tables.get(z).sample(a);
+//                    }
+//                }
+//                break;
+//            }
+//            default:
+//                int[] order = new int[n];
+//                for (int i = 0; i < n; i++)
+//                    order[i] = i;
+//                ArrayUtils.shuffle(order, a.random());
+//                for (int i = 0; i < n; i++) {
+//                    tables.get(order[i]).sample(a);
+//                    if (!a.active())
+//                        break;
+//                }
+//                break;
+//        }
+//
+//    }
 
     @Override
     public void add(Remember r, NAR n) {

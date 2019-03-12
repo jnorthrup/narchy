@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import jcog.WTF;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedTopN;
 import nars.NAR;
@@ -29,17 +28,16 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  * designed to be reusable
  */
-public final class Answer implements AutoCloseable {
+public final class Answer {
 
     public final static int BELIEF_MATCH_CAPACITY =
             //Param.STAMP_CAPACITY - 1;
             //Math.max(1, Param.STAMP_CAPACITY / 2);
             Math.max(1, 2 * (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
-    //3;
-    public final static int QUESTION_MATCH_CAPACITY = 1;
+            //3;
 
-    public static final int BELIEF_SAMPLE_CAPACITY = 2; //Math.max(1, BELIEF_MATCH_CAPACITY / 2);
-    public static final int QUESTION_SAMPLE_CAPACITY = 1;
+    public static final int BELIEF_SAMPLE_CAPACITY = 2;
+    public static final int QUESTION_SAMPLE_CAPACITY = 4;
 
     public final NAR nar;
 
@@ -48,7 +46,7 @@ public final class Answer implements AutoCloseable {
      */
     public Term term = null;
 
-    public RankedTopN<Task> tasks;
+    public final RankedTopN<Task> tasks;
     public TimeRangeFilter time;
     public final Predicate<Task> filter;
     private final FloatRank<Task> rank;
@@ -135,7 +133,7 @@ public final class Answer implements AutoCloseable {
 
     }
 
-    static final FloatFunction<TaskRegion> EviAbsolute = x -> -(x instanceof Task ? TruthIntegration.evi((Task) x) : (x.confMax() * x.range()));
+    static final FloatFunction<TaskRegion> EviAbsolute = x -> (x instanceof Task ? TruthIntegration.evi((Task) x) : (x.confMax() * x.range()));
 
     public static FloatFunction<TaskRegion> temporalDistanceFn(TimeRange target) {
         long targetStart = target.start;
@@ -145,7 +143,7 @@ public final class Answer implements AutoCloseable {
             //return b -> -(Util.mean(b.minTimeTo(a.start), b.minTimeTo(a.end))) -b.range()/tableDur;
             //return b -> -(Util.mean(b.midTimeTo(a.start), b.minTimeTo(a.end))); // -b.range()/tableDur;
             // -b.minTimeTo(a.start, a.end); // -b.range()/tableDur;
-            return x -> -target.minTimeTo(x);
+            return x -> -target.meanTimeTo(x);
 //            return b -> {
 //
 //                return a.minTimeTo(b);
@@ -155,7 +153,7 @@ public final class Answer implements AutoCloseable {
 //                return r; //TODO make sure that the long cast to float is ok
 //            };
         } else {
-            return x -> -x.minTimeTo(targetStart); // -b.range()/tableDur;
+            return x -> -x.meanTimeTo(targetStart); // -b.range()/tableDur;
         }
     }
 
@@ -167,12 +165,9 @@ public final class Answer implements AutoCloseable {
     /**
      * for belief or goals (not questions / quests
      */
-    public static Answer relevance(boolean beliefOrQuestion, int capacity, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+    public static Answer relevant(boolean beliefOrQuestion, int capacity, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
-        if (!beliefOrQuestion && capacity > 1)
-            throw new WTF("questions are not merged so the capacity need not exceed 1");
-
-        FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template);
+        FloatRank<Task> r = relevant(beliefOrQuestion, start, end, template);
 
         return new Answer(r, filter, capacity, nar)
                 .time(start, end)
@@ -180,7 +175,7 @@ public final class Answer implements AutoCloseable {
     }
 
 
-    static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
+    static FloatRank<Task> relevant(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
 
         FloatRank<Task> strength =
                 beliefOrQuestion ?
@@ -281,7 +276,7 @@ public final class Answer implements AutoCloseable {
 
 
     public static FloatRank<Task> temporalTaskStrength(long start, long end) {
-        int dur = Tense.occToDT(1 + (end-start)); //half the range
+        int dur = Tense.occToDT(1 + (end - start)); //half the range
         return temporalTaskStrength(start, end, dur);
     }
 
@@ -312,64 +307,59 @@ public final class Answer implements AutoCloseable {
      * clears the cache and tasks before returning
      */
     public Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth, boolean ditherTime) {
-        try {
-            ditherTruth(ditherTruth); //enable/disable truth dithering
+        ditherTruth(ditherTruth); //enable/disable truth dithering
 
-            int s = tasks.size();
+        int s = tasks.size();
 
-            if (s == 0)
-                return null;
+        if (s == 0)
+            return null;
 
-            @Nullable Task root = tasks.first();
+        @Nullable Task root = tasks.first();
 
-            if (s == 1)
-                return root;
+        if (s == 1)
+            return root;
 
-            Task t;
+        Task t;
 
-            if (!topOrSample) {
-                t = tasks.getRoulette(random());
-                assert (!forceProject);
+        if (!topOrSample) {
+            t = tasks.getRoulette(random());
+            assert (!forceProject);
 
-            } else {
-                //compare alternate roots, as they might match better with tasks below
+        } else {
+            //compare alternate roots, as they might match better with tasks below
 
 
-                switch (root.punc()) {
-                    case BELIEF:
-                    case GOAL: {
-                        t = Truth.stronger(newTask(), tasks.first());
-                    }
-                    break;
-                    case QUESTION:
-                    case QUEST:
-                        throw new UnsupportedOperationException();
-                        //break;
-                    default:
-                        throw new UnsupportedOperationException();
+            switch (root.punc()) {
+                case BELIEF:
+                case GOAL: {
+                    t = Truth.stronger(newTask(), tasks.first());
                 }
+                break;
+                case QUESTION:
+                case QUEST:
+                    throw new UnsupportedOperationException();
+                    //break;
+                default:
+                    throw new UnsupportedOperationException();
             }
-
-            float eviMin = eviMin();
-            if (t.evi() < eviMin)
-                return null;
-
-            if (forceProject) { //dont bother sub-projecting eternal here.
-                long ss = time.start;
-                if (ss != ETERNAL) { //dont eternalize here
-                    long ee = time.end;
-                    @Nullable Task t2 = Task.project(t, ss, ee, eviMin, ditherTime, this.ditherTruth, nar);
-                    if (t2 == null)
-                        return null;
-                    t = t2;
-                }
-            }
-
-            return t;
-
-        } finally {
-            close();
         }
+
+        float eviMin = eviMin();
+        if (t.evi() < eviMin)
+            return null;
+
+        if (forceProject) { //dont bother sub-projecting eternal here.
+            long ss = time.start;
+            if (ss != ETERNAL) { //dont eternalize here
+                long ee = time.end;
+                @Nullable Task t2 = Task.project(t, ss, ee, eviMin, ditherTime, this.ditherTruth, nar);
+                if (t2 == null)
+                    return null;
+                t = t2;
+            }
+        }
+
+        return t;
 
     }
 
@@ -394,13 +384,12 @@ public final class Answer implements AutoCloseable {
      */
     @Nullable
     public Truth truth() {
-        try {
 
-            //quick case: 1 item, and it's eternal => its truth
-
-            int s = tasks.size();
-            if (s == 0)
-                return null;
+        //quick case: 1 item, and it's eternal => its truth
+//
+//        int s = tasks.size();
+//        if (s == 0)
+//            return null;
 
 //            if (s == 1) {
 //                //simple case where the projected time is exactly right
@@ -413,13 +402,11 @@ public final class Answer implements AutoCloseable {
 //                }
 //            }
 
-            TruthProjection tp = truthpolation(taskList());
-            if (tp != null) {
-                assert (!ditherTruth);
-                return tp.truth(eviMin(), false, false /* give the value at specified range, no matter how sparse */, nar);
-            }
-        } finally {
-            close();
+        TruthProjection tp = truthpolation(taskList());
+        if (tp != null) {
+            assert (!ditherTruth);
+            assert (eviMin() == Param.TRUTH_EVI_MIN);
+            return tp.truth(Param.TRUTH_EVI_MIN, false, false /* give the value at specified range, no matter how sparse */, nar);
         }
 
         return null;
@@ -437,12 +424,12 @@ public final class Answer implements AutoCloseable {
             return null;
 
         //HACK TODO do this without creating a temporary TaskList
-        if (tp.size()==1) {
+        if (tp.size() == 1) {
             //proxy to the individual task being projected
             Task only = tp.get(0).task();
-            if (!only.isEternal() && (only.start()!=tp.start() || only.end()!=tp.end()) )
+            if (!only.isEternal() && (only.start() != tp.start() || only.end() != tp.end()))
                 return new SpecialTruthAndOccurrenceTask(only,
-                    tp.start(), tp.end(), false, tt);
+                        tp.start(), tp.end(), false, tt);
             else
                 return only; //as-is
         } else {
@@ -456,7 +443,7 @@ public final class Answer implements AutoCloseable {
         int t = tasks.size();
         if (t == 0)
             return null;
-        return new TaskList(tasks, tasks.size()); //copy because it can be modified
+        else return new TaskList(tasks, tasks.size()); //copy because it can be modified
     }
 
     /**
@@ -515,10 +502,11 @@ public final class Answer implements AutoCloseable {
         return this;
     }
 
-    public final Answer sample(TaskTable t) {
-        t.sample(this);
-        return this;
+    public final Task sample(TaskTable t) {
+        t.match(this);
+        return tasks.getRoulette(random());
     }
+
 //    final static ThreadLocal<DequePool<CachedFloatRank<Task>>> pool =
 //            //HEAP
 //            //() -> new CachedFloatRank<>(64);
@@ -540,12 +528,6 @@ public final class Answer implements AutoCloseable {
 //        return x;
 //    }
 
-    public void close() {
-//        if (tasks != null) {
-//            tasks.clear();
-            tasks = null;
-//        }
-    }
 
     public Answer time(TimeRangeFilter time) {
         this.time = time;

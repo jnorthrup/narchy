@@ -948,110 +948,110 @@ public class CastGraph extends TypeCastGraph {
     };
     //</editor-fold>
     //</editor-fold>
-
-    // TODO use proj text
-    //<editor-fold defaultstate="collapsed" desc="byte / char arrays">
-    //<editor-fold defaultstate="collapsed" desc="String 2 byte[]">
-//    public static final Convertor String2byteArr = new MutableWeightedCaster() {
+//
+//    // TODO use proj text
+//    //<editor-fold defaultstate="collapsed" desc="byte / char arrays">
+//    //<editor-fold defaultstate="collapsed" desc="String 2 byte[]">
+////    public static final Convertor String2byteArr = new MutableWeightedCaster() {
+////        @Override
+////        public Object convert(Object from) {
+////            return xyz.cofe.text.Text.decodeHex( (String)from );
+////        }
+////        @Override public String toString(){ return "String2byteArr"; }
+////    };
+//    //</editor-fold>
+//
+//    // TODO use proj text
+//    //<editor-fold defaultstate="collapsed" desc="byte[] 2 String">
+////    public static final Convertor byteArr2String = new MutableWeightedCaster() {
+////        @Override
+////        public Object convert(Object from) {
+////            byte[] ba = (byte[])from;
+////            return xyz.cofe.text.Text.encodeHex(ba);
+////        }
+////        @Override public String toString(){ return "byteArr2String"; }
+////    };
+//    //</editor-fold>
+//
+//    // TODO use proj text
+//    //<editor-fold defaultstate="collapsed" desc="Byte[] 2 String">
+////    public static final Convertor ByteArr2String = new MutableWeightedCaster() {
+////        @Override
+////        public Object convert(Object from) {
+////            Byte[] ba = (Byte[])from;
+////            return xyz.cofe.text.Text.encodeHex(ba);
+////        }
+////        @Override public String toString(){ return "ByteArr2String"; }
+////    };
+//    //</editor-fold>
+//
+//    // TODO use proj text
+//    //<editor-fold defaultstate="collapsed" desc="String 2 Byte[]">
+////    public static final Convertor String2ByteArr = new MutableWeightedCaster() {
+////        @Override
+////        public Object convert(Object from) {
+////            return xyz.cofe.text.Text.decodeHexBytes((String)from);
+////        }
+////        @Override public String toString(){ return "String2ByteArr"; }
+////    };
+//    //</editor-fold>
+//    public final Function SqlTimestamp2Date = new MutableWeightedCaster() {
 //        @Override
-//        public Object convert(Object from) {
-//            return xyz.cofe.text.Text.decodeHex( (String)from );
+//        public Object apply(Object from) {
+//            return (java.sql.Timestamp) from;
 //        }
-//        @Override public String toString(){ return "String2byteArr"; }
-//    };
-    //</editor-fold>
-
-    // TODO use proj text
-    //<editor-fold defaultstate="collapsed" desc="byte[] 2 String">
-//    public static final Convertor byteArr2String = new MutableWeightedCaster() {
+//
 //        @Override
-//        public Object convert(Object from) {
-//            byte[] ba = (byte[])from;
-//            return xyz.cofe.text.Text.encodeHex(ba);
+//        public String toString() {
+//            return "SqlTimestamp2Date";
 //        }
-//        @Override public String toString(){ return "byteArr2String"; }
 //    };
-    //</editor-fold>
-
-    // TODO use proj text
-    //<editor-fold defaultstate="collapsed" desc="Byte[] 2 String">
-//    public static final Convertor ByteArr2String = new MutableWeightedCaster() {
+//    //</editor-fold>
+//    public final Function String2SqlDate = new MutableWeightedCaster() {
 //        @Override
-//        public Object convert(Object from) {
-//            Byte[] ba = (Byte[])from;
-//            return xyz.cofe.text.Text.encodeHex(ba);
+//        public Object apply(Object from) {
+//            synchronized (CastGraph.this) {
+//                //java.util.Date d = getDateFormat().parse((String)from);
+//                Date d = (Date) String2Date.apply(from);
+//                return new java.sql.Date(d.getTime());
+//            }
 //        }
-//        @Override public String toString(){ return "ByteArr2String"; }
-//    };
-    //</editor-fold>
-
-    // TODO use proj text
-    //<editor-fold defaultstate="collapsed" desc="String 2 Byte[]">
-//    public static final Convertor String2ByteArr = new MutableWeightedCaster() {
+//
 //        @Override
-//        public Object convert(Object from) {
-//            return xyz.cofe.text.Text.decodeHexBytes((String)from);
+//        public String toString() {
+//            return "String2SqlDate";
 //        }
-//        @Override public String toString(){ return "String2ByteArr"; }
 //    };
-    //</editor-fold>
-    public final Function SqlTimestamp2Date = new MutableWeightedCaster() {
-        @Override
-        public Object apply(Object from) {
-            return (java.sql.Timestamp) from;
-        }
-
-        @Override
-        public String toString() {
-            return "SqlTimestamp2Date";
-        }
-    };
-    //</editor-fold>
-    public final Function String2SqlDate = new MutableWeightedCaster() {
-        @Override
-        public Object apply(Object from) {
-            synchronized (CastGraph.this) {
-                //java.util.Date d = getDateFormat().parse((String)from);
-                Date d = (Date) String2Date.apply(from);
-                return new java.sql.Date(d.getTime());
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "String2SqlDate";
-        }
-    };
-    //</editor-fold>
-    public final Function String2SqlTime = new MutableWeightedCaster() {
-        @Override
-        public Object apply(Object from) {
-            synchronized (CastGraph.this) {
-                Date d = (Date) String2Date.apply(from);
-                return new java.sql.Time(d.getTime());
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "String2SqlTime";
-        }
-    };
-    //</editor-fold>
-    public final Function String2SqlTimestamp = new MutableWeightedCaster() {
-        @Override
-        public Object apply(Object from) {
-            synchronized (CastGraph.this) {
-                Date d = (Date) String2Date.apply(from);
-                return new java.sql.Timestamp(d.getTime());
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "String2SqlTimestamp";
-        }
-    };
+//    //</editor-fold>
+//    public final Function String2SqlTime = new MutableWeightedCaster() {
+//        @Override
+//        public Object apply(Object from) {
+//            synchronized (CastGraph.this) {
+//                Date d = (Date) String2Date.apply(from);
+//                return new java.sql.Time(d.getTime());
+//            }
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return "String2SqlTime";
+//        }
+//    };
+//    //</editor-fold>
+//    public final Function String2SqlTimestamp = new MutableWeightedCaster() {
+//        @Override
+//        public Object apply(Object from) {
+//            synchronized (CastGraph.this) {
+//                Date d = (Date) String2Date.apply(from);
+//                return new java.sql.Timestamp(d.getTime());
+//            }
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return "String2SqlTimestamp";
+//        }
+//    };
     //</editor-fold>
 //</editor-fold>
     //</editor-fold>
@@ -1060,44 +1060,44 @@ public class CastGraph extends TypeCastGraph {
     private SimpleDateFormat[] dateFormats = new SimpleDateFormat[]{
             new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ")
     };
-    //<editor-fold defaultstate="collapsed" desc="date time convertors">
-    public final Function Date2String = new MutableWeightedCaster() {
-        @Override
-        public Object apply(Object from) {
-            synchronized (CastGraph.this) {
-                Date d = (Date) from;
-                SimpleDateFormat[] dfs = getDateFormats();
-                SimpleDateFormat df = dfs != null && dfs.length > 0 ? dfs[0] : new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ");
-                return df.format(d);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "Date2String";
-        }
-    };
-    public final Function String2Date = new MutableWeightedCaster() {
-        @Override
-        public Object apply(Object from) {
-            synchronized (CastGraph.this) {
-                SimpleDateFormat[] dfs = getDateFormats();
-                if (dfs == null) throw new IllegalStateException("date formats not setted");
-                for (SimpleDateFormat df : dfs) {
-                    try {
-                        return df.parse((String) from);
-                    } catch (ParseException ex) {
-                    }
-                }
-                throw new Error("can't cast from " + from + " to java.util.Date");
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "String2Date";
-        }
-    };
+//    //<editor-fold defaultstate="collapsed" desc="date time convertors">
+//    public final Function Date2String = new MutableWeightedCaster() {
+//        @Override
+//        public Object apply(Object from) {
+//            synchronized (CastGraph.this) {
+//                Date d = (Date) from;
+//                SimpleDateFormat[] dfs = getDateFormats();
+//                SimpleDateFormat df = dfs != null && dfs.length > 0 ? dfs[0] : new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ");
+//                return df.format(d);
+//            }
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return "Date2String";
+//        }
+//    };
+//    public final Function String2Date = new MutableWeightedCaster() {
+//        @Override
+//        public Object apply(Object from) {
+//            synchronized (CastGraph.this) {
+//                SimpleDateFormat[] dfs = getDateFormats();
+//                if (dfs == null) throw new IllegalStateException("date formats not setted");
+//                for (SimpleDateFormat df : dfs) {
+//                    try {
+//                        return df.parse((String) from);
+//                    } catch (ParseException ex) {
+//                    }
+//                }
+//                throw new Error("can't cast from " + from + " to java.util.Date");
+//            }
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return "String2Date";
+//        }
+//    };
     //</editor-fold>
 
 //    /**
@@ -1239,10 +1239,10 @@ public class CastGraph extends TypeCastGraph {
         set(Date.class, java.sql.Timestamp.class, Date2SqlTimestamp);
         set(java.sql.Date.class, Date.class, SqlDate2Date);
         set(java.sql.Time.class, Date.class, SqlTime2Date);
-        set(java.sql.Timestamp.class, Date.class, SqlTimestamp2Date);
+//        set(java.sql.Timestamp.class, Date.class, SqlTimestamp2Date);
 
-        set(Date.class, String.class, Date2String);
-        set(String.class, Date.class, String2Date);
+//        set(Date.class, String.class, Date2String);
+//        set(String.class, Date.class, String2Date);
 
 //        setAt( Clob.class, String.class, Clob2String );
 //        setAt( NClob.class, String.class, NClob2String );

@@ -18,7 +18,6 @@ import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -35,9 +34,6 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class AbstractGoalActionConcept extends ActionConcept {
 
-    private static final long CURIOSITY_TASK_RANGE_DURS = 2;
-
-//    private static final Logger logger = LoggerFactory.getLogger(AbstractGoalActionConcept.class);
 
     @Nullable
     private Curiosity curiosity = null;
@@ -62,8 +58,6 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     final short cause;
 
-    private static final boolean shareCuriosityEvi = true;
-
     public AbstractGoalActionConcept(Term term, NAR n) {
         this(term,
                 new RTreeBeliefTable(),
@@ -82,7 +76,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     }
 
-    protected CauseChannel<ITask> newChannel(NAR n) {
+    protected CauseChannel<ITask> channel(NAR n) {
         return n.newChannel(this);
     }
 
@@ -165,27 +159,26 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 Predicate<Task> fil =
                         withoutCuriosity;
 
-                try (Answer a = Answer.relevance(true, limit, s, e, term, fil, n).dur(organicDur)) {
+                Answer a = Answer.relevant(true, limit, s, e, term, fil, n).dur(organicDur);
 
-                    for (BeliefTable b : tables) {
-                        if (!(b instanceof CuriosityGoalTable)) {
-                            a.ttl = limit;
-                            a.match(b);
-                        }
-                    }
-
-                    //TODO my truthpolation .stamp()'s and .cause()'s for clues
-
-                    Truth organic = a.truth();
-                    if (organic != null) {
-                        @Nullable Truth maybeNextActionDex = organic;
-                        if (next == null)
-                            next = maybeNextActionDex;
-                        else
-                            next = Truth.stronger(maybeNextActionDex, next);
-
+                for (BeliefTable b : tables) {
+                    if (!(b instanceof CuriosityGoalTable)) {
+                        a.ttl = limit;
+                        a.match(b);
                     }
                 }
+
+                //TODO my truthpolation .stamp()'s and .cause()'s for clues
+
+                Truth organic = a.truth();
+                if (organic != null) {
+                    @Nullable Truth maybeNextActionDex = organic;
+                    if (next == null)
+                        next = maybeNextActionDex;
+                    else
+                        next = Truth.stronger(maybeNextActionDex, next);
+                }
+
 
                 //optional:
 //            if (nextActionDex!=null)
@@ -195,14 +188,14 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         }
 
-        return pair(next, new long[]{ s, e});
+        return pair(next, new long[]{s, e});
     }
 
     @Override
     public void act(long prev, long now, NAR n) {
 
         int narDur = n.dur();
-        
+
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
 
         Pair<Truth, long[]> bt = truth(true, limit, prev, now, narDur, n);
@@ -254,10 +247,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
                     long lastCuriosity = curiosityTable.series.end();
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
                     int dither = n.dtDither();
-                    long curiEnd = curiStart + Math.max(dither, Math.round((now-prev)*CURIOSITY_TASK_RANGE_DURS * n.random().nextFloat())); //(1 + (curiosity.Math.max(curiStart, e);
+                    long curiEnd = curiStart + Math.max(dither, Math.round((now - prev) * Param.CURIOSITY_TASK_RANGE_DURS * n.random().nextFloat())); //(1 + (curiosity.Math.max(curiStart, e);
 
-                    curiStart = Tense.dither(curiStart, dither);
-                    curiEnd = Tense.dither(curiEnd, dither);
+                    //curiStart = Tense.dither(curiStart, dither);
+                    //curiEnd = Tense.dither(curiEnd, dither);
 
                     n.input(
                             curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
@@ -271,10 +264,11 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
             //use existing curiosity
             @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
-            try (Answer a = Answer.
-                    relevance(true, 2, s, e, term, null, n).match(curiTable).dur(curiDur)) {
-                actionCuri = a.truth();
-            }
+            Answer a = Answer.
+                    relevant(true, 2, s, e, term, null, n)
+                    .dur(curiDur)
+                    .match(curiTable);
+            actionCuri = a.truth();
         }
 
         if (actionDex != null || actionCuri != null) {
@@ -299,27 +293,14 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     }
 
-    private long[] eviShared = null;
 
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        long[] evi = evi(n);
+        long[] evi = n.evidence();
 
         SignalTask curiosity = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);
         curiosity.priMax(attn.elementPri());
         curiosity.cause(new short[]{cause});
         return curiosity;
-    }
-
-    private long[] evi(NAR n) {
-        return shareCuriosityEvi ? eviShared(n) : n.evidence();
-    }
-
-    private long[] eviShared(NAR n) {
-        long[] evi;
-        if (eviShared == null)
-            eviShared = n.evidence();
-        evi = eviShared;
-        return evi;
     }
 
     protected void feedback(@Nullable Truth f, long last, long now, short cause, NAR nar) {

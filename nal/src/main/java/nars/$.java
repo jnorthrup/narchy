@@ -858,11 +858,6 @@ public enum $ {
         if (x instanceof Term)
             return ((Term)x);
 
-        if (x instanceof Termed) {
-            if (((Termed) x).term() !=null)
-                return ((Termed) x).term();
-        }
-
         return $.p($.quote(x.getClass().getName()), $.the(System.identityHashCode(x)));
 
     }

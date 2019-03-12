@@ -84,7 +84,7 @@ public class Leaf<X> extends AbstractNode<X> {
 
     @Override
     public Stream<X> streamValues() {
-        return ArrayIterator.streamNonNull(data, size);
+        return ArrayIterator.streamNonNull(data, size); //TODO null-terminator iterator eliding 'size'
     }
 
     @Override
@@ -97,7 +97,7 @@ public class Leaf<X> extends AbstractNode<X> {
         return iterateValues();
     }
 
-    public X get(int i) {
+    public final X get(int i) {
         return data[i];
     }
 
@@ -154,24 +154,24 @@ public class Leaf<X> extends AbstractNode<X> {
 
     @Override
     public boolean AND(Predicate<X> p) {
-        X[] data = this.data;
-        int s = size;
-        for (int i = 0; i < s; i++) {
-            X d = data[i];
-            if (/*d!=null && */!p.test(d))
-                return false;
+        for (X x : data) {
+            if (x != null) {
+                if (!p.test(x))
+                    return false;
+            } else
+                break; //null-terminator reached
         }
         return true;
     }
 
     @Override
     public boolean OR(Predicate<X> p) {
-        X[] data = this.data;
-        short s = this.size;
-        for (int i = 0; i < s; i++) {
-            X d = data[i];
-            if (/*d!=null && */p.test(d))
-                return true;
+        for (X x : data) {
+            if (x != null) {
+                if (p.test(x))
+                    return true;
+            } else
+                break; //null-terminator reached
         }
         return false;
     }
@@ -293,15 +293,20 @@ public class Leaf<X> extends AbstractNode<X> {
 
     @Override
     public void forEach(Consumer<? super X> consumer) {
-        short s = this.size;
-        if (s > 0) {
-            X[] data = this.data;
-            for (int i = 0; i < s; i++) {
-                X d = data[i];
-                if (d != null)
-                    consumer.accept(d);
-            }
-        }
+//        short s = this.size;
+//        if (s > 0) {
+//            X[] data = this.data;
+//            for (int i = 0; i < s; i++) {
+//                X d = data[i];
+//                if (d != null)
+//                    consumer.accept(d);
+//            }
+//        }
+        for (X x : data)
+            if (x!=null)
+                consumer.accept(x);
+            else
+                break; //null-terminator reached
     }
 
     @Override

@@ -112,7 +112,7 @@ abstract public class Causable extends NARService {
      */
     public abstract float value();
 
-    public InternalEvent event() {
+    @Deprecated public InternalEvent event() {
         return new AtCause();
     }
 

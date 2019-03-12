@@ -52,9 +52,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //              };
 
 
-    private static final int CURSOR_CAPACITY = 128;
-
-
     protected int capacity;
 
 
@@ -186,7 +183,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     public final void match(Answer a) {
 
         HyperIterator.iterate(this,
-                RTreeBeliefTable.CURSOR_CAPACITY,
                 a::temporalDistanceFn,
                 n->a.tryAccept((Task)n)
         );

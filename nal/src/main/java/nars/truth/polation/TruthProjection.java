@@ -108,16 +108,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     public final MetalLongSet commit(boolean provideStamp, boolean tCrop, int minResults) {
 
 
-        if (size() < minResults) return null;
-
-        /** dont crop initially. instead, decide the crop, if any, based on the discovered tasks */
-        int s = refocus(false);
-
-        if (s < minResults)
+        int s = size();
+        if (s < minResults) {
             return null;
-        else if (s == 1) {
-            refocus(tCrop);
-            return only(provideStamp);
+        } else if (s == 1) {
+            return only(tCrop, provideStamp);
         } else {
             MetalLongSet e = filterCyclicN(minResults, tCrop || start==ETERNAL);
             return provideStamp ? e : null;
@@ -128,6 +123,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     private int update(boolean force) {
+        if (force)
+            invalidate();
+
         int s = size();
         if (s > 0) {
             int count = 0;
@@ -150,18 +148,17 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
         MetalLongSet e = null;
         do {
+            int activeRemain = refocus(tCrop, true);
+            if (activeRemain < minComponents) {
+                //OOPS
+                // TODO undo
+                return null;
+            }
 
             if (e == null) {
                 e = new MetalLongSet(Param.STAMP_CAPACITY); //first iteration
             } else {
                 //2nd iteration, or after
-
-                int activeRemain = refocus(tCrop);
-                if (activeRemain < minComponents) {
-                    //OOPS
-                    // TODO undo
-                    return null;
-                }
                 e.clear();
             }
 
@@ -206,7 +203,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                     //TODO try evaluating the truth by removing each of the conflicting tasks
 
                     //for now, try removing the weakestConflict and repeat
-                    cull(minComponents, weakestConflict);
+                    cull(weakestConflict);
 
                     //TODO early exit possible here if weakestConflict == 0, then 'e' will be correct for return in some cases
 //                }
@@ -226,7 +223,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     }
 
-    private void cull(int minComponents, int conflict) {
+    private void cull(int conflict) {
 //        if (minComponents <= 1)
 //            oneForAll(conflict);
 //        else
@@ -274,7 +271,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 //        return e;
 //    }
 
-    private MetalLongSet only(boolean provideStamp) {
+    private MetalLongSet only(boolean tCrop, boolean provideStamp) {
+        refocus(tCrop, true);
         return provideStamp ? Stamp.toMutableSet(firstValid().task) : null;
     }
 
@@ -425,42 +423,43 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * adjust start/end to better fit the (remaining) task components and minimize temporalizing truth dilution.
      * if the start/end has changed, then evidence for each will need recalculated
      * returns the number of active tasks
+     * @param all - true if applying to the entire set of tasks; false if applying only to those remaining active
      */
-    private int refocus(boolean tCrop) {
-        long[] se;
-        boolean allInvalid = allInvalid(); //uninitialized or not
-
-        if ((allInvalid ? size() : active()) > 1) {
-            se = Tense.union(Iterables.transform(this,
-                    allInvalid ?
-                            ((TaskComponent x) -> x.task) :
-                            ((TaskComponent x) -> x.valid() ? x.task : null)));
-        } else {
-            TruthProjection.TaskComponent only = allInvalid ? getFirst() : firstValid();
-            se = new long[]{only.task.start(), only.task.end()};
-        }
-
-        if (se[0] != ETERNAL) {
-            if (start == ETERNAL) {
-                //override eternal range with the calculated union
+    private int refocus(boolean tCrop, boolean all) {
+        if (tCrop || start == ETERNAL) {
+            long[] union;
+            if ((all ? size() : active()) > 1) {
+                union = Tense.union(Iterables.transform(this,
+                        all ?
+                                ((TaskComponent x) -> x.task) :
+                                ((TaskComponent x) -> x.valid() ? x.task : null)));
             } else {
-                if (tCrop && Longerval.intersects(se[0], se[1], start, end)) {
-                    //crop start/stop to narrower window intersecting/containing the task union
-                    se[0] = Math.max(start, se[0]);
-                    se[1] = Math.max(se[0], Math.min(end, se[1]));
-                    assert(se[1] >= se[0]);
+                TruthProjection.TaskComponent only = all ? getFirst() : firstValid();
+                union = new long[]{only.task.start(), only.task.end()};
+            }
+
+            boolean changed = false;
+            if (union[0] != ETERNAL) {
+                if (start == ETERNAL) {
+                    //override eternal range with the entire calculated union
+                    start = union[0]; end = union[1]; changed = true;
+                } else {
+                    if (start < union[0] && union[0] < end) {
+                        start = union[0];
+                        changed = true;
+                    }
+                    if (end > union[1] && union[1] > start) {
+                        end = union[1];
+                        changed = true;
+                    }
                 }
             }
-        }
-        if (allInvalid || (se[0] != start || se[1] != end)) {
-            start = se[0];
-            end = se[1];
 
-            return update(true);
-        } else {
-            return update(false);
+            if (changed)
+                return update(true);
         }
 
+        return update(false);
     }
 
     private void invalidate() {

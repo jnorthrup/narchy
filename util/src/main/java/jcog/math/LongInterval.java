@@ -228,18 +228,28 @@ public interface LongInterval {
         }
     }
 
-//    default long midTimeTo(long x) {
-//        long start = start();
-//        if (start == ETERNAL) return 0;
-//        long end = end();
-//        long distToStart = Math.abs(start - x);
-//        if (end == start) {
-//            return distToStart;
-//        } else {
-//            long distToEnd = Math.abs(end - x);
-//            return (distToStart + distToEnd)/2L;
-//        }
-//    }
+    default long meanTimeTo(long x) {
+        long start = start();
+        if (start == ETERNAL) return 0;
+        long end = end();
+        long distToStart = Math.abs(start - x);
+        if (end == start) {
+            return distToStart;
+        } else {
+            long distToEnd = Math.abs(end - x);
+            return (distToStart + distToEnd)/2L;
+        }
+    }
+
+    default long meanTimeTo(long s, long e) {
+        long ms = meanTimeTo(s);
+        if (s == e)
+            return ms;
+        else {
+            return (ms + meanTimeTo(e))/2;
+        }
+    }
+
     default long maxTimeTo(long x) {
         long start = start();
         if (start == ETERNAL) return 0;

@@ -489,9 +489,7 @@ public class Dynamics2D {
     private final Timer tempTimer = new Timer();
 
     public final void invoke(Runnable r) {
-        if (!queue.offer(r)) {
-            throw new RuntimeException(this + " queue overflow");
-        }
+        queue.add(r);
     }
 
     /**

@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  * by a score function that ranks the next nodes to either provide via an Iterator<X>-like interface
  * or to expand the ranked buffer to find more results.
  */
-public class HyperIterator<X> implements AutoCloseable {
+public class HyperIterator<X>  {
 
     /**
      * next available item
@@ -29,7 +29,7 @@ public class HyperIterator<X> implements AutoCloseable {
      */
     final RankedTopN<Object> plan;
 
-    public static <X> void iterate(ConcurrentRTree<X> tree, int capacity, Supplier<FloatFunction<X>> rank, Predicate<X> whle) {
+    public static <X> void iterate(ConcurrentRTree<X> tree, Supplier<FloatFunction<X>> rank, Predicate<X> whle) {
 
 
         tree.read(t -> {
@@ -39,15 +39,16 @@ public class HyperIterator<X> implements AutoCloseable {
                     return;
                 case 1:
                     t.forEach(whle::test);
+                    break;
                 default: {
-                    try (HyperIterator<X> h = new HyperIterator(tree.model(), new Object[Math.min(s, capacity)], rank.get())) {
-                        Node<X> r = t.root();
-                        //if (r != null) {
-                            h.start(r);
-                            while (h.hasNext() && whle.test(h.next())) {
-                            }
-                        //}
+                    int cursorCapacity = s; //TODO determine if this can safely be smaller like log(s)/branching or something
+
+                    HyperIterator<X> h = new HyperIterator(tree.model(), new Object[cursorCapacity], rank.get());
+                    h.start(t.root());
+                    while (h.hasNext() && whle.test(h.next())) {
                     }
+
+                    break;
                 }
             }
         });
@@ -67,10 +68,6 @@ public class HyperIterator<X> implements AutoCloseable {
         plan.add(start);
     }
 
-    @Override
-    public final void close() {
-
-    }
 
     /**
      * finds the next item given the current item and
@@ -91,46 +88,34 @@ public class HyperIterator<X> implements AutoCloseable {
     }
 
 
-    private void local(Object itemOrNode) {
-        if (itemOrNode instanceof Node) {
-            Node node = (Node) itemOrNode;
-
-            //inline 1-arity branches for optimization
-            while (node.size() == 1) {
-                Object next = node.get(0);
-                if (next instanceof Node)
-                    node = (Node) next; //this might indicate a problem in the tree structure that could have been flattened automatically
-                else {
-
-                    //dont filter root node (traversed while plan is null)
-                    addPlan(node, next);
-                    return;
-                }
+    private void visit(Object x) {
+        //inline 1-arity branches for optimization
+        while (x instanceof Node && (((Node)x).size() == 1)) {
+            Object next = ((Node) x).get(0);
+            if (next instanceof Branch)
+                x = next; //this might indicate a problem in the tree structure that could have been flattened automatically
+            else {
+                //leaf node or item
+                break;
             }
-
-            addPlan(node, node);
-
-        } else {
-            plan.add(itemOrNode);
         }
 
+        //dont filter root node (traversed while plan is null)
+        if ((x instanceof Node) && nodeFilter != null && !plan.isEmpty() && !nodeFilter.tryVisit((Node)x))
+            return;
+
+        plan.add(x);
     }
 
     /**
      * surveys the contents of the node, producing a new 'stack frame' for navigation
      */
     private void expand(Node<X> at) {
-        if (at.size() == 0)
-            return;
+//        if (at.size() == 0)
+//            return;
 
-        at.forEachLocal(this::local);
+        at.forEachLocal(this::visit);
 
-    }
-
-    private void addPlan(Node node, Object first) {
-        if (nodeFilter == null || plan.isEmpty() || nodeFilter.tryVisit(node)) {
-            plan.add(first);
-        }
     }
 
 

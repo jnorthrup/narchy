@@ -6,6 +6,8 @@ import nars.NAR;
 import nars.attention.AttNode;
 import nars.attention.AttnBranch;
 import nars.concept.sensor.AbstractSensor;
+import nars.control.channel.CauseChannel;
+import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.PreciseTruth;
@@ -27,7 +29,7 @@ public class BiPolarAction extends AbstractSensor {
     private final FloatToFloatFunction motor;
 
     public final AttNode attn;
-    private final short cause;
+    private final CauseChannel<ITask> cause;
 
 
     /** model for computing the net result from the current truth inputs */
@@ -54,11 +56,15 @@ public class BiPolarAction extends AbstractSensor {
     public BiPolarAction(Term pos, Term neg, Polarization model, FloatToFloatFunction motor, NAR nar) {
         super(PROD.the(pos, neg), nar);
 
-        this.cause = nar.newCause(id).id;
-
+        this.cause = nar.newChannel(id);
         this.attn = new AttnBranch(id, List.of(pos, neg));
 
-        this.pos = new AbstractGoalActionConcept(pos, nar);
+        this.pos = new AbstractGoalActionConcept(pos, nar) {
+            @Override
+            protected CauseChannel<ITask> channel(NAR n) {
+                return BiPolarAction.this.cause;
+            }
+        };
         this.neg = new AbstractGoalActionConcept(neg, nar);
 
 
@@ -159,8 +165,9 @@ public class BiPolarAction extends AbstractSensor {
             Pb = Nb = null;
         }
 
-        pos.feedback(Pb, prev, now, cause, nar);
-        neg.feedback(Nb, prev, now, cause, nar);
+        short cid = cause.id;
+        pos.feedback(Pb, prev, now, cid, nar);
+        neg.feedback(Nb, prev, now, cid, nar);
 
     }
 

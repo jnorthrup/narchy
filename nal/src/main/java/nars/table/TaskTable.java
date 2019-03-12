@@ -14,7 +14,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
  * holds a set of ranked question/quests tasks
@@ -78,11 +77,6 @@ public interface TaskTable {
 
     void match(Answer m);
 
-    /** default behavior is similar to match but sample implies an attempt at fair, random sort order of visited components.
-     *  see mplementations such as BeliefTables */
-    default void sample(Answer m) {
-        match(m);
-    }
 
 //        if (isEmpty())
 //            return;
@@ -92,7 +86,9 @@ public interface TaskTable {
 //    }
 
 
-    @Nullable default Task match(When w, @Nullable Term template) { return match(w.start, w.end, template, null, w.dur, w.nar); }
+    @Nullable default Task match(When w, @Nullable Term template) { return match(w, template, null); }
+
+    @Nullable default Task match(When w, @Nullable Term template, Predicate<Task> filter) { return match(w.start, w.end, template, filter, w.dur, w.nar); }
 
     @Nullable default Task match(long start, long end, Term template, int dur, NAR nar) { return match(start, end, template, null, dur, nar); }
 
@@ -103,8 +99,10 @@ public interface TaskTable {
 
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
         boolean beliefOrQuestion = !(this instanceof QuestionTable);
-        return Answer.relevance(beliefOrQuestion,
-                beliefOrQuestion ? Answer.BELIEF_MATCH_CAPACITY : Answer.QUESTION_MATCH_CAPACITY, start, end, template, filter, nar)
+        assert(beliefOrQuestion);
+
+        return Answer.relevant(beliefOrQuestion,
+                Answer.BELIEF_MATCH_CAPACITY, start, end, template, filter, nar)
                 .dur(dur)
                 .match(this);
     }
@@ -115,46 +113,31 @@ public interface TaskTable {
                 .task(true, true, false) : null;
     }
 
-    default Task sample(long start, long end, @Nullable Term template, NAR nar) {
-        return sample(start, end, template, null, nar);
-    }
+
 
     default Task sample(When when, @Nullable Term template, @Nullable Predicate<Task> filter) {
-        return sample(when.start, when.end, template, filter, when.nar);
-    }
-
-    default Task sample(long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
         if (isEmpty())
             return null;
 
         boolean isBeliefOrGoal = !(this instanceof QuestionTable);
 
-        /* use as-is */
-        final boolean dither = false;
-
-        filter = dither &&isBeliefOrGoal ? filterConfMin(filter, nar) : filter;
-
-        return Answer.relevance(isBeliefOrGoal,
+        return Answer.relevant(isBeliefOrGoal,
                 isBeliefOrGoal ? Answer.BELIEF_SAMPLE_CAPACITY : Answer.QUESTION_SAMPLE_CAPACITY,
-                start, end, template, filter, nar)
-            .ditherTruth(dither)
-            .sample(this)
-            .task(false, false, false);
-
-//        return matching(start, end, template, filter, nar).task(false, false, false);
+                when.start, when.end, template, filter, when.nar)
+            .sample(this);
 
     }
 
-    static Predicate<Task> filterConfMin(Predicate<Task> filter, NAR nar) {
-        float eviMin = c2wSafe(nar.confMin.floatValue());
-
-        return (filter == null) ?
-            t -> t.evi() >= eviMin
-            :
-            t -> t.evi() >= eviMin && filter.test(t)
-        ;
-    }
+    //    static Predicate<Task> filterConfMin(Predicate<Task> filter, NAR nar) {
+//        float eviMin = c2wSafe(nar.confMin.floatValue());
+//
+//        return (filter == null) ?
+//            t -> t.evi() >= eviMin
+//            :
+//            t -> t.evi() >= eviMin && filter.test(t)
+//        ;
+//    }
 
     /** clear and fully deallocate if possible */
     default void delete() {
