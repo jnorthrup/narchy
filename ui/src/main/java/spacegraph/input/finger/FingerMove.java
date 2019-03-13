@@ -49,9 +49,7 @@ public abstract class FingerMove extends Dragging {
         return super.startDrag(f);
     }
 
-    v2 pos(Finger finger) {
-        return finger.posPixel;
-    }
+    public abstract v2 pos(Finger finger);
 
 
 }

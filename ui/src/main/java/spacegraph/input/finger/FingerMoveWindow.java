@@ -29,9 +29,7 @@ abstract public class FingerMoveWindow extends FingerMove {
         return super.startDrag(f);
     }
 
-    @Override
-    protected v2 pos(Finger finger) {
-        return finger.posPixel;
+    @Override public v2 pos(Finger finger) {
+        return finger.posScreen.clone();
     }
-
 }

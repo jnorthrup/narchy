@@ -219,7 +219,10 @@ public class OsmSurface extends Surface {
 
     final FingerMove pan = new FingerMove(0) {
 
-
+        @Override
+        public v2 pos(Finger finger) {
+            return finger.posRelative(OsmSurface.this);
+        }
 
         v2 prev = new v2();
         @Override

@@ -140,11 +140,6 @@ public class ZoomOrtho extends Ortho {
             return super.startDrag(f);
         }
 
-        @Override
-        protected v2 pos(Finger finger) {
-
-            return finger.posScreen.clone();
-        }
 
         @Override
         public void move(float dx, float dy) {

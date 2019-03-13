@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.meter;
 
 import jcog.Util;
+import jcog.math.v2;
 import jcog.pri.ScalarValue;
 import jcog.signal.buffer.CircularFloatBuffer;
 import spacegraph.audio.AudioBuffer;
@@ -54,6 +55,11 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
         @Override
         protected void move(float tx, float ty) {
             vis.pan(tx * PAN_SPEED);
+        }
+
+        @Override
+        public v2 pos(Finger finger) {
+            return finger.posRelative(WaveView.this);
         }
     };
 

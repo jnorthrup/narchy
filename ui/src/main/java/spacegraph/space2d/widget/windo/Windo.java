@@ -56,7 +56,7 @@ public class Windo extends MutableUnitContainer {
         if (other != null && other != this) {
             unfinger(finger);
             return other;
-        } else if (finger == null || !fingeringBounds(finger)) {
+        } else if (finger == null || !fingeringRelative(finger).inUnit()) {
 
 
             unfinger(finger);
@@ -76,10 +76,7 @@ public class Windo extends MutableUnitContainer {
     private Surface drag(Finger finger) {
 
 
-
-        v2 hitPoint = windowHitPointRel(finger);
-
-        DragEdit potentialDragMode = DragEdit.edge(hitPoint, resizeBorder);
+        DragEdit potentialDragMode = DragEdit.edge(fingeringRelative(finger), resizeBorder);
 
 
         if (!fingerable(potentialDragMode))
@@ -123,13 +120,10 @@ public class Windo extends MutableUnitContainer {
         finger.tryFingering(RenderWhileHovering.Reset);
     }
 
-    protected boolean fingeringBounds(Finger finger) {
-        v2 f = finger.posGlobal(this);
-        return bounds.contains(f.x, f.y);
-    }
 
-    protected v2 windowHitPointRel(Finger finger) {
-        return finger.posGlobal(this);
+
+    protected v2 fingeringRelative(Finger finger) {
+        return finger.posRelative(this);
     }
 
 

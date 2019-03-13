@@ -1,5 +1,6 @@
 package spacegraph.input.finger;
 
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 
@@ -22,6 +23,9 @@ public class FingerMoveSurface extends FingerMove {
             this.before = moving.bounds;
 
         return super.drag(f);
+    }
+    @Override public v2 pos(Finger finger) {
+        return finger.posGlobal(moving);
     }
 
     @Override
