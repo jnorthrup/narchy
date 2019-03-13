@@ -13,6 +13,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
+import nars.time.event.DurService;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -110,8 +111,9 @@ abstract public class MultiExec extends UniExec {
             throw new UnsupportedOperationException("non-realtime clock not supported");
 
         super.start(n);
-        //ons.add(DurService.on(n, this::update));
-        ons.add(n.onCycle(this::update));
+
+        ons.add(DurService.on(n, this::update));
+        //ons.add(n.onCycle(this::update));
 
     }
 

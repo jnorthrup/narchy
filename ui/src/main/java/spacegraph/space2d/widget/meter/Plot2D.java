@@ -559,7 +559,7 @@ public class Plot2D extends Widget {
             this.maxValue = maxValue;
 
             if (update) {
-                update = !bmp.updateIfNotShowing(); //keep updating till updated
+                update = !bmp.updateIfShowing(); //keep updating till updated
             }
 
             bmp.paint(g, null);

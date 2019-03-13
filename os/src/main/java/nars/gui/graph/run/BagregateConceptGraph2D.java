@@ -21,7 +21,7 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
     };
 
     public static nars.gui.graph.run.BagregateConceptGraph2D get(NAR n) {
-        Bagregate<Term> b = new Bagregate(() -> n.conceptsActive().iterator(), 256, 0.5f);
+        Bagregate<Term> b = new Bagregate(() -> n.conceptsActive().iterator(), 256);
 
         return new nars.gui.graph.run.BagregateConceptGraph2D(b, n) {
             private DurService updater;

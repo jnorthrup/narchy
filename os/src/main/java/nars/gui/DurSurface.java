@@ -39,7 +39,7 @@ abstract public class DurSurface<S extends Surface> extends AbstractTriggeredSur
         return get(x, n, (nn)->eachDur.run());
     }
     public static DurSurface get(BitmapMatrixView x, NAR n) {
-        return get(x, n, x::updateIfNotShowing);
+        return get(x, n, x::updateIfShowing);
     }
 
     public static DurSurface get(Surface x, NAR n, Consumer<NAR> eachDur) {

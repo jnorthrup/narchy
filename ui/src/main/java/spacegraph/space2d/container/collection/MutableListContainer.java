@@ -112,6 +112,7 @@ public class MutableListContainer extends AbstractMutableContainer {
             } //else: wait until attached
         }
 
+        layout();
 
 
     }

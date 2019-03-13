@@ -16,6 +16,9 @@ import static nars.time.Tense.ETERNAL;
 
 public class WorkerExec extends ThreadedExec {
 
+    /** process sub-timeslice divisor */
+    double granularity = 8;
+
     public WorkerExec(Valuator r, int threads) {
         super(r, threads);
     }
@@ -47,7 +50,8 @@ public class WorkerExec extends ThreadedExec {
         long prioLast = ETERNAL;
         private int n;
 
-        private long prioritizeEveryCycles;
+        private long priorityPeriod;
+        boolean reprioritize = true;
 
         WorkPlayLoop() {
             rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
@@ -96,22 +100,28 @@ public class WorkerExec extends ThreadedExec {
             if (n == 0)
                 return;
 
-            long now = nar.time();
-            if (now > prioLast + prioritizeEveryCycles) {
-                prioritizeEveryCycles =
-                        nar.dur(); //update current dur
-                //2 * nar.dtDither();
 
-                prioLast = now;
-                prioritize(threadWorkTimePerCycle * prioritizeEveryCycles);
-            }
 
             long start = nanoTime();
             long until = start + playTime, after = start /* assigned for safety */;
 
 
             int skip = 0;
+
             do {
+
+                long now = nar.time();
+                if (reprioritize || now > prioLast + priorityPeriod) {
+                    reprioritize = false;
+
+
+                    priorityPeriod =
+                            nar.dur(); //update current dur
+                    //2 * nar.dtDither();
+
+                    prioLast = now;
+                    prioritize(threadWorkTimePerCycle);
+                }
 
                 TimedLink.MyTimedLink s = play[i++];
                 if (i == n) i = 0;
@@ -155,8 +165,10 @@ public class WorkerExec extends ThreadedExec {
                     }
                 }
 
-                if (!played && ++skip == n)
-                    break; //go to work early
+                if (!played && ++skip == n) {
+                    reprioritize = true;
+                    //break; //go to work early
+                }
 
             } while ((until > after) && queueSafe());
 //                System.out.println(
@@ -196,7 +208,7 @@ public class WorkerExec extends ThreadedExec {
             long shift = minTime < 0 ? 1 - minTime : 0;
             for (TimedLink.MyTimedLink m : play) {
                 int t = Math.round(shift + remainingTime * m.pri());
-                m.add(Math.max(subCycleMinNS, t), -workTimeNS, +workTimeNS);
+                m.add(Math.max(subCycleMinNS, t) * priorityPeriod, -workTimeNS, +workTimeNS);
             }
 //                }
         }

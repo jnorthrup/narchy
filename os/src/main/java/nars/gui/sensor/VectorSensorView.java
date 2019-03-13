@@ -5,14 +5,15 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.random.SplitMix64Random;
 import nars.NAR;
+import nars.Param;
 import nars.agent.NAgent;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.VectorSensor;
-import nars.time.event.DurService;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
-import nars.term.Term;
+import nars.task.util.Answer;
 import nars.time.Tense;
+import nars.time.event.DurService;
 import nars.truth.Truth;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
@@ -45,7 +46,6 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private DurService on;
 
     private long start, end;
-    private int dur;
 
     /** how much evidence to include in result */
     static final int truthPrecision = 8;
@@ -69,7 +69,8 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
     private Consumer<TaskConcept> touchMode = (x) -> { };
     private final TaskConcept[][] concept;
-    private int _truthDur;
+
+    private Answer answer = null;
 
     public VectorSensorView(Bitmap2DSensor sensor, NAgent a) {
         super(sensor.width, sensor.height);
@@ -185,17 +186,30 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         super.stopping();
     }
 
-    private void accept(NAR nn) {
-        dur = nn.dur();
-        long now = Math.round(nn.time() + (dur * timeShift.floatValue()));
-        float window = this.window.floatValue();
+    private void accept(NAR n) {
 
-        this.start = Math.round(now - dur * window);
-        this.end = Math.round(now + dur * window);
+        if (showing()) {
 
-        this._truthDur = Math.round(truthDur.floatValue() * dur);
-        updateIfNotShowing();
+            int narDur = n.dur();
+            long now = Math.round(n.time() + (narDur * timeShift.floatValue()));
+
+            double windowRadius = this.window.floatValue() * narDur / 2;
+
+            this.start = Math.round(now - windowRadius);
+            this.end = Math.round(now + windowRadius);
+
+
+            if (answer == null)
+                this.answer = Answer
+                        .relevant(true, truthPrecision, start, end, null, null, nar);
+
+            this.answer.time(start, end).dur(Math.round(narDur * truthDur.floatValue()));
+        }
+
+
+        updateIfShowing();
     }
+
 
     private final SplitMix64Random noise = new SplitMix64Random(1);
 
@@ -214,18 +228,17 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         float R = 0, G = 0 , B = 0;
         float bf = 0;
 
-        Term template =
-                null; //s.target;
-
+        Answer a = this.answer;
+        int tries = (int) Math.ceil(truthPrecision * Param.ANSWER_COMPLETENESS);
         if (beliefs.get()) {
-            Truth b = s.beliefs().truth(start, end, template, null, truthPrecision, _truthDur, nar);
+            Truth b = a!=null ? a.clear(tries).match(s.beliefs()).truth() : null;
             bf = b != null ? b.freq() : noise();
         }
 
         R = bf * 0.75f; G = bf * 0.75f; B = bf * 0.75f;
 
         if (goals.get()) {
-            Truth d = s.goals().truth(start, end, template, null, truthPrecision, _truthDur, nar);
+            Truth d = a!=null ? a.clear(tries).match(s.goals()).truth() : null;
             if (d != null) {
                 float f = d.expectation();
 

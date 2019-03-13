@@ -68,7 +68,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         if (concepts == null)
             concepts = (Iterable) this;
 
-        this.concepts = new Bagregate<Concept>(concepts, maxNodes, bagUpdateRate) {
+        this.concepts = new Bagregate<Concept>(concepts, maxNodes) {
 
             @Override
             public void onRemove(PriReference<Concept> value) {

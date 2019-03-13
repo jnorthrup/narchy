@@ -16,7 +16,7 @@ public class PaintUpdateMatrixView extends BitmapMatrixView {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        updateIfNotShowing();
+        updateIfShowing();
         super.paint(gl, surfaceRender);
     }
 

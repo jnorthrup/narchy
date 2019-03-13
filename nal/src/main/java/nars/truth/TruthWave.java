@@ -4,6 +4,7 @@ import jcog.WTF;
 import nars.NAR;
 import nars.Param;
 import nars.table.BeliefTable;
+import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.util.Timed;
@@ -160,23 +161,24 @@ public class TruthWave {
             t = minT + dt / 2;
         }
 
-        int halfDur = dur/2;
+        int halfDT = (int) Math.round(dt/2);
         float[] data = this.truth;
         int j = 0;
+        Answer a = Answer.relevant(true, precision, start, end, term, null, nar)
+                .dur(dur);
+        int tries = (int) Math.ceil(precision* Param.ANSWER_COMPLETENESS);
+
         for (int i = 0; i < points; i++) {
-            long mid = Math.round(t);
-            long a = mid - halfDur;
-            long b = mid + halfDur;
-//            long a = Math.round(t); //Math.round(t - dt/2);
-//            long b = Math.round(t + dt);
+            long s = Math.round(t - halfDT);
+            long e = Math.round(t + halfDT);
+            Truth tr = a.clear(tries).time(s, e).match(table).truth();
+            if (tr!=null)
+                load(data, (j++) * ENTRY_SIZE,
+                        minT, maxT,
+                        s, e,
+                        tr
+                );
 
-            Truth tr = table.truth(a, b, term, null, precision, dur, nar);
-
-            load(data, (j++) * ENTRY_SIZE,
-                    minT, maxT,
-                    mid,mid,
-                    tr
-            );
             t += dt;
         }
         this.size = j;

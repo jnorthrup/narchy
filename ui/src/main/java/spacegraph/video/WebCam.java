@@ -248,7 +248,7 @@ public class WebCam {
             cam.tensor.on(x -> {
                current = x;
 
-               bmp.updateIfNotShowing();
+               bmp.updateIfShowing();
             });
 
             add(bmp);

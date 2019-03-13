@@ -36,7 +36,7 @@ public final class Answer {
             Math.max(1, 2 * (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
             //3;
 
-    public static final int BELIEF_SAMPLE_CAPACITY = 2;
+    public static final int BELIEF_SAMPLE_CAPACITY = 4;
     public static final int QUESTION_SAMPLE_CAPACITY = 4;
 
     public final NAR nar;
@@ -50,6 +50,7 @@ public final class Answer {
     public TimeRangeFilter time;
     public final Predicate<Task> filter;
     private final FloatRank<Task> rank;
+    public boolean ditherTruth = false;
 
     /**
      * time to live, # of tries remain
@@ -60,21 +61,22 @@ public final class Answer {
      * truthpolation duration in result evidence projection
      */
     public int dur = 0;
-    public boolean ditherTruth = false;
 
-    private Answer(FloatRank<Task> rank, @Nullable Predicate<Task> filter, int capacity, NAR nar) {
-        this(rank, filter, capacity, Math.round(Param.ANSWER_COMPLETENESS * capacity), nar);
+
+    public Answer clear(int ttl) {
+        tasks.clear();
+        this.ttl = ttl;
+        return this;
     }
 
     /**
      * TODO filter needs to be more clear if it refers to the finished task (if dynamic) or a component in creating one
      */
-    private Answer(FloatRank<Task> rank, @Nullable Predicate<Task> filter, int capacity, int maxTries, NAR nar) {
+    private Answer(FloatRank<Task> rank, @Nullable Predicate<Task> filter, int capacity, NAR nar) {
         this.nar = nar;
         this.tasks = //TopN.pooled(topTasks, capacity, this.rank = rank.filter(filter));
                 new RankedTopN<>(new Task[capacity], this.rank = rank.filter(filter));
         this.filter = filter;
-        this.ttl = maxTries;
     }
 
     /**
@@ -171,7 +173,8 @@ public final class Answer {
 
         return new Answer(r, filter, capacity, nar)
                 .time(start, end)
-                .template(template);
+                .template(template)
+                .clear(Math.round(Param.ANSWER_COMPLETENESS * capacity));
     }
 
 
@@ -497,14 +500,15 @@ public final class Answer {
         return tp;
     }
 
+
+
     public final Answer match(TaskTable t) {
         t.match(this);
         return this;
     }
 
     public final Task sample(TaskTable t) {
-        t.match(this);
-        return tasks.getRoulette(random());
+        return match(t).tasks.getRoulette(random());
     }
 
 //    final static ThreadLocal<DequePool<CachedFloatRank<Task>>> pool =
@@ -593,15 +597,5 @@ public final class Answer {
         }
         return this;
     }
-
-//
-//    @Nullable
-//    private Truth truth(TruthPolation p) {
-//        p.ensureCapacity(tasks.size());
-//        p.addAt(tasks);
-//        p.filterCyclic(false);
-//        return p.truth();
-//    }
-
 
 }

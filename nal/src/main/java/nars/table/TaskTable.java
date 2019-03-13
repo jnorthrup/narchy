@@ -77,15 +77,6 @@ public interface TaskTable {
 
     void match(Answer m);
 
-
-//        if (isEmpty())
-//            return;
-//
-//        forEachTask(m);
-//        throw new TODO();
-//    }
-
-
     @Nullable default Task match(When w, @Nullable Term template) { return match(w, template, null); }
 
     @Nullable default Task match(When w, @Nullable Term template, Predicate<Task> filter) { return match(w.start, w.end, template, filter, w.dur, w.nar); }

@@ -1,7 +1,6 @@
 package jcog.pri.bag.util;
 
 import com.google.common.collect.Iterables;
-import jcog.data.NumberX;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
@@ -25,15 +24,17 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 
     public final Bag<?, PriReference<X>> bag;
     private final Iterable<? extends PriReference<X>> src;
-    private final NumberX scale;
+
+    public final FloatRange preAmp = new FloatRange(1, 0f, 1f);
+    public final FloatRange forgetRate = new FloatRange(0.5f, 0, 1);
 //    private final AtomicBoolean busy = new AtomicBoolean();
 
 
-    public Bagregate(Stream<PriReference<X>> src, int capacity, float scale) {
-        this(src::iterator, capacity, scale);
+    public Bagregate(Stream<PriReference<X>> src, int capacity) {
+        this(src::iterator, capacity);
     }
 
-    public Bagregate(Iterable<? extends PriReference<X>> src, int capacity, float scale) {
+    public Bagregate(Iterable<? extends PriReference<X>> src, int capacity) {
         this.bag = new PLinkArrayBag<>(PriMerge.max /*PriMerge.replace*/, capacity) {
             @Override
             public void onRemove(PriReference<X> value) {
@@ -41,7 +42,6 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
             }
         };
         this.src = src;
-        this.scale = new FloatRange(scale, 0f, 1f);
     }
 
     protected void onRemove(PriReference<X> value) {
@@ -56,16 +56,16 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 
 
 
-        float scale = this.scale.floatValue();
+        float preAmp = this.preAmp.floatValue();
 
-        bag.commit();
+        bag.commit(bag.forget(this.forgetRate.floatValue()));
 
         src.forEach(x -> {
             X xx = x.get();
             if (include(xx)) {
                 float pri = x.pri();
                 if (pri==pri)
-                    bag.putAsync(new PLink<>(xx, pri*scale ));
+                    bag.putAsync(new PLink<>(xx, pri*preAmp ));
             }
         });
 

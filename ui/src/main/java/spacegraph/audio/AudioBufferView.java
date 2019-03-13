@@ -88,7 +88,7 @@ public class AudioBufferView extends Gridding {
 
             protected void update() {
                 if (s.update())
-                    bmp.updateIfNotShowing();
+                    bmp.updateIfShowing();
             }
 
             private Off off;

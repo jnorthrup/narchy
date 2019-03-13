@@ -198,7 +198,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         return i(x, capacity());
     }
 
-    private int i(int x, int cap) {
+    public int i(int x, int cap) {
          //return x & mask;
         return x % cap;
     }
@@ -252,7 +252,11 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
     }
 
     public final X peek(int delta) {
-        return getOpaque(i(head() + delta) );
+        return peek(head(), delta);
+    }
+
+    public final X peek(int head, int delta) {
+        return getOpaque(i( head + delta) );
     }
 
     /** oldest element */

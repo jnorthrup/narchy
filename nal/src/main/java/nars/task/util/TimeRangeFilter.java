@@ -38,6 +38,7 @@ public class TimeRangeFilter extends TimeRange implements LongLongPredicate {
     private final Mode mode;
 
     public static TimeRangeFilter the(long start, long end, Mode mode) {
+        assert(start!=TIMELESS);
         if (mode == Mode.Contains && (start == end))
             throw new RuntimeException("nothing contained in zero length time interval");
 

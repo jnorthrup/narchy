@@ -210,7 +210,7 @@ public class BitmapMatrixView extends TexSurface {
     /**
      * must call this to re-generate texture so it will display
      */
-    public final boolean updateIfNotShowing() {
+    public final boolean updateIfShowing() {
 
         if (!showing())
             return false;

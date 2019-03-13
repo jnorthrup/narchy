@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -115,9 +116,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     public org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int narDur, NAR n) {
-        long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
+        long s = ETERNAL, e = ETERNAL;
         Truth next = null;
         FasterList<BeliefTable> tables = ((BeliefTables) (beliefsOrGoals ? beliefs() : goals())).tables;
+
         if (!tables.isEmpty()) {
             int dither = n.dtDither.intValue();
 
@@ -125,31 +127,33 @@ public class AbstractGoalActionConcept extends ActionConcept {
                     //Tense.occToDT(e-s);
                     narDur;
 
+            int limit = componentsMax;
+            Answer a = Answer.relevant(true, limit, s, e, term, withoutCuriosity, n).dur(organicDur);
             for (int iter = 0; iter < 3; iter++) {
 
 
                 switch (iter) {
                     case 0:
                         //duration-precision window
-                        //s = now - dur / 2;
-                        //e = now + dur / 2;
-                        s = now - narDur;
-                        e = now;
+                        s = now - narDur / 2;
+                        e = now + narDur / 2;
+//                        s = now - narDur;
+//                        e = now;
                         break;
                     case 1:
-//                    s = now - dur;
-//                    e = now + dur;
-                        s = now - narDur * 2;
-                        e = now; //now + dur;
+                        s = now - narDur;
+                        e = now + narDur;
+//                        s = now - narDur * 2;
+//                        e = now; //now + dur;
                         break;
                     default:
                         //frame-precision window
-                        long frameDur = now - prev;
+                        double frameDur = now - prev;
                         int dn = 3;
-//                    s = now - Math.max(dur*dn/2f, frameDur/2);
-//                    e = now + Math.max(dur*dn/2f, frameDur/2);
-                        s = now - Math.max(narDur * dn, frameDur);
-                        e = now; //now + Math.max(dur * 2, 0);
+                        s = (long) (now - Math.max(narDur*dn/2f, frameDur/2));
+                        e = (long) (now + Math.max(narDur*dn/2f, frameDur/2));
+                        //s = now - Math.max(narDur * dn, frameDur);
+                        //e = now; //now + Math.max(dur * 2, 0);
                         break;
 
                 }
@@ -158,31 +162,17 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 s += dither / 2;
                 e += dither / 2;
 
-                int limit = componentsMax;
-
-                Predicate<Task> fil =
-                        withoutCuriosity;
-
-                Answer a = Answer.relevant(true, limit, s, e, term, fil, n).dur(organicDur);
+                a.time(s, e);
 
                 for (BeliefTable b : tables) {
                     if (!(b instanceof CuriosityGoalTable)) {
-                        a.ttl = limit;
-                        a.match(b);
+                        a.clear(limit*2).match(b);
                     }
                 }
 
                 //TODO my truthpolation .stamp()'s and .cause()'s for clues
 
-                Truth organic = a.truth();
-                if (organic != null) {
-                    @Nullable Truth maybeNextActionDex = organic;
-                    if (next == null)
-                        next = maybeNextActionDex;
-                    else
-                        next = Truth.stronger(maybeNextActionDex, next);
-                }
-
+                next = Truth.stronger(a.truth(), next);
 
                 //optional:
 //            if (nextActionDex!=null)
@@ -201,6 +191,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
         int narDur = n.dur();
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
+
+        if (prev == TIMELESS)
+            prev = now - n.dur(); //HACK
 
         Pair<Truth, long[]> bt = truth(true, limit, prev, now, narDur, n);
         this.beliefTruth = bt != null ? bt.getOne() : null;

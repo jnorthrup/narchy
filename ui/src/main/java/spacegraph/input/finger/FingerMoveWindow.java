@@ -30,6 +30,6 @@ abstract public class FingerMoveWindow extends FingerMove {
     }
 
     @Override public v2 pos(Finger finger) {
-        return finger.posScreen.clone();
+        return finger.posScreen;
     }
 }

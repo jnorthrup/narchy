@@ -163,10 +163,10 @@ public class Jake2Agent extends NAgentX implements Runnable {
 //        }
 
         BitmapMatrixView rgbView = new BitmapMatrixView(rgbVision);
-        onFrame(rgbView::updateIfNotShowing);
+        onFrame(rgbView::updateIfShowing);
 
         BitmapMatrixView depthView = new BitmapMatrixView(depthVision.src);
-        onFrame(depthView::updateIfNotShowing);
+        onFrame(depthView::updateIfShowing);
 
         window(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
 

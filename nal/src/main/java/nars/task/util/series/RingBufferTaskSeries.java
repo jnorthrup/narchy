@@ -1,6 +1,5 @@
 package nars.task.util.series;
 
-import jcog.WTF;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.LongInterval;
 import jcog.math.Longerval;
@@ -61,34 +60,34 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
     /**
      * binary search
      */
-    public int indexOf(long when) {
-        int low = 0;
-        int high = size() - 1;
+    public int indexNear(int head, long when) {
+        int s = size();
+        if (s == 0)
+            return -1;
+        else if (s == 1)
+            return 0;
+        else if (s == 2)
+            return 1; //prefer the newest
 
-        int closest = -1;
-        while (low <= high) {
-            int mid = (low + high) >>> 1;
-            T midVal = q.peek(mid);
-            if (midVal == null)
-                return closest;
-            else
-                closest = mid; //store in case we arrive at internal empty location
+        int low = 0, high = s - 1, mid = -1;
+        while (low < high) {
+            mid = (low + high) / 2;
+            T midVal = q.peek(head, mid);
+            if (midVal == null) {
+                low = mid + 1; ///oops ?
+                continue;
+            }
 
-            if (midVal == null)
-                break;
-
-            long a = midVal.start();
-            long b = midVal.end();
+            long a = midVal.start(), b = midVal.end();
             if (when >= a && when <= b)
-                return mid; //found
-
-            if (when > b)
+                break; //found
+            else if (when > b)
                 low = mid + 1;
-            else
+            else //if (when < a)
                 high = mid - 1;
         }
 
-        return closest;
+        return mid;
     }
 
 //    /**
@@ -132,6 +131,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
     public boolean whileEach(long minT, long maxT, boolean exactRange, Predicate<? super T> whle) {
         //assert (minT != ETERNAL);
 
+
 //        /*if (exactRange)*/ {
         long s = start();
         if (s == TIMELESS)
@@ -151,35 +151,31 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 return true; //nothing
         }
 
+        int head = q.head();
         if (minT != ETERNAL && minT != TIMELESS) {
             boolean point = maxT == minT;
+            boolean fullyDisjoint = !Longerval.intersects(minT, maxT, s, e);
 
-            int b = indexOf(Math.min(e, maxT));
+            int b = indexNear(head, Math.min(e, maxT));
             if (b == -1)
                 return true; //b = size() - 1;
 
-            int a = point ? b : indexOf(Math.max(s, minT));
+            int a = point ? b : indexNear(head, Math.max(s, minT));
             if (a == -1)
                 return true; //a = 0;
 
             int center = (a + b) / 2;
 
-            boolean fullyDisjoint = !Longerval.intersects(minT, maxT, s, e);
 
-            int cap = this.cap;
-            int r = 0, capacityRadius = cap / 2 + 1;
+            int size = this.size();
+            int r = 0, rad = size / 2 + 1;
             int supplied = 0;
             long suppliedMin = Long.MAX_VALUE, suppliedMax = Long.MIN_VALUE;
 
-            int h = q.head();
-
             do {
 
-
-
-
                 int vv = center + r;
-                T v = q.getOpaque((h + vv) % cap);
+                T v = vv < size ? q.peek(head, vv) : null;
                 if (v!=null && (!exactRange || v.intersects(minT, maxT))) {
                     if (!whle.test(v))
                         return false;
@@ -193,8 +189,8 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
 
 
-                int uu = center - r; if (uu < 0) uu += cap; //HACK prevent negative value
-                T u = q.getOpaque((h + uu) % cap);
+                int uu = center - r; //if (uu < 0) uu += cap; //HACK prevent negative value
+                T u = uu > 0 ? q.peek(head, uu) : null;
                 if (u!=null && (!exactRange || u.intersects(minT, maxT))) {
                     if (!whle.test(u))
                         return false;
@@ -209,7 +205,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 if (u == null && v == null)
                     break;
 
-            } while (r <= capacityRadius);
+            } while (r <= rad);
 
         } else {
 
@@ -218,7 +214,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             //TODO iterate from oldest to newest if the target time is before or near series start
             int qs = q.size();
             for (int i = qs - 1; i >= 0; i--) {
-                T qi = q.peek(i);
+                T qi = q.get(i);
                 if (qi!=null && !whle.test(qi))
                     return false;
             }

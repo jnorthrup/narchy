@@ -91,7 +91,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
             {
                 agent.onFrame(() -> forEach(x -> {
                     if (x instanceof BitmapMatrixView)
-                        ((BitmapMatrixView) x).updateIfNotShowing();
+                        ((BitmapMatrixView) x).updateIfShowing();
                 }));
             }
         }

@@ -310,7 +310,7 @@ public interface TaskLink extends UnitPrioritizable {
 
 
                 float inflation = 1; //TODO test inflation<1
-                float want = 2 * p * subRate / 2;
+                float want = p * subRate / 2;
                 float got =
                         inflation < 1 ? Util.lerp(inflation, take(punc, want*inflation), want) : want;
 

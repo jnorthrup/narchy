@@ -62,7 +62,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
         } else {
             r.remember(x);
 
-            commit();
+            commit(forget(n.attn.forgetRate.floatValue() /* estimate */));
         }
 
 

@@ -74,7 +74,7 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
         }
 
         if (update) {
-            update = !bmp.updateIfNotShowing(); //keep updating till updated
+            update = !bmp.updateIfShowing(); //keep updating till updated
         }
 
         //bmp.paintMatrix(g);

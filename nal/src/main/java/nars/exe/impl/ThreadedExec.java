@@ -17,7 +17,6 @@ abstract public class ThreadedExec extends MultiExec {
     final int threads;
     final boolean affinity;
 
-    double granularity = 4;
 
     final AffinityExecutor exe = new AffinityExecutor();
     private List<Worker> workers;

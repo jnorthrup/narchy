@@ -35,12 +35,12 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
     public final Stacking layers = new Stacking() {
         @Override protected void compileChildren(SurfaceRender r) {
             forEach(c -> {
-//            float w = display.getWidth(), h = display.getHeight();
-//                r.on((g,rr)-> {
-//                    rr.pw = w; rr.ph = h;
-//                    //rr.set(0.5f, 0.5f, 1, 1);
-//                    g.glLoadIdentity();
-//                });
+            float w = display.getWidth(), h = display.getHeight();
+                r.on((g,rr)-> {
+                    rr.pw = w; rr.ph = h;
+                    //rr.set(0.5f, 0.5f, 1, 1);
+                    g.glLoadIdentity();
+                });
                 c.recompile(r);
             });
         }
@@ -78,7 +78,6 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
                 layers.add(new Menu());
             }
 
-            layers.layout();
             layers.doLayout(1);
 
 

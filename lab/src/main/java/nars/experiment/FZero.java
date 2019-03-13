@@ -125,7 +125,7 @@ public class FZero extends NAgentX {
 //        }
 
         BitmapMatrixView visionView = new BitmapMatrixView(vision);
-        onFrame(visionView::updateIfNotShowing);
+        onFrame(visionView::updateIfShowing);
         window(grid(visionView,
                 camAE.newChart()
                 //new Bitmap2DConceptsView(c, this).withControls()

@@ -425,7 +425,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public void clear() {
-        Arrays.fill(items, 0, SIZE.getAndSet(this, 0), null);
+        int s = SIZE.getAndSet(this, 0);
+        if (s > 0)
+            Arrays.fill(items, 0, s, null);
     }
 
 

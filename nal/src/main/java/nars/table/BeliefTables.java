@@ -2,7 +2,6 @@ package nars.table;
 
 import jcog.data.list.FasterList;
 import jcog.data.list.LimitedFasterList;
-import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
@@ -56,6 +55,7 @@ public class BeliefTables implements BeliefTable {
     @Override
     public void match(Answer a) {
         tables.allSatisfyWith((t,aa) -> {
+            //TODO better TTL distribution system
             if (aa.active()) {
                 int triesBefore = aa.ttl;
                 t.match(aa);
