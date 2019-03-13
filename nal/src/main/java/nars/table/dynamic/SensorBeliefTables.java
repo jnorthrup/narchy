@@ -43,8 +43,8 @@ public class SensorBeliefTables extends BeliefTables {
     public SensorBeliefTables(Term c, boolean beliefOrGoal) {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
-                //new ConcurrentSkiplistTaskSeries<>( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
-                new RingBufferTaskSeries<>( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
+                //new ConcurrentSkiplistTaskSeries<>(Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
+                new RingBufferTaskSeries<>(  Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
     }
 
     SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<SeriesBeliefTable.SeriesTask> s) {
@@ -58,12 +58,11 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
     protected TaskLink.GeneralTaskLink newTaskLink(Term term) {
-        Term src = term;
-        return new TaskLink.GeneralTaskLink(src);
+        return new TaskLink.GeneralTaskLink(term);
     }
 
     @Override
-    public void add(Remember r, NAR n) {
+    public final void add(Remember r, NAR n) {
 
         Task x = r.input;
         if (x instanceof SeriesBeliefTable.SeriesTask) {
@@ -73,9 +72,14 @@ public class SensorBeliefTables extends BeliefTables {
         } else {
 
             if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
-                if (!x.isEternal() && series.absorbNonSignal(x, series.start(), series.seriesEndMinDur(n))) {
-                    r.reject();
-                    return;
+                if (!x.isEternal()) {
+                    long seriesStart = series.start();
+                    if (seriesStart!=TIMELESS) {
+                        if (series.absorbNonSignal(x, seriesStart, series.end())) {
+                            r.reject();
+                            return;
+                        }
+                    }
                 }
             }
         }
@@ -122,7 +126,7 @@ public class SensorBeliefTables extends BeliefTables {
         SeriesBeliefTable.SeriesTask nextT = null, last = series.series.last();
         if (last != null) {
             long lastStart = last.start(), lastEnd = last.end();
-            if (lastEnd >= nextStart)
+            if (lastEnd > nextStart)
                 return null; //too soon, does this happen?
 
             int dur = nar.dur();
@@ -131,12 +135,14 @@ public class SensorBeliefTables extends BeliefTables {
             if (gapCycles <= series.series.latchDurs() * dur) {
 
                 if (next!=null) {
-                    long stretchCycles = (nextEnd - lastStart);
-                    if (stretchCycles <= series.series.stretchDurs() * dur) {
-                        Truth lastEnds = last.truth(lastEnd, 0);
-                        if (lastEnds!=null && lastEnds.equals(next)) {
+                    if (last.truth().equals(next)) {
+                        //continue, if not excessively long
+                        long stretchCycles = (nextEnd - lastStart);
+                        if (stretchCycles <= series.series.stretchDurs() * dur) {
+                            //Truth lastEnds = last.truth(lastEnd, 0);
+                            //if (lastEnds!=null && lastEnds.equals(next)) {
                             //stretch
-                            end(last, nextEnd, nar);
+                            stretch(last, nextEnd, nar);
                             return last;
                         }
                     }
@@ -146,11 +152,11 @@ public class SensorBeliefTables extends BeliefTables {
 
                 if (next == null) {
                     //guess that the signal stopped midway between (starting) now and the end of the last
-                    long midGap = Math.min(nextStart-1, lastEnd + dur/2);
-                    end(last, midGap, nar);
+//                    long midGap = Math.min(nextStart, lastEnd + dur/2);
+//                    stretch(last, midGap, nar);
                 } else {
                     //stretch the previous to the current starting point for the new task
-                    end(last, nextStart-1, nar);
+//                    stretch(last, nextStart, nar);
                 }
 
             }
@@ -187,7 +193,7 @@ public class SensorBeliefTables extends BeliefTables {
         return new SeriesBeliefTable.SeriesTask(term, punc, next, s, e, evi);
     }
 
-    static private void end(SeriesBeliefTable.SeriesTask s, long e, NAR nar) {
+    static private void stretch(SeriesBeliefTable.SeriesTask s, long e, NAR nar) {
         if (Param.SIGNAL_TASK_OCC_DITHER) {
             e = Tense.dither(e, nar);
         }

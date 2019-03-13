@@ -281,16 +281,16 @@ public interface NAct {
     /** adjusts increment/decrement rate according to provided curve;
      *    ex: short press moves in small steps, but pressing longer scans faster
      */
-    default GoalActionConcept[] actionDial(Term base, FloatRange x, FloatToFloatFunction dursPressedToIncrement) {
+    default GoalActionConcept[] actionDial(Term down, Term up, FloatRange x, FloatToFloatFunction dursPressedToIncrement) {
         throw new TODO();
     }
 
     /** discrete rotary dial:
      *    a pair of up/down buttons for discretely incrementing and decrementing a value within a given range
      */
-    default GoalActionConcept[] actionDial(Term base, FloatRange x, int steps) {
+    default GoalActionConcept[] actionDial(Term down, Term up, FloatRange x, int steps) {
         float delta = 1f/steps;
-        return actionStep(base, (c)->{
+        return actionStep(down,up, (c)->{
             float before = x.get();
             float next = Util.clamp(before + c * delta, x.min, x.max);
             if (!Util.equals(before, next, delta/4f)) {
@@ -474,17 +474,17 @@ public interface NAct {
         return actionUnipolar(s, true, (x) -> Float.NaN, update);
     }
 
-    default GoalActionConcept[] actionStep(Term s, IntProcedure each) {
-        return actionStep(s, (e)->{
+    default GoalActionConcept[] actionStep(Term down, Term up, IntProcedure each) {
+        return actionStep(down, up, (e)->{
             each.accept(e);
             return true;
         });
     }
 
-    default GoalActionConcept[] actionStep(Term s, IntPredicate each) {
+    default GoalActionConcept[] actionStep(Term down, Term up, IntPredicate each) {
         float thresh = 4/6f;
         return actionPushButtonMutex(
-            $.inh(s, NEG), $.inh(s, PLUS),
+            down,up,
             ifNeg -> ifNeg && each.test(-1),
             ifPos -> ifPos && each.test(+1),
             ()->thresh,

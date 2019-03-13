@@ -115,7 +115,7 @@ public class NARS {
 
             if (nal > 0)
                 withNAL(
-                        new TaskBuffer.BagTaskBuffer(32, 0.5f),
+                        new TaskBuffer.BagTaskBuffer(64, 0.25f),
                         //new TaskBuffer.MapTaskBuffer(64),
                         //new TaskBuffer.DirectTaskBuffer(),
                         1, nal);
@@ -128,7 +128,7 @@ public class NARS {
 
                 n.termVolumeMax.set(26);
 
-                n.attn.activeCapacity.set(96);
+                n.attn.activeCapacity.set(64);
                 n.attn.forgetRate.set(0.1f);
 
                 n.beliefPriDefault.set(0.1f);

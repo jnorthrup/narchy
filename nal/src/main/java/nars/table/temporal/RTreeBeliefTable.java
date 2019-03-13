@@ -59,7 +59,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         super(new RTree<>(RTreeBeliefModel.the));
     }
 
-
     /**
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing
      * an encountered deleted task.

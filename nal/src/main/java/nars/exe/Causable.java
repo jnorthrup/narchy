@@ -48,11 +48,11 @@ abstract public class Causable extends NARService {
     private Causable(NAR nar, Term id) {
         super(id);
         can = new Can(term().toString());
-        if (nar != null)
-            nar.on(this);
         this.nar = nar;
         this.busy = //new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
             singleton() ? new AtomicBoolean(false) : null;
+        if (nar != null)
+            nar.on(this);
     }
 
     @Override

@@ -69,7 +69,7 @@ public class BagClustering<X> {
         this.net = new NeuralGasNet(model.dims, centroids, model::distanceSq);
 
 
-        Bag<X, VLink<X>> b = new PriReferenceArrayBag<>(merge, initialCap);
+        Bag<X, VLink<X>> b = new PriReferenceArrayBag<>(merge, initialCap, PriBuffer.newConcurrentMap());
         this.bag = new BufferedBag.SimpleBufferedBag<>(b, new PriBuffer<>(merge));
 
     }

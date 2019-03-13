@@ -11,7 +11,7 @@ public class PriReferenceArrayBag<X,Y extends PriReference<X>> extends ArrayBag<
         super(mergeFunction, capacity);
     }
 
-    public PriReferenceArrayBag(int cap, PriMerge mergeFunction, Map<X, Y> map) {
+    public PriReferenceArrayBag(PriMerge mergeFunction, int cap, Map<X, Y> map) {
         super(mergeFunction, cap, map);
     }
 

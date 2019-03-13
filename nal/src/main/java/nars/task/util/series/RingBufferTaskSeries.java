@@ -2,10 +2,10 @@ package nars.task.util.series;
 
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.LongInterval;
-import jcog.math.Longerval;
 import nars.Task;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 /** fully concurrent. implemented with MetalConcurrentQueue */
 public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> {
 
-    final MetalConcurrentQueue<T> q;
+    public final MetalConcurrentQueue<T> q;
 
     public RingBufferTaskSeries(int capacity) {
         super(capacity);
@@ -66,12 +66,19 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             return -1;
         else if (s == 1)
             return 0;
-        else if (s == 2)
-            return 1; //prefer the newest
+        else if (s == 2) {
+            T a = q.peek(head, 0), b = q.peek(head, 1);
+            if (a==null) return 1; else if (b == null) return 0;
+            long at = a.meanTimeTo(when), bt = b.meanTimeTo(when);
+            if (at < bt) return 0;
+            else if (at > bt) return 1;
+            else return ThreadLocalRandom.current().nextBoolean() ? 0 : 1;
+        }
 
         int low = 0, high = s - 1, mid = -1;
-        while (low < high) {
-            mid = (low + high) / 2;
+        while (low <= high) {
+
+            mid = (low + (high+1)) / 2;
             T midVal = q.peek(head, mid);
             if (midVal == null) {
                 low = mid + 1; ///oops ?
@@ -81,10 +88,13 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             long a = midVal.start(), b = midVal.end();
             if (when >= a && when <= b)
                 break; //found
-            else if (when > b)
+            else if (when > b) {
+                //assert(when>a);
                 low = mid + 1;
-            else //if (when < a)
+            } else {//if (when < a)
+                //assert(when<a);
                 high = mid - 1;
+            }
         }
 
         return mid;
@@ -154,23 +164,25 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         int head = q.head();
         if (minT != ETERNAL && minT != TIMELESS) {
             boolean point = maxT == minT;
-            boolean fullyDisjoint = !Longerval.intersects(minT, maxT, s, e);
 
+            int center;
             int b = indexNear(head, Math.min(e, maxT));
             if (b == -1)
                 return true; //b = size() - 1;
 
-            int a = point ? b : indexNear(head, Math.max(s, minT));
-            if (a == -1)
-                return true; //a = 0;
+            if (point) {
+                int a = point ? b : indexNear(head, Math.max(s, minT));
+                if (a == -1)
+                    return true; //a = 0;
 
-            int center = (a + b) / 2;
+                center = (a + b) / 2;
+            } else {
+                center = b;
+            }
 
 
             int size = this.size();
             int r = 0, rad = size / 2 + 1;
-            int supplied = 0;
-            long suppliedMin = Long.MAX_VALUE, suppliedMax = Long.MIN_VALUE;
 
             do {
 
@@ -179,7 +191,6 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 if (v!=null && (!exactRange || v.intersects(minT, maxT))) {
                     if (!whle.test(v))
                         return false;
-                    supplied++; if (!fullyDisjoint) { long zs = v.start(), ze = v.end(); if (zs < suppliedMin) suppliedMin = zs; if (ze > suppliedMax) suppliedMax = ze; }
                 } else {
                     v = null;
                 }
@@ -187,20 +198,16 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
                 r++;
 
-
-
                 int uu = center - r; //if (uu < 0) uu += cap; //HACK prevent negative value
-                T u = uu > 0 ? q.peek(head, uu) : null;
+                T u = uu >= 0 ? q.peek(head, uu) : null;
                 if (u!=null && (!exactRange || u.intersects(minT, maxT))) {
                     if (!whle.test(u))
                         return false;
-                    supplied++; if (!fullyDisjoint) { long zs = u.start(), ze = u.end(); if (zs < suppliedMin) suppliedMin = zs; if (ze > suppliedMax) suppliedMax = ze; }
                 } else {
                     u = null;
                 }
-
-                if (!exactRange && supplied > 0 && (fullyDisjoint || ((suppliedMin <= minT) && (suppliedMax >= maxT))))
-                    break; //early exit heuristic
+//                if (!exactRange && supplied > 0)
+//                    break; //early exit heuristic
 
                 if (u == null && v == null)
                     break;

@@ -235,11 +235,15 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-    public int indexOf(Predicate<X> p) {
+    public final int indexOf(Predicate<X> p) {
+        return indexOf(0, p);
+    }
+
+    public int indexOf(int atOrAfter, Predicate<X> p) {
         int s = size;
         if (s > 0) {
             X[] items = this.items;
-            for (int i = 0; i < s; i++) {
+            for (int i = atOrAfter; i < s; i++) {
                 if (p.test(items[i]))
                     return i;
             }

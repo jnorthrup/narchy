@@ -35,9 +35,8 @@ public class NARService extends Service<NAR> implements TermedDelegate {
     protected NARService(Term id, NAR nar) {
         this(id);
 
-        if (nar != null) {
+        if (nar != null)
             (this.nar = nar).on(this);
-        }
     }
 
     protected NARService(@Nullable Term id) {

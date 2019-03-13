@@ -7,7 +7,6 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
-import jcog.math.Longerval;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -90,13 +89,15 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
 
     protected float evi(Task task) {
+        float e;
         if (start == ETERNAL) {
             if (!task.isEternal())
                 throw new WTF("eternal truthpolation requires eternal tasks");
-            return task.evi();
+            e = task.evi();
         } else {
-            return TruthIntegration.evi(task, start, end, dur);
+            e = TruthIntegration.evi(task, start, end, dur);
         }
+        return e < Param.TRUTH_EVI_MIN ? Float.NaN : e;
     }
 
 
@@ -283,6 +284,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     protected int firstValidIndex() {
         return indexOf(TaskComponent::valid);
     }
+    protected int firstValidIndex(int after) {
+        return indexOf(after, TaskComponent::valid);
+    }
 
     public final boolean valid(int i) {
         return get(i).valid();
@@ -345,38 +349,46 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
             //use the first successful intermpolation, if possible
 
-            int tryB = 1;
-            final float e1Evi = rootComponent.evi;
-            Term a = first;
-            TaskComponent B = get(tryB);
-            Term b = B.task.term();
 
-            if ((Float.isFinite(dtDiff(a, b)))) {
+            for (int next = root+1; next < size; next++) {
+                int tryB = firstValidIndex(next);
+                if (tryB!=-1) {
+                    TaskComponent B = get(tryB);
+                    Term a = first;
+                    Term b = B.task.term();
+                    final float e2Evi = B.evi;
 
-                final float e2Evi = B.evi;
+                    if ((Float.isFinite(dtDiff(a, b)))) {
 
-                //if there isnt more evidence for the primarily sought target, then just use those components
-                Term ab = Intermpolate.intermpolate(a,
-                        b, e1Evi / (e1Evi + e2Evi), nar);
+                        final float e1Evi = rootComponent.evi;
 
-                if (Task.validTaskTerm(ab)) {
+                        //if there isnt more evidence for the primarily sought target, then just use those components
+                        Term ab = Intermpolate.intermpolate(a,
+                                b, e1Evi / (e1Evi + e2Evi), nar);
 
-                    this.term = ab;
-                    removeAbove(1 + 1);
-                    assert (size() == 2);
-                    //return 1 - dtDiff * 0.5f; //half discounted
-                    //return 1 - dtDiff;
-                    return 1; //no discount for difference
+                        if (Task.validTaskTerm(ab)) {
+
+                            this.term = ab;
+                            for (int i = 0; i < size; i++)
+                                if (i != root && i != tryB)
+                                    set(i, null);
+                            removeNulls();
+                            //return 1 - dtDiff * 0.5f; //half discounted
+                            //return 1 - dtDiff;
+                            return 1; //no discount for difference
+                        }
+
+
+                    }
+                    set(tryB, null); //eliminate and continue
                 }
-
-
             }
 
 
             //last option: remove all except the first
-            removeAbove(1);
-            assert (size() == 1);
-            this.term = a;
+            removeNulls();
+
+            this.term = first;
             return 1;
 
 
@@ -393,7 +405,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
 
     @Nullable
-    @Deprecated public final Truth truth() {
+    public final Truth truth() {
         return truth(Float.MIN_NORMAL, false, false, null);
     }
 
@@ -410,13 +422,6 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return end;
     }
 
-//    private void cull() {
-//        removeIf(x -> update(x, Float.MIN_NORMAL) == null);
-//    }
-
-    boolean allInvalid() {
-        return !this.anySatisfy(TaskComponent::valid);
-    }
 
     /**
      * aka "shrinkwrap", or "trim". use after filtering cyclic.
@@ -486,19 +491,14 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             TaskComponent x = this.get(i);
             if (x.valid())
                 t.add(x.task);
-            else
-                System.out.println("skipped");
         }
         return t;
     }
 
     public void forEachTask(Consumer<Task> each) {
         forEachWith((x, e) -> {
-            if (x.valid()) {
+            if (x.valid())
                 e.accept(x.task);
-            } else {
-                System.out.println("skipped");
-            }
         }, each);
     }
 

@@ -360,7 +360,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
 
 
                             //PriForget.forgetPressure(temperature, 0, size, cap, pressure, mass);
-                            PriForget.forgetIdeal(temperature, 0.25f, size, cap, pressure, mass);
+                            PriForget.forgetIdeal(temperature, 0.5f, size, cap, pressure, mass);
 
                                 //OVERDRIVE (attenuated by size/capacity ratio)
                                 //PriForget.forgetPressure(temperature * (((float)size)/cap), cap, pressure, mass);

@@ -35,6 +35,10 @@ abstract public class FrameTrigger {
     /** estimate the time of the next cycle */
     abstract public long next(long now);
 
+    public final long prev(long now) {
+        return (now - Math.max(1, next(now))); //HACK
+    }
+
     /** measured in realtime
      * TODO async loop for extended sleep periods
      * */

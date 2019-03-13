@@ -5,6 +5,7 @@ import jcog.math.Longerval;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
@@ -35,9 +36,11 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
         super(c, beliefOrGoal);
         this.series = s;
-
     }
 
+    @Override
+    public void add(Remember r, NAR nar) {
+    }
 
     @Override
     public int size() {
@@ -76,21 +79,12 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         series.forEach(action);
     }
 
-
-//    @Override
-//    protected Truth truthDynamic(long start, long end, Term templateIgnored, Predicate filter, NAR nar) {
-//        return (Truth) (eval(false, start, end, filter, nar));
-//    }
-
-
     public void clean(List<BeliefTable> tables, NAR n) {
         if (!Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 
-        assert (beliefOrGoal);
-
         long sStart = series.start(), e;
-        if (sStart != TIMELESS && (e = seriesEndMinDur(n)) != TIMELESS) {
+        if (sStart != TIMELESS && (e = series.end()) != TIMELESS) {
             long sEnd = e;
 
             List<Task> deleteAfter = new LinkedList();
@@ -110,10 +104,6 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             }
 
         }
-    }
-
-    protected long seriesEndMinDur(NAR n) {
-        return series.end() - n.dur();
     }
 
     /**
@@ -151,7 +141,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         return x;
     }
 
-    public void add(T nextT) {
+    public final void add(T nextT) {
         series.compress();
 
         series.push(nextT);

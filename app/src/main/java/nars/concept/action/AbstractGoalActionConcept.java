@@ -7,18 +7,20 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.action.curiosity.Curiosity;
-import nars.concept.action.curiosity.CuriosityGoalTable;
 import nars.concept.action.curiosity.CuriosityTask;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
+import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -37,10 +39,14 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class AbstractGoalActionConcept extends ActionConcept {
 
 
-    @Nullable
-    private Curiosity curiosity = null;
+    @Nullable private Curiosity curiosity = null;
 
-    private final CuriosityGoalTable curiosityTable;
+
+    /** disables revision merge so that revisions, not being CuriosityTask and thus intercepted, cant directly
+     *  contaminate the normal derived goal table
+     *  and compete (when curiosity confidence is stronger) with authentic derived
+     *  goals which we are trying to learn to form and remember. */
+    private final SeriesBeliefTable curiosityTable;
 
     /**
      * current estimate
@@ -66,14 +72,19 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 n);
     }
 
-    protected AbstractGoalActionConcept(Term term, BeliefTable goals, NAR n) {
+    protected AbstractGoalActionConcept(Term term, BeliefTable mutableGoals, NAR n) {
         super(term, new SensorBeliefTables(term, true),
-                new BeliefTables(goals),
+                new BeliefTables(),
                 n);
 
         cause = n.newCause(term).id;
 
-        ((BeliefTables) goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, Param.CURIOSITY_CAPACITY));
+        /** make sure to add curiosity table first in the list, as a filter */
+        BeliefTables GOALS = ((BeliefTables) goals());
+        GOALS.tables.add(curiosityTable =
+                new CuriosityBeliefTable(term));
+        GOALS.tables.add(mutableGoals);
+
 
 
     }
@@ -116,9 +127,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     public org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int narDur, NAR n) {
-        long s = ETERNAL, e = ETERNAL;
         Truth next = null;
         FasterList<BeliefTable> tables = ((BeliefTables) (beliefsOrGoals ? beliefs() : goals())).tables;
+
+        long ss = TIMELESS, ee = TIMELESS;
 
         if (!tables.isEmpty()) {
             int dither = n.dtDither.intValue();
@@ -127,33 +139,34 @@ public class AbstractGoalActionConcept extends ActionConcept {
                     //Tense.occToDT(e-s);
                     narDur;
 
-            int limit = componentsMax;
-            Answer a = Answer.relevant(true, limit, s, e, term, withoutCuriosity, n).dur(organicDur);
+            int limit = componentsMax, tries = limit*2;
+            Answer a = Answer.relevant(true, limit, ETERNAL, ETERNAL, term, withoutCuriosity, n).dur(organicDur);
             for (int iter = 0; iter < 3; iter++) {
 
+                long s, e;
 
                 switch (iter) {
                     case 0:
                         //duration-precision window
-                        s = now - narDur / 2;
-                        e = now + narDur / 2;
-//                        s = now - narDur;
-//                        e = now;
+                        //s = now - narDur / 2;
+                        //e = now + narDur / 2;
+                        s = now - narDur;
+                        e = now;
                         break;
                     case 1:
-                        s = now - narDur;
-                        e = now + narDur;
-//                        s = now - narDur * 2;
-//                        e = now; //now + dur;
+                        //s = now - narDur;
+                        //e = now + narDur;
+                        s = now - narDur * 2;
+                        e = now; //now + dur;
                         break;
                     default:
                         //frame-precision window
-                        double frameDur = now - prev;
+                        int frameDur = Tense.occToDT(now - prev);
                         int dn = 3;
-                        s = (long) (now - Math.max(narDur*dn/2f, frameDur/2));
-                        e = (long) (now + Math.max(narDur*dn/2f, frameDur/2));
-                        //s = now - Math.max(narDur * dn, frameDur);
-                        //e = now; //now + Math.max(dur * 2, 0);
+                        //s = (long) (now - Math.max(narDur*dn/2f, frameDur/2));
+                        //e = (long) (now + Math.max(narDur*dn/2f, frameDur/2));
+                        s = now - Math.max(narDur * dn, frameDur);
+                        e = now; //now + Math.max(dur * 2, 0);
                         break;
 
                 }
@@ -162,27 +175,30 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 s += dither / 2;
                 e += dither / 2;
 
-                a.time(s, e);
+                a.clear(tries).time(s, e);
 
-                for (BeliefTable b : tables) {
-                    if (!(b instanceof CuriosityGoalTable)) {
-                        a.clear(limit*2).match(b);
+                for (BeliefTable table : tables) {
+                    if (table!=curiosityTable) {
+                        a.ttl = tries;
+                        a.match(table);
                     }
                 }
 
                 //TODO my truthpolation .stamp()'s and .cause()'s for clues
 
-                next = Truth.stronger(a.truth(), next);
-
-                //optional:
-//            if (nextActionDex!=null)
-//                break; //take the first (not the strongest)
+                if ((next = Truth.stronger(a.truth(), next))!=next) {
+                    ss = s;
+                    ee = e;
+                }
             }
-
-
         }
 
-        return pair(next, new long[]{s, e});
+        if (ss == TIMELESS) {
+            //default
+            ss = prev;
+            ee = now;
+        }
+        return pair(next, new long[]{ss, ee});
     }
 
     @Override
@@ -212,17 +228,16 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         int curiDur = narDur;
 
-
         Truth actionTruth;
-        Pair<Truth, long[]> t = truth(false, limit, prev, now, narDur, n);
+        Pair<Truth, long[]> gt = truth(false, limit, prev, now, narDur, n);
 
-        Truth nextActionDex = t == null ? null : t.getOne();
+        Truth nextActionDex = gt == null ? null : gt.getOne();
         actionDex = nextActionDex;
         if (nextActionDex != null)
             curiDex = actionDex;
 
 
-        long[] se = t.getTwo();
+        long[] se = gt.getTwo();
         long s = se[0], e = se[1];
 
         Truth actionCuri = curiosity.curiosity(this);
@@ -266,11 +281,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
             curiosityInject = curiosity.injection.get();
 
             //use existing curiosity
-            @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
             Answer a = Answer.
                     relevant(true, 2, s, e, term, null, n)
                     .dur(curiDur)
-                    .match(curiTable);
+                    .match(curiosityTable);
             actionCuri = a.truth();
         }
 
@@ -283,18 +297,6 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return actionTruth;
     }
 
-
-    @Override
-    public void add(Remember r, NAR n) {
-
-        if (r.input instanceof CuriosityTask) {
-            //intercept curiosity goals for the curiosity table
-            curiosityTable.add(r, n);
-        } else {
-            super.add(r, n);
-        }
-
-    }
 
 
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
@@ -316,4 +318,17 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
 
+    private static class CuriosityBeliefTable extends SeriesBeliefTable {
+        public CuriosityBeliefTable(Term term) {
+            super(term, false, new RingBufferTaskSeries<>(Param.CURIOSITY_CAPACITY));
+        }
+
+        @Override
+        public void add(Remember r, NAR nar) {
+            if (r.input instanceof CuriosityTask) {
+                add(r.input);
+                r.remember(r.input);
+            }
+        }
+    }
 }

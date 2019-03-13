@@ -74,9 +74,9 @@ public class NAgent extends NARService implements NSense, NAct {
     public final AttNode attn;
     public final AttNode attnReward, attnAction, attnSensor;
 
-    public volatile long prev;
-    protected volatile long now;
-    public volatile long next;
+    public volatile long prev = ETERNAL;
+    protected volatile long now = ETERNAL;
+    public volatile long next = ETERNAL;
 
     @FunctionalInterface
     public interface ReinforcedTask {
@@ -107,10 +107,8 @@ public class NAgent extends NARService implements NSense, NAct {
         attnReward.parent(attn);
 
         this.frameTrigger = frameTrigger;
-        this.prev = ETERNAL;
-        this.now = nar.time();
 
-//        actReward = new AttnDistributor(
+        //        actReward = new AttnDistributor(
 //                Iterables.concat(
 //                    //() -> Iterators.singletonIterator(nar.conceptualize(target())),
 //                    Iterables.concat(actions,
@@ -332,12 +330,6 @@ public class NAgent extends NARService implements NSense, NAct {
     @Override
     protected void starting(NAR nar) {
 
-
-        //Term id = (this.id == null) ? nar.self() : this.id;
-
-        this.prev = nar.time();
-
-
         super.starting(nar);
 
         this.frameTrigger.start(this);
@@ -516,19 +508,24 @@ public class NAgent extends NARService implements NSense, NAct {
         try {
             long now = nar.time();
             long prev = this.now;
-            assert (prev != ETERNAL);
+            if (prev == ETERNAL) {
+                this.now = now;
+                prev = now-1;
+            }
+            int dtDither = nar.dtDither();
+            if (now <= prev + (dtDither)/2)
+                return; //too early
 
-            if (now <= prev)
-                return; //too learly
+            prev = Math.max(prev,  frameTrigger.prev(now)); //assume up to one frame behind
 
             long next =
                     //(Math.max(now, frameTrigger.next(now)), d);
                     Math.max(now, frameTrigger.next(now));
 
+            assert (prev < now && now < next);
             this.prev = prev;
             this.now = now;
             this.next = next;
-            assert (prev <= now && now < next);
 
 
             float pb = nar.priDefault(BELIEF), pg = nar.priDefault(GOAL);

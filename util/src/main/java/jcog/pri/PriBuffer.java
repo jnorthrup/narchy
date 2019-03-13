@@ -31,7 +31,7 @@ public class PriBuffer<Y> {
     public final PriMerge merge;
 
     public PriBuffer(PriMerge merge) {
-        this(merge, new java.util.concurrent.ConcurrentHashMap<>(0, 0.5f));
+        this(merge,newConcurrentMap());
     }
     public PriBuffer(PriMerge merge, boolean concurrent) {
         this(merge, concurrent ?

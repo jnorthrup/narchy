@@ -265,8 +265,8 @@ public abstract class Param {
      * TTL = 'time to live'
      */
     public static final int TermutatorSearchTTL = 4;
-    public static final int TermUnifyForkMax = 3;
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public static final int TermUnifyForkMax = 2;
+    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 3; //HACK this is a TTL supply, not a COST
@@ -485,18 +485,19 @@ public abstract class Param {
     public static float evi(float evi, long dt, int dur) {
 
         //assert(dur > 0);
+        assert(dur > 0 && dt > 0);
 
         float e;
 
         //inverse linear decay
         float falloffDurs =
                 //0.5f;
-                //1;
+                1;
                 //1.618f; //phi
                 //2; //nyquist
                 //4;
                 //dur;
-                8;
+                //8;
                 //64;
 
         double decayTime = falloffDurs * dur;
@@ -508,8 +509,8 @@ public abstract class Param {
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
         //TODO
 
-        //constant duration linear decay
-        //e = evi * Math.max(0, (1.0 - dt / decayTime))
+        //constant duration linear decay ("trapezoidal")
+        //e = (float) (evi * Math.max(0, (1.0 - dt / decayTime)));
 
         //constant duration quadratic decay (sharp falloff)
         //e = evi * Math.max(0, (float) (1.0 - Math.sqrt(dt / decayTime)));

@@ -25,15 +25,14 @@ public class LinearTruthProjection extends TruthProjection {
     @Nullable
     public Truth truth(float eviMin, boolean dither, boolean tCrop, NAR nar) {
 
-        if (active() == 0) {
-            if (size()==0)
+        if (size()==0)
+            return null;
+        else {
+            commit(false, tCrop,1);
+            if (active()==0)
                 return null;
-            else {
-                commit(false, tCrop,1);
-                if (active()==0)
-                    return null;
-            }
         }
+
 
         double eviFactor = 1f;
         if (nar != null) {

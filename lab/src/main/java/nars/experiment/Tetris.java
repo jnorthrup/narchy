@@ -130,7 +130,7 @@ public class Tetris extends NAgentX {
                 //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
                 grid, n);
         addSensor(c);
-        pixels.resolution(0.05f);
+        //pixels.resolution(0.05f);
 
         window(new VectorSensorView(pixels, this).withControls(), 400, 900);
 
@@ -170,7 +170,7 @@ public class Tetris extends NAgentX {
 //            });
 
             return new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
-        }, FPS);
+        }, -1, FPS, FPS);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)

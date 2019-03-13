@@ -60,11 +60,17 @@ public class MetaAgent {
         curiosityAction.attn.reparent(attn);
 
 
-        forgetAction = a.actionDial($.inh(a.id,forget), n.attn.forgetRate, 40);
+        forgetAction = a.actionDial(
+                $.inh(a.id,$.p(forget,$.the(-1))),
+                $.inh(a.id,$.p(forget,$.the(+1))),
+                n.attn.forgetRate, 40);
         forgetAction[0].attn.reparent(attn); //HACK
         forgetAction[1].attn.reparent(attn);//HACK
 
-        priAction = a.actionDial($.inh(a.id,pri), a.pri, 40);
+        priAction = a.actionDial(
+                $.inh(a.id,$.p(pri,$.the(-1))),
+                $.inh(a.id,$.p(pri,$.the(+1))), a.pri,
+                40);
         priAction[0].attn.reparent(attn);//HACK
         priAction[1].attn.reparent(attn); //HACK
 

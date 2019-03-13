@@ -1,6 +1,8 @@
 package nars.table.dynamic;
 
+import nars.NAR;
 import nars.Op;
+import nars.control.op.Remember;
 import nars.table.EmptyBeliefTable;
 import nars.term.Term;
 
@@ -14,6 +16,11 @@ public abstract class DynamicTaskTable extends EmptyBeliefTable {
     protected DynamicTaskTable(Term c, boolean beliefOrGoal) {
         this.beliefOrGoal = beliefOrGoal;
         this.term = c;
+    }
+
+    @Override
+    public void add(Remember r, NAR nar) {
+
     }
 
     /** this is very important:  even if size==0 this must return false */

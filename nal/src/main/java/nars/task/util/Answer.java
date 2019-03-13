@@ -310,40 +310,35 @@ public final class Answer {
      * clears the cache and tasks before returning
      */
     public Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth, boolean ditherTime) {
-        ditherTruth(ditherTruth); //enable/disable truth dithering
 
         int s = tasks.size();
-
         if (s == 0)
             return null;
 
-        @Nullable Task root = tasks.first();
+        ditherTruth(ditherTruth); //enable/disable truth dithering
 
-        if (s == 1)
-            return root;
+        Task root = tasks.first();
 
         Task t;
+        if (s == 1)
+            t = root;
+        else {
+            if (topOrSample) {
+                //compare alternate roots, as they might match better with tasks below
+                switch (root.punc()) {
+                    case BELIEF:
+                    case GOAL:
+                        t = Truth.stronger(newTask(), tasks.first());
+                        break;
 
-        if (!topOrSample) {
-            t = tasks.getRoulette(random());
-            assert (!forceProject);
-
-        } else {
-            //compare alternate roots, as they might match better with tasks below
-
-
-            switch (root.punc()) {
-                case BELIEF:
-                case GOAL: {
-                    t = Truth.stronger(newTask(), tasks.first());
+                    case QUESTION:
+                    case QUEST:
+                    default:
+                        throw new UnsupportedOperationException();
                 }
-                break;
-                case QUESTION:
-                case QUEST:
-                    throw new UnsupportedOperationException();
-                    //break;
-                default:
-                    throw new UnsupportedOperationException();
+            } else {
+                t = tasks.getRoulette(random());
+                assert (!forceProject);
             }
         }
 

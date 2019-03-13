@@ -172,12 +172,14 @@ public class TruthWave {
             long s = Math.round(t - halfDT);
             long e = Math.round(t + halfDT);
             Truth tr = a.clear(tries).time(s, e).match(table).truth();
-            if (tr!=null)
+            if (tr!=null) {
+                long mid = (s + e) / 2;
                 load(data, (j++) * ENTRY_SIZE,
                         minT, maxT,
-                        s, e,
+                        mid, mid,
                         tr
                 );
+            }
 
             t += dt;
         }

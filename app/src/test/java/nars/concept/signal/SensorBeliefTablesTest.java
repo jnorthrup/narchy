@@ -8,6 +8,7 @@ import nars.Task;
 import nars.agent.NAgent;
 import nars.concept.sensor.Signal;
 import nars.table.dynamic.SensorBeliefTables;
+import nars.task.util.series.RingBufferTaskSeries;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -33,6 +34,7 @@ class SensorBeliefTablesTest {
         SensorBeliefTables xb = (SensorBeliefTables) x.beliefs();
 
         step(n, xb);
+        step(n, xb);
         assertEquals(1, xb.size());
 
         xx.set(0.5f);
@@ -44,13 +46,30 @@ class SensorBeliefTablesTest {
         {
             List<Task> tt = xb.streamTasks().collect(toList());
             assertEquals(2, tt.size());
-            assertEquals(2, tt.get(0).range());
-            assertEquals(2, tt.get(1).range());
+            assertEquals(3, tt.get(0).range());
+            assertEquals(3, tt.get(1).range());
 
             assertEquals(1, tt.get(0).stamp()[0]);
             assertEquals(2, tt.get(1).stamp()[0]);
             //assertTrue(!Arrays.equals(tt.get(0).stamp(), tt.get(1).stamp()));
         }
+
+        xx.set(0.75f);
+        step(n, xb);
+        {
+            List<Task> tt = xb.streamTasks().collect(toList());
+            assertEquals(3, tt.size());
+        }
+
+        RingBufferTaskSeries rb = (RingBufferTaskSeries) (xb.series.series);
+        int head = rb.q.head();
+        assertEquals(0, rb.indexNear(head,0));
+        assertEquals(1, rb.indexNear(head,4));
+        assertEquals(2, rb.indexNear(head,5));
+        assertEquals(2, rb.indexNear(head,6));
+        assertEquals(2, rb.indexNear(head,1000));
+        assertEquals(0, rb.indexNear(head,-5));
+
 
         //stretch another step
         step(n, xb);

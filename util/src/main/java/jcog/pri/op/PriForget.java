@@ -14,8 +14,6 @@ public enum PriForget { ;
 
     public static final class PriMult<P extends Prioritizable> implements Consumer<P> {
 
-        public static final float FORGET_TEMPERATURE_DEFAULT = 1f;
-
         public final float mult;
 
         public PriMult(float factor) {
@@ -65,13 +63,13 @@ public enum PriForget { ;
     public static Consumer<? extends Prioritizable> forgetIdeal(float rate, float idealPri, int size, int cap, float pressure, float mass) {
         float excess = pressure +
                 Math.max(0,
-                    mass - (size * idealPri)
+                    mass - (cap * idealPri)
                 )
         ;
         float eachMustForgetPct =
-                rate * (excess / (excess + mass));
+                rate * (excess / (mass+excess));
 
-            if (eachMustForgetPct * mass / size > ScalarValue.EPSILONsqrt) {
+            if (eachMustForgetPct * mass / size >= ScalarValue.EPSILONsqrt) {
                 return new PriMult<>(1-eachMustForgetPct);
             }
 

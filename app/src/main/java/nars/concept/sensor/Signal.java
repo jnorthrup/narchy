@@ -114,7 +114,9 @@ public class Signal extends TaskConcept implements AgentLoop, FloatFunction<Term
 
         ((SensorBeliefTables) beliefs()).add(
                 nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
-                        start, end, pri, cause, n);
+                start, end,
+                pri, cause,
+                n);
     }
 
 
