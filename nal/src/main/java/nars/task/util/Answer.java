@@ -142,10 +142,11 @@ public final class Answer {
         if (targetStart == ETERNAL) {
             return EviAbsolute;
         } else if (targetStart != target.end) {
+            long targetEnd = target.end;
             //return b -> -(Util.mean(b.minTimeTo(a.start), b.minTimeTo(a.end))) -b.range()/tableDur;
             //return b -> -(Util.mean(b.midTimeTo(a.start), b.minTimeTo(a.end))); // -b.range()/tableDur;
             // -b.minTimeTo(a.start, a.end); // -b.range()/tableDur;
-            return x -> -target.meanTimeTo(x);
+            return x -> -x.minTimeTo(targetStart, targetEnd);//-target.minTimeTo(x);
 //            return b -> {
 //
 //                return a.minTimeTo(b);
@@ -155,7 +156,7 @@ public final class Answer {
 //                return r; //TODO make sure that the long cast to float is ok
 //            };
         } else {
-            return x -> -x.meanTimeTo(targetStart); // -b.range()/tableDur;
+            return x -> -x.minTimeTo(targetStart); // -b.range()/tableDur;
         }
     }
 
@@ -279,7 +280,7 @@ public final class Answer {
 
 
     public static FloatRank<Task> temporalTaskStrength(long start, long end) {
-        int dur = Tense.occToDT(1 + (end - start)); //half the range
+        int dur = Tense.occToDT(1 + (end - start)/2 /*half the range*/ );
         return temporalTaskStrength(start, end, dur);
     }
 

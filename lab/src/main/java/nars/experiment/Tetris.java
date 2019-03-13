@@ -67,8 +67,8 @@ public class Tetris extends NAgentX {
      */
     public Tetris(Term id, NAR n, int width, int height, int timePerFall) {
         super(id,
-                FrameTrigger.fps(24f),
-                //FrameTrigger.durs(1),
+                //FrameTrigger.fps(24f),
+                FrameTrigger.durs(1),
                 n);
 
 
@@ -170,7 +170,7 @@ public class Tetris extends NAgentX {
 //            });
 
             return new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
-        }, -1, FPS, FPS);
+        },  FPS);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)

@@ -17,7 +17,7 @@ import static nars.time.Tense.ETERNAL;
 public class WorkerExec extends ThreadedExec {
 
     /** process sub-timeslice divisor */
-    double granularity = 8;
+    double granularity = 4;
 
     public WorkerExec(Valuator r, int threads) {
         super(r, threads);
@@ -34,7 +34,7 @@ public class WorkerExec extends ThreadedExec {
 
     private final class WorkPlayLoop implements Worker {
 
-        private long subCycleMinNS = 50_000;
+        private long subCycleMinNS = 10_000;
         private long subCycleMaxNS;
 
         private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);

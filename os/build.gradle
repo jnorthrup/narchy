@@ -1,6 +1,8 @@
 plugins {
     id 'application'
     id 'java'
+
+    id 'org.beryx.runtime' version '1.1.5'
 }
 
 mainClassName = 'nars.Shell'
@@ -31,6 +33,32 @@ dependencies {
 
 }
 
+
+runtime {
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    modules = ['java.naming', 'java.xml']
+}
+//jlink {
+//    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+//    launcher{
+//        name = 'narchy_os'
+//        jvmArgs = [
+//            //'-Dlog4j.configurationFile=./log4j2.xml'
+//        ]
+//    }
+//}
+//jpackage {
+//    jpackageHome = '/home/me/pjdk13' //HACK
+//    outputDir = 'my-packaging'
+//    // imageOutputDir = file("$buildDir/my-packaging-image")
+//    // installerOutputDir = file("$buildDir/my-packaging-installer")
+//    imageName = 'MyApp'
+//    imageOptions = ['--win-console']
+//    skipInstaller = false
+//    installerName = 'MyApp'
+//    installerType = 'msi'
+//    installerOptions = ['--win-console', '--win-menu', '--win-shortcut']
+//}
 
 //shadowJar {
 //

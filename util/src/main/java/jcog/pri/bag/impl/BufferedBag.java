@@ -1,5 +1,6 @@
 package jcog.pri.bag.impl;
 
+import jcog.data.MutableFloat;
 import jcog.data.NumberX;
 import jcog.pri.PriBuffer;
 import jcog.pri.Prioritizable;
@@ -32,21 +33,20 @@ abstract public class BufferedBag<X,B,Y extends Prioritizable> extends ProxyBag<
     }
 
     @Override
-    public Bag<X, Y> commit(Consumer<Y> update) {
+    public final Bag<X, Y> commit(@Nullable Consumer<Y> update) {
+        return commit(update, null);
+    }
+
+    public final Bag<X, Y> commit(@Nullable Consumer<Y> before, @Nullable Consumer<Y> after) {
 
         if (busy.compareAndSet(false,true)) {
             try {
-                //synchronized (bag) {
-
-                    bag.commit(update);
+                    bag.commit(before);
 
                     if (!pre.isEmpty()) {
                         pre.update(this::putInternal);
-                        bag.commit(null); //force sort after
+                        bag.commit(after); //force sort after
                     }
-
-//                    buffer.update(this::putInternal);
-//                    bag.commit(update);
 
                 //}
             } finally {
@@ -75,10 +75,11 @@ abstract public class BufferedBag<X,B,Y extends Prioritizable> extends ProxyBag<
         Y yBag = bag.get(x);
         if (yBag!=null) {
             //HACK
-            if (bag instanceof ArrayBag) ((ArrayBag)bag).merge(yBag, (Prioritizable)x, null);
-            else if (bag instanceof HijackBag) ((HijackBag)bag).merge(yBag, x, null);
-            else
-                throw new UnsupportedOperationException();
+            NumberX o =new MutableFloat();
+            if (bag instanceof ArrayBag) ((ArrayBag)bag).merge(yBag, (Prioritizable)x, o);
+            else if (bag instanceof HijackBag) ((HijackBag)bag).merge(yBag, x, o);
+            else throw new UnsupportedOperationException();
+            bag.depressurize(o);
 
             return (B) yBag;
         } else

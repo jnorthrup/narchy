@@ -208,7 +208,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         assertRunning();
         int c = cursor();
         if (c >= 0) {
-            if (!model.reschedule(idx(c + r.offset(model.resolution) + 1), r)) {
+            int offset = r.offset(model.resolution);
+            if (!model.reschedule(idx(c + offset), r)) {
                 reject(r);
                 return false;
             }
@@ -365,7 +366,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         int rounds = (int) (delayNS / cycleLen);
         int firstFireOffset = Util.longToInt( delayNS - rounds * cycleLen );
 
-        return schedule(new OneTimedFuture(firstFireOffset + 1, rounds, callable));
+        return schedule(new OneTimedFuture(Math.max(1, firstFireOffset), rounds, callable));
     }
 
 
@@ -519,8 +520,10 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         public final boolean schedule(TimedFuture r, int c, HashedWheelTimer timer) {
             int offset = r.offset(resolution);
+            if (offset <= 0)
+                System.out.println(r);
             if (offset > -1 || r.isPeriodic()) {
-                if (!reschedule(idx(c + offset + 1), r))
+                if (!reschedule(idx(c + offset), r))
                     return false;
             } else {
                 timer.execute(r);

@@ -45,7 +45,7 @@ public class PatternIndex extends MapConceptIndex {
         if (!xop.conceptualizable)
             return x;
 
-        Termed y = intern.get(x);
+        Termed y = map.get(x);
         if (y != null) {
             return y;
         }
@@ -53,13 +53,13 @@ public class PatternIndex extends MapConceptIndex {
 
             Termed xx = nar.concept(x);
             if (xx != null) {
-                intern.put(xx.term(), xx);
+                map.put(xx.term(), xx);
                 return xx;
             }
         }
 
         Term yy = patternify(x);
-        intern.put(yy, yy);
+        map.put(yy, yy);
         return yy;
     }
 

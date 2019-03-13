@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 /** utility methods for JMH microbenchmarks
  *
  * to run stack profiler, add cmdline arg:
- *     -prof nars.perf.StackProfiler2
+ *     -prof nars.perf.util.StackProfiler2
  * */
 public enum NARBenchmarks { ;
 

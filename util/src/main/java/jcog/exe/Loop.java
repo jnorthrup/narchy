@@ -71,7 +71,7 @@ abstract public class Loop extends FixedRateTimedFuture {
         super();
         logger = getLogger(getClass());
 
-        int p = periodMS.getOpaque();
+        int p = periodMS.get();
 
         //HACK trigger change in period value to trigger start
         periodMS.set(-1);

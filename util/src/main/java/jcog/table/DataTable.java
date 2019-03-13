@@ -9,8 +9,6 @@ import jcog.util.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import tech.tablesaw.api.*;
 import tech.tablesaw.columns.Column;
-import tech.tablesaw.io.csv.CsvWriteOptions;
-import tech.tablesaw.io.csv.CsvWriter;
 import tech.tablesaw.table.Rows;
 
 import java.io.FilterOutputStream;
@@ -197,7 +195,9 @@ public class DataTable extends Table {
     }
 
     public void printCSV(OutputStream o) {
-        new CsvWriter(this, new CsvWriteOptions.Builder(o).header(true).build()).write();
+        throw new TODO();
+//        CsvWriteOptions.builder(o).header(true).build();
+//                .write();
 //        String s = data.columnNames().toString();
 //        System.out.println(s.substring(/*'['*/ 1, s.length()-1 /*']'*/));
     }

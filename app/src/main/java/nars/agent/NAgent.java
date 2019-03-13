@@ -512,11 +512,15 @@ public class NAgent extends NARService implements NSense, NAct {
                 this.now = now;
                 prev = now-1;
             }
-            int dtDither = nar.dtDither();
-            if (now <= prev + (dtDither)/2)
+            if (now <= prev)
                 return; //too early
 
-            prev = Math.max(prev,  frameTrigger.prev(now)); //assume up to one frame behind
+
+            long idealPrev = frameTrigger.prev(now);
+            if (now <= idealPrev)
+                return; //too early
+
+            prev = Math.max(prev, idealPrev); //assume up to one frame behind
 
             long next =
                     //(Math.max(now, frameTrigger.next(now)), d);

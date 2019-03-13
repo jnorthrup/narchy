@@ -16,7 +16,6 @@ import nars.table.temporal.RTreeBeliefTable;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -142,7 +141,7 @@ public class SensorBeliefTables extends BeliefTables {
                             //Truth lastEnds = last.truth(lastEnd, 0);
                             //if (lastEnds!=null && lastEnds.equals(next)) {
                             //stretch
-                            stretch(last, nextEnd, nar);
+                            stretch(last, nextEnd);
                             return last;
                         }
                     }
@@ -150,13 +149,15 @@ public class SensorBeliefTables extends BeliefTables {
 
                 //form new task either because the value changed, or because the latch duration was exceeded
 
+
                 if (next == null) {
                     //guess that the signal stopped midway between (starting) now and the end of the last
-//                    long midGap = Math.min(nextStart, lastEnd + dur/2);
-//                    stretch(last, midGap, nar);
+                    long midGap = Math.min(nextStart-1, lastEnd + dur/2);
+                    stretch(last, midGap);
                 } else {
                     //stretch the previous to the current starting point for the new task
-//                    stretch(last, nextStart, nar);
+                    if (lastEnd < nextStart-1)
+                        stretch(last, nextStart-1);
                 }
 
             }
@@ -184,20 +185,19 @@ public class SensorBeliefTables extends BeliefTables {
             evi = nar.evidence(); //unique
         }
 
-        if (Param.SIGNAL_TASK_OCC_DITHER) {
-            int dither = nar.dtDither();
-            s = Tense.dither(s, dither);
-            e = Tense.dither(e, dither);
-        }
+//        if (Param.SIGNAL_TASK_OCC_DITHER) {
+//            int dither = nar.dtDither();
+//            s = Tense.dither(s, dither);
+//            e = Tense.dither(e, dither);
+//        }
 
         return new SeriesBeliefTable.SeriesTask(term, punc, next, s, e, evi);
     }
 
-    static private void stretch(SeriesBeliefTable.SeriesTask s, long e, NAR nar) {
-        if (Param.SIGNAL_TASK_OCC_DITHER) {
-            e = Tense.dither(e, nar);
-        }
-        s.setEnd(e);
+    static private void stretch(SeriesBeliefTable.SeriesTask t, long e) {
+//        if (e - t.start() > 9*nar.dur())
+//            throw new WTF();
+        t.setEnd(e);
     }
 
 

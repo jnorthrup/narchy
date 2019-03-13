@@ -209,7 +209,7 @@ public class User {
             try {
                 TopDocs y = iis.search(
                         new TermQuery(id(id)), 1);
-                if (y.totalHits > 0)
+                if (y.totalHits.value > 0)
                     D[0] = iis.doc(y.scoreDocs[0].doc); 
 
             } catch (IOException e) {
@@ -297,7 +297,7 @@ public class User {
         search((iis) -> {
             try {
                 TopDocs y = iis.searchAfter(after, q, n);
-                if (y.totalHits > 0) {
+                if (y.totalHits.value > 0) {
                     DocObj d = new DocObj(iis.getIndexReader());
                     for (ScoreDoc sd : y.scoreDocs) {
                         if (!yy.test(d.update(sd.doc, sd.score)))
@@ -318,7 +318,7 @@ public class User {
 
             try {
                 TopDocs y = is.search(new TermQuery(id(id)), 1);
-                if (y.totalHits > 0)
+                if (y.totalHits.value > 0)
                     D[0] = is.doc(y.scoreDocs[0].doc);
             } catch (IOException e) {
                 e.printStackTrace();

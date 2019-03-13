@@ -8,14 +8,13 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.control.NARService;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -27,7 +26,7 @@ import static nars.time.Tense.TIMELESS;
  */
 abstract public class DurService extends NARService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DurService.class);
+    //private static final Logger logger = LoggerFactory.getLogger(DurService.class);
 
     /**
      * ideal duration multiple to be called, since time after implementation's procedure finished last
@@ -210,15 +209,19 @@ abstract public class DurService extends NARService {
             scheduleNext(atStart, now);
         }
 
-        private void scheduleNext(long atStart, long now) {
+        private void scheduleNext(long started, long now) {
             long d = durCycles();
-            long idealNext = atStart + d;
-            if (idealNext < now) {
-                //LAG
-                //compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged
+            long idealNext = started + d;
+            if (idealNext <= now) {
+                /** LAG - compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged*/
                 long phaseLate = (now - idealNext) % d;
                 //idealNext = now + 1; //immediate
                 idealNext = now + Math.max(1, d - phaseLate);
+
+                if (Param.DEBUG) {
+                    long maxNext = started + d; assert (next >= maxNext) : "starting too soon: " + next + " < " + maxNext;
+                    long minNext = now + d; assert (next <= minNext) : "starting too late: " + next + " > " + maxNext;
+                }
             }
 
             next = idealNext;

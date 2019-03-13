@@ -30,7 +30,7 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
         this.resolution = resolution;
         this.wheels = wheels;
         this.rescheduleCallback = rescheduleCallback;
-        this.phase = Util.longToInt((1 + (periodNS / (resolution * wheels))) % resolution);
+        this.phase = Math.max(1, Util.longToInt((1 + (periodNS / (resolution * wheels))) % resolution));
         reset();
     }
 

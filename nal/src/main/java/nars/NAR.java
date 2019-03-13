@@ -903,9 +903,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this;
     }
 
-    /**
-     * TODO this needs refactoring to use a central scheduler
-     */
     public NAR inputAt(long time, String... tt) {
 
         assert (tt.length > 0);

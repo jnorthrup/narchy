@@ -76,7 +76,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
                 directory = new SimpleFSDirectory(folder.toPath());
             }
             writer = new IndexWriter(directory, writerConfig);
-            numDocs = writer.numDocs();
+            numDocs = writer.getDocStats().numDocs;
             searcherManager = new SearcherManager(writer, true, true, null);
             log.info("Map loaded, size: " + numDocs);
 
