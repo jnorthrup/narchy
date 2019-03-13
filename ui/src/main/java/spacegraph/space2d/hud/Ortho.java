@@ -14,7 +14,8 @@ import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.unit.AbstractUnitContainer;
+import spacegraph.space2d.container.EmptySurface;
+import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.JoglSpace;
@@ -27,7 +28,7 @@ import static java.lang.Math.sin;
 /**
  * orthographic widget adapter. something which goes on the "face" of a HUD ("head"s-up-display)
  */
-public class Ortho<S extends Surface> extends AbstractUnitContainer implements WindowListener, KeyPressed {
+public class Ortho<S extends Surface> extends MutableUnitContainer implements WindowListener, KeyPressed {
 
     @Deprecated private final NewtKeyboard keyboard;
 
@@ -53,13 +54,12 @@ public class Ortho<S extends Surface> extends AbstractUnitContainer implements W
     /** parent */
     public final JoglSpace space;
 
-    S content;
 
 //    /** finger position local to this layer/camera */
 //    public final v2 fingerPos = new v2();
 
-    public Ortho(JoglSpace space, S content, NewtKeyboard keyboard) {
-        super();
+    public Ortho(JoglSpace space, NewtKeyboard keyboard) {
+        super(new EmptySurface());
 
         this.space = space;
 
@@ -67,26 +67,6 @@ public class Ortho<S extends Surface> extends AbstractUnitContainer implements W
 
         this.keyboard = keyboard;
 
-        setContent(content);
-    }
-
-
-    public void setContent(S content) {
-        synchronized (this) {
-            S oldSurface = this.content;
-            if (oldSurface != null) {
-                if (oldSurface == content) {
-                    return;//no change
-                }
-                oldSurface.stop();
-            }
-
-            this.content = content;
-            if (this.content.parent == null)
-                this.content.start(this);
-        }
-
-        layout();
     }
 
 
@@ -100,7 +80,7 @@ public class Ortho<S extends Surface> extends AbstractUnitContainer implements W
             camZmax = camZ;
 
             if (autosize()) {
-                content.pos(bounds);
+                the().pos(bounds);
                 cam.set(bounds.w / 2f, bounds.h / 2f, camZ);
             }
 
@@ -132,7 +112,7 @@ public class Ortho<S extends Surface> extends AbstractUnitContainer implements W
             gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
         });
 
-        content.recompile(render);
+        the().recompile(render);
 
         render.on((gl)->{
            gl.glPopMatrix();
@@ -154,10 +134,8 @@ public class Ortho<S extends Surface> extends AbstractUnitContainer implements W
     @Override
     protected void starting() {
         super.starting();
-        start( ((JoglSpace) root()) );
-    }
 
-    protected void start(JoglSpace s) {
+        JoglSpace s = (JoglSpace) root();
         synchronized (this) {
 
             s.display.addWindowListener(this);
@@ -167,11 +145,6 @@ public class Ortho<S extends Surface> extends AbstractUnitContainer implements W
             windowResized(null);
 
             animate(cam);
-
-
-            if (content.parent == null)
-                content.start(this);
-
         }
 
     }
@@ -317,14 +290,7 @@ public class Ortho<S extends Surface> extends AbstractUnitContainer implements W
 
     }
 
-    @Override
-    public boolean stop() {
-        synchronized (this) {
-            stopping();
-            assert (content.parent == this);
-            return content.stop();
-        }
-    }
+
 
     @Override
     public void windowRepaint(WindowUpdateEvent e) {
@@ -351,9 +317,6 @@ public class Ortho<S extends Surface> extends AbstractUnitContainer implements W
 //    }
 
 
-    public final S the() {
-        return content;
-    }
 
 
     public class Camera extends AnimVector3f {
@@ -397,15 +360,7 @@ public class Ortho<S extends Surface> extends AbstractUnitContainer implements W
             camYmin = 0 + visH;
             camXmax = bounds.w - visW;
             camYmax = bounds.h - visH;
-
-
         }
-
-
-//            @Override
-//            public void setAt(float x, float y, float z) {
-//                super.setAt(camX(x), camY(y), camZ(z));
-//            }
 
         @Override
         public void setDirect(float x, float y, float z) {

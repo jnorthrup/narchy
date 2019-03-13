@@ -42,7 +42,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
      * scale can remain the unit 1 vector, normally
      */
 
-    public volatile RectFloat bounds = RectFloat.Zero;
+    public volatile RectFloat bounds = RectFloat.Unit;
     public volatile SurfaceBase parent;
     protected volatile boolean visible = true, showing = false;
 

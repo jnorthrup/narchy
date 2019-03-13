@@ -16,16 +16,21 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
         set(the);
     }
 
-    public final MutableUnitContainer set(S next) {
-        synchronized(this) {
-            if (next == null) {
-                _set(new EmptySurface());
-            } else if (this.the!=next) {
-                _set(next);
-            }
+    public final MutableUnitContainer set(S _next) {
+        Surface next = _next;
+        if (next == null) {
+            next = new EmptySurface();
         }
+        synchronized(this) {
+            if (this.the==next)
+                return this;
+
+            _set(next);
+        }
+        layout();
         return this;
     }
+
 
     private void _set(Surface next) {
         if (the==next)

@@ -25,9 +25,8 @@ public class FingerResizeWindow extends FingerResize {
 
     @Override
     protected v2 pos(Finger finger) {
-        return finger.posScreen.scale(1f,1f);
+        return finger.posScreen;//.scale(1f,1f);
     }
-
 
     @Override
     protected RectFloat size() {

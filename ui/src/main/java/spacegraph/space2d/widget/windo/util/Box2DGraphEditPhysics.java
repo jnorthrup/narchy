@@ -54,7 +54,6 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     final ConcurrentFastIteratingHashMap<Surface, PhySurface> w =
             new ConcurrentFastIteratingHashMap<>(new PhySurface[0]);
 
-    private Off loop;
     private int velIter = 4;
     private int posIter = 4;
     float timeScale = 1f;
@@ -174,18 +173,15 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     @Override
     public Surface starting(GraphEdit g) {
-        loop = g.root().animate((dt)->{
-            update(g, dt);
-            return true;
-        });
-        return
-                new Dyn2DRenderer(true, true, true);
+        return new Dyn2DRenderer(true, true, true);
         //new EmptySurface();
     }
 
     private transient RectFloat fence;
     float wMin, hMin;
-    protected void update(GraphEdit g, float dt) {
+
+    @Override
+    public void update(GraphEdit g, float dt) {
         wMin = g.windoSizeMinRel.x * g.w();
         hMin = g.windoSizeMinRel.y * g.h();
         fence = g.bounds;
@@ -222,8 +218,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     @Override
     public void stop() {
-        loop.off();
-        loop = null;
+
     }
 
     @Override

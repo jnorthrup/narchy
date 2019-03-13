@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.slider;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.v2;
+import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Dragging;
@@ -21,7 +22,7 @@ public class SliderModel extends Surface {
      * dead-zone at the edges to latch min/max values
      */
     static private final float margin =
-            0.0001f;
+            0.001f;
     public static final int BUTTON = 0;
 
 
@@ -93,14 +94,14 @@ public class SliderModel extends Surface {
     }
 
     private void setPoint(Finger f) {
-        setPoint(ui.p(bounds.unitize(f.posGlobal(this))));
+        setPoint(ui.p(f.posRelative(this)));
     }
 
     private void setPoint(float pNext) {
         Util.assertFinite(pNext);
 
         float pPrev = this.p;
-        if (Util.equals(pPrev, pNext))
+        if (Util.equals(pPrev, pNext, ScalarValue.EPSILONsqrt))
             return;
 
         this.p = pNext;

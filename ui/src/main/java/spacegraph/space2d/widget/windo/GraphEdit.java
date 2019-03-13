@@ -7,6 +7,7 @@ import jcog.data.graph.FromTo;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
+import jcog.event.Off;
 import jcog.math.v2;
 import jcog.reflect.AutoBuilder;
 import jcog.tree.rtree.rect.RectFloat;
@@ -49,9 +50,11 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
     private final DoubleClicking doubleClicking;
 
     public final v2 windoSizeMinRel = new v2(0.005f, 0.005f); //visible
+    private Off loop;
 
     public GraphEdit() {
         super();
+        physics.surface = physics.start(this);
         doubleClicking = new DoubleClicking(0, this::doubleClick, this);
     }
 
@@ -101,14 +104,23 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
     @Override
     protected void starting() {
 
-
-        physics.surface = physics.start(this);
+        super.starting();
 
         raw.start(this);
 
-        super.starting();
+        loop = root().animate(((float dt)->{ this.physics.update(GraphEdit.this,dt); return parent!=null; } ));
 
+        layout();
     }
+
+    @Override
+    protected final void stopping() {
+        loop.off();
+        raw.stop();
+        physics.stop();
+        super.stopping();
+    }
+
 
     /** wraps window content for a new window */
     protected Scale windowContent(Surface xx) {
@@ -266,12 +278,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
         Debugger d = new Debugger();
         return new Animating<>(d, d::update, 0.25f);
     }
-    @Override
-    protected final void stopping() {
-        physics.stop();
-        raw.stop();
-        super.stopping();
-    }
+
 
 //    @Override
 //    public boolean tangible() {

@@ -177,7 +177,8 @@ public class Windo extends MutableUnitContainer {
 //        v2 mousePos = root.fingerPos;
 //        float pmx = mousePos.x, pmy = mousePos.y;
 
-        posGlobal = finger.posScreen;
+        posGlobal = //finger.posGlobal(this);
+                    finger.posPixel;
     }
 
     protected void postpaint(GL2 gl) {

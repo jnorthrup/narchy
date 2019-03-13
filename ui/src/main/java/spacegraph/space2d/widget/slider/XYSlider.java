@@ -1,7 +1,6 @@
 package spacegraph.space2d.widget.slider;
 
 import com.jogamp.opengl.GL2;
-import jcog.Util;
 import jcog.exe.Exe;
 import jcog.math.FloatRange;
 import jcog.math.v2;
@@ -108,13 +107,11 @@ public class XYSlider extends Surface implements HudHover  {
     };
 
     private void setPoint(Finger f) {
-        v2 hitPoint = f.posGlobal(XYSlider.this);
+        v2 hitPoint = f.posRelative(XYSlider.this);
         if (hitPoint.inUnit()) {
             pressing = true;
-            if (!Util.equals(knob.x, hitPoint.x) || !Util.equals(knob.y, hitPoint.y)) {
-                knob.set(hitPoint);
+            if (knob.setIfChanged(hitPoint.x, hitPoint.y, ScalarValue.EPSILONsqrt))
                 updated();
-            }
         }
     }
 

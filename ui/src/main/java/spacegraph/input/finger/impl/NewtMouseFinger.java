@@ -86,7 +86,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
             int pmx = e.getX(), pmy = win.getHeight() - e.getY();
 
             posPixel.set(pmx, pmy);
-            posScreen.set(win.getX() + pmx, win.getScreenY() - (e.getY() + win.getY()));
+            posScreen.set(win.getX() + pmx, win.getY() - (e.getY() + win.getY()));
         }
 
         if (buttonsDown != null) {

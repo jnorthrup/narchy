@@ -3,6 +3,7 @@ package spacegraph.space2d;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.impl.NewtKeyboard;
@@ -10,6 +11,7 @@ import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.util.animate.Animated;
@@ -33,12 +35,12 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
     public final Stacking layers = new Stacking() {
         @Override protected void compileChildren(SurfaceRender r) {
             forEach(c -> {
-                float w = display.getWidth(), h = display.getHeight();
-                r.on((g,rr)-> {
-                    rr.pw = w; rr.ph = h;
-                    //rr.set(0.5f, 0.5f, 1, 1);
-                    g.glLoadIdentity();
-                });
+//            float w = display.getWidth(), h = display.getHeight();
+//                r.on((g,rr)-> {
+//                    rr.pw = w; rr.ph = h;
+//                    //rr.set(0.5f, 0.5f, 1, 1);
+//                    g.glLoadIdentity();
+//                });
                 c.recompile(r);
             });
         }
@@ -58,22 +60,33 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
 
         later(() -> {
             display.window.setPointerVisible(false); //HACK
-            layers.pos(0, 0, display.getWidth(), display.getHeight());
             layers.start(this);
 
-            ZoomOrtho content = new ZoomOrtho(this, _content, finger, keyboard);
+            RectFloat bounds = RectFloat.X0Y0WH(0, 0, display.getWidth(), display.getHeight());
+            layers.pos(bounds);
+
+            Ortho content = new ZoomOrtho(this, keyboard);
+            content.set(_content);
             layers.add(content);
+
             layers.add(finger.zoomBoundsSurface(content.cam));
             layers.add(finger.cursorSurface());
 //        //addOverlay(this.keyboard.keyFocusSurface(cam));
 //        layers.add((Surface) hud);
 
             {
-                Menu menu = new Menu();
-                layers.add(menu);
+                layers.add(new Menu());
             }
 
             layers.layout();
+            layers.doLayout(1);
+
+
+
+
+
+
+
         });
     }
 

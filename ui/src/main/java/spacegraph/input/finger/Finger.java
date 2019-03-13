@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.data.atomic.AtomicFloat;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.math.v2;
+import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -116,13 +117,8 @@ abstract public class Finger {
         return touching.getOpaque();
     }
 
-    private v2 relative(v2 x, Ortho o) {
+    private v2 posGlobal(v2 x, Ortho o) {
         return o.cam.screenToWorld(x);
-//        v2 y = new v2(x);
-//        RectFloat b = c.bounds;
-//        y.sub(b.x, b.y);
-//        y.scaled(1f / b.w, 1f / b.h);
-//        return y;
     }
 
     /**
@@ -211,7 +207,7 @@ abstract public class Finger {
 
 
 
-    final static v2 OOB = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+    //final static v2 OOB = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
 
 //    public v2 relativePos(v2 screen, Surface x) {
 //
@@ -331,7 +327,7 @@ abstract public class Finger {
     public v2 posGlobal(Surface c) {
         Ortho orthoParent = c.parent(Ortho.class);
         if (orthoParent!=null)
-            return relative( posPixel, orthoParent);
+            return posGlobal( posPixel, orthoParent);
         else
             return posPixel;
     }
@@ -385,6 +381,18 @@ abstract public class Finger {
 
     public boolean focused() {
         return focused.getOpaque();
+    }
+
+    public static v2 posRelative(v2 p, Surface s) {
+        v2 y = new v2(p);
+        RectFloat b = s.bounds;
+        y.sub(b.x, b.y);
+        y.scaled(1f / b.w, 1f / b.h);
+        return y;
+    }
+
+    public v2 posRelative(Surface s) {
+        return posRelative(posPixel, s);
     }
 
 

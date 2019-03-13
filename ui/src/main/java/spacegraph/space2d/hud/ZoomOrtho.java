@@ -22,8 +22,8 @@ public class ZoomOrtho extends Ortho {
 
     private float wheelZoomRate = 0.5f;
 
-    public ZoomOrtho(JoglSpace space, Surface content, Finger finger, NewtKeyboard keyboard) {
-        super(space, content, keyboard);
+    public ZoomOrtho(JoglSpace space, NewtKeyboard keyboard) {
+        super(space, keyboard);
     }
 
 
@@ -90,7 +90,7 @@ public class ZoomOrtho extends Ortho {
 
     @Deprecated
     public MutableListContainer hud() {
-        return (MutableListContainer) ((MutableListContainer) content).get(3); //HACK
+        return (MutableListContainer) ((MutableListContainer) the()).get(3); //HACK
     }
 
     private final Fingering fingerContentPan = new FingerMoveWindow(PAN_BUTTON) {

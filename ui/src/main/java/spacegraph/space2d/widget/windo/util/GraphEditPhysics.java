@@ -28,4 +28,8 @@ public abstract class GraphEditPhysics {
 
     public abstract void invokeLater(Runnable o);
 
+    public void update(GraphEdit g, float dt) {
+
+    }
+
 }
