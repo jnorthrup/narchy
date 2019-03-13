@@ -241,12 +241,6 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
         return targetDepth(d * (1+margin));
     }
 
-    public final int pw() {
-        return this.space.display.getWidth();
-    }
-    public final int ph() {
-        return this.space.display.getHeight();
-    }
 
     private float targetDepth(float viewDiameter) {
         return (float) ((viewDiameter * sin(Math.PI / 2 - focusAngle / 2)) / sin(focusAngle / 2));

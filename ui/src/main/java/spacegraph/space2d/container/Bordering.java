@@ -38,8 +38,9 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         set(center);
     }
 
-    public void set(S center) {
+    public Bordering set(S center) {
         set(0, center);
+        return this;
     }
 
     /**
@@ -99,12 +100,14 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
 
         float borderWest, borderEast, borderNorth, borderSouth;
         int l = length;
-        borderWest = autocollapse && !(l > Bordering.W && get(Bordering.W) != null) ? 0 : this.borderWest;
         boolean se = get(Bordering.SE) != null;
         boolean ne = get(Bordering.NE) != null;
+        boolean sw = get(Bordering.SW) != null;
+        boolean nw = get(Bordering.NW) != null;
+        borderWest = autocollapse && !(l > Bordering.W && get(Bordering.W) != null || sw || nw) ? 0 : this.borderWest;
         borderEast = autocollapse && !(l > Bordering.E && get(Bordering.E) != null || se || ne) ? 0 : this.borderEast;
-        borderNorth = autocollapse && !(l > Bordering.N && get(Bordering.N) != null) ? 0 : this.borderNorth;
-        borderSouth = autocollapse && !(l > Bordering.S && get(Bordering.S) != null) ? 0 : this.borderSouth;
+        borderNorth = autocollapse && !(l > Bordering.N && get(Bordering.N) != null || ne || nw) ? 0 : this.borderNorth;
+        borderSouth = autocollapse && !(l > Bordering.S && get(Bordering.S) != null || se || sw) ? 0 : this.borderSouth;
 
         for (int i = 0, childrenLength = l; i < childrenLength; i++) {
 

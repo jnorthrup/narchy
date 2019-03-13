@@ -1,5 +1,6 @@
 package spacegraph.space2d;
 
+import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
@@ -9,6 +10,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.hud.Ortho;
@@ -19,6 +21,7 @@ import spacegraph.video.JoglSpace;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -34,14 +37,31 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
 
     public final Stacking layers = new Stacking() {
         @Override protected void compileChildren(SurfaceRender r) {
+            int w = display.getWidth(), h = display.getHeight();
+            BiConsumer<GL2, SurfaceRender> reset = (g, rr) -> {
+                g.glViewport(0, 0, w, h);
+                g.glMatrixMode(GL_PROJECTION);
+                g.glLoadIdentity();
+
+                g.glOrtho(0, w, 0, h, -1.5, 1.5);
+                g.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+
+                //rr.set(w/2, h/2, w, h);
+                rr.pw = w;
+                rr.ph = h;
+                rr.x1 = rr.y1 = 0;
+                rr.x2 = w; rr.y2 = h;
+                //rr.scaleX = 1; rr.scaleY = 1;
+                //rr.restart(w, h);
+                //rr.set(0.5f, 0.5f, 1, 1);
+                g.glPushMatrix();
+            };
             forEach(c -> {
-            float w = display.getWidth(), h = display.getHeight();
-                r.on((g,rr)-> {
-                    rr.pw = w; rr.ph = h;
-                    //rr.set(0.5f, 0.5f, 1, 1);
-                    g.glLoadIdentity();
-                });
+                r.on(reset);
                 c.recompile(r);
+                r.on((g,rr)-> {
+                    g.glPopMatrix();
+                });
             });
         }
     };
@@ -56,14 +76,17 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
         keyboard = new NewtKeyboard(/*TODO this */);
 
 
-
-
         later(() -> {
+            display.window.addWindowListener(new com.jogamp.newt.event.WindowAdapter(){
+                @Override
+                public void windowResized(WindowEvent e) {
+                    resize();
+                }
+            });
             display.window.setPointerVisible(false); //HACK
             layers.start(this);
 
-            RectFloat bounds = RectFloat.X0Y0WH(0, 0, display.getWidth(), display.getHeight());
-            layers.pos(bounds);
+
 
             Ortho content = new ZoomOrtho(this, keyboard);
             content.set(_content);
@@ -78,15 +101,14 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
                 layers.add(new Menu());
             }
 
-            layers.doLayout(1);
-
-
-
-
-
-
-
+            resize();
         });
+    }
+
+    protected void resize() {
+        RectFloat bounds = RectFloat.X0Y0WH(0, 0, display.getWidth(), display.getHeight());
+        layers.pos(bounds);
+        layers.doLayout(1);
     }
 
 
@@ -105,12 +127,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
 
         gl.glDisable(GL2.GL_DEPTH_TEST);
 
-        gl.glViewport(0, 0, w, h);
-        gl.glMatrixMode(GL_PROJECTION);
-        gl.glLoadIdentity();
 
-        gl.glOrtho(0, w, 0, h, -1.5, 1.5);
-        gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 
         rendering.render(gl);
         rendering.clear();
@@ -177,27 +194,25 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
 
         //TODO different modes, etc
         public Menu() {
+            super(new EmptySurface());
             //animate(new DelayedHover(finger));
-            set(NW, new Gridding(
-                    new PushButton("X"),
-                    new PushButton("Y"),
-                    new PushButton("Z")
-            ));
-            set(SW, new Gridding(
-                    new PushButton("X"),
-                    new PushButton("Y"),
-                    new PushButton("Z")
+            set(SW, Gridding.row(
+                    PushButton.awesome("mouse-pointer"), //click, wire, etc
+                    PushButton.awesome("i-cursor"), //text edit
+                    PushButton.awesome("question-circle") //inspect
             ));
             set(NE, new Gridding(
-                    new PushButton("X"),
-                    new PushButton("Y"),
-                    new PushButton("Z")
+                    PushButton.awesome("bolt") //popup with configuration, options, tasks
             ));
-            set(SE, new Gridding(
-                    new PushButton("X"),
-                    new PushButton("Y"),
-                    new PushButton("Z")
-            ));
+//            set(NE, new Gridding(
+//                    new PushButton("X"),
+//                    new PushButton("Y"),
+//                    new PushButton("Z")
+//            ));
+//            set(SE, new Gridding(
+//                    //new Timeline2D<>()
+//            ));
+
         }
 
     }

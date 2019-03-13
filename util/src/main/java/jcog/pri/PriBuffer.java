@@ -24,7 +24,7 @@ public class PriBuffer<Y> {
 
 
     /** pending Y activation collation */
-    final Map<Y, Prioritizable> items;
+    public final Map<Y, Prioritizable> items;
             //new ConcurrentHashMapUnsafe<>(512);
             //new java.util.concurrent.ConcurrentHashMap(512);
 

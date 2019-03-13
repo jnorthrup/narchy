@@ -128,8 +128,8 @@ public class NARS {
 
                 n.termVolumeMax.set(26);
 
-                n.attn.activeCapacity.set(128);
-                n.attn.forgetRate.set(0.1f);
+                n.attn.activeCapacity.set(64);
+                n.attn.forgetRate.set(0.5f);
 
                 n.beliefPriDefault.set(0.1f);
                 n.goalPriDefault.set(0.1f);
@@ -157,8 +157,6 @@ public class NARS {
         exec = () -> new UniExec();
 
         rng = ThreadLocalRandom::current;
-
-//        attention(()->new ActiveConcepts(96));
 
         ToIntFunction<Concept> termVolume = c->c.term().volume();
 

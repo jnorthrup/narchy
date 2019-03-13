@@ -303,10 +303,11 @@ public interface TaskLink extends UnitPrioritizable {
             if (u != null && !u.equals(t)) {
 
 
+                //TODO abstact activation parameter object
                 float subRate =
-                        //1f;
+                        1f;
                         //1f/(t.volume());
-                        (float) (1f/(Math.sqrt(s.volume())));
+                        //(float) (1f/(Math.sqrt(s.volume())));
 
 
                 float inflation = 1; //TODO test inflation<1
@@ -329,8 +330,9 @@ public interface TaskLink extends UnitPrioritizable {
 
     static void linkSafe(Term s, Term u, byte punc, float p, NAR nar) {
         Op o = s.op();
-        if (o.conceptualizable && o.taskable)
+        if (o.taskable) {
             TaskLink.link(s, u, punc, p, nar);
+        }
     }
 
     /** snapshots a 4-tuple: beliefs, goals, questions, quests */

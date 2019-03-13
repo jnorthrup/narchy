@@ -95,6 +95,7 @@ public class SurfaceRender {
     }
 
     public SurfaceRender set(float cx, float cy, float sx, float sy) {
+
         this.scaleX = sx;
         this.scaleY = sy;
         float sxw = 0.5f * pw / sx;

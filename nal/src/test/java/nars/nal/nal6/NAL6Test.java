@@ -281,19 +281,30 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination5() {
-        test.nar.termVolumeMax.set(16);
 
-        TestNAR tester = test;
-        tester.believe("({Tweety} --> [withWings])");
-        tester.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> ($x --> bird))");
-        tester.mustBelieve(cycles,
+
+        test
+
+            .believe("({Tweety} --> [withWings])")
+            .believe("((($x --> [chirping]) && ($x --> [withWings])) ==> ($x --> bird))")
+            .mustBelieve(cycles,
                 //"((({Tweety}-->[chirping])&&({Tweety}-->[withWings]))==>({Tweety}-->bird))",
                 "(({Tweety}-->[chirping])==>({Tweety}-->bird))",
                 1.00f,
                 0.81f
         );
-
     }
+
+    @Test
+    void variable_elimination6() {
+        test
+            .believe("flyer:Tweety")
+            .believe("((&&, flyer:$x, ($x-->[chirping]), food($x, worms)) ==> bird:$x)")
+            .mustBelieve(cycles, "(((Tweety-->[chirping]) && food(Tweety,worms)) ==> bird:Tweety)",
+                    1.0f,
+                    0.73f);
+    }
+
     @Test
     void variable_elimination5_neg() {
         test.nar.termVolumeMax.set(16);
@@ -355,20 +366,6 @@ public class NAL6Test extends NALTest {
                         0.42f
                         //0.81f
                 );
-
-
-    }
-
-    @Test
-    void variable_elimination6() {
-
-
-        test
-                .believe("((&&, flyer:$x, ($x-->[chirping]), food($x, worms)) ==> bird:$x)")
-                .believe("flyer:Tweety")
-                .mustBelieve(cycles, "(((Tweety-->[chirping]) && food(Tweety,worms)) ==> bird:Tweety)",
-                        1.0f,
-                        0.73f);
 
 
     }

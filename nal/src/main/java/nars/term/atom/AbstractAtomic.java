@@ -35,7 +35,7 @@ public abstract class AbstractAtomic implements Atomic {
         return bytes(opID, str.getBytes());
     }
 
-    protected static byte[] bytes(byte opID, byte[] stringbytes) {
+    public static byte[] bytes(byte opID, byte[] stringbytes) {
         int slen = stringbytes.length;
 
         byte[] sbytes = new byte[slen + 3];

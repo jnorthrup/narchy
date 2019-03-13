@@ -2,6 +2,7 @@ package nars.term.var;
 
 import nars.$;
 import nars.io.IO;
+import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.unify.UnifyAny;
@@ -75,11 +76,12 @@ class CommonVariableTest {
 
     }
 
-    private static void assertSerialize(Atomic c123) {
-        byte[] bb = c123.bytes();
+    private static void assertSerialize(Atomic x) {
+        byte[] bb = x.bytes();
+        Term y = IO.bytesToTerm(bb);
         assertEq(
-                c123,
-                IO.bytesToTerm(bb)
+                x,
+                y
         );
     }
 

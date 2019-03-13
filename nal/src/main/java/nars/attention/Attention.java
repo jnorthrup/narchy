@@ -65,8 +65,12 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
         on(
                 nar.eventClear.on(active::clear),
-                nar.onCycle(() -> active.commit(
-                    forgetting.forget(active, 1f, forgetRate.floatValue()))
+                nar.onCycle(() -> {
+//                    System.out.println(nar.time());
+//                    active.pre.items.forEach((k,v)->System.out.println(v));
+                            active.commit(
+                                    forgetting.forget(active, 1f, forgetRate.floatValue()));
+                        }
                 )
         );
 

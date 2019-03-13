@@ -5,7 +5,6 @@ import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
-import jcog.exe.Exe;
 import jcog.io.bzip2.BZip2InputStream;
 import jcog.io.tar.TarEntry;
 import jcog.io.tar.TarInputStream;
@@ -102,7 +101,7 @@ public class ImageTexture extends Tex {
 
                 Pair<GLContext, String> key = Tuples.pair(gl.getContext(), u);
 
-                Exe.invokeLater(() -> {
+                //Exe.invokeLater(() -> {
 
                     textureData = textureCache.apply(key);
 
@@ -111,7 +110,7 @@ public class ImageTexture extends Tex {
                     if (textureData == null)
                         throw new NullPointerException(); //TODO logger.warn
 
-                });
+                //});
 
 
             }
