@@ -31,10 +31,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     }
 
     public TaskList(Collection<Task> t) {
-        this(0, new Task[t.size()]);
-        assert(size() > 0);
-        for (Task x : t)
-            add(x);
+        this(t, t.size());
     }
 
     public TaskList(Iterable<Task> t, int sizeEstimate) {

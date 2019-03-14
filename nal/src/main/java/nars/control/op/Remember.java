@@ -249,8 +249,7 @@ public class Remember extends AbstractTask {
      *
      * @param dCreationDurs (creation(next) - creation(prev))/durCycles
      */
-    @Nullable
-    protected boolean rememberFilter(Task prev, Task next, Task remembered, float dPri, NAR n) {
+    protected static boolean rememberFilter(Task prev, Task next, Task remembered, float dPri, NAR n) {
 
         long dDurCycles = Math.max(0, next.creation() - prev.creation());
         float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dur()));
@@ -273,7 +272,7 @@ public class Remember extends AbstractTask {
      * returns which task, if any, to remember on merge
      */
     @Nullable
-    protected Task rememberMerged(Task prev, Task next) {
+    protected static Task rememberMerged(Task prev, Task next) {
 
         if (next instanceof DynamicTruthTask)
             return null;

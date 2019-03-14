@@ -7,7 +7,6 @@ import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
-import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_PATTERN;

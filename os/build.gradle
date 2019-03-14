@@ -7,7 +7,7 @@ plugins {
 
 mainClassName = 'nars.Shell'
 
-def teaVMversion = '0.6.0-dev-688';
+def teaVMversion = '0.6.0-dev-701';
 
 dependencies {
 
@@ -35,8 +35,9 @@ dependencies {
 
 
 runtime {
+	javaHome='/home/me/jdk12' //HACK
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
-    modules = ['java.naming', 'java.xml']
+    modules = []
 }
 //jlink {
 //    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']

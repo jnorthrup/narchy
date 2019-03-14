@@ -407,7 +407,7 @@ public class TestNAR {
 
 
     private TestNAR mustEmit(ByteTopic<Tasked>[] c, long cyclesAhead, String task) throws Narsese.NarseseException {
-        Task t = Narsese.the().task(task, nar);
+        Task t = Narsese.task(task, nar);
 
 
         String termString = t.term().toString();

@@ -82,7 +82,7 @@ public interface TermTransform extends Function<Term,Term> {
         if (!c && !out.changed()) {
             //remains same; rewind and paste as-is
             out.rewind(i);
-            out.append((Compound)x);
+            out.append(x);
         }
         return true;
     }

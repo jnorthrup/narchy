@@ -360,4 +360,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public v2 unitize(v2 v) {
         return new v2((v.x - left())/w, (v.y - bottom()/h));
     }
+
+    /** computes the average of both position and scale parameters */
+    public RectFloat mean(RectFloat o) {
+        if (this == o) return this;
+        return XYWH((x + o.x)/2, (y+o.y)/2, (w + o.w)/2, (h + o.h)/2);
+    }
 }

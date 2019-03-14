@@ -113,30 +113,30 @@ abstract public class Container extends Surface {
 
         if (showing() && childrenCount() > 0) {
 
-            Surface[] found = new Surface[1];
-
-
             v2 fp = finger.posGlobal(this);
+            if (bounds.contains(fp)) {
 
-            whileEachReverse(c -> {
+                Surface[] found = new Surface[1];
+                whileEachReverse(c -> {
 
-                if (c instanceof Container && c.showing() && !((Container) c).clipBounds || c.bounds.contains(fp)) {
+                    if (c instanceof Container && c.showing() && !((Container) c).clipBounds || c.bounds.contains(fp)) {
 
-                    Surface s = c.finger(finger);
-                    if (s != null) {
+                        Surface s = c.finger(finger);
+                        if (s != null) {
 
-                        found[0] = s;
+                            found[0] = s;
 
-                        return false;
+                            return false;
+                        }
+
                     }
 
-                }
+                    return true;
 
-                return true;
+                });
+                return found[0];
+            }
 
-            });
-
-            return found[0];
         }
 
         return null;

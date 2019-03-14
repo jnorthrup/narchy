@@ -95,8 +95,7 @@ public final class CommonVariable extends UnnormalizedVariable {
             return Null;
 
         SortedSet<Variable> s = new TreeSet();
-        for (int i = 0; i < cv.length; i++)
-            s.add((Variable)cv[i]);
+        for (Object o : cv) s.add((Variable) o);
         if (s.size() < 2 || s.size() > Param.COMMON_VAR_MAX)
             return Null;
 
@@ -120,9 +119,9 @@ public final class CommonVariable extends UnnormalizedVariable {
     static String key(Op o, Iterable<Term> vars) {
         return o + Joiner.on("").join(vars);
     }
-    static String key(Op o, Term[] vars) {
-        return o + Joiner.on("").join(vars);
-    }
+//    static String key(Op o, Term[] vars) {
+//        return o + Joiner.on("").join(vars);
+//    }
 
     public static boolean unify(Variable X, Variable Y, Unify u) {
 

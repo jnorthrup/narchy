@@ -47,11 +47,9 @@ public class LinearTruthProjection extends TruthProjection {
 
         double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
 //        double wFreqPos = 0, wFreqNeg = 0;
-        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            TaskComponent x = get(i);
-
+        for (TaskComponent x : this) {
             double e = x.evi;
-            if (e!=e)
+            if (e != e)
                 continue;
 
             e *= eviFactor;

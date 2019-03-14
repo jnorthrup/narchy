@@ -61,9 +61,9 @@ public class TrackXY  {
         grid.set((x, y) -> {
 
 
-            float distOther = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
+            float distOther = (float) Math.sqrt(Util.sqr((tx - x)/((double)W)) + Util.sqr((ty - y)/((double)H)));
             //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
-            return unitize(1 - distOther * visionContrast.floatValue());
+            return unitize(1 - distOther * 2 * visionContrast.floatValue());
 //                return Util.unitize(
 //                        Math.max(1 - distOther * visionContrast,
 //                                1 - distSelf * visionContrast

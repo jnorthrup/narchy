@@ -234,15 +234,15 @@ public enum Terms {
     public static ObjectIntHashMap<Term> subtermScore(Subterms c, ToIntFunction<Term> score, int minTotalScore) {
         ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(c.volume());
 
-        c.forEach(cc -> {
+        c.forEach(cc ->
             cc.recurseTerms((Term subterm) -> {
                 if (subterm == c)
                     return;
                 int s = score.applyAsInt(subterm);
                 if (s > 0)
                     uniques.addToValue(subterm, s);
-            });
-        });
+            })
+        );
 
         int total = uniques.size();
         if (total == 0) return null;

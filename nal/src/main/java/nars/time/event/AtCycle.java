@@ -1,6 +1,5 @@
 package nars.time.event;
 
-import nars.$;
 import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
@@ -18,8 +17,10 @@ public class AtCycle extends NAREvent {
         super(id, x);
     }
 
+
+    static final Logger logger = LoggerFactory.getLogger(AtCycle.class);
+
     abstract protected static class AtCycleService extends NARService implements Consumer<NAR> {
-        static final Logger logger = LoggerFactory.getLogger(AtCycle.class);
 
 //    protected final AtomicBoolean busy = new AtomicBoolean(false);
 

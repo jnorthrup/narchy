@@ -7,7 +7,7 @@ import jcog.pri.op.PriMerge;
  *bounded-explosive semi-weighted task batching
  *     double buffer of task merge bags
  * recyclable; ideally thread-local */
-public class TaskBatch {
+public final class TaskBatch {
 
     /** double buffered, page flipping strategy */
     final TaskQueue[] queue = new TaskQueue[2];
@@ -39,9 +39,7 @@ public class TaskBatch {
         /** execute and drain the queue */
         public void run(TaskQueue target) {
             /** TODO optional: sort the removed entries by class to group similar implementations in hopes of maximizing cpu code cache hits */
-            update((x, pri)->{
-                x.run(target);
-            });
+            update((x, pri)-> x.run(target));
         }
     }
 

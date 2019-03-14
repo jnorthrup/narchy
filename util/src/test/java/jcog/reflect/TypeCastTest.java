@@ -173,7 +173,7 @@ public class TypeCastTest {
                 Path<Class, Function> path = bcast.findPath(cf, cto);
                 if( path!=null ){
                     i++;
-                    Converter sc = new Converter(path);
+                    Converter sc = Converter.the(path);
                     System.out.println(i+": "+ sc);
 
                     Object y = sc.apply("9");

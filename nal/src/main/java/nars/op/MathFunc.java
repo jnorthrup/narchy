@@ -121,7 +121,7 @@ public enum MathFunc { ;
     }
 
     /** TODO abstract CommutiveBooleanBidiFunctor */
-    public static class XOR extends Functor.InlineCommutiveBinaryBidiFunctor implements The {
+    public static final class XOR extends Functor.InlineCommutiveBinaryBidiFunctor implements The {
 
         public static final XOR the = new XOR();
 

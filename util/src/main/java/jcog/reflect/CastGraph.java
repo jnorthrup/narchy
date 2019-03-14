@@ -31,7 +31,6 @@ import jcog.reflect.graph.Path;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Clob;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -1322,7 +1321,7 @@ public class CastGraph extends TypeCastGraph {
             Path<Class, Function> path = findPath(cf, cto);
             if( path!=null ){
                 i++;
-                convertors.add(new Converter(path));
+                convertors.add(Converter.the(path));
             }
         }
 

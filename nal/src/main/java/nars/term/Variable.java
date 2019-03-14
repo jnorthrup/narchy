@@ -6,8 +6,8 @@ import nars.Op;
 import nars.Param;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
-import nars.unify.Unify;
 import nars.term.var.ellipsis.Ellipsis;
+import nars.unify.Unify;
 
 import static nars.Op.NEG;
 import static nars.Op.VAR_PATTERN;
@@ -60,15 +60,22 @@ public interface Variable extends Atomic {
         Op xOp = x.op();
         if (x instanceof Variable && u.var(xOp)) {
 
-            if (!(x instanceof Ellipsis) && xOp!=VAR_PATTERN) {
+            if (!(x instanceof Ellipsis)) {
 
                 if (y instanceof Variable && !(y instanceof Ellipsis)) {
                     Op yOp = y.op();
 
-                    if (u.commonVariables && (yOp!=VAR_PATTERN && (u.varCommon(xOp) || u.varCommon(yOp))))
+//                    if (u.commonVariables && (yOp!=VAR_PATTERN && (u.varCommon(xOp) || u.varCommon(yOp))))
+//                        return CommonVariable.unify((Variable) x, (Variable) y, u);
+//                    else if (yOp.id < xOp.id && u.varReverse(yOp))
+//                        return u.putXY((Variable) y, x);
+                    if (yOp == xOp)
                         return CommonVariable.unify((Variable) x, (Variable) y, u);
-                    else if (yOp.id < xOp.id && u.varReverse(yOp))
-                        return u.putXY((Variable) y, x);
+                    else {
+                        if (yOp.id < xOp.id && u.varReverse(yOp))
+                            return u.putXY((Variable) y, x);
+                    }
+
                 }
             }
 

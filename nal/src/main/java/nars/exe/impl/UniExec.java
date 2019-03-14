@@ -24,7 +24,7 @@ public class UniExec extends Exec {
 
     static final int inputQueueCapacityPerThread = 128;
 
-    final MetalConcurrentQueue in;
+    protected final MetalConcurrentQueue in;
 
     public static final class TimedLink extends PLink<Causable> {
 

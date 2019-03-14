@@ -244,7 +244,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return out(this, x);
     }
 
-    public boolean out(Supplier<X> x) {
+    public boolean outLazy(Supplier<X> x) {
         if (active()) {
             return this.out(x.get());
         }
@@ -268,17 +268,14 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     }
 
     @Override
-    public boolean stop() {
+    protected void stopping() {
+        node = null;
+        enabled = false;
         GraphEdit p = parent(GraphEdit.class);
-        if (super.stop()) {
-            node = null;
-            if (p != null)
-                p.links.removeNode(this);
-            return true;
-        }
-        return false;
+        if (p != null)
+            p.links.removeNode(this);
+        super.stopping();
     }
-
 
     protected final boolean out(Port<?> sender, X x) {
         if (enabled) {

@@ -5,7 +5,7 @@ import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.jetbrains.annotations.Nullable;
 
-public class TimeRangeFilter extends TimeRange implements LongLongPredicate {
+public final class TimeRangeFilter extends TimeRange implements LongLongPredicate {
 
 
     final static private TimeRangeFilter Eternal = new TimeRangeFilter(Tense.ETERNAL, Tense.ETERNAL, Mode.Near);

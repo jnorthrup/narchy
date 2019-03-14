@@ -33,13 +33,13 @@ public class TruthletTask extends SignalTask {
     }
 
 
-    /**
-     * should be called only from the stretch procedure
-     */
-    private void updateTime(Concept c, long nextStart, long nextEnd) {
-        if (!(nextStart == start() && nextEnd == end()))
-            update(c, t-> t.truthlet = t.truthlet.stretch(nextStart, nextEnd));
-    }
+//    /**
+//     * should be called only from the stretch procedure
+//     */
+//    private void updateTime(Concept c, long nextStart, long nextEnd) {
+//        if (!(nextStart == start() && nextEnd == end()))
+//            update(c, t-> t.truthlet = t.truthlet.stretch(nextStart, nextEnd));
+//    }
 
     public void update(NAR n, Consumer<TruthletTask> t) {
         Concept c = n.concept(term(), true);

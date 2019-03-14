@@ -177,7 +177,7 @@ abstract public class NAgentX extends NAgent {
         return n;
     }
 
-    static NAR baseNAR(float durFPS, int threads) {
+    static NAR baseNAR(float durFPS, int _threads) {
     /*
     try {
         Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
@@ -196,6 +196,11 @@ abstract public class NAgentX extends NAgent {
 
         clock.durFPS(durFPS);
 
+        Valuator val =
+            new Valuator.DefaultValuator(0.9f);
+            //new Valuator.AEValuator(new XoRoShiRo128PlusRandom());
+
+        int threads = _threads <= 0 ? Util.concurrencyExcept(1) : _threads;
 
         NAR n = new NARS()
 
@@ -204,12 +209,10 @@ abstract public class NAgentX extends NAgent {
                 //new UniExec()
 
                 new WorkerExec(
-                        new Valuator.DefaultValuator(0.9f),
-                        //new Valuator.AEValuator(new XoRoShiRo128PlusRandom()),
-
-                        threads <= 0 ? Util.concurrencyExcept(1) : threads,
-
+                        val, threads,
                         false/* affinity */)
+
+//                new ForkJoinExec(val, threads)
 
 //                new SuperExec(
 //                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads
@@ -397,8 +400,8 @@ abstract public class NAgentX extends NAgent {
 
     public static void config(NAR n) {
         n.dtDither.set(
-                10
-                //20
+                //10
+                20
                 //40
         );
 
@@ -409,10 +412,10 @@ abstract public class NAgentX extends NAgent {
         n.attn.activeCapacity.set(1024);
 
 
-        n.beliefPriDefault.set(0.1f);
-        n.goalPriDefault.set(0.25f);
-        n.questionPriDefault.set(0.05f);
-        n.questPriDefault.set(0.05f);
+        n.beliefPriDefault.set(0.01f);
+        n.goalPriDefault.set(0.025f);
+        n.questionPriDefault.set(0.005f);
+        n.questPriDefault.set(0.005f);
 
         n.beliefConfDefault.set(0.75f);
         n.goalConfDefault.set(0.75f);

@@ -290,7 +290,7 @@ public interface TermIO {
                 super.writeDT(dts.get(i), out);
         }
 
-        public int ditherUniform(int dtDither, int x) {
+        public static int ditherUniform(int dtDither, int x) {
             int y = Tense.dither(x, dtDither);
             if (y != 0)
                 y = y > 0 ? dtDither : -dtDither; //destroying most of the the temporal data in canonicalization

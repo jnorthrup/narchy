@@ -1,6 +1,5 @@
 package nars.task;
 
-import com.google.common.primitives.Longs;
 import jcog.Util;
 import jcog.pri.Prioritizable;
 import nars.NAR;

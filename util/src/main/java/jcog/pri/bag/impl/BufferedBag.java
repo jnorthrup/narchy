@@ -75,11 +75,17 @@ abstract public class BufferedBag<X,B,Y extends Prioritizable> extends ProxyBag<
         Y yBag = bag.get(x);
         if (yBag!=null) {
             //HACK
-            NumberX o =new MutableFloat();
-            if (bag instanceof ArrayBag) ((ArrayBag)bag).merge(yBag, (Prioritizable)x, o);
-            else if (bag instanceof HijackBag) ((HijackBag)bag).merge(yBag, x, o);
+
+            if (bag instanceof ArrayBag) {
+                //handles merge pressurization
+                ((ArrayBag) bag).merge(yBag, (Prioritizable) x, null);
+            } else if (bag instanceof HijackBag) {
+                //TODO test if neceessary
+                NumberX o =new MutableFloat();
+                ((HijackBag)bag).merge(yBag, x, o);
+                bag.depressurize(o);
+            }
             else throw new UnsupportedOperationException();
-            bag.depressurize(o);
 
             return (B) yBag;
         } else

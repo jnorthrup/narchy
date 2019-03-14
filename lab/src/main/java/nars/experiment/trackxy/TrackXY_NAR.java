@@ -20,7 +20,7 @@ import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.util.TaskBuffer;
 import nars.term.Term;
-import nars.time.clock.RealTime;
+import nars.time.clock.CycleTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Splitting;
@@ -45,11 +45,12 @@ public class TrackXY_NAR extends NAgentX {
 
     //W = 3, H = 1;
     //W = 5, H = 1;
-    public static final int derivationStrength = 8;
+    public static final int derivationStrength = 2;
 
-    static float fps = 16;
-    static int durMS = Math.round(1000/(fps));
+//    static float fps = 16;
+//    static int durMS = Math.round(1000/(fps));
 
+    static int dur = 16;
 
     static float camResolution = 0.1f;
     static int volMax = 11;
@@ -67,8 +68,8 @@ public class TrackXY_NAR extends NAgentX {
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super("trackXY",
                 //FrameTrigger.cycles(W*H*2),
-                //FrameTrigger.durs(1),
-                FrameTrigger.fps(fps),
+                FrameTrigger.durs(1),
+                //FrameTrigger.fps(fps),
                 nar);
 
         int W = xy.W;
@@ -91,7 +92,8 @@ public class TrackXY_NAR extends NAgentX {
         }
 
         if (targetCam) {
-            Bitmap2DSensor<jcog.signal.wave2d.ArrayBitmap2D> c = new Bitmap2DSensor<>(/*id*/  (Term) null, track.grid, nar);
+            Bitmap2DSensor<jcog.signal.wave2d.ArrayBitmap2D> c = new Bitmap2DSensor<>(/*id*/  (Term) null,
+                    track.grid, nar);
             c.resolution(camResolution);
             addSensor(c);
             /*id*/
@@ -158,6 +160,7 @@ public class TrackXY_NAR extends NAgentX {
 
             if (trainer.getOpaque()) {
                 long now = nar.time();
+                int durMS = nar.dur();
                 if (track.ty < track.cy) {
                     nar().want(0.1f, $.the("down"), now, now + durMS, 1f, 0.02f);
                 } else if (track.ty > track.cy) {
@@ -177,8 +180,8 @@ public class TrackXY_NAR extends NAgentX {
 
         NARS nb = new NARS.DefaultNAR(0, true)
                 .exe(new UniExec(1, 2 /* force concurrent */))
-                .time(new RealTime.MS().dur(durMS))
-                //.time(new CycleTime().dur(dur))
+                //.time(new RealTime.MS().dur(durMS))
+                .time(new CycleTime().dur(dur))
                 .index(
                         new CaffeineIndex(4 * 1024 * 10)
                         //new HijackConceptIndex(4 * 1024, 4)
@@ -212,7 +215,7 @@ public class TrackXY_NAR extends NAgentX {
         //n.freqResolution.setAt(0.04f);
 
         n.termVolumeMax.set(volMax);
-        n.dtDither.set(Math.max(1, durMS));
+        //n.dtDither.set(Math.max(1, durMS));
 
 
         Deriver d = new BatchDeriver(Derivers.nal(n,

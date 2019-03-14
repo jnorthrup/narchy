@@ -18,6 +18,7 @@ public class WorkerExec extends ThreadedExec {
 
     /** process sub-timeslice divisor */
     double granularity = 4;
+    private static final long subCycleMinNS = 20_000;
 
     public WorkerExec(Valuator r, int threads) {
         super(r, threads);
@@ -34,7 +35,7 @@ public class WorkerExec extends ThreadedExec {
 
     private final class WorkPlayLoop implements Worker {
 
-        private long subCycleMinNS = 10_000;
+
         private long subCycleMaxNS;
 
         private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
@@ -186,7 +187,7 @@ public class WorkerExec extends ThreadedExec {
 //                /** expected time will be equal to or less than the max due to various overheads on resource constraints */
 //                double expectedWorkTimeNS = (((double)workTimeNS) * expectedWorkTimeFactor); //TODO meter and predict
 
-            subCycleMaxNS = (long) (cycleNS / granularity);
+            subCycleMaxNS = (long) ((workTimeNS) / granularity);
 
             if (play.length != n) {
                 //TODO more careful test for change
@@ -201,14 +202,13 @@ public class WorkerExec extends ThreadedExec {
 
             //schedule
             //TODO Util.max((TimedLink.MyTimedLink m) -> m.time, play);
+//            long existingTime = Util.sum((TimedLink.MyTimedLink x) -> Math.max(0, x.time), play);
+//            long remainingTime = workTimeNS - existingTime;
             long minTime = -Util.max((TimedLink.MyTimedLink x) -> -x.time, play);
-            long existingTime = Util.sum((TimedLink.MyTimedLink x) -> Math.max(0, x.time), play);
-            long remainingTime = workTimeNS - existingTime;
-//                if (remainingTime > subCycleMinNS) {
             long shift = minTime < 0 ? 1 - minTime : 0;
             for (TimedLink.MyTimedLink m : play) {
-                int t = Math.round(shift + remainingTime * m.pri());
-                m.add(Math.max(subCycleMinNS, t) * priorityPeriod, -workTimeNS, +workTimeNS);
+                double t = shift + workTimeNS * m.pri();
+                m.add(Math.max(subCycleMinNS, Math.round(t * priorityPeriod)), -workTimeNS*priorityPeriod, +workTimeNS*priorityPeriod);
             }
 //                }
         }

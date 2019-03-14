@@ -3,17 +3,24 @@ package nars.agent;
 import jcog.Util;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
+import jcog.math.FloatRange;
+import jcog.pri.ScalarValue;
 import nars.$;
 import nars.NAR;
 import nars.attention.AttNode;
 import nars.concept.action.GoalActionConcept;
 import nars.term.atom.Atomic;
+import org.jetbrains.annotations.NotNull;
 
-/** supraself agent metavisor */
+/**
+ * supraself agent metavisor
+ */
 public class MetaAgent {
 
     static final Atomic curiosity = Atomic.the("curi"),
             forget = Atomic.the("forget"),
+            beliefPri = Atomic.the("beliefPri"),
+            goalPri = Atomic.the("goalPri"),
             pri = Atomic.the("pri"),
             enable = Atomic.the("enable"), duration = Atomic.the("dur");
 
@@ -25,7 +32,10 @@ public class MetaAgent {
     public final Reward enableReward;
     //private final GoalActionConcept durAction;
     public final GoalActionConcept[] forgetAction;
-    public final GoalActionConcept[] priAction;
+    public final GoalActionConcept[] beliefPriAction;
+    private final GoalActionConcept[] goalPriAction;
+    private final GoalActionConcept[] agentPri;
+    private final GoalActionConcept dur;
 
     private int disableCountDown = 0;
     private final int disableThreshold = 1;
@@ -35,7 +45,7 @@ public class MetaAgent {
 
     float curiMax = 0.2f;
     float curiMinOld = 0.01f,
-          curiMinYoung = 0.04f;
+            curiMinYoung = 0.04f;
 
 
     private final GoalActionConcept curiosityAction;
@@ -53,7 +63,7 @@ public class MetaAgent {
         NAR n = a.nar();
         NAR nar = n;
         start = nar.time();
-        curiosityAction = a.actionUnipolar($.inh(a.id,curiosity), (c)->{
+        curiosityAction = a.actionUnipolar($.inh(a.id, curiosity), (c) -> {
             a.curiosity.rate.set(curiosity(c));
             return c;
         });
@@ -61,18 +71,30 @@ public class MetaAgent {
 
 
         forgetAction = a.actionDial(
-                $.inh(a.id,$.p(forget,$.the(-1))),
-                $.inh(a.id,$.p(forget,$.the(+1))),
+                $.inh(a.id, $.p(forget, $.the(-1))),
+                $.inh(a.id, $.p(forget, $.the(+1))),
                 n.attn.forgetRate, 40);
         forgetAction[0].attn.reparent(attn); //HACK
         forgetAction[1].attn.reparent(attn);//HACK
 
-        priAction = a.actionDial(
-                $.inh(a.id,$.p(pri,$.the(-1))),
-                $.inh(a.id,$.p(pri,$.the(+1))), a.pri,
-                40);
-        priAction[0].attn.reparent(attn);//HACK
-        priAction[1].attn.reparent(attn); //HACK
+        this.beliefPriAction = dial(a, MetaAgent.beliefPri,
+                n.beliefPriDefault.subRange(
+                        ScalarValue.EPSILON, n.beliefPriDefault.floatValue() /* current value */ * 2),
+                20);
+        this.goalPriAction = dial(a, MetaAgent.goalPri,
+                n.goalPriDefault.subRange(
+                        ScalarValue.EPSILON, n.goalPriDefault.floatValue() /* current value */ * 2),
+                20);
+
+        int initialDur = n.dur();
+        this.dur = a.actionUnipolar($.inh(a.id,duration), (x) -> {
+            n.time.dur((int) Util.lerp(Math.sqrt(x), 1, initialDur));
+            return x;
+        });
+        this.agentPri = dial(a, MetaAgent.pri,
+                a.pri,
+                20);
+
 
         if (allowPause) {
 
@@ -86,15 +108,16 @@ public class MetaAgent {
 
 
             //TODO agent enable
-            enableAction = a.actionPushButton($.func(enable, a.id), (e)->{
-            //enableAction = n.actionToggle($.func(enable, n.id), (e)->{
+            enableAction = a.actionPushButton($.func(enable, a.id), (e) -> {
+                //enableAction = n.actionToggle($.func(enable, n.id), (e)->{
                 //TODO integrate and threshold, pause for limited time
                 if (!e) {
                     if (disableCountDown++ >= disableThreshold) {
                         a.enabled.set(false);
-                        nar.runAt(nar.time() + disablePeriod * nar.dur(), ()-> {
+                        nar.runAt(nar.time() + disablePeriod * nar.dur(), () -> {
                             //re-enable
-                            a.enabled.set(true); disableCountDown = 0;
+                            a.enabled.set(true);
+                            disableCountDown = 0;
                         });
                     }
                 } else {
@@ -104,7 +127,7 @@ public class MetaAgent {
             });
 
 
-            enableReward = a.reward("enable", ()->a.enabled.getOpaque() ? +1 : 0f);
+            enableReward = a.reward("enable", () -> a.enabled.getOpaque() ? +1 : 0f);
 
             enableAction.attn.reparent(attn);
             enableReward.attn.reparent(attn);
@@ -119,15 +142,29 @@ public class MetaAgent {
         //TODO duration control
     }
 
+    @NotNull
+    public GoalActionConcept[] dial(NAgent a, Atomic label, FloatRange var, int steps) {
+        GoalActionConcept[] priAction = a.actionDial(
+                $.inh(a.id, $.p(label, $.the(-1))),
+                $.inh(a.id, $.p(label, $.the(+1))),
+                var,
+                steps);
+        priAction[0].attn.reparent(attn);//HACK
+        priAction[1].attn.reparent(attn); //HACK
+        return priAction;
+    }
+
     private int dur(int initialDur, float d) {
         return Math.max(1, Math.round((d + 0.5f) * 2 * initialDur));
     }
 
-    /** curiosity frequency -> probability mapping curve */
+    /**
+     * curiosity frequency -> probability mapping curve
+     */
     float curiosity(float c) {
 
         float min;
-        float durs = (float)(((double)(agent.nar().time() - start)) / agent.nar().dur());
+        float durs = (float) (((double) (agent.nar().time() - start)) / agent.nar().dur());
         if (durs < startupDurs)
             min = curiMinYoung;
         else

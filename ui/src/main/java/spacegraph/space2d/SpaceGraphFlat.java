@@ -39,12 +39,9 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
         @Override protected void compileChildren(SurfaceRender r) {
             int w = display.getWidth(), h = display.getHeight();
             BiConsumer<GL2, SurfaceRender> reset = (g, rr) -> {
-                g.glViewport(0, 0, w, h);
-                g.glMatrixMode(GL_PROJECTION);
-                g.glLoadIdentity();
 
-                g.glOrtho(0, w, 0, h, -1.5, 1.5);
-                g.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+
+//                g.glPushMatrix();
 
                 //rr.set(w/2, h/2, w, h);
                 rr.pw = w;
@@ -54,14 +51,13 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
                 //rr.scaleX = 1; rr.scaleY = 1;
                 //rr.restart(w, h);
                 //rr.set(0.5f, 0.5f, 1, 1);
-                g.glPushMatrix();
             };
             forEach(c -> {
                 r.on(reset);
                 c.recompile(r);
-                r.on((g,rr)-> {
-                    g.glPopMatrix();
-                });
+//                r.on((g,rr)-> {
+//                    g.glPopMatrix();
+//                });
             });
         }
     };
@@ -86,20 +82,19 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
             display.window.setPointerVisible(false); //HACK
             layers.start(this);
 
-
-
             Ortho content = new ZoomOrtho(this, keyboard);
             content.set(_content);
             layers.add(content);
 
-            layers.add(finger.zoomBoundsSurface(content.cam));
+//            layers.add(finger.zoomBoundsSurface(content.cam));
             layers.add(finger.cursorSurface());
+
 //        //addOverlay(this.keyboard.keyFocusSurface(cam));
 //        layers.add((Surface) hud);
 
-            {
-                layers.add(new Menu());
-            }
+//            {
+//                layers.add(new Menu());
+//            }
 
             resize();
         });
@@ -120,19 +115,24 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
             return;
         }
 
-        GL2 gl = display.gl;
+        GL2 g = display.gl;
 
         int w = display.window.getWidth(), h = display.window.getHeight();
         rendering.restart(w, h, dtMS);
 
-        gl.glDisable(GL2.GL_DEPTH_TEST);
+        g.glDisable(GL2.GL_DEPTH_TEST);
 
+        g.glViewport(0, 0, w, h);
+        g.glMatrixMode(GL_PROJECTION);
+        g.glLoadIdentity();
 
+        g.glOrtho(0, w, 0, h, -1.5, 1.5);
+        g.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 
-        rendering.render(gl);
+        rendering.render(g);
         rendering.clear();
 
-        gl.glEnable(GL2.GL_DEPTH_TEST);
+        g.glEnable(GL2.GL_DEPTH_TEST);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package nars.time.event;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloat;
 import jcog.event.Off;
@@ -15,18 +16,19 @@ import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import static nars.time.Tense.TIMELESS;
 
 /**
  * executes approximately once every N durations
  */
 abstract public class DurService extends NARService {
 
-    //private static final Logger logger = LoggerFactory.getLogger(DurService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DurService.class);
 
     /**
      * ideal duration multiple to be called, since time after implementation's procedure finished last
@@ -120,11 +122,9 @@ abstract public class DurService extends NARService {
     public static Pair<FloatRange, Off> cache(FloatSupplier o, float min, float max, float durPeriod, NAR n) {
         assert (min < max);
         FloatRange r = new FloatRange((min + max) / 2, min, max);
-        DurService d = DurService.on(n, () -> {
-            r.set(
-                    Util.clampSafe(o.asFloat(), min, max)
-            );
-        });
+        DurService d = DurService.on(n, () -> r.set(
+                Util.clampSafe(o.asFloat(), min, max)
+        ));
         d.durs(durPeriod);
         return Tuples.pair(r, d);
     }
@@ -143,7 +143,6 @@ abstract public class DurService extends NARService {
     }
 
 
-    private transient long next = TIMELESS;
 
 
     private final AtDur at = new AtDur();
@@ -177,6 +176,7 @@ abstract public class DurService extends NARService {
          */
         private volatile long lastStarted = Long.MIN_VALUE;
 
+        final AtomicBoolean busy = new AtomicBoolean(false);
 
         @Override
         public Term term() {
@@ -186,10 +186,12 @@ abstract public class DurService extends NARService {
         @Override
         public void run() {
 
-//        if (!busy.compareAndSet(false, true))
-//            return;
+        if (!busy.compareAndSet(false, true))
+            throw new WTF(); //return false;
 
-//        try {
+        try {
+
+            long d = durCycles(); //get prior in case dur changes during execution
 
             long atStart = nar.time();
 
@@ -197,20 +199,26 @@ abstract public class DurService extends NARService {
             if (lastStarted == Long.MIN_VALUE)
                 lastStarted = atStart;
 
-
             this.lastStarted = atStart;
 
             long delta = atStart - lastStarted;
 
-            DurService.this.run(nar, delta);
+            try {
+                DurService.this.run(nar, delta);
+            } catch (Throwable t) {
+                logger.error("{} {}", this, t);
+            }
 
             long now = nar.time();
 
-            scheduleNext(atStart, now);
+            scheduleNext(d, atStart, now);
+        } finally {
+            busy.set(false);
+        }
         }
 
-        private void scheduleNext(long started, long now) {
-            long d = durCycles();
+        private void scheduleNext(long d, long started, long now) {
+
             long idealNext = started + d;
             if (idealNext <= now) {
                 /** LAG - compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged*/
@@ -219,8 +227,8 @@ abstract public class DurService extends NARService {
                 idealNext = now + Math.max(1, d - phaseLate);
 
                 if (Param.DEBUG) {
-                    long maxNext = started + d; assert (next >= maxNext) : "starting too soon: " + next + " < " + maxNext;
-                    long minNext = now + d; assert (next <= minNext) : "starting too late: " + next + " > " + maxNext;
+                    long earliest = started + d; assert (next >= earliest) : "starting too soon: " + next + " < " + earliest;
+                    long latest = now + d; assert (next <= latest) : "starting too late: " + next + " > " + earliest;
                 }
             }
 

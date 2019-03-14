@@ -266,7 +266,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 3; //HACK this is a TTL supply, not a COST

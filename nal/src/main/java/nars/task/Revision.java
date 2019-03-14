@@ -54,7 +54,7 @@ public enum Revision {;
      * also cause merge is deferred in the same way
      * @return
      */
-    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAR nar, boolean dither, T... tasks) {
+    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAR nar, boolean dither, T[] tasks) {
 
 
         assert (tasks.length > 1);

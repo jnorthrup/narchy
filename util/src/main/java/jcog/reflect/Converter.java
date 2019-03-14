@@ -25,11 +25,11 @@
 package jcog.reflect;
 
 
+import jcog.WTF;
 import jcog.data.graph.FromTo;
 import jcog.data.list.FasterList;
 import jcog.reflect.graph.Path;
 
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -46,64 +46,65 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements GetWei
         Converter.this.weight = null;
         fireEvent(oldw, null);
     };
-    
-    protected List<Function> functions;
 
-    public Converter(Path<Class, Function> path) {
-        this.functions = new FasterList<>();
+    private final Function[] functionsArray;
 
-        for (FromTo<jcog.data.graph.Node<Class, Function>, Function> ed : path.fetch(0, path.nodeCount())) {
+    protected Function F;
+
+    public static Converter the(Path<Class, Function> path) {
+        int steps = path.nodeCount();
+        FasterList<Function> functions = new FasterList<>(steps);
+        for (FromTo<jcog.data.graph.Node<Class, Function>, Function> ed : path.fetch(0, steps)) {
             if (ed != null) {
-                this.functions.add(ed.id());
+                functions.add(ed.id());
             }
         }
+        return new Converter(functions);
+    }
+
+    public Converter(FasterList<Function> functions) {
+
+        switch (functions.size()) {
+            case 0: throw new WTF();
+            case 1:
+                this.functionsArray = new Function[] { this.F = functions.get(0) };
+                break;
+            default: {
+                Function[] ff = functions.toArrayRecycled(Function[]::new);
+                this.functionsArray = ff;
+                this.F = (x) -> {
+                    Object y = x;
+                    for (Function f : ff) {
+                        y = f.apply(y);
+                    }
+                    return y;
+                };
+            }
+        }
+
+
 
 //        path.stream().filter((ed) -> ( ed!=null )).forEach((ed) -> {
 //            this.convertors.addAt(ed.getEdge());
 //        });
 
-        attachListener();
-    }
-
-    public Converter(List<Function> convertors) {
-//        this.functions = new ArrayList<>();
-//        for (Function conv : convertors) {
-//            if (conv != null) {
-//                this.functions.add(conv);
-//            }
-//        }
-        this.functions = convertors;
-
-        attachListener();
-    }
-
-    //</editor-fold>
-
-    private void attachListener() {
-//        this.convertors.stream()
-//            .filter( (c) -> ( c instanceof WeightChangeSender ) )
-//            .forEach( (c) -> {
-//                ((WeightChangeSender)c).addWeightChangeListener(listener,true);
-//            });
-
-        for (Function c : this.functions) {
+        for (Function c : functions) {
             if (c instanceof WeightChangeSender) {
                 ((WeightChangeSender) c).addWeightChangeListener(listener, true);
             }
         }
     }
 
+
+
+
     public Function[] getConvertors() {
-        return functions.toArray(new Function[]{});
+        return functionsArray;
     }
 
     @Override
     public Y apply(X from) {
-        Object v = from;
-        for (Function conv : functions) {
-            v = conv.apply(v);
-        }
-        return (Y) v;
+        return (Y) F.apply(from);
     }
 
     @Override
@@ -111,7 +112,7 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements GetWei
         if (weight != null) return weight;
 
         double w = 0;
-        for (Function conv : functions) {
+        for (Function conv : functionsArray) {
             if (conv instanceof GetWeight) {
                 Double wc = ((GetWeight) conv).getWeight();
                 if (wc != null)

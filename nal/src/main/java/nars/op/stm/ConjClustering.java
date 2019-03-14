@@ -13,6 +13,7 @@ import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
 import nars.control.CauseMerge;
+import nars.term.TermedDelegate;
 import nars.time.event.DurService;
 import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
@@ -27,6 +28,7 @@ import nars.truth.dynamic.TaskList;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -252,7 +254,7 @@ public class ConjClustering extends Causable {
 
 //        private final Map<LongObjectPair<Term>, Task> vv = new UnifiedMap<>(16);
         private final List<Task> trying = new FasterList();
-        List<Task> tried = new FasterList();
+        FasterList<Task> tried = new FasterList();
 
         private final MetalLongSet actualStamp = new MetalLongSet(Param.STAMP_CAPACITY * 2);
 
@@ -381,8 +383,7 @@ public class ConjClustering extends Causable {
                                 } else {
 
                                     //recycle to be reused
-                                    for (Task u : x)
-                                        tried.add(u);
+                                    tried.addAll(Arrays.asList(x));
                                 }
 
                             }
@@ -427,7 +428,7 @@ public class ConjClustering extends Causable {
 
 
 
-                            int xVolMax = Util.max((Task z) -> (z.volume()), x);
+                            int xVolMax = Util.max(TermedDelegate::volume, x);
                             float cmplFactor =
                                     ((float)xVolMax) / y.volume();
 

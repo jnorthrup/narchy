@@ -30,8 +30,11 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
         executeNow(t);
     }
 
-    /** immediately execute a Task */
-    @Override public final void input(ITask t) {
+    /**
+     * immediately execute a Task
+     */
+    @Override
+    public final void input(ITask t) {
         ITask.run(t, nar);
     }
 
@@ -81,22 +84,21 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
      * inline, synchronous
      */
     protected final void executeNow(Object t) {
-        if (t instanceof ITask)
-            input((ITask) t);
-        else {
-//            Exe.run(t, () -> {
-                try {
-                    if (t instanceof Runnable) {
-                        ((Runnable) t).run();
-                    } else {
-                        ((Consumer) t).accept(nar);
-                    }
-                } catch (Throwable e) {
-                    logger.error("{} {}", t, /*Param.DEBUG ?*/ e /*: e.getMessage()*/);
+        try {
+            if (t instanceof ITask)
+                input((ITask) t);
+            else {
+                if (t instanceof Runnable) {
+                    ((Runnable) t).run();
+                } else {
+                    ((Consumer) t).accept(nar);
                 }
-//            });
+            }
+        } catch (Throwable e) {
+            logger.error("{} {}", t, /*Param.DEBUG ?*/ e /*: e.getMessage()*/);
         }
     }
+
 
 
     public void start(NAR nar) {
@@ -108,8 +110,6 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
 
         //this.nar = null;
     }
-
-
 
 
     public void print(Appendable out) {

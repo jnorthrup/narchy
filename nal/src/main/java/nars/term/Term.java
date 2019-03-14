@@ -435,16 +435,16 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
         if (op() == CONJ) {
             if (Conj.isSeq(this)) {
-                final int[] hits = {0};
+//                final int[] hits = {0};
                 eventsWhile((when, what) -> {
                     if (what.equals(match)) {
-                        hits[0]++;
+//                        hits[0]++;
                         return each.test(Tense.occToDT(when));
                     } else {
                         if (Term.this != what && what.op() == CONJ) { //HACK unwrap this better to avoid unnecessary recursion
                             int subWhen = what.subTimeFirst(match);
                             if (subWhen != DTERNAL) {
-                                hits[0]++;
+//                                hits[0]++;
                                 return each.test(Tense.occToDT(when + subWhen));
                             }
                         }

@@ -170,8 +170,8 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             if (b == -1)
                 return true; //b = size() - 1;
 
-            if (point) {
-                int a = point ? b : indexNear(head, Math.max(s, minT));
+            if (!point) {
+                int a = indexNear(head, Math.max(s, minT));
                 if (a == -1)
                     return true; //a = 0;
 
@@ -212,7 +212,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 if (u == null && v == null)
                     break;
 
-            } while (r <= rad);
+            } while (r < rad);
 
         } else {
 

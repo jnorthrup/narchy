@@ -327,7 +327,7 @@ abstract public class Finger {
 
 
     public v2 posGlobal(Surface c) {
-        Ortho orthoParent = c.parent(Ortho.class);
+        Ortho orthoParent = c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class);
         if (orthoParent!=null)
             return posGlobal( posPixel, orthoParent);
         else

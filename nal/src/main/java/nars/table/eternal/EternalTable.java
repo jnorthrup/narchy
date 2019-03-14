@@ -2,7 +2,6 @@ package nars.table.eternal;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.decide.MutableRoulette;
 import jcog.pri.Prioritizable;
 import jcog.sort.SortedArray;
 import nars.$;

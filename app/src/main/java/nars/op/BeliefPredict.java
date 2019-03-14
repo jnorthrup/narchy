@@ -9,12 +9,12 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.time.event.DurService;
-import nars.control.channel.BufferedCauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
+import nars.time.event.DurService;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
@@ -41,7 +41,7 @@ public class BeliefPredict {
 
     final DurService on;
     //final List<ITask> currentPredictions = new FasterList<>();
-    private final BufferedCauseChannel predict;
+    private final CauseChannel predict;
     private final LivePredictor predictor;
     private final NAR nar;
 
@@ -78,7 +78,7 @@ public class BeliefPredict {
             map(c -> freqSupplier(c, nar), LongToFloatFunction[]::new, presentSampling)
         ));
 
-        this.predict = nar.newChannel(this).buffered();
+        this.predict = nar.newChannel(this);
 
         this.on = DurService.on(nar, this::predict);
     }
@@ -115,7 +115,7 @@ public class BeliefPredict {
 //
 //        predict.input(currentPredictions);
 
-        predict.commit();
+//        predict.commit();
 
     }
 

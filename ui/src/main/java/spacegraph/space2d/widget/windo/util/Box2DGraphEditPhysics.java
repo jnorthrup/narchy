@@ -470,6 +470,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     static class Snake {
 
+        float TENSION = 0.25f;
+
         private final List<Body2D> bodies;
         private final List<Body2D> attachments;
         final List<Joint> joints;
@@ -577,7 +579,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                     jd.enableMotor = false;
                     //jd.motorSpeed = 100;
 
-                    RevoluteJoint jj = new MyRevoluteJoint(w, jd, 0.05f);
+
+                    RevoluteJoint jj = new MyRevoluteJoint(w, jd, TENSION);
                     joints.add(jj);
 
 

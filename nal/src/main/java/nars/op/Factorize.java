@@ -92,10 +92,10 @@ public class Factorize {
         else
             yyy = null;
 
-        if (yyy==null)
-            return Op.EmptyTermArray; //not worth changing
-        else
-            return yyy;
+        return yyy == null ?
+                Op.EmptyTermArray  //not worth changing
+                :
+                yyy;
     }
 
     /** returns null if detects no reason to re-process */

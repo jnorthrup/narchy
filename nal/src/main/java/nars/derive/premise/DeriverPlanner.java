@@ -36,7 +36,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
 
 
-    final DeriverPlanner ConceptMetaMemoizer = preDerivation -> {
+    DeriverPlanner ConceptMetaMemoizer = preDerivation -> {
         Derivation d = (Derivation) preDerivation;
 
 

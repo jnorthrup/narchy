@@ -1345,6 +1345,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             try {
                 out.append(k.replace(" ", "/")).append(" \t ").append(v.toString()).append('\n');
             } catch (IOException e) {
+                e.printStackTrace();
             }
         });
         try {

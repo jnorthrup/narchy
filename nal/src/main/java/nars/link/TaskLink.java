@@ -533,9 +533,7 @@ public interface TaskLink extends UnitPrioritizable {
         private static FloatFloatToFloatFunction mergeComponent(PriMerge merge) {
             if (merge == PriMerge.replace) {
                 //optimized
-                return (existing, incoming) -> {
-                    return incoming;
-                };
+                return (existing, incoming) -> incoming;
             }
             if (merge == PriMerge.max) {
                 //optimized

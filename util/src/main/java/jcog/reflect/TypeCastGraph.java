@@ -389,7 +389,7 @@ public class TypeCastGraph extends SimpleSDGraph<Class, Function> {
                     fail(failedCastConvertor, castErrors, conv, ex);
                 }
             } else {
-                Converter c = new Converter(path);
+                Converter c = Converter.the(path);
                 scasters.add(c);
                 if (newSeqCasters != null)
                     newSeqCasters.accept(c);

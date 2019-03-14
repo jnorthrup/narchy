@@ -120,8 +120,12 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.isConsumed()) return;
+        if (e.isConsumed())
+            return;
 
+        short[] bd = e.getButtonsDown();
+        for (int i = 0, bdLength = bd.length; i < bdLength; i++)
+            bd[i] = (short) +bd[i];
 
         if (update(false, e, e.getButtonsDown())) {
             if (touching() != null)

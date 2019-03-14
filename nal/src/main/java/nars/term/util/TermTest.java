@@ -26,11 +26,11 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Termlike;
 import nars.term.compound.CachedCompound;
+import nars.term.util.builder.TermBuilder;
 import org.junit.jupiter.api.Assertions;
 
 import static nars.$.$$;
 import static nars.Op.PROD;
-import static nars.Op.terms;
 import static nars.time.Tense.DTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -169,8 +169,8 @@ public enum TermTest { ;
         for (int i = 0; i < s; i++)
             assertEq(a.sub(i), b.sub(i));
 
-        assertEquals(terms.newCompound(PROD, a), terms.newCompound(PROD, b));
-        assertEquals(terms.newCompound(PROD, b), terms.newCompound(PROD, a));
+        assertEquals(TermBuilder.newCompound(PROD, a), TermBuilder.newCompound(PROD, b));
+        assertEquals(TermBuilder.newCompound(PROD, b), TermBuilder.newCompound(PROD, a));
         assertEquals($.pFast(a), $.pFast(b));
         assertEquals(CachedCompound.newCompound(PROD, DTERNAL, a), CachedCompound.newCompound(PROD, DTERNAL, b));
 

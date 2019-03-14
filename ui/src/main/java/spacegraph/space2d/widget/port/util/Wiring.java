@@ -1,22 +1,20 @@
 package spacegraph.space2d.widget.port.util;
 
-import jcog.Util;
-import jcog.math.v2;
-import jcog.math.v3;
-import jcog.reflect.ExtendedCastGraph;
-import jcog.signal.Tensor;
-import jcog.signal.tensor.ArrayTensor;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.shape.PathSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.util.Path2D;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.function.Function;
+
+import static spacegraph.space2d.widget.port.TypedPort.CAST;
 
 /**
  * the process of drawing a wire between two surfaces
@@ -87,6 +85,8 @@ public class Wiring extends Dragging {
     @Override
     public final void stop(Finger finger) {
 
+        if (start == end)
+            return; //same instance
 
         if (end != null) {
             if (!tryWire())
@@ -106,14 +106,48 @@ public class Wiring extends Dragging {
 
     }
 
-    protected boolean tryWire() {
+    protected final boolean tryWire() {
+        GraphEdit g = graph();
+        return tryWire((Port)start, (Port)end, g);
+    }
 
-        if (Port.connectable((Port)start, (Port)end)) {
+    static boolean tryWire(Port start, Port end, GraphEdit g) {
+        if (Port.connectable(start, end)) {
 
-            GraphEdit g = graph();
+            if (start instanceof TypedPort && end instanceof TypedPort) {
+
+                //TODO lazy construct and/or cache these
+
+                //apply type checking and auto-conversion if necessary
+                Class aa = ((TypedPort) start).type, bb = ((TypedPort) end).type;
+                if (aa.equals(bb)) {
+                    //ok
+                } else {
+
+                    List<Function> ab = CAST.convertors(aa, bb), ba = CAST.convertors(bb, aa);
+
+                    if (!ab.isEmpty() || !ba.isEmpty()) {
+                        //wire with adapter
+                        PortAdapter adapter = new PortAdapter(aa, ab, bb, ba);
+                        g.addWeak(adapter).pos(start.bounds.mean(end.bounds).scale(0.1f));
+
+                        TypedPort ax = adapter.port(true);
+                        if (ax !=null) {
+                            g.addWire(new Wire(start, ax));
+                            g.addWire(new Wire(end, ax));
+                        }
+                        TypedPort ay = adapter.port(false);
+                        if (ay !=null) {
+
+                            g.addWire(new Wire(ay, start));
+                            g.addWire(new Wire(ay, end));
+                        }
+                        return true;
+                    }
+                }
+            }
 
             Wire wire = g.addWire(new Wire(start, end));
-            wire.connected();
 
             start.root().debug(start, 1, wire);
 

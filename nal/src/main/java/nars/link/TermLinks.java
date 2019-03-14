@@ -64,7 +64,7 @@ public final class TermLinks {
                                 if (((Set)match).size() >= cap) {
                                     //upgrade to TopN
                                     RankedTopN<TaskLink> mm = new RankedTopN<>(new TaskLink[cap], (FloatFunction<TaskLink>) TaskLink::pri);
-                                    match.forEach(mm::accept);
+                                    match.forEach(mm);
                                     match = mm;
                                 }
                             }
@@ -78,9 +78,10 @@ public final class TermLinks {
             if (match == null)
                 links = null;
             else if (match instanceof Set) {
+                @Nullable TaskLink[] l = this.links;
                 links = ((Set<TaskLink>) match).toArray(
-                            links!=null && links.length == ((Set)match).size() ?
-                                links /* recycle */
+                            l!=null && l.length == ((Set)match).size() ?
+                                l /* recycle */
                                 :
                                 TaskLink.EmptyTaskLinkArray
                         );

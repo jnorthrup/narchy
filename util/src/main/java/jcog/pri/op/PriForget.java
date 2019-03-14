@@ -63,7 +63,7 @@ public enum PriForget { ;
     public static Consumer<? extends Prioritizable> forgetIdeal(float rate, float idealPri, int size, int cap, float pressure, float mass) {
         float excess = pressure +
                 Math.max(0,
-                    mass - (cap * idealPri)
+                    mass - (/*cap*/size * idealPri)
                 )
         ;
         float eachMustForgetPct =

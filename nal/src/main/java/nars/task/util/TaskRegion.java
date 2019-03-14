@@ -120,7 +120,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         }
     }
 
-    public static TasksRegion mbr(TaskRegion r, Task x) {
+    static TasksRegion mbr(TaskRegion r, Task x) {
         return TasksRegion.mbr(r, x.start(), x.end(), x.freq(), x.conf());
     }
 

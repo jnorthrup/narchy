@@ -163,9 +163,9 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
         return concepts.putIfAbsent(k, () -> nar.conceptBuilder.apply(finalT, null));
     }
 
-    public final AbstractBytes key(Termed t) {
-        return key(t.term());
-    }
+//    public final AbstractBytes key(Termed t) {
+//        return key(t.term());
+//    }
 
 
     @Override

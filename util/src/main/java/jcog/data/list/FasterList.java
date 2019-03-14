@@ -1,5 +1,6 @@
 package jcog.data.list;
 
+import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.util.ArrayUtils;
 import jcog.util.FloatFloatToFloatFunction;
@@ -613,18 +614,14 @@ public class FasterList<X> extends FastList<X> {
     @Override
     public Iterator<X> iterator() {
         switch (size) {
-            case 0:
-                return Collections.emptyIterator();
-
-            default:
-                return new FasterListIterator<>(this);
+            case 0:  return Collections.emptyIterator();
+            default: return new FasterListIterator<>(this);
         }
     }
 
     public boolean containsInstance(X x) {
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            X y = this.items[i];
-            if (y == x)
+            if (this.items[i] == x)
                 return true;
         }
         return false;

@@ -61,15 +61,19 @@ public class Wire {
     }
 
     /** sends to target */
-    public final boolean send(Surface sender, Port receiver, Object s) {
-        if (receiver.recv(this, transfer(sender, s))) {
+    public final boolean send(Surface sender, Port receiver, Object x) {
+
+        if (x == null)
+            throw new NullPointerException();
+
+        if (receiver.recv(this, x)) {
             long now = System.nanoTime();
 
-            Class<?> cl = s.getClass();
+            Class<?> cl = x.getClass();
             int th = cl.hashCode();
             if (cl.isArray()) {
                 
-                th = Util.hashCombine(th, Array.getLength(s));
+                th = Util.hashCombine(th, Array.getLength(x));
             }
 
             if (sender == a) {
@@ -84,11 +88,6 @@ public class Wire {
             return true;
         }
         return false;
-    }
-
-    /** allows subclasses to impl inline filters or transforms */
-    protected Object transfer(Surface sender, Object x) {
-        return x;
     }
 
     public Surface other(Surface x) {

@@ -464,7 +464,7 @@ public class Builtin {
         }
     });
 
-       nar.on(new Functor.AbstractInlineFunctor2("chooseUnifiableSubEvent") {
+   nar.on(new Functor.AbstractInlineFunctor2("chooseUnifiableSubEvent") {
            @Override
            protected Term apply(Term conj, Term event) {
                if (event instanceof nars.term.Variable)
@@ -483,10 +483,8 @@ public class Builtin {
                    return Null;
 
                return Conj.chooseEvent(conj, nar.random(),(!econj || edt!=DTERNAL), (!econj || edt!=0),
-                       (when, what)->{
-                   return (!requireVars || what.hasVars())
-                           && Terms.possiblyUnifiable(event, what, true, Op.Variable);
-              });
+                       (when, what)-> (!requireVars || what.hasVars())
+                               && Terms.possiblyUnifiable(event, what, true, Op.Variable));
            }
        });
 

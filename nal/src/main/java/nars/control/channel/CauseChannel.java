@@ -21,13 +21,13 @@ abstract public class CauseChannel<X extends Prioritizable> extends ConsumerX<X>
         return cause.name + "<-" + super.toString();
     }
 
-    public BufferedCauseChannel<X> buffered() {
-        return buffered(8*1024);
-    }
+//    public BufferedCauseChannel<X> buffered() {
+//        return buffered(8*1024);
+//    }
 
-    public BufferedCauseChannel<X> buffered(int capacity) {
-        return new BufferedCauseChannel(this, capacity);
-    }
+//    public BufferedCauseChannel<X> buffered(int capacity) {
+//        return new BufferedCauseChannel(this, capacity);
+//    }
 
 //    public ThreadBufferedCauseChannel<X> threadBuffered() {
 //        return new ThreadBufferedCauseChannel<>(this);

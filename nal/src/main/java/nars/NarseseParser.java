@@ -398,11 +398,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             case "days":
                 return "day";
             case "hours":
-                return "h";
             case "hr":
                 return "h";
             case "m":
-                return "min";
             case "mins":
                 return "min";
             case "sec":

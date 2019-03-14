@@ -14,7 +14,7 @@ public interface TruthFunc {
     static void permuteTruth(TruthFunc[] values, Map<Term, TruthFunc> table) {
         for (TruthFunc t : values) {
 
-            table.put(Atomic.the(t + ""), t);
+            table.put(Atomic.the(t.toString() /*+ ""*/), t);
             table.put(Atomic.the(t + "PP"), t); //alias
 
             SwappedTruth swapped = new SwappedTruth(t);

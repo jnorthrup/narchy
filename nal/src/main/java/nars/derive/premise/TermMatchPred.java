@@ -57,8 +57,7 @@ public final class TermMatchPred<X> extends AbstractTermMatchPred<X> {
             return false; //dont bother grouping root accessors
 
         TermMatchPred other = null;
-        for (int i = 0, pSize = p.size(); i < pSize; i++) {
-            PREDICATE x = p.get(i);
+        for (PREDICATE x : p) {
             if (x != this && x instanceof TermMatchPred) {
                 TermMatchPred t = ((TermMatchPred) x);
                 if (resolve.equals(t.resolve)) {

@@ -186,7 +186,7 @@ public class XYSlider extends Surface implements HudHover  {
 //        b.set(S, px, 0.1f);
 //        b.set(E, py, 0.1f);
         TypedPort<v2> b = new TypedPort<>(v2.class);
-        on((x,y)-> b.out(()->knob));
+        on((x,y)-> b.outLazy(()->knob));
         b.set(this);
 
         return b;

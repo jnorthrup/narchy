@@ -316,7 +316,7 @@ public abstract class Unify extends Versioning<Term> {
 
     @Override
     public Versioning clear() {
-        clear((BiConsumer)null);
+        clear(null);
         return this;
     }
 
@@ -468,6 +468,7 @@ public abstract class Unify extends Versioning<Term> {
 //                }
 //                return 0;
 //            } else
+            else
                 return -1;
         }
 

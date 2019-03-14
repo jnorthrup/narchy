@@ -28,7 +28,6 @@ import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WeakSurface;
 import spacegraph.space2d.widget.meta.WizardFrame;
-import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.windo.util.Box2DGraphEditPhysics;
@@ -96,7 +95,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
 
     public static <X extends Surface> GraphEdit<X> window(int w, int h) {
-        GraphEdit<X> g = new GraphEdit<X>();
+        GraphEdit<X> g = new GraphEdit<>();
         SpaceGraph.window(g, w, h);
         return g;
     }
@@ -314,11 +313,11 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
     }
 
     @Override
-    public Surface finger(Finger finger) {
+    public final Surface finger(Finger finger) {
 
         Surface s = super.finger(finger);
 
-        if (s == null || s == raw) {
+        if (s == null || s == raw || s == this) {
             if (doubleClicking.update(finger))
                 return this;
         } else {
@@ -384,15 +383,15 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
                 return null; //already exists
         }
 
+        wire.connected();
+
         physics.invokeLater(() -> physics.link(wire));
 
-        return adapt(wire);
+
+
+        return wire;
     }
 
-    protected Wire adapt(Wire w) {
-        return TypedPort.adapt(w, this);
-        //TODO other adapters here
-    }
 
     //protected Wire removeWire(Surface source, Surface target) {
     protected boolean removeWire(Wire wire) {

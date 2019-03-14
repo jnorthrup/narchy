@@ -1,14 +1,18 @@
 package nars.exe.impl;
 
+import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import nars.NAR;
+import nars.exe.Exec;
 import nars.exe.Valuator;
 
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
+
+import static java.lang.System.nanoTime;
 
 /** N independent asynchronously looping worker threads */
 abstract public class ThreadedExec extends MultiExec {
@@ -16,6 +20,7 @@ abstract public class ThreadedExec extends MultiExec {
 
     final int threads;
     final boolean affinity;
+    protected int workGranularity;
 
 
     final AffinityExecutor exe = new AffinityExecutor();
@@ -33,6 +38,51 @@ abstract public class ThreadedExec extends MultiExec {
         this.threads = threads;
         this.affinity = affinity;
     }
+    @Override protected void executeLater(/*@NotNull */Object x) {
+
+        in.add(x, (xx)->{
+            Exec.logger.warn("{} blocked queue on: {}", this, xx);
+            executeNow(xx);
+        });
+    }
+
+    @Override
+    protected void update() {
+
+        super.update();
+
+        workGranularity =
+                //Math.max(1, concurrency() + 1);
+                Math.max(1, concurrency() - 1);
+    }
+
+    protected long work(float responsibility, FasterList buffer) {
+
+        int available = in.size();
+        if (available > 0) {
+            //do {
+            long workStart = nanoTime();
+
+            int batchSize = //Util.lerp(throttle,
+                    //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
+                    (int) Math.ceil(((responsibility * available) / workGranularity))
+                    //)
+                    ;
+
+            int got = in.remove(buffer, batchSize);
+            if (got > 0)
+                execute(buffer, 1, ThreadedExec.this::executeNow);
+
+
+            long workEnd = nanoTime();
+            //} while (!queueSafe());
+
+            return workEnd - workStart;
+        }
+
+        return 0;
+    }
+
 
     @Override
     public void start(NAR n) {

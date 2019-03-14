@@ -26,10 +26,11 @@ public class SuperExec extends ThreadedExec {
 
     }
 
-    private class SubNARLoop implements Worker {
+    private final class SubNARLoop implements Worker {
         public final NAR sub;
 
         int activeCapacity = 512;
+        private boolean running;
 
         private SubNARLoop(NAR sooper) {
             this.sub = new NARS()
@@ -42,19 +43,20 @@ public class SuperExec extends ThreadedExec {
 
             sub.attn.activeCapacity.set(activeCapacity);
             sub.log();
+            running = true;
         }
 
         @Override
         public void run() {
-            while (true) {
+            do {
                 in.clear(SuperExec.this::executeNow, 1);
                 sub.run();
-            }
+            } while (running);
         }
 
         @Override
         public void off() {
-            sub.stop();
+            running = false; sub.stop();
         }
     }
 

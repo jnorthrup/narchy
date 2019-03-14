@@ -1,6 +1,5 @@
 package nars.term.util.key;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.HashCachedBytes;
 import nars.Op;
 import nars.Task;
@@ -29,7 +28,7 @@ public class TermBytes extends HashCachedBytes {
 
         y.writeByte(vol);
 
-        TermIO.the.write(x, (ByteArrayDataOutput) y);
+        TermIO.the.write(x, y);
 
         y.compact();
 
@@ -45,7 +44,7 @@ public class TermBytes extends HashCachedBytes {
         super(task.volume() * 4 + 64 /* ESTIMATE */);
         try {
 
-            TermIO.the.write(task.term(), (ByteArrayDataOutput) this);
+            TermIO.the.write(task.term(), this);
 
             byte punc = task.punc();
             this.writeByte(punc);

@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  *
  * also caches Concept references until a concept becomes deleted
  */
-public class TemplateTermLinker extends FasterList<Term> implements TermLinker {
+public final class TemplateTermLinker extends FasterList<Term> implements TermLinker {
 
 
     //    /**

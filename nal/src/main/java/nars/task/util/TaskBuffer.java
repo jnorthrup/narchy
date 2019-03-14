@@ -12,7 +12,7 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriArrayBag;
-import jcog.pri.op.PriMerge;
+import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
@@ -21,7 +21,6 @@ import nars.task.ITask;
 import nars.task.NALTask;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -231,8 +230,9 @@ abstract public class TaskBuffer implements Consumer<ITask> {
          * temporary buffer before input so they can be merged in case of duplicates
          */
         public final Bag<ITask, ITask> tasks = new BufferedBag.SimpleBufferedBag<>(
-                new PriArrayBag<ITask>(PriMerge.max,
-                        new HashMap(0, 0.5f)
+                new PriArrayBag<ITask>(Param.tasklinkMerge,
+                        PriBuffer.newConcurrentMap()
+                        //new HashMap(0, 0.5f)
                         //new UnifiedMap<>(0, 0.5f)
                 ) {
                     @Override
@@ -245,7 +245,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                         return 0;
                     }
                 },
-                new PriBuffer<>(PriMerge.max) {
+                new PriBuffer<>(Param.tasklinkMerge) {
                     @Override
                     protected void merge(Prioritizable existing, ITask incoming, float pri, OverflowDistributor<ITask> overflow) {
                         TaskBuffer.merge((ITask)existing, incoming);

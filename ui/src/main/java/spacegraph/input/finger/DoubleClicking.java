@@ -47,9 +47,6 @@ public class DoubleClicking {
 
     int count = 0;
     public boolean update(Finger finger) {
-        //        if (finger!=null)
-//            System.out.println(finger.buttonSummary());
-
 
         if (!finger.clickedNow(button, clicked))
             return count > 0; //could be in-between presses

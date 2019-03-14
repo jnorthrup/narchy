@@ -26,23 +26,23 @@ public class FloatRange extends MutableFloat /*AtomicFloat*/ {
         set(Util.lerp(x, min, max));
     }
 
-//    public FloatRange subRange(float subMin, float subMax) {
-//        if (subMin < min)
-//            throw new NumberIsTooSmallException(subMin, min, true );
-//        if (subMax > max)
-//            throw new NumberIsTooSmallException(subMax, max, true );
-//        return new FloatRange(get(), subMin, subMax) {
-//            @Override
-//            public float get() {
-//                return FloatRange.this.get();
-//            }
-//
-//            @Override
-//            public void set(float value) {
-//                FloatRange.this.set(value);
-//            }
-//        };
-//    }
+    public FloatRange subRange(float subMin, float subMax) {
+        subMin = Math.max(min, subMin);
+        //if (subMin < min) throw new NumberIsTooSmallException(subMin, min, true );
+        subMax = Math.min(max, subMax);
+        //if (subMax > max)throw new NumberIsTooSmallException(subMax, max, true );
+        return new FloatRange(get(), subMin, subMax) {
+            @Override
+            public float get() {
+                return FloatRange.this.get();
+            }
+
+            @Override
+            public void set(float value) {
+                FloatRange.this.set(value);
+            }
+        };
+    }
 
 
 }

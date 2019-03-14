@@ -54,9 +54,10 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
 
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
-        S content = the();
-        if (content instanceof Container)  return ((Container)content).whileEachReverse(o);
-        else return o.test(content);
+//        S content = the();
+//        if (content instanceof Container)  return ((Container)content).whileEachReverse(o);
+//        else return o.test(content);
+        return o.test(the());
     }
 
 

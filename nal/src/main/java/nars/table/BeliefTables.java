@@ -54,12 +54,12 @@ public class BeliefTables implements BeliefTable {
 
     @Override
     public void match(Answer a) {
+        int triesBefore = a.ttl;
         tables.allSatisfyWith((t,aa) -> {
             //TODO better TTL distribution system
             if (aa.active()) {
-                int triesBefore = aa.ttl;
-                t.match(aa);
                 aa.ttl = triesBefore; //restore for next
+                t.match(aa);
                 return true;
             }
             return false;

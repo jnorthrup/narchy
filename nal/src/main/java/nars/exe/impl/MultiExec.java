@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.exe.Causable;
 import nars.exe.Exec;
@@ -38,10 +39,11 @@ abstract public class MultiExec extends UniExec {
     /**
      * proportion of time spent in forced curiosity
      */
-    private float explorationRate = 0.05f;
+
+    private float explorationRate = 0.1f;
+    private float momentum = 0.9f;
 
     protected long cycleNS;
-    protected int workGranularity;
 
     public MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
@@ -66,13 +68,7 @@ abstract public class MultiExec extends UniExec {
         executeLater(r);
     }
 
-    private void executeLater(/*@NotNull */Object x) {
-
-        in.add(x, (xx)->{
-            Exec.logger.warn("{} blocked queue on: {}", this, xx);
-            executeNow(xx);
-        });
-    }
+    abstract protected void executeLater(/*@NotNull */Object x);
 
 
     protected  void update() {
@@ -80,8 +76,14 @@ abstract public class MultiExec extends UniExec {
         updateTiming();
 
         valuator.update(nar);
+
+        prioritize();
+
     }
 
+    @Override protected void onCycle(NAR nar) {
+        nar.time.schedule(this::executeLater);
+    }
 
     private void updateTiming() {
         cycleNS = nar.loop.periodNS();
@@ -99,9 +101,7 @@ abstract public class MultiExec extends UniExec {
                 input(new QueueLatencyMeasurement(nanoTime()));
             }
         }
-        workGranularity =
-                //Math.max(1, concurrency() + 1);
-                Math.max(1, concurrency() - 1);
+
     }
 
 
@@ -163,21 +163,20 @@ abstract public class MultiExec extends UniExec {
                     s.pri(0);
                 } else {
                     float vNorm = Util.normalize(s.valueRate, valMin[0] - exp, valMax[0]);
-                    s.pri(vNorm);
+                    pri(s, vNorm);
                 }
             });
         } else {
             //FLAT
             float p = 1f / n;
-            cpu.forEach(s -> s.pri(p));
+            cpu.forEach(s -> pri(s, p));
         }
 
     }
 
-    protected void onCycle(NAR nar) {
-        nar.time.schedule(this::executeLater);
-
-        prioritize();
+    protected void pri(Prioritizable s, float p) {
+        //s.pri(p);
+        s.pri(s.priElseZero() * momentum + (1-momentum) * p);
     }
 
 
@@ -188,33 +187,6 @@ abstract public class MultiExec extends UniExec {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    protected long work(float responsibility, FasterList buffer) {
-
-        int available = in.size();
-        if (available > 0) {
-            //do {
-            long workStart = nanoTime();
-
-            int batchSize = //Util.lerp(throttle,
-                    //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                    (int) Math.ceil(((responsibility * available) / workGranularity))
-                    //)
-                    ;
-
-            int got = in.remove(buffer, batchSize);
-            if (got > 0)
-                execute(buffer, 1, MultiExec.this::executeNow);
-
-
-            long workEnd = nanoTime();
-            //} while (!queueSafe());
-
-            return workEnd - workStart;
-        }
-
-        return 0;
     }
 
     static boolean execute(FasterList b, int concurrency, Consumer each) {

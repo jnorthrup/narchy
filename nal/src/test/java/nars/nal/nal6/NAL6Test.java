@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 800;
+    private static final int cycles = 1200;
 
     @BeforeEach
     void setup() {
@@ -822,7 +822,7 @@ public class NAL6Test extends NALTest {
     @Test void abduction_positive_negative_mix_depolarized() {
 
         test
-           .termVolMax(5)
+           .termVolMax(7)
             .believe("(P ==> N)", 0.00f, 0.90f)
             .believe("((A && --N) ==> P)", 1.00f, 0.90f)
             .mustBelieve(cycles, "A", 1.00f, 0.45f)
