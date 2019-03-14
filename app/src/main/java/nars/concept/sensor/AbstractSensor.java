@@ -7,7 +7,7 @@ import nars.term.Term;
 
 abstract public class AbstractSensor extends NARService implements AgentLoop {
 
-    private final FloatRange res;
+    protected final FloatRange res;
 
     protected AbstractSensor(NAR nar) {
         this(null, nar);

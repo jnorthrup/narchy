@@ -11,7 +11,7 @@ import jcog.util.IntIntToFloatFunction;
 import nars.$;
 import nars.NAR;
 import nars.agent.NAgent;
-import nars.concept.NodeConcept;
+import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.gui.sensor.VectorSensorView;
@@ -119,7 +119,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
     @Override
     public Iterable<Termed> components() {
-        return Iterables.transform(signals, NodeConcept::term);
+        return Iterables.transform(signals, Concept::term);
     }
 
     /*

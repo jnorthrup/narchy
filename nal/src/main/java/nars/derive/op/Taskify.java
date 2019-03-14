@@ -106,7 +106,7 @@ public class Taskify extends ProxyTerm {
             throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
 
 
-        Term x = Task.forceNormalizeForBelief(x1);
+        Term x = Task.normalize(x1);
 
         Op xo = x.op();
 

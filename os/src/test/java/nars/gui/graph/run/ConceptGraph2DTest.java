@@ -23,9 +23,9 @@ class ConceptGraph2DTest {
 
             SpaceGraph.window(g.widget(), 1200, 800 );
 
-            new DeductiveMeshTest(n, 4,4);
+            new DeductiveMeshTest(n, 5,5);
 
-            n.startFPS(16f);
+            n.startFPS(32f);
         }
 
     }

@@ -133,7 +133,7 @@ public class FZero extends NAgentX {
 
         ActionConcept F = initUnipolarLinear(5f);
 
-        //initPushButtonTank();
+        initPushButtonTank();
 
 
 

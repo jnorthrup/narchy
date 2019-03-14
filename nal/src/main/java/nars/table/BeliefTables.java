@@ -57,12 +57,9 @@ public class BeliefTables implements BeliefTable {
         int triesBefore = a.ttl;
         tables.allSatisfyWith((t,aa) -> {
             //TODO better TTL distribution system
-            if (aa.active()) {
-                aa.ttl = triesBefore; //restore for next
-                t.match(aa);
-                return true;
-            }
-            return false;
+            aa.ttl = triesBefore; //restore for next
+            t.match(aa);
+            return aa.active();
         }, a);
     }
 

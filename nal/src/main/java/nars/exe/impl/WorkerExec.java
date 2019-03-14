@@ -18,7 +18,8 @@ public class WorkerExec extends ThreadedExec {
 
     /** process sub-timeslice divisor */
     double granularity = 4;
-    private static final long subCycleMinNS = 20_000;
+    private static final long subCycleMinNS = 500_000;
+    private long subCycleMaxNS;
 
     public WorkerExec(Valuator r, int threads) {
         super(r, threads);
@@ -36,7 +37,6 @@ public class WorkerExec extends ThreadedExec {
     private final class WorkPlayLoop implements Worker {
 
 
-        private long subCycleMaxNS;
 
         private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
 
@@ -116,20 +116,16 @@ public class WorkerExec extends ThreadedExec {
                     reprioritize = false;
 
 
-                    priorityPeriod =
-                            nar.dur(); //update current dur
-                    //2 * nar.dtDither();
 
                     prioLast = now;
                     prioritize(threadWorkTimePerCycle);
                 }
 
-                TimedLink.MyTimedLink s = play[i++];
-                if (i == n) i = 0;
+                TimedLink.MyTimedLink next = play[i++];  if (i == n) i = 0;
 
-                long sTime = s.time;
+                long sTime = next.time;
 
-                Causable c = s.can;
+                Causable c = next.can;
 
                 boolean played = false;
                 if (sTime <= 0 || c.sleeping()) {
@@ -142,22 +138,17 @@ public class WorkerExec extends ThreadedExec {
                         try {
                             long before = nanoTime();
 
-                            long runtimeNS = Math.min(until - before, Math.min(sTime, subCycleMaxNS));
-                            if (runtimeNS > 0) {
-
-                                try {
-
-                                    deadline = before + runtimeNS;
-                                    c.next(nar, deadlineFn);
-                                } catch (Throwable t) {
-                                    Exec.logger.error("{} {}", this, t);
-                                }
-
-                                played = true;
-                                after = nanoTime();
-                                s.use(after - before);
-
+                            long useNS = Util.clampSafe(sTime / priorityPeriod, subCycleMinNS, subCycleMaxNS);
+                            try {
+                                deadline = before + useNS;
+                                c.next(nar, deadlineFn);
+                            } catch (Throwable t) {
+                                Exec.logger.error("{} {}", this, t);
                             }
+
+                            played = true;
+                            after = nanoTime();
+                            next.use(after - before);
 
                         } finally {
                             if (singleton)
@@ -187,6 +178,10 @@ public class WorkerExec extends ThreadedExec {
 //                /** expected time will be equal to or less than the max due to various overheads on resource constraints */
 //                double expectedWorkTimeNS = (((double)workTimeNS) * expectedWorkTimeFactor); //TODO meter and predict
 
+            priorityPeriod =
+                    //nar.dur(); //update current dur
+                    8 * nar.dtDither();
+
             subCycleMaxNS = (long) ((workTimeNS) / granularity);
 
             if (play.length != n) {
@@ -206,9 +201,10 @@ public class WorkerExec extends ThreadedExec {
 //            long remainingTime = workTimeNS - existingTime;
             long minTime = -Util.max((TimedLink.MyTimedLink x) -> -x.time, play);
             long shift = minTime < 0 ? 1 - minTime : 0;
+//            System.out.println(subCycleMinNS + " " + subCycleMaxNS /* actualCycleNS */);
             for (TimedLink.MyTimedLink m : play) {
                 double t = shift + workTimeNS * m.pri();
-                m.add(Math.max(subCycleMinNS, Math.round(t * priorityPeriod)), -workTimeNS*priorityPeriod, +workTimeNS*priorityPeriod);
+                m.add(Math.max(0, Math.round(t * priorityPeriod)), -workTimeNS*priorityPeriod, +workTimeNS*priorityPeriod);
             }
 //                }
         }

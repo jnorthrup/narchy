@@ -32,7 +32,7 @@ public abstract class RealTime extends Time {
 
     final AtomicLong nextStamp = new AtomicLong(seed);
 
-    private int dur = 1;
+    private int dur = 1, nextDur = 1;
     private long last;
 
 
@@ -62,12 +62,13 @@ public abstract class RealTime extends Time {
         this.startMS = System.currentTimeMillis();
         this.startNS = System.nanoTime();
         this.start = relativeToStart ? Math.round((startMS/1000.0) * unitsPerSecond) : 0L;
-
+        this.dur = nextDur;
         T.set(this, this.last = realtime());
     }
 
     @Override
     public final void cycle(NAR n) {
+        this.dur = nextDur;
         this.last = T.getAndSet(this, realtime());
     }
 
@@ -102,7 +103,7 @@ public abstract class RealTime extends Time {
     @Override
     public Time dur(int cycles) {
         assert(cycles > 0);
-        this.dur = cycles;
+        this.nextDur = cycles;
         return this;
     }
 

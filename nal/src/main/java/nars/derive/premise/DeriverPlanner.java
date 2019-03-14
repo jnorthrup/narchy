@@ -2,7 +2,7 @@ package nars.derive.premise;
 
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
-import nars.concept.NodeConcept;
+import nars.concept.Concept;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 
@@ -40,7 +40,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         Derivation d = (Derivation) preDerivation;
 
 
-        NodeConcept c = (NodeConcept) d.nar.conceptualize(preDerivation.taskTerm);
+        Concept c = d.nar.conceptualize(preDerivation.taskTerm);
         if (c!=null) {
             //NodeConcept.memoize(c, d.deriver.id + "ConceptMetaMemoizer", )
             ByteHijackMemoize<PremiseKey, short[]> whats =

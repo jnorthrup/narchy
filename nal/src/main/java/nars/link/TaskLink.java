@@ -3,13 +3,11 @@ package nars.link;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.Weight;
-import jcog.pri.bag.Bag;
 import jcog.pri.op.PriMerge;
 import jcog.signal.tensor.AtomicArrayTensor;
 import jcog.util.FloatFloatToFloatFunction;
@@ -18,13 +16,10 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
-import nars.concept.NodeConcept;
-import nars.derive.Derivation;
 import nars.table.TaskTable;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
-import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
@@ -67,16 +62,6 @@ public interface TaskLink extends UnitPrioritizable {
         return new GeneralTaskLink(src, tgt).priMerge(punc, pri);
     }
 
-    static TaskLink link(Term src, Term tgt, byte punc, float pri, NAR nar) {
-
-        TaskLink t = tasklink(src, tgt, punc, pri);
-        link(t, nar);
-        return t;
-    }
-
-    static void link(TaskLink x, NAR nar) {
-        ((Bag<TaskLink, TaskLink>) nar.attn.active).putAsync(x);
-    }
 
 //    static void link(TaskLink x, NAR nar, @Nullable OverflowDistributor<Bag> overflow) {
 //
@@ -102,6 +87,7 @@ public interface TaskLink extends UnitPrioritizable {
 
     /**
      * sample punctuation by relative priority
+     * returns 0 for none
      */
     byte priPunc(Random rng);
 
@@ -114,6 +100,9 @@ public interface TaskLink extends UnitPrioritizable {
     }
 
     @Nullable default Task get(byte punc, When when) {
+        if (punc == 0)
+            return null; //flat-lined tasklink
+
         Term x = source();
 
         NAR n = when.nar;
@@ -249,91 +238,6 @@ public interface TaskLink extends UnitPrioritizable {
 //     */
 //    float priMax(byte punc, float p);
 
-    @Nullable
-    default Term term(Task task, Derivation d) {
-
-        Term t = target();
-
-        NAR nar = d.nar;
-        Random rng = d.random;
-        Term s = source();
-        byte punc = task.punc();
-
-        float p =
-                priPunc(punc);
-                //task.priElseZero();
-
-        ///* HACK */ getAndSetPriPunc(punc, p*0.9f /* decay */); //spend
-
-
-        //Math.max(ScalarValue.EPSILON, task.priElseZero() - priPunc(punc));
-
-//        float pDown = 1*p, pUp = Float.NaN;
-
-        Concept ct;
-        boolean self = s.equals(t);
-        if (t.op().conceptualizable) {
-            ct = nar.conceptualize(t);
-
-
-            Term u = null;
-            if (ct != null) {
-                t = ct.term();
-                TermLinker linker = ct.linker();
-                if (linker != TermLinker.NullLinker && !((FasterList) linker).isEmpty())
-                    //grow-ahead: s -> t -> u
-                    u = linker.sample(rng);
-                else {
-
-                    if (t instanceof Atom) {
-                        //why is this necessary
-                        if (self || d.random.nextFloat() > 1f/(1+s.complexity())) {
-                            //sample active tasklinks for a tangent match to the atom
-                            u = nar.attn.active.atomTangent((NodeConcept) ct, this, d.time, d.ditherDT, d.random);
-                        }
-                    }
-                }
-
-//                if (!self)
-//                    TaskLink.linkSafe(t, s, punc, p/2, nar); //reverse
-
-            }
-
-
-            if (u != null && !u.equals(t)) {
-
-
-                //TODO abstact activation parameter object
-                float subRate =
-                        1f;
-                        //1f/(t.volume());
-                        //(float) (1f/(Math.sqrt(s.volume())));
-
-
-                float inflation = 1; //TODO test inflation<1
-                float want = p * subRate / 2;
-                float got =
-                        inflation < 1 ? Util.lerp(inflation, take(punc, want*inflation), want) : want;
-
-                //CHAIN
-                TaskLink.linkSafe(s, u, punc, got/2, nar); //forward (hop)
-                TaskLink.linkSafe(u, t, punc, got/2, nar); //reverse (adjacent)
-
-                if (self)
-                    t = u;
-            }
-        }
-
-
-        return t;
-    }
-
-    static void linkSafe(Term s, Term u, byte punc, float p, NAR nar) {
-        Op o = s.op();
-        if (o.taskable) {
-            TaskLink.link(s, u, punc, p, nar);
-        }
-    }
 
     /** snapshots a 4-tuple: beliefs, goals, questions, quests */
     default float[] priPuncArray() {
@@ -468,7 +372,11 @@ public interface TaskLink extends UnitPrioritizable {
 
         @Override
         public byte priPunc(Random rng) {
-            return Task.p(Roulette.selectRouletteCached(4, punc::getAt, rng));
+            int i = Roulette.selectRouletteCached(4, punc::getAt, rng);
+            if (i!=-1)
+                return Task.p(i);
+            else
+                return 0;
         }
 
         public final GeneralTaskLink priMerge(byte punc, float pri) {

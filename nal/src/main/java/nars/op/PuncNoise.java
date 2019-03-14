@@ -21,7 +21,7 @@ public class PuncNoise extends DurService {
 
     @Override
     protected void run(NAR n, long dt) {
-        TaskLinkBag b = nar.attn.active;
+        TaskLinkBag b = nar.attn.links;
         if (b!=null) {
             int i = Math.min(b.size(), tasklinksPerDuration.intValue());
             if (i > 0)

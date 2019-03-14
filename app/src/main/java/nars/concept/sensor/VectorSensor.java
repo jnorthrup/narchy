@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import nars.$;
 import nars.NAR;
 import nars.attention.AttnBranch;
-import nars.concept.NodeConcept;
+import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Termed;
@@ -26,7 +26,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
     @Override
     public Iterable<Termed> components() {
-        return Iterables.transform(this, NodeConcept::term);
+        return Iterables.transform(this, Concept::term);
     }
 
 //    protected VectorSensor(@Nullable FloatSupplier input, @Nullable Term id, NAR nar) {

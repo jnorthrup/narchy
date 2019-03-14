@@ -162,8 +162,8 @@ public abstract class Param {
 
     public static final PriMerge tasklinkMerge =
             //PriMerge.max;
-            //PriMerge.plus;
-            PriMerge.or;
+            PriMerge.plus;
+            //PriMerge.or;
             //PriMerge.avgGeoFast;
 
 
@@ -173,12 +173,12 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        tasklinkMerge::merge;
+        //tasklinkMerge::merge;
         //Util::or;
         //(t,b)->Util.unitize(t+b);
         //Util::or;
         //Math::max;
-        //Util::and;
+        Util::and;
         //Util::mean;
 
 
@@ -266,7 +266,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 3; //HACK this is a TTL supply, not a COST
@@ -492,12 +492,12 @@ public abstract class Param {
         //inverse linear decay
         float falloffDurs =
                 //0.5f;
-                1;
+                //1;
                 //1.618f; //phi
                 //2; //nyquist
                 //4;
                 //dur;
-                //8;
+                8;
                 //64;
 
         double decayTime = falloffDurs * dur;

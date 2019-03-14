@@ -80,7 +80,7 @@ public class BeliefAnalysis implements TermedDelegate {
 
 	@NotNull
 	public TruthWave wave() {
-		return new TruthWave(beliefs(), nar);
+		return new TruthWave(beliefs());
 	}
 
 	@NotNull

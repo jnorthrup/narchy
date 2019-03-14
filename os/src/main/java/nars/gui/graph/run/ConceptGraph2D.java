@@ -212,7 +212,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 return;
 
 
-            n.attn.active.forEach(l ->
+            n.attn.links.forEach(l ->
                     add(edit, belief, goal, question, quest, l)
             );
 

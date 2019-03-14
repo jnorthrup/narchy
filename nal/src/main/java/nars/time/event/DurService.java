@@ -35,7 +35,8 @@ abstract public class DurService extends NARService {
      */
     private final NumberX durations = new AtomicFloat(1f);
 
-    @Override public InternalEvent event() {
+    @Override
+    public InternalEvent event() {
         return at;
     }
 
@@ -143,12 +144,10 @@ abstract public class DurService extends NARService {
     }
 
 
-
-
     private final AtDur at = new AtDur();
 
     public long durCycles() {
-        return Math.round((double) (durations.floatValue()) * this.nar.dur());
+        return Math.max(1, Math.round((double) (durations.floatValue()) * this.nar.dur()));
     }
 
     /**
@@ -159,14 +158,14 @@ abstract public class DurService extends NARService {
 
     abstract public static class RecurringTask extends ScheduledTask {
 
-        long next;
-
+        volatile long next;
 
         @Override
         public long start() {
             return next;
         }
     }
+
     private static final Atomic DUR = Atomic.the("dur");
 
     public class AtDur extends RecurringTask {
@@ -186,38 +185,40 @@ abstract public class DurService extends NARService {
         @Override
         public void run() {
 
-        if (!busy.compareAndSet(false, true))
-            throw new WTF(); //return false;
-
-        try {
-
-            long d = durCycles(); //get prior in case dur changes during execution
-
-            long atStart = nar.time();
-
-            long lastStarted = this.lastStarted;
-            if (lastStarted == Long.MIN_VALUE)
-                lastStarted = atStart;
-
-            this.lastStarted = atStart;
-
-            long delta = atStart - lastStarted;
+            if (!busy.compareAndSet(false, true))
+                throw new WTF(); //return false;
 
             try {
-                DurService.this.run(nar, delta);
-            } catch (Throwable t) {
-                logger.error("{} {}", this, t);
+
+                long atStart = nar.time();
+
+                long lastStarted = this.lastStarted;
+                if (lastStarted == Long.MIN_VALUE)
+                    lastStarted = atStart;
+
+                this.lastStarted = atStart;
+
+                long delta = atStart - lastStarted;
+                long d = durCycles(); //get prior in case dur changes during execution
+
+                try {
+                    DurService.this.run(nar, delta);
+                } catch (Throwable t) {
+                    logger.error("{} {}", this, t);
+                }
+
+                if (!DurService.this.isOff()) {
+                    scheduleNext(d, atStart);
+                }
+
+            } finally {
+                busy.set(false);
             }
+        }
+
+        private void scheduleNext(long d, long started) {
 
             long now = nar.time();
-
-            scheduleNext(d, atStart, now);
-        } finally {
-            busy.set(false);
-        }
-        }
-
-        private void scheduleNext(long d, long started, long now) {
 
             long idealNext = started + d;
             if (idealNext <= now) {
@@ -227,8 +228,10 @@ abstract public class DurService extends NARService {
                 idealNext = now + Math.max(1, d - phaseLate);
 
                 if (Param.DEBUG) {
-                    long earliest = started + d; assert (next >= earliest) : "starting too soon: " + next + " < " + earliest;
-                    long latest = now + d; assert (next <= latest) : "starting too late: " + next + " > " + earliest;
+                    long earliest = started + d;
+                    assert (next >= earliest) : "starting too soon: " + next + " < " + earliest;
+                    long latest = now + d;
+                    assert (next <= latest) : "starting too late: " + next + " > " + earliest;
                 }
             }
 

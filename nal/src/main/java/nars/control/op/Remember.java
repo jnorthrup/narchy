@@ -4,7 +4,6 @@ import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.CauseMerge;
 import nars.op.stm.ConjClustering;
@@ -12,6 +11,7 @@ import nars.task.*;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.term.util.Image;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -23,23 +23,24 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Remember extends AbstractTask {
 
+    /**
+     * root input
+     */
+    @Deprecated
     public Task input;
-    /** TODO HACK */
-    @Deprecated private transient TaskConcept inputConcept;
-
 
     private FasterList<ITask> remembered = null;
-
 
     public final boolean store, link, notify;
     public boolean done = false;
 
-
-    @Nullable public static Remember the(Task x, NAR n) {
+    @Nullable
+    public static Remember the(Task x, NAR n) {
         return the(x, true, true, true, n);
     }
 
-    @Nullable public static Remember the(Task x, boolean store, boolean link, boolean notify, NAR n) {
+    @Nullable
+    public static Remember the(Task x, boolean store, boolean link, boolean notify, NAR n) {
 
         assert (!x.isCommand());
 
@@ -71,7 +72,7 @@ public class Remember extends AbstractTask {
 
         if (Param.DEBUG_ENSURE_DITHERED_DT || Param.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
             int d = n.dtDither();
-            if(d > 1) {
+            if (d > 1) {
                 if (Param.DEBUG_ENSURE_DITHERED_DT) {
                     Tense.assertDithered(xTerm, d);
                 }
@@ -81,93 +82,123 @@ public class Remember extends AbstractTask {
             }
         }
 
-        Concept c = n.conceptualize(x);
-        if (c != null) {
-            if (!(c instanceof TaskConcept)) {
-                if (isInput || Param.DEBUG)
-                    throw new TaskException(x, c + " is not a TaskConcept: " + c.getClass());
-                else
-                    return null;
-            }
-
-            return new Remember(x, store, link, notify, (TaskConcept) c);
-        } else {
-            if (isInput) {
-                //if (Param.DEBUG) {
-                    throw new TaskException(x, "input not conceptualized");
-                //}
-            }
-            return null;
-        }
+        return new Remember(x, store, link, notify);
     }
 
-    public Remember(Task input, boolean store, boolean link, boolean notify, TaskConcept c) {
+    public Remember(Task input, boolean store, boolean link, boolean notify) {
         this.store = store;
         this.link = link;
         this.notify = notify;
-        setInput(input, c);
+        setInput(input);
     }
 
 
     /**
      * concept must correspond to the input task
      */
-    public void setInput(Task input, @Nullable TaskConcept c) {
-        if (this.input!=input) {
+    public void setInput(Task input) {
+        if (this.input != input) {
             this.input = input;
-            this.inputConcept = c;
             this.done = false;
         }
     }
 
     @Override
     public String toString() {
-        return "Remember(" + input + ')';
+        return Remember.class.getSimpleName() + '(' + input + ')';
     }
 
     @Override
     public ITask next(NAR n) {
 
-        if (store) {
-            tryAddAndCommit(n);
-        } else {
-            commit(input, n);
-        }
+        commit(input, store, n);
 
         return null;
     }
 
+    private void commit(ITask input, NAR n) {
+        if (input instanceof Task)
+            commit((Task) input, false, n);
+        else
+            ITask.run(input, n); //inline
+    }
+
+    /** TODO check that image dont double link/activate for their product terms */
+    private void commit(Task input, boolean store, NAR n) {
+
+        TaskConcept c = null;
+
+        Task rawInput = input;
+
+        Term inputTerm = input.term();
+        boolean the = (input == this.input);
+        boolean commitProxyOrigin = false;
+        if (store) {
+            Term imgNormal = Image.imageNormalize(inputTerm);
+
+            if (!inputTerm.equals(imgNormal)) {
+                //transparently normalize image tasks
+                c = (TaskConcept)
+                        //n.conceptualizeDynamic(imgNormal);
+                        n.conceptualize(imgNormal);
+                if (c == null)
+                    return;
 
 
-    private void commit(ITask t, NAR n) {
-        if (t instanceof Task) {
-            commit((Task) t, n);
-        } else {
-            ITask.run(t, n); //inline
+                boolean cyclic = input.isCyclic();
+
+                input = new SpecialTermTask(imgNormal, input);
+
+                if (cyclic)
+                    input.setCyclic(true); //inherit cyclic
+
+                if (the) {
+                    this.input = input;
+                    commitProxyOrigin = true;
+                }
+            }
+        }
+
+        if (c == null) {
+            c = (TaskConcept) n.conceptualize(input);
+            if (c == null)
+                return;
+        }
+
+        if (store) {
+            insert(c, n);
+        }
+        if (!store || commitProxyOrigin) {
+            link(rawInput, c, n);
         }
     }
 
-    private void commit(Task t, NAR n) {
 
+    private void link(Task t, TaskConcept c, NAR n) {
 
-        if (link) {
-            Concept c = (this.inputConcept!=null) &&
-                    ((this.input==t) || (inputConcept.term().equals(t.term().concept()))) ? inputConcept : null;
-            new TaskLinkTask(t, c).next(n);
-        }
+        if (link)
+            n.attn.link(t, c, n);
 
         if (notify)
             new TaskEvent(t).next(n);
+
     }
 
 
     /**
      * attempt to insert into the concept's belief table
      */
-    private void tryAddAndCommit(NAR n) {
-        inputConcept.add(this, n);
+    private void insert(TaskConcept c, NAR n) {
+
+        c.add(this, n);
+
         if (remembered != null && !remembered.isEmpty()) {
-            remembered.forEachWith(this::commit, n);
+            remembered.forEachWith((ITask r, NAR nn) -> {
+                if (r.equals(this.input)) //HACK
+                    link((Task) r, c, nn); //root
+                else
+                    commit(r, nn); //sub
+            }, n);
             remembered = null;
         }
     }
@@ -183,7 +214,6 @@ public class Remember extends AbstractTask {
 
         if (input == x) {
             input = null;
-            inputConcept = null;
             done = true;
         }
     }
@@ -254,7 +284,7 @@ public class Remember extends AbstractTask {
         long dDurCycles = Math.max(0, next.creation() - prev.creation());
         float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dur()));
 
-        if (next==remembered && next.isInput())
+        if (next == remembered && next.isInput())
             return true;
 
         if (dCreationDurs > Param.REMEMBER_REPEAT_THRESH_DURS) {
@@ -262,10 +292,8 @@ public class Remember extends AbstractTask {
             return true;
         }
 
-        if (dPri > Param.REMEMBER_REPEAT_PRI_THRESHOLD)
-            return true;
+        return dPri > Param.REMEMBER_REPEAT_PRI_THRESHOLD;
 
-        return false;
     }
 
     /**

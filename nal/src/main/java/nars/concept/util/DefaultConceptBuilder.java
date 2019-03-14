@@ -33,7 +33,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
 
     @Override
-    public NodeConcept nodeConcept(Term t) {
+    public Concept nodeConcept(Term t) {
         return new NodeConcept(t, this);
     }
 

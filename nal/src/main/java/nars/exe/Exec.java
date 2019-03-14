@@ -34,10 +34,20 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
      * immediately execute a Task
      */
     @Override
-    public final void input(ITask t) {
-        ITask.run(t, nar);
+    public final void input(ITask x) {
+        ITask t = x;
+        try {
+            ITask.run(t, nar);
+        } catch (Throwable ee) {
+            error(t, x, ee, nar);
+        }
     }
-
+    static void error(ITask t, ITask x, Throwable ee, NAR nar) {
+        if (t == x)
+            nar.logger.error("{} {}", x, ee);
+        else
+            nar.logger.error("{}->{} {}", t, x, ee);
+    }
 
     @Override
     public void execute(Runnable async) {
@@ -84,18 +94,18 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
      * inline, synchronous
      */
     protected final void executeNow(Object t) {
-        try {
-            if (t instanceof ITask)
-                input((ITask) t);
-            else {
+        if (t instanceof ITask)
+            input((ITask) t);
+        else {
+            try {
                 if (t instanceof Runnable) {
                     ((Runnable) t).run();
                 } else {
                     ((Consumer) t).accept(nar);
                 }
+            } catch (Throwable e) {
+                logger.error("{} {}", t, /*Param.DEBUG ?*/ e /*: e.getMessage()*/);
             }
-        } catch (Throwable e) {
-            logger.error("{} {}", t, /*Param.DEBUG ?*/ e /*: e.getMessage()*/);
         }
     }
 

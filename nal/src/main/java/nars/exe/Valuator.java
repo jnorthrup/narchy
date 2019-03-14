@@ -41,8 +41,7 @@ public abstract class Valuator {
         long time = nar.time();
         if (lastUpdate == ETERNAL)
             lastUpdate = time;
-        int dur = nar.dur();
-        dt = (time - lastUpdate) / ((double) dur);
+        dt = (time - lastUpdate);
 
 
         lastUpdate = time;

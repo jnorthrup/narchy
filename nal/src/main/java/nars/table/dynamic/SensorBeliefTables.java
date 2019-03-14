@@ -32,7 +32,7 @@ public class SensorBeliefTables extends BeliefTables {
 
     public final SeriesBeliefTable<SeriesBeliefTable.SeriesTask> series;
 
-    public FloatRange res;
+    @Deprecated public FloatRange res;
 
     /**
      * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
@@ -282,12 +282,13 @@ public class SensorBeliefTables extends BeliefTables {
 //        delta += tasklink.priMax(QUESTION, p/4);
 //        delta += tasklink.priMax(QUEST, p/4);
 
-        TaskLink.link(tasklink, n);
+        n.attn.link(tasklink);
 
+        //since this isnt a complete insert
         if (delta > ScalarValue.EPSILON)
-            n.attn.active.bag.pressurize(delta); //HACK
+            n.attn.links.bag.pressurize(delta); //HACK
 
-        if (prev!=next)
+        //if (prev!=next)
             n.eventTask.emit(next);
 
     }

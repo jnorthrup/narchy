@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -103,7 +104,7 @@ public class AutoBuilder<X, Y> {
         List<Pair<X, Iterable<Y>>> target = new FasterList<>();
 
 
-        FasterList<BiFunction<? super X, Object, Y>> builders = new FasterList();
+        FasterList<BiFunction<Object, Object, Y>> builders = new FasterList();
 
 //        {
 //            if (!onCondition.isEmpty()) {
@@ -120,8 +121,9 @@ public class AutoBuilder<X, Y> {
         {
             classBuilders(obj, builders); //TODO check subtypes/supertypes etc
             if (!builders.isEmpty()) {
-                Iterable<Y> yy = () -> builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull).iterator();
-                target.add(pair(obj, yy));
+                target.add(pair(obj,
+                        () -> builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull).iterator()
+                ));
             }
         }
 
@@ -129,13 +131,21 @@ public class AutoBuilder<X, Y> {
         if (depth <= maxDepth) {
             collectFields(root, obj, parentRepr, target, depth + 1);
         }
-        //}
+
+        if (obj instanceof Map) {
+            Stream<Y> s = ((Map<?,?>) obj).entrySet().stream().
+                    flatMap((Map.Entry<?,?> e) ->
+                        builders.stream().map(b ->
+                            b.apply(e.getValue(), e.getKey()))
+                            .filter(Objects::nonNull));
+            target.add(pair(obj, s::iterator));
+        }
 
 
         return building.build(root, target, obj);
     }
 
-    private void classBuilders(X x, FasterList<BiFunction<? super X, Object, Y>> ll) {
+    private void classBuilders(X x, FasterList<BiFunction</* X */Object, Object, Y>> ll) {
         Class<?> xc = x.getClass();
 //        Function<X, Y> exact = onClass.get(xc);
 //        if (exact!=null)
@@ -145,7 +155,7 @@ public class AutoBuilder<X, Y> {
         // TODO cache in a type graph
         onClass.forEach((k, v) -> {
             if (k.isAssignableFrom(xc))
-                ll.add(v);
+                ll.add((BiFunction) v);
         });
     }
 

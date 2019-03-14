@@ -16,6 +16,7 @@ public class TaskProxy extends UnitPri implements Task {
 
     private int hash = 0;
 
+    volatile long creation;
     private volatile boolean cyclic = false;
 
     public TaskProxy(Task task) {
@@ -25,6 +26,8 @@ public class TaskProxy extends UnitPri implements Task {
 //            //System.out.println(task.getClass() + " may be unwrapped for " + getClass());
 //            throw new WTF(task.getClass() + " may be unwrapped for use as base of " + getClass());
 //        }
+
+        creation = task.creation();
 
         float p = task.pri();
         if (p!=p)
@@ -66,10 +69,7 @@ public class TaskProxy extends UnitPri implements Task {
         return cyclic;
     }
 
-    @Override
-    public void setCreation(long creation) {
-        throw new UnsupportedOperationException();
-    }
+
 
     @Override
     public Term term() {
@@ -105,7 +105,12 @@ public class TaskProxy extends UnitPri implements Task {
 
     @Override
     public long creation() {
-        return task.creation();
+        //updated to the latest of this or the proxy'd task's creation (as it may change)
+        return this.creation = Math.max(task.creation(), creation);
+    }
+    @Override
+    public void setCreation(long creation) {
+        this.creation = creation;
     }
 
     @Override

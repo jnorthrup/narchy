@@ -2609,7 +2609,7 @@ public enum Util {
         };
     }
 
-    public static int sqrt(int x) {
+    public static int sqrtInt(int x) {
         if (x < 0)
             throw new NumberException("sqrt of negative value", x);
         return (int) Math.round(Math.sqrt(x));

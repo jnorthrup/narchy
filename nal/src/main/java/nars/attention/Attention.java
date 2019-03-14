@@ -1,5 +1,6 @@
 package nars.attention;
 
+import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.PriBuffer;
@@ -8,14 +9,25 @@ import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
+import nars.Op;
 import nars.Param;
+import nars.Task;
 import nars.attention.derive.DefaultDerivePri;
+import nars.concept.Concept;
+import nars.concept.TaskConcept;
+import nars.derive.Derivation;
 import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
+import nars.link.TermLinker;
+import nars.term.Term;
+import nars.term.Termed;
+import nars.term.atom.Atom;
 import nars.time.event.DurService;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /** abstract attention economy model */
 public class Attention extends DurService implements Sampler<TaskLink> {
@@ -24,7 +36,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     /**
      * short target memory, TODO abstract and remove
      */
-    public TaskLinkBag active = null;
+    public TaskLinkBag links = null;
 
 //    /**
 //     * tasklink activation
@@ -38,7 +50,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     public final IntRange activeCapacity = new IntRange(256, 0, 2024) {
         @Override
         @Deprecated protected void changed() {
-            TaskLinkBag a = active;
+            TaskLinkBag a = links;
             if (a != null)
                 a.setCapacity(intValue());
         }
@@ -54,22 +66,21 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     @Override
     protected void starting(NAR nar) {
         super.starting(nar);
-
         int c = activeCapacity.intValue();
-        active = new TaskLinkBag(
+        links = new TaskLinkBag(
                 new TaskLinkArrayBag(c)
                 //new TaskLinkHijackBag(c, 5),
         );
 
-        active.setCapacity(activeCapacity.intValue());
+        links.setCapacity(activeCapacity.intValue());
 
         on(
-                nar.eventClear.on(active::clear),
+                nar.eventClear.on(links::clear),
                 nar.onCycle(() -> {
 //                    System.out.println(nar.time());
 //                    active.pre.items.forEach((k,v)->System.out.println(v));
-                            active.commit(
-                                    forgetting.forget(active, 1f, forgetRate.floatValue()));
+                            links.commit(
+                                    forgetting.forget(links, 1f, forgetRate.floatValue()));
                         }
                 )
         );
@@ -84,7 +95,166 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     @Override
     public void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
-        active.sample(rng, each);
+        links.sample(rng, each);
+    }
+
+    /** resolves and possibly sub-links a link target */
+    @Nullable public Term term(TaskLink link, Task task, Derivation d) {
+
+        Term t = link.target();
+
+        NAR nar = d.nar;
+        Random rng = d.random;
+        final Term s = link.source();
+        byte punc = task.punc();
+
+        /** propagation (decay+growth) rate */
+        float conductance =
+                //1f/(1 + t.volume());
+                (float) (1f/(1 + Math.sqrt(t.volume())));
+                //1f/((s.volume() + t.volume())/2f); //1/vol_mean
+                //1f/(s.volume() + t.volume()); //1/vol_sum
+
+        float p =
+                link.priPunc(punc);
+        //task.priElseZero();
+
+        ///* HACK */ getAndSetPriPunc(punc, p*0.9f /* decay */); //spend
+
+
+        //Math.max(ScalarValue.EPSILON, task.priElseZero() - priPunc(punc));
+
+//        float pDown = 1*p, pUp = Float.NaN;
+
+        Concept ct;
+        if (t.op().conceptualizable) {
+
+//            boolean self = s.equals(t);
+
+            Term u = null;
+
+            ct = nar.conceptualize(t);
+            if (ct != null) {
+                t = ct.term();
+                TermLinker linker = ct.linker();
+                if (linker != TermLinker.NullLinker && !((FasterList) linker).isEmpty())
+                    //grow-ahead: s -> t -> u
+                    u = linker.sample(rng);
+                else {
+
+                    if (t instanceof Atom) {
+                        //why is this necessary
+                        //if (self || d.random.nextFloat() > 1f/(1+s.complexity())) {
+                            //sample active tasklinks for a tangent match to the atom
+//                            Atom tt = (Atom) t;
+                            Predicate<TaskLink> filter =
+                                    x -> !link.equals(x);
+                                    //x -> !link.equals(x) && !link.other(tt).equals(s);
+
+                            u = links.atomTangent(ct, filter, d.time, 1, d.random);
+//                        if (u!=null && u.equals(s)) {
+////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY
+//                            throw new WTF();
+//                        }
+
+//                        } else {
+//
+//
+//                            //link(t, s, punc, p*subRate); //reverse echo
+//                        }
+                    }
+
+                }
+
+
+            }
+
+
+            if (u != null && !t.equals(u)) {
+
+
+//                //TODO abstact activation parameter object
+//                float subRate =
+//                        1f;
+//                //1f/(t.volume());
+//                //(float) (1f/(Math.sqrt(s.volume())));
+//
+//
+//                float inflation = 1; //TODO test inflation<1
+//                float want = p * subRate / 2;
+//                float p =
+//                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
+
+                int n = 2;
+                float pp = p * conductance / n;
+
+                link.take(punc, pp*n);
+
+                //CHAIN
+                link(s, u, punc, pp); //forward (hop)
+                //link(u, s, punc, pp); //reverse (hop)
+                //link(t, u, punc, pp); //forward (adjacent)
+                link(u, t, punc, pp); //reverse (adjacent)
+
+
+
+
+                //link(s, t, punc, ); //redundant
+                //link(t, s, punc, pp); //reverse echo
+
+//                if (self) {
+//                    t = u;
+//                }
+            }
+        }
+
+
+        return t;
+    }
+
+    void link(Term s, Term u, byte punc, float p) {
+        Op o = s.op();
+        if (o.taskable) {
+            linkSafe(s, u, punc, p);
+        }
+    }
+
+    private TaskLink linkSafe(Term src, Term tgt, byte punc, float pri) {
+        TaskLink t = TaskLink.tasklink(src, tgt, punc, pri);
+        link(t);
+        return t;
+    }
+
+    public void link(TaskLink x) {
+        links.putAsync(x);
+    }
+    public void link(TaskLink... xx) {
+        for (TaskLink x : xx)
+            link(x);
+    }
+
+    /** initial tasklink activation for an input task
+     * @return*/
+    public boolean link(Task task, @Nullable Concept taskConcept, NAR n) {
+
+        Termed cc = taskConcept == null ? task : taskConcept;
+        Concept c =
+                n.conceptualize(cc);
+                //n.activate(cc, pri, true);
+        if (c == null)
+            return false;
+
+        float pri = task.pri();
+        if (pri!=pri)
+            return false;
+
+
+        link(new TaskLink.GeneralTaskLink(c.term()).priMerge(task.punc(), pri));
+
+
+        ((TaskConcept) c).value(task, n);
+
+        return true;
     }
 
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {

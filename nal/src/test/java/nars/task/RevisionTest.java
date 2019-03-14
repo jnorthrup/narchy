@@ -79,9 +79,9 @@ public class RevisionTest {
      */
     @Test void testOverlapConflict() throws Narsese.NarseseException {
         Task t = Revision.merge(n, true,
-                t(0, 0.71f, 0, 0).evidence(1,2).apply(n),
+                new Task[] { t(0, 0.71f, 0, 0).evidence(1,2).apply(n),
                 t(1, 0.7f, 0, 0).evidence(1).apply(n),
-                t(1, 0.7f, 0, 0).evidence(2).apply(n)).getOne();
+                t(1, 0.7f, 0, 0).evidence(2).apply(n) }).getOne();
 
         assertNotNull(t);
         assertEquals("(b-->a). 0 %1.0;.82%", t.toStringWithoutBudget());
@@ -119,7 +119,7 @@ public class RevisionTest {
     }
 
     private Task merge(Task t01, Task t45, NAR n) {
-        return Revision.merge(n, false, t01, t45).getOne();
+        return Revision.merge(n, false, new Task[] { t01, t45 }).getOne();
     }
 
 

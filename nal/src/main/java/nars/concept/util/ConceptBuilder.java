@@ -85,7 +85,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
     }
 
 
-    protected abstract NodeConcept nodeConcept(final Term t);
+    protected abstract Concept nodeConcept(final Term t);
 
 //    public void on(Conceptor c) {
 //        conceptors.put(c.target, c);
@@ -316,7 +316,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 //        }
 
         @Override
-        public NodeConcept nodeConcept(Term t) {
+        public Concept nodeConcept(Term t) {
             throw new UnsupportedOperationException();
         }
 

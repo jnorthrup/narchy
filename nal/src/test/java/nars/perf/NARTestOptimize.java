@@ -45,7 +45,7 @@ class NARTestOptimize {
                 return n;
             })
                 .var("attnCapacity", 4, 128, 8,
-                        (NAR n, int i) -> n.attn.active.setCapacity(i))
+                        (NAR n, int i) -> n.attn.links.setCapacity(i))
 
 //                .var("ttlMax", 1 * Param.TTL_MIN, 8 * Param.TTL_MIN, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.setAt(i))

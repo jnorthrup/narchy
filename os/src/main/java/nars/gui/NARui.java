@@ -175,7 +175,7 @@ public class NARui {
 
 
         return Splitting.row(
-                new BagView<>(cc.active, n),
+                new BagView<>(cc.links, n),
                 0.8f,
                 new Gridding(
                      new ObjectSurface(
@@ -199,14 +199,14 @@ public class NARui {
                             Appendable a = null;
                             try {
                                 a = TextEdit.out().append(
-                                        Joiner.on('\n').join(cc.active)
+                                        Joiner.on('\n').join(cc.links)
                                 );
                                 window(a, 800, 500);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }),
-                        new PushButton("Clear", () -> cc.active.clear())
+                        new PushButton("Clear", () -> cc.links.clear())
                 )
         );
 

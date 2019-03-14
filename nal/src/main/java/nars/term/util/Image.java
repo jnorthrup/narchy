@@ -7,7 +7,6 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.control.op.Remember;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.table.dynamic.DynamicTaskTable;
@@ -31,11 +30,6 @@ public enum Image {;
             imageNormalize = Functor.f1Inline("imageNormalize", Image::imageNormalize),
             imageInt = Functor.f2Inline("imageInt", Image::imageInt),
             imageExt = Functor.f2Inline("imageExt", Image::imageExt);
-
-
-//    private static boolean imaged(Term p) {
-//        return p.hasAny(Op.IMG) && p.OR(x -> (x == Op.ImgInt || x == Op.ImgExt));
-//    }
 
     public static Term imageInt(Term t, Term x) {
         return image(true, t, x);
@@ -211,61 +205,43 @@ public enum Image {;
             }
         }
 
-        @Override
-        public void add(Remember r, NAR nar) {
-            BeliefTable table = table(nar, true);
-            Task imageInput = r.input;
-            if (table == null) {
-                r.forget(imageInput);
-                return;
-            }
-
-            Term normalTerm = normal.hasAny(Temporal) ?
-                    /* if temporal, normal is not necessarily equal to the task's target */
-                    Image.imageNormalize(imageInput.term())
-                    :
-                    normal;
-
-            SpecialTermTask transformedInput = new SpecialTermTask(normalTerm, imageInput);
-            if (imageInput.isCyclic())
-                transformedInput.setCyclic(true);
-
-            Term image = this.term;
-            r.setInput(transformedInput, (TaskConcept)nar.conceptualizeDynamic(image));
-
-            table.add(r, nar);
-
-
-//            if (r.forgotten.containsInstance(transformedInput))
-//                return; //wasnt added
-
-
-//            if (rememberance.contains(transformedInput))
-//                rememberance.replaceAll((x)->x == transformedInput ? originalInput : x); //for TaskEvent emission
-//            else {
-//            rememberance.replaceAll(x -> {
-//                if (x == transformedInput)
-//                    return originalInput;
-////               if (x instanceof Reaction) {
-////                   if (((Reaction)x).task == transformedInput)
-////                       return true;
-////               }
-////                if (x instanceof TaskLinkTask) {
-////                    if (((TaskLinkTask)x).task == transformedInput)
-////                        return true;
-////                }
+//        @Override
+//        public void add(Remember r, NAR nar) {
 //
-//               return x;
-//            });
-
-//            if (!transformedInput.isDeleted()) {
-//                if (r.remembered != null) {
-//                    r.remembered.remove(transformedInput); //if it's present, it may not
-//                }
-//                r.remember(originalInput);
-//            }
-//            }
-        }
+//
+//            table.add(r, nar);
+//
+//
+////            if (r.forgotten.containsInstance(transformedInput))
+////                return; //wasnt added
+//
+//
+////            if (rememberance.contains(transformedInput))
+////                rememberance.replaceAll((x)->x == transformedInput ? originalInput : x); //for TaskEvent emission
+////            else {
+////            rememberance.replaceAll(x -> {
+////                if (x == transformedInput)
+////                    return originalInput;
+//////               if (x instanceof Reaction) {
+//////                   if (((Reaction)x).task == transformedInput)
+//////                       return true;
+//////               }
+//////                if (x instanceof TaskLinkTask) {
+//////                    if (((TaskLinkTask)x).task == transformedInput)
+//////                        return true;
+//////                }
+////
+////               return x;
+////            });
+//
+////            if (!transformedInput.isDeleted()) {
+////                if (r.remembered != null) {
+////                    r.remembered.remove(transformedInput); //if it's present, it may not
+////                }
+////                r.remember(originalInput);
+////            }
+////            }
+//        }
 
         @Nullable private BeliefTable table(NAR n, boolean conceptualize) {
             Concept h = host(n, conceptualize);

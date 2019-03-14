@@ -48,14 +48,9 @@ public class StatementLinker extends NARService implements Consumer<Task> {
                             Term subj = a.concept(), pred = b.concept();
                             if ((a == subj && b == pred) || !subj.equals(pred)) {
 
-                                TaskLink.link(
-                                        TaskLink.tasklink(subj, pred, BELIEF, pri / 2),
-                                        nar
-                                );
-
-                                TaskLink.link(
-                                        TaskLink.tasklink(pred, subj, BELIEF, pri / 2),
-                                        nar
+                                nar.attn.link(
+                                    TaskLink.tasklink(subj, pred, BELIEF, pri / 2),
+                                    TaskLink.tasklink(pred, subj, BELIEF, pri / 2)
                                 );
 
                             }

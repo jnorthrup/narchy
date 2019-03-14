@@ -88,7 +88,7 @@ public class MetaAgent {
 
         int initialDur = n.dur();
         this.dur = a.actionUnipolar($.inh(a.id,duration), (x) -> {
-            n.time.dur((int) Util.lerp(Math.sqrt(x), 1, initialDur));
+            n.time.dur(Util.lerp(x*x, n.dtDither(), initialDur*2));
             return x;
         });
         this.agentPri = dial(a, MetaAgent.pri,

@@ -35,52 +35,73 @@ public enum Roulette {
         if (weightCount == 1)
             return 0;
 
-        return selectRoulette(weightCount, weight, Util.sumIfPositive(weightCount, weight), rng);
+        float weight_sum = Util.sumIfPositive(weightCount, weight);
+
+        if (weight_sum < ScalarValue.EPSILON) {
+            //flat
+            return Util.bin(rng.asFloat() * weightCount, weightCount);//rng.nextInt(count)
+        } else {
+
+            return selectRouletteUnidirectionally
+                    //return selectRouletteBidirectionally
+                            (weightCount, weight, weight_sum, rng);
+        }
     }
 
     public static int selectRouletteCached(int weightCount, IntToFloatFunction weight, Random rng) {
         return selectRouletteCached(weightCount, weight, rng::nextFloat);
     }
 
+    /** returns -1 if no option (not any weight==NaN, or non-positive) */
     public static int selectRouletteCached(int weightCount, IntToFloatFunction weight, FloatSupplier rng) {
 
-        if (weightCount == 1)
-            return 0;
-        else if (weightCount == 2) {
+        if (weightCount == 1) {
+            float w = weight.valueOf(0);
+            return valid(w) ? 0 : -1;
+        } else if (weightCount == 2) {
 
             float rx = weight.valueOf(0), ry = weight.valueOf(1);
-            return rng.asFloat() <= (Util.equals(rx, ry, Float.MIN_NORMAL) ?
-                    0.5f : (rx / (rx + ry))) ?
+            boolean bx = valid(rx), by = valid(ry);
+            if (bx && by)
+                return rng.asFloat() <= (Util.equals(rx, ry, Float.MIN_NORMAL) ?
+                        0.5f : (rx / (rx + ry))) ?
                         0 : 1;
+            else if (!bx && !by) return -1;
+            else if (bx && !by) return 0;
+            else return 1;
 
         } else {
 
             float[] w = new float[weightCount];
+            int lastValid = -1;
             for (int i = 0; i < weightCount; i++) {
                 float wi = weight.valueOf(i);
-                if (wi < 0)
-                    wi=0; //throw new WTF();
-                w[i] = wi;
+                if (valid(wi)) {
+                    w[i] = wi;
+                    if (lastValid == -1)
+                        lastValid = i;//first
+                    else
+                        lastValid = -2;//more than one
+                }
             }
-            return selectRoulette(weightCount, i -> w[i], rng);
+
+            if (lastValid == -1)
+                return -1;
+            else if (lastValid!= -2) {
+                return lastValid;
+//                for (int i = 0; i < weightCount; i++)
+//                    if (w[i] > 0)
+//                        return i; //choose the only
+//
+//                throw new WTF(); //return -1; //WTF
+            } else {
+                return selectRoulette(weightCount, i -> w[i], rng);
+            }
         }
     }
 
-    /**
-     * faster if the sum is already known
-     * TODO use a generic FloatSupplier instead of Random
-     */
-    private static int selectRoulette(final int count, IntToFloatFunction weight, float weight_sum, FloatSupplier rng) {
-
-        if (weight_sum < ScalarValue.EPSILON) {
-            //flat
-            return Util.bin(rng.asFloat() * count, count);//rng.nextInt(count)
-        } else {
-
-            return selectRouletteUnidirectionally
-                    //return selectRouletteBidirectionally
-                            (count, weight, weight_sum, rng);
-        }
+    private static boolean valid(float w) {
+        return w==w && w > 0;
     }
 
     private static int selectRouletteUnidirectionally(int count, IntToFloatFunction weight, float weight_sum, FloatSupplier rng) {

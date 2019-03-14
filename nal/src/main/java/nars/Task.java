@@ -576,7 +576,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         );
     }
 
-    static Term forceNormalizeForBelief(Term x) {
+    static Term normalize(Term x) {
         x = x.normalize();
 
         if (x instanceof Compound && !validTaskCompound((Compound) x, true)) {

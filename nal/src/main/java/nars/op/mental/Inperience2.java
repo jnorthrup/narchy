@@ -50,7 +50,7 @@ public class Inperience2 extends Causable {
         int volMaxPre = (int) Math.max(1, Math.ceil(volMax * 0.5f));
         float beliefConf = n.confDefault(BELIEF);
         Random rng = n.random();
-        n.attn.active.sample(rng, (TaskLink tl) -> {
+        n.attn.links.sample(rng, (TaskLink tl) -> {
 
             Task t = tl.get(when);
             if (t != null && t.term().volume() <= volMaxPre) {

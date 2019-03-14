@@ -8,11 +8,12 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.op.PriMerge;
 import nars.Param;
-import nars.concept.NodeConcept;
+import nars.concept.Concept;
 import nars.term.Term;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLink> {
 
@@ -45,9 +46,9 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
     /**
      * acts as a virtual tasklink bag associated with an atom concept allowing it to otherwise act as a junction between tasklinking compounds which share it
      */
-    public final Term atomTangent(NodeConcept src, TaskLink except, long now, int minUpdateCycles, Random rng) {
+    public final Term atomTangent(Concept src, Predicate<TaskLink> filter, long now, int minUpdateCycles, Random rng) {
         return TermLinks.tangent(this,
-                src, except,
+                src, filter,
                 false, true,
                 now, minUpdateCycles, rng);
     }

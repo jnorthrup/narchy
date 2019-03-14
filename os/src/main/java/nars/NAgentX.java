@@ -300,7 +300,7 @@ abstract public class NAgentX extends NAgent {
 
         window(new Gridding(NARui.agent(a), NARui.top(n)), 800, 500);
 
-        final Bag<?,TaskLink> active = n.attn.active;
+        final Bag<?,TaskLink> active = n.attn.links;
         int c = active.capacity();
         int history = 64;
         int width = c;

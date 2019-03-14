@@ -46,13 +46,9 @@ public interface ITask extends Prioritizable {
      */
     static void run(ITask t, NAR nar) {
         ITask x = t;
-        try {
-            do {
-                x = x.next(nar);
-            } while (x != null);
-        } catch (Throwable ee) {
-            error(t, x, ee, nar);
-        }
+        do {
+            x = x.next(nar);
+        } while (x != null);
     }
 
     static void error(ITask t, ITask x, Throwable ee, NAR nar) {

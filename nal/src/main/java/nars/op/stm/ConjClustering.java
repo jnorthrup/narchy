@@ -414,7 +414,7 @@ public class ConjClustering extends Causable {
                     Term cj = ConjLazy.sequence(x);
                     if (cj.volume() > 1) {
 
-                        Term tt = Task.forceNormalizeForBelief(cj);
+                        Term tt = Task.normalize(cj);
 
                         ObjectBooleanPair<Term> cp = Task.tryContent(tt, punc, true);
                         if (cp != null) {

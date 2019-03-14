@@ -78,7 +78,7 @@ public class STMLinkage extends NARService {
     }
 
     static void link(Concept target, Task task, float factor, NAR nar) {
-        TaskLink.link(TaskLink.tasklink(task.term(), target.term(), task.punc(),task.priElseZero() * factor), nar);
+        nar.attn.link(TaskLink.tasklink(task.term(), target.term(), task.punc(),task.priElseZero() * factor));
     }
 
 
