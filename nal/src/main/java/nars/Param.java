@@ -176,9 +176,9 @@ public abstract class Param {
         //tasklinkMerge::merge;
         //Util::or;
         //(t,b)->Util.unitize(t+b);
-        //Util::or;
+        Util::or;
         //Math::max;
-        Util::and;
+        //Util::and;
         //Util::mean;
 
 

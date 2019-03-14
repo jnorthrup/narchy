@@ -202,7 +202,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Override
-    public void act(long prev, long now, NAR n) {
+    public void update(long prev, long now, NAR n) {
 
         int narDur = n.dur();
 

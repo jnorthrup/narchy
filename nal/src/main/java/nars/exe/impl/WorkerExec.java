@@ -16,7 +16,9 @@ import static nars.time.Tense.ETERNAL;
 
 public class WorkerExec extends ThreadedExec {
 
-    /** process sub-timeslice divisor */
+    /**
+     * process sub-timeslice divisor
+     */
     double granularity = 4;
     private static final long subCycleMinNS = 500_000;
     private long subCycleMaxNS;
@@ -35,7 +37,6 @@ public class WorkerExec extends ThreadedExec {
     }
 
     private final class WorkPlayLoop implements Worker {
-
 
 
         private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
@@ -92,7 +93,6 @@ public class WorkerExec extends ThreadedExec {
         }
 
 
-
         private final BooleanSupplier deadlineFn = this::deadline;
 
         private void play(long playTime) {
@@ -100,7 +100,6 @@ public class WorkerExec extends ThreadedExec {
             n = cpu.size();
             if (n == 0)
                 return;
-
 
 
             long start = nanoTime();
@@ -116,12 +115,12 @@ public class WorkerExec extends ThreadedExec {
                     reprioritize = false;
 
 
-
                     prioLast = now;
                     prioritize(threadWorkTimePerCycle);
                 }
 
-                TimedLink.MyTimedLink next = play[i++];  if (i == n) i = 0;
+                TimedLink.MyTimedLink next = play[i++];
+                if (i == n) i = 0;
 
                 long sTime = next.time;
 
@@ -135,25 +134,25 @@ public class WorkerExec extends ThreadedExec {
                     boolean singleton = c.singleton();
                     if (!singleton || c.busy.compareAndSet(false, true)) {
 
+                        long before = nanoTime();
+
+                        long useNS = Util.clampSafe(sTime / priorityPeriod, subCycleMinNS, subCycleMaxNS);
+
                         try {
-                            long before = nanoTime();
 
-                            long useNS = Util.clampSafe(sTime / priorityPeriod, subCycleMinNS, subCycleMaxNS);
-                            try {
-                                deadline = before + useNS;
-                                c.next(nar, deadlineFn);
-                            } catch (Throwable t) {
-                                Exec.logger.error("{} {}", this, t);
-                            }
+                            deadline = before + useNS;
+                            c.next(nar, deadlineFn);
 
-                            played = true;
-                            after = nanoTime();
-                            next.use(after - before);
-
+                        } catch (Throwable t) {
+                            Exec.logger.error("{} {}", this, t);
                         } finally {
                             if (singleton)
                                 c.busy.set(false);
                         }
+
+                        played = true;
+                        after = nanoTime();
+                        next.use(after - before);
                     }
                 }
 
@@ -204,7 +203,7 @@ public class WorkerExec extends ThreadedExec {
 //            System.out.println(subCycleMinNS + " " + subCycleMaxNS /* actualCycleNS */);
             for (TimedLink.MyTimedLink m : play) {
                 double t = shift + workTimeNS * m.pri();
-                m.add(Math.max(0, Math.round(t * priorityPeriod)), -workTimeNS*priorityPeriod, +workTimeNS*priorityPeriod);
+                m.add(Math.max(0, Math.round(t * priorityPeriod)), -workTimeNS * priorityPeriod, +workTimeNS * priorityPeriod);
             }
 //                }
         }

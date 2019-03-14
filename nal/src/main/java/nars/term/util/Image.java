@@ -245,14 +245,14 @@ public enum Image {;
 
         @Nullable private BeliefTable table(NAR n, boolean conceptualize) {
             Concept h = host(n, conceptualize);
-            if (h == null)
-                return null;
+            if (!(h instanceof TaskConcept))
+                return null; //TODO if this happens: may be a NodeConcept in certain cases involving $ vars.  investigate
             else
                 return beliefOrGoal ? h.beliefs() : h.goals();
         }
 
-        @Nullable private TaskConcept host(NAR n, boolean conceptualize) {
-            return (TaskConcept) n.concept(normal, conceptualize);
+        @Nullable private Concept host(NAR n, boolean conceptualize) {
+            return n.concept(normal, conceptualize);
         }
 
         private static class ImgTermTask extends SpecialTermTask {

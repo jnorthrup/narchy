@@ -153,19 +153,27 @@ public class NAgent extends NARService implements NSense, NAct {
      * happiness = sum( 1 - abs(rewardBeliefExp - rewardGoalExp) )
      * avg reward satisfaction, current measurement
      */
-    public float happiness() {
-        //1 - abs(belief-goal)
-        //    freq or expectation ??
-        throw new TODO();
+    public final float happinessMean() {
+        return (float) rewards.meanBy(rr -> {
+            float r = rr.happiness();
+            if (r!=r)
+                return 0;
+            return r;
+        });
     }
+
+    //TODO weighted happiness function
 
     /**
      * proficiency = happiness * dexterity
      * current measurement
      * professional satori
      */
-    public float proficiency() {
-        throw new TODO();
+    public final float proficiency() {
+        float x = happinessMean() * dexterityMean();
+        if (x!=x)
+            x = 0; //NaN > 0
+        return x;
     }
 
     @Override
@@ -357,16 +365,6 @@ public class NAgent extends NARService implements NSense, NAct {
         return reward(rewardTerm("reward"), rewardfunc);
     }
 
-    @Deprecated
-    public Reward rewardDetailed(FloatSupplier rewardfunc) {
-        return rewardDetailed(rewardTerm("reward"), rewardfunc);
-    }
-
-    @Deprecated
-    public Reward rewardDetailed(float min, float max, FloatSupplier rewardfunc) {
-        return rewardDetailed(rewardTerm("reward"), min, max, rewardfunc);
-    }
-
     public Reward reward(String reward, FloatSupplier rewardFunc) {
         return reward(rewardTerm(reward), rewardFunc);
     }
@@ -400,23 +398,33 @@ public class NAgent extends NARService implements NSense, NAct {
         return new FloatNormalized(new FloatClamped(rewardFunc, min, max), min, max, false);
     }
 
-    @Deprecated
-    public Reward rewardDetailed(String reward, FloatSupplier rewardFunc) {
-        return rewardDetailed(rewardTerm(reward), rewardFunc);
-    }
-
-    @Deprecated
-    public Reward rewardDetailed(Term reward, FloatSupplier rewardFunc) {
-        return reward(new DetailedReward(reward, rewardFunc, this));
-    }
-
-    public Reward rewardDetailed(String reward, float min, float max, FloatSupplier rewardFunc) {
-        return rewardDetailed(rewardTerm(reward), min, max, rewardFunc);
-    }
-
-    public Reward rewardDetailed(Term reward, float min, float max, FloatSupplier rewardFunc) {
-        return reward(new DetailedReward(reward, normalize(rewardFunc, min, max), this));
-    }
+//    @Deprecated
+//    public Reward rewardDetailed(String reward, FloatSupplier rewardFunc) {
+//        return rewardDetailed(rewardTerm(reward), rewardFunc);
+//    }
+//
+//    @Deprecated
+//    public Reward rewardDetailed(Term reward, FloatSupplier rewardFunc) {
+//        return reward(new DetailedReward(reward, rewardFunc, this));
+//    }
+//
+//    public Reward rewardDetailed(String reward, float min, float max, FloatSupplier rewardFunc) {
+//        return rewardDetailed(rewardTerm(reward), min, max, rewardFunc);
+//    }
+//
+//    public Reward rewardDetailed(Term reward, float min, float max, FloatSupplier rewardFunc) {
+//        return reward(new DetailedReward(reward, normalize(rewardFunc, min, max), this));
+//    }
+//
+//    @Deprecated
+//    public Reward rewardDetailed(FloatSupplier rewardfunc) {
+//        return rewardDetailed(rewardTerm("reward"), rewardfunc);
+//    }
+//
+//    @Deprecated
+//    public Reward rewardDetailed(float min, float max, FloatSupplier rewardfunc) {
+//        return rewardDetailed(rewardTerm("reward"), min, max, rewardfunc);
+//    }
 
     /**
      * default reward module
@@ -565,12 +573,12 @@ public class NAgent extends NARService implements NSense, NAct {
             if (a instanceof AbstractGoalActionConcept)
                 ((AbstractGoalActionConcept) a).curiosity(curiosity);
 
-            a.act(prev, now, nar);
+            a.update(prev, now, nar);
         }
     }
 
     protected void sense(long prev, long now) {
-        sensors.forEach(s -> s.act(prev, now, nar));
+        sensors.forEach(s -> s.update(prev, now, nar));
         rewards.forEach(r -> r.update(prev, now));
     }
 

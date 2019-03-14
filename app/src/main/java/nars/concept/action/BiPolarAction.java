@@ -81,7 +81,7 @@ public class BiPolarAction extends AbstractSensor {
     /** the pos and neg .update() method should have been called just prior to this since this is
      * invoked by the frame listeners at the end of the NAgent cycle
      */
-    @Override public void act(long prev, long now, NAR nar) {
+    @Override public void update(long prev, long now, NAR nar) {
 
 
         Truth p, n;

@@ -294,11 +294,14 @@ abstract public class NAgentX extends NAgent {
 //        senseReward.timing = new ActionTiming(n);
 
 
-        MetaAgent meta = new MetaAgent(a, false);
+        MetaAgent meta = new MetaAgent(n);
+        meta.pri.set(0.5f);
 
-        window(AttentionUI.attentionGraph(n, a), 600, 600);
+        window(AttentionUI.attentionGraph(n, a, meta), 600, 600);
 
-        window(new Gridding(NARui.agent(a), NARui.top(n)), 800, 500);
+        window(NARui.agent(a), 500, 500);
+        window(NARui.agent(meta), 500, 500);
+        window(NARui.top(n), 800, 500);
 
         final Bag<?,TaskLink> active = n.attn.links;
         int c = active.capacity();

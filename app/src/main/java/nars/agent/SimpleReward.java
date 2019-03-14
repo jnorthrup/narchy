@@ -58,6 +58,7 @@ public class SimpleReward extends BeliefReward {
 //        }, true);
     }
 
+
     @Override
     protected float reward() {
         return rewardFunc.asFloat();
@@ -74,8 +75,6 @@ public class SimpleReward extends BeliefReward {
         return concept;
     }
 
-
-
     @Override
     public Term term() {
         return concept.term();
@@ -84,6 +83,6 @@ public class SimpleReward extends BeliefReward {
 
     @Override
     protected final void updateReward(long prev, long now) {
-        ((Signal)concept).act(prev, now, nar());
+        ((Signal)concept).update(prev, now, nar());
     }
 }

@@ -1525,8 +1525,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         );
     }
 
-    public Map<Term,List<InternalEvent>> atMap() {
+    public final Map<Term,List<InternalEvent>> atMap() {
         return at().collect(Collectors.groupingBy(InternalEvent::category));
+    }
+
+    public final <X> Stream<X> services(Class<? extends X> nAgentClass) {
+        return services().filter(x -> nAgentClass.isAssignableFrom(x.getClass()))
+                .map(x -> (X)x);
     }
 
     private class TaskChannel extends CauseChannel<ITask> {

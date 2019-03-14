@@ -1,122 +1,119 @@
 package nars.agent;
 
 import jcog.Util;
-import jcog.math.FloatFirstOrderDifference;
-import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
+import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
-import nars.attention.AttNode;
 import nars.concept.action.GoalActionConcept;
+import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * supraself agent metavisor
  */
-public class MetaAgent {
+public class MetaAgent extends NAgent {
 
     static final Atomic curiosity = Atomic.the("curi"),
             forget = Atomic.the("forget"),
             beliefPri = Atomic.the("beliefPri"),
             goalPri = Atomic.the("goalPri"),
-            pri = Atomic.the("pri"),
-            enable = Atomic.the("enable"), duration = Atomic.the("dur");
 
-    final AttNode attn;
-    private final NAgent agent;
-    private final long start;
+            enable = Atomic.the("enable"),
+            duration = Atomic.the("dur"),
+            happy = Atomic.the("happy")
+            ;
 
-    public final GoalActionConcept enableAction;
-    public final Reward enableReward;
+    //final AttNode attn;
+    //private final NAgent agent;
+    //private final long start;
+
+    //public final GoalActionConcept enableAction;
+    //public final Reward enableReward;
     //private final GoalActionConcept durAction;
-    public final GoalActionConcept[] forgetAction;
-    public final GoalActionConcept[] beliefPriAction;
-    private final GoalActionConcept[] goalPriAction;
-    private final GoalActionConcept[] agentPri;
+    public final GoalActionConcept forgetAction;
+    public final GoalActionConcept beliefPriAction;
+    private final GoalActionConcept goalPriAction;
+    //    private final GoalActionConcept[] agentPri;
     private final GoalActionConcept dur;
 
     private int disableCountDown = 0;
     private final int disableThreshold = 1;
     private final long disablePeriod = 4;
 
-    int startupDurs = 5000;
 
-    float curiMax = 0.2f;
-    float curiMinOld = 0.01f,
-            curiMinYoung = 0.04f;
-
-
-    private final GoalActionConcept curiosityAction;
-
-    public MetaAgent(NAgent n) {
-        this(n, false);
-    }
-
-    public MetaAgent(NAgent a, boolean allowPause) {
-        this.agent = a;
-
-        this.attn = new AttNode(this);
-        attn.parent(a.attnReward /* HACK */);
-
-        NAR n = a.nar();
-        NAR nar = n;
-        start = nar.time();
-        curiosityAction = a.actionUnipolar($.inh(a.id, curiosity), (c) -> {
-            a.curiosity.rate.set(curiosity(c));
-            return c;
-        });
-        curiosityAction.attn.reparent(attn);
+    static int curiStartupDurs = 5000;
+    static float curiMax = 0.2f;
+    static float curiMinOld = 0.01f, curiMinYoung = 0.04f;
 
 
-        forgetAction = a.actionDial(
-                $.inh(a.id, $.p(forget, $.the(-1))),
-                $.inh(a.id, $.p(forget, $.the(+1))),
-                n.attn.forgetRate, 40);
-        forgetAction[0].attn.reparent(attn); //HACK
-        forgetAction[1].attn.reparent(attn);//HACK
 
-        this.beliefPriAction = dial(a, MetaAgent.beliefPri,
-                n.beliefPriDefault.subRange(
-                        ScalarValue.EPSILON, n.beliefPriDefault.floatValue() /* current value */ * 2),
-                20);
-        this.goalPriAction = dial(a, MetaAgent.goalPri,
-                n.goalPriDefault.subRange(
-                        ScalarValue.EPSILON, n.goalPriDefault.floatValue() /* current value */ * 2),
-                20);
+    public MetaAgent(NAR n) {
+        super(n.self().toString() /* HACK */, n);
+
+        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
+
+        float priFactorMin = 0.1f, priFactorMax = 4f;
+        beliefPriAction = actionUnipolar($.inh(id, beliefPri), n.beliefPriDefault.subRange(
+                Math.max(n.beliefPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
+                n.beliefPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
+        goalPriAction = actionUnipolar($.inh(id, goalPri), n.goalPriDefault.subRange(
+                Math.max(n.goalPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
+                n.goalPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
 
         int initialDur = n.dur();
-        this.dur = a.actionUnipolar($.inh(a.id,duration), (x) -> {
-            n.time.dur(Util.lerp(x*x, n.dtDither(), initialDur*2));
+        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
+            n.time.dur(Util.lerp(x * x, n.dtDither(), initialDur * 2));
             return x;
         });
-        this.agentPri = dial(a, MetaAgent.pri,
-                a.pri,
-                20);
 
 
-        if (allowPause) {
 
-            //TODO control the agent dur, not the entire NAR
+        n.services(NAgent.class).forEach(a -> {
+            if(MetaAgent.this!=a)
+                add(a, false);
+        });
+    }
+
+    private void add(NAgent a, boolean allowPause) {
+
+        long start = a.nar().time();
+
+
+        reward($.inh(a.id, happy), () -> Util.or(a.happinessMean(), a.proficiency()));
+        //reward($.inh(a.id, happy), a::happiness);
+
+        Term agentPriTerm =
+                $.inh(a.id, id /* self */);
+                //$.inh(a.id, pri);
+        GoalActionConcept agentPri = actionUnipolar(agentPriTerm, (FloatConsumer) a.pri::set);
+
+
+        GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
+            a.curiosity.rate.set(curiosity(a, start, c));
+        });
+        curiosityAction.attn.reparent(attn);
+        //TODO control the agent dur, not the entire NAR
 //            int initialDur = nar.dur();
-//            durAction = a.actionUnipolar($.func(duration, a.id), (d)->{
+//            durAction = actionUnipolar($.func(duration, id), (d)->{
 //                nar.time.dur(dur(initialDur,d));
 //                return d;
 //            });
 //            durAction.attn.reparent(attn);
 
 
+        if (allowPause) {
             //TODO agent enable
-            enableAction = a.actionPushButton($.func(enable, a.id), (e) -> {
+            GoalActionConcept enableAction = actionPushButton($.inh(a.id, enable), (e) -> {
                 //enableAction = n.actionToggle($.func(enable, n.id), (e)->{
                 //TODO integrate and threshold, pause for limited time
                 if (!e) {
                     if (disableCountDown++ >= disableThreshold) {
                         a.enabled.set(false);
-                        nar.runAt(nar.time() + disablePeriod * nar.dur(), () -> {
+                        a.nar().runAt(a.nar().time() + disablePeriod * a.nar().dur(), () -> {
                             //re-enable
-                            a.enabled.set(true);
+                            enabled.set(true);
                             disableCountDown = 0;
                         });
                     }
@@ -126,27 +123,19 @@ public class MetaAgent {
                 }
             });
 
-
-            enableReward = a.reward("enable", () -> a.enabled.getOpaque() ? +1 : 0f);
-
-            enableAction.attn.reparent(attn);
-            enableReward.attn.reparent(attn);
-        } else {
-            enableAction = null;
-            enableReward = null;
-
-
-//            durAction = null;
+            enableAction.attn.reparent(a.attn);
         }
 
-        //TODO duration control
+
+//        Reward enableReward = reward("enable", () -> enabled.getOpaque() ? +1 : 0f);
+//        enableReward.attn.reparent(a.attn);
     }
 
-    @NotNull
+
     public GoalActionConcept[] dial(NAgent a, Atomic label, FloatRange var, int steps) {
-        GoalActionConcept[] priAction = a.actionDial(
-                $.inh(a.id, $.p(label, $.the(-1))),
-                $.inh(a.id, $.p(label, $.the(+1))),
+        GoalActionConcept[] priAction = actionDial(
+                $.inh(id, $.p(label, $.the(-1))),
+                $.inh(id, $.p(label, $.the(+1))),
                 var,
                 steps);
         priAction[0].attn.reparent(attn);//HACK
@@ -161,11 +150,11 @@ public class MetaAgent {
     /**
      * curiosity frequency -> probability mapping curve
      */
-    float curiosity(float c) {
+    static float curiosity(NAgent agent, long start, float c) {
 
         float min;
         float durs = (float) (((double) (agent.nar().time() - start)) / agent.nar().dur());
-        if (durs < startupDurs)
+        if (durs < curiStartupDurs)
             min = curiMinYoung;
         else
             min = curiMinOld;
@@ -173,87 +162,87 @@ public class MetaAgent {
         return Util.lerp(c, min, curiMax);
     }
 
-    private static NAgent metavisor(NAgent a) {
-
-//        new NARSpeak.VocalCommentary( a.nar());
-
-        //
-//        a.nar().onTask(x -> {
-//           if (x.isGoal() && !x.isInput())
-//               System.out.println(x.proof());
-//        });
-
-        int durs = 4;
-        NAR nar = a.nar();
-
-        NAgent m = new NAgent($.func("meta", a.id), FrameTrigger.durs(durs), nar);
-
-        m.reward(
-                new SimpleReward($.func("dex", a.id),
-                        new FloatNormalized(new FloatFirstOrderDifference(a.nar()::time,
-                                a::dexterity)).relax(0.01f), m)
-        );
-
-//        m.actionUnipolar($.func("forget", a.id), (f)->{
-//            nar.memoryDuration.setAt(Util.lerp(f, 0.5f, 0.99f));
-//        });
-//        m.actionUnipolar($.func("awake", a.id), (f)->{
-//            nar.conceptActivation.setAt(Util.lerp(f, 0.1f, 0.99f));
-//        });
-        m.senseNumber($.func("busy", a.id), new FloatNormalized(() ->
-                (float) Math.log(1 + m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
+//    private static NAgent metavisor(NAgent a) {
 //
-//        for (Sensor s : a.sensors) {
-//            if (!(s instanceof Signal)) { //HACK only if compound sensor
-//                Term target = s.target();
+////        new NARSpeak.VocalCommentary( nar());
 //
-//                //HACK
-//                if (s instanceof DigitizedScalar)
-//                    target = $.quote(target.toString()); //throw new RuntimeException("overly complex sensor target");
+//        //
+////        nar().onTask(x -> {
+////           if (x.isGoal() && !x.isInput())
+////               System.out.println(x.proof());
+////        });
 //
-//                //HACK TODO divide by # of contained concepts, reported by Sensor interface
-//                float maxPri;
-//                if (s instanceof Bitmap2DSensor) {
-//                    maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
-//                } else {
-//                    maxPri = 1;
-//                }
+//        int durs = 4;
+//        NAR nar = nar();
 //
-//                m.actionUnipolar($.func("aware", target), (p) -> {
-//                    FloatRange pp = s.pri();
-//                    pp.setAt(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
-//                });
+//        NAgent m = new NAgent($.func("meta", id), FrameTrigger.durs(durs), nar);
 //
-//            }
-//        }
-
-//        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d) -> {
-//            if (d == d) {
-//                //deep incrases both duration and max target volume
-//                this.nar.time.dur(Util.lerp(d * d, 20, 120));
-//                this.nar.termVolumeMax.setAt(Util.lerp(d, 30, 60));
-//            }
-//            return d;
-//        });
-
-//        actionUnipolar($.inh(this.nar.self(), $.the("awake")), (a)->{
-//            if (a == a) {
-//                this.nar.activateConceptRate.setAt(Util.lerp(a, 0.2f, 1f));
-//            }
-//            return a;
-//        });
-
-//        actionUnipolar($.prop(nar.self(), $.the("focus")), (a)->{
-//            nar.forgetRate.setAt(Util.lerp(a, 0.9f, 0.8f)); //inverse forget rate
-//            return a;
-//        });
-
-//        m.actionUnipolar($.func("curious", a.id), (cur) -> {
-//            a.curiosity.setAt(lerp(cur, 0.01f, 0.25f));
-//        });//.resolution(0.05f);
-
-
-        return m;
-    }
+//        m.reward(
+//                new SimpleReward($.func("dex", id),
+//                        new FloatNormalized(new FloatFirstOrderDifference(nar()::time,
+//                                a::dexterity)).relax(0.01f), m)
+//        );
+//
+////        m.actionUnipolar($.func("forget", id), (f)->{
+////            nar.memoryDuration.setAt(Util.lerp(f, 0.5f, 0.99f));
+////        });
+////        m.actionUnipolar($.func("awake", id), (f)->{
+////            nar.conceptActivation.setAt(Util.lerp(f, 0.1f, 0.99f));
+////        });
+//        m.senseNumber($.func("busy", id), new FloatNormalized(() ->
+//                (float) Math.log(1 + m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
+////
+////        for (Sensor s : sensors) {
+////            if (!(s instanceof Signal)) { //HACK only if compound sensor
+////                Term target = s.target();
+////
+////                //HACK
+////                if (s instanceof DigitizedScalar)
+////                    target = $.quote(target.toString()); //throw new RuntimeException("overly complex sensor target");
+////
+////                //HACK TODO divide by # of contained concepts, reported by Sensor interface
+////                float maxPri;
+////                if (s instanceof Bitmap2DSensor) {
+////                    maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
+////                } else {
+////                    maxPri = 1;
+////                }
+////
+////                m.actionUnipolar($.func("aware", target), (p) -> {
+////                    FloatRange pp = s.pri();
+////                    pp.setAt(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
+////                });
+////
+////            }
+////        }
+//
+////        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d) -> {
+////            if (d == d) {
+////                //deep incrases both duration and max target volume
+////                this.nar.time.dur(Util.lerp(d * d, 20, 120));
+////                this.nar.termVolumeMax.setAt(Util.lerp(d, 30, 60));
+////            }
+////            return d;
+////        });
+//
+////        actionUnipolar($.inh(this.nar.self(), $.the("awake")), (a)->{
+////            if (a == a) {
+////                this.nar.activateConceptRate.setAt(Util.lerp(a, 0.2f, 1f));
+////            }
+////            return a;
+////        });
+//
+////        actionUnipolar($.prop(nar.self(), $.the("focus")), (a)->{
+////            nar.forgetRate.setAt(Util.lerp(a, 0.9f, 0.8f)); //inverse forget rate
+////            return a;
+////        });
+//
+////        m.actionUnipolar($.func("curious", id), (cur) -> {
+////            curiosity.setAt(lerp(cur, 0.01f, 0.25f));
+////        });//.resolution(0.05f);
+//
+//
+//        return m;
+//    }
 
 }

@@ -51,6 +51,12 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     }
 
+    /** estimated current happiness/satisfaction of this reward */
+    abstract public float happiness();
+
+    /** scalar value representing the reward state (0..1.0) */
+    protected abstract float reward();
+
     public final NAR nar() { return agent.nar(); }
 
     public final void update(long prev, long now) {
@@ -58,8 +64,6 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
         updateReward(prev, now);
     }
 
-    /** scalar value representing the reward state (0..1.0) */
-    protected abstract float reward();
 
 
     abstract protected void updateReward(long prev, long now);

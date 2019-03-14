@@ -28,6 +28,11 @@ public class BeliefReward extends Reward {
     }
 
     @Override
+    public final float happiness() {
+        return reward();
+    }
+
+    @Override
     protected float reward() {
         NAR n = nar();
         Truth t = concept.beliefs().truth(n.time(), n);

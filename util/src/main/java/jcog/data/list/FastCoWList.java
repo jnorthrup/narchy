@@ -359,4 +359,19 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         return true;
     }
 
+    public double sumBy(FloatFunction<X> each) {
+        double s =  0;
+        for (X x : array())
+            s += each.floatValueOf(x);
+        return s;
+    }
+    public double meanBy(FloatFunction<X> each) {
+        double s =  0;
+        int i = 0;
+        for (X x : array()) {
+            s += each.floatValueOf(x);
+            i++;
+        }
+        return s/i;
+    }
 }

@@ -444,7 +444,7 @@ public class NARui {
                 "reward", () -> NARui.beliefCharts(rewards, a.nar()),
                 "actions", () -> NARui.beliefCharts(actions, a.nar())
         ));
-        return aa;
+        return LabeledPane.the(a.id.toString(), aa);
 //            .on(Bitmap2DSensor.class, (Bitmap2DSensor b) ->
 //                new PushButton(b.id.toString()).click(()-> {
 //                    window(new AspectAlign(

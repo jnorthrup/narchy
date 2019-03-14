@@ -19,7 +19,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
     }
 
     @Override
-    public void act(long prev, long now, NAR n) {
+    public void update(long prev, long now, NAR n) {
         //long agentDur = now - prev;
 //        long dur = agentDur;
         //narDur; //Math.min(narDur, agentDur);
@@ -42,7 +42,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
         long feedbackShift = n.dur();
 
-        super.act(prev, now, n);
+        super.update(prev, now, n);
 
         Truth goal = actionTruth;
 

@@ -1,5 +1,6 @@
 package jcog.math;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.MutableFloat;
 
@@ -44,5 +45,9 @@ public class FloatRange extends MutableFloat /*AtomicFloat*/ {
         };
     }
 
+
+    public FloatRange mapRange(float mapMin, float mapMax) {
+        throw new TODO();
+    }
 
 }

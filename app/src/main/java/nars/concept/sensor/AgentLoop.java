@@ -14,7 +14,7 @@ import nars.term.Termed;
 public interface AgentLoop extends Termed {
 
     /** run an update procedure, for the provided time period */
-    void act(long last, long now, NAR nar);
+    void update(long last, long now, NAR nar);
 
     /** numeric resolution of scalar signals */
     FloatRange resolution();
