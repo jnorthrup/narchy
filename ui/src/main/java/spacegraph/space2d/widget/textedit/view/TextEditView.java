@@ -19,7 +19,7 @@ public class TextEditView implements BufferListener {
         this.document = buffer;
         this.cursor = new CursorView(buffer.cursor());
         buffer.addListener(this);
-        document.lines.forEach(this::addLine);
+        document.lines.forEach(this::_addLine);
     }
 
 
@@ -59,7 +59,6 @@ public class TextEditView implements BufferListener {
     public void updateCursor(CursorPosition c) {
         LineView lv = lines.get(c.getRow());
 
-
         float x;
         if (document.isLineHead()) {
             x = (float) lv.getChars().stream().mapToDouble(cv -> cv.width() / 2).findFirst()
@@ -80,8 +79,12 @@ public class TextEditView implements BufferListener {
 
     @Override
     public void addLine(BufferLine bufferLine) {
-        lines.add(new LineView(bufferLine));
+        _addLine(bufferLine);
         updatePositions();
+    }
+
+    protected void _addLine(BufferLine bufferLine) {
+        lines.add(new LineView(bufferLine));
     }
 
     @Override
@@ -106,11 +109,14 @@ public class TextEditView implements BufferListener {
     }
 
     protected void updatePositions() {
-        Collections.sort(lines);
-        float h = 0f;
-        for (LineView lv : lines) {
-            lv.position.y = h;
-            h -= LineView.getHeight();
+        FasterList<LineView> ll = this.lines;
+        if (ll.size() > 1) {
+            Collections.sort(ll);
+            float h = 0f;
+            for (LineView lv : ll) {
+                lv.position.y = h;
+                h -= LineView.getHeight();
+            }
         }
     }
 

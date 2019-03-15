@@ -7,6 +7,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -208,7 +209,7 @@ public class MutableListContainer extends AbstractMutableContainer {
         return children.isEmpty();
     }
 
-    public void clear() {
+    public TextEdit clear() {
         synchronized (this) {
             if (parent == null) {
                 children.clear();
@@ -219,6 +220,7 @@ public class MutableListContainer extends AbstractMutableContainer {
                 }
             }
         }
+        return null;
     }
 
     /**

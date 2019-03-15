@@ -118,10 +118,11 @@ public class XYSlider extends Surface implements HudHover  {
     @Override
     public Surface finger(Finger f) {
         if (f.tryFingering(drag)) {
+            if (f.pressing(drag.button))
+                setPoint(f);
             return this;
-        } else if (f.pressing(drag.button)) {
-            setPoint(f);
-            return this;
+        } else {
+
         }
         return null;
     }

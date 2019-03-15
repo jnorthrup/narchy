@@ -22,7 +22,7 @@ public class SliderModel extends Surface {
      * dead-zone at the edges to latch min/max values
      */
     static private final float margin =
-            0.001f;
+            0.01f;
     public static final int BUTTON = 0;
 
 
@@ -172,6 +172,7 @@ public class SliderModel extends Surface {
      * resulting value is lower aligned
      */
     private static float pTarget(float x, float knob) {
+
         return Util.clamp(pTarget(x) - knob / 2, 0, 1 - knob);
     }
 
@@ -204,7 +205,7 @@ public class SliderModel extends Surface {
     public static final SliderUI KnobVert = new KnobVert() {
         @Override
         public float p(v2 hitPoint) {
-            return 1 - pTarget(hitPoint.y, 0);
+            return pTarget(1 - hitPoint.y, 0);
         }
     };
 
@@ -225,18 +226,18 @@ public class SliderModel extends Surface {
         public void paint(float p, GL2 gl) {
 
 
-            float y = H * p;
+            float y = H * (1-p);
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
             Draw.rect(0, 0, W, H, gl);
 
             gl.glColor4f(1f - p, p, 0f, 0.75f);
-            Draw.rect(0, H - y - knob, W, knob, gl);
+            Draw.rect(0, y-knob/2, W, knob, gl);
         }
 
         @Override
         public float p(v2 hitPoint) {
-            return pTarget(1 - hitPoint.y, knob);
+            return pTarget(hitPoint.y, knob);
         }
     }
 

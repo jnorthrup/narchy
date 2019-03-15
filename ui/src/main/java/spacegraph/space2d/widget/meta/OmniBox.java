@@ -13,6 +13,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -59,11 +60,12 @@ public class OmniBox extends Widget {
             }
 
             @Override
-            public void clear() {
+            public TextEdit clear() {
                 super.clear();
                 synchronized (content) {
                     content.detachChild(this);
                 }
+                return null;
             }
 
         };

@@ -3,6 +3,7 @@ package spacegraph.space2d.container.collection;
 import jcog.data.map.CellMap;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -92,8 +93,9 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     }
 
     @Override
-    protected void clear() {
+    protected TextEdit clear() {
         cells.clear();
+        return null;
     }
 
     protected void removeAll(Iterable<K> x) {

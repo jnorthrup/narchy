@@ -19,6 +19,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.MutableRectFloat;
 import spacegraph.video.Draw;
@@ -230,8 +231,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     @Override
-    public void clear() {
+    public TextEdit clear() {
         set(List.of());
+        return null;
     }
 
     private Graph2D<X> update(Iterable<X> nodes, boolean addOrReplace) {

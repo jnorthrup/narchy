@@ -30,7 +30,7 @@ import static spacegraph.space2d.widget.slider.SliderModel.KnobVert;
 public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
 
-    public final S content;
+    public S content = null;
 
     /**
      * proportional in scale to bounds
@@ -45,6 +45,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
      */
     private volatile RectFloat view;
     private volatile v2 viewMin = new v2(0,0);
+    //private volatile v2 viewDefault = new v2(0,0);
     protected volatile v2 viewMax = new v2(1,1);
 
     private final boolean autoHideScrollForSingleColumnOrRow = false;
@@ -54,13 +55,26 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         this((S) new DynGrid<>(grid, renderer));
     }
 
+    public ScrollXY(S scrollable) {
+        this();
+        set(scrollable);
+    }
     /**
      * by default, only the first cell will be visible
      */
-    public ScrollXY(S scrollable) {
+    public ScrollXY() {
         super();
 
         this.scale = new XYSlider();
+        this.scrollX = new FloatProportionalSlider("X", ()->0, ()->view.w/viewMax.x, ()->viewMax.x - view.w, true);
+        this.scrollY = new FloatProportionalSlider("Y", ()->0, ()->view.h/viewMax.y, ()->viewMax.y - view.h, false);
+
+        set(E,scrollY);
+        set(S,scrollX);
+        set(SE, scale);
+    }
+
+    public synchronized void set(S scrollable) {
 
         scrollable.update(this);
         if (viewMin == null)
@@ -73,27 +87,14 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
         set(C, new Clipped((Surface) (content = scrollable)));
 
-        this.scrollX = new FloatProportionalSlider("X", ()->0, ()->view.w/viewMax.x, ()->viewMax.x - view.w, true);
-        this.scrollY = new FloatProportionalSlider("Y", ()->0, ()->view.h/viewMax.y, ()->viewMax.y - view.h, false);
-
         borderSize(defaultScrollEdge);
-
-
-        set(W,scrollY);
-        set(S,scrollX);
-        set(SE, scale);
 
         scale.on((w, h)->{
             scroll(view.x, view.y, lerp(w, viewMin.x, viewMax.x), lerp(h, viewMin.y, viewMax.y));
         });
         scrollX.on((sx, x) -> scroll(x, view.y, view.w, view.h));
         scrollY.on((sy, y) -> scroll(view.x, y, view.w, view.h));
-//        scaleW.on((sx, w) -> ));
-//        scaleH.on((sy, h) -> scroll(view.x, view.y, view.w, h));
-
-
         scale.set(1,1);
-
     }
 
     public ScrollXY<S> viewMax(v2 viewMax) {
@@ -230,42 +231,22 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
         float x1, x2, y1, y2;
 
-        float maxW = viewMax.x, maxH = viewMax.y;
-
-        if (maxW == 1 && autoHideScrollForSingleColumnOrRow) {
-            x1 = 0;
-            x2 = 1;
+        if (w <= 1 && autoHideScrollForSingleColumnOrRow) {
+            x1 = x;
+            x2 = x+1;
             setScrollBar(true, false, false);
         } else {
             x1 = x;
             x2 = x1 + w;
-//            if (w < maxW) {
-//                x = ((((x / maxW) - 0.5f) * 2 /* -1..+1 */ * (1f - w / maxW)) / 2 + 0.5f) * maxW;
-//            } else {
-//                x = maxW / 2;
-//            }
-//            x1 = (x - w / 2);
-//            x2 = (x + w / 2);
         }
 
-        if (maxH == 1 && autoHideScrollForSingleColumnOrRow) {
-            y1 = 0;
-            y2 = 1;
+        if (h <= 1 && autoHideScrollForSingleColumnOrRow) {
+            y1 = y;
+            y2 = y+1;
             setScrollBar(false, false, false);
         } else {
-
             y1 = y;
             y2 = y1 + h;
-//            if (h < maxH) {
-//                y = ((((y / maxH) - 0.5f) * 2 /* -1..+1 */ * (1f - h / maxH)) / 2 + 0.5f) * maxH;
-//            } else {
-//
-//                y = maxH / 2;
-//            }
-//            y1 = (y - h / 2);
-//            y2 = (y + h / 2);
-
-
         }
 
         view(x1, y1, x2-x1, y2-y1);

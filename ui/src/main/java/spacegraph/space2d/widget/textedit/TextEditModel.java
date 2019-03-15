@@ -11,7 +11,7 @@ import spacegraph.space2d.widget.textedit.keybind.TextEditKeys;
 import spacegraph.space2d.widget.textedit.view.TextEditView;
 import spacegraph.video.Draw;
 
-public class TextEditModel extends Widget implements ScrollXY.ScrolledXY{
+public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY.ScrolledXY {
 
 
     /** current buffer */
@@ -30,7 +30,7 @@ public class TextEditModel extends Widget implements ScrollXY.ScrolledXY{
         setBuffer(buf);
     }
 
-    public synchronized void setBuffer(Buffer buf) {
+    public /*synchronized*/ void setBuffer(Buffer buf) {
         if (buffer != buf) {
             buffer = buf;
             view = new TextEditView(buf) {
@@ -58,10 +58,13 @@ public class TextEditModel extends Widget implements ScrollXY.ScrolledXY{
     @Override
     public void update(ScrollXY s) {
 
+        //calculate min,max scales, with appropriate aspect ratio restrictions
+
         s.viewMin(new v2(1, 1));
         int w = Math.max(1, Math.min(buffer.width(), 80));
         int h = Math.max(1, Math.min(buffer.height(), 20));
         s.viewMax(new v2(w, h));
+
         s.view(0, 0, w, h);
     }
 

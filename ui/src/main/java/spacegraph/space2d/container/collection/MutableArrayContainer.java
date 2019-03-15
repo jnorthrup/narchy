@@ -2,6 +2,7 @@ package spacegraph.space2d.container.collection;
 
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;
@@ -70,9 +71,10 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
     }
 
     @Override
-    protected void clear() {
+    protected TextEdit clear() {
         for (int i= 0; i < length; i++)
             put(i, null);
+        return null;
     }
 
 
