@@ -1,7 +1,7 @@
 package nars.task.util;
 
 import jcog.sort.FloatRank;
-import jcog.sort.RankedTopN;
+import jcog.sort.RankedN;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -46,7 +46,7 @@ public final class Answer {
      */
     public Term term = null;
 
-    public final RankedTopN<Task> tasks;
+    public final RankedN<Task> tasks;
     public TimeRangeFilter time;
     public final Predicate<Task> filter;
     private final FloatRank<Task> rank;
@@ -75,7 +75,7 @@ public final class Answer {
     private Answer(FloatRank<Task> rank, @Nullable Predicate<Task> filter, int capacity, NAR nar) {
         this.nar = nar;
         this.tasks = //TopN.pooled(topTasks, capacity, this.rank = rank.filter(filter));
-                new RankedTopN<>(new Task[capacity], this.rank = rank.filter(filter));
+                new RankedN<>(new Task[capacity], this.rank = rank.filter(filter));
         this.filter = filter;
     }
 

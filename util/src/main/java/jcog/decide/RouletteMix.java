@@ -2,7 +2,7 @@ package jcog.decide;
 
 import jcog.WTF;
 import jcog.math.FloatSupplier;
-import jcog.sort.RankedTopN;
+import jcog.sort.RankedN;
 import org.eclipse.collections.api.tuple.primitive.FloatObjectPair;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.function.Function;
 
 /** weighted sampler */
-public class RouletteMix<X> extends RankedTopN<X> implements Function<FloatSupplier/*RNG*/,X> {
+public class RouletteMix<X> extends RankedN<X> implements Function<FloatSupplier/*RNG*/,X> {
 
     public static <X> RouletteMix<X> the(List<FloatObjectPair<X>> items) {
 

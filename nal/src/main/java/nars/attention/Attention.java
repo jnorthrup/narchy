@@ -59,7 +59,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
 
     public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(new ConcurrentHashMap<>());
-    public PriNode root = new PriNode("root");
+    public PriNode root = new PriNode.ConstPriNode("root", ()->1);
     private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
 
 
@@ -95,18 +95,19 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
         on(
                 nar.eventClear.on(links::clear),
-                nar.onCycle(() -> {
-//                    System.out.println(nar.time());
-//                    active.pre.items.forEach((k,v)->System.out.println(v));
-                            links.commit(
-                                    forgetting.forget(links, 1f, forgetRate.floatValue()));
-                        }
-                )
+                nar.onCycle(this::onCycle)
         );
 
         super.starting(nar);
 
     }
+
+    protected final void onCycle() {
+        links.commit(
+            forgetting.forget(links, 1f, forgetRate.floatValue())
+        );
+    }
+
 
     @Override
     protected void run(NAR n, long dt) {
@@ -295,7 +296,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {
 
         public TaskLinkArrayBag(int initialCapacity) {
-            super(Param.tasklinkMerge, initialCapacity, PriBuffer.newConcurrentMap());
+            super(Param.tasklinkMerge, initialCapacity, PriBuffer.newMap());
         }
 
         @Override

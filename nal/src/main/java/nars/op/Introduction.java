@@ -1,5 +1,6 @@
 package nars.op;
 
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.bag.leak.TaskLeakTransform;
@@ -9,6 +10,8 @@ import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class Introduction extends TaskLeakTransform {
+
+    public final FloatRange priFactor = new FloatRange(0.5f, 0, 1);
 
     protected Introduction(NAR nar) {
         super(nar);
@@ -34,13 +37,7 @@ public abstract class Introduction extends TaskLeakTransform {
                 Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) -> new UnevaluatedTask(c, xx, t));
 
                 if (yy != null) {
-                    //discount pri by increase in target complexity
-
-                    float xc = x.voluplexity(), yc = y.voluplexity();
-                    float priSharePct =
-                            1f - (yc / (xc + yc));
-                    yy.pri(0);
-                    yy.take(xx, priSharePct, false, true);
+                    Task.deductComplexification(xx, yy, priFactor.floatValue(), false);
 
                     input(yy);
                     return 1;
@@ -50,4 +47,5 @@ public abstract class Introduction extends TaskLeakTransform {
 
         return 0;
     }
+
 }

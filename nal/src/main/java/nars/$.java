@@ -859,6 +859,8 @@ public enum $ {
 
         if (x instanceof Term)
             return ((Term)x);
+        else if (x instanceof String)
+            return Atomic.the((String)x);
 
         return $.p($.quote(x.getClass().getName()), $.the(System.identityHashCode(x)));
 

@@ -1,5 +1,6 @@
 package nars.test;
 
+import jcog.exe.Exe;
 import nars.NAR;
 import nars.NARS;
 import org.junit.jupiter.api.AfterEach;
@@ -23,6 +24,9 @@ public abstract class NALTest {
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
 
     protected NALTest() {
+
+        Exe.singleThread();
+
         test = new TestNAR(nar());
     }
 

@@ -41,10 +41,10 @@ abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitCo
 
     /** TODO double buffer to prevent 'tearing' */
     @Override protected void compileChildren(SurfaceRender r) {
-        if (invalid.compareAndSet(true, false)) {
+        if (invalid.compareAndSet(true, false))
             r.record(the(), render);
-        }
-        r.play(render);
+        else
+            r.play(render);
     }
 
     @Override

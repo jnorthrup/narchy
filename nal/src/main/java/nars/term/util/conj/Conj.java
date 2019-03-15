@@ -592,16 +592,24 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         int dt = x.dt();
         if (dt == DTERNAL) {
-            Subterms xx = x.subterms();
-            return xx.hasAny(CONJ) && //inner conjunction
-                    xx.subs() > 1 &&
-                    xx.subs(Conj::isSeq) == 1;
+            return _isSeq(x);
         } else
             return !dtSpecial(dt);
     }
 
+    protected static boolean _isSeq(Term x) {
+        Subterms xx = x.subterms();
+        return xx.hasAny(CONJ) && //inner conjunction
+                xx.subs() > 1 &&
+                xx.subs(Conj::isSeq) == 1 &&
+                (   !xx.hasAny(NEG)
+                        ||
+                    /** TODO weird disjunctive seq cases */
+                    xx.subs(xxx-> xxx.op()==NEG && xxx.unneg().op()==CONJ) == 0);
+    }
+
     public static boolean isFactoredSeq(Term x) {
-        return x.dt() == DTERNAL && isSeq(x);
+        return x.dt() == DTERNAL && _isSeq(x);
     }
 
     static final Predicate<Term> isTemporalComponent = Conj::isSeq;

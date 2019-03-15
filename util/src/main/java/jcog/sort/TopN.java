@@ -256,7 +256,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
         IntToFloatFunction select = i -> anyRank.rank(get(i));
         return get( //n < 8 ?
-                this instanceof RankedTopN ?
+                this instanceof RankedN ?
                     Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache
                     Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
         );

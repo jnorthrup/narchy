@@ -2,6 +2,7 @@ package nars.concept.sensor;
 
 import jcog.math.FloatRange;
 import nars.NAR;
+import nars.agent.NAgent;
 import nars.term.Termed;
 
 /**
@@ -13,8 +14,14 @@ import nars.term.Termed;
  **/
 public interface AgentLoop extends Termed {
 
+    default void update(long last, long now, NAgent a) {
+        update(last, now, a.nar());
+    }
+
     /** run an update procedure, for the provided time period */
-    void update(long last, long now, NAR nar);
+    default void update(long last, long now, NAR nar) {
+
+    }
 
     /** numeric resolution of scalar signals */
     FloatRange resolution();

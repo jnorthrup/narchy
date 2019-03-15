@@ -197,19 +197,19 @@ public class ConsoleAgent extends NAgentX {
 
 
             PriNode charAttn = new PriNode(this);
-            charAttn.parent(attnSensor, nar());
+            charAttn.parent(nar(), attnSensor);
 
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
                     Term XY = $.p($.the(x), $.the(y));
                     PriNode xy = new PriNode(XY);
-                    xy.parent(charAttn, nar());
+                    xy.parent(nar(), charAttn);
                     for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
                         char a = alphabet[i];
                         Term xya = $.funcImg((Atomic)id, $.the(a), XY);
                         int xx = x;
                         int yy = y;
-                        (charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a)).attn.parent(xy,nar());
+                        (charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a)).attn.parent(nar(), xy);
                     }
                 }
             }

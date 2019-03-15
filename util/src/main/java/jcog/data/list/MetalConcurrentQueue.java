@@ -288,7 +288,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
      */
     public int remove(final X[] x, int maxElements) {
 
-        //maxElements = Math.min(x.length, maxElements);
+        maxElements = Math.min(x.length, maxElements);
         assert(maxElements > 0);
 
         int spin = 0;

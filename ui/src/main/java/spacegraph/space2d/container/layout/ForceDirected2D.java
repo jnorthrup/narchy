@@ -13,7 +13,7 @@ import java.util.Random;
 public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
-    private final int iterations = 4;
+    private final int iterations = 1;
     private float AUTOSCALE = 0f;
 
 

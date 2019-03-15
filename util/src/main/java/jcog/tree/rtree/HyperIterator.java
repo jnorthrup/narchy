@@ -1,6 +1,6 @@
 package jcog.tree.rtree;
 
-import jcog.sort.RankedTopN;
+import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +27,7 @@ public class HyperIterator<X>  {
     /**
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
      */
-    final RankedTopN<Object> plan;
+    final RankedN<Object> plan;
 
     public static <X> void iterate(ConcurrentRTree<X> tree, Supplier<FloatFunction<X>> rank, Predicate<X> whle) {
 
@@ -57,7 +57,7 @@ public class HyperIterator<X>  {
     }
 
     public HyperIterator(Spatialization<X> model, X[] x, FloatFunction<? super HyperRegion> rank) {
-        this.plan = new RankedTopN(x, (FloatFunction) r -> rank.floatValueOf(
+        this.plan = new RankedN(x, (FloatFunction) r -> rank.floatValueOf(
                 r instanceof HyperRegion ? ((HyperRegion) r) :
                         (r instanceof Node ? ((Node) r).bounds() :
                                 model.bounds((X) r))

@@ -170,7 +170,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         public MapTaskBuffer(int initialCapacity) {
             capacity.set(initialCapacity);
-            tasks = PriBuffer.newConcurrentMap();
+            tasks = PriBuffer.newMap();
         }
 
         @Override
@@ -231,7 +231,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
          */
         public final Bag<ITask, ITask> tasks = new BufferedBag.SimpleBufferedBag<>(
                 new PriArrayBag<ITask>(Param.tasklinkMerge,
-                        PriBuffer.newConcurrentMap()
+                        PriBuffer.newMap()
                         //new HashMap(0, 0.5f)
                         //new UnifiedMap<>(0, 0.5f)
                 ) {

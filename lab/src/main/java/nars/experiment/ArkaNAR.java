@@ -36,7 +36,7 @@ public class ArkaNAR extends NAgentX {
 
     //final int visW = 48, visH = 32;
     //final int visW = 24, visH = 16;
-    final int visW = 16, visH = 12;
+    final int visW = 20, visH = 16;
     //final int visW = 8, visH = 6;
 
 

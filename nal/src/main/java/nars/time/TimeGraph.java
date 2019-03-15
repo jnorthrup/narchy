@@ -1,6 +1,7 @@
 package nars.time;
 
 import com.google.common.collect.Iterables;
+import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.graph.FromTo;
@@ -18,6 +19,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
+import nars.term.var.CommonVariable;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -330,6 +332,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                return; //already present
 //        }
 
+        if (eventTerm instanceof CommonVariable) {
+            CommonVariable c = ((CommonVariable) eventTerm);
+            for (Term v : c.common()) {
+                link(event, 0, know(v)); //equivalence
+            }
+        }
+
         if (decomposeAddedEvent(event)) {
             int edt = eventTerm.dt();
 
@@ -623,23 +632,38 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                 long dt = pt[0];
 
-                if (dt == ETERNAL) dt = 0; //HACK
+                if (dt == ETERNAL)
+                    dt = 0; //HACK
 
                 if (!(ss instanceof Absolute) && !(ee instanceof Absolute)) {
                     start = TIMELESS;
                 } else {
-                    if (dir) {
-                        if (ss instanceof Absolute) {
-                            start = ((Absolute) ss).start();
-                        } else {
-                            start = ((Absolute) ee).start() - dt - a.eventRange();
-                        }
+                    long SS = ss.start(), EE = ee.start();
+                    if (SS==ETERNAL && EE==ETERNAL) {
+                        start = ETERNAL;
                     } else {
-                        if (ee instanceof Absolute) {
-                            start = ((Absolute) ee).start();
-                        } else {
-                            start = ((Absolute) ss).start() - dt - b.eventRange();
+                        if (SS==ETERNAL && EE!=ETERNAL) {
+                            SS = EE; //collapse eternity
+                        } else if (SS!=ETERNAL && EE==ETERNAL) {
+                            EE = SS; //collapse eternity
                         }
+
+                        assert(SS!=ETERNAL && EE!=ETERNAL);
+                        if (dir) {
+                            if (ss instanceof Absolute) {
+                                start = SS;
+                            } else {
+                                start = EE - dt - a.eventRange();
+                            }
+                        } else {
+                            if (ee instanceof Absolute) {
+                                start = EE;
+                            } else {
+                                long sss = ((Absolute) ss).start();
+                                start = SS - dt - b.eventRange();
+                            }
+                        }
+
                     }
                 }
 
@@ -1280,7 +1304,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             Term t = x.id;
             /** clone the list because modifying solutions while iterating will cause infinite loop */
             return new FasterList<>(solutions.list).allSatisfy((s) -> {
-                if (s instanceof Absolute && !(s.equals(x)) && s.id.equals(t)) {
+                if (s instanceof Absolute && (s.start()!=ETERNAL) && !(s.equals(x)) && s.id.equals(t)) {
                     for (Event e : byTerm.get(t)) {
                         {
                             //TODO shuffle found self-loops, there could be sevreal
@@ -1292,9 +1316,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                         if (ee.loop()) {
 //                                        if (random().nextBoolean())
 //                                            dt = -dt;
-                                            if (!each.test(((Absolute) s).shift(dt)))
+                                            Absolute as = (Absolute) s;
+                                            if (!each.test(as.shift(+dt)))
                                                 return false;
-                                            if (!each.test(((Absolute) s).shift(-dt)))
+                                            if (!each.test(as.shift(-dt)))
                                                 return false;
 
                                         }
@@ -1572,11 +1597,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 Event e = event.from().id();
                 if (e instanceof Absolute) {
                     long d = e.dur();
-                    if (e.id.op() == IMPL) {
+                    if (e.id.op() == IMPL)
                         durImplMin = Math.min(durImplMin, d);
-                    } else {
+                    else
                         durEventMin = Math.min(durEventMin, d);
-                    }
                 }
             }
 
@@ -1584,11 +1608,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 Event e = event.to().id();
                 if (e instanceof Absolute) {
                     long d = e.dur();
-                    if (e.id.op() == IMPL) {
+                    if (e.id.op() == IMPL)
                         durImplMin = Math.min(durImplMin, d);
-                    } else {
+                    else
                         durEventMin = Math.min(durEventMin, d);
-                    }
                 }
             }
 
@@ -1599,6 +1622,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         long dt = 0, dur = allImpl ? durImplMin : durEventMin;
 
+
         for (BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> span : path) {
 
             FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan> event = span.getTwo();
@@ -1608,11 +1632,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             assert (spanDT != TIMELESS);
 
             if (spanDT == ETERNAL) {
-                dt = ETERNAL; //lock in eternal mode for the duration of the path, but still accumulate duration
+                //dt = ETERNAL; //lock in eternal mode for the duration of the path, but still accumulate duration
+                //no effect but do not set eternable
             } else if (dt != ETERNAL && spanDT != 0) {
                 dt += (spanDT) * (span.getOne() ? +1 : -1);
             }
         }
+
 
         if (dur == Long.MAX_VALUE)
             dur = 0; //all relative events, shrink to point

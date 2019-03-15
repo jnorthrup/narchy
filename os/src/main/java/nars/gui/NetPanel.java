@@ -21,7 +21,7 @@ public class NetPanel extends Bordering {
         this.status = new BitmapLabel();
 
         set(new DurSurface<>(status, n) {
-            @Override protected void doUpdate() {
+            @Override protected void update() {
                 status.text(
                     //net.peer.summary().replace(", (", "\n") + "\n" +
                     Joiner.on('\n').join(net.peer.them.stream().map(UDPeer.UDProfile::toString).iterator())

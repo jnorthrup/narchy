@@ -6,6 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.agent.NAgent;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityTask;
 import nars.control.channel.CauseChannel;
@@ -20,7 +21,6 @@ import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -122,11 +122,11 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     static final Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask) && !t.isEternal();  /* filter curiosity tasks? */
 
-    public final org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, NAR n) {
-        return truth(beliefsOrGoals, componentsMax, prev, now, n.dur(), n);
-    }
+//    public final org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, NAR n) {
+//        return truth(beliefsOrGoals, componentsMax, prev, now, n.dur(), n);
+//    }
 
-    public org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int narDur, NAR n) {
+    public org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int agentDur, int narDur, NAR n) {
         Truth next = null;
         FasterList<BeliefTable> tables = ((BeliefTables) (beliefsOrGoals ? beliefs() : goals())).tables;
 
@@ -141,7 +141,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
             int limit = componentsMax, tries = limit*2;
             Answer a = Answer.relevant(true, limit, ETERNAL, ETERNAL, term, withoutCuriosity, n).dur(organicDur);
-            for (int iter = 0; iter < 3; iter++) {
+            for (int iter = 0; iter < 2; iter++) {
 
                 long s, e;
 
@@ -154,20 +154,21 @@ public class AbstractGoalActionConcept extends ActionConcept {
                         e = now;
                         break;
                     case 1:
+                    default:
                         //s = now - narDur;
                         //e = now + narDur;
-                        s = now - narDur * 2;
-                        e = now; //now + dur;
+                        s = now - Math.min(narDur*2, agentDur);
+                        e = now;
                         break;
-                    default:
-                        //frame-precision window
-                        int frameDur = Tense.occToDT(now - prev);
-                        int dn = 3;
-                        //s = (long) (now - Math.max(narDur*dn/2f, frameDur/2));
-                        //e = (long) (now + Math.max(narDur*dn/2f, frameDur/2));
-                        s = now - Math.max(narDur * dn, frameDur);
-                        e = now; //now + Math.max(dur * 2, 0);
-                        break;
+//                    default:
+//                        //frame-precision window
+//                        int frameDur = Tense.occToDT(now - prev);
+//                        int dn = 3;
+//                        //s = (long) (now - Math.max(narDur*dn/2f, frameDur/2));
+//                        //e = (long) (now + Math.max(narDur*dn/2f, frameDur/2));
+//                        s = now - Math.max(narDur * dn, frameDur);
+//                        e = now; //now + Math.max(dur * 2, 0);
+//                        break;
 
                 }
 
@@ -202,19 +203,21 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Override
-    public void update(long prev, long now, NAR n) {
+    public final void update(long prev, long now, NAgent a) {
 
+        NAR n = a.nar();
         int narDur = n.dur();
+        int agentDur = a.frameTrigger.dur();
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
 
         if (prev == TIMELESS)
             prev = now - n.dur(); //HACK
 
-        Pair<Truth, long[]> bt = truth(true, limit, prev, now, narDur, n);
+        Pair<Truth, long[]> bt = truth(true, limit, prev, now, agentDur, narDur, n);
         this.beliefTruth = bt != null ? bt.getOne() : null;
 
-        this.actionTruth = actionTruth(limit, prev, now, narDur, n);
+        this.actionTruth = actionTruth(limit, prev, now, agentDur, narDur, n);
 
         {
             //update dexterity
@@ -224,12 +227,12 @@ public class AbstractGoalActionConcept extends ActionConcept {
         }
     }
 
-    private Truth actionTruth(int limit, long prev, long now, int narDur, NAR n) {
+    private Truth actionTruth(int limit, long prev, long now, int agentDur, int narDur, NAR n) {
 
         int curiDur = narDur;
 
         Truth actionTruth;
-        Pair<Truth, long[]> gt = truth(false, limit, prev, now, narDur, n);
+        Pair<Truth, long[]> gt = truth(false, limit, prev, now, agentDur, narDur, n);
 
         Truth nextActionDex = gt == null ? null : gt.getOne();
         actionDex = nextActionDex;
@@ -303,13 +306,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
         long[] evi = n.evidence();
 
         SignalTask curiosity = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);
-        curiosity.priMax(attn.elementPri());
+        curiosity.priMax(attn.pri());
         curiosity.cause(new short[]{cause});
         return curiosity;
     }
 
     protected void feedback(@Nullable Truth f, long last, long now, short cause, NAR nar) {
-        ((SensorBeliefTables) beliefs()).add(f, last, now, attn::elementPri, cause, nar);
+        ((SensorBeliefTables) beliefs()).add(f, last, now, attn::pri, cause, nar);
     }
 
 

@@ -26,6 +26,7 @@ import java.util.List;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
+/** TODO extends AgentLoop */
 public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
@@ -46,7 +47,7 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
         this.agent = a;
 
         this.attn = new PriNode(this);
-        attn.parent(a.attnReward, a.nar());
+        attn.parent(a.nar(), a.attnReward);
 
         in = a.nar().newChannel(this);
 
@@ -64,8 +65,6 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
         reward = reward();
         updateReward(prev, now);
     }
-
-
 
     abstract protected void updateReward(long prev, long now);
 
@@ -101,12 +100,12 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
             @Override
             public void update(float f, MapNodeGraph<PriNode,Object> g) {
                 super.update(f, g);
-                t.pri(elementPri());
+                t.pri(f);
                 in.input(t);
             }
 
         };
-        a.parent(attn, nar());
+        a.parent(nar(), attn);
     }
 
 }

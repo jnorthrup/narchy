@@ -2196,5 +2196,19 @@ public class ConjTest {
         assertTrue(Conj.isSeq(x));
         assertEquals(1, Conj.seqEternalComponents(x.subterms()).cardinality());
     }
+
+    @Test void notFactoredSequences() {
+        assertEquals(1,
+            $$("((--,(#1 &&+74 #1))&&(#1 &&+200 #1))").eventList().size());
+
+        assertEquals(1,
+            $$("((--,((_2-->_3) &&+6800 (_2-->_3)))&&(_1-->_2))").eventList().size());
+
+        //TODO
+        //                                                                                              ^         ^
+        // (((--,(((--,(((--,x) &&+120 ((--,x)&|#1)) &&+9 #1))&|right) &&+300 (--,(#1 &&+90 (--,x)))))&|x)&&(((--,x)&|#2) &&+220 #2))
+        // ((&|,(((--,(#1,#2))&(--,(#2,#2)))-->_1),_3(#1,#2,_2),(--,_4))&&((_4 &&+140 _3(#4,#5,_2)) &&+600 _3(#4,#5,_2)))
+    }
+
 }
 

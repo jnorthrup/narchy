@@ -27,7 +27,7 @@ import jcog.data.graph.FromTo;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.sort.FloatRank;
-import jcog.sort.RankedTopN;
+import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.function.Function;
@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * @param <E> Тип ребра
  * @author gocha
  */
-public class PathFinder<N, E> extends RankedTopN<Path<N,E>> {
+public class PathFinder<N, E> extends RankedN<Path<N,E>> {
 
     private static final Logger logger = Logger.getLogger(PathFinder.class.getName());
     /**

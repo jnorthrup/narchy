@@ -16,6 +16,7 @@ public class MetaAgent extends NAgent {
 
     static final Atomic curiosity = Atomic.the("curi"),
             forget = Atomic.the("forget"),
+            PRI = Atomic.the("pri"),
             beliefPri = Atomic.the("beliefPri"),
             goalPri = Atomic.the("goalPri"),
 
@@ -73,13 +74,23 @@ public class MetaAgent extends NAgent {
         long start = a.nar().time();
 
 
-        Reward r = reward($.inh(a.id, happy), () -> Util.or(a.happinessMean(), a.proficiency()));
+        Reward r = reward(a.id, () -> {
+            float h = a.happinessMean();
+            float p = a.proficiency();
+            float hp = Util.or(h, p);
+            //System.out.println(h + " " + p + " -> " + hp);
+
+            return hp;
+        });
         //reward($.inh(a.id, happy), a::happiness);
 
         Term agentPriTerm =
-                $.inh(a.id, id /* self */);
-                //$.inh(a.id, pri);
-        GoalActionConcept agentPri = actionUnipolar(agentPriTerm, a.attn::factor);
+                $.inh(a.id, PRI);
+                //$.inh(a.id, id /* self */);
+
+        //TODO other Emotion sensors
+
+        GoalActionConcept agentPri = actionUnipolar(agentPriTerm, (FloatConsumer)a.attn.factor::set);
 
 
         GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {

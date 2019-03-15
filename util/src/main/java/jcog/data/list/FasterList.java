@@ -11,6 +11,7 @@ import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.list.mutable.FastList;
+import org.eclipse.collections.impl.utility.internal.InternalArrayIterate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -954,6 +955,28 @@ public class FasterList<X> extends FastList<X> {
             }
             this.lastIndex = -1;
         }
+    }
+
+    @Override
+    public boolean allSatisfy(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
+        //return InternalArrayIterate.allSatisfy(this.items, this.size, predicate);
+        int s = size;
+        X[] items = this.items;
+        for (int i = 0; i < s; i++) {
+            if (!predicate.test(items[i]))
+                return false;
+        }
+        return true;
+    }
+    @Override
+    public boolean anySatisfy(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
+        int s = size;
+        X[] items = this.items;
+        for (int i = 0; i < s; i++) {
+            if (predicate.test(items[i]))
+                return true;
+        }
+        return false;
     }
 
     public boolean anySatisfy(int from, int to, Predicate<? super X> predicate2) {

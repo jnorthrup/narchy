@@ -50,7 +50,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         if (src instanceof PixelBag) {
             //HACK steal the actions for this attn group
-            ((PixelBag)src).actions.forEach(aa -> aa.attn.parent(attn, nar()));
+            ((PixelBag)src).actions.forEach(aa -> aa.attn.parent(nar(), attn));
         }
 
         /** modes */

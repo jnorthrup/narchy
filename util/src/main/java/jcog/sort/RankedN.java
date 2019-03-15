@@ -10,13 +10,13 @@ import java.util.Arrays;
 /** caches the rank inside a Ranked instance for fast entry comparison as each entry
  * TODO maybe make autocloseable to enforce .clear (aka .close()) for returning Ranked to pools
  * */
-public class RankedTopN<X> extends TopN<X> {
+public class RankedN<X> extends TopN<X> {
 
     /** cached rank/strength/weight/value table; maintained to be synchronized with the items array */
     private float[] value;
 
 
-    public RankedTopN(X[] items) {
+    public RankedN(X[] items) {
         super(items);
     }
 
@@ -33,11 +33,11 @@ public class RankedTopN<X> extends TopN<X> {
 //        setCapacity(capacity);
 //    }
 
-    public RankedTopN(X[] buffer, @NotNull FloatFunction<X> ranking) {
+    public RankedN(X[] buffer, @NotNull FloatFunction<X> ranking) {
         this(buffer, FloatRank.the(ranking));
     }
 
-    public RankedTopN(X[] buffer, FloatRank<X> ranking) {
+    public RankedN(X[] buffer, FloatRank<X> ranking) {
         this(buffer);
         rank(ranking);
     }

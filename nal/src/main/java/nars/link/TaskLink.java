@@ -25,6 +25,7 @@ import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
+import java.util.function.Predicate;
 
 import static jcog.Util.assertFinite;
 import static nars.Op.*;
@@ -96,10 +97,14 @@ public interface TaskLink extends UnitPrioritizable {
     }
 
     @Nullable default /* final */Task get(When when) {
-        return get(punc(when.nar.random()), when);
+        return get(punc(when.nar.random()), when, null);
     }
 
     @Nullable default Task get(byte punc, When when) {
+        return get(punc, when, null);
+    }
+
+    @Nullable default Task get(byte punc, When when, Predicate<Task> filter) {
         if (punc == 0)
             return null; //flat-lined tasklink
 
@@ -119,9 +124,9 @@ public interface TaskLink extends UnitPrioritizable {
             TaskTable table = c.table(punc);
             Task y;
             if (beliefOrGoal) {
-                y = table.match(when, null);
+                y = table.match(when, null, filter);
             } else {
-                y = table.sample(when, null, null);
+                y = table.sample(when, null, filter);
             }
 
             if (y == null) {

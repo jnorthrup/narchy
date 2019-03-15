@@ -294,7 +294,7 @@ abstract public class NAgentX extends NAgent {
 
 
         MetaAgent meta = new MetaAgent(n, 8);
-        meta.attn.factor(0.25f);
+        meta.attn.factor.set(0.25f);
 
         window(AttentionUI.attentionGraph(n), 600, 600);
 
@@ -499,6 +499,7 @@ abstract public class NAgentX extends NAgent {
 
         //new StatementLinker(n);
         //new PuncNoise(n);
+        //new Eternalizer(n);
 
 //        new STMLinkage(n, 1);
 

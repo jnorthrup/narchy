@@ -3,7 +3,7 @@ package nars.link;
 import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
-import jcog.sort.RankedTopN;
+import jcog.sort.RankedN;
 import jcog.sort.TopN;
 import nars.concept.Concept;
 import nars.term.Term;
@@ -54,7 +54,7 @@ public final class TermLinks {
             for (TaskLink t : items) {
                 if (t == null) continue; //HACK
                 float xp = t.priElseZero();
-                if (match == null || match instanceof Set || (match instanceof RankedTopN && xp > ((RankedTopN)match).minValueIfFull())) {
+                if (match == null || match instanceof Set || (match instanceof RankedN && xp > ((RankedN)match).minValueIfFull())) {
                     Term y = other(x, t, in, out);
                     if (y != null) {
 
@@ -65,7 +65,7 @@ public final class TermLinks {
                             if (((Set)match).add(t)) {
                                 if (((Set)match).size() >= cap) {
                                     //upgrade to TopN
-                                    RankedTopN<TaskLink> mm = new RankedTopN<>(new TaskLink[cap], (FloatFunction<TaskLink>) TaskLink::pri);
+                                    RankedN<TaskLink> mm = new RankedN<>(new TaskLink[cap], (FloatFunction<TaskLink>) TaskLink::pri);
                                     match.forEach(mm);
                                     match = mm;
                                 }

@@ -89,6 +89,15 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return a.term().equals(b.term());
     }
 
+    public static void deductComplexification(Task xx, Task yy, float factor, boolean copyOrMove) {
+        //discount pri by increase in target complexity
+        float xc = xx.voluplexity(), yc = yy.voluplexity();
+        float priSharePct =
+                1f - (yc / (xc + yc));
+        yy.pri(0);
+        yy.take(xx, priSharePct * factor, false, copyOrMove);
+    }
+
     @Override
     default <X extends HyperRegion> Function<X, HyperRegion> mbrBuilder() {
         long s = start(), e = end();
@@ -564,7 +573,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
         byte punc = x.punc();
 
-        return Task.clone(x, x.term(),
+        Task y = Task.clone(x, x.term(),
                 tt,
                 punc,
                 /* TODO current time, from NAR */
@@ -574,6 +583,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
                                 x.stamp()
                         )
         );
+        if (y!=null && x.isCyclic())
+            y.setCyclic(true); //inherit cyclic
+        return y;
     }
 
     static Term normalize(Term x) {

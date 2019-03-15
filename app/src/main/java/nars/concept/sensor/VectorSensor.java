@@ -65,7 +65,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
         short cause = in.id;
         for (Signal s : this) {
-            s.update(last, now, truther, attn::elementPri, cause, this.nar);
+            s.update(last, now, truther, attn::pri, cause, this.nar);
         }
     }
 

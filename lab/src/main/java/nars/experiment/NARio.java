@@ -117,9 +117,9 @@ public class NARio extends NAgentX {
         );
 
         PriNode tileAttnGroup = new PriNode(tileSensors);
-        tileAttnGroup.parent(attnSensor, nar());
+        tileAttnGroup.parent(nar(), attnSensor);
         for (SelectorSensor s : tileSensors)
-            s.attn.parent(tileAttnGroup, nar());
+            s.attn.parent(nar(), tileAttnGroup);
 
 
         SpaceGraph.window(camAE.newChart(), 500, 500);

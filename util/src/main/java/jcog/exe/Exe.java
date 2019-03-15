@@ -83,6 +83,18 @@ public enum Exe {;
         }
     }
 
+    private static final ThreadLocal<Boolean> singleThreaded = ThreadLocal.withInitial(()->false);
+
+    /** promises that this thread is single threaded */
+    public static void singleThread() {
+        singleThreaded.set(true);
+    }
+
+
+    public static boolean concurrent() {
+        return !singleThreaded.get();
+    }
+
     public static abstract class Profiler {
 
         abstract public void profiled(Object what, long startNS, long endNS);

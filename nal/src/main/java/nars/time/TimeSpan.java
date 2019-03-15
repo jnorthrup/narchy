@@ -39,7 +39,7 @@ public final class TimeSpan {
 
     @Override
     public String toString() {
-        return (dt == ETERNAL ? "~" : (dt >= 0 ? ("+" + dt) : ("-" + (-dt))));
+        return (dt == ETERNAL ? "E" : (dt >= 0 ? ("+" + dt) : ("-" + (-dt))));
 
     }
 }

@@ -91,12 +91,12 @@ public final class CommonVariable extends UnnormalizedVariable {
     }
 
     public static Term parse(Object... cv) {
-        if (cv.length < 2 || cv.length > Param.COMMON_VAR_MAX)
+        if (cv.length < 2 || cv.length > Param.UNIFY_COMMON_VAR_MAX)
             return Null;
 
         SortedSet<Variable> s = new TreeSet();
         for (Object o : cv) s.add((Variable) o);
-        if (s.size() < 2 || s.size() > Param.COMMON_VAR_MAX)
+        if (s.size() < 2 || s.size() > Param.UNIFY_COMMON_VAR_MAX)
             return Null;
 
         return new CommonVariable(s.first().op(), new AnonVector(s.toArray(Op.EmptyTermArray)));
@@ -112,9 +112,12 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     @Override
     public String toString() {
-        return key(op(), new AnonVector(vars));
+        return key(op(), common());
     }
 
+    public AnonVector common() {
+        return new AnonVector(vars);
+    }
 
     static String key(Op o, Iterable<Term> vars) {
         return o + Joiner.on("").join(vars);

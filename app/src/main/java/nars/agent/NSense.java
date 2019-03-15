@@ -302,10 +302,10 @@ public interface NSense {
         a.addAction(pn.neg);
 
         NAR nar = a.nar();
-        pn.attn.parent(a.attnAction, nar);
+        pn.attn.parent(nar, a.attnAction);
 
-        pn.pos.attn.parent(pn.attn, nar);
-        pn.neg.attn.parent(pn.attn, nar);
+        pn.pos.attn.parent(nar, pn.attn);
+        pn.neg.attn.parent(nar, pn.attn);
 
         onFrame(x -> pn.update(a.prev, a.now, a.nar()));
         return pn;

@@ -133,7 +133,7 @@ public class Signal extends TaskConcept implements AgentLoop, FloatFunction<Term
     public void update(long prev, long now, NAR nar) {
         update(prev, now,
                 (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)),
-                attn::elementPri,
+                attn::pri,
                 cause, nar);
     }
 

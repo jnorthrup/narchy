@@ -73,7 +73,7 @@ public class Inperience2 extends Causable {
                 }
 
                 if (u != null) {
-                    u.pri(t.priElseZero() * priFactor.floatValue());
+                    Task.deductComplexification(t, u, priFactor.floatValue(),false);
                     in.input(u);
                 }
             }

@@ -30,7 +30,7 @@ abstract public class FrameTrigger {
     }
 
     /** estimated cycles per frame. not necessarily equal to the NAR's dur() */
-    abstract int dur();
+    public abstract int dur();
 
     /** estimate the time of the next cycle */
     abstract public long next(long now);
@@ -60,7 +60,7 @@ abstract public class FrameTrigger {
         }
 
         @Override
-        int dur() {
+        public int dur() {
             RealTime t = (RealTime) agent.nar().time;
             double unitsPerSec = 1/t.secondsPerUnit();
             double secondsPerFrame = 1/loop.getFPS();
@@ -103,7 +103,7 @@ abstract public class FrameTrigger {
         }
 
         @Override
-        int dur() {
+        public int dur() {
             return Tense.occToDT(loop.durCycles());
         }
 
@@ -133,7 +133,7 @@ abstract public class FrameTrigger {
         }
 
         @Override
-        int dur() {
+        public int dur() {
             throw new TODO();
         }
 

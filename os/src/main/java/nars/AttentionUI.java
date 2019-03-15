@@ -43,7 +43,7 @@ public class AttentionUI {
                         }
                     });
                     float s = node.id.pri();
-                    float d = 0.5f * node.id.factor.floatValue();
+                    float d = 0.5f * node.id.pri();
 //                            float r = Math.min(1, s/d);
                     node.color(Math.min(d, 1), Math.min(s, 1), 0);
                     if (!(node.the() instanceof NodeUI)) {

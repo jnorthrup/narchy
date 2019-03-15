@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1800;
+    private static final int cycles = 2000;
 
     @BeforeEach
     void setup() {
@@ -501,7 +501,8 @@ public class NAL6Test extends NALTest {
     @Test
     void variables_introduction() {
 
-        test
+        test.termVolMax(10)
+            .confMin(0.25f)
                 .believe("open({key1},{lock1})")
                 .believe("key:{key1}")
                 //.mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.45f)
@@ -832,21 +833,23 @@ public class NAL6Test extends NALTest {
     @Test
     void strong_unification_simple() {
 
-        TestNAR tester = test;
-        tester.believe("(pair($a,$b) ==> ($a --> $b))", 1.00f, 0.90f);
-        tester.believe("pair(x,y)", 1.00f, 0.90f);
-        tester.mustBelieve(cycles * 4, "(x --> y)", 1.00f, 0.81f);
+        test
+            .believe("(pair($a,$b) ==> ($a --> $b))", 1.00f, 0.90f)
+            .believe("pair(x,y)", 1.00f, 0.90f)
+            .mustBelieve(cycles * 4, "(x --> y)", 1.00f, 0.81f);
     }
 
     @Test
     void strong_unification_dep_indep_pre() {
-        test.believe("(#x --> y)")
+        test.termVolMax(7)
+            .believe("(#x --> y)")
             .believe("(($x --> y) ==> ($x --> z))")
             .mustBelieve(cycles, "(#x-->z)", 1f, 0.81f);
     }
     @Test
     void strong_unification_dep_indep_post() {
-        test.believe("(#x --> z)")
+        test.termVolMax(7)
+            .believe("(#x --> z)")
             .believe("(($x --> y) ==> ($x --> z))")
             .mustBelieve(cycles, "(#x-->y)", 1f, 0.45f);
     }
@@ -854,10 +857,10 @@ public class NAL6Test extends NALTest {
     @Test
     void strong_unification_simple2() {
 
-        TestNAR tester = test;
-        tester.believe("<<($a,$b) --> pair> ==> {$a,$b}>", 1.00f, 0.90f);
-        tester.believe("<(x,y) --> pair>", 1.00f, 0.90f);
-        tester.mustBelieve(cycles, "{x,y}", 1.00f, 0.81f);
+        test.termVolMax(8)
+                .believe("<<($a,$b) --> pair> ==> {$a,$b}>", 1.00f, 0.90f)
+                .believe("<(x,y) --> pair>", 1.00f, 0.90f)
+                .mustBelieve(cycles, "{x,y}", 1.00f, 0.81f);
     }
 
 
@@ -886,7 +889,7 @@ public class NAL6Test extends NALTest {
     @Test
     void strong_elimination() {
         test.nar.termVolumeMax.set(18);
-        test.nar.confMin.set(0.25f);
+        test.nar.confMin.set(0.5f);
         TestNAR tester = test;
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         tester.believe("test(tim,is,cat)");

@@ -1,13 +1,11 @@
 package nars;
 
 import jcog.Util;
-import jcog.math.FloatRange;
-import jcog.math.FloatRangeRounded;
-import jcog.math.IntRange;
-import jcog.math.Range;
+import jcog.math.*;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
+import nars.attention.PriNode;
 import nars.term.atom.Atom;
 import nars.term.util.builder.MemoizingTermBuilder;
 import nars.term.util.transform.Conceptualization;
@@ -15,6 +13,7 @@ import nars.term.util.transform.Retemporalize;
 import nars.truth.polation.LinearTruthProjection;
 import nars.truth.polation.TruthProjection;
 
+import static java.lang.Float.NaN;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
@@ -226,8 +225,8 @@ public abstract class Param {
             //1.5f;
             //2f;
 
-    /** 0..1.0: how much to reduce a signal which hasnt changed (in proportion to change significance) */
-    public static final float SIGNAL_UNSURPRISING_FACTOR = 0.1f;
+//    /** 0..1.0: how much to reduce a signal which hasnt changed (in proportion to change significance) */
+//    public static final float SIGNAL_UNSURPRISING_FACTOR = 0.1f;
 
 
     /** may cause unwanted "sticky" event conflation. may only be safe when the punctuation of the task in which the event contained is the same */
@@ -250,7 +249,36 @@ public abstract class Param {
     public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
 
 
-    public static final int COMMON_VAR_MAX = 5;
+    public static final int UNIFY_COMMON_VAR_MAX = 5;
+
+    /** priority of sensor task, with respect to how significantly it changed from a previous value */
+    public static float surprise(Task prev, Task next, FloatSupplier pri, NAR n) {
+
+        float p = pri.asFloat();
+        if (p != p)
+            return NaN;
+
+        boolean NEW = prev==null;
+
+        boolean stretched = !NEW && prev==next;
+
+        boolean latched = !NEW && !stretched &&
+                Math.abs(next.start() - prev.end()) < SIGNAL_LATCH_LIMIT_DURS * n.dur();
+
+        //decrease priority by similarity to previous truth
+        if (prev!=null && (stretched || latched)) {
+
+            //TODO abstract this frequence response curve
+            float deltaFreq = prev!=next? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
+            if (deltaFreq > Float.MIN_NORMAL) {
+                float perceived = 0.1f + 0.9f * (float) Math.pow(deltaFreq, 1 / 2f /* etc*/);
+                p *= perceived;
+            }
+            //p *= Util.lerp(deltaFreq, perceived, 1);
+        }
+
+        return p;
+    }
 
     /**
      * provides an instance of the default truthpolation implementation
@@ -266,7 +294,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 3; //HACK this is a TTL supply, not a COST
@@ -568,17 +596,17 @@ public abstract class Param {
     /**
      * Default priority of input judgment
      */
-    public final FloatRange beliefPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
+    @Deprecated public final FloatRange beliefPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
 
     /**
      * Default priority of input question
      */
-    public final FloatRange questionPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
+    @Deprecated public final FloatRange questionPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
 
     /**
      * Default priority of input judgment
      */
-    public final FloatRange goalPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
+    @Deprecated public final FloatRange goalPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
 
     /**
      * Default priority of input question
@@ -610,6 +638,7 @@ public abstract class Param {
     public final FloatRange beliefConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f - Param.TRUTH_EPSILON);
     public final FloatRange goalConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f - Param.TRUTH_EPSILON);
 
-
+    public final PriNode beliefPriDefaultNode = new PriNode.ConstPriNode("beliefPriDefault", beliefPriDefault);
+    public final PriNode goalPriDefaultNode = new PriNode.ConstPriNode("goalPriDefault", goalPriDefault);
 
 }

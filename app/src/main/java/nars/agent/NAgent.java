@@ -36,8 +36,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static nars.$.$$;
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -95,12 +93,21 @@ public class NAgent extends NARService implements NSense, NAct {
     public NAgent(Term id, FrameTrigger frameTrigger, NAR nar) {
         super(id);
         this.nar = nar;
+
         this.attn = nar.attn.add(id).id();
-        this.attn.outs(nar.attn.graph,
-            this.attnAction = new PriNode($.func("action", id)),
-            this.attnSensor = new PriNode($.func("sensor", id)),
-            this.attnReward = new PriNode($.func("reward", id))
-        );
+        this.attnAction = new PriNode($.func("action", id))
+                .parent(nar, attn, nar.goalPriDefaultNode);
+        this.attnSensor = new PriNode($.func("sensor", id))
+                .parent(nar, attn, nar.beliefPriDefaultNode);
+        this.attnReward = new PriNode($.func("reward", id))
+                .parent(nar, attn, nar.goalPriDefaultNode /* TODO avg */);
+        /*             float pb = nar.priDefault(BELIEF), pg = nar.priDefault(GOAL);
+            //TODO adjustable balance
+            attnSensor.factor.set(pb);
+            attnAction.factor.set(pg);
+            attnReward.factor.set((pb + pg));
+        */
+
 
 
         this.frameTrigger = frameTrigger;
@@ -150,7 +157,7 @@ public class NAgent extends NARService implements NSense, NAct {
         return (float) rewards.meanBy(rr -> {
             float r = rr.happiness();
             if (r!=r)
-                return 0;
+                return 0.5f;
             return r;
         });
     }
@@ -189,15 +196,15 @@ public class NAgent extends NARService implements NSense, NAct {
 
     protected void addAttention(PriNode target, Object s) {
         if (s instanceof VectorSensor) {
-            ((VectorSensor) s).attn.parent(target, nar);
+            ((VectorSensor) s).attn.parent(nar, target);
         } else if (s instanceof Signal) {
-            ((Signal) s).attn.parent(target, nar);
+            ((Signal) s).attn.parent(nar, target);
         } else if (s instanceof Reward) {
-            ((Reward) s).attn.parent(target, nar);
+            ((Reward) s).attn.parent(nar, target);
         } else if (s instanceof ActionConcept) {
-            ((ActionConcept) s).attn.parent(target, nar);
+            ((ActionConcept) s).attn.parent(nar, target);
         } else if (s instanceof PriNode)
-            ((PriNode) s).parent(target, nar);
+            ((PriNode) s).parent(nar, target);
         else
             throw new TODO();
     }
@@ -425,13 +432,6 @@ public class NAgent extends NARService implements NSense, NAct {
             this.now = now;
             this.next = next;
 
-
-            float pb = nar.priDefault(BELIEF), pg = nar.priDefault(GOAL);
-            //TODO adjustable balance
-            attnSensor.factor.set(pb);
-            attnAction.factor.set(pg);
-            attnReward.factor.set((pb + pg));
-
             cycle.next(this, iteration.getAndIncrement(), prev, now);
 
             if (trace.getOpaque())
@@ -458,12 +458,12 @@ public class NAgent extends NARService implements NSense, NAct {
             if (a instanceof AbstractGoalActionConcept)
                 ((AbstractGoalActionConcept) a).curiosity(curiosity);
 
-            a.update(prev, now, nar);
+            a.update(prev, now, this);
         }
     }
 
     protected void sense(long prev, long now) {
-        sensors.forEach(s -> s.update(prev, now, nar));
+        sensors.forEach(s -> s.update(prev, now, this));
         rewards.forEach(r -> r.update(prev, now));
     }
 

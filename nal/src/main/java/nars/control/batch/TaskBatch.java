@@ -33,7 +33,7 @@ public final class TaskBatch {
     static class TaskQueue extends PriBuffer<BatchableTask> {
 
         TaskQueue() {
-            super(PriMerge.plus, false);
+            super(PriMerge.plus);
         }
 
         /** execute and drain the queue */

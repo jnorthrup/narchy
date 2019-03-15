@@ -53,7 +53,7 @@ public abstract class TaskLeak extends Causable {
         this(
                 new BufferSource(
                         new BufferedBag.SimpleBufferedBag<>(
-                                new PLinkArrayBag<>(capacity, PriMerge.max, PriBuffer.newConcurrentMap()),
+                                new PLinkArrayBag<>(capacity, PriMerge.max, PriBuffer.newMap()),
                                 new PriBuffer(PriMerge.max))
                 )
                 , n, puncs

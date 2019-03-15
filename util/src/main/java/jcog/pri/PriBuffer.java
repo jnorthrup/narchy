@@ -1,5 +1,7 @@
 package jcog.pri;
 
+import jcog.data.map.NonBlockingHashMap;
+import jcog.exe.Exe;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -31,26 +33,35 @@ public class PriBuffer<Y> {
     public final PriMerge merge;
 
     public PriBuffer(PriMerge merge) {
-        this(merge,newConcurrentMap());
+        this(merge, newMap());
     }
-    public PriBuffer(PriMerge merge, boolean concurrent) {
-        this(merge, concurrent ?
-                newConcurrentMap():
-                new LinkedHashMap<>(0, 0.5f) );
-    }
+
+//    public PriBuffer(PriMerge merge, boolean concurrent) {
+//        this(merge, concurrent ?
+//                newConcurrentMap():
+//                new LinkedHashMap<>(0, 0.5f) );
+//    }
+
     public PriBuffer(PriMerge merge, Map<Y, Prioritizable> items) {
         this.merge = merge;
         this.items = items;
     }
 
     /** returns concurrent map for use in bags and buffers */
-    public static Map newConcurrentMap() {
-        return
-            //new NonBlockingHashMap();
-            new java.util.concurrent.ConcurrentHashMap<>(0, 1f);
+    public static Map newMap() {
+        if (Exe.concurrent()) {
+            return
+            new NonBlockingHashMap();
+            //new java.util.concurrent.ConcurrentHashMap<>(0, 0.5f);
             //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f);
             //new CustomConcurrentHashMap(64);
             //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0);
+        } else {
+             return
+                 new LinkedHashMap();
+                 //new UnifiedMap();
+                 //new HashMap();
+        }
     }
 
 

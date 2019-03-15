@@ -2,9 +2,9 @@ package jcog.data.graph;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
+import jcog.WTF;
 
 import java.io.PrintStream;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Iterables.transform;
@@ -20,11 +20,16 @@ public interface Node<N, E> {
     Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out);
 
     default Iterable<? extends Node<N,E>> nodes(boolean in, boolean out) {
-        assert(in || out);
-        return Iterables.concat(
-            (in ? transform(edges(true,false), x->x.other(this)) : List.of()),
-            (out ? transform(edges(false,true), x->x.other(this)) : List.of())
-        );
+        Iterable<Node<N, E>> i = in ? transform(edges(true, false), x -> x.other(this)) : null;
+        Iterable<Node<N, E>> o = out ? transform(edges(false,true), x->x.other(this)) : null;
+        if (in && out)
+            return Iterables.concat(i, o);
+        else if (in)
+            return i;
+        else if (out)
+            return o;
+        else
+            throw new WTF();
     }
 
     default Stream<FromTo<Node<N,E>,E>> streamIn() {

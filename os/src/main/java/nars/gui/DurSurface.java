@@ -49,23 +49,22 @@ abstract public class DurSurface<S extends Surface> extends AbstractTriggeredSur
     }
 
     long lastUpdate = Long.MIN_VALUE;
-    @Override
-    protected final void update() {
-        if (showing()) {
+    public boolean showing() {
+        if (super.showing()) {
             long now = System.nanoTime();
             if (lastUpdate < now - minUpdateTimeNS) {
                 lastUpdate = now; //TODO throttle duration to match expected update speed if significantly different
-                doUpdate();
+                update();
             }
+            return true;
         }
+        return false;
     }
-
-    abstract protected void doUpdate();
 
     public static DurSurface get(Surface x, NAR n, Consumer<NAR> eachDur) {
         return new DurSurface(x, n) {
             @Override
-            protected void doUpdate() {
+            protected void update() {
                 eachDur.accept(n);
             }
 

@@ -46,7 +46,7 @@ class TopTest {
 
     @Test
     void testCachedTopN() {
-        RankedTopN<String> c = new RankedTopN<String>(new String[3], String::length);
+        RankedN<String> c = new RankedN<String>(new String[3], String::length);
         assertAdd(c, "a", "[a]");
         //assertAdd(c, "a", "[a]"); //duplicate absorbed
         assertAdd(c, "bbb", "[bbb, a]");

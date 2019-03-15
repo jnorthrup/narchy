@@ -40,6 +40,18 @@ public class When extends TimeRange {
     public static When now(NAR nar) {
         return now(nar, nar.dur());
     }
+    public static When sinceAgo(long ago, NAR nar) {
+        long now = nar.time();
+        return new When(now - Math.max(0, ago), now, nar);
+    }
+    public static When since(long when, NAR nar) {
+        long now = nar.time();
+        return new When(Math.min(when, now), now, nar);
+    }
+    public static When until(long when, NAR nar) {
+        long now = nar.time();
+        return new When(now, Math.max(when, now), nar);
+    }
 
     /** creates new evidence */
     public final long[] newStamp() {

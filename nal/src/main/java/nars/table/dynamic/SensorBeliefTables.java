@@ -18,7 +18,6 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import static java.lang.Float.NaN;
 import static nars.time.Tense.TIMELESS;
 
 /**
@@ -231,34 +230,6 @@ public class SensorBeliefTables extends BeliefTables {
     private Task prev = null;
 
 
-    /** priority of tasklink applied to a new or stretched existing sensor task */
-    private float surprise(Task prev, Task next, FloatSupplier pri, NAR n) {
-
-        float p = pri.asFloat();
-        if (p != p)
-            return NaN;
-
-        boolean NEW = prev==null;
-
-        boolean stretched = !NEW && prev==next;
-
-        boolean latched = !NEW && !stretched &&
-                Math.abs(next.start() - prev.end()) < Param.SIGNAL_LATCH_LIMIT_DURS * n.dur();
-
-        //decrease tasklink priority if the same task or if similar truth
-
-        if (prev!=null && (stretched || latched)) {
-
-            float deltaFreq = prev!=next? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
-
-            p *= Util.lerp(deltaFreq, Param.SIGNAL_UNSURPRISING_FACTOR, 1);
-        }
-
-        return p;
-
-
-    }
-
     /** link and emit */
     private void remember(Task next, FloatSupplier pri, NAR n) {
         //if (y==prev)
@@ -269,7 +240,7 @@ public class SensorBeliefTables extends BeliefTables {
         if (next == null)
             return; //?
 
-        float p = surprise(prev, next, pri, n);
+        float p = Param.surprise(prev, next, pri, n);
         if (p!=p)
             return;
 
