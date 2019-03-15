@@ -58,7 +58,7 @@ class ScrollXYTest {
                         } else {
                             return new VectorLabel(s);
                         }
-                    })).view(0,0,8,4);
+                    })).scroll(0,0,8,4);
 
 
 //            grid.setScrollBar(true, true, false);

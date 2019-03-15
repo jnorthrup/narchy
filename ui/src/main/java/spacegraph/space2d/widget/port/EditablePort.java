@@ -1,18 +1,18 @@
 package spacegraph.space2d.widget.port;
 
-import spacegraph.space2d.widget.console.TextEdit0;
+import spacegraph.space2d.widget.textedit.TextEdit;
 
 abstract public class EditablePort<X> extends TypedPort<X> {
 
-    public final TextEdit0 edit;
+    public final TextEdit edit;
 
     public EditablePort(X initialValue, Class<? super X> type) {
         super(type);
         process(initialValue);
 
-        edit = new TextEdit0(8, 1);
+        edit = new TextEdit(8, 1);
         //TODO txt = new TextEdit(8, 1);
-        edit.on(z -> out(parse(z)));
+        edit.onChange.on(z -> out(parse(z.text())));
         set(edit);
     }
 

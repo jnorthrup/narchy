@@ -40,14 +40,13 @@ public class SliderModel extends Surface {
         setValue(v);
     }
 
-
     public SliderModel on(ObjectFloatProcedure<SliderModel> c) {
         this.change = c;
         return this;
     }
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected final void paint(GL2 gl, SurfaceRender surfaceRender) {
         Draw.bounds(bounds, gl, g -> ui.paint(this.p, g));
     }
 
@@ -60,7 +59,6 @@ public class SliderModel extends Surface {
          * resolves the 2d hit point to a 1d slider value
          */
         float p(v2 hitPoint);
-
     }
 
     public void update() {
@@ -82,10 +80,6 @@ public class SliderModel extends Surface {
 
     @Override
     public Surface finger(Finger f) {
-        if (f.pressing(drag.button)) {
-            setPoint(f);
-            return this;
-        }
         if (f.tryFingering(drag)) {
             return this;
         }
@@ -225,7 +219,6 @@ public class SliderModel extends Surface {
         @Override
         public void paint(float p, GL2 gl) {
 
-
             float y = H * (1-p);
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
@@ -237,7 +230,7 @@ public class SliderModel extends Surface {
 
         @Override
         public float p(v2 hitPoint) {
-            return pTarget(hitPoint.y, knob);
+            return pTarget(1-hitPoint.y, knob);
         }
     }
 
@@ -251,7 +244,7 @@ public class SliderModel extends Surface {
             Draw.rect(0, 0, W, H, gl);
 
             gl.glColor4f(1f - p, p, 0f, 0.75f);
-            Draw.rect(x, 0, knob, H, gl);
+            Draw.rect(x-knob/2, 0, knob, H, gl);
         }
 
         @Override

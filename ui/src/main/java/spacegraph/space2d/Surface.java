@@ -341,5 +341,9 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
 
+    public boolean exist() {
+        //TODO optimize with boolean flag
+        return rootParent()!=null;
+    }
 
 }

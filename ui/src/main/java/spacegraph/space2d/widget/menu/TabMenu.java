@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static java.util.stream.Collectors.toList;
 import static spacegraph.SpaceGraph.window;
 
 public class TabMenu extends Menu {
@@ -40,22 +41,14 @@ public class TabMenu extends Menu {
     public TabMenu(Map<String, Supplier<Surface>> options, MenuView view, Function<String, ToggleButton> buttonBuilder) {
         super(options, view);
         this.buttonBuilder = buttonBuilder;
-
-
-        tabs.clear();
         items.clear();
-        options.entrySet().stream().map(x ->
-                {
-                    Surface y = toggle(buttonBuilder, x.getKey(), x.getValue());
-                    return y;
-                }
-        ).forEach(tabs::add);
+        tabs.set(options.entrySet().stream()
+                .map(x -> toggle(buttonBuilder, x.getKey(), x.getValue()))
+                .collect(toList()));
 
         wrap = new Splitting(tabs, content.view(),0);
 
         set(wrap);
-
-
     }
 
     public final TabMenu set(String item, boolean enable) {

@@ -48,7 +48,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     //private volatile v2 viewDefault = new v2(0,0);
     protected volatile v2 viewMax = new v2(1,1);
 
-    private final boolean autoHideScrollForSingleColumnOrRow = false;
+    private final boolean autoHideScrollForSingleColumnOrRow = true;
 
 
     public <X> ScrollXY(GridModel<X> grid, GridRenderer<X> renderer) {
@@ -72,29 +72,30 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         set(E,scrollY);
         set(S,scrollX);
         set(SE, scale);
+
+        scrollX.on((sx, x) -> scroll(x, view.y, view.w, view.h));
+        scrollY.on((sy, y) -> scroll(view.x, y, view.w, view.h));
+        scale.set(1,1);
+        scale.on((w, h)->{
+            scroll(view.x, view.y, lerp(w, viewMin.x, viewMax.x), lerp(h, viewMin.y, viewMax.y));
+        });
+
+
     }
 
     public synchronized void set(S scrollable) {
 
         scrollable.update(this);
         if (viewMin == null)
-            throw new NullPointerException("view min setAt by " + scrollable);
+            throw new NullPointerException("view min set by " + scrollable);
         if (viewMax == null)
-            throw new NullPointerException("view max setAt by " + scrollable);
+            throw new NullPointerException("view max set by " + scrollable);
         if (view == null)
             view = RectFloat.WH(viewMax.x, viewMax.y); //TODO max reasonable limit
 
-
-        set(C, new Clipped((Surface) (content = scrollable)));
-
         borderSize(defaultScrollEdge);
 
-        scale.on((w, h)->{
-            scroll(view.x, view.y, lerp(w, viewMin.x, viewMax.x), lerp(h, viewMin.y, viewMax.y));
-        });
-        scrollX.on((sx, x) -> scroll(x, view.y, view.w, view.h));
-        scrollY.on((sy, y) -> scroll(view.x, y, view.w, view.h));
-        scale.set(1,1);
+        set(C, new Clipped((Surface) (content = scrollable)));
     }
 
     public ScrollXY<S> viewMax(v2 viewMax) {
@@ -116,18 +117,15 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     }
 
     public ScrollXY<S> view(float w, float h) {
-        return view(RectFloat.WH(w, h));
-    }
-
-    public ScrollXY<S> view(RectFloat view) {
+        RectFloat view1 = RectFloat.WH(w, h);
         if (this.view == null) {
-            this.view = view; //initial
+            this.view = view1; //initial
             layoutModel();
         } else {
 
             //break suspected deadlock
 //            Exe.invoke(() -> {
-                this.view = view;
+                this.view = view1;
                 layoutModel();
 //            });
         }
@@ -188,7 +186,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     /**
      * enables or disables certain scrollbar-related features per axis
      */
-    public ScrollXY<S> setScrollBar(boolean xOrY, boolean scrollVisible, boolean scaleVisible) {
+    private ScrollXY<S> setScrollBar(boolean xOrY, boolean scrollVisible, boolean scaleVisible) {
         if (xOrY) {
             scrollX.visible(scrollVisible);
             borderSize(S, scrollVisible ? defaultScrollEdge : 0);
@@ -201,7 +199,6 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
             borderSize(W, scaleVisible ? defaultScrollEdge : 0);
         }
 
-        scale.visible(scrollX.visible()||scrollY.visible());
 
         return this;
     }
@@ -217,40 +214,44 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 //    }
 
 
-    /**
-     * sets the x, y position as a fraction of the entire model bounds.
-     * if a coordinate is NaN, that coordinate is not affected,
-     * allowing shift of either or both X and Y coordinates of the
-     * visible cell window.
-     */
-    public ScrollXY<S> view(float x, float y, float w, float h) {
-        return view(RectFloat.X0Y0WH(x, y, w, h));
+    public final ScrollXY scroll(float w, float h) {
+        return scroll(0, 0, w, h);
     }
 
-    protected /*synchronized*/ void scroll(float x, float y, float w, float h) {
+    public/*synchronized*/ ScrollXY scroll(float x, float y, float w, float h) {
 
         float x1, x2, y1, y2;
+
 
         if (w <= 1 && autoHideScrollForSingleColumnOrRow) {
             x1 = x;
             x2 = x+1;
-            setScrollBar(true, false, false);
+            setScrollBar(true, false, true);
         } else {
             x1 = x;
             x2 = x1 + w;
+            setScrollBar(true, true, true);
         }
 
         if (h <= 1 && autoHideScrollForSingleColumnOrRow) {
             y1 = y;
             y2 = y+1;
-            setScrollBar(false, false, false);
+            setScrollBar(false, false, true);
         } else {
             y1 = y;
             y2 = y1 + h;
+            setScrollBar(false, true, true);
         }
 
-        view(x1, y1, x2-x1, y2-y1);
+        viewMax(new v2(x2-x1, y2-y1)); //HACK
 
+        scale.visible(scrollX.visible()||scrollY.visible());
+
+        this.view = RectFloat.X0Y0WH(x1, y1, x2-x1, y2-y1);
+        layoutModel();
+        layout();
+
+        return this;
     }
 
 

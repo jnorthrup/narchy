@@ -101,7 +101,7 @@ public class ProtoWidget extends Bordering {
         add("bool", BoolPort::new, "Value"); //Generic Toggle Switch
         add("int", IntPort::new, "Value");
         add("float", FloatPort::new, "Value");
-        add("text", TextPort::new, "Value");
+        add("text", TextPort::new, "Value"); //single or multi-line toggleable
         add("float[-1..1]", ()->new FloatRangePort(0.5f, -1, 1f), "Value");
         add("float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Value");
         add("f(x)", TODO, "Value");
@@ -234,13 +234,13 @@ public class ProtoWidget extends Bordering {
             }
         }));
 
+        set(N, new VectorLabel("new User()"));
+
         Exe.invokeLater(()->{
 
             User u = new User();
 
-            library.byName.forEach((t,v)->{
-                u.put(t, t);
-            });
+            library.byName.forEach((t,v)-> u.put(t, t));
 
             set(N, new OmniBox(new OmniBox.LuceneQueryModel(u) {
 

@@ -88,6 +88,7 @@ public class HistogramSonification extends Gridding {
         for (SoundProducer g : this.g) {
             g.stop();
         }
+        super.stopping();
     }
 
     @Override

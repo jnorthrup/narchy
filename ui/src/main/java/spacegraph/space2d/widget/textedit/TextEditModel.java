@@ -28,6 +28,7 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
 
     public TextEditModel(Buffer buf) {
         setBuffer(buf);
+
     }
 
     public /*synchronized*/ void setBuffer(Buffer buf) {
@@ -65,7 +66,7 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
         int h = Math.max(1, Math.min(buffer.height(), 20));
         s.viewMax(new v2(w, h));
 
-        s.view(0, 0, w, h);
+        s.scroll(0, 0, w, h);
     }
 
     @Override

@@ -35,7 +35,7 @@ public class ServicesTable extends Gridding implements GridModel, GridRenderer {
         super();
 
         this.context = s;
-        set(new ScrollXY<>(new DynGrid<>(this, this)).view(0, 0, 2, 16));
+        set(new ScrollXY<>(new DynGrid<>(this, this)).scroll(0, 0, 2, 16));
     }
 
     @Override protected void starting() {  super.starting();

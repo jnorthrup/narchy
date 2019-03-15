@@ -66,11 +66,11 @@ public class PulseChip extends Gridding {
 
     @Override
     protected void stopping() {
-        super.stopping();
         if (loop!=null) {
             loop.stop();
             loop = null;
         }
+        super.stopping();
     }
 
 }

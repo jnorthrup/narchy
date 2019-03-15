@@ -48,6 +48,7 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
         animate.off();
         animate = null;
         waiting = 0;
+        super.stopping();
     }
 
     @Override

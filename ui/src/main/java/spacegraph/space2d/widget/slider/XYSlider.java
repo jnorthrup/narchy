@@ -17,38 +17,39 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import static jcog.Texts.n4;
+import static jcog.Util.unitize;
 
 /**
- * Created by me on 6/26/16.
+ * x and y are in 0..1.0 domain
  */
-public class XYSlider extends Surface implements HudHover  {
+public class XYSlider extends Surface implements HudHover {
 
     public static final int BUTTON = 0;
     private final v2 knob = new v2(0.5f, 0.5f);
 
     private FloatFloatProcedure change = null;
-    private final float[] knobColor = new float[] { 0.75f, 0.75f, 0.75f };
+    private final float[] knobColor = new float[]{0.75f, 0.75f, 0.75f};
 
 
     private static final float _low = 0.2f;
     private static final float _HIH = 0.8f;
-    private static final float[] lefAlphaCorners = new float[] {_low, _HIH, _HIH, _low};
-    private static final float[] rihAlphaCorners = new float[] {_HIH, _low, _low, _HIH};
-    private static final float[] topAlphaCorners = new float[] {_HIH, _HIH, _low, _low};
-    private static final float[] botAlphaCorners = new float[] {_low, _low, _HIH, _HIH};
+    private static final float[] lefAlphaCorners = new float[]{_low, _HIH, _HIH, _low};
+    private static final float[] rihAlphaCorners = new float[]{_HIH, _low, _low, _HIH};
+    private static final float[] topAlphaCorners = new float[]{_HIH, _HIH, _low, _low};
+    private static final float[] botAlphaCorners = new float[]{_low, _low, _HIH, _HIH};
     private boolean pressing;
 
 
     public XYSlider() {
         super();
-        updated();
     }
 
     public XYSlider(FloatRange x, FloatRange y) {
         this();
         set(x.floatValue(), y.floatValue());
-        on((xx,yy)->{
-           x.setProportionally(xx); y.setProportionally(yy);
+        on((xx, yy) -> {
+            x.setProportionally(xx);
+            y.setProportionally(yy);
         });
     }
 
@@ -57,7 +58,9 @@ public class XYSlider extends Surface implements HudHover  {
         return caption().pos(screenBounds.scale(0.75f));
     }
 
-    /** creates a live-updating label */
+    /**
+     * creates a live-updating label
+     */
     public Surface caption() {
         return new VectorLabel() {
             @Override
@@ -68,7 +71,9 @@ public class XYSlider extends Surface implements HudHover  {
         };
     }
 
-    /** TODO optional labels for x and y axes */
+    /**
+     * TODO optional labels for x and y axes
+     */
     public String summary() {
         return summaryX(knob.x) + ", " + summaryY(knob.y);
     }
@@ -100,7 +105,8 @@ public class XYSlider extends Surface implements HudHover  {
             pressing = false;
         }
 
-        @Override protected boolean drag(Finger f) {
+        @Override
+        protected boolean drag(Finger f) {
             setPoint(f);
             return true;
         }
@@ -108,35 +114,28 @@ public class XYSlider extends Surface implements HudHover  {
 
     private void setPoint(Finger f) {
         v2 hitPoint = f.posRelative(XYSlider.this);
-        if (hitPoint.inUnit()) {
-            pressing = true;
-            if (knob.setIfChanged(hitPoint.x, hitPoint.y, ScalarValue.EPSILONsqrt))
-                updated();
-        }
+
+        pressing = true;
+        if (knob.setIfChanged(unitize(hitPoint.x), unitize(hitPoint.y), ScalarValue.EPSILONsqrt))
+            updated();
+
     }
 
     @Override
     public Surface finger(Finger f) {
         if (f.tryFingering(drag)) {
-            if (f.pressing(drag.button))
-                setPoint(f);
             return this;
-        } else {
-
         }
         return null;
     }
 
 
-
-
     private void updated() {
         FloatFloatProcedure c = change;
-        if (c!=null) {
-            Exe.invokeLater(()->{
+        if (c != null) {
+            Exe.invokeLater(() -> {
                 c.value(knob.x, knob.y);
             });
-
         }
     }
 
@@ -155,22 +154,18 @@ public class XYSlider extends Surface implements HudHover  {
         float bw = bounds.w;
         float bh = bounds.h;
         float KT = Math.min(bw, bh) * knobThick;
-        float kw = bounds.x+(px* bw);
-        float kh = bounds.y+(py* bh);
+        float kw = bounds.x + (px * bw);
+        float kh = bounds.y + (py * bh);
         float KTH = KT / 2;
         Draw.rectAlphaCorners(bounds.x, kh - KTH, kw - KTH, kh + KTH, knobColor, lefAlphaCorners, gl
         );
         Draw.rectAlphaCorners(kw + KTH, kh - KTH, bounds.x + bw, kh + KTH, knobColor, rihAlphaCorners, gl
         );
 
-        Draw.rectAlphaCorners(kw - KTH, bounds.y, kw + KTH, kh- KTH, knobColor, botAlphaCorners, gl
+        Draw.rectAlphaCorners(kw - KTH, bounds.y, kw + KTH, kh - KTH, knobColor, botAlphaCorners, gl
         );
         Draw.rectAlphaCorners(kw - KTH, kh + KTH, kw + KTH, bounds.y + bh, knobColor, topAlphaCorners, gl
         );
-
-        
-
-
 
 
     }
@@ -187,7 +182,7 @@ public class XYSlider extends Surface implements HudHover  {
 //        b.set(S, px, 0.1f);
 //        b.set(E, py, 0.1f);
         TypedPort<v2> b = new TypedPort<>(v2.class);
-        on((x,y)-> b.outLazy(()->knob));
+        on((x, y) -> b.outLazy(() -> knob));
         b.set(this);
 
         return b;

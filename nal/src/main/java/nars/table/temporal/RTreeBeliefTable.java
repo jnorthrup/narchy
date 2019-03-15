@@ -38,7 +38,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             1f;
             //2f;
 
-    private static final int MAX_TASKS_PER_LEAF = 3;
+    private static final int MAX_TASKS_PER_LEAF = 4;
 
     private static final Split SPLIT =
 //            new AxialSplitLeaf() {  //AXIAL SPLIT IS PROBABLY BAD FOR THIS UNLESS A LEAF ENDS UP BEING SPLIT IN A CERTAIN WAY

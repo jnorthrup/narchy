@@ -260,6 +260,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             nodeCache.values().forEach(Container::stop);
             nodeCache.clear();
             edgePool.delete();
+        super.stopping();
         //}
     }
 

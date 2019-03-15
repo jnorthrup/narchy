@@ -1,6 +1,8 @@
 package spacegraph.space2d.widget.textedit;
 
+import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
+import jcog.TODO;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import jcog.math.v2;
@@ -18,23 +20,32 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
 
     public final Topic<TextEdit> onChange = new ListTopic<>();
 
-    @Deprecated public TextEdit() {
-        this(1, 1);
-    }
 
     public TextEdit(int cols, int rows /*boolean editable*/) {
+        this(cols, rows, -1, -1);
+    }
+
+    public TextEdit(int cols, int rows, int colsMax, int rowsMax /*boolean editable*/) {
+        this();
+        viewMax(new v2(Math.max(cols,colsMax), Math.max(rows, rowsMax)));
+        view(cols, rows);
+    }
+
+    public TextEdit() {
         super();
 
         MyTextEditView model;
         set(model = new MyTextEditView());
+        model.actions = TextEditActions.DEFAULT_ACTIONS;
+        model.keys = TextEditActions.DEFAULT_KEYS;
 
-        v2 initialSize = new v2(cols, rows);
+
+        v2 initialSize = new v2(1, 1);
         viewMin(new v2(1,1));
 //        viewMax(initialSize);
         view(initialSize);
 
-        model.actions = TextEditActions.DEFAULT_ACTIONS;
-        model.keys = TextEditActions.DEFAULT_KEYS;
+
 
         updateScroll();
     }
@@ -43,6 +54,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
         this();
 
         text(initialText);
+        viewAll();
     }
 
     public static Appendable out() {
@@ -89,18 +101,19 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
     }
 
     public TextEdit text(String text) {
-        clear();
+        if (!text().isEmpty()) //HACK
+            clear();
         insert(text);
         return this;
     }
 
-//    /** TODO add reasonable limits (too many lines to display etc) */
-//    private void viewAll() {
-//        int w = model.buffer().width()+1;
-//        int h = model.buffer().height();
-//        viewMax(new v2(Math.max(viewMax.x, w), Math.max(viewMax.y, h)));
-//        view(w, h);
-//    }
+    /** TODO add reasonable limits (too many lines to display etc) */
+    private void viewAll() {
+        Buffer b = buffer();
+        int w = b.width(), h = b.height();
+        viewMax(new v2(Math.max(viewMax.x, w), Math.max(viewMax.y, h)));
+        view(w, h);
+    }
 
     public String text() {
         return buffer().text();
@@ -120,6 +133,10 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
     public TextEdit onChange(Consumer<TextEdit> e) {
         onChange.on(e);
         return this;
+    }
+    public TextEdit onKey(Consumer<KeyEvent> e) {
+        throw new TODO();
+        //return this;
     }
 
     private abstract static class AppendableUnitContainer<S extends Surface> extends UnitContainer<S> implements Appendable {

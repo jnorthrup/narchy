@@ -148,11 +148,15 @@ abstract public class Container extends Surface {
     @Override
     public /* final */ boolean stop() {
         if (super.stop()) {
-            forEach(Surface::stop);
             //TODO: clear();
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void stopping() {
+        forEach(Surface::stop);
     }
 
     abstract public void forEach(Consumer<Surface> o);

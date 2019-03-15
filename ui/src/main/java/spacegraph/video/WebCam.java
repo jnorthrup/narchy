@@ -4,14 +4,14 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamEventType;
 import com.github.sarxos.webcam.WebcamListener;
-import jcog.event.*;
+import jcog.event.ListTopic;
+import jcog.event.Off;
+import jcog.event.Topic;
 import jcog.signal.Tensor;
 import jcog.signal.named.RGB;
 import jcog.signal.tensor.AsyncTensor;
 import jcog.signal.wave2d.RGBBufImgBitmap2D;
 import jcog.signal.wave2d.RGBToMonoBitmap2D;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.AspectAlign;
@@ -34,29 +34,28 @@ import static spacegraph.SpaceGraph.window;
 
 public class WebCam {
 
-    public int width;
-    public int height;
-
+    public int width = 0;
+    public int height = 0;
 
     private final com.github.sarxos.webcam.Webcam webcam;
 
-    private final Offs webcamListeners = new Offs();
+//    private final Offs webcamListeners = new Offs();
 
     public final Topic<WebcamEvent> eventChange = new ListTopic();
 
     public final AsyncTensor<RGBBufImgBitmap2D> tensor = new AsyncTensor();
 
-    private final static Logger logger = LoggerFactory.getLogger(WebCam.class);
+//    private final static Logger logger = LoggerFactory.getLogger(WebCam.class);
 
     public volatile BufferedImage image;
 
+    /** TODO async load */
     public WebCam(Webcam wc) {
 
 
         //logger.info("Webcam Devices: {} ", com.github.sarxos.webcam.Webcam.getWebcams());
 
         webcam = wc;
-
         if (!webcam.open(true))
             throw new RuntimeException("webcam not open");
 
@@ -115,7 +114,9 @@ public class WebCam {
 
     }
 
-    /** returns the default webcam, or null if none exist */
+    /**
+     * returns the default webcam, or null if none exist
+     */
     public static WebCam the() {
         Webcam defaultf = Webcam.getDefault();
         return defaultf == null ? null : new WebCam(defaultf);
@@ -147,19 +148,19 @@ public class WebCam {
 //    }
 
 
-    public void on(WebcamListener wl) {
-        webcamListeners.add(new AbstractOff() {
-            {
-                webcam.addWebcamListener(wl);
-            }
-
-            @Override
-            public void off() {
-                webcam.removeWebcamListener(wl);
-            }
-        });
-
-    }
+//    public void on(WebcamListener wl) {
+//        webcamListeners.add(new AbstractOff() {
+//            {
+//                webcam.addWebcamListener(wl);
+//            }
+//
+//            @Override
+//            public void off() {
+//                webcam.removeWebcamListener(wl);
+//            }
+//        });
+//
+//    }
 
 
     static public class WebCamSurface extends AspectAlign {
@@ -182,19 +183,19 @@ public class WebCam {
         @Override
         protected void starting() {
             super.starting();
-                on = webcam.eventChange.on(x -> {
-                    WebcamEventType t = x.getType();
-                    switch (t) {
-                        case CLOSED:
-                        case DISPOSED:
-                            this.stop();
-                            break;
-                        case NEW_IMAGE:
-                            ts.set(webcam.image);
+            on = webcam.eventChange.on(x -> {
+                WebcamEventType t = x.getType();
+                switch (t) {
+                    case CLOSED:
+                    case DISPOSED:
+                        this.stop();
+                        break;
+                    case NEW_IMAGE:
+                        ts.set(webcam.image);
 
-                            break;
-                    }
-                });
+                        break;
+                }
+            });
         }
 
         @Override
@@ -224,9 +225,9 @@ public class WebCam {
         ChannelView(WebCam cam) {
             this.cam = cam;
 
-            BitmapMatrixView bmp = new BitmapMatrixView(cam.width, cam.height, (x, y)->{
+            BitmapMatrixView bmp = new BitmapMatrixView(cam.width, cam.height, (x, y) -> {
                 Tensor c = current;
-                if (c!=null) {
+                if (c != null) {
                     mixed.update((RGBBufImgBitmap2D) current);
                     float intensity = //c.get(x, y, channel);
                             mixed.get(x, y);
@@ -246,9 +247,9 @@ public class WebCam {
                 return 0;
             });
             cam.tensor.on(x -> {
-               current = x;
+                current = x;
 
-               bmp.updateIfShowing();
+                bmp.updateIfShowing();
             });
 
             add(bmp);
@@ -259,12 +260,12 @@ public class WebCam {
     public static void main(String[] args) {
         WebCam wc = the();
 
-        Gridding menu =new Gridding();
-        menu.add(new PushButton("++").click(()->{
+        Gridding menu = new Gridding();
+        menu.add(new PushButton("++").click(() -> {
             window(new ChannelView(wc), 400, 400);
         }));
 
-        window(new Splitting(new Gridding(menu, new ObjectSurface(wc)), new WebCamSurface(wc),  0.9f), 1000, 1000);
+        window(new Splitting(new Gridding(menu, new ObjectSurface(wc)), new WebCamSurface(wc), 0.9f), 1000, 1000);
     }
 
 }

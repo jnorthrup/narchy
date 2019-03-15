@@ -1,10 +1,10 @@
 package spacegraph.space2d.widget.port.util;
 
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.TypedPort;
 
-import java.lang.ref.SoftReference;
 import java.util.List;
 import java.util.function.Function;
 
@@ -16,8 +16,8 @@ public class PortAdapter<X,Y> extends Widget {
 
     public final Class<? super X> xClass;
     public final Class<? super Y> yClass;
-    public final SoftReference<TypedPort<X>> x; //HACK
-    public final SoftReference<TypedPort<Y>> y; //HACK
+    public final TypedPort<X> x; //HACK
+    public final TypedPort<Y> y; //HACK
 
     /** current enabled strategy (selection index) */
     volatile int whichXY = -1, whichYX = -1;
@@ -47,22 +47,26 @@ public class PortAdapter<X,Y> extends Widget {
 
         } else this.fyx = null;
 
-        this.x = new SoftReference(x); this.y = new SoftReference(y);
+        this.x = x; this.y = y;
         set(g);
+    }
+
+    @Override
+    protected boolean prePaint(SurfaceRender r) {
+        if ((x!=null && !x.active()) || (y!=null && !y.active())) {
+            remove(); //done
+            return false;
+        }
+        return super.prePaint(r);
     }
 
     protected final boolean out(Object o, boolean sender) {
         TypedPort src = port(sender);
-        if (src == null) {
-            remove(); //done
-            return false;
-        }
-
         return src.out((sender? fxy : fyx).get(sender? whichXY : whichYX).apply(o));
     }
 
     public TypedPort<?> port(boolean xOrY) {
-        return (xOrY ? this.x : this.y).get();
+        return (xOrY ? this.x : this.y);
     }
 
 //    @Override
