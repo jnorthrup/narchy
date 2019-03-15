@@ -95,7 +95,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     @Override
     protected Node<N, E> newNode(N data) {
-        return new MutableNode(data);
+        return new MutableNode<>(data);
     }
 
     protected void onAdd(Node<N, E> r) {
@@ -108,9 +108,9 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     /** creates the nodes if they do not exist yet */
     public boolean addEdge(N from, E data, N to) {
-        Node<N, E> f = addNode(from);
-        Node<N, E> t = addNode(to);
-        return addEdgeByNode((MutableNode<N,E>) f, data, (MutableNode<N,E>) t);
+        MutableNode<N,E> f = addNode(from);
+        MutableNode<N,E> t = addNode(to);
+        return addEdgeByNode(f, data, t);
     }
 
     public boolean addEdgeIfNodesExist(N from, E data, N to) {
