@@ -2,7 +2,6 @@ package nars.agent;
 
 import jcog.Util;
 import jcog.math.FloatRange;
-import jcog.pri.Prioritizable;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
@@ -80,7 +79,7 @@ public class MetaAgent extends NAgent {
         Term agentPriTerm =
                 $.inh(a.id, id /* self */);
                 //$.inh(a.id, pri);
-        GoalActionConcept agentPri = actionUnipolar(agentPriTerm, (FloatConsumer) ((Prioritizable) a.attn)::pri);
+        GoalActionConcept agentPri = actionUnipolar(agentPriTerm, a.attn::factor);
 
 
         GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {

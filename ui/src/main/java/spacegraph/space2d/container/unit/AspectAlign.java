@@ -15,7 +15,7 @@ public class AspectAlign extends UnitContainer {
     /**
      * height/width target aspect ratio; if aspect is NaN, no adjustment applied
      */
-    private float aspect;
+    private final float aspect;
 
     /**
      * relative size adjustment uniformly applied to x,y

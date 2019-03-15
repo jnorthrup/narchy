@@ -18,9 +18,9 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.obj.QuantityTerm;
 import nars.term.var.CommonVariable;
+import nars.term.var.ellipsis.Ellipsis;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
-import nars.term.var.ellipsis.Ellipsis;
 import org.jetbrains.annotations.Nullable;
 import tec.uom.se.AbstractQuantity;
 

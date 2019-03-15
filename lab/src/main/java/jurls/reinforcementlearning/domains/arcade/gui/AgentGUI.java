@@ -45,7 +45,7 @@ public final class AgentGUI extends JFrame implements AbstractUI {
         pack();
         setLocationRelativeTo(null);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
     }
 

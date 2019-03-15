@@ -38,7 +38,7 @@ public class LevelEditor extends JFrame implements ActionListener {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(screenSize.width * 8 / 10, screenSize.height * 8 / 10);
         setLocation((screenSize.width - getWidth()) / 2, (screenSize.height - getHeight()) / 2);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         tilePicker = new TilePicker();
         JPanel tilePickerPanel = new JPanel(new BorderLayout());

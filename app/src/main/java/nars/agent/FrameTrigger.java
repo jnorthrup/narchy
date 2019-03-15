@@ -3,9 +3,9 @@ package nars.agent;
 import jcog.TODO;
 import jcog.event.Off;
 import jcog.exe.Loop;
-import nars.time.event.DurService;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
+import nars.time.event.DurService;
 
 abstract public class FrameTrigger {
 
@@ -116,7 +116,7 @@ abstract public class FrameTrigger {
     /** measured in # of cycles */
     public static class Cycs extends FrameTrigger {
 
-        private transient float cyclePeriod;
+        private final transient float cyclePeriod;
 
         public Off loop = null;
 

@@ -28,7 +28,7 @@ public class ForkJoinExec extends MultiExec  {
         pool = new ForkJoinPool(
                 Runtime.getRuntime().availableProcessors(),
                 ForkJoinPool.defaultForkJoinWorkerThreadFactory,
-                (Thread.UncaughtExceptionHandler)null,
+                null,
                 false, 0, 32767, 0,
                 null, 60000L, TimeUnit.MILLISECONDS);
 

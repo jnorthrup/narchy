@@ -91,8 +91,8 @@ public class GameSVCmds {
      */
     static boolean StringToFilter(String s, GameSVCmds.ipfilter_t f) {
 
-    	byte b[] = { 0, 0, 0, 0 };
-        byte m[] = { 0, 0, 0, 0 };
+        byte[] b = {0, 0, 0, 0};
+        byte[] m = {0, 0, 0, 0};
 
         try {
             StringTokenizer tk = new StringTokenizer(s, ". ");
@@ -120,7 +120,7 @@ public class GameSVCmds {
     static boolean SV_FilterPacket(String from) {
         int i;
         int in;
-        int m[] = { 0, 0, 0, 0 };
+        int[] m = {0, 0, 0, 0};
 
         int p = 0;
         char c;
@@ -214,7 +214,7 @@ public class GameSVCmds {
      */
     static void SVCmd_ListIP_f() {
         int i;
-        byte b[];
+        byte[] b;
 
         game_import_t.cprintf(null, Defines.PRINT_HIGH, "Filter list:\n");
         for (i = 0; i < numipfilters; i++) {
@@ -233,7 +233,7 @@ public class GameSVCmds {
         RandomAccessFile f;
         
         String name;
-        byte b[];
+        byte[] b;
 
         int i;
         cvar_t game;

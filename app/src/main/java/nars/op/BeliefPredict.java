@@ -49,7 +49,7 @@ public class BeliefPredict {
     private final int sampleDur;
     private final Termed[] predicted;
     int projections = 0;
-    private List<Task> predictions = new FasterList();
+    private final List<Task> predictions = new FasterList();
 
     /** if the past and present set of monitored concepts are equal, then iterative projections
      * into the future are possible to compute each cycle.

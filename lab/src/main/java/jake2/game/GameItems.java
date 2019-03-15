@@ -735,8 +735,8 @@ public class GameItems {
             ent.solid = Defines.SOLID_TRIGGER;
             ent.movetype = Defines.MOVETYPE_TOSS;
             ent.touch = Touch_Item;
-    
-            float v[] = { 0, 0, -128 };
+
+            float[] v = {0, 0, -128};
             Math3D.VectorAdd(ent.s.origin, v, dest);
     
             tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, dest, ent,

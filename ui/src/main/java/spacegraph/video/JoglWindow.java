@@ -60,7 +60,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     /**
      * render loop
      */
-    private GameAnimatorControl renderer;
+    private final GameAnimatorControl renderer;
 
     private long lastRenderNS = System.nanoTime();
     private volatile int nx, ny, nw, nh;

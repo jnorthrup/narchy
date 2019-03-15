@@ -34,7 +34,7 @@ public interface Tensor  {
         for (int i = 0; i < elements; i++)
             values[i] = start + i * steps;
 
-        return new ArrayTensor((float[])values);
+        return new ArrayTensor(values);
     }
 
     static Tensor empty(int dimension) {
@@ -155,7 +155,7 @@ public interface Tensor  {
     }
 
 
-    public static int[] stride(int[] shape) {
+    static int[] stride(int[] shape) {
         int[] stride = new int[shape.length - 1];
         int striding = shape[0];
         for (int i = 1, dimsLength = shape.length; i < dimsLength; i++) {

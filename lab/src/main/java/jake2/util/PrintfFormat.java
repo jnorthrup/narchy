@@ -1280,14 +1280,14 @@ public class PrintfFormat {
 				}
 				if (fieldWidthSet)
 					nZeros = fieldWidth - ca4.length;
-				if ((!minusSign && (leadingSign || leadingSpace)) || minusSign)
+				if (minusSign || (leadingSign || leadingSpace))
 					nZeros--;
 				nZeros -= xThousands;
 				if (nZeros < 0)
 					nZeros = 0;
 			}
 			j = 0;
-			if ((!minusSign && (leadingSign || leadingSpace)) || minusSign) {
+			if (minusSign || (leadingSign || leadingSpace)) {
 				ca5 = new char[ca4.length + nZeros + 1];
 				j++;
 			} else
@@ -1647,14 +1647,14 @@ public class PrintfFormat {
 				}
 				if (fieldWidthSet)
 					nZeros = fieldWidth - ca2.length;
-				if ((!minusSign && (leadingSign || leadingSpace)) || minusSign)
+				if (minusSign || (leadingSign || leadingSpace))
 					nZeros--;
 				nZeros -= xThousands;
 				if (nZeros < 0)
 					nZeros = 0;
 			}
 			j = 0;
-			if ((!minusSign && (leadingSign || leadingSpace)) || minusSign) {
+			if (minusSign || (leadingSign || leadingSpace)) {
 				ca3 = new char[ca2.length + nZeros + 1];
 				j++;
 			} else

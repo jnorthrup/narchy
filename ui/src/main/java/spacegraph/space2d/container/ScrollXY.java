@@ -47,7 +47,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     private volatile v2 viewMin = new v2(0,0);
     protected volatile v2 viewMax = new v2(1,1);
 
-    private boolean autoHideScrollForSingleColumnOrRow = false;
+    private final boolean autoHideScrollForSingleColumnOrRow = false;
 
 
     public <X> ScrollXY(GridModel<X> grid, GridRenderer<X> renderer) {

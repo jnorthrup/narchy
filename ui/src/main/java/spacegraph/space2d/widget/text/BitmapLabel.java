@@ -16,7 +16,8 @@ public class BitmapLabel extends BitmapTextGrid {
     static final int minPixelsToBeVisible = 7;
 
     private volatile String text = "";
-    private volatile Color3f fgColor = Color3f.WHITE, bgColor= Color3f.BLACK;
+    private final Color3f fgColor = Color3f.WHITE;
+    private final Color3f bgColor= Color3f.BLACK;
     private volatile RectFloat textBounds;
 
     public BitmapLabel(String text) {

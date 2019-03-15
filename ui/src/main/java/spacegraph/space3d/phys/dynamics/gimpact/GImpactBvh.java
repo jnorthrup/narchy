@@ -37,7 +37,7 @@ import spacegraph.space3d.phys.util.IntArrayList;
  */
 public class GImpactBvh {
 
-	private BvhTree box_tree = new BvhTree();
+	private final BvhTree box_tree = new BvhTree();
 	private PrimitiveManagerBase primitive_manager;
 
 	/**

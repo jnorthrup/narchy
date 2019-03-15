@@ -773,7 +773,7 @@ public class GameMisc {
 
     public static void ThrowHead(edict_t self, String gibname, int damage,
             int type) {
-        float vd[] = { 0, 0, 0 };
+        float[] vd = {0, 0, 0};
     
         float vscale;
     
@@ -815,7 +815,7 @@ public class GameMisc {
     }
 
     public static void ThrowClientHead(edict_t self, int damage) {
-        float vd[] = { 0, 0, 0 };
+        float[] vd = {0, 0, 0};
         String gibname;
     
         if ((Lib.rand() & 1) != 0) {

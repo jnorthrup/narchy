@@ -101,7 +101,7 @@ public class Generic6DofConstraint extends TypedConstraint {
     private final v3[] calculatedAxis/*[3]*/ = {new v3(), new v3(), new v3()};
     private final v3 anchorPos = new v3();
     private final v3 calculatedLinearDiff = new v3();
-    private boolean useLinearReferenceFrameA;
+    private final boolean useLinearReferenceFrameA;
 
 	public Generic6DofConstraint() {
 		super(TypedConstraintType.D6_CONSTRAINT_TYPE);

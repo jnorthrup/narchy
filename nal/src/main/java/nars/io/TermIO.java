@@ -67,7 +67,8 @@ public interface TermIO {
 
         static { assert(TEMPORAL_BIT_0 == OP_MASK + 1); }
         static { assert(Op.values().length < OP_MASK); }
-        static { for (Op o : Op.values()) if (o.temporal) assert(o.id!=OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */ }
+        static { for (Op o : Op.values()) assert !o.temporal || (o.id != OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */
+        }
 
         @Override
         public Term read(DataInput in) throws IOException {

@@ -7,9 +7,9 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
-import nars.time.event.DurService;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.time.event.DurService;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -24,8 +24,8 @@ public class HijackConceptIndex extends ConceptIndex {
     private final PriLinkHijackBag<Termed,PLink<Termed>> table;
 
 
-    private int forgetPeriodDurs = 64;
-    private float forgetTemperature = 0.1f;
+    private final int forgetPeriodDurs = 64;
+    private final float forgetTemperature = 0.1f;
 
 
     /** eliding is faster but records less accurate access statistics.

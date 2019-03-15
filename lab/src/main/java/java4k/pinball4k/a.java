@@ -1334,7 +1334,7 @@ public class a extends JFrame {
 	    k[e.getKeyCode()] = (e.getID() == 401);
 	}
 	
-	public static void main(String args[]) throws Exception {
+	public static void main(String[] args) throws Exception {
 		new a();
 	}
 }

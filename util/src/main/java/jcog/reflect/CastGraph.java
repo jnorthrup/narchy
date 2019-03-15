@@ -900,7 +900,7 @@ public class CastGraph extends TypeCastGraph {
     public final Function SqlDate2Date = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            return (java.sql.Date) from;
+            return from;
         }
 
         @Override
@@ -924,7 +924,7 @@ public class CastGraph extends TypeCastGraph {
     public final Function SqlTime2Date = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            return (java.sql.Time) from;
+            return from;
         }
 
         @Override

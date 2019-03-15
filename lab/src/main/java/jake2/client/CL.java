@@ -57,7 +57,7 @@ public final class CL {
 
     static int precache_model_skin;
 
-    static byte precache_model[]; 
+    static byte[] precache_model;
 
     public static final int PLAYER_MULT = 5;
 
@@ -131,7 +131,7 @@ public final class CL {
         public void execute() {
             try {
                 String name;
-                byte buf_data[] = new byte[Defines.MAX_MSGLEN];
+                byte[] buf_data = new byte[Defines.MAX_MSGLEN];
                 sizebuf_t buf = new sizebuf_t();
                 int i;
                 entity_state_t ent;
@@ -563,7 +563,7 @@ public final class CL {
             
             if (Cmd.Argc() < 2) {
 
-                int iw[] = { 0 }; 
+                int[] iw = {0};
 
                 CM.CM_LoadMap(Globals.cl.configstrings[Defines.CS_MODELS + 1],
                         true, iw);
@@ -1181,7 +1181,7 @@ public final class CL {
         if (CL.precache_check == ENV_CNT) {
             CL.precache_check = ENV_CNT + 1;
 
-            int iw[] = { map_checksum };
+            int[] iw = {map_checksum};
 
             CM.CM_LoadMap(Globals.cl.configstrings[Defines.CS_MODELS + 1],
                     true, iw);

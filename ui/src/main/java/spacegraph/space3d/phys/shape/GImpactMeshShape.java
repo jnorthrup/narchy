@@ -42,7 +42,7 @@ import static spacegraph.space3d.phys.dynamics.gimpact.GImpactCollisionAlgorithm
  */
 public class GImpactMeshShape extends GImpactShape {
 	
-	private OArrayList<GImpactMeshShapePart> mesh_parts = new OArrayList<>();
+	private final OArrayList<GImpactMeshShapePart> mesh_parts = new OArrayList<>();
 
 	public GImpactMeshShape(StridingMeshInterface meshInterface) {
 		buildMeshParts(meshInterface);

@@ -37,7 +37,7 @@ public class texinfo_t {
 
 	public texinfo_t(ByteBuffer bb) {
 
-		byte str[] = new byte[32];
+        byte[] str = new byte[32];
 
 		vecs[0] = new float[] { bb.getFloat(), bb.getFloat(), bb.getFloat(), bb.getFloat()};
 		vecs[1] = new float[] { bb.getFloat(), bb.getFloat(), bb.getFloat(), bb.getFloat()};

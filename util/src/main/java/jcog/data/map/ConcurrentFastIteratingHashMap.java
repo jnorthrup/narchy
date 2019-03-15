@@ -18,7 +18,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
             new ConcurrentHashMap<>();
 
     /** double buffer live copy */
-    private AtomicBoolean invalid = new AtomicBoolean(false);
+    private final AtomicBoolean invalid = new AtomicBoolean(false);
     private volatile Y[] values;
 
     public ConcurrentFastIteratingHashMap(Y[] empty) {

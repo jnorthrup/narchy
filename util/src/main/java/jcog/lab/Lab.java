@@ -91,7 +91,7 @@ public class Lab<X> {
     }
 
     public static <X> Object[] row(X x, List<Sensor<X, ?>> sensors) {
-        Object row[] = new Object[sensors.size()];
+        Object[] row = new Object[sensors.size()];
         int c = 0;
         for (int i = 0, sensorsSize = sensors.size(); i < sensorsSize; i++) {
             row[c++] = sensors.get(i).apply(x);

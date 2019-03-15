@@ -13,8 +13,8 @@ import jcog.signal.meter.ExplainedCounter;
 import jcog.signal.meter.FastCounter;
 import jcog.signal.meter.Meter;
 import jcog.signal.meter.event.AtomicMeanFloat;
-import nars.time.event.DurService;
 import nars.control.MetaGoal;
+import nars.time.event.DurService;
 
 import static jcog.Texts.n4;
 

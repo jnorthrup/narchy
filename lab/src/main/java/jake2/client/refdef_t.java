@@ -26,21 +26,21 @@ package jake2.client;
 public class refdef_t {
 	public int		x, y, width, height;
 	public float		fov_x, fov_y;
-	public float		vieworg[] ={0,0,0};
-	public float		viewangles[]={0,0,0};
-	public float		blend[]={0,0,0,0};			
+    public float[] vieworg = {0, 0, 0};
+    public float[] viewangles = {0, 0, 0};
+    public float[] blend = {0, 0, 0, 0};
 	public float		time;				
-	public int		rdflags;			
+	public int		rdflags;
 
-	public byte		areabits[];			
+    public byte[] areabits;
 
-	public lightstyle_t	lightstyles[];	
+    public lightstyle_t[] lightstyles;
 
 	public int		num_entities;
-	public entity_t	entities[];
+    public entity_t[] entities;
 
 	public int		num_dlights;
-	public dlight_t	dlights[];
+    public dlight_t[] dlights;
 
 	public int		num_particles;
 	

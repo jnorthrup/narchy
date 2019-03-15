@@ -29,7 +29,7 @@ public class OsmSurface extends Surface {
 
     private final IRL index;
 
-    private OsmSpace.LonLatProjection projection =
+    private final OsmSpace.LonLatProjection projection =
             new OsmSpace.RawProjection();
             //new OsmSpace.ECEFProjection();
 
@@ -39,7 +39,7 @@ public class OsmSurface extends Surface {
     final v2 translate = new v2();
 
     private transient GL2 gl;
-    private List<OsmElement> hilight = new FasterList(128);
+    private final List<OsmElement> hilight = new FasterList(128);
 
     public OsmSurface(IRL i) {
         this.index = i;
@@ -224,7 +224,7 @@ public class OsmSurface extends Surface {
             return finger.posRelative(OsmSurface.this);
         }
 
-        v2 prev = new v2();
+        final v2 prev = new v2();
         @Override
         protected boolean startDrag(Finger f) {
             prev.set(0,0);
@@ -238,7 +238,7 @@ public class OsmSurface extends Surface {
         }
     };
 
-    float touch[] = new float[3];
+    float[] touch = new float[3];
 
 
     @Override

@@ -39,8 +39,8 @@ abstract public class MultiExec extends UniExec {
      * proportion of time spent in forced curiosity
      */
 
-    private float explorationRate = 0.1f;
-    private float momentum = 0.5f;
+    private final float explorationRate = 0.1f;
+    private final float momentum = 0.5f;
 
     protected long cycleNS;
 

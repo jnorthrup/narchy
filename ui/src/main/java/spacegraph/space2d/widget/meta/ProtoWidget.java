@@ -87,14 +87,14 @@ public class ProtoWidget extends Bordering {
                     try {
                         done.accept(new String(IOUtil.copyStream2ByteArray(is)));
                     } catch (IOException e) {
-                        done.accept(e.toString() + Arrays.toString(e.getStackTrace()));
+                        done.accept(e + Arrays.toString(e.getStackTrace()));
                     }
                 });
                 proc.waitFor();
 
 
             } catch (Throwable e) {
-                done.accept(e.toString() + Arrays.toString(e.getStackTrace()));
+                done.accept(e + Arrays.toString(e.getStackTrace()));
             }
 
         }), "Value"); //system shell command evaluation

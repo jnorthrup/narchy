@@ -111,7 +111,7 @@ public class WebClient {
 
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         // There are 7 floating-point values per vertex
-        int stride = 7 * 4;/*Float32Array.BYTES_PER_ELEMENT*/;
+        int stride = 7 * 4;/*Float32Array.BYTES_PER_ELEMENT*/
         // Set up position stream
         gl.vertexAttribPointer(positionAttr, 3, gl.FLOAT, false, stride, 0);
         // Set up color stream

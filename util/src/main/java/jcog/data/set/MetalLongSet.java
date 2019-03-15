@@ -1,6 +1,7 @@
 package jcog.data.set;
 
 
+import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.list.primitive.MutableLongList;
@@ -11,7 +12,7 @@ import java.util.function.LongConsumer;
 
 public class MetalLongSet extends LongOpenHashSet  {
 
-    private static final float LOAD = LongOpenHashSet.FAST_LOAD_FACTOR;
+    private static final float LOAD = Hash.FAST_LOAD_FACTOR;
 
     public MetalLongSet(int capacity) {
         super(capacity, LOAD);

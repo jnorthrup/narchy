@@ -12,7 +12,7 @@ import spacegraph.audio.SoundProducer;
 public class BinauralTones extends SoundProducer {
 
     private final float carrier;
-    private float beat;
+    private final float beat;
     private float x;
 
     public BinauralTones(float initialBeat, float initialCarrier) {

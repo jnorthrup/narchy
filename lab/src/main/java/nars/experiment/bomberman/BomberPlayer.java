@@ -105,7 +105,7 @@ public class BomberPlayer extends Thread {
         sprites = new Image[4][5][5];
         int[] states = {UP, DOWN, LEFT, RIGHT, EXPLODING};
         Toolkit tk = Toolkit.getDefaultToolkit();
-        String path = new String();
+        String path = "";
         /** open the files */
         try {
             for (int p = 0; p < 4; p++) {

@@ -85,10 +85,8 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
                 if (next.isCommand() || !peer.connected() || next.stamp().length == 0 /* don't share assumptions */)
                     return false;
 
-                if (next.isBeliefOrGoal() && next.conf() < nar.confMin.floatValue())
-                    return false;
+                return !next.isBeliefOrGoal() || !(next.conf() < nar.confMin.floatValue());
 
-                return true;
             }
             @Override
             public float value() {

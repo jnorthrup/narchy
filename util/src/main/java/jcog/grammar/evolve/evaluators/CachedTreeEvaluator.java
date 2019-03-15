@@ -48,7 +48,7 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
 
         Triplet<EvaluationPhases, Boolean, String> key = new Triplet<>(context.getPhase(), context.isStripedPhase(), sb.toString());
         /*synchronized (cache)*/ {
-            TreeEvaluationException error[] = new TreeEvaluationException[1];
+            TreeEvaluationException[] error = new TreeEvaluationException[1];
             List<Bounds[]> result = cache.compute(key, (k, res) -> {
                 if (res != null) {
                     hit++;

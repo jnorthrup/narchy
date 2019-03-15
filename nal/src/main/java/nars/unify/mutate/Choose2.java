@@ -10,9 +10,9 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
-import nars.unify.Unify;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.EllipsisMatch;
+import nars.unify.Unify;
 import org.eclipse.collections.api.set.MutableSet;
 
 import java.util.List;

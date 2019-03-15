@@ -32,9 +32,7 @@ public abstract class AbstractMutableContainer extends Container {
     public final boolean remove(Surface s) {
         boolean removed = detachChild(s);
         if (removed) {
-            if (s.stop()) {
-                return true;
-            }
+            return s.stop();
         }
         return false;
     }

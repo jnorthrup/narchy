@@ -43,7 +43,7 @@ public class OutputLayer {
 
     public void forwardPropagation(HiddenLayer hiddenLayer) {
 
-        final double hiddenLayerNeurons[] = hiddenLayer.neurons.value;
+        final double[] hiddenLayerNeurons = hiddenLayer.neurons.value;
 
         final double[] out = outputs.value;
 

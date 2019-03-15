@@ -106,7 +106,7 @@ public class TinySpeech {
             int sl = Math.round((int)p.get("len") * (SAMPLE_FREQUENCY / 15f) * speed);
             List<Integer> pf = (List) p.get("f");
             List<Integer> pw = (List) p.get("w");
-            boolean osc = ((Integer)p.get("osc")).equals(1);
+            boolean osc = p.get("osc").equals(1);
             for (int formant = 0; formant < 3; formant++) {
                 float ff = pf.get(formant);
                 if (ff == 0)

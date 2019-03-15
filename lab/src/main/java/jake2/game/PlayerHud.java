@@ -170,8 +170,8 @@ public class PlayerHud {
 
         int stringlength;
         int i, j, k;
-        int sorted[] = new int[Defines.MAX_CLIENTS];
-        int sortedscores[] = new int[Defines.MAX_CLIENTS];
+        int[] sorted = new int[Defines.MAX_CLIENTS];
+        int[] sortedscores = new int[Defines.MAX_CLIENTS];
         int score, total;
         int picnum;
         int x, y;

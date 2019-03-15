@@ -27,7 +27,7 @@ import jake2.util.QuakeFile;
 import java.io.IOException;
 
 public class mmove_t {
-	public mmove_t(int firstframe, int lastframe, mframe_t frame[], EntThinkAdapter endfunc) {
+	public mmove_t(int firstframe, int lastframe, mframe_t[] frame, EntThinkAdapter endfunc) {
 		
 		this.firstframe= firstframe;
 		this.lastframe= lastframe;
@@ -40,7 +40,7 @@ public class mmove_t {
 
 	public int firstframe;
 	public int lastframe;
-	public mframe_t frame[]; 
+    public mframe_t[] frame;
 	public EntThinkAdapter endfunc;
 	
 

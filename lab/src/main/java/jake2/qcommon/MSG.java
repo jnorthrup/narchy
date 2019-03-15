@@ -94,7 +94,7 @@ public class MSG extends Globals {
     }
 
     
-    public static void WriteString(sizebuf_t sb, byte s[]) {
+    public static void WriteString(sizebuf_t sb, byte[] s) {
         WriteString(sb, new String(s).trim());
     }
 
@@ -510,7 +510,7 @@ public class MSG extends Globals {
         return ReadShort(msg_read) * (1.0f / 8);
     }
 
-    public static void ReadPos(sizebuf_t msg_read, float pos[]) {
+    public static void ReadPos(sizebuf_t msg_read, float[] pos) {
         assert (pos.length == 3) : "vec3_t bug";
         pos[0] = ReadShort(msg_read) * (1.0f / 8);
         pos[1] = ReadShort(msg_read) * (1.0f / 8);
@@ -565,7 +565,7 @@ public class MSG extends Globals {
 
     }
 
-    public static void ReadData(sizebuf_t msg_read, byte data[], int len) {
+    public static void ReadData(sizebuf_t msg_read, byte[] data, int len) {
         for (int i = 0; i < len; i++)
             data[i] = (byte) ReadByte(msg_read);
     }    

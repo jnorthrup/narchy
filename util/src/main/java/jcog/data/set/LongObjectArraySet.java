@@ -219,7 +219,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
          * Index of element to be returned by subsequent call to next.
          */
         private int index;
-        private int size;
+        private final int size;
 
         public InternalLongIterator(long[] data, int size) {
             this.data = data;

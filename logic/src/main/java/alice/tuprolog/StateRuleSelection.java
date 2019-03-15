@@ -136,7 +136,7 @@ public class StateRuleSelection extends State {
         ec.tailCallOptimize(e);
         ec.saveParentState();
         e.currentContext = ec;
-        return c.GOAL_SELECTION;
+        return PrologRun.GOAL_SELECTION;
     }
 
 }

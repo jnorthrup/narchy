@@ -57,7 +57,7 @@ public class CL_ents {
 	 * 
 	 * Returns the entity number and the header bits =================
 	 */
-	public static int ParseEntityBits(int bits[]) {
+	public static int ParseEntityBits(int[] bits) {
 		int b, total;
 		int i;
 		int number;

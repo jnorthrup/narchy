@@ -53,7 +53,8 @@ public class model_t implements Cloneable {
 	
 	
 	public boolean clipbox;
-	public float clipmins[] = { 0, 0, 0 }, clipmaxs[] = { 0, 0, 0 };
+    public float[] clipmins = {0, 0, 0};
+    public float[] clipmaxs = {0, 0, 0};
 
 	
 	
@@ -62,39 +63,39 @@ public class model_t implements Cloneable {
 	public int lightmap; 
 
 	public int numsubmodels;
-	public mmodel_t submodels[];
+    public mmodel_t[] submodels;
 
 	public int numplanes;
-	public cplane_t planes[];
+    public cplane_t[] planes;
 
-	public int numleafs; 
-	public mleaf_t leafs[];
+	public int numleafs;
+    public mleaf_t[] leafs;
 
 	public int numvertexes;
-	public mvertex_t vertexes[];
+    public mvertex_t[] vertexes;
 
 	public int numedges;
-	public medge_t edges[];
+    public medge_t[] edges;
 
 	public int numnodes;
 	public int firstnode;
-	public mnode_t nodes[];
+    public mnode_t[] nodes;
 
 	public int numtexinfo;
-	public mtexinfo_t texinfo[];
+    public mtexinfo_t[] texinfo;
 
 	public int numsurfaces;
-	public msurface_t surfaces[];
+    public msurface_t[] surfaces;
 
 	public int numsurfedges;
-	public int surfedges[];
+    public int[] surfedges;
 
 	public int nummarksurfaces;
-	public msurface_t marksurfaces[];
+    public msurface_t[] marksurfaces;
 
 	public qfiles.dvis_t vis;
 
-	public byte lightdata[];
+    public byte[] lightdata;
 
 	
 	

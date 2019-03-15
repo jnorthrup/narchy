@@ -651,7 +651,7 @@ public class Rdesktop {
 
                                 if (ext_disc_reason[0] >= 2) {
                                     String reason = textDisconnectReason(ext_disc_reason[0]);
-                                    String msg[] = {"Connection terminated",
+                                    String[] msg = {"Connection terminated",
                                             reason};
                                     window.showErrorDialog(msg);
                                     logger.warn("Connection terminated: {}", reason);
@@ -679,7 +679,7 @@ public class Rdesktop {
                         
 
                     } catch (ConnectionException e) {
-                        String msg[] = {"Connection Exception", e.getMessage()};
+                        String[] msg = {"Connection Exception", e.getMessage()};
                         window.showErrorDialog(msg);
                         Rdesktop.exit(0, RdpLayer, window, true);
                     } catch (UnknownHostException e) {
@@ -699,9 +699,9 @@ public class Rdesktop {
                         e.printStackTrace(System.err);
 
                         if (!readytosend) {
-                            
-                            
-                            String msg[] = {
+
+
+                            String[] msg = {
                                     "The terminal server reset connection before licence negotiation completed.",
                                     "Possible cause: terminal server could not connect to licence server.",
                                     "Retry?"};
@@ -720,7 +720,7 @@ public class Rdesktop {
                                 continue;
                             }
                         } else {
-                            String msg[] = {e.getMessage()};
+                            String[] msg = {e.getMessage()};
                             window.showErrorDialog(msg);
                             Rdesktop.exit(0, RdpLayer, window, true);
                         }

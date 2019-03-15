@@ -95,14 +95,9 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
         }
 
         boolean validKey = key.reset();
-        
-        
 
-        if (!validKey) {
-            
-            return false;
-        }
 
-        return true;
+        return validKey;
+
     }
 }

@@ -193,8 +193,8 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            int pause_frames[] = { 34, 51, 59, 0 };
-            int fire_frames[] = { 6, 0 };
+            int[] pause_frames = {34, 51, 59, 0};
+            int[] fire_frames = {6, 0};
 
             Weapon_Generic(ent, 5, 16, 59, 64, pause_frames, fire_frames,
                     weapon_grenadelauncher_fire);
@@ -267,8 +267,8 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            int pause_frames[] = { 25, 33, 42, 50, 0 };
-            int fire_frames[] = { 5, 0 };
+            int[] pause_frames = {25, 33, 42, 50, 0};
+            int[] fire_frames = {5, 0};
 
             Weapon_Generic(ent, 4, 12, 50, 54, pause_frames, fire_frames,
                     Weapon_RocketLauncher_Fire);
@@ -303,8 +303,8 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            int pause_frames[] = { 19, 32, 0 };
-            int fire_frames[] = { 5, 0 };
+            int[] pause_frames = {19, 32, 0};
+            int[] fire_frames = {5, 0};
 
             Weapon_Generic(ent, 4, 8, 52, 55, pause_frames, fire_frames,
                     Weapon_Blaster_Fire);
@@ -391,8 +391,8 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            int pause_frames[] = { 0 };
-            int fire_frames[] = { 6, 7, 8, 9, 10, 11, 0 };
+            int[] pause_frames = {0};
+            int[] fire_frames = {6, 7, 8, 9, 10, 11, 0};
 
             Weapon_Generic(ent, 5, 20, 49, 53, pause_frames, fire_frames,
                     Weapon_HyperBlaster_Fire);
@@ -406,8 +406,8 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            int pause_frames[] = { 23, 45, 0 };
-            int fire_frames[] = { 4, 5, 0 };
+            int[] pause_frames = {23, 45, 0};
+            int[] fire_frames = {4, 5, 0};
 
             Weapon_Generic(ent, 3, 5, 45, 49, pause_frames, fire_frames,
                     Machinegun_Fire);
@@ -421,9 +421,9 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            int pause_frames[] = { 38, 43, 51, 61, 0 };
-            int fire_frames[] = { 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    17, 18, 19, 20, 21, 0 };
+            int[] pause_frames = {38, 43, 51, 61, 0};
+            int[] fire_frames = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    17, 18, 19, 20, 21, 0};
 
             Weapon_Generic(ent, 4, 31, 61, 64, pause_frames, fire_frames,
                     Chaingun_Fire);
@@ -501,8 +501,8 @@ public class PlayerWeapon {
         public String getID() { return "Weapon_Shotgun"; }
         @Override
         public boolean think(edict_t ent) {
-            int pause_frames[] = { 22, 28, 34, 0 };
-            int fire_frames[] = { 8, 9, 0 };
+            int[] pause_frames = {22, 28, 34, 0};
+            int[] fire_frames = {8, 9, 0};
 
             Weapon_Generic(ent, 7, 18, 36, 39, pause_frames, fire_frames,
                     weapon_shotgun_fire);
@@ -576,8 +576,8 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            int pause_frames[] = { 29, 42, 57, 0 };
-            int fire_frames[] = { 7, 0 };
+            int[] pause_frames = {29, 42, 57, 0};
+            int[] fire_frames = {7, 0};
 
             Weapon_Generic(ent, 6, 17, 57, 61, pause_frames, fire_frames,
                     weapon_supershotgun_fire);
@@ -653,8 +653,8 @@ public class PlayerWeapon {
         @Override
         public boolean think(edict_t ent) {
 
-            int pause_frames[] = { 56, 0 };
-            int fire_frames[] = { 4, 0 };
+            int[] pause_frames = {56, 0};
+            int[] fire_frames = {4, 0};
             Weapon_Generic(ent, 3, 18, 56, 61, pause_frames, fire_frames,
                     weapon_railgun_fire);
             return true;
@@ -1265,9 +1265,9 @@ public class PlayerWeapon {
      */
 
     public static void Weapon_Generic(edict_t ent, int FRAME_ACTIVATE_LAST,
-            int FRAME_FIRE_LAST, int FRAME_IDLE_LAST,
-            int FRAME_DEACTIVATE_LAST, int pause_frames[], int fire_frames[],
-            EntThinkAdapter fire) {
+                                      int FRAME_FIRE_LAST, int FRAME_IDLE_LAST,
+                                      int FRAME_DEACTIVATE_LAST, int[] pause_frames, int[] fire_frames,
+                                      EntThinkAdapter fire) {
         int FRAME_FIRE_FIRST = (FRAME_ACTIVATE_LAST + 1);
         int FRAME_IDLE_FIRST = (FRAME_FIRE_LAST + 1);
         int FRAME_DEACTIVATE_FIRST = (FRAME_IDLE_LAST + 1);

@@ -749,8 +749,8 @@ public final class Dbvt {
 
 	private static void bottomup(Dbvt pdbvt, FasterList<Node> leaves) {
 		DbvtAabbMm tmpVolume = new DbvtAabbMm();
-		int num;;
-		while ((num  = leaves.size()) > 1) {
+		int num;
+        while ((num  = leaves.size()) > 1) {
 			float minsize = BulletGlobals.SIMD_INFINITY;
 			int[] minidx = { -1, -1 };
 			for (int i = 0; i< num; i++) {

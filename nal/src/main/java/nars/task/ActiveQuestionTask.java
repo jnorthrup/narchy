@@ -75,9 +75,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
                     if (t.op() == o && Subterms.possiblyUnifiable(term, t, Op.Variable)) {
                         MySubUnify u = new MySubUnify(nar.random(), ttl); //TODO pool ThreadLocal
                         u.unify(term(), t);
-                        if (u.match) {
-                            return true;
-                        }
+                        return u.match;
                     }
                     return false;
                 };

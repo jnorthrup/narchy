@@ -83,7 +83,7 @@ public class StateException extends State {
                 e.currentContext.currentGoal = handler;
 
                 
-                e.nextState = c.GOAL_SELECTION;
+                e.nextState = PrologRun.GOAL_SELECTION;
                 return;
             } else {
                 
@@ -182,7 +182,7 @@ public class StateException extends State {
                 e.currentContext.currentGoal = handler;
 
                 
-                e.nextState = c.GOAL_SELECTION;
+                e.nextState = PrologRun.GOAL_SELECTION;
                 return;
 
             } else {

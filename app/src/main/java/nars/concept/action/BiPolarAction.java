@@ -3,8 +3,8 @@ package nars.concept.action;
 import jcog.Util;
 import nars.$;
 import nars.NAR;
-import nars.attention.PriNode;
 import nars.attention.AttnBranch;
+import nars.attention.PriNode;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
@@ -196,7 +196,7 @@ public class BiPolarAction extends AbstractSensor {
         //final FloatAveraged fp = new FloatAveraged(0.99f, true);
         /** adjustable q- lowpass filters */
         //final FloatAveraged fn = new FloatAveraged(0.99f, true);
-        private boolean normalize = false;
+        private final boolean normalize = false;
 
         public DefaultPolarization(boolean fair) {
             this.fair = fair;

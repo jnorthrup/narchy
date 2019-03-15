@@ -161,7 +161,7 @@ public final class Menu extends Key {
     static class menulist_s extends menucommon_s {
         int curvalue;
 
-        String itemnames[];
+        String[] itemnames;
     }
 
     static class menuaction_s extends menucommon_s {
@@ -756,7 +756,7 @@ public final class Menu extends Key {
         }
     }
 
-    static void FindKeysForCommand(String command, int twokeys[]) {
+    static void FindKeysForCommand(String command, int[] twokeys) {
         int count;
         int j;
         String b;
@@ -787,7 +787,7 @@ public final class Menu extends Key {
     }
 
     static void DrawKeyBindingFunc(Object self) {
-        int keys[] = { 0, 0 };
+        int[] keys = {0, 0};
         menuaction_s a = (menuaction_s) self;
 
         FindKeysForCommand(bindnames[a.localdata[0]][0], keys);
@@ -815,7 +815,7 @@ public final class Menu extends Key {
 
     static void KeyBindingFunc(Object self) {
         menuaction_s a = (menuaction_s) self;
-        int keys[] = { 0, 0 };
+        int[] keys = {0, 0};
 
         FindKeysForCommand(bindnames[a.localdata[0]][0], keys);
 
@@ -1461,8 +1461,8 @@ public final class Menu extends Key {
 
     static final String[] cd_music_items = { "disabled", "enabled" };
 
-    static String compatibility_items[] = { "max compatibility",
-            "max performance" };
+    static String[] compatibility_items = {"max compatibility",
+            "max performance"};
 
     static final String[] yesno_names = { "no", "yes" };
 
@@ -1800,7 +1800,7 @@ public final class Menu extends Key {
             "other trademarks and trade names are",
             "properties of their respective owners.", null };
 
-    static String credits[] = idcredits;
+    static String[] credits = idcredits;
 
     static final String[] xatcredits = { "+QUAKE II MISSION PACK: THE RECKONING",
             "+BY", "+XATRIX ENTERTAINMENT, INC.", "", "+DESIGN AND DIRECTION",
@@ -1962,11 +1962,11 @@ public final class Menu extends Key {
         int n;
         int isdeveloper = 0;
 
-        byte b[] = FS.LoadFile("credits");
+        byte[] b = FS.LoadFile("credits");
 
         if (b != null) {
             creditsBuffer = new String(b);
-            String line[] = NEWLINE.split(creditsBuffer);
+            String[] line = NEWLINE.split(creditsBuffer);
 
             for (n = 0; n < line.length; n++) {
                 creditsIndex[n] = line[n];
@@ -2067,8 +2067,8 @@ public final class Menu extends Key {
         Menu_Credits_f();
     }
 
-    static String difficulty_names[] = { "easy", "medium",
-            "fuckin shitty hard" };
+    static String[] difficulty_names = {"easy", "medium",
+            "fuckin shitty hard"};
 
     static void Game_MenuInit() {
 
@@ -2632,7 +2632,7 @@ public final class Menu extends Key {
      */
     static final menuframework_s s_startserver_menu = new menuframework_s();
 
-    static String mapnames[];
+    static String[] mapnames;
 
     static int nummaps;
 
@@ -2706,7 +2706,7 @@ public final class Menu extends Key {
         if (pos == -1)
             startmap = x;
         else
-            startmap = x.substring(pos + 1, x.length());
+            startmap = x.substring(pos + 1);
 
         maxclients = Lib.atoi(s_maxclients_field.buffer.toString());
         timelimit = Lib.atoi(s_timelimit_field.buffer.toString());
@@ -2803,7 +2803,7 @@ public final class Menu extends Key {
         }
 
         s = new String(buffer);
-        String lines[] = NEWLINE.split(s);
+        String[] lines = NEWLINE.split(s);
 
         nummaps = lines.length;
 
@@ -3794,7 +3794,7 @@ public final class Menu extends Key {
     static class playermodelinfo_s {
         int nskins;
 
-        String skindisplaynames[];
+        String[] skindisplaynames;
 
         
         String displayname;
@@ -3805,7 +3805,7 @@ public final class Menu extends Key {
 
     static final playermodelinfo_s[] s_pmi = new playermodelinfo_s[MAX_PLAYERMODELS];
 
-    static String s_pmnames[] = new String[MAX_PLAYERMODELS];
+    static String[] s_pmnames = new String[MAX_PLAYERMODELS];
 
     static int s_numplayermodels;
 
@@ -3834,8 +3834,8 @@ public final class Menu extends Key {
         s_player_skin_box.curvalue = 0;
     }
 
-    static boolean IconOfSkinExists(String skin, String pcxfiles[],
-            int npcxfiles) {
+    static boolean IconOfSkinExists(String skin, String[] pcxfiles,
+                                    int npcxfiles) {
  
         String scratch;
 
@@ -3864,7 +3864,7 @@ public final class Menu extends Key {
 
         int ndirs = 0, npms = 0;
         int a, b, c;
-        String dirnames[];
+        String[] dirnames;
 
         String path = null;
 
@@ -3899,9 +3899,9 @@ public final class Menu extends Key {
 
         for (i = 0; i < npms; i++) {
             int k, s;
-            
-            String pcxnames[];
-            String skinnames[];
+
+            String[] pcxnames;
+            String[] skinnames;
             int npcxfiles;
             int nskins = 0;
 
@@ -3960,8 +3960,7 @@ public final class Menu extends Key {
                         else
                             c = b;
 
-                        scratch = pcxnames[k].substring(c + 1, pcxnames[k]
-                                .length());
+                        scratch = pcxnames[k].substring(c + 1);
                         int pos = scratch.lastIndexOf('.');
                         if (pos != -1)
                             scratch = scratch.substring(0, pos);
@@ -4499,7 +4498,7 @@ public final class Menu extends Key {
 
         
         String s = f.buffer.toString();
-        tempbuffer = s.substring(f.visible_offset, s.length());
+        tempbuffer = s.substring(f.visible_offset);
         re.DrawChar(f.x + f.parent.x + 16, f.y + f.parent.y - 4, 18);
         re.DrawChar(f.x + f.parent.x + 16, f.y + f.parent.y + 4, 24);
 
@@ -4601,8 +4600,8 @@ public final class Menu extends Key {
             String cbd;
 
             if ((cbd = Sys.GetClipboardData()) != null) {
-                
-                String lines[] = NEWLINE.split(cbd);
+
+                String[] lines = NEWLINE.split(cbd);
                 if (lines.length > 0 && lines[0].length() != 0) {
                     
                     f.buffer = new StringBuffer(lines[0]);
@@ -4892,7 +4891,7 @@ public final class Menu extends Key {
         for (i = 0; i < menu.nitems; i++) {
             if (menu.items[i].type == MTYPE_LIST) {
                 int nitems = 0;
-                String n[] = ((menulist_s) menu.items[i]).itemnames;
+                String[] n = ((menulist_s) menu.items[i]).itemnames;
 
                 while (n[nitems] != null)
                     nitems++;
@@ -4918,7 +4917,7 @@ public final class Menu extends Key {
     }
 
     public static void MenuList_Draw(menulist_s l) {
-        String n[];
+        String[] n;
         int y = 0;
 
         Menu_DrawStringR2LDark(l.x + l.parent.x + LCOLUMN_OFFSET, l.y

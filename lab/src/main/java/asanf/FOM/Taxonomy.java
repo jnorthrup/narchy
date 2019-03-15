@@ -35,7 +35,7 @@ public class Taxonomy<E> implements Iterable<E>{
     }
 
     public void taxonomyPruning(){
-    	double distance[][];
+        double[][] distance;
     	int bigNum = 10000;
     	int i,j,k;
     	double sumDist;

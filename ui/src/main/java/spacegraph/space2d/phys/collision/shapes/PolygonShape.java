@@ -51,13 +51,13 @@ public class PolygonShape extends Shape {
      * The vertices of the shape. Note: use getVertexCount(), not m_vertices.length, to get number of
      * active vertices.
      */
-    public final v2 vertex[];
+    public final v2[] vertex;
 
     /**
      * The normals of the shape. Note: use getVertexCount(), not m_normals.length, to get number of
      * active normals.
      */
-    public final v2 normals[];
+    public final v2[] normals;
 
     /**
      * Number of active vertices in the shape.

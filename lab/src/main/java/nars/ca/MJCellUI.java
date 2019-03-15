@@ -910,9 +910,9 @@ class MJCellUI extends Frame {
 	
 	private void InputBoardSize() {
 		String sDefault = String.valueOf(mjb.UnivSize.x) + 'x'
-				+ String.valueOf(mjb.UnivSize.y);
+				+ mjb.UnivSize.y;
 		String sMax = "max. " + MJBoard.MAX_X + 'x'
-				+ String.valueOf(MJBoard.MAX_Y);
+				+ MJBoard.MAX_Y;
 		InputBox ib = new InputBox(new Frame(""), sDefault, "Board size",
 				"Input the new board size (" + sMax + "):");
 		requestFocus();
@@ -948,8 +948,8 @@ class MJCellUI extends Frame {
 				+ mjb.StatesCount + ')');
 		itmCloCrrState.setLabel("Active state... ("
 				+ mjb.CrrState + ')');
-		lblStates.setText("States: " + Integer.toString(mjb.CrrState) + '/'
-				+ Integer.toString(mjb.StatesCount));
+		lblStates.setText("States: " + mjb.CrrState + '/'
+				+ mjb.StatesCount);
 
 		boolean fSttCntEna = false;
 		switch (mjb.CrrGame) {
@@ -1101,22 +1101,22 @@ class MJCellUI extends Frame {
 		ta.append("Color palette: " + mjb.mjPal.PalName + '\n');
 		ta.append("\n");
 		ta.append("Board: " + mjb.UnivSize.x + 'x'
-				+ String.valueOf(mjb.UnivSize.y) + '\n');
+				+ mjb.UnivSize.y + '\n');
 		ta.append("Cell size: " + mjb.CellSize + '\n');
 		ta.append("1D current line: " + mjb.i1DLastRow + '\n');
 		ta.append("\n");
-		ta.append("Speed: " + Integer.toString(mjb.AnimDelay) + '\n');
-		ta.append("Cycle: " + Integer.toString(mjb.Cycle) + '\n');
-		ta.append("Population: " + Integer.toString(mjb.Population) + '\n');
+		ta.append("Speed: " + mjb.AnimDelay + '\n');
+		ta.append("Cycle: " + mjb.Cycle + '\n');
+		ta.append("Population: " + mjb.Population + '\n');
 
 		double dTmp = 100.0 * mjb.Population
 				/ (mjb.UnivSize.x * mjb.UnivSize.y);
 		dTmp = (Math.round(dTmp * 100.0) / 100.0);
-		ta.append("Density: " + Double.toString(dTmp) + "%\n");
+		ta.append("Density: " + dTmp + "%\n");
 		ta.append("\nDistribution:\n");
 		for (int i = 0; i < mjb.StatesCount; i++) {
-			ta.append("State " + Integer.toString(i) + ": "
-					+ Integer.toString(mjb.Populations[i]) + '\n');
+			ta.append("State " + i + ": "
+					+ mjb.Populations[i] + '\n');
 		}
 
 		msgDlg.add(ta, BorderLayout.CENTER);
@@ -1220,12 +1220,12 @@ class MJCellUI extends Frame {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void UpdateUI() {
-		lblCycle.setText("Cycle: " + Integer.toString(mjb.Cycle));
-		lblPopul.setText("Population: " + Integer.toString(mjb.Population)
+		lblCycle.setText("Cycle: " + mjb.Cycle);
+		lblPopul.setText("Population: " + mjb.Population
 				+ ' ');
-		lblBoard.setText("Board: " + Integer.toString(mjb.UnivSize.x) + 'x'
-				+ Integer.toString(mjb.UnivSize.y) + '/'
-				+ Integer.toString(mjb.CellSize));
+		lblBoard.setText("Board: " + mjb.UnivSize.x + 'x'
+				+ mjb.UnivSize.y + '/'
+				+ mjb.CellSize);
 	}
 
 	

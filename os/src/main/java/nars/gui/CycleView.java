@@ -43,7 +43,7 @@ public class CycleView implements Runnable {
 
     @Override
     public void run() {
-        time.text("@: " + Long.toString(timed.time()));
+        time.text("@: " + timed.time());
     }
 
 }

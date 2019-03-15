@@ -13,7 +13,7 @@ import java.util.Random;
 public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
-    private int iterations = 4;
+    private final int iterations = 4;
     private float AUTOSCALE = 0f;
 
 
@@ -71,8 +71,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
 
         int iterations = this.iterations;
-        float repelSpeed = this.repelSpeed.floatValue() / iterations;
-        float attractSpeed = this.attractSpeed.floatValue() / iterations;
+        float repelSpeed = this.repelSpeed.floatValue() * gRad * /*~*/3 / iterations;
+        float attractSpeed = this.attractSpeed.floatValue() * /*~*/(1f/10)  / iterations;
 
         float maxSpeedPerIter = needSpeedLimit.floatValue()  * gRad;
 
@@ -137,7 +137,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
             if (b == null)
                 return;
 
-            float idealLen = (fromRad + b.radius()) * equilibriumDistFactor / 2;
+            float idealLen = (fromRad + b.radius()) * equilibriumDistFactor;
 
             v2 delta = new v2(b.cx() - px, b.cy() - py);
             float len = delta.normalize();
@@ -172,7 +172,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 //        ar *= ar;
 //        br *= br;
 
-        float radii = (ar + br) * equilibriumDistFactor;
+        float radii = (ar + br);
 
         v2 delta = aCenter.clone().subbed(b.cx(), b.cy());
         float len = delta.normalize();
@@ -182,12 +182,12 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
             float tx = (float) Math.cos(theta);
             float ty = (float) Math.sin(theta);
             delta.set(tx, ty);
-            len = 0;
+            len = radii;
         } else if (len >= maxRepelDist)
             return;
         else {
-            len -= (radii);
-            len = Math.max(0, len);
+            len -= (radii * equilibriumDistFactor);
+            len = Math.max(radii, len);
         }
 
         float s = repelSpeed /

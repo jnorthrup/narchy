@@ -29,6 +29,7 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.set.mutable.primitive.CharHashSet;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -113,7 +114,7 @@ public class Utils {
         return out;
     }
 
-    public static boolean isAParetoDominateByB(double fitnessA[], double fitnessB[]) {
+    public static boolean isAParetoDominateByB(double[] fitnessA, double[] fitnessB) {
         final int n = fitnessA.length;
         boolean dominate = false;
         for (int i = 0; i < n; i++) {
@@ -200,7 +201,7 @@ public class Utils {
 
     public static void saveFile(String text, String pathOfFile) {
         try {
-            Writer writer = new OutputStreamWriter(new FileOutputStream(pathOfFile), "utf-8");
+            Writer writer = new OutputStreamWriter(new FileOutputStream(pathOfFile), StandardCharsets.UTF_8);
             writer.write(text);
             writer.close();
         } catch (IOException ex) {

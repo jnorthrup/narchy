@@ -78,7 +78,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
         this.configName = configName;
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         enableEvents(AWTEvent.KEY_EVENT_MASK);
 
@@ -717,7 +717,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
         JDialog dialog = pane.createDialog(JCTermSwingFrame.this.term,
                 "Enter username@hostname");
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
         Object o = pane.getValue();
 
@@ -777,7 +777,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
             JDialog dialog = pane.createDialog(JCTermSwingFrame.this.term,
                     message);
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
             Object o = pane.getValue();
 
@@ -840,7 +840,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
             };
             JDialog dialog = pane.createDialog(JCTermSwingFrame.this.term,
                     destination + ": " + name);
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
             Object o = pane.getValue();
             if (o != null && (Integer) o == JOptionPane.OK_OPTION) {

@@ -88,13 +88,13 @@ public final class Utf8Writer  {
         }
     }
 
-    public void write(char cbuf[]) throws IOException {
+    public void write(char[] cbuf) throws IOException {
         for (int i = 0; i < cbuf.length; i++) {
             write(cbuf[i]);
         }
     }
 
-    public void write(char cbuf[], int off, int len) throws IOException {
+    public void write(char[] cbuf, int off, int len) throws IOException {
         for (int i = 0; i < len; i++) {
             write(cbuf[off + i]);
         }

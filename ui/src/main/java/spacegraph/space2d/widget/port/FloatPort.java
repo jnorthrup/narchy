@@ -9,7 +9,7 @@ import jcog.math.FloatSupplier;
  * */
 public class FloatPort extends TypedPort<Float> implements FloatSupplier {
 
-    private AtomicFloat curValue = new AtomicFloat(Float.NaN);
+    private final AtomicFloat curValue = new AtomicFloat(Float.NaN);
 
     public FloatPort() {
         super(Float.class);

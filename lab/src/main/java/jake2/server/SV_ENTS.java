@@ -349,10 +349,10 @@ public class SV_ENTS {
      * PVS point. 
      */
     public static void SV_FatPVS(float[] org) {
-        int leafs[] = new int[64];
+        int[] leafs = new int[64];
         int i, j, count;
         int longs;
-        byte src[];
+        byte[] src;
         float[] mins = { 0, 0, 0 }, maxs = { 0, 0, 0 };
 
         for (i = 0; i < 3; i++) {
@@ -410,8 +410,8 @@ public class SV_ENTS {
         int clientarea, clientcluster;
         int leafnum;
         int c_fullsend;
-        byte clientphs[];
-        byte bitvector[];
+        byte[] clientphs;
+        byte[] bitvector;
 
         clent = client.edict;
         if (clent.client == null)
@@ -531,8 +531,7 @@ public class SV_ENTS {
     }
 
 
-    
-    private static final byte buf_data[] = new byte[32768];
+    private static final byte[] buf_data = new byte[32768];
     
     /**
      * Save everything in the world out without deltas. Used for recording

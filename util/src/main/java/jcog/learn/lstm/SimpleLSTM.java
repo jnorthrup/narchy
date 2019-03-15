@@ -190,7 +190,7 @@ public class SimpleLSTM  {
 		for (int k = 0; k < output_dimension; k++)
 		{
 			double s = 0;
-			double wk[] = weightsOut[k];
+            double[] wk = weightsOut[k];
 			for (int j = 0; j < cell_blocks + 1; j++)
 				s += wk[j] * full_hidden[j];
 

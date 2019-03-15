@@ -1234,7 +1234,7 @@ public class M_Boss32 {
     static final mmove_t makron_move_run = new mmove_t(FRAME_walk204, FRAME_walk213,
             makron_frames_run, null);
 
-    static mframe_t makron_frames_walk[] = {
+    static mframe_t[] makron_frames_walk = {
             new mframe_t(GameAI.ai_walk, 3, makron_step_left),
             new mframe_t(GameAI.ai_walk, 12, null),
             new mframe_t(GameAI.ai_walk, 8, null),
@@ -1244,7 +1244,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_walk, 12, null),
             new mframe_t(GameAI.ai_walk, 9, null),
             new mframe_t(GameAI.ai_walk, 6, null),
-            new mframe_t(GameAI.ai_walk, 12, null) };
+            new mframe_t(GameAI.ai_walk, 12, null)};
 
     static final mmove_t makron_move_walk = new mmove_t(FRAME_walk204, FRAME_walk213,
             makron_frames_run, null);

@@ -45,7 +45,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     /**
      * channel objects for playing midi
      */
-    private MidiChannel channels[];
+    private MidiChannel[] channels;
     /**
      * current playing sound
      */
@@ -167,7 +167,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             /** if the object is a directory */
             if (file != null && file.isDirectory()) {
                 /** get the list of files in the directory */
-                String files[] = file.list();
+                String[] files = file.list();
                 /** iterate through the list */
                 for (int i = 0; i < files.length; i++) {
                     /** get the path */

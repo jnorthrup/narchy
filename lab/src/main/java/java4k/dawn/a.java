@@ -43,8 +43,8 @@ public class a extends GamePanel {
 	public void keyReleased(KeyEvent e) {
 		key[e.getKeyCode()] = false;
 	}
-	
-	boolean key[] = new boolean[65535];
+
+    boolean[] key = new boolean[65535];
 	boolean click;
 	int my, mx;
 	BufferStrategy strategy;

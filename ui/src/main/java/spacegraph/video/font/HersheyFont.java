@@ -1,5 +1,6 @@
 package spacegraph.video.font;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.list.FasterList;
@@ -210,7 +211,7 @@ public final class HersheyFont {
 
             int ss = seg.length;
 
-            gl.glBegin(GL2.GL_LINE_STRIP);
+            gl.glBegin(GL.GL_LINE_STRIP);
             for (int j = 0; j < ss; )
                 gl.glVertex2i(seg[j++], seg[j++]);
             gl.glEnd();

@@ -44,7 +44,7 @@ public final class ImprovedNoise {
         return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
     }
 
-    int p[] = new int[512];
+    int[] p = new int[512];
 
     public double perlinNoise(double x, double y) {
         double n = 0;
@@ -59,7 +59,7 @@ public final class ImprovedNoise {
 
     public void shuffle(long seed) {
         Random random = new Random(seed);
-        int permutation[] = new int[256];
+        int[] permutation = new int[256];
         for (int i = 0; i < 256; i++) {
             permutation[i] = i;
         }

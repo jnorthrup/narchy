@@ -43,24 +43,24 @@ public class WheelInfo {
 	private final v3 chassisConnectionPointCS = new v3();
 	private final v3 wheelDirectionCS = new v3();
 	private final v3 wheelAxleCS = new v3();
-	private float suspensionRestLength1;
-	private float maxSuspensionTravelCm;
-	private float maxSuspensionForce;
-	private float wheelsRadius;
-	private float suspensionStiffness;
-	private float wheelsDampingCompression;
-	private float wheelsDampingRelaxation;
-	private float frictionSlip;
-	private float steering;
-	private float rotation;
-	private float deltaRotation;
-	private float rollInfluence;
+	private final float suspensionRestLength1;
+	private final float maxSuspensionTravelCm;
+	private final float maxSuspensionForce;
+	private final float wheelsRadius;
+	private final float suspensionStiffness;
+	private final float wheelsDampingCompression;
+	private final float wheelsDampingRelaxation;
+	private final float frictionSlip;
+	private final float steering;
+	private final float rotation;
+	private final float deltaRotation;
+	private final float rollInfluence;
 
-	private float engineForce;
+	private final float engineForce;
 
-	private float brake;
+	private final float brake;
 	
-	private boolean bIsFrontWheel;
+	private final boolean bIsFrontWheel;
 	
 	public Object clientInfo; 
 

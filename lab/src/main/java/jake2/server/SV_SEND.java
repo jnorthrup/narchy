@@ -43,7 +43,7 @@ public class SV_SEND {
 
 	public static final StringBuffer sv_outputbuf = new StringBuffer();
 
-	public static void SV_FlushRedirect(int sv_redirected, byte outputbuf[]) {
+	public static void SV_FlushRedirect(int sv_redirected, byte[] outputbuf) {
 		if (sv_redirected == Defines.RD_PACKET) {
 			String s = ("print\n" + Lib.CtoJava(outputbuf));
 			Netchan.Netchan_OutOfBand(Defines.NS_SERVER, Globals.net_from, s.length(), Lib.stringToBytes(s));
@@ -136,7 +136,7 @@ public class SV_SEND {
 	*/
 	public static void SV_Multicast(float[] origin, int to) {
 		client_t client;
-		byte mask[];
+        byte[] mask;
 		int leafnum, cluster;
 		int j;
 		boolean reliable;
@@ -444,7 +444,7 @@ public class SV_SEND {
 		return false;
 	}
 
-	private static final byte msgbuf[] = new byte[Defines.MAX_MSGLEN];
+    private static final byte[] msgbuf = new byte[Defines.MAX_MSGLEN];
 	private static final byte[] NULLBYTE = {0};
 	/*
 	=======================

@@ -367,7 +367,6 @@ public interface NAct {
             float c =
                     n.confDefault(BELIEF);
                     //Math.max(n.confMin.floatValue(), g!=null ? g.conf() : 0)
-                    ;
             return $.t(feedback, c);
 
         });
@@ -389,7 +388,6 @@ public interface NAct {
             float c =
                     n.confDefault(BELIEF);
                     //Math.max(n.confMin.floatValue(), g!=null ? g.conf() : 0)
-                    ;
             return $.t(feedback, c);
         });
 

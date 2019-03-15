@@ -22,6 +22,7 @@ package java4k.jackal4k;
 
 import java4k.GamePanel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
@@ -754,7 +755,7 @@ public class a extends GamePanel {
   
   public static void main(String[] args) throws Throwable {
     javax.swing.JFrame frame = new javax.swing.JFrame("Jackal 4K");
-    frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     a applet = new a();    
     applet.setPreferredSize(new java.awt.Dimension(512, 512));
     frame.add(applet, java.awt.BorderLayout.CENTER);

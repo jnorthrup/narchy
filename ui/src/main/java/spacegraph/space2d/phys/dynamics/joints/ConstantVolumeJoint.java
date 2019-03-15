@@ -217,7 +217,7 @@ public class ConstantVolumeJoint extends Joint {
 
         v2[] velocities = step.velocities;
         v2[] positions = step.positions;
-        final v2 d[] = pool.getVec2Array(bodies.length);
+        final v2[] d = pool.getVec2Array(bodies.length);
 
         for (int i = 0; i < bodies.length; ++i) {
             final int prev = (i == 0) ? bodies.length - 1 : i - 1;

@@ -31,7 +31,7 @@ public class Array2DIterable<X> implements Iterable<X> {
     public FasterList<X> order;
     
 
-    public Array2DIterable(X x[][]) {
+    public Array2DIterable(X[][] x) {
         array2D = x;
         
         int cols = array2D[0].length;

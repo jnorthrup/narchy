@@ -422,7 +422,7 @@ public class SideScrollMinicraft {
      *
      * @param argv The arguments that are passed into our game
      */
-    public static void main(String argv[]) {
+    public static void main(String[] argv) {
 
         Constants.DEBUG = true;
         for (String arg : argv) {

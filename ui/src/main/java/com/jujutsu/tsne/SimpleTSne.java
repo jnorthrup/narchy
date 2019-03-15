@@ -24,14 +24,14 @@ public class SimpleTSne implements TSne {
     private double[][] iY;
     protected double[][] gains;
 
-    private double momentum = .85;
+    private final double momentum = .85;
 
-    private double eta =
+    private final double eta =
             //0.1f;
             //0.5;
             1f;
 
-    private double min_gain =
+    private final double min_gain =
             //Double.MIN_NORMAL;
             ScalarValue.EPSILON;
             //ScalarValue.EPSILONsqrt;
@@ -39,7 +39,7 @@ public class SimpleTSne implements TSne {
 
     private double[][] numMatrix;
 
-    private boolean pca = true;
+    private final boolean pca = true;
 
     @Override
     public double[][] reset(double[][] X, TSneConfiguration config) {

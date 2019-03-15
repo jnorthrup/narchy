@@ -55,7 +55,7 @@ public class GameBase {
 
     public static int num_edicts;
 
-    public static edict_t g_edicts[] = new edict_t[Defines.MAX_EDICTS];
+    public static edict_t[] g_edicts = new edict_t[Defines.MAX_EDICTS];
     static {
         for (int n = 0; n < Defines.MAX_EDICTS; n++)
             g_edicts[n] = new edict_t(n);
@@ -242,7 +242,7 @@ public class GameBase {
 
     public static edict_t G_PickTarget(String targetname) {
         int num_choices = 0;
-        edict_t choice[] = new edict_t[MAXCHOICES];
+        edict_t[] choice = new edict_t[MAXCHOICES];
 
         if (targetname == null) {
             game_import_t.dprintf("G_PickTarget called with null targetname\n");

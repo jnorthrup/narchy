@@ -43,7 +43,7 @@ public class BiSequence implements AbstractSequence {
 
     @Override
     public Void evaluate(Arguments arguments, Assignments assignments) {
-        arguments.evalEach(assignments);;
+        arguments.evalEach(assignments);
         return Void.VOID;
     }
 

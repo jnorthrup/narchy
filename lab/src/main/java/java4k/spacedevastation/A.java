@@ -48,10 +48,10 @@ public class A extends Applet implements Runnable {
 	private final int energyboost = 16;
 	private final int baselife = 18;
 
-	private final String text[] = { "", "Thrusters Upgrade Unlocked!", "", "Double Damage Unlocked!", "",
-			"Regeneration Boost Unlocked!", "", "Energy Boost Unlocked!", "", "" };
-	private final String textlvl[] = { "Please! Don't hurt me captain galaxy!",
-			"I love the smell of laser in the morning.", "Do you know Chuck norris? it's my follower!" };
+    private final String[] text = {"", "Thrusters Upgrade Unlocked!", "", "Double Damage Unlocked!", "",
+            "Regeneration Boost Unlocked!", "", "Energy Boost Unlocked!", "", ""};
+    private final String[] textlvl = {"Please! Don't hurt me captain galaxy!",
+            "I love the smell of laser in the morning.", "Do you know Chuck norris? it's my follower!"};
 	
 	private final int BKBUFFER = 0;
 	private final int MAP1 = 2;
@@ -120,8 +120,9 @@ public class A extends Applet implements Runnable {
 	private int dx = 350, dy = 400;
 	private double d1, d2;
 	private long timer;
-	private Graphics2D g, bg[];
-	private BufferedImage buf[];
+	private Graphics2D g;
+    private Graphics2D[] bg;
+    private BufferedImage[] buf;
 	private int frame;
 
 	@Override

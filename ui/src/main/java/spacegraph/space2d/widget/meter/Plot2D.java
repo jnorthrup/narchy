@@ -74,7 +74,7 @@ public class Plot2D extends Widget {
         private transient float maxValue;
         private transient float minValue;
 
-        private float[] color = {1, 1, 1, 0.75f};
+        private final float[] color = {1, 1, 1, 0.75f};
 
         @Override
         public float[] toArray() {

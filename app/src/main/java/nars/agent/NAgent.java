@@ -95,12 +95,13 @@ public class NAgent extends NARService implements NSense, NAct {
     public NAgent(Term id, FrameTrigger frameTrigger, NAR nar) {
         super(id);
         this.nar = nar;
-        this.attn = new PriNode(id);
+        this.attn = nar.attn.add(id).id();
         this.attn.outs(nar.attn.graph,
             this.attnAction = new PriNode($.func("action", id)),
             this.attnSensor = new PriNode($.func("sensor", id)),
             this.attnReward = new PriNode($.func("reward", id))
         );
+
 
         this.frameTrigger = frameTrigger;
 

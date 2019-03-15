@@ -97,30 +97,30 @@ public class G extends Applet implements Runnable {
 		int player_climbing = NO;
 		int player_bulletCounter = 0;
 
-		
-		int bullet_x[] = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
-		int bullet_y[] = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
-		int bullet_direction[] = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
+
+        int[] bullet_x = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
+        int[] bullet_y = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
+        int[] bullet_direction = new int[MAX_NUMBER_OF_ACTIVE_BULLETS];
 		int numberOfActiveBullets = 0;
 
 		
 		int numberOfActiveEnemies = 0;
-		int enemy_x[] = new int[MAX_NUMBER_OF_ENEMIES];
-		int enemy_y[] = new int[MAX_NUMBER_OF_ENEMIES];
-		int enemy_health[] = new int[MAX_NUMBER_OF_ENEMIES];
-		int enemy_direction[] = new int[MAX_NUMBER_OF_ENEMIES];
-		int enemy_climbing[] = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_x = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_y = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_health = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_direction = new int[MAX_NUMBER_OF_ENEMIES];
+        int[] enemy_climbing = new int[MAX_NUMBER_OF_ENEMIES];
 
 		
 		int balls_height = 0;
 		int balls_direction_isUp = YES;
 
-		
-		int particle_x[] = new int[MAX_NUMBER_OF_PARTICLES];
-		int particle_y[] = new int[MAX_NUMBER_OF_PARTICLES];
-		float particle_xVelocity[] = new float[MAX_NUMBER_OF_PARTICLES];
-		float particle_yVelocity[] = new float[MAX_NUMBER_OF_PARTICLES];
-		int particle_life[] = new int[MAX_NUMBER_OF_PARTICLES];
+
+        int[] particle_x = new int[MAX_NUMBER_OF_PARTICLES];
+        int[] particle_y = new int[MAX_NUMBER_OF_PARTICLES];
+        float[] particle_xVelocity = new float[MAX_NUMBER_OF_PARTICLES];
+        float[] particle_yVelocity = new float[MAX_NUMBER_OF_PARTICLES];
+        int[] particle_life = new int[MAX_NUMBER_OF_PARTICLES];
 		int activeParticles = 0;
 
 		

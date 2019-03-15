@@ -29,7 +29,7 @@ public class sfxcache_t {
 	public int speed;			
 	public int width;
 	public int stereo;
-	public byte data[];		
+    public byte[] data;
 	
 	public sfxcache_t(int size) {
 		data = new byte[size];

@@ -14,6 +14,7 @@ import org.codehaus.janino.util.ClassFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.Permissions;
 import java.security.ProtectionDomain;
 import java.security.SecureClassLoader;
@@ -93,7 +94,7 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
 
         try {
             Scanner scanner = new Scanner(null, new ByteArrayInputStream(
-                    sb.toString().getBytes("UTF-8")), "UTF-8");
+                    sb.toString().getBytes(StandardCharsets.UTF_8)), "UTF-8");
 
             JaninoRestrictedClassLoader cl = new JaninoRestrictedClassLoader();
             UnitCompiler unitCompiler = new UnitCompiler(

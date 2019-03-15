@@ -138,13 +138,10 @@ public class Z extends GamePanel {
 	int[][] map = new int[MAPSIZE][MAPSIZE]; 
 	float[] gauge = new float[3]; 
 	byte[][] audioData = new byte[SOUNDS][]; 
-	Clip[] audio = new Clip[SOUNDS]; 
+	Clip[] audio = new Clip[SOUNDS];
 
-	
-	
-	
 
-	boolean keyboard[] = new boolean[0x10000]; 
+    boolean[] keyboard = new boolean[0x10000];
 
 	
 	int i, j, k, m, n;

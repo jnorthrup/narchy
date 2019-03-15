@@ -391,11 +391,11 @@ public class WordNet {
         m = regexPatterns[1].matcher(pointers);
         while (m.lookingAt()) {
             String word = m.group(1);
-            if (word.length() > 3 && ("(a)".equals(word.substring(word.length() - 3, word.length()))
-                    || "(p)".equals(word.substring(word.length() - 3, word.length())))) {
+            if (word.length() > 3 && ("(a)".equals(word.substring(word.length() - 3))
+                    || "(p)".equals(word.substring(word.length() - 3)))) {
                 word = word.substring(0, word.length() - 3);
             }
-            if (word.length() > 4 && "(ip)".equals(word.substring(word.length() - 4, word.length()))) {
+            if (word.length() > 4 && "(ip)".equals(word.substring(word.length() - 4))) {
                 word = word.substring(0, word.length() - 4);
             }
             String count = m.group(2);
@@ -901,7 +901,7 @@ public class WordNet {
                                 
                             } else {
                                 word = words[i].substring(0, words[i].indexOf('_'));
-                                freq = words[i].substring(words[i].lastIndexOf('_') + 1, words[i].length());
+                                freq = words[i].substring(words[i].lastIndexOf('_') + 1);
                                 frequencies.put(word.intern(), Integer.decode(freq));
                             }
                         }
@@ -2250,7 +2250,7 @@ public class WordNet {
         if (underscore1 < 0) {
             return "";
         }
-        return senseKey.substring(underscore2 + 1, senseKey.length());
+        return senseKey.substring(underscore2 + 1);
     }
 
     /**

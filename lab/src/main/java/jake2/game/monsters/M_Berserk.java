@@ -734,7 +734,7 @@ public class M_Berserk {
         public String getID() { return "berserk_attack_club";}
         @Override
         public boolean think(edict_t self) {
-            float aim[] = { 0, 0, 0 };
+            float[] aim = {0, 0, 0};
 
             Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], -4);
             GameWeapon.fire_hit(self, aim, (5 + (Lib.rand() % 6)), 400); 
@@ -933,7 +933,7 @@ public class M_Berserk {
         public String getID() { return "berserk_die";}
         @Override
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
-                        int damage, float point[]) {
+                        int damage, float[] point) {
             int n;
 
             if (self.health <= self.gib_health) {

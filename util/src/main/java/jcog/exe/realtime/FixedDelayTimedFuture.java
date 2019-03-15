@@ -17,7 +17,7 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
     protected long periodNS;
     @Deprecated private final int wheels;
     @Deprecated private final long resolution;
-    private int phase;
+    private final int phase;
 
     public FixedDelayTimedFuture(
                                  Callable<T> callable,

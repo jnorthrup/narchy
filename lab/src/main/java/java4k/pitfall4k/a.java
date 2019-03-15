@@ -23,6 +23,7 @@ package java4k.pitfall4k;
 
 import java4k.GamePanel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -1099,7 +1100,7 @@ public class a extends GamePanel {
 	
 	public static void main(String[] args) throws Throwable {
 	  javax.swing.JFrame frame = new javax.swing.JFrame("Pitfall 4K");
-	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+	  frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	  a applet = new a();
 	  applet.setPreferredSize(new java.awt.Dimension(608, 384));
 	  frame.add(applet, java.awt.BorderLayout.CENTER);

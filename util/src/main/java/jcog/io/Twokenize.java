@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -450,8 +451,8 @@ public enum Twokenize {
      * output. Input and output UTF-8.
      */
     public static void main(String[] args) throws IOException {
-        BufferedReader input = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-        PrintStream output = new PrintStream(out, true, "UTF-8");
+        BufferedReader input = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+        PrintStream output = new PrintStream(out, true, StandardCharsets.UTF_8);
         String line;
         while ((line = input.readLine()) != null) {
             List<Span> toks = twokenize(line);

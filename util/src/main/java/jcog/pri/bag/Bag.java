@@ -374,8 +374,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
 //                                        //0.5f,
 //                                        size, cap, pressure, mass);
 
-                        if (eachMustForgetPct != null)
-                            return eachMustForgetPct;
+                        return eachMustForgetPct;
 
                     }
                 }

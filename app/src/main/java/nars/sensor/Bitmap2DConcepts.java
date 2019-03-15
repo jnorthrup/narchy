@@ -35,7 +35,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     private final Int2Function<Term> pixelTerm;
 
     /** TODO abstract pixel neighbor linking strategies */
-    @Deprecated private boolean linkNESW = false;
+    @Deprecated private final boolean linkNESW = false;
 
     protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, FloatRange res, NAR n) {
 

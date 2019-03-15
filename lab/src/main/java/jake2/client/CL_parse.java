@@ -340,8 +340,8 @@ public class CL_parse {
      */
     public static void ParseBaseline() {
         entity_state_t nullstate = new entity_state_t(null);
-        
-        int bits[] = { 0 };
+
+        int[] bits = {0};
         int newnum = CL_ents.ParseEntityBits(bits);
         entity_state_t es = Globals.cl_entities[newnum].baseline;
         CL_ents.ParseDelta(nullstate, es, newnum, bits[0]);
@@ -373,7 +373,7 @@ public class CL_parse {
 
         if (t != -1) {
             ci.name = s.substring(0, t);
-            s = s.substring(t + 1, s.length());
+            s = s.substring(t + 1);
             
         }
 
@@ -406,7 +406,7 @@ public class CL_parse {
             model_name = s.substring(0, pos);
 
             
-            skin_name = s.substring(pos + 1, s.length());
+            skin_name = s.substring(pos + 1);
 
             
             model_filename = "players/" + model_name + "/tris.md2";
@@ -588,7 +588,7 @@ public class CL_parse {
             channel = 0;
         }
 
-        float pos[];
+        float[] pos;
         if ((flags & Defines.SND_POS) != 0) { 
             MSG.ReadPos(Globals.net_message, pos_v);
             

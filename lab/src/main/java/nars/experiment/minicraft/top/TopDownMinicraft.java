@@ -367,7 +367,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
         game.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 
         JFrame frame = new JFrame(TopDownMinicraft.NAME);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.add(game, BorderLayout.CENTER);
         frame.pack();

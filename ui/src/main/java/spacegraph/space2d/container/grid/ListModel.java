@@ -8,7 +8,7 @@ import java.util.List;
 abstract public class ListModel<X> implements GridModel<X> {
 
     /** orientation, dynamically changeable. true=vertical, false=horizontal. default=vertical */
-    private boolean vertical = true;
+    private final boolean vertical = true;
 
     private DynGrid<X> surface;
 

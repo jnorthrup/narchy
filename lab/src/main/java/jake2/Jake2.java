@@ -93,7 +93,7 @@ public final class Jake2 {
 
         
 
-        Globals.dedicated= Cvar.Get("dedicated", "0", Qcommon.CVAR_NOSET);
+        Globals.dedicated= Cvar.Get("dedicated", "0", Defines.CVAR_NOSET);
 
         if (dedicated)
             Globals.dedicated.value = 1.0f;

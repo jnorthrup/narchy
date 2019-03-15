@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.*;
+import java.nio.charset.StandardCharsets;
 
 public class Lib {
 
@@ -109,7 +110,7 @@ public class Lib {
 	/** Converts a string to a vector. Needs improvement. */
 	public static float[] atov(String v) {
 		float[] res = { 0, 0, 0 };
-		String strres[] = v.split(" ");
+        String[] strres = v.split(" ");
 		for (int n=0; n < 3 && n < strres.length; n++)
 		{
 			res[n] = atof(strres[n]);
@@ -118,7 +119,7 @@ public class Lib {
 	}
 
 	/** Like in libc. */
-	public static int strlen(char in[]) {
+	public static int strlen(char[] in) {
 		for (int i = 0; i < in.length; i++)
 			if (in[i] == 0)
 				return i;
@@ -126,7 +127,7 @@ public class Lib {
 	}
 	
 	/** Like in libc. */
-	public static int strlen(byte in[]) {
+	public static int strlen(byte[] in) {
 		for (int i = 0; i < in.length; i++)
 			if (in[i] == 0)
 				return i;
@@ -137,8 +138,8 @@ public class Lib {
 	public static String hexdumpfile(ByteBuffer bb, int len) {
 	
 		ByteBuffer bb1 = bb.slice();
-	
-		byte buf[] = new byte[len];
+
+        byte[] buf = new byte[len];
 	
 		bb1.get(buf);
 	
@@ -146,7 +147,7 @@ public class Lib {
 	}
 	
 	/** Converts memory to a memory dump string. */
-	public static String hexDump(byte data1[], int len, boolean showAddress) {
+	public static String hexDump(byte[] data1, int len, boolean showAddress) {
 		StringBuilder result = new StringBuilder();
 		StringBuilder charfield = new StringBuilder();
 		int i = 0;
@@ -195,13 +196,13 @@ public class Lib {
 	}
 	
 	/** Prints a vector to the quake console. */
-	public static void printv(String in, float arr[]) {
+	public static void printv(String in, float[] arr) {
 		for (int n = 0; n < arr.length; n++) {
 			Com.Println(in + '[' + n + "]: " + arr[n]);
 		}
 	}
-	
-	static final byte nullfiller[] = new byte[8192];
+
+    static final byte[] nullfiller = new byte[8192];
 		
 	/** Like in libc. */
 	public static void fwriteString(String s, int len, RandomAccessFile f) throws IOException {
@@ -239,7 +240,7 @@ public class Lib {
 	
 	/** Like in libc */
 	public static String freadString(RandomAccessFile f, int len) {
-		byte buffer[] = new byte[len];
+        byte[] buffer = new byte[len];
 		FS.Read(buffer, len, f);
 	
 		return Lib.CtoJava(buffer);
@@ -251,7 +252,7 @@ public class Lib {
 		if (pos == -1)
 			return "";
 		else if (pos < in.length())
-			return in.substring(pos + 1, in.length());
+			return in.substring(pos + 1);
 		return "";
 	}
 	
@@ -280,7 +281,7 @@ public class Lib {
 	
 	/** Converts an int to 4 bytes java representation. */
 	public static byte[] getIntBytes(int c) {
-		byte b[] = new byte[4];
+        byte[] b = new byte[4];
 		b[0] = (byte) ((c & 0xff));
 		b[1] = (byte) ((c >>> 8) & 0xff);
 		b[2] = (byte) ((c >>> 16) & 0xff);
@@ -289,13 +290,13 @@ public class Lib {
 	}
 	
 	/** Converts an 4 bytes java int representation to an int. */
-	public static int getInt(byte b[]) {
+	public static int getInt(byte[] b) {
 		return (b[0] & 0xff) | ((b[1] & 0xff) << 8) | ((b[2] & 0xff) << 16) | ((b[3] & 0xff) << 24);
 	}
 	
 	/** Duplicates a float array. */
-	public static float[] clone(float in[]) {
-		float out[] = new float[in.length];
+	public static float[] clone(float[] in) {
+        float[] out = new float[in.length];
 	
 		if (in.length != 0)
 			System.arraycopy(in, 0, out, 0, in.length);
@@ -309,12 +310,7 @@ public class Lib {
      * avoid String.getBytes() because it is using system specific character encoding.
      */
     public static byte[] stringToBytes(String value) {
-        try {
-           return value.getBytes("ISO-8859-1");
-        } catch (UnsupportedEncodingException e) {
-            
-            return null;
-        }
+        return value.getBytes(StandardCharsets.ISO_8859_1);
     }
     
     /** 
@@ -323,12 +319,7 @@ public class Lib {
      * avoid new String(bytes) because it is using system specific character encoding.
      */
     public static String bytesToString(byte[] value) {
-        try {
-           return new String(value, "ISO-8859-1");
-        } catch (UnsupportedEncodingException e) {
-            
-            return null;
-        }
+        return new String(value, StandardCharsets.ISO_8859_1);
     }
 	
 	/** Helper method that savely handles the null termination of old C String data. */

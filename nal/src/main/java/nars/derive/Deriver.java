@@ -7,7 +7,6 @@ import nars.NAR;
 import nars.Task;
 import nars.attention.DerivePri;
 import nars.control.Cause;
-import nars.time.event.DurService;
 import nars.control.channel.ConsumerX;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
@@ -18,6 +17,7 @@ import nars.exe.Causable;
 import nars.task.ITask;
 import nars.task.util.TaskBuffer;
 import nars.term.Term;
+import nars.time.event.DurService;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;

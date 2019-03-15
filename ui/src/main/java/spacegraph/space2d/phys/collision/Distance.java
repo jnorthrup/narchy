@@ -79,11 +79,11 @@ public class Distance {
         /**
          * vertices on shape A
          */
-        public final int indexA[] = new int[3];
+        public final int[] indexA = new int[3];
         /**
          * vertices on shape B
          */
-        public final int indexB[] = new int[3];
+        public final int[] indexB = new int[3];
 
         public SimplexCache() {
             metric = 0;

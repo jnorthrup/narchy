@@ -260,7 +260,7 @@ public class ClassReloader extends ClassLoader {
     protected List<Class<?>> reloadableClassCache;
     protected ClassReloader child;
     private int reloadersCreated = 0;
-    private ByteCodeContainer byteCodeContainer;
+    private final ByteCodeContainer byteCodeContainer;
     public static int MAX_RELOADERS_BEFORE_CLEANING = 150;
 
     /**
@@ -390,7 +390,7 @@ public class ClassReloader extends ClassLoader {
             if (parentField != null) {
                 parentField.setAccessible(true);
                 try {
-                    parentField.set(current, (ClassLoader)null);
+                    parentField.set(current, null);
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -698,10 +698,10 @@ public class ClassReloader extends ClassLoader {
     }
 
     private static class ByteCodeContainer {
-        private Map<String, byte[]> classByteCodeMap;
-        private Map<String, String> filePerClass;
-        private Set<String> classesToReload;
-        private boolean verifyFileChanges;
+        private final Map<String, byte[]> classByteCodeMap;
+        private final Map<String, String> filePerClass;
+        private final Set<String> classesToReload;
+        private final boolean verifyFileChanges;
         public static boolean reuseByteCode = true;
 
         private ByteCodeContainer(Map<String, byte[]> classByteCodeMap, Set<String> classesToReload, boolean verifyFileChanges) {
@@ -745,12 +745,12 @@ public class ClassReloader extends ClassLoader {
             String key = file.getAbsolutePath();
             if (ByteCodeContainer.reuseByteCode && this.classByteCodeMap.containsKey(key)) {
                 if (this.classesToReload.contains(key)) {
-                    byte buff[] = loadFile(file);
+                    byte[] buff = loadFile(file);
                     this.classByteCodeMap.put(key, buff);
                     return buff;
                 } else if (this.verifyFileChanges) {
-                    byte lastBuff[] = this.classByteCodeMap.get(key);
-                    byte currentBuff[] = JustCodeDigest.digest(file, false);
+                    byte[] lastBuff = this.classByteCodeMap.get(key);
+                    byte[] currentBuff = JustCodeDigest.digest(file, false);
                     if (Arrays.equals(lastBuff, currentBuff)) {
                         return lastBuff;
                     } else {
@@ -761,7 +761,7 @@ public class ClassReloader extends ClassLoader {
                     return this.classByteCodeMap.get(key);
                 }
             } else {
-                byte buff[] = loadFile(file);
+                byte[] buff = loadFile(file);
                 this.classByteCodeMap.put(key, buff);
                 return buff;
             }
@@ -777,7 +777,7 @@ public class ClassReloader extends ClassLoader {
 
         private byte[] loadFile(File file) throws IOException {
             int size = (int) file.length();
-            byte buff[] = new byte[size];
+            byte[] buff = new byte[size];
             FileInputStream fis = new FileInputStream(file);
             DataInputStream dis = new DataInputStream(fis);
             dis.readFully(buff);

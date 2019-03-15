@@ -372,7 +372,7 @@ public class ShapeSensor extends NARService {
             }
 
             if(!ts.isEmpty())
-                image.add(SETe.the((Collection) ts));
+                image.add(SETe.the(ts));
         }
     }
 

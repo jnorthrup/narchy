@@ -8,7 +8,7 @@ public class CPU {
     }
 
     public void run() {
-        int memory[] = mem.getMem();
+        int[] memory = mem.getMem();
         while (true) {
             String res = "0x" + toHexString((byte) memory[mem.pc]).toLowerCase();
             switch (res) {

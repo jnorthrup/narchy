@@ -22,6 +22,7 @@ import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.outputs.Results;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -67,7 +68,7 @@ public class JsonPostProcessor extends BasicPostprocessor {
 
     private void saveFile(String text, String pathOfFile) {
         try {
-            Writer writer = new OutputStreamWriter(new FileOutputStream(pathOfFile), "utf-8");
+            Writer writer = new OutputStreamWriter(new FileOutputStream(pathOfFile), StandardCharsets.UTF_8);
             writer.write(text);
             writer.close();
         } catch (IOException ex) {

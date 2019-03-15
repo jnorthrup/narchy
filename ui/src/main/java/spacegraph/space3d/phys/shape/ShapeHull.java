@@ -46,7 +46,7 @@ public class ShapeHull {
 	private final FasterList<v3> vertices = new FasterList<>();
 	private final IntArrayList indices = new IntArrayList();
 	private int numIndices;
-	private ConvexShape shape;
+	private final ConvexShape shape;
 
 	private final FasterList<v3> unitSpherePoints = new FasterList<>();
 

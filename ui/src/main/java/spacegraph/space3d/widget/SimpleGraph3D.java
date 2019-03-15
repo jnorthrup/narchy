@@ -132,8 +132,8 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
     public SimpleGraph3D<X> commit(MapNodeGraph<X,Object> g) {
         return commit(
-                g.nodes().stream().map(x -> (X)x.id()).collect(Collectors.toList()),
-                x-> StreamSupport.stream(g.node(x).edges(false, true).spliterator(), false).map(zz -> (X)zz.to().id())
+                g.nodes().stream().map(x -> x.id()).collect(Collectors.toList()),
+                x-> StreamSupport.stream(g.node(x).edges(false, true).spliterator(), false).map(zz -> zz.to().id())
                         .collect(Collectors.toList()));
     }
 

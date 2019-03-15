@@ -1656,7 +1656,7 @@ public class PlayerClient {
      */
     public static void LookAtKiller(edict_t self, edict_t inflictor,
             edict_t attacker) {
-        float dir[] = { 0, 0, 0 };
+        float[] dir = {0, 0, 0};
     
         edict_t world = GameBase.g_edicts[0];
     

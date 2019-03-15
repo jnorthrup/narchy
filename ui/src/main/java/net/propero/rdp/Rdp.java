@@ -1000,7 +1000,7 @@ public class Rdp {
     private void processDemandActive(RdpPacket_Localised data)
             throws RdesktopException, IOException, CryptoException,
             OrderException {
-        int type[] = new int[1];
+        int[] type = new int[1];
 
         this.rdp_shareid = data.getLittleEndian32();
 

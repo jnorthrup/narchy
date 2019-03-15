@@ -182,13 +182,13 @@ public class RdpApplet extends Applet {
         }
 
         @Override
-        public void write(byte b[]) {
+        public void write(byte[] b) {
             String aString = new String(b);
             aTextArea.append(aString);
         }
 
         @Override
-        public void write(byte b[], int off, int len) {
+        public void write(byte[] b, int off, int len) {
             String aString = new String(b, off, len);
             aTextArea.append(aString);
         }

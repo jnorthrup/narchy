@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.sound.joal;
 
 import com.jogamp.openal.AL;
+import com.jogamp.openal.ALConstants;
 import com.jogamp.openal.ALException;
 import jake2.Defines;
 import jake2.Globals;
@@ -119,7 +120,7 @@ public class Channel {
 			sourceId = tmp[0];
                         int errorCode = al.alGetError();
 			
-			if (errorCode != AL.AL_NO_ERROR) {
+			if (errorCode != ALConstants.AL_NO_ERROR) {
 	                    Com.Println("can't generate more sources: channel="+
                                          i +" sourceId=" + sourceId +
                                         " alError:" + errorCode);
@@ -137,14 +138,14 @@ public class Channel {
 			numChannels++;
 			
 			
-			al.alSourcef (sourceId, AL.AL_GAIN, 1.0f);
-			al.alSourcef (sourceId, AL.AL_PITCH, 1.0f);
-			al.alSourcei (sourceId, AL.AL_SOURCE_RELATIVE,  AL.AL_FALSE);
-			al.alSourcefv(sourceId, AL.AL_VELOCITY, NULLVECTOR, 0);
-			al.alSourcei (sourceId, AL.AL_LOOPING, AL.AL_FALSE);
-			al.alSourcef (sourceId, AL.AL_REFERENCE_DISTANCE, 200.0f);
-			al.alSourcef (sourceId, AL.AL_MIN_GAIN, 0.0005f);
-			al.alSourcef (sourceId, AL.AL_MAX_GAIN, 1.0f);
+			al.alSourcef (sourceId, ALConstants.AL_GAIN, 1.0f);
+			al.alSourcef (sourceId, ALConstants.AL_PITCH, 1.0f);
+			al.alSourcei (sourceId, ALConstants.AL_SOURCE_RELATIVE, ALConstants.AL_FALSE);
+			al.alSourcefv(sourceId, ALConstants.AL_VELOCITY, NULLVECTOR, 0);
+			al.alSourcei (sourceId, ALConstants.AL_LOOPING, ALConstants.AL_FALSE);
+			al.alSourcef (sourceId, ALConstants.AL_REFERENCE_DISTANCE, 200.0f);
+			al.alSourcef (sourceId, ALConstants.AL_MIN_GAIN, 0.0005f);
+			al.alSourcef (sourceId, ALConstants.AL_MAX_GAIN, 1.0f);
 		}
 		return numChannels;
 	}
@@ -152,7 +153,7 @@ public class Channel {
 	static void reset() {
 		for (int i = 0; i < numChannels; i++) {
 			al.alSourceStop(sources[i]);
-			al.alSourcei(sources[i], AL.AL_BUFFER, 0);
+			al.alSourcei(sources[i], ALConstants.AL_BUFFER, 0);
 			channels[i].clear();
 		}
 	}
@@ -171,8 +172,8 @@ public class Channel {
         streamQueue = 0;
 
         int source = channels[numChannels].sourceId;
-        al.alSourcei (source, AL.AL_SOURCE_RELATIVE,  AL.AL_TRUE);
-        al.alSourcef(source, AL.AL_GAIN, 1.0f);
+        al.alSourcei (source, ALConstants.AL_SOURCE_RELATIVE, ALConstants.AL_TRUE);
+        al.alSourcef(source, ALConstants.AL_GAIN, 1.0f);
         channels[numChannels].volumeChanged = true;
 
         Com.DPrintf("streaming enabled\n");
@@ -181,7 +182,7 @@ public class Channel {
     static void disableStreaming() {
         if (!streamingEnabled) return;
         unqueueStreams();
-		al.alSourcei (channels[numChannels].sourceId, AL.AL_SOURCE_RELATIVE,  AL.AL_FALSE);
+		al.alSourcei (channels[numChannels].sourceId, ALConstants.AL_SOURCE_RELATIVE, ALConstants.AL_FALSE);
 
         
         numChannels++;
@@ -198,7 +199,7 @@ public class Channel {
         
         al.alSourceStop(source);
         int[] tmpCount = {0};
-        al.alGetSourcei(source, AL.AL_BUFFERS_QUEUED, tmpCount, 0);
+        al.alGetSourcei(source, ALConstants.AL_BUFFERS_QUEUED, tmpCount, 0);
         int count = tmpCount[0];
         Com.DPrintf("unqueue " + count + " buffers\n");
         while (count-- > 0) {
@@ -215,11 +216,11 @@ public class Channel {
         int source = channels[numChannels].sourceId;
         
         int[] tmp = {0};
-        al.alGetSourcei(source, AL.AL_BUFFERS_PROCESSED, tmp, 0);
+        al.alGetSourcei(source, ALConstants.AL_BUFFERS_PROCESSED, tmp, 0);
         int processed = tmp[0];
-        al.alGetSourcei(source, AL.AL_SOURCE_STATE, tmp, 0);
+        al.alGetSourcei(source, ALConstants.AL_SOURCE_STATE, tmp, 0);
         int state = tmp[0];
-        boolean playing = ( state == AL.AL_PLAYING);
+        boolean playing = ( state == ALConstants.AL_PLAYING);
         boolean interupted = !playing && streamQueue > 2;
         
         if (interupted) {
@@ -345,25 +346,25 @@ public class Channel {
 				if (ch.modified) {
 					if (ch.bufferChanged) {
 					    try {
-						al.alSourcei(sourceId, AL.AL_BUFFER, ch.bufferId);
+						al.alSourcei(sourceId, ALConstants.AL_BUFFER, ch.bufferId);
 					    } catch (ALException e) {
 						
 						al.alSourceStop(sourceId);
-						al.alSourcei(sourceId, AL.AL_BUFFER, ch.bufferId);
+						al.alSourcei(sourceId, ALConstants.AL_BUFFER, ch.bufferId);
 					    }
 					}
 					if (ch.volumeChanged) {
-						al.alSourcef (sourceId, AL.AL_GAIN, ch.volume);
+						al.alSourcef (sourceId, ALConstants.AL_GAIN, ch.volume);
 					}
-					al.alSourcef (sourceId, AL.AL_ROLLOFF_FACTOR, ch.rolloff);
-					al.alSourcefv(sourceId, AL.AL_POSITION, sourceOrigin, 0);
+					al.alSourcef (sourceId, ALConstants.AL_ROLLOFF_FACTOR, ch.rolloff);
+					al.alSourcefv(sourceId, ALConstants.AL_POSITION, sourceOrigin, 0);
 					al.alSourcePlay(sourceId);
 					ch.modified = false;
 				} else {
-					al.alGetSourcei(sourceId, AL.AL_SOURCE_STATE, tmp , 0);
+					al.alGetSourcei(sourceId, ALConstants.AL_SOURCE_STATE, tmp , 0);
 					state = tmp[0];
-                    if (state == AL.AL_PLAYING) {
-						al.alSourcefv(sourceId, AL.AL_POSITION, sourceOrigin, 0);
+                    if (state == ALConstants.AL_PLAYING) {
+						al.alSourcefv(sourceId, ALConstants.AL_POSITION, sourceOrigin, 0);
 					} else {
 						ch.clear();
 					}
@@ -381,7 +382,7 @@ public class Channel {
 	 */
 	static void addLoopSounds() {
 		
-		if ((Globals.cl_paused.value != 0.0f) || (Globals.cls.state != Globals.ca_active) || !Globals.cl.sound_prepped) {
+		if ((Globals.cl_paused.value != 0.0f) || (Globals.cls.state != Defines.ca_active) || !Globals.cl.sound_prepped) {
 			removeUnusedLoopSounds();
 			return;
 		}
@@ -429,7 +430,7 @@ public class Channel {
 			ch.autosound = true;
 			
 			looptable.put(key, ch);
-			al.alSourcei(ch.sourceId, AL.AL_LOOPING, AL.AL_TRUE);
+			al.alSourcei(ch.sourceId, ALConstants.AL_LOOPING, ALConstants.AL_TRUE);
 		}
 
 		removeUnusedLoopSounds();
@@ -443,7 +444,7 @@ public class Channel {
 			ch = iter.next();
 			if (!ch.autosound) {
 				al.alSourceStop(ch.sourceId);
-				al.alSourcei(ch.sourceId, AL.AL_LOOPING, AL.AL_FALSE);
+				al.alSourcei(ch.sourceId, ALConstants.AL_LOOPING, ALConstants.AL_FALSE);
 				iter.remove();
 				ch.clear();
 			}

@@ -219,7 +219,7 @@ public class ChainShape extends Shape {
      * @param vertices an array of vertices, these are copied
      * @param count    the vertex count
      */
-    private void createChain(final v2 vertices[], int count) {
+    private void createChain(final v2[] vertices, int count) {
         assert (m_vertices == null && m_count == 0);
         assert (count >= 2);
         m_count = count;

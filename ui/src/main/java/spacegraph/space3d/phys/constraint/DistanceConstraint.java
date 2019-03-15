@@ -13,8 +13,8 @@ import static jcog.math.v3.v;
  */
 public class DistanceConstraint extends TypedConstraint {
 
-    private float dist;
-    private float speed;
+    private final float dist;
+    private final float speed;
 
     private final JacobianEntry jac = new JacobianEntry();
 
@@ -26,8 +26,8 @@ public class DistanceConstraint extends TypedConstraint {
      */
     private float tau = 0.3f;
 
-    private float damping = 1f;
-    private float impulseClamp;
+    private final float damping = 1f;
+    private final float impulseClamp;
     private float error;
 
     public DistanceConstraint(Body3D rbA, Body3D rbB, float dist, float speed, float impulseClamp, float tau) {

@@ -40,13 +40,13 @@ import spacegraph.space3d.phys.BulletStats;
  */
 class CProfileNode {
 
-	private String name;
+	private final String name;
 	private int totalCalls;
 	private float totalTime;
 	private long startTime;
 	private int recursionCounter;
 	
-	private CProfileNode parent;
+	private final CProfileNode parent;
 	private CProfileNode child;
 	private CProfileNode sibling;
 

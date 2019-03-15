@@ -604,7 +604,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param row the matrix row
      * @param v   the array into which the matrix row values will be copied
      */
-    public final void getRow(int row, float v[]) {
+    public final void getRow(int row, float[] v) {
         switch (row) {
             case 0:
                 v[0] = m00;
@@ -682,7 +682,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param column the matrix column
      * @param v      the array into which the matrix row values will be copied
      */
-    public final void getColumn(int column, float v[]) {
+    public final void getColumn(int column, float[] v) {
         switch (column) {
             case 0:
                 v[0] = m00;
@@ -1039,7 +1039,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param row the row number to be modified (zero indexed)
      * @param v   the replacement row
      */
-    public final void setRow(int row, float v[]) {
+    public final void setRow(int row, float[] v) {
         switch (row) {
             case 0:
                 this.m00 = v[0];
@@ -1165,7 +1165,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param column the column number to be modified (zero indexed)
      * @param v      the replacement column
      */
-    public final void setColumn(int column, float v[]) {
+    public final void setColumn(int column, float[] v) {
         switch (column) {
             case 0:
                 this.m00 = v[0];
@@ -1739,7 +1739,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * about allocating a little bit of garbage.
      */
     private void invertGeneral(Matrix4f m1) {
-        double temp[] = new double[16];
+        double[] temp = new double[16];
         int r, c;
 
         
@@ -1827,7 +1827,7 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
     private static boolean luDecomposition(double[] matrix0,
                                            int[] row_perm) {
 
-        double row_scale[] = new double[4];
+        double[] row_scale = new double[4];
 
         
         {

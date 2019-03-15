@@ -183,15 +183,15 @@ public class RectDouble implements HyperRegion, Comparable<RectDouble> {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append('(');
-        sb.append(Double.toString(min.x));
+        sb.append(min.x);
         sb.append(',');
-        sb.append(Double.toString(min.y));
+        sb.append(min.y);
         sb.append(')');
         sb.append(' ');
         sb.append('(');
-        sb.append(Double.toString(max.x));
+        sb.append(max.x);
         sb.append(',');
-        sb.append(Double.toString(max.y));
+        sb.append(max.y);
         sb.append(')');
 
         return sb.toString();

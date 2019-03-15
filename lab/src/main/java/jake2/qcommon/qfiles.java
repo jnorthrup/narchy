@@ -536,8 +536,8 @@ public class qfiles {
 	
 	
 	public static class dedge_t {
-		
-		final int v[] = { 0, 0 };
+
+        final int[] v = {0, 0};
 	}
 	
 	public static class dface_t {
@@ -673,7 +673,7 @@ public class qfiles {
 		}
 
 		public final int numclusters;
-		public int bitofs[][] = new int[8][2]; 
+        public int[][] bitofs = new int[8][2];
 	}
 	
 	

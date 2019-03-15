@@ -1143,7 +1143,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     @SuppressWarnings("JavaDoc")
     <O> Iterable<O> getDescendantValues(final AbstractBytes startKey, final Node startNode) {
         return () -> new LazyIterator<O>() {
-            Iterator<NodeKeyPair> descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
+            final Iterator<NodeKeyPair> descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
 
             @Override
             protected O computeNext() {
@@ -1179,7 +1179,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
             @Override
             public Iterator<Pair<AbstractBytes, O>> iterator() {
                 return new LazyIterator<Pair<AbstractBytes, O>>() {
-                    Iterator<NodeKeyPair> descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
+                    final Iterator<NodeKeyPair> descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
 
                     @Override
                     protected Pair<AbstractBytes, O> computeNext() {

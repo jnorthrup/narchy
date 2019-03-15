@@ -1,6 +1,8 @@
 package nars.gui;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL2ES3;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.util.FloatFloatToFloatFunction;
@@ -53,7 +55,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
     public void renderWaveLine(GL2 gl, TruthWave wave, FloatFloatToFloatFunction y, Colorize colorize) {
 
         gl.glLineWidth(4);
-        gl.glBegin(GL2.GL_LINE_STRIP);
+        gl.glBegin(GL.GL_LINE_STRIP);
 
         wave.forEach((freq, conf, start, end) -> {
 
@@ -82,7 +84,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
     public void renderWaveArea(long minT, long maxT, GL2 gl, TruthWave wave, FloatFloatToFloatFunction y, Colorize colorize) {
 
-        gl.glBegin(GL2.GL_QUADS);
+        gl.glBegin(GL2ES3.GL_QUADS);
 
         float midY = y.apply(0.5f, 0.5f);
 //

@@ -2591,7 +2591,7 @@ public enum Util {
                 points - 1;
         //points;
 
-        float coefficients[] = Util.toFloat(PolynomialCurveFitter.create(degree).fit(obs));
+        float[] coefficients = Util.toFloat(PolynomialCurveFitter.create(degree).fit(obs));
 
         /* adapted from: PolynomialFunction
            https://en.wikipedia.org/wiki/Horner%27s_method

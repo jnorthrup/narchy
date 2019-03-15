@@ -360,7 +360,7 @@ public class Shell {
                 setContentPane(swingTerminal);
 
 
-                setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 setBackground(Color.BLACK);
                 pack();
 

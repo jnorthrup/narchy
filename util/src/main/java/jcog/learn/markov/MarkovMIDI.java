@@ -21,7 +21,7 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
     }
 
     public void learnSequence(Sequence s, MidiFileFormat fmt) {
-        Track tracks[] = s.getTracks();
+        Track[] tracks = s.getTracks();
         for (int i = 0; i < tracks.length; i++) {
             learnTrack(tracks[i], fmt);
         }
@@ -118,8 +118,8 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 
         @Override
         public int compareTo(MidiMessageWrapper other) {
-            byte mymsg[] = mMessage.getMessage();
-            byte theirmsg[] = mMessage.getMessage();
+            byte[] mymsg = mMessage.getMessage();
+            byte[] theirmsg = mMessage.getMessage();
 
 
             for (int i = 0; i < mymsg.length && i < theirmsg.length; i++) {
@@ -134,8 +134,8 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
         public boolean equals(Object o) {
             try {
                 MidiMessageWrapper other = (MidiMessageWrapper) o;
-                byte mine[] = mMessage.getMessage();
-                byte theirs[] = other.getMessage().getMessage();
+                byte[] mine = mMessage.getMessage();
+                byte[] theirs = other.getMessage().getMessage();
 
                 if (mine.length != theirs.length) return false;
 

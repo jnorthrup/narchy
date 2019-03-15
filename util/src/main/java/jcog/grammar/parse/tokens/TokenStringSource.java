@@ -106,7 +106,7 @@ public class TokenStringSource {
 		if (tokenList.isEmpty()) {
 			cachedTokenString = null;
 		} else {
-			Token tokens[] = new Token[tokenList.size()];
+            Token[] tokens = new Token[tokenList.size()];
 			tokenList.toArray(tokens);
 			cachedTokenString = new TokenString(tokens);
 		}

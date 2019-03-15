@@ -38,7 +38,7 @@ public class DQN2 extends Agent {
 
     /* Deep Q-learning configuration */
     final QLearningConfig learnConfig;
-    private double[] targetFuture;
+    private final double[] targetFuture;
 
     public DQN2(int inputs, int actions) {
         this(inputs, actions, new XoRoShiRo128PlusRandom(1));

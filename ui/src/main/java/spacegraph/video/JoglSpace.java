@@ -77,7 +77,7 @@ abstract public class JoglSpace {
     }
 
     private void initBlend(GL gl) {
-        gl.glEnable(GL2.GL_BLEND);
+        gl.glEnable(GL_BLEND);
         gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
         gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
 
@@ -201,7 +201,7 @@ abstract public class JoglSpace {
 
             gl.glEnable(GL_LINE_SMOOTH);
 
-            gl.glEnable(GL2.GL_MULTISAMPLE);
+            gl.glEnable(GL_MULTISAMPLE);
 
 
             gl.glHint(GL_POLYGON_SMOOTH_HINT,

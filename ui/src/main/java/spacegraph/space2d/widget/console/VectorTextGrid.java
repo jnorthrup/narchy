@@ -18,18 +18,18 @@ import java.awt.*;
     private Color bg;
 
     private static final float fontThickness = 3f;
-    private static final Color TRANSLUCENT = new Color(Color.TRANSLUCENT);
+    private static final Color TRANSLUCENT = new Color(Transparency.TRANSLUCENT);
 
 
     /**
      * percent of each grid cell width filled with the character
      */
-    private float charScaleX = 0.85f;
+    private final float charScaleX = 0.85f;
 
     /**
      * percent of each grid cell height filled with the character
      */
-    private float charScaleY = 0.85f;
+    private final float charScaleY = 0.85f;
 
 
     

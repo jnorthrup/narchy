@@ -41,17 +41,16 @@ public class server_static_t {
 
     String mapcmd = ""; 
 
-    int spawncount; 
+    int spawncount;
 
-    
 
-    client_t clients[]; 
+    client_t[] clients;
 
     int num_client_entities; 
 
-    int next_client_entities; 
+    int next_client_entities;
 
-    entity_state_t client_entities[]; 
+    entity_state_t[] client_entities;
 
     int last_heartbeat;
 

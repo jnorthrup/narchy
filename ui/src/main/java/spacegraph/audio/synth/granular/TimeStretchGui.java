@@ -34,11 +34,11 @@ public class TimeStretchGui extends JPanel {
 
 
 		
-		JLabel sliderLabel = new JLabel("Tempo", JLabel.CENTER);
+		JLabel sliderLabel = new JLabel("Tempo", SwingConstants.CENTER);
 		sliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		
-		tempoSlider = new JSlider(JSlider.VERTICAL, 0, 100, 50);
+		tempoSlider = new JSlider(SwingConstants.VERTICAL, 0, 100, 50);
 		tempoSlider.setMajorTickSpacing(10);
 		tempoSlider.setMinorTickSpacing(1);
 		tempoSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));

@@ -17,9 +17,9 @@ import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjCommutive;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.CompoundNormalization;
-import nars.time.Tense;
 import nars.term.var.ellipsis.EllipsisMatch;
 import nars.term.var.ellipsis.Ellipsislike;
+import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;

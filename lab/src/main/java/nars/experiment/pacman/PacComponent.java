@@ -198,7 +198,7 @@ public class PacComponent extends JComponent {
         for (int i = 0; i < this.splashText.size(); i++) {
 
             Splash s = this.splashText.get(i);
-            g2d.setColor(new Color(s.color.getRed() / 255f, s.color.getGreen() / 255f, s.color.getBlue() / 255f, s.time / (float) Splash.TIME));
+            g2d.setColor(new Color(s.color.getRed() / 255f, s.color.getGreen() / 255f, s.color.getBlue() / 255f, s.time / (float) SplashModel.TIME));
             g2d.setFont(s.font);
             Rectangle bounds = getTileBounds(s.x, s.y, offset);
             g2d.drawString(s.text, bounds.x, (int) (bounds.y + Math.sqrt(s.time)));

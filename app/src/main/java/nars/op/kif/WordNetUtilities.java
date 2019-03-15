@@ -377,7 +377,7 @@ public class WordNetUtilities {
         String remainder = "";
         if (verb.indexOf('_') > 0) {
             word = verb.substring(0, verb.indexOf('_'));
-            remainder = verb.substring(verb.indexOf('_'), verb.length());
+            remainder = verb.substring(verb.indexOf('_'));
         }
 
         

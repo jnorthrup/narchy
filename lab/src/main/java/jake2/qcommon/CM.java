@@ -197,7 +197,7 @@ public class CM {
 
     public static cvar_t map_noareas;
 
-    public static byte cmod_base[];
+    public static byte[] cmod_base;
 
     public static int checksum;
 
@@ -207,9 +207,9 @@ public class CM {
      * Loads in the map and all submodels.
      */
     public static cmodel_t CM_LoadMap(String name, boolean clientload,
-            int checksum[]) {
+                                      int[] checksum) {
         Com.DPrintf("CM_LoadMap(" + name + ")...\n");
-        byte buf[];
+        byte[] buf;
         qfiles.dheader_t header;
         int length;
 
@@ -854,7 +854,7 @@ public class CM {
         return map_leafs[leafnum].area;
     }
 
-    static cplane_t box_planes[];
+    static cplane_t[] box_planes;
 
     static int box_headnode;
 
@@ -988,9 +988,10 @@ public class CM {
 
     private static int leaf_count, leaf_maxcount;
 
-    private static int leaf_list[];
+    private static int[] leaf_list;
 
-    private static float leaf_mins[], leaf_maxs[];
+    private static float[] leaf_mins;
+    private static float[] leaf_maxs;
 
     private static int leaf_topnode;
 
@@ -1031,7 +1032,7 @@ public class CM {
 
     /** Fills in a list of all the leafs touched and starts with the head node. */
     private static int CM_BoxLeafnums_headnode(float[] mins, float[] maxs,
-            int list[], int listsize, int headnode, int topnode[]) {
+                                               int[] list, int listsize, int headnode, int[] topnode) {
         leaf_list = list;
         leaf_count = 0;
         leaf_maxcount = listsize;
@@ -1049,8 +1050,8 @@ public class CM {
     }
 
     /** Fills in a list of all the leafs touched. */
-    public static int CM_BoxLeafnums(float[] mins, float[] maxs, int list[],
-            int listsize, int topnode[]) {
+    public static int CM_BoxLeafnums(float[] mins, float[] maxs, int[] list,
+                                     int listsize, int[] topnode) {
         return CM_BoxLeafnums_headnode(mins, maxs, list, listsize,
                 map_cmodels[0].headnode, topnode);
     }
@@ -1470,7 +1471,7 @@ public class CM {
         
         if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2]) {
 
-            int leafs[] = new int[1024];
+            int[] leafs = new int[1024];
             int i, numleafs;
             float[] c1 = { 0, 0, 0 }, c2 = { 0, 0, 0 };
             int topnode = 0;
@@ -1483,7 +1484,7 @@ public class CM {
                 c2[i] += 1;
             }
 
-            int tn[] = { topnode };
+            int[] tn = {topnode};
 
             numleafs = CM_BoxLeafnums_headnode(c1, c2, leafs, 1024, headnode,
                     tn);
@@ -1592,7 +1593,7 @@ public class CM {
     /*
      * =================== CM_DecompressVis ===================
      */
-    public static void CM_DecompressVis(byte in[], int offset, byte out[]) {
+    public static void CM_DecompressVis(byte[] in, int offset, byte[] out) {
         int c;
 
         int row;
@@ -1736,7 +1737,7 @@ public class CM {
      * 
      * This is used by the client refreshes to cull visibility.
      */
-    public static int CM_WriteAreaBits(byte buffer[], int area) {
+    public static int CM_WriteAreaBits(byte[] buffer, int area) {
         int i;
         int floodnum;
         int bytes;
@@ -1782,7 +1783,7 @@ public class CM {
         
         int len = portalopen.length * 4;
 
-        byte buf[] = new byte[len];
+        byte[] buf = new byte[len];
 
         FS.Read(buf, len, f);
 
@@ -1799,7 +1800,7 @@ public class CM {
      * CM_HeadnodeVisible returns true if any leaf under headnode has a cluster that is potentially
      * visible.
      */
-    public static boolean CM_HeadnodeVisible(int nodenum, byte visbits[]) {
+    public static boolean CM_HeadnodeVisible(int nodenum, byte[] visbits) {
         while (true) {
             if (nodenum < 0) {
                 int leafnum = -1 - nodenum;

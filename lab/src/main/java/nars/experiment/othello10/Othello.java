@@ -26,7 +26,7 @@ public class Othello extends JFrame {
 
     public static void main(String[] args) {
         Othello frame = new Othello();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 }

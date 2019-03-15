@@ -98,7 +98,7 @@ public final class Netchan extends SV_MAIN {
     
     public static sizebuf_t net_message = new sizebuf_t();
 
-    public static byte net_message_buffer[] = new byte[Defines.MAX_MSGLEN];
+    public static byte[] net_message_buffer = new byte[Defines.MAX_MSGLEN];
 
     /**
      * Netchan_Init.
@@ -115,14 +115,14 @@ public final class Netchan extends SV_MAIN {
         qport = Cvar.Get("qport", String.valueOf(port), Defines.CVAR_NOSET);
     }
 
-    private static final byte send_buf[] = new byte[Defines.MAX_MSGLEN];
+    private static final byte[] send_buf = new byte[Defines.MAX_MSGLEN];
     private static final sizebuf_t send = new sizebuf_t();
     
     /**
      * Netchan_OutOfBand. Sends an out-of-band datagram.
      */
     public static void Netchan_OutOfBand(int net_socket, netadr_t adr,
-            int length, byte data[]) {
+                                         int length, byte[] data) {
 
         
         SZ.Init(send, send_buf, Defines.MAX_MSGLEN);
@@ -186,7 +186,7 @@ public final class Netchan extends SV_MAIN {
      * A 0 length will still generate a packet and deal with the reliable
      * messages.
      */
-    public static void Transmit(netchan_t chan, int length, byte data[]) {
+    public static void Transmit(netchan_t chan, int length, byte[] data) {
         int send_reliable;
         int w1, w2;
 

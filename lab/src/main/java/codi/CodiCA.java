@@ -14,7 +14,7 @@ public class CodiCA extends CA {
     private boolean SignalingInited;
 
     /** add blocks every 2 cells TODO verify this is what it actually means */
-    private boolean gridBlock = true;
+    private final boolean gridBlock = true;
 
 
     static class CodiCell {

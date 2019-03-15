@@ -42,7 +42,7 @@ import spacegraph.util.math.Matrix3f;
 public class ScaledBvhTriangleMeshShape extends ConcaveShape {
 
 	private final v3 localScaling = new v3();
-	private BvhTriangleMeshShape bvhTriMeshShape;
+	private final BvhTriangleMeshShape bvhTriMeshShape;
 
 	public ScaledBvhTriangleMeshShape(BvhTriangleMeshShape childShape, v3 localScaling) {
 		this.localScaling.set(localScaling);

@@ -23,6 +23,7 @@ package java4k.rainbowroad;
 
 import java4k.GamePanel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -1029,7 +1030,7 @@ public class ap extends GamePanel {
     javax.swing.JFrame frame = new javax.swing.JFrame(
             "Rainbow Road");
 
-    frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
     applet.setPreferredSize(new java.awt.Dimension(800, 600));
     frame.setContentPane(applet);

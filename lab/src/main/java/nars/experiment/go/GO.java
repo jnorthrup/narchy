@@ -101,9 +101,9 @@ public class GO extends JPanel implements MouseListener {
     public static JButton pass = new JButton("Pass");
     static JFrame frame = new JFrame("GO");
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 
         GO panel = new GO();

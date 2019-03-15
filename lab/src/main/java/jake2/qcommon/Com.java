@@ -107,12 +107,12 @@ public final class Com
 			index= 0;
 		}
 
-		public ParseHelp(char in[])
+		public ParseHelp(char[] in)
 		{
 			this(in, 0);
 		}
 
-		public ParseHelp(char in[], int offset)
+		public ParseHelp(char[] in, int offset)
 		{
 			data= in;
 			index= offset;
@@ -153,7 +153,7 @@ public final class Com
 		}
 
 		public int index;
-		public char data[];
+        public char[] data;
 		private final int length;
 
 		public char skipwhites()
@@ -691,7 +691,7 @@ public final class Com
 	/**
 	 * Calculates a crc checksum-sequence over an array.
 	 */
-	public static byte BlockSequenceCRCByte(byte base[], int offset, int length, int sequence)
+	public static byte BlockSequenceCRCByte(byte[] base, int offset, int length, int sequence)
 	{
 		if (sequence < 0)
 			Sys.Error("sequence < 0, this shouldn't happen\n");

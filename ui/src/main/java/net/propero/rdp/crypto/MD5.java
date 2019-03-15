@@ -192,7 +192,7 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
      */
     @Override
     public byte[] engineDigest(byte[] in, int length) {
-        byte b[] = java_digest(in, length);
+        byte[] b = java_digest(in, length);
         engineReset();
         return b;
     }
@@ -223,7 +223,7 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
 
         transform(data);
 
-        byte buf[] = new byte[HASH_LENGTH];
+        byte[] buf = new byte[HASH_LENGTH];
 
         
         int off = 0;
@@ -237,7 +237,7 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
         return buf;
     }
 
-    private void transform(int M[]) {
+    private void transform(int[] M) {
         int a, b, c, d;
 
         a = digest[0];

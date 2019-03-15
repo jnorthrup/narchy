@@ -13,7 +13,7 @@ public class Granulize extends SoundProducer.Amplifiable {
 	private final float[] sourceBuffer;
 	private final Random rng;
 	private float now;
-	private float playTime;
+	private final float playTime;
 
     /** this actually represents the target amplitude which the current amplitude will continuously interpolate towards */
 	public final NumberX stretchFactor = new AtomicFloat(1.0f);
@@ -26,7 +26,7 @@ public class Granulize extends SoundProducer.Amplifiable {
 	private long[] currentGrain;
 	private long[] fadingGrain;
 
-	private int playOffset;
+	private final int playOffset;
 
     public Granulize(SoundSample s, float grainSizeSecs, float windowSizeFactor, Random rng) {
         this(s.buf, s.rate, grainSizeSecs, windowSizeFactor, rng);

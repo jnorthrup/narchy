@@ -30,7 +30,7 @@ public class ConnectFour {
         JFrame frame = new JFrame();
         JPanel panel = new ConnectFourPanel(game);
         frame.add(panel, BorderLayout.CENTER);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         return frame;
     }
 

@@ -88,8 +88,7 @@ abstract public class TermMetadata implements Termlike {
                         if (typeToMatch[0] == -1)
                             typeToMatch[0] = type;
                         else {
-                            if (typeToMatch[0] != type)
-                                return false; //same # differnt type, needs normalized
+                            return typeToMatch[0] == type; //same # differnt type, needs normalized
                         }
                     } else if (varID == minID[0] + 1) {
                         //increase the order, ok, set new type

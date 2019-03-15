@@ -1017,23 +1017,23 @@ public class PJLibrary extends PrologLib {
 			return unify(id, new Var());
 		}
 		try {
-			if (Boolean.class.isInstance(obj)) {
+			if (obj instanceof Boolean) {
 				return (Boolean) obj ? unify(id, Term.TRUE) : unify(id, Term.FALSE);
-			} else if (Byte.class.isInstance(obj)) {
+			} else if (obj instanceof Byte) {
 				return unify(id, new NumberTerm.Int(((Byte) obj).intValue()));
-			} else if (Short.class.isInstance(obj)) {
+			} else if (obj instanceof Short) {
 				return unify(id, new NumberTerm.Int(((Short) obj).intValue()));
-			} else if (Integer.class.isInstance(obj)) {
+			} else if (obj instanceof Integer) {
 				return unify(id, new NumberTerm.Int((Integer) obj));
-			} else if (java.lang.Long.class.isInstance(obj)) {
+			} else if (obj instanceof Long) {
 				return unify(id, new NumberTerm.Long((java.lang.Long) obj));
-			} else if (java.lang.Float.class.isInstance(obj)) {
+			} else if (obj instanceof Float) {
 				return unify(id, new NumberTerm.Float((java.lang.Float) obj));
-			} else if (java.lang.Double.class.isInstance(obj)) {
+			} else if (obj instanceof Double) {
 				return unify(id, new NumberTerm.Double((java.lang.Double) obj));
-			} else if (String.class.isInstance(obj)) {
+			} else if (obj instanceof String) {
 				return unify(id, new Struct((String) obj));
-			} else if (Character.class.isInstance(obj)) {
+			} else if (obj instanceof Character) {
 				return unify(id, new Struct(obj.toString()));
 			} else {
 				return bindDynamicObject(id, obj);
@@ -1045,7 +1045,7 @@ public class PJLibrary extends PrologLib {
 	}
 	
 	private static Object[] getArrayFromList(Struct list) {
-		Object args[] = new Object[list.listSize()];
+        Object[] args = new Object[list.listSize()];
 		Iterator<? extends Term> it = list.listIterator();
 		int count = 0;
 		while (it.hasNext()) {

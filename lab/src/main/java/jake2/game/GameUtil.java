@@ -260,7 +260,7 @@ public class GameUtil {
             return value.substring(0, p);
         }
 
-        return value.substring(p + 1, value.length());
+        return value.substring(p + 1);
     }
 
     static void ValidateSelectedItem(edict_t ent) {

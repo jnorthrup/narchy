@@ -9,11 +9,11 @@ import spacegraph.space3d.Spatial;
  */
 public class Spiral<X> implements SpaceTransform<X> {
 
-    private float nodeSpeed = 0.3f;
+    private final float nodeSpeed = 0.3f;
     private int order;
 
-    private float baseRad = 40f;
-    private float angleRate = 0.5f;
+    private final float baseRad = 40f;
+    private final float angleRate = 0.5f;
 
     @Override
     public void update(Iterable<Spatial<X>> g, float dt) {

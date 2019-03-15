@@ -54,7 +54,7 @@ public class TapIn extends UGen {
         }
     }
 
-    public void fillBufferLinear(float buf[], UGen env) {
+    public void fillBufferLinear(float[] buf, UGen env) {
         int base = (counter - bufferSize + memLength) % memLength;
         for (int i = 0; i < buf.length; i++) {
             float numSamplesBack;
@@ -74,7 +74,7 @@ public class TapIn extends UGen {
         }
     }
 
-    public void fillBufferLinear(float buf[], float numSamplesBack) {
+    public void fillBufferLinear(float[] buf, float numSamplesBack) {
         if (numSamplesBack < 0) {
             numSamplesBack = 0;
         } else if (numSamplesBack > maxDelay) {
@@ -92,7 +92,7 @@ public class TapIn extends UGen {
 
     }
 
-    public void fillBufferNoInterp(float buf[], UGen env) {
+    public void fillBufferNoInterp(float[] buf, UGen env) {
         int base = (counter - bufferSize + memLength + memLength);
         for (int i = 0; i < buf.length; i++) {
             int numSamplesBack;
@@ -106,7 +106,7 @@ public class TapIn extends UGen {
         }
     }
 
-    public void fillBufferNoInterp(float buf[], int numSamplesBack) {
+    public void fillBufferNoInterp(float[] buf, int numSamplesBack) {
         if (numSamplesBack < 0) {
             numSamplesBack = 0;
         } else if (numSamplesBack > maxDelay) {
@@ -118,7 +118,7 @@ public class TapIn extends UGen {
         }
     }
 
-    public float fillBufferAllpass(float buf[], UGen env, float lastY) {
+    public float fillBufferAllpass(float[] buf, UGen env, float lastY) {
         int base = counter - bufferSize + memLength + memLength;
         for (int i = 0; i < buf.length; i++) {
             float numSamplesBack;
@@ -147,7 +147,7 @@ public class TapIn extends UGen {
      * @return The last output value.
      */
 
-    public float fillBufferAllpass(float buf[], int sampDel, float g,
+    public float fillBufferAllpass(float[] buf, int sampDel, float g,
                                    float lastY) {
         if (sampDel < 0) {
             sampDel = 0;

@@ -386,7 +386,7 @@ public class LevelPanel extends JComponent implements MouseListener
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				Point releasePoint = snapToGrid(e.getPoint());
 				handleDrag(pressedPoint, releasePoint);
-				if ((e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) != 0) {
+				if ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) {
 					pressedPoint = releasePoint;
 					draggedPoint = releasePoint;
 				} else {
@@ -434,7 +434,7 @@ public class LevelPanel extends JComponent implements MouseListener
 	@Override
     public void keyPressed(KeyEvent e) {
 		try {
-			boolean ctrlDown = ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0);
+			boolean ctrlDown = ((e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0);
 			if (ctrlDown) {
 				if (e.getKeyCode() == KeyEvent.VK_S) {
 					saveBtn.doClick();

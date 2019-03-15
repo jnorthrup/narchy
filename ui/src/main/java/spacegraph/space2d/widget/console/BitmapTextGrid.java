@@ -28,10 +28,10 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     private BufferedImage backbuffer = null;
     private Font font;
     private Graphics2D backbufferGraphics;
-    private Color cursorColor = new Color(255, 200, 0, 127);
+    private final Color cursorColor = new Color(255, 200, 0, 127);
 
-    private boolean antialias = true;
-    private boolean quality = true;
+    private final boolean antialias = true;
+    private final boolean quality = true;
 
     protected int cursorCol, cursorRow;
     protected int fontWidth, fontHeight;

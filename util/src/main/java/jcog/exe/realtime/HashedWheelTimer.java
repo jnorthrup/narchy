@@ -38,7 +38,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      */
     static final int SLEEP_EPOCHS = 1024;
 
-    transient private boolean daemon = false;
+    final transient private boolean daemon = false;
 
 
     private final WheelModel model;

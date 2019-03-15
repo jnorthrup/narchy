@@ -12,7 +12,7 @@ public class TriggeredSurface<X extends Surface> extends AbstractTriggeredSurfac
 
     private final Function<Runnable, Off> trigger;
     private final Consumer<X> update;
-    private transient Off on = null;
+    private final transient Off on = null;
 
     public TriggeredSurface(X surface, Function<Runnable,Off> trigger, Runnable update) {
         this(surface, trigger, (x)->update.run());

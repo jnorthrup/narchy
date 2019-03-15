@@ -26,11 +26,11 @@ package jake2.render;
 import java.util.Arrays;
 
 public class mtexinfo_t {
-	
-	public float vecs[][] = {
-		 { 0, 0, 0, 0 },
-		 { 0, 0, 0, 0 }
-	};
+
+    public float[][] vecs = {
+            {0, 0, 0, 0},
+            {0, 0, 0, 0}
+    };
 	public int flags;
 	public int numframes;
 	public mtexinfo_t next; 

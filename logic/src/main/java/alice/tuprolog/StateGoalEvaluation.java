@@ -46,7 +46,7 @@ public class StateGoalEvaluation extends State {
             try {
                 nextState = primitive
                         .evalAsPredicate(e.currentContext.currentGoal) ?
-                        c.GOAL_SELECTION
+                        PrologRun.GOAL_SELECTION
                         : PrologRun.BACKTRACK;
             } catch (HaltException he) {
                 nextState = PrologRun.END_HALT;
@@ -73,11 +73,11 @@ public class StateGoalEvaluation extends State {
                     //System.err.println(((JavaException) t).getException());
                 }
                 
-                nextState = c.EXCEPTION;
+                nextState = PrologRun.EXCEPTION;
             }
             e.nDemoSteps++;
         } else {
-            nextState = c.RULE_SELECTION;
+            nextState = PrologRun.RULE_SELECTION;
         }
 
         return nextState;

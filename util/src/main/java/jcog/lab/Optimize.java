@@ -68,7 +68,7 @@ public class Optimize<S, E> extends Lab<E>  {
     private final List<Sensor<S, ?>> varSensors;
 
     /** enable to print exceptions */
-    private boolean debug = false;
+    private final boolean debug = false;
 
     public Optimize(Supplier<S> subj,
                     Function<Supplier<S>, E> experiment, Goal<E> goal,

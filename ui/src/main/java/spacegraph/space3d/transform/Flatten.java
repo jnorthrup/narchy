@@ -19,8 +19,8 @@ public class Flatten<X> implements SpaceTransform<X>, Consumer<Spatial<X>> {
 
     private final float zTolerance = 5f;
 
-    private float zSpeed;
-    private float rotateRate;
+    private final float zSpeed;
+    private final float rotateRate;
 
     public Flatten(float zSpeed, float rotateRate) {
         this.zSpeed = zSpeed; this.rotateRate = rotateRate;

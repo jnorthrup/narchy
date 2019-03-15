@@ -255,15 +255,15 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append('(');
-        sb.append(Float.toString(x));
+        sb.append(x);
         sb.append(',');
-        sb.append(Float.toString(y));
+        sb.append(y);
         sb.append(')');
         sb.append(' ');
         sb.append('(');
-        sb.append(Float.toString(x + w));
+        sb.append((x + w));
         sb.append(',');
-        sb.append(Float.toString(y + h));
+        sb.append((y + h));
         sb.append(')');
 
         return sb.toString();

@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class M extends GamePanel {
 	MouseEvent click;
-	boolean key[] = new boolean[65535];
+    boolean[] key = new boolean[65535];
 	BufferStrategy strategy;
 	Random r = new Random();
 

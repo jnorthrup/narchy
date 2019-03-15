@@ -28,10 +28,10 @@ import jcog.pri.Prioritized;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
-import nars.time.event.DurService;
 import nars.control.NARService;
 import nars.link.Activate;
 import nars.op.language.NARHear;
+import nars.time.event.DurService;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;

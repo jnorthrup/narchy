@@ -15,7 +15,8 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
     private final CircularFloatBuffer buffer;
 
 
-    private transient float yMin, yMax;
+    private final transient float yMin;
+    private final transient float yMax;
     private transient BitmapMatrixView bmp = null;
     private transient Graphics gfx;
 

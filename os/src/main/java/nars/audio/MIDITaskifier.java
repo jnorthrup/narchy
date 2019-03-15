@@ -30,7 +30,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public class MIDITaskifier {
 
-    float volume[] = new float[128];
+    float[] volume = new float[128];
 
     public MIDITaskifier() {
         NAR nar = NARS.threadSafe();

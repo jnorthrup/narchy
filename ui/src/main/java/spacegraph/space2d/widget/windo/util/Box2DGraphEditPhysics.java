@@ -5,7 +5,6 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
-import jcog.event.Off;
 import jcog.math.v2;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;

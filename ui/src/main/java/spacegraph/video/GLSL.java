@@ -1,6 +1,8 @@
 package spacegraph.video;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
 import com.jogamp.opengl.util.glsl.ShaderState;
@@ -156,7 +158,7 @@ public class GLSL extends Surface {
 
 
 
-        gl.glEnable(GL2.GL_TEXTURE);
+        gl.glEnable(GL.GL_TEXTURE);
 
         gl.glColor3f(1f,1f,1f);
         Draw.rect(gl, -1, -1, 1, 1);
@@ -165,7 +167,7 @@ public class GLSL extends Surface {
 
 
 
-        gl.glBegin(GL2.GL_QUADS);
+        gl.glBegin(GL2ES3.GL_QUADS);
         {
             gl.glTexCoord2f(0.0f, 800.0f);
             gl.glVertex3f(0.0f, 1.0f, 1.0f);  

@@ -105,7 +105,7 @@ public class RuleRTab {
 					iTmp = 0;
 				if (iTmp > MJBoard.MAX_CLO)
 					iTmp = MJBoard.MAX_CLO;
-				sBff = sBff + ',' + String.valueOf(iTmp);
+				sBff = sBff + ',' + iTmp;
 			}
 		}
 

@@ -20,7 +20,7 @@ import static nars.time.Tense.XTERNAL;
  */
 public class TruthletTask extends SignalTask {
 
-    private volatile Truthlet truthlet;
+    private final Truthlet truthlet;
 
     public TruthletTask(Term t, byte punct, Truthlet truth, NAR n) {
         this(t, punct, truth, n.time(), n.time.nextStamp());

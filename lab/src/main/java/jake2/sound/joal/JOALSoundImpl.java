@@ -7,6 +7,7 @@ package jake2.sound.joal;
 
 import com.jogamp.openal.*;
 import com.jogamp.openal.eax.EAX;
+import com.jogamp.openal.eax.EAXConstants;
 import com.jogamp.openal.eax.EAXFactory;
 import jake2.Defines;
 import jake2.Globals;
@@ -76,7 +77,7 @@ public final class JOALSoundImpl implements Sound {
 		al.alGenBuffers(buffers.length, buffers, 0);
 		int count = Channel.init(al, buffers);
 		Com.Printf("... using " + count + " channels\n");
-		al.alDistanceModel(AL.AL_INVERSE_DISTANCE_CLAMPED);
+		al.alDistanceModel(ALConstants.AL_INVERSE_DISTANCE_CLAMPED);
 		Cmd.AddCommand("play", new xcommand_t() {
 			@Override
             public void execute() {
@@ -138,7 +139,7 @@ public final class JOALSoundImpl implements Sound {
     private void initBuffer(byte[] samples, int bufferId, int freq) {
         ByteBuffer data = sfxDataBuffer.slice();
         data.put(samples).flip();
-        al.alBufferData(buffers[bufferId], AL.AL_FORMAT_MONO16,
+        al.alBufferData(buffers[bufferId], ALConstants.AL_FORMAT_MONO16,
                 data, data.limit(), freq);
     }
 
@@ -149,12 +150,12 @@ public final class JOALSoundImpl implements Sound {
 	private static String alErrorString(){
 		int error;
 		String message = "";
-		if ((error = al.alGetError()) != AL.AL_NO_ERROR) {
+		if ((error = al.alGetError()) != ALConstants.AL_NO_ERROR) {
 			switch(error) {
-				case AL.AL_INVALID_OPERATION: message = "invalid operation"; break;
-				case AL.AL_INVALID_VALUE: message = "invalid value"; break;
-				case AL.AL_INVALID_ENUM: message = "invalid enum"; break;
-				case AL.AL_INVALID_NAME: message = "invalid name"; break;
+				case ALConstants.AL_INVALID_OPERATION: message = "invalid operation"; break;
+				case ALConstants.AL_INVALID_VALUE: message = "invalid value"; break;
+				case ALConstants.AL_INVALID_ENUM: message = "invalid enum"; break;
+				case ALConstants.AL_INVALID_NAME: message = "invalid name"; break;
 				default: message = String.valueOf(error);
 			}
 		}
@@ -218,33 +219,33 @@ public final class JOALSoundImpl implements Sound {
 	@Override
     public void Update(float[] origin, float[] forward, float[] right, float[] up) {
 		Channel.convertVector(origin, listenerOrigin);		
-		al.alListenerfv(AL.AL_POSITION, listenerOrigin, 0);
+		al.alListenerfv(ALConstants.AL_POSITION, listenerOrigin, 0);
 
 		Channel.convertOrientation(forward, up, listenerOrientation);		
-		al.alListenerfv(AL.AL_ORIENTATION, listenerOrientation, 0);
+		al.alListenerfv(ALConstants.AL_ORIENTATION, listenerOrientation, 0);
 		
 		
-		al.alListenerf(AL.AL_GAIN, s_volume.value);
+		al.alListenerf(ALConstants.AL_GAIN, s_volume.value);
 		
 		if (eax != null) {
 			
 			boolean changeEnv = true;
 			if (currentEnv == -1) {
-				eaxEnv.put(0, EAX.EAX_ENVIRONMENT_UNDERWATER);
-				eax.EAXSet(EAX.LISTENER, EAX.DSPROPERTY_EAXLISTENER_ENVIRONMENT | EAX.DSPROPERTY_EAXLISTENER_DEFERRED, 0, eaxEnv, 4);
+				eaxEnv.put(0, EAXConstants.EAX_ENVIRONMENT_UNDERWATER);
+				eax.EAXSet(EAX.LISTENER, EAXConstants.DSPROPERTY_EAXLISTENER_ENVIRONMENT | EAXConstants.DSPROPERTY_EAXLISTENER_DEFERRED, 0, eaxEnv, 4);
 				changeEnv = true;
 			}
 
 			if ((GameBase.gi.pointcontents.pointcontents(origin)& Defines.MASK_WATER)!= 0) {
-				changeEnv = currentEnv != EAX.EAX_ENVIRONMENT_UNDERWATER;
-				currentEnv = EAX.EAX_ENVIRONMENT_UNDERWATER;
+				changeEnv = currentEnv != EAXConstants.EAX_ENVIRONMENT_UNDERWATER;
+				currentEnv = EAXConstants.EAX_ENVIRONMENT_UNDERWATER;
 			} else {
-				changeEnv = currentEnv != EAX.EAX_ENVIRONMENT_GENERIC;
-				currentEnv = EAX.EAX_ENVIRONMENT_GENERIC;
+				changeEnv = currentEnv != EAXConstants.EAX_ENVIRONMENT_GENERIC;
+				currentEnv = EAXConstants.EAX_ENVIRONMENT_GENERIC;
 			}
 			if (changeEnv) {
 				eaxEnv.put(0, currentEnv);
-				eax.EAXSet(EAX.LISTENER, EAX.DSPROPERTY_EAXLISTENER_ENVIRONMENT | EAX.DSPROPERTY_EAXLISTENER_DEFERRED, 0, eaxEnv, 4);
+				eax.EAXSet(EAX.LISTENER, EAXConstants.DSPROPERTY_EAXLISTENER_ENVIRONMENT | EAXConstants.DSPROPERTY_EAXLISTENER_DEFERRED, 0, eaxEnv, 4);
 			}
 		}
 
@@ -260,7 +261,7 @@ public final class JOALSoundImpl implements Sound {
     public void StopAllSounds() {
 		
 		if (al!=null)
-			al.alListenerf(AL.AL_GAIN, 0);
+			al.alListenerf(ALConstants.AL_GAIN, 0);
 	    PlaySound.reset();
 	    Channel.reset();
 	}
@@ -335,7 +336,7 @@ public final class JOALSoundImpl implements Sound {
 
 		
 		String model = null;
-		int n = Globals.CS_PLAYERSKINS + ent.number - 1;
+		int n = Defines.CS_PLAYERSKINS + ent.number - 1;
 		if (Globals.cl.configstrings[n] != null) {
 			int p = Globals.cl.configstrings[n].indexOf('\\');
 			if (p >= 0) {
@@ -502,22 +503,22 @@ public final class JOALSoundImpl implements Sound {
     public void RawSamples(int samples, int rate, int width, int channels, ByteBuffer data) {
         int format;
         if (channels == 2) {
-            format = (width == 2) ? AL.AL_FORMAT_STEREO16
-                    : AL.AL_FORMAT_STEREO8;
+            format = (width == 2) ? ALConstants.AL_FORMAT_STEREO16
+                    : ALConstants.AL_FORMAT_STEREO8;
         } else {
-            format = (width == 2) ? AL.AL_FORMAT_MONO16
-                    : AL.AL_FORMAT_MONO8;
+            format = (width == 2) ? ALConstants.AL_FORMAT_MONO16
+                    : ALConstants.AL_FORMAT_MONO8;
         }
         
         
-        if (format == AL.AL_FORMAT_MONO8) {
+        if (format == ALConstants.AL_FORMAT_MONO8) {
             ShortBuffer sampleData = streamBuffer;
             int value;
             for (int i = 0; i < samples; i++) {
                 value = (data.get(i) & 0xFF) - 128;
                 sampleData.put(i, (short) value);
             }
-            format = AL.AL_FORMAT_MONO16;
+            format = ALConstants.AL_FORMAT_MONO16;
             width = 2;
             data = sfxDataBuffer.slice();
         }

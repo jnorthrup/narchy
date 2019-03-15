@@ -28,7 +28,7 @@ import java.util.BitSet;
  * Implements static methods to load and write graphs.
  */
 public enum GraphIO { ;
-    private GraphIO() {
+    GraphIO() {
     }
 
 

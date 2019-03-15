@@ -270,7 +270,7 @@ public class Quantize {
      *
      * @return The new color palette.
      */
-    public static int[] quantizeImage(int pixels[][], int max_colors) {
+    public static int[] quantizeImage(int[][] pixels, int max_colors) {
         Cube cube = new Cube(pixels, max_colors);
         cube.classification();
         cube.reduction();
@@ -281,7 +281,7 @@ public class Quantize {
     static class Cube {
         final int[][] pixels;
         final int max_colors;
-        int colormap[];
+        int[] colormap;
 
         final Node root;
         int depth;
@@ -293,7 +293,7 @@ public class Quantize {
         
         int nodes;
 
-        Cube(int pixels[][], int max_colors) {
+        Cube(int[][] pixels, int max_colors) {
             this.pixels = pixels;
             this.max_colors = max_colors;
 
@@ -354,7 +354,7 @@ public class Quantize {
          *   represented by this node.
          */
         void classification() {
-            int pixels[][] = this.pixels;
+            int[][] pixels = this.pixels;
 
             int width = pixels.length;
             int height = pixels[0].length;
@@ -450,7 +450,7 @@ public class Quantize {
             colors = 0;
             root.colormap();
 
-            int pixels[][] = this.pixels;
+            int[][] pixels = this.pixels;
 
             int width = pixels.length;
             int height = pixels[0].length;

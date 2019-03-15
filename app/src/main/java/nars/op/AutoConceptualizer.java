@@ -7,13 +7,13 @@ import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.AbstractSensor;
-import nars.time.event.DurService;
 import nars.control.channel.ConsumerX;
 import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.time.event.DurService;
 import nars.truth.Truth;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 

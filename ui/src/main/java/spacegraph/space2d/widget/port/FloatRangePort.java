@@ -14,7 +14,7 @@ public class FloatRangePort extends FloatPort {
     //private static final float EPSILON = 0.001f;
 
     public final FloatRange f;
-    private boolean autoUpdate = true; //TODO configurable rate
+    private final boolean autoUpdate = true; //TODO configurable rate
 
     public FloatRangePort(float val, float min, float max) {
         this(new FloatRange(val, min, max));

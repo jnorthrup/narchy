@@ -33,8 +33,8 @@ public class clientinfo_t {
 	image_t skin;	
 	image_t icon;	
 	String iconname	="";
-	model_t model;	
-	model_t weaponmodel[] = new model_t[Defines.MAX_CLIENTWEAPONMODELS]; 
+	model_t model;
+    model_t[] weaponmodel = new model_t[Defines.MAX_CLIENTWEAPONMODELS];
 	
 
 

@@ -71,7 +71,7 @@ public class Cons<H extends Term<?>, R extends Compound<?>> extends Compound<Con
     @Override
     public Iterator<Term> iterator() {
         return new Iterator<>() {
-            Cons<?, ?> theTuple = (Cons<?, ?>) Cons.this;
+            Cons<?, ?> theTuple = Cons.this;
 
             @Override
             public Term next() {

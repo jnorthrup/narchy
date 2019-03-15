@@ -47,15 +47,21 @@ public class PreciseHMM {
 	/** The number of observations */
 	private final int sigmaSize;
 
-	/** The initial probabilities for each state: p[state] */
-	public double pi[];
+    /**
+     * The initial probabilities for each state: p[state]
+     */
+    public double[] pi;
 
-	/** The state change probability to switch from state A to
-	 * state B: a[stateA][stateB] */
-	public double a[][];
+    /**
+     * The state change probability to switch from state A to
+     * state B: a[stateA][stateB]
+     */
+    public double[][] a;
 
-	/** The probability to emit symbol S in state A: b[stateA][symbolS] */
-	public double b[][];
+    /**
+     * The probability to emit symbol S in state A: b[stateA][symbolS]
+     */
+    public double[][] b;
 
 	/**
 	 * Initialize the Hidden Markov Model in a left-to-right version.

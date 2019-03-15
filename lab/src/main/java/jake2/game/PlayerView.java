@@ -219,7 +219,7 @@ public class PlayerView {
      * damage = deltavelocity*deltavelocity * 0.0001
      */
     public static void SV_CalcViewOffset(edict_t ent) {
-        float angles[] = { 0, 0, 0 };
+        float[] angles = {0, 0, 0};
         float bob;
         float ratio;
         float delta;
@@ -371,7 +371,7 @@ public class PlayerView {
      * Adds a blending effect to the clients view.
      */
     public static void SV_AddBlend(float r, float g, float b, float a,
-            float v_blend[]) {
+                                   float[] v_blend) {
         float a2, a3;
 
         if (a <= 0)

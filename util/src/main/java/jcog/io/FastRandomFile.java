@@ -21,7 +21,7 @@ package jcog.io;
 public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 {
   protected java.io.RandomAccessFile raf = null;
-  protected byte buff[] = new byte[65536];
+    protected byte[] buff = new byte[65536];
   protected int buffptr = 0;
   protected long fp = 0;
 
@@ -161,7 +161,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
       buff[buffptr - ((int)(fp - targetFp)) + 3] = b4;
   }
 
-  public void write(byte b[], int off, int len) throws java.io.IOException
+  public void write(byte[] b, int off, int len) throws java.io.IOException
   {
     if (/*crypto || */circularFileSize > 0)
     {
@@ -193,7 +193,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     }
   }
 
-  public void write(byte b[])	throws java.io.IOException
+  public void write(byte[] b)	throws java.io.IOException
   {
     write(b, 0, b.length);
   }
@@ -615,7 +615,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     }
   }
 
-  public void readFully(byte b[], int off, int len) throws java.io.IOException
+  public void readFully(byte[] b, int off, int len) throws java.io.IOException
   {
     raf.readFully(b, off, len);
 

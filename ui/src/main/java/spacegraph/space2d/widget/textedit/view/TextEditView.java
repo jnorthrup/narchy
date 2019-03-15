@@ -37,7 +37,7 @@ public class TextEditView implements BufferListener {
 
 
         int x1 = Math.max(0, (int) Math.floor(vx));
-        int y1 = Math.max(0, (int) Math.round(vy));
+        int y1 = Math.max(0, Math.round(vy));
         int x2 = x1 + (int) Math.ceil(vw);
         int y2 = y1 + Math.round(vh);
 

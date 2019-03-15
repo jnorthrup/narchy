@@ -128,7 +128,7 @@ public class game_import_t {
     }
 
     
-    public static int BoxEdicts(float[] mins, float[] maxs, edict_t list[],
+    public static int BoxEdicts(float[] mins, float[] maxs, edict_t[] list,
                                 int maxcount, int areatype) {
         return SV_WORLD.SV_AreaEdicts(mins, maxs, list, maxcount, areatype);
     }

@@ -23,6 +23,7 @@ package java4k.dord;
 
 import java4k.GamePanel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -1404,7 +1405,7 @@ public class a extends GamePanel {
   public static void main(String[] args) throws Throwable {
     javax.swing.JFrame frame = new javax.swing.JFrame(
         "Dord");
-    frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     a applet = new a();
     applet.setPreferredSize(new java.awt.Dimension(800, 600));
     frame.add(applet, java.awt.BorderLayout.CENTER);

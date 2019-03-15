@@ -396,7 +396,7 @@ public class GjkEpaSolver {
                     b[1].cross(ab, b[1]);
                     b[2].cross(ab, b[2]);
 
-                    float m[] = { b[0].lengthSquared(), b[1].lengthSquared(), b[2].lengthSquared() };
+                    float[] m = {b[0].lengthSquared(), b[1].lengthSquared(), b[2].lengthSquared()};
 
                     Quat4f tmpQuat = new Quat4f();
                     tmp.normalize(ab);

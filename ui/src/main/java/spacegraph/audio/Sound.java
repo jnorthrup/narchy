@@ -9,7 +9,7 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
     public final S producer;
     private final SoundSource source;
     private float volume;
-    private float priority;
+    private final float priority;
     
     private float x, y, z;
     private float score;

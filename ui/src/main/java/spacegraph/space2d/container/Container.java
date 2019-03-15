@@ -22,7 +22,7 @@ abstract public class Container extends Surface {
     final static MetalAtomicIntegerFieldUpdater<Container> MUSTLAYOUT =
             new MetalAtomicIntegerFieldUpdater<>(Container.class, "mustLayout");
 
-    private volatile int mustLayout = 0;
+    private final int mustLayout = 0;
 
 
     @Override

@@ -95,8 +95,8 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
 
     }
 
-    private IndexWriter writer;
-    private SearcherManager searcherManager;
+    private final IndexWriter writer;
+    private final SearcherManager searcherManager;
 
     /**
      * Read the object from Base64 string.

@@ -20,7 +20,7 @@ public class ZoomOrtho extends Ortho {
     public final static short PAN_BUTTON = 0;
     private final static short MOVE_WINDOW_BUTTON = 1;
 
-    private float wheelZoomRate = 0.5f;
+    private final float wheelZoomRate = 0.5f;
 
     public ZoomOrtho(JoglSpace space, NewtKeyboard keyboard) {
         super(space, keyboard);
@@ -95,7 +95,7 @@ public class ZoomOrtho extends Ortho {
 
     private final Fingering fingerContentPan = new FingerMoveWindow(PAN_BUTTON) {
 
-        float speed = 1f;
+        final float speed = 1f;
         private v3 camStart;
 
         @Override

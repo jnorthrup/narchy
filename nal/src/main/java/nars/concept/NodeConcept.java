@@ -90,12 +90,8 @@ public class NodeConcept implements Concept {
     @Override
     public boolean delete( NAR nar) {
         Object[] c = meta.clearPut(DELETED, DELETED);
-        if (c==null || (c.length!=2 || c[0]!=DELETED)) {
-//            if (linker instanceof TemplateTermLinker) ((FasterList)linker).clear(); //HACK TODO maybe add Linker.clear()
-
-            return true;
-        }
-        return false;
+        //            if (linker instanceof TemplateTermLinker) ((FasterList)linker).clear(); //HACK TODO maybe add Linker.clear()
+        return c == null || (c.length != 2 || c[0] != DELETED);
     }
 
     @Override

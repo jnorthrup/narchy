@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public class A extends Applet implements Runnable {
-	static boolean keys[] = new boolean[65536];
+    static boolean[] keys = new boolean[65536];
 	final static double PI = 3.1415;
 	final static int enemynum = 80;
 	final static int bulletnum = 8000;
@@ -68,17 +68,17 @@ public class A extends Applet implements Runnable {
 
 		
 		double[][] item = new double[itemnum][6];
-		int itemStack[] = new int[itemnum];
+        int[] itemStack = new int[itemnum];
 		int itemStacki = itemnum;
 
-		int item2[] = { 0, 490, 600, 1 };
+        int[] item2 = {0, 490, 600, 1};
 
 		
 		double[][] graze = new double[grazenum][5];
 		int[] grazeStack = new int[grazenum];
 		int grazeStacki = grazenum;
 
-		double star[][] = new double[75][2];
+        double[][] star = new double[75][2];
 
 		for (i = 0; i < itemnum; ++i) {
 			if (i < enemynum) {
@@ -107,7 +107,7 @@ public class A extends Applet implements Runnable {
 		BufferedImage gbullet = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
 		BufferedImage gbg = new BufferedImage(480, 480, BufferedImage.TYPE_INT_RGB);
 
-		Color bgCol[] = { new Color(64, 20, 64), new Color(160, 60, 160), new Color(112, 112, 140) };
+        Color[] bgCol = {new Color(64, 20, 64), new Color(160, 60, 160), new Color(112, 112, 140)};
 
 		
 		long playerG = 35466898305473L, enemyG = 562949815469064L;
@@ -505,10 +505,10 @@ public class A extends Applet implements Runnable {
 			if (cd < 0)
 				cd = 0;
 			g.setColor(Color.white);
-			g.drawString("Score: " + String.valueOf(score), 5, 15);
-			g.drawString("Lives: " + String.valueOf(lives), 5, 30);
-			g.drawString("Next Bomb: " + String.valueOf(cd), 5, 45);
-			g.drawString("FPS: " + String.valueOf(fpsout), 430, 475);
+			g.drawString("Score: " + score, 5, 15);
+			g.drawString("Lives: " + lives, 5, 30);
+			g.drawString("Next Bomb: " + cd, 5, 45);
+			g.drawString("FPS: " + fpsout, 430, 475);
 
 			appletGraphics.drawImage(screen, 0, 0, null);
 

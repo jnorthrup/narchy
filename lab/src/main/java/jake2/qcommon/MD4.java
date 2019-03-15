@@ -302,7 +302,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 		MD4 md4 = new MD4();
 
 		md4.engineUpdate(buffer, 0, length);
-		byte data[] = md4.engineDigest();		
+        byte[] data = md4.engineDigest();
 		ByteBuffer bb = ByteBuffer.wrap(data);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		val = bb.getInt() ^ bb.getInt() ^ bb.getInt() ^ bb.getInt();

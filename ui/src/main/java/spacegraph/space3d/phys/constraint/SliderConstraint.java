@@ -54,7 +54,7 @@ public class SliderConstraint extends TypedConstraint {
 	private final Transform frameInA = new Transform();
 	private final Transform frameInB = new Transform();
 	
-	private boolean useLinearReferenceFrameA;
+	private final boolean useLinearReferenceFrameA;
 	
 	private float lowerLinLimit;
 	private float upperLinLimit;
@@ -90,10 +90,10 @@ public class SliderConstraint extends TypedConstraint {
 	private boolean solveLinLim;
 	private boolean solveAngLim;
 
-	private JacobianEntry[] jacLin = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() };
-	private float[] jacLinDiagABInv = new float[3];
+	private final JacobianEntry[] jacLin = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() };
+	private final float[] jacLinDiagABInv = new float[3];
 
-	private JacobianEntry[] jacAng = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() };
+	private final JacobianEntry[] jacAng = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() };
 
 	private float timeStep;
 	private final Transform calculatedTransformA = new Transform();

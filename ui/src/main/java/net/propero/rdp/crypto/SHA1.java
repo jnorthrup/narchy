@@ -175,7 +175,7 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
      */
     @Override
     public byte[] engineDigest(byte[] in, int length) {
-        byte b[] = java_digest(in, length);
+        byte[] b = java_digest(in, length);
         engineReset();
         return b;
     }
@@ -209,7 +209,7 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
 
         transform(data);
 
-        byte buf[] = new byte[HASH_LENGTH];
+        byte[] buf = new byte[HASH_LENGTH];
 
         
         int off = 0;
@@ -230,7 +230,7 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
         int D = digest[3];
         int E = digest[4];
 
-        int W[] = w;
+        int[] W = w;
         System.arraycopy(X, 0, W, 0, 16);
         for (int i = 16; i < 80; i++) {
             int j = W[i - 16] ^ W[i - 14] ^ W[i - 8] ^ W[i - 3];

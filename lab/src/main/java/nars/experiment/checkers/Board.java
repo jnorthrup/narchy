@@ -217,7 +217,7 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
 
 
         JFrame frame = new JFrame("Checkers");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JPanel boardPane = new JPanel(new FlowLayout());
         ((FlowLayout) boardPane.getLayout()).setAlignment(FlowLayout.CENTER);
@@ -266,7 +266,7 @@ public class Board extends JPanel implements MouseListener, PlayerListener {
 
     public void playWindow() {
         JFrame frame = new JFrame("Checkers");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JPanel boardPane = new JPanel(new BorderLayout());
 

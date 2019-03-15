@@ -98,7 +98,7 @@ public class Main extends JFrame {
     JPanel panel = (JPanel)getContentPane();
     panel.setIgnoreRepaint(true);
     panel.setPreferredSize(new Dimension(DISPLAY_WIDTH, DISPLAY_HEIGHT));
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     setResizable(false);
     pack();    
     setLocationRelativeTo(null);

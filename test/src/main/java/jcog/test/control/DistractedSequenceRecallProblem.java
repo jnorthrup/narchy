@@ -353,7 +353,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
                 String agent = "";
                 for(int c = 0; c < targets; ++c ) {
 //                    float r = _idealActions._values[ c ];
-                    float r = actions.get(c);;
+                    float r = actions.get(c);
                     r = Math.min( 0.999f, Math.max( 0f, r ) );
                     int n = (int)( r * 100f ); // 0..99
                     String val = String.valueOf( n );
@@ -370,10 +370,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
     }
 
     public boolean complete() {
-        if( seq >= seqLen) {
-            return true;
-        }
-        return false;
+        return seq >= seqLen;
     }
 
 

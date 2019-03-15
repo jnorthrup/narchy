@@ -30,13 +30,13 @@ import jake2.util.Math3D;
 
 public class entity_t implements Cloneable{
 	
-	public model_t model; 
-	public float angles[] = { 0, 0, 0 };
+	public model_t model;
+    public float[] angles = {0, 0, 0};
 
-	/*
-	** most recent data
-	*/
-	public float origin[] = { 0, 0, 0 }; 
+    /*
+     ** most recent data
+     */
+    public float[] origin = {0, 0, 0};
 	public int frame; 
 
 	/*

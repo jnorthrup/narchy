@@ -84,4 +84,8 @@ public class PriNode extends PLink<Term> {
             g.addEdge(parent, "pri", thisNode);
         }
     }
+
+    public void factor(float f) {
+        factor.set(f);
+    }
 }

@@ -30,7 +30,7 @@ public class Timeline2D<E> extends Graph2D<E> {
     private final TimelineModel<E> model;
 
     /** minimum displayed temporal width, for tasks less than this duration */
-    private float timeVisibleEpsilon = 0.5f;
+    private final float timeVisibleEpsilon = 0.5f;
 
 
     public Timeline2D(TimelineModel<E> model, Consumer<NodeVis<E>> view) {

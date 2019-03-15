@@ -24,6 +24,7 @@ package java4k.crackattack4k;
 import java4k.GamePanel;
 
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -986,7 +987,7 @@ public class a extends GamePanel {
 			a[MOUSE_Y] = e.getY();
 			if (e.getID() == MouseEvent.MOUSE_PRESSED) {
 				a[MOUSE_DOWN] = 1;
-				a[MOUSE_BUTTON] = ((e.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK) ? 1 : 0;
+				a[MOUSE_BUTTON] = ((e.getModifiers() & InputEvent.BUTTON1_MASK) == InputEvent.BUTTON1_MASK) ? 1 : 0;
 			} else {
 				a[MOUSE_DOWN] = 0;
 			}

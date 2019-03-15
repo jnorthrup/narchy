@@ -84,7 +84,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
     final ScatterPlotModel<X> model;
 
 
-    private float extentUpdatePeriodS = 0.3f;
+    private final float extentUpdatePeriodS = 0.3f;
     final RectAnimator extent =
             new RectAnimator.ExponentialRectAnimator(new MutableRectFloat());
 

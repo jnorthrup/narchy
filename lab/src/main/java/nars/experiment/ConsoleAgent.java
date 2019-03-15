@@ -180,7 +180,7 @@ public class ConsoleAgent extends NAgentX {
 
         private final Signal[][][] charMatrix;
         private final char[] alphabet;
-        int c[] = new int[2];
+        int[] c = new int[2];
 
 
         public TestConsole(Term id, int w, int h, char[] alphabet) {

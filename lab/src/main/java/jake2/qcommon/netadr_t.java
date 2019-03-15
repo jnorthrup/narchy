@@ -34,7 +34,7 @@ public class netadr_t {
 
     public int port;
 
-    public byte ip[];
+    public byte[] ip;
 
     public netadr_t() {
         this.type = Defines.NA_LOOPBACK;

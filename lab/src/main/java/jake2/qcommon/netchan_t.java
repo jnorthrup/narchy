@@ -57,17 +57,17 @@ public class netchan_t {
     public int last_reliable_sequence; 
 
     
-    public sizebuf_t message = new sizebuf_t(); 
-                                                
+    public sizebuf_t message = new sizebuf_t();
 
-    public byte message_buf[] = new byte[Defines.MAX_MSGLEN - 16]; 
+
+    public byte[] message_buf = new byte[Defines.MAX_MSGLEN - 16];
                                                                    
                                                                    
 
     
     public int reliable_length;
 
-    public byte reliable_buf[] = new byte[Defines.MAX_MSGLEN - 16]; 
+    public byte[] reliable_buf = new byte[Defines.MAX_MSGLEN - 16];
                                                                     
                                                                     
 

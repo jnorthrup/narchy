@@ -241,7 +241,7 @@ public class M extends JFrame {
     setIconImage(vehicleSprites[0]);
     JPanel panel = (JPanel)getContentPane();
     panel.setPreferredSize(new Dimension(640, 480));
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     pack();
     setLocationRelativeTo(null);    
     show();

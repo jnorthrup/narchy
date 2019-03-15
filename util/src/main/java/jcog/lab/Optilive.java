@@ -111,7 +111,7 @@ public class Optilive<S,E>  {
             try {
                 //save
                 String path = outDir + "/" +
-                        current.varKey() + "." + Long.toString(currentStart) + ".arff";
+                        current.varKey() + "." + currentStart + ".arff";
                 logger.info("save {}", path);
                 new ARFF(current.data).writeToFile(path);
             } catch (IOException e) {

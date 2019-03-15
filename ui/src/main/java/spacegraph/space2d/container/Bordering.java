@@ -27,7 +27,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
     protected float borderSouth = 0.25f;
     protected float borderNorth = 0.25f;
 
-    private boolean autocollapse = true;
+    private final boolean autocollapse = true;
 
     public Bordering() {
         super(SE+1);

@@ -259,7 +259,7 @@ public final class BuiltIn extends PrologLib {
         if (i == 0)
             return ArrayUtils.EMPTY_STRING_ARRAY;
 
-        String args[] = new String[i];
+        String[] args = new String[i];
         Iterator<? extends Term> it = list.listIterator();
         int count = 0;
         while (it.hasNext()) {

@@ -72,7 +72,7 @@ public class Prolog {
     /*  spying activated ?  */
     private boolean spy;
     /* exception activated ? */
-    private boolean exception;
+    private final boolean exception;
     private boolean warning;
     /* path history for including documents */
     private List<String> absolutePathList;

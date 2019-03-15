@@ -27,7 +27,7 @@ public class TabMenu extends Menu {
 
     private static final float MenuContentRatio = 0.9f;
 
-    private Map<String,ToggleButton> items = new LinkedHashMap();
+    private final Map<String,ToggleButton> items = new LinkedHashMap();
 
     public TabMenu(Map<String, Supplier<Surface>> options) {
         this(options, new GridMenuView());

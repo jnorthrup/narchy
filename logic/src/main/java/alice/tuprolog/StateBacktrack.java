@@ -79,7 +79,7 @@ public enum StateBacktrack  { ;
             } while (true);
 
 
-            return e.run.GOAL_EVALUATION;
+            return PrologRun.GOAL_EVALUATION;
         }
 
     };

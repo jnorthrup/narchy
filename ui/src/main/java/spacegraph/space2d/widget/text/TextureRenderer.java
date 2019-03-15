@@ -511,7 +511,7 @@ public class TextureRenderer {
     final TextureCoords coords = texture.getSubImageTexCoords(texturex, texturey,
                                                         texturex + width,
                                                         texturey + height);
-    gl.glBegin(GL2GL3.GL_QUADS);
+    gl.glBegin(GL2ES3.GL_QUADS);
     gl.glTexCoord2f(coords.left(), coords.bottom());
     gl.glVertex3f(x, y, z);
     gl.glTexCoord2f(coords.right(), coords.bottom());

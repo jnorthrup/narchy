@@ -62,7 +62,7 @@ public class CRC
             0xbfba, 0x8fd9, 0x9ff8, 0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93,
             0x3eb2, 0x0ed1, 0x1ef0 };
 
-	static int CRC_Block(byte start[], int count)
+	static int CRC_Block(byte[] start, int count)
 	{
 		short crc= CRC_INIT_VALUE;
 
@@ -77,30 +77,30 @@ public class CRC
 
 	public static void main(String[] args)
 	{
-		byte data[]=
-			{
-				(byte) 0x71,
-				(byte) 0xa9,
-				(byte) 0x05,
-				(byte) 0xce,
-				(byte) 0x8d,
-				(byte) 0x75,
-				(byte) 0x28,
-				(byte) 0xc8,
-				(byte) 0xba,
-				(byte) 0x97,
-				
-				(byte) 0x45,
-				(byte) 0xe9,
-				(byte) 0x8a,
-				(byte) 0xe0,
-				(byte) 0x37,
-				(byte) 0xbd,
-				(byte) 0x6c,
-				(byte) 0x6d,
-				(byte) 0x67,
-				(byte) 0x4a, 
-				(byte) 0x21 };
+        byte[] data =
+                {
+                        (byte) 0x71,
+                        (byte) 0xa9,
+                        (byte) 0x05,
+                        (byte) 0xce,
+                        (byte) 0x8d,
+                        (byte) 0x75,
+                        (byte) 0x28,
+                        (byte) 0xc8,
+                        (byte) 0xba,
+                        (byte) 0x97,
+
+                        (byte) 0x45,
+                        (byte) 0xe9,
+                        (byte) 0x8a,
+                        (byte) 0xe0,
+                        (byte) 0x37,
+                        (byte) 0xbd,
+                        (byte) 0x6c,
+                        (byte) 0x6d,
+                        (byte) 0x67,
+                        (byte) 0x4a,
+                        (byte) 0x21};
 				System.out.println("crc:" + (CRC_Block(data, 21) & 0xffff));
 				System.out.println("----");
 				for (int n=0; n < 5; n++)

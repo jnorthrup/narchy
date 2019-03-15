@@ -69,7 +69,7 @@ public class PJ implements MethodHandler {
      * because it is coming from the PJLibrary and because the context of the current
      * Prolog call needs to be saved) a new engine is pushed onto the stack.
      */
-    public static Object call(Object receiver, Method method, Object args[], boolean reentrant) {
+    public static Object call(Object receiver, Method method, Object[] args, boolean reentrant) {
         if (reentrant || PJ.reentrant > 0)
             pushEngine();
         try {

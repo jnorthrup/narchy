@@ -108,8 +108,8 @@ public class gclient_t
 
 	public float pickup_msg_time;
 
-	public float flood_locktill; 
-	public float flood_when[] = new float[10]; 
+	public float flood_locktill;
+    public float[] flood_when = new float[10];
 	public int flood_whenhead; 
 
 	public float respawn_time; 

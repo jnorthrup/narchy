@@ -4,7 +4,7 @@ public class EchoFilter {
 
     private final double volumeFraction;
     private final int frameOffset;
-    private double[] previousFrames;
+    private final double[] previousFrames;
     private int frameIndex = 0;
 
     public EchoFilter(double volumeFraction, double offsetMillis, int sampleRate) {

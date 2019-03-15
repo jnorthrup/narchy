@@ -208,7 +208,7 @@ public class AudioUtils {
 
 
     //the default format for reading and writing audio information
-    public static AudioFormat kDefaultFormat = new AudioFormat((float) Constants.kSamplingFrequency,
+    public static AudioFormat kDefaultFormat = new AudioFormat(Constants.kSamplingFrequency,
             8, 1, true, false);
 
     public static void decodeWavFile(File inputFile, ByteArrayOutputStream out)

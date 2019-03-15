@@ -57,11 +57,9 @@ public class Taskify extends ProxyTerm {
         Term y = AbstractTermTransform.transform(termify.pattern, d.transform);
 //      d.revert(start);
         d.transform.xy = null;
-        if (!test(y, d))
-            return false;
+        return test(y, d);
 
 
-        return true;
     }
 
 

@@ -64,7 +64,7 @@ public class W extends GamePanel {
 	private float[] playerspaddle;
 	private long lastTime;
 	private long think;
-	private int colors[];
+    private int[] colors;
 	private float[] paddleVec;
 
 	private final BufferedImage offscreenImage;

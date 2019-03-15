@@ -1,6 +1,7 @@
 package spacegraph.space2d;
 
 import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
@@ -118,7 +119,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
         int w = display.window.getWidth(), h = display.window.getHeight();
         rendering.restart(w, h, dtMS);
 
-        g.glDisable(GL2.GL_DEPTH_TEST);
+        g.glDisable(GL.GL_DEPTH_TEST);
 
         g.glViewport(0, 0, w, h);
         g.glMatrixMode(GL_PROJECTION);
@@ -130,7 +131,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
         rendering.render(g);
         rendering.clear();
 
-        g.glEnable(GL2.GL_DEPTH_TEST);
+        g.glEnable(GL.GL_DEPTH_TEST);
     }
 
     @Override

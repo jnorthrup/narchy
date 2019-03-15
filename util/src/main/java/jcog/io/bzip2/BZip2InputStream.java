@@ -418,7 +418,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private void recvDecodingTables() {
-        char len[][] = new char[N_GROUPS][MAX_ALPHA_SIZE];
+        char[][] len = new char[N_GROUPS][MAX_ALPHA_SIZE];
         int i, j, t, nGroups, nSelectors, alphaSize;
         int minLen, maxLen;
         boolean[] inUse16 = new boolean[16];

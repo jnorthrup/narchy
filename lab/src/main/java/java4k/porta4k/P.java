@@ -5,6 +5,7 @@ import java4k.GamePanel;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.SourceDataLine;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -819,7 +820,7 @@ public class P extends GamePanel {
 	
 	public static void main(String[] args) {
 		javax.swing.JFrame frame = new javax.swing.JFrame("Porta 4K");
-		frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		P applet = new P();
 		applet.setPreferredSize(new java.awt.Dimension(608, 384));
 		frame.add(applet, java.awt.BorderLayout.CENTER);

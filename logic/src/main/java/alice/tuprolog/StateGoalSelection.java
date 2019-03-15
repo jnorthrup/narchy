@@ -58,7 +58,7 @@ public class StateGoalSelection extends State {
                     curGoal = new Struct("call", goal_app);
 
                 e.currentContext.currentGoal = (Struct) curGoal;
-                return c.GOAL_EVALUATION;
+                return PrologRun.GOAL_EVALUATION;
             }
         }
 

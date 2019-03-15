@@ -29,7 +29,7 @@ public abstract class AtomicPri implements ScalarValue {
 
 
     /** initialized to zero */
-    private volatile int pri = iZero;
+    private final int pri = iZero;
 
     @Override
     public String toString() {

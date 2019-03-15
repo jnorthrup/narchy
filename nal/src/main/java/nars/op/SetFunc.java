@@ -85,8 +85,7 @@ public class SetFunc {
 
             Predicate<Term> contains = a.subs() > 2 ? (a.toSet()::contains) : a::contains;
             Set<Term> ab = b.toSet(contains);
-            if (ab != null)
-                return ab;
+            return ab;
         }
         return null;
     }

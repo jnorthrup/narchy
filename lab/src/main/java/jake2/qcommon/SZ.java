@@ -39,7 +39,7 @@ public final class SZ {
 
 	
 	
-	public static void Init(sizebuf_t buf, byte data[], int length) {
+	public static void Init(sizebuf_t buf, byte[] data, int length) {
 	  
 	  buf.readcount = 0;
 
@@ -72,16 +72,16 @@ public final class SZ {
 		return oldsize;
 	}
 
-	public static void Write(sizebuf_t buf, byte data[], int length) {
+	public static void Write(sizebuf_t buf, byte[] data, int length) {
 		
 		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
 	}
 
-	public static void Write(sizebuf_t buf, byte data[], int offset, int length) {
+	public static void Write(sizebuf_t buf, byte[] data, int offset, int length) {
 		System.arraycopy(data, offset, buf.data, GetSpace(buf, length), length);
 	}
 
-	public static void Write(sizebuf_t buf, byte data[]) {
+	public static void Write(sizebuf_t buf, byte[] data) {
 		int length = data.length;
 		
 		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
@@ -91,7 +91,7 @@ public final class SZ {
 	public static void Print(sizebuf_t buf, String data) {
 	    Com.dprintln("SZ.print():<" + data + '>');
 		int length = data.length();
-		byte str[] = Lib.stringToBytes(data);
+        byte[] str = Lib.stringToBytes(data);
 	
 		if (buf.cursize != 0) {
 	

@@ -133,7 +133,7 @@ public class VID extends Globals {
 			new vidmode_t("Mode 9: 1600x1200", 1600, 1200, 9),
 			new vidmode_t("Mode 10: 2048x1536", 2048, 1536, 10),
 			new vidmode_t("Mode 11: user", 640, 480, 11)};
-	static vidmode_t fs_modes[];
+    static vidmode_t[] fs_modes;
 
 	public static boolean GetModeInfo(Dimension dim, int mode) {
 		if (fs_modes == null) initModeList();

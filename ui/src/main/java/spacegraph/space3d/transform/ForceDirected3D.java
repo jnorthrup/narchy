@@ -18,7 +18,7 @@ import static jcog.math.v3.v;
 public class ForceDirected3D implements spacegraph.space3d.phys.constraint.BroadConstraint {
 
     private final int iterations;
-    private boolean center = true;
+    private final boolean center = true;
 
     public final FloatRange expand = new FloatRange(14f, 0, 32f);
     public final FloatRange condense = new FloatRange(0.05f, 0, 3f);
@@ -26,7 +26,7 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
 
 
     /** speed at which center correction is applied */
-    private float centerSpeed = 0.02f;
+    private final float centerSpeed = 0.02f;
 
     private final v3 boundsMin;
     private final v3 boundsMax;

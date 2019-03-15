@@ -40,7 +40,7 @@ public class MartialArts implements RLEnvironment {
 
     public MartialArts() {
         final JFrame f = new JFrame();
-        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         f.setSize(200, 100);
         f.setLayout(new GridLayout(0, 1));
         final JLabel l = new JLabel();

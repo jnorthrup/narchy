@@ -38,7 +38,7 @@ public class WebCam {
     public int height;
 
 
-    private com.github.sarxos.webcam.Webcam webcam;
+    private final com.github.sarxos.webcam.Webcam webcam;
 
     private final Offs webcamListeners = new Offs();
 

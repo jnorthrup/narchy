@@ -11,7 +11,7 @@ import java.util.Arrays;
 class MIDI {
 
     private final MidiInReceiver receiver;
-    private float[] volume = new float[128];
+    private final float[] volume = new float[128];
 
     public MIDI() {
 

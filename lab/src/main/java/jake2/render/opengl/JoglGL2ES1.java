@@ -3,6 +3,7 @@ package jake2.render.opengl;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES1;
 import com.jogamp.opengl.GLException;
+import com.jogamp.opengl.fixedfunc.GLPointerFunc;
 import com.jogamp.opengl.util.ImmModeSink;
 
 import java.nio.ByteBuffer;
@@ -296,11 +297,11 @@ public class JoglGL2ES1 implements QGL {
     private void glInterleavedArraysT2F_V3F(int byteStride, FloatBuffer buf) {
         int pos = buf.position();
         gl.glTexCoordPointer(2, GL.GL_FLOAT, byteStride, buf);
-        gl.glEnableClientState(GL2ES1.GL_TEXTURE_COORD_ARRAY);
+        gl.glEnableClientState(GLPointerFunc.GL_TEXTURE_COORD_ARRAY);
 
         buf.position(pos + 2);
         gl.glVertexPointer(3, GL.GL_FLOAT, byteStride, buf);
-        gl.glEnableClientState(GL2ES1.GL_VERTEX_ARRAY);
+        gl.glEnableClientState(GLPointerFunc.GL_VERTEX_ARRAY);
 
         buf.position(pos);
     }

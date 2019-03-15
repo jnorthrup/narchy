@@ -644,8 +644,8 @@ public class G extends Applet implements Runnable
 
 
             g2.setColor( new Color(1f, 1f, 0f) );
-            g2.drawString( "SCORE " + String.valueOf(score) , 30, 10 );
-            g2.drawString( "HI " + String.valueOf(hiscore), 150, 10 );
+            g2.drawString( "SCORE " + score, 30, 10 );
+            g2.drawString( "HI " + hiscore, 150, 10 );
 
             for( int i = 0; i < 6; i++ )
             {
@@ -895,7 +895,7 @@ public class G extends Applet implements Runnable
         }
     }
 
-    public int addSprite( int[] st, int sx[], int[] sy, int[] sd, int t, int x, int y )
+    public int addSprite(int[] st, int[] sx, int[] sy, int[] sd, int t, int x, int y )
     {
         final int G_FLAT    = 15;
         for( int i = t < G_FLAT ? 0 : 40; i < st.length; i++ )

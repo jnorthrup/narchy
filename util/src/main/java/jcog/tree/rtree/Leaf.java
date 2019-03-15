@@ -259,7 +259,7 @@ public class Leaf<X> extends AbstractNode<X> {
     public boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         short s = this.size;
         if (s > 0 && rect.intersects(bounds)) {
-            boolean containsAll = s > 1 ? rect.contains(bounds) : false; 
+            boolean containsAll = s > 1 && rect.contains(bounds);
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
                 X d = data[i];

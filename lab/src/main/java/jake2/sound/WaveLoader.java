@@ -121,7 +121,7 @@ public class WaveLoader {
 	 * Converts sample data with respect to the endianess and adjusts 
 	 * the sample rate of a loaded sample, see flag DONT_DO_A_RESAMPLING_FOR_JOAL_AND_LWJGL.
 	 */
-	public static void ResampleSfx (sfx_t sfx, int inrate, int inwidth, byte data[], int offset)
+	public static void ResampleSfx (sfx_t sfx, int inrate, int inwidth, byte[] data, int offset)
 	{
         int             outcount;
         int             srcsample;

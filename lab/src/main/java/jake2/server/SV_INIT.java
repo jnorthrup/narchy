@@ -230,7 +230,7 @@ public class SV_INIT {
         sv.name = server;
         sv.configstrings[Defines.CS_NAME] = server;
 
-        int iw[] = { checksum };
+        int[] iw = {checksum};
 
         if (serverstate != Defines.ss_game) {
             sv.models[1] = CM.CM_LoadMap("", false, iw); 

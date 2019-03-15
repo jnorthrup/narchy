@@ -1,6 +1,5 @@
 package jcog.data.list;
 
-import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.util.ArrayUtils;
 import jcog.util.FloatFloatToFloatFunction;
@@ -137,7 +136,7 @@ public class FasterList<X> extends FastList<X> {
             if (oldCapacity == 0) {
                 items = (X[]) newArray(minCapacity);
             } else {
-                int newCapacity = Math.max(this.sizePlusFiftyPercent(oldCapacity), minCapacity);
+                int newCapacity = Math.max(sizePlusFiftyPercent(oldCapacity), minCapacity);
                 this.transferItemsToNewArrayWithCapacity(newCapacity);
             }
         }

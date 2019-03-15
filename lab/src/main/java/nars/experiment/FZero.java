@@ -107,11 +107,7 @@ public class FZero extends NAgentX {
 //        ;
 
 
-
-
-        ;
-
-//        {
+        //        {
             int nx = 4;
             AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
                     null /*$.p($.the("cae"), id)*/, vision, nx, nx, (subX, subY) -> {
@@ -668,7 +664,7 @@ public class FZero extends NAgentX {
             panel.setPreferredSize(new Dimension(640, 480));
             panel.setIgnoreRepaint(true);
 
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             pack();
             setLocationRelativeTo(null);
             show();

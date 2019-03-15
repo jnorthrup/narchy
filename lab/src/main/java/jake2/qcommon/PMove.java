@@ -273,7 +273,7 @@ public class PMove {
      * Handles both ground friction and water friction.
      */
     public static void PM_Friction() {
-        float vel[];
+        float[] vel;
         float speed, newspeed, control;
         float friction;
         float drop;
@@ -900,9 +900,9 @@ public class PMove {
      */
 
     public static void PM_SnapPosition() {
-        int sign[] = { 0, 0, 0 };
+        int[] sign = {0, 0, 0};
         int i, j, bits;
-        short base[] = { 0, 0, 0 };
+        short[] base = {0, 0, 0};
 
         
         for (i = 0; i < 3; i++)
@@ -941,7 +941,7 @@ public class PMove {
      */
     public static void PM_InitialSnapPosition() {
         int x, y, z;
-        short base[] = { 0, 0, 0 };
+        short[] base = {0, 0, 0};
 
         Math3D.VectorCopy(pm.s.origin, base);
 

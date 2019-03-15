@@ -1,6 +1,8 @@
 package spacegraph.video.font;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import spacegraph.SpaceGraph;
@@ -38,7 +40,7 @@ public class BmpFont {
 
     private void loadGLTextures() {
 
-        String tileNames[] =
+        String[] tileNames =
                 {"font2.png"/*, "bumps.png"*/};
 
 
@@ -57,20 +59,20 @@ public class BmpFont {
                 System.exit(1);
             }
             
-            gl.glBindTexture(GL2.GL_TEXTURE_2D, textures[i]);
+            gl.glBindTexture(GL.GL_TEXTURE_2D, textures[i]);
 
-            gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
-            gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
+            gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+            gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
 
-            gl.glTexImage2D(GL2.GL_TEXTURE_2D,
+            gl.glTexImage2D(GL.GL_TEXTURE_2D,
                     0,
 
                     3,
                     texture.getWidth(),
                     texture.getHeight(),
                     0,
-                    GL2.GL_RGBA,
-                    GL2.GL_UNSIGNED_BYTE,
+                    GL.GL_RGBA,
+                    GL.GL_UNSIGNED_BYTE,
                     texture.getBuffer());
 
 
@@ -83,14 +85,14 @@ public class BmpFont {
         float cy;      
 
         base = gl.glGenLists(256);  
-        gl.glBindTexture(GL2.GL_TEXTURE_2D, textures[0]);  
+        gl.glBindTexture(GL.GL_TEXTURE_2D, textures[0]);
         for (int loop = 0; loop < 256; loop++)      
         {
             cx = (loop % 16) / 16.0f;
             cy = (loop / 16) / 16.0f;
 
             gl.glNewList(base + loop, GL2.GL_COMPILE);  
-            gl.glBegin(GL2.GL_QUADS);      
+            gl.glBegin(GL2ES3.GL_QUADS);
             gl.glTexCoord2f(cx, 1 - cy - 0.0625f);  
             gl.glVertex2i(0, 0);      
             gl.glTexCoord2f(cx + 0.0625f, 1 - cy - 0.0625f);  
@@ -111,7 +113,7 @@ public class BmpFont {
         if (set > 1) {
             set = 1;
         }
-        gl.glBindTexture(GL2.GL_TEXTURE_2D, textures[0]); 
+        gl.glBindTexture(GL.GL_TEXTURE_2D, textures[0]);
         
         
 
@@ -132,7 +134,7 @@ public class BmpFont {
         stringBuffer.flip();
 
         
-        gl.glCallLists(string.length(), GL2.GL_BYTE, stringBuffer);
+        gl.glCallLists(string.length(), GL.GL_BYTE, stringBuffer);
 
         
 
@@ -172,7 +174,7 @@ public class BmpFont {
 
 
 
-        gl.glEnable(GL2.GL_TEXTURE_2D);      
+        gl.glEnable(GL.GL_TEXTURE_2D);
     }
 
     public static void main(String[] args) {

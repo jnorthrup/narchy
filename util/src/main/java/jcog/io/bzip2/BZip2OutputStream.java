@@ -590,7 +590,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     }
 
     private void sendMTFValues() throws IOException {
-        char len[][] = new char[N_GROUPS][MAX_ALPHA_SIZE];
+        char[][] len = new char[N_GROUPS][MAX_ALPHA_SIZE];
 
         int v, t, i, j, gs, ge, totc, bt, bc, iter;
         int nSelectors = 0, alphaSize, minLen, maxLen, selCtr;

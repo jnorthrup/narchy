@@ -24,17 +24,17 @@ public class Bool extends Term<Bool> {
         
         @Override
         public alice.tuprolog.Term marshal() {
-            return _theBool ? alice.tuprolog.Struct.TRUE : alice.tuprolog.Struct.FALSE;
+            return _theBool ? alice.tuprolog.Term.TRUE : alice.tuprolog.Term.FALSE;
         }
         
         static Bool unmarshal(alice.tuprolog.Struct b) {
             if (!matches(b))
                 throw new UnsupportedOperationException();
-            return b.isEqual(alice.tuprolog.Struct.TRUE) ? new Bool(Boolean.TRUE) : new Bool(Boolean.FALSE);
+            return b.isEqual(alice.tuprolog.Term.TRUE) ? new Bool(Boolean.TRUE) : new Bool(Boolean.FALSE);
         }
         
         static boolean matches(alice.tuprolog.Term t) {            
-            return (!(t instanceof alice.tuprolog.Var) && (t.isEqual(alice.tuprolog.Struct.TRUE) || t.isEqual(alice.tuprolog.Struct.FALSE)));
+            return (!(t instanceof alice.tuprolog.Var) && (t.isEqual(alice.tuprolog.Term.TRUE) || t.isEqual(alice.tuprolog.Term.FALSE)));
         }
         
 	public String toString() {

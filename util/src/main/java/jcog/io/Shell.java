@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -27,7 +28,7 @@ public class Shell {
     public Shell(String... cmd) throws IOException {
         this.proc = new ProcessBuilder(cmd).redirectErrorStream(true).start();
 
-        this.writer = new PrintWriter(new OutputStreamWriter(this.proc.getOutputStream(), "UTF-8"), true);
+        this.writer = new PrintWriter(new OutputStreamWriter(this.proc.getOutputStream(), StandardCharsets.UTF_8), true);
 
 
 

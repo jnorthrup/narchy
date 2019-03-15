@@ -74,8 +74,8 @@ public class ClipBMP extends Component {
 
     private int biClrImportant;
 
-    
-    private int bitmap[];
+
+    private int[] bitmap;
 
     
     private OutputStream fo;
@@ -91,7 +91,7 @@ public class ClipBMP extends Component {
      *
      */
     private static byte[] intToWord(int parValue) {
-        byte retValue[] = new byte[2];
+        byte[] retValue = new byte[2];
         retValue[0] = (byte) (parValue & 0x00FF);
         retValue[1] = (byte) ((parValue >> 8) & 0x00FF);
         return (retValue);
@@ -104,7 +104,7 @@ public class ClipBMP extends Component {
      *
      */
     private static byte[] intToDWord(int parValue) {
-        byte retValue[] = new byte[4];
+        byte[] retValue = new byte[4];
         retValue[0] = (byte) (parValue & 0x00FF);
         retValue[1] = (byte) ((parValue >> 8) & 0x000000FF);
         retValue[2] = (byte) ((parValue >> 16) & 0x000000FF);
@@ -134,8 +134,8 @@ public class ClipBMP extends Component {
             
             
             
-            int bilen = 40; 
-            byte bi[] = new byte[bilen];
+            int bilen = 40;
+            byte[] bi = new byte[bilen];
             fs.read(bi, 0, bilen);
 
             
@@ -201,8 +201,8 @@ public class ClipBMP extends Component {
                     
                     
                     int npad = (nsizeimage / nheight) - nwidth * 3;
-                    int ndata[] = new int[nheight * nwidth];
-                    byte brgb[] = new byte[(nwidth + npad) * 3 * nheight];
+                    int[] ndata = new int[nheight * nwidth];
+                    byte[] brgb = new byte[(nwidth + npad) * 3 * nheight];
                     fs.read(brgb, 0, (nwidth + npad) * 3 * nheight);
                     int nindex = 0;
                     for (int j = 0; j < nheight; j++) {
@@ -246,9 +246,9 @@ public class ClipBMP extends Component {
                         
                     }
 
-                    
-                    int npalette[] = new int[nNumColors];
-                    byte bpalette[] = new byte[nNumColors * 4];
+
+                    int[] npalette = new int[nNumColors];
+                    byte[] bpalette = new byte[nNumColors * 4];
                     fs.read(bpalette, 0, nNumColors * 4);
                     int nindex8 = 0;
                     for (int n = 0; n < nNumColors; n++) {
@@ -269,10 +269,10 @@ public class ClipBMP extends Component {
                     
                     
                     int npad8 = (nsizeimage / nheight) - nwidth;
-                    
 
-                    int ndata8[] = new int[nwidth * nheight];
-                    byte bdata[] = new byte[(nwidth + npad8) * nheight];
+
+                    int[] ndata8 = new int[nwidth * nheight];
+                    byte[] bdata = new byte[(nwidth + npad8) * nheight];
                     fs.read(bdata, 0, (nwidth + npad8) * nheight);
                     nindex8 = 0;
                     for (int j8 = 0; j8 < nheight; j8++) {
@@ -310,9 +310,9 @@ public class ClipBMP extends Component {
                         
                     }
 
-                    
-                    int npalette[] = new int[nNumColors];
-                    byte bpalette[] = new byte[nNumColors * 4];
+
+                    int[] npalette = new int[nNumColors];
+                    byte[] bpalette = new byte[nNumColors * 4];
                     fs.read(bpalette, 0, nNumColors * 4);
                     int nindex8 = 0;
                     for (int n = 0; n < nNumColors; n++) {
@@ -333,10 +333,10 @@ public class ClipBMP extends Component {
                     
                     
                     int npad8 = (nsizeimage / nheight) - nwidth;
-                    
 
-                    int ndata8[] = new int[nwidth * nheight];
-                    byte bdata[] = new byte[(nwidth + npad8) * nheight];
+
+                    int[] ndata8 = new int[nwidth * nheight];
+                    byte[] bdata = new byte[(nwidth + npad8) * nheight];
                     fs.read(bdata, 0, (nwidth + npad8) * nheight);
                     nindex8 = 0;
                     for (int j8 = 0; j8 < nheight; j8++) {
@@ -373,9 +373,9 @@ public class ClipBMP extends Component {
                         
                     }
 
-                    
-                    int npalette[] = new int[nNumColors + 1];
-                    byte bpalette[] = new byte[nNumColors * 4];
+
+                    int[] npalette = new int[nNumColors + 1];
+                    byte[] bpalette = new byte[nNumColors * 4];
                     fs.read(bpalette, 0, nNumColors * 4);
                     int nindex8 = 0;
                     for (int n = 0; n < nNumColors; n++) {
@@ -394,8 +394,8 @@ public class ClipBMP extends Component {
                     if (npad8 == 4)
                         npad8 = 0;
 
-                    int ndata8[] = new int[nwidth * nheight];
-                    byte bdata[] = new byte[(nwidth / 2 + npad8) * nheight];
+                    int[] ndata8 = new int[nwidth * nheight];
+                    byte[] bdata = new byte[(nwidth / 2 + npad8) * nheight];
                     fs.read(bdata, 0, (nwidth / 2 + npad8) * nheight);
 
                     
@@ -543,7 +543,7 @@ public class ClipBMP extends Component {
         int lastRowIndex;
         int pad;
         int padCount;
-        byte rgb[] = new byte[3];
+        byte[] rgb = new byte[3];
         size = (biWidth * biHeight) - 1;
         pad = 4 - ((biWidth * 3) % 4);
         if (pad == 4) 

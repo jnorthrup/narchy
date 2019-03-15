@@ -310,8 +310,7 @@ public class J2PProxyFactory extends ProxyFactory {
         WeakReference<Class<?>> ref = key.proxyClass;
         if (ref != null) {
             Class<?> c = ref.get();
-            if(c != null)
-                return c;
+            return c;
         }
 
         return null;
@@ -581,7 +580,7 @@ public class J2PProxyFactory extends ProxyFactory {
         code.addIconst(size * 2);
         code.addAnewarray("java.lang.reflect.Method");
         code.addPutstatic(classname, HOLDER, HOLDER_TYPE);
-        code.addOpcode(Bytecode.RETURN);
+        code.addOpcode(Opcode.RETURN);
         minfo.setCodeAttribute(code.toCodeAttribute());
         cf.addMethod(minfo);
     }
@@ -595,7 +594,7 @@ public class J2PProxyFactory extends ProxyFactory {
         code.addAload(0);
         code.addAload(1);
         code.addPutfield(classname, HANDLER, HANDLER_TYPE);
-        code.addOpcode(Bytecode.RETURN);
+        code.addOpcode(Opcode.RETURN);
         minfo.setCodeAttribute(code.toCodeAttribute());
         cf.addMethod(minfo);
     }

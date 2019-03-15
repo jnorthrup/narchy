@@ -33,7 +33,7 @@ public class BitmapMatrixView extends TexSurface {
 
     public final int w;
     public final int h;
-    private volatile BitmapPainter view;
+    private final BitmapPainter view;
     protected final v2 touchPos = new v2();
     protected final Point2i touchPixel = new Point2i();
     private BufferedImage buf;
@@ -154,10 +154,7 @@ public class BitmapMatrixView extends TexSurface {
 
     @Override
     public boolean stop() {
-        if (super.stop()) {
-            return true;
-        }
-        return false;
+        return super.stop();
     }
 
     public boolean updateTouch(Finger finger) {

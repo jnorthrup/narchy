@@ -14,7 +14,7 @@ public class AI {
 
     private final MainPanel panel;
 
-    private static final int valueOfPlace[][] = {
+    private static final int[][] valueOfPlace = {
             {120, -20, 20, 5, 5, 20, -20, 120},
             {-20, -40, -5, -5, -5, -5, -40, -20},
             {20, -5, 15, 3, 3, 15, -5, 20},

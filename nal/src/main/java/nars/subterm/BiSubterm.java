@@ -48,11 +48,9 @@ public class BiSubterm extends TermVector {
             boolean avoidDynamicHashing = obj instanceof TermList; //TODO marker interface
             Subterms t = ((Subterms) obj);
             if (avoidDynamicHashing || hash == t.hashCodeSubterms()) {
-                if (t.subs() == 2 && t.sub(0).equals(x) && t.sub(1).equals(y)) {
-//                    if (t instanceof TermVector)
-//                        equivalentTo((TermVector) t);
-                    return true;
-                }
+                //                    if (t instanceof TermVector)
+                //                        equivalentTo((TermVector) t);
+                return t.subs() == 2 && t.sub(0).equals(x) && t.sub(1).equals(y);
             }
         }
         return false;

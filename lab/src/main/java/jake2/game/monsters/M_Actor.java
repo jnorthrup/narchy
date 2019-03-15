@@ -1215,7 +1215,7 @@ public class M_Actor {
             
 
             if ((other.client != null) && (Lib.random() < 0.4)) {
-                float v[] = { 0, 0, 0 };
+                float[] v = {0, 0, 0};
 
                 String name;
 
@@ -1376,7 +1376,7 @@ public class M_Actor {
         public String getID() { return "actor_use";}
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            float v[] = { 0, 0, 0 };
+            float[] v = {0, 0, 0};
 
             self.goalentity = self.movetarget = GameBase
                     .G_PickTarget(self.target);
@@ -1419,7 +1419,7 @@ public class M_Actor {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            float v[] = { 0, 0, 0 };
+            float[] v = {0, 0, 0};
 
             if (other.movetarget != self)
                 return;
@@ -1501,9 +1501,11 @@ public class M_Actor {
     };
 
     static void actorMachineGun(edict_t self) {
-        float start[] = { 0, 0, 0 }, target[] = { 0, 0, 0 };
+        float[] start = {0, 0, 0};
+        float[] target = {0, 0, 0};
 
-        float forward[] = { 0, 0, 0 }, right[] = { 0, 0, 0 };
+        float[] forward = {0, 0, 0};
+        float[] right = {0, 0, 0};
 
         Math3D.AngleVectors(self.s.angles, forward, right, null);
 

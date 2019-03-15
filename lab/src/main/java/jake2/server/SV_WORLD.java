@@ -45,9 +45,10 @@ public class SV_WORLD {
 
     public static int sv_numareanodes;
 
-    public static float area_mins[], area_maxs[];
+    public static float[] area_mins;
+    public static float[] area_maxs;
 
-    public static edict_t area_list[];
+    public static edict_t[] area_list;
 
     public static int area_count, area_maxcount;
 
@@ -234,8 +235,8 @@ public class SV_WORLD {
         ent.num_clusters = 0;
         ent.areanum = 0;
         ent.areanum2 = 0;
-        
-        int iw[] = { topnode };
+
+        int[] iw = {topnode};
         num_leafs = CM.CM_BoxLeafnums(ent.absmin, ent.absmax, SV_WORLD.leafs,
                 SV_WORLD.MAX_TOTAL_ENT_LEAFS, iw);
         topnode = iw[0];
@@ -350,8 +351,8 @@ public class SV_WORLD {
     /*
      * ================ SV_AreaEdicts ================
      */
-    public static int SV_AreaEdicts(float[] mins, float[] maxs, edict_t list[],
-            int maxcount, int areatype) {
+    public static int SV_AreaEdicts(float[] mins, float[] maxs, edict_t[] list,
+                                    int maxcount, int areatype) {
         SV_WORLD.area_mins = mins;
         SV_WORLD.area_maxs = maxs;
         SV_WORLD.area_list = list;
@@ -416,7 +417,7 @@ public class SV_WORLD {
         edict_t touch;
         trace_t trace;
         int headnode;
-        float angles[];
+        float[] angles;
         num = SV_AreaEdicts(clip.boxmins, clip.boxmaxs, SV_WORLD.touchlist,
                 Defines.MAX_EDICTS, Defines.AREA_SOLID);
         

@@ -345,9 +345,9 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	    - iterate over all triangles in that subset of the grid
 	 */
 
-    private int[] quantizedAabbMin = new int[3];
-	private int[] quantizedAabbMax = new int[3];
-	private v3[] vertices = new v3[3];
+    private final int[] quantizedAabbMin = new int[3];
+	private final int[] quantizedAabbMax = new int[3];
+	private final v3[] vertices = new v3[3];
 
 	private static void checkNormal(v3[] vertices1, TriangleCallback callback)
 	{

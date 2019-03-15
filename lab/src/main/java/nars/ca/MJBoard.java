@@ -1203,7 +1203,7 @@ class MJBoard extends Panel implements Runnable {
 			if (iPos >= 0) {
 				int dx = Integer.valueOf(sHow.substring(0, iPos));
 				int dy = Integer.valueOf(
-                        sHow.substring(iPos + 1, sHow.length()));
+                        sHow.substring(iPos + 1));
 				if (GameType == MJRules.GAMTYP_2D) {
 					for (i = 0; i < dx; i++)
 						for (j = 0; j < dy; j++)
@@ -1223,7 +1223,7 @@ class MJBoard extends Panel implements Runnable {
 			if (iPos >= 0) {
 				int dx = Integer.valueOf(sHow.substring(0, iPos));
 				int dy = Integer.valueOf(
-                        sHow.substring(iPos + 1, sHow.length()));
+                        sHow.substring(iPos + 1));
 				if (GameType == MJRules.GAMTYP_2D) {
 					for (i = 0; i < dx; i++) {
 						SetCell(ctrX - (dx / 2) + i, ctrY - (dy / 2),

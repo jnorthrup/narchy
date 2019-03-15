@@ -71,7 +71,7 @@ public class KIF {
      */
     public HashMap<String, Formula> formulaMap = new HashMap<String, Formula>();
 
-    private String filename = "";
+    private final String filename = "";
 
     private int totalLinesForComments = 0;
 

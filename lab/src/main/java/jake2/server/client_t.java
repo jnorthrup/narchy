@@ -69,9 +69,9 @@ public class client_t {
 	final sizebuf_t datagram = new sizebuf_t();
 	final byte[] datagram_buf = new byte[Defines.MAX_MSGLEN];
 
-	final client_frame_t[] frames = new client_frame_t[Defines.UPDATE_BACKUP]; 
+	final client_frame_t[] frames = new client_frame_t[Defines.UPDATE_BACKUP];
 
-	byte download[]; 
+    byte[] download;
 	int downloadsize; 
 	int downloadcount; 
 

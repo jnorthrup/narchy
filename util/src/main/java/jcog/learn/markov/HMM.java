@@ -46,15 +46,21 @@ public class HMM implements Serializable{
 	/** The number of observations */
 	protected int numObservations;
 
-	/** The initial probabilities for each state: p[state] */
-	protected double pi[];
+    /**
+     * The initial probabilities for each state: p[state]
+     */
+    protected double[] pi;
 
-	/** The state change probability to switch from state A to
-	 * state B: a[stateA][stateB] */
-	protected double a[][];
+    /**
+     * The state change probability to switch from state A to
+     * state B: a[stateA][stateB]
+     */
+    protected double[][] a;
 
-	/** The probability to emit symbol S in state A: b[stateA][symbolS] */
-	protected double b[][];
+    /**
+     * The probability to emit symbol S in state A: b[stateA][symbolS]
+     */
+    protected double[][] b;
 
 	/**
 	 * Initialize the Hidden Markov Model in a left-to-right version.

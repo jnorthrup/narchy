@@ -47,7 +47,7 @@ public class PriBuffer<Y> {
     public static Map newConcurrentMap() {
         return
             //new NonBlockingHashMap();
-            new java.util.concurrent.ConcurrentHashMap<>(0, 0.75f);
+            new java.util.concurrent.ConcurrentHashMap<>(0, 1f);
             //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f);
             //new CustomConcurrentHashMap(64);
             //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0);

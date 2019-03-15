@@ -198,7 +198,7 @@ public class SV_CCMDS {
 	public static void CopyFile(String src, String dst) {
 		RandomAccessFile f1, f2;
 		int l = -1;
-		byte buffer[] = new byte[65536];
+        byte[] buffer = new byte[65536];
 
 		
 		try {
@@ -872,7 +872,7 @@ public class SV_CCMDS {
 	public static void SV_ServerRecord_f() {
 		
 		String name;
-		byte buf_data[] = new byte[32768];
+        byte[] buf_data = new byte[32768];
 		sizebuf_t buf = new sizebuf_t();
 		int len;
 		int i;

@@ -143,7 +143,7 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
     setSize(l,h);
 
     setVisible(true);
-    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     
     prolog=new Prolog();
     prolog.setTheory(theory);
@@ -218,6 +218,6 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
     System.out.println("goal:"+goal);
     System.out.println("in given theory\n---------------\n"+theory);
     SpyFrame tf=new SpyFrame(theory, goal);
-    tf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    tf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
   }
 }

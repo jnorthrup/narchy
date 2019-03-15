@@ -132,7 +132,7 @@ public class GameAI {
      * walkmove(angle, speed) primitive is all or nothing
      */
     public static boolean ai_checkattack(edict_t self, float dist) {
-        float temp[] = { 0, 0, 0 };
+        float[] temp = {0, 0, 0};
 
         boolean hesDeadJim;
 

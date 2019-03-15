@@ -975,7 +975,7 @@ public class FormulaPreprocessor {
         f.read(strf);
         FormulaPreprocessor fp = new FormulaPreprocessor();
         System.out.println("Formula: " + f);
-        System.out.println("Var types: " + fp.computeVariableTypes(f, kb));
+        System.out.println("Var types: " + computeVariableTypes(f, kb));
 
         System.out.println();
         strf = "(=> (and (attribute ?AREA LowTerrain) (part ?ZONE ?AREA)" +
@@ -983,7 +983,7 @@ public class FormulaPreprocessor {
         f.read(strf);
         fp = new FormulaPreprocessor();
         System.out.println("Formula: " + f);
-        System.out.println("Var types: " + fp.computeVariableTypes(f, kb));
+        System.out.println("Var types: " + computeVariableTypes(f, kb));
 
         System.out.println();
         strf = "(=> (and (typicalPart ?PART ?WHOLE) (instance ?X ?PART) " +
@@ -994,7 +994,7 @@ public class FormulaPreprocessor {
         f.read(strf);
         fp = new FormulaPreprocessor();
         System.out.println("Formula: " + f);
-        System.out.println("Var types: " + fp.computeVariableTypes(f, kb));
+        System.out.println("Var types: " + computeVariableTypes(f, kb));
 
         System.out.println();
         strf = "(<=> (instance ?REL TransitiveRelation) " +
@@ -1004,8 +1004,8 @@ public class FormulaPreprocessor {
         f.read(strf);
         fp = new FormulaPreprocessor();
         System.out.println("Formula: " + f);
-        System.out.println("Var types: " + fp.computeVariableTypes(f, kb));
-        System.out.println("Explicit types: " + fp.findExplicitTypesInAntecedent(kb, f));
+        System.out.println("Var types: " + computeVariableTypes(f, kb));
+        System.out.println("Explicit types: " + findExplicitTypesInAntecedent(kb, f));
     }
 
     /** ***************************************************************
@@ -1027,7 +1027,7 @@ public class FormulaPreprocessor {
         String var = m.group(1);
         String cl = m.group(2);
         System.out.println("FormulaPreprocessor.testExplicit(): " + var + " " + cl);
-        System.out.println("Explicit types: " + fp.findExplicitTypesInAntecedent(kb, f));
+        System.out.println("Explicit types: " + findExplicitTypesInAntecedent(kb, f));
     }
 
     /** ***************************************************************
@@ -1088,7 +1088,7 @@ public class FormulaPreprocessor {
         f.read(strf);
         fp = new FormulaPreprocessor();
 
-        System.out.println(fp.preProcess(f, false, kb));
+        System.out.println(preProcess(f, false, kb));
     }
 
     /** ***************************************************************
@@ -1106,7 +1106,7 @@ public class FormulaPreprocessor {
         Formula f = new Formula();
         f.read(strf);
         fp = new FormulaPreprocessor();
-        System.out.println("testTwo(): equality: " + fp.preProcess(f, false, kb));
+        System.out.println("testTwo(): equality: " + preProcess(f, false, kb));
     }
 
     /** ***************************************************************
@@ -1138,7 +1138,7 @@ public class FormulaPreprocessor {
         Formula f = new Formula();
         f.read(strf);
         fp = new FormulaPreprocessor();
-        System.out.println("testThree(): " + fp.preProcess(f, false, kb));
+        System.out.println("testThree(): " + preProcess(f, false, kb));
     }
 
     /** ***************************************************************

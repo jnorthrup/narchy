@@ -148,7 +148,7 @@ public class KB implements Serializable {
     public TreeSet<String> errors = new TreeSet<String>();
 
     /** Warnings found during loading of the KB constituents. */
-    private TreeSet<String> warnings = new TreeSet<String>();
+    private final TreeSet<String> warnings = new TreeSet<String>();
 
     /**
      * Future: If true, the contents of the KB have been modified without
@@ -164,7 +164,7 @@ public class KB implements Serializable {
 
     KBcache kbCache = null;
 
-    private Map<String, Integer> termFrequency = new HashMap<String, Integer>();
+    private final Map<String, Integer> termFrequency = new HashMap<String, Integer>();
 
     /*************************************************************** Constructor
      * which takes the name of the KB and the location where KBs preprocessed
@@ -2242,7 +2242,7 @@ public class KB implements Serializable {
      * removed for KB, since the latter might affect the availability of format
      * or termFormat values.
      */
-    private List<String> loadFormatMapsAttempted = new ArrayList<String>();
+    private final List<String> loadFormatMapsAttempted = new ArrayList<String>();
 
     /****************************************************************
      * Populates the format maps for language lang.

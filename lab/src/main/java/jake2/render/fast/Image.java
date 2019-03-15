@@ -180,7 +180,7 @@ public abstract class Image extends Main {
         }
     }
 
-    static final glmode_t modes[] =
+    static final glmode_t[] modes =
             {
                     new glmode_t("GL_NEAREST", GL_NEAREST, GL_NEAREST),
                     new glmode_t("GL_LINEAR", GL_LINEAR, GL_LINEAR),

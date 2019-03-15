@@ -392,7 +392,7 @@ public class SPTree {
 		}
 
 		
-		boolean containsPoint(double point[])
+		boolean containsPoint(double[] point)
 		{
 			for(int d = 0; d < dimension; d++) {
 				if(corner[d] - width[d] > point[d]) return false;

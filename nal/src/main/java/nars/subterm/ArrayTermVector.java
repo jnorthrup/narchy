@@ -76,8 +76,7 @@ public class ArrayTermVector extends TermVector {
 //                    return false; //mismatch
 //                }
 //            }
-            if (!Arrays.equals(terms, v.terms))
-                return false;
+            return Arrays.equals(terms, v.terms);
 
         } else {
             final Term[] x = this.terms;

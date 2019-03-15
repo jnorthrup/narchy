@@ -169,8 +169,8 @@ public class DTMatrix<E> {
 				values[i][j] /= value;
 			}
 	}
-	
-	protected double values[][];
+
+    protected double[][] values;
 	protected ObjectIntHashMap<E> terms;
 	private static final int minSize = 128;
 }

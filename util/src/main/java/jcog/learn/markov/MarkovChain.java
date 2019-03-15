@@ -112,7 +112,7 @@ public class MarkovChain<T> {
      *
      * @param phrase to interpret
      */
-    public MarkovChain learn(T phrase[]) {
+    public MarkovChain learn(T[] phrase) {
         return learn(Stream.of(phrase));
     }
 

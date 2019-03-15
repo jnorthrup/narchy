@@ -28,7 +28,7 @@ public class DecideEpsilonGreedy implements Deciding {
         this.random = random;
     }
 
-    int motivationOrder[];
+    int[] motivationOrder;
 
     @Override
     public int applyAsInt(float[] vector) {

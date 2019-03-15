@@ -39,7 +39,7 @@ public class QuadBezier extends JPanel {
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
 		frame.setSize(640, 480);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.getContentPane().add(new QuadBezier(), BorderLayout.CENTER);
 		frame.setVisible(true);
 	}

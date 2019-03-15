@@ -30,7 +30,7 @@ public class glstate_t
 
 	public int prev_mode;
 
-	public byte d_16to8table[];
+    public byte[] d_16to8table;
 
 	public int lightmap_textures;
 

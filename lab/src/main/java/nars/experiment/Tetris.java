@@ -39,7 +39,7 @@ public class Tetris extends NAgentX {
 
     private final boolean opjects = false;
 
-    private boolean canFall = false;
+    private final boolean canFall = false;
 
     public final FloatRange timePerFall = new FloatRange(1f, 1f, 32f);
     public final AtomicBoolean easy;

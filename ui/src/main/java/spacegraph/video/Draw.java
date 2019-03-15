@@ -26,6 +26,7 @@ package spacegraph.video;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.ImmModeSink;
 import com.jogamp.opengl.util.gl2.GLUT;
@@ -331,21 +332,21 @@ public enum Draw {
     }
 
     public static void line(int x1, int y1, int x2, int y2, GL2 gl) {
-        gl.glBegin(GL2.GL_LINES);
+        gl.glBegin(GL_LINES);
         gl.glVertex2i(x1, y1);
         gl.glVertex2i(x2, y2);
         gl.glEnd();
     }
 
     public static void line(float x1, float y1, float x2, float y2, GL2 gl) {
-        gl.glBegin(GL2.GL_LINES);
+        gl.glBegin(GL_LINES);
         gl.glVertex2f(x1, y1);
         gl.glVertex2f(x2, y2);
         gl.glEnd();
     }
 
     public static void tri2d(int x1, int y1, int x2, int y2, int x3, int y3, GL2 gl) {
-        gl.glBegin(GL2.GL_TRIANGLES);
+        gl.glBegin(GL_TRIANGLES);
         gl.glVertex2i(x1, y1);
         gl.glVertex2i(x2, y2);
         gl.glVertex2i(x3, y3);
@@ -353,7 +354,7 @@ public enum Draw {
     }
 
     public static void tri2f(GL2 gl, float x1, float y1, float x2, float y2, float x3, float y3) {
-        gl.glBegin(GL2.GL_TRIANGLES);
+        gl.glBegin(GL_TRIANGLES);
         gl.glVertex2f(x1, y1);
         gl.glVertex2f(x2, y2);
         gl.glVertex2f(x3, y3);
@@ -361,7 +362,7 @@ public enum Draw {
     }
 
     public static void quad2d(GL2 gl, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-        gl.glBegin(GL2.GL_QUADS);
+        gl.glBegin(GL2ES3.GL_QUADS);
         gl.glVertex2f(x1, y1);
         gl.glVertex2f(x2, y2);
         gl.glVertex2f(x3, y3);
@@ -370,7 +371,7 @@ public enum Draw {
     }
 
     public static void quad2d(GL2 gl, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
-        gl.glBegin(GL2.GL_QUADS);
+        gl.glBegin(GL2ES3.GL_QUADS);
         gl.glVertex2i(x1, y1);
         gl.glVertex2i(x2, y2);
         gl.glVertex2i(x3, y3);
@@ -379,14 +380,14 @@ public enum Draw {
     }
 
     public static void line(GL2 gl, v3 a, v3 b) {
-        gl.glBegin(GL2.GL_LINES);
+        gl.glBegin(GL_LINES);
         gl.glVertex3f(a.x, a.y, a.z);
         gl.glVertex3f(b.x, b.y, b.z);
         gl.glEnd();
     }
 
     public static void rectStroke(float left, float bottom, float w, float h, GL2 gl) {
-        gl.glBegin(GL2.GL_LINE_STRIP);
+        gl.glBegin(GL_LINE_STRIP);
         gl.glVertex2f(left, bottom);
         gl.glVertex2f(left + w, bottom);
         gl.glVertex2f(left + w, bottom + h);
@@ -430,7 +431,7 @@ public enum Draw {
         float y = 0;
         float cx = center.x;
         float cy = center.y;
-        gl.glBegin(solid ? GL2.GL_TRIANGLE_FAN : GL2.GL_LINE_LOOP);
+        gl.glBegin(solid ? GL_TRIANGLE_FAN : GL_LINE_LOOP);
 
         for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
             gl.glVertex3f(x + cx, y + cy, 0);
@@ -457,7 +458,7 @@ public enum Draw {
             v2 center = centers[i];
             float cx = center.x;
             float cy = center.y;
-            gl.glBegin(GL2.GL_TRIANGLE_FAN);
+            gl.glBegin(GL_TRIANGLE_FAN);
             if (colors == null) {
                 gl.glColor4f(1, 1, 1, .4f);
             } else {
@@ -480,7 +481,7 @@ public enum Draw {
     }
 
     public static void rectAlphaCorners(float left, float bottom, float x2, float y2, float[] color, float[] cornerAlphas, GL2 gl) {
-        gl.glBegin(GL2.GL_QUADS);
+        gl.glBegin(GL2ES3.GL_QUADS);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[0]);
         gl.glVertex3f(left, bottom, 0);
         gl.glColor4f(color[0], color[1], color[2], cornerAlphas[1]);
@@ -504,7 +505,7 @@ public enum Draw {
             rect(x1, y1, w, h, gl);
         } else {
 
-            gl.glBegin(GL2.GL_QUADS);
+            gl.glBegin(GL2ES3.GL_QUADS);
             gl.glNormal3f(0, 0, 1);
             gl.glVertex3f(x1, y1, z);
             gl.glVertex3f(x1 + w, y1, z);
@@ -545,7 +546,7 @@ public enum Draw {
             repeatScale = 1f;
         }
 
-        gl.glBegin(GL2.GL_QUADS);
+        gl.glBegin(GL2ES3.GL_QUADS);
 
         final float s = repeatScale;
         if (!inverted) {
@@ -603,7 +604,7 @@ public enum Draw {
         v3 vv = new v3(dx, dy, dz).cross(ww).normalized(width);
 
 
-        gl.glBegin(GL2.GL_TRIANGLES);
+        gl.glBegin(GL_TRIANGLES);
 
         gl.glColor4f(e.r, e.g, e.b, e.a);
         gl.glNormal3f(ww.x, ww.y, ww.z);
@@ -1081,7 +1082,7 @@ public enum Draw {
         gl.glStencilMask(0x00);
 
 
-        gl.glStencilFunc(includeOrExclude ? GL2.GL_NOTEQUAL : GL2.GL_EQUAL, 0, 0xFF);
+        gl.glStencilFunc(includeOrExclude ? GL_NOTEQUAL : GL_EQUAL, 0, 0xFF);
 
 
     }

@@ -65,7 +65,7 @@ public final class Sys extends Defines {
 
         if (index != -1) {
             findbase = path.substring(0, index);
-            findpattern = path.substring(index + 1, path.length());
+            findpattern = path.substring(index + 1);
         } else {
             findbase = path;
             findpattern = "*";

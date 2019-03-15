@@ -24,7 +24,7 @@ public class QuoteState extends TokenizerState {
 	 */
     private void checkBufLength(int i) {
 		if (i >= charbuf.length) {
-			char nb[] = new char[charbuf.length * 2];
+            char[] nb = new char[charbuf.length * 2];
 			System.arraycopy(charbuf, 0, nb, 0, charbuf.length);
 			charbuf = nb;
 		}

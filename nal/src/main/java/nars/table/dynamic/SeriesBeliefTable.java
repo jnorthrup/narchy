@@ -188,8 +188,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
                 Task xx = (Task) x;
                 if (hashCode() != x.hashCode())
                     return false;
-                if (stamp()[0] == xx.stamp()[0] && start() == xx.start() && term().equals(xx.term()))
-                    return true;
+                return stamp()[0] == xx.stamp()[0] && start() == xx.start() && term().equals(xx.term());
             }
             return false; //return super.equals(x);
         }

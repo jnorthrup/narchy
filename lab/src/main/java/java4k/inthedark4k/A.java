@@ -52,7 +52,7 @@ import java.util.Collections;
 @SuppressWarnings("serial")
 public class A extends GamePanel {
 
-	final boolean keys[] = new boolean[65535];
+    final boolean[] keys = new boolean[65535];
 
 	public A() {
 		new Thread(this).start();
@@ -1408,9 +1408,9 @@ public class A extends GamePanel {
 
 			
 			if (DEBUG) {
-				gfx.drawString("FPS : " + String.valueOf(fps), 10, 60);
-				gfx.drawString("Entites : " + String.valueOf(entities.size()), 10, 80);
-				gfx.drawString("Enemies : " + String.valueOf(nbEnemies), 10, 100);
+				gfx.drawString("FPS : " + fps, 10, 60);
+				gfx.drawString("Entites : " + entities.size(), 10, 80);
+				gfx.drawString("Enemies : " + nbEnemies, 10, 100);
 			}
 
 			if (gameState > PLAYING) {

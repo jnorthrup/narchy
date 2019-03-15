@@ -5,9 +5,9 @@ import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.time.event.DurService;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.time.event.DurService;
 
 import java.util.Objects;
 import java.util.concurrent.Executor;

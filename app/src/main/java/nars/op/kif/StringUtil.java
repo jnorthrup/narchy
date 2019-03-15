@@ -1537,7 +1537,7 @@ public class StringUtil {
 
     /** *****************************************************************
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         System.out.println(StringUtil.fillString("111",'0',8,true));
 

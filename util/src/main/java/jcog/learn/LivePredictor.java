@@ -41,8 +41,8 @@ public class LivePredictor {
         private final LongToFloatFunction[] ins;
         private final LongToFloatFunction[] outs;
 
-        private int past; 
-        private int dur; 
+        private final int past;
+        private final int dur;
 
         /**
          * temporary buffers, re-used

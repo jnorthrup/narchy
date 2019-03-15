@@ -10,7 +10,6 @@ import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
 
 import static nars.Op.NEG;
-import static nars.Op.VAR_PATTERN;
 
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific

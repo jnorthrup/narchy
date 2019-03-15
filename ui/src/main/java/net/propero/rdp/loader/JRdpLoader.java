@@ -47,7 +47,7 @@ public class JRdpLoader {
     private static final String[] pairs = {"-u", "-p", "-d", "-f", "-g",
             "--use_rdp5"};
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         if (args.length <= 0) {
             System.err.println("Expected usage: JRdpLoader launchFile");

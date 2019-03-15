@@ -184,11 +184,11 @@ public final class Cmd {
     /** 
      * Cmd_MacroExpandString.
      */
-    public static char[] MacroExpandString(char text[], int len) {
+    public static char[] MacroExpandString(char[] text, int len) {
         int i, j, count;
         boolean inquote;
 
-        char scan[];
+        char[] scan;
 
         String token;
         inquote = false;
@@ -259,7 +259,7 @@ public final class Cmd {
      * Parses the given string into command line tokens. $Cvars will be expanded
      * unless they are in a quoted token.
      */
-    public static void TokenizeString(char text[], boolean macroExpand) {
+    public static void TokenizeString(char[] text, boolean macroExpand) {
         String com_token;
 
         cmd_argc = 0;
@@ -951,7 +951,7 @@ public final class Cmd {
         String small;
         String large;
 
-        Integer index[] = new Integer[256];
+        Integer[] index = new Integer[256];
 
         count = 0;
         for (i = 0; i < GameBase.maxclients.value; i++) {

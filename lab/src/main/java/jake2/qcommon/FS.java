@@ -820,8 +820,7 @@ public final class FS extends Globals {
                 int index = 0;
                 for (int i = 0; i < dirnames.length; i++) {
                     if ((index = dirnames[i].lastIndexOf('/')) > 0) {
-                        Com.Printf(dirnames[i].substring(index + 1, dirnames[i]
-                                .length()) + '\n');
+                        Com.Printf(dirnames[i].substring(index + 1) + '\n');
                     } else {
                         Com.Printf(dirnames[i] + '\n');
                     }

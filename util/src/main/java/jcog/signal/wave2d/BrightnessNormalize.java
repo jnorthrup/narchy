@@ -16,7 +16,7 @@ public class BrightnessNormalize implements Bitmap2D {
     int W, H;
 
     /** for noise */
-    private SplitMix64Random rng = new SplitMix64Random(1);
+    private final SplitMix64Random rng = new SplitMix64Random(1);
 
     public BrightnessNormalize(Bitmap2D src) {
         this.src = src;

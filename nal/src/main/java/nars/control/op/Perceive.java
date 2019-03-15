@@ -214,10 +214,7 @@ public enum Perceive { ;
             return task(new FasterList<ITask>(2).with(e, r));
         else if (e!=null)
             return e;
-        else if (r!=null)
-            return r;
-        else
-            return null;
+        else return r;
     }
 
     private static ITask execute(Task t, NAR n, boolean cmd) {

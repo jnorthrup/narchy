@@ -146,7 +146,7 @@ public abstract class Main extends Base {
 	final float[] r_origin = { 0, 0, 0 };
 
 	final FloatBuffer r_world_matrix = Lib.newFloatBuffer(16);
-	float r_base_world_matrix[] = new float[16];
+    float[] r_base_world_matrix = new float[16];
 
 	
 	

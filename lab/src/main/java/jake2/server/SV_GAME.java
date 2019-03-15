@@ -224,7 +224,7 @@ public class SV_GAME {
         int leafnum;
         int cluster;
         int area1, area2;
-        byte mask[];
+        byte[] mask;
 
         leafnum = CM.CM_PointLeafnum(p1);
         cluster = CM.CM_LeafCluster(leafnum);
@@ -254,7 +254,7 @@ public class SV_GAME {
         int leafnum;
         int cluster;
         int area1, area2;
-        byte mask[];
+        byte[] mask;
 
         leafnum = CM.CM_PointLeafnum(p1);
         cluster = CM.CM_LeafCluster(leafnum);

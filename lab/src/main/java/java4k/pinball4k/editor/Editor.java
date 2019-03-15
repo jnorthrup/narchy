@@ -23,7 +23,7 @@ public class Editor extends JFrame {
 	public Editor() {
 		super("Pinball Editor");
 		setSize(1400, 800);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
 		LevelPanel levelPnl = new LevelPanel(this);
 		
@@ -92,7 +92,7 @@ public class Editor extends JFrame {
 	 * Main entry point of editor application.
 	 * @param args not used
 	 */
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		new Editor();
 	}
 }

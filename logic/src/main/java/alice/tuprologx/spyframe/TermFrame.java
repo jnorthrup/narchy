@@ -60,7 +60,7 @@ public class TermFrame extends JFrame implements ActionListener{
    */
   public TermFrame(Term term){
     super("termframe");
-    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     Container c=getContentPane();
     ptt= new Tree<>(term2tree, term);
     c.add(new JScrollPane(ptt));
@@ -104,7 +104,7 @@ public class TermFrame extends JFrame implements ActionListener{
       System.out.println("Pass exactly one prolog term!");
     else{
       TermFrame tf=new TermFrame(Term.term(args[0]));
-      tf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      tf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
   }
 }

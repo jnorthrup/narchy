@@ -51,20 +51,20 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     /** propagation (decay+growth) rate */
     public final FloatRange conductance = new FloatRange(0.5f,  0, 1f /* 2f */);
-
-    public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(new ConcurrentHashMap<>());
-    private PriNode root;
-    private NodeGraph.MutableNode<PriNode,Object> rootNode;
-
-
     //0.25f;
     //(float) (1f/(1 + Math.sqrt(t.volume())));
     //1f/(1 + t.volume());
-
     //1f/((s.volume() + t.volume())/2f); //1/vol_mean
     //1f/(s.volume() + t.volume()); //1/vol_sum
 
-    public final IntRange activeCapacity = new IntRange(256, 0, 2024) {
+
+    public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(new ConcurrentHashMap<>());
+    public PriNode root = new PriNode("root");
+    private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
+
+
+
+    public final IntRange linksCapacity = new IntRange(256, 0, 2024) {
         @Override
         @Deprecated protected void changed() {
             TaskLinkBag a = links;
@@ -82,17 +82,15 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     @Override
     protected void starting(NAR nar) {
-        int c = activeCapacity.intValue();
+        int c = linksCapacity.intValue();
         links = new TaskLinkBag(
                 new TaskLinkArrayBag(c)
                 //new TaskLinkHijackBag(c, 5)
         );
 
-        links.setCapacity(activeCapacity.intValue());
+        links.setCapacity(linksCapacity.intValue());
 
-        root = new PriNode(nar.self());
-        root.pri(1);
-        rootNode = graph.addNode(root);
+
 
 
         on(
@@ -288,8 +286,8 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     /** attaches a priority node to the priority graph
      * @return*/
-    public NodeGraph.MutableNode<PriNode, Object> add(PriNode attn) {
-        NodeGraph.MutableNode<PriNode, Object> a = graph.addNode(attn);
+    public NodeGraph.MutableNode<PriNode, Object> add(Term id) {
+        NodeGraph.MutableNode<PriNode, Object> a = graph.addNode(new PriNode(id));
         graph.addEdgeByNode(rootNode, "pri", a);
         return a;
     }

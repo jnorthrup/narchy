@@ -40,11 +40,10 @@ public class game_locals_t {
 
     public String helpmessage2 = "";
 
-    public int helpchanged; 
+    public int helpchanged;
 
-    
 
-    public gclient_t clients[] = new gclient_t[Defines.MAX_CLIENTS];
+    public gclient_t[] clients = new gclient_t[Defines.MAX_CLIENTS];
 
     
     

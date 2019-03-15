@@ -16,7 +16,7 @@ import static jcog.math.v3.v;
 public class Maze extends CompoundSpatial {
 
 
-    private boolean[][] cells;
+    private final boolean[][] cells;
 
     public Maze(String id, int x, int y) {
         super(id);

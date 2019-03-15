@@ -68,7 +68,7 @@ public class BomberConfigDialog extends JDialog
         helpPanel.setBorder(BorderFactory.createEtchedBorder());
         /** add a label to it */
         helpPanel.add(new JLabel("Click on the buttons to edit the keys.",
-                JLabel.CENTER));
+                SwingConstants.CENTER));
         /** add the help panel to the north side of the dialog */
         getContentPane().add(helpPanel, "North");
         /** add the key setup panels to the center */

@@ -40,7 +40,7 @@ public class PredVarInst {
         
         HashMap<String,HashSet<String>> result = new HashMap<String,HashSet<String>>();
         FormulaPreprocessor fp = new FormulaPreprocessor();
-    	HashMap<String,HashSet<String>> explicit = fp.findExplicitTypesInAntecedent(kb,input);
+    	HashMap<String,HashSet<String>> explicit = FormulaPreprocessor.findExplicitTypesInAntecedent(kb,input);
         if (explicit == null || explicit.keySet() == null || explicit.keySet().isEmpty())
             return types;
         Iterator<String> it = explicit.keySet().iterator();
@@ -442,7 +442,7 @@ public class PredVarInst {
         
         HashSet<String> predVars = gatherPredVars(kb,f);
         FormulaPreprocessor fp = new FormulaPreprocessor();
-        HashMap<String,HashSet<String>> typeMap = fp.computeVariableTypes(f, kb);
+        HashMap<String,HashSet<String>> typeMap = FormulaPreprocessor.computeVariableTypes(f, kb);
         HashMap<String,HashSet<String>> result = new HashMap<String,HashSet<String>>();
         Iterator<String> it = predVars.iterator();
         while (it.hasNext()) {
@@ -770,7 +770,7 @@ public class PredVarInst {
         System.out.println("Pred vars: " + gatherPredVars(kb,f));
         System.out.println("Pred vars with types: " + findPredVarTypes(f,kb));
         FormulaPreprocessor fp = new FormulaPreprocessor();
-        System.out.println("Explicit types: " + fp.findExplicitTypesInAntecedent(kb,f));
+        System.out.println("Explicit types: " + FormulaPreprocessor.findExplicitTypesInAntecedent(kb,f));
         System.out.println("Instantiated: " + instantiatePredVars(f,kb));
         System.out.println();
         

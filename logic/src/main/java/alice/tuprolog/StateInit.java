@@ -42,7 +42,7 @@ public enum StateInit { ;
 
 
             /* Set the future state */
-            return e.run.GOAL_SELECTION;
+            return PrologRun.GOAL_SELECTION;
         }
 
     };

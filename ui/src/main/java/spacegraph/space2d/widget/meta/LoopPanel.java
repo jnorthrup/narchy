@@ -17,7 +17,7 @@ public class LoopPanel extends Gridding {
     protected final Loop loop;
     private final IntSpinner fpsLabel;
     private final Plot2D cycleTimePlot, heapPlot;
-    private MutableInteger fps;
+    private final MutableInteger fps;
 
     private volatile boolean pause = false;
 

@@ -58,7 +58,7 @@ public class edict_t {
     /** if -1, use headnode instead. */
     public int num_clusters;
 
-    public int clusternums[] = new int[Defines.MAX_ENT_CLUSTERS];
+    public int[] clusternums = new int[Defines.MAX_ENT_CLUSTERS];
 
     /** unused if num_clusters != -1. */
     public int headnode;

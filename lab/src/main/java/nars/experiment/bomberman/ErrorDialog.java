@@ -23,8 +23,8 @@ public class ErrorDialog {
         /** store the stack trace (error message) into a string variable */
         CharArrayWriter writer = new CharArrayWriter();
         e.printStackTrace(new PrintWriter(writer, true));
-        String result = new String(" " + writer + "\n" +
-                " CLICK OK TO TERMINATE THE PROGRAM.");
+        String result = " " + writer + "\n" +
+                " CLICK OK TO TERMINATE THE PROGRAM.";
 
         /** create a text field and put the error message into it */
         JTextArea ta = new JTextArea(result);
@@ -59,7 +59,7 @@ public class ErrorDialog {
         /** store the stack trace (error message) into a string variable */
         CharArrayWriter writer = new CharArrayWriter();
         e.printStackTrace(new PrintWriter(writer, true));
-        String result = new String(" " + writer);
+        String result = " " + writer;
 
         /** create a text field and put the error message into it */
         JTextArea ta = new JTextArea(result);

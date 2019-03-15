@@ -301,7 +301,8 @@ public final class SV {
      */
     public static boolean SV_Push(edict_t pusher, float[] move, float[] amove) {
         int i, e;
-        edict_t check, block[];
+        edict_t check;
+        edict_t[] block;
         float[] mins = { 0, 0, 0 };
         float[] maxs = { 0, 0, 0 };
         pushed_t p;
@@ -667,7 +668,7 @@ public final class SV {
     public static void SV_Physics_Step(edict_t ent) {
         boolean wasonground;
         boolean hitsound = false;
-        float vel[];
+        float[] vel;
         float speed, newspeed, control;
         float friction;
         edict_t groundentity;
@@ -993,7 +994,7 @@ public final class SV {
 
     public static void SV_NewChaseDir(edict_t actor, edict_t enemy, float dist) {
         float deltax, deltay;
-        float d[] = { 0, 0, 0 };
+        float[] d = {0, 0, 0};
         float tdir, olddir, turnaround;
 
         

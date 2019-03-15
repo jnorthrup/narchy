@@ -31,7 +31,7 @@ public class Math3D {
 
 	static final float shortratio = 360.0f / 65536.0f;
 	static final float piratio = (float) (Math.PI / 360.0);
-	public static void set(float v1[], float v2[]) {
+	public static void set(float[] v1, float[] v2) {
 		v1[0] = v2[0];
 		v1[1] = v2[1];
 		v1[2] = v2[2];
@@ -104,7 +104,7 @@ public class Math3D {
 		}
 		return length;
 	}
-	public static final float VectorLength(float v[]) {
+	public static final float VectorLength(float[] v) {
 		return (float) Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 	}
 	public static void VectorInverse(float[] v) {
@@ -246,7 +246,7 @@ public class Math3D {
 	R_ConcatTransforms
 	================
 	*/
-	public static void R_ConcatTransforms(float in1[][], float in2[][], float out[][]) {
+	public static void R_ConcatTransforms(float[][] in1, float[][] in2, float[][] out) {
 		out[0][0] = in1[0][0] * in2[0][0] + in1[0][1] * in2[1][0] + in1[0][2] * in2[2][0];
 		out[0][1] = in1[0][0] * in2[0][1] + in1[0][1] * in2[1][1] + in1[0][2] * in2[2][1];
 		out[0][2] = in1[0][0] * in2[0][2] + in1[0][1] * in2[1][2] + in1[0][2] * in2[2][2];
@@ -263,7 +263,7 @@ public class Math3D {
 	/**
 	 * concatenates 2 matrices each [3][3].
 	 */
-	public static void R_ConcatRotations(float in1[][], float in2[][], float out[][]) {
+	public static void R_ConcatRotations(float[][] in1, float[][] in2, float[][] out) {
 		float[] in1_0 = in1[0];
 		float[] out0 = out[0];
 		out0[0] = in1_0[0] * in2[0][0] + in1_0[1] * in2[1][0] + in1_0[2] * in2[2][0];
@@ -323,7 +323,7 @@ public class Math3D {
 	 stellt fest, auf welcher Seite sich die Kiste befindet, wenn die Ebene 
 	 durch Entfernung und Senkrechten-Normale gegeben ist.    
 	 erste Version mit vec3_t... */
-	public static final int BoxOnPlaneSide(float emins[], float emaxs[], cplane_t p) {
+	public static final int BoxOnPlaneSide(float[] emins, float[] emaxs, cplane_t p) {
 
 		assert(emins.length == 3 && emaxs.length == 3) : "vec3_t bug";
 

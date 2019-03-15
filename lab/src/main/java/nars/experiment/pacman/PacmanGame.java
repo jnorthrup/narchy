@@ -50,7 +50,7 @@ public class PacmanGame {
         keys = new boolean[4];
         splashes = new CopyOnWriteArrayList<>();
         JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setTitle("Pacman");
         frame.setVisible(true);
         frame.setResizable(false);

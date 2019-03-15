@@ -118,8 +118,8 @@ public class GraphMeter {
      */
     public static void multicast(Graph g, int[] b, Random r) {
 
-        int c1[] = new int[g.size()];
-        int c2[] = new int[g.size()];
+        int[] c1 = new int[g.size()];
+        int[] c2 = new int[g.size()];
         for (int i = 0; i < c1.length; ++i) c2[i] = c1[i] = WHITE;
         c2[0] = c1[0] = BLACK;
 

@@ -91,7 +91,7 @@ public class AnimVector3f extends v3 implements Animated {
     }
 
 
-    private InterpolationCurve curve = InterpolationCurve.LERP;
+    private final InterpolationCurve curve = InterpolationCurve.LERP;
 
     public AnimVector3f(float speed) {
         this(0, 0, 0, speed);

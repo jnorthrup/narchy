@@ -47,9 +47,9 @@ public class TranslationalLimitMotor {
 	public final v3 upperLimit = new v3(); 
 	public final v3 accumulatedImpulse = new v3();
 	
-	private float limitSoftness;
-	private float damping;
-	private float restitution;
+	private final float limitSoftness;
+	private final float damping;
+	private final float restitution;
 
         
         private final boolean[] enableMotor      = new boolean[3];

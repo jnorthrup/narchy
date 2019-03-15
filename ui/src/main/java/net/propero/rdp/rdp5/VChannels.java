@@ -63,7 +63,7 @@ public class VChannels {
     public static final int CHANNEL_FLAG_LAST = 0x02;
     public static final int CHANNEL_FLAG_SHOW_PROTOCOL = 0x10;
     private static final Logger logger = LoggerFactory.getLogger(VChannels.class);
-    private VChannel channels[] = new VChannel[MAX_CHANNELS];
+    private VChannel[] channels = new VChannel[MAX_CHANNELS];
 
     private int num_channels;
     private byte[] fragment_buffer;

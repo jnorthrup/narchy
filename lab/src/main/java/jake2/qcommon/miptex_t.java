@@ -36,9 +36,9 @@ public class miptex_t {
 	String		name="";
 	
 	int		width, height;
-	
-	
-	int		offsets[] = new int[Defines.MIPLEVELS];		
+
+
+    int[] offsets = new int[Defines.MIPLEVELS];
 	
 	
 	String 		animframe="";

@@ -46,7 +46,7 @@ public class Point2PointConstraint extends TypedConstraint {
 	/** strength */
 	public float tau = 0.3f;
 
-	private float damping = 1f;
+	private final float damping = 1f;
 	public float impulseClamp;
 
 

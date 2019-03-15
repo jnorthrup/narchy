@@ -129,7 +129,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
         CellMap.CacheCell<K, V> entry = cells.map.computeIfAbsent(key, k -> cells.cellPool.get());
 
-        ((SurfaceCacheCell<K,V>) entry).update(key, nextValue, renderer, (BiConsumer<V,Surface>)this::hide);
+        ((SurfaceCacheCell<K,V>) entry).update(key, nextValue, renderer, this::hide);
 
         return cells.update(key, entry, entry.key != null);
 

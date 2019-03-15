@@ -69,9 +69,9 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
                 0;
 
 
-        TextRegionUtil textRegionUtil;
-        RenderState renderState;
-        RegionRenderer regionRenderer;
+        final TextRegionUtil textRegionUtil;
+        final RenderState renderState;
+        final RegionRenderer regionRenderer;
 
 
         Font font;
