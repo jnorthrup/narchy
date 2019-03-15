@@ -301,10 +301,11 @@ public interface NSense {
         a.addAction(pn.pos);
         a.addAction(pn.neg);
 
-        pn.attn.reparent(a.attnAction);
+        NAR nar = a.nar();
+        pn.attn.parent(a.attnAction, nar);
 
-        pn.pos.attn.reparent(pn.attn);
-        pn.neg.attn.reparent(pn.attn);
+        pn.pos.attn.parent(pn.attn, nar);
+        pn.neg.attn.parent(pn.attn, nar);
 
         onFrame(x -> pn.update(a.prev, a.now, a.nar()));
         return pn;

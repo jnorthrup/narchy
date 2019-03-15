@@ -1,8 +1,8 @@
 package nars;
 
-import jcog.data.iterator.ArrayIterator;
-import nars.agent.NAgent;
-import nars.attention.AttNode;
+import com.google.common.collect.Iterables;
+import jcog.data.graph.Node;
+import nars.attention.PriNode;
 import nars.gui.DurSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.Graph2D;
@@ -15,9 +15,9 @@ import spacegraph.util.MutableRectFloat;
 public class AttentionUI {
 
     static class NodeUI extends Gridding {
-        public final AttNode node;
+        public final PriNode node;
 
-        NodeUI(AttNode node) {
+        NodeUI(PriNode node) {
             this.node = node;
             add(new VectorLabel(node.toString()));
             add(new ObjectSurface(node));
@@ -32,17 +32,17 @@ public class AttentionUI {
 //        return g;
 //    }
 
-    public static Surface attentionGraph(NAR n, NAgent... a) {
-        Graph2D<AttNode> aaa = new Graph2D<AttNode>()
-                .render((Graph2D.Graph2DRenderer<AttNode>) (node, graph) -> {
-                    node.id.children.forEach(c -> {
-                        Graph2D.EdgeVis<AttNode> e = graph.edge(node, c);
+    public static Surface attentionGraph(NAR n) {
+        Graph2D<PriNode> aaa = new Graph2D<PriNode>()
+                .render((Graph2D.Graph2DRenderer<PriNode>) (node, graph) -> {
+                    n.attn.graph.node(node.id).nodes(false,true).forEach(c -> {
+                        Graph2D.EdgeVis<PriNode> e = graph.edge(node, c.id());
                         if (e!=null) {
                             e.weight(1f);
                             e.color(0.5f, 0.5f, 0.5f);
                         }
                     });
-                    float s = node.id.pri.pri();
+                    float s = node.id.pri();
                     float d = 0.5f * node.id.factor.floatValue();
 //                            float r = Math.min(1, s/d);
                     node.color(Math.min(d, 1), Math.min(s, 1), 0);
@@ -52,9 +52,9 @@ public class AttentionUI {
                 })
                 .update(new ForceDirected2D<>() {
                     @Override
-                    protected void size(MutableRectFloat<AttNode> m, float a) {
+                    protected void size(MutableRectFloat<PriNode> m, float a) {
                         float q =
-                                    m.node.id.pri.pri();
+                                    m.node.id.pri();
 
                         float s = (float)(Math.sqrt((Math.max(0, q))));
                         s = Math.max(Math.min(s, 2) * a, 32);
@@ -62,9 +62,7 @@ public class AttentionUI {
                     }
                 });
         return DurSurface.get(aaa.widget(), n, () -> {
-
-            aaa.set(ArrayIterator.stream(a).flatMap(aa -> aa.attn.childrenStreamRecurse())::iterator);
-
+            aaa.set(Iterables.transform(n.attn.graph.nodes(), Node::id));
         } );
     }
 }

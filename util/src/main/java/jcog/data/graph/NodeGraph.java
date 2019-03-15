@@ -168,6 +168,13 @@ public abstract class NodeGraph<N, E> {
             return new ArrayHashSet<>(2);
         }
 
+        Collection<FromTo<Node<N, E>, E>> newEdgeCollection(FromTo... ff) {
+            Collection<FromTo<Node<N, E>, E>> c = newEdgeCollection();
+            for (FromTo f: ff)
+                c.add(f);
+            return c;
+        }
+
         boolean addIn(FromTo<Node<N, E>, E> e) {
             return addSet(e, true);
 
@@ -187,10 +194,9 @@ public abstract class NodeGraph<N, E> {
             } else {
                 if (s instanceof ArrayUnenforcedSortedSet) {
                     FromTo<Node<N, E>, E> x = ((ArrayUnenforcedSortedSet<FromTo<Node<N, E>, E>>)s).get(0);
+                    assert(x!=null);
                     if (!e.equals(x)) {
-                        s = newEdgeCollection();
-                        s.add(x);
-                        s.add(e);
+                        s = newEdgeCollection(x,e);
                         result = true;
                     } else {
                         result = false;
@@ -255,6 +261,7 @@ public abstract class NodeGraph<N, E> {
         public Stream<FromTo<Node<N, E>, E>> streamOut() {
             return (out.stream());
         }
+
 
 
     }

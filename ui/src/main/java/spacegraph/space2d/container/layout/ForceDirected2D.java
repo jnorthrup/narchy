@@ -13,20 +13,20 @@ import java.util.Random;
 public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
-    private int iterations = 1;
+    private int iterations = 4;
     private float AUTOSCALE = 0f;
 
 
-    public final FloatRange repelSpeed = new FloatRange(4f, 0, 16f);
+    public final FloatRange repelSpeed = new FloatRange(0.5f, 0, 1f);
 
-    public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 16f);
+    public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 1f);
 
     public final FloatRange nodeScale = new FloatRange(0.25f, 0.04f, 1.5f);
 
 
-    public final FloatRange nodeSpacing  = new FloatRange(1f, 0.1f, 4f);
+    public final FloatRange nodeSpacing  = new FloatRange(1f, 0.1f, 16f);
 
-    public final FloatRange needSpeedLimit = new FloatRange(25f, 0f, 100f);
+    public final FloatRange needSpeedLimit = new FloatRange(0.1f, 0f, 1f);
 
 
 
@@ -64,7 +64,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         for (MutableRectFloat<X> m : nodes)
             size(m, AUTOSCALE);
 
-        maxRepelDist = (float) ((2 * g.radius()) * Math.sqrt(2)); //estimate
+        float gRad = g.radius();
+        maxRepelDist = (float) ((2 * gRad) * Math.sqrt(2)); //estimate
 
         equilibriumDistFactor = nodeSpacing.floatValue();
 
@@ -73,7 +74,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         float repelSpeed = this.repelSpeed.floatValue() / iterations;
         float attractSpeed = this.attractSpeed.floatValue() / iterations;
 
-        float maxSpeedPerIter = needSpeedLimit.floatValue() / iterations;
+        float maxSpeedPerIter = needSpeedLimit.floatValue()  * gRad;
 
 
         final v2 aCenter = new v2();
@@ -147,7 +148,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
                 //attractSpeed/=neighbors;
 
                 float s = (len - idealLen) * attractSpeed * weightToVelocity(edge.weight);
-                if (s > Float.MIN_NORMAL) {
+                if (Math.abs(s) > Float.MIN_NORMAL) {
                     delta.scaled(s);
                     a.move(delta.x, delta.y);
                     b.move(-delta.x, -delta.y);

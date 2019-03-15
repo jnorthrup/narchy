@@ -6,6 +6,7 @@ import jcog.data.list.FasterList;
 import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatRange;
+import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.RingBufferTensor;
@@ -294,9 +295,9 @@ abstract public class NAgentX extends NAgent {
 
 
         MetaAgent meta = new MetaAgent(n, 8);
-        meta.pri.set(0.25f);
+        ((Prioritizable) meta.attn).pri(0.25f);
 
-        //window(AttentionUI.attentionGraph(n, a, meta), 600, 600);
+        window(AttentionUI.attentionGraph(n), 600, 600);
 
 
         window(new Gridding(NARui.agent(a), NARui.agent(meta)), 500, 500);

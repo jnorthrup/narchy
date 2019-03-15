@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * https://en.wikipedia.org/wiki/Average_absolute_deviation
  */
 @Paper
-public class AttnBranch extends AttNode {
+public class AttnBranch extends PriNode {
 
     private final Iterable<? extends Termed> components;
 
@@ -39,7 +39,6 @@ public class AttnBranch extends AttNode {
         this.components = components;
     }
 
-    @Override
     public Stream<Concept> concepts(NAR nar) {
         return Streams.stream(components).map(nar::concept).filter(Objects::nonNull);
     }

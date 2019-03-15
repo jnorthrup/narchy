@@ -72,19 +72,16 @@ abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
         return null;
     }
 
-    @NotNull
     @Override
     public SortedSet<X> subSet(X x, X e1) {
         throw new TODO();
     }
 
-    @NotNull
     @Override
     public SortedSet<X> headSet(X x) {
         throw new TODO();
     }
 
-    @NotNull
     @Override
     public SortedSet<X> tailSet(X x) {
         throw new TODO();
@@ -94,6 +91,11 @@ abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
 
         private One(X x) {
             super(x);
+        }
+
+        @Override
+        public int size() {
+            return 1;
         }
 
         @Override
@@ -116,6 +118,11 @@ abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
 
         private Two(X x, X y) {
             super(x, y);
+        }
+
+        @Override
+        public int size() {
+            return 2;
         }
 
         @Override

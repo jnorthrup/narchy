@@ -1,5 +1,7 @@
 package nars.attention;
 
+import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
@@ -26,6 +28,7 @@ import nars.time.event.DurService;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -48,6 +51,11 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     /** propagation (decay+growth) rate */
     public final FloatRange conductance = new FloatRange(0.5f,  0, 1f /* 2f */);
+
+    public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(new ConcurrentHashMap<>());
+    private PriNode root;
+    private NodeGraph.MutableNode<PriNode,Object> rootNode;
+
 
     //0.25f;
     //(float) (1f/(1 + Math.sqrt(t.volume())));
@@ -74,7 +82,6 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     @Override
     protected void starting(NAR nar) {
-        super.starting(nar);
         int c = activeCapacity.intValue();
         links = new TaskLinkBag(
                 new TaskLinkArrayBag(c)
@@ -82,6 +89,11 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         );
 
         links.setCapacity(activeCapacity.intValue());
+
+        root = new PriNode(nar.self());
+        root.pri(1);
+        rootNode = graph.addNode(root);
+
 
         on(
                 nar.eventClear.on(links::clear),
@@ -94,12 +106,15 @@ public class Attention extends DurService implements Sampler<TaskLink> {
                 )
         );
 
+        super.starting(nar);
+
     }
 
     @Override
     protected void run(NAR n, long dt) {
         forgetting.update(n);
         derivePri.update(n);
+        root.update(1, graph);
     }
 
     @Override
@@ -269,6 +284,14 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         ((TaskConcept) c).value(task, n);
 
         return true;
+    }
+
+    /** attaches a priority node to the priority graph
+     * @return*/
+    public NodeGraph.MutableNode<PriNode, Object> add(PriNode attn) {
+        NodeGraph.MutableNode<PriNode, Object> a = graph.addNode(attn);
+        graph.addEdgeByNode(rootNode, "pri", a);
+        return a;
     }
 
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {

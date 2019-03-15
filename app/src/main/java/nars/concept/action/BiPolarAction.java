@@ -3,7 +3,7 @@ package nars.concept.action;
 import jcog.Util;
 import nars.$;
 import nars.NAR;
-import nars.attention.AttNode;
+import nars.attention.PriNode;
 import nars.attention.AttnBranch;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
@@ -28,7 +28,7 @@ public class BiPolarAction extends AbstractSensor {
     private final Polarization model;
     private final FloatToFloatFunction motor;
 
-    public final AttNode attn;
+    public final PriNode attn;
     private final CauseChannel<ITask> cause;
 
 

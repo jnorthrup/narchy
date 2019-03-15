@@ -6,7 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.agent.Reward;
-import nars.attention.AttNode;
+import nars.attention.PriNode;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
@@ -116,10 +116,10 @@ public class NARio extends NAgentX {
                 tileSwitch(+1, +1)
         );
 
-        AttNode tileAttnGroup = new AttNode(tileSensors);
-        tileAttnGroup.parent(attnSensor);
+        PriNode tileAttnGroup = new PriNode(tileSensors);
+        tileAttnGroup.parent(attnSensor, nar());
         for (SelectorSensor s : tileSensors)
-            s.attn.reparent(tileAttnGroup);
+            s.attn.parent(tileAttnGroup, nar());
 
 
         SpaceGraph.window(camAE.newChart(), 500, 500);

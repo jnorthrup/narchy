@@ -1,11 +1,12 @@
 package nars.agent;
 
 import jcog.Util;
+import jcog.data.graph.MapNodeGraph;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.attention.AttNode;
 import nars.attention.AttnBranch;
+import nars.attention.PriNode;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.op.mental.Inperience;
@@ -37,15 +38,15 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     final static boolean goalUnstamped = false;
 
-    final AttNode attn;
+    final PriNode attn;
 
     public Reward(NAgent a) {
     //TODO
     //public Reward(NAgent a, FloatSupplier r, float confFactor) {
         this.agent = a;
 
-        this.attn = new AttNode(this);
-        attn.reparent(a.attnReward);
+        this.attn = new PriNode(this);
+        attn.parent(a.attnReward, a.nar());
 
         in = a.nar().newChannel(this);
 
@@ -95,17 +96,17 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
         Task t = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
         Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
-        AttNode a = new AttnBranch(at, List.of(t)) {
-
+        //HACK
+        PriNode a = new AttnBranch(at, List.of(t)) {
             @Override
-            public void update(float f) {
-                super.update(f);
+            public void update(float f, MapNodeGraph<PriNode,Object> g) {
+                super.update(f, g);
                 t.pri(elementPri());
                 in.input(t);
             }
 
         };
-        a.parent(attn);
+        a.parent(attn, nar());
     }
 
 }

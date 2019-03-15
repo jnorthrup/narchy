@@ -7,7 +7,7 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.attention.AttNode;
+import nars.attention.PriNode;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -196,20 +196,20 @@ public class ConsoleAgent extends NAgentX {
             this.charMatrix = new Signal[w][h][alphabet.length];
 
 
-            AttNode charAttn = new AttNode(this);
-            charAttn.parent(attnSensor);
+            PriNode charAttn = new PriNode(this);
+            charAttn.parent(attnSensor, nar());
 
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
                     Term XY = $.p($.the(x), $.the(y));
-                    AttNode xy = new AttNode(XY);
-                    xy.parent(charAttn);
+                    PriNode xy = new PriNode(XY);
+                    xy.parent(charAttn, nar());
                     for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
                         char a = alphabet[i];
                         Term xya = $.funcImg((Atomic)id, $.the(a), XY);
                         int xx = x;
                         int yy = y;
-                        (charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a)).attn.reparent(xy);
+                        (charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a)).attn.parent(xy,nar());
                     }
                 }
             }

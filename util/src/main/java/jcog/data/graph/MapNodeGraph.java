@@ -49,7 +49,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         }
     }
 
-    MapNodeGraph(Map<N, Node<N, E>> nodes) {
+    public MapNodeGraph(Map<N, Node<N, E>> nodes) {
         this.nodes = nodes;
     }
 
@@ -120,14 +120,21 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
     public final boolean addEdgeByNode(MutableNode<N, E> from, E data, MutableNode<N, E> to) {
-        return addEdgeByNode(from, to, new ImmutableDirectedEdge<>(from, data, to));
+        return addEdge(from, to, new ImmutableDirectedEdge<>(from, data, to));
+    }
+
+    public final boolean addEdge(MutableNode<N, E> from, E data, N to) {
+        return addEdgeByNode(from, data, addNode(to));
+    }
+    public final boolean addEdge(N from, E data, MutableNode<N,E> to) {
+        return addEdgeByNode(addNode(from), data, to);
     }
 
     public boolean addEdge(FromTo<Node<N, E>, E> ee) {
-        return addEdgeByNode((MutableNode<N,E>)(ee.from()), (MutableNode<N,E>)(ee.to()), ee);
+        return addEdge((MutableNode<N,E>)(ee.from()), (MutableNode<N,E>)(ee.to()), ee);
     }
 
-    protected boolean addEdgeByNode(MutableNode<N, E> from, MutableNode<N, E> to, FromTo<Node<N, E>, E> ee) {
+    static <N,E> boolean addEdge(MutableNode<N, E> from, MutableNode<N, E> to, FromTo<Node<N, E>, E> ee) {
         if (from.addOut(ee)) {
             boolean a = to.addIn(ee);
             assert (a);
