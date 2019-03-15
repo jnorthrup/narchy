@@ -6,14 +6,10 @@ import com.google.common.collect.Lists;
 import com.googlecode.lanterna.input.KeyType;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
-import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.math.Quantiler;
-import jcog.pri.PLinkHashCached;
 import jcog.pri.VLink;
-import jcog.pri.bag.impl.PLinkArrayBag;
-import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Narsese;
 import nars.Task;
@@ -31,7 +27,6 @@ import nars.time.event.DurService;
 import nars.truth.Truth;
 import nars.util.MemorySnapshot;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
@@ -56,7 +51,6 @@ import spacegraph.space2d.widget.meta.TriggeredSurface;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.meter.ScatterPlot2D;
 import spacegraph.space2d.widget.port.FloatRangePort;
-import spacegraph.space2d.widget.slider.FloatGuage;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
@@ -168,7 +162,6 @@ public class NARui {
         return mm;
     }
 
-    @NotNull
     public static Surface priView(NAR n) {
 
         Attention cc = n.attn;
@@ -349,60 +342,60 @@ public class NARui {
         };
     }
 
-    public static Surface taskTable(NAR n) {
-
-        int cap = 32;
-        float rate = 1f;
-
-        CheckBox updating = new CheckBox("Update");
-        updating.on(true);
-
-        /** TODO make multithread better */
-        PLinkArrayBag<Task> b = new PLinkArrayBag<>(PriMerge.replace, cap);
-        List<Task> taskList = new FasterList();
-
-        ScrollXY tasks = ScrollXY.listCached(t ->
-                        new Splitting<>(new FloatGuage(0, 1, t::priElseZero),
-                                new PushButton(new VectorLabel(t.toStringWithoutBudget())).click(() -> {
-                                    conceptWindow(t, n);
-                                }),
-                                false, 0.1f),
-                taskList, 64);
-        tasks.view(1, cap);
-
-        TextEdit0 input = new TextEdit0(16, 1);
-        input.onKey((k) -> {
-            if (k.getKeyType() == KeyType.Enter) {
-                //input
-            }
-        });
-
-
-        Surface s = new Splitting(
-                tasks,
-                new Gridding(updating, input /* ... */)
-                , 0.1f);
-
-        Off onTask = n.onTask((t) -> {
-            if (updating.on()) {
-                b.put(new PLinkHashCached<>(t, t.priElseZero() * rate));
-            }
-        });
-        return DurSurface.get(s, n, (nn) -> {
-
-        }, (nn) -> {
-            if (updating.on()) {
-                synchronized (tasks) {
-                    taskList.clear();
-                    b.commit();
-                    b.forEach(x -> taskList.add(x.get()));
-                    tasks.update();
-                }
-            }
-        }, (nn) -> {
-            onTask.off();
-        });
-    }
+//    public static Surface taskTable(NAR n) {
+//
+//        int cap = 32;
+//        float rate = 1f;
+//
+//        CheckBox updating = new CheckBox("Update");
+//        updating.on(true);
+//
+//        /** TODO make multithread better */
+//        PLinkArrayBag<Task> b = new PLinkArrayBag<>(PriMerge.replace, cap);
+//        List<Task> taskList = new FasterList();
+//
+//        ScrollXY tasks = ScrollXY.listCached(t ->
+//                        new Splitting<>(new FloatGuage(0, 1, t::priElseZero),
+//                                new PushButton(new VectorLabel(t.toStringWithoutBudget())).click(() -> {
+//                                    conceptWindow(t, n);
+//                                }),
+//                                false, 0.1f),
+//                taskList, 64);
+//        tasks.view(1, cap);
+//
+//        TextEdit0 input = new TextEdit0(16, 1);
+//        input.onKey((k) -> {
+//            if (k.getKeyType() == KeyType.Enter) {
+//                //input
+//            }
+//        });
+//
+//
+//        Surface s = new Splitting(
+//                tasks,
+//                new Gridding(updating, input /* ... */)
+//                , 0.1f);
+//
+//        Off onTask = n.onTask((t) -> {
+//            if (updating.on()) {
+//                b.put(new PLinkHashCached<>(t, t.priElseZero() * rate));
+//            }
+//        });
+//        return DurSurface.get(s, n, (nn) -> {
+//
+//        }, (nn) -> {
+//            if (updating.on()) {
+//                synchronized (tasks) {
+//                    taskList.clear();
+//                    b.commit();
+//                    b.forEach(x -> taskList.add(x.get()));
+//                    tasks.update();
+//                }
+//            }
+//        }, (nn) -> {
+//            onTask.off();
+//        });
+//    }
 
     private static Surface memoryView(NAR n) {
 

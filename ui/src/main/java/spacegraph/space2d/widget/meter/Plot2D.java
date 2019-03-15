@@ -5,6 +5,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat;
@@ -237,7 +238,19 @@ public class Plot2D extends Widget {
                 autorange();
             }
         });
+        return this;
+    }
 
+    /** TODO use a FloatRingBuffer or something non-Box */
+    @Deprecated public Plot2D add(String name, MetalConcurrentQueue<Float> buffer) {
+        add(new ArraySeries(name, maxHistory) {
+            @Override
+            public void update() {
+                limit();
+                buffer.clear(super::add);
+                autorange();
+            }
+        });
         return this;
     }
 

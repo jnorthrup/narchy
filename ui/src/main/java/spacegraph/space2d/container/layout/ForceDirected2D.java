@@ -4,7 +4,6 @@ import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.math.FloatRange;
 import jcog.math.v2;
 import jcog.random.XoRoShiRo128PlusRandom;
-import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.util.MutableRectFloat;
@@ -34,7 +33,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
     private float maxRepelDist;
 
-    private float equilibriumDist;
+    private float equilibriumDistFactor;
 
     @Override
     public void init(Graph2D<X> g, Graph2D.NodeVis<X> newNode) {
@@ -65,9 +64,9 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         for (MutableRectFloat<X> m : nodes)
             size(m, AUTOSCALE);
 
-        maxRepelDist = (float) ((2 * g.radius()) * Math.sqrt(2) / 2); //estimate
+        maxRepelDist = (float) ((2 * g.radius()) * Math.sqrt(2)); //estimate
 
-        equilibriumDist = nodeSpacing.floatValue();
+        equilibriumDistFactor = nodeSpacing.floatValue();
 
 
         int iterations = this.iterations;
@@ -137,19 +136,17 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
             if (b == null)
                 return;
 
-            v2 delta = new v2();
-            delta.set(b.cx() - px, b.cy() - py);
+            float idealLen = (fromRad + b.radius()) * equilibriumDistFactor / 2;
 
-            float scale = fromRad + b.radius();
+            v2 delta = new v2(b.cx() - px, b.cy() - py);
             float len = delta.normalize();
-            float idealLen = scale * equilibriumDist;
             //if (len > idealLen) {
 //            len = len * (1+Util.tanhFast(len - (scale)))/2;
 
 
                 //attractSpeed/=neighbors;
 
-                float s = (len - idealLen) * attractSpeed * weightToVelocity(edge.weight) / 2;
+                float s = (len - idealLen) * attractSpeed * weightToVelocity(edge.weight);
                 if (s > Float.MIN_NORMAL) {
                     delta.scaled(s);
                     a.move(delta.x, delta.y);
@@ -175,10 +172,10 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 //        ar *= ar;
 //        br *= br;
 
-        float scale = (ar + br);
+        float radii = (ar + br) * equilibriumDistFactor;
 
         float len = delta.normalize();
-        if (len < Spatialization.EPSILONf) {
+        if (len <= radii) {
             //coincident, apply random vector
             double theta = (float) (rng.nextFloat()*Math.PI*2);
             float tx = (float) Math.cos(theta);
@@ -187,19 +184,21 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
             len = 0;
         } else if (len >= maxRepelDist)
             return;
-
-        len -= (scale) * equilibriumDist;
-        len = Math.max(0, len);
+        else {
+            len -= (radii);
+            len = Math.max(0, len);
+        }
 
         float s = repelSpeed /
-                (1 + (len * len));
+                //(1 + (len * len));
+                (1 + (len));
                 //Util.sqr(1 + len);
 
         delta.scaled(s);
 
-        double baRad = br / scale;
+        double baRad = br / radii;
         a.move(delta.x * baRad, delta.y * baRad);
-        double abRad = -ar / scale;
+        double abRad = -ar / radii;
         b.move(delta.x * abRad, delta.y * abRad);
 
     }

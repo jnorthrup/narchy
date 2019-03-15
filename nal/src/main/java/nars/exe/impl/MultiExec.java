@@ -40,7 +40,7 @@ abstract public class MultiExec extends UniExec {
      */
 
     private float explorationRate = 0.1f;
-    private float momentum = 0.75f;
+    private float momentum = 0.5f;
 
     protected long cycleNS;
 

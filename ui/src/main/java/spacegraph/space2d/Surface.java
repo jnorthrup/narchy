@@ -230,11 +230,11 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     /** prepares the rendering procedures in the rendering context */
     public final void recompile(SurfaceRender r) {
         if (!showing) {
-            showing = (visible() && (!clipBounds || r.visible(bounds)));
+            if (!(showing = (visible() && (!clipBounds || r.visible(bounds)))))
+                return;
         }
 
-        if (showing)
-            compile(r);
+        compile(r);
     }
 
     protected void compile(SurfaceRender r) {

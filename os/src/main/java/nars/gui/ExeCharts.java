@@ -2,6 +2,8 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.data.list.MetalConcurrentQueue;
+import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.MutableEnum;
@@ -37,6 +39,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.video.Draw;
 
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -97,15 +100,37 @@ public class ExeCharts {
     }
 
     public static Surface exePanel(NAR n) {
-        int plotHistory = 100;
+
+        int plotHistory = 500;
+        MetalConcurrentQueue busyBuffer = new MetalConcurrentQueue(plotHistory);
+        MetalConcurrentQueue queueSize = new MetalConcurrentQueue(plotHistory);
+
         Plot2D exeQueue = new Plot2D(plotHistory, Plot2D.BarLanes)
-                .add("queueSize", ((UniExec) n.exe)::queueSize);
+                .add("queueSize", queueSize);
         Plot2D busy = new Plot2D(plotHistory, Plot2D.BarLanes)
-                .add("Busy", n.emotion.busyVol::getSum);
-        return grid(
-                DurSurface.get(exeQueue, n, exeQueue::commit),
-                DurSurface.get(busy, n, busy::commit)
-        );
+                .add("Busy", busyBuffer);
+
+
+        Gridding g = grid(exeQueue, busy);
+        DurSurface d = DurSurface.get(g, n, new Consumer<NAR>() {
+
+            Off c = n.onCycle((nn) -> {
+                busyBuffer.offer(nn.emotion.busyVol.getSum());
+                queueSize.offer((float)((UniExec) n.exe).queueSize());
+            });
+
+            @Override
+            public void accept(NAR nn) {
+                if (g.parent!=null) {
+                    exeQueue.commit();
+                    busy.commit();
+                } else{
+                    c.off();
+                }
+            }
+        });
+        return d;
+
     }
 
     public static Surface valuePanel(NAR n) {
@@ -284,6 +309,13 @@ public class ExeCharts {
 
             super.update();
             if (loop.isRunning()) {
+
+                if (nar.time instanceof RealTime) {
+                    double actualMS = ((RealTime) nar.time).durSeconds() * 1000.0;
+                    if (!Util.equals(durMS.doubleValue(), actualMS, 0.1)) {
+                        durMS.set(actualMS); //external change singificant
+                    }
+                }
             }
 
         }

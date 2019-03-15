@@ -103,9 +103,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
     protected void resize() {
         RectFloat bounds = RectFloat.X0Y0WH(0, 0, display.getWidth(), display.getHeight());
         layers.pos(bounds);
-        layers.doLayout(1);
     }
-
 
     @Override
     protected void renderOrthos(int dtMS) {

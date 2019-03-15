@@ -22,12 +22,6 @@ public class MutableRectFloat<X> {
     @Deprecated
     public Graph2D.NodeVis<X> node;
 
-    /**
-     * is this helpful? move to subclass if really neceessry.
-     * using an index (kdtree etc) will be better
-     */
-    @Deprecated
-    private transient float rad;
 
     public MutableRectFloat() {
 
@@ -61,7 +55,8 @@ public class MutableRectFloat<X> {
     }
 
     public float radius() {
-        return rad;
+        float ww = w/2, hh = h/2;
+        return (float) Math.sqrt((ww * ww) + (hh * hh));
     }
 
     public MutableRectFloat pos(float x, float y) {
@@ -145,7 +140,6 @@ public class MutableRectFloat<X> {
     public MutableRectFloat size(float w, float h) {
         this.w = w;
         this.h = h;
-        this.rad = (float) Math.sqrt((w * w) + (h * h));
         return this;
     }
 

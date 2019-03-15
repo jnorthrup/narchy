@@ -174,9 +174,9 @@ public abstract class Param {
      */
     public static final FloatFloatToFloatFunction DerivationPri =
         //tasklinkMerge::merge;
-        //Util::or;
-        //(t,b)->Util.unitize(t+b);
         Util::or;
+        //(t,b)->Util.unitize(t+b);
+        //Util::or;
         //Math::max;
         //Util::and;
         //Util::mean;
@@ -222,9 +222,9 @@ public abstract class Param {
      * */
     public final static float SIGNAL_LATCH_LIMIT_DURS =
             //0.5f;
-            //1f;
+            1f;
             //1.5f;
-            2f;
+            //2f;
 
     /** 0..1.0: how much to reduce a signal which hasnt changed (in proportion to change significance) */
     public static final float SIGNAL_UNSURPRISING_FACTOR = 0.1f;

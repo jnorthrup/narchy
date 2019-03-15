@@ -1,12 +1,22 @@
 package spacegraph.space2d.widget.meta;
 
+import com.jogamp.opengl.GL2;
+import jcog.data.list.FasterList;
 import jcog.event.Off;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.unit.UnitContainer;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 
 abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitContainer<X> {
 
     private Off on;
+
+    final AtomicBoolean invalid = new AtomicBoolean(false);
+    final List<BiConsumer<GL2,SurfaceRender>> render = new FasterList();
 
     protected AbstractTriggeredSurface(X the) {
         super(the);
@@ -16,13 +26,20 @@ abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitCo
 
     abstract protected void update();
 
-    protected final void updateIfShowing() {
+    protected void updateIfShowing() {
         if (showing()) {
-            //((ZoomOrtho)root()).space.io.window.getScreenIndex()
             update();
+            invalid.set(true);
         }
     }
 
+    /** TODO double buffer to prevent 'tearing' */
+    @Override protected void compileChildren(SurfaceRender r) {
+        if (invalid.compareAndSet(true, false)) {
+            r.record(the(), render);
+        }
+        r.play(render);
+    }
 
     @Override
     protected void starting() {

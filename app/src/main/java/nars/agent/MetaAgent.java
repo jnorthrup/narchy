@@ -81,7 +81,7 @@ public class MetaAgent extends NAgent {
         long start = a.nar().time();
 
 
-        reward($.inh(a.id, happy), () -> Util.or(a.happinessMean(), a.proficiency()));
+        Reward r = reward($.inh(a.id, happy), () -> Util.or(a.happinessMean(), a.proficiency()));
         //reward($.inh(a.id, happy), a::happiness);
 
         Term agentPriTerm =
@@ -93,7 +93,6 @@ public class MetaAgent extends NAgent {
         GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
             a.curiosity.rate.set(curiosity(a, start, c));
         });
-        curiosityAction.attn.reparent(attn);
         //TODO control the agent dur, not the entire NAR
 //            int initialDur = nar.dur();
 //            durAction = actionUnipolar($.func(duration, id), (d)->{
@@ -122,13 +121,10 @@ public class MetaAgent extends NAgent {
                     disableCountDown = 0;
                 }
             });
-
-            enableAction.attn.reparent(a.attn);
         }
 
 
 //        Reward enableReward = reward("enable", () -> enabled.getOpaque() ? +1 : 0f);
-//        enableReward.attn.reparent(a.attn);
     }
 
 
@@ -138,8 +134,6 @@ public class MetaAgent extends NAgent {
                 $.inh(id, $.p(label, $.the(+1))),
                 var,
                 steps);
-        priAction[0].attn.reparent(attn);//HACK
-        priAction[1].attn.reparent(attn); //HACK
         return priAction;
     }
 

@@ -1,6 +1,7 @@
 package nars.gui;
 
 import com.google.common.base.Joiner;
+import jcog.net.UDPeer;
 import nars.InterNAR;
 import nars.NAR;
 import spacegraph.space2d.container.Bordering;
@@ -16,14 +17,14 @@ public class NetPanel extends Bordering {
         this.nar = n;
         this.net = net;
 
-        north(new BitmapLabel(net.peer.name() + " " + net.peer.addr));
+        north(new BitmapLabel(net.peer.name() + ' ' + net.peer.addr));
         this.status = new BitmapLabel();
 
         set(new DurSurface<>(status, n) {
-            @Override protected void update() {
+            @Override protected void doUpdate() {
                 status.text(
                     //net.peer.summary().replace(", (", "\n") + "\n" +
-                    Joiner.on('\n').join(net.peer.them.stream().map(x->x.toString()).iterator())
+                    Joiner.on('\n').join(net.peer.them.stream().map(UDPeer.UDProfile::toString).iterator())
                 );
             }
         });

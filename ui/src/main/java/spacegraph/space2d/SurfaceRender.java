@@ -6,6 +6,7 @@ import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.hud.Ortho;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -41,6 +42,18 @@ public class SurfaceRender {
 
     public void clear() {
         main.clear();
+    }
+
+    //public static class CachedSurfaceRender extends SurfaceRender {}
+    public void record(Surface compiled, List<BiConsumer<GL2,SurfaceRender>> buffer) {
+
+        int before = main.size();
+        compiled.recompile(this);
+        int after = main.size();
+
+        buffer.clear();
+        for (int i = before; i < after; i++)
+            buffer.add(main.get(i));
     }
 
     public final void render(GL2 gl) {
@@ -143,6 +156,10 @@ public class SurfaceRender {
     @Override
     public String toString() {
         return scaleX + "x" + scaleY + " " + main.size() + " renderables";
+    }
+
+    public void play(List<BiConsumer<GL2, SurfaceRender>> render) {
+        main.addAll(render);
     }
 
 

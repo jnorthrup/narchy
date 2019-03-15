@@ -266,7 +266,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
     }
 
     @Override
-    public void update() {
+    public void doUpdate() {
 
         Concept ccd = nar.conceptualizeDynamic(term/* lookup by target, not the termed which could be a dead instance */);
         if (ccd == null)
