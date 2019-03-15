@@ -37,7 +37,7 @@ public abstract class Introduction extends TaskLeakTransform {
                 Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) -> new UnevaluatedTask(c, xx, t));
 
                 if (yy != null) {
-                    Task.deductComplexification(xx, yy, priFactor.floatValue(), false);
+                    Task.deductComplexification(xx, yy, priFactor.floatValue(), true);
 
                     input(yy);
                     return 1;

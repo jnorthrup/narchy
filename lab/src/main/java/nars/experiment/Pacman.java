@@ -111,7 +111,7 @@ public class Pacman extends NAgentX {
             Pacman a = new Pacman(n);
             return a;
 
-        }, 1000f / PacmanGame.periodMS);
+        }, 500f / PacmanGame.periodMS);
     }
 
 }

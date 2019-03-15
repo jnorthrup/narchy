@@ -74,7 +74,7 @@ public class MetaAgent extends NAgent {
         long start = a.nar().time();
 
 
-        Reward r = reward(a.id, () -> {
+        Reward r = reward($.inh(a.id, happy), () -> {
             float h = a.happinessMean();
             float p = a.proficiency();
             float hp = Util.or(h, p);
@@ -84,12 +84,11 @@ public class MetaAgent extends NAgent {
         });
         //reward($.inh(a.id, happy), a::happiness);
 
+        //TODO other Emotion sensors
+
         Term agentPriTerm =
                 $.inh(a.id, PRI);
                 //$.inh(a.id, id /* self */);
-
-        //TODO other Emotion sensors
-
         GoalActionConcept agentPri = actionUnipolar(agentPriTerm, (FloatConsumer)a.attn.factor::set);
 
 

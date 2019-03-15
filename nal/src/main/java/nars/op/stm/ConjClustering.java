@@ -58,7 +58,7 @@ public class ConjClustering extends Causable {
     private int volMax;
 
     private final boolean popConjoinedTasks = false;
-    static final boolean priCopyOrMove = false;
+    static final boolean priCopyOrMove = true;
 
     final AtomicBoolean learn = new AtomicBoolean(true);
     private int inputTermVolMax, stampLenMax;

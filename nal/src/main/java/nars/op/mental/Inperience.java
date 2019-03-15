@@ -103,7 +103,8 @@ abstract public class Inperience extends TaskLeakTransform {
                     if (dt == DTERNAL || dt == XTERNAL) {
                         return $.func(If, apply(term.sub(0)), apply(term.sub(1)));
                     } else {
-                        return $.func(If, apply(term.sub(0)), apply(term.sub(1)), $.func(this.dt, Int.the(dt)));
+                        return $.func(If, apply(term.sub(0)), apply(term.sub(1)),
+                                $.func(this.dt, /*Tense.dither(*/Int.the(dt)));
                     }
 
                 case CONJ:
@@ -117,7 +118,7 @@ abstract public class Inperience extends TaskLeakTransform {
                             if (!ss.isEmpty()) {
                                 long interval = when - last[0];
                                 if (interval > 0)
-                                    ss.add($.func(this.dt, $.the(interval)));
+                                    ss.add($.func(this.dt, /*Tense.dither(*/$.the(interval)));
                             }
                             ss.add(apply(what));
                             last[0] = when;

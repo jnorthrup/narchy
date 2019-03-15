@@ -1,7 +1,10 @@
 package nars.attention;
 
+import jcog.data.graph.FromTo;
 import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
+import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
@@ -25,6 +28,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.time.event.DurService;
+import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -113,7 +117,17 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     protected void run(NAR n, long dt) {
         forgetting.update(n);
         derivePri.update(n);
-        root.update(1, graph);
+        root.pri(1);
+
+        //iterate, in topologically sorted order
+        root.update( graph);
+        graph.bfs(root, new Search<PriNode,Object>() {
+            @Override
+            protected boolean next(BooleanObjectPair<FromTo<Node<PriNode, Object>, Object>> move, Node<PriNode, Object> next) {
+                next.id().update(graph);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -287,8 +301,8 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     /** attaches a priority node to the priority graph
      * @return*/
-    public NodeGraph.MutableNode<PriNode, Object> add(Term id) {
-        NodeGraph.MutableNode<PriNode, Object> a = graph.addNode(new PriNode(id));
+    public NodeGraph.MutableNode<PriNode, Object> add(PriNode p) {
+        NodeGraph.MutableNode<PriNode, Object> a = graph.addNode(p);
         graph.addEdgeByNode(rootNode, "pri", a);
         return a;
     }

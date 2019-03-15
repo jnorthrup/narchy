@@ -98,9 +98,9 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
         //HACK
         PriNode a = new AttnBranch(at, List.of(t)) {
             @Override
-            public void update(float f, MapNodeGraph<PriNode,Object> g) {
-                super.update(f, g);
-                t.pri(f);
+            public void update(MapNodeGraph<PriNode,Object> g) {
+                super.update(g);
+                t.pri(pri());
                 in.input(t);
             }
 

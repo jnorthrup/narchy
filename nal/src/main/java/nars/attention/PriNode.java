@@ -20,6 +20,7 @@ public class PriNode extends PLink<Term> {
 
     /** cached */
     @Deprecated transient private Node<PriNode, Object> node;
+    private int fanOut;
 
     public PriNode(Object id) {
         super($.identity(id), 0);
@@ -30,8 +31,9 @@ public class PriNode extends PLink<Term> {
         return id + " pri=" + pri();
     }
 
-    @Deprecated /* move to subclass */ protected float priFraction(int n) {
+    @Deprecated /* move to subclass */ protected float priFraction() {
         float i;
+        int n = fanOut;
         if (n == 0)
             return 0;
         //i = 1; //each component important as a top level concept
@@ -40,34 +42,36 @@ public class PriNode extends PLink<Term> {
         return i;
     }
 
-    public void update(float pri, MapNodeGraph<PriNode,Object> graph) {
+    public void update(MapNodeGraph<PriNode,Object> graph) {
+
         if (node == null) {
             node = graph.node(this); //cache
         }
+        fanOut = node.edgeCount(false,true); //TODO cache
 
         final double[] factor = {this.factor.floatValue()};
 
         if (node.edgeCount(true,false) > 0) {
 
             node.nodes(true, false).forEach((Node<PriNode, Object> n) -> {
-                float np = n.id().pri();
+                PriNode nn = n.id();
+                float np = nn.pri() * nn.priFraction();
 //            if (Util.equals(0, np))
 //                throw new WTF();
                 factor[0] *= np;
             });
         }
 
-        pri = (float) (pri * factor[0]);
+        float pri = (float) (factor[0]);
         this.pri(pri);
 
 
-        int fanout = node.edgeCount(false, true);
-        if (fanout > 0) {
-            float priEach = pri * priFraction(fanout);
-            //TODO local boost's
-            //TODO p.nodes(..)
-            node.nodes(false, true).forEach(c -> c.id().update(priEach, graph));
-        }
+//        int fanout = node.edgeCount(false, true);
+//        if (fanout > 0) {
+//            //TODO local boost's
+//            //TODO p.nodes(..)
+//            node.nodes(false, true).forEach(c -> c.id().update(graph));
+//        }
     }
 
 
@@ -104,20 +108,9 @@ public class PriNode extends PLink<Term> {
         }
 
         @Override
-        protected float priFraction(int n) {
-            return 1;
-        }
-
-        //HACK TODO other pri methods
-
-        @Override
-        public float priElse(float valueIfDeleted) {
-            return f.asFloat();
-        }
-
-        @Override
-        public float pri() {
-            return f.asFloat();
+        public void update(MapNodeGraph<PriNode, Object> graph) {
+            this.factor.set(f.asFloat());
+            super.update(graph);
         }
     }
 }

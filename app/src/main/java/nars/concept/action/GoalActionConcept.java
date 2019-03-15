@@ -1,6 +1,7 @@
 package nars.concept.action;
 
 import nars.NAR;
+import nars.agent.NAgent;
 import nars.term.Term;
 import nars.truth.Truth;
 
@@ -19,7 +20,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
     }
 
     @Override
-    public void update(long prev, long now, NAR n) {
+    public void update(long prev, long now, NAgent a) {
         //long agentDur = now - prev;
 //        long dur = agentDur;
         //narDur; //Math.min(narDur, agentDur);
@@ -44,7 +45,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
                 0;
                 //n.dur();
 
-        super.update(prev, now, n);
+        super.update(prev, now, a);
 
         Truth goal = actionTruth;
 
@@ -53,7 +54,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
                 goal
         );
 
-        feedback(fb, prev + feedbackShift, now + feedbackShift, cause, n);
+        feedback(fb, prev + feedbackShift, now + feedbackShift, cause, a.nar());
     }
 
 

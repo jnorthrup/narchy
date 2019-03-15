@@ -254,7 +254,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         n.attn.link(tasklink);
 
-        if (prev!=next)
+        //if (prev!=next)
             n.eventTask.emit(next);
 
     }

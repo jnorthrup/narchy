@@ -19,7 +19,7 @@ public interface AgentLoop extends Termed {
     }
 
     /** run an update procedure, for the provided time period */
-    default void update(long last, long now, NAR nar) {
+    @Deprecated default void update(long last, long now, NAR nar) {
 
     }
 

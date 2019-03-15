@@ -150,14 +150,14 @@ public class AbstractGoalActionConcept extends ActionConcept {
                         //duration-precision window
                         //s = now - narDur / 2;
                         //e = now + narDur / 2;
-                        s = now - narDur;
+                        s = now - Math.max(narDur, agentDur);
                         e = now;
                         break;
                     case 1:
                     default:
                         //s = now - narDur;
                         //e = now + narDur;
-                        s = now - Math.min(narDur*2, agentDur);
+                        s = now - Math.max(narDur, agentDur)*2;
                         e = now;
                         break;
 //                    default:
@@ -203,7 +203,12 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Override
-    public final void update(long prev, long now, NAgent a) {
+    @Deprecated public final void update(long last, long now, NAR nar) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void update(long prev, long now, NAgent a) {
 
         NAR n = a.nar();
         int narDur = n.dur();

@@ -29,9 +29,7 @@ import nars.gui.DurSurface;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.link.TaskLink;
-import nars.op.Arithmeticize;
-import nars.op.AutoencodedBitmap;
-import nars.op.Introduction;
+import nars.op.*;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -293,7 +291,7 @@ abstract public class NAgentX extends NAgent {
 //        senseReward.timing = new ActionTiming(n);
 
 
-        MetaAgent meta = new MetaAgent(n, 8);
+        MetaAgent meta = new MetaAgent(n, 16);
         meta.attn.factor.set(0.25f);
 
         window(AttentionUI.attentionGraph(n), 600, 600);
@@ -498,8 +496,8 @@ abstract public class NAgentX extends NAgent {
 
 
         //new StatementLinker(n);
-        //new PuncNoise(n);
-        //new Eternalizer(n);
+        new PuncNoise(n);
+        new Eternalizer(n);
 
 //        new STMLinkage(n, 1);
 

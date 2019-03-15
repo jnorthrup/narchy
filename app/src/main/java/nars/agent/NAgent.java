@@ -94,7 +94,7 @@ public class NAgent extends NARService implements NSense, NAct {
         super(id);
         this.nar = nar;
 
-        this.attn = nar.attn.add(id).id();
+        this.attn = nar.attn.add(new PriNode.ConstPriNode(id,()->1)).id();
         this.attnAction = new PriNode($.func("action", id))
                 .parent(nar, attn, nar.goalPriDefaultNode);
         this.attnSensor = new PriNode($.func("sensor", id))
