@@ -62,13 +62,13 @@ class NodeGraphTest {
     }
 
     private static void edge(MapNodeGraph n, String a, String b) {
-        n.addEdge(a, a+b, b);
+        n.addEdgeIfNodesExist(a, a+b, b);
     }
 
     @Test
     void testObjectGraph() {
         MapNodeGraph<Object, Object> h = new MapNodeGraph<>();
-        h.addEdge(h.addNode("y"), "yx", h.addNode("x"));
+        h.addEdgeByNode(h.addNode("y"), "yx", h.addNode("x"));
 
         ObjectGraph o = new ObjectGraph(3, h) {
 

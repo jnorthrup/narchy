@@ -46,13 +46,13 @@ public class Inspector extends Bordering {
         if (p instanceof Surface) {
             Surface pp = (Surface) p;
             include(pp, depth-1);
-            graph.addEdge(pp, "->", s);
+            graph.addEdgeIfNodesExist(pp, "->", s);
         }
 
         if (s instanceof Container) {
             ((Container)s).forEach(x -> {
                 include(x, depth-1);
-                graph.addEdge(s, "->", x);
+                graph.addEdgeIfNodesExist(s, "->", x);
             });
         }
     }

@@ -1,6 +1,5 @@
 package jcog.pri.bag.impl;
 
-import jcog.data.MutableFloat;
 import jcog.data.NumberX;
 import jcog.pri.PriBuffer;
 import jcog.pri.Prioritizable;
@@ -74,16 +73,13 @@ abstract public class BufferedBag<X,B,Y extends Prioritizable> extends ProxyBag<
     public final B put(B x, float p) {
         Y yBag = bag.get(x);
         if (yBag!=null) {
-            //HACK
 
+            //HACK
+            //both arraybag and hijackbag handle merge depressurization
             if (bag instanceof ArrayBag) {
-                //handles merge pressurization
                 ((ArrayBag) bag).merge(yBag, (Prioritizable) x, null);
             } else if (bag instanceof HijackBag) {
-                //TODO test if neceessary
-                NumberX o =new MutableFloat();
-                ((HijackBag)bag).merge(yBag, x, o);
-                bag.depressurize(o);
+                ((HijackBag)bag).merge(yBag, x, null);
             }
             else throw new UnsupportedOperationException();
 

@@ -289,7 +289,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         NodeVis<X> yy = nodeCache.computeIfAbsent(x, x0 -> {
             NodeVis<X> y = new NodeVis<>();
             y.start(x0);
-            init(y);
             builder.accept(y);
             return y;
         });
@@ -298,10 +297,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         return yy;
     }
 
-    private void init(NodeVis<X> y) {
-        //HACK
-        pos(Graph2D.this.cx(), Graph2D.this.cy());
-    }
 
     /**
      * node continues being materialized

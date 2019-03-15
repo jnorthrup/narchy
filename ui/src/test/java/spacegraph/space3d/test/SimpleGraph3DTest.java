@@ -18,10 +18,10 @@ public class SimpleGraph3DTest {
         h.addNode(("y"));
         h.addNode(("z"));
         h.addNode(("w"));
-        h.addEdge(("x"), ("xy"), ("y"));
-        h.addEdge(("x"), ("xz"), ("z"));
-        h.addEdge(("y"), ("yz"), ("z"));
-        h.addEdge(("w"), ("wy"), ("y"));
+        h.addEdgeIfNodesExist(("x"), ("xy"), ("y"));
+        h.addEdgeIfNodesExist(("x"), ("xz"), ("z"));
+        h.addEdgeIfNodesExist(("y"), ("yz"), ("z"));
+        h.addEdgeIfNodesExist(("w"), ("wy"), ("y"));
 
         SimpleGraph3D sg = new SimpleGraph3D();
         

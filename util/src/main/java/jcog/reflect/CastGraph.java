@@ -1115,102 +1115,102 @@ public class CastGraph extends TypeCastGraph {
      * Базовый конструктор
      */
     public CastGraph() {
-        set(Integer.class, int.class, integer2Int);
-        set(int.class, Integer.class, int2Integer);
+        addEdge(Integer.class, integer2Int, int.class);
+        addEdge(int.class, int2Integer, Integer.class);
 
-        set(Byte.class, byte.class, Byte2byte);
-        set(byte.class, Byte.class, byte2Byte);
+        addEdge(Byte.class, Byte2byte, byte.class);
+        addEdge(byte.class, byte2Byte, Byte.class);
 
-        set(Short.class, short.class, Short2short);
-        set(short.class, Short.class, short2Short);
+        addEdge(Short.class, Short2short, short.class);
+        addEdge(short.class, short2Short, Short.class);
 
-        set(Long.class, long.class, Long2long);
-        set(long.class, Long.class, long2Long);
+        addEdge(Long.class, Long2long, long.class);
+        addEdge(long.class, long2Long, Long.class);
 
-        set(Float.class, float.class, Float2float);
-        set(float.class, Float.class, float2Float);
+        addEdge(Float.class, Float2float, float.class);
+        addEdge(float.class, float2Float, Float.class);
 
-        set(Double.class, double.class, Double2double);
-        set(double.class, Double.class, double2Double);
+        addEdge(Double.class, Double2double, double.class);
+        addEdge(double.class, double2Double, Double.class);
 
-        set(Number.class, Byte.class, Number2Byte);
-        set(Byte.class, Number.class, Byte2Number);
+        addEdge(Number.class, Number2Byte, Byte.class);
+        addEdge(Byte.class, Byte2Number, Number.class);
 
-        set(Number.class, Short.class, Number2Short);
-        set(Short.class, Number.class, Short2Number);
+        addEdge(Number.class, Number2Short, Short.class);
+        addEdge(Short.class, Short2Number, Number.class);
 
-        set(Number.class, Integer.class, Number2Integer);
-        set(Integer.class, Number.class, Integer2Number);
+        addEdge(Number.class, Number2Integer, Integer.class);
+        addEdge(Integer.class, Integer2Number, Number.class);
 
-        set(Number.class, Long.class, Number2Long);
-        set(Long.class, Number.class, Long2Number);
+        addEdge(Number.class, Number2Long, Long.class);
+        addEdge(Long.class, Long2Number, Number.class);
 
-        set(Number.class, Float.class, Number2Float);
-        set(Float.class, Number.class, Float2Number);
+        addEdge(Number.class, Number2Float, Float.class);
+        addEdge(Float.class, Float2Number, Number.class);
 
-        set(Number.class, Double.class, Number2Double);
-        set(Double.class, Number.class, Double2Number);
+        addEdge(Number.class, Number2Double, Double.class);
+        addEdge(Double.class, Double2Number, Number.class);
 
-        set(Number.class, BigDecimal.class, Number2BigDecimal);
-        set(BigDecimal.class, Number.class, BigDecimal2Number);
+        addEdge(Number.class, Number2BigDecimal, BigDecimal.class);
+        addEdge(BigDecimal.class, BigDecimal2Number, Number.class);
 
-        set(Number.class, BigInteger.class, Number2BigInteger);
-        set(BigInteger.class, Number.class, BigInteger2Number);
+        addEdge(Number.class, Number2BigInteger, BigInteger.class);
+        addEdge(BigInteger.class, BigInteger2Number, Number.class);
 
-        set(Boolean.class, boolean.class, Boolean2boolean);
-        set(boolean.class, Boolean.class, boolean2Boolean);
+        addEdge(Boolean.class, Boolean2boolean, boolean.class);
+        addEdge(boolean.class, boolean2Boolean, Boolean.class);
 
-        set(Character.class, char.class, Character2char);
-        set(char.class, Character.class, char2Character);
+        addEdge(Character.class, Character2char, char.class);
+        addEdge(char.class, char2Character, Character.class);
 
         // ..........
 
-        set(Number.class, String.class, Number2String);
+        addEdge(Number.class, Number2String, String.class);
 
-        set(char.class, int.class, char2int);
-        set(Character.class, int.class, char2int);
-        set(char.class, Integer.class, char2int);
-        set(Character.class, Integer.class, char2int);
+        addEdge(char.class, char2int, int.class);
+        addEdge(Character.class, char2int, int.class);
+        addEdge(char.class, char2int, Integer.class);
+        addEdge(Character.class, char2int, Integer.class);
 
-        set(int.class, char.class, int2char);
-        set(int.class, Character.class, int2char);
-        set(Integer.class, char.class, int2char);
-        set(Integer.class, Character.class, int2char);
+        addEdge(int.class, int2char, char.class);
+        addEdge(int.class, int2char, Character.class);
+        addEdge(Integer.class, int2char, char.class);
+        addEdge(Integer.class, int2char, Character.class);
 
-        set(char.class, String.class, char2String);
-        set(Character.class, String.class, char2String);
-        set(String.class, char.class, String2char);
-        set(String.class, Character.class, String2char);
+        addEdge(char.class, char2String, String.class);
+        addEdge(Character.class, char2String, String.class);
+        addEdge(String.class, String2char, char.class);
+        addEdge(String.class, String2char, Character.class);
 
-        set(Integer.class, Boolean.class, Integer2Boolean);
-        set(int.class, Boolean.class, Integer2Boolean);
-        set(Integer.class, boolean.class, Integer2Boolean);
-        set(int.class, boolean.class, Integer2Boolean);
+        addEdge(Integer.class, Integer2Boolean, Boolean.class);
+        addEdge(int.class, Integer2Boolean, Boolean.class);
+        addEdge(Integer.class, Integer2Boolean, boolean.class);
+        addEdge(int.class, Integer2Boolean, boolean.class);
 
-        set(Boolean.class, Integer.class, Boolean2Integer);
-        set(Boolean.class, int.class, Boolean2Integer);
-        set(boolean.class, Integer.class, Boolean2Integer);
-        set(boolean.class, int.class, Boolean2Integer);
+        addEdge(Boolean.class, Boolean2Integer, Integer.class);
+        addEdge(Boolean.class, Boolean2Integer, int.class);
+        addEdge(boolean.class, Boolean2Integer, Integer.class);
+        addEdge(boolean.class, Boolean2Integer, int.class);
 
-        set(Boolean.class, String.class, Boolean2String);
-        set(boolean.class, String.class, Boolean2String);
+        addEdge(Boolean.class, Boolean2String, String.class);
+        addEdge(boolean.class, Boolean2String, String.class);
 
-        set(String.class, Boolean.class, String2Boolean);
-        set(String.class, boolean.class, String2Boolean);
+        addEdge(String.class, String2Boolean, Boolean.class);
+        addEdge(String.class, String2Boolean, boolean.class);
 
-        set(BigInteger.class, BigDecimal.class, BigInteger2BigDecimal);
-        set(BigDecimal.class, BigInteger.class, BigDecimal2BigInteger);
+        addEdge(BigInteger.class, BigInteger2BigDecimal, BigDecimal.class);
+        addEdge(BigDecimal.class, BigDecimal2BigInteger, BigInteger.class);
 
-        set(String.class, Integer.class, String2Integer);
-        set(String.class, int.class, String2int);
+        addEdge(String.class, String2Integer, Integer.class);
+        addEdge(String.class, String2int, int.class);
 
-        set(String.class, Long.class, String2Long);
-        set(String.class, long.class, String2long);
+        addEdge(String.class, String2Long, Long.class);
+        addEdge(String.class, String2long, long.class);
 
-        set(String.class, Double.class, String2Double);
-        set(String.class, double.class, String2double);
+        addEdge(String.class, String2Double, Double.class);
+        addEdge(String.class, String2double, double.class);
 
-        set(String.class, BigDecimal.class, String2BigDecimal);
+        addEdge(String.class, String2BigDecimal, BigDecimal.class);
 
         byte[] ba = new byte[]{};
         Byte[] Ba = new Byte[]{};
@@ -1227,18 +1227,18 @@ public class CastGraph extends TypeCastGraph {
         // TODO use proj text
 //        setAt( String.class, Ba.getClass(), String2ByteArr );
 
-        set(ca.getClass(), String.class, charArr2String);
-        set(Ca.getClass(), String.class, CharArr2String);
+        addEdge(ca.getClass(), charArr2String, String.class);
+        addEdge(Ca.getClass(), CharArr2String, String.class);
 
-        set(String.class, ca.getClass(), String2charArr);
-        set(String.class, Ca.getClass(), String2CharArr);
+        addEdge(String.class, String2charArr, ca.getClass());
+        addEdge(String.class, String2CharArr, Ca.getClass());
 
-        set(Date.class, java.sql.Date.class, Date2SqlDate);
-        set(Date.class, java.sql.Time.class, Date2SqlTime);
-        set(Date.class, java.sql.Timestamp.class, Date2SqlTimestamp);
-        set(java.sql.Date.class, Date.class, SqlDate2Date);
-        set(java.sql.Time.class, Date.class, SqlTime2Date);
-//        set(java.sql.Timestamp.class, Date.class, SqlTimestamp2Date);
+        addEdge(Date.class, Date2SqlDate, java.sql.Date.class);
+        addEdge(Date.class, Date2SqlTime, java.sql.Time.class);
+        addEdge(Date.class, Date2SqlTimestamp, java.sql.Timestamp.class);
+        addEdge(java.sql.Date.class, SqlDate2Date, Date.class);
+        addEdge(java.sql.Time.class, SqlTime2Date, Date.class);
+        //        set(java.sql.Timestamp.class, Date.class, SqlTimestamp2Date);
 
 //        set(Date.class, String.class, Date2String);
 //        set(String.class, Date.class, String2Date);
@@ -1318,7 +1318,7 @@ public class CastGraph extends TypeCastGraph {
         List<Function<X, Y>> convertors = new FasterList(roots.size());
         int i = -1;
         for( Class cf : roots ){
-            Path<Class, Function> path = findPath(cf, cto);
+            Path path = findPath(cf, cto);
             if( path!=null ){
                 i++;
                 convertors.add(Converter.the(path));

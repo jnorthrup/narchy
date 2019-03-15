@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.math.Longerval;
-import jcog.pri.ScalarValue;
 import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Param;
@@ -284,11 +283,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         n.attn.link(tasklink);
 
-        //since this isnt a complete insert
-        if (delta > ScalarValue.EPSILON)
-            n.attn.links.bag.pressurize(delta); //HACK
-
-        //if (prev!=next)
+        if (prev!=next)
             n.eventTask.emit(next);
 
     }

@@ -26,7 +26,13 @@ abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitCo
 
     abstract protected void update();
 
-    protected void updateIfShowing() {
+    @Override
+    protected void doLayout(int dtMS) {
+        invalid.set(true);
+        super.doLayout(dtMS);
+    }
+
+    protected final void updateIfShowing() {
         if (showing()) {
             update();
             invalid.set(true);
@@ -47,6 +53,7 @@ abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitCo
 
         assert(on == null);
         on = on();
+        invalid.set(true);
         assert(on!=null);
     }
 

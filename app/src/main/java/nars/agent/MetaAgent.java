@@ -25,17 +25,10 @@ public class MetaAgent extends NAgent {
             happy = Atomic.the("happy")
             ;
 
-    //final AttNode attn;
-    //private final NAgent agent;
-    //private final long start;
 
-    //public final GoalActionConcept enableAction;
-    //public final Reward enableReward;
-    //private final GoalActionConcept durAction;
     public final GoalActionConcept forgetAction;
-    public final GoalActionConcept beliefPriAction;
-    private final GoalActionConcept goalPriAction;
-    //    private final GoalActionConcept[] agentPri;
+//    public final GoalActionConcept beliefPriAction;
+//    private final GoalActionConcept goalPriAction;
     private final GoalActionConcept dur;
 
     private int disableCountDown = 0;
@@ -49,18 +42,18 @@ public class MetaAgent extends NAgent {
 
 
 
-    public MetaAgent(NAR n) {
-        super(n.self().toString() /* HACK */, n);
+    public MetaAgent(NAR n, float fps) {
+        super(n.self().toString() /* HACK */,FrameTrigger.fps(fps),  n);
 
         forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
 
-        float priFactorMin = 0.1f, priFactorMax = 4f;
-        beliefPriAction = actionUnipolar($.inh(id, beliefPri), n.beliefPriDefault.subRange(
-                Math.max(n.beliefPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
-                n.beliefPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
-        goalPriAction = actionUnipolar($.inh(id, goalPri), n.goalPriDefault.subRange(
-                Math.max(n.goalPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
-                n.goalPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
+//        float priFactorMin = 0.1f, priFactorMax = 4f;
+//        beliefPriAction = actionUnipolar($.inh(id, beliefPri), n.beliefPriDefault.subRange(
+//                Math.max(n.beliefPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
+//                n.beliefPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
+//        goalPriAction = actionUnipolar($.inh(id, goalPri), n.goalPriDefault.subRange(
+//                Math.max(n.goalPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
+//                n.goalPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
 
         int initialDur = n.dur();
         this.dur = actionUnipolar($.inh(id, duration), (x) -> {
@@ -93,14 +86,6 @@ public class MetaAgent extends NAgent {
         GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
             a.curiosity.rate.set(curiosity(a, start, c));
         });
-        //TODO control the agent dur, not the entire NAR
-//            int initialDur = nar.dur();
-//            durAction = actionUnipolar($.func(duration, id), (d)->{
-//                nar.time.dur(dur(initialDur,d));
-//                return d;
-//            });
-//            durAction.attn.reparent(attn);
-
 
         if (allowPause) {
             //TODO agent enable

@@ -13,14 +13,13 @@ import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
 import nars.control.CauseMerge;
-import nars.term.TermedDelegate;
-import nars.time.event.DurService;
 import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
 import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.term.TermedDelegate;
 import nars.term.util.conj.ConjLazy;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -95,7 +94,7 @@ public class ConjClustering extends Causable {
                 double dPolarity = Math.abs(a[1] - b[1]);
                 double dConf = Math.abs(a[2] - b[2]);
 
-                double rangeMin = Math.min(a[3], b[3])/dur;
+                double rangeMin = Math.min(a[3], b[3]);
                 double dRange = Math.abs(a[3] - b[3])/rangeMin;
                 double dMid = Math.abs(a[0] - b[0])/rangeMin;
                 return (1 + dMid)
@@ -129,7 +128,8 @@ public class ConjClustering extends Causable {
     @Override
     protected void starting(NAR nar) {
 
-        on(DurService.on(nar, () -> learn.set(true)));
+        //on(DurService.on(nar, () -> learn.set(true)));
+        on(nar.onCycle(()->learn.set(true)));
 
         on(nar.onTask(t -> {
             if (!t.isEternal()

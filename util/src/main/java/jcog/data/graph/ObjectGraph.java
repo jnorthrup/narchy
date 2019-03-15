@@ -117,7 +117,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         path.add(pair(srcClass, axe));
 
         if (access(root, path, target)) {
-            addEdge(src, axe, add(root, target, path, level - 1));
+            addEdgeByNode(src, axe, add(root, target, path, level - 1));
         }
 
         path.removeLast();

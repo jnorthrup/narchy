@@ -31,7 +31,6 @@ import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.reflect.graph.Path;
 import jcog.reflect.graph.PathFinder;
-import jcog.reflect.graph.SimpleSDGraph;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +59,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  *
  * @author Kamnev Georgiy (nt.gocha@gmail.com)
  */
-public class TypeCastGraph extends SimpleSDGraph<Class, Function> {
+public class TypeCastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
 
     private static final Logger logger = Logger.getLogger(TypeCastGraph.class.getName());
 
@@ -77,6 +76,7 @@ public class TypeCastGraph extends SimpleSDGraph<Class, Function> {
      * Конструктор по умолчанию
      */
     public TypeCastGraph() {
+        super();
     }
 
     private static Level logLevel() {
@@ -119,22 +119,22 @@ public class TypeCastGraph extends SimpleSDGraph<Class, Function> {
 //     * @param incChildren true - включать в поиск дочерние классы
 //     * @return Возможные альтернативы преобразований
 //     */
-//    public Map<Class,Function<Object,Object>> getConvertorsFrom( 
-//        Class type, 
+//    public Map<Class,Function<Object,Object>> getConvertorsFrom(
+//        Class type,
 //        boolean strongCompare,
-//        boolean childToParent, 
+//        boolean childToParent,
 //        boolean incParent,
 //        boolean incChildren
 //    ){
-//        Map<Class,Function<Object,Object>> convs 
+//        Map<Class,Function<Object,Object>> convs
 //            = new TreeMap<Class, Function>(
 //                new ClassSet.ClassHeirarchyComparer( childToParent )
 //            );
-//        
+//
 //        Iterable<Class> fromClasses = strongCompare ?
 //            Iterators.single(type) :
 //            classes.getAssignableFrom(type, incParent, incChildren);
-//        
+//
 //        for( Class cnode : fromClasses ){
 //            for( Edge<Class,Function<Object,Object>> e : this.edgesOfNodeA(cnode) ){
 //                Function<Object,Object> conv = e.getEdge();
@@ -142,7 +142,7 @@ public class TypeCastGraph extends SimpleSDGraph<Class, Function> {
 //                convs.put(target, conv);
 //            }
 //        }
-//        
+//
 //        return convs;
 //    }
 
@@ -283,7 +283,7 @@ public class TypeCastGraph extends SimpleSDGraph<Class, Function> {
                     startCls,
                     targetType,
                     // java 8
-                /*(pathFound) -> { 
+                /*(pathFound) -> {
                     variants.addAt(pathFound);
                     if( variants.size()<findPathMinimum && findPathMinimum>=0 ){
                         return false;
@@ -297,7 +297,7 @@ public class TypeCastGraph extends SimpleSDGraph<Class, Function> {
                         return true;
                     }
             );
-            
+
             /*if( path!=null ){
                 lvariants.addAt(path);
             }*/

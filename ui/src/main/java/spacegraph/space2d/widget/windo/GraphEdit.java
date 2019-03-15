@@ -379,7 +379,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
         Surface aa = wire.a, bb = wire.b;
 
         synchronized (links) {
-            if (!links.addEdge(links.addNode(aa), wire, links.addNode(bb)))
+            if (!links.addEdgeByNode(links.addNode(aa), wire, links.addNode(bb)))
                 return null; //already exists
         }
 

@@ -133,9 +133,9 @@ public class TypeCastTest {
         System.out.println("=============");
         
         TypeCastGraph tcast = new TypeCastGraph();
-        
-        tcast.set(Interface1.class, Interface2.class, from -> null);
-        
+
+        tcast.addEdge(Interface1.class, from -> null, Interface2.class);
+
         Class clsFrom = Intf1Impl.class;
 
         List<Class> m = tcast.roots(clsFrom, false, true, true, false);

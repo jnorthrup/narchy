@@ -19,10 +19,10 @@ public enum Graph2DTest {;
         h.addNode(("z"));
         h.addNode(("w"));
 
-        h.addEdge(("x"), ("xy"), ("y"));
-        h.addEdge(("x"), ("xz"), ("z"));
-        h.addEdge(("y"), ("yz"), ("z"));
-        h.addEdge(("w"), ("wy"), ("y"));
+        h.addEdgeIfNodesExist(("x"), ("xy"), ("y"));
+        h.addEdgeIfNodesExist(("x"), ("xz"), ("z"));
+        h.addEdgeIfNodesExist(("y"), ("yz"), ("z"));
+        h.addEdgeIfNodesExist(("w"), ("wy"), ("y"));
     }
     public static class Graph2DTest1 {
         public static void main(String[] args) {
@@ -66,7 +66,7 @@ public enum Graph2DTest {;
         h.addNode("env");
         env.forEach((k,v)->{
             h.addNode(v);
-            h.addEdge("env",k,v);
+            h.addEdgeIfNodesExist("env",k,v);
         });
 
 

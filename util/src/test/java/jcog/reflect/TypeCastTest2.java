@@ -91,8 +91,8 @@ public class TypeCastTest2 {
                 
                 Converter sc = new Converter( path );
                 sc.setWeight(0.8);
-                
-                tc.set(String.class, int.class, sc);                
+
+                tc.addEdge(String.class, sc, int.class);
             }
         }
 

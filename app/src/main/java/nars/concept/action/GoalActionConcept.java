@@ -40,7 +40,9 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
         //long s = now - agentDur/2, e = now + agentDur/2;
         //long s = now - dur/2, e = now + dur/2;
 
-        long feedbackShift = n.dur();
+        long feedbackShift =
+                0;
+                //n.dur();
 
         super.update(prev, now, n);
 

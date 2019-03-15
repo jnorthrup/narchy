@@ -164,7 +164,6 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
     private void repel(MutableRectFloat a, v2 aCenter, float ar, MutableRectFloat b, float repelSpeed) {
 
-        v2 delta = aCenter.clone().subbed(b.cx(), b.cy());
 
 
 
@@ -174,6 +173,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
         float radii = (ar + br) * equilibriumDistFactor;
 
+        v2 delta = aCenter.clone().subbed(b.cx(), b.cy());
         float len = delta.normalize();
         if (len <= radii) {
             //coincident, apply random vector
@@ -190,8 +190,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         }
 
         float s = repelSpeed /
-                //(1 + (len * len));
-                (1 + (len));
+                (1 + (len * len));
                 //Util.sqr(1 + len);
 
         delta.scaled(s);

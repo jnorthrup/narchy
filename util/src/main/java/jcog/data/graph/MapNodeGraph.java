@@ -43,7 +43,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
                 if (traversed.add(y))
                     queue.add(y);
 
-                addEdge(xx, (E) "->" /* HACK */, addNode(y));
+                addEdgeByNode(xx, (E) "->" /* HACK */, addNode(y));
             });
 
         }
@@ -106,21 +106,28 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     }
 
+    /** creates the nodes if they do not exist yet */
     public boolean addEdge(N from, E data, N to) {
-        Node<N, E> f = node(from);
-        Node<N, E> t = node(to);
-        return addEdge((MutableNode) f, data, (MutableNode) t);
+        Node<N, E> f = addNode(from);
+        Node<N, E> t = addNode(to);
+        return addEdgeByNode((MutableNode<N,E>) f, data, (MutableNode<N,E>) t);
     }
 
-    public final boolean addEdge(MutableNode<N, E> from, E data, MutableNode<N, E> to) {
-        return addEdge(from, to, new ImmutableDirectedEdge<>(from, data, to));
+    public boolean addEdgeIfNodesExist(N from, E data, N to) {
+        Node<N, E> f = node(from);
+        Node<N, E> t = node(to);
+        return addEdgeByNode((MutableNode<N,E>) f, data, (MutableNode<N,E>) t);
+    }
+
+    public final boolean addEdgeByNode(MutableNode<N, E> from, E data, MutableNode<N, E> to) {
+        return addEdgeByNode(from, to, new ImmutableDirectedEdge<>(from, data, to));
     }
 
     public boolean addEdge(FromTo<Node<N, E>, E> ee) {
-        return addEdge((MutableNode)(ee.from()), (MutableNode)(ee.to()), ee);
+        return addEdgeByNode((MutableNode<N,E>)(ee.from()), (MutableNode<N,E>)(ee.to()), ee);
     }
 
-    protected boolean addEdge(MutableNode<N, E> from, MutableNode<N, E> to, FromTo<Node<N, E>, E> ee) {
+    protected boolean addEdgeByNode(MutableNode<N, E> from, MutableNode<N, E> to, FromTo<Node<N, E>, E> ee) {
         if (from.addOut(ee)) {
             boolean a = to.addIn(ee);
             assert (a);
@@ -204,13 +211,13 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
                         removed.add(inEdge);
                         MutableNode x = (MutableNode) (inEdge.from());
                         if (x != fromNode)
-                            addEdge(x, inEdge.id(), toNode);
+                            addEdgeByNode(x, inEdge.id(), toNode);
                     });
                     fromNode.edges(false, true).forEach(outEdge -> {
                         removed.add(outEdge);
                         MutableNode x = (MutableNode) (outEdge.to());
                         if (x != fromNode)
-                            addEdge(toNode, outEdge.id(), x);
+                            addEdgeByNode(toNode, outEdge.id(), x);
                     });
                     removed.forEach(this::edgeRemove);
                     //assert (fromNode.ins() == 0 && fromNode.outs() == 0);

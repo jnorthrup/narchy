@@ -1,6 +1,5 @@
 package nars.attention;
 
-import jcog.pri.Pressurizable;
 import jcog.pri.bag.Bag;
 import jcog.pri.op.PriForget;
 import nars.NAR;
@@ -24,7 +23,8 @@ abstract public class Forgetting {
                 int cap = b.capacity();
                 if (cap > 0) {
 
-                    float pressure = depressurize(b, depressurizationRate); assert(pressure == pressure);
+                    float pressure = b.depressurizePct(depressurizationRate);
+                    assert(pressure == pressure);
 
                     float mass = b.mass(); assert(mass == mass);
 
@@ -36,10 +36,6 @@ abstract public class Forgetting {
         }
 
         return null;
-    }
-
-    static protected float depressurize(Pressurizable b, float temperature) {
-        return b.depressurizePct(temperature);
     }
 
     abstract protected @Nullable Consumer forget(float temperature, int size, int cap, float pressure, float mass);

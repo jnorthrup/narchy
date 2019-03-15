@@ -122,8 +122,18 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      * WARNING this is a duplicate of code in hijackbag, they ought to share this through a common Pressure class extending AtomicDouble or something
      */
     @Override
-    public void depressurize(float priAmount) {
-        PRESSURE.update(this, (p, a)->Math.max(0,p-a), priAmount);
+    public void pressurize(float f) {
+        if (f==f && Math.abs(f) > Float.MIN_NORMAL)
+            PRESSURE.add(this, f);
+    }
+
+    /**
+     * WARNING this is a duplicate of code in hijackbag, they ought to share this through a common Pressure class extending AtomicDouble or something
+     */
+    @Override
+    public void depressurize(float f) {
+        if (f==f && Math.abs(f) > Float.MIN_NORMAL)
+            PRESSURE.update(this, (p, a)->Math.max(0,p-a), f);
     }
 
     @Override
@@ -134,11 +144,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             PRESSURE.getAndUpdate(this, (p,factor)-> p * factor, 1-percentage);
     }
 
-    @Override
-    public void pressurize(float f) {
-        if (f == f)
-            PRESSURE.add(this, f);
-    }
+
 
     /**
      * returns true unless failed to add during 'add' operation or becomes empty

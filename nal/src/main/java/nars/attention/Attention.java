@@ -46,6 +46,15 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     public final FloatRange forgetRate = new FloatRange(0.1f,  0, 1f /* 2f */);
 
+    /** propagation (decay+growth) rate */
+    public final FloatRange conductance = new FloatRange(0.5f,  0, 1f /* 2f */);
+
+    //0.25f;
+    //(float) (1f/(1 + Math.sqrt(t.volume())));
+    //1f/(1 + t.volume());
+
+    //1f/((s.volume() + t.volume())/2f); //1/vol_mean
+    //1f/(s.volume() + t.volume()); //1/vol_sum
 
     public final IntRange activeCapacity = new IntRange(256, 0, 2024) {
         @Override
@@ -69,7 +78,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         int c = activeCapacity.intValue();
         links = new TaskLinkBag(
                 new TaskLinkArrayBag(c)
-                //new TaskLinkHijackBag(c, 5),
+                //new TaskLinkHijackBag(c, 5)
         );
 
         links.setCapacity(activeCapacity.intValue());
@@ -108,12 +117,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         final Term s = link.source();
         byte punc = task.punc();
 
-        /** propagation (decay+growth) rate */
-        float conductance =
-                //1f/(1 + t.volume());
-                (float) (1f/(1 + Math.sqrt(t.volume())));
-                //1f/((s.volume() + t.volume())/2f); //1/vol_mean
-                //1f/(s.volume() + t.volume()); //1/vol_sum
+
 
         float p =
                 link.priPunc(punc);
@@ -129,9 +133,11 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         Concept ct;
         if (t.op().conceptualizable) {
 
-//            boolean self = s.equals(t);
+
 
             Term u = null;
+
+            boolean self = s.equals(t);
 
             ct = nar.conceptualize(t);
             if (ct != null) {
@@ -144,12 +150,13 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
                     if (t instanceof Atom) {
                         //why is this necessary
-                        //if (self || d.random.nextFloat() > 1f/(1+s.complexity())) {
+                        if (d.random.nextFloat() < 0.5f) {
+                            //if (self || d.random.nextFloat() > 1f/(1+s.complexity())) {
                             //sample active tasklinks for a tangent match to the atom
 //                            Atom tt = (Atom) t;
                             Predicate<TaskLink> filter =
                                     x -> !link.equals(x);
-                                    //x -> !link.equals(x) && !link.other(tt).equals(s);
+                            //x -> !link.equals(x) && !link.other(tt).equals(s);
 
                             u = links.atomTangent(ct, filter, d.time, 1, d.random);
 //                        if (u!=null && u.equals(s)) {
@@ -162,6 +169,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 //
 //                            //link(t, s, punc, p*subRate); //reverse echo
 //                        }
+                        }
                     }
 
                 }
@@ -186,7 +194,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 //                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
 
                 int n = 2;
-                float pp = p * conductance / n;
+                float pp = p * conductance.floatValue() / n;
 
                 link.take(punc, pp*n);
 
@@ -202,9 +210,15 @@ public class Attention extends DurService implements Sampler<TaskLink> {
                 //link(s, t, punc, ); //redundant
                 //link(t, s, punc, pp); //reverse echo
 
-//                if (self) {
+//                if (self)
 //                    t = u;
-//                }
+
+            } else {
+//                int n = 1;
+//                float pp = p * conductance / n;
+//
+//                link(t, s, punc, pp); //reverse echo
+
             }
         }
 

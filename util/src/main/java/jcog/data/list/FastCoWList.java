@@ -372,6 +372,6 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
             s += each.floatValueOf(x);
             i++;
         }
-        return s/i;
+        return i > 0 ? s/i : 0;
     }
 }

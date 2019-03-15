@@ -271,7 +271,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         MutableNode<Event, TimeSpan> x = addNode(before);
         MutableNode<Event, TimeSpan> y = before.equals(after) ? x : addNode(after);
 
-        return addEdge(x, e, y);
+        return addEdgeByNode(x, e, y);
     }
 
     private void link(Event x, long dt, Event y) {

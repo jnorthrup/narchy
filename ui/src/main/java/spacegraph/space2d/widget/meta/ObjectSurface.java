@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.meta;
 
-import com.google.common.collect.Lists;
 import com.jogamp.opengl.GL2;
 import jcog.TODO;
 import jcog.data.list.FasterList;
@@ -27,6 +26,7 @@ import spacegraph.video.Draw;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -35,10 +35,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ObjectSurface<X> extends MutableUnitContainer {
 
     private static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable Object ctx, List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj) -> {
-        List<Surface> outer = new FasterList<>(target.size());
+        List<Surface> outer = new FasterList<>(target.size()) {
+            @Override
+            protected Object[] newArray(int newCapacity) {
+                return new Surface[newCapacity]; //HACK
+            }
+        };
         for (Pair<Object, Iterable<Surface>> p : target) {
             //Object o = p.getOne();
-            List<Surface> cx = Lists.newArrayList(p.getTwo());
+            List<Surface> cx = new FasterList(0) {
+                @Override
+                protected Object[] newArray(int newCapacity) {
+                    return new Surface[newCapacity]; //HACK
+                }
+            };
+            p.getTwo().forEach(cx::add);
             switch (cx.size()) {
                 case 0:
                     break; //TODO shouldnt happen
@@ -100,20 +111,16 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         this.obj = x;
         this.builder = builder;
 
+
         initDefaults();
     }
 
     private void initDefaults() {
+        builder.on(Map.Entry.class, (Map.Entry x, Object relation) ->
+                new VectorLabel(x.toString())
+        );
         builder.on(FloatRange.class, (FloatRange x, Object relation) ->
-                        //new LabeledPane(
-                        new FloatRangePort(x, objLabel(x, relation))
-                //{
-                //public String text() {
-                //return k + '=' + super.text();
-                //}
-                //}
-                //new MySlider((FloatRange) x, objLabel(x,relation))
-                //)
+            new FloatRangePort(x, objLabel(x, relation))
         );
         builder.on(IntRange.class, (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
 

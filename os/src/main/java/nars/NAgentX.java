@@ -66,7 +66,6 @@ import static nars.$.$$;
 import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
-import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -197,7 +196,7 @@ abstract public class NAgentX extends NAgent {
         clock.durFPS(durFPS);
 
         Valuator val =
-            new Valuator.DefaultValuator(0.9f);
+            new Valuator.DefaultValuator(0.99f);
             //new Valuator.AEValuator(new XoRoShiRo128PlusRandom());
 
         int threads = _threads <= 0 ? Util.concurrencyExcept(1) : _threads;
@@ -294,60 +293,16 @@ abstract public class NAgentX extends NAgent {
 //        senseReward.timing = new ActionTiming(n);
 
 
-        MetaAgent meta = new MetaAgent(n);
-        meta.pri.set(0.5f);
+        MetaAgent meta = new MetaAgent(n, 8);
+        meta.pri.set(0.25f);
 
-        window(AttentionUI.attentionGraph(n, a, meta), 600, 600);
+        //window(AttentionUI.attentionGraph(n, a, meta), 600, 600);
 
-        window(NARui.agent(a), 500, 500);
-        window(NARui.agent(meta), 500, 500);
+
+        window(new Gridding(NARui.agent(a), NARui.agent(meta)), 500, 500);
         window(NARui.top(n), 800, 500);
 
-        final Bag<?,TaskLink> active = n.attn.links;
-        int c = active.capacity();
-        int history = 64;
-        int width = c;
-        Spectrogram s = new Spectrogram(false, history, width);
-
-        DurSurface d = DurSurface.get(s, n, new Runnable() {
-
-            final FasterList<TaskLink> snapshot = new FasterList();
-
-            @Override
-            public void run() {
-                active.forEach(snapshot::add);
-                s.next(color);
-                snapshot.clear();
-            }
-
-            final IntToIntFunction color = _x -> {
-                TaskLink x = snapshot.getSafe(_x);
-                if (x == null)
-                    return 0;
-
-//                float[] bgqq = x.priPuncSnapshot();
-                float r = x.priPunc(BELIEF);
-                float g = x.priPunc(GOAL);
-                float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;
-                return Draw.rgbInt(r, g, b);
-
-//                    float h;
-//                    switch (x.puncMax()) {
-//                        case BELIEF: h = 0; break;
-//                        case QUESTION: h = 0.25f; break;
-//                        case GOAL: h = 0.5f; break;
-//                        case QUEST: h = 0.75f; break;
-//                        default:
-//                            return Draw.rgbInt(0.5f, 0.5f, 0.5f);
-//                    }
-//
-//                    return Draw.colorHSB(h, 0.75f, 0.25f + 0.75f * x.priElseZero());
-
-            };
-
-        });
-
-        window(d, 500, 500);
+        window(tasklinkSpectrogram(n, n.attn.links, 64), 500, 500);
 
         //d.durs(0.25f);
 
@@ -399,6 +354,51 @@ abstract public class NAgentX extends NAgent {
 //        }));
     }
 
+    private static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> active, int history) {
+        return tasklinkSpectrogram(n, active, history, active.capacity());
+    }
+
+    private static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> active, int history, int width) {
+        Spectrogram s = new Spectrogram(false, history, width);
+
+        return DurSurface.get(s, n, new Runnable() {
+
+            final FasterList<TaskLink> snapshot = new FasterList();
+
+            @Override
+            public void run() {
+                active.forEach(snapshot::add);
+                s.next(color);
+                snapshot.clear();
+            }
+
+            final IntToIntFunction color = _x -> {
+                TaskLink x = snapshot.getSafe(_x);
+                if (x == null)
+                    return 0;
+
+//                float[] bgqq = x.priPuncSnapshot();
+                float r = x.priPunc(BELIEF);
+                float g = x.priPunc(GOAL);
+                float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;
+                return Draw.rgbInt(r, g, b);
+
+//                    float h;
+//                    switch (x.puncMax()) {
+//                        case BELIEF: h = 0; break;
+//                        case QUESTION: h = 0.25f; break;
+//                        case GOAL: h = 0.5f; break;
+//                        case QUEST: h = 0.75f; break;
+//                        default:
+//                            return Draw.rgbInt(0.5f, 0.5f, 0.5f);
+//                    }
+//
+//                    return Draw.colorHSB(h, 0.75f, 0.25f + 0.75f * x.priElseZero());
+
+            };
+
+        });
+    }
 
 
     public static void config(NAR n) {
@@ -415,10 +415,10 @@ abstract public class NAgentX extends NAgent {
         n.attn.activeCapacity.set(1024);
 
 
-        n.beliefPriDefault.set(0.01f);
-        n.goalPriDefault.set(0.025f);
-        n.questionPriDefault.set(0.005f);
-        n.questPriDefault.set(0.005f);
+        n.beliefPriDefault.set(0.1f);
+        n.goalPriDefault.set(0.25f);
+        n.questionPriDefault.set(0.05f);
+        n.questPriDefault.set(0.05f);
 
         n.beliefConfDefault.set(0.75f);
         n.goalConfDefault.set(0.75f);
@@ -512,7 +512,7 @@ abstract public class NAgentX extends NAgent {
             //new ConjClustering(n, GOAL, 4, 16)
         );
 
-        window(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
+//        window(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
 
 
 

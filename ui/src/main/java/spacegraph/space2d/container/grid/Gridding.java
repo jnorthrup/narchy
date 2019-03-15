@@ -213,12 +213,10 @@ public class Gridding extends MutableListContainer {
         return new Gridding(new FasterList<>(content));
     }
     public static <S> Gridding grid(Collection<S> c, Function<S,Surface> builder) {
-        Surface ss [] = new Surface[c.size()];
-        int i = 0;
-        for (S x : c) {
-            ss[i++] = builder.apply(x);
-        }
-        return grid(ss);
+        List<Surface> ss  = new FasterList(c.size());
+        for (S x : c)
+            ss.add(builder.apply(x));
+        return new Gridding(ss);
     }
 
     public static Gridding row(Collection<? extends Surface> content) {

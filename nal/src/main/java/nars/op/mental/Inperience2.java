@@ -1,5 +1,6 @@
 package nars.op.mental;
 
+import jcog.math.FloatRange;
 import jcog.pri.bag.Sampler;
 import nars.$;
 import nars.NAR;
@@ -12,7 +13,6 @@ import nars.link.TaskLink;
 import nars.task.ITask;
 import nars.task.proxy.SpecialPuncTermAndTruthTask;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.time.When;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +26,8 @@ import static nars.Op.BELIEF;
  * snapshots of belief table aggregates, rather than individual tasks
  */
 public class Inperience2 extends Causable {
+
+    public final FloatRange priFactor = new FloatRange(0.5f, 0, 2f);
 
     private final CauseChannel<ITask> in;
 
@@ -41,9 +43,9 @@ public class Inperience2 extends Causable {
         int dur = n.dur();
         double window = 2.0;
 
-        int dither = n.dtDither();
-        long start = Tense.dither((long)Math.floor(now - window * dur/2), dither);
-        long end = Tense.dither((long)Math.ceil(now + window * dur/2), dither);
+        //int dither = n.dtDither();
+        long start = /*Tense.dither*/((long)Math.floor(now - window * dur/2));//, dither);
+        long end = /*Tense.dither*/((long)Math.ceil(now + window * dur/2));//, dither);
         When when = new When(start, end, dur, n);
 
         int volMax = n.termVolumeMax.intValue();
@@ -58,17 +60,22 @@ public class Inperience2 extends Causable {
                 Task u = null;
                 if (t.isBeliefOrGoal()) {
                     Term r = Inperience.reifyBeliefOrGoal(t, n);
+                    r = r.normalize();
                     if (validReification(r, volMax)) {
                         boolean neg = t.isNegative();
                         u = new InperienceTask(r, $.t(1, beliefConf * t.truth().negIf(neg).expectation()), t);
                     }
                 } else {
                     Term r = Inperience.reifyQuestion(t.term(), t.punc(), n);
+                    r = r.normalize();
                     if (validReification(r, volMax))
-                        u = new InperienceTask(r, $.t(1, 0.75f * beliefConf), t);
+                        u = new InperienceTask(r, $.t(1, beliefConf * 0.5f), t);
                 }
-                if (u != null)
+
+                if (u != null) {
+                    u.pri(t.priElseZero() * priFactor.floatValue());
                     in.input(u);
+                }
             }
 
             return kontinue.getAsBoolean() ? Sampler.SampleReaction.Next : Sampler.SampleReaction.Stop;

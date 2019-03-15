@@ -43,6 +43,10 @@ public class BoolTest {
         assertEquals(True, $$("true"));
         assertEquals(False, $$("false"));
         //assertEquals(Null, $$("null"));
+
+        assertEq("plan(#1,true)", $$("plan(#1,true)"));
+        assertEq("plan(#1,true)", $$("plan(#1,true)").concept().term());
+
     }
 
     @Test

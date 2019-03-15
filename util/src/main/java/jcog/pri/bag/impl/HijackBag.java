@@ -124,13 +124,14 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public void pressurize(float f) {
-        if (f == f)
+        if (f==f && Math.abs(f) > Float.MIN_NORMAL)
             PRESSURE.add(this, f);
     }
 
     @Override
-    public void depressurize(float priAmount) {
-        PRESSURE.update(this, (p, a) -> Math.max(0, p - a), priAmount);
+    public void depressurize(float f) {
+        if (f==f && Math.abs(f) > Float.MIN_NORMAL)
+            PRESSURE.update(this, (p, a) -> Math.max(0, p - a), f);
     }
 
     @Override
@@ -352,7 +353,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                                 break;
                             } else if (keyEquals(k, kHash, v)) {
 
+                                float before = pri(v);
                                 V next = merge(v, incoming, overflowing);
+                                float after = pri(v);
+                                depressurize(Math.max(0,incomingPri - (after-before)));
+
                                 assert (next != null);
                                 if (next != v) {
                                     if (next == null)

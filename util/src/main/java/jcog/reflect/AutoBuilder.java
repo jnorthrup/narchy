@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -132,14 +131,21 @@ public class AutoBuilder<X, Y> {
             collectFields(root, obj, parentRepr, target, depth + 1);
         }
 
-        if (obj instanceof Map) {
-            Stream<Y> s = ((Map<?,?>) obj).entrySet().stream().
-                    flatMap((Map.Entry<?,?> e) ->
-                        builders.stream().map(b ->
-                            b.apply(e.getValue(), e.getKey()))
-                            .filter(Objects::nonNull));
-            target.add(pair(obj, s::iterator));
-        }
+//        if (obj instanceof Map) {
+//            ((Map<?,?>) obj).entrySet().stream()
+//                    .map((Map.Entry<?,?> x) ->
+//                            Tuples.pair(obj,
+//                                (Iterable<Y>)(builders.stream().map(b ->
+//                                    b.apply(x, relation)).filter(Objects::nonNull)::iterator)))
+//                    .forEach(target::add);
+//        }/* else if (obj instanceof List) {
+//            ((List<?>)obj).stream()
+//                    .map((Object x) ->
+//                            Tuples.pair(obj, (Iterable<Y>)(builders.stream().map(b ->
+//                                            b.apply(x, relation)).filter(Objects::nonNull)::iterator)))
+//                    .forEach(target::add);
+//
+//        }*/
 
 
         return building.build(root, target, obj);

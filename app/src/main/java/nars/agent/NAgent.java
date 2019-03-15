@@ -135,17 +135,13 @@ public class NAgent extends NARService implements NSense, NAct {
         int n = actions.size();
         if (n == 0)
             return 0;
-
-        final double[] m = {0};
-        actions.forEach(a -> {
-            m[0] += a.dexterity();
-        });
-
-        return (float) m[0];
+        else
+            return (float) actions.sumBy(ActionConcept::dexterity);
     }
 
     public float dexterityMean() {
-        return dexterity() / actions.size();
+        int a = actions.size();
+        return a > 0 ? dexterity() / a : 0;
     }
 
 
