@@ -34,6 +34,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.UnitCompound;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
@@ -596,6 +597,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     default Term dt(int dt) {
+        return dt(dt, Op.terms);
+    }
+    default Term dt(int dt, TermBuilder builder) {
         return this;
     }
 

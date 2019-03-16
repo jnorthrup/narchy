@@ -3,11 +3,11 @@ package nars.term.compound;
 import jcog.Util;
 import nars.Op;
 import nars.The;
-import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.builder.TermBuilder;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.jetbrains.annotations.Nullable;
@@ -108,11 +108,11 @@ public abstract class UnitCompound implements Compound {
 
 
     @Override
-    public Term dt(int nextDT) {
+    public Term dt(int nextDT, TermBuilder builder) {
         if (nextDT == XTERNAL) {
             //only case it's allowed
             assert(op()==CONJ);
-            return CachedCompound.newCompound(CONJ, XTERNAL, new ArrayTermVector(sub()));
+            return builder.theCompound(CONJ, XTERNAL, new Term[] { sub()} );
         }
         assert(nextDT == DTERNAL);
         return this;

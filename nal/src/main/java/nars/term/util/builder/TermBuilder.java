@@ -28,8 +28,7 @@ import java.util.Collection;
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.term.Terms.sorted;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 
 /**
  * interface for target and subterm builders
@@ -104,8 +103,8 @@ public abstract class TermBuilder implements TermConstructor {
                 //TODO Param.SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME
                 boolean different = false;
                 for (int i = 1; i < t.length; i++) {
-                    if (t[i]!=t[i-1]) {
-                    //if (!t[i].equals(t[i-1])) {
+                    if (t[i] != t[i - 1]) {
+                        //if (!t[i].equals(t[i-1])) {
                         different = true;
                         break;
                     }
@@ -286,4 +285,86 @@ public abstract class TermBuilder implements TermConstructor {
         return statement(op, dt, u[0], u[1]);
     }
 
+    /**
+     * TODO option for instantiating CompoundLight base's in the bottom part of this
+     */
+    public Term dt(Compound x, int nextDT) {
+
+        int baseDT = x.dt();
+        if (nextDT == baseDT)
+            return x; //no change
+
+        Op op = x.op();
+        assert (op.temporal);
+
+        Subterms xs = x.subterms();
+        if (baseDT != XTERNAL && nextDT != XTERNAL && dtSpecial(baseDT) == dtSpecial(nextDT)) {
+            if (!xs.hasAny(CONJ.bit | NEG.bit)
+                    ||
+                    (!xs.hasAny(CONJ) && xs.hasAny(NEG) && xs.subs(z -> z.op() == NEG) <= 1) //exception: one or less negs
+            ) {
+                /* simple case - fast transform non-concurrent -> non-concurrent */
+                return compound(op, nextDT, xs);
+                //return CachedCompound.newCompound(op, nextDT, xs);
+            }
+        }
+
+//        if (op == CONJ) {
+//            boolean baseConcurrent = Conj.concurrentInternal(baseDT);
+//            if (!Conj.concurrentInternal(nextDT)) {
+//
+//                boolean repeating = xx.length == 2 && xx[0].equals(xx[1]);
+//
+//                if (Param.DEBUG_EXTRA) {
+//                    if (baseConcurrent) {
+//                        if (!repeating)
+//                            throw new TermException(CONJ, baseDT, xx, "ambiguous DT change from concurrent to non-concurrent and non-repeating");
+//                    }
+//                }
+//
+//                if (repeating) {
+//                    nextDT = Math.abs(nextDT);
+//                    if (nextDT == baseDT) {
+//                        //can this be detected earlier, if it happens
+//                        return x;
+//                    }
+//                }
+//
+////                if (!baseConcurrent) {
+////                    //fast transform non-concurrent -> non-concurrent
+////                    return Op.compound(CONJ, nextDT, xx);
+////                }
+//            } else {
+//
+//                if (baseConcurrent) {
+//                    if (baseDT == XTERNAL) {
+//                        //changing to non-XTERNAL, check for repeats
+//                        if (xx.length < 2) {
+//
+//                        } else if (xx.length == 2) {
+//                            if (xx[0].equals(xx[1]))
+//                                return xx[0]; //collapse
+//                            else if (xx[0].equalsNeg(xx[1]))
+//                                return Bool.False; //contradict
+//                            else if (xx[0].hasAny(CONJ.bit | NEG.bit) || xx[1].hasAny(CONJ.bit | NEG.bit)) {
+//                                //need to thoroughly construct
+//                                return CONJ.the(nextDT, xx);
+//                            }
+//                        } else {
+//                            //need to thoroughly check for co-negations
+//                            return CONJ.the(nextDT, xx);
+//                        }
+//                    }
+//                    //fast transform concurrent -> concurrent, subs wont change
+//                    return Op.compound(CONJ, nextDT, xx);
+//                }
+//
+//            }
+//        }
+
+
+        return op.the(this, nextDT, xs);
+
+
+    }
 }

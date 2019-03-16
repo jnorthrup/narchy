@@ -33,6 +33,7 @@ import nars.term.anon.Anon;
 import nars.term.atom.Bool;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermException;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
@@ -540,8 +541,8 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default Term dt(int nextDT) {
-        return Op.dt(this, nextDT);
+    default Term dt(int nextDT, TermBuilder b) {
+        return b.dt(this, nextDT);
     }
 
 

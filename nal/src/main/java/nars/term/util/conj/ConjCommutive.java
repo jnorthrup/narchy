@@ -92,7 +92,7 @@ public enum ConjCommutive {;
                         Term xu = x.unneg();
                         if (xu.op() == CONJ) {
                             if (dt == 0 && xu.dt() == DTERNAL /* promote inner DTERNAL to parallel */) {
-                                u[i] = xu.dt(0).neg();
+                                u[i] = xu.dt(0, B).neg();
                             }
                             disj = set(disj, i, uLength);
                         } else {

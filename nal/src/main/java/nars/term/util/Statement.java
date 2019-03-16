@@ -155,7 +155,7 @@ public class Statement {
 
                             if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
                                 //HACK return to dternal
-                                newPred = newPred.dt(DTERNAL);
+                                newPred = newPred.dt(DTERNAL, B);
                                 if (newPred instanceof Bool) {
                                     return newPred;
                                 }

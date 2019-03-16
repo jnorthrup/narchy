@@ -3,6 +3,7 @@ package nars.term.atom;
 import nars.Op;
 import nars.The;
 import nars.term.Term;
+import nars.term.util.builder.TermBuilder;
 
 import static nars.Op.BOOL;
 
@@ -156,7 +157,7 @@ abstract public class Bool extends AbstractAtomic implements The {
 
 
     @Override
-    public final Term dt(int dt) {
+    public final Term dt(int dt, TermBuilder b) {
         //return this;
         throw new UnsupportedOperationException();
     }
