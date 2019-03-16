@@ -31,7 +31,7 @@ public enum Exe {;
      */
     private static final HashedWheelTimer timer = new HashedWheelTimer(
             //new AdmissionQueueWheelModel(8, TimeUnit.MILLISECONDS.toNanos(1))
-            new ConcurrentQueueWheelModel(64, 16, TimeUnit.MILLISECONDS.toNanos(2))
+            new ConcurrentQueueWheelModel(64, 16, TimeUnit.MILLISECONDS.toNanos(1))
             ,
             HashedWheelTimer.WaitStrategy.SleepWait,
             //HashedWheelTimer.WaitStrategy.YieldingWait,

@@ -39,22 +39,19 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
         update();
     }
 
-
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            if (gfx != null) {
-                gfx.dispose();
-                gfx = null;
-            }
-            if (bmp != null) {
-                bmp.stop();
-                bmp = null;
-            }
-            return true;
+    protected void stopping() {
+        if (gfx != null) {
+            gfx.dispose();
+            gfx = null;
         }
-        return false;
+        if (bmp != null) {
+            bmp.stop();
+            bmp = null;
+        }
+        super.stopping();
     }
+
 
 //    @Override
 //    protected void paintIt(GL2 gl) {

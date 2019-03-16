@@ -387,8 +387,6 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
         physics.invokeLater(() -> physics.link(wire));
 
-
-
         return wire;
     }
 

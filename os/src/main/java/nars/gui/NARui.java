@@ -10,7 +10,9 @@ import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.math.Quantiler;
 import jcog.pri.VLink;
+import jcog.pri.bag.Bag;
 import nars.NAR;
+import nars.NAgentX;
 import nars.Narsese;
 import nars.Task;
 import nars.agent.NAgent;
@@ -20,6 +22,7 @@ import nars.concept.sensor.Signal;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
+import nars.link.TaskLink;
 import nars.op.stm.ConjClustering;
 import nars.task.util.TaskBuffer;
 import nars.term.Termed;
@@ -572,6 +575,13 @@ public class NARui {
                     )
                 )
         );
+    }
+
+    public static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> b, int history) {
+        return NAgentX.tasklinkSpectrogram(n, b, history, b.capacity());
+    }
+    public static Surface tasklinkSpectrogram(NAR n, int history) {
+        return tasklinkSpectrogram(n, n.attn.links, history);
     }
 
 //    @Deprecated public static void agentOld(NAgent a) {

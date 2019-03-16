@@ -2,7 +2,7 @@ package spacegraph.audio;
 
 import jcog.event.Off;
 import jcog.signal.buffer.CircularFloatBuffer;
-import jcog.signal.wave1d.Spectrogram;
+import jcog.signal.wave1d.FreqDomain;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
@@ -36,13 +36,11 @@ public class AudioBufferView extends Gridding {
                     }
 
                     @Override
-                    public boolean stop() {
-                        if (super.stop()) {
-                            off.off();
-                            return true;
-                        }
-                        return false;
+                    protected void stopping() {
+                        off.off();
+                        super.stopping();
                     }
+
 
 //                    /** TODO use updateLive */
 //                    @Override public void update() {
@@ -67,7 +65,7 @@ public class AudioBufferView extends Gridding {
 
         CircularFloatBuffer buffer = capture.buffer;
 
-        Spectrogram s = new Spectrogram(buffer,
+        FreqDomain s = new FreqDomain(buffer,
                 sampleTime,
                 capture.source().samplesPerSecond(), fftSize, history);
 

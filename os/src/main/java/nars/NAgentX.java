@@ -14,7 +14,6 @@ import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
-import nars.agent.MetaAgent;
 import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
 import nars.concept.Concept;
@@ -29,7 +28,10 @@ import nars.gui.DurSurface;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.link.TaskLink;
-import nars.op.*;
+import nars.op.Arithmeticize;
+import nars.op.AutoencodedBitmap;
+import nars.op.Introduction;
+import nars.op.PuncNoise;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -291,16 +293,15 @@ abstract public class NAgentX extends NAgent {
 //        senseReward.timing = new ActionTiming(n);
 
 
-        MetaAgent meta = new MetaAgent(n, 16);
-        meta.attn.factor.set(0.25f);
+//        MetaAgent meta = new MetaAgent(n, 16);
+//        meta.attn.factor.set(0.5f);
 
-        window(AttentionUI.attentionGraph(n), 600, 600);
+        window(new Gridding(n.services(NAgent.class).map(NARui::agent).collect(toList())), 500, 500);
 
-
-        window(new Gridding(NARui.agent(a), NARui.agent(meta)), 500, 500);
         window(NARui.top(n), 800, 500);
 
-        window(tasklinkSpectrogram(n, n.attn.links, 64), 500, 500);
+//        window(NARui.tasklinkSpectrogram(n, n.attn.links, 64), 500, 500);
+//        window(AttentionUI.attentionGraph(n), 600, 600);
 
         //d.durs(0.25f);
 
@@ -352,12 +353,8 @@ abstract public class NAgentX extends NAgent {
 //        }));
     }
 
-    private static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> active, int history) {
-        return tasklinkSpectrogram(n, active, history, active.capacity());
-    }
-
-    private static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> active, int history, int width) {
-        Spectrogram s = new Spectrogram(false, history, width);
+    public static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> active, int history, int width) {
+        Spectrogram s = new Spectrogram(true, history, width);
 
         return DurSurface.get(s, n, new Runnable() {
 
@@ -414,12 +411,12 @@ abstract public class NAgentX extends NAgent {
 
 
         n.beliefPriDefault.set(0.1f);
-        n.goalPriDefault.set(0.25f);
+        n.goalPriDefault.set(0.5f);
         n.questionPriDefault.set(0.05f);
         n.questPriDefault.set(0.05f);
 
-        n.beliefConfDefault.set(0.85f);
-        n.goalConfDefault.set(0.85f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
@@ -497,7 +494,7 @@ abstract public class NAgentX extends NAgent {
 
         //new StatementLinker(n);
         new PuncNoise(n);
-        new Eternalizer(n);
+        //new Eternalizer(n);
 
 //        new STMLinkage(n, 1);
 

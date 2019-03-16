@@ -4,9 +4,9 @@ import jcog.data.map.NonBlockingHashMap;
 import jcog.exe.Exe;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 //import java.util.concurrent.ConcurrentHashMap;
@@ -58,8 +58,8 @@ public class PriBuffer<Y> {
             //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0);
         } else {
              return
-                 new LinkedHashMap();
-                 //new UnifiedMap();
+                 //new LinkedHashMap();
+                 new UnifiedMap();
                  //new HashMap();
         }
     }

@@ -136,5 +136,6 @@ public class Wire {
             ((Port) a).connected((Port) b);
             ((Port) b).connected((Port) a);
         }
+        //start.root().debug(start, 1, wire);
     }
 }

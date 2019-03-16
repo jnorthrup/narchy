@@ -150,35 +150,31 @@ public class ConsoleGUI extends ConsoleTerminal {
     }
 
     @Override
-    public boolean stop() {
-        if (super.stop()) {
+    protected void stopping() {
+        term.removeVirtualTerminalListener(listener);
+        listener = null;
 
-            term.removeVirtualTerminalListener(listener);
-            listener = null;
-
-            if (gui!=null) {
-                gui.removeWindow(window);
-                gui = null;
-            }
-
-            if (screen != null) {
-                try {
-                    screen.stopScreen();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                screen = null;
-            }
-
-            if (updates!=null) {
-                updates.off();
-                updates = null;
-            }
-
-            return true;
+        if (gui!=null) {
+            gui.removeWindow(window);
+            gui = null;
         }
 
-        return false;
+        if (screen != null) {
+            try {
+                screen.stopScreen();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            screen = null;
+        }
+
+        if (updates!=null) {
+            updates.off();
+            updates = null;
+        }
+
+
+        super.stopping();
     }
 
     /** TODO throttle the different update processes if necessary */

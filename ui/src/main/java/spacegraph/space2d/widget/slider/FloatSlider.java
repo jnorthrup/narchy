@@ -134,14 +134,10 @@ public class FloatSlider extends Widget {
     abstract public static class FloatSliderModel extends SliderModel {
 
         @Override
-        public boolean start(SurfaceBase parent) {
-            if (super.start(parent)) {
-                update();
-                return true;
-            }
-            return false;
+        protected void starting() {
+            super.starting();
+            update();
         }
-
 
         public void update() {
             FloatSlider p = parent(FloatSlider.class);

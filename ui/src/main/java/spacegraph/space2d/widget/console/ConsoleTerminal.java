@@ -130,15 +130,12 @@ public class ConsoleTerminal extends Widget implements Appendable, KeyPressed {
         return true;
     }
 
-
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            term.close();
-            return true;
-        }
-        return false;
+    protected void stopping() {
+        term.close();
+        super.stopping();
     }
+
 
     @Override
     public Appendable append(CharSequence c) {

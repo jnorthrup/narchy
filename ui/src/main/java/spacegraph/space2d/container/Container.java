@@ -146,15 +146,6 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public /* final */ boolean stop() {
-        if (super.stop()) {
-            //TODO: clear();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     protected void stopping() {
         forEach(Surface::stop);
     }

@@ -308,13 +308,11 @@ public class Plot2D extends Widget {
     }
 
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            vis.stop();
-            return true;
-        }
-        return false;
+    protected void stopping() {
+        vis.stop();
+        super.stopping();
     }
+
 
 //    public static final PlotVis BarWave = (List<Series> series, GL2 g, float minValue, float maxValue) -> {
 //        if (minValue != maxValue) {

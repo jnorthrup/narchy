@@ -7,14 +7,14 @@ import jcog.signal.tensor.RingBufferTensor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** TODO extract RingBufferTensor to an extended impl.  this only needs to supply the next 1D vector of new freq information */
-public class Spectrogram {
+public class FreqDomain {
     @Deprecated
     public final RingBufferTensor freq;
     final SlidingDFTTensor dft;
     private final CircularFloatBuffer in;
     private final ArrayTensor inWave;
 
-    public Spectrogram(CircularFloatBuffer in, float sampleTime, int sampleRate, int fftSize, int history) {
+    public FreqDomain(CircularFloatBuffer in, float sampleTime, int sampleRate, int fftSize, int history) {
 
         this.in = in;
 

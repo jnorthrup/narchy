@@ -31,7 +31,7 @@ public class SpectrogramChip extends TypedPort<float[]> {
                 set(s = this.s = new Spectrogram(true, history, row.length));
             }
 
-            s.next((c)-> Draw.rgbInt(0, row[c], 0));
+            //s.next((c)-> Draw.rgbInt(0, row[c], 0));
 
             return true;
         }

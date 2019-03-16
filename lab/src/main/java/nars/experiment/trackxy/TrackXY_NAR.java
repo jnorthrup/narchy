@@ -22,7 +22,9 @@ import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
+import org.fusesource.jansi.FilterPrintStream;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.LogContainer;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.chip.PIDChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -103,8 +105,8 @@ public class TrackXY_NAR extends NAgentX {
             this.cam = null;
         }
 
-        //actionPushButton();
-        actionPushButtonMutex();
+        actionPushButton();
+        //actionPushButtonMutex();
         //actionSwitch();
         //actionTriState();
 
@@ -144,16 +146,6 @@ public class TrackXY_NAR extends NAgentX {
 //        }
 
         track.randomize();
-
-//        Param.DEBUG = true;
-//        nar().log(new FilterPrintStream(System.out) {
-//
-//            @Override
-//            public void print(String s) {
-//                super.print(s);
-//                Util.sleepMS(1);
-//            }
-//        }, (t)->log.getOpaque() /*&& t instanceof Task && ((Task)t).isGoal()*/);
 
 
         onFrame(() -> {
@@ -344,9 +336,35 @@ public class TrackXY_NAR extends NAgentX {
 //                })).sizeRel(0.2f, 0.2f);
 
                 g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
-                g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
-                g.add(NARui.taskBufferView(d.out, n)).sizeRel(0.25f,0.25f);
-                g.add(new PIDChip(new MiniPID(0.01, 0.01, 0.01))).sizeRel(0.1f,0.1f);
+                g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.03f, 0.2f);
+                g.add(NARui.taskBufferView(d.out, n)).sizeRel(0.25f, 0.25f);
+//                g.add(new PIDChip(new MiniPID(0.01, 0.01, 0.01))).sizeRel(0.1f, 0.1f);
+                g.add(NARui.tasklinkSpectrogram(n, 200)).sizeRel(0.25f, 0.25f);
+
+                g.add(new LogContainer(32) {
+                    {
+                        LogContainer z = this; //HACK
+
+                        //        Param.DEBUG = true;
+//                        n.log(new FilterPrintStream(System.out) {
+//
+//                                  @Override
+//                                  public void print(String s) {
+//                                      //super.print(s);
+//                                      if (showing() && Math.random() > 0.1f)
+//                                        z.append(s);
+//                                  }
+//
+//                                  @Override
+//                                  public void println() {
+//
+//                                  }
+//                              }//, (t)->log.getOpaque() /*&& t instanceof Task && ((Task)t).isGoal()*/
+//                        );
+                        n.onTask(t->z.append(t.toStringWithoutBudget()));
+                    }
+                }).sizeRel(0.25f, 0.25f);
+
 
                 //window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 //            window.addAt(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);

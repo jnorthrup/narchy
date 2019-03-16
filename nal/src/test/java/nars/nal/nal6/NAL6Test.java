@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 2000;
+    private static final int cycles = 1500;
 
     @BeforeEach
     void setup() {
@@ -27,7 +27,7 @@ public class NAL6Test extends NALTest {
         NAR n = NARS.tmp(6);
         n.termVolumeMax.set(18);
         //n.freqResolution.setAt(0.1f);
-        n.confMin.set(0.1f);
+        n.confMin.set(0.12f);
         return n;
     }
 
@@ -357,7 +357,7 @@ public class NAL6Test extends NALTest {
 
 
         test.termVolMax(14);
-        test.nar.confMin.set(0.2f);
+        test.nar.confMin.set(0.35f);
         test
                 .believe("(bird:$x ==> (&&, flyer:$x, chirping:$x, food:worms))")
                 .believe("flyer:Tweety")
@@ -415,12 +415,12 @@ public class NAL6Test extends NALTest {
     @Test
     void multiple_variable_elimination4() {
 
-        TestNAR tester = test;
-        tester.believe("(&&,open(#y,#x),(#x --> lock),<#y --> key>)");
-        tester.believe("({lock1} --> lock)");
-        tester.mustBelieve(cycles, "((#1-->key) && open(#1,{lock1}))",
-                1.00f,
-                //0.66f
+
+        test.termVolMax(11)
+            .believe("(&&,open(#y,#x),(#x --> lock),<#y --> key>)")
+            .believe("({lock1} --> lock)")
+            .mustBelieve(cycles, "((#1-->key) && open(#1,{lock1}))", 1.00f,
+                    //0.66f
                 0.43f
         );
     }
@@ -429,13 +429,12 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_introduction() {
 
-
-        test.termVolMax(7);
-        test.believe("(swan --> bird)");
-        test.believe("(swan --> swimmer)", 0.80f, 0.9f);
-        test.mustBelieve(cycles, "(($1 --> swimmer) ==> ($1 --> bird))", 1.00f, 0.39f);
-        test.mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> swimmer))", 0.80f, 0.45f);
-        test.mustBelieve(cycles, "((#1 --> swimmer) && (#1 --> bird))", 0.80f, 0.81f);
+        test.termVolMax(7)
+            .believe("(swan --> bird)")
+            .believe("(swan --> swimmer)", 0.80f, 0.9f)
+            .mustBelieve(cycles, "(($1 --> swimmer) ==> ($1 --> bird))", 1.00f, 0.39f)
+            .mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> swimmer))", 0.80f, 0.45f)
+            .mustBelieve(cycles, "((#1 --> swimmer) && (#1 --> bird))", 0.80f, 0.81f);
 
     }
 
@@ -502,7 +501,7 @@ public class NAL6Test extends NALTest {
     void variables_introduction() {
 
         test.termVolMax(10)
-            .confMin(0.25f)
+            .confMin(0.35f)
                 .believe("open({key1},{lock1})")
                 .believe("key:{key1}")
                 //.mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.45f)
@@ -823,7 +822,7 @@ public class NAL6Test extends NALTest {
     @Test void abduction_positive_negative_mix_depolarized() {
 
         test
-           .termVolMax(7)
+           .termVolMax(7).confMin(0.35f)
             .believe("(P ==> N)", 0.00f, 0.90f)
             .believe("((A && --N) ==> P)", 1.00f, 0.90f)
             .mustBelieve(cycles, "A", 1.00f, 0.45f)

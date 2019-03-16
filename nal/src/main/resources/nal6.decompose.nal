@@ -1,31 +1,31 @@
 //conjunction/disjunction structural decomposition
 
     //specific deduction
-    C, X, eventOf(C,X), --isVar(X)                    |-   conjWithout(C,  X), (Belief:DeductionPP)
-    C, X, eventOfNeg(C,X), --isVar(X), has(C,"--")    |-   conjWithout(C,--X), (Belief:DeductionPN)
+    C, X, eventOf(C,X)                    |-   conjWithout(C,  X), (Belief:DeductionPP)
+    C, X, eventOfNeg(C,X), has(C,"--")    |-   conjWithout(C,--X), (Belief:DeductionPN)
         //anti-specific deduction: "conjunction contraposition" (weak)
-        C, X, eventOf(C,X), --isVar(X)                    |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
-        C, X, eventOfNeg(C,X), --isVar(X), has(C,"--")    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
+        C, X, eventOf(C,X)                    |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
+        C, X, eventOfNeg(C,X), has(C,"--")    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
 
     //free structural Conjunction/Disjunction decomposition
-    C, X, eventOfPN(C,X), --isVar(X)                  |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
-      C, X, eventOfPN(C,X), --isVar(X), task("?@"), hasBelief()    |-   conjWithoutPN(C,X)
-    C, X, eventOfPN(C,X), conjParallel(C), --isVar(X) |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
+    C, X, eventOfPN(C,X)                  |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
+      C, X, eventOfPN(C,X), task("?@"), hasBelief()    |-   conjWithoutPN(C,X)
+    C, X, eventOfPN(C,X), conjParallel(C) |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
     //not right:
       //D, X, eventOfPN(C,X), conjParallel(D), --isVar(X)  |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 
     //free structural implication belief and question decomposition
-    (A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
+    (A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
       //(A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- --(A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeductionN)
-    (--D ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- polarizeTask((--conjWithoutPN(D,  --X) ==> A)), (Belief:StructuralReductionDepolarized)
+    (--D ==> A), X, eventOfPN(C,X), --isVar(A)   |- polarizeTask((--conjWithoutPN(D,  --X) ==> A)), (Belief:StructuralReductionDepolarized)
     //(C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
-        (C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
+        (C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
       //(--C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (--conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
-          (--C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (--conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
+          (--C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (--conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
 
     //(A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Belief:StructuralReduction)
-         (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
+         (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
 
 
 

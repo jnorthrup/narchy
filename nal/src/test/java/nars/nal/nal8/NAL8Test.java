@@ -759,7 +759,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "(--a ==>+1 b). |")
                 .inputAt(1, "b! |")
-                .mustGoal(5, "a", 0f, 0.81f, (t) -> t >= 1);
+                .mustGoal(5, "a", 0f, 0.81f, (t) -> t >= 0);
 
     }
 

@@ -108,13 +108,10 @@ public class AWTSurface extends Widget implements KeyPressed {
     }
 
     @Override
-    public boolean stop() {
-        if (super.stop()) {
-            ons.off();
-            ons = null;
-            return true;
-        }
-        return false;
+    protected void stopping() {
+        ons.off();
+        ons = null;
+        super.stopping();
     }
 
     @Override

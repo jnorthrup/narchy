@@ -190,7 +190,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         //for implementing in subclasses
     }
 
-    public boolean stop() {
+    public final boolean stop() {
         if (PARENT.getAndSet(this, null) != null) {
             //synchronized (this) {
                 showing = false;

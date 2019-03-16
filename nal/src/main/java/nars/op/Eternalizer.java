@@ -19,7 +19,8 @@ import static nars.Op.BELIEF;
 public class Eternalizer extends LinkRanker<Task> {
 
     public final FloatRange eviFactor = new FloatRange(0.5f, 0, 1);
-    public final FloatRange noise = new FloatRange(0.1f, 0, 1);
+    public final FloatRange priFactor = new FloatRange(0.5f, 0, 1);
+    public final FloatRange noise = new FloatRange(0.25f, 0, 1);
     private final CauseChannel<ITask> in;
     private When when;
 
@@ -74,7 +75,9 @@ public class Eternalizer extends LinkRanker<Task> {
     public FloatRank<Task> score() {
         Random rng = nar.random();
         return (t,min)->{
-            float base = (t.conf()) * (t.originality()) * ((1/(1f+t.complexity())));
+            float base = (t.conf()) * ((1/(1f+t.complexity())))
+                    //* (t.originality())
+                    ;
             float noise = this.noise.floatValue();
             return base + (noise > 0 ? noise * ((rng.nextFloat()-0.5f)*2) : 0);
         };
@@ -88,10 +91,10 @@ public class Eternalizer extends LinkRanker<Task> {
     @Override
     protected void run(RankedN<Task> best, NAR n, long dt) {
         best.forEach(t->{
-//            System.out.println(b);
             Task u = Task.eternalized(t, eviFactor.floatValue(), nar.confMin.floatValue(), nar);
             if (u!=null) {
-//                System.out.println(u);
+                System.out.println(u);
+                u.priMult(priFactor.floatValue());
                 in.input(u);
             }
         });

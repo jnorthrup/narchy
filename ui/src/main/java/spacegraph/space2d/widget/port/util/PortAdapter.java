@@ -4,6 +4,7 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.TypedPort;
+import spacegraph.space2d.widget.windo.Windo;
 
 import java.util.List;
 import java.util.function.Function;
@@ -54,7 +55,9 @@ public class PortAdapter<X,Y> extends Widget {
     @Override
     protected boolean prePaint(SurfaceRender r) {
         if ((x!=null && !x.active()) || (y!=null && !y.active())) {
-            remove(); //done
+            //done
+            parent(Windo.class).remove();
+            //remove();
             return false;
         }
         return super.prePaint(r);

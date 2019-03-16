@@ -148,10 +148,7 @@ public class Wiring extends Dragging {
             }
 
             Wire wire = g.addWire(new Wire(start, end));
-
-            start.root().debug(start, 1, wire);
-
-            return true;
+            return wire!=null;
         }
 
         return false;

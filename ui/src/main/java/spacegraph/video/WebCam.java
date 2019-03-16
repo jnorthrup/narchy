@@ -199,14 +199,12 @@ public class WebCam {
         }
 
         @Override
-        public boolean stop() {
-            if (super.stop()) {
-                on.off();
-                on = null;
-                return true;
-            }
-            return false;
+        protected void stopping() {
+            on.off();
+            on = null;
+            super.stopping();
         }
+
 
     }
 

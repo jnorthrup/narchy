@@ -152,11 +152,6 @@ public class BitmapMatrixView extends TexSurface {
         return null;
     }
 
-    @Override
-    public boolean stop() {
-        return super.stop();
-    }
-
     public boolean updateTouch(Finger finger) {
 
         finger.posGlobal(this).scaled(w, h, touchPos);
@@ -208,11 +203,8 @@ public class BitmapMatrixView extends TexSurface {
      * must call this to re-generate texture so it will display
      */
     public final boolean updateIfShowing() {
+        return showing() && update();
 
-        if (!showing())
-            return false;
-
-        return update();
     }
 
     public boolean update() {
@@ -222,7 +214,6 @@ public class BitmapMatrixView extends TexSurface {
             this.buf = new BufferedImage(w, h, alpha() ? TYPE_INT_ARGB : TYPE_INT_RGB);
             this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
         }
-
 
         view.color(buf, pix);
 
