@@ -596,12 +596,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         Terms.printRecursive(out, this);
     }
 
-    default Term dt(int dt) {
-        return dt(dt, Op.terms);
-    }
-    default Term dt(int dt, TermBuilder builder) {
-        return this;
-    }
 
 
     /**

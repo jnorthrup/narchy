@@ -6,6 +6,7 @@ import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conjterpolate;
 import nars.time.Tense;
@@ -20,14 +21,22 @@ import static nars.time.Tense.XTERNAL;
  */
 public enum Intermpolate {;
 
-    private static Term intermpolate(/*@NotNull*/ Term a,  /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
+    private static Term intermpolate(Term a, Term b, float aProp, float curDepth, NAR nar) {
         if (a.equals(b))
             return a;
+        else {
+            if (a instanceof Compound && b instanceof Compound) {
+                return intermpolate((Compound)a, (Compound)b, aProp, curDepth, nar);
+            }
+            return Null;
+        }
+    }
+
+    private static Term intermpolate(/*@NotNull*/ Compound a,  /*@NotNull*/ Compound b, float aProp, float curDepth, NAR nar) {
 
         if (!a.equalsRoot(b))
             return Null;
-
 
         Op ao = a.op();//, bo = b.op();
 //        if (ao != bo)         return Null; //checked in equalRoot
@@ -59,8 +68,12 @@ public enum Intermpolate {;
             boolean change = false;
             for (int i = 0; i < len; i++) {
                 Term ai = aa.sub(i), bi = bb.sub(i);
+                Term y = intermpolate(ai, bi, aProp, curDepth / 2f, nar);
+                if (y == Null)
+                    return Null;
+
                 if (!ai.equals(bi)) {
-                    Term y = intermpolate(ai, bi, aProp, curDepth / 2f, nar);
+
                     if (y == Null)
                         return Null;
 

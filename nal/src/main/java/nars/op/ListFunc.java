@@ -6,6 +6,7 @@ import nars.$;
 import nars.Op;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Terms;
@@ -163,7 +164,7 @@ public enum ListFunc {
                 case CONJ:
                     int dt = x.dt();
                     if (!Conj.concurrent(dt))
-                        return x.dt(-dt);
+                        return ((Compound)x).dt(-dt);
                     break;
             }
             return null;

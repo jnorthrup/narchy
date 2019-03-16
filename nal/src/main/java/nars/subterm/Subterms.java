@@ -98,7 +98,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return sub(i).eventRange();
     }
 
-//    default boolean equalsRoot(Subterms y) {
+    @Override
+    default int structure() {
+        return intifyShallow((s, x) -> s | x.structure(), 0);
+    }
+
+    //    default boolean equalsRoot(Subterms y) {
 //        return equals(y) ||
 //                (y.hasAny(Op.Temporal) && y.subs() == subs() && y.structure()==structure() && ANDith((x, i)-> x.equalsRoot(y.sub(i))));
 //    }

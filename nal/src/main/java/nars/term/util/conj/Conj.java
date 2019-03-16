@@ -9,6 +9,7 @@ import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.Param;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
@@ -601,11 +602,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         Subterms xx = x.subterms();
         return xx.hasAny(CONJ) && //inner conjunction
                 xx.subs() > 1 &&
-                xx.subs(Conj::isSeq) == 1 &&
+                xx.count(Conj::isSeq) == 1 &&
                 (   !xx.hasAny(NEG)
                         ||
                     /** TODO weird disjunctive seq cases */
-                    xx.subs(xxx-> xxx.op()==NEG && xxx.unneg().op()==CONJ) == 0);
+                    xx.count(xxx-> xxx.op()==NEG && xxx.unneg().op()==CONJ) == 0);
     }
 
     public static boolean isFactoredSeq(Term x) {
@@ -1037,7 +1038,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         if (at!=ETERNAL && !polarity && xUnneg.op()==CONJ && xUnneg.dt()==DTERNAL) {
             //convert a sequenced negated eternal conjunction to parallel
-            xUnneg = xUnneg.dt(0);
+            xUnneg = ((Compound)xUnneg).dt(0);
             x = xUnneg.neg();
         }
 

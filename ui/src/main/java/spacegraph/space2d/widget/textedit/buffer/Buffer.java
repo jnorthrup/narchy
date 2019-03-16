@@ -69,19 +69,20 @@ public class Buffer {
             case "\r":
             case "\n":
             case "\r\n":
-                insertEnter();
+                insertEnter(true);
                 break;
             default:
                 if (string.contains("\n")) {
                     String[] values = string.split("\n");
                     synchronized(this) {
                         for (String x : values) {
-                            insertChars(x);
-                            insertEnter();
+                            insertChars(x, false);
+                            insertEnter(false);
                         }
+                        update();
                     }
                 } else {
-                    insertChars(string);
+                    insertChars(string, true);
                 }
 //                String[] values = string.split("(\r\n|\n|\r)");
 //                if (values.length == 1) {
@@ -98,7 +99,7 @@ public class Buffer {
 
     }
 
-    public void insertChars(CharSequence string) {
+    public void insertChars(CharSequence string, boolean update) {
         int n = string.length();
         if (n > 0) {
             synchronized (this) {
@@ -108,12 +109,13 @@ public class Buffer {
                     line.insertChar(colStart + i, string.charAt(i));
                 }
                 currentCursor.incCol(n);
-                update();
+                if (update)
+                    update();
             }
         }
     }
 
-    public void insertEnter() {
+    public void insertEnter(boolean update) {
         synchronized (this) {
             BufferLine currentLine = currentLine();
 
@@ -121,7 +123,9 @@ public class Buffer {
 
             BufferLine nextLine = new BufferLine();
             lines.add(currentCursor.getRow() + 1, nextLine);
-            update();
+            if (update) {
+                update();
+            }
             observer.addLine(nextLine);
             leaveChars.forEach(c -> {
                 nextLine.getChars().add(c);

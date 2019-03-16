@@ -15,6 +15,7 @@ import static nars.$.$;
 import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
+import static nars.term.util.conj.ConjTest.$$c;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -198,7 +199,7 @@ public class TemporalTermTest {
     @Test
     void testTransformedImplDoesntActuallyOverlap() throws Narsese.NarseseException {
         assertEquals("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+7 (_1,_2))",
-                $("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+- (_1,_2))").dt(7).toString());
+                $$c("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+- (_1,_2))").dt(7).toString());
     }
 
 

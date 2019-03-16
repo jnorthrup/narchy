@@ -19,6 +19,7 @@ import static nars.term.TermTestMisc.assertValid;
 import static nars.term.TermTestMisc.assertValidTermValidConceptInvalidTaskContent;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
+import static nars.term.util.conj.ConjTest.$$c;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -465,20 +466,20 @@ public class TermReductionsTest extends NarseseTest {
     void testCommutizeRepeatingImpl() throws Narsese.NarseseException {
 
         assertEquals(Bool.True,
-                $("(a ==>+1 a)").dt(DTERNAL));
+                $$c("(a ==>+1 a)").dt(DTERNAL));
         assertEquals(Bool.False,
-                $("(--a ==>+1 a)").dt(DTERNAL));
+                $$c("(--a ==>+1 a)").dt(DTERNAL));
 
         assertEquals(Bool.True,
-                $("(a ==>+1 a)").dt(0));
+                $$c("(a ==>+1 a)").dt(0));
         assertEquals(Bool.False,
-                $("(--a ==>+1 a)").dt(0));
+                $$c("(--a ==>+1 a)").dt(0));
 
 
         assertEquals("(a ==>+- a)",
-                $("(a ==>+1 a)").dt(XTERNAL).toString());
+                $$c("(a ==>+1 a)").dt(XTERNAL).toString());
         assertEquals("((--,a) ==>+- a)",
-                $("(--a ==>+1 a)").dt(XTERNAL).toString());
+                $$c("(--a ==>+1 a)").dt(XTERNAL).toString());
     }
 
     @Test

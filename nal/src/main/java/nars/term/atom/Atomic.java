@@ -275,7 +275,7 @@ public interface Atomic extends Term {
         return 0;
     }
     @Override
-    default int subs(Op matchingOp) {
+    default int count(Op matchingOp) {
         return 0;
     }
 
@@ -343,15 +343,6 @@ public interface Atomic extends Term {
     default int structureSurface() {
         return structure();
     }
-
-    @Override
-    default Stream<Term> subStream() {
-        return Stream.empty();
-    }
-
-
-
-
 
     /**
      * determines if the string is invalid as an unquoted target according to the characters present

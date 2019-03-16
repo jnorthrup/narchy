@@ -237,7 +237,7 @@ public class Factorize {
 
         @Override
         protected boolean filter(Term next) {
-            return next.op() == CONJ && Tense.dtSpecial(next.dt()) && next.subs(x -> x instanceof Compound) > 1;
+            return next.op() == CONJ && Tense.dtSpecial(next.dt()) && next.count(x -> x instanceof Compound) > 1;
         }
 
 

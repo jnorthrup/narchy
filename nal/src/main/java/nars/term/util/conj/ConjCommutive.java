@@ -4,6 +4,7 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtils;
 import nars.Op;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
@@ -92,7 +93,7 @@ public enum ConjCommutive {;
                         Term xu = x.unneg();
                         if (xu.op() == CONJ) {
                             if (dt == 0 && xu.dt() == DTERNAL /* promote inner DTERNAL to parallel */) {
-                                u[i] = xu.dt(0, B).neg();
+                                u[i] = ((Compound)xu).dt(0, B).neg();
                             }
                             disj = set(disj, i, uLength);
                         } else {

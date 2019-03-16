@@ -199,17 +199,17 @@ public class AnonTest {
         Term x = $$("(%1,%2)").normalize();
         assertEquals(AnonVector.class, x.subterms().getClass());
         for (Termlike t: new Termlike[]{x, x.subterms()}) {
-            assertEquals(2, t.subs(Op.VAR_PATTERN));
-            assertEquals(0, t.subs(Op.VAR_DEP));
+            assertEquals(2, t.count(Op.VAR_PATTERN));
+            assertEquals(0, t.count(Op.VAR_DEP));
         }
 
         Term y = $$("(%1,%2,(--,$3))").normalize();
         assertEquals(AnonVector.class, y.subterms().getClass());
         for (Termlike t: new Termlike[]{y, y.subterms()}) {
-            assertEquals(2, t.subs(Op.VAR_PATTERN));
-            assertEquals(2, t.subs(Op.VAR_PATTERN));
-            assertEquals(0, t.subs(Op.VAR_INDEP));
-            assertEquals(1, t.subs(Op.NEG));
+            assertEquals(2, t.count(Op.VAR_PATTERN));
+            assertEquals(2, t.count(Op.VAR_PATTERN));
+            assertEquals(0, t.count(Op.VAR_INDEP));
+            assertEquals(1, t.count(Op.NEG));
         }
     }
 

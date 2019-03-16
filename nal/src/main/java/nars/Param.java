@@ -240,7 +240,7 @@ public abstract class Param {
 
     /** whether timegraph should not return solutions with volume significantly less than the input's.
      *  set 0 to disable the filter */
-    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0f;
+    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.1f;
 
     /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
     public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
@@ -249,7 +249,7 @@ public abstract class Param {
     public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
 
 
-    public static final int UNIFY_COMMON_VAR_MAX = 5;
+    public static final int UNIFY_COMMON_VAR_MAX = 8;
 
     /** priority of sensor task, with respect to how significantly it changed from a previous value */
     public static float surprise(Task prev, Task next, FloatSupplier pri, NAR n) {
@@ -294,7 +294,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 3; //HACK this is a TTL supply, not a COST

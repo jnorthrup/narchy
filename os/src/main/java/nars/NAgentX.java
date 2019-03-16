@@ -450,7 +450,7 @@ abstract public class NAgentX extends NAgent {
 
         //new StatementLinker(n);
         new PuncNoise(n);
-        //new Eternalizer(n);
+        new Eternalizer(n);
 
 //        new STMLinkage(n, 1);
 

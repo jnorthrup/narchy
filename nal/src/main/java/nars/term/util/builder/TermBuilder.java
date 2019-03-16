@@ -301,7 +301,7 @@ public abstract class TermBuilder implements TermConstructor {
         if (baseDT != XTERNAL && nextDT != XTERNAL && dtSpecial(baseDT) == dtSpecial(nextDT)) {
             if (!xs.hasAny(CONJ.bit | NEG.bit)
                     ||
-                    (!xs.hasAny(CONJ) && xs.hasAny(NEG) && xs.subs(z -> z.op() == NEG) <= 1) //exception: one or less negs
+                    (!xs.hasAny(CONJ) && xs.hasAny(NEG) && xs.count(NEG) <= 1) //exception: one or less negs
             ) {
                 /* simple case - fast transform non-concurrent -> non-concurrent */
                 return compound(op, nextDT, xs);

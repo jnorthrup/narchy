@@ -80,11 +80,10 @@ public class ConjTest {
 //        assertEq("(c &&+1 (--,(a&|b)))", "(c &&+1 --(a&&b))");
 //    }
 
-
     @Test
     void testDternalize() {
         assertEq("((a &&+3 b)&&c)"
-                /*"((a&|c) &&+3 (b&|c))"*/, $$("((a &&+3 b) &&+3 c)").dt(DTERNAL));
+                /*"((a&|c) &&+3 (b&|c))"*/, $$c("((a &&+3 b) &&+3 c)").dt(DTERNAL));
     }
 
     @Test
@@ -408,10 +407,11 @@ public class ConjTest {
         assertEquals(+1, CONJ.the(-1, new Term[]{x, x}).dt());
         assertEquals(+1, CONJ.the(+1, new Term[]{x, x}).dt());
         assertArrayEquals(IO.termToBytes(CONJ.the(+32, new Term[]{x, x})), IO.termToBytes(CONJ.the(-32, new Term[]{x, x})));
-        assertEquals(+1, CONJ.the(XTERNAL, new Term[]{x, x}).dt(-1).dt());
-        assertEquals(+1, CONJ.the(XTERNAL, new Term[]{x, x}).dt(+1).dt());
+        assertEquals(+1, ((Compound)CONJ.the(XTERNAL, new Term[]{x, x})).dt(-1).dt());
+        assertEquals(+1, ((Compound)CONJ.the(XTERNAL, new Term[]{x, x})).dt(+1).dt());
         assertEquals(CONJ.the(-1, new Term[]{x, x}), CONJ.the(+1, new Term[]{x, x}));
-        assertEquals(CONJ.the(XTERNAL, new Term[]{x, x}).dt(-1), CONJ.the(XTERNAL, new Term[]{x, x}).dt(+1));
+        assertEquals(((Compound)CONJ.the(XTERNAL, new Term[]{x, x})).dt(-1),
+                ((Compound)CONJ.the(XTERNAL, new Term[]{x, x})).dt(+1));
     }
 
     @Test
@@ -979,7 +979,7 @@ public class ConjTest {
     public void testInvalidAfterXternalToNonXternalDT() {
         //String s = "((--,((||,dex(fz),reward(fz))&&dex(fz))) &&+- dex(fz))";
         String s = "((--x &&+1 y) &&+- x)";
-        Term x = $$(s);
+        Compound x = $$(s);
         assertEquals(False, x.dt(0));
         assertEquals(False, x.dt(DTERNAL));
 //        assertThrows(TermException.class, ()->
@@ -1625,21 +1625,21 @@ public class ConjTest {
     }
 
     @Test
-    void testCommutizeRepeatingConjunctions() throws Narsese.NarseseException {
+    void testCommutizeRepeatingConjunctions() {
         assertEquals("a",
-                $("(a &&+1 a)").dt(DTERNAL).toString());
+                $$c("(a &&+1 a)").dt(DTERNAL).toString());
         assertEquals(False,
-                $("(a &&+1 --a)").dt(DTERNAL));
+                $$c("(a &&+1 --a)").dt(DTERNAL));
 
         assertEquals("a",
-                $("(a &&+1 a)").dt(0).toString());
+                $$c("(a &&+1 a)").dt(0).toString());
         assertEquals(False,
-                $("(a &&+1 --a)").dt(0));
+                $$c("(a &&+1 --a)").dt(0));
 
         assertEquals("(a &&+- a)",
-                $("(a &&+1 a)").dt(XTERNAL).toString());
+                $$c("(a &&+1 a)").dt(XTERNAL).toString());
         assertEquals("((--,a) &&+- a)",
-                $("(a &&+1 --a)").dt(XTERNAL).toString());
+                $$c("(a &&+1 --a)").dt(XTERNAL).toString());
 
     }
 
@@ -1763,7 +1763,7 @@ public class ConjTest {
     @Test
     void testConjOneEllipsisDontRepeat() {
         assertEq("(&&,%1..+)", "(&&,%1..+)");
-        assertEq("( &&+- ,%1..+)", $$("(&&,%1..+)").dt(XTERNAL));
+        assertEq("( &&+- ,%1..+)", $$c("(&&,%1..+)").dt(XTERNAL));
 
     }
 
@@ -1780,7 +1780,7 @@ public class ConjTest {
 
         //construct by changed dt to XTERNAL from DTERNAL
         assertEq("((%1..+ &&+- %1..+) &&+- (%2..+ &&+- %2..+))",
-                $$("((%1..+ &&+- %1..+) && (%2..+ &&+- %2..+))").dt(XTERNAL));
+                $$c("((%1..+ &&+- %1..+) && (%2..+ &&+- %2..+))").dt(XTERNAL));
 
         //construct directly
         assertEq("((%1..+ &&+- %1..+) &&+- (%2..+ &&+- %2..+))",
@@ -1953,7 +1953,11 @@ public class ConjTest {
 
     @Test
     void testDTChange() {
-        assertEq("((a &&+3 b) &&+2 c)", $$("((a &&+3 b) &&+3 c)").dt(2));
+        assertEq("((a &&+3 b) &&+2 c)", $$c("((a &&+3 b) &&+3 c)").dt(2));
+    }
+
+    public static Compound $$c(String s) {
+        return ((Compound)$$(s));
     }
 
     @Test

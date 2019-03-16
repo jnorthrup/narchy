@@ -349,6 +349,8 @@ public enum Op {
      */
     public static final Subterms FalseSubterm = HeapTermBuilder.the.subterms(Bool.False);
 
+    public static final Compound[] EmptyCompoundArray = new Compound[0];
+
 
     static {
         for (Op o : Op.values()) {

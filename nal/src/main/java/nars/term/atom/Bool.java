@@ -156,10 +156,4 @@ abstract public class Bool extends AbstractAtomic implements The {
 
 
 
-    @Override
-    public final Term dt(int dt, TermBuilder b) {
-        //return this;
-        throw new UnsupportedOperationException();
-    }
-
 }

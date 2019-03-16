@@ -183,7 +183,7 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
     }
 
     @Override
-    public int subs(Op matchingOp) {
+    public int count(Op matchingOp) {
         short match;
         switch (matchingOp) {
             case NEG:

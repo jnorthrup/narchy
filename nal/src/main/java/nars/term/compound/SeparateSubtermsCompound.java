@@ -83,13 +83,13 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public int subs(Op matchingOp) {
-        return subterms().subs(matchingOp);
+    public int count(Op matchingOp) {
+        return subterms().count(matchingOp);
     }
 
     @Override
-    public int subs(Predicate<Term> match) {
-        return subterms().subs(match);
+    public int count(Predicate<Term> match) {
+        return subterms().count(match);
     }
 
 

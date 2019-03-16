@@ -61,6 +61,7 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean AND(Predicate<Term> p) {
         return Subterms.super.AND(p);
     }
+
     @Override
     default boolean OR(Predicate<Term> p) {
         return Subterms.super.OR(p);
@@ -92,7 +93,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         if (a instanceof UnitCompound || b instanceof UnitCompound) {
             //avoid instantiating dummy subterms instance
-            return a.subs()==1 && b.subs()==1 && a.sub(0).equals(b.sub(0));
+            return a.subs() == 1 && b.subs() == 1 && a.sub(0).equals(b.sub(0));
         } else
             return a.subterms().equals(b.subterms());
     }
@@ -139,7 +140,6 @@ public interface Compound extends Term, IPair, Subterms {
                 c.op().id
         );
     }
-
 
 
     @Override
@@ -216,29 +216,26 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-
-
-
     /**
-//     * unification matching entry point (default implementation)
-//     *
-//     * @param y compound to match against (the instance executing this method is considered 'x')
-//     * @param u the substitution context holding the match state
-//     * @return whether match was successful or not, possibly having modified subst regardless
-//     */
+     * //     * unification matching entry point (default implementation)
+     * //     *
+     * //     * @param y compound to match against (the instance executing this method is considered 'x')
+     * //     * @param u the substitution context holding the match state
+     * //     * @return whether match was successful or not, possibly having modified subst regardless
+     * //
+     */
 //    @Override
 //    default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
 //        return (this == y) || unifyForward(y, u) || ((y instanceof Variable) && y.unify(this, u));
 //
 //    }
-
     @Override
     default boolean unify(Term y, Unify u) {
-        return (this==y)
-               ||
-               (y instanceof Compound && (equals(y) || (op() == y.op() && unifySubterms(y, u))))
-               ||
-               (y instanceof Variable && y.unify(this, u));
+        return (this == y)
+                ||
+                (y instanceof Compound && (equals(y) || (op() == y.op() && unifySubterms(y, u))))
+                ||
+                (y instanceof Variable && y.unify(this, u));
     }
 
 
@@ -259,8 +256,8 @@ public interface Compound extends Term, IPair, Subterms {
         if (xs != ys) {
             if (o == CONJ) {
                 int xdt = dt(), ydt = y.dt();
-                if (xdt!=ydt) {
-                    if (xdt ==XTERNAL || ydt ==XTERNAL) {
+                if (xdt != ydt) {
+                    if (xdt == XTERNAL || ydt == XTERNAL) {
 
                         if (!Subterms.possiblyUnifiable(x, y, u.varBits))
                             return false;
@@ -306,9 +303,8 @@ public interface Compound extends Term, IPair, Subterms {
             }
 
 
-
             //compound equality would have been true if non-temporal
-            if (xdt!=ydt && xx.equals(yy))
+            if (xdt != ydt && xx.equals(yy))
                 return true;
 
             if (!xSpecific && !ySpecific && !u.var(xx) && !u.var(yy)) {
@@ -448,7 +444,7 @@ public interface Compound extends Term, IPair, Subterms {
             return to;
         if (impossibleSubTerm(from))
             return this;
-      return MapSubst.replace(from,to).apply(this);
+        return MapSubst.replace(from, to).apply(this);
 
 //
 //        Subterms oldSubs = subterms();
@@ -540,10 +536,6 @@ public interface Compound extends Term, IPair, Subterms {
 //    }
 
 
-    @Override
-    default Term dt(int nextDT, TermBuilder b) {
-        return b.dt(this, nextDT);
-    }
 
 
     /**
@@ -728,8 +720,16 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default int structure() {
-        return intifyShallow((s, x) -> s | x.structure(), opBit());
+        return Subterms.super.structure() | opBit();
     }
+
+    default Term dt(int dt) {
+        return dt(dt, Op.terms);
+    }
+    default Term dt(int nextDT, TermBuilder b) {
+        return b.dt(this, nextDT);
+    }
+
 
     @Override
     @Nullable
@@ -752,7 +752,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         if (structure() == x.structure()) {
             Term root = root(), xRoot;
-            return (root != this && root.equals(x)) || (((xRoot = x.root()))!=x && root.equals(xRoot));
+            return (root != this && root.equals(x)) || (((xRoot = x.root())) != x && root.equals(xRoot));
         }
 
         return false;

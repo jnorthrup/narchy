@@ -12,6 +12,7 @@ import nars.table.eternal.EternalTable;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
 
@@ -132,13 +133,13 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
     /**
-     * correct CONJ concepts for task generation
+     * adjust CONJ concepts for series task generation
      */
     protected static Term taskTerm(Term x) {
-        if (x.op() == CONJ) {
-            return x.dt(0);
-        }
-        return x;
+        if (x.op() == CONJ)
+            return ((Compound)x).dt(0);
+        else
+            return x;
     }
 
     public final void add(T nextT) {

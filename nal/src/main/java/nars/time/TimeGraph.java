@@ -15,6 +15,7 @@ import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.Param;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
@@ -530,7 +531,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
 
-    private boolean solveDT(Term x, Predicate<Event> each) {
+    private boolean solveDT(Compound x, Predicate<Event> each) {
 
         if (!termsEvent(x)) return true;
 
@@ -555,8 +556,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             if (subs == 3) {
                 Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2);
                 //go in reverse complexity order
-                return solveDT(CONJ.the(XTERNAL, c, b), (bc) -> {
-                    return solveDT(CONJ.the(XTERNAL, bc.id, a), each);
+                return solveDT((Compound)CONJ.the(XTERNAL, c, b), (bc) -> {
+                    return solveDT((Compound)CONJ.the(XTERNAL, bc.id, a), each);
                 });
             }
 
@@ -568,7 +569,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
 
-    private boolean solveDTTrace(Term x, Predicate<Event> each, Term _a, Term _b, boolean aEqB) {
+    private boolean solveDTTrace(Compound x, Predicate<Event> each, Term _a, Term _b, boolean aEqB) {
 
         Term a = _a;//.eventLast();
         Term b = _b;//.eventFirst();
@@ -718,7 +719,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return false;
     }
 
-    private boolean solveDTAbsolutePair(Term x, Predicate<Event> each, Term a, Term b, boolean aEqB) {
+    private boolean solveDTAbsolutePair(Compound x, Predicate<Event> each, Term a, Term b, boolean aEqB) {
         if (!a.hasXternal() && !b.hasXternal()) {
             UnifiedSet<Event> ae = new UnifiedSet(2);
             //solveExact(a, ax -> {
@@ -777,7 +778,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return aa;
     }
 
-    private boolean solveDTAbsolutePair(Term x, Event a, Event b, Predicate<Event> each) {
+    private boolean solveDTAbsolutePair(Compound x, Event a, Event b, Predicate<Event> each) {
         assert (!(a.equals(b)));
         if (a.start() == b.start() && at(a.id, b.id))
             return true; //same event
@@ -871,7 +872,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     /**
      * TODO make this for impl only because the ordering of terms is known implicitly from 'x' unlike CONJ
      */
-    private boolean solveDT(Term x, long start, int dt, long dur,
+    private boolean solveDT(Compound x, long start, int dt, long dur,
                             @Nullable List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, boolean dir, Predicate<Event> each) {
 
         return solveOccurrence(dt(x, dir, dt), start, dur, each);
@@ -920,7 +921,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
      * expects 'dt' to be the final value (already dithered)
      */
     @Deprecated
-    private Term dt(Term x, boolean dir, int dt) {
+    private Term dt(Compound x, boolean dir, int dt) {
 
         assert (dt != XTERNAL);
 
@@ -1083,14 +1084,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private boolean solveDTAndOccRecursive(Term x, Predicate<Event> each) {
 
-        Map<Term, Set<Term>> subSolved = new UnifiedMap(4);
+        Map<Compound, Set<Compound>> subSolved = new UnifiedMap(4);
 
         x.subterms().recurseTerms(Term::hasXternal, y -> {
-            if (y.dt() == XTERNAL && !y.subterms().hasXternal()) {
+            if (y instanceof Compound && y.dt() == XTERNAL && !y.subterms().hasXternal()) {
 
-                subSolved.computeIfAbsent(y, (yy) -> {
+                subSolved.computeIfAbsent((Compound) y, (yy) -> {
 
-                    Set<Term> s = new UnifiedSet(2);
+                    Set<Compound> s = new UnifiedSet(2);
 
 //                    int yv = yy.volume();
                     solveDT(yy, z -> {
@@ -1098,8 +1099,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                            return true; //something probably collapsed
 
                         //TODO there could be multiple solutions for dt
-                        assert (z.id.dt() != XTERNAL);
-                        s.add(z.id);
+                        Term zz = z.id;
+                        if (!(zz instanceof Compound))
+                            return true; //skip non-compound result (degenerate?)
+
+                        assert (zz.dt() != XTERNAL);
+                        s.add((Compound) zz);
                         return true;
                     });
                     return s.isEmpty() ? java.util.Set.of() : s;
@@ -1117,12 +1122,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 break;
             case 1:
                 //randomize the entries
-                Map.Entry<Term, Set<Term>> xy = subSolved.entrySet().iterator().next();
+                Map.Entry<Compound, Set<Compound>> xy = subSolved.entrySet().iterator().next();
 
-                Set<Term> sy = xy.getValue();
+                Set<Compound> sy = xy.getValue();
                 if (!sy.isEmpty()) {
                     Term xyx = xy.getKey();
-                    Term[] two = sy.toArray(EmptyTermArray);
+                    Compound[] two = sy.toArray(Op.EmptyCompoundArray);
                     if (two.length > 1) ArrayUtils.shuffle(two, random());
 
 //                    int xv = x.volume();
@@ -1137,10 +1142,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             default:
                 //TODO cartesian product of terms. could be expensive
                 //for now randomize and start with first entry
-                List<Pair<Term, Term[]>> substs = new FasterList();
+                List<Pair<Compound, Compound[]>> substs = new FasterList();
                 final int[] permutations = {1};
                 subSolved.forEach((h, w) -> {
-                    Term[] ww = w.toArray(EmptyTermArray);
+                    Compound[] ww = w.toArray(EmptyCompoundArray);
                     assert (ww.length > 0);
                     permutations[0] *= ww.length;
                     substs.add(pair(h, ww));
@@ -1152,8 +1157,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                 while (permutations[0]-- > 0) {
                     Map<Term, Term> m = new UnifiedMap(ns);
-                    for (Pair<Term, Term[]> si : substs) {
-                        Term[] ssi = si.getTwo();
+                    for (Pair<Compound, Compound[]> si : substs) {
+                        Compound[] ssi = si.getTwo();
                         Term sssi = ssi[ssi.length > 1 ? rng.nextInt(ssi.length) : 0];
                         m.put(si.getOne(), sssi);
                     }
@@ -1216,8 +1221,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private boolean solveDtAndOccTop(Term x, Predicate<Event> each) {
         if (!validPotentialSolution(x)) return true;
 
-        if (x.dt() == XTERNAL) {
-            return solveDT(x, y -> !validPotentialSolution(y.id) || solveOccurrence(y, each));
+        if (x instanceof Compound && x.dt() == XTERNAL) {
+            return solveDT((Compound) x, y -> !validPotentialSolution(y.id) || solveOccurrence(y, each));
         } else {
             //dont solve if more specific dt solved further in previous solveDT call
             return solveOccurrence(x, each);

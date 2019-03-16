@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.locks.StampedLock;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -36,6 +37,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public class EternalTable extends SortedArray<Task> implements BeliefTable, FloatFunction<Task> {
 
+    private final StampedLock lock = new StampedLock();
 
     public EternalTable(int initialCapacity) {
         super();
@@ -44,15 +46,12 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void forEachTask(Consumer<? super Task> x) {
-//        Task[] a = toArray();
-//        for (int i = 0, aLength = Math.min(size, a.length); i < aLength; i++) {
-//            Task y = a[i];
-//            if (y == null)
-//                break;
-//            if (!y.isDeleted())
-//                x.accept(y);
-//        }
-        this.forEach(x);
+        long r = lock.readLock();
+        try {
+            this.forEach(x);
+        } finally {
+            lock.unlockRead(r);
+        }
     }
 
 
@@ -78,25 +77,33 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public void match(Answer t) {
-        whileEach(t::tryAccept);
+        long r = lock.readLock();
+        try {
+            whileEach(t::tryAccept);
+        } finally {
+            lock.unlockRead(r);
+        }
     }
 
     public void setTaskCapacity(int c) {
         assert (c >= 0);
 
-        int wasCapacity = this.capacity();
-        if (wasCapacity != c) {
 
             List<Task> trash = null;
-            synchronized (this) {
+
+            long r = lock.readLock();
+            try {
+                int wasCapacity = this.capacity();
+
+                //synchronized (this) {
                 if (wasCapacity != c) {
+
+                    r = lock.tryConvertToWriteLock(r);
 
                     wasCapacity = capacity();
 
                     int s = size;
                     if (s > 0 && (s > c)) {
-
-
                         trash = new FasterList(s - c);
                         while (c < s--) {
                             trash.add(removeLast());
@@ -106,8 +113,10 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                     if (wasCapacity != c)
                         resize(c);
                 }
+                //}
+            } finally {
+                lock.unlock(r);
             }
-
 
             if (trash != null) {
 
@@ -116,29 +125,44 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             }
 
-        }
+
+
     }
 
 
     @Override
     public Task[] toArray() {
 
-        int s = this.size;
-        if (s == 0)
-            return Task.EmptyArray;
-        else {
-            Task[] list = this.items;
-            return Arrays.copyOf(list, Math.min(s, list.length));
-
+        long l = lock.readLock();
+        try {
+            int s = this.size;
+            if (s == 0)
+                return Task.EmptyArray;
+            else {
+                Task[] list = this.items;
+                return Arrays.copyOf(list, Math.min(s, list.length));
+            }
+        } finally {
+            lock.unlock(l);
         }
 
     }
 
 
     //    @Override
-    public synchronized void clear() {
+    public void clear() {
 //        forEach(ScalarValue::delete);
-        super.clear();
+
+        long l = lock.readLock();
+        try {
+            if (size()>0) {
+                l = lock.tryConvertToWriteLock(l);
+                super.clear();
+            }
+        } finally {
+            lock.unlock(l);
+        }
+
     }
 
     /**
@@ -151,7 +175,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
     @Nullable
-    private synchronized Task put(Task incoming) {
+    private Task put(Task incoming) {
 
 
         Task displaced = null;
@@ -190,19 +214,25 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     @Override
     public boolean removeTask(Task x, boolean delete) {
 
-
         if (!x.isEternal())
             return false;
 
         Task removed;
-        synchronized (this) {
+
+        long r = lock.readLock();
+        try {
+
             int index = indexOf(x, this);
             if (index != -1) {
+                r = lock.tryConvertToWriteLock(r);
                 removed = remove(index);
                 assert (removed != null);
             } else {
                 removed = null;
             }
+
+        } finally {
+            lock.unlock(r);
         }
 
         if (removed != null) {
@@ -212,8 +242,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         } else {
             return false;
         }
-
-
     }
 
 
@@ -228,11 +256,19 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             return;
 
         if (!contains(r, nar)) {
-            reviseOrTryInsertion(r, nar);
+
+            /** TODO more fine-grain locking inside revise */
+            long l = lock.writeLock();
+            try {
+                reviseOrTryInsertion(r, nar);
+            } finally {
+                lock.unlockWrite(l);
+            }
+
         }
     }
 
-    private synchronized void reviseOrTryInsertion(Remember r, NAR nar) {
+    private void reviseOrTryInsertion(Remember r, NAR nar) {
         Object[] list = this.items;
 
         Task input = r.input;
@@ -343,14 +379,13 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
         Task input = r.input, existing = null;
 
-        synchronized (this) {
+        long l = lock.readLock();
+        try {
             if (size == 0)
                 return false;
 
             //scan list for existing equal task
             Object[] list = this.items;
-
-
             for (Object aList : list) {
                 if (aList == null)
                     break;
@@ -361,6 +396,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                     break;
                 }
             }
+        } finally {
+            lock.unlockRead(l);
         }
 
         if (existing != null) {
@@ -409,38 +446,38 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 //    }
 
 
-    /**
-     * TODO batch eternalize multiple removed tasks together as one attempted task
-     */
-    public Task eternalize(Task x, int tableCap, long tableDur, NAR nar) {
-
-        assert (!x.isDeleted());
-        float factor = Math.max((1f / tableCap), (float) Util.unitize((((double) x.range()) / (1 + tableDur))));
-
-        float eviMin;
-        //synchronized (this) {
-        if (size() == capacity()) {
-            Task w = last();
-            eviMin = w != null ? w.evi() : 0;
-        } else {
-            eviMin = 0;
-        }
-        //}
-        Task eternalized = Task.eternalized(x, factor, eviMin, nar);
-
-        if (eternalized == null)
-            return null;
-
-        float xPri = x.priElseZero();
-
-        eternalized.pri(xPri * factor);
-
-        if (Param.DEBUG)
-            eternalized.log("Eternalized Temporal");
-
-        return eternalized;
-
-    }
+//    /**
+//     * TODO batch eternalize multiple removed tasks together as one attempted task
+//     */
+//    public Task eternalize(Task x, int tableCap, long tableDur, NAR nar) {
+//
+//        assert (!x.isDeleted());
+//        float factor = Math.max((1f / tableCap), (float) Util.unitize((((double) x.range()) / (1 + tableDur))));
+//
+//        float eviMin;
+//        //synchronized (this) {
+//        if (size() == capacity()) {
+//            Task w = last();
+//            eviMin = w != null ? w.evi() : 0;
+//        } else {
+//            eviMin = 0;
+//        }
+//        //}
+//        Task eternalized = Task.eternalized(x, factor, eviMin, nar);
+//
+//        if (eternalized == null)
+//            return null;
+//
+//        float xPri = x.priElseZero();
+//
+//        eternalized.pri(xPri * factor);
+//
+//        if (Param.DEBUG)
+//            eternalized.log("Eternalized Temporal");
+//
+//        return eternalized;
+//
+//    }
 
 
 }

@@ -195,11 +195,11 @@ public enum Terms {
     }
 
     public static int countNegated(Subterms subterms) {
-        return subterms.hasAny(Op.NEG) ? subterms.subs(NEG) : 0;
+        return subterms.hasAny(Op.NEG) ? subterms.count(NEG) : 0;
     }
 
     public static int negatedNonConjCount(Subterms subterms) {
-        return subterms.hasAny(Op.NEG) ? subterms.subs(x -> x.op() == NEG && !x.hasAny(CONJ)) : 0;
+        return subterms.hasAny(Op.NEG) ? subterms.count(x -> x.op() == NEG && !x.hasAny(CONJ)) : 0;
     }
 
     /**

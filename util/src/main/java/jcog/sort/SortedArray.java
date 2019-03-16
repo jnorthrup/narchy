@@ -757,12 +757,12 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             action.accept(items[i]);
     }
 
-    public final void forEach(int n, Consumer<? super X> action) {
-        whileEach(n, x -> {
-            action.accept(x);
-            return true;
-        });
-    }
+//    public final void forEach(int n, Consumer<? super X> action) {
+//        whileEach(n, x -> {
+//            action.accept(x);
+//            return true;
+//        });
+//    }
 
     public final boolean whileEach(Predicate<? super X> action) {
         return whileEach(-1, action);

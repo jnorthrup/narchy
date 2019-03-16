@@ -51,6 +51,7 @@ public class Eternalizer extends LinkRanker<Task> {
         when = When.sinceAgo(durCycles(), nar);
     }
 
+    /** TODO weight according to punct components */
     protected byte punc() {
         return
                     //BELIEF;

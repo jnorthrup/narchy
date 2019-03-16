@@ -24,8 +24,8 @@ public interface TermedDelegate extends Termlike, Termed {
 
 
     @Override
-    default int subs(Predicate<Term> match) {
-        return term().subs(match);
+    default int count(Predicate<Term> match) {
+        return term().count(match);
     }
 
     default Op op() {

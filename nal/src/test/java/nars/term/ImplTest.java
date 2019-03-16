@@ -263,13 +263,13 @@ public class ImplTest {
 
         assertEq("(b ==>+1 (a&&x))", $$("(b ==>+1 (a&&x))"));
 
-        Term x1 = $$("((a &&+5 b) ==>+- (b &&+5 c))");
+        Compound x1 = $$("((a &&+5 b) ==>+- (b &&+5 c))");
         Term y1 = x1.dt(0);
         assertEq("((a &&+5 b) ==>+5 c)", y1);
     }
     @Test
     void testElimination4() {
-        Term x2 = $$("((a &&+5 b) ==>+1 (b &&+5 c))");
+        Compound x2 = $$("((a &&+5 b) ==>+1 (b &&+5 c))");
         assertEq("((a &&+5 b) ==>+5 c)", x2.dt(0));
         assertEq("((a &&+5 b) ==>+- (b &&+5 c))", x2.dt(XTERNAL));
         assertEq("((a &&+5 b)==>c)", x2.dt(DTERNAL));
