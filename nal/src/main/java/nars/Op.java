@@ -511,10 +511,11 @@ public enum Op {
 
         Subterms xs = x.subterms();
         if (baseDT!=XTERNAL && nextDT!=XTERNAL && dtSpecial(baseDT)==dtSpecial(nextDT)) {
-            if (!xs.hasAny(CONJ)) { //simple case
-
-                //fast transform non-concurrent -> non-concurrent
-
+            if (!xs.hasAny(CONJ.bit | NEG.bit)
+                    ||
+                (!xs.hasAny(CONJ) && xs.hasAny(NEG) && xs.subs(z->z.op()==NEG)<=1) //exception: one or less negs
+            ) {
+                /* simple case - fast transform non-concurrent -> non-concurrent */
                 return compound(op, nextDT, xs);
                 //return CachedCompound.newCompound(op, nextDT, xs);
             }

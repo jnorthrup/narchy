@@ -40,6 +40,10 @@ public class RingBufferTensor extends ArrayTensor {
         }
     }
 
+    public RingBufferTensor commit(float[] t) {
+        return commit(new ArrayTensor(t));
+    }
+
     public RingBufferTensor commit(Tensor t) {
         //synchronized (data) {
         t.writeTo(data, target * segment);

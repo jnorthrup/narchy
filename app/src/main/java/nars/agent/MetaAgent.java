@@ -1,13 +1,15 @@
 package nars.agent;
 
 import jcog.Util;
+import jcog.math.FloatFirstOrderDifference;
+import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
-import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.concept.action.GoalActionConcept;
-import nars.term.Term;
 import nars.term.atom.Atomic;
+
+import static nars.$.$$;
 
 /**
  * supraself agent metavisor
@@ -26,10 +28,10 @@ public class MetaAgent extends NAgent {
             ;
 
 
-    public final GoalActionConcept forgetAction;
+//    public final GoalActionConcept forgetAction;
 //    public final GoalActionConcept beliefPriAction;
 //    private final GoalActionConcept goalPriAction;
-    private final GoalActionConcept dur;
+//    private final GoalActionConcept dur;
 
     private int disableCountDown = 0;
     private final int disableThreshold = 1;
@@ -43,9 +45,10 @@ public class MetaAgent extends NAgent {
 
 
     public MetaAgent(NAR n, float fps) {
-        super(n.self().toString() /* HACK */,FrameTrigger.fps(fps),  n);
+        super(n.self() /* HACK */,FrameTrigger.fps(fps),  n);
 
-        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
+//        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
+        actionDial($.inh(id, $.p(forget, $.the(1))), $.inh(id, $.p(forget, $.the(-1))), n.attn.forgetRate, 40);
 
 //        float priFactorMin = 0.1f, priFactorMax = 4f;
 //        beliefPriAction = actionUnipolar($.inh(id, beliefPri), n.beliefPriDefault.subRange(
@@ -55,12 +58,15 @@ public class MetaAgent extends NAgent {
 //                Math.max(n.goalPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
 //                n.goalPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
 
-        int initialDur = n.dur();
-        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
-            n.time.dur(Util.lerp(x * x, n.dtDither(), initialDur * 2));
-            return x;
-        });
+//        int initialDur = n.dur();
+//        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
+//            n.time.dur(Util.lerp(x * x, n.dtDither(), initialDur * 2));
+//            return x;
+//        });
 
+
+        senseNumberDifference($.inh(id, $$("busy")), ()->n.emotion.busyVol.getSum());
+        senseNumberDifference($.inh(id, $$("deriveTask")), ()->n.emotion.deriveTask.get());
 
 
         n.services(NAgent.class).forEach(a -> {
@@ -74,27 +80,28 @@ public class MetaAgent extends NAgent {
         long start = a.nar().time();
 
 
-        Reward r = reward($.inh(a.id, happy), () -> {
-            float h = a.happinessMean();
-            float p = a.proficiency();
-            float hp = Util.or(h, p);
+        Reward r = reward($.inh(a.id, happy), new FloatNormalized(new FloatFirstOrderDifference(nar::time, () -> {
+//            float h = a.happinessMean();
+//            float p = a.proficiency();
+//            float hp = Util.or(h, p);
             //System.out.println(h + " " + p + " -> " + hp);
-
-            return hp;
-        });
+//            return hp;
+            float d = a.dexterityMean();
+            return d;
+        })));
         //reward($.inh(a.id, happy), a::happiness);
 
         //TODO other Emotion sensors
 
-        Term agentPriTerm =
-                $.inh(a.id, PRI);
-                //$.inh(a.id, id /* self */);
-        GoalActionConcept agentPri = actionUnipolar(agentPriTerm, (FloatConsumer)a.attn.factor::set);
-
-
-        GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
-            a.curiosity.rate.set(curiosity(a, start, c));
-        });
+//        Term agentPriTerm =
+//                $.inh(a.id, PRI);
+//                //$.inh(a.id, id /* self */);
+//        GoalActionConcept agentPri = actionUnipolar(agentPriTerm, (FloatConsumer)a.attn.factor::set);
+//
+//
+//        GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
+//            a.curiosity.rate.set(curiosity(a, start, c));
+//        });
 
         if (allowPause) {
             //TODO agent enable

@@ -3,12 +3,14 @@ package nars.gui;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.googlecode.lanterna.input.KeyType;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.Exe;
+import jcog.learn.ql.HaiQae;
 import jcog.math.Quantiler;
 import jcog.pri.VLink;
 import jcog.pri.bag.Bag;
@@ -16,6 +18,7 @@ import nars.NAR;
 import nars.Narsese;
 import nars.Task;
 import nars.agent.NAgent;
+import nars.agent.util.RLBooster;
 import nars.attention.Attention;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
@@ -52,6 +55,7 @@ import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.meta.TriggeredSurface;
+import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.meter.ScatterPlot2D;
 import spacegraph.space2d.widget.meter.Spectrogram;
@@ -80,6 +84,7 @@ import static nars.$.$$;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 import static spacegraph.SpaceGraph.window;
+import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -787,4 +792,69 @@ public class NARui {
 //        }
 //
 //    }
+
+    public static Surface rlbooster(RLBooster rlb) {
+
+//            return new Gridding(
+//                Stream.of(((HaiQ) (rlb.agent)).q,((HaiQ) (rlb.agent)).et).map(
+//                        l -> {
+//
+//                            BitmapMatrixView i = new BitmapMatrixView(l);
+//                            rlb.env.onFrame(i::update);
+//                            return i;
+//                        }
+//                ).collect(toList()));
+
+        HaiQae q = (HaiQae) rlb.agent;
+        Plot2D plot;
+        Gridding charts = new Gridding(
+                new ObjectSurface(q),
+                new Gridding(VERTICAL,
+                        new PaintUpdateMatrixView(q.ae.x),
+                        new PaintUpdateMatrixView(q.ae.W),
+                        new PaintUpdateMatrixView(q.ae.y)
+                ),
+                new Gridding(VERTICAL,
+                        new PaintUpdateMatrixView(q.q),
+                        new PaintUpdateMatrixView(q.et)
+                ),
+                plot = new Plot2D(200, Plot2D.Line)
+
+        );
+        AtomicDouble rewardSum = new AtomicDouble();
+        plot.add("Reward", ()->{
+            return rewardSum.getAndSet(0); //clear
+        }, -1, +1);
+
+        rlb.env.onFrame(()->{
+            rewardSum.addAndGet(rlb.lastReward);
+            plot.commit();
+        });
+        return charts;
+
+
+//            window(
+//                    new LSTMView(
+//                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
+//                    ), 800, 800
+//            );
+//
+////            window(new Gridding(
+////                Stream.of(((DQN2) (rlb.agent)).valuePredict.layers).map(
+////                        l -> {
+////
+////                            BitmapMatrixView i = new BitmapMatrixView(l.input);
+////                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
+////                            BitmapMatrixView o = new BitmapMatrixView(l.output);
+////
+////                            a.onFrame(i::update);
+////                            a.onFrame(w::update);
+////                            a.onFrame(o::update);
+////
+////                            return new Gridding(i, w, o);
+////                        }
+////                ).collect(toList()))
+////            , 800, 800);
+
+    }
 }

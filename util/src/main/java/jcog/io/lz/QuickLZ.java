@@ -71,14 +71,14 @@ public final class QuickLZ {
 
     /** level=(1|3) */
     public static byte[] compress(byte[] source, int level) {
+        byte[] destination = new byte[source.length + 400];
+
         int src = 0;
         int dst = DEFAULT_HEADERLEN + CWORD_LEN;
         long cword_val = 0x80000000L;
         int cword_ptr = DEFAULT_HEADERLEN;
-        byte[] destination = new byte[source.length + 400];
         int[] cachetable = new int[HASH_VALUES];
         byte[] hash_counter = new byte[HASH_VALUES];
-        byte[] d2;
         int fetch = 0;
         int last_matchstart = (source.length - UNCONDITIONAL_MATCHLEN - UNCOMPRESSED_END - 1);
         int lits = 0;
@@ -97,7 +97,7 @@ public final class QuickLZ {
         while (src <= last_matchstart) {
             if ((cword_val & 1) == 1) {
                 if (src > 3 * (source.length >> 2) && dst > src - (src >> 5)) {
-                    d2 = new byte[source.length + DEFAULT_HEADERLEN];
+                    byte[] d2 = new byte[source.length + DEFAULT_HEADERLEN];
                     write_header(d2, level, false, source.length, source.length + DEFAULT_HEADERLEN);
                     System.arraycopy(source, 0, d2, DEFAULT_HEADERLEN, source.length);
                     return d2;
@@ -251,7 +251,7 @@ public final class QuickLZ {
         fast_write(destination, cword_ptr, (cword_val >>> 1) | 0x80000000L, CWORD_LEN);
         write_header(destination, level, true, source.length, dst);
 
-        d2 = new byte[dst];
+        byte[] d2 = new byte[dst];
         System.arraycopy(destination, 0, d2, 0, dst);
         return d2;
     }

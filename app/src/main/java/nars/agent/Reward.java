@@ -73,9 +73,6 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
                 $.t(Util.unitize(next), nar().confDefault(BELIEF)) : null;
     }
 
-    public final float summary() {
-        return reward;
-    }
 
     public void setDefault(PreciseTruth t) {
         for (Concept c : this) {

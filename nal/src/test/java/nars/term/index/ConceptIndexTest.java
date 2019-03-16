@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ConceptIndexTest {
 
-    public static void testIndex(@NotNull ConceptIndex i) throws Narsese.NarseseException {
+    public static void testIndex(ConceptIndex i) throws Narsese.NarseseException {
 
         NAR t = new NARS().index(i).withNAL(new TaskBuffer.MapTaskBuffer(64),1,1).get();
 
@@ -40,7 +40,7 @@ class ConceptIndexTest {
 
     }
 
-    private static void testTermSharing(@NotNull ConceptIndex tt) throws Narsese.NarseseException {
+    private static void testTermSharing(ConceptIndex tt) throws Narsese.NarseseException {
 
         tt.start(NARS.shell());
         testShared(tt, "<<x-->w> --> <y-->z>>");

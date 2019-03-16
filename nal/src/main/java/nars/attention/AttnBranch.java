@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * https://en.wikipedia.org/wiki/Average_absolute_deviation
  */
 @Paper
-public class AttnBranch extends PriNode {
+@Deprecated public class AttnBranch extends PriNode {
 
     private final Iterable<? extends Termed> components;
 

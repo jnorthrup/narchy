@@ -638,31 +638,34 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     start = TIMELESS;
                 } else {
                     long SS = ss.start(), EE = ee.start();
-                    if (SS==ETERNAL && EE==ETERNAL) {
-                        start = ETERNAL;
-                    } else {
-                        if (SS==ETERNAL && EE!=ETERNAL) {
-                            SS = EE; //collapse eternity
-                        } else if (SS!=ETERNAL && EE==ETERNAL) {
-                            EE = SS; //collapse eternity
-                        }
-
-                        assert(SS!=ETERNAL && EE!=ETERNAL);
-                        if (dir) {
-                            if (ss instanceof Absolute) {
-                                start = SS;
-                            } else {
-                                start = EE - dt - a.eventRange();
-                            }
+                    if (SS == TIMELESS || EE == TIMELESS)
+                        start = TIMELESS;
+                    else {
+                        if (SS == ETERNAL && EE == ETERNAL) {
+                            start = ETERNAL;
                         } else {
-                            if (ee instanceof Absolute) {
-                                start = EE;
+                            if (SS == ETERNAL && EE != ETERNAL) {
+                                SS = EE; //collapse eternity
+                            } else if (SS != ETERNAL && EE == ETERNAL) {
+                                EE = SS; //collapse eternity
+                            }
+
+                            assert (SS != ETERNAL && EE != ETERNAL);
+                            if (dir) {
+                                if (ss instanceof Absolute) {
+                                    start = SS;
+                                } else {
+                                    start = EE - dt - a.eventRange();
+                                }
                             } else {
-                                long sss = ((Absolute) ss).start();
-                                start = SS - dt - b.eventRange();
+                                if (ee instanceof Absolute) {
+                                    start = EE;
+                                } else {
+                                    long sss = ((Absolute) ss).start();
+                                    start = SS - dt - b.eventRange();
+                                }
                             }
                         }
-
                     }
                 }
 

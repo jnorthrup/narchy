@@ -5,13 +5,13 @@ import jcog.Util;
 import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatRange;
-import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.RingBufferTensor;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
+import nars.agent.MetaAgent;
 import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
 import nars.concept.Concept;
@@ -24,10 +24,7 @@ import nars.exe.Valuator;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
-import nars.op.Arithmeticize;
-import nars.op.AutoencodedBitmap;
-import nars.op.Introduction;
-import nars.op.PuncNoise;
+import nars.op.*;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -57,6 +54,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 
@@ -102,7 +100,6 @@ abstract public class NAgentX extends NAgent {
     public static NAR runRT(Function<NAR, NAgent> init, int threads, float narFPS, float durFPS) {
         NAR n = baseNAR(durFPS, threads);
 
-
         n.runLater(() -> {
 
             NAgent a = init.apply(n);
@@ -111,6 +108,11 @@ abstract public class NAgentX extends NAgent {
 
             initPlugins(n);
             initPlugins2(n, a);
+            //initPlugins3(n, a);
+
+            window(new Gridding(n.services(NAgent.class).map(NARui::agent).collect(toList())), 500, 500);
+            window(NARui.top(n), 800, 500);
+            window(NARui.tasklinkSpectrogram(n, n.attn.links, 64), 500, 500);
 
             Loop loop = n.startFPS(narFPS);
 
@@ -285,15 +287,18 @@ abstract public class NAgentX extends NAgent {
 //        );
 //        senseReward.timing = new ActionTiming(n);
 
+    }
+    static void initPlugins3(NAR n, NAgent a) {
 
-//        MetaAgent meta = new MetaAgent(n, 16);
-//        meta.attn.factor.set(0.5f);
+        MetaAgent meta = new MetaAgent(n, 32);
+        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 6,o),
+                16, 2,true);
 
-        window(new Gridding(n.services(NAgent.class).map(NARui::agent).collect(toList())), 500, 500);
+        meta.attn.factor.set(0.5f);
+//        window(NARui.agent(meta), 500, 500);
+        window(NARui.rlbooster(metaBoost), 500, 500);
 
-        window(NARui.top(n), 800, 500);
 
-        window(NARui.tasklinkSpectrogram(n, n.attn.links, 64), 500, 500);
 //        window(AttentionUI.attentionGraph(n), 600, 600);
 
         //d.durs(0.25f);
@@ -355,10 +360,10 @@ abstract public class NAgentX extends NAgent {
         );
 
         n.confMin.set(0.01f);
-        n.termVolumeMax.set(28);
+        n.termVolumeMax.set(30);
 
 
-        n.attn.linksCapacity.set(4096);
+        n.attn.linksCapacity.set(2048);
 
 
         n.beliefPriDefault.set(0.1f);
@@ -413,26 +418,26 @@ abstract public class NAgentX extends NAgent {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        TaskBuffer.BagTaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 0.25f);
+        TaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 0.2f);
+        //TaskBuffer injection = new TaskBuffer.DirectTaskBuffer();
+//        window(NARui.taskBufferView(injection, n), 500, 500);
 
-        BatchDeriver bd6_actWhen = new BatchDeriver(Derivers.nal(n, 6, 6,
+
+        BatchDeriver bd6_actWhen = new BatchDeriver(Derivers.nal(n, 6, 8,
                 "motivation.nal"), injection);
 
-        BatchDeriver bd6_act = new BatchDeriver(Derivers.nal(n, 6, 6,
+        BatchDeriver bd6_act = new BatchDeriver(Derivers.nal(n, 6, 8,
                 "motivation.nal"), injection);
         bd6_act.timing = new ActionTiming(n);
 
-        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n,
-                1, 1),
+        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 1, 1),
                 injection);
-        BatchDeriver bd2_4 = new BatchDeriver(Derivers.nal(n,
-                2, 4,
-                "nal4.sect.nal"),
+        BatchDeriver bd2_4 = new BatchDeriver(Derivers.nal(n, 2, 4),
                 injection);
 
-        BatchDeriver bd6_8 = new BatchDeriver(Derivers.nal(n, 6, 8), injection);
-
-        BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n, "relation_introduction.nal", "motivation.nal"), injection);
+        BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n,
+                "nal4.sect.nal",
+                "relation_introduction.nal", "motivation.nal"), injection);
 
 
 //        inputInjectionPID(injection, n);
@@ -455,8 +460,8 @@ abstract public class NAgentX extends NAgent {
 
 
         List<ConjClustering> conjClusters = List.of(
-            new ConjClustering(n, BELIEF, 32, 256)
-            //new ConjClustering(n, GOAL, 4, 16)
+            new ConjClustering(n, BELIEF, 32, 256),
+            new ConjClustering(n, GOAL, 4, 16)
         );
 
 //        window(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
@@ -594,9 +599,9 @@ abstract public class NAgentX extends NAgent {
                 plot.commit();
 
                 float x = ((TaskBuffer.BagTaskBuffer) b).valve.floatValue();
-                sense = history.commit(new ArrayTensor(new float[]{
+                sense = history.commit(new float[]{
                         x, v, 0.5f + 0.5f * Util.tanhFast((float) -Math.log(dv))
-                })).snapshot(sense);
+                }).snapshot(sense);
 
 
                 int decision = q.act(reward, sense);

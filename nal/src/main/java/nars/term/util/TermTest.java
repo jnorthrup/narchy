@@ -17,6 +17,7 @@
 package nars.term.util;
 
 import com.google.common.collect.Iterators;
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.Narsese;
 import nars.io.IO;
@@ -25,9 +26,12 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Termlike;
+import nars.term.atom.Atomic;
 import nars.term.compound.CachedCompound;
 import nars.term.util.builder.TermBuilder;
 import org.junit.jupiter.api.Assertions;
+
+import java.util.List;
 
 import static nars.$.$$;
 import static nars.Op.PROD;
@@ -81,6 +85,9 @@ public enum TermTest { ;
         assertArrayEquals(x.subterms().arrayShared(), y.subterms().arrayShared());
         assertEquals(x.subterms().hashCodeSubterms(), y.subterms().hashCodeSubterms());
         assertEquals(x.subterms().hashCode(), y.subterms().hashCode());
+
+        if (x instanceof Compound)
+            Assertions.assertEquals(orderedRecursion(x), orderedRecursion(y));
 
         //return assertEq(y, x.toString(), x);
         return x;
@@ -153,6 +160,16 @@ public enum TermTest { ;
         Assertions.assertEquals(x.hasVarPattern(), y.hasVarPattern());
         Assertions.assertEquals(x.varPattern(), y.varPattern());
 
+
+    }
+
+    private static List<Term> orderedRecursion(Term x) {
+        List<Term> m = new FasterList(x.volume()*2);
+        x.recurseTermsOrdered((t)->{
+            m.add(t);
+            return true;
+        });
+        return m;
     }
 
     public static void assertEq(Compound a, Compound b) {

@@ -62,7 +62,7 @@ public class NAgentTest {
         DataTable s = new DataTable();
         s.addColumns(DoubleColumn.create("reward"),DoubleColumn.create("dex"),DoubleColumn.create("x"));
         n.onCycle(()->{
-            float reward = a.reward();
+            float reward = a.happinessMean();
             if (reward!=reward) reward = 0;
             float dex = a.dexterity();
             float x = 0;

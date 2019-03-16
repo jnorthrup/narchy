@@ -22,7 +22,7 @@ import static java.lang.System.nanoTime;
 
 abstract public class MultiExec extends UniExec {
 
-    protected static final float inputQueueSizeSafetyThreshold = 0.999f;
+    protected static final float inputQueueSizeSafetyThreshold = 1f;
 
     private final Valuator valuator;
 
@@ -40,7 +40,7 @@ abstract public class MultiExec extends UniExec {
      */
 
     private final float explorationRate = 0.1f;
-    private final float momentum = 0.5f;
+    private final float momentum = 0.95f;
 
     protected long cycleNS;
 

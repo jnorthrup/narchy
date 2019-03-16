@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.learn.Agent;
 import jcog.math.FloatRange;
 import jcog.math.IntIntToObjectFunc;
+import jcog.signal.tensor.RingBufferTensor;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -33,65 +34,62 @@ public class RLBooster implements Consumer<NAR> {
 
     public final NAgent env;
     public final Agent agent;
-    public final FloatRange conf = new FloatRange(0.26f, 0f, 1f);
+    public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
     final float[] input;
     final int inD, outD;
     final ActionConcept[] actions;
     private final ConsumerX<ITask> in;
     private final List<Term> inputs;
     private final int actionDiscretization;
+    private final RingBufferTensor history;
+
+    transient private float[] _in = null;
+    public double lastReward = Float.NaN;
 
 //    public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
 //        this(env, rl, true);
 //    }
+
+    @Deprecated public RLBooster(NAgent env, IntIntToObjectFunc<Agent> agent, boolean nothingAction) {
+        this(env, agent, 1, 1, nothingAction);
+    }
 
     /**
      * @param env
      * @param agent
      * @param nothingAction        reserve 0 for nothing
      */
-    public RLBooster(NAgent env, IntIntToObjectFunc<Agent> agent, boolean nothingAction) {
+    public RLBooster(NAgent env, IntIntToObjectFunc<Agent> agent, int history, int actionDiscetization, boolean nothingAction) {
 
-
+        this.actionDiscretization = actionDiscetization;
 
         this.env = env;
 
 
-        conf.set(Util.lerp(0.5f, env.nar().confMin.floatValue(), env.nar().confDefault(GOAL)));
+        conf.set(Util.lerp(0f, 2 * env.nar().confMin.floatValue(), env.nar().confDefault(GOAL)));
 
+        List<Term> ii = $.newArrayList();
 
+        env.sensors.forEach(s -> s.components().forEach(t -> ii.add(t.term())));
+        if (env.rewards.size() > 1)
+            env.rewards.forEach(s -> s.forEach(t -> ii.add(t.term()))); //use individual rewards as sensors if > 1 reward
 
-        List<Term> sc = $.newArrayList();
-
-
-
-
-        env.sensors.forEach(s -> s.components().forEach(t -> sc.add(t.term())));
-
-
-        this.inputs = sc;
-        this.inD = sc.size();
+        this.inputs = ii;
+        this.inD = ii.size();
 
         input = new float[inD];
 
-        this.actionDiscretization = 1;
         this.actions = env.actions().array();
         this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * actionDiscretization /* pos/neg for each action */;
 
-        logger.info("{} {} in={} out={}", agent, env, inD, outD);
+        logger.info("{} {} in={}x{} out={}", agent, env, inD, history, outD);
         assert(inD > 0);
         assert(outD > 0);
 
-
-
-
-
-
-
-
         in = env.nar().newChannel(this);
 
-        this.agent = agent.apply(inD, outD);
+        this.history = new RingBufferTensor(inD, history);
+        this.agent = agent.apply(inD * history, outD);
 
         env.onFrame(this);
     }
@@ -110,8 +108,12 @@ public class RLBooster implements Consumer<NAR> {
             input[i++] = t!=null ? t.freq() : 0.5f;
         }
 
-
         return input;
+    }
+
+    /** uniform [0,1] noise */
+    private float noise() {
+        return env.nar().random().nextFloat();
     }
 
     private float[] feedback(long prev, long now) {
@@ -121,19 +123,20 @@ public class RLBooster implements Consumer<NAR> {
         float[] feedback = new float[actions()];
         for (ActionConcept s : actions) {
             Truth t = n.beliefTruth(s, prev, now);
-            feedback[i++] = t!=null ? t.freq() : 0.5f;
+            feedback[i++] = t!=null ? t.freq() : noise();
         }
 
-        //Util.normalize...
+        //Util.normalize(feedback); //needs shifted to mid0 and back to mid.5
 
         return feedback;
     }
 
     @Override
-    public void accept(NAR ignored) {
+    public synchronized void accept(NAR ignored) {
         NAR nar = env.nar();
 
-        float reward = env.reward();
+        double reward = (env.happinessMean() - 0.5)*2 /* polarize */;
+        lastReward = reward;
 
 //        long start = env.last; //now() - dur/2;
 //        long end = env.now(); //+ dur/2;
@@ -147,7 +150,9 @@ public class RLBooster implements Consumer<NAR> {
 //        long start = now - dur/2;
 //        long end = now + dur/2;
 
-        int O = agent.act(feedback(env.prev, now), reward, input(start, end) );
+
+        int O = agent.act(feedback(env.prev, now), (float) reward,
+                _in = history.commit(input(start, end)).snapshot(_in) );
 
         float OFFfreq =
                 0f;
@@ -172,8 +177,7 @@ public class RLBooster implements Consumer<NAR> {
             if (t !=null) {
                 Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, nar.time.nextStamp());
                 tt.pri(nar);
-                if (tt != null)
-                    e.add(tt);
+                e.add(tt);
             }
         }
         in.input(e);

@@ -21,7 +21,6 @@
 package nars.term;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
@@ -33,6 +32,7 @@ import nars.subterm.Subterms;
 import nars.term.anon.Anon;
 import nars.term.atom.Bool;
 import nars.term.compound.UnitCompound;
+import nars.term.util.TermException;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
@@ -555,7 +555,6 @@ public interface Compound extends Term, IPair, Subterms {
         if (o != CONJ)
             return each.accept(offset, this);
 
-
         int dt = dt();
         boolean decompose;
         switch (dt) {
@@ -585,13 +584,14 @@ public interface Compound extends Term, IPair, Subterms {
 
                         return seq.eventsWhile((when, what) -> {
 
-                            //int w = when == ETERNAL ? DTERNAL : 0;
                             int w = DTERNAL;
                             if ((w == DTERNAL && !decomposeConjDTernal) || (w != DTERNAL && !decomposeConjParallel)) {
                                 //combine the component with the eternal factor
                                 Term distributed = CONJ.the(w, what, factor);
+
                                 if (distributed instanceof Bool)
-                                    throw new WTF();
+                                    throw new TermException("invalid conjunction factorization", this);
+
 //                                    assert (!(distributed instanceof Bool));
                                 return each.accept(when, distributed);
                             } else {
@@ -605,9 +605,8 @@ public interface Compound extends Term, IPair, Subterms {
 
                 }
 
-                if (decompose = decomposeConjDTernal) {
+                if (decompose = decomposeConjDTernal)
                     dt = 0;
-                }
 
                 break;
             case 0:

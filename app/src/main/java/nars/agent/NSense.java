@@ -180,6 +180,7 @@ public interface NSense {
     }
 
 
+    /** normalized */
     default Signal senseNumberDifference(Term id, FloatSupplier v) {
         return senseNumber(id,difference(v));
     }

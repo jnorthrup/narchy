@@ -151,6 +151,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     /**
      * happiness = sum( 1 - abs(rewardBeliefExp - rewardGoalExp) )
+     * in range 0..1
      * avg reward satisfaction, current measurement
      */
     public final float happinessMean() {
@@ -561,16 +562,6 @@ public class NAgent extends NARService implements NSense, NAct {
 //        };
 //    }
 
-    /**
-     * scalar summary of current reward satisfaction state
-     */
-    public final float reward() {
-        float total = 0;
-        for (Reward r : rewards) {
-            total += r.summary();
-        }
-        return total / rewards.size();
-    }
 }
 
 //    public final Bitmap2DSensor sense(Bitmap2DSensor bmp) {

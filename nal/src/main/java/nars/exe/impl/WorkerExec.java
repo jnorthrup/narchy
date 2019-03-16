@@ -19,8 +19,8 @@ public class WorkerExec extends ThreadedExec {
     /**
      * process sub-timeslice divisor
      */
-    double granularity = 4;
-    private static final long subCycleMinNS = 200_000;
+    double granularity = 8;
+    private static final long subCycleMinNS = 50_000;
     private long subCycleMaxNS;
 
     public WorkerExec(Valuator r, int threads) {
@@ -59,21 +59,21 @@ public class WorkerExec extends ThreadedExec {
             rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
         }
 
-        public void run0() {
-
-            while (alive) {
-
-                long workTime = work(1f, schedule);
-
-                long playTime =
-                        threadWorkTimePerCycle - workTime;
-                //threadWorkTimePerCycle;
-                if (playTime > 0)
-                    play(playTime);
-
-                sleep();
-            }
-        }
+//        public void run0() {
+//
+//            while (alive) {
+//
+//                long workTime = work(1f, schedule);
+//
+//                long playTime =
+//                        threadWorkTimePerCycle - workTime;
+//                //threadWorkTimePerCycle;
+//                if (playTime > 0)
+//                    play(playTime);
+//
+//                sleep();
+//            }
+//        }
 
         @Override
         public void run() {

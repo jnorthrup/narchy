@@ -270,7 +270,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
                     }
                 }
 
-                if (q==q && q < p) {
+                if (q==q && p-q >= ScalarValue.EPSILON / 2) {
                     //swap with previous (early progressive sorting pass)
                     Object x = l[i - 1];
                     l[i-1] = y;

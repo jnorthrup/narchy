@@ -15,6 +15,7 @@ import nars.time.When;
 import java.util.Random;
 
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 public class Eternalizer extends LinkRanker<Task> {
 
@@ -24,7 +25,7 @@ public class Eternalizer extends LinkRanker<Task> {
     private final CauseChannel<ITask> in;
     private When when;
 
-    private static final int cap = 8; //TODO IntRange
+    private static final int cap = 16; //TODO IntRange
 
     public Eternalizer(NAR n) {
         super(n);
@@ -48,17 +49,19 @@ public class Eternalizer extends LinkRanker<Task> {
     @Override
     protected void beforeRun(NAR n, long dt) {
         when = When.sinceAgo(durCycles(), nar);
-//        int nextCap = cap();
-//        if (nextCap!=best.capacity()) {
-//
-//        }
+    }
+
+    protected byte punc() {
+        return
+                    //BELIEF;
+            nar.random().nextBoolean() ? BELIEF : GOAL;
     }
 
     @Override
     protected Task apply(TaskLink x) {
         Term xs = x.source();
         if (filter(xs.op()) && filter(xs.term())) {
-            Task t = x.get(BELIEF, when, (tt)->!tt.isEternal());
+            Task t = x.get(punc(), when, (tt)->!tt.isEternal());
 
             if (t == null || t.isInput())
                 return null;
@@ -75,8 +78,8 @@ public class Eternalizer extends LinkRanker<Task> {
     public FloatRank<Task> score() {
         Random rng = nar.random();
         return (t,min)->{
-            float base = (t.conf()) * ((1/(1f+t.complexity())))
-                    //* (t.originality())
+            float base = (float) ((t.conf()) * ((1/(1f+Math.sqrt(t.complexity())))));
+                    //* (t.originality()) //polarity()
                     ;
             float noise = this.noise.floatValue();
             return base + (noise > 0 ? noise * ((rng.nextFloat()-0.5f)*2) : 0);
@@ -93,8 +96,8 @@ public class Eternalizer extends LinkRanker<Task> {
         best.forEach(t->{
             Task u = Task.eternalized(t, eviFactor.floatValue(), nar.confMin.floatValue(), nar);
             if (u!=null) {
-                System.out.println(u);
                 u.priMult(priFactor.floatValue());
+                //System.out.println(u);
                 in.input(u);
             }
         });

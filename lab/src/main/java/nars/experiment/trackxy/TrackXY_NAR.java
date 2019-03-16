@@ -284,39 +284,6 @@ public class TrackXY_NAR extends NAgentX {
 //                    false);
 //            a.curiosity.enable.setAt(false);
 //
-//            window(new Gridding(
-//                Stream.of(((HaiQ) (rlb.agent)).q,((HaiQ) (rlb.agent)).et).map(
-//                        l -> {
-//
-//                            BitmapMatrixView i = new BitmapMatrixView(l);
-//                            a.onFrame(i::update);
-//                            return i;
-//                        }
-//                ).collect(toList()))
-//            , 800, 800);
-//
-////            window(
-////                    new LSTMView(
-////                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
-////                    ), 800, 800
-////            );
-////
-//////            window(new Gridding(
-//////                Stream.of(((DQN2) (rlb.agent)).valuePredict.layers).map(
-//////                        l -> {
-//////
-//////                            BitmapMatrixView i = new BitmapMatrixView(l.input);
-//////                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
-//////                            BitmapMatrixView o = new BitmapMatrixView(l.output);
-//////
-//////                            a.onFrame(i::update);
-//////                            a.onFrame(w::update);
-//////                            a.onFrame(o::update);
-//////
-//////                            return new Gridding(i, w, o);
-//////                        }
-//////                ).collect(toList()))
-//////            , 800, 800);
 //        }
 
 

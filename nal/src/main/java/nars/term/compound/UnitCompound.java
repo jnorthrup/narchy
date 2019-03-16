@@ -89,11 +89,11 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public boolean ANDrecurse(Predicate<Term> p) {
-        return p.test(this) && p.test(sub());
+        return p.test(this) && sub().ANDrecurse(p);
     }
     @Override
     public boolean ORrecurse(Predicate<Term> p) {
-        return p.test(this) || p.test(sub());
+        return p.test(this) || sub().ORrecurse(p);
     }
 
 
