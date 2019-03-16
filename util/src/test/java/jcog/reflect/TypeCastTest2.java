@@ -24,8 +24,8 @@
 package jcog.reflect;
 
 import jcog.data.graph.path.FromTo;
+import jcog.data.graph.path.Path;
 import jcog.data.list.FasterList;
-import jcog.reflect.graph.Path;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

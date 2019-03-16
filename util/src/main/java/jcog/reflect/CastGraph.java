@@ -25,8 +25,8 @@
 package jcog.reflect;
 
 
+import jcog.data.graph.path.Path;
 import jcog.data.list.FasterList;
-import jcog.reflect.graph.Path;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -1316,13 +1316,10 @@ public class CastGraph extends TypeCastGraph {
             return List.of();
 
         List<Function<X, Y>> convertors = new FasterList(roots.size());
-        int i = -1;
         for( Class cf : roots ){
             Path path = findPath(cf, cto);
-            if( path!=null ){
-                i++;
+            if( path!=null )
                 convertors.add(Converter.the(path));
-            }
         }
 
         return convertors;

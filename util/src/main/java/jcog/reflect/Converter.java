@@ -27,8 +27,8 @@ package jcog.reflect;
 
 import jcog.WTF;
 import jcog.data.graph.path.FromTo;
+import jcog.data.graph.path.Path;
 import jcog.data.list.FasterList;
-import jcog.reflect.graph.Path;
 
 import java.util.function.Function;
 

@@ -26,11 +26,11 @@ package jcog.reflect;
 
 
 import com.google.common.collect.Lists;
-import jcog.data.graph.path.FromTo;
 import jcog.data.graph.Node;
+import jcog.data.graph.path.FromTo;
+import jcog.data.graph.path.Path;
+import jcog.data.graph.search.PathFinder;
 import jcog.data.list.FasterList;
-import jcog.reflect.graph.Path;
-import jcog.reflect.graph.PathFinder;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 

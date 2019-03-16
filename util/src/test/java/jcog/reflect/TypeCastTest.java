@@ -24,7 +24,7 @@
 package jcog.reflect;
 
 import jcog.data.graph.Node;
-import jcog.reflect.graph.Path;
+import jcog.data.graph.path.Path;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

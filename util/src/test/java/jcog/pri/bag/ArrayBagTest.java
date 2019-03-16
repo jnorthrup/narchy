@@ -136,9 +136,9 @@ class ArrayBagTest {
         final int[] sorts = {0};
         @NotNull ArrayBag<PLink<String>, PLink<String>> x = new PLinkArrayBag(4, PriMerge.plus, new HashMap<>()) {
             @Override
-            protected void sort(int from, int to) {
+            protected void sort() {
                 sorts[0]++;
-                super.sort(from, to);
+                super.sort();
             }
         };
 
