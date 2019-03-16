@@ -10,7 +10,6 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 

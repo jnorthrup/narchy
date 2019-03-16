@@ -61,7 +61,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     private static final int PUT_ATTEMPTS = 2;
 
-    private static final boolean VICTIM_NOISE = true;
+    private static final float VICTIM_NOISE = 0.5f;
 
 
     /**
@@ -81,7 +81,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     /**
      * when size() reaches this proportion of space(), and space() < capacity(), grows
      */
-    private static final float loadFactor = 0.5f;
+    private static final float loadFactor = 0.75f;
 
     /**
      * how quickly the current space grows towards the full capacity, using LERP
@@ -93,20 +93,18 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     public final int reprobes;
 
+    protected HijackBag(int reprobes) {
+        this(0, reprobes);
+    }
 
     protected HijackBag(int initialCapacity, int reprobes) {
         this.id = serial.getAndIncrement();
 
         assert (reprobes < Byte.MAX_VALUE - 1);
         this.reprobes = reprobes;
-        this.map = EMPTY_ARRAY;
-
-        if (initialCapacity > 0)
-            setCapacity(initialCapacity);
-    }
-
-    protected HijackBag(int reprobes) {
-        this(0, reprobes);
+        int initialSpace = spaceMin();
+        MAP.set(this, new AtomicReferenceArray(initialSpace));
+        CAPACITY.set(this, Math.max(spaceMin(), initialCapacity));
     }
 
     public static boolean hijackGreedy(float newPri, float weakestPri) {
@@ -124,13 +122,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public void pressurize(float f) {
-        if (f==f && Math.abs(f) > Float.MIN_NORMAL)
+        if (f == f && Math.abs(f) > Float.MIN_NORMAL)
             PRESSURE.add(this, f);
     }
 
     @Override
     public void depressurize(float f) {
-        if (f==f && Math.abs(f) > Float.MIN_NORMAL)
+        if (f == f && Math.abs(f) > Float.MIN_NORMAL)
             PRESSURE.update(this, (p, a) -> Math.max(0, p - a), f);
     }
 
@@ -169,21 +167,26 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     @Override
-    public void setCapacity(int _newCapacity) {
+    public void setCapacity(int _newCap) {
 
-        int newCapacity = _newCapacity > 0 ? Math.max(_newCapacity, reprobes) : 0;
-
-        if (CAPACITY.getAndSet(this, newCapacity) != newCapacity) {
+        int newCap = Math.max(_newCap, spaceMin());
+        int oldCap;
+        if ((oldCap = CAPACITY.getAndSet(this, newCap)) != newCap) {
 
             int s = space();
-            if (s == 0 || newCapacity < s /* must shrink */) {
-                resize(newCapacity);
+            if (((oldCap < _newCap && (size() >= oldCap - /* tolerance */ 1  /* should grow */)
+                    ||
+                    (newCap < s /* must shrink */)))) {
+                resize(newCap);
             }
-
-
         }
+    }
 
-
+    /**
+     * minimum allocation
+     */
+    public int spaceMin() {
+        return reprobes;
     }
 
     protected void resize(int newSpace) {
@@ -211,24 +214,21 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public void clear() {
-        AtomicReferenceArray<V> m = map;
-        AtomicReferenceArray<V> x = shrinkForCapacity(m.length()) ? reset(reprobes) : m;
+
+        AtomicReferenceArray<V> x = reshrink(space()) ? reset(spaceMin()) : null;
         PRESSURE.zero(this);
         SIZE.set(this, 0);
-        mass = 0;
+        min = max = mass = 0;
         if (x != null) {
-            if (x != m)
-                forEachActive(this, x, this::onRemove);
-            else
-                updateEach(x, (V v) -> {
-                    onRemove(v);
-                    return null;
-                });
+//            if (x != m)
+//                forEachActive(this, x, this::onRemove);
+//            else
+            forEach(x, this::onRemove);
         }
 
     }
 
-    protected boolean shrinkForCapacity(int length) {
+    protected boolean reshrink(int length) {
         return true;
     }
 
@@ -249,7 +249,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     /**
-     * the current capacity, which is less than or equal to the value returned by capacity()
+     * the current allocation, which is less than or equal to the value returned by capacity()
      */
     public int space() {
         return map.length();
@@ -277,11 +277,12 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      */
     private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, Mode mode, @Nullable NumberX overflowing) {
 
-        final AtomicReferenceArray<V> map = this.map;
+
+
+        AtomicReferenceArray<V> map = MAP.get(this);
         int c = map.length();
         if (c == 0)
             return null;
-
 
         final int kHash = hash(k);
 
@@ -303,7 +304,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             start += c;
 
 
-
         if (mode != GET) {
             mutexTicket = mutex.start(id, kHash);
         }
@@ -323,7 +323,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     for (int i = start, j = reprobes; j > 0; j--) {
                         V v = map.getAcquire(i);
                         if (v != null && keyEquals(k, kHash, v)) {
-                            if (map.compareAndExchangeRelease(i, v, null)==v) {
+                            if (map.compareAndExchangeRelease(i, v, null) == v) {
                                 toReturn = toRemove = v;
                                 break;
                             }
@@ -356,13 +356,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                                 float before = pri(v);
                                 V next = merge(v, incoming, overflowing);
                                 float after = pri(v);
-                                depressurize(Math.max(0,incomingPri - (after-before)));
+                                depressurize(Math.max(0, incomingPri - (after - before)));
 
                                 assert (next != null);
                                 if (next != v) {
                                     if (next == null)
                                         throw new NullPointerException();
-                                    if (map.compareAndExchangeRelease(i, v, next)!=v) {
+                                    if (map.compareAndExchangeRelease(i, v, next) != v) {
 //                                        throw new WTF("merge mismatch: " + v);
 //                                        //the previous value likely got hijacked by another thread
 //                                        //restart?
@@ -395,7 +395,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                             //assert(victimWeakest!=-1);
 
-                            if ((victimIndex >= 0 && victimValue == null) || (victimValue!=null && replace(incomingPri, victimValue, victimPri))) {
+                            if ((victimIndex >= 0 && victimValue == null) || (victimValue != null && replace(incomingPri, victimValue, victimPri))) {
                                 if (map.weakCompareAndSetRelease(victimIndex, victimValue, incoming)) {
                                     toRemove = victimValue;
                                     toReturn = toAdd = incoming;
@@ -404,10 +404,10 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                             }
                         }
 
-                        if (retriesRemain>0)
-                            victimPri *= 1-(1f/reprobes); //weaken
+                        if (retriesRemain > 0)
+                            victimPri *= 1 - (1f / reprobes); //weaken
 
-                    } while (--retriesRemain>0);
+                    } while (--retriesRemain > 0);
 
                     break;
 
@@ -427,26 +427,26 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         int dSize = (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0);
         int size = dSize == 0 ? size() : SIZE.addAndGet(this, dSize);
 
-        if (toRemove!=null)
+        if (toRemove != null)
 
         if (toAdd != null) {
             _onAdded(toAdd);
 
-            if (regrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ : size /* size which has been increased by the insertion */)) {
+            if (regrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ : size /* size which has been increased by the insertion */, space())) {
 
                 if (toRemove != null) {
-                    update(key(toRemove), toRemove, PUT, null);
+                    update(key(toRemove), toRemove, PUT, overflowing);
                     toRemove = null;
                 }
             }
         }
 
-        if (toRemove != null) {
-            if (map == this.map) {
-                depressurize(pri(toRemove));
-                onRemove(toRemove);
+            if (toRemove != null) {
+                if (map == this.map) {
+                    depressurize(pri(toRemove));
+                    onRemove(toRemove);
+                }
             }
-        }
 
 
         return toReturn;
@@ -457,8 +457,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         //OPTIONAL: victim noise
         //      causes insertion to underestimate the priority allowing disproportionate replacement
         //      in some low probability of cases, allowing more item churn
-        if (VICTIM_NOISE) {
-            float victimNoise = 1 / (reprobes * reprobes);
+        if (VICTIM_NOISE> 0) {
+            float victimNoise = VICTIM_NOISE / (reprobes * reprobes);
             currentVictimPri *= victimNoise > 0 ? (1 - (random().nextFloat() * victimNoise)) : 1;
         }
 
@@ -597,6 +597,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return update(key, null, GET, null);
     }
 
+    /**
+     * maximum capacity allowed
+     */
     @Override
     public int capacity() {
         return CAPACITY.getOpaque(this);
@@ -797,7 +800,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
 
-
     @Override
     public float mass() {
         return mass;
@@ -872,21 +874,24 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     }
 
-    protected boolean regrowForSize(int s) {
+    protected boolean regrowForSize(int s, int sp) {
 
-        int sp = space();
-        int cp = capacity();
-        if (sp < cp && s >= (loadFactor * sp)) {
+        if (s >= (loadFactor * sp)) {
+            int cp = capacity();
+            if (sp < cp) {
 
-            int ns = Util.lerp(growthLerpRate, sp, cp);
-            if ((cp - ns) / ((float) cp) >= loadFactor)
-                ns = cp;
+                int ns = Util.lerp(growthLerpRate, sp, cp);
+                if ((cp - ns) / ((float) cp) >= loadFactor)
+                    ns = cp;
 
-            if (ns != sp) {
-                resize(ns);
-                return true;
+                if (ns != sp) {
+                    resize(ns);
+                    return true;
+                }
             }
         }
+
+
         return false;
     }
 

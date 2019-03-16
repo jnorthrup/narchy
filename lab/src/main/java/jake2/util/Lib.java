@@ -30,7 +30,6 @@ import jake2.qcommon.FS;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.nio.*;
 import java.nio.charset.StandardCharsets;
 

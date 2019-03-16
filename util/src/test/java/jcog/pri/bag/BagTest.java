@@ -196,8 +196,8 @@ class BagTest {
         Tensor f1 = samplingPriDist(bag, batches, batchSize, bins);
 
         String h = "cap=" + cap + " total=" + (batches * batchSize);
-        System.out.println(h + ":\n\t" + f1.tsv2());
-        System.out.println();
+//        System.out.println(h + ":\n\t" + f1.tsv2());
+//        System.out.println();
 
         float[] ff = f1.snapshot();
 

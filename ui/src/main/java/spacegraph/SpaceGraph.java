@@ -1,5 +1,6 @@
 package spacegraph;
 
+import jcog.Skill;
 import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -7,8 +8,8 @@ import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.video.JoglSpace;
 
+@Skill("Direct_manipulation_interface")
 public enum SpaceGraph { ;
-
 
 
     /** creates window with 2d with single surface layer, maximized to the size of the window */

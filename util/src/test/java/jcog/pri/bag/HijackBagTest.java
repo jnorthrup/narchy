@@ -44,34 +44,39 @@ class HijackBagTest {
     void testGrowToCapacity() {
         int cap = 16;
         int reprobes = 3;
-        DefaultHijackBag<String> b = new DefaultHijackBag<String>(max, cap, reprobes);
+        DefaultHijackBag<String> b = new DefaultHijackBag<>(max, cap, reprobes);
         assertEquals(0, b.size());
-        assertEquals(reprobes, b.space());
+        assertEquals(b.spaceMin(), b.space());
         assertEquals(cap, b.capacity());
 
         b.put(p("x",0.5f));
         assertEquals(1, b.size());
-        assertEquals(10, b.space());
+        assertEquals(b.spaceMin(), b.space());
 
         b.put(p("y",0.25f));
-        assertEquals(10, b.space());
+        assertEquals(b.spaceMin(), b.space());
 
-        for (int i = 0; i <12; i++)
+        for (int i = 0; i <cap*2 /* ensure filled */; i++)
             b.put(p("z" + i, 0.5f));
         assertEquals(b.capacity(), b.space());
 
         
         for (int i = 0; i < 64; i++)
             b.put(p("w" + i, 0.8f));
+        assertEquals(b.capacity(), b.size());
         assertEquals(b.capacity(), b.space());
         assertTrue(Math.abs(b.capacity() - b.size()) <= 2); 
 
         
-        b.setCapacity(cap/2);
-        assertEquals(cap/2, b.capacity());
-        assertEquals(cap/2, b.space());
-        assertTrue(cap/2 >= b.size());
+        b.setCapacity(cap = cap/2);
+        assertEquals(cap, b.capacity());
+        assertEquals(cap, b.space());
+        assertTrue(cap >= b.size());
 
+        b.clear();
+        assertEquals(0, b.size());
+        assertEquals(cap, b.capacity());
+        assertEquals(b.spaceMin(), b.space());
     }
 
     @Test
@@ -129,7 +134,7 @@ class HijackBagTest {
         for (int cap : new int[] { 63, 37 }) {
             int rep = 3;
             int batch = 4;
-            int extraSpace = 5;
+            int extraSpace = Math.round(cap *0.2f);
             DefaultHijackBag bag = new DefaultHijackBag(plus, cap * extraSpace, rep) {
 
                 @Override

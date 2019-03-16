@@ -5,7 +5,6 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.port.Wire;
-import spacegraph.video.Draw;
 
 public class SpectrogramChip extends TypedPort<float[]> {
 

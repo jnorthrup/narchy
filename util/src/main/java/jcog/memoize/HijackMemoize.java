@@ -225,12 +225,17 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         }
 
         @Override
-        protected boolean shrinkForCapacity(int length) {
+        public int spaceMin() {
+            return capacity();
+        }
+
+        @Override
+        protected boolean reshrink(int length) {
             return false; //maintain capacity
         }
 
         @Override
-        protected boolean regrowForSize(int size) {
+        protected boolean regrowForSize(int s, int c) {
             return false;
         }
 

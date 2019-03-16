@@ -64,8 +64,18 @@ public class HijackConceptIndex extends ConceptIndex {
             }
 
             @Override
-            protected boolean regrowForSize(int s) {
+            protected boolean regrowForSize(int s, int sp) {
                 return false;
+            }
+
+            @Override
+            protected boolean reshrink(int length) {
+                return false;
+            }
+
+            @Override
+            public int spaceMin() {
+                return capacity();
             }
 
             @Override

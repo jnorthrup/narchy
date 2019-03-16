@@ -1,9 +1,9 @@
 package nars.attention;
 
-import jcog.data.graph.path.FromTo;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
+import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
@@ -32,7 +32,6 @@ import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -89,7 +88,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         int c = linksCapacity.intValue();
         links = new TaskLinkBag(
                 new TaskLinkArrayBag(c)
-                //new TaskLinkHijackBag(c, 5)
+                //new TaskLinkHijackBag(c, 7)
         );
 
         links.setCapacity(linksCapacity.intValue());
@@ -313,10 +312,10 @@ public class Attention extends DurService implements Sampler<TaskLink> {
             super(Param.tasklinkMerge, initialCapacity, PriBuffer.newMap());
         }
 
-        @Override
-        protected float sortedness() {
-            return 0.33f;
-        }
+//        @Override
+//        protected float sortedness() {
+//            return 0.33f;
+//        }
 
         @Override
         public TaskLink key(TaskLink value) {
