@@ -62,9 +62,11 @@ public class PriNode extends PLink<Term> {
             });
         }
 
+
         float pri = (float) (factor[0]);
         this.pri(pri);
 
+        //System.out.println(id + " updated " + pri + " from " + Joiner.on(",").join(node.nodes(true,false)));
 
 //        int fanout = node.edgeCount(false, true);
 //        if (fanout > 0) {

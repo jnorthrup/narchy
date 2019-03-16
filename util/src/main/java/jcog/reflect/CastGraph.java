@@ -418,7 +418,7 @@ public class CastGraph extends TypeCastGraph {
     public static final Function BigDecimal2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            return from;
+            return (((BigDecimal)from)).doubleValue();
         }
 
         @Override
@@ -731,7 +731,7 @@ public class CastGraph extends TypeCastGraph {
         @Override
         public Object apply(Object from) {
             String str = (String) from;
-            return Integer.parseInt(str);
+            return (int)Math.round(Double.parseDouble(str));
         }
 
         @Override
@@ -1212,8 +1212,8 @@ public class CastGraph extends TypeCastGraph {
 
         addEdge(String.class, String2BigDecimal, BigDecimal.class);
 
-        byte[] ba = new byte[]{};
-        Byte[] Ba = new Byte[]{};
+//        byte[] ba = new byte[]{};
+//        Byte[] Ba = new Byte[]{};
         char[] ca = new char[]{};
         Character[] Ca = new Character[]{};
 

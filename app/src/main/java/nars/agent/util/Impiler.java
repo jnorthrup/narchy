@@ -3,7 +3,7 @@ package nars.agent.util;
 import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.data.graph.AdjGraph;
-import jcog.data.graph.FromTo;
+import jcog.data.graph.path.FromTo;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.data.graph.search.Search;

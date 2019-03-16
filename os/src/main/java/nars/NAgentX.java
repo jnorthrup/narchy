@@ -2,11 +2,9 @@ package nars;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatRange;
-import jcog.pri.bag.Bag;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.RingBufferTensor;
 import jcog.signal.wave2d.Bitmap2D;
@@ -24,10 +22,8 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.Valuator;
 import nars.exe.impl.WorkerExec;
-import nars.gui.DurSurface;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
-import nars.link.TaskLink;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Introduction;
@@ -42,17 +38,14 @@ import nars.term.Termed;
 import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
-import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
-import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.GraphEdit;
-import spacegraph.video.Draw;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -63,7 +56,7 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
-import static nars.Op.*;
+import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 
@@ -300,7 +293,7 @@ abstract public class NAgentX extends NAgent {
 
         window(NARui.top(n), 800, 500);
 
-//        window(NARui.tasklinkSpectrogram(n, n.attn.links, 64), 500, 500);
+        window(NARui.tasklinkSpectrogram(n, n.attn.links, 64), 500, 500);
 //        window(AttentionUI.attentionGraph(n), 600, 600);
 
         //d.durs(0.25f);
@@ -353,48 +346,6 @@ abstract public class NAgentX extends NAgent {
 //        }));
     }
 
-    public static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> active, int history, int width) {
-        Spectrogram s = new Spectrogram(true, history, width);
-
-        return DurSurface.get(s, n, new Runnable() {
-
-            final FasterList<TaskLink> snapshot = new FasterList();
-
-            @Override
-            public void run() {
-                active.forEach(snapshot::add);
-                s.next(color);
-                snapshot.clear();
-            }
-
-            final IntToIntFunction color = _x -> {
-                TaskLink x = snapshot.getSafe(_x);
-                if (x == null)
-                    return 0;
-
-//                float[] bgqq = x.priPuncSnapshot();
-                float r = x.priPunc(BELIEF);
-                float g = x.priPunc(GOAL);
-                float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;
-                return Draw.rgbInt(r, g, b);
-
-//                    float h;
-//                    switch (x.puncMax()) {
-//                        case BELIEF: h = 0; break;
-//                        case QUESTION: h = 0.25f; break;
-//                        case GOAL: h = 0.5f; break;
-//                        case QUEST: h = 0.75f; break;
-//                        default:
-//                            return Draw.rgbInt(0.5f, 0.5f, 0.5f);
-//                    }
-//
-//                    return Draw.colorHSB(h, 0.75f, 0.25f + 0.75f * x.priElseZero());
-
-            };
-
-        });
-    }
-
 
     public static void config(NAR n) {
         n.dtDither.set(
@@ -407,7 +358,7 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(28);
 
 
-        n.attn.linksCapacity.set(1024);
+        n.attn.linksCapacity.set(4096);
 
 
         n.beliefPriDefault.set(0.1f);
@@ -420,7 +371,7 @@ abstract public class NAgentX extends NAgent {
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        n.emotion.want(MetaGoal.Believe, 0.02f);
+        n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.6f);
 
         n.emotion.want(MetaGoal.Action, +1f);

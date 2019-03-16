@@ -1,4 +1,4 @@
-package jcog.data.graph;
+package jcog.data.graph.path;
 
 import org.jetbrains.annotations.Nullable;
 

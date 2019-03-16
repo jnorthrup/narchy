@@ -1,6 +1,7 @@
 package jcog.data.graph;
 
 import com.google.common.collect.Iterables;
+import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.ArrayUnenforcedSortedSet;

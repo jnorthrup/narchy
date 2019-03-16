@@ -26,7 +26,7 @@ package jcog.reflect;
 
 
 import jcog.WTF;
-import jcog.data.graph.FromTo;
+import jcog.data.graph.path.FromTo;
 import jcog.data.list.FasterList;
 import jcog.reflect.graph.Path;
 
@@ -37,7 +37,7 @@ import java.util.function.Function;
  *
  * @author Kamnev Georgiy (nt.gocha@gmail.com)
  */
-public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements GetWeight {
+public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements PrioritizedDouble {
     
     protected final double defaultItemWeight = 1;
     
@@ -108,13 +108,13 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements GetWei
     }
 
     @Override
-    public Double getWeight() {
+    public Double weight() {
         if (weight != null) return weight;
 
         double w = 0;
         for (Function conv : functionsArray) {
-            if (conv instanceof GetWeight) {
-                Double wc = ((GetWeight) conv).getWeight();
+            if (conv instanceof PrioritizedDouble) {
+                Double wc = ((PrioritizedDouble) conv).weight();
                 if (wc != null)
                     w += wc;
                 else
@@ -132,7 +132,7 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements GetWei
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        Object w = getWeight();
+        Object w = weight();
         sb.append("Sequence");
         sb.append(" w=").append(w);
         sb.append(" {");
@@ -140,8 +140,8 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements GetWei
         for (Object conv : getConvertors()) {
             i++;
             Object wc = defaultItemWeight;
-            if (conv instanceof GetWeight) {
-                wc = ((GetWeight) conv).getWeight();
+            if (conv instanceof PrioritizedDouble) {
+                wc = ((PrioritizedDouble) conv).weight();
             }
             if (i > 0) sb.append(", ");
             sb.append(conv).append(" w=").append(wc);

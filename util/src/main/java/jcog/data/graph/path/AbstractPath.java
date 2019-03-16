@@ -21,9 +21,8 @@
  * ПРИЧИНОЙ ИЛИ СВЯЗАННЫМ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ ИЛИ ИСПОЛЬЗОВАНИЕМ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ
  * ИЛИ ИНЫМИ ДЕЙСТВИЯМИ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ.
  */
-package jcog.reflect.graph;
+package jcog.data.graph.path;
 
-import jcog.data.graph.path.FromTo;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
@@ -43,7 +42,7 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
     /**
      * Описывает направление движения
      */
-    protected Path.Direction direction = Path.Direction.AB;
+    protected Direction direction = Direction.AB;
 
     protected MapNodeGraph<N, E> graph;
 

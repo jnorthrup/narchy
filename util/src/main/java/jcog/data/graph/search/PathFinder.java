@@ -21,11 +21,13 @@
  * ПРИЧИНОЙ ИЛИ СВЯЗАННЫМ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ ИЛИ ИСПОЛЬЗОВАНИЕМ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ
  * ИЛИ ИНЫМИ ДЕЙСТВИЯМИ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ.
  */
-package jcog.reflect.graph;
+package jcog.data.graph.search;
 
-import jcog.data.graph.path.FromTo;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
+import jcog.data.graph.path.BasicPath;
+import jcog.data.graph.path.FromTo;
+import jcog.data.graph.path.Path;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -194,10 +196,10 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
                 if( value==null )return false;
                 for( Path<N,E> p : paths ){
                     //if( p.has(value.getNodeA(), value.getNodeB()) )return false;
-                    
+
                     N na = GraphTools.secondNode(value, direction);
                     if( na==null )return false;
-                    
+
                     if( p.count(na)>0 )return false;
                 }
                 return true;

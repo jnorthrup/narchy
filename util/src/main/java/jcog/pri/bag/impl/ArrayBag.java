@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -192,7 +193,30 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         return false;
     }
 
-    protected void sort(int from /* inclusive */, int to /* inclusive */) {
+    protected float sortedness() {
+        return 1f;
+    }
+    protected void sort() {
+        int s = size();
+        if (s <= 1)
+            return;
+
+        float c = sortedness();
+        int from, to;
+
+        if (c >= 1f-Float.MIN_NORMAL) {
+            //int from /* inclusive */, int to /* inclusive */
+            from = 0;
+            to = s;
+        } else {
+            int toSort = (int)Math.ceil(c * s);
+            float f = ThreadLocalRandom.current().nextFloat();
+            int center = (int) (Util.sqr(f) * (s - toSort) + toSort/2); //sqr adds curve to focus on the highest priority subsection
+            from = Math.max(center - toSort/2, 0);
+            to = Math.min(center + toSort/2, s);
+        }
+
+
         items.sort(ScalarValue::priComparable, from, to);
     }
 
@@ -201,7 +225,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
 //        float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY, mass = 0;
         int s = size();
-
 
         SortedArray<Y> items2 = this.items;
         final Object[] l = items2.array();
@@ -221,6 +244,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         } else {
             hist = hist.clear(0, histRange-1, bins);
         }
+        float q = Float.NaN;
         for (int i = 0; i < s; ) {
             Y y = (Y) l[i];
             //assert y != null;
@@ -246,17 +270,28 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
                     }
                 }
 
+                if (q==q && q < p) {
+                    //swap with previous (early progressive sorting pass)
+                    Object x = l[i - 1];
+                    l[i-1] = y;
+                    l[i] = x;
+                    //q remains the previous of any next item
+                } else {
+                    q = p;
+                }
+
                 i++;
+
 
             } else {
                 removeFromMap(items2.remove(i));
                 s--;
-                //dont increment i
+                q = Float.NaN;
             }
         }
 
         if (!sorted) {
-            sort(0, s);
+            sort();
         }
 
         while (s > c) {
@@ -268,7 +303,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             this.hist = hist;
             ArrayBag.MASS.set(this, hist.mass = m);
         }
-
 
         return s;
     }

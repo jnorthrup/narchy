@@ -21,9 +21,8 @@
  * ПРИЧИНОЙ ИЛИ СВЯЗАННЫМ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ ИЛИ ИСПОЛЬЗОВАНИЕМ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ
  * ИЛИ ИНЫМИ ДЕЙСТВИЯМИ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ.
  */
-package jcog.reflect.graph;
+package jcog.data.graph.path;
 
-import jcog.data.graph.path.FromTo;
 import jcog.data.graph.Node;
 
 import java.util.List;
@@ -185,7 +184,7 @@ public interface Path<N, E> {
     Path<N, E> subPath(int beginIdx, int endExc);
 
 
-    default double sum(ToDoubleFunction<FromTo<Node<N,E>,E>> v) {
+    default double sum(ToDoubleFunction<FromTo<Node<N, E>, E>> v) {
         double s = 0;
         for (FromTo<Node<N,E>,E> e : fetch(0, nodeCount()))
             s += v.applyAsDouble(e);

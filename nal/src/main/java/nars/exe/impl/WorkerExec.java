@@ -19,7 +19,7 @@ public class WorkerExec extends ThreadedExec {
     /**
      * process sub-timeslice divisor
      */
-    double granularity = 8;
+    double granularity = 4;
     private static final long subCycleMinNS = 200_000;
     private long subCycleMaxNS;
 

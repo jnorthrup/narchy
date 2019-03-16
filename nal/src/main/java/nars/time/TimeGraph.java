@@ -1,10 +1,9 @@
 package nars.time;
 
 import com.google.common.collect.Iterables;
-import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
-import jcog.data.graph.FromTo;
+import jcog.data.graph.path.FromTo;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;

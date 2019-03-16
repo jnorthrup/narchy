@@ -3,6 +3,7 @@ package jcog.data.graph;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import jcog.WTF;
+import jcog.data.graph.path.FromTo;
 
 import java.io.PrintStream;
 import java.util.stream.Stream;

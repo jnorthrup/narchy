@@ -6,13 +6,13 @@ import com.google.common.collect.Lists;
 import com.googlecode.lanterna.input.KeyType;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
+import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.math.Quantiler;
 import jcog.pri.VLink;
 import jcog.pri.bag.Bag;
 import nars.NAR;
-import nars.NAgentX;
 import nars.Narsese;
 import nars.Task;
 import nars.agent.NAgent;
@@ -29,6 +29,7 @@ import nars.term.Termed;
 import nars.time.event.DurService;
 import nars.truth.Truth;
 import nars.util.MemorySnapshot;
+import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
@@ -53,6 +54,7 @@ import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.meta.TriggeredSurface;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.meter.ScatterPlot2D;
+import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -578,10 +580,52 @@ public class NARui {
     }
 
     public static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> b, int history) {
-        return NAgentX.tasklinkSpectrogram(n, b, history, b.capacity());
+        return tasklinkSpectrogram(n, b, history, b.capacity());
     }
     public static Surface tasklinkSpectrogram(NAR n, int history) {
         return tasklinkSpectrogram(n, n.attn.links, history);
+    }
+
+    public static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> active, int history, int width) {
+        Spectrogram s = new Spectrogram(true, history, width);
+
+        return DurSurface.get(s, n, new Runnable() {
+
+            final FasterList<TaskLink> snapshot = new FasterList();
+
+            @Override
+            public void run() {
+                active.forEach(snapshot::add);
+                s.next(color);
+                snapshot.clear();
+            }
+
+            final IntToIntFunction color = _x -> {
+                TaskLink x = snapshot.getSafe(_x);
+                if (x == null)
+                    return 0;
+
+//                float[] bgqq = x.priPuncSnapshot();
+                float r = x.priPunc(BELIEF);
+                float g = x.priPunc(GOAL);
+                float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;
+                return Draw.rgbInt(r, g, b);
+
+//                    float h;
+//                    switch (x.puncMax()) {
+//                        case BELIEF: h = 0; break;
+//                        case QUESTION: h = 0.25f; break;
+//                        case GOAL: h = 0.5f; break;
+//                        case QUEST: h = 0.75f; break;
+//                        default:
+//                            return Draw.rgbInt(0.5f, 0.5f, 0.5f);
+//                    }
+//
+//                    return Draw.colorHSB(h, 0.75f, 0.25f + 0.75f * x.priElseZero());
+
+            };
+
+        });
     }
 
 //    @Deprecated public static void agentOld(NAgent a) {

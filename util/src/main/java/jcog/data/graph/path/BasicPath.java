@@ -21,9 +21,8 @@
  * ПРИЧИНОЙ ИЛИ СВЯЗАННЫМ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ ИЛИ ИСПОЛЬЗОВАНИЕМ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ
  * ИЛИ ИНЫМИ ДЕЙСТВИЯМИ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ.
  */
-package jcog.reflect.graph;
+package jcog.data.graph.path;
 
-import jcog.data.graph.path.FromTo;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
@@ -217,16 +216,21 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     @Override
     public N node(int nodeIndex) {
         int ncnt = nodeCount();
-        if (nodeIndex < 0)
-            return (ncnt + nodeIndex) < 0 ? null : node(ncnt + nodeIndex);
+        if (nodeIndex < 0) {
+            if ((ncnt + nodeIndex) < 0) return null;
+            return node(ncnt + nodeIndex);
+        }
 //        if (nodeIndex >= nodeCount())
 //            return null;
-        else if (nodeIndex == 0)
-            return next(Direction.AB, list.get(0));
-         else if (nodeIndex == 1)
-            return next(Direction.BA, list.get(0));
-         else
-            return next(Direction.BA, list.get(nodeIndex - 1));
+        if (nodeIndex == 0) {
+            FromTo<Node<N, E>, E> edge = list.get(0);
+            return next(Direction.AB, edge);
+        } else if (nodeIndex == 1) {
+            FromTo<Node<N, E>, E> edge = list.get(0);
+            return next(Direction.BA, edge);
+        } else {
+            FromTo<Node<N, E>, E> edge = list.get(nodeIndex - 1);
+            return next(Direction.BA, edge);
 //            switch (direction) {
 //                case AB:
 //                    return edge.to().id();
@@ -234,11 +238,11 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
 //                default:
 //                    return edge.from().id();
 //            }
-
+        }
 //        return null;
     }
 
-    private static <N,E> N next(Direction direction, FromTo<Node<N, E>, E> edge) {
+    protected N next(Direction direction, FromTo<Node<N, E>, E> edge) {
         switch (direction) {
             case AB:
                 return edge.from().id();

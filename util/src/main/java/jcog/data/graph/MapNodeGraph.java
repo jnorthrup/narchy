@@ -1,6 +1,7 @@
 package jcog.data.graph;
 
 import com.google.common.graph.SuccessorsFunction;
+import jcog.data.graph.path.FromTo;
 import jcog.data.list.FasterList;
 
 import java.util.*;

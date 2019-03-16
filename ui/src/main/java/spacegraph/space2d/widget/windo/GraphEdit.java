@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.windo;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.jogamp.opengl.GL2;
-import jcog.data.graph.FromTo;
+import jcog.data.graph.path.FromTo;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;

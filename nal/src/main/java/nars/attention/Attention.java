@@ -1,6 +1,6 @@
 package nars.attention;
 
-import jcog.data.graph.FromTo;
+import jcog.data.graph.path.FromTo;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
@@ -54,7 +54,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     public final FloatRange forgetRate = new FloatRange(0.1f,  0, 1f /* 2f */);
 
     /** propagation (decay+growth) rate */
-    public final FloatRange conductance = new FloatRange(0.5f,  0, 1f /* 2f */);
+    public final FloatRange amp = new FloatRange(0.5f,  0, 2f /* 2f */);
     //0.25f;
     //(float) (1f/(1 + Math.sqrt(t.volume())));
     //1f/(1 + t.volume());
@@ -62,13 +62,13 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     //1f/(s.volume() + t.volume()); //1/vol_sum
 
 
-    public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(new ConcurrentHashMap<>());
+    public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(PriBuffer.newMap());
     public PriNode root = new PriNode.ConstPriNode("root", ()->1);
     private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
 
 
 
-    public final IntRange linksCapacity = new IntRange(256, 0, 2024) {
+    public final IntRange linksCapacity = new IntRange(256, 0, 8192) {
         @Override
         @Deprecated protected void changed() {
             TaskLinkBag a = links;
@@ -222,9 +222,9 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 //                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
 
                 int n = 2;
-                float pp = p * conductance.floatValue() / n;
+                float pp = p * amp.floatValue() / n;
 
-                link.take(punc, pp*n);
+                //link.take(punc, pp*n);
 
                 //CHAIN
                 link(s, u, punc, pp); //forward (hop)
@@ -311,6 +311,11 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
         public TaskLinkArrayBag(int initialCapacity) {
             super(Param.tasklinkMerge, initialCapacity, PriBuffer.newMap());
+        }
+
+        @Override
+        protected float sortedness() {
+            return 0.33f;
         }
 
         @Override

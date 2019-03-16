@@ -1,6 +1,7 @@
 package jcog.data.graph;
 
 import jcog.Util;
+import jcog.data.graph.path.FromTo;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;

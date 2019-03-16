@@ -1,8 +1,8 @@
 package jcog.data.graph.search;
 
 import com.google.common.collect.Iterators;
-import jcog.data.graph.FromTo;
 import jcog.data.graph.Node;
+import jcog.data.graph.path.FromTo;
 import jcog.data.list.Cons;
 import jcog.data.list.FasterList;
 import org.eclipse.collections.api.tuple.Pair;

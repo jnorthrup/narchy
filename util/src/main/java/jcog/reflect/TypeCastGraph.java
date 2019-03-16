@@ -26,7 +26,7 @@ package jcog.reflect;
 
 
 import com.google.common.collect.Lists;
-import jcog.data.graph.FromTo;
+import jcog.data.graph.path.FromTo;
 import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.reflect.graph.Path;
@@ -103,8 +103,8 @@ public class TypeCastGraph extends jcog.data.graph.MapNodeGraph<Class, Function>
         return
                 from -> {
                     Object edge = from.id();
-                    if (edge instanceof GetWeight)
-                        return ((GetWeight) edge).getWeight();
+                    if (edge instanceof PrioritizedDouble)
+                        return ((PrioritizedDouble) edge).weight();
                     return (double) 1;
                 };
     }
@@ -226,7 +226,7 @@ public class TypeCastGraph extends jcog.data.graph.MapNodeGraph<Class, Function>
     public Path<Class, Function> findPath(
             Class from,
             Class to,
-            Predicate<Path<Class, Function>> filter
+            java.util.function.Predicate<Path<Class, Function>> filter
     ) {
 //        if (from == null) throw new IllegalArgumentException("from==null");
 //        if (to == null) throw new IllegalArgumentException("to==null");
@@ -255,7 +255,7 @@ public class TypeCastGraph extends jcog.data.graph.MapNodeGraph<Class, Function>
             Class lastnode = path.node(-1);
             if (lastnode != null && lastnode.equals(to)) {
                 if (filter != null) {
-                    if (filter.validate(path)) return path;
+                    if (filter.test(path)) return path;
                 } else {
                     return path;
                 }
