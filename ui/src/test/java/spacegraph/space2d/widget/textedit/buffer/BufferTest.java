@@ -29,7 +29,7 @@ public class BufferTest {
   public void insertString1() {
     buf.insert("abcde");
     assertEquals(buf.cursor(), (new CursorPosition(0, 5)));
-    buf.insertEnter();
+    buf.insertEnter(true);
     assertEquals(buf.cursor(), (new CursorPosition(1, 0)));
   }
 
@@ -62,7 +62,7 @@ public class BufferTest {
     assertEquals(buf.cursor(), (new CursorPosition(0, 0)));
     buf.forward();
     buf.forward();
-    buf.insertEnter();
+    buf.insertEnter(true);
     assertEquals(buf.cursor(), (new CursorPosition(1, 0)));
     assertEquals(buf.text(), ("ab\ncde\n12345\n"));
   }

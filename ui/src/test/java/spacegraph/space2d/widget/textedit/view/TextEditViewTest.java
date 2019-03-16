@@ -23,7 +23,7 @@ public class TextEditViewTest {
     buffer.back();
     buffer.backspace();
     buffer.delete();
-    buffer.insertEnter();
+    buffer.insertEnter(true);
   }
 
 }

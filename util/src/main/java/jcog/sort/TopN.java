@@ -149,11 +149,6 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         return x;
     }
 
-    @Override
-    public void removeFast(int index) {
-        throw new UnsupportedOperationException();
-    }
-
     public List<X> drain(int count) {
         count = Math.min(count, size);
         List<X> x = new FasterList(count);

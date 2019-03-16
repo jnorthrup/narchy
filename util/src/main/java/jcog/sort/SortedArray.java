@@ -3,6 +3,7 @@ package jcog.sort;
 import jcog.Util;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.data.iterator.ArrayIterator;
+import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -408,15 +409,19 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
 
-    public void removeFast(int index) {
+    public boolean removeFast(X x, int index) {
         int totalOffset = this.size - index - 1;
         if (totalOffset >= 0) {
             X[] list = this.items;
-            if (totalOffset > 0) {
-                System.arraycopy(list, index + 1, list, index, totalOffset);
+            if (list[index]==x) {
+                if (totalOffset > 0) {
+                    System.arraycopy(list, index + 1, list, index, totalOffset);
+                }
+                list[SIZE.decrementAndGet(this)] = null;
+                return true;
             }
-            list[SIZE.decrementAndGet(this)] = null;
         }
+        return false;
     }
 
     public boolean remove(X removed, FloatFunction<X> cmp) {
@@ -835,4 +840,32 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return ArrayIterator.get(items, size());
     }
 
+    public void reprioritize(X existing, int posBefore, float delta, float priAfter, FloatFunction<X> cmp) {
+
+        //only reindex if exceeds threshold to previous or next item
+
+        if (delta > 0) {
+            if (posBefore > 0) {
+                if (-cmp.floatValueOf(items[posBefore - 1]) > priAfter - ScalarValue.EPSILON/2)
+                    return; //order doesnt change
+            } else {
+                //already highest
+                return;
+            }
+        } else if ( delta < 0) {
+            if (posBefore < size()-1) {
+                if (-cmp.floatValueOf(items[posBefore + 1]) < priAfter + ScalarValue.EPSILON/2)
+                    return; //order doesnt change
+            } else {
+                //already lowest
+                return;
+            }
+        }
+
+        if (!removeFast(existing, posBefore))
+            throw new ConcurrentModificationException(); //item order changed
+
+        int inserted = add(existing, -priAfter, cmp); assert(inserted!=-1);
+
+    }
 }

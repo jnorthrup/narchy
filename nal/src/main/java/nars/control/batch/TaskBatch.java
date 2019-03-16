@@ -39,7 +39,7 @@ public final class TaskBatch {
         /** execute and drain the queue */
         public void run(TaskQueue target) {
             /** TODO optional: sort the removed entries by class to group similar implementations in hopes of maximizing cpu code cache hits */
-            update((x, pri)-> x.run(target));
+            drain(x-> x.run(target));
         }
     }
 

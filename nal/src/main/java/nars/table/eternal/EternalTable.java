@@ -91,14 +91,14 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             List<Task> trash = null;
 
-            long r = lock.readLock();
+            long r = lock.writeLock();
             try {
                 int wasCapacity = this.capacity();
 
                 //synchronized (this) {
                 if (wasCapacity != c) {
 
-                    r = lock.tryConvertToWriteLock(r);
+                    //r = lock.tryConvertToWriteLock(r); //TODO
 
                     wasCapacity = capacity();
 
@@ -151,12 +151,13 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     //    @Override
     public void clear() {
-//        forEach(ScalarValue::delete);
 
-        long l = lock.readLock();
+        //long l = lock.readLock();
+        long l = lock.writeLock();
         try {
             if (size()>0) {
-                l = lock.tryConvertToWriteLock(l);
+                //TODO l = lock.tryConvertToWriteLock(l);
+//        forEach(ScalarValue::delete);
                 super.clear();
             }
         } finally {

@@ -85,7 +85,8 @@ public class Conjterpolate extends Conj {
         int remainingEvents = Util.lerp(aProp, na, nb);
         if (remainingEvents > 0) {
             if (nb == 0 ^ na == 0) {
-                addAll((aa.isEmpty() ? bb : aa)); //the remaining events
+                if (!addAll((aa.isEmpty() ? bb : aa))) //the remaining events
+                    return;
             } else {
                 if (na ==1 && nb == 1 && nabOriginal>1 && aa.get(0).getTwo().equalsRoot(bb.get(0).getTwo())) {
                     //special case: only one event remains, with the same root target

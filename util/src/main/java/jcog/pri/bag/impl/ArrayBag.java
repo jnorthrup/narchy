@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.StampedLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -40,6 +41,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     private static final AtomicFloatFieldUpdater<ArrayBag> PRESSURE =
             new AtomicFloatFieldUpdater(ArrayBag.class, "pressure");
 
+    private final StampedLock lock = new StampedLock();
 
 
     @Deprecated private final PriMerge mergeFunction;
@@ -106,17 +108,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      */
     @Override
     public final void setCapacity(int nextCapacity) {
-
-        if (capacity()==nextCapacity)
-            return; //same
-
-        synchronized (items) {
-            if (setCapacityIfChanged(nextCapacity)) {
-                if (size() > capacity() /* must check again */)
-                    commit(null);
-            }
+        if (setCapacityIfChanged(nextCapacity)) {
+            commit(null);
         }
-
     }
 
     /**
@@ -546,8 +540,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     @Override
     public Y remove(X x) {
         Y removed;
-        synchronized (items) {
+        long l = lock.writeLock();
+        try {
             removed = super.remove(x);
+        } finally {
+            lock.unlockWrite(l);
         }
         if (removed != null) {
             removed(removed);
@@ -558,82 +555,92 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     private void remove(Y y, int suspectedPosition) {
 
-        synchronized (items) {
+        //TODO convert to write lock from readlock
+        long l = lock.writeLock();
+        try {
             if (items.get(suspectedPosition) == y) {
                 items.remove(suspectedPosition);
                 removeFromMap(y);
                 return;
             }
+        } finally {
+            lock.unlockWrite(l);
         }
 
         remove(key(y)); //wasnt found with provided index, use standard method by key
 
     }
 
+//    @Override
+//    public void putAll(Consumer<Consumer<Y>> c) {
+//
+//    }
+
     @Override
     public Y put(final Y incoming, final NumberX overflow) {
 
 
-        float p = incoming.priElseZero();
 
         final int capacity = this.capacity();
         if (capacity == 0)
             return null;
 
-
-
-
-//        //HACK special case for saving a lot of unnecessary work when merge=Max
-//        //TODO may also work with average and replace merges
-//        //TODO this can only work if the bag is sorted
-//        if (this.mergeFunction == PriMerge.max && fastMergeMaxReject() && isFull()) {
-//            if (p < priMin()) {
-//                return null; //fast drop the novel task due to insufficient priority
-//                //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
-//            }
-//        }
-
         X key = key(incoming);
-
 
         boolean inserted;
 
         Y mergeResult;
 
-        synchronized (items) {
+        float p = incoming.priElseZero();
+
+        long r = lock.readLock();
+        try {
 
             Y existing = map.get(key);
 
-            if (existing != null) {
-                depressurize(p); //undo the initial pressurization
-                mergeResult = (existing != incoming) ?
-                        merge(existing, incoming, overflow) :
-                        incoming; //exact same instance
+            if (existing == incoming) {
+
+                //exact same instance
+                mergeResult = incoming;
                 inserted = false;
+
             } else {
+                long rr = lock.tryConvertToWriteLock(r);
 
-                mergeResult = null;
-
-                int s = size();
-
-                if (s >= capacity) {
-
-
-                    inserted = tryInsertFull(incoming, p, null);
-
+                if (rr != 0) {
+                    r = rr;
                 } else {
-                    int i = items.add(incoming, -p, this);
-                    assert i >= 0;
-
-                    inserted = true;
+                    lock.unlockRead(r);
+                    r = lock.writeLock();
                 }
 
-                if (inserted) {
-                    map.put(key, incoming);
-                }
+                if (existing != null) {
+                    depressurize(p); //undo the initial pressurization
+                    mergeResult = merge(existing, incoming, overflow);
+                    inserted = false;
+                } else {
 
+                    mergeResult = null;
+
+                    int s = size();
+
+                    if (s >= capacity) {
+                        inserted = tryInsertFull(incoming, p, null);
+                    } else {
+                        int i = items.add(incoming, -p, this);
+                        assert i >= 0;
+                        inserted = true;
+                    }
+
+                    if (inserted) {
+                        map.put(key, incoming);
+                    }
+
+                }
             }
 
+        } finally {
+            lock.unlock(r);
         }
 
         if (mergeResult != null)
@@ -678,10 +685,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     /**
      * will not need to be sorted after calling this; the index is automatically updated
      */
-    public Y merge(Y existing, Y incoming,  @Nullable NumberX overflow) {
+    private Y merge(Y existing, Y incoming,  @Nullable NumberX overflow) {
 
 
-//        int posBefore = items.indexOf(existing, this, true);
+        int posBefore = items.indexOf(existing, this, true);
 //        if (posBefore == -1) {
 //            //items.indexOf(existing, this, true);
 //
@@ -701,35 +708,30 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         Y result;
 
         float priBefore = existing.pri();
+
         float overflo = merge(existing, incoming);
         float priAfter = existing.pri();
         if (priAfter != priAfter) {
             //got deleted
-            remove(key(existing));
+            remove(existing, posBefore);
             priAfter = 0;
             result = null;
         } else {
             result = existing;
         }
+
         if (overflo!=0 && overflow!=null)
             overflow.add(overflo);
 
         float delta = priAfter - priBefore;
 
-        pressurize(delta);
-
 
         if (Math.abs(delta) >= ScalarValue.EPSILON) {
 
-            if (result!=null) {
+            if (result!=null)
+                items.reprioritize(existing, posBefore, delta, priAfter, this);
 
-                //sort(0, size());
-
-                //sort(0, posBefore);
-
-                //items.partialSort(posBefore, this);
-
-            }
+            pressurize(delta);
 
             MASS.add(this, delta);
         }
@@ -761,13 +763,13 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     @Override
     public Bag<X, Y> commit(Consumer<Y> update) {
 
-        synchronized (items) {
-
+        long l = lock.writeLock();
+        try {
             if (!isEmpty())
                 clean(update);
-
+        } finally {
+            lock.unlockWrite(l);
         }
-
 
         return this;
     }
@@ -780,7 +782,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     @Override
     public final void clear() {
-        popBatch(size(), ScalarValue::delete);
+        popBatch(-1, ScalarValue::delete);
         MASS.zero(this);
         PRESSURE.zero(this);
     }
@@ -807,7 +809,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
     @Override
-    public Sampler<Y> pop(Random rng, int max, Consumer<? super Y> each) {
+    public final Sampler<Y> pop(Random rng, int max, Consumer<? super Y> each) {
         if (rng == null) {
             //high-efficiency non-random pop
             clear(max, each);
@@ -820,7 +822,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     public Sampler<Y> popBatch(int n, @Nullable Consumer<Y> popped) {
 
-        synchronized (items) {
+        if (n == 0) return this;
+
+        long l = lock.writeLock();
+        try {
 
             int s = size();
             if (s > 0) {
@@ -834,6 +839,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
                 );
 
             }
+        } finally {
+            lock.unlockWrite(l);
         }
 
         return this;
@@ -853,38 +860,41 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     @Override
     public void forEach(Consumer<? super Y> action) {
 
+//        long r = lock.readLock();
+//        try {
 
-        int s = size();
-        if (s <= 0)
-            return;
+            int s = size();
+            if (s <= 0)
+                return;
 
-        //synchronized (items) {
-
-        Object[] yy = items.array();
-        s = Math.min(yy.length, s);
+            Object[] yy = items.array();
+            s = Math.min(yy.length, s);
 //        float r = Float.POSITIVE_INFINITY;
 //        boolean commit = false;
-        for (int i = 0; i < s; i++) {
+            for (int i = 0; i < s; i++) {
 
-            Y y =
-                    //ITEM.getOpaque(yy, i);
-                    (Y) yy[i];
+                Y y =
+                        //ITEM.getOpaque(yy, i);
+                        (Y) yy[i];
 
-            if (y == null)
-                continue; //throw new WTF();
+                if (y == null)
+                    continue; //throw new WTF();
 
-            float p = pri(y);
-            if (p == p) {
-                action.accept(y);
+                float p = pri(y);
+                if (p == p) {
+                    action.accept(y);
 //                if (!commit) {
 //                    if (r <= p - ScalarValue.EPSILON)
 //                        commit = true; //out of order detected
 //                    r = p;
 //                }
-            } /*else {
+                } /*else {
                 commit = true;
             }*/
-        }
+            }
+//        } finally {
+//            lock.unlockRead(r);
+//        }
 
 //        if (commit) {
 //            commit(null);

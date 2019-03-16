@@ -1,14 +1,15 @@
 package jcog.pri;
 
-import jcog.data.map.NonBlockingHashMap;
 import jcog.exe.Exe;
 import jcog.pri.op.PriMerge;
+import org.eclipse.collections.api.block.function.primitive.ObjectFloatToObjectFunction;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
 //import java.util.concurrent.ConcurrentHashMap;
 
 /** accumulates/buffers/collates a stream of Y activations and termlinkages
@@ -51,8 +52,8 @@ public class PriBuffer<Y> {
     public static Map newMap() {
         if (Exe.concurrent()) {
             return
-            new NonBlockingHashMap();
-            //new java.util.concurrent.ConcurrentHashMap<>(0, 0.5f);
+            //new NonBlockingHashMap();
+            new java.util.concurrent.ConcurrentHashMap<>(0, 0.5f);
             //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f);
             //new CustomConcurrentHashMap(64);
             //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0);
@@ -111,35 +112,34 @@ public class PriBuffer<Y> {
         }
     }
 
-    /** drains the bufffer while performing an operation on it */
-    public void update(ObjectFloatProcedure<Y> each) {
 
+    public void drain(Consumer<Y> each) {
+        items.keySet().removeIf(e->{
+            each.accept(e);
+            return true;
+        });
+    }
+
+    /** drains the bufffer while performing an operation on it */
+    public void drain(ObjectFloatProcedure<Y> each) {
         items.entrySet().removeIf(e->{
             float pp = e.getValue().pri();
             if (pp == pp)
                 each.value(e.getKey(), pp);
             return true;
         });
-
-//        Iterator<Map.Entry<Y, Prioritizable>> ii = items.entrySet().iterator();
-//        while (ii.hasNext()) {
-//            Map.Entry<Y, Prioritizable> e = ii.next();
-//        }
-
-//        removeIf(a -> {
-//            n.Ys.activate(a.get(), a.pri());
-//            return true;
-//        });
-
-        //if (!isEmpty()) {
-            //deferred
-//        if (deferredOrInline) {
-//            n.input(this);
-//        } else {
-            //inline
-//            ITask.run(this, n);
-//        }
-
+    }
+    /** drains the bufffer while performing an operation on it */
+    public <X> void drain(Consumer<X> each, ObjectFloatToObjectFunction<Y,X> f) {
+        items.entrySet().removeIf(e->{
+            float pp = e.getValue().pri();
+            if (pp == pp) {
+                X x = f.valueOf(e.getKey(), pp);
+                if (x!=null)
+                    each.accept(x);
+            }
+            return true;
+        });
     }
 
     public final void put(OverflowDistributor<Y> overflow, Random random) {

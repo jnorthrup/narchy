@@ -151,6 +151,10 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
         put(b);
     }
 
+    default void putAll(Consumer<Consumer<V>> c) {
+        c.accept(this::put);
+    }
+
     V put(V b, NumberX overflowing);
 
     /**

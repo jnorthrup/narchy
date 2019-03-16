@@ -240,7 +240,7 @@ public abstract class Param {
 
     /** whether timegraph should not return solutions with volume significantly less than the input's.
      *  set 0 to disable the filter */
-    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.1f;
+    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0f;
 
     /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
     public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;

@@ -387,7 +387,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
             int nEach = (int) Math.ceil(((float) n) / (c - 1));
             for (int i = 0; i < c && n > 0; i++) {
 
-                target/*HACK*/.input((nn) -> {
+                target/*HACK*/.input(nn -> {
 
                     FasterList batch = BagTaskBuffer.batch.get();
                     Bag<ITask, ITask> t = tasks;
