@@ -119,10 +119,15 @@ public interface Compound extends Term, IPair, Subterms {
     Op op();
 
 
-    @Override
-    default boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
-        return !impossibleSubTerm(x) && inSubtermsOf.test(this) && subterms().containsRecursively(x, root, inSubtermsOf);
+    /** very fragile be careful here */
+    @Override default /* final */ boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+        return !impossibleSubTerm(x) && inSubtermsOf.test(this) &&
+                subtermsContainsRecursively(x, root, inSubtermsOf);
     }
+    default boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+        return subterms().containsRecursively(x, root, inSubtermsOf);
+    }
+
 
     /**
      * deprecated; TODO move to SeparateSubtermsCompound interface and allow Compounds which do not have to generate this.  this sums up many of xjrn's suggestions

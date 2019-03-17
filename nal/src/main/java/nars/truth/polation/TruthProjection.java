@@ -159,11 +159,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 return null;
             }
             if (activeRemain == 1) {
-                throw new WTF();
-//                if (e == null && needStamp)
-//                    return Stamp.toMutableSet(firstValid().task);
-//                else
-//                    return e;
+                //throw new WTF();
+                if (e == null && needStamp)
+                    return Stamp.toMutableSet(firstValid().task);
+                else
+                    return e;
             }
 
             if (e == null)

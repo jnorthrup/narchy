@@ -79,7 +79,7 @@ public class WorkerExec extends ThreadedExec {
 
 
         //TODO use a double averaged
-        final FloatAveragedWindow workTimeMean = new FloatAveragedWindow(8, 0.1f);
+        final FloatAveragedWindow workTimeMean = new FloatAveragedWindow(4, 0.5f);
 
         @Override
         public void run() {

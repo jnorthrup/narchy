@@ -606,14 +606,13 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
                 items.remove(suspectedPosition);
                 removeFromMap(y);
-                return;
+            } else {
+                super.remove(key(y)); //wasnt found with provided index, use standard method by key
             }
         } finally {
             if (close)
                 lock.unlock(l);
         }
-
-        remove(key(y)); //wasnt found with provided index, use standard method by key
 
     }
 
@@ -759,7 +758,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             if (!items.removeFast(existing, posBefore))
                 throw new ConcurrentModificationException();
             remove(existing, posBefore, lock, false);
-            removeFromMap(existing);
         }
 
         if (Math.abs(delta) > Float.MIN_NORMAL) {

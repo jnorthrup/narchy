@@ -88,24 +88,19 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public boolean ANDrecurse(Predicate<Term> p) {
+    public final boolean ANDrecurse(Predicate<Term> p) {
         return p.test(this) && sub().ANDrecurse(p);
     }
     @Override
-    public boolean ORrecurse(Predicate<Term> p) {
+    public final boolean ORrecurse(Predicate<Term> p) {
         return p.test(this) || sub().ORrecurse(p);
     }
 
-
-    @Override
-    public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
-        if (!impossibleSubTerm(x) && inSubtermsOf.test(this)) {
-            Term sub = sub();
-            return (root ? sub.equalsRoot(x) : sub.equals(x)) || sub.containsRecursively(x, root, inSubtermsOf);
-        }
-        return false;
+    /** elides creation of subterms intermediary instance */
+    @Override public final boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+        Term s = sub();
+        return (root ? s.equalsRoot(x) : s.equals(x)) || s.containsRecursively(x, root, inSubtermsOf);
     }
-
 
     @Override
     public Term dt(int nextDT, TermBuilder builder) {
@@ -119,7 +114,7 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public boolean hasXternal() {
+    public final boolean hasXternal() {
         return dt()==XTERNAL || sub().hasXternal();
     }
 

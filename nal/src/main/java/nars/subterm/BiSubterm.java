@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 /**
  * Size 2 TermVector
  */
-public class BiSubterm extends TermVector {
+public final class BiSubterm extends TermVector {
 
     protected final Term x,y;
 
@@ -68,19 +68,27 @@ public class BiSubterm extends TermVector {
     }
 
     @Override
-    public void forEach(Consumer<? super Term> action, int start, int stop) {
-        int n = stop - start;
-        if (n == 1 && start == 0 || start == 1) {
-            action.accept(start == 0 ? x : y);
-        } else if (start == 0) {
-            forEach(action);
-        } else {
-            throw new ArrayIndexOutOfBoundsException();
+    public void forEach(Consumer<? super Term> a, int start, int stop) {
+        switch (start) {
+            case 0:
+                switch (stop) {
+                    case 0: return;
+                    case 1: a.accept(x); return;
+                    case 2: a.accept(x); a.accept(y); return;
+                }
+                break;
+            case 1:
+                switch (stop) {
+                    case 1: return;
+                    case 2: a.accept(y); return;
+                }
+                break;
         }
+        throw new ArrayIndexOutOfBoundsException();
     }
 
     @Override
-    public void forEach(Consumer<? super Term> action) {
+    public final void forEach(Consumer<? super Term> action) {
         action.accept(x);
         action.accept(y);
     }

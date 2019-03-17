@@ -5,11 +5,8 @@ import nars.Op;
 import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.Term;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
@@ -104,22 +101,6 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
     @Override
     public int varPattern() {
         return ref.varPattern();
-    }
-
-
-    @Override
-    public boolean contains(Term t) {
-        return ref.contains(t);
-    }
-
-    @Override
-    public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
-        return ref.containsRecursively(x, root, inSubtermsOf);
-    }
-
-    @Override
-    public boolean containsRecursively(Term t) {
-        return ref.containsRecursively(t);
     }
 
 

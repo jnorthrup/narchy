@@ -11,7 +11,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NonEternalTaskOccurenceOrPresentDeriverTiming implements BiFunction<Task, Term, long[]> {
 
-    public final FloatRange durRadius = new FloatRange(4, 0, 32);
+    public final FloatRange durRadius = new FloatRange(0.5f, 0, 32);
 
     private final NAR nar;
 

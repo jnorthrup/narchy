@@ -24,7 +24,10 @@ import nars.exe.Valuator;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
-import nars.op.*;
+import nars.op.Arithmeticize;
+import nars.op.AutoencodedBitmap;
+import nars.op.Introduction;
+import nars.op.PuncNoise;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -54,7 +57,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 
@@ -371,8 +373,8 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.05f);
         n.questPriDefault.set(0.05f);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.85f);
+        n.goalConfDefault.set(0.85f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 

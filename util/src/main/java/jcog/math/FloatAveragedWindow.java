@@ -61,26 +61,26 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
 
     protected double calculate() {
         //TODO dont synch
-        int v = window.volume();
         float a = alpha.get();
 
         final double[] next = {Double.NaN};
 
-        synchronized (window) {
+//        synchronized (window) {
             //TODO option for reverse calculation?
 
             //TODO Tensor reduce function
             window.forEach((int i, float n)->{
-                if (n==n) {
-                    double prev = next[0];
-                    if (prev==prev)
-                        next[0] = ((1 - a) * prev) + (a * n);
-                    else
-                        next[0] = n; //initial value
-                }
+                if (n != n)
+                    return;
+
+                double prev = next[0];
+                next[0] = (prev==prev) ?
+                    ((1 - a) * prev) + (a * n)
+                    :
+                    n; //initial value
             });
             return next[0];
-        }
+//        }
     }
 
     @Override

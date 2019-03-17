@@ -99,12 +99,12 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
 
-    private final FloatAveragedWindow DEXTERITY = new FloatAveragedWindow(16, 0.5f);
-    private transient float dexterity = 0;
+    private final FloatAveragedWindow DEXTERITY = new FloatAveragedWindow(16, 0.66f);
+
 
     @Override
     public float dexterity() {
-        return dexterity;
+        return DEXTERITY.asFloat();
     }
 
 
@@ -228,7 +228,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
             //update dexterity
             Truth t = this.actionDex;
             float e = t != null ? w2cSafe(t.evi()) : 0;
-            dexterity = DEXTERITY.valueOf(e);
+            DEXTERITY.put(e);
         }
     }
 

@@ -7,9 +7,11 @@ import nars.term.Term;
 import nars.term.util.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -68,11 +70,6 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public void forEach(/*@NotNull*/ Consumer<? super Term> action, int start, int stop) {
-        subterms().forEach(action, start, stop);
-    }
-
-    @Override
     public @Nullable Term subPath(int start, int end, byte... path) {
         return end==start ? this : subterms().subSub(start, end, path);
     }
@@ -92,20 +89,37 @@ public abstract class SeparateSubtermsCompound implements Compound {
         return subterms().count(match);
     }
 
-
     @Override
-    public void forEach(/*@NotNull*/ Consumer<? super Term> c) {
+    public final void forEach(/*@NotNull*/ Consumer<? super Term> c) {
         subterms().forEach(c);
+    }
+    @Override
+    public final void forEach(/*@NotNull*/ Consumer<? super Term> action, int start, int stop) {
+        subterms().forEach(action, start, stop);
+    }
+    @Override
+    public final void forEachWith(ObjectIntProcedure<Term> t) {
+        subterms().forEachWith(t);
     }
 
     @Override
-    public boolean contains(Term t) {
+    public final <X> void forEachWith(BiConsumer<Term, X> t, X argConst) {
+        subterms().forEachWith(t, argConst);
+    }
+
+    @Override
+    public final boolean contains(Term t) {
         return subterms().contains(t);
     }
 
     @Override
-    public boolean containsNeg(Term x) {
+    public final boolean containsNeg(Term x) {
         return subterms().containsNeg(x);
+    }
+
+    @Override
+    public final boolean containsAny(Subterms ofThese) {
+        return subterms().containsAny(ofThese);
     }
 
     @Override

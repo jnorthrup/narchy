@@ -149,6 +149,7 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
 
+
     /**
      * happiness = sum( 1 - abs(rewardBeliefExp - rewardGoalExp) )
      * in range 0..1

@@ -4,7 +4,6 @@ import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.exe.Causable;
 import nars.exe.Exec;
@@ -40,7 +39,7 @@ abstract public class MultiExec extends UniExec {
      */
 
     private final float explorationRate = 0.1f;
-    private final float momentum = 0.95f;
+    //private final float momentum = 0.95f;
 
     protected long cycleNS;
 
@@ -155,28 +154,29 @@ abstract public class MultiExec extends UniExec {
 
         float valRange = valMax[0] - valMin[0];
         if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
-            float exp = explorationRate * valRange;
+            float exploreMargin = explorationRate * valRange;
             cpu.forEach(s -> {
                 Causable c = s.get();
                 if (c.sleeping()) {
                     s.pri(0);
                 } else {
-                    float vNorm = Util.normalize(s.valueRate, valMin[0] - exp, valMax[0]);
-                    pri(s, vNorm);
+                    float vNorm = Util.normalize(s.valueRate, valMin[0] - exploreMargin, valMax[0]);
+                    //pri(s, vNorm);
+                    s.pri(vNorm);
                 }
             });
         } else {
             //FLAT
-            float p = 1f / n;
-            cpu.forEach(s -> pri(s, p));
+            float pFlat = 1f / n;
+            cpu.forEach(s -> s.pri(pFlat));
         }
 
     }
 
-    protected void pri(Prioritizable s, float p) {
-        //s.pri(p);
-        s.pri(s.priElseZero() * momentum + (1-momentum) * p);
-    }
+//    protected void pri(Prioritizable s, float p) {
+//        //s.pri(p);
+//        s.pri(s.priElseZero() * momentum + (1-momentum) * p);
+//    }
 
 
     @Override

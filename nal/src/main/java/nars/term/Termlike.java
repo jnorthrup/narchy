@@ -183,17 +183,11 @@ public interface Termlike {
 
     boolean hasXternal();
 
-    /**
-     * convenience dont override (except in Atomic)
-     */
-    default boolean containsRecursively(Term t) {
+    default /* final */boolean containsRecursively(Term t) {
         return containsRecursively(t, (x) -> true);
     }
 
-    /**
-     * convenience dont override (except in Atomic)
-     */
-    default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
+    default /* final */boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
         return !impossibleSubTerm(t) && containsRecursively(t, false, inSubtermsOf);
     }
 
