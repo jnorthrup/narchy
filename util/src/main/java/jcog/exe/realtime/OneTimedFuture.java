@@ -16,8 +16,4 @@ public class OneTimedFuture<T> extends AbstractTimedCallable<T> {
         return (int) (offset % resolution);
     }
 
-    @Override
-    public boolean isPeriodic() {
-        return false;
-    }
 }

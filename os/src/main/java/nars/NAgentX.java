@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatRange;
-import jcog.signal.tensor.RingBufferTensor;
+import jcog.signal.tensor.RingTensor;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -546,7 +546,7 @@ abstract public class NAgentX extends NAgent {
         g.add(NARui.taskBufferView(b, n)).sizeRel(0.75f,0.25f);
         //g.add(new PIDChip(pid)).sizeRel(0.2f,0.2f);
 
-        RingBufferTensor history = new RingBufferTensor(3, 8);
+        RingTensor history = new RingTensor(3, 8);
         HaiQae q = new HaiQae(history.volume(), 32,5);
         float[] in = new float[q.ae.inputs()];
         Plot2D plot;
@@ -593,7 +593,7 @@ abstract public class NAgentX extends NAgent {
                 float v = b.volume();
                 float reward =
                         //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
-                        (float) (Math.log(n.emotion.busyVol.floatValue())/5f);
+                        (float) (Math.log(n.emotion.busyVol.asFloat())/5f);
                 rewardSum.addAndGet(reward);
                 plot.commit();
 

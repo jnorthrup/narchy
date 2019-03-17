@@ -31,12 +31,6 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
         }
     }
 
-    @Override
-    public void restart(HashedWheelTimer h) {
-
-    }
-
-
     /**
      * HACK TODO note this method isnt fair because it implicitly prioritizes 'tenured' items that were inserted and remained.
      * instead it should behave like ConcurrentQueueWheelModel's impl

@@ -158,16 +158,6 @@ public class ConsoleTerminal extends Widget implements Appendable, KeyPressed {
     }
 
     public class MyBitmapTextGrid extends BitmapTextGrid {
-        @Override
-        public Surface finger(Finger finger) {
-            return null;
-        }
-//
-//        @Override
-//        public boolean tangible() {
-//            return false;
-//        }
-
 
         @Override
         protected void doLayout(int dtMS) {

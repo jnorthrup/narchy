@@ -720,7 +720,7 @@ public class FasterList<X> extends FastList<X> {
 
 
     /**
-     * after procedure executes on a cell, it nullifies the cell. equivalent to:
+     * before procedure executes on a cell, it nullifies the cell. equivalent to:
      * forEach(p) ... clear()
      * but faster
      *
@@ -729,9 +729,11 @@ public class FasterList<X> extends FastList<X> {
     public void clear(Consumer<? super X> each) {
         int s = this.size;
         if (s > 0) {
+            X[] items = this.items;
             for (int i = 0; i < s; i++) {
-                each.accept(this.items[i]);
-                this.items[i] = null;
+                X ii = items[i];
+                items[i] = null;
+                each.accept(ii);
             }
             this.size = 0;
         }
@@ -740,16 +742,18 @@ public class FasterList<X> extends FastList<X> {
     public <Y> void clearWith(BiConsumer<X, Y> each, Y y) {
         int s = this.size;
         if (s > 0) {
+            X[] items = this.items;
             for (int i = 0; i < s; i++) {
-                each.accept(this.items[i], y);
-                this.items[i] = null;
+                X ii = items[i];
+                items[i] = null;
+                each.accept(ii, y);
             }
             this.size = 0;
         }
     }
 
     @Override
-    public void clear() {
+    public final void clear() {
         clearIfChanged();
     }
 

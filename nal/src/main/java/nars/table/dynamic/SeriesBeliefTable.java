@@ -41,6 +41,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
     @Override
     public void add(Remember r, NAR nar) {
+        //ignore
     }
 
     @Override

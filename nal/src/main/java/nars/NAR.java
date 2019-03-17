@@ -272,7 +272,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         Util.toMap(clazz, "concept class", x::put);
 
-        emotion.getter(() -> x).run();
+        emotion.commit(x::put);
 
         return x;
 

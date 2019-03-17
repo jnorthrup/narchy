@@ -11,7 +11,7 @@ import static java.lang.System.arraycopy;
 /**
  * float tensor - see: https:
  */
-public class ArrayTensor extends AbstractShapedTensor
+public class ArrayTensor extends AbstractMutableTensor
         /* source, getters, suppliers */
         /* target, setters, consumers */ {
 

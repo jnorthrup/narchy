@@ -12,7 +12,7 @@ import static java.lang.Float.floatToIntBits;
 import static java.lang.Float.intBitsToFloat;
 
 /** stores 32-bit float values in AtomicIntegerArray */
-public class AtomicArrayTensor extends AbstractVector {
+public class AtomicArrayTensor extends AbstractVector implements TensorTo {
     private final AtomicIntegerArray data;
 
     public AtomicArrayTensor(int length) {

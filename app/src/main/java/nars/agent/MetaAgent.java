@@ -65,8 +65,8 @@ public class MetaAgent extends NAgent {
 //        });
 
 
-        senseNumberDifference($.inh(id, $$("busy")), ()->n.emotion.busyVol.getSum());
-        senseNumberDifference($.inh(id, $$("deriveTask")), ()->n.emotion.deriveTask.get());
+        senseNumberDifference($.inh(id, $$("busy")), n.emotion.busyVol::asFloat);
+        senseNumberDifference($.inh(id, $$("deriveTask")), n.emotion.deriveTask::get);
 
 
         n.services(NAgent.class).forEach(a -> {

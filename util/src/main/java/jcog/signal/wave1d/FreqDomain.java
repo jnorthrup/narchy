@@ -2,14 +2,14 @@ package jcog.signal.wave1d;
 
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.tensor.ArrayTensor;
-import jcog.signal.tensor.RingBufferTensor;
+import jcog.signal.tensor.RingTensor;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** TODO extract RingBufferTensor to an extended impl.  this only needs to supply the next 1D vector of new freq information */
 public class FreqDomain {
     @Deprecated
-    public final RingBufferTensor freq;
+    public final RingTensor freq;
     final SlidingDFTTensor dft;
     private final CircularFloatBuffer in;
     private final ArrayTensor inWave;
@@ -20,7 +20,7 @@ public class FreqDomain {
 
         this.inWave = new ArrayTensor(new float[(int) Math.ceil(sampleTime * sampleRate)]);
         dft = new SlidingDFTTensor(inWave, fftSize, true);
-        freq = new RingBufferTensor(dft.volume(), history);
+        freq = new RingTensor(dft.volume(), history);
 
 
     }

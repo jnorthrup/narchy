@@ -238,7 +238,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
             //update dexterity
             Truth t = this.actionDex;
             float e = t != null ? w2cSafe(t.evi()) : 0;
-            DEXTERITY.put(e);
+            DEXTERITY.setAndCommit(e);
         }
     }
 

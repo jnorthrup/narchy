@@ -200,7 +200,7 @@ abstract public class MultiExec extends UniExec {
         }
 
         if (concurrency <= 1) {
-            b.forEach(each);
+            b.clear(each);
         } else {
 
             float granularity = 1 * (concurrency / 2f);
@@ -210,7 +210,6 @@ abstract public class MultiExec extends UniExec {
                     .parallelStream().forEach(x -> x.forEach(each));
         }
 
-        b.clear();
         return true;
     }
 

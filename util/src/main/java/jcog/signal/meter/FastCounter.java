@@ -1,51 +1,27 @@
 package jcog.signal.meter;
 
-import com.netflix.servo.monitor.Counter;
-import com.netflix.servo.monitor.Monitor;
-import com.netflix.servo.monitor.MonitorConfig;
-
 import java.util.concurrent.atomic.AtomicLong;
 
-import static jcog.signal.meter.Meter.meter;
+public class FastCounter extends AtomicLong {
 
-public class FastCounter extends AtomicLong implements Monitor<Number>, Counter {
-    protected final MonitorConfig config;
-
+    private final String name;
 
     public FastCounter(String name) {
-        this(meter(name));
-    }
-
-    public FastCounter(MonitorConfig config) {
-        this.config = config;
+        this.name = name;
     }
 
     @Override
+    public String toString() {
+        return name + "=" + super.toString();
+    }
+
     public final void increment() {
         incrementAndGet();
     }
 
-    @Override
     public void increment(long amount) {
         addAndGet(amount);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final Long getValue(int pollerIdx) {
-        return getValue();
-    }
-
-    @Override
-    public final Long getValue() {
-        return getOpaque();
-    }
-
-    @Override
-    public final MonitorConfig getConfig() {
-        return config;
-    }
 
 }

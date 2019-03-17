@@ -51,9 +51,9 @@ dependencies {
     }
 
 
-    compile(group: 'com.netflix.servo', name: 'servo-core', version: '0.12.25') {
-        exclude(module: 'slf4j-api')
-    }
+//    compile(group: 'com.netflix.servo', name: 'servo-core', version: '0.12.25') {
+//        exclude(module: 'slf4j-api')
+//    }
 
     // https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket
     compile group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.4.0'

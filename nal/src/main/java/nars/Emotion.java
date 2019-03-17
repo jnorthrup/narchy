@@ -1,20 +1,16 @@
 package nars;
 
-//import com.netflix.servo.Metric;
-//import com.netflix.servo.MonitorRegistry;
-//import com.netflix.servo.monitor.Counter;
-//import com.netflix.servo.publish.BasicMetricFilter;
-//import com.netflix.servo.publish.MonitorRegistryMetricPoller;
-//import com.netflix.servo.publish.PollRunnable;
-//import com.netflix.servo.util.Clock;
 
-import com.netflix.servo.util.Clock;
+import jcog.TODO;
+import jcog.math.FloatAveragedWindow;
 import jcog.signal.meter.ExplainedCounter;
 import jcog.signal.meter.FastCounter;
 import jcog.signal.meter.Meter;
-import jcog.signal.meter.event.AtomicMeanFloat;
 import nars.control.MetaGoal;
 import nars.time.event.DurService;
+
+import java.io.PrintStream;
+import java.util.function.BiConsumer;
 
 import static jcog.Texts.n4;
 
@@ -67,13 +63,14 @@ public class Emotion implements Meter {
      * TODO convert to AtomicFloatArray or something where each value is volatile
      */
     public final float[] want = new float[MetaGoal.values().length];
-    public final AtomicMeanFloat busyVol, busyPri;
-    /**
-     * happiness rate
-     */
-    public final AtomicMeanFloat happy;
+
+    static final int history = 100;
+    public final FloatAveragedWindow
+            busyVol = new FloatAveragedWindow(history, 0.9f),
+            busyVolPriWeighted = new FloatAveragedWindow(history, 0.9f);
+//    FastCounter busyVol = new FastCounter("busyVol"), busyVolPriWeighted = new FastCounter("busyVolPriWeighted");
+
     private final NAR nar;
-    float _happy;
 
     /**
      * count of errors
@@ -82,15 +79,10 @@ public class Emotion implements Meter {
 
     public Emotion(NAR n) {
         super();
-
         this.nar = n;
+        //nar.onCycle((Runnable)this::commit);
+        DurService.on(nar, (Runnable) this::commit);
 
-        this.happy = new AtomicMeanFloat("happy");
-
-        this.busyVol = new AtomicMeanFloat("busyV");
-        this.busyPri = new AtomicMeanFloat("busyP");
-
-        DurService.on(n, this::commit);
     }
 
     /**
@@ -109,10 +101,6 @@ public class Emotion implements Meter {
         return "emotion";
     }
 
-    @Override
-    public Clock clock() {
-        return nar.time;
-    }
 
 //    public Runnable getter(MonitorRegistry reg, Supplier<Map<String, Object>> p) {
 //        return new PollRunnable(
@@ -132,38 +120,20 @@ public class Emotion implements Meter {
      * new frame started
      */
     public void commit() {
-
-        _happy = happy.commitSum();
-
-        busyVol.commit();
-
-    }
-
-
-    public float happy() {
-        return _happy;
-    }
-
-
-    @Deprecated
-    public void happy(float increment) {
-        happy.accept(increment);
+        busyVol.commit(0);
+        busyVolPriWeighted.commit(0);
     }
 
     @Deprecated
     public void busy(float pri, int vol) {
-        busyPri.accept(Math.round(pri * 1000));
-        busyVol.accept(vol);
+        //busyPri.accept(Math.round(pri * 1000));
+        busyVol.add(vol);
+        busyVolPriWeighted.add(vol * pri);
     }
 
 
     public String summary() {
-
-
-        return " hapy=" + n4(happy()) +
-                " busy=" + n4(busyVol.getSum());
-
-
+        return "busy=" + n4(busyVol.asDouble());
     }
 
 
@@ -184,6 +154,14 @@ public class Emotion implements Meter {
         busy(pri, vol);
 
         taskFire.increment();
+    }
+
+    public void print(PrintStream out) {
+        throw new TODO();
+    }
+
+    public void commit(BiConsumer<String,Object> statConsumer) {
+        throw new TODO();
     }
 
 //    public void onAnswer(Task questionTask, Task answer) {

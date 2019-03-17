@@ -25,9 +25,9 @@ class TensorTest {
     @Test
     void testMatrix() {
         ArrayTensor t = new ArrayTensor(new int[] { 2, 2 });
-        t.set(0.5f, 0, 0);
-        t.set(0.25f, 1, 0);
-        t.set(0.5f, 1, 1);
+        t.set(0.5f, new int[] { 0, 0 });
+        t.set(0.25f, new int[] { 1, 0 });
+        t.set(0.5f, new int[] { 1, 1 });
 
         assertEquals(0, t.index(0, 0));
         assertEquals(1, t.index(1, 0));

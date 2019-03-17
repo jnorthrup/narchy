@@ -2,7 +2,7 @@ package jcog.signal.tensor;
 
 import com.google.common.util.concurrent.AtomicDoubleArray;
 
-public class AtomicDoubleArrayTensor extends AbstractShapedTensor {
+public class AtomicDoubleArrayTensor extends AbstractMutableTensor {
 
     private final AtomicDoubleArray data;
 

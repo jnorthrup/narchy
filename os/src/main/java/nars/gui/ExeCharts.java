@@ -115,7 +115,7 @@ public class ExeCharts {
         DurSurface d = DurSurface.get(g, n, new Consumer<NAR>() {
 
             final Off c = n.onCycle((nn) -> {
-                busyBuffer.offer(nn.emotion.busyVol.getSum());
+                busyBuffer.offer(nn.emotion.busyVol.asFloat());
                 queueSize.offer((float)((UniExec) n.exe).queueSize());
             });
 

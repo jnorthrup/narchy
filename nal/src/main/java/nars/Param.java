@@ -24,6 +24,7 @@ public abstract class Param {
 
 
 
+
     static {
         Op.terms =
                 //HeapTermBuilder.the;
@@ -434,7 +435,7 @@ public abstract class Param {
     public static final boolean DEBUG_TASK_LOG = true;
 
 
-
+    public final static int TIME_QUEUE_CAPACITY = 2 * 1024;
 
     /**
      * internal granularity which truth components are rounded to

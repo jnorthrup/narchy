@@ -4,7 +4,7 @@
  */
 package nars.derive;
 
-import com.netflix.servo.monitor.Counter;
+import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -34,14 +34,6 @@ public class Premise implements Comparable<Premise> {
 
     public final Term beliefTerm;
 
-    /**
-     * specially constructed hash that is useful for sorting premises by:
-     * a) task equivalency (hash)
-     * a) task target equivalency (hash)
-     * b) belief target equivalency (hash)
-     * <p>
-     * designed to maximize sequential repeat of derived task target
-     */
     public final long hash;
 
     public Premise(Task task, Term beliefTerm) {
@@ -51,13 +43,25 @@ public class Premise implements Comparable<Premise> {
 
         this.beliefTerm = beliefTerm;
 
-        this.hash =
+        this.hash = premiseHash(task, beliefTerm);
+    }
+
+
+    /**
+     * specially constructed hash that is useful for sorting premises by:
+     * a) task equivalency (hash)
+     * a) task target equivalency (hash)
+     * b) belief target equivalency (hash)
+     * <p>
+     * designed to maximize sequential repeat of derived task target
+     */
+    public static long premiseHash(Task task, Term beliefTerm) {
                 //task's lower 23 bits in bits 40..64
-                (((long) task.hashCode()) << (64 - 24))
-                        | //task target's lower 20 bits in bits 20..40
-                        (((long) (task.term().hashCode() & 0b00000000000011111111111111111111)) << 20)
-                        | //termlink's lower 20 bits in bits 0..20
-                        ((beliefTerm.hashCode() & 0b00000000000011111111111111111111));
+        return (((long) task.hashCode()) << (64 - 24))
+                | //task target's lower 20 bits in bits 20..40
+                (((long) (task.term().hashCode() & 0b00000000000011111111111111111111)) << 20)
+                | //termlink's lower 20 bits in bits 0..20
+                ((beliefTerm.hashCode() & 0b00000000000011111111111111111111));
     }
 
     /**
@@ -361,7 +365,7 @@ public class Premise implements Comparable<Premise> {
 
     public final void derive(Derivation d, int matchTTL, int deriveTTL) {
 
-        Counter result;
+        FastCounter result;
 
         Emotion e = d.nar.emotion;
 
@@ -378,7 +382,7 @@ public class Premise implements Comparable<Premise> {
                     deriveTTL, can
                 );
 
-                result = e.premiseFire; //premiseFired(p, d);
+                result = e.premiseFire;
 
             } else {
                 result = e.premiseUnderivable;

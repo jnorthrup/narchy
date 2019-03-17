@@ -196,9 +196,12 @@ public class DynTaskify extends TaskList {
 
 
     @Override
-    public void clear() {
-        super.clear();
-        evi = null;
+    public boolean clearIfChanged() {
+        if (super.clearIfChanged()) {
+            evi = null;
+            return true;
+        }
+        return false;
     }
 
     public final Term template() {

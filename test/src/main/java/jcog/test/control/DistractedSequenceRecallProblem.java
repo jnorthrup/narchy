@@ -193,12 +193,12 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
         for(int t = 0; t < prompts; ++t ) {
             int targetBit  = targetBits.get( t );
             int targetTime = targetTimes.get( t );
-            sequenceState.set(1f, targetTime, targetBit ); // these inputs are the targets
+            sequenceState.set(1f, new int[] { targetTime, targetBit }); // these inputs are the targets
             // zero output expected during target setting
             int promptBit = targets +t;
             int promptTime = length + t;
-            sequenceState.set(1f, promptTime, promptBit); // these inputs are the targets
-            sequenceActions.set(1f, promptTime, targetBit); // ideal output bit is the target value
+            sequenceState.set(1f, new int[] { promptTime, promptBit }); // these inputs are the targets
+            sequenceActions.set(1f, new int[] { promptTime, targetBit }); // ideal output bit is the target value
         }
 
         // now set some random distractor bits:
@@ -224,7 +224,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
             // else pick a random distractor bit:
             int distractorBit = targets + prompts + rng.nextInt(distractors);
-            sequenceState.set(1f, t , distractorBit); // these inputs are the targets
+            sequenceState.set(1f, new int[] { t , distractorBit }); // these inputs are the targets
         }
 
         //print();

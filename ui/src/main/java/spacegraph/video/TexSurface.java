@@ -19,11 +19,6 @@ public class TexSurface extends Surface {
         this.tex = tex;
     }
 
-    @Override
-    protected void compile(SurfaceRender r) {
-
-        super.compile(r);
-    }
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {

@@ -1,5 +1,7 @@
 package jcog.data.atomic;
 
+import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 abstract public class AtomicCycle  {
@@ -21,12 +23,19 @@ abstract public class AtomicCycle  {
             return Integer.MAX_VALUE;
         }
     }
+
+    /** [0..n) */
     public static class AtomicCycleN extends AtomicCycle {
-        public final int n;
+        public int n;
 
         public AtomicCycleN(int n) {
             assert(n > 1);
             this.n = n;
+        }
+
+        public AtomicCycleN high(int newHigh) {
+            this.n = newHigh;
+            return this;
         }
 
         @Override public int low() {
@@ -69,12 +78,24 @@ abstract public class AtomicCycle  {
     public int getAndIncrement() {
         return i.getAndUpdate(x -> {
             int y = x + 1;
-//            if (y < 0)
-//                y = 0;
             if (y >= high())
                 y = low();
             return y;
         });
     }
+
+    /** procedure receives the index of the next target */
+    public int getAndIncrement(IntProcedure r) {
+        return i.getAndUpdate(x -> {
+            int y = x + 1;
+            if (y >= high())
+                y = low();
+            r.value(y);
+            return y;
+        });
+    }
+
+// TODO
+//    public <X> int getAndIncrementWith(ObjectFloatProcedure r, X x) {
 
 }

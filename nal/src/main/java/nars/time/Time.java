@@ -1,9 +1,9 @@
 package nars.time;
 
-import com.netflix.servo.util.Clock;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.MetalConcurrentQueue;
 import nars.NAR;
+import nars.Param;
 import nars.time.event.AtTime;
 
 import javax.measure.Quantity;
@@ -15,19 +15,41 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * Time state
+ * 1-D Time Model (and Clock)
  */
-public abstract class Time implements Clock, Serializable {
+public abstract class Time implements Serializable {
 
+    abstract public long now();
+
+    /**
+     * time elapsed since last cycle
+     */
+    public abstract long sinceLast();
+
+    /**
+     * returns a new stamp evidence id
+     */
+    public abstract long nextStamp();
+
+
+    /**
+     * the default duration applied to input tasks that do not specify one
+     * >0
+     */
+    public abstract int dur();
+
+    /**
+     * set the duration, return this
+     *
+     * @param d, d>0
+     */
+    public abstract Time dur(int d);
 
     final AtomicLong scheduledNext = new AtomicLong(Long.MIN_VALUE);
 
-    final static int MAX_INCOMING = 4 * 1024;
-    final MetalConcurrentQueue<ScheduledTask> incoming =
-            new MetalConcurrentQueue<>(MAX_INCOMING);
+    final MetalConcurrentQueue<ScheduledTask> incoming = new MetalConcurrentQueue<>(Param.TIME_QUEUE_CAPACITY);
 
-
-    final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(MAX_INCOMING /* estimate capacity */);
+    final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(Param.TIME_QUEUE_CAPACITY /* estimate capacity */);
 
     /**
      * busy mutex
@@ -58,30 +80,6 @@ public abstract class Time implements Clock, Serializable {
             ArrayIterator.stream(s) //a copy
         );
     }
-
-    /**
-     * time elapsed since last cycle
-     */
-    public abstract long sinceLast();
-
-    /**
-     * returns a new stamp evidence id
-     */
-    public abstract long nextStamp();
-
-
-    /**
-     * the default duration applied to input tasks that do not specify one
-     * >0
-     */
-    public abstract int dur();
-
-    /**
-     * set the duration, return this
-     *
-     * @param d, d>0
-     */
-    public abstract Time dur(int d);
 
 
     public final void runAt(long whenOrAfter, Runnable then) {
