@@ -151,6 +151,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                         //s = now - narDur / 2;
                         //e = now + narDur / 2;
                         s = now - Math.max(narDur, agentDur);
+                        //e = now;
                         e = now;
                         break;
                     case 1:
@@ -158,6 +159,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                         //s = now - narDur;
                         //e = now + narDur;
                         s = now - Math.max(narDur, agentDur)*2;
+                        //e = now;
                         e = now;
                         break;
 //                    default:
@@ -172,9 +174,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
                 }
 
-                //shift forward
-                s += dither / 2;
-                e += dither / 2;
+                //shift forward to include some immediate future desire as part of present moment desire
+                int shift =
+                        //dither/2;
+                        Math.max(dither/2, narDur/2);
+
+                s += shift;
+                e += shift;
 
                 a.clear(tries).time(s, e);
 
@@ -191,6 +197,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
                     ss = s;
                     ee = e;
                 }
+
+                //HACK
+                if (next!=null)
+                    break; //early finish on first non-null
             }
         }
 

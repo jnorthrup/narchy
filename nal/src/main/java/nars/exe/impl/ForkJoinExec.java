@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
+/** TODO not finished */
 public class ForkJoinExec extends MultiExec  {
 
     private ForkJoinPool pool = ForkJoinPool.commonPool(); //temporary setting

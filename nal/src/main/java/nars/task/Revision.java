@@ -14,6 +14,7 @@ import nars.truth.polation.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.truth.func.TruthFunctions.c2wSafe;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
@@ -79,8 +80,8 @@ public enum Revision {;
         assert(p.size()>=2);
 
         float eviMin =
-                0;
-                //c2wSafe(nar.confMin.floatValue());
+                Param.REVISION_MIN_EVI_FILTER ? c2wSafe(nar.confMin.floatValue()) : Param.TRUTH_EVI_MIN;
+                //;
 
         Truth truth = p.truth(eviMin, dither, true, nar);
         if (truth == null)

@@ -193,7 +193,10 @@ public class Statement {
             }
         }
 
-        if ((op != IMPL || dt == DTERNAL /* allow parallel IMPL because sequences may separate the events from overlap */) /*&& !subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN)*/) {
+        if ((op != IMPL
+                || dt == DTERNAL /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */)
+                || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
+        ) {
 
             Predicate<Term> delim = (op == IMPL) ?
                     recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;

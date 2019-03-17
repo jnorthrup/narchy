@@ -23,8 +23,6 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
 public abstract class Param {
 
 
-    /** return <= 0 to disable */
-    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0.75f;
 
     static {
         Op.terms =
@@ -64,7 +62,18 @@ public abstract class Param {
     public static final boolean PREMISE_FOCUS_TIME_DITHER = false;
 
 
-    public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = false;
+    /** return <= 0 to disable */
+    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0.75f;
+
+    /** true will filter sub-confMin revision results.  false will not, allowing sub-confMin
+     * results to reside in the belief table (perhaps combinable with something else that would
+     * eventually raise to above-confMin).  generally, false should be more accurate with a tradeoff
+     * for overhead due to increased belief table churn.
+     */
+    public static final boolean REVISION_MIN_EVI_FILTER = false;
+
+
+    public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME = false;
 
 
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = true;
@@ -188,16 +197,6 @@ public abstract class Param {
     /** novelty threshold: >=0; higher values decrease the rate at which repeated tasks can be reactivated */
     public static final float REMEMBER_REPEAT_THRESH_DURS = 1f;
 
-//    public static final boolean REVISION_ALLOW_DILUTE_UNION = false;
-
-//    /** restrains revision's ability to stretch evidence across time:
-//     * as a factor of the maximum of the ranges of the tasks involved in the revision */
-//    public static final float REVISION_UNION_THRESHOLD =
-//            0.5f;
-//            //1;
-//            //1.5f;
-//            //1.618f; //goldenratio
-//            //2;
 
     /**
      * maximum time (in durations) that a signal task can stretch the same value

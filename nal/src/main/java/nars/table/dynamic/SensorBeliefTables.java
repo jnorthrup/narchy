@@ -175,7 +175,7 @@ public class SensorBeliefTables extends BeliefTables {
     protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAR nar) {
         long[] evi;
 
-        if (Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME) {
+        if (Param.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
             if (eviShared == null)
                 eviShared = nar.evidence();
             evi = eviShared;

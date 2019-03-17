@@ -444,7 +444,7 @@ public interface Stamp {
 //    }
 
     static boolean overlaps(Task x, Task y) {
-        return (!Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end()))
+        return (!Param.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end()))
                    &&
                Stamp.overlapsAny(x, y);
     }
