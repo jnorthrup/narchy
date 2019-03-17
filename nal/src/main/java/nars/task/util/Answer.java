@@ -403,8 +403,8 @@ public final class Answer {
 
         TruthProjection tp = truthpolation(taskList());
         if (tp != null) {
-            assert (!ditherTruth);
-            assert (eviMin() == Param.TRUTH_EVI_MIN);
+            assert (!ditherTruth); assert (eviMin() <= Param.TRUTH_EVI_MIN);
+
             return tp.truth(Param.TRUTH_EVI_MIN, false, false /* give the value at specified range, no matter how sparse */, nar);
         }
 
@@ -549,7 +549,7 @@ public final class Answer {
      * a false return value should signal a stop to any iteration supplying results
      */
     public final boolean tryAccept(Task t) {
-        if (time.accept(t.start(), t.end())) {
+        if (time.accept(t)) {
             int remain = --ttl;
             if (remain >= 0) {
                 if (filter == null || filter.test(t)) {

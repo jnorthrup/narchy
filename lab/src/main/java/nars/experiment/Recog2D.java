@@ -2,7 +2,7 @@ package nars.experiment;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.math.FloatAveraged;
+import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
@@ -109,7 +109,7 @@ public class Recog2D extends NAgentX {
             }
 
             return Util.clamp(2 * -(error / maxImages - 0.5f), -1, +1);
-        }, new FloatAveraged(0.1f, true)));
+        }, new FloatAveragedWindow(16, 0.1f)));
 
 //        Param.DEBUG = true;
         nar.onTask((t)->{

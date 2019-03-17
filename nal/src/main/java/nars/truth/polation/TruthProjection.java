@@ -104,19 +104,20 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     /**
      * removes the weakest components sharing overlapping evidence with stronger ones.
      * should be called after all entries are added
+     * @param needStamp whether a stamp result should be returned, or if this can be elided if not necessary
      */
     @Nullable
-    public final MetalLongSet commit(boolean provideStamp, boolean tCrop, int minResults) {
+    public final MetalLongSet commit(boolean tCrop, int minResults, boolean needStamp) {
 
 
         int s = size();
         if (s < minResults) {
             return null;
         } else if (s == 1) {
-            return only(tCrop, provideStamp);
+            return only(tCrop, needStamp);
         } else {
-            MetalLongSet e = filterCyclicN(minResults, tCrop || start==ETERNAL);
-            return provideStamp ? e : null;
+            MetalLongSet e = filterCyclicN(minResults, tCrop || start==ETERNAL, needStamp);
+            return needStamp ? e : null;
         }
     }
     public int active() {
@@ -141,87 +142,91 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return 0;
     }
 
-    private MetalLongSet filterCyclicN(int minComponents, boolean tCrop) {
+ @Nullable private MetalLongSet filterCyclicN(int minComponents, boolean tCrop, boolean needStamp) {
 
         assert (minComponents >= 1);
 
         int ss = size();
 
+        long bs = this.start, be = this.end;
+
         MetalLongSet e = null;
-        do {
+        while (ss > 1) {
             int activeRemain = refocus(tCrop, true);
             if (activeRemain < minComponents) {
                 //OOPS
                 // TODO undo
                 return null;
             }
-
-            if (e == null) {
-                e = new MetalLongSet(Param.STAMP_CAPACITY); //first iteration
-            } else {
-                //2nd iteration, or after
-                e.clear();
+            if (activeRemain == 1) {
+                throw new WTF();
+//                if (e == null && needStamp)
+//                    return Stamp.toMutableSet(firstValid().task);
+//                else
+//                    return e;
             }
 
+            if (e == null)
+                e = new MetalLongSet(Param.STAMP_CAPACITY); //first iteration
+            else
+                e.clear(); //2nd iteration, or after
 
-            int weakestConflict = Integer.MIN_VALUE, strongestConflict = Integer.MAX_VALUE;
-            for (int i = ss - 1; i >= 0; i--) {
+
+            MetalBitSet conflict = MetalBitSet.bits(ss);
+            for (int i = 0; i < ss; i++) {
                 TaskComponent c = get(i);
                 if (!c.valid())
                     continue;
-                Task ii = c.task;
-                long[] iis = ii.stamp();
-                if (i < ss - 1) {
-                    if (Stamp.overlapsAny(e, iis)) {
-                        strongestConflict = Math.min(i, strongestConflict);
-                        weakestConflict = Math.max(i, weakestConflict);
-                        continue;
-                    }
+
+                long[] iis = c.task.stamp();
+
+                if (i > 0 && Stamp.overlapsAny(e, iis)) {
+                    conflict.set(i);
+                } else {
+                    e.addAll(iis);
                 }
-                e.addAll(iis); //first
             }
+
+            int conflicts = conflict.cardinality();
 
             //1. test if they are all independent.  then all may be combined.
-            if (weakestConflict < 0)
-                return e; //all ok
+            if (conflicts == 0)
+                break; //all ok
 
+            ss = activeRemain;
 
             //something must be removed:
-            if (ss - 1 < minComponents)
+            if (ss - conflicts < minComponents)
                 return null; //impossible: nothing else to remove
 
-            if (strongestConflict == ss - 1) {
-                //2. if the only overlapping task is the least ranked, just remove that and continue.
-                removeLastFast();
-                return e;
+            if (conflicts == 1) {
+                removeFast(conflict.first(true));
             } else {
-//                if (strongestConflict == weakestConflict) {
-//                    //it is only conflict present in this set.
-//                    // eliminate it if the sum of the other evidences are greater
-//                    cull(minComponents, strongestConflict);
-//                } else {
-
-                    //TODO try evaluating the truth by removing each of the conflicting tasks
-
-                    //for now, try removing the weakestConflict and repeat
-                    cull(weakestConflict);
-
-                    //TODO early exit possible here if weakestConflict == 0, then 'e' will be correct for return in some cases
-//                }
-
+                for (int i = 0; i < ss; i++) {
+                    if (conflict.get(i))
+                        setFast(i, null);
+                }
+                removeNulls();
             }
 
-            ss = size();
-            if (ss < minComponents)
-                return null;
+            ss -= conflicts;
 
-        } while (ss > 1);
+        }
 
-        if (ss == 1)
-            return e;
+        if (this.time(bs, be)) {
+            int sss = refocus(tCrop, true);
+            assert(sss >= minComponents);
+        }
 
-        return null;
+        return e;
+    }
 
+    private boolean time(long bs, long be) {
+        if (this.start!=bs || this.end != be) {
+            this.start = bs; this.end = be;
+            return true;
+        }
+        return false;
     }
 
     private void cull(int conflict) {

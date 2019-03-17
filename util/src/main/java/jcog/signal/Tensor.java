@@ -196,8 +196,7 @@ public interface Tensor  {
     }
 
 
-    /** should not need subclassed */
-    default void writeTo(float[] target) {
+    default /* final */ void writeTo(float[] target) {
         writeTo(target, 0);
     }
 

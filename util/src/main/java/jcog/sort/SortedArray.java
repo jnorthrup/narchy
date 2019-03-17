@@ -450,12 +450,11 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
 
     public int add(X element, float elementRank, FloatFunction<X> cmp) {
-        int s = size;
         assert (elementRank == elementRank);
 
         final int index = find(element, elementRank, cmp, false, true);
 
-        return insert(element, elementRank, index, s);
+        return insert(element, elementRank, index, size);
 
 //        if (!isSorted(cmp)) throw new WTF();
     }

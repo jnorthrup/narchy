@@ -2,7 +2,7 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
-import jcog.math.FloatAveraged;
+import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
@@ -155,13 +155,15 @@ public class FZero extends NAgentX {
 
 
         float r = 0.05f;
-        senseNumberBi($.funcImg("vel", $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7], new FloatAveraged(0.5f, false))).resolution(r);
-        senseNumberBi($.funcImg("vel", $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8], new FloatAveraged(0.5f, false))).resolution(r);
+//        senseNumberBi($.funcImg("vel", $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7],
+//                new FloatAveragedWindow(8,0.5f, false))).resolution(r);
+//        senseNumberBi($.funcImg("vel", $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8],
+//                new FloatAveragedWindow(8, 0.5f, false))).resolution(r);
 
         senseNumberDifferenceBi($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
 
         FloatSupplier playerAngle = compose(() -> (float) fz.playerAngle,
-                new FloatAveraged(0.5f, true));
+                new FloatAveragedWindow(8,0.5f));
         senseNumberDifferenceBi($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
 
         int angles = 8;
@@ -198,7 +200,7 @@ public class FZero extends NAgentX {
 //        });
 
         //auto-restore health
-        FloatAveraged progressFilter = new FloatAveraged(0.8f);
+        FloatAveragedWindow progressFilter = new FloatAveragedWindow(16, 0.8f);
 
         onFrame(()-> {
 
@@ -396,7 +398,7 @@ public class FZero extends NAgentX {
     public BiPolarAction initBipolarRotateDirect(boolean fair, float rotFactor) {
 
         //final MiniPID rotFilter = new MiniPID(0.3f, 0.3, 0.4f);
-        final FloatAveraged lp = new FloatAveraged(0.5f);
+        //final FloatAveraged lp = new FloatAveraged(0.5f);
 
         float inputThresh = 0f;
         float curve = //curve exponent
@@ -410,7 +412,7 @@ public class FZero extends NAgentX {
                 return Float.NaN;
             //float ddHeading = Math.abs(dHeading) >= inputThresh ? lp.valueOf(dHeading) : 0;
 
-            fz.playerAngle = lp.valueOf((float) (fz.playerAngle + Math.pow((dHeading), curve) * rotFactor)); //bipolar
+            fz.playerAngle = /*lp.valueOf*/((float) (fz.playerAngle + Math.pow((dHeading), curve) * rotFactor)); //bipolar
 
             return dHeading;
         };

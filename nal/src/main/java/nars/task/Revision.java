@@ -73,7 +73,7 @@ public enum Revision {;
 
         TruthProjection p = nar.projection(u[0], u[1], 0).add(tasks);
 
-        MetalLongSet stamp = p.commit(true, true,2);
+        MetalLongSet stamp = p.commit(true, 2, true);
         if (stamp == null)
             return null;
 

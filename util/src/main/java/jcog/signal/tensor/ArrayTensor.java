@@ -38,6 +38,10 @@ public class ArrayTensor extends AbstractShapedTensor
         this.data = new float[super.volume()];
     }
 
+    @Override public void writeTo(float[] target, int offset) {
+        System.arraycopy(data, 0, target, offset, volume());
+    }
+
     @Override
     public int volume() {
         return data.length;

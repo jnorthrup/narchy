@@ -2,7 +2,7 @@ package nars.exe.impl;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.math.FloatAveraged;
+import jcog.math.FloatAveragedWindow;
 import jcog.random.SplitMix64Random;
 import jcog.util.ArrayUtils;
 import nars.exe.Causable;
@@ -79,7 +79,7 @@ public class WorkerExec extends ThreadedExec {
 
 
         //TODO use a double averaged
-        final FloatAveraged workTimeMean = new FloatAveraged(0.1f);
+        final FloatAveragedWindow workTimeMean = new FloatAveragedWindow(8, 0.1f);
 
         @Override
         public void run() {
@@ -88,7 +88,7 @@ public class WorkerExec extends ThreadedExec {
 
                 long workTime = work(1, schedule);
                 //TODO use time-averaged workTime
-                float workTimeMean = this.workTimeMean.valueOf((float)(workTime/1.0E6));
+                float workTimeMean = this.workTimeMean.valueOf((float)(workTime/1.0E6)/*, i++ % 100 == 0 */ );
                 long playTime =
                         Math.round(threadWorkTimePerCycle - (workTimeMean*1.0E6));
 

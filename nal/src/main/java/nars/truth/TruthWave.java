@@ -157,7 +157,7 @@ public class TruthWave {
             t = (minT + maxT)/2;
         } else {
             dt = (maxT - minT) / ((float) (points - 1));
-            t = minT + dt / 2;
+            t = minT;
         }
 
         int halfDT = (int) Math.round(dt/2);

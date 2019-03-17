@@ -55,7 +55,11 @@ public final class TimeRangeFilter extends TimeRange implements LongLongPredicat
     }
 
     @Override
-    public boolean accept(long s, long e) {
+    public final boolean accept(long s, long e) {
         return mode == null || mode.accept(s, e, start, end);
+    }
+
+    public final boolean accept(TaskRegion t) {
+        return mode == null || mode.accept(t.start(), t.end(), start, end);
     }
 }

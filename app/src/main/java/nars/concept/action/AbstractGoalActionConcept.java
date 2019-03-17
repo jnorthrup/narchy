@@ -1,7 +1,7 @@
 package nars.concept.action;
 
 import jcog.data.list.FasterList;
-import jcog.math.FloatAveraged;
+import jcog.math.FloatAveragedWindow;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -99,7 +99,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
 
-    private final FloatAveraged DEXTERITY = new FloatAveraged(0.5f);
+    private final FloatAveragedWindow DEXTERITY = new FloatAveragedWindow(16, 0.5f);
     private transient float dexterity = 0;
 
     @Override

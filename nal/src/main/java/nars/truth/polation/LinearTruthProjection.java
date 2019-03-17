@@ -28,7 +28,7 @@ public class LinearTruthProjection extends TruthProjection {
         if (size()==0)
             return null;
         else {
-            commit(false, tCrop,1);
+            commit(tCrop, 1, false);
             if (active()==0)
                 return null;
         }

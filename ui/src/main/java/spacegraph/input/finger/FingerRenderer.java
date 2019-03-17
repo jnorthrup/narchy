@@ -1,7 +1,7 @@
 package spacegraph.input.finger;
 
 import com.jogamp.opengl.GL2;
-import jcog.math.FloatAveraged;
+import jcog.math.FloatAveragedWindow;
 import jcog.math.v2;
 import spacegraph.video.Draw;
 
@@ -16,7 +16,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
     FingerRenderer rendererCrossHairs1 = new FingerRenderer() {
 
         final v2 lastPixel = new v2(0,0);
-        final FloatAveraged speedFilter = new FloatAveraged(0.5f);
+        final FloatAveragedWindow speedFilter = new FloatAveragedWindow(8, 0.5f);
 
         @Override
         public void paint(v2 posPixel, Finger finger, int dtMS, GL2 gl) {
@@ -83,7 +83,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
 
         float pixelDistSq = 0;
         final v2 lastPixel = new v2();
-        final FloatAveraged smoothedRad = new FloatAveraged(0.25f);
+        final FloatAveragedWindow smoothedRad = new FloatAveragedWindow(8, 0.25f);
         long timeMS = 0;
 
         @Override
