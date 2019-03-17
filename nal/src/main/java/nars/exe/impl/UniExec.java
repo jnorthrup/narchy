@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  */
 public class UniExec extends Exec {
 
-    static final int inputQueueCapacityPerThread = 128;
+    static final int inputQueueCapacityPerThread = 256;
 
     protected final MetalConcurrentQueue in;
 

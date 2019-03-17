@@ -80,6 +80,10 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
     protected abstract Y valueInternal(B b, float pri);
 
+    @Override
+    public int size() {
+        return Math.max(bag.size(), Math.min(bag.capacity(), pre.size()));
+    }
 
     @Override
     public final Y put(Y x) {

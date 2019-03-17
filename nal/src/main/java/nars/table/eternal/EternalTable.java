@@ -103,8 +103,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
                 //r = lock.tryConvertToWriteLock(r); //TODO
 
-                wasCapacity = capacity();
-
                 int s = size;
                 if (s > 0 && (s > c)) {
                     trash = new FasterList(s - c);
@@ -113,30 +111,23 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                     }
                 }
 
-                if (wasCapacity != c)
-                    resize(c);
+                resize(c);
             }
             //}
         } finally {
             lock.unlock(r);
         }
 
-        if (trash != null) {
-
-
+        if (trash != null)
             trash.forEach(Task::delete);
-
-        }
-
-
     }
 
 
     @Override
     public Task[] toArray() {
 
-        long l = lock.readLock();
-        try {
+        //long l = lock.readLock();
+//        try {
             int s = this.size;
             if (s == 0)
                 return Task.EmptyArray;
@@ -144,9 +135,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                 Task[] list = this.items;
                 return Arrays.copyOf(list, Math.min(s, list.length));
             }
-        } finally {
-            lock.unlock(l);
-        }
+//        } finally {
+//            lock.unlock(l);
+//        }
 
     }
 

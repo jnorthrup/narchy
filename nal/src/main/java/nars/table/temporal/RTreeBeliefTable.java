@@ -264,11 +264,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         FloatFunction<Task> taskStrength = null;
         FloatRank<TaskRegion> leafRegionWeakness = null;
         int e = 0, cap;
-        long now = nar.time();
+        long atStart;
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
-                taskStrength = taskStrength(beliefOrGoal, now, nar.dur(), Tense.occToDT(tableDur()));
-                leafRegionWeakness = regionWeakness(now, beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
+                atStart = nar.time();
+                taskStrength = taskStrength(beliefOrGoal, atStart, nar.dur(), Tense.occToDT(tableDur()));
+                leafRegionWeakness = regionWeakness(atStart, beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
             }
             if (!compress(treeRW,  /** only limit by inputRegion on first iter */
                     taskStrength, leafRegionWeakness,

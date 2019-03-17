@@ -36,29 +36,23 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
     private final Finger finger;
     private final NewtKeyboard keyboard;
 
+
     public final Stacking layers = new Stacking() {
+
+        private transient int _w, _h;
+
+        private final BiConsumer<GL2, SurfaceRender> reset = (g, rr) -> {
+            rr.pw = _w;
+            rr.ph = _h;
+            rr.x1 = rr.y1 = 0;
+            rr.x2 = _w; rr.y2 = _h;
+        };
+
         @Override protected void compileChildren(SurfaceRender r) {
-            int w = display.getWidth(), h = display.getHeight();
-            BiConsumer<GL2, SurfaceRender> reset = (g, rr) -> {
-
-
-//                g.glPushMatrix();
-
-                //rr.set(w/2, h/2, w, h);
-                rr.pw = w;
-                rr.ph = h;
-                rr.x1 = rr.y1 = 0;
-                rr.x2 = w; rr.y2 = h;
-                //rr.scaleX = 1; rr.scaleY = 1;
-                //rr.restart(w, h);
-                //rr.set(0.5f, 0.5f, 1, 1);
-            };
+            _w = display.getWidth(); _h = display.getHeight();
             forEach(c -> {
                 r.on(reset);
                 c.recompile(r);
-//                r.on((g,rr)-> {
-//                    g.glPopMatrix();
-//                });
             });
         }
     };
@@ -87,8 +81,8 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
             content.set(_content);
             layers.add(content);
 
-//            layers.add(finger.zoomBoundsSurface(content.cam));
-            layers.add(finger.cursorSurface());
+            layers.add(finger.zoomBoundsSurface(content.cam));
+            layers.add(finger.cursor());
 
 //        //addOverlay(this.keyboard.keyFocusSurface(cam));
 //        layers.add((Surface) hud);

@@ -2,6 +2,7 @@ package nars.exe.impl;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.math.FloatAveraged;
 import jcog.random.SplitMix64Random;
 import jcog.util.ArrayUtils;
 import nars.exe.Causable;
@@ -18,8 +19,9 @@ public class WorkerExec extends ThreadedExec {
 
     /**
      * process sub-timeslice divisor
+     * TODO auto-calculate
      */
-    double granularity = 8;
+    double granularity = 2;
     private static final long subCycleMinNS = 50_000;
     private long subCycleMaxNS;
 
@@ -52,7 +54,7 @@ public class WorkerExec extends ThreadedExec {
         long prioLast = ETERNAL;
         private int n;
 
-        private long priorityPeriod;
+        private long rescheduleCycles;
         boolean reprioritize = true;
 
         WorkPlayLoop() {
@@ -75,18 +77,25 @@ public class WorkerExec extends ThreadedExec {
 //            }
 //        }
 
+
+        //TODO use a double averaged
+        final FloatAveraged workTimeMean = new FloatAveraged(0.1f);
+
         @Override
         public void run() {
 
             while (alive) {
 
+                long workTime = work(1, schedule);
+                //TODO use time-averaged workTime
+                float workTimeMean = this.workTimeMean.valueOf((float)(workTime/1.0E6));
                 long playTime =
-                        threadWorkTimePerCycle;
+                        Math.round(threadWorkTimePerCycle - (workTimeMean*1.0E6));
 
                 if (playTime > 0)
                     play(playTime);
 
-                work(1f, schedule);
+
 
                 sleep();
             }
@@ -111,7 +120,7 @@ public class WorkerExec extends ThreadedExec {
             do {
 
                 long now = nar.time();
-                if (reprioritize || now > prioLast + priorityPeriod) {
+                if (reprioritize || now > prioLast + rescheduleCycles) {
                     reprioritize = false;
 
 
@@ -127,7 +136,7 @@ public class WorkerExec extends ThreadedExec {
                 Causable c = next.can;
 
                 boolean played = false;
-                if (sTime <= 0 || c.sleeping()) {
+                if (sTime <= subCycleMinNS/2 || c.sleeping()) {
 
                 } else {
 
@@ -136,7 +145,7 @@ public class WorkerExec extends ThreadedExec {
 
                         long before = nanoTime();
 
-                        long useNS = Util.clampSafe(sTime / priorityPeriod, subCycleMinNS, subCycleMaxNS);
+                        long useNS = Util.clampSafe(sTime / rescheduleCycles, subCycleMinNS, subCycleMaxNS);
 
                         try {
 
@@ -168,6 +177,10 @@ public class WorkerExec extends ThreadedExec {
 //                );
         }
 
+        /**
+         *
+         * @param workTimeNS  expected worktime nanoseconds per cycle
+         */
         private void prioritize(long workTimeNS) {
 
             int n = this.n;
@@ -177,9 +190,10 @@ public class WorkerExec extends ThreadedExec {
 //                /** expected time will be equal to or less than the max due to various overheads on resource constraints */
 //                double expectedWorkTimeNS = (((double)workTimeNS) * expectedWorkTimeFactor); //TODO meter and predict
 
-            priorityPeriod =
+            //TODO abstract
+            rescheduleCycles =
                     //nar.dur(); //update current dur
-                    8 * nar.dtDither();
+                    16 * nar.dtDither();
 
             subCycleMaxNS = (long) ((workTimeNS) / granularity);
 
@@ -202,8 +216,9 @@ public class WorkerExec extends ThreadedExec {
             long shift = minTime < 0 ? 1 - minTime : 0;
 //            System.out.println(subCycleMinNS + " " + subCycleMaxNS /* actualCycleNS */);
             for (TimedLink.MyTimedLink m : play) {
-                double t = shift + workTimeNS * m.pri();
-                m.add(Math.max(0, Math.round(t * priorityPeriod)), -workTimeNS * priorityPeriod, +workTimeNS * priorityPeriod);
+                double t = workTimeNS * m.pri();
+                m.add(Math.max(subCycleMinNS, Math.round(shift + t * rescheduleCycles)),
+                        -workTimeNS * rescheduleCycles, +workTimeNS * rescheduleCycles);
             }
 //                }
         }

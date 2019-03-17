@@ -114,7 +114,7 @@ abstract public class Container extends Surface {
         if (showing() && childrenCount() > 0) {
 
             v2 fp = finger.posGlobal(this);
-            if (bounds.contains(fp)) {
+//            if (bounds.contains(fp)) {
 
                 Surface[] found = new Surface[1];
                 whileEachReverse(c -> {
@@ -135,7 +135,7 @@ abstract public class Container extends Surface {
 
                 });
                 return found[0];
-            }
+//            }
 
         }
 

@@ -32,7 +32,10 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     public static final Surface[] EmptySurfaceArray = new Surface[0];
 
     private final static AtomicInteger serial = new AtomicInteger();
+
+    /** whether content can be expected outside of the bounds, ex: in order to react to events */
     protected boolean clipBounds = true;
+
     /**
      * serial id unique to each instanced surface
      */

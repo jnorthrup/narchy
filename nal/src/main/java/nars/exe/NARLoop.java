@@ -5,6 +5,7 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.control.NARService;
+import nars.term.atom.Atom;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
  * as a loop at a certain frequency.
  */
 public class NARLoop extends InstrumentedLoop {
+
+    static final Atom NAR_LOOP = $.the(NARLoop.class);
 
     private final NAR nar;
 
@@ -24,7 +27,7 @@ public class NARLoop extends InstrumentedLoop {
     public NARLoop(@NotNull NAR n) {
         super();
         nar = n;
-        this.service = new NARService($.identity(this), n) {
+        this.service = new NARService($.inh(NAR_LOOP, n.self()), n) {
 
         };
         n.on(service);
@@ -38,15 +41,12 @@ public class NARLoop extends InstrumentedLoop {
     @Override
     public final boolean next() {
 
-        try {
-            nar.time.cycle(nar);
+        nar.time.cycle(nar);
 
-//        if (async) {
-//            nar.eventCycle.emitAsync(nar, nar.exe, () -> ready());
-//        } else {
+        if (nar.exe.concurrent()) {
+            nar.eventCycle.emitAsync(nar, nar.exe, this::ready);
+        } else {
             nar.eventCycle.emit(nar);
-//        }
-        } finally {
             ready();
         }
 

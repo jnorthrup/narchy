@@ -373,7 +373,7 @@ abstract public class Finger {
     /**
      * visual overlay representation of the Finger; ie. cursor
      */
-    public Surface cursorSurface() {
+    public Surface cursor() {
         return new FingerRendererSurface();
     }
 

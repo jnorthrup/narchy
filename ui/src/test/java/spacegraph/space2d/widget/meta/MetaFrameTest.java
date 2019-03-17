@@ -9,6 +9,6 @@ class MetaFrameTest {
 
     public static void main(String[] args) {
 
-        window(new Scale(new MetaFrame(new PushButton("x")), 0.1f), 800, 800);
+        window(new Scale(new MetaFrame(new PushButton("x")), 0.5f), 800, 800);
     }
 }

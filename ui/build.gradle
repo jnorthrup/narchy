@@ -4,6 +4,10 @@
 //        maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
 //    }
 //}
+plugins {
+    id 'application'
+    id 'java'
+}
 
 def boofVersion =
         '0.32'
@@ -69,3 +73,5 @@ dependencies {
 
 
 }
+
+mainClassName = 'spacegraph.SpaceGraph'

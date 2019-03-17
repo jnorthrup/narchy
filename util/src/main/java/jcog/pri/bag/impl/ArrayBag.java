@@ -157,7 +157,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         int s;
         if (cleanIfFull()) {
             writing = true;
-            lock[0] = this.writeLock(lock[0]);
+            lock[0] = this.writeFromRead(lock[0]);
             s = clean(update);
         } else {
             s = size();
@@ -179,7 +179,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         }
 
         if (!writing)
-            lock[0] = writeLock(lock[0]);
+            lock[0] = writeFromRead(lock[0]);
 
         if (lastToRemove!=null) {
             //removeFromMap(items.removeLast());
@@ -580,7 +580,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     private void remove(Y y, int suspectedPosition, long l, boolean weak) {
 
-        //TODO convert to write lock from readlock
         boolean close = false;
         if (l == 0) {
             if (weak) {
@@ -598,7 +597,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             if (items.get(suspectedPosition) == y) {
 
 
-                long ll = weak ? tryWriteLock(l) : writeLock(l);
+                long ll = weak ? tryWriteFromRead(l) : writeFromRead(l);
                 if (ll == 0) {
                     y.delete();
                     return;
@@ -645,10 +644,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             if (existing == incoming)
                 return incoming; //exact same instance
 
-
-
             if (existing != null) {
-                l = writeLock(l);
+                l = writeFromRead(l);
                 return merge(existing, incoming, l, overflow);
             } else {
 
@@ -662,7 +659,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
                 } else {
 
-                    l = writeLock(l);
+                    l = writeFromRead(l);
 
                     int i = items.add(incoming, -p, this);
                     assert i >= 0;
@@ -702,12 +699,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     }
 
-    protected long writeLock(long l) {
+    protected long writeFromRead(long l) {
         long ll = lock.tryConvertToWriteLock(l);
         if (ll != 0) { l = ll; } else { lock.unlockRead(l);l = lock.writeLock(); }
         return l;
     }
-    protected long tryWriteLock(long l) {
+    protected long tryWriteFromRead(long l) {
         long ll = lock.tryConvertToWriteLock(l);
         if (ll != 0) { l = ll; } else { return 0; }
         return l;

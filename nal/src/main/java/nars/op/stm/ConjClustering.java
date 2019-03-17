@@ -163,8 +163,6 @@ public class ConjClustering extends Causable {
 
         update(nar);
 
-        if (data.bag.isEmpty()) return;
-
         if (learn.compareAndSet(true, false)) {
             //learn once per duration
             data.learn(forgetRate(), 1);

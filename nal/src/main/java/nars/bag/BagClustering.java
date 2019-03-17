@@ -138,24 +138,24 @@ public class BagClustering<X> {
     }
     public void learn(float forgetRate, int learningIterations) {
 
-        int s = bag.size();
-        if (s > 0) {
+//        int s = bag.size();
+//        if (s > 0) {
 
             @Nullable Consumer<VLink<X>> f = bag.forget(forgetRate);
             bag.commit(v -> {
                 X tt = v.get();
                 if ((tt instanceof Prioritized) && ((Prioritized) tt).isDeleted())
                     v.delete();
-                else
+                else if (f!=null)
                     f.accept(v);
             });
 
 //            net.alpha.setAt(0.8f / s);
             float lambdaFactor = 1f;
-            net.setLambdaPeriod((int) Math.ceil(s * lambdaFactor));
+            net.setLambdaPeriod((int) Math.ceil((bag.capacity()) * lambdaFactor));
             for (int i = 0; i < learningIterations; i++)
                 bag.forEach(this::learn);
-        }
+//        }
     }
 
 //    private List<VLink<X>> itemsSortedByCentroid(Random rng) {

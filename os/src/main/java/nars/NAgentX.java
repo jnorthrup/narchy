@@ -450,7 +450,7 @@ abstract public class NAgentX extends NAgent {
 
         //new StatementLinker(n);
         new PuncNoise(n);
-        new Eternalizer(n);
+        //new Eternalizer(n);
 
 //        new STMLinkage(n, 1);
 
@@ -460,8 +460,8 @@ abstract public class NAgentX extends NAgent {
 
 
         List<ConjClustering> conjClusters = List.of(
-            new ConjClustering(n, BELIEF, 32, 256),
-            new ConjClustering(n, GOAL, 4, 16)
+            new ConjClustering(n, BELIEF, 32, 256)
+            //new ConjClustering(n, GOAL, 4, 16)
         );
 
 //        window(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
