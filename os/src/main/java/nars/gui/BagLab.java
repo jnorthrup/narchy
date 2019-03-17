@@ -102,10 +102,9 @@ public class BagLab {
         int capacity = 512;
         BagLab bagLab;
         bagLab = new BagLab(
-                new PLinkArrayBag(capacity,
+                new PLinkArrayBag(PriMerge.avg, capacity,
                         //plus,
                         //replace,
-                        PriMerge.avg,
                         new HashMap())
 
                 //new DefaultHijackBag<>(avg,capacity,4)

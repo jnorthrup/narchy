@@ -222,11 +222,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     }
 
     @Override
-    public final int opBit() {
-        return op.bit;
-    }
-
-    @Override
     public final String toString() {
         return Compound.toString(this);
     }

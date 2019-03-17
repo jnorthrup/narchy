@@ -16,6 +16,9 @@ import java.util.function.Consumer;
  */
 abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBag<X, Y> {
 
+    /** how many times the bag can be grown above its conventional capacity for extra space during merge */
+    static final int OVER_CAPACITY_FACTOR = 4;
+
     final AtomicBoolean busy = new AtomicBoolean(false);
 
     /**
@@ -45,19 +48,26 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
         if (busy.compareAndSet(false, true)) {
             try {
 
-                bag.commit(before); //TODO this can elide pre-sorting
+                bag.commit(before);
 
                 if (!pre.isEmpty()) {
 
-                    //int cap = bag.capacity();
+                    //before
+//                    boolean growDuringMerge = bag instanceof ArrayBag;
+//                    int cap = bag.capacity();
+//                    if (growDuringMerge) {
+//                        bag.setCapacity(Math.max(cap, Math.min(cap * OVER_CAPACITY_FACTOR, bag.size() + pre.size()))); //expand before
+//                    }
 
-                    //bag.setCapacity(Math.max(cap, Math.min(cap*2, bag.size() + pre.size()))); //expand before
-
+                    //merge
                     pre.drain(bag::putAsync, this::valueInternal);
 
-                    //bag.setCapacity(cap); //contract after
+                    //after
+//                    if (growDuringMerge) {
+//                        bag.setCapacity(cap); //contract after
+//                    }
 
-                    bag.commit(after); //force sort after
+                    //bag.commit(after); //force sort after
                 }
 
             } finally {

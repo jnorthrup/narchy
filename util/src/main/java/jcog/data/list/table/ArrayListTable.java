@@ -58,12 +58,10 @@ abstract public class ArrayListTable<K, V> implements Table<K, V> {
         return map.containsKey(k);
     }
 
-
     @Override
     public final int capacity() {
-        return CAPACITY.get(this);
+        return CAPACITY.getOpaque(this);
     }
-
 
     @Override
     public void setCapacity(int newCapacity) {

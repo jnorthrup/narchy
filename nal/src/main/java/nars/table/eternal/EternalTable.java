@@ -46,12 +46,12 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void forEachTask(Consumer<? super Task> x) {
-        long r = lock.readLock();
-        try {
+//        long r = lock.readLock();
+//        try {
             this.forEach(x);
-        } finally {
-            lock.unlockRead(r);
-        }
+//        } finally {
+//            lock.unlockRead(r);
+//        }
     }
 
 
@@ -77,12 +77,12 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public void match(Answer t) {
-        long r = lock.readLock();
-        try {
+        //long r = lock.readLock();
+        //try {
             whileEach(t::tryAccept);
-        } finally {
-            lock.unlockRead(r);
-        }
+//        } finally {
+//            lock.unlockRead(r);
+//        }
     }
 
     @Override
@@ -154,16 +154,17 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     //    @Override
     public void clear() {
 
-        //long l = lock.readLock();
-        long l = lock.writeLock();
-        try {
-            if (size() > 0) {
-                //TODO l = lock.tryConvertToWriteLock(l);
-//        forEach(ScalarValue::delete);
-                super.clear();
+        if (size() > 0) {
+            //long l = lock.readLock();
+            long l = lock.writeLock();
+            try {
+                if (size() > 0) {
+                    //        forEach(ScalarValue::delete);
+                    super.clear();
+                }
+            } finally {
+                lock.unlock(l);
             }
-        } finally {
-            lock.unlock(l);
         }
 
     }
@@ -228,12 +229,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             int index = indexOf(x, this);
             if (index != -1) {
                 long rr = lock.tryConvertToWriteLock(r);
-                if (rr==0) {
-                    lock.unlockRead(r);
-                    lock.writeLock();
-                } else {
-                    r = rr;
-                }
+                if (rr==0) { lock.unlockRead(r); r = lock.writeLock(); } else { r = rr; }
                 removed = remove(index);
                 assert (removed != null);
             } else {
@@ -428,7 +424,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             return;
         }
 
-        return;
     }
 
 

@@ -11,7 +11,7 @@ public class PLinkArrayBag<X> extends PriReferenceArrayBag<X,PriReference<X>> {
         super(mergeFunction, cap);
     }
 
-    public PLinkArrayBag(int cap, PriMerge mergeFunction, Map<X, PriReference<X>> map) {
+    public PLinkArrayBag(PriMerge mergeFunction, int cap, Map<X, PriReference<X>> map) {
         super(mergeFunction, cap, map);
     }
 

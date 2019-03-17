@@ -496,14 +496,7 @@ public class TextUI {
                         return true;
                     }
                 };
-                
 
-
-
-
-
-
-                
                 update = newGUIUpdate(this::update);
 
             }

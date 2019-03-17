@@ -29,6 +29,7 @@ import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.time.event.DurService;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -90,7 +91,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         int c = linksCapacity.intValue();
         links = new TaskLinkBag(
                 new TaskLinkArrayBag(c)
-                //new TaskLinkHijackBag(c, 7)
+                //new TaskLinkHijackBag(c, 5)
         );
 
         links.setCapacity(linksCapacity.intValue());
@@ -311,7 +312,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {
 
         public TaskLinkArrayBag(int initialCapacity) {
-            super(Param.tasklinkMerge, initialCapacity, PriBuffer.newMap());
+            super(Param.tasklinkMerge, initialCapacity, new UnifiedMap());
         }
 
 //        @Override

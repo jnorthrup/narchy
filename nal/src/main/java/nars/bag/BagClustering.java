@@ -69,8 +69,9 @@ public class BagClustering<X> {
         this.net = new NeuralGasNet(model.dims, centroids, model::distanceSq);
 
 
-        Bag<X, VLink<X>> b = new PriReferenceArrayBag<>(merge, initialCap, PriBuffer.newMap());
-        this.bag = new BufferedBag.SimpleBufferedBag<>(b, new PriBuffer<>(merge));
+        this.bag = new BufferedBag.SimpleBufferedBag<>(
+                new PriReferenceArrayBag<>(merge, initialCap),
+                new PriBuffer<>(merge));
 
     }
 
@@ -137,15 +138,17 @@ public class BagClustering<X> {
     }
     public void learn(float forgetRate, int learningIterations) {
 
-        bag.commit(t -> {
-            X tt = t.get();
-            if ((tt instanceof Prioritized) && ((Prioritized) tt).isDeleted())
-                t.delete();
-        });
-
         int s = bag.size();
         if (s > 0) {
-            bag.commit(bag.forget(forgetRate));
+
+            @Nullable Consumer<VLink<X>> f = bag.forget(forgetRate);
+            bag.commit(v -> {
+                X tt = v.get();
+                if ((tt instanceof Prioritized) && ((Prioritized) tt).isDeleted())
+                    v.delete();
+                else
+                    f.accept(v);
+            });
 
 //            net.alpha.setAt(0.8f / s);
             float lambdaFactor = 1f;

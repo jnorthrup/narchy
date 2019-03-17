@@ -24,18 +24,18 @@ class ArrayBagTest {
 
 
     private ArrayBag<PLink<String>, PLink<String>> curveBag(int n, PriMerge mergeFunction) {
-        return new PLinkArrayBag(n, mergeFunction, new HashMap<>(n));
+        return new PLinkArrayBag(mergeFunction, n, new HashMap<>(n));
     }
 
     @Test
     void testBasicInsertionRemovalArray() {
-        testBasicInsertionRemoval(new PLinkArrayBag<>(1, plus, new HashMap<>(1)));
+        testBasicInsertionRemoval(new PLinkArrayBag<>(plus, 1, new HashMap<>(1)));
     }
 
 
     @Test
     void testBudgetMerge() {
-        PLinkArrayBag<String> a = new PLinkArrayBag<String>(4, plus, new HashMap<>(4));
+        PLinkArrayBag<String> a = new PLinkArrayBag<String>(plus, 4, new HashMap<>(4));
         assertEquals(0, a.size());
 
         a.put(new PLink("x", 0.1f));
@@ -70,7 +70,7 @@ class ArrayBagTest {
 
     @Test
     void testSort() {
-        PLinkArrayBag a = new PLinkArrayBag(4, plus, new HashMap<>(4));
+        PLinkArrayBag a = new PLinkArrayBag(plus, 4, new HashMap<>(4));
 
         a.put(new PLink("x", 0.1f));
         a.put(new PLink("y", 0.2f));
@@ -104,7 +104,7 @@ class ArrayBagTest {
 
     @Test
     void testCapacity() {
-        PLinkArrayBag a = new PLinkArrayBag(2, plus, new HashMap<>(2));
+        PLinkArrayBag a = new PLinkArrayBag(plus, 2, new HashMap<>(2));
 
         a.put(new PLink("x", 0.1f));
         a.put(new PLink("y", 0.2f));
@@ -127,14 +127,14 @@ class ArrayBagTest {
 
     @Test
     void testRemoveByKey() {
-        BagTest.testRemoveByKey(new PLinkArrayBag(2, plus, new HashMap<>(2)));
+        BagTest.testRemoveByKey(new PLinkArrayBag(plus, 2, new HashMap<>(2)));
     }
 
     @Disabled
     @Test
     void testInsertOrBoostDoesntCauseSort() {
         final int[] sorts = {0};
-        @NotNull ArrayBag<PLink<String>, PLink<String>> x = new PLinkArrayBag(4, PriMerge.plus, new HashMap<>()) {
+        @NotNull ArrayBag<PLink<String>, PLink<String>> x = new PLinkArrayBag(PriMerge.plus, 4, new HashMap<>()) {
             @Override
             protected void sort() {
                 sorts[0]++;

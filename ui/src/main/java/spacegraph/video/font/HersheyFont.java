@@ -73,13 +73,13 @@ public final class HersheyFont {
     public static void textStart(GL2 gl, float scaleX, float scaleY, float x, float y, float z) {
 
         gl.glTranslatef(x, y, z);
-        gl.glScalef(scaleX / 20f, scaleY / 20f, 1f);
+        gl.glScalef(scaleX / 20, scaleY / 20, 1);
     }
 
     public static void textNext(GL2 gl, char c, float x) {
 
         int ci = c - 32;
-        if (ci >= 0 && (ci < fontMono.length)) {
+        if (ci >= 0 && ci < fontMono.length) {
             fontMono[ci].draw(gl, x * 20);
         }
 
@@ -103,19 +103,23 @@ public final class HersheyFont {
 
         int curX, curY;
         boolean penUp = true;
-        ByteArrayList currentSeg = new ByteArrayList();
+        ByteArrayList currentSeg = new ByteArrayList(8);
 
-        for (int i = 0; i < spec.length() - 1; i += 2) {
-            if (spec.charAt(i + 1) == 'R' && spec.charAt(i) == ' ') {
+        int ss = spec.length() - 1;
+        for (int i = 0; i < ss; i += 2) {
+
+            char ci = spec.charAt(i), cii = spec.charAt(i + 1);
+
+            if (cii == 'R' && ci == ' ') {
                 penUp = true;
                 segments.add(currentSeg.toArray());
-                currentSeg = new ByteArrayList();
+                currentSeg = new ByteArrayList(8);
                 continue;
             }
 
-            curX = (spec.charAt(i)) - offsetR;
+            curX = ci - offsetR;
             currentSeg.add((byte) curX);
-            curY = (spec.charAt(i + 1)) - offsetR;
+            curY = cii - offsetR;
             currentSeg.add((byte) (10 - curY));
         }
         if (!currentSeg.isEmpty())
@@ -190,12 +194,14 @@ public final class HersheyFont {
     void draw(GL2 gl, float x) {
 
 
-        if (x != 0)
+        boolean xShifted = Math.abs(x) > Float.MIN_NORMAL;
+
+        if (xShifted)
             gl.glTranslatef(x, 0, 0);
 
         draw(gl);
 
-        if (x != 0)
+        if (xShifted)
             gl.glTranslatef(-x, 0, 0);
     }
 

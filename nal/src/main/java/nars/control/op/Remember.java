@@ -1,9 +1,11 @@
 package nars.control.op;
 
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.CauseMerge;
 import nars.op.stm.ConjClustering;
@@ -160,7 +162,14 @@ public class Remember extends AbstractTask {
         }
 
         if (c == null) {
-            c = (TaskConcept) n.conceptualize(input);
+            Concept cc = n.conceptualize(input);
+            if (!(cc instanceof TaskConcept)) {
+                //may be an atomic functor term, not sure
+                if (Param.DEBUG)
+                    throw new WTF();
+                return;
+            }
+            c = (TaskConcept) cc;
             if (c == null)
                 return;
         }

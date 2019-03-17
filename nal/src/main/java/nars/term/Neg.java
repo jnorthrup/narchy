@@ -20,11 +20,6 @@ public final class Neg extends UnitCompound implements The {
         return NEG;
     }
 
-    @Override
-    public int opBit() {
-        return NEG.bit;
-    }
-
 
     @Override
     public Term sub() {

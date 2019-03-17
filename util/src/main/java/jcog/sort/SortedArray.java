@@ -448,19 +448,18 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     }
 
+
     public int add(X element, float elementRank, FloatFunction<X> cmp) {
         int s = size;
         assert (elementRank == elementRank);
 
         final int index = find(element, elementRank, cmp, false, true);
 
-        int result = insert(element, elementRank, index, s);
+        return insert(element, elementRank, index, s);
 
-//        if (!isSorted(cmp))
-//            throw new WTF();
-
-        return result;
+//        if (!isSorted(cmp)) throw new WTF();
     }
+
 
     private int insert(X element, float elementRank, int index, int size) {
 //        assert (index != -1);
@@ -481,7 +480,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     protected int addEnd(X e, float elementRank) {
         int s = this.size;
         Object[] l = this.items;
-        if (l.length == s) {
+
+        if (capacity() == s) {
             if (grows()) {
                 l = resize(grow(s));
             } else {
@@ -505,15 +505,17 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         X[] list = this.items;
         boolean adding;
-        if (list.length == oldSize) {
+        int c = capacity();
+        if (c == oldSize) {
             if (!grows()) {
                 rejectExisting(list[oldSize - 1]); //pop
                 adding = false;
             } else {
                 int newCapacity = grow(oldSize);
-                assert (newCapacity > list.length);
+                assert (newCapacity > c);
                 this.items = list = copyOfArray(list, newCapacity);
                 adding = true;
+                c = newCapacity;
             }
         } else {
             adding = true;
@@ -522,7 +524,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (adding)
             SIZE.getAndIncrement(this);
 
-        int ss = Math.min(oldSize - 1, list.length - 2);
+        int ss = Math.min(oldSize - 1, c - 2);
         if (ss + 1 - index >= 0)
             System.arraycopy(list, index, list, index + 1, ss + 1 - index);
 
@@ -731,10 +733,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     @Nullable
     public final X first() {
         return size == 0 ? null : items[0];
-//        X[] ii = items;
-//        return ii.length == 0 ? null :
-//                //(X) ITEM.getOpaque(items, 0);
-//                ii[0];
     }
 
     /**
@@ -743,13 +741,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     @Nullable
     public final X last() {
         int size = this.size;
-        if (size == 0) return null;
-        return items[size - 1];
-//        X[] ll = items;
-//        int i = Math.min(ll.length - 1, size - 1);
-        //return (X) ITEM.getOpaque(ll, i);
-        //return ll[i];
-
+        return size == 0 ? null : items[size - 1];
     }
 
     public final void forEach(Consumer<? super X> action) {
@@ -825,7 +817,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         X[] ii = items;
         int s = size();
         /*(X) ITEM.getOpaque(items, i)*/
-        return ArrayIterator.stream(ii, Math.min(ii.length, s));
+        return ArrayIterator.stream(ii, Math.min(capacity(), s));
 //        return s > 0 ?
 //                Arrays.stream(ii, 0, Math.min(ii.length, s))
 //                :

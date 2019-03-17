@@ -594,7 +594,7 @@ public final class Evolution {
         }
 
         private ArrayBag<GeneticOperator, PLink<GeneticOperator>> createDefaultGeneticOperators() {
-            ArrayBag<GeneticOperator, PLink<GeneticOperator>> operators = new PLinkArrayBag<>(10, PriMerge.plus, new HashMap());
+            ArrayBag<GeneticOperator, PLink<GeneticOperator>> operators = new PLinkArrayBag<>(PriMerge.plus, 10, new HashMap());
 
 
             TreeGenerator treeGenerator = TreeGeneratorImpl.grow(_primitiveSet, rng);

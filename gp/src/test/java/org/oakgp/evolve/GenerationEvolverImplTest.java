@@ -45,7 +45,7 @@ public class GenerationEvolverImplTest {
         
         float elitismRate = 0.5f;
 
-        ArrayBag<GeneticOperator, PLink<GeneticOperator>> operators = new PLinkArrayBag<>(2, PriMerge.plus, new HashMap());
+        ArrayBag<GeneticOperator, PLink<GeneticOperator>> operators = new PLinkArrayBag<>(PriMerge.plus, 2, new HashMap());
         GeneticOperator generator1 = mock(GeneticOperator.class);
         GeneticOperator generator2 = mock(GeneticOperator.class);
         operators.put(new PLink(generator1, 0.3f));

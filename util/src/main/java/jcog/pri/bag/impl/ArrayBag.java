@@ -19,6 +19,7 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -44,7 +45,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     private final StampedLock lock = new StampedLock();
 
 
-    @Deprecated private final PriMerge mergeFunction;
+    @Deprecated
+    private final PriMerge mergeFunction;
 
     private transient ArrayHistogram hist = null;
 
@@ -53,7 +55,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     protected ArrayBag(PriMerge mergeFunction, int capacity) {
         this(mergeFunction,
                 //new HashMap<>(capacity, 0.5f)
-                new UnifiedMap<>(capacity, 1f)
+                new UnifiedMap<>(capacity, 0.5f)
         );
         setCapacity(capacity);
     }
@@ -118,7 +120,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      */
     @Override
     public void pressurize(float f) {
-        if (f==f && Math.abs(f) > Float.MIN_NORMAL)
+        if (f == f && Math.abs(f) > Float.MIN_NORMAL)
             PRESSURE.add(this, f);
     }
 
@@ -127,8 +129,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      */
     @Override
     public void depressurize(float f) {
-        if (f==f && Math.abs(f) > Float.MIN_NORMAL)
-            PRESSURE.update(this, (p, a)->Math.max(0,p-a), f);
+        if (f == f && Math.abs(f) > Float.MIN_NORMAL)
+            PRESSURE.update(this, (p, a) -> Math.max(0, p - a), f);
     }
 
     @Override
@@ -136,9 +138,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         assertUnitized(percentage);
 
         return
-            PRESSURE.getAndUpdate(this, (p,factor)-> p * factor, 1-percentage);
+                PRESSURE.getAndUpdate(this, (p, factor) -> p * factor, 1 - percentage);
     }
-
 
 
     /**
@@ -149,34 +150,46 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      * trash must be removed from the map, outside of critical section
      * may include the item being added
      */
-    private boolean tryInsertFull(Y toAdd, float toAddPri, @Nullable Consumer<Y> update) {
+    private boolean tryInsertFull(Y toAdd, float toAddPri, long[] lock, @Nullable Consumer<Y> update) {
 
-        int s = cleanIfFull() ? clean(update  /*|| (s == capacity) && get(0) instanceof PLinkUntilDeleted*/) : size();
+        boolean writing = false;
+
+        int s;
+        if (cleanIfFull()) {
+            writing = true;
+            lock[0] = this.writeLock(lock[0]);
+            s = clean(update);
+        } else {
+            s = size();
+        }
 
         int c = capacity();
 
-        if (s + 1 <= c) {
+        boolean free = s+1 <= c;
 
-            //space cleared for the new item
-
-            int i = items.add(toAdd, this);
-            assert (i >= 0);
-            return true;
-
+        Y lastToRemove;
+        if (!free) {
+            lastToRemove = items.last();
+            float priMin = pri(lastToRemove);
+            if (toAddPri <= priMin)
+                return false;
         } else {
-
-            if (toAddPri > priMin()) {
-
-                removeFromMap(items.removeLast());
-
-                int i = items.add(toAdd, this);
-                assert (i >= 0);
-
-                return true;
-            }
+            //space has been cleared for the new item
+            lastToRemove = null;
         }
 
-        return false;
+        if (!writing)
+            lock[0] = writeLock(lock[0]);
+
+        if (lastToRemove!=null) {
+            //removeFromMap(items.removeLast());
+            boolean removed = items.removeFast(lastToRemove, s-1); assert(removed);
+            removeFromMap(lastToRemove);
+        }
+
+        int i = items.add(toAdd, this); assert (i >= 0);
+
+        return true;
     }
 
     /**
@@ -190,6 +203,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     protected float sortedness() {
         return 1f;
     }
+
     protected void sort() {
         int s = size();
         if (s <= 1)
@@ -198,16 +212,16 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         float c = sortedness();
         int from, to;
 
-        if (c >= 1f-Float.MIN_NORMAL) {
+        if (c >= 1f - Float.MIN_NORMAL) {
             //int from /* inclusive */, int to /* inclusive */
             from = 0;
             to = s;
         } else {
-            int toSort = (int)Math.ceil(c * s);
+            int toSort = (int) Math.ceil(c * s);
             float f = ThreadLocalRandom.current().nextFloat();
-            int center = (int) (Util.sqr(f) * (s - toSort) + toSort/2); //sqr adds curve to focus on the highest priority subsection
-            from = Math.max(center - toSort/2, 0);
-            to = Math.min(center + toSort/2, s);
+            int center = (int) (Util.sqr(f) * (s - toSort) + toSort / 2); //sqr adds curve to focus on the highest priority subsection
+            from = Math.max(center - toSort / 2, 0);
+            to = Math.min(center + toSort / 2, s);
         }
 
 
@@ -234,9 +248,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         ArrayHistogram hist = this.hist;
         if (hist == null) {
             if (bins > 0)
-                hist = new ArrayHistogram(0, histRange-1, bins);
+                hist = new ArrayHistogram(0, histRange - 1, bins);
         } else {
-            hist = hist.clear(0, histRange-1, bins);
+            hist = hist.clear(0, histRange - 1, bins);
         }
         float q = Float.NaN;
         for (int i = 0; i < s; ) {
@@ -251,8 +265,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
             if (p == p) {
 
-                if (hist!=null)
-                    hist.addWithoutSettingMass(i,p);
+                if (hist != null)
+                    hist.addWithoutSettingMass(i, p);
 
                 m += p;
 
@@ -264,10 +278,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
                     }
                 }
 
-                if (q==q && p-q >= ScalarValue.EPSILON / 2) {
+                if (q == q && p - q >= ScalarValue.EPSILON / 2) {
                     //swap with previous (early progressive sorting pass)
                     Object x = l[i - 1];
-                    l[i-1] = y;
+                    l[i - 1] = y;
                     l[i] = x;
                     //q remains the previous of any next item
                 } else {
@@ -293,7 +307,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             s--;
         }
 
-        if (hist!=null) {
+        if (hist != null) {
             this.hist = hist;
             ArrayBag.MASS.set(this, hist.mass = m);
         }
@@ -301,7 +315,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         return s;
     }
 
-    /** override and return 0 to effectively disable histogram sampling (for efficiency if sampling isnt needed) */
+    /**
+     * override and return 0 to effectively disable histogram sampling (for efficiency if sampling isnt needed)
+     */
     protected int histogramBins() {
         return histogramBins(size());
     }
@@ -337,33 +353,33 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
 
         //while (true) {
-            Object[] ii;
-            int s;
-            int i;
-            while ((s = Math.min((ii = items.array()).length, size())) > 0) {
+        Object[] ii;
+        int s;
+        int i;
+        while ((s = Math.min((ii = items.array()).length, size())) > 0) {
 
-                i = sampleNext(rng, s);
+            i = sampleNext(rng, s);
 
-                Object x = ii[i];
+            Object x = ii[i];
 
-                if (x != null) {
-                    Y y = (Y) x;
-                    float yp = pri(y);
-                    if (yp != yp) {
-                        remove(y, i); //deleted, remove
-                    } else {
+            if (x != null) {
+                Y y = (Y) x;
+                float yp = pri(y);
+                if (yp != yp) {
+                    tryRemove(y, i); //deleted, remove
+                } else {
 
-                        SampleReaction next = each.apply(y);
+                    SampleReaction next = each.apply(y);
 
-                        if (next.remove)
-                            remove(y, i);
+                    if (next.remove)
+                        tryRemove(y, i);
 
-                        if (next.stop)
-                            return;
-                    }
+                    if (next.stop)
+                        return;
                 }
-
             }
+
+        }
 
 
         //}
@@ -379,12 +395,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             return 0;
         else {
             ArrayHistogram h = this.hist;
-            if (h == null || h.mass < ScalarValue.EPSILON*size)
+            if (h == null || h.mass < ScalarValue.EPSILON * size)
                 return rng.nextInt(size);
             else {
                 int index = (int) h.sample(rng);
                 if (index >= size)
-                    index = size-1;
+                    index = size - 1;
                 return index;
             }
             //return sampleNextLinear(rng, size);
@@ -393,11 +409,13 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
 
-    /** raw selection by index, with x^2 bias towards higher pri indexed items */
+    /**
+     * raw selection by index, with x^2 bias towards higher pri indexed items
+     */
     private static int sampleNextLinear(Random rng, int size) {
         float targetIndex = rng.nextFloat();
 
-        return Util.bin(targetIndex*targetIndex, size);
+        return Util.bin(targetIndex * targetIndex, size);
     }
 
 //    @Override public ArrayBag sample(Random rng, int max, Consumer<? super Y> each) {
@@ -434,7 +452,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         float indexNorm;
 
         if (range > ScalarValue.EPSILON) {
-            float balance = (max-med) / range; //measure of skewness or something; 0.5 = centered (median~=mean)
+            float balance = (max - med) / range; //measure of skewness or something; 0.5 = centered (median~=mean)
             //balance < 0.5: denser distribution of elements below the median
             //        > 0.5: denser dist above
             if (balance >= 0.5f)
@@ -554,17 +572,46 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
 
     private void remove(Y y, int suspectedPosition) {
+        remove(y, suspectedPosition, 0, false);
+    }
+    private void tryRemove(Y y, int suspectedPosition) {
+        remove(y, suspectedPosition, 0, true);
+    }
+
+    private void remove(Y y, int suspectedPosition, long l, boolean weak) {
 
         //TODO convert to write lock from readlock
-        long l = lock.writeLock();
+        boolean close = false;
+        if (l == 0) {
+            if (weak) {
+                l = lock.tryReadLock();
+                if (l == 0) {
+                    y.delete(); return; //just delete it for now
+                }
+            } else {
+                l = lock.readLock();
+            }
+            close = true;
+        }
+
         try {
             if (items.get(suspectedPosition) == y) {
+
+
+                long ll = weak ? tryWriteLock(l) : writeLock(l);
+                if (ll == 0) {
+                    y.delete();
+                    return;
+                }
+                l = ll;
+
                 items.remove(suspectedPosition);
                 removeFromMap(y);
                 return;
             }
         } finally {
-            lock.unlockWrite(l);
+            if (close)
+                lock.unlock(l);
         }
 
         remove(key(y)); //wasnt found with provided index, use standard method by key
@@ -579,8 +626,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     @Override
     public Y put(final Y incoming, final NumberX overflow) {
 
-
-
         final int capacity = this.capacity();
         if (capacity == 0)
             return null;
@@ -589,64 +634,55 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         boolean inserted;
 
-        Y mergeResult;
 
         float p = incoming.priElseZero();
 
-        long r = lock.readLock();
+        long l = lock.readLock();
         try {
 
             Y existing = map.get(key);
 
-            if (existing == incoming) {
+            if (existing == incoming)
+                return incoming; //exact same instance
 
-                //exact same instance
-                mergeResult = incoming;
-                inserted = false;
 
+
+            if (existing != null) {
+                l = writeLock(l);
+                return merge(existing, incoming, l, overflow);
             } else {
-                long rr = lock.tryConvertToWriteLock(r);
 
-                if (rr != 0) {
-                    r = rr;
-                } else {
-                    lock.unlockRead(r);
-                    r = lock.writeLock();
-                }
+                int s = size();
 
-                if (existing != null) {
-                    depressurize(p); //undo the initial pressurization
-                    mergeResult = merge(existing, incoming, overflow);
-                    inserted = false;
+                if (s >= capacity) {
+
+                    long[] lock = new long[] { l };
+                    inserted = tryInsertFull(incoming, p, lock,null);
+                    l = lock[0];
+
                 } else {
 
-                    mergeResult = null;
+                    l = writeLock(l);
 
-                    int s = size();
-
-                    if (s >= capacity) {
-                        inserted = tryInsertFull(incoming, p, null);
-                    } else {
-                        int i = items.add(incoming, -p, this);
-                        assert i >= 0;
-                        inserted = true;
-                    }
-
-                    if (inserted) {
-                        map.put(key, incoming);
-                    }
+                    int i = items.add(incoming, -p, this);
+                    assert i >= 0;
+                    inserted = true;
 
                 }
+
+                if (inserted) {
+                    Y exists = map.put(key, incoming);
+                    assert (exists == null);
+                }
+
             }
 
+
         } finally {
-            lock.unlock(r);
+            lock.unlock(l);
         }
 
-        if (mergeResult != null)
-            return mergeResult; //merge finished
-        else
-            pressurize(p);
+        pressurize(p);
 
         if (!inserted) {
 
@@ -664,6 +700,17 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             return incoming;
         }
 
+    }
+
+    protected long writeLock(long l) {
+        long ll = lock.tryConvertToWriteLock(l);
+        if (ll != 0) { l = ll; } else { lock.unlockRead(l);l = lock.writeLock(); }
+        return l;
+    }
+    protected long tryWriteLock(long l) {
+        long ll = lock.tryConvertToWriteLock(l);
+        if (ll != 0) { l = ll; } else { return 0; }
+        return l;
     }
 
 //    @Override
@@ -685,25 +732,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     /**
      * will not need to be sorted after calling this; the index is automatically updated
      */
-    private Y merge(Y existing, Y incoming,  @Nullable NumberX overflow) {
-
+    private Y merge(Y existing, Y incoming, long lock, @Nullable NumberX overflow) {
 
         int posBefore = items.indexOf(existing, this, true);
-//        if (posBefore == -1) {
-//            //items.indexOf(existing, this, true);
-//
-////            //try harder: compare by keys, even if the value refuse to respond true to equals()
-////            X ki = key(incoming);
-////            int s = size();
-////            for (int i = 0; i < s; i++) {
-////                if (ki.equals(key(items.get(i)))) {
-////                    posBefore = i;
-////                    break;
-////                }
-////            }
-////            if (posBefore == -1)
-//            throw new RuntimeException("Bag fault: " + existing + " not found in array");
-//        }
 
         Y result;
 
@@ -712,27 +743,30 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         float overflo = merge(existing, incoming);
         float priAfter = existing.pri();
         if (priAfter != priAfter) {
-            //got deleted
-            remove(existing, posBefore);
             priAfter = 0;
             result = null;
         } else {
             result = existing;
         }
 
-        if (overflo!=0 && overflow!=null)
+        if (overflo != 0 && overflow != null)
             overflow.add(overflo);
 
         float delta = priAfter - priBefore;
 
 
-        if (Math.abs(delta) >= ScalarValue.EPSILON) {
+        if (result != null && Math.abs(delta) >= ScalarValue.EPSILON) {
+            items.reprioritize(existing, posBefore, delta, priAfter, this);
+        } else if (result == null) {
+            //got deleted
+            if (!items.removeFast(existing, posBefore))
+                throw new ConcurrentModificationException();
+            remove(existing, posBefore, lock, false);
+            removeFromMap(existing);
+        }
 
-            if (result!=null)
-                items.reprioritize(existing, posBefore, delta, priAfter, this);
-
+        if (Math.abs(delta) > Float.MIN_NORMAL) {
             pressurize(delta);
-
             MASS.add(this, delta);
         }
 
@@ -745,13 +779,19 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         return mergeFunction.merge(existing, incoming);
     }
 
-    private Y removeFromMap(Y y) {
+    private Y removeFromMap(Y y, boolean callRemoved) {
         Y removed = map.remove(key(y));
-        if (removed == null) {
+        if (removed == null)
             throw new WTF();
-        }
-        removed(removed);
+
+        if (callRemoved)
+            removed(removed);
         return removed;
+
+    }
+
+    private Y removeFromMap(Y y) {
+        return removeFromMap(y, true);
     }
 
 //    @Nullable
@@ -833,7 +873,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
                 int toRemove = n == -1 ? s : Math.min(s, n);
 
                 items.removeRange(0, toRemove,
-                        popped!=null ? e -> popped.accept(removeFromMap(e))
+                        popped != null ? e -> popped.accept(removeFromMap(e))
                                 :
                                 this::removeFromMap
                 );
@@ -851,11 +891,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         return key.pri();
     }
 
-    @Override
-    public void forEachKey(Consumer<? super X> each) {
-        forEach(x -> each.accept(key(x)));
-    }
-
 
     @Override
     public void forEach(Consumer<? super Y> action) {
@@ -863,35 +898,35 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 //        long r = lock.readLock();
 //        try {
 
-            int s = size();
-            if (s <= 0)
-                return;
+        int s = size();
+        if (s <= 0)
+            return;
 
-            Object[] yy = items.array();
-            s = Math.min(yy.length, s);
+        Object[] yy = items.array();
+        s = Math.min(yy.length, s);
 //        float r = Float.POSITIVE_INFINITY;
 //        boolean commit = false;
-            for (int i = 0; i < s; i++) {
+        for (int i = 0; i < s; i++) {
 
-                Y y =
-                        //ITEM.getOpaque(yy, i);
-                        (Y) yy[i];
+            Y y =
+                    //ITEM.getOpaque(yy, i);
+                    (Y) yy[i];
 
-                if (y == null)
-                    continue; //throw new WTF();
+            if (y == null)
+                continue; //throw new WTF();
 
-                float p = pri(y);
-                if (p == p) {
-                    action.accept(y);
+            float p = pri(y);
+            if (p == p) {
+                action.accept(y);
 //                if (!commit) {
 //                    if (r <= p - ScalarValue.EPSILON)
 //                        commit = true; //out of order detected
 //                    r = p;
 //                }
-                } /*else {
+            } /*else {
                 commit = true;
             }*/
-            }
+        }
 //        } finally {
 //            lock.unlockRead(r);
 //        }

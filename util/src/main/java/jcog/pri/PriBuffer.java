@@ -3,10 +3,10 @@ package jcog.pri;
 import jcog.exe.Exe;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.function.primitive.ObjectFloatToObjectFunction;
-import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -114,32 +114,29 @@ public class PriBuffer<Y> {
 
 
     public void drain(Consumer<Y> each) {
-        items.keySet().removeIf(e->{
+
+        Iterator<Y> ii = items.keySet().iterator();
+        while (ii.hasNext()) {
+            Y e = ii.next();
+            ii.remove();
             each.accept(e);
-            return true;
-        });
+        }
     }
 
-    /** drains the bufffer while performing an operation on it */
-    public void drain(ObjectFloatProcedure<Y> each) {
-        items.entrySet().removeIf(e->{
-            float pp = e.getValue().pri();
-            if (pp == pp)
-                each.value(e.getKey(), pp);
-            return true;
-        });
-    }
-    /** drains the bufffer while performing an operation on it */
+    /** drains the bufffer while applying a transformation to each item */
     public <X> void drain(Consumer<X> each, ObjectFloatToObjectFunction<Y,X> f) {
-        items.entrySet().removeIf(e->{
+        Iterator<Map.Entry<Y, Prioritizable>> ii = items.entrySet().iterator();
+        while (ii.hasNext()) {
+            Map.Entry<Y, Prioritizable> e = ii.next();
+            ii.remove();
+
             float pp = e.getValue().pri();
             if (pp == pp) {
                 X x = f.valueOf(e.getKey(), pp);
                 if (x!=null)
                     each.accept(x);
             }
-            return true;
-        });
+        }
     }
 
     public final void put(OverflowDistributor<Y> overflow, Random random) {

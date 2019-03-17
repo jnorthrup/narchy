@@ -19,6 +19,7 @@ import nars.control.channel.ConsumerX;
 import nars.exe.Exec;
 import nars.task.ITask;
 import nars.task.NALTask;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -230,10 +231,10 @@ abstract public class TaskBuffer implements Consumer<ITask> {
          * temporary buffer before input so they can be merged in case of duplicates
          */
         public final Bag<ITask, ITask> tasks = new BufferedBag.SimpleBufferedBag<>(
-                new PriArrayBag<ITask>(Param.tasklinkMerge,
-                        PriBuffer.newMap()
+                new PriArrayBag<>(Param.tasklinkMerge,
+                        new UnifiedMap<>(0, 0.5f)
+                        //PriBuffer.newMap()
                         //new HashMap(0, 0.5f)
-                        //new UnifiedMap<>(0, 0.5f)
                 ) {
                     @Override
                     protected float merge(ITask existing, ITask incoming) {
