@@ -40,7 +40,7 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
         return commit(update, null);
     }
 
-    private final Bag<X, Y> commit(@Nullable Consumer<Y> before, @Nullable Consumer<Y> after) {
+    private Bag<X, Y> commit(@Nullable Consumer<Y> before, @Nullable Consumer<Y> after) {
 
         if (busy.compareAndSet(false, true)) {
             try {
@@ -49,7 +49,13 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
                 if (!pre.isEmpty()) {
 
+                    //int cap = bag.capacity();
+
+                    //bag.setCapacity(Math.max(cap, Math.min(cap*2, bag.size() + pre.size()))); //expand before
+
                     pre.drain(bag::putAsync, this::valueInternal);
+
+                    //bag.setCapacity(cap); //contract after
 
                     bag.commit(after); //force sort after
                 }
@@ -64,10 +70,6 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
     protected abstract Y valueInternal(B b, float pri);
 
-    @Override
-    public final void putAsync(Y b) {
-        put(b);
-    }
 
     @Override
     public final Y put(Y x) {

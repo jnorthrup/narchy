@@ -157,6 +157,10 @@ public class PriBuffer<Y> {
         });
     }
 
+    public int size() {
+        return items.size();
+    }
+
 //    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {
 //
 //        public final static Comparator<TermLinkage> preciseComparator = Comparator

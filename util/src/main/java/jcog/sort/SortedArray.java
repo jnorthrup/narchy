@@ -555,12 +555,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public X removeLast() {
-
         return this.items[SIZE.decrementAndGet(this)];
-
-
     }
-
 
     public int capacity() {
         return items.length;

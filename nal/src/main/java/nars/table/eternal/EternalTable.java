@@ -85,46 +85,48 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
     }
 
+    @Override
     public void setTaskCapacity(int c) {
         assert (c >= 0);
 
+        if (capacity() == c)
+            return;
 
-            List<Task> trash = null;
+        List<Task> trash = null;
 
-            long r = lock.writeLock();
-            try {
-                int wasCapacity = this.capacity();
+        long r = lock.writeLock();
+        try {
+            int wasCapacity = this.capacity();
 
-                //synchronized (this) {
-                if (wasCapacity != c) {
+            //synchronized (this) {
+            if (wasCapacity != c) {
 
-                    //r = lock.tryConvertToWriteLock(r); //TODO
+                //r = lock.tryConvertToWriteLock(r); //TODO
 
-                    wasCapacity = capacity();
+                wasCapacity = capacity();
 
-                    int s = size;
-                    if (s > 0 && (s > c)) {
-                        trash = new FasterList(s - c);
-                        while (c < s--) {
-                            trash.add(removeLast());
-                        }
+                int s = size;
+                if (s > 0 && (s > c)) {
+                    trash = new FasterList(s - c);
+                    while (c < s--) {
+                        trash.add(removeLast());
                     }
-
-                    if (wasCapacity != c)
-                        resize(c);
                 }
-                //}
-            } finally {
-                lock.unlock(r);
+
+                if (wasCapacity != c)
+                    resize(c);
             }
+            //}
+        } finally {
+            lock.unlock(r);
+        }
 
-            if (trash != null) {
+        if (trash != null) {
 
 
-                trash.forEach(Task::delete);
+            trash.forEach(Task::delete);
 
-            }
-
+        }
 
 
     }
@@ -155,7 +157,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         //long l = lock.readLock();
         long l = lock.writeLock();
         try {
-            if (size()>0) {
+            if (size() > 0) {
                 //TODO l = lock.tryConvertToWriteLock(l);
 //        forEach(ScalarValue::delete);
                 super.clear();
@@ -225,7 +227,13 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             int index = indexOf(x, this);
             if (index != -1) {
-                r = lock.tryConvertToWriteLock(r);
+                long rr = lock.tryConvertToWriteLock(r);
+                if (rr==0) {
+                    lock.unlockRead(r);
+                    lock.writeLock();
+                } else {
+                    r = rr;
+                }
                 removed = remove(index);
                 assert (removed != null);
             } else {
@@ -256,20 +264,11 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         if (!r.input.isEternal())
             return;
 
-        if (!contains(r, nar)) {
-
-            /** TODO more fine-grain locking inside revise */
-            long l = lock.writeLock();
-            try {
-                reviseOrTryInsertion(r, nar);
-            } finally {
-                lock.unlockWrite(l);
-            }
-
-        }
+        tryAdd(r, nar);
     }
 
-    private void reviseOrTryInsertion(Remember r, NAR nar) {
+    /** lock begins as read */
+    private long reviseOrTryInsertion(Remember r, NAR nar, long lock) {
         Object[] list = this.items;
 
         Task input = r.input;
@@ -363,6 +362,14 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             revised = null;
         }
 
+        long ll = this.lock.tryConvertToWriteLock(lock);
+        if (ll==0) {
+            this.lock.unlockRead(lock);
+            lock = this.lock.writeLock();
+        } else {
+            lock = ll;
+        }
+
         if (revised == null) {
             tryPut(input, r);
         } else {
@@ -374,36 +381,43 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             }
             //could not insertion revision
         }
+
+        return lock;
     }
 
-    public boolean contains(Remember r, NAR nar) {
+    public void tryAdd(Remember r, NAR nar) {
 
         Task input = r.input, existing = null;
 
         long l = lock.readLock();
         try {
-            if (size == 0)
-                return false;
+            if (size > 0) {
 
-            //scan list for existing equal task
-            Object[] list = this.items;
-            for (Object aList : list) {
-                if (aList == null)
-                    break;
+                //scan list for existing equal task
+                Object[] list = this.items;
+                for (Object aList : list) {
+                    if (aList == null)
+                        break;
 
-                Task x = (Task) aList;
-                if (x.equals(input)) {
-                    existing = x;
-                    break;
+                    Task x = (Task) aList;
+                    if (x.equals(input)) {
+                        existing = x;
+                        break;
+                    }
                 }
             }
+
+            if (existing==null) {
+                l = reviseOrTryInsertion(r, nar, l);
+                return;
+            }
         } finally {
-            lock.unlockRead(l);
+            lock.unlock(l);
         }
 
         if (existing != null) {
             r.merge(existing, nar);
-            return true;
+            return;
         }
 
         int cap = capacity();
@@ -411,10 +425,10 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             if (input.isInput())
                 throw new RuntimeException("input task rejected by " + EternalTable.class + " with 0 capacity): " + input);
             r.forget(input);
-            return true;
+            return;
         }
 
-        return false;
+        return;
     }
 
 
