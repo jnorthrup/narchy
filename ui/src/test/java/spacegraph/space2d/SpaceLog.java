@@ -3,20 +3,12 @@ package spacegraph.space2d;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.io.Grok;
 import jcog.net.UDPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.graph.Timeline2D;
-import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.container.unit.Scale;
-import spacegraph.space2d.widget.button.CheckBox;
-import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.video.Draw;
+import spacegraph.space2d.container.time.Timeline2D;
 
 import java.io.IOException;
 import java.util.Date;
@@ -124,51 +116,51 @@ public class SpaceLog {
         //Surface space = new OsmSpace(i.osm).surface();
 
 
-        Surface timeline = new Timeline2D<>(time,
-                e -> e.set(new Scale(
-                        new PushButton(e.id.name) {
-                            final int eHash = e.id.name.hashCode();
-
-                            @Override
-                            protected void paintIt(GL2 gl, SurfaceRender r) {
-                                Draw.colorHashRange(gl, eHash, 0.3f, 0.6f, 0.8f);
-                                Draw.rect(bounds, gl);
-                            }
-                        }, 0.8f))) {
-
-            boolean autoNow = true;
-
-            @Override
-            protected void paintIt(GL2 gl, SurfaceRender r) {
-                gl.glColor3f(0, 0, 0.1f);
-                Draw.rect(bounds, gl);
-            }
-
-            @Override
-            public Bordering controls() {
-                Bordering b = super.controls();
-                b.west(new CheckBox("Auto").on(autoNow).on(x -> autoNow = x));
-                return b;
-            }
-
-            @Override
-            protected boolean prePaint(SurfaceRender r) {
-                if (autoNow && !time.isEmpty()) {
-                    double when = System.nanoTime();
-                    double range = tEnd - tStart;
-                    assert (range > 0);
-                    SimpleEvent lastEvent = time.last();
-                    double end = Math.min(lastEvent.end + lastEvent.range() / 2, when);
-                    double start = end - range;
-                    view(start, end /* TODO: false unless new data */);
-                    
-                }
-                return super.prePaint(r);
-            }
-        }.view(0, 15_000_000_000L /* ns */).withControls();
-        SpaceGraph.window(new Gridding(
-                //new Clipped(space),
-                timeline), 800, 600);
+//        Surface timeline = new Timeline2D<>(time,
+//                e -> e.set(new Scale(
+//                        new PushButton(e.id.name) {
+//                            final int eHash = e.id.name.hashCode();
+//
+//                            @Override
+//                            protected void paintIt(GL2 gl, SurfaceRender r) {
+//                                Draw.colorHashRange(gl, eHash, 0.3f, 0.6f, 0.8f);
+//                                Draw.rect(bounds, gl);
+//                            }
+//                        }, 0.8f))) {
+//
+//            boolean autoNow = true;
+//
+//            @Override
+//            protected void paintIt(GL2 gl, SurfaceRender r) {
+//                gl.glColor3f(0, 0, 0.1f);
+//                Draw.rect(bounds, gl);
+//            }
+//
+//            @Override
+//            public Bordering controls() {
+//                Bordering b = super.controls();
+//                b.west(new CheckBox("Auto").on(autoNow).on(x -> autoNow = x));
+//                return b;
+//            }
+//
+//            @Override
+//            protected boolean prePaint(SurfaceRender r) {
+//                if (autoNow && !time.isEmpty()) {
+//                    double when = System.nanoTime();
+//                    double range = tEnd - tStart;
+//                    assert (range > 0);
+//                    SimpleEvent lastEvent = time.last();
+//                    double end = Math.min(lastEvent.end + lastEvent.range() / 2, when);
+//                    double start = end - range;
+//                    setTime(start, end /* TODO: false unless new data */);
+//
+//                }
+//                return super.prePaint(r);
+//            }
+//        }.setTime(0, 15_000_000_000L /* ns */).withControls();
+//        SpaceGraph.window(new Gridding(
+//                //new Clipped(space),
+//                timeline), 800, 600);
 
     }
 

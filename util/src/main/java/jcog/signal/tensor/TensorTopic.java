@@ -4,26 +4,25 @@ import jcog.event.ListTopic;
 import jcog.signal.Tensor;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
+import java.util.function.Supplier;
+
 /** proxy to a (changeable) tensor referrent, and signaling topic */
-public class AsyncTensor<T extends Tensor> extends ListTopic<T> implements Tensor {
+public class TensorTopic<T extends Tensor> extends ListTopic<T> implements Tensor {
 
     private volatile T current = null;
 
-    public AsyncTensor() {
+    public TensorTopic() {
         super();
     }
 
-    public AsyncTensor(T initial) {
+    public TensorTopic(T initial) {
         this();
-        commit(initial);
+        emit(initial);
     }
 
-    public final void commit(T t) {
-        emit(t);
-    }
 
-    @Override public final void emit(T t) {
-        super.emit(current = t);
+    @Override public final void emit(T x) {
+        super.emit(current = x);
     }
 
     public T get() {

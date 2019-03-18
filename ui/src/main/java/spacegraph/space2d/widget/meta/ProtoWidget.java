@@ -8,7 +8,6 @@ import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
 import jcog.signal.wave1d.HaarWaveletTensor;
-import jcog.signal.wave1d.SlidingDFTTensor;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
@@ -130,10 +129,10 @@ public class ProtoWidget extends Bordering {
         add("HaarWavelet", ()->new FunctionChip<>(Tensor.class, HaarWaveletTensor.class, (Tensor t)->{
             return new HaarWaveletTensor(t, 64);
         }).buffered(), "Math");
-        add("SlidingDFT", ()->new FunctionChip<>(Tensor.class, SlidingDFTTensor.class, (Tensor t)->{
-            return new SlidingDFTTensor(t, 64, true);
-        }).buffered(), "Math");
 
+//        add("SlidingDFT", ()->new AccumulatorChip<>(Tensor.class, SlidingDFTTensor.class, (Tensor t)->{
+//            return new SlidingDFTTensor( 64, true).;
+//        }).buffered(), "Math");
 
         add("mix", TODO, "Audio");
         add("EQ", TODO, "Audio");
@@ -247,7 +246,7 @@ public class ProtoWidget extends Bordering {
 
             User u = new User();
 
-            library.byName.forEach((t,v)-> u.put(t, t));
+//            library.byName.forEach((t,v)-> u.put(t, t));
 
             return new OmniBox(new OmniBox.LuceneQueryModel(u));
 

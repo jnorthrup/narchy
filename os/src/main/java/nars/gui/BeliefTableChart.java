@@ -308,7 +308,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         return Splitting.row(
             ObjectSurface.the(this),
             0.9f,
-            PushButton.awesome("search-plus").click(() -> NARui.conceptWindow(term, nar))
+            PushButton.awesome("search-plus").clicking(() -> NARui.conceptWindow(term, nar))
         );
     }
 

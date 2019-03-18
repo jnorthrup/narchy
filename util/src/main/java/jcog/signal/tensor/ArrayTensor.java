@@ -1,7 +1,6 @@
 package jcog.signal.tensor;
 
 import jcog.Texts;
-import jcog.signal.buffer.CircularFloatBuffer;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
 import java.util.Arrays;
@@ -17,10 +16,6 @@ public class ArrayTensor extends AbstractMutableTensor
 
     public final float[] data;
 
-    public ArrayTensor(CircularFloatBuffer b, int start, int end) {
-        this(new float[end-start]);
-        b.readFully(data, start, end-start);
-    }
 
     public ArrayTensor(float[] oneD) {
         super(new int[]{oneD.length});
@@ -45,6 +40,11 @@ public class ArrayTensor extends AbstractMutableTensor
     @Override
     public int volume() {
         return data.length;
+    }
+
+    @Override
+    public void setAt(float[] values, int linearCellStart) {
+        System.arraycopy(values, 0, data, linearCellStart, values.length);
     }
 
     @Override

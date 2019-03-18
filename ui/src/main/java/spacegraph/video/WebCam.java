@@ -9,7 +9,7 @@ import jcog.event.Off;
 import jcog.event.Topic;
 import jcog.signal.Tensor;
 import jcog.signal.named.RGB;
-import jcog.signal.tensor.AsyncTensor;
+import jcog.signal.tensor.TensorTopic;
 import jcog.signal.wave2d.RGBBufImgBitmap2D;
 import jcog.signal.wave2d.RGBToMonoBitmap2D;
 import spacegraph.space2d.container.Splitting;
@@ -43,7 +43,7 @@ public class WebCam {
 
     public final Topic<WebcamEvent> eventChange = new ListTopic();
 
-    public final AsyncTensor<RGBBufImgBitmap2D> tensor = new AsyncTensor();
+    public final TensorTopic<RGBBufImgBitmap2D> tensor = new TensorTopic();
 
 //    private final static Logger logger = LoggerFactory.getLogger(WebCam.class);
 
@@ -259,7 +259,7 @@ public class WebCam {
         WebCam wc = the();
 
         Gridding menu = new Gridding();
-        menu.add(new PushButton("++").click(() -> {
+        menu.add(new PushButton("++").clicking(() -> {
             window(new ChannelView(wc), 400, 400);
         }));
 

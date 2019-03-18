@@ -126,7 +126,7 @@ public class TsneTest {
                 protected void paintIt(GL2 gl, SurfaceRender r) {
                     paintNode(gl, this, node.id);
                 }
-            }.click(()->{
+            }.clicking(()->{
                 System.out.println(node.id);
             }));
         }

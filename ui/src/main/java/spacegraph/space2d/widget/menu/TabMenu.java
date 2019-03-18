@@ -128,7 +128,7 @@ public class TabMenu extends Menu {
 
         ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);
         items.put(label, bb);
-        PushButton cc = PushButton.awesome("external-link").click(spawnOutside);
+        PushButton cc = PushButton.awesome("external-link").clicking(spawnOutside);
 
         //return Splitting.row(bb, 0.75f, new AspectAlign(cc, AspectAlign.Align.RightTop,1, 0.75f));
 

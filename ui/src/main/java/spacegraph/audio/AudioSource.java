@@ -1,8 +1,7 @@
 package spacegraph.audio;
 
-import jcog.math.FloatRange;
 import jcog.math.IntRange;
-import jcog.signal.buffer.CircularFloatBuffer;
+import jcog.signal.wave1d.SignalReading;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,41 +13,49 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Signal sampled from system sound devices (via Java Media)
  */
-public class AudioSource {
+public class AudioSource implements SignalReading.SignalReader {
 
     /** buffer time in milliseconds */
     public final IntRange bufferSize;
 
-    private final int sampleRate;
+    public final int sampleRate;
     private TargetDataLine line;
     private final DataLine.Info dataLineInfo;
     public final AudioFormat audioFormat;
 
+
+
     private final int bytesPerSample;
 
-    public final FloatRange gain = new FloatRange(1f, 0, 128f);
+
 
     private static final Logger logger = LoggerFactory.getLogger(AudioSource.class);
 
     private byte[] preByteBuffer;
     private short[] preShortBuffer;
-    private float[] preFloatBuffer;
+
     volatile public int audioBytesRead;
 
+
     //TODO parameterize with device
-    /** frameRate determines buffer size and frequency that events are emitted; can also be considered a measure of latency */
+    /**
+     * the constructor does not call start()
+     * frameRate determines buffer size and frequency that events are emitted; can also be considered a measure of latency */
     public AudioSource() {
 
-        sampleRate = 22050;
-        bytesPerSample = 2;
+        sampleRate = 44100;
+        bytesPerSample = 2; /* 16-bit */
 
-        this.bufferSize = new IntRange(sampleRate/16, 1, sampleRate * 2);
+        this.bufferSize = new IntRange(
+                sampleRate * 16 /* ie. n seconds */,
+                sampleRate, sampleRate * 128);
 
         audioFormat = new AudioFormat(sampleRate, 8*bytesPerSample, 1, true, false);
         dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat, bufferSize.intValue());
     }
 
-    public int samplesPerSecond() {
+
+    public int sampleRate() {
         return sampleRate;
     }
 
@@ -67,82 +74,116 @@ public class AudioSource {
         return audioFormat.getChannels();
     }
 
-    public int start() {
-        
-        
+    public final AudioSource start() {
+
         try {
-            
+
+            logger.info("start {} {}", this, dataLineInfo);
+
             line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
-            logger.info("open {} {}", dataLineInfo);
 
-            int sampleRate = (int) audioFormat.getSampleRate();
             int numChannels = audioFormat.getChannels();
-
 
             int audioBufferSamples = (int) Math.ceil(numChannels * bufferSize.intValue());
 
-
             preByteBuffer = new byte[audioBufferSamples * bytesPerSample];
             preShortBuffer = new short[audioBufferSamples];
-            preFloatBuffer = new float[audioBufferSamples];
-
 
             line.open(audioFormat, audioBufferSamples);
             line.start();
 
+            //TODO
+            //line.addLineListener();
 
+            return this;
 
-            return audioBufferSamples;
         } catch (LineUnavailableException e) {
             e.printStackTrace();
-            return 0;
-
+            return null;
         }
-
     }
 
     public void stop() {
-
+        line.close();
+        logger.info("stopped {} {} {}", this, dataLineInfo);
     }
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
 
-    public int next(CircularFloatBuffer buffer) {
+    @Override
+    public boolean hasNext(int atleast) {
+        return line.available() >= atleast;
+    }
 
+    @Override
+    public int next(float[] x, int toPos, int capacitySamples) {
 
         if (!busy.compareAndSet(false, true))
             return 0;
 
         try {
 
-            int capacity = preByteBuffer.length;
-            //int availableBytes = Math.min(capacity, line.available());
-            audioBytesRead = line.read(preByteBuffer, 0, capacity);
-            if(audioBytesRead==0)
-                return 0;
-            int nSamplesRead = audioBytesRead / 2;
-
-            ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(preShortBuffer);
+//            do {
 
 
-            int start = 0;
-            int end = nSamplesRead;
-            int j = 0;
-            short min = Short.MAX_VALUE, max = Short.MIN_VALUE;
-            float gain = this.gain.floatValue() / shortRange;
-            for (int i = start; i < end; i++) {
-                short s = preShortBuffer[i];
-                if (s < min) min = s;
-                if (s > max) max = s;
+                int availableBytes = line.available();
 
-                preFloatBuffer[j++] = s * gain;
-            }
-            buffer.flush(j);
-            buffer.write(preFloatBuffer, j);
-            //Arrays.fill(buffer, end, buffer.length, 0);
+                //logger.trace
+                //System.out.println(available + "/" + capacity + " @ " + line.getMicrosecondPosition());
 
-            line.flush();
-            return nSamplesRead;
+//                if (available > capacity) {
+//                    int excess = available - capacity;
+//
+//                    while (excess % bytesPerSample != 0) {
+//                        excess--; //pad
+//                    }
+//                    if (excess > 0) {
+//                        if (excess <= preByteBuffer.length) {
+//                            //small skip. just read more
+//                            line.read(preByteBuffer, 0, excess);
+//                            System.err.println(this + " buffer skip: available=" + available + " capacity=" + capacity);
+//                            available -= excess;
+//                        } else {
+//                            System.err.println(this + " buffer skip flush: available=" + available + " capacity=" + capacity);
+//                            line.flush();
+//                            return 0;
+//                        }
+//                    }
+//                }
+                int toRead = Math.min(capacitySamples * bytesPerSample, availableBytes);
+                if (toRead < availableBytes) {
+                    while (toRead % bytesPerSample != 0)
+                        toRead++;
+                } else {
+                    while (toRead % bytesPerSample != 0)
+                        toRead--;
+                }
+
+                //int availableBytes = Math.min(capacity, line.available());
+                audioBytesRead = line.read(preByteBuffer, 0, toRead);
+                if (audioBytesRead == 0)
+                    return 0;
+                int nSamplesRead = audioBytesRead / 2;
+
+                ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(preShortBuffer);
+
+                int start = 0;
+                int end = nSamplesRead;
+                int j = 0;
+//                short min = Short.MAX_VALUE, max = Short.MIN_VALUE;
+                double gain =
+                        1.0/shortRange;
+                        //this.gain.floatValue() / shortRange;
+                for (int i = start; i < end; ) {
+                    short s = preShortBuffer[i++];
+//                    if (s < min) min = s;
+//                    if (s > max) max = s;
+                    x[j++] = (float) (s * gain); //compute in double for exra precision
+                }
+
+                return nSamplesRead;
+
+//            } while (line.available() > 0);
 
         } finally {
             busy.set(false);
@@ -153,4 +194,7 @@ public class AudioSource {
 
     private static final float shortRange = Short.MAX_VALUE;
 
+    public String name() {
+        return line.getLineInfo().toString();
+    }
 }

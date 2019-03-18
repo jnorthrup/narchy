@@ -280,7 +280,7 @@ public class NARui {
                 path,
                 new Gridding(
                         mode,
-                        new PushButton("save").click(() -> {
+                        new PushButton("save").clicking(() -> {
                             Exe.invokeLater(() -> {
                                 try {
                                     nar.output(new File(path.text()), false);
@@ -412,7 +412,7 @@ public class NARui {
         return new ScrollXY<>(new KeyValueGrid(new MemorySnapshot(n).byAnon),
                 (x, y, v) -> {
                     if (x == 0) {
-                        return new PushButton(v.toString()).click(() -> {
+                        return new PushButton(v.toString()).clicking(() -> {
 
                         });
                     } else {

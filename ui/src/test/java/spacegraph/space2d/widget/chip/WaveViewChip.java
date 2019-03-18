@@ -15,7 +15,7 @@ public class WaveViewChip extends TypedPort<ObjectIntPair<float[]>> {
 
         on((ObjectIntPair<float[]> nextBuffer)->{
             float[] b = nextBuffer.getOne();
-            buffer.flush(b.length);
+            buffer.free(b.length);
             buffer.write(b);
             wave.updateLive();
         });

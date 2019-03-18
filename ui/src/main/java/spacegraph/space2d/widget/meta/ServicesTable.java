@@ -106,8 +106,8 @@ public class ServicesTable extends Gridding implements GridModel, GridRenderer {
         ServiceToggle(Services n, Service s) {
             this.s = s;
             set(
-                new PushButton("On").click(()->s.start(n, ForkJoinPool.commonPool())),
-                new PushButton("Off").click(()->s.stop(n, ForkJoinPool.commonPool(), ()->{}))
+                new PushButton("On").clicking(()->s.start(n, ForkJoinPool.commonPool())),
+                new PushButton("Off").clicking(()->s.stop(n, ForkJoinPool.commonPool(), ()->{}))
             );
         }
 

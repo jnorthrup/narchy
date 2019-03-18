@@ -4,7 +4,7 @@ import jcog.signal.Tensor;
 
 import java.io.Serializable;
 
-public abstract class AbstractTensor implements Tensor, TensorFrom, Serializable {
+public abstract class AbstractTensor implements Tensor, Serializable {
 
     public static final Tensor Zero = new ArrayTensor(0);
 

@@ -6,18 +6,18 @@ import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 
 /** TODO delegate not inherit */
-public class RingTensor extends AbstractShapedTensor implements TensorTo {
+public class RingTensor extends AbstractShapedTensor implements WritableTensor {
     public final int segment;
     private final int num;
     private final AtomicCycle.AtomicCycleN target;
-    private final TensorTo buffer;
+    private final WritableTensor buffer;
 
 
     public RingTensor(int volume, int history) {
         this(new ArrayTensor(volume*history), volume, history);
     }
 
-    public RingTensor(TensorTo x, int volume, int history) {
+    public RingTensor(WritableTensor x, int volume, int history) {
         super(/*new int[] { volume,history}*/ new int[] { volume * history });
         assert(x.volume() >= (volume*history));
         this.buffer = x;
@@ -62,12 +62,7 @@ public class RingTensor extends AbstractShapedTensor implements TensorTo {
     }
 
     public RingTensor commit(float[] t) {
-        if (buffer instanceof ArrayTensor)
-            System.arraycopy(t, 0, ((ArrayTensor) buffer).data, spin()*segment, segment);
-        else {
-            //HACK TODO better
-            new ArrayTensor(t).forEach((i,v)-> buffer.setAt(v, i + spin()*segment));
-        }
+        buffer.setAt(t, spin()*segment);
         return this;
     }
 
@@ -97,14 +92,11 @@ public class RingTensor extends AbstractShapedTensor implements TensorTo {
     }
 
     public float[] snapshot(float[] output) {
-        if (output==null || output.length != volume())
-            output = new float[volume()];
+        int v = volume();
+        if (output==null || output.length != v)
+            output = new float[v];
         writeTo(output);
         return output;
-    }
-
-    public float[] commitToArray(Tensor t) {
-        return commit(t).snapshot();
     }
 
     @Override

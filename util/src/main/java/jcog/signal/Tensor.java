@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.Random;
 
 /**
+ * read-only tensor interface
+ * 
  * see: https://github.com/vespa-engine/vespa/blob/master/vespajlib/src/main/java/com/yahoo/tensor/Tensor.java
  */
 public interface Tensor  {

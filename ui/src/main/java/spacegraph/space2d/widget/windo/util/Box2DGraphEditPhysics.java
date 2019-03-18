@@ -399,9 +399,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             Body2D b = targetBody();
 
             Bordering l = new Bordering<>(
-                    new PushButton("X").click((@Nullable Runnable) this::remove)
+                    new PushButton("X").clicking((@Nullable Runnable) this::remove)
             );
-            l.set(E, new PushButton("Tap").click(() -> {
+            l.set(E, new PushButton("Tap").clicking(() -> {
                 splice(new CopyPort());
             })); //as in wire-tap, aka splice
             l.set(S, new PushButton("Split"));

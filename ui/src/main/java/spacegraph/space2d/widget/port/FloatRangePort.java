@@ -34,10 +34,6 @@ public class FloatRangePort extends FloatPort {
         on(this::SET);
     }
 
-    @Override
-    public Port on(@Nullable In i) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     protected void compile(SurfaceRender r) {

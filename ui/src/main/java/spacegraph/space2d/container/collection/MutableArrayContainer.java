@@ -122,5 +122,8 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
         }
         return true;
     }
-
+    @Override
+    public void add(Surface... s) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -47,7 +47,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
         build(nn -> nn.set(
                 new Scale(
-                        new PushButton(new VectorLabel(nn.id.toString())).click(() -> {
+                        new PushButton(new VectorLabel(nn.id.toString())).clicking(() -> {
                             Term t = nn.id;
                             if (t != null)
                                 NARui.conceptWindow(t, nar);

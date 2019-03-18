@@ -87,11 +87,6 @@ public class MutableListContainer extends AbstractMutableContainer {
         }
     }
 
-
-    public final void addAll(Surface... s) {
-        add(s);
-    }
-
     public void add(Surface... s) {
 
         if (s.length == 0) return;
@@ -99,7 +94,7 @@ public class MutableListContainer extends AbstractMutableContainer {
         synchronized (this) {
             for (Surface x : s) {
                 if (x != null) {
-                    children.add(x);
+                    _add(x);
                 }
             }
             //children.commit();
@@ -114,8 +109,10 @@ public class MutableListContainer extends AbstractMutableContainer {
         }
 
         layout();
+    }
 
-
+    protected void _add(Surface x) {
+        children.add(x);
     }
 
     @Override public boolean attachChild(Surface s) {
@@ -223,15 +220,6 @@ public class MutableListContainer extends AbstractMutableContainer {
         return null;
     }
 
-    /**
-     * this can be accelerated by storing children as a Map
-     */
-    public void replace(Surface child, Surface replacement) {
-        if (!remove(child))
-            throw new RuntimeException("could not replace missing " + child + " with " + replacement);
-
-        add(replacement);
-    }
 
     @Override
     protected void doLayout(int dtMS) {

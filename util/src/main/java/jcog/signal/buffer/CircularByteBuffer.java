@@ -47,7 +47,7 @@ public class CircularByteBuffer extends CircularBuffer {
     }
 
     @Override
-    public int getCapacityInternal() {
+    public int capacityInternal() {
         return _circBuffer.length;
     }
 
@@ -67,7 +67,7 @@ public class CircularByteBuffer extends CircularBuffer {
 
         @Override
         public int available() {
-            return CircularByteBuffer.this.size();
+            return CircularByteBuffer.this.writeAt();
         }
 
         @Override
@@ -160,14 +160,14 @@ public class CircularByteBuffer extends CircularBuffer {
         lock.lock();
         try {
             if (length > 0) {
-                int emptySize = _circBuffer.length - bufferSize.get();
+                int emptySize = _circBuffer.length - writeAt.get();
                 while (blocking && emptySize < length) {
                     try {
                         writCond.await();
                     } catch (InterruptedException e) {
                         return -1;
                     }
-                    emptySize = _circBuffer.length - bufferSize.get();
+                    emptySize = _circBuffer.length - writeAt.get();
                 }
                 if (emptySize > 0) {
                     if (len > emptySize)
@@ -184,7 +184,7 @@ public class CircularByteBuffer extends CircularBuffer {
                         System.arraycopy(data, offset, _circBuffer, bufEnd, len);
                         bufEnd = (tmpIdx) % _circBuffer.length;
                     }
-                    bufferSize.addAndGet(len);
+                    writeAt.addAndGet(len);
                     return len;
                 }
             }
@@ -208,7 +208,7 @@ public class CircularByteBuffer extends CircularBuffer {
         int len = length;
         lock.lock();
         try {
-            int remSize = bufferSize.get() - currOffset.get();
+            int remSize = writeAt.get() - readAt.get();
             if (length > 0 && remSize > 0) {
                 if (len > remSize)
                     len = remSize;
@@ -223,7 +223,7 @@ public class CircularByteBuffer extends CircularBuffer {
                     System.arraycopy(_circBuffer, viewPtr, data, 0, len);
                     viewPtr = (tmpIdx) % _circBuffer.length;
                 }
-                currOffset.addAndGet(len);
+                readAt.addAndGet(len);
                 return len;
             }
             return 0;
@@ -237,7 +237,7 @@ public class CircularByteBuffer extends CircularBuffer {
         try {
             if (length > 0) {
                 int minSize = this.minSize < 0 ? 0 : this.minSize;
-                while (bufferSize.get() - minSize < length) {
+                while (writeAt.get() - minSize < length) {
                     try {
                         readCond.await();
                     } catch (InterruptedException e) {
@@ -264,7 +264,7 @@ public class CircularByteBuffer extends CircularBuffer {
         try {
             wasMarked = false;
             if (length > 0) {
-                while (blocking && minSize > -1 && bufferSize.get() <= minSize) {
+                while (blocking && minSize > -1 && writeAt.get() <= minSize) {
                     try {
                         readCond.await();
                     } catch (InterruptedException e) {
@@ -272,9 +272,9 @@ public class CircularByteBuffer extends CircularBuffer {
                     }
                 }
                 int minSize = this.minSize < 0 ? 0 : this.minSize;
-                if (bufferSize.get() > 0) {
-                    if (len > bufferSize.get() - minSize)
-                        len = bufferSize.get() - minSize;
+                if (writeAt.get() > 0) {
+                    if (len > writeAt.get() - minSize)
+                        len = writeAt.get() - minSize;
                     int tmpLen;
                     CircularBuffer.BufMark m = marks.peek();
                     if (m != null) {
@@ -297,12 +297,12 @@ public class CircularByteBuffer extends CircularBuffer {
                             bufStart = (tmpIdx) % _circBuffer.length;
                         }
                         if (tmpIdx < viewPtr)
-                            currOffset.set(viewPtr - bufStart);
+                            readAt.set(viewPtr - bufStart);
                         else {
                             viewPtr = bufStart;
-                            currOffset.set(0);
+                            readAt.set(0);
                         }
-                        bufferSize.addAndGet(-len);
+                        writeAt.addAndGet(-len);
                     }
                     return len;
                 }

@@ -38,5 +38,12 @@ public abstract class AbstractMutableContainer extends Container {
         return false;
     }
 
+    public final void addAll(Surface... s) {
+        add(s);
+    }
+
+    abstract public void add(Surface... s);
+
+
     protected abstract TextEdit clear();
 }

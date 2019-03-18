@@ -35,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 public class CircularFloatBuffer extends CircularBuffer {
     public float[] data;
 
+    /** warning: starts with 0 capacity */
     public CircularFloatBuffer() {
         super();
     }
@@ -55,7 +56,7 @@ public class CircularFloatBuffer extends CircularBuffer {
     }
 
     @Override
-    public int getCapacityInternal() {
+    public int capacityInternal() {
         return data.length;
     }
 
@@ -76,14 +77,14 @@ public class CircularFloatBuffer extends CircularBuffer {
         try {
 
             int capacity = this.data.length;
-            int available = capacity - bufferSize.get();
+            int available = capacity - writeAt.get();
             while (blocking && available < length) {
                 try {
                     writCond.await();
                 } catch (InterruptedException e) {
                     return -1;
                 }
-                available = capacity - bufferSize.get();
+                available = capacity - writeAt.get();
             }
             if (available <= 0)
                 return 0;
@@ -103,7 +104,7 @@ public class CircularFloatBuffer extends CircularBuffer {
                 System.arraycopy(data, offset, this.data, bufEnd, len);
                 bufEnd = (tmpIdx) % capacity;
             }
-            bufferSize.addAndGet(len);
+            writeAt.addAndGet(len);
             return len;
 
 
@@ -161,10 +162,10 @@ public class CircularFloatBuffer extends CircularBuffer {
     public int skip(int len) {
         lock.lock();
         try {
-            int s = bufferSize.get();
+            int s = writeAt.get();
             len = Math.min(s, len);
             bufStart += len;
-            bufferSize.addAndGet(-len);
+            writeAt.addAndGet(-len);
             return s;
         } finally {
             lock.unlock();
@@ -203,7 +204,7 @@ public class CircularFloatBuffer extends CircularBuffer {
         int len = length;
         lock.lock();
         try {
-            int remSize = bufferSize.get() - currOffset.get();
+            int remSize = writeAt.get() - readAt.get();
             if (length > 0 && remSize > 0) {
                 if (len > remSize)
                     len = remSize;
@@ -218,7 +219,7 @@ public class CircularFloatBuffer extends CircularBuffer {
                     System.arraycopy(this.data, viewPtr, data, 0, len);
                     viewPtr = (tmpIdx) % this.data.length;
                 }
-                currOffset.addAndGet(len);
+                readAt.addAndGet(len);
                 return len;
             }
             return 0;
@@ -232,7 +233,7 @@ public class CircularFloatBuffer extends CircularBuffer {
         try {
             if (length > 0) {
                 int minSize = this.minSize < 0 ? 0 : this.minSize;
-                while (bufferSize.get() - minSize < length) {
+                while (writeAt.get() - minSize < length) {
                     try {
                         readCond.await();
                     } catch (InterruptedException e) {
@@ -259,7 +260,7 @@ public class CircularFloatBuffer extends CircularBuffer {
         try {
             wasMarked = false;
             if (length > 0) {
-                int bs = bufferSize.get();
+                int bs = writeAt.get();
                 while (blocking && minSize > -1 && bs <= minSize) {
                     try {
                         readCond.await();
@@ -293,12 +294,12 @@ public class CircularFloatBuffer extends CircularBuffer {
                             bufStart = (tmpIdx) % this.data.length;
                         }
                         if (tmpIdx < viewPtr)
-                            currOffset.set(viewPtr - bufStart);
+                            readAt.set(viewPtr - bufStart);
                         else {
                             viewPtr = bufStart;
-                            currOffset.set(0);
+                            readAt.set(0);
                         }
-                        bufferSize.addAndGet(-len);
+                        writeAt.addAndGet(-len);
                     }
                     return len;
                 }
@@ -340,6 +341,6 @@ public class CircularFloatBuffer extends CircularBuffer {
 
     public int available() {
         int capacity = this.data.length;
-        return capacity - bufferSize.get();
+        return capacity - writeAt.get();
     }
 }

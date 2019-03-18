@@ -1,11 +1,15 @@
 package jcog.signal.tensor;
 
+import jcog.TODO;
 import jcog.signal.Tensor;
 
-/** writable tensor methods */
-public interface TensorTo extends Tensor {
+public interface WritableTensor extends Tensor {
 
     void setAt(float newValue, int linearCell);
+
+    default void set(float newValue, int[] cell) {
+        setAt(newValue, index(cell));
+    }
 
     default float addAt(float x, int linearCell) {
         float next = getAt(linearCell);
@@ -15,8 +19,14 @@ public interface TensorTo extends Tensor {
         return next;
     }
 
-    default void set(float newValue, int[] cell) {
-        setAt(newValue, index(cell));
+    default void setAt(float[] values, int linearCellStart) {
+        int i = linearCellStart;
+        for (float v: values)
+            setAt(v, i++);
+    }
+
+    default void readFrom(Tensor from, int[] fromStart, int[] fromEnd, int[] myStart, int[] myEnd) {
+        throw new TODO();
     }
 
     default void fill(float x) {

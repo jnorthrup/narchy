@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.math.v2;
 import jcog.pri.ScalarValue;
 import jcog.signal.buffer.CircularFloatBuffer;
-import spacegraph.audio.AudioBuffer;
+import jcog.signal.wave1d.SignalReading;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
@@ -13,7 +13,6 @@ import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
 
@@ -22,41 +21,24 @@ import static java.lang.Float.NaN;
 /** waveform viewing and editing
  * TODO extend Spectrogram
  * */
-public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb {
+public class WaveView extends WaveBitmap implements MenuSupplier, Finger.WheelAbsorb {
 
     final static int SELECT_BUTTON = 0;
     final static int PAN_BUTTON = 2;
     final static float PAN_SPEED = 1/100f;
 
-    private final float[] wave;
-    protected final WaveBitmap vis;
-
     public WaveView(CircularFloatBuffer wave, int pixWidth, int pixHeight) {
-        //int totalSamples = wave.capacity(); //int) Math.ceil(seconds * capture.source.samplesPerSecond());
-
-        this.wave = null; ///capture.buffer.peekLast(new float[totalSamples]);
-
-
-        vis = new WaveBitmap(pixWidth, pixHeight, wave);
-        set(vis);
-    }
-    @Deprecated public WaveView(AudioBuffer capture, float seconds, int pixWidth, int pixHeight) {
-        super();
-
-        int totalSamples = Math.round(capture.source().samplesPerSecond() * seconds);
-
-        this.wave = capture.buffer.peekLast(new float[totalSamples]);
-
-
-        vis = new WaveBitmap(pixWidth, pixHeight, new CircularFloatBuffer(wave));
-        set(vis);
+        super(pixWidth, pixHeight, wave);
     }
 
+    @Deprecated public WaveView(SignalReading capture, int pixWidth, int pixHeight) {
+        this(new CircularFloatBuffer(capture.data), pixWidth, pixHeight);
+    }
 
     final Fingering pan = new FingerMove(PAN_BUTTON) {
         @Override
         protected void move(float tx, float ty) {
-            vis.pan(tx * PAN_SPEED);
+            pan(tx * PAN_SPEED);
         }
 
         @Override
@@ -71,7 +53,7 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
     final Fingering select = new Dragging(SELECT_BUTTON) {
 
         float sample(float x) {
-            return vis.start + (vis.end - vis.start) * (x / w());
+            return start + (end - start) * (x / w());
         }
 
         @Override
@@ -97,8 +79,8 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
 
             //TODO if ctrl pressed or something
 
-            vis.scale(( (1f + wheel*0.1f)));
-            //vis.pan(+1);
+            scale(( (1f + wheel*0.1f)));
+            //pan(+1);
             return this;
         }
 
@@ -134,8 +116,8 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
     }
 
     float x(float sample) {
-        long f = vis.start;
-        return (sample - f)/(vis.end - f) * w();
+        long f = start;
+        return (sample - f)/(end - f) * w();
     }
 
     @Override
@@ -149,17 +131,17 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
                 //TODO trim, etc
         );
     }
+//
+//    public void update() {
+//        update();
+//    }
 
-    public void update() {
-        vis.update();
-    }
-
-    public void updateLive() {
-//        if (showing())
-            vis.updateLive();
-    }
-
-    public void updateLive(int samples) {
-        vis.updateLive(samples);
-    }
+//    public void updateLive() {
+////        if (showing())
+////            updateLive();
+//    }
+//
+//    public void updateLive(int samples) {
+////        updateLive(samples);
+//    }
 }

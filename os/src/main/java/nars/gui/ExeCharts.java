@@ -252,7 +252,7 @@ public class ExeCharts {
         return DurSurface.get(
                 new Splitting(s,
                         new Gridding(new PushButton("Stats")
-                                .click(()->causeSummary(nar, 10))
+                                .clicking(()->causeSummary(nar, 10))
                                 , s.configWidget()), 0.1f),
                 nar, () -> {
                     s.set(((UniExec) nar.exe).cpu);

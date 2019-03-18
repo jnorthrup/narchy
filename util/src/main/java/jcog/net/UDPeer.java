@@ -471,8 +471,7 @@ public class UDPeer extends UDP {
     }
 
     protected void receive(@Nullable UDProfile from, Msg m) {
-        if (!receive.isEmpty())
-            receive.emit(new MsgReceived(m, from));
+        receive.emit(()->new MsgReceived(m, from));
     }
 
 

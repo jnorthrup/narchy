@@ -1,104 +1,66 @@
 package spacegraph.audio;
 
+import jcog.math.FloatRange;
 import jcog.signal.Tensor;
-import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.wave1d.FreqDomain;
-import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import jcog.signal.wave1d.SignalReading;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.EmptySurface;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.meta.MetaFrame;
-import spacegraph.space2d.widget.meta.TriggeredSurface;
 import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.video.Draw;
 
-import static spacegraph.SpaceGraph.window;
+public class SignalView extends Bordering {
+    private final SignalReading audio;
 
-public class AudioBufferView extends Gridding {
-    private final AudioBuffer audio;
+    public final FloatRange gain = new FloatRange(1, 0, 100);
 
-    public AudioBufferView(AudioBuffer a) {
+    public SignalView(SignalReading a) {
         super();
         this.audio = a;
 
 
-        set(
-                new FloatSlider(a.source().gain),
+        south(new Gridding(
+            new FloatSlider(gain, "Gain"),
+            PushButton.awesome("play", "Record Clip").clicking(()-> {
+                //window(new MetaFrame(new WaveView(a, 1f, 1024, 256)), 400, 400);
+            })
+        ));
 
-                spectrogram(a, 0.05f, 256, 128),
 
-                new TriggeredSurface<>(new WaveView(a.buffer, 1024, 256),
-                        a.frame::on, WaveView::updateLive)
 
-//                    private final Off off;
-//
-//                    {
-//                        this.off = a.frame.on((Runnable)this::updateLive);
-//                    }
-//
-//                    @Override
-//                    protected void stopping() {
-//                        off.off();
-//                        super.stopping();
-//                    }
-//
-//
-////                    /** TODO use updateLive */
-////                    @Override public void update() {
-////                        long width = vis.end - vis.start;
-////                        vis.end = a.buffer.viewPtr; //getPeekPosition();
-////                        vis.start = a.buffer.idx((int) (vis.end - (width)));
-////                        super.update();
-////                    }
-//
-//
-//                },
-                ,new PushButton("Record Clip", () -> {
-                    window(new MetaFrame(new WaveView(a, 1f, 1024, 256)), 400, 400);
-                })
+        Timeline2D t = new Timeline2D(0, 1);
 
-        );
+
+        FreqDomain freqDomain = new FreqDomain(
+                a,
+                2048, 256);
+
+
+        Spectrogram g = new Spectrogram(true, 256, 2048);
+        WaveView w = new WaveView(a, 500, 250);
+        audio.wave.on(raw->{
+            Tensor fft = freqDomain.next(raw);
+            g.next(i -> {
+                float v = fft.getAt(i);
+                return Draw.colorHSB(0.3f * (1-v),0.9f,v);
+            });
+
+            w.updateLive();
+        });
+
+        t.add(g);
+        t.add(Splitting.column(new EmptySurface(), 0.5f, w));
+        center(t);
+
 
     }
 
-
-    public static Surface spectrogram(AudioBuffer capture, float sampleTime, int fftSize, int history) {
-
-        CircularFloatBuffer buffer = capture.buffer;
-
-        FreqDomain s = new FreqDomain(buffer,
-                sampleTime,
-                capture.source().samplesPerSecond(), fftSize, history);
-
-//        int stride = s.freq.segment;
-//        BitmapMatrixView bmp = new BitmapMatrixView(
-//                (int) Math.floor(((float) s.freq.volume()) / stride), stride, (x, y) -> {
-//            float v =
-//                    s.freq.get(x, y);
-//            //t.data[y * stride + x];
-//            //return Draw.colorBipolar(v);
-//            //v = unitize(v);
-//            return Draw.colorHSB(0.3f * (1-v),0.9f,v);
-//        });
-//        //bmp.bmp.mipmap(true);
-
-        return new Spectrogram(true, history, fftSize) {
-            @Override
-            protected void compile(SurfaceRender r) {
-                if (s.update()) {
-                    Tensor n = s.next();
-                    next(i -> {
-                        float v = n.getAt(i);
-                        return Draw.colorHSB(0.3f * (1-v),0.9f,v);
-                    });
-                }
-
-                super.compile(r);
-            }
-        };
-    }
 }
 //        rawWave = new Plot2D.ArraySeries("Audio", 1);
 //        a.wave.on(x -> {

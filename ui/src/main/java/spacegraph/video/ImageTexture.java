@@ -60,7 +60,7 @@ public class ImageTexture extends Tex {
                     InputStream in = new ByteArrayInputStream(b);
                     return TextureIO.newTextureData(profile, in, true, "png");
                 } else{
-                    throw new RuntimeException("unrecognized FontAwesome icon: " + u);
+                    throw new UnsupportedOperationException("unrecognized FontAwesome icon: " + u);
                 }
             } else {
                 //return TextureIO.newTexture(new URL(u), true, null);

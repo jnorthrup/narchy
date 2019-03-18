@@ -1,10 +1,10 @@
 package nars.audio;
 
-import jcog.learn.pid.MiniPID;
+import jcog.math.FloatRange;
+import jcog.signal.wave1d.SignalReading;
 import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
-import spacegraph.audio.AudioBuffer;
 
 /**
  * time domain waveform input, sampled in buffers.
@@ -14,48 +14,47 @@ import spacegraph.audio.AudioBuffer;
  */
 public class WaveIn extends NARService {
 
-    final AudioBuffer in;
+    final SignalReading in;
 
-    float TARGET_GAIN = 0.5f;
+    /** updates per time unit */
+    private final FloatRange rate = new FloatRange(30, 0.5f, 120);
 
-    final MiniPID autogain = new MiniPID(0.5, 0.5, 0.5);
 
-    WaveIn(Term id, AudioBuffer in) {
+    WaveIn(Term id, SignalReading in, float rate) {
         super(id);
         this.in = in;
-
-        if (autogain != null) {
-            in.wave.on((w) -> {
-
-                float max = 0;
-                for (float s : w.data) {
-                    max = Math.max(max, Math.abs(s));
-                }
-
-
-                float a = (float) autogain.out(max, TARGET_GAIN /* target */);
-
-
-                in.source().gain.set(a);
-            });
-        }
-
+        this.rate.set(rate);
     }
-
-
-    @Override
-    protected void starting(NAR x) {
-
-        in.setPeriodMS(0); //run ASAP
-
-
-    }
-
 
     @Override
     protected void stopping(NAR nar) {
-        synchronized (this) {
-            in.stop();
-        }
+        in.stop();
+        super.stopping(nar);
     }
+
+    @Override
+    protected void starting(NAR nar) {
+        super.starting(nar);
+        in.setPeriodMS(Math.round(1000f/rate.floatValue()));
+    }
+
 }
+//    float TARGET_GAIN = 0.5f;
+//
+//    final MiniPID autogain = new MiniPID(0.5, 0.5, 0.5);
+//
+//        if (autogain != null) {
+//            in.wave.on((w) -> {
+//
+//                float max = 0;
+//                for (float s : w.data) {
+//                    max = Math.max(max, Math.abs(s));
+//                }
+//
+//
+//                float a = (float) autogain.out(max, TARGET_GAIN /* target */);
+//
+//
+//                in.gain.set(a);
+//            });
+//        }

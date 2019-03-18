@@ -4,6 +4,7 @@ import jcog.exe.Exe;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.ImageTexture;
 
@@ -39,13 +40,13 @@ public class PushButton extends AbstractButton {
 
     public PushButton(Consumer<PushButton> onClick) {
         this();
-        click(onClick);
+        clicking(onClick);
     }
 
     public PushButton(String s, Runnable onClick) {
         //this(s, (p) -> onClick.run());
         this(s);
-        click(onClick);
+        clicking(onClick);
     }
 
 //    public PushButton(String s, @Nullable Consumer<PushButton> onClick) {
@@ -60,12 +61,17 @@ public class PushButton extends AbstractButton {
     public static PushButton awesome(String icon) {
         return new PushButton(ImageTexture.awesome(icon).view(1));
     }
-
-    public PushButton click(@Nullable Runnable onClick) {
-        return click((cb)->onClick.run());
+    public static PushButton awesome(String icon, String label) {
+        return new PushButton(Splitting.column(
+                new VectorLabel(label), 0.9f,
+                ImageTexture.awesome(icon).view(1)));
     }
 
-    public PushButton click(@Nullable Consumer<PushButton> onClick) {
+    public PushButton clicking(@Nullable Runnable onClick) {
+        return clicking((cb)->onClick.run());
+    }
+
+    public PushButton clicking(@Nullable Consumer<PushButton> onClick) {
         this.onClick = onClick;
         return this;
     }

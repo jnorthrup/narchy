@@ -9,10 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.LongSupplier;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 /**
@@ -86,16 +83,21 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
         return s;
     }
 
+    /** broadcast the signal to zero or more attached recipients */
+    void emit(X x);
 
-    /**
-     * TODO rename to 'out' to match Streams api
-     */
-    void emit(X arg);
+    /** emits the supplier procedure's result IF there is any listener to receive it */
+    default /* final */ void emit(Supplier<X> t) {
+        if (!isEmpty()) {
+            X x = t.get();
+            if (x!=null)
+                emit(x);
+        }
+    }
 
     default Off on(long minUpdatePeriodMS, Consumer<X> o) {
-        if (minUpdatePeriodMS == 0)
-            return on(o);
-        return on(System::currentTimeMillis, () -> minUpdatePeriodMS, o);
+        return minUpdatePeriodMS == 0 ? on(o) :
+                on(System::currentTimeMillis, () -> minUpdatePeriodMS, o);
     }
 
     default Off on(LongSupplier time, LongSupplier minUpdatePeriod, Consumer<X> o) {

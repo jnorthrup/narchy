@@ -1,14 +1,15 @@
 package nars.audio;
 
+import jcog.signal.buffer.CircularFloatBuffer;
+import jcog.signal.wave1d.SignalReading;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.agent.NAgent;
 import nars.concept.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorView;
-import spacegraph.audio.AudioBuffer;
-import spacegraph.audio.AudioBufferView;
 import spacegraph.audio.AudioSource;
+import spacegraph.audio.SignalView;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.WaveView;
 
@@ -22,13 +23,22 @@ public class NARAudio extends WaveIn {
 
     private final FreqVectorSensor hear;
 
-    public NARAudio(NAR nar, AudioSource src, float bufferTime) {
-        super($.the("audio"), new AudioBuffer(src, bufferTime));
+    public NARAudio(NAR nar, AudioSource src, float fps) {
+        super($.quote(src.name()),
+                new SignalReading(src, src.sampleRate,
+                1f/fps /* + tolerance? */
+        ), fps);
 
         NAgent h = new NAgent("hear", nar);
 
-
-        hear = new FreqVectorSensor(in.buffer,
+        /**
+         * buffer time in seconds
+         */
+//    public SignalSampling(AudioSource src, float bufferTime) {
+//            this(src::writeTo, src.sampleRate(),Math.round(src.sampleRate() * bufferTime));
+//        }
+        CircularFloatBuffer hearBuf = new CircularFloatBuffer(in.data);
+        hear = new FreqVectorSensor(hearBuf /* hack */,
                 f->$.inh($.the(f), /*src.id*/ "hear"), 512,16, nar);
         h.addSensor(hear);
 
@@ -36,6 +46,7 @@ public class NARAudio extends WaveIn {
         WaveView hearView = new WaveView(hear.buf, 300, 64);
         h.onFrame(()->{
             hearView.updateLive();
+            hearBuf.rewind();
         });
 
         window(grid(new VectorSensorView(hear, nar).withControls(),
@@ -51,11 +62,13 @@ public class NARAudio extends WaveIn {
 
         NAR n = NARS.shell();
 
-        NARAudio a = new NARAudio(n, new AudioSource(), 1f);
+        AudioSource audio = new AudioSource().start();
 
-        window(new AudioBufferView(a.in), 800, 800);
+        NARAudio na = new NARAudio(n, audio, 15f);
 
-        n.startFPS(10f);
+        window(new SignalView(na.in), 800, 800);
+
+        n.startFPS(20f);
 
     }
 

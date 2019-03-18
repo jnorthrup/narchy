@@ -41,13 +41,13 @@ public abstract class CircularBuffer {
         void onChanged(CircularBuffer buffer);
     }
 
-    private static final int DEFAULT_BUFFER_SIZE = 3530752;
+    private static final int DEFAULT_BUFFER_SIZE = 0;
 
     public int bufStart = 0;
     public int bufEnd = 0;
     public int viewPtr = 0; //TODO long?
-    protected final AtomicInteger currOffset = new AtomicInteger();
-    protected final AtomicInteger bufferSize = new AtomicInteger();
+    protected final AtomicInteger readAt = new AtomicInteger();
+    protected final AtomicInteger writeAt = new AtomicInteger();
     protected ConcurrentLinkedQueue<BufMark> marks = new ConcurrentLinkedQueue<>();
     protected volatile boolean wasMarked = false;
 
@@ -124,7 +124,7 @@ public abstract class CircularBuffer {
     public int capacity() {
         lock.lock();
         try {
-            return getCapacityInternal();
+            return capacityInternal();
         } finally {
             lock.unlock();
         }
@@ -132,30 +132,30 @@ public abstract class CircularBuffer {
 
     abstract protected void setCapacityInternal(int capacity);
 
-    abstract public int getCapacityInternal();
+    abstract public int capacityInternal();
 
-    public int size() {
+    public int writeAt() {
         lock.lock();
         try {
-            return bufferSize.get();
+            return writeAt.get();
         } finally {
             lock.unlock();
         }
     }
-
-    public int peekSize() {
-        lock.lock();
-        try {
-            return bufferSize.get() - currOffset.get();
-        } finally {
-            lock.unlock();
-        }
-    }
+//
+//    public int peekSize() {
+//        lock.lock();
+//        try {
+//            return writeAt.get() - readAt.get();
+//        } finally {
+//            lock.unlock();
+//        }
+//    }
 
     public int freeSpace() {
         lock.lock();
         try {
-            return getCapacityInternal() - bufferSize.get();
+            return capacityInternal() - writeAt.get();
         } finally {
             lock.unlock();
         }
@@ -185,8 +185,8 @@ public abstract class CircularBuffer {
         lock.lock();
         try {
             viewPtr = bufEnd = bufStart = 0;
-            bufferSize.set(0);
-            currOffset.set(0);
+            writeAt.set(0);
+            readAt.set(0);
             wasMarked = false;
             marks.clear();
         } finally {
@@ -208,10 +208,10 @@ public abstract class CircularBuffer {
         try {
             BufMark m = marks.peek();
             if (m != null && m.index == bufEnd) {
-                if (bufferSize.get() == getCapacityInternal() && !m.flag)
+                if (writeAt.get() == capacityInternal() && !m.flag)
                     marks.add(new BufMark(bufEnd, true));
             } else
-                marks.add(new BufMark(bufEnd, bufferSize.get() == getCapacityInternal()));
+                marks.add(new BufMark(bufEnd, writeAt.get() == capacityInternal()));
         } finally {
             lock.unlock();
         }
@@ -273,10 +273,10 @@ public abstract class CircularBuffer {
     protected int calcMarkSize(BufMark m) {
         if (m != null) {
             if (m.index < bufStart)
-                return (getCapacityInternal() - bufStart) + m.index;
+                return (capacityInternal() - bufStart) + m.index;
             else if (m.index == bufStart) {
                 if (m.flag)
-                    return bufferSize.get();
+                    return writeAt.get();
             } else {
                 return m.index - bufStart;
             }
@@ -288,51 +288,50 @@ public abstract class CircularBuffer {
      * Remove data from the head of the buffer
      *
      * @param length amount of data to remove.
+     * TODO what happens if len < 0
      */
-    public int flush(int len) {
+    public int free(int atMost) {
         lock.lock();
         try {
-            int bs = bufferSize.get();
-            if (bs == 0)
-                return 0;
-
-            if (len > 0) {
-                len = Math.max(len, bs);
-                bufStart = (bufStart + len) % getCapacityInternal();
+            int bs = writeAt.get();
+            atMost = Math.min(writeAt.get(), atMost);
+            if (atMost > 0) {
+                atMost = Math.max(atMost, bs);
+                bufStart = (bufStart + atMost) % capacityInternal();
                 if (bufStart == bufEnd) {
                     viewPtr = bufStart;
-                    currOffset.set(0);
+                    readAt.set(0);
                 } else if (viewPtr == bufEnd) {
                     if (bufStart < viewPtr) {
-                        currOffset.set(viewPtr - bufStart);
+                        readAt.set(viewPtr - bufStart);
                     } else {
-                        currOffset.set(viewPtr + (getCapacityInternal() - bufStart));
+                        readAt.set(viewPtr + (capacityInternal() - bufStart));
                     }
                 } else if ((bufStart > bufEnd && viewPtr > bufEnd) || (bufStart < bufEnd && viewPtr < bufEnd)) {
                     if (bufStart < viewPtr)
-                        currOffset.set(viewPtr - bufStart);
+                        readAt.set(viewPtr - bufStart);
                     else {
                         viewPtr = bufStart;
-                        currOffset.set(0);
+                        readAt.set(0);
                     }
                 } else if (bufStart < viewPtr) {
                     viewPtr = bufStart;
-                    currOffset.set(0);
+                    readAt.set(0);
                 } else {
-                    currOffset.set(viewPtr + (getCapacityInternal() - bufStart));
+                    readAt.set(viewPtr + (capacityInternal() - bufStart));
                 }
-                bufferSize.addAndGet(-len);
+                writeAt.addAndGet(-atMost);
                 BufMark m = marks.peek();
                 while (m != null && ((bufEnd > bufStart && (m.index < bufStart || m.index > bufEnd)) || (m.index < bufStart && m.index > bufEnd))) {
                     marks.poll();
                     m = marks.peek();
                 }
-            } else if (len < 0) {
+            } else if (atMost < 0) {
                 bufStart = viewPtr;
-                bufferSize.addAndGet(currOffset.decrementAndGet());
-                currOffset.set(0);
+                writeAt.addAndGet(readAt.decrementAndGet());
+                readAt.set(0);
             }
-            return len;
+            return atMost;
         } finally {
             writCond.signalAll();
             lock.unlock();
@@ -348,8 +347,8 @@ public abstract class CircularBuffer {
         lock.lock();
         try {
             bufEnd = bufStart;
-            bufferSize.set(0);
-            currOffset.set(0);
+            writeAt.set(0);
+            readAt.set(0);
         } finally {
             lock.unlock();
         }
@@ -363,23 +362,23 @@ public abstract class CircularBuffer {
     public void setPeekPosition(int position) {
         lock.lock();
         try {
-            int bs = bufferSize.get();
+            int bs = writeAt.get();
             if (position < bs) {
-                viewPtr = (bufStart + position) % getCapacityInternal();
-                currOffset.set(position);
+                viewPtr = (bufStart + position) % capacityInternal();
+                readAt.set(position);
             } else {
                 viewPtr = bufEnd;
-                currOffset.set(bs);
+                readAt.set(bs);
             }
         } finally {
             lock.unlock();
         }
     }
 
-    public int getPeekPosition() {
+    public int readAt() {
         lock.lock();
         try {
-            return currOffset.getOpaque();
+            return readAt.getOpaque();
         } finally {
             lock.unlock();
         }

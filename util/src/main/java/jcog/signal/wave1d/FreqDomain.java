@@ -1,7 +1,6 @@
 package jcog.signal.wave1d;
 
 import jcog.signal.Tensor;
-import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.RingTensor;
 
@@ -14,40 +13,41 @@ public class FreqDomain {
     @Deprecated
     public final RingTensor freq;
     final SlidingDFTTensor dft;
-    private final CircularFloatBuffer in;
-    private final ArrayTensor inWave;
+    private final SignalReading in;
 
-    public FreqDomain(CircularFloatBuffer in, float sampleTime, int sampleRate, int fftSize, int history) {
+    private ArrayTensor next;
 
+    public FreqDomain(SignalReading in, int fftSize, int history) {
         this.in = in;
-
-        this.inWave = new ArrayTensor(new float[(int) Math.ceil(sampleTime * sampleRate)]);
-        dft = new SlidingDFTTensor(inWave, fftSize, true);
+        dft = new SlidingDFTTensor( fftSize, true);
         freq = new RingTensor(dft.volume(), history);
 
+        next = new ArrayTensor(1); //empty
 
+        in.wave.on((next)->{
+            this.next = next;
+            invalid.set(true);
+        });
     }
 
 
-    final AtomicBoolean busy = new AtomicBoolean();
+    final AtomicBoolean invalid = new AtomicBoolean(false);
 
 
-    public Tensor next() {
-        if (!busy.compareAndSet(false, true))
-            return dft;
-
-        try {
-            in.peekLast(inWave.data);
-            dft.updateNormalized();
-            return dft;
-        } finally {
-            busy.set(false);
+    public Tensor next(Tensor next) {
+        if (invalid.compareAndSet(true, false)) {
+            try {
+                dft.updateNormalized(next);
+            } finally {
+                invalid.set(false);
+            }
         }
 
+        return dft;
     }
 
-    public boolean update() {
-        freq.commit(next());
+    public boolean update(Tensor next) {
+        freq.commit(next(next));
         return true;
     }
 }

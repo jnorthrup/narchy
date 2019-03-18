@@ -8,7 +8,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.graph.Graph2D;
-import spacegraph.space2d.container.graph.Timeline2D;
+import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
@@ -43,13 +43,17 @@ public class TasksView implements Timeline2D.TimelineModel<Task> {
 
         Iterable<Task> tasks = ()->n.tasks().filter(x->!x.isEternal()).iterator();
 
-        Timeline2D t = timeline(tasks).view(0, n.time());
+        Timeline2D t = timeline(tasks).setTime(0, n.time());
         SpaceGraph.window(t.withControls(),
                 1200, 500);
     }
 
     public static Timeline2D timeline(Iterable<Task> tasks) {
-        return new Timeline2D<>(new TasksView(tasks), TaskRenderer);
+        long start, end;
+        //TODO
+        start = 0;
+        end = 10;
+        return new Timeline2D(start, end).addEvents(new TasksView(tasks), TaskRenderer);
     }
 
     @Override

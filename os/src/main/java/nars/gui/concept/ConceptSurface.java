@@ -58,11 +58,11 @@ public class ConceptSurface extends TabMenu {
 //                "tasklinks", () -> new LabeledPane("TaskLinks", new BagView(n.concept(x).tasklinks(), n)),
                 "goal", () -> {
                     return new Gridding(
-                            new PushButton("gOAL tRUE").click((b) -> {
+                            new PushButton("gOAL tRUE").clicking((b) -> {
                                 long now = n.time();
                                 n.input(NALTask.the(x, GOAL, $.t(1f, n.confDefault(GOAL)), now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(GOAL)));
                             }),
-                            new PushButton("gOAL fALSE").click((b) -> {
+                            new PushButton("gOAL fALSE").clicking((b) -> {
                                 long now = n.time();
                                 n.input(NALTask.the(x, GOAL, $.t(0f, n.confDefault(GOAL)), now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(GOAL)));
                             })
@@ -70,15 +70,15 @@ public class ConceptSurface extends TabMenu {
                 },
                 "predict", () -> {
                     return new Gridding(
-                            new PushButton("What +1").click((b) -> {
+                            new PushButton("What +1").clicking((b) -> {
                                 long now = n.time();
                                 n.input(NALTask.the(x, QUESTION, null, now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(QUESTION)));
                             }),
-                            new PushButton("What +4").click((b) -> {
+                            new PushButton("What +4").clicking((b) -> {
                                 long now = n.time();
                                 n.input(NALTask.the(x, QUESTION, null, now, now + n.dur() * 3, now + n.dur() * 4, n.evidence()).priSet(n.priDefault(QUESTION)));
                             }),
-                            new PushButton("How +1").click((b) -> {
+                            new PushButton("How +1").clicking((b) -> {
                                 long now = n.time();
                                 n.input(NALTask.the(x, QUEST, null, now, now, now + n.dur(), n.evidence()).priSet(n.priDefault(QUEST)));
                             })

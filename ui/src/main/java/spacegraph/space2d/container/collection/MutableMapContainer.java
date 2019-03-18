@@ -88,6 +88,11 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     }
 
     @Override
+    public void add(Surface... s) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public int childrenCount() {
         return Math.max(1, cells.size());
     }
