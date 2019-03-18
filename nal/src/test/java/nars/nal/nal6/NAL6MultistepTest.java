@@ -61,7 +61,7 @@ public class NAL6MultistepTest {
             
         }
 
-        n.stats(System.out);
+        //n.stats(System.out);
 
         
         Truth burgTruth = n.beliefTruth(burglary, Tense.ETERNAL);

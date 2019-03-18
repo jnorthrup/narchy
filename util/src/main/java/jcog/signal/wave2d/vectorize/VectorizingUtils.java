@@ -3,6 +3,7 @@ package jcog.signal.wave2d.vectorize;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class VectorizingUtils {
 
@@ -246,46 +247,59 @@ public class VectorizingUtils {
 
 
 	
-	public static ArrayList<ArrayList<Double[]>> internodes (ArrayList<ArrayList<Integer[]>> paths){
+	public static ArrayList<ArrayList<Double[]>> internodes (List<ArrayList<Integer[]>> paths){
 		ArrayList<ArrayList<Double[]>> ins = new ArrayList<>();
 		ArrayList<Double[]> thisinp;
 		Double[] thispoint, nextpoint = new Double[2];
 		Integer[] pp1, pp2, pp3;
 		int palen=0,nextidx=0,nextidx2=0;
 
-		
-		for(int pacnt=0; pacnt<paths.size(); pacnt++){
+
+		for (ArrayList<Integer[]> path : paths) {
 			ins.add(new ArrayList<>());
-			thisinp = ins.get(ins.size()-1);
-			palen = paths.get(pacnt).size();
-			
-			for(int pcnt=0;pcnt<palen;pcnt++){
+			thisinp = ins.get(ins.size() - 1);
+			palen = path.size();
 
-				
-				nextidx = (pcnt+1)%palen; nextidx2 = (pcnt+2)%palen;
+			for (int pcnt = 0; pcnt < palen; pcnt++) {
+
+
+				nextidx = (pcnt + 1) % palen;
+				nextidx2 = (pcnt + 2) % palen;
 				thisinp.add(new Double[3]);
-				thispoint = thisinp.get(thisinp.size()-1);
-				pp1 = paths.get(pacnt).get(pcnt);
-				pp2 = paths.get(pacnt).get(nextidx);
-				pp3 = paths.get(pacnt).get(nextidx2);
-				thispoint[0] = (pp1[0]+pp2[0]) / 2.0;
-				thispoint[1] = (pp1[1]+pp2[1]) / 2.0;
-				nextpoint[0] = (pp2[0]+pp3[0]) / 2.0;
-				nextpoint[1] = (pp2[1]+pp3[1]) / 2.0;
+				thispoint = thisinp.get(thisinp.size() - 1);
+				pp1 = path.get(pcnt);
+				pp2 = path.get(nextidx);
+				pp3 = path.get(nextidx2);
+				thispoint[0] = (pp1[0] + pp2[0]) / 2.0;
+				thispoint[1] = (pp1[1] + pp2[1]) / 2.0;
+				nextpoint[0] = (pp2[0] + pp3[0]) / 2.0;
+				nextpoint[1] = (pp2[1] + pp3[1]) / 2.0;
 
-				
-				if(thispoint[0] < nextpoint[0]){
-					if     (thispoint[1] < nextpoint[1]){ thispoint[2] = 1.0; }
-					else if(thispoint[1] > nextpoint[1]){ thispoint[2] = 7.0; }
-					else                                { thispoint[2] = 0.0; } 
-				}else if(thispoint[0] > nextpoint[0]){
-					if     (thispoint[1] < nextpoint[1]){ thispoint[2] = 3.0; }
-					else if(thispoint[1] > nextpoint[1]){ thispoint[2] = 5.0; }
-					else                                { thispoint[2] = 4.0; }
-				}else{
-					if     (thispoint[1] < nextpoint[1]){ thispoint[2] = 2.0; }
-					else if(thispoint[1] > nextpoint[1]){ thispoint[2] = 6.0; }
-					else                                { thispoint[2] = 8.0; }
+
+				if (thispoint[0] < nextpoint[0]) {
+					if (thispoint[1] < nextpoint[1]) {
+						thispoint[2] = 1.0;
+					} else if (thispoint[1] > nextpoint[1]) {
+						thispoint[2] = 7.0;
+					} else {
+						thispoint[2] = 0.0;
+					}
+				} else if (thispoint[0] > nextpoint[0]) {
+					if (thispoint[1] < nextpoint[1]) {
+						thispoint[2] = 3.0;
+					} else if (thispoint[1] > nextpoint[1]) {
+						thispoint[2] = 5.0;
+					} else {
+						thispoint[2] = 4.0;
+					}
+				} else {
+					if (thispoint[1] < nextpoint[1]) {
+						thispoint[2] = 2.0;
+					} else if (thispoint[1] > nextpoint[1]) {
+						thispoint[2] = 6.0;
+					} else {
+						thispoint[2] = 8.0;
+					}
 				}
 
 			}
@@ -297,8 +311,8 @@ public class VectorizingUtils {
 	
 	static ArrayList<ArrayList<ArrayList<Double[]>>> batchinternodes (ArrayList<ArrayList<ArrayList<Integer[]>>> bpaths){
 		ArrayList<ArrayList<ArrayList<Double[]>>> binternodes = new ArrayList<>();
-		for(int k=0; k<bpaths.size(); k++) {
-			binternodes.add(internodes(bpaths.get(k)));
+		for (ArrayList<ArrayList<Integer[]>> bpath : bpaths) {
+			binternodes.add(internodes(bpath));
 		}
 		return binternodes;
 	}
@@ -449,8 +463,8 @@ public class VectorizingUtils {
 	
 	public static ArrayList<ArrayList<Double[]>> batchtracepaths (ArrayList<ArrayList<Double[]>> internodepaths, float ltres,float qtres){
 		ArrayList<ArrayList<Double[]>> btracedpaths = new ArrayList<>();
-		for(int k=0; k<internodepaths.size(); k++){
-			btracedpaths.add(tracepath(internodepaths.get(k),ltres,qtres) );
+		for (ArrayList<Double[]> internodepath : internodepaths) {
+			btracedpaths.add(tracepath(internodepath, ltres, qtres));
 		}
 		return btracedpaths;
 	}
@@ -459,8 +473,8 @@ public class VectorizingUtils {
 	
 	public static ArrayList<ArrayList<ArrayList<Double[]>>> batchtracelayers (ArrayList<ArrayList<ArrayList<Double[]>>> binternodes, float ltres, float qtres){
 		ArrayList<ArrayList<ArrayList<Double[]>>> btbis = new ArrayList<>();
-		for(int k=0; k<binternodes.size(); k++){
-			btbis.add( batchtracepaths( binternodes.get(k),ltres,qtres) );
+		for (ArrayList<ArrayList<Double[]>> binternode : binternodes) {
+			btbis.add(batchtracepaths(binternode, ltres, qtres));
 		}
 		return btbis;
 	}

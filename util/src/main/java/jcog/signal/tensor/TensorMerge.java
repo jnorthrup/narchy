@@ -13,6 +13,7 @@ public class TensorMerge extends BatchArrayTensor {
     protected TensorMerge(Tensor from) {
         super(from.shape());
         this.from = from;
+        //noinspection CastToIncompatibleInterface
         this.func = (FloatFloatToFloatFunction)this;
     }
 

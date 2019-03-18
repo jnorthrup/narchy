@@ -83,7 +83,7 @@ public interface Tensor  {
 
     /** element-wise addition */
     default Tensor add(Tensor vector) {
-        return func(vector, (a,b)->a+b);
+        return func(vector, Float::sum);
     }
 
     /** element-wise multiplication */

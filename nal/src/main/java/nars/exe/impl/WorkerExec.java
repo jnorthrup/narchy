@@ -21,8 +21,8 @@ public class WorkerExec extends ThreadedExec {
      * process sub-timeslice divisor
      * TODO auto-calculate
      */
-    double granularity = 2;
-    private static final long subCycleMinNS = 50_000;
+    double granularity = 16;
+    private static final long subCycleMinNS = 200_000;
     private long subCycleMaxNS;
 
     public WorkerExec(Valuator r, int threads) {
@@ -58,6 +58,7 @@ public class WorkerExec extends ThreadedExec {
         boolean reprioritize = true;
 
         WorkPlayLoop() {
+
             rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
         }
 
@@ -90,7 +91,7 @@ public class WorkerExec extends ThreadedExec {
                 //TODO use time-averaged workTime
                 float workTimeMean = this.workTimeMean.valueOf((float)(workTime/1.0E6)/*, i++ % 100 == 0 */ );
                 long playTime =
-                        Math.round(threadWorkTimePerCycle - (workTimeMean*1.0E6));
+                        (long)(threadWorkTimePerCycle - (workTimeMean*1.0E6));
 
                 if (playTime > 0)
                     play(playTime);
@@ -191,9 +192,10 @@ public class WorkerExec extends ThreadedExec {
 //                double expectedWorkTimeNS = (((double)workTimeNS) * expectedWorkTimeFactor); //TODO meter and predict
 
             //TODO abstract
+            //randomize the rescheduling so that the workers tend to be out of phase with each other's next rescheduling
             rescheduleCycles =
                     //nar.dur(); //update current dur
-                    16 * nar.dtDither();
+                    Util.lerp(nar.random().nextFloat(), 1 * nar.dtDither(), 2 * nar.dtDither());
 
             subCycleMaxNS = (long) ((workTimeNS) / granularity);
 
@@ -217,7 +219,7 @@ public class WorkerExec extends ThreadedExec {
 //            System.out.println(subCycleMinNS + " " + subCycleMaxNS /* actualCycleNS */);
             for (TimedLink.MyTimedLink m : play) {
                 double t = workTimeNS * m.pri();
-                m.add(Math.max(subCycleMinNS, Math.round(shift + t * rescheduleCycles)),
+                m.add(Math.max(subCycleMinNS, (long)(shift + t * rescheduleCycles)),
                         -workTimeNS * rescheduleCycles, +workTimeNS * rescheduleCycles);
             }
 //                }
@@ -230,7 +232,7 @@ public class WorkerExec extends ThreadedExec {
         void sleep() {
             long i = nars.exe.impl.WorkerExec.this.threadIdleTimePerCycle;
             if (i > 0) {
-                Util.sleepNSwhile(i, NapTime, nars.exe.impl.WorkerExec.this::queueSafe);
+                Util.sleepNSwhile(i, NapTimeNS, nars.exe.impl.WorkerExec.this::queueSafe);
             }
         }
 

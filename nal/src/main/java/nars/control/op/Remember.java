@@ -150,7 +150,7 @@ public class Remember extends AbstractTask {
                 boolean cyclic = input.isCyclic();
 
                 input = new SpecialTermTask(imgNormal, input);
-
+                input.pri(0); //prevent the product task from being activated significantly, because the image task will be emitted at its priority also.
                 if (cyclic)
                     input.setCyclic(true); //inherit cyclic
 

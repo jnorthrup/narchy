@@ -257,10 +257,7 @@ import java.util.function.Predicate;
         signalIndex = null;
         return m;
     }
-    
-    public void removeMeter(Meters m) {
-        throw new TODO("Removal not supported yet");
-    }
+
     
     /** generate the next row.  key can be a time number, or some other unique-like identifying value */
     public synchronized <R extends RowKey> void update(R key) {

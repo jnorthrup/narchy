@@ -56,7 +56,7 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
         if (source == null)
             return;
 
-        Image in = source.get();
+        BufferedImage in = source.get();
         if (in == null)
             return;
 
@@ -65,7 +65,7 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
             if (outgfx!=null)
                 outgfx.dispose();
 
-            img = new BufferedImage(pw, ph, in instanceof BufferedImage ? ((BufferedImage)in).getType() : TYPE_RGB);
+            img = new BufferedImage(pw, ph, in instanceof BufferedImage ? in.getType() : TYPE_RGB);
             raster = img.getRaster();
             outgfx = img.createGraphics();
             outgfx.setRenderingHint(KEY_ANTIALIASING,VALUE_ANTIALIAS_ON);

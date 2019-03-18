@@ -19,7 +19,11 @@ public enum AutoTranscodeTensor { ;
         private final Tensor in;
         //private final dA a;
         public final Autoencoder ae;
+
+        /** TODO FloatRange */
         private final double learnRate = 0.01f;
+
+        /** TODO FloatRange */
         float noise = 0.0005f;
 
         public AutoEncodeTensor(Tensor input, int outputs) {

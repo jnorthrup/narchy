@@ -1830,6 +1830,9 @@ public enum Util {
 
 
     public static void sleepNSwhile(long periodNS, long napTimeNS, BooleanSupplier keepSleeping) {
+        if (!keepSleeping.getAsBoolean())
+            return;
+
         if (periodNS <= napTimeNS) {
             sleepNS(periodNS);
         } else {

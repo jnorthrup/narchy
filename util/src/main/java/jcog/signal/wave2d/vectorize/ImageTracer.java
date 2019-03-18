@@ -209,7 +209,7 @@ public class ImageTracer {
         }
     }
 
-    private static byte[][] getPalette(BufferedImage image, HashMap<String, Float> options) {
+    private static byte[][] getPalette(BufferedImage image, Map<String, Float> options) {
         int numberofcolors = options.get("numberofcolors").intValue();
         int[][] pixels = new int[image.getWidth()][image.getHeight()];
 

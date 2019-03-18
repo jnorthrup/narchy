@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.math.FloatAveragedWindow;
 import nars.NAR;
 import nars.exe.Causable;
 import nars.exe.Exec;
@@ -30,18 +31,20 @@ abstract public class MultiExec extends UniExec {
     /**
      * global sleep nap period
      */
-    protected static final long NapTime = 2 * 1000 * 1000; //on the order of ~1ms
+    protected static final long NapTimeNS = 500 * 1000; //on the order of 0.5ms
 
-    static private final float queueLatencyMeasurementProbability = 0.05f;
+    static private final float queueLatencyMeasurementProbability = 0.01f;
+
+    static final double lagAdjustmentFactor  =
+            1.0;
+            //1.5;
 
     /**
      * proportion of time spent in forced curiosity
      */
+    private final float explorationRate = 0.05f;
 
-    private final float explorationRate = 0.1f;
-    //private final float momentum = 0.95f;
-
-    protected long cycleNS;
+    protected long cycleIdealNS;
 
     public MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
@@ -68,10 +71,14 @@ abstract public class MultiExec extends UniExec {
 
     abstract protected void executeLater(/*@NotNull */Object x);
 
+    long lastCycle = System.nanoTime();
 
-    protected  void update() {
+    protected void update() {
 
-        updateTiming();
+        long now = System.nanoTime();
+        long last = this.lastCycle;
+        this.lastCycle = now;
+        updateTiming(now - last);
 
         valuator.update(nar);
 
@@ -83,17 +90,29 @@ abstract public class MultiExec extends UniExec {
         nar.time.schedule(this::executeLater);
     }
 
-    private void updateTiming() {
-        cycleNS = nar.loop.periodNS();
-        if (cycleNS < 0) {
+    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(16, 0.25f);
+
+    private void updateTiming(long _cycleDeltaNS) {
+
+        cycleIdealNS = nar.loop.periodNS();
+        if (cycleIdealNS < 0) {
             //paused
-            threadIdleTimePerCycle = NapTime;
+            threadIdleTimePerCycle = NapTimeNS;
         } else {
             double throttle = nar.loop.throttle.floatValue();
 
             //TODO better idle calculation in each thread / worker
-            threadIdleTimePerCycle = Math.round(Util.clamp(cycleNS * (1 - throttle), 0, cycleNS));
-            threadWorkTimePerCycle = cycleNS - threadIdleTimePerCycle;
+            long workTargetNS = (long)(Util.lerp(throttle, 0, cycleIdealNS));
+            long cycleActualNS = (long)(1_000_000.0 * CYCLE_DELTA_MS.valueOf((float)(_cycleDeltaNS/1.0E6)));
+            long lagMeanNS = cycleActualNS - cycleIdealNS;
+
+                    //0.5;
+            if (lagMeanNS > 0)
+                workTargetNS = (long) Math.max(workTargetNS - lagMeanNS * lagAdjustmentFactor / concurrency(), 0);
+
+            threadWorkTimePerCycle = workTargetNS;
+            threadIdleTimePerCycle = cycleIdealNS - workTargetNS;
+
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
                 input(new QueueLatencyMeasurement(nanoTime()));
@@ -140,7 +159,7 @@ abstract public class MultiExec extends UniExec {
                 vr = 0;
             } else {
                 float v = Math.max(0, s.value = c.value());
-                double cyclesUsed = ((double) tUsed) / cycleNS;
+                double cyclesUsed = ((double) tUsed) / cycleIdealNS;
                 vr = (float) (v / (1 + cyclesUsed));
                 assert (vr == vr);
             }
