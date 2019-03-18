@@ -318,9 +318,9 @@ abstract public class TaskBuffer implements Consumer<ITask> {
          * perceptual valve
          * dilation factor
          * input rate
-         * proportional to # of capacities/durations of time
+         * tasks per cycle
          */
-        public final FloatRange valve = new FloatRange(0.25f, 0, 1f);
+        public final FloatRange valve = new FloatRange(1, 0, 8);
 
         final AtomicBoolean busy = new AtomicBoolean(false);
 
@@ -385,7 +385,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         public void popChunked(Exec target, int n, int c) {
             //concurrency > 1
-            int nEach = (int) Math.ceil(((float) n) / (c - 1));
+            int nEach = (int) Math.ceil(((float) n) / c);
             for (int i = 0; i < c && n > 0; i++) {
 
                 target/*HACK*/.input(nn -> {
@@ -424,15 +424,17 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         /**
          * TODO abstract
          */
-        protected int batchSize(float dt) {
+        protected int batchSize(long dt) {
+            return (int) Math.ceil(dt * valve.floatValue());
             //rateControl.apply(tasks.size(), tasks.capacity());
-            float v = valve.floatValue();
-            if (v < ScalarValue.EPSILON)
-                return 0;
-            return Math.max(1, Math.round(
-                    //dt * v * tasks.capacity()
-                    v * tasks.capacity()
-            ));
+
+//            float v = valve.floatValue();
+//            if (v < ScalarValue.EPSILON)
+//                return 0;
+//            return Math.max(1, Math.round(
+//                    //dt * v * tasks.capacity()
+//                    v * tasks.capacity()
+//            ));
         }
 
 

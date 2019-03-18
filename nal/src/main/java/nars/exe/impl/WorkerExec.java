@@ -21,8 +21,8 @@ public class WorkerExec extends ThreadedExec {
      * process sub-timeslice divisor
      * TODO auto-calculate
      */
-    double granularity = 8;
-    private static final long subCycleMinNS = 200_000;
+    double granularity = 4;
+    private static final long subCycleMinNS = 100_000;
     private long subCycleMaxNS;
 
     public WorkerExec(Valuator r, int threads) {
@@ -85,21 +85,22 @@ public class WorkerExec extends ThreadedExec {
         @Override
         public void run() {
 
-            while (alive) {
+            do {
 
                 long workTime = work(1, schedule);
                 //TODO use time-averaged workTime
-                float workTimeMean = this.workTimeMean.valueOf((float)(workTime/1.0E6)/*, i++ % 100 == 0 */ );
+                float workTimeMean = this.workTimeMean.valueOf((float) (workTime / 1.0E6)/*, i++ % 100 == 0 */);
                 long playTime =
-                        (long)(threadWorkTimePerCycle - (workTimeMean*1.0E6));
+                        (long) (threadWorkTimePerCycle - (workTimeMean * 1.0E6));
 
                 if (playTime > 0)
                     play(playTime);
 
-
-
                 sleep();
-            }
+
+            } while (alive);
+
+
         }
 
 
@@ -137,7 +138,7 @@ public class WorkerExec extends ThreadedExec {
                 Causable c = next.can;
 
                 boolean played = false;
-                if (sTime <= subCycleMinNS/2 || c.sleeping()) {
+                if (sTime <= subCycleMinNS / 2 || c.sleeping()) {
 
                 } else {
 
@@ -179,8 +180,7 @@ public class WorkerExec extends ThreadedExec {
         }
 
         /**
-         *
-         * @param workTimeNS  expected worktime nanoseconds per cycle
+         * @param workTimeNS expected worktime nanoseconds per cycle
          */
         private void prioritize(long workTimeNS) {
 
@@ -219,7 +219,7 @@ public class WorkerExec extends ThreadedExec {
 //            System.out.println(subCycleMinNS + " " + subCycleMaxNS /* actualCycleNS */);
             for (TimedLink.MyTimedLink m : play) {
                 double t = workTimeNS * m.pri();
-                m.add(Math.max(subCycleMinNS, (long)(shift + t * rescheduleCycles)),
+                m.add(Math.max(subCycleMinNS, (long) (shift + t * rescheduleCycles)),
                         -workTimeNS * rescheduleCycles, +workTimeNS * rescheduleCycles);
             }
 //                }
@@ -232,7 +232,7 @@ public class WorkerExec extends ThreadedExec {
         void sleep() {
             long i = nars.exe.impl.WorkerExec.this.threadIdleTimePerCycle;
             if (i > 0) {
-                Util.sleepNSwhile(i, NapTimeNS, nars.exe.impl.WorkerExec.this::queueSafe);
+                Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());
             }
         }
 
@@ -244,7 +244,8 @@ public class WorkerExec extends ThreadedExec {
 
                     //execute remaining tasks in callee's thread
                     schedule.removeIf(x -> {
-                        executeNow(x);
+                        if (x!=null)
+                            executeNow(x);
                         return true;
                     });
                 }

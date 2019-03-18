@@ -113,7 +113,6 @@ abstract public class MultiExec extends UniExec {
             threadWorkTimePerCycle = workTargetNS;
             threadIdleTimePerCycle = cycleIdealNS - workTargetNS;
 
-
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
                 input(new QueueLatencyMeasurement(nanoTime()));
             }

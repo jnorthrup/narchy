@@ -1,17 +1,14 @@
 package jcog.exe;
 
+import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import net.openhft.affinity.AffinityLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -21,9 +18,9 @@ import java.util.function.Supplier;
  */
 public class AffinityExecutor implements Executor {
 
-    private static final Logger logger = LoggerFactory.getLogger(AffinityExecutor.class);
+//    private static final Logger logger = LoggerFactory.getLogger(AffinityExecutor.class);
 
-    public final Collection<Thread> threads = new CopyOnWriteArraySet<>();
+    public final FastCoWList<Thread> threads = new FastCoWList<Thread>(Thread[]::new);
     public final String id;
 
     public AffinityExecutor() {
@@ -43,19 +40,27 @@ public class AffinityExecutor implements Executor {
         stop();
     }
 
+    public int size() {
+        return threads.size();
+    }
+
+    public void remove(int i) {
+        kill(threads.get(i));
+    }
+
     protected final class AffinityThread extends Thread {
 
         private final boolean tryPin;
-        final Runnable cmd;
+        final Runnable run;
 
-        public AffinityThread(String name, Runnable cmd) {
-            this(name, cmd, true);
+        public AffinityThread(String name, Runnable run) {
+            this(name, run, true);
         }
 
-        public AffinityThread(String name, Runnable cmd, boolean tryPin) {
+        public AffinityThread(String name, Runnable run, boolean tryPin) {
             super(name);
 
-            this.cmd = cmd;
+            this.run = run;
             this.tryPin = tryPin;
         }
 
@@ -65,13 +70,14 @@ public class AffinityExecutor implements Executor {
             try {
                 if (tryPin) {
                     try (AffinityLock lock = AffinityLock.acquireCore()) {
-                        cmd.run();
+                        run.run();
                     } catch (Exception e) {
-                        logger.warn("Could not acquire affinity lock; executing normally: {} ", e.getMessage());
-                        cmd.run();
+//                        logger.warn("Could not acquire affinity lock; executing normally: {} ", e.getMessage());
+//                        cmd.run();
+                        throw new RuntimeException(e);
                     }
                 } else {
-                    cmd.run();
+                    run.run();
                 }
             } finally {
                 threads.remove(this);
@@ -85,46 +91,53 @@ public class AffinityExecutor implements Executor {
 
     public void stop() {
         threads.removeIf(t -> {
-            if (t instanceof Off)
-                ((Off)t).off();
 
-            if (t.isAlive())
-                t.interrupt();
+            kill(t);
+
             return true;
         });
     }
 
+    protected void kill(Thread thread) {
+        Runnable t = ((AffinityThread)thread).run;
+        if (t instanceof Off) {
 
-    public final void execute(Runnable worker, int count) {
-        execute(()->worker, count);
+            ((Off) t).off();
+
+        }
+
+        if (thread.isAlive()) thread.interrupt();
+
     }
 
-    public final void execute(Supplier<Runnable> worker, int count) {
+
+    public final <R extends Runnable> void execute(R worker, int count) {
+        execute((Supplier<R>)()->worker, count);
+    }
+
+    public final <R extends Runnable>  void execute(Supplier<R> worker, int count) {
         execute(worker, count, true);
     }
 
-    public synchronized  final <R extends Runnable> List<R> execute(Supplier<R> worker, int count, boolean tryPin) {
-
+    public final <R extends Runnable> List<R> execute(Supplier<R> workerBuilder, int count, boolean tryPin) {
 
         FasterList<R> l = new FasterList(count);
 
         for (int i = 0; i < count; i++) {
-            R w = worker.get();
-            l.add(w);
+            R w = workerBuilder.get();
             AffinityThread at = new AffinityThread(
                     id + "_" + serial.getAndIncrement(),
                     w,
                     tryPin);
             add(at);
-
-            at.start();
+            l.add(w);
         }
         return l;
-
     }
 
     protected void add(AffinityThread at) {
         threads.add(at);
+        at.start();
     }
 
 

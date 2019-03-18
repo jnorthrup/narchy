@@ -419,7 +419,7 @@ abstract public class NAgentX extends NAgent {
 
         TaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 0.2f);
         //TaskBuffer injection = new TaskBuffer.DirectTaskBuffer();
-//        window(NARui.taskBufferView(injection, n), 500, 500);
+        window(NARui.taskBufferView(injection, n), 500, 500);
 
 
         BatchDeriver bd6_actWhen = new BatchDeriver(Derivers.nal(n, 6, 8,

@@ -1,5 +1,6 @@
 package nars.exe.impl;
 
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
@@ -20,7 +21,7 @@ abstract public class ThreadedExec extends MultiExec {
 
     final int threads;
     final boolean affinity;
-    protected int workGranularity;
+    protected int workGranularity = Integer.MAX_VALUE;
 
 
     final AffinityExecutor exe = new AffinityExecutor();
@@ -37,7 +38,14 @@ abstract public class ThreadedExec extends MultiExec {
         super(valuator, threads);
         this.threads = threads;
         this.affinity = affinity;
+
+        if (threads > Runtime.getRuntime().availableProcessors() / 2) {
+            /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
+            Exe.setExecutor(this);
+        }
+
     }
+
     @Override protected void executeLater(/*@NotNull */Object x) {
 
         in.add(x, (xx)->{
@@ -49,11 +57,42 @@ abstract public class ThreadedExec extends MultiExec {
     @Override
     protected void update() {
 
-        super.update();
+        if (!affinity && queueSafe()) { //HACK should somehow work in affinity mode too
+            long ci = this.cycleIdealNS;
+            if (ci > 0) {
+                int idealThreads = Util.clamp(
+                        (int) Math.ceil((nar.loop.throttle.floatValue()) * concurrencyMax()),
+                    1,
+                        concurrencyMax());
+
+                //TODO fix this
+                int currentThreads = exe.size();
+                if (idealThreads > currentThreads) {
+                    //spawn more
+                    int demand = idealThreads - currentThreads;
+                    logger.info("add {} worker threads", demand);
+                    synchronized (exe) {
+                        exe.execute(loop(), demand, affinity);
+                    }
+                } else if (currentThreads > idealThreads) {
+                    //stop some
+                    int excess = currentThreads - idealThreads;
+//                    logger.info("stop {} worker threads", excess);
+//                    synchronized (exe) {
+//                        while (exe.size() > idealThreads)
+//                            exe.remove(exe.size() - 1);
+//                    }
+                }
+            }
+        }
 
         workGranularity =
-                //Math.max(1, concurrency() + 1);
-                Math.max(1, concurrency() - 1);
+                //concurrency() + 1;
+                //Math.max(1, concurrency() - 1);
+                concurrency();
+
+        super.update();
+
     }
 
     protected long work(float responsibility, FasterList buffer) {
@@ -65,7 +104,7 @@ abstract public class ThreadedExec extends MultiExec {
 
             int batchSize = //Util.lerp(throttle,
                     //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                    (int) Math.ceil(((responsibility * available) / workGranularity))
+                    Math.max(1, (int) Math.floor(((responsibility * available) / workGranularity)));
                     //)
                     ;
 
@@ -92,11 +131,6 @@ abstract public class ThreadedExec extends MultiExec {
         super.start(n);
 
         workers = exe.execute(loop(), threads, affinity);
-
-        if (concurrency() > procs / 2) {
-            /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
-            Exe.setExecutor(this);
-        }
 
     }
 

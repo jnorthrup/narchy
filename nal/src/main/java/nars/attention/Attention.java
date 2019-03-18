@@ -160,12 +160,13 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
 //        float pDown = 1*p, pUp = Float.NaN;
 
+        Term u = null;
         Concept ct;
         if (t.op().conceptualizable) {
 
 
 
-            Term u = null;
+
 
             boolean self = s.equals(t);
 
@@ -252,6 +253,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
             }
         }
 
+        //System.out.println(s + "\t" + t + "\t" + u);
 
         return t;
     }
