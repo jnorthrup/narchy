@@ -273,9 +273,12 @@ public final class Answer {
      * TODO use FloatRank min
      */
     public static FloatRank<Task> eternalTaskStrength() {
-        return (x, min) -> (x.isEternal() ? x.evi() : x.eviEternalized() * x.range())
-                //* x.originality()
-                ;
+        //return (x, min) -> (x.isEternal() ? x.evi() : x.eviEternalized() * x.range())
+        //* x.originality()
+        ;
+
+        return (x, min) -> x.evi();
+
     }
 
 

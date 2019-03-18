@@ -127,7 +127,10 @@ public class NAgent extends NARService implements NSense, NAct {
 //                rewards.forEach(r->r.pri(pri.floatValue()));
 //        }, nar);
 
-        nar.on(this);
+        nar.runLater(()->{
+            nar.on(this);
+        });
+
     }
 
 

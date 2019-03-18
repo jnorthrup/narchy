@@ -2,6 +2,7 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import jcog.test.control.TrackXY;
@@ -107,6 +108,8 @@ public class TrackXY_NAR extends NAgentX {
         //actionSwitch();
         //actionTriState();
 
+        actionAccelerate();
+
 //        {
 //            curiosity.enable.setAt(false);
 //            GraphEdit w = new GraphEdit(RectFloat.X0Y0WH(0, 0, 256, 256));
@@ -137,7 +140,7 @@ public class TrackXY_NAR extends NAgentX {
 
         FloatSupplier nearness = () -> 1f - (track.dist() / track.distMax());
 
-        rewardNormalized($.the("good"), 0, 1, nearness);
+        reward(nearness);
         //rewardNormalized($.the("better"), -0.1f,  +0.1f, new FloatFirstOrderDifference(nar::time, nearness) );
 
 //        }
@@ -161,6 +164,28 @@ public class TrackXY_NAR extends NAgentX {
                     nar().want(0.1f, $.the("right"), now, now + durMS, 1f, 0.02f);
                 }
             }
+        });
+    }
+
+
+    private void actionAccelerate() {
+//        actionDial($.inh($.p(id, $.the("speed")), $.the(-1)),
+//                $.inh($.p(id, $.the("speed")), $.the(+1)),
+//                        track.controlSpeed, 100);
+//        actionTriStateContinuous($.inh(id, $.the("speed")), (a)->{
+////            System.out.println(a);
+//            track.controlSpeed.add(a/100f);
+//            return true; //TODO check change
+//        });
+
+        FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(32, 0.05f);
+        actionUnipolar($.inh(id, $.the("speed")), (float a)->{
+//            System.out.println(a);
+            //track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
+            float c = _controlSpeed.valueOf((float) Math.pow(a, 2));
+            track.controlSpeed.set(c);
+            return c;
+            //TODO check change
         });
     }
 
@@ -190,6 +215,7 @@ public class TrackXY_NAR extends NAgentX {
 //        n.beliefConfDefault.setAt(0.5f);
 //        n.goalConfDefault.setAt(0.5f);
 
+        n.attn.links.capacity(1024);
 
         n.goalPriDefault.set(0.5f);
         n.beliefPriDefault.set(0.1f);
@@ -268,7 +294,7 @@ public class TrackXY_NAR extends NAgentX {
 //        }, GOAL);
 
         //final int W = 3, H = 1;
-        final int W = 4, H = 4;
+        final int W = 5, H = 5;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
 
@@ -299,8 +325,8 @@ public class TrackXY_NAR extends NAgentX {
 //                    return features.isEmpty() ? new ObjectSurface(obj) : new ObjectSurface(features, 2);
 //                })).sizeRel(0.2f, 0.2f);
 
-                g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
-                g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.03f, 0.2f);
+                g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
+                g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
                 g.add(NARui.taskBufferView(d.out, n)).sizeRel(0.25f, 0.25f);
 //                g.add(new PIDChip(new MiniPID(0.01, 0.01, 0.01))).sizeRel(0.1f, 0.1f);
                 g.add(NARui.tasklinkSpectrogram(n, 200)).sizeRel(0.25f, 0.25f);
@@ -346,6 +372,8 @@ public class TrackXY_NAR extends NAgentX {
                 }
             });
         }
+
+        n.synch();
 
         n.run(experimentTime);
 

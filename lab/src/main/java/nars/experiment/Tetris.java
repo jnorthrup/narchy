@@ -72,7 +72,6 @@ public class Tetris extends NAgentX {
                 n);
 
 
-
         //if a pixel is on, pixels above it should be off
         reward(new BeliefReward($$("(&|,tetris(#x,#yBelow),--tetris(#x,#yAbove),cmp(#yBelow,#yAbove,1))"), this));
 
@@ -89,10 +88,9 @@ public class Tetris extends NAgentX {
 
         easy = state.easy;
 
-        onFrame(() -> {
-            state.timePerFall = Math.round(this.timePerFall.floatValue());
-            state.next();
-        });
+        state.timePerFall = Math.round(this.timePerFall.floatValue());
+
+
         rewardNormalized("score", 0 /* ignore decrease */, 1,
                 state::score
                 //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
@@ -141,8 +139,13 @@ public class Tetris extends NAgentX {
 
         state.reset();
 
+        onFrame(() -> {
+            state.timePerFall = Math.round(this.timePerFall.floatValue());
+            state.next();
+        });
 
     }
+
 
     public static void main(String[] args) {
 

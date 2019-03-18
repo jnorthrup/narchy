@@ -98,7 +98,10 @@ public interface NAct {
                 ii = 0;
             } else {
                 float f = d.freq();
-                float deadZoneFreqRadius = 1f / 6;
+                float deadZoneFreqRadius =
+                        //1f / 6;
+                        1f/12;
+
                 if (f > 0.5f + deadZoneFreqRadius)
                     ii = +1;
                 else if (f < 0.5f - deadZoneFreqRadius)
@@ -488,6 +491,7 @@ public interface NAct {
             ()->thresh,
             q()
         );
+//        return actionTriStateContinuous(down, each);
     }
 
     /**

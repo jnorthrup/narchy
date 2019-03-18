@@ -110,7 +110,7 @@ public class FZero extends NAgentX {
         //        {
             int nx = 4;
             AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
-                    null /*$.p($.the("cae"), id)*/, vision, nx, nx, (subX, subY) -> {
+                    $.p($.the("cam"), id), vision, nx, nx, (subX, subY) -> {
                 return new float[]{/*cc.X, cc.Y*/};
             }, 8, this);
             camAE.setResolution(0.25f);

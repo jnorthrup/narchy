@@ -362,7 +362,7 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(30);
 
 
-        n.attn.linksCapacity.set(2048);
+        n.attn.linksCapacity.set(4096);
 
 
         n.beliefPriDefault.set(0.1f);
@@ -370,8 +370,8 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.05f);
         n.questPriDefault.set(0.05f);
 
-        n.beliefConfDefault.set(0.85f);
-        n.goalConfDefault.set(0.85f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
@@ -449,7 +449,7 @@ abstract public class NAgentX extends NAgent {
 
         //new StatementLinker(n);
         new PuncNoise(n);
-        //new Eternalizer(n);
+        new Eternalizer(n);
 
 //        new STMLinkage(n, 1);
 

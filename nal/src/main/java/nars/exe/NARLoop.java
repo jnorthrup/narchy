@@ -33,22 +33,22 @@ public class NARLoop extends InstrumentedLoop {
         n.on(service);
     }
 
-    @Override
-    protected boolean async() {
-        return true;
-    }
+//    @Override
+//    protected boolean async() {
+//        return true;
+//    }
 
     @Override
     public final boolean next() {
 
         nar.time.cycle(nar);
 
-        if (nar.exe.concurrent()) {
-            nar.eventCycle.emitAsync(nar, nar.exe, this::ready);
-        } else {
+//        if (nar.exe.concurrent()) {
+//            nar.eventCycle.emitAsync(nar, nar.exe, this::ready);
+//        } else {
             nar.eventCycle.emit(nar);
-            ready();
-        }
+//            ready();
+//        }
 
         return true;
     }

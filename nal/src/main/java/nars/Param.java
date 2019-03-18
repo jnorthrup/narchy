@@ -523,9 +523,9 @@ public abstract class Param {
                 //1;
                 //1.618f; //phi
                 //2; //nyquist
-                //4;
+                4;
                 //dur;
-                8;
+                //8;
                 //64;
 
         double decayTime = falloffDurs * dur;

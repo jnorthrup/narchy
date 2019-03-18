@@ -318,6 +318,11 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
     @Override
     void setCapacity(int c);
 
+    default <B extends Bag> B capacity(int c) {
+        setCapacity(c);
+        return (B) this;
+    }
+
     default float[] histogram(float[] x) {
         int bins = x.length;
         forEach(budget -> {

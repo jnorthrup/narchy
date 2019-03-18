@@ -57,20 +57,20 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      */
     public MutableFloat(final Number value) {
         super();
-        this.value = value.floatValue();
+        set(value.floatValue());
     }
 
-    /**
-     * Constructs a new MutableFloat parsing the given string.
-     *
-     * @param value  the string to parse, not null
-     * @throws NumberFormatException if the string cannot be parsed into a float
-     * @since 2.5
-     */
-    public MutableFloat(final String value) throws NumberFormatException {
-        super();
-        this.value = Float.parseFloat(value);
-    }
+//    /**
+//     * Constructs a new MutableFloat parsing the given string.
+//     *
+//     * @param value  the string to parse, not null
+//     * @throws NumberFormatException if the string cannot be parsed into a float
+//     * @since 2.5
+//     */
+//    public MutableFloat(final String value) throws NumberFormatException {
+//        super();
+//        this.value = Float.parseFloat(value);
+//    }
 
     
     /**
@@ -121,73 +121,73 @@ public class MutableFloat extends NumberX implements FloatSupplier {
     }
 
     
-    /**
-     * Increments the value.
-     *
-     * @since Commons Lang 2.2
-     */
-    public void increment() {
-        value++;
-    }
+//    /**
+//     * Increments the value.
+//     *
+//     * @since Commons Lang 2.2
+//     */
+//    public void increment() {
+//        value++;
+//    }
 
-    /**
-     * Increments this instance's value by 1; this method returns the value associated with the instance
-     * immediately prior to the increment operation. This method is not thread safe.
-     *
-     * @return the value associated with the instance before it was incremented
-     * @since 3.5
-     */
-    public float getAndIncrement() {
-        final float last = value;
-        value++;
-        return last;
-    }
+//    /**
+//     * Increments this instance's value by 1; this method returns the value associated with the instance
+//     * immediately prior to the increment operation. This method is not thread safe.
+//     *
+//     * @return the value associated with the instance before it was incremented
+//     * @since 3.5
+//     */
+//    public float getAndIncrement() {
+//        final float last = value;
+//        value++;
+//        return last;
+//    }
 
-    /**
-     * Increments this instance's value by 1; this method returns the value associated with the instance
-     * immediately after the increment operation. This method is not thread safe.
-     *
-     * @return the value associated with the instance after it is incremented
-     * @since 3.5
-     */
-    public float incrementAndGet() {
-        value++;
-        return value;
-    }
+//    /**
+//     * Increments this instance's value by 1; this method returns the value associated with the instance
+//     * immediately after the increment operation. This method is not thread safe.
+//     *
+//     * @return the value associated with the instance after it is incremented
+//     * @since 3.5
+//     */
+//    public float incrementAndGet() {
+//        value++;
+//        return value;
+//    }
 
-    /**
-     * Decrements the value.
-     *
-     * @since Commons Lang 2.2
-     */
-    public void decrement() {
-        value--;
-    }
+//    /**
+//     * Decrements the value.
+//     *
+//     * @since Commons Lang 2.2
+//     */
+//    public void decrement() {
+//        value--;
+//    }
 
-    /**
-     * Decrements this instance's value by 1; this method returns the value associated with the instance
-     * immediately prior to the decrement operation. This method is not thread safe.
-     *
-     * @return the value associated with the instance before it was decremented
-     * @since 3.5
-     */
-    public float getAndDecrement() {
-        final float last = value;
-        value--;
-        return last;
-    }
+//    /**
+//     * Decrements this instance's value by 1; this method returns the value associated with the instance
+//     * immediately prior to the decrement operation. This method is not thread safe.
+//     *
+//     * @return the value associated with the instance before it was decremented
+//     * @since 3.5
+//     */
+//    public float getAndDecrement() {
+//        final float last = value;
+//        value--;
+//        return last;
+//    }
 
-    /**
-     * Decrements this instance's value by 1; this method returns the value associated with the instance
-     * immediately after the decrement operation. This method is not thread safe.
-     *
-     * @return the value associated with the instance after it is decremented
-     * @since 3.5
-     */
-    public float decrementAndGet() {
-        value--;
-        return value;
-    }
+//    /**
+//     * Decrements this instance's value by 1; this method returns the value associated with the instance
+//     * immediately after the decrement operation. This method is not thread safe.
+//     *
+//     * @return the value associated with the instance after it is decremented
+//     * @since 3.5
+//     */
+//    public float decrementAndGet() {
+//        value--;
+//        return value;
+//    }
 
     
     /**
@@ -196,8 +196,8 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * @param operand  the value to addAt, not null
      * @since Commons Lang 2.2
      */
-    public void add(final float operand) {
-        this.value += operand;
+    public void add(float operand) {
+        set(value + operand);
     }
 
     /**
@@ -213,61 +213,61 @@ public class MutableFloat extends NumberX implements FloatSupplier {
 
 
 
-    /**
-     * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
-     * immediately after the addition operation. This method is not thread safe.
-     *
-     * @param operand the quantity to addAt, not null
-     * @return the value associated with this instance after adding the operand
-     * @since 3.5
-     */
-    public float addAndGet(final float operand) {
-        this.value += operand;
-        return value;
-    }
+//    /**
+//     * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
+//     * immediately after the addition operation. This method is not thread safe.
+//     *
+//     * @param operand the quantity to addAt, not null
+//     * @return the value associated with this instance after adding the operand
+//     * @since 3.5
+//     */
+//    public float addAndGet(final float operand) {
+//        this.value += operand;
+//        return value;
+//    }
 
-    /**
-     * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
-     * immediately after the addition operation. This method is not thread safe.
-     *
-     * @param operand the quantity to addAt, not null
-     * @throws NullPointerException if {@code operand} is null
-     * @return the value associated with this instance after adding the operand
-     * @since 3.5
-     */
-    public float addAndGet(final Number operand) {
-        this.value += operand.floatValue();
-        return value;
-    }
-
-    /**
-     * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
-     * immediately prior to the addition operation. This method is not thread safe.
-     *
-     * @param operand the quantity to addAt, not null
-     * @return the value associated with this instance immediately before the operand was added
-     * @since 3.5
-     */
-    public float getAndAdd(final float operand) {
-        final float last = value;
-        this.value += operand;
-        return last;
-    }
-
-    /**
-     * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
-     * immediately prior to the addition operation. This method is not thread safe.
-     *
-     * @param operand the quantity to addAt, not null
-     * @throws NullPointerException if {@code operand} is null
-     * @return the value associated with this instance immediately before the operand was added
-     * @since 3.5
-     */
-    public float getAndAdd(final Number operand) {
-        final float last = value;
-        this.value += operand.floatValue();
-        return last;
-    }
+//    /**
+//     * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
+//     * immediately after the addition operation. This method is not thread safe.
+//     *
+//     * @param operand the quantity to addAt, not null
+//     * @throws NullPointerException if {@code operand} is null
+//     * @return the value associated with this instance after adding the operand
+//     * @since 3.5
+//     */
+//    public float addAndGet(final Number operand) {
+//        this.value += operand.floatValue();
+//        return value;
+//    }
+//
+//    /**
+//     * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
+//     * immediately prior to the addition operation. This method is not thread safe.
+//     *
+//     * @param operand the quantity to addAt, not null
+//     * @return the value associated with this instance immediately before the operand was added
+//     * @since 3.5
+//     */
+//    public float getAndAdd(final float operand) {
+//        final float last = value;
+//        this.value += operand;
+//        return last;
+//    }
+//
+//    /**
+//     * Increments this instance's value by {@code operand}; this method returns the value associated with the instance
+//     * immediately prior to the addition operation. This method is not thread safe.
+//     *
+//     * @param operand the quantity to addAt, not null
+//     * @throws NullPointerException if {@code operand} is null
+//     * @return the value associated with this instance immediately before the operand was added
+//     * @since 3.5
+//     */
+//    public float getAndAdd(final Number operand) {
+//        final float last = value;
+//        this.value += operand.floatValue();
+//        return last;
+//    }
 
     
     

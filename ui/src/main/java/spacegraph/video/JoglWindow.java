@@ -286,8 +286,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         W.addWindowListener(this);
 
         windows.add(this);
+        W.setVisible(true);
 
-        //Exe.invokeLater(()->{
+        Exe.invokeLater(()->{
 
             W.setTitle(title);
             if (x != Integer.MIN_VALUE) {
@@ -298,9 +299,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 setSize(w, h);
                 W.setSize(w, h);
             }
-        //});
+        });
 
-        W.setVisible(true);
 
         return W;
         //});
