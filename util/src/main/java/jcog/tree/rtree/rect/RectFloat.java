@@ -2,6 +2,7 @@ package jcog.tree.rtree.rect;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.WTF;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.Spatialization;
@@ -365,5 +366,21 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public RectFloat mean(RectFloat o) {
         if (this == o) return this;
         return XYWH((x + o.x)/2, (y+o.y)/2, (w + o.w)/2, (h + o.h)/2);
+    }
+
+    public RectFloat fenceInside(RectFloat outer) {
+        if (outer.contains(this))
+            return this;
+        else {
+            if (outer.w < w || outer.h < h)
+                throw new WTF(this +  " is too large to fit inside " + outer);
+
+            //if ((cx != cx) || (cy != cy)) randomize(bounds);
+            return XYWH(
+                    Util.clamp(cx(), outer.left() + w / 2, outer.right() - w / 2),
+                    Util.clamp(cy(), outer.bottom() + h / 2, outer.top() - h / 2),
+                    w,h);
+        }
+
     }
 }

@@ -3,9 +3,7 @@ package spacegraph.space2d.widget.meta;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.jogamp.common.util.IOUtil;
-import com.jogamp.opengl.GL2;
 import jcog.User;
-import jcog.exe.Exe;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
@@ -13,7 +11,6 @@ import jcog.signal.wave1d.HaarWaveletTensor;
 import jcog.signal.wave1d.SlidingDFTTensor;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
@@ -27,14 +24,10 @@ import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.video.Draw;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -120,10 +113,10 @@ public class ProtoWidget extends Bordering {
         add("Vectorize", TODO, "Video");
         add("ShapeDetect", TODO, "Video");
 
-        add("split", TODO, "Tensor");
+        add("split", TODO, "Math");
         add("concat", ()-> new BiFunctionChip<>(Tensor.class, Tensor.class, Tensor.class, (Tensor a, Tensor b) -> {
             return TensorChain.get(a, b);
-        }), "Tensor");
+        }), "Math");
         add("OneHotBit", ()-> new BiFunctionChip<>(Integer.class, Integer.class, Tensor.class, (Integer signal, Integer range) -> {
             //TODO optimize with a special Tensor impl
             if (signal >= 0 && signal < range) {
@@ -133,13 +126,13 @@ public class ProtoWidget extends Bordering {
             } else {
                 return null;
             }
-        }), "Tensor");
+        }), "Math");
         add("HaarWavelet", ()->new FunctionChip<>(Tensor.class, HaarWaveletTensor.class, (Tensor t)->{
             return new HaarWaveletTensor(t, 64);
-        }).buffered(), "Tensor");
+        }).buffered(), "Math");
         add("SlidingDFT", ()->new FunctionChip<>(Tensor.class, SlidingDFTTensor.class, (Tensor t)->{
             return new SlidingDFTTensor(t, 64, true);
-        }).buffered(), "Tensor");
+        }).buffered(), "Math");
 
 
         add("mix", TODO, "Audio");
@@ -191,16 +184,20 @@ public class ProtoWidget extends Bordering {
         //categories.put("...", OmniBox::new);
         library.byTag.asMap().forEach((t,v)->{
             Surface[] fields = v.stream()
-                    .map(x -> becoming(x.getOne(), x.getTwo()))
+                    .sorted(Comparator.comparing(Pair::getOne))
+                    .map(x -> {
+                        String name = x.getOne();
+                        return becoming(name, x.getTwo());
+                    })
                     .toArray(Surface[]::new);
             categories.put(t, () -> new Widget(new LabeledPane(new VectorLabel(t) {
-                {  textColor.set(1,1,1,1);   }
+//                {  textColor.set(1,1,1,1);   }
 
-                @Override
-                protected void paintIt(GL2 gl, SurfaceRender r) {
-                    gl.glColor3f(0,0, 0);
-                    Draw.rect(bounds, gl);
-                }
+//                @Override
+//                protected void paintIt(GL2 gl, SurfaceRender r) {
+//                    gl.glColor3f(0,0, 0);
+//                    Draw.rect(bounds, gl);
+//                }
             }, new Gridding( fields )) ));
         });
 
@@ -210,6 +207,18 @@ public class ProtoWidget extends Bordering {
                 case "Control":
                     icon = "cogs";
                     break;
+                case "Value":
+                    icon = "pencil-square-o";
+                    break;
+                case "Math":
+                    icon = "calculator";
+                    break;
+                case "Meter":
+                    icon = "line-chart";
+                    break;
+                case "Video":
+                    icon = "video-camera";
+                    break;
                 case "Audio":
                     icon = "volume-up";
                     break;
@@ -217,7 +226,7 @@ public class ProtoWidget extends Bordering {
                     icon = "sliders";
                     break;
                 case "Data":
-                    icon = "bar-chart-o";
+                    icon = "database";
                     break;
                 case "Reality":
                     icon = "wrench";
@@ -234,26 +243,27 @@ public class ProtoWidget extends Bordering {
             }
         }));
 
-        set(N, new VectorLabel("new User()"));
-
-        Exe.invokeLater(()->{
+        set(N, new LazySurface(()->{
 
             User u = new User();
 
             library.byName.forEach((t,v)-> u.put(t, t));
 
-            set(N, new OmniBox(new OmniBox.LuceneQueryModel(u) {
+            return new OmniBox(new OmniBox.LuceneQueryModel(u));
 
-            }));
-        });
+        }, "new User()"));
+
 
     }
 
 
     private PushButton becoming(String label, Supplier<Surface> replacement) {
         return new PushButton(label,
-                () -> parent(WizardFrame.class).replace(ProtoWidget.this,
-                        replacement.get()));
+            () -> {
+                parent(WizardFrame.class).replace(ProtoWidget.this,
+                    safe(replacement)
+                );
+            });
     }
 
 }

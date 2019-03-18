@@ -13,27 +13,19 @@ public class SpectrogramChip extends TypedPort<float[]> {
     int history = 128;
 
     public SpectrogramChip() {
+
         super(float[].class);
-    }
-
-    @Override
-    protected void paintWidget(RectFloat bounds, GL2 gl) {
-        //super.paintWidget(bounds, gl);
-    }
-
-    @Override
-    public boolean recv(Wire from, float[] row) {
-        if (super.recv(from, row)) {
+        on((float[] row)->{
             Spectrogram s = this.s;
             if (s == null || s.N.intValue()!=row.length) {
                 //s = new Spectrogram()
                 set(s = this.s = new Spectrogram(true, history, row.length));
             }
-
-            //s.next((c)-> Draw.rgbInt(0, row[c], 0));
-
-            return true;
-        }
-        return false;
+        });
     }
+
+    @Override
+    protected void paintWidget(RectFloat bounds, GL2 gl) {
+    }
+
 }

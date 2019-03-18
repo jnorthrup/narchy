@@ -31,6 +31,7 @@ public class FloatRangePort extends FloatPort {
 
         set(LabeledPane.the(label, s));
 
+        on(this::SET);
     }
 
     @Override
@@ -58,15 +59,6 @@ public class FloatRangePort extends FloatPort {
         synchronized(f) {
             f.set(s);
         }
-    }
-
-    @Override
-    public boolean recv(Wire from, Float s) {
-        if (super.recv(from, s)) {
-            SET(s);
-            return true;
-        }
-        return false;
     }
 
     @Override

@@ -10,6 +10,7 @@ import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
 import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
+import spacegraph.space2d.widget.meta.ErrorPanel;
 import spacegraph.space2d.widget.meta.WeakSurface;
 import spacegraph.util.MutableRectFloat;
 
@@ -17,6 +18,7 @@ import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * planar subspace.
@@ -53,6 +55,20 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
 
     public Surface() {
 
+    }
+
+    public static Surface safe(Supplier<Surface> s) {
+        Surface r;
+        try {
+            r = s.get();
+        } catch (Throwable e) {
+            r = new ErrorPanel(e, s);
+        }
+
+        if (r == null)
+            r = new ErrorPanel(new NullPointerException(), s);
+
+        return r;
     }
 
     public final float cx() {

@@ -44,11 +44,6 @@ public class IntPort extends EditablePort<Integer> {
 
 
     @Override
-    protected boolean change(Integer x) {
-        return value.getAndSet(x)!=x;
-    }
-
-    @Override
     protected Integer parse(String x) {
         x = x.trim();
         if (x.isEmpty())

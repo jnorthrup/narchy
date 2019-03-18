@@ -293,7 +293,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return false;
     }
 
-    public boolean recv(Wire from, X s) {
+    public final boolean recv(Wire from, X s) {
         if (!enabled) {
             return false;
         } else {

@@ -200,9 +200,10 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     }
 
     private RectFloat preBoundsPos(RectFloat x) {
-        return x.move(
-                    Math.min(fence.w - x.right(), Math.max(0, -x.left())),
-                    Math.min(fence.h - x.top(), Math.max(0, -x.bottom())));
+        return x.fenceInside(graph.bounds);
+//        return x.move(
+//                    Math.min(fence.w - x.right(), Math.max(0, -x.left())),
+//                    Math.min(fence.h - x.top(), Math.max(0, -x.bottom())));
     }
 
     private RectFloat preBoundsSize(RectFloat r) {

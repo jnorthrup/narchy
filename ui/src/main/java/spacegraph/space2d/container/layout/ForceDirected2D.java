@@ -97,7 +97,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
             for (MutableRectFloat b : nodes) {
                 b.commit(maxSpeedPerIter);
-                b.fence(gg);
+                b.fenceInside(gg);
             }
 
 

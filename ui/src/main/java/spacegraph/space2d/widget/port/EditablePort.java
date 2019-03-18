@@ -34,13 +34,9 @@ abstract public class EditablePort<X> extends TypedPort<X> {
     @Override
     public boolean out(X _next) {
         X next = process(_next);
+        if (next!=null)
+            return super.out(next);
 
-        if (next!=null && change(next)) {
-            if (super.out(next)) {
-                edit.text(toString(next));
-                return true;
-            }
-        }
         return false;
     }
 
@@ -48,7 +44,7 @@ abstract public class EditablePort<X> extends TypedPort<X> {
         return next.toString();
     }
 
-    abstract protected boolean change(X x);
+
 
 
     /** returns true if the value is valid and can set the port, override in subclasses to filter input */

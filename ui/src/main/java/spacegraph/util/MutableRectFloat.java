@@ -127,7 +127,7 @@ public class MutableRectFloat<X> {
     /**
      * keeps this rectangle within the given bounds
      */
-    public void fence(RectFloat bounds) {
+    public void fenceInside(RectFloat bounds) {
         if ((cx != cx) || (cy != cy)) randomize(bounds);
         cx = Util.clamp(cx, bounds.left() + w / 2, bounds.right() - w / 2);
         cy = Util.clamp(cy, bounds.bottom() + h / 2, bounds.top() - h / 2);

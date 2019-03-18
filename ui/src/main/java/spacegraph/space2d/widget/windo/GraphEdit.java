@@ -51,6 +51,9 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
     public final v2 windoSizeMinRel = new v2(0.005f, 0.005f); //visible
     private Off loop;
 
+//    /** TODO abstract fence rules */
+//    private static final boolean fenceInside = true;
+
     public GraphEdit() {
         super();
         physics.surface = physics.start(this);
@@ -79,6 +82,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
             r.edges(true, true).forEach(e -> e.id().remove());
         }
     };
+
 
 
     /**
@@ -159,13 +163,16 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
     @Override
     public void doLayout(int dtMS) {
-        physics.surface.pos(bounds);
-        raw.pos(bounds);
-        //w.fence(bounds);
+        RectFloat graphBounds = this.bounds;
+        physics.surface.pos(graphBounds);
+        raw.pos(graphBounds);
+
         forEach(w -> {
             if (w.parent==null)
                 w.start(GraphEdit.this);
-            w.layout();
+
+//            if (fenceInside)
+//                w.pos(w.bounds.fenceInside(graphBounds));
         });
     }
 

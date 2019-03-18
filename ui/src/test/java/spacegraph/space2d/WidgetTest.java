@@ -12,6 +12,7 @@ import spacegraph.space2d.widget.menu.ListMenu;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaFrame;
+import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
@@ -74,8 +75,16 @@ public class WidgetTest {
                             "Graph2D Simple", () -> Graph2DTest.newSimpleGraph(),
                             "Graph2D UJMP", () -> Graph2DTest.newUjmpGraph()
                     )),
-            "Wiring", () ->
-                    new GraphEdit<>(1000, 1000)//new GraphEditTest.TinySpeechTest()
+            "Wiring", () -> {
+                GraphEdit<Surface> g;
+                g = new GraphEdit<>();
+                g.physics.invokeLater(()->{
+                    g.add(WidgetTest.widgetDemo()).posRel(1, 1, 0.5f,0.25f);
+                    for (int i = 0; i < 1; i++)
+                        g.add(new ProtoWidget()).posRel(1, 1,0.25f, 0.2f);
+                });
+                return g;
+            }
             ,
             "Toy", () -> new
 

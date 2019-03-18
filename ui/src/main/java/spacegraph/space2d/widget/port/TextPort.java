@@ -7,20 +7,21 @@ public class TextPort extends EditablePort<String> {
     final AtomicReference<String> val = new AtomicReference();
 
     public TextPort() {
-        super("", String.class);
-    }
 
-    @Override
-    protected boolean change(String s) {
-        final boolean[] changed = {false};
-        val.accumulateAndGet(s, (p,n)->{
-           if (p!=null && n.equals(p)) {
-               changed[0] = true;
-               return p;
-           } else
-               return s;
+        super("", String.class);
+        on((String s)->{
+            final boolean[] changed = {false};
+            val.accumulateAndGet(s, (p, n) -> {
+                if (p != null && n.equals(p)) {
+                    changed[0] = true;
+                    return p;
+                } else
+                    return s;
+            });
+            if (changed[0]) {
+
+            }
         });
-        return changed[0];
     }
 
     @Override
