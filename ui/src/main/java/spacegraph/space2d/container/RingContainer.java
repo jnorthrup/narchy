@@ -72,8 +72,6 @@ public abstract class RingContainer<X extends Surface> extends Surface {
 
 
         setter.accept(x[y%t]);
-
-
     }
 
     public void forEach(BiConsumer<X, RectFloat> each) {

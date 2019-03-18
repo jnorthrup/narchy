@@ -1,12 +1,15 @@
 package jcog.signal.wave1d;
 
+import jcog.signal.Tensor;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.RingTensor;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** TODO extract RingBufferTensor to an extended impl.  this only needs to supply the next 1D vector of new freq information */
+/**
+ * TODO extract RingBufferTensor to an extended impl.  this only needs to supply the next 1D vector of new freq information
+ */
 public class FreqDomain {
     @Deprecated
     public final RingTensor freq;
@@ -28,19 +31,23 @@ public class FreqDomain {
 
     final AtomicBoolean busy = new AtomicBoolean();
 
-    public boolean update() {
+
+    public Tensor next() {
         if (!busy.compareAndSet(false, true))
-            return false;
+            return dft;
 
         try {
             in.peekLast(inWave.data);
             dft.updateNormalized();
-            freq.commit(dft);
-            return true;
+            return dft;
         } finally {
             busy.set(false);
-
         }
+
     }
 
+    public boolean update() {
+        freq.commit(next());
+        return true;
+    }
 }

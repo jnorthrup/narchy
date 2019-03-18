@@ -4,12 +4,12 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.signal.buffer.CircularFloatBuffer;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.unit.MutableUnitContainer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPainter {
+public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView.BitmapPainter {
 
     private final int w, h;
     private final CircularFloatBuffer buffer;
@@ -20,7 +20,7 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
     private transient BitmapMatrixView bmp = null;
     private transient Graphics gfx;
 
-    volatile boolean update = false;
+    volatile boolean update = true;
 
     /**
      * visualization bounds
@@ -68,6 +68,7 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
                     return true;
                 }
             };
+            bmp.pos(bounds);
             set(bmp);
         }
 
@@ -75,7 +76,7 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
             update = !bmp.updateIfShowing(); //keep updating till updated
         }
 
-        //bmp.paintMatrix(g);
+//        bmp.paint(g, r);
     }
 
     public void update() {
@@ -94,7 +95,7 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
     }
 
     @Override
-    public synchronized void color(BufferedImage buf, int[] pix) {
+    public void color(BufferedImage buf, int[] pix) {
 
 
         if (gfx == null) {
@@ -127,14 +128,14 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
 
         //System.out.println(first + " "+ last);
 
+        long range = end - start;
+        float W = w;
         for (int x = 0; x < w; x++) {
 
-            float sStart = start + (end - start) * (x/((float)w));
-            float sEnd = start + (end - start) * ((x+1)/((float)w));
+            float sStart = start + range * (x/ W);
+            float sEnd = start + range * ((x+1)/ W);
 
             float amp = buffer.mean(sStart, sEnd);
-
-            float ampNormalized = (amp) / absRange;
 
             float intensity = Math.abs(amp) / absRange;
 
@@ -143,6 +144,8 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
             //float[] sc = s.color();
             //float iBase = Util.unitize(intensity / 2 + 0.5f);
             //gfx.setColor(new Color(sc[0] * iBase, sc[1] * iBase, sc[2] * iBase, alpha));
+
+            float ampNormalized = (amp) / absRange;
 
             int ah = Math.round(ampNormalized * h);
             gfx.drawLine(x, h / 2 - ah / 2, x, h / 2 + ah / 2);
@@ -153,7 +156,7 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
 //        return ((float) x) / w * (last - first) + first;
 //    }
 
-    public synchronized void pan(float pct) {
+    public void pan(float pct) {
         long width = end - start;
         int N = buffer.capacity();
         if (width < N) {
@@ -177,7 +180,7 @@ public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPaint
 
     }
 
-    public synchronized void scale(float pct) {
+    public void scale(float pct) {
 
         long first = this.start, last = this.end;
         long width = last - first;

@@ -1,13 +1,15 @@
 package spacegraph.audio;
 
-import jcog.event.Off;
+import jcog.signal.Tensor;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.wave1d.FreqDomain;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
-import spacegraph.space2d.widget.meter.BitmapMatrixView;
+import spacegraph.space2d.widget.meta.TriggeredSurface;
+import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.video.Draw;
@@ -25,34 +27,35 @@ public class AudioBufferView extends Gridding {
         set(
                 new FloatSlider(a.source().gain),
 
-                spectrogram(a, 0.05f, 256, 32),
+                spectrogram(a, 0.05f, 256, 128),
 
+                new TriggeredSurface<>(new WaveView(a.buffer, 1024, 256),
+                        a.frame::on, WaveView::updateLive)
 
-                new WaveView(a.buffer, 1024, 256) {
-                    private final Off off;
-
-                    {
-                        this.off = a.frame.on((Runnable)this::updateLive);
-                    }
-
-                    @Override
-                    protected void stopping() {
-                        off.off();
-                        super.stopping();
-                    }
-
-
-//                    /** TODO use updateLive */
-//                    @Override public void update() {
-//                        long width = vis.end - vis.start;
-//                        vis.end = a.buffer.viewPtr; //getPeekPosition();
-//                        vis.start = a.buffer.idx((int) (vis.end - (width)));
-//                        super.update();
+//                    private final Off off;
+//
+//                    {
+//                        this.off = a.frame.on((Runnable)this::updateLive);
 //                    }
-
-
-                },
-                new PushButton("Record Clip", () -> {
+//
+//                    @Override
+//                    protected void stopping() {
+//                        off.off();
+//                        super.stopping();
+//                    }
+//
+//
+////                    /** TODO use updateLive */
+////                    @Override public void update() {
+////                        long width = vis.end - vis.start;
+////                        vis.end = a.buffer.viewPtr; //getPeekPosition();
+////                        vis.start = a.buffer.idx((int) (vis.end - (width)));
+////                        super.update();
+////                    }
+//
+//
+//                },
+                ,new PushButton("Record Clip", () -> {
                     window(new MetaFrame(new WaveView(a, 1f, 1024, 256)), 400, 400);
                 })
 
@@ -69,41 +72,31 @@ public class AudioBufferView extends Gridding {
                 sampleTime,
                 capture.source().samplesPerSecond(), fftSize, history);
 
-        int stride = s.freq.segment;
-        BitmapMatrixView bmp = new BitmapMatrixView(
-                (int) Math.floor(((float) s.freq.volume()) / stride), stride, (x, y) -> {
-            float v =
-                    s.freq.get(x, y);
-            //t.data[y * stride + x];
-            //return Draw.colorBipolar(v);
-            //v = unitize(v);
-            return Draw.colorHSB(0.3f * (1-v),0.9f,v);
-        });
-        //bmp.bmp.mipmap(true);
+//        int stride = s.freq.segment;
+//        BitmapMatrixView bmp = new BitmapMatrixView(
+//                (int) Math.floor(((float) s.freq.volume()) / stride), stride, (x, y) -> {
+//            float v =
+//                    s.freq.get(x, y);
+//            //t.data[y * stride + x];
+//            //return Draw.colorBipolar(v);
+//            //v = unitize(v);
+//            return Draw.colorHSB(0.3f * (1-v),0.9f,v);
+//        });
+//        //bmp.bmp.mipmap(true);
 
-        return new Gridding(bmp) {
-
-
-            protected void update() {
-                if (s.update())
-                    bmp.updateIfShowing();
-            }
-
-            private Off off;
-
+        return new Spectrogram(true, history, fftSize) {
             @Override
-            protected void starting() {
-                super.starting();
-                this.off = capture.frame.on(this::update);
-            }
+            protected void compile(SurfaceRender r) {
+                if (s.update()) {
+                    Tensor n = s.next();
+                    next(i -> {
+                        float v = n.getAt(i);
+                        return Draw.colorHSB(0.3f * (1-v),0.9f,v);
+                    });
+                }
 
-            @Override
-            public void stopping() {
-                off.off();
-                off = null;
-                super.stopping();
+                super.compile(r);
             }
-
         };
     }
 }

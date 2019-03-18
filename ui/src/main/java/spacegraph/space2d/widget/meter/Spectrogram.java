@@ -1,7 +1,9 @@
 package spacegraph.space2d.widget.meter;
 
 import jcog.math.IntRange;
+import jcog.signal.Tensor;
 import jcog.tree.rtree.rect.RectFloat;
+import org.eclipse.collections.api.block.function.primitive.FloatToIntFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -106,6 +108,10 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
         this._color = color;
         next((BitmapMatrixView b)->b.update());
     }
+//    public void next(Tensor data, FloatToIntFunction color) {
+//        this._color = color;
+//        next((BitmapMatrixView b)->b.update());
+//    }
 
 
 //    public final <X> void next(Iterable<X> items, ToIntFunction<X> colorFn) {

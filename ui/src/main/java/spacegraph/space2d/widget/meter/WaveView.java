@@ -19,7 +19,9 @@ import spacegraph.video.Draw;
 
 import static java.lang.Float.NaN;
 
-/** waveform viewing and editing */
+/** waveform viewing and editing
+ * TODO extend Spectrogram
+ * */
 public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb {
 
     final static int SELECT_BUTTON = 0;
@@ -88,15 +90,12 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
     @Override
     public Surface finger(Finger finger) {
 
-//        if (selectStart!=null && !finger.pressing(SELECT_BUTTON)) {
-//            selectStart
-//        }
-
         float wheel;
 
         if ((wheel = finger.rotationY(true))!=0) {
 //            scale = Util.clamp(scale * ( (1f - wheel*0.1f) ), 0.1f, 10f);
 
+            //TODO if ctrl pressed or something
 
             vis.scale(( (1f + wheel*0.1f)));
             //vis.pan(+1);
@@ -131,7 +130,7 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
             }
         }
 
-        super.compileAbove(r);
+        //super.compileAbove(r);
     }
 
     float x(float sample) {
@@ -156,8 +155,10 @@ public class WaveView extends Widget implements MenuSupplier, Finger.WheelAbsorb
     }
 
     public void updateLive() {
-        vis.updateLive();
+//        if (showing())
+            vis.updateLive();
     }
+
     public void updateLive(int samples) {
         vis.updateLive(samples);
     }
