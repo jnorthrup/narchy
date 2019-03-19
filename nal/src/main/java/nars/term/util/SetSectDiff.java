@@ -7,7 +7,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermConstructor;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +46,7 @@ public class SetSectDiff {
     }
 
     public static Term intersect(Op o, boolean union, Term... t) {
-        return intersect(HeapTermBuilder.the, o, union, t);
+        return intersect(Op.terms, o, union, t);
     }
 
     public static Term intersect(TermConstructor b, Op o, boolean union, Term... t) {
@@ -116,7 +115,7 @@ public class SetSectDiff {
     }
 
     public static Term intersectProd(Op o, boolean union, Term x, Term y) {
-        return intersectProd(HeapTermBuilder.the, o, union, x, y);
+        return intersectProd(Op.terms, o, union, x, y);
     }
 
     public static Term intersectProd(TermConstructor B, Op o, boolean union, Term x, Term y) {
@@ -431,7 +430,7 @@ public class SetSectDiff {
         } else if (retained == 0) {
             return Null;
         } else {
-            return o.the(HeapTermBuilder.the, aa.subsExcluding(removals));
+            return o.the(Op.terms, aa.subsExcluding(removals));
         }
 
     }

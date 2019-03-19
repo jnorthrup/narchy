@@ -21,16 +21,17 @@
 package nars.truth;
 
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.set.MetalLongSet;
 import jcog.io.BinTxt;
+import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.truth.func.TruthFunctions;
 import org.eclipse.collections.api.list.primitive.MutableLongList;
-import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
@@ -40,7 +41,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.IntFunction;
-import java.util.function.LongPredicate;
 
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -58,29 +58,76 @@ public interface Stamp {
 //                true);
 
         final int capacity = Param.STAMP_CAPACITY;
-        return merge(a, b, rng, capacity);
+        return merge(a, b, rng, aToB, capacity);
     }
 
     /** applies a fair, random-removal merge of input stamps */
-    static long[] merge(long[] a, long[] b, Random rng, int capacity) {
-        if (Arrays.equals(a, b))
-            return a;
+    static long[] merge(long[] a, long[] b, Random rng, float aToB, int capacity) {
         if (a.length == 0) return b;
         if (b.length == 0) return a;
+        if (Arrays.equals(a, b))
+            return a;
 
-        //TODO other simple cases
+        int abLength = a.length + b.length;
+        if (abLength <= capacity) {
+            //TODO simple 2-ary case
 
-        MetalLongSet ab = new MetalLongSet(a.length + b.length);
-        if (a.length >= b.length) {
-            ab.addAll(a);
-            if (!ab.addAll(b))
-                return a; //b is contained within a
+            if (!Stamp.overlapsAny(a,b)) {
+                //simple case: direct sequential merge with no contention
+                long[] ab = new long[abLength];
+                int ia = 0, ib = 0;
+                for (int i = 0; i < ab.length; i++) {
+                    long an = ia >= a.length ? Long.MAX_VALUE : a[ia];
+                    long bn = ib >= b.length ? Long.MAX_VALUE : b[ib];
+                    long abn;
+                    if (an < bn) {
+                        abn = an; ia++;
+                    } else {
+                        abn = bn; ib++;
+                    }
+                    ab[i] = abn;
+                }
+                return ab;
+            } else {
+                //duplicates, with no contention
+                MetalLongSet ab = new MetalLongSet(a.length + b.length);
+                if (a.length > b.length) {
+                    //swap so that 'a' is smaller
+                    long[] _a = a;
+                    a = b;
+                    b = _a;
+                }
+                ab.addAll(a);
+                if (!ab.addAll(b))
+                    return a; //b is contained entirely within a
+
+                return ab.toSortedArray();
+            }
         } else {
-            ab.addAll(b);
-            if (!ab.addAll(a))
-                return b; //a is contained within b
+            LongArrayList A = Stamp.toList(a);
+            if (a.length > 1)
+                ArrayUtils.shuffle(A.elements(), rng);
+            LongArrayList B = Stamp.toList(b);
+            if (b.length > 1)
+                ArrayUtils.shuffle(B.elements(), rng);
+
+            MetalLongSet AB = new MetalLongSet(abLength);
+            do {
+                LongArrayList x = (A!=B && rng.nextFloat() <= aToB) ? A : B;
+                AB.add(x.removeLong(x.size()-1));
+                if (x.isEmpty()) {
+                    if (x == A && x == B)
+                        break; //both empty
+                    else if (x == A) A = B;
+                    else B = A;
+                }
+            } while (AB.size() < capacity);
+            return AB.toSortedArray();
         }
-        return sample(capacity, ab, rng);
+    }
+
+    static LongArrayList toList(long[] a) {
+        return new LongArrayList(a);
     }
 
 
@@ -181,17 +228,8 @@ public interface Stamp {
         return s;
     }
 
-    static ImmutableLongSet toImmutableSet(Stamp task) {
-        return LongSets.immutable.of(task.stamp());
-    }
-//        switch (s.length) {
-//            case 0: return (x)->false;
-//            case 1: { long y = s[0]; return (x)->x==y; }
-//            case 2: { long y0 = s[0], y1 = s[1]; return (x)->x==y0 || x == y1; }
-//            case 3: { long y0 = s[0], y1 = s[1], y2 = s[2]; return (x)->x==y0 || x == y1 || x == y2; }
-//            default:
-//                return LongSets.immutable.of(s)::contains;
-//        }
+//    static ImmutableLongSet toImmutableSet(Stamp task) {
+//        return LongSets.immutable.of(task.stamp());
 //    }
 
     /** unsampled, may exceed expected capacity */
@@ -363,24 +401,24 @@ public interface Stamp {
      */
     static boolean overlapsAny(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b) {
 
-//        if (Param.DEBUG) {
-//
-//
-//        }
-        if (a.length == 0 || b.length == 0) {
+        if (a.length == 0 || b.length == 0)
             return false;
+
+        if (a.length > b.length) {
+            //swap to get the larger stamp in the inner loop
+            long[] _a = a;
+            a = b;
+            b = _a;
         }
 
         /** TODO there may be additional ways to exit early from this loop */
 
         for (long x : a) {
-
             for (long y : b) {
-                if (x == y) {
-                    return true;
-                } else if (y > x) {
+                if (y > x)
                     break;
-                }
+                else if (x == y)
+                    return true;
             }
         }
         return false;
@@ -426,22 +464,11 @@ public interface Stamp {
     }
 
     static boolean overlapsAny(/*@NotNull*/ MetalLongSet aa,  /*@NotNull*/ long[] b) {
-        return overlapsAny(aa::contains, b);
-    }
-
-    static boolean overlapsAny(/*@NotNull*/ LongPredicate aa,  /*@NotNull*/ long[] b) {
         for (long x : b)
-            if (aa.test(x))
+            if (aa.contains(x))
                 return true;
         return false;
     }
-
-//    static boolean overlapsAny(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
-//        for (long x : b)
-//            if (aa.contains(x))
-//                return true;
-//        return false;
-//    }
 
     static boolean overlaps(Task x, Task y) {
         return (!Param.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end()))

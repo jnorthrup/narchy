@@ -200,7 +200,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
     protected <X> void reject(TimedFuture<X> r) {
-        logger.error("unscheduled {}", r);
+        logger.error("spill {}", r);
         r.cancel(false);
     }
 

@@ -1,38 +1,43 @@
 package nars.truth.util;
 
+import jcog.math.LongFloatTrapezoidalIntegrator;
 import jcog.math.LongInterval;
 import nars.Param;
 import nars.Task;
-import org.eclipse.collections.api.block.function.primitive.LongToDoubleFunction;
+
+import java.util.function.LongToDoubleFunction;
 
 import static nars.time.Tense.ETERNAL;
 
 /**
  * used for accelerating evidence queries involving a batch of time points
  */
-public interface EvidenceEvaluator {
+public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time to evidence */  {
 
 
-    double evi(long when, int dur);
-
-    default /* final */ double[] evi(int dur, long... when) {
-        return evi(dur, 0, when.length, when);
+    public final double evi(long when) {
+        return applyAsDouble(when);
     }
 
-    default double[] evi(int dur, int arrayFrom, int arrayTo, long[] when) {
+    public final double[] evi(long... when) {
+        return evi(0, when.length, when);
+    }
+
+    public double[] evi(int arrayFrom, int arrayTo, long[] when) {
         int n = arrayTo-arrayFrom;
         double[] e = new double[n];
         for (int i = 0; i < n; i++) {
-            e[i] = evi(when[i + arrayFrom], dur);
+            e[i] = applyAsDouble(when[i + arrayFrom]);
         }
         return e;
     }
 
-    default LongToDoubleFunction eviFn(int dur) {
-        return w->evi(w,dur);
+    /** points must be ordered */
+    public double integrate(long... points) {
+        return LongFloatTrapezoidalIntegrator.sum(this, points);
     }
 
-    final class EternalEvidenceEvaluator implements EvidenceEvaluator {
+    static final class EternalEvidenceEvaluator extends EvidenceEvaluator {
         private final double evi;
 
         private EternalEvidenceEvaluator(double evi) {
@@ -40,44 +45,45 @@ public interface EvidenceEvaluator {
         }
 
         @Override
-        public double evi(long when, int dur) {
+        public double applyAsDouble(long when) {
             return evi;
         }
 
     }
 
-    class TemporalPointEvidenceEvaluator implements EvidenceEvaluator {
+    static class TemporalPointEvidenceEvaluator extends EvidenceEvaluator {
         public final long s;
-
+        public final int dur;
         /**
          * max evidence during defined range
          */
-        private final double ee;
+        private final double evi;
 
         protected long dt(long when) {
             return Math.abs(when - s);
         }
 
-        protected TemporalPointEvidenceEvaluator(long s, double ee) {
-            this.s = s;
-            assert (s != LongInterval.ETERNAL);
-            this.ee = ee;
+        protected TemporalPointEvidenceEvaluator(long w, double evi, int dur) {
+            this.dur = dur;
+            this.s = w;
+            assert (w != LongInterval.ETERNAL);
+            this.evi = evi;
         }
 
         @Override
-        public final double evi(long when, int dur) {
+        public double applyAsDouble(long when) {
             long dt = dt(when);
             return (dt == 0) ?
-                    ee : ((dur != 0) ? Param.evi(ee, dt, dur) : 0);
+                    evi : ((dur > 0) ? Param.evi(evi, dt, dur) : 0 /* none */);
         }
     }
 
-    final class TemporalSpanEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
+    static final class TemporalSpanEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
         public final long e;
 
 
-        public TemporalSpanEvidenceEvaluator(long s, long e, double ee) {
-            super(s, ee);
+        public TemporalSpanEvidenceEvaluator(long s, long e, double evi, int dur) {
+            super(s, evi, dur);
             this.e = e;
         }
 
@@ -112,7 +118,7 @@ public interface EvidenceEvaluator {
     }
 
 
-    static EvidenceEvaluator the(Task t) {
+    public static EvidenceEvaluator the(Task t, int dur) {
         long s = t.start();
         double ee = t.evi();
         if (s == ETERNAL)
@@ -120,9 +126,9 @@ public interface EvidenceEvaluator {
 
         long e = t.end();
         if (s == e)
-            return new TemporalPointEvidenceEvaluator(s, ee);
+            return new TemporalPointEvidenceEvaluator(s, ee, dur);
         else
-            return new TemporalSpanEvidenceEvaluator(s, e, ee);
+            return new TemporalSpanEvidenceEvaluator(s, e, ee, dur);
     }
 
 }

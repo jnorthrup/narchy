@@ -15,7 +15,7 @@ import static nars.Op.GOAL;
 
 
 /** generic NAL Task with stored start,end time */
-public class GenericNALTask extends NALTask {
+public class GenericNALTask extends ActualNALTask {
 
     private final long start, end;
 
@@ -24,7 +24,7 @@ public class GenericNALTask extends NALTask {
     }
 
     protected GenericNALTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
-        super(term, punc, truth, start, end, stamp, creation);
+        super(term, punc, truth, creation, start, end, stamp);
 
         if (start!=ETERNAL && end-start > Param.TASK_RANGE_LIMIT)
             throw new TaskException(term, "excessive range: " + (end-start));

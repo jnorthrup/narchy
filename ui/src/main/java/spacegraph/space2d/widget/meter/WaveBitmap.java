@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.math.FloatRange;
 import jcog.signal.buffer.CircularFloatBuffer;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.time.Timeline2D;
@@ -10,7 +11,12 @@ import spacegraph.space2d.container.unit.MutableUnitContainer;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static jcog.Util.unitizeSafe;
+
 public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView.BitmapPainter, Timeline2D.TimelineRenderable {
+
+    public final FloatRange height = new FloatRange(0.75f, 0.01f, 1f);
+    public final FloatRange alpha = new FloatRange(0.75f, 0.01f, 1f);
 
     private final int w, h;
     private final CircularFloatBuffer buffer;
@@ -65,6 +71,11 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
 
     @Override
     protected void paintIt(GL2 g, SurfaceRender r) {
+
+    }
+
+    @Override
+    protected void compile(SurfaceRender r) {
         if (bmp == null) {
             bmp = new BitmapMatrixView(w, h, this) {
                 @Override
@@ -72,7 +83,7 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
                     return true;
                 }
             };
-            bmp.pos(bounds);
+            position(bmp);
             set(bmp);
         }
 
@@ -80,6 +91,15 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
             update = !bmp.updateIfShowing(); //keep updating till updated
         }
 
+        position(bmp);
+        super.compile(r);
+    }
+
+    private void position(BitmapMatrixView bmp) {
+        if (bmp!=null) {
+            float h = height.get();
+            bmp.pos(bounds.scale(1, h).move(0, h/2 /* center vertical align */));
+        }
     }
 
     public void update() {
@@ -102,9 +122,13 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
     @Override
     public void color(BufferedImage buf, int[] pix) {
 
-
         if (gfx == null) {
             gfx = buf.getGraphics();
+            ((Graphics2D)gfx).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            ((Graphics2D)gfx).setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+            ((Graphics2D)gfx).setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+            ((Graphics2D)gfx).setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+            ((Graphics2D)gfx).setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
         }
 
         ((Graphics2D)gfx).setBackground(transparent);
@@ -115,10 +139,14 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
         float minValue = this.yMin;
         float maxValue = this.yMax;
 
-
 //        float yRange = ((maxValue) - (minValue));
         float absRange = Math.max(Math.abs(maxValue), Math.abs(minValue));
-        if (absRange < Float.MIN_NORMAL) absRange = 1;
+        if (absRange < Float.MIN_NORMAL) {
+            //no signal
+            //TODO display message
+            return;
+            //absRange = 1;
+        }
 
 
 //        float alpha = 0.9f; //1f / ns;
@@ -127,8 +155,8 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
 //        this.end = buffer._bufEnd;
 //        System.out.println(start + ".." + end);
 
-        long start = this.start;
-        long end = this.end;
+        long start = this.start, end = this.end;
+
 
 //        int sn = buffer.capacity();
 
@@ -136,6 +164,9 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
 
         long range = end - start;
         float W = w;
+
+//        float[] rgba = new float[4];
+//        float alpha = this.alpha.get();
         for (int x = 0; x < w; x++) {
 
             float sStart = start + range * (x/ W);
@@ -143,9 +174,14 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
 
             float amp = buffer.mean(sStart, sEnd);
 
-            float intensity = Math.abs(amp) / absRange;
+            float intensity = unitizeSafe(Math.abs(amp) / absRange);
 
-            gfx.setColor(Color.getHSBColor(intensity, 0.7f, 0.7f));
+//            Draw.hsb(rgba, intensity, 0.9f, 0.1f*intensity + 0.9f, alpha);
+            float ic = intensity * 0.9f + 0.1f;
+            Color c = //new Color(unitizeSafe(rgba[0]), unitizeSafe(rgba[1]), unitizeSafe(rgba[2]), unitizeSafe(rgba[3]));
+                    new Color(ic, 1-ic, 0);
+            gfx.setColor(c);
+
 
             //float[] sc = s.color();
             //float iBase = Util.unitize(intensity / 2 + 0.5f);

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.function.LongToDoubleFunction;
 
 /** trapezoidally integrates a function where the x domain is long integers, and the y range is floats */
-public class LongFloatTrapezoidalIntegrator {
+public final class LongFloatTrapezoidalIntegrator {
 
     private long xPrev = Long.MIN_VALUE;
     private double yPrev = Float.NaN;
@@ -28,7 +28,7 @@ public class LongFloatTrapezoidalIntegrator {
             case 0:
                 return 0;
             case 1:
-                return each.applyAsDouble(x[0]);
+                return each.applyAsDouble(x[0]); //range=1
             case 2: {
                 long a = x[0], b = x[1];
                 if (a == b)
@@ -47,7 +47,7 @@ public class LongFloatTrapezoidalIntegrator {
 
     }
 
-    public final LongFloatTrapezoidalIntegrator sample(LongToDoubleFunction y, long... xNexts) {
+    private final LongFloatTrapezoidalIntegrator sample(LongToDoubleFunction y, long... xNexts) {
         long xPrev = Long.MIN_VALUE;
         for (long xNext : xNexts) {
             if (xPrev == xNext)
@@ -56,14 +56,14 @@ public class LongFloatTrapezoidalIntegrator {
         }
         return this;
     }
+//
+//    /** returns same instance */
+//    public final LongFloatTrapezoidalIntegrator sample(LongToDoubleFunction y, long xNext) {
+//        sample(xNext, y.applyAsDouble(xNext));
+//        return this;
+//    }
 
-    /** returns same instance */
-    public final LongFloatTrapezoidalIntegrator sample(LongToDoubleFunction y, long xNext) {
-        sample(xNext, y.applyAsDouble(xNext));
-        return this;
-    }
-
-    public void sample(long xNext, double yNext) {
+    private void sample(long xNext, double yNext) {
         if (!Double.isFinite(yNext))
             throw new WTF("y must be finite");
 
@@ -90,7 +90,7 @@ public class LongFloatTrapezoidalIntegrator {
     }
 
     /** returns Float.Nan if empty */
-    public double sum() {
+    private double sum() {
         if (sum != sum) {
             //zero or 1 points
             return yPrev;

@@ -7,10 +7,7 @@ import jcog.pri.UnitPrioritizable;
 import jcog.tree.rtree.HyperRegion;
 import nars.control.op.Perceive;
 import nars.subterm.Subterms;
-import nars.task.DerivedTask;
-import nars.task.ITask;
-import nars.task.NALTask;
-import nars.task.UnevaluatedTask;
+import nars.task.*;
 import nars.task.proxy.SpecialNegatedTermTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
@@ -408,7 +405,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         float xp = x.priElseZero();
         y.pri(xp);
 
-        ((NALTask) y).cause(x.cause()/*.clone()*/);
+        if (y instanceof NALTask)
+            ((NALTask) y).cause(x.cause()/*.clone()*/);
 
 //        if (x.target().equals(y.target()) && x.isCyclic())
 //            y.setCyclic(true);
@@ -655,8 +653,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
 
-    default EvidenceEvaluator eviEvaluator() {
-        return EvidenceEvaluator.the(this);
+    default EvidenceEvaluator eviEvaluator(int dur) {
+        return EvidenceEvaluator.the(this, dur);
     }
 
     /**
@@ -673,7 +671,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * @return value >= 0 indicating the evidence
      */
     default double evi(long when, final int dur) {
-        return EvidenceEvaluator.the(this).evi(when, dur);
+        return EvidenceEvaluator.the(this, dur).evi(when);
     }
 
     @Override

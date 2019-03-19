@@ -66,7 +66,7 @@ public class SignalView extends Bordering {
                 tl.clear();
                 //Math.round(t.tEnd),Math.round(t.tEnd)
                 tl.add(new Timeline2D.SimpleEvent("event", 0, 1));
-                t.setTime(-1, 2, true); //HACK force update
+                //t.setTime(-1, 2, true); //HACK force update
             }
         });
 

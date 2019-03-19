@@ -201,14 +201,14 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
         private ArrayRemappedSubterms(S base, byte[] map) {
             super(base); assert(base.subs()==map.length);
-            this.map = map;
+            this.map = ArrayUtils.intern(map);
             this.negs = (byte) super.negs();
             this.hash = Subterms.hash(this);
         }
 
         private ArrayRemappedSubterms(S base, byte[] map, int hash) {
             super(base); assert(base.subs()==map.length);
-            this.map = map;
+            this.map = ArrayUtils.intern(map);
             this.negs = (byte) super.negs();
             this.hash = hash;
         }

@@ -1,10 +1,7 @@
 package spacegraph.space2d.container.time;
 
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.math.Longerval;
-import org.roaringbitmap.PeekableIntIterator;
-import org.roaringbitmap.RoaringBitmap;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
@@ -15,7 +12,6 @@ import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -25,127 +21,11 @@ public class Timeline2D extends Stacking {
     /**
      * viewable range
      */
-    protected double tStart = 0;
-    public double tEnd = 1;
+    private double start, end, startNext, endNext;
 
     public <X> Timeline2D addEvents(TimelineModel<X> e, Consumer<Graph2D.NodeVis<X>> r) {
-        add(new Timeline2D.Timeline2DEvents<>(e, r));
+        add(new Timeline2DEvents<>(e, r));
         return this;
-    }
-
-    /** layers in which discretely renderable or interactable events can be materialized */
-    public static class Timeline2DEvents<E> extends Graph2D<E> implements TimelineRenderable {
-
-        double tStart, tEnd;
-
-        private final TimelineModel<E> model;
-
-        /** minimum displayed temporal width, for tasks less than this duration */
-        private final float timeVisibleEpsilon = 0.5f;
-
-
-        public Timeline2DEvents(TimelineModel<E> model, Consumer<NodeVis<E>> view) {
-            super();
-            this.model = model;
-            build(view);
-
-            update(new DefaultTimelineUpdater());
-        }
-
-        private Timeline2DEvents update() {
-            set(model.events((long) Math.floor(tStart), (long) Math.ceil(tEnd - 1)));
-            return this;
-        }
-
-        @Override
-        public void setTime(double start, double end) {
-            this.tStart = start; this.tEnd = end;
-            update();
-        }
-
-        private class DefaultTimelineUpdater implements Graph2DUpdater<E> {
-
-
-            FasterList<NodeVis<E>> next = new FasterList<>();
-
-            @Override
-            public void update(Graph2D<E> g, int dtMS) {
-                next.clear();
-
-                g.forEachValue(t -> {
-                    if (t.id!=null) {
-                        next.add(t);
-                    }
-                });
-                if (next.isEmpty())
-                    return;
-
-                next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
-
-
-
-                List<RoaringBitmap> lanes = new FasterList();
-                RoaringBitmap l0 = new RoaringBitmap();
-                l0.add(0);
-                lanes.add(l0);
-
-                for (int i = 1, byDurationSize = next.size(); i < byDurationSize; i++) {
-                    NodeVis<E> in = next.get(i);
-
-                    int lane = -1;
-                    nextLane:
-                    for (int l = 0, lanesSize = lanes.size(); l < lanesSize; l++) {
-                        RoaringBitmap r = lanes.get(l);
-                        PeekableIntIterator rr = r.getIntIterator();
-                        boolean collision = false;
-                        while (rr.hasNext()) {
-                            int j = rr.next();
-                            if (model.intersectLength(next.get(j).id, in.id) > 0) {
-                                collision = true;
-                                break;
-                            }
-                        }
-                        if (!collision) {
-                            lane = l;
-                            r.add(i);
-                            break;
-                        }
-                    }
-                    if (lane == -1) {
-                        RoaringBitmap newLane = new RoaringBitmap();
-                        newLane.add(i);
-                        lanes.add(newLane);
-                    }
-                }
-
-                int nlanes = lanes.size();
-                float laneHeight = g.h() / nlanes;
-                float Y = g.top();
-                for (int i = 0; i < nlanes; i++) {
-                    RoaringBitmap ri = lanes.get(i);
-                    PeekableIntIterator ii = ri.getIntIterator();
-                    while (ii.hasNext()) {
-                        int j = ii.next();
-                        NodeVis<E> jj = next.get(j);
-                        long[] w = model.range(jj.id);
-                        float left = (w[0]), right = (w[1]);
-                        if (right-left < timeVisibleEpsilon) {
-                            float mid = (left + right)/2f;
-                            left = mid - timeVisibleEpsilon /2;
-                            right = mid + timeVisibleEpsilon /2;
-                        }
-
-                        jj.show();
-                        jj.pos(x(left), Y + laneHeight * i, x(right), Y + laneHeight * (i + 1));
-                    }
-                }
-            }
-        }
-
-        protected float x(float left) {
-            return Timeline2D.x(tStart, tEnd, x(), w(), left );
-        }
-
     }
 
 
@@ -153,7 +33,8 @@ public class Timeline2D extends Stacking {
         void setTime(double tStart, double tEnd);
     }
 
-    @Deprecated public Timeline2D(double start, double end) {
+    @Deprecated
+    public Timeline2D(double start, double end) {
         this.setTime(start, end);
     }
 
@@ -161,7 +42,7 @@ public class Timeline2D extends Stacking {
     @Override
     protected void _add(Surface x) {
         super._add(x);
-        setTime(x);
+        setLayerTime(x, start, end);
     }
 
     public Surface withControls() {
@@ -177,7 +58,7 @@ public class Timeline2D extends Stacking {
                 float v = this.get();
                 float d = (v - 0.5f) * 2;
                 if (Math.abs(d) > 0.05f)
-                    viewShift(d * (tEnd - tStart) * 0.1);
+                    viewShift(d * (end - start) * 0.1);
 
                 set(Util.lerp(0.6f, v, 0.5f));
 
@@ -212,50 +93,69 @@ public class Timeline2D extends Stacking {
     }
 
     private Timeline2D viewShift(double dt) {
-        return setTime(tStart + dt, tEnd + dt);
+        synchronized (this) {
+            return setTime(startNext + dt, endNext + dt);
+        }
     }
 
     private Timeline2D viewScale(double dPct) {
-        double range = (tEnd - tStart) * dPct;
-        double tCenter = (tEnd + tStart) / 2;
-        return setTime(tCenter - range / 2, tCenter + range / 2);
+        synchronized (this) {
+            double range = (endNext - startNext) * dPct;
+            double tCenter = (endNext + startNext) / 2;
+            return setTime(tCenter - range / 2, tCenter + range / 2);
+        }
+
     }
 
     /**
      * keeps current range
      */
     public Timeline2D setTime(double when) {
-        double range = tEnd - tStart;
-        assert (range > 0);
-        return setTime(when - range / 2, when + range / 2);
+        synchronized (this) {
+            double range = end - start;
+            assert (range > 0);
+            return setTime(when - range / 2, when + range / 2);
+        }
+    }
+
+    @Override
+    protected void compileChildren(SurfaceRender r) {
+        _setTime(startNext, endNext);
+
+        super.compileChildren(r);
     }
 
     public Timeline2D setTime(double start, double end) {
-        return setTime(start, end, false);
-    }
-
-    public Timeline2D setTime(double start, double end, boolean forceUpdate) {
-        if (this.tStart!=start || this.tEnd!=end) {
-            this.tStart = start;
-            this.tEnd = end;
-        } else if(!forceUpdate)
-            return this;
-
-        forEach(this::setTime);
+        synchronized (this) {
+            this.startNext = start;
+            this.endNext = end;
+        }
         return this;
     }
 
-    private void setTime(Surface x) {
-        if (x instanceof TimelineRenderable)
-            ((TimelineRenderable)x).setTime(tStart, tEnd);
+    private void _setTime(double start, double end) {
+        synchronized (this) {
+            if (!Util.equals(this.start, start) || !Util.equals(this.end, end)) {
+                this.start = start;
+                this.end = end;
+            } else
+                return;
+        }
+
+        forEach(x -> setLayerTime(x, start, end));
     }
 
-    /** proportionizes time to an axis of given length */
+    private void setLayerTime(Surface x, double s, double e) {
+        if (x instanceof TimelineRenderable)
+            ((TimelineRenderable) x).setTime(s, e);
+    }
+
+    /**
+     * proportionizes time to an axis of given length
+     */
     public static float x(double s, double e, float X, float W, double t) {
         return (float) ((t - s) / (e - s) * W + X);
     }
-
-
 
 
     public interface TimelineModel<X> {

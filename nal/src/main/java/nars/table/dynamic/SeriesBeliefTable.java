@@ -177,9 +177,9 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         }
 
         @Override
-        protected int hashCalculate(long start, long end) {
+        protected int hashCalculate(long start, long end, long[] stamp) {
             //TODO also involve Term?
-            return Util.hashCombine(term().hashCode(), Util.hashCombine(stamp()[0], start));
+            return Util.hashCombine(term().hashCode(), Util.hashCombine(stamp[0], start));
         }
 
         @Override

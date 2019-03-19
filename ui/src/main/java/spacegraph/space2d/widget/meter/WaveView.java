@@ -19,10 +19,12 @@ import spacegraph.video.Draw;
 import static java.lang.Float.NaN;
 
 /**
- * waveform viewing and editing
- * TODO extend Spectrogram
+ * extends WaveView with region selection support
+ *
  */
 public class WaveView extends WaveBitmap implements MenuSupplier, Finger.WheelAbsorb {
+
+    static final float selectorAlpha = 0.5f;
 
     final static int SELECT_BUTTON = 0;
     final static int PAN_BUTTON = 2;
@@ -104,7 +106,7 @@ public class WaveView extends WaveBitmap implements MenuSupplier, Finger.WheelAb
             if (sEnd == sEnd) {
                 r.on((gl, rr) -> {
                     float ss = Util.clamp(x(selectStart), left(), right());
-                    gl.glColor4f(1f, 0.8f, 0, 0.5f);
+                    gl.glColor4f(1f, 0.8f, 0, selectorAlpha);
                     float ee = Util.clamp(x(selectEnd), left(), right());
                     if (ee - ss > ScalarValue.EPSILON) {
                         Draw.rect(x() + ss, y(), ee - ss, h(), gl);
@@ -133,6 +135,9 @@ public class WaveView extends WaveBitmap implements MenuSupplier, Finger.WheelAb
                 //TODO trim, etc
         );
     }
+
+
+
 
 //
 //    public void update() {

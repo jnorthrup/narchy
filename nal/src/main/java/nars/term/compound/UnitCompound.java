@@ -19,7 +19,7 @@ import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
-public abstract class UnitCompound implements Compound {
+public abstract class UnitCompound implements SameSubtermsCompound {
 
     @Override
     abstract public Op op();

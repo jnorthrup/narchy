@@ -2687,6 +2687,8 @@ public enum Util {
                 while (i < 0) i += data.length;
             else
                 i = 0;
+        } else if (i >= data.length) {
+            i = 0; //wrap?
         }
 
         sum += iStart > 0 ? (iStart - sStart) * data[i++] : 0;

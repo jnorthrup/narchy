@@ -5,8 +5,7 @@ import jcog.WTF;
 import jcog.math.LongFloatTrapezoidalIntegrator;
 import jcog.math.Longerval;
 import nars.Task;
-
-import java.util.function.LongToDoubleFunction;
+import nars.truth.util.EvidenceEvaluator;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -52,7 +51,8 @@ public class TruthIntegration {
 
         long tEnd = t.end();
 
-        LongToDoubleFunction ee = t.eviEvaluator().eviFn(dur);
+        EvidenceEvaluator ee = t.eviEvaluator(dur);
+
         //TODO: ee.integrate(...)
 
         //possible optimization, needs tested:
@@ -68,7 +68,7 @@ public class TruthIntegration {
         if (tStart <= qStart && tEnd >= qEnd) {
 
             //task contains question
-            return LongFloatTrapezoidalIntegrator.sum(ee, qStart, qEnd);
+            return ee.integrate(qStart, qEnd);
 
             //return eviInteg(t, dur, qStart, qEnd);
             //return (qEnd - qStart) * t.evi(); //fast, assumes task evi is uniform between the end-points:
@@ -89,8 +89,7 @@ public class TruthIntegration {
 //                            qEnd);
 //
 //                } else {
-                    return LongFloatTrapezoidalIntegrator.sum(ee,
-                            qStart,
+                    return ee.integrate(qStart,
                             Math.min(qStart, (qStart + tStart) / 2), //supersample
                             Math.max(qStart, tStart - 1), //task rising edge supersample
                             tStart, tEnd,   //internal to task.  supersample not necessary unless task is not uniform
@@ -103,7 +102,7 @@ public class TruthIntegration {
                 //MESSY INTERSECTION
                 if (qStart <= tStart && qEnd >= tEnd) {
                     //ends before the task
-                    return LongFloatTrapezoidalIntegrator.sum(ee,
+                    return ee.integrate(
                     qStart,
                             (qStart+tStart)/2, //supersample
                             Math.max(qStart, tStart - 1), //task rising edge supersample
@@ -114,8 +113,8 @@ public class TruthIntegration {
                 } else if (qStart >= tStart && qEnd <= tEnd) {
                     assert(qEnd <= tEnd);
                     //starts before the task and ends in it
-                    return LongFloatTrapezoidalIntegrator.sum(ee,
-                            qStart,
+                    return ee.integrate(
+                        qStart,
                             (qStart+tStart)/2, //supersample
                             Math.max(qStart, tStart - 1), //task rising edge supersample
                             tStart,
@@ -124,7 +123,7 @@ public class TruthIntegration {
                 } else if (qStart >= tStart && qStart <= tEnd && qEnd >= tEnd) {
                     //tstart, qstart, qend
                     //finishes after the task
-                    return LongFloatTrapezoidalIntegrator.sum(ee,
+                    return ee.integrate(
                             qStart,
                             tEnd,
                             Math.min(tEnd + 1, qEnd),//task falling edge supersample
@@ -133,8 +132,8 @@ public class TruthIntegration {
                     );
                 } else if (tStart >= qStart && qEnd <= tEnd) {
                     //qStart, tstart, qend
-                    return LongFloatTrapezoidalIntegrator.sum(ee,
-                            qStart,
+                    return ee.integrate(
+                        qStart,
                             (qStart+tStart)/2, //supersample
                             tStart,
                             qEnd
@@ -150,7 +149,7 @@ public class TruthIntegration {
             //entirely before, or after
             //return eviInteg(t, dur, qStart, qEnd);
 
-            return LongFloatTrapezoidalIntegrator.sum(ee,
+            return ee.integrate(
                     qStart,
                     (qStart + qEnd) / 2,   //supersample
                     qEnd);

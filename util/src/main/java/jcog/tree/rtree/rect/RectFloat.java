@@ -5,10 +5,10 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
-import jcog.tree.rtree.Spatialization;
 
 import static jcog.Util.lerp;
 import static jcog.tree.rtree.Spatialization.EPSILON;
+import static jcog.tree.rtree.Spatialization.EPSILONf;
 
 
 public class RectFloat implements HyperRegion, Comparable<RectFloat> {
@@ -80,7 +80,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         float cx = (source.cx() + target.cx()) / 2;
         float cy = (source.cy() + target.cy()) / 2;
         float wh = relScale * Math.max((source.w + target.w) / 2f, (source.h + target.h) / 2);
-        return RectFloat.XYWH(cx, cy, wh, wh);
+        return target.orThisIfEqual(source.orThisIfEqual(RectFloat.XYWH(cx, cy, wh, wh)));
     }
 
     public static RectFloat WH(float w, float h) {
@@ -96,28 +96,21 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public RectFloat move(float dx, float dy) {
-        return move(dx, dy, Spatialization.EPSILONf);
+        return move(dx, dy, EPSILONf);
     }
 
     public RectFloat move(float dx, float dy, float epsilon) {
         return Math.abs(dx) < epsilon && Math.abs(dy) < epsilon ? this :
-                XYXY(x + dx, y + dy, x + w + dx, y + h + dy);
+                X0Y0WH(x + dx, y + dy, w, h);
     }
     public RectFloat pos(float x, float y, float epsilon) {
         return Util.equals(this.x, x, epsilon) && Util.equals(this.y, y, epsilon) ? this :
                 XYXY(x , y , x + w, y + h);
     }
 
-    public RectFloat size(float ww, float hh) {
-        return size(ww, hh, Spatialization.EPSILONf);
-    }
 
-    public RectFloat size(float ww, float hh, float epsilon) {
-        return Util.equals(this.w, ww, epsilon)
-                &&
-               Util.equals(this.h, hh, epsilon) ?
-                        this :
-                        XYWH(cx(), cy(), ww, hh);
+    public RectFloat size(float ww, float hh) {
+        return orThisIfEqual(XYWH(cx(), cy(), ww, hh));
     }
 
     @Override
@@ -141,7 +134,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
                 minY = Math.min(ay, by),
                 maxY = Math.max(ay + h, by + b.h);
 
-        return XYXY(minX, minY, maxX, maxY);
+        return orThisIfEqual(XYXY(minX, minY, maxX, maxY));
     }
 
     @Override
@@ -215,7 +208,6 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return Math.abs(w * h);
     }
 
-
     @Override
     public final int hashCode() {
         return Util.hashCombine(Float.hashCode(x), Float.hashCode(y), Util.hashCombine(Float.hashCode(w), Float.hashCode(h)));
@@ -223,18 +215,17 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
     @Override
     public final boolean equals(Object o) {
-        return equals(o, (float) EPSILON);
+        return this == o || ((o instanceof RectFloat) && equals((RectFloat)o, EPSILONf));
+
     }
 
     public final boolean equals(RectFloat o) {
-        return equals(o, (float) EPSILON);
+        return this == o || equals(o, EPSILONf);
     }
 
-    public final boolean equals(Object o, float epsilon) {
-        if (this == o) return true;
-        if (!(o instanceof RectFloat)) return false;
+    protected final boolean equals(Object o, float epsilon) {
 
-        return equals((RectFloat) o, epsilon);
+        return this == o || ((o instanceof RectFloat) && equals((RectFloat)o, epsilon));
     }
 
     public final boolean equals(RectFloat o, float epsilon) {
@@ -303,30 +294,32 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public final float cx() {
         return x + w / 2;
     }
-
     public final float cy() {
         return y + h / 2;
     }
 
     public RectFloat transform(float s, float ox, float oy) {
         ////        if (Util.equals(scale, 1f, ScalarValue.EPSILON) && offset.equalsZero())
-            return RectFloat.X0Y0WH(left()+ox, bottom()+oy, w * s, h * s);
+            return orThisIfEqual(RectFloat.X0Y0WH(left()+ox, bottom()+oy, w * s, h * s));
     }
 
     public RectFloat scale(float s) {
         return !Util.equals(s, 1, EPSILON) ?
-                RectFloat.X0Y0WH(left(), bottom(), w * s, h * s) : this;
+                RectFloat.XYWH(cx(), cy(), w * s, h * s) : this;
     }
 
     public RectFloat scale(float sw, float sh) {
         return !Util.equals(sw, 1, EPSILON) || !Util.equals(sh, 1, EPSILON) ?
-                RectFloat.X0Y0WH(left(), bottom(), w * sw, h * sh) : this;
+                RectFloat.XYWH(cx(), cy(), w * sw, h * sh) : this;
     }
 
     public float radius() {
-        float W = w / 2;
-        float H = h / 2;
-        return ((float) Math.sqrt(W * W + H * H));
+        return ((float) Math.sqrt(radiusSquare()));
+    }
+
+    public float radiusSquare() {
+        float W = w / 2, H = h / 2;
+        return (W * W + H * H);
     }
 
     public final float area() {
@@ -341,12 +334,11 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return w > epsilon && h > epsilon;
     }
 
-
     public RectFloat rel(float cx, float cy, float pctW, float pctH) {
         float ww = this.w, hh = this.h;
         float nw = ww * pctW;
         float nh = hh * pctH;
-        return X0Y0WH( x + cx * ww, y + cy * hh, nw, nh);
+        return orThisIfEqual(X0Y0WH( x + cx * ww, y + cy * hh, nw, nh));
     }
 
     public v2 midPoint(RectFloat o) {
@@ -365,22 +357,30 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     /** computes the average of both position and scale parameters */
     public RectFloat mean(RectFloat o) {
         if (this == o) return this;
-        return XYWH((x + o.x)/2, (y+o.y)/2, (w + o.w)/2, (h + o.h)/2);
+        return orThisIfEqual(XYWH((x + o.x)/2, (y+o.y)/2, (w + o.w)/2, (h + o.h)/2));
     }
 
     public RectFloat fenceInside(RectFloat outer) {
         if (outer.contains(this))
             return this;
         else {
+            float w = this.w, h = this.h;
             if (outer.w < w || outer.h < h)
                 throw new WTF(this +  " is too large to fit inside " + outer);
 
             //if ((cx != cx) || (cy != cy)) randomize(bounds);
-            return XYWH(
+            return orThisIfEqual(XYWH(
                     Util.clamp(cx(), outer.left() + w / 2, outer.right() - w / 2),
                     Util.clamp(cy(), outer.bottom() + h / 2, outer.top() - h / 2),
-                    w,h);
+                    w,h));
         }
 
+    }
+
+    public final RectFloat orThisIfEqual(RectFloat r) {
+        if (r.equals(this))
+            return this;
+        else
+            return r;
     }
 }

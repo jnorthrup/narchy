@@ -412,7 +412,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             if (input.isInput())
                 throw new RuntimeException("input task rejected by " + EternalTable.class + " with 0 capacity): " + input);
             r.forget(input);
-            return;
         }
 
     }

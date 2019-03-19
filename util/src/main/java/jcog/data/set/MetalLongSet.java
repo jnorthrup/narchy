@@ -28,10 +28,8 @@ public class MetalLongSet extends LongOpenHashSet  {
             return ArrayUtils.EMPTY_LONG_ARRAY;
 
         long[] l = toLongArray();
-
         if (s > 1)
             Arrays.sort(l);
-
         return l;
     }
 

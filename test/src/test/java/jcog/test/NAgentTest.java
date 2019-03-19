@@ -64,7 +64,7 @@ public class NAgentTest {
         n.onCycle(()->{
             float reward = a.happinessMean();
             if (reward!=reward) reward = 0;
-            float dex = a.dexterity();
+            double dex = a.dexterity();
             float x = 0;
             try {
                 Truth t = n.goalTruth("x", n.time());

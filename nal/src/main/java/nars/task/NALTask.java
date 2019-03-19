@@ -4,7 +4,6 @@ import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.UnitPri;
 import jcog.pri.op.PriMerge;
-import jcog.util.ArrayUtils;
 import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
@@ -26,9 +25,8 @@ public abstract class NALTask extends UnitPri implements Task {
     protected final Truth truth;
     protected final byte punc;
     protected final int hash;
-    /*@Stable*/ protected final long[] stamp;
     public long creation;
-    private /*volatile*/ short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
+
     private volatile boolean cyclic;
 
     public static NALTask the(Term c, byte punct, Truth tr, When when) {
@@ -47,17 +45,16 @@ public abstract class NALTask extends UnitPri implements Task {
         }
     }
 
-    protected NALTask(Term term, byte punc, @Nullable Truth truth, long start, long end, long[] stamp, long creation) {
+    protected NALTask(Term term, byte punc, @Nullable Truth truth, long start, long end, long creation, long[] stamp) {
         super();
         this.term = term;
         this.truth = truth;
         this.punc = punc;
         this.creation = creation;
-        this.stamp = stamp;
-        this.hash = hashCalculate(start, end); //must be last
+        this.hash = hashCalculate(start, end, stamp); //must be last
     }
 
-    protected int hashCalculate(long start, long end) {
+    protected int hashCalculate(long start, long end, long[] stamp) {
         return Task.hash(
                 term,
                 truth,
@@ -97,6 +94,13 @@ public abstract class NALTask extends UnitPri implements Task {
         return causeMerge(incoming.cause(), merge);
     }
 
+    /**
+     * set the cause[]
+     */
+    public NALTask cause(short[] ignored) {
+        return this;
+    }
+
     public Task causeMerge(short[] c, CauseMerge merge) {
 
         int causeCap = Param.causeCapacity.intValue();
@@ -105,8 +109,8 @@ public abstract class NALTask extends UnitPri implements Task {
             //HACK
             short[] prevCause = cause();
             short[] nextCause = merge.merge(prevCause, c, causeCap);
-            if (prevCause == this.cause) //to avoid needing to synchronize, check again if the same previous result is still there.  otherwise just give up (but could try again)
-                this.cause = nextCause;
+            if (prevCause == this.cause())
+                this.cause(nextCause);
         //}
 
         return this;
@@ -149,23 +153,6 @@ public abstract class NALTask extends UnitPri implements Task {
     @Override
     public abstract long end();
 
-    @Override
-    public long[] stamp() {
-        return stamp;
-    }
-
-    @Override
-    public short[] cause() {
-        return cause;
-    }
-
-    /**
-     * set the cause[]
-     */
-    public NALTask cause(short[] cause) {
-        this.cause = cause;
-        return this;
-    }
 
     @Override
     public String toString() {

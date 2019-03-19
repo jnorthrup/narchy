@@ -8995,4 +8995,84 @@ public enum ArrayUtils {
         };
     }
 
+
+    private static final byte[] BYTE_ZERO = new byte[] { 0 };
+    private static final byte[] BYTE_ONE = new byte[] { 1 };
+    private static final byte[] BYTE_TWO = new byte[] { 2 };
+    private static final byte[] BYTE_THREE = new byte[] { 3 };
+
+    private static final byte[] BYTE_ZERO_ZERO = new byte[] { 0, 0 };
+    private static final byte[] BYTE_ZERO_ONE = new byte[] { 0, 1 };
+    private static final byte[] BYTE_ONE_ZERO = new byte[] { 1, 0 };
+    private static final byte[] BYTE_ONE_ONE = new byte[] { 1, 1 };
+    private static final byte[] BYTE_ONE_TWO = new byte[] { 1, 2 };
+    private static final byte[] BYTE_ONE_NEGONE = new byte[] { 1, -1 };
+    private static final byte[] BYTE_ONE_NEGTWO = new byte[] { 1, -2 };
+    private static final byte[] BYTE_TWO_ONE = new byte[] { 2, 1 };
+    private static final byte[] BYTE_TWO_TWO = new byte[] { 2, 2 };
+    private static final byte[] BYTE_TWO_NEGONE = new byte[] { 2, -1 };
+    private static final byte[] BYTE_TWO_NEGTWO = new byte[] { 2, -2 };
+    private static final byte[] BYTE_NEGONE_ONE = new byte[] { -1, 1 };
+    private static final byte[] BYTE_NEGONE_TWO = new byte[] { -1, 2 };
+    private static final byte[] BYTE_NEGONE_NEGONE = new byte[] { -1, -1 };
+    private static final byte[] BYTE_NEGONE_NEGTWO = new byte[] { -1, -2 };
+
+    /** simple byte[] interner for low-count elements */
+    public static byte[] intern(byte[] map) {
+        switch (map.length) {
+            case 0: return ArrayUtils.EMPTY_BYTE_ARRAY;
+            case 1: {
+                switch (map[0]) {
+                    case 0: return BYTE_ZERO;
+                    case 1: return BYTE_ONE;
+                    case 2: return BYTE_TWO;
+                    case 3: return BYTE_THREE;
+                }
+            }
+            case 2: {
+                switch (map[0]) {
+                    case 0: switch (map[1]) {
+                        case 0:
+                            return BYTE_ZERO_ZERO;
+                        case 1:
+                            return BYTE_ZERO_ONE;
+                    }
+                    case 1: switch (map[1]) {
+                        case 0:
+                            return BYTE_ONE_ZERO;
+                        case 1:
+                            return BYTE_ONE_ONE;
+                        case 2:
+                            return BYTE_ONE_TWO;
+                        case -1:
+                            return BYTE_ONE_NEGONE;
+                        case -2:
+                            return BYTE_ONE_NEGTWO;
+                    }
+                    case -1: switch (map[1]) {
+                        case 1:
+                            return BYTE_NEGONE_ONE;
+                        case 2:
+                            return BYTE_NEGONE_TWO;
+                        case -1:
+                            return BYTE_NEGONE_NEGONE;
+                        case -2:
+                            return BYTE_NEGONE_NEGTWO;
+                    }
+                    case 2: switch (map[1]) {
+                        case 1:
+                            return BYTE_TWO_ONE;
+                        case 2:
+                            return BYTE_TWO_TWO;
+                        case -1:
+                            return BYTE_TWO_NEGONE;
+                        case -2:
+                            return BYTE_TWO_NEGTWO;
+                    }
+                }
+            }
+        }
+
+        return map;
+    }
 }
