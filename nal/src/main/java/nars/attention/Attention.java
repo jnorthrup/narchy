@@ -60,7 +60,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     //1f/(s.volume() + t.volume()); //1/vol_sum
 
 
-    public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(PriBuffer.newMap());
+    public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(PriBuffer.newMap(false));
     public PriNode root = new PriNode.ConstPriNode("root", ()->1);
     private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
 

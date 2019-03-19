@@ -32,7 +32,7 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
     private static class TaskLinkBuffer extends PriBuffer<TaskLink> {
 
         public TaskLinkBuffer(PriMerge merge) {
-            super(merge, PriBuffer.newMap());
+            super(merge);
         }
 
         @Override

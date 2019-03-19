@@ -171,7 +171,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         public MapTaskBuffer(int initialCapacity) {
             capacity.set(initialCapacity);
-            tasks = PriBuffer.newMap();
+            tasks = PriBuffer.newMap(true);
         }
 
         @Override
