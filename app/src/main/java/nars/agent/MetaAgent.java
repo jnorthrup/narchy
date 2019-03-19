@@ -86,7 +86,7 @@ public class MetaAgent extends NAgent {
 //            float hp = Util.or(h, p);
             //System.out.println(h + " " + p + " -> " + hp);
 //            return hp;
-            float d = a.dexterityMean();
+            float d = (float) a.dexterityMean();
             return d;
         })));
         //reward($.inh(a.id, happy), a::happiness);

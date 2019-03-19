@@ -11,10 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 /** be careful about synchronizing to instances of this class
@@ -363,6 +360,12 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         double s =  0;
         for (X x : array())
             s += each.floatValueOf(x);
+        return s;
+    }
+    public double sumBy(ToDoubleFunction<X> each) {
+        double s =  0;
+        for (X x : array())
+            s += each.applyAsDouble(x);
         return s;
     }
     public double meanBy(FloatFunction<X> each) {

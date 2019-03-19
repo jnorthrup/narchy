@@ -51,7 +51,7 @@ public final class AtomicFloatFieldUpdater<X>  {
         do {
             prev = INT.get(x);
             next = floatToIntBits( intBitsToFloat(prev) + add);
-        } while(prev!=next && !INT.compareAndSet(x, prev, next));
+        } while(prev!=next && !INT.weakCompareAndSet(x, prev, next));
 
 
 
@@ -108,7 +108,7 @@ public final class AtomicFloatFieldUpdater<X>  {
             prev = INT.get(x);
             nextFloat = f.apply(intBitsToFloat(prev), y);
             next = floatToIntBits(nextFloat);
-        } while(prev!=next && !INT.compareAndSet(x, prev, next));
+        } while(prev!=next && !INT.weakCompareAndSet(x, prev, next));
         return nextFloat;
     }
 
@@ -118,7 +118,7 @@ public final class AtomicFloatFieldUpdater<X>  {
         do {
             prev = INT.get(x);
             next = floatToIntBits(f.apply(intBitsToFloat(prev), y));
-        } while(prev!=next && !INT.compareAndSet(x, prev, next));
+        } while(prev!=next && !INT.weakCompareAndSet(x, prev, next));
     }
 
     public float getAndSet(X x, float value) {

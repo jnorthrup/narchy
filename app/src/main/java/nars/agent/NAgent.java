@@ -138,15 +138,15 @@ public class NAgent extends NARService implements NSense, NAct {
      * dexterity = sum(evidence(action))
      * evidence/confidence in action decisions, current measurement
      */
-    public float dexterity() {
+    public double dexterity() {
         int n = actions.size();
         if (n == 0)
             return 0;
         else
-            return (float) actions.sumBy(ActionConcept::dexterity);
+            return actions.sumBy(ActionConcept::dexterity);
     }
 
-    public float dexterityMean() {
+    public double dexterityMean() {
         int a = actions.size();
         return a > 0 ? dexterity() / a : 0;
     }
@@ -174,8 +174,8 @@ public class NAgent extends NARService implements NSense, NAct {
      * current measurement
      * professional satori
      */
-    public final float proficiency() {
-        float x = happinessMean() * dexterityMean();
+    public final double proficiency() {
+        double x = happinessMean() * dexterityMean();
         if (x!=x)
             x = 0; //NaN > 0
         return x;

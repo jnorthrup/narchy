@@ -57,7 +57,7 @@ public abstract class ActionConcept extends TaskConcept implements AgentLoop, Pe
 //    /** estimates the organic (derived, excluding curiosity) goal confidence for the given time interval
 //     * TODO exclude input tasks from the calculation */
 //    abstract public float dexterity(long start, long end, NAR n);
-    abstract public float dexterity();
+    abstract public double dexterity();
 
     @Override
     public FloatRange resolution() {
