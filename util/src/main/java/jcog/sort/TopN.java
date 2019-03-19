@@ -60,6 +60,11 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         super.clear();
         min = NEGATIVE_INFINITY;
     }
+    @Override
+    public void clearWeak() {
+        super.clearWeak();
+        min = NEGATIVE_INFINITY;
+    }
 
     public TopN<X> rank(FloatRank<X> rank) {
         this.rank = rank;
@@ -242,14 +247,14 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
      * roulette select
      */
     @Nullable
-    public X getRoulette(FloatSupplier rng, FloatRank<X> anyRank) {
+    public X getRoulette(FloatSupplier rng, FloatFunction<X> anyRank) {
         int n = size();
         if (n == 0)
             return null;
         if (n == 1)
             return get(0);
 
-        IntToFloatFunction select = i -> anyRank.rank(get(i));
+        IntToFloatFunction select = i -> anyRank.floatValueOf(get(i));
         return get( //n < 8 ?
                 this instanceof RankedN ?
                     Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache

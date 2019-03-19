@@ -47,7 +47,7 @@ public class AudioSource implements SignalReading.SignalReader {
         bytesPerSample = 2; /* 16-bit */
 
         this.bufferSize = new IntRange(
-                sampleRate * 16 /* ie. n seconds */,
+                sampleRate * 4 /* ie. n seconds */,
                 sampleRate, sampleRate * 128);
 
         audioFormat = new AudioFormat(sampleRate, 8*bytesPerSample, 1, true, false);

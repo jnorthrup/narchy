@@ -4,12 +4,13 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.signal.buffer.CircularFloatBuffer;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView.BitmapPainter {
+public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView.BitmapPainter, Timeline2D.TimelineRenderable {
 
     private final int w, h;
     private final CircularFloatBuffer buffer;
@@ -38,6 +39,15 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
         this.end = buffer.capacity();
         update();
     }
+    @Override
+    public void setTime(double tStart, double tEnd) {
+        long start = Math.round(tStart);
+        long end = Math.round(tEnd);
+        if (start!=this.start || end!=this.end) {
+            this.start = start; this.end = end;
+            update = true;
+        }
+    }
 
     @Override
     protected void stopping() {
@@ -53,13 +63,7 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
     }
 
 
-//    @Override
-//    protected void paintIt(GL2 gl) {
-//        super.paintIt(gl);
-//    }
-
     @Override
-    //protected void paintWidget(GL2 g, RectFloat2D bounds) {
     protected void paintIt(GL2 g, SurfaceRender r) {
         if (bmp == null) {
             bmp = new BitmapMatrixView(w, h, this) {
@@ -76,7 +80,6 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
             update = !bmp.updateIfShowing(); //keep updating till updated
         }
 
-//        bmp.paint(g, r);
     }
 
     public void update() {
@@ -94,6 +97,8 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
         update = true;
     }
 
+    private static final Color transparent = new Color(0, 0, 0, 0);
+
     @Override
     public void color(BufferedImage buf, int[] pix) {
 
@@ -102,6 +107,7 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
             gfx = buf.getGraphics();
         }
 
+        ((Graphics2D)gfx).setBackground(transparent);
         gfx.clearRect(0, 0, w, h);
 
         int w = this.w;

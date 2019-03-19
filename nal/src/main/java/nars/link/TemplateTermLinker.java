@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.Param;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.Img;
@@ -15,6 +16,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static nars.Op.IMPL;
+import static nars.Op.VAR_INDEP;
 
 /**
  * default general-purpose termlink template impl. for compound terms
@@ -49,11 +53,20 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
     }
 
     public static TermLinker of(Term term) {
-        return of(term, 2);
+        return of(term, layers(term));
     }
 
     public static TermLinker of(Term term, Term... additional) {
-        return of(term, 2, additional);
+        return of(term, layers(term), additional);
+    }
+
+    private static int layers(Term term) {
+        if (term instanceof Compound) {
+//            if (term.op()==IMPL && term.hasAny(VAR_INDEP))
+//                return 3;
+            return 2;
+        }
+        return 1;
     }
 
     /**
@@ -136,7 +149,6 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
             if (!tc.add(x))
                 return;
         }
-
 
         Op xo = x.op();
         boolean done = xo.atomic || !xo.conceptualizable;
@@ -271,8 +283,11 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
     @Override
     public void sample(Random rng, Function<? super Term, SampleReaction> each) {
-        Termed termed = get(rng);
-        each.apply(termed.term());
+        //all terms:
+        each.apply(get(rng));
+
+        //only concepts:
+        //each.apply(get(rng.nextInt(concepts > 0 ? concepts : size())));
     }
 
 

@@ -1,35 +1,51 @@
-//package spacegraph.space2d.widget;
-//
-//import com.jogamp.opengl.GL2;
-//import spacegraph.SpaceGraph;
-//import spacegraph.space2d.SurfaceRender;
-//import spacegraph.space2d.container.time.Timeline2D;
-//import spacegraph.space2d.container.unit.Scale;
-//import spacegraph.space2d.widget.button.PushButton;
-//import spacegraph.video.Draw;
-//
-//public class Timeline2DTest {
-//
-//    public static void main(String[] args) {
-//
-//        Timeline2D.SimpleTimelineModel dummyModel = new Timeline2D.SimpleTimelineModel();
-//        int events = 30;
-//        int range = 50;
-//        for (int i = 0; i < events; i++) {
-//            long start = (long) (Math.random()* range);
-//            long length = (long) (Math.random()*10)+1;
-//            dummyModel.add(new Timeline2D.SimpleEvent("x" + i, start, start+length));
-//        }
-//
-//
-//
-//        SpaceGraph.window(new Timeline2D(dummyModel, (Timeline2D.Timeline2DEvents<Timeline2D.SimpleEvent> e) ->
-//                e.set(new Scale(new PushButton(e.id.tost), 0.8f))) {
-//            @Override
-//            protected void paintIt(GL2 gl, SurfaceRender r) {
-//                gl.glColor3f(0.1f, 0, 0.1f);
-//                Draw.rect(bounds, gl);
-//            }
-//        }.setTime(0, range+1).withControls(), 800, 600);
-//    }
-//}
+package spacegraph.space2d.widget;
+
+import jcog.signal.buffer.CircularFloatBuffer;
+import org.jetbrains.annotations.NotNull;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.time.Timeline2D;
+import spacegraph.space2d.container.unit.Scale;
+import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.meter.WaveView;
+
+import java.util.concurrent.ThreadLocalRandom;
+
+public class Timeline2DTest {
+
+    public static void main(String[] args) {
+
+        int range = 50;
+
+        Timeline2D tl = new Timeline2D(0, range + 1);
+        tl.add(wave(range));
+        tl.add(events(range));
+
+        SpaceGraph.window(tl.withControls(), 800, 600);
+    }
+
+    private static Surface wave(int range) {
+        int samplesPerRange = 10;
+        CircularFloatBuffer c = new CircularFloatBuffer(range * samplesPerRange);
+        for (int i = 0; i < range * samplesPerRange; i++) {
+            c.write(new float[] {ThreadLocalRandom.current().nextFloat()});
+        }
+        return new WaveView(c,500,500);
+    }
+
+    @NotNull
+    protected static Timeline2D.Timeline2DEvents<Timeline2D.SimpleEvent> events(int range) {
+        Timeline2D.SimpleTimelineModel dummyModel = new Timeline2D.SimpleTimelineModel();
+        int events = 30;
+        for (int i = 0; i < events; i++) {
+            long start = (long) (Math.random() * range);
+            long length = (long) (Math.random() * 10) + 1;
+            dummyModel.add(new Timeline2D.SimpleEvent("x" + i, start, start + length));
+        }
+
+        return new Timeline2D.Timeline2DEvents<>(dummyModel,
+                (Graph2D.NodeVis<Timeline2D.SimpleEvent> e) ->
+                        e.set(new Scale(new PushButton(e.id.toString()), 0.8f)));
+    }
+}

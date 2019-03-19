@@ -15,7 +15,7 @@ public class BgRenderer {
     private Level level;
 
     private Random random = new Random();
-    public boolean renderBehaviors;
+//    public boolean renderBehaviors = true;
 
     private final int width;
     private final int height;
@@ -61,6 +61,7 @@ public class BgRenderer {
             updateArea(0, 0, width, yCamD);
         }
     }
+
 
     private void updateArea(int x0, int y0, int w, int h) {
         g.setBackground(transparent);

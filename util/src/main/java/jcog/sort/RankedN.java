@@ -1,11 +1,16 @@
 package jcog.sort;
 
 import jcog.Util;
+import jcog.decide.Roulette;
+import jcog.math.FloatSupplier;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 /** caches the rank inside a Ranked instance for fast entry comparison as each entry
  * TODO maybe make autocloseable to enforce .clear (aka .close()) for returning Ranked to pools
@@ -40,6 +45,10 @@ public class RankedN<X> extends TopN<X> {
     public RankedN(X[] buffer, FloatRank<X> ranking) {
         this(buffer);
         rank(ranking);
+    }
+
+    public float rankCached(int index) {
+        return value[index];
     }
 
 //    public static ThreadLocal<MetalPool<RankedTopN>> newRankedPool() {
@@ -116,5 +125,27 @@ public class RankedN<X> extends TopN<X> {
             //Arrays.fill(ranked, Float.NEGATIVE_INFINITY);
         }
         super.clear();
+    }
+
+    @Override
+    public void clearWeak() {
+        super.clearWeak();
+    }
+
+    @Nullable
+    public X getRoulette(FloatSupplier rng, Predicate<X> filter, boolean cached) {
+        int n = size();
+        if (n == 0)
+            return null;
+        if (n == 1)
+            return get(0);
+
+        IntToFloatFunction select = i -> filter.test(get(i)) ? (cached ? rankCached(i) : rank.rank(get(i))) : Float.NaN;
+        return get( //n < 8 ?
+                this instanceof RankedN ?
+                        Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache
+                        Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
+        );
+
     }
 }

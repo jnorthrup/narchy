@@ -119,7 +119,7 @@ abstract public class Container extends Surface {
                 Surface[] found = new Surface[1];
                 whileEachReverse(c -> {
 
-                    if (c instanceof Container && c.showing() && !((Container) c).clipBounds || c.bounds.contains(fp)) {
+                    if (c.showing() && (!c.clipBounds || c.bounds.contains(fp))) {
 
                         Surface s = c.finger(finger);
                         if (s != null) {

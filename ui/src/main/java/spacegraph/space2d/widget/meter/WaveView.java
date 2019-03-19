@@ -13,25 +13,28 @@ import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
 
 import static java.lang.Float.NaN;
 
-/** waveform viewing and editing
+/**
+ * waveform viewing and editing
  * TODO extend Spectrogram
- * */
+ */
 public class WaveView extends WaveBitmap implements MenuSupplier, Finger.WheelAbsorb {
 
     final static int SELECT_BUTTON = 0;
     final static int PAN_BUTTON = 2;
-    final static float PAN_SPEED = 1/100f;
+    final static float PAN_SPEED = 1 / 100f;
 
     public WaveView(CircularFloatBuffer wave, int pixWidth, int pixHeight) {
         super(pixWidth, pixHeight, wave);
     }
 
-    @Deprecated public WaveView(SignalReading capture, int pixWidth, int pixHeight) {
+    @Deprecated
+    public WaveView(SignalReading capture, int pixWidth, int pixHeight) {
         this(new CircularFloatBuffer(capture.data), pixWidth, pixHeight);
     }
 
@@ -72,16 +75,16 @@ public class WaveView extends WaveBitmap implements MenuSupplier, Finger.WheelAb
     @Override
     public Surface finger(Finger finger) {
 
-        float wheel;
 
-        if ((wheel = finger.rotationY(true))!=0) {
-//            scale = Util.clamp(scale * ( (1f - wheel*0.1f) ), 0.1f, 10f);
+        //TODO if ctrl pressed or something
 
-            //TODO if ctrl pressed or something
-
-            scale(( (1f + wheel*0.1f)));
-            //pan(+1);
-            return this;
+        if (finger.pressedNow(2)) {
+            float wheel;
+            if ((wheel = finger.rotationY(true)) != 0) {
+                scale(((1f + wheel * 0.1f)));
+                //pan(+1);
+                return this;
+            }
         }
 
         if (finger.tryFingering(pan)) {
@@ -91,16 +94,16 @@ public class WaveView extends WaveBitmap implements MenuSupplier, Finger.WheelAb
             return this;
         }
 
-        return this;
+        return null;
     }
 
     @Override
     protected void compileAbove(SurfaceRender r) {
         float sStart = selectStart;
-        if (sStart==sStart) {
+        if (sStart == sStart) {
             float sEnd = selectEnd;
-            if (sEnd==sEnd) {
-                r.on((gl,rr)->{
+            if (sEnd == sEnd) {
+                r.on((gl, rr) -> {
                     float ss = Util.clamp(x(selectStart), left(), right());
                     gl.glColor4f(1f, 0.8f, 0, 0.5f);
                     float ee = Util.clamp(x(selectEnd), left(), right());
@@ -117,20 +120,21 @@ public class WaveView extends WaveBitmap implements MenuSupplier, Finger.WheelAb
 
     float x(float sample) {
         long f = start;
-        return (sample - f)/(end - f) * w();
+        return (sample - f) / (end - f) * w();
     }
 
     @Override
     public Surface menu() {
         return new Gridding(
-            PushButton.awesome("play"),
-            PushButton.awesome("microphone"),
-            PushButton.awesome("save"), //remember
-            PushButton.awesome("question-circle") //recognize
+                PushButton.awesome("play"),
+                PushButton.awesome("microphone"),
+                PushButton.awesome("save"), //remember
+                PushButton.awesome("question-circle") //recognize
 
                 //TODO trim, etc
         );
     }
+
 //
 //    public void update() {
 //        update();

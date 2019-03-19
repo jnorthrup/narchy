@@ -31,11 +31,15 @@ public class PriNode extends PLink<Term> {
         return id + " pri=" + pri();
     }
 
+    @Deprecated /* move to subclass */ public float priComponent() {
+        return priFraction() * pri();
+    }
+
     @Deprecated /* move to subclass */ protected float priFraction() {
         float i;
         int n = fanOut;
         if (n == 0)
-            return 0;
+            return 1;
         //i = 1; //each component important as a top level concept
         i = (float) (1f / Math.sqrt((float)n)); //shared by sqrt of components
         //i = 1f / n; //shared by all components
@@ -55,25 +59,15 @@ public class PriNode extends PLink<Term> {
 
             node.nodes(true, false).forEach((Node<PriNode, Object> n) -> {
                 PriNode nn = n.id();
-                float np = nn.pri() * nn.priFraction();
-//            if (Util.equals(0, np))
-//                throw new WTF();
-                factor[0] *= np;
+                float p = nn.priComponent();
+                if (p == p) {
+                    factor[0] *= p;
+                }
             });
         }
 
-
         float pri = (float) (factor[0]);
         this.pri(pri);
-
-        //System.out.println(id + " updated " + pri + " from " + Joiner.on(",").join(node.nodes(true,false)));
-
-//        int fanout = node.edgeCount(false, true);
-//        if (fanout > 0) {
-//            //TODO local boost's
-//            //TODO p.nodes(..)
-//            node.nodes(false, true).forEach(c -> c.id().update(graph));
-//        }
     }
 
 

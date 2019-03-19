@@ -190,7 +190,7 @@ abstract public class NAgentX extends NAgent {
         clock.durFPS(durFPS);
 
         Valuator val =
-            new Valuator.DefaultValuator(0.99f);
+            new Valuator.DefaultValuator(0.5f);
             //new Valuator.AEValuator(new XoRoShiRo128PlusRandom());
 
         int threads = _threads <= 0 ? Util.concurrencyExcept(1) : _threads;
@@ -362,7 +362,7 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(30);
 
 
-        n.attn.linksCapacity.set(4096);
+        n.attn.linksCapacity.set(2048);
 
 
         n.beliefPriDefault.set(0.1f);
@@ -370,8 +370,8 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.05f);
         n.questPriDefault.set(0.05f);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.5f);
+        n.goalConfDefault.set(0.5f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
@@ -417,7 +417,7 @@ abstract public class NAgentX extends NAgent {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        TaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 0.2f);
+        TaskBuffer injection = new TaskBuffer.BagTaskBuffer(256, 2.5f);
         //TaskBuffer injection = new TaskBuffer.DirectTaskBuffer();
         window(NARui.taskBufferView(injection, n), 500, 500);
 

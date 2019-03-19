@@ -5,8 +5,6 @@ import jcog.signal.Tensor;
 import jcog.signal.wave1d.FreqDomain;
 import jcog.signal.wave1d.SignalReading;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.widget.button.PushButton;
@@ -55,7 +53,7 @@ public class SignalView extends Bordering {
         });
 
         t.add(g);
-        t.add(Splitting.column(new EmptySurface(), 0.5f, w));
+        t.add(w);
         center(t);
 
 

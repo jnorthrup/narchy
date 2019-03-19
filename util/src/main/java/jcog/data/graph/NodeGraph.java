@@ -19,6 +19,8 @@ public abstract class NodeGraph<N, E> {
     abstract public Node<N, E> node(Object key);
 
 
+    abstract int nodeCount();
+
     abstract public void forEachNode(Consumer<Node<N, E>> n);
 
     protected abstract Node<N, E> newNode(N data);
@@ -44,19 +46,49 @@ public abstract class NodeGraph<N, E> {
     }
 
     public boolean bfs(N startingNode, Search<N, E> tv) {
-        return bfs(List.of(startingNode), new ArrayDeque(), tv);
+        return bfs(List.of(startingNode),tv);
+    }
+
+    /** iterate all nodes, in topologically sorted order */
+    public void forEachBF(N root, Consumer<? super N> each) {
+        each.accept(root);
+        bfs(List.of(root), new Search<>() {
+            @Override
+            protected boolean next(BooleanObjectPair<FromTo<Node<N, E>, E>> move, Node<N, E> next) {
+                each.accept(next.id());
+                return true;
+            }
+        });
     }
 
     private boolean dfs(Iterable<N> startingNodes, Search<N, E> search) {
-        return search.dfs(Iterables.transform(startingNodes, this::node));
+        return search.dfs(startingNodes, this);
     }
 
-    public boolean bfs(Iterable<N> startingNodes, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, Search<N, E> search) {
-        return bfs(q, Iterables.transform(startingNodes, this::node), search);
+//    public boolean bfs(Iterable<N> startingNodes, Search<N, E> search) {
+//        if (startingNodes instanceof Collection) {
+//            return bfs((Collection)startingNodes, search); //potential optimization
+//        } else  {
+//            return bfs(new ArrayDeque(/*TODO size */), Iterables.transform(startingNodes, this::node), search);
+//        }
+//    }
+
+    public boolean bfs(Collection<N> startingNodes, Search<N, E> search) {
+        int c = nodeCount();
+        switch (c) {
+            case 0:
+            case 1:
+                return true; //nothing
+            case 2:
+                return dfs(startingNodes, search); //optimization (no queue needed)
+        }
+
+        return bfs(startingNodes, new ArrayDeque<>(
+                2 * (int)Math.ceil(Math.log(c)) /* estimate */), search);
     }
 
-    public boolean bfs(Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, Iterable<Node<N, E>> nn, Search<N, E> search) {
-        return search.bfs(nn, q);
+    public boolean bfs(Iterable startingNodes, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, Search<N, E> search) {
+        return search.bfs(startingNodes, q, this);
     }
 
 

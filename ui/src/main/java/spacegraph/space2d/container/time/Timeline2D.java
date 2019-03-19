@@ -166,7 +166,7 @@ public class Timeline2D extends Stacking {
     }
 
     public Surface withControls() {
-        return new Widget(new Splitting(new Clipped(this), controls(), 0.2f));
+        return new Splitting(new Clipped(this), controls(), 0.2f);
     }
 
     public Bordering controls() {

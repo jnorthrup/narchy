@@ -1,7 +1,9 @@
 package jcog.data.graph.search;
 
 import com.google.common.collect.Iterators;
+import jcog.WTF;
 import jcog.data.graph.Node;
+import jcog.data.graph.NodeGraph;
 import jcog.data.graph.path.FromTo;
 import jcog.data.list.Cons;
 import jcog.data.list.FasterList;
@@ -65,7 +67,7 @@ abstract public class Search<N, E> {
         return step.getTwo().to(step.getOne());
     }
     
-    private boolean bfs(Node<N,E> start, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N,E>,E>>>, Node<N,E>>> q) {
+    private boolean bfsNode(Node<N,E> start, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N,E>,E>>>, Node<N,E>>> q) {
         if (start==null)
             return true;  //??
 
@@ -119,20 +121,31 @@ abstract public class Search<N, E> {
 
 
 
-    public boolean dfs(Iterable<Node<N,E>> startingNodes){
-        return dfsNodes(startingNodes);
+    public boolean dfs(Iterable<Node> startingNodes){
+        return dfs(startingNodes, null);
     }
 
-    private boolean dfsNodes(Iterable<Node<N,E>> startingNodes) {
+    public boolean dfs(Iterable startingNodes, @Nullable NodeGraph g){
 
         start();
+
         try {
 
             path = new FasterList(8);
 
-            for (Node n : startingNodes)
-                if (!dfsNode(n))
+            for (Object n : startingNodes) {
+                Node nn;
+                if (n instanceof Node)
+                    nn = (Node)n;
+                else {
+                    nn = g.node(n);
+                    if (nn==null)
+                        throw new WTF();
+                }
+
+                if (!dfsNode(nn))
                     return false;
+            }
 
             return true;
         } finally {
@@ -183,25 +196,27 @@ abstract public class Search<N, E> {
 
 
 
-    public boolean bfs(Node<N,E> startingNodes) {
-        return bfs(List.of(startingNodes));
-    }
-
-    private boolean bfs(Iterable<Node<N, E>> startingNodes) {
-        return bfs(startingNodes, new ArrayDeque());
-    }
-
     /**
      * q is recycleable between executions automatically. just provide a pre-allocated ArrayDeque or similar.
      */
-    public boolean bfs(Iterable<Node<N,E>> startingNodes, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q) {
+    public boolean bfs(Iterable startingNodes, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, NodeGraph g) {
 
         start();
+
         try {
 
-            for (Node<N,E> n : startingNodes) {
+            for (Object n : startingNodes) {
+                Node nn;
+                if (n instanceof Node)
+                    nn = (Node)n;
+                else {
+                    nn = g.node(n);
+                    if (nn==null)
+                        throw new WTF();
+                }
+
                 q.clear();
-                if (!bfs(n, q))
+                if (!bfsNode(nn, q))
                     return false;
             }
 

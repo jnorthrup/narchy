@@ -1,10 +1,7 @@
 package nars.attention;
 
 import jcog.data.graph.MapNodeGraph;
-import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
-import jcog.data.graph.path.FromTo;
-import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
@@ -28,7 +25,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.time.event.DurService;
-import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -119,17 +115,9 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     protected void run(NAR n, long dt) {
         forgetting.update(n);
         derivePri.update(n);
-        root.pri(1);
 
-        //iterate, in topologically sorted order
-        root.update( graph);
-        graph.bfs(root, new Search<PriNode,Object>() {
-            @Override
-            protected boolean next(BooleanObjectPair<FromTo<Node<PriNode, Object>, Object>> move, Node<PriNode, Object> next) {
-                next.id().update(graph);
-                return true;
-            }
-        });
+        root.pri(1);
+        graph.forEachBF(root, (PriNode x)->x.update(graph));
     }
 
     @Override
@@ -165,10 +153,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         if (t.op().conceptualizable) {
 
 
-
-
-
-            boolean self = s.equals(t);
+//            boolean self = s.equals(t);
 
             ct = nar.conceptualize(t);
             if (ct != null) {
@@ -181,7 +166,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
                     if (t instanceof Atom) {
                         //why is this necessary
-                        if (d.random.nextFloat() < 0.5f) {
+                        if (d.random.nextFloat() > 1f/(1+ t.volume())) {
                             //if (self || d.random.nextFloat() > 1f/(1+s.complexity())) {
                             //sample active tasklinks for a tangent match to the atom
 //                            Atom tt = (Atom) t;
@@ -189,7 +174,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
                                     x -> !link.equals(x);
                             //x -> !link.equals(x) && !link.other(tt).equals(s);
 
-                            u = links.atomTangent(ct, filter, d.time, 1, d.random);
+                            u = links.atomTangent(ct, punc, filter, d.time, 1, d.random);
 //                        if (u!=null && u.equals(s)) {
 ////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY
 //                            throw new WTF();
@@ -224,7 +209,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 //                float p =
 //                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
 
-                int n = 2;
+                int n = 1;
                 float pp = p * amp.floatValue() / n;
 
                 //link.take(punc, pp*n);
@@ -233,7 +218,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
                 link(s, u, punc, pp); //forward (hop)
                 //link(u, s, punc, pp); //reverse (hop)
                 //link(t, u, punc, pp); //forward (adjacent)
-                link(u, t, punc, pp); //reverse (adjacent)
+                //link(u, t, punc, pp); //reverse (adjacent)
 
 
 

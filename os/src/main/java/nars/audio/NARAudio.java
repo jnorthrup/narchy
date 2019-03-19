@@ -64,11 +64,11 @@ public class NARAudio extends WaveIn {
 
         AudioSource audio = new AudioSource().start();
 
-        NARAudio na = new NARAudio(n, audio, 15f);
+        NARAudio na = new NARAudio(n, audio, 30f);
 
         window(new SignalView(na.in), 800, 800);
 
-        n.startFPS(20f);
+        n.startFPS(5f);
 
     }
 

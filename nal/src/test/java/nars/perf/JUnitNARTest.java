@@ -16,7 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JUnitNARTest {
 
-    /** junit test for running NALTest outside of Junit lol */
+
+    /**
+     * junit test for running NALTest outside of Junit lol
+     */
     @Test
     void testTestNAROutsideJUnit() {
         TestNAR tt = new TestNAR(NARS.tmp(1));

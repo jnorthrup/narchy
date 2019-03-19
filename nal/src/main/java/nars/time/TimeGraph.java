@@ -1261,7 +1261,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
 
 
-        Queue<Pair<List<BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>>>, Node<Event, nars.time.TimeSpan>>> q = new ArrayDeque<>(roots.size() /* estimate TODO find good sizing heuristic */);
+
 
 //        Iterable<Node<Event,TimeSpan>> rr = Iterables.transform(roots, r -> {
 //            Node<Event, TimeSpan> n = node(r);
@@ -1283,7 +1283,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        });
 //        boolean result = bfs(q, rr, tv);
 
-        boolean result = bfs(roots, q, tv);
+        boolean result = bfs(roots, tv);
 
         if (created != null && result /* tail call optimization  - dont bother removing if we're done anyway */) {
             int m = 0;

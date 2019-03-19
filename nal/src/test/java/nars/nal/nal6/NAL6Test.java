@@ -44,11 +44,11 @@ public class NAL6Test extends NALTest {
     void variable_unification2() {
 
         test
-
-                .believe("<($x --> bird) ==> <$x --> animal>>")
-                .believe("<<$y --> robin> ==> <$y --> bird>>")
-                .mustBelieve(cycles, "<<$1 --> robin> ==> <$1 --> animal>>", 1.00f, 0.81f)
-                .mustBelieve(cycles, "<<$1 --> animal> ==> <$1 --> robin>>", 1.00f, 0.45f);
+            .termVolMax(8)
+            .believe("<($x --> bird) ==> <$x --> animal>>")
+            .believe("<<$y --> robin> ==> <$y --> bird>>")
+            .mustBelieve(cycles, "<<$1 --> robin> ==> <$1 --> animal>>", 1.00f, 0.81f)
+            .mustBelieve(cycles, "<<$1 --> animal> ==> <$1 --> robin>>", 1.00f, 0.45f);
 
     }
 

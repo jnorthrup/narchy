@@ -435,6 +435,11 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             Arrays.fill(items, 0, s, null);
     }
 
+    /** doesnt nullify existing items */
+    public void clearWeak() {
+        SIZE.set(this, 0);
+    }
+
 
     public final int add(final X element, FloatFunction<X> cmp) {
         float elementRank = cmp.floatValueOf(element);

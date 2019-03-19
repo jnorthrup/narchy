@@ -153,6 +153,10 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         return nodes.values();
     }
 
+    @Override int nodeCount() {
+        return nodes.size();
+    }
+
     @Override
     public void forEachNode(Consumer<Node<N, E>> n) {
         nodes.values().forEach(n);

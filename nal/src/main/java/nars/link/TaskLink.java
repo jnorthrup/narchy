@@ -56,6 +56,10 @@ public interface TaskLink extends UnitPrioritizable {
     //byte punc();
     float priPunc(byte punc);
 
+    default float pri(byte punc) {
+        throw new WTF("use priPunc");
+    }
+
     float getAndSetPriPunc(byte punc, float next);
 
 
