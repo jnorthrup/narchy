@@ -71,8 +71,9 @@ public class ZoomOrtho extends Ortho {
         if (f==null) {
             if (finger.touching() == null) {
                 if (finger.tryFingering(fingerWindowMove) ||
-                        finger.tryFingering(fingerWindowResize) ||
-                        finger.tryFingering(fingerContentPan)) {
+                        finger.tryFingering(fingerContentPan) ||
+                        finger.tryFingering(fingerWindowResize)
+                ) {
                     return this;
                 }
             }

@@ -7,8 +7,6 @@ import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 
-import java.util.function.Predicate;
-
 /** mutable, use with caution; hashCode is dynamically computed */
 public class LighterCompound extends TermList implements AbstractLightCompound {
     private final byte op;

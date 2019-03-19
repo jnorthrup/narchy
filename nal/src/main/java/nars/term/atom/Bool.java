@@ -3,7 +3,6 @@ package nars.term.atom;
 import nars.Op;
 import nars.The;
 import nars.term.Term;
-import nars.term.util.builder.TermBuilder;
 
 import static nars.Op.BOOL;
 

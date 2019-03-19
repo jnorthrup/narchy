@@ -23,7 +23,7 @@ public class LinearTruthProjection extends TruthProjection {
 
     @Override
     @Nullable
-    public Truth truth(float eviMin, boolean dither, boolean tCrop, NAR nar) {
+    public Truth truth(double eviMin, boolean dither, boolean tCrop, NAR nar) {
 
         if (size()==0)
             return null;
@@ -84,13 +84,13 @@ public class LinearTruthProjection extends TruthProjection {
         }
 
 
-        double F = (float)wFreqSum / eSum;
+        double F = wFreqSum / eSum;
 
 //        double F2 = (((wFreqPos - wFreqNeg) / (wFreqPos+wFreqNeg)/ wSum + 1)/2 ) ;
 //        if (!Util.equals(F,F2))
 //            System.out.println(F + " "+ F2);
 
-        return dither ? Truth.theDithered((float)F, (float)eAvg, nar) : PreciseTruth.byEvi(F, eAvg);
+        return dither ? Truth.theDithered((float)F, eAvg, nar) : PreciseTruth.byEvi(F, eAvg);
     }
 
 

@@ -98,7 +98,7 @@ public interface Truth extends Truthed {
 
 
     class TruthException extends RuntimeException {
-        public TruthException(String reason, float value) {
+        public TruthException(String reason, double value) {
             super(new StringBuilder(64).append(reason).append(": ").append(value).toString());
         }
     }
@@ -198,14 +198,14 @@ public interface Truth extends Truthed {
     }
 
     @Nullable
-    static PreciseTruth theDithered(float f, float e, NAR nar) {
+    static PreciseTruth theDithered(float f, double e, NAR nar) {
         if (e < c2wSafe(nar.confMin.floatValue()))
             return null;
 
         //keep evidence difference
         return PreciseTruth.byFreqConfEvi(
                 Truth.freq(f, nar.freqResolution.floatValue()),
-                Truth.w2cDithered(e, nar.confResolution.floatValue()),
+                Truth.w2cDithered((float)e, nar.confResolution.floatValue()),
                 e);
 
     }
@@ -229,7 +229,7 @@ public interface Truth extends Truthed {
     float freq();
 
     @Override
-    float evi();
+    double evi();
 
     @Nullable
     @Override
@@ -290,11 +290,11 @@ public interface Truth extends Truthed {
         if (Util.equals(f,ff) && Util.equals(c,cc))
             return this;
         else
-            return PreciseTruth.byConf(ff, cc);
+            return PreciseTruth.byFreqConfEvi(ff, cc, evi() /* extra precision */);
     }
 
-    @Nullable default Truth dither(float freqRes, float confRes, float eviMin, boolean negate) {
-        float e = evi();
+    @Nullable default Truth dither(float freqRes, float confRes, double eviMin, boolean negate) {
+        double e = evi();
         if (e < eviMin)
             return null;
 
@@ -303,18 +303,18 @@ public interface Truth extends Truthed {
 
         float f = freq();
         float ff = freq(negate ? 1-f : f, freqRes);
-        float c0 = w2cSafe(e);
-        float cc = conf(c0, confRes);
+        double c0 = w2cSafe(e);
+        float cc = conf((float) c0, confRes);
         if (Util.equals(f,ff) && Util.equals(c0,cc))
             return this;
         else
-            return PreciseTruth.byConf(ff, cc);
+            return PreciseTruth.byFreqConfEvi(ff, cc, e /* extra precision */);
     }
 
 
-    default Truth eternalized(float factor, float eviMin, @Nullable NAR n) {
+    default Truth eternalized(float factor, double eviMin, @Nullable NAR n) {
         float f = freq();
-        float e = factor * eviEternalized();
+        double e = factor * eviEternalized();
         if (e < eviMin)
             return null;
         if (n!=null) {

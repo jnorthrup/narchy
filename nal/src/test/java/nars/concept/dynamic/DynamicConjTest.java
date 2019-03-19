@@ -307,7 +307,7 @@ class DynamicConjTest {
         }
 
         assertEquals(
-                "%0.0;.41%", n.beliefTruth(
+                "%0.0;.40%", n.beliefTruth(
                         n.conceptualize($("(&&,y,z)")
                         ), n.time()).toString()
         );

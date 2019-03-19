@@ -54,7 +54,7 @@ public class DiscreteTruth implements Truth {
     }
 
     @Override
-    public float evi() {
+    public double evi() {
         return c2wSafe(conf());
     }
 

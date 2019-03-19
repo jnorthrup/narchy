@@ -17,9 +17,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static nars.Op.IMPL;
-import static nars.Op.VAR_INDEP;
-
 /**
  * default general-purpose termlink template impl. for compound terms
  * contains a fixed set of subterm components that can be target-linked with.

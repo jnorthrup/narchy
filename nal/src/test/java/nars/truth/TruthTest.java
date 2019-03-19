@@ -203,12 +203,12 @@ class TruthTest {
     @Test
     void testEvidenceHorizonDistortion() {
         Truth a = t(1f, 0.9f);
-        float eviA = a.evi();
+        double eviA = a.evi();
         Truth b = t(1f, 0.9f);
-        float eviB = b.evi();
+        double eviB = b.evi();
         float eviABintersect = TruthFunctions.c2w(0.81f);
-        float eviABintersectRaw = eviA * eviB;
-        float eviABintersectRawToConf = w2c(eviA * eviB);
+        double eviABintersectRaw = eviA * eviB;
+        double eviABintersectRawToConf = w2c(eviA * eviB);
         System.out.println();
     }
 }

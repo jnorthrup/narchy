@@ -1,26 +1,26 @@
 package jcog.math;
 
 import jcog.WTF;
-import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 
 import java.util.Arrays;
+import java.util.function.LongToDoubleFunction;
 
 /** trapezoidally integrates a function where the x domain is long integers, and the y range is floats */
 public class LongFloatTrapezoidalIntegrator {
 
     private long xPrev = Long.MIN_VALUE;
-    private float yPrev = Float.NaN;
+    private double yPrev = Float.NaN;
     private double sum = Float.NaN;
 
 
     /** pre-sorts the input array */
-    public final static float sumSort(LongToFloatFunction y, long... xNexts) {
+    public final static double sumSort(LongToDoubleFunction y, long... xNexts) {
         if (xNexts.length > 1)
             Arrays.sort(xNexts);
         return sum(y, xNexts);
     }
 
-    public final static float sum(LongToFloatFunction each, long... x) {
+    public final static double sum(LongToDoubleFunction each, long... x) {
 
         //return new LongFloatTrapezoidalIntegrator().sample(each, x).sum();
 
@@ -28,16 +28,16 @@ public class LongFloatTrapezoidalIntegrator {
             case 0:
                 return 0;
             case 1:
-                return each.valueOf(x[0]);
+                return each.applyAsDouble(x[0]);
             case 2: {
                 long a = x[0], b = x[1];
                 if (a == b)
-                    return each.valueOf(a);
+                    return each.applyAsDouble(a);
                 else {
                     long range = b-a;
                     if (range < 0)
                         throw new WTF("x must be monotonically increasing");
-                    return (float)((each.valueOf(a) + each.valueOf(b)) / 2.0 * (range + 1));
+                    return ((each.applyAsDouble(a) + each.applyAsDouble(b)) / 2.0 * (range + 1));
                 }
             }
             //TODO 3-ary case?
@@ -47,24 +47,24 @@ public class LongFloatTrapezoidalIntegrator {
 
     }
 
-    public final LongFloatTrapezoidalIntegrator sample(LongToFloatFunction y, long... xNexts) {
+    public final LongFloatTrapezoidalIntegrator sample(LongToDoubleFunction y, long... xNexts) {
         long xPrev = Long.MIN_VALUE;
         for (long xNext : xNexts) {
             if (xPrev == xNext)
                 continue;
-            sample(xNext, y.valueOf(xPrev = xNext));
+            sample(xNext, y.applyAsDouble(xPrev = xNext));
         }
         return this;
     }
 
     /** returns same instance */
-    public final LongFloatTrapezoidalIntegrator sample(LongToFloatFunction y, long xNext) {
-        sample(xNext, y.valueOf(xNext));
+    public final LongFloatTrapezoidalIntegrator sample(LongToDoubleFunction y, long xNext) {
+        sample(xNext, y.applyAsDouble(xNext));
         return this;
     }
 
-    public void sample(long xNext, float yNext) {
-        if (!Float.isFinite(yNext))
+    public void sample(long xNext, double yNext) {
+        if (!Double.isFinite(yNext))
             throw new WTF("y must be finite");
 
         boolean first = yPrev!=yPrev;
@@ -90,13 +90,14 @@ public class LongFloatTrapezoidalIntegrator {
     }
 
     /** returns Float.Nan if empty */
-    public float sum() {
+    public double sum() {
         if (sum != sum) {
             //zero or 1 points
-            return xPrev;
+            return yPrev;
         }
-        return (float) sum;
+        return sum;
     }
+
 //        /**
 //         //     * https:
 //         //     * long[] points needs to be sorted, unique, and not contain any ETERNALs

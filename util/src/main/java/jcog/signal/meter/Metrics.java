@@ -7,7 +7,6 @@ package jcog.signal.meter;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
-import jcog.TODO;
 import jcog.Texts;
 import jcog.signal.meter.event.DoubleMeter;
 import jcog.signal.meter.event.HitMeter;

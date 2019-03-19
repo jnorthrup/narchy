@@ -61,15 +61,15 @@ public interface Truthed  {
     }
 
     default float conf() {
-        return w2cSafe(evi()); 
+        return (float) w2cSafe(evi());
     }
     /** weight of evidence ( confidence converted to weight, 'c2w()' )  */
-    default float evi() {
+    default double evi() {
         return truth().evi(); 
     }
 
 
-    default float eviEternalized() {
+    default double eviEternalized() {
         return TruthFunctions.eternalize(evi());
     }
 

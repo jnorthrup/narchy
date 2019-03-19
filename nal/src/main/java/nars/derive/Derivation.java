@@ -171,7 +171,8 @@ public class Derivation extends PreDerivation {
      * current NAR time, set at beginning of derivation
      */
     public transient long time = ETERNAL;
-    public transient float confMin, eviMin;
+    public transient float confMin;
+    public transient double eviMin;
     public transient int termVolMax;
 
 
@@ -542,7 +543,7 @@ public class Derivation extends PreDerivation {
     @Nullable
     public long[] evidenceDouble() {
         if (evidenceDouble == null) {
-            float te, be, tb;
+            double te, be, tb;
             if (taskPunc == BELIEF || taskPunc == GOAL) {
 
                 te = taskTruth.evi();
@@ -555,7 +556,7 @@ public class Derivation extends PreDerivation {
                 tb = te + be;
                 tb = tb < ScalarValue.EPSILON ? 0.5f : te / tb;
             }
-            long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), tb, random);
+            long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), (float)tb, random);
             if (evidenceDouble == null || !Arrays.equals(e, evidenceDouble))
                 this.evidenceDouble = e;
             return e;
@@ -628,13 +629,13 @@ public class Derivation extends PreDerivation {
     }
 
     public boolean concTruthEviMul(float ratio, boolean eternalize) {
-        float e = ratio * concTruth.evi();
+        double e = ratio * concTruth.evi();
         if (eternalize)
             e = Math.max(concTruth.eviEternalized(), e);
         return concTruthEvi(e);
     }
 
-    public boolean concTruthEvi(float e) {
+    public boolean concTruthEvi(double e) {
         return e >= eviMin && (this.concTruth = PreciseTruth.byEvi(concTruth.freq(), e)) != null;
     }
 

@@ -287,9 +287,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
                 Truth xt = x.truth();
 
-                final float newBeliefWeight = input.evi();
+                final double newBeliefWeight = input.evi();
 
-                aProp = newBeliefWeight / (newBeliefWeight + x.evi());
+                aProp = (float) (newBeliefWeight / (newBeliefWeight + x.evi()));
 
                 Term xTerm = x.term();
                 Term nt;

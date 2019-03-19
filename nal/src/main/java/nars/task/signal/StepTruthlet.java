@@ -34,7 +34,7 @@ public class StepTruthlet extends ProxyTruthlet {
                 f = freqAfter;
             }
             freqEvi[0] = f;
-            freqEvi[1] = Param.evi(eviInactive, dist, Math.max(1, Tense.occToDT(e - s) / 2));
+            freqEvi[1] = (float) Param.evi(eviInactive, dist, Math.max(1, Tense.occToDT(e - s) / 2));
         }
     }
 

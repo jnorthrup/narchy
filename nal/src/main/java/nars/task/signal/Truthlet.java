@@ -40,7 +40,7 @@ abstract public class Truthlet implements Truth {
         
         return freq(mid());
     }
-    @Deprecated @Override public final float evi() {
+    @Deprecated @Override public final double evi() {
         float es = evi(start());
         if (es > 0) {
             float ee = evi(end());

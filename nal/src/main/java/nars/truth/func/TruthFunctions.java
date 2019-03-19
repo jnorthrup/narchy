@@ -310,6 +310,9 @@ public final class TruthFunctions {
     /**
      * http://www.wolframalpha.com/input/?i=x%2F(x%2B1)
      */
+    public static double w2cSafe(double w, float horizon) {
+        return w / (w + horizon);
+    }
     public static float w2cSafe(float w, float horizon) {
         return w / (w + horizon);
     }
@@ -325,12 +328,20 @@ public final class TruthFunctions {
             throw new Truth.TruthException("insufficient evidence", w);
         if (!Float.isFinite(w))
             throw new Truth.TruthException("non-finite evidence", w);
-
-
+        return w2cSafe(w);
+    }
+    public static double w2c(double w) {
+        if (w < Param.TRUTH_EVI_MIN)
+            throw new Truth.TruthException("insufficient evidence", w);
+        if (!Double.isFinite(w))
+            throw new Truth.TruthException("non-finite evidence", w);
         return w2cSafe(w);
     }
 
     public static float w2cSafe(float w) {
+        return w2cSafe(w, Param.HORIZON);
+    }
+    public static double w2cSafe(double w) {
         return w2cSafe(w, Param.HORIZON);
     }
 
@@ -347,8 +358,8 @@ public final class TruthFunctions {
         return (confidence * (frequency - 0.5f) + 0.5f);
     }
 
-    public static float eternalize(float evi) {
-        return w2c(evi);
+    public static double eternalize(double evi) {
+        return w2cSafe(evi);
     }
 }
 

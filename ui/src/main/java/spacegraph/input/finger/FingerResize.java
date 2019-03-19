@@ -37,7 +37,8 @@ public abstract class FingerResize extends Dragging {
         float fx = pos.x;
         float fy = pos.y;
 
-        switch (mode()) {
+        DragEdit m = mode();
+        switch (m) {
             case RESIZE_S: {
                 float pmy = before.top();
                 float bh = before.h;

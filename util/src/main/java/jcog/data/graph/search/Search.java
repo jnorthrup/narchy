@@ -12,7 +12,10 @@ import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 

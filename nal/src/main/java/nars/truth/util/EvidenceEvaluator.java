@@ -3,7 +3,7 @@ package nars.truth.util;
 import jcog.math.LongInterval;
 import nars.Param;
 import nars.Task;
-import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
+import org.eclipse.collections.api.block.function.primitive.LongToDoubleFunction;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -13,33 +13,34 @@ import static nars.time.Tense.ETERNAL;
 public interface EvidenceEvaluator {
 
 
-    float evi(long when, int dur);
+    double evi(long when, int dur);
 
-    default /* final */ float[] evi(int dur, long... when) {
+    default /* final */ double[] evi(int dur, long... when) {
         return evi(dur, 0, when.length, when);
     }
-    default float[] evi(int dur, int arrayFrom, int arrayTo, long[] when) {
+
+    default double[] evi(int dur, int arrayFrom, int arrayTo, long[] when) {
         int n = arrayTo-arrayFrom;
-        float[] e = new float[n];
+        double[] e = new double[n];
         for (int i = 0; i < n; i++) {
             e[i] = evi(when[i + arrayFrom], dur);
         }
         return e;
     }
 
-    default LongToFloatFunction eviFn(int dur) {
+    default LongToDoubleFunction eviFn(int dur) {
         return w->evi(w,dur);
     }
 
     final class EternalEvidenceEvaluator implements EvidenceEvaluator {
-        private final float evi;
+        private final double evi;
 
-        private EternalEvidenceEvaluator(float evi) {
+        private EternalEvidenceEvaluator(double evi) {
             this.evi = evi;
         }
 
         @Override
-        public float evi(long when, int dur) {
+        public double evi(long when, int dur) {
             return evi;
         }
 
@@ -51,20 +52,20 @@ public interface EvidenceEvaluator {
         /**
          * max evidence during defined range
          */
-        private final float ee;
+        private final double ee;
 
         protected long dt(long when) {
             return Math.abs(when - s);
         }
 
-        protected TemporalPointEvidenceEvaluator(long s, float ee) {
+        protected TemporalPointEvidenceEvaluator(long s, double ee) {
             this.s = s;
             assert (s != LongInterval.ETERNAL);
             this.ee = ee;
         }
 
         @Override
-        public final float evi(long when, int dur) {
+        public final double evi(long when, int dur) {
             long dt = dt(when);
             return (dt == 0) ?
                     ee : ((dur != 0) ? Param.evi(ee, dt, dur) : 0);
@@ -75,7 +76,7 @@ public interface EvidenceEvaluator {
         public final long e;
 
 
-        public TemporalSpanEvidenceEvaluator(long s, long e, float ee) {
+        public TemporalSpanEvidenceEvaluator(long s, long e, double ee) {
             super(s, ee);
             this.e = e;
         }
@@ -113,7 +114,7 @@ public interface EvidenceEvaluator {
 
     static EvidenceEvaluator the(Task t) {
         long s = t.start();
-        float ee = t.evi();
+        double ee = t.evi();
         if (s == ETERNAL)
             return new EternalEvidenceEvaluator(ee);
 

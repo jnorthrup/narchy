@@ -26,7 +26,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Termlike;
-import nars.term.atom.Atomic;
 import nars.term.compound.CachedCompound;
 import nars.term.util.builder.TermBuilder;
 import org.junit.jupiter.api.Assertions;

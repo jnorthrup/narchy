@@ -9,9 +9,7 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.newt.event.KeyEvent;
-import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.Widget;
 
 import java.io.OutputStream;

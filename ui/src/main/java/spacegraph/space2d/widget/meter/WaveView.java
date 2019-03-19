@@ -13,7 +13,6 @@ import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
 

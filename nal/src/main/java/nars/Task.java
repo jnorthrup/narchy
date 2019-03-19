@@ -464,7 +464,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * start!=ETERNAL
      */
     @Nullable
-    static Task project(Task t, long start, long end, float eviMin, boolean ditherTruth, boolean ditherTime, NAR n) {
+    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, boolean ditherTime, NAR n) {
 
         if (t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
             return t;
@@ -490,45 +490,45 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return new SpecialTruthAndOccurrenceTask(t, start, end, false, tt);
     }
 
-    @Deprecated
-    @Nullable
-    static Task project(Task t, long start, long end, boolean ditherTruth, boolean negated, float eviMin, NAR n) {
-        if (!negated && t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
-            return t;
-
-//        if (trimIfIntersects) {
-//            @Nullable long[] intersection = Longerval.intersectionArray(start, end, t.start(), t.end());
-//            if (intersection != null) {
+//    @Deprecated
+//    @Nullable
+//    static Task project(Task t, long start, long end, boolean ditherTruth, boolean negated, float eviMin, NAR n) {
+//        if (!negated && t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
+//            return t;
 //
-//                start = intersection[0];
-//                end = intersection[1];
+////        if (trimIfIntersects) {
+////            @Nullable long[] intersection = Longerval.intersectionArray(start, end, t.start(), t.end());
+////            if (intersection != null) {
+////
+////                start = intersection[0];
+////                end = intersection[1];
+////            }
+////
+//////            start = Tense.dither(start, n);
+//////            end = Tense.dither(end, n);
+////        }
+//
+//
+//        Truth tt;
+//        if (t.isBeliefOrGoal()) {
+//            tt = t.truth(start, end, n.dur());
+//            if (tt == null || tt.evi() < eviMin)
+//                return null;
+//
+//            if (ditherTruth) {
+//                Truth ttd = tt.dither(n);
+//                if (ttd == null || ttd.evi() < eviMin)
+//                    return null;
+//                tt = ttd;
 //            }
 //
-////            start = Tense.dither(start, n);
-////            end = Tense.dither(end, n);
+//            tt = tt.negIf(negated);
+//        } else {
+//            tt = null;
 //        }
-
-
-        Truth tt;
-        if (t.isBeliefOrGoal()) {
-            tt = t.truth(start, end, n.dur());
-            if (tt == null || tt.evi() < eviMin)
-                return null;
-
-            if (ditherTruth) {
-                Truth ttd = tt.dither(n);
-                if (ttd == null || ttd.evi() < eviMin)
-                    return null;
-                tt = ttd;
-            }
-
-            tt = tt.negIf(negated);
-        } else {
-            tt = null;
-        }
-
-        return new SpecialTruthAndOccurrenceTask(t, start, end, negated, tt);
-    }
+//
+//        return new SpecialTruthAndOccurrenceTask(t, start, end, negated, tt);
+//    }
 
 
     /**
@@ -672,7 +672,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * @param minEvi used to fast fail if the result will not exceed the value
      * @return value >= 0 indicating the evidence
      */
-    default float evi(long when, final int dur) {
+    default double evi(long when, final int dur) {
         return EvidenceEvaluator.the(this).evi(when, dur);
     }
 
@@ -858,7 +858,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
             return truth();
         else {
 
-            float eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
+            double eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
 
             if (eve > Param.TRUTH_EVI_MIN) {
                 return PreciseTruth.byEvi(

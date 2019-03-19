@@ -25,7 +25,7 @@ public interface BeliefTable extends TaskTable {
     BeliefTable Empty = new EmptyBeliefTable();
 
     static float eternalTaskValue(Task eternal) {
-        return eternal.evi();
+        return (float) eternal.evi();
     }
 
     static float eternalTaskValueWithOriginality(Task eternal) {

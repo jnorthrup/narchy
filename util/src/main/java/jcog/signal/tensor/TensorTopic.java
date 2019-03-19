@@ -4,8 +4,6 @@ import jcog.event.ListTopic;
 import jcog.signal.Tensor;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
-import java.util.function.Supplier;
-
 /** proxy to a (changeable) tensor referrent, and signaling topic */
 public class TensorTopic<T extends Tensor> extends ListTopic<T> implements Tensor {
 

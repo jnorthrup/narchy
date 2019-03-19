@@ -111,7 +111,7 @@ public class TruthletTask extends SignalTask {
     }
 
     @Override
-    public float evi() {
+    public double evi() {
         return truthlet.evi();
     }
 
@@ -121,7 +121,7 @@ public class TruthletTask extends SignalTask {
     }
 
     /** this is where truthlet would provide its custom EvidenceEvaluator */
-    @Override @Deprecated public float evi(long when, int dur) {
+    @Override @Deprecated public double evi(long when, int dur) {
         return truthlet.truth(when)[1];
     }
 

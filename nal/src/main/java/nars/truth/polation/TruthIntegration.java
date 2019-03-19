@@ -5,39 +5,38 @@ import jcog.WTF;
 import jcog.math.LongFloatTrapezoidalIntegrator;
 import jcog.math.Longerval;
 import nars.Task;
-import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
+
+import java.util.function.LongToDoubleFunction;
 
 import static nars.time.Tense.ETERNAL;
 
 public class TruthIntegration {
 
-    public static float eviAvg(Task t, int dur) {
+    public static double eviAvg(Task t, int dur) {
         return eviAvg(t, t.start(), t.end(), dur);
     }
 
-    public static float eviAvg(Task t, long start, long end, int dur) {
+    public static double eviAvg(Task t, long start, long end, int dur) {
         long range = start == ETERNAL ? 1 : 1 + (end - start);
         return evi(t, start, end, dur) / range;
     }
 
-    public static float evi(Task t) {
+    public static double evi(Task t) {
         return evi(t, 0);
     }
 
-    public static float evi(Task t, int dur) {
+    public static double evi(Task t, int dur) {
         return evi(t, t.start(), t.end(), dur);
     }
 
-//    public static float evi(Task t, long[] startEnd, int dur) {
-//        return evi(t, startEnd[0], startEnd[1], dur);
-//    }
+
 
     /**
      * convenience method for selecting evidence integration strategy
      * interval is: [qStart, qEnd], ie: qStart: inclusive qEnd: inclusive
      * if qStart==qEnd then it is a point sample
      */
-    public static float evi(Task t, long qStart, long qEnd, int dur) {
+    public static double evi(Task t, long qStart, long qEnd, int dur) {
 
         assert(qStart != ETERNAL && qStart <= qEnd);
 
@@ -53,7 +52,7 @@ public class TruthIntegration {
 
         long tEnd = t.end();
 
-        LongToFloatFunction ee = t.eviEvaluator().eviFn(dur);
+        LongToDoubleFunction ee = t.eviEvaluator().eviFn(dur);
         //TODO: ee.integrate(...)
 
         //possible optimization, needs tested:

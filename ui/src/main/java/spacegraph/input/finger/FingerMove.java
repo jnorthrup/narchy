@@ -1,7 +1,6 @@
 package spacegraph.input.finger;
 
 import jcog.math.v2;
-import jcog.tree.rtree.Spatialization;
 
 public abstract class FingerMove extends Dragging {
 
@@ -37,10 +36,6 @@ public abstract class FingerMove extends Dragging {
             current.set(pos);
             float tx = xSpeed != 0 ? (current.x - start.x) * xSpeed : 0;
             float ty = ySpeed != 0 ? (current.y - start.y) * ySpeed : 0;
-
-            float epsilon = Spatialization.EPSILONf;
-            if (Math.abs(tx) < epsilon && Math.abs(ty) < epsilon)
-                return false;
 
             move(tx, ty);
             return true;

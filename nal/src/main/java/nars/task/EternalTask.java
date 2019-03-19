@@ -35,7 +35,7 @@ public class EternalTask extends NALTask {
         return true;
     }
 
-    @Override public final float evi(long when, int dur) {
+    @Override public final double evi(long when, int dur) {
         return truth().evi();
     }
 

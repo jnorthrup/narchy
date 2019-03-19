@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import static java.lang.Float.NaN;
+
 import static nars.term.util.Intermpolate.dtDiff;
 import static nars.time.Tense.ETERNAL;
 
@@ -61,7 +61,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * computes the final truth value
      */
     @Nullable
-    public abstract Truth truth(float eviMin, boolean dither, boolean tCrop, NAR nar);
+    public abstract Truth truth(double eviMin, boolean dither, boolean tCrop, NAR nar);
 
     public final boolean add(TaskRegion t) {
         return add(t.task());
@@ -80,7 +80,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     @Nullable
     protected boolean update(TaskComponent tc, boolean force) {
-        float e = tc.evi;
+        double e = tc.evi;
         if (force || (e!=e)) {
             tc.evi = e = evi(tc.task);
         }
@@ -88,8 +88,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
 
-    protected float evi(Task task) {
-        float e;
+    protected double evi(Task task) {
+        double e;
         if (start == ETERNAL) {
             if (!task.isEternal())
                 throw new WTF("eternal truthpolation requires eternal tasks");
@@ -97,7 +97,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         } else {
             e = TruthIntegration.evi(task, start, end, dur);
         }
-        return e < Param.TRUTH_EVI_MIN ? Float.NaN : e;
+        return e < Param.TRUTH_EVI_MIN ? Double.NaN : e;
     }
 
 
@@ -238,7 +238,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     private void sortByEvidence() {
         if (size() > 1)
-            sortThisByFloat(tc -> (tc.evi==tc.evi) ? -tc.evi : Float.POSITIVE_INFINITY); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
+            sortThisByDouble(tc -> (tc.evi==tc.evi) ? -tc.evi : Double.POSITIVE_INFINITY); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
     }
 
 //    /**
@@ -361,15 +361,15 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                     TaskComponent B = get(tryB);
                     Term a = first;
                     Term b = B.task.term();
-                    final float e2Evi = B.evi;
+                    final double e2Evi = B.evi;
 
                     if ((Float.isFinite(dtDiff(a, b)))) {
 
-                        final float e1Evi = rootComponent.evi;
+                        final double e1Evi = rootComponent.evi;
 
                         //if there isnt more evidence for the primarily sought target, then just use those components
                         Term ab = Intermpolate.intermpolate(a,
-                                b, e1Evi / (e1Evi + e2Evi), nar);
+                                b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
 
                         if (Task.validTaskTerm(ab)) {
 
@@ -411,7 +411,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     @Nullable
     public final Truth truth() {
-        return truth(Float.MIN_NORMAL, false, false, null);
+        return truth(Param.TRUTH_EVI_MIN, false, false, null);
     }
 
 
@@ -518,7 +518,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         /**
          * NaN if not yet computed
          */
-        float evi = NaN;
+        double evi = Double.NaN;
 
         TaskComponent(Task task) {
             this.task = task;
@@ -539,7 +539,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         }
 
         public void invalidate() {
-            evi = Float.NaN;
+            evi = Double.NaN;
         }
     }
 

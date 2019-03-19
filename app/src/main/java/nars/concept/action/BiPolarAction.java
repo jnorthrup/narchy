@@ -286,9 +286,11 @@ public class BiPolarAction extends AbstractSensor {
             return input;
         }
 
-        /** confidence/evidence strength.  could be truth conf or evidence, zero if null. used in determining coherence */
+        /** confidence/evidence strength.  could be truth conf or evidence, zero if null. used in determining coherence
+         *  TODO return double
+         * */
         public float c(Truth t) {
-            return t != null ? t.evi() : 0;
+            return t != null ? (float) t.evi() : 0;
         }
 
         /** "Q" desire/value function. produces the scalar summary of the goal truth desire that will be

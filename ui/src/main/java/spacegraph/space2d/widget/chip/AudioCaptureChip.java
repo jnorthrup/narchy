@@ -23,11 +23,7 @@ public class AudioCaptureChip extends Bordering {
 
     }
 
-    @Override
-    protected void starting() {
-        super.starting();
-//        on = au.wave.on(this::update);
-    }
+
 
 //    private void update() {
 //        out.out(au.wave);

@@ -19,7 +19,8 @@ import static nars.truth.func.TruthFunctions.w2cSafe;
  */
 public final class PreciseTruth extends DiscreteTruth {
 
-    final float f, e;
+    final float f;
+    final double e;
 
 
     public static PreciseTruth byConf(float freq, float conf) {
@@ -30,12 +31,12 @@ public final class PreciseTruth extends DiscreteTruth {
         return byEvi((float)freq, (float)evi);
     }
 
-    public static PreciseTruth byEvi(float freq, float evi) {
-        return byFreqConfEvi(freq, w2cSafe(evi), evi);
+    public static PreciseTruth byEvi(float freq, double evi) {
+        return byFreqConfEvi(freq, (float) w2cSafe(evi), evi);
     }
 
     /** use with caution, if you are calculating a precise evi and a dithered conf, they should correspond */
-    protected static PreciseTruth byFreqConfEvi(float freq, float conf, float evi) {
+    protected static PreciseTruth byFreqConfEvi(float freq, float conf, double evi) {
 
         if (conf >= Param.TRUTH_CONF_MAX || evi>=Param.TRUTH_EVI_MAX) {
             //upper limit on truth
@@ -46,9 +47,9 @@ public final class PreciseTruth extends DiscreteTruth {
         return new PreciseTruth(freq, conf, evi);
     }
 
-    private PreciseTruth(float freq, float conf, float evi) {
+    private PreciseTruth(float freq, float conf, double evi) {
         super(freq, conf);
-        if (!Float.isFinite(evi))
+        if (!Double.isFinite(evi))
             throw new TruthException("non-finite evi", evi);
         this.e = evi;
         this.f = freq;
@@ -65,11 +66,11 @@ public final class PreciseTruth extends DiscreteTruth {
     }
 
     @Override
-    public final float evi() { return e; }
+    public final double evi() { return e; }
 
     @Override
     public final float conf() {
-        return w2cSafe(e);
+        return (float) w2cSafe(e);
     }
 
     /** create a DiscreteTruth instance, shedding the freq,evi floats stored here */

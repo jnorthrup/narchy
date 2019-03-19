@@ -35,7 +35,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import static nars.term.Terms.sorted;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**

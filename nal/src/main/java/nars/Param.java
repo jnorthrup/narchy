@@ -443,10 +443,10 @@ public abstract class Param {
     public static final float TRUTH_EPSILON = 0.01f;
     public static final float TRUTH_CONF_MAX = 1f - TRUTH_EPSILON;
     public static final float TRUTH_EVI_MAX = c2wSafe(Param.TRUTH_CONF_MAX);
-    public static final float TRUTH_EVI_MIN =
+    public static final double TRUTH_EVI_MIN =
                         //c2wSafe(TRUTH_EPSILON);
                         //ScalarValue.EPSILON;
-                        Float.MIN_NORMAL;
+                        Double.MIN_NORMAL;
 
 
     /**
@@ -510,15 +510,15 @@ public abstract class Param {
      *
      * TODO integrate with EvidenceEvaluator
      */
-    public static float evi(float evi, long dt, int dur) {
+    public static double evi(double evi, long dt, int dur) {
 
         //assert(dur > 0);
         assert(dur > 0 && dt > 0);
 
-        float e;
+        double e;
 
         //inverse linear decay
-        float falloffDurs =
+        double falloffDurs =
                 //0.5f;
                 //1;
                 //1.618f; //phi
@@ -531,7 +531,7 @@ public abstract class Param {
         double decayTime = falloffDurs * dur;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        e = (float)(evi / (1.0 + Util.sqr(dt / decayTime )));
+        e = (evi / (1.0 + Util.sqr(dt / decayTime )));
         //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral

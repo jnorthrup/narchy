@@ -98,7 +98,7 @@ public class DefaultDerivePri implements DerivePri {
 
     float factorEvi(Task t, Derivation d) {
 
-        float eParentTask, eParentBelief, eDerived;
+        double eParentTask, eParentBelief, eDerived;
         if (t.isEternal()) {
             eDerived = t.evi();
             assert(d.taskStart==ETERNAL);
@@ -131,20 +131,20 @@ public class DefaultDerivePri implements DerivePri {
                     eParentTask;
                     //0;
 
-        float eParent =
+        double eParent =
                 //Math.max(eParentTask, eParentBelief);
                 eParentTask + eParentBelief;
         if (eParent < eDerived)
 //            throw new WTF("spontaneous belief inflation"); //not actually
             return 1;
         else {
-            float cDerived = w2cSafe(eDerived);
-            float cParent = w2cSafe(eParent);
-            float lossFactor = 1 - ((cParent - cDerived) / cParent);
+            double cDerived = w2cSafe(eDerived);
+            double cParent = w2cSafe(eParent);
+            double lossFactor = 1 - ((cParent - cDerived) / cParent);
 
             //float lossFactor = 1 - ((eParent - eDerived) / eParent);
 
-            return Util.lerp(eviImportance.floatValue(), 1f, lossFactor);
+            return (float) Util.lerp(eviImportance.floatValue(), 1f, lossFactor);
         }
     }
 

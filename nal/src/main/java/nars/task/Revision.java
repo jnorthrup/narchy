@@ -25,10 +25,10 @@ public enum Revision {;
     /** fundamental eternal revision */
     @Nullable public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
 
-        float ae = a.evi();
-        float be = b.evi();
-        float w = ae + be;
-        float e = w * factor;
+        double ae = a.evi();
+        double be = b.evi();
+        double w = ae + be;
+        double e = w * factor;
 
         return e <= minEvi ?
                 null :
@@ -79,7 +79,7 @@ public enum Revision {;
 
         assert(p.size()>=2);
 
-        float eviMin =
+        double eviMin =
                 Param.REVISION_MIN_EVI_FILTER ? c2wSafe(nar.confMin.floatValue()) : Param.TRUTH_EVI_MIN;
                 //;
 

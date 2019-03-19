@@ -392,7 +392,7 @@ public class TrackXY_NAR extends NAgentX {
         int dur = n.dur();
         long now = n.time();
         List<Task> l = n.tasks(false, false, true, false)
-                .sorted(Comparators.byFloatFunction(tt -> -tt.evi(now, dur)))
+                .sorted(Comparators.byFloatFunction(tt -> (float) -tt.evi(now, dur)))
                 .collect(toList());
         l.forEach(System.out::println);
         System.out.println();
@@ -403,7 +403,7 @@ public class TrackXY_NAR extends NAgentX {
         long now = n.time();
         List<Task> l = n.tasks(true, false, false, false)
                 .filter(x -> x.op() == IMPL)
-                .sorted(Comparators.byFloatFunction(tt -> -tt.evi(now, dur)))
+                .sorted(Comparators.byFloatFunction(tt -> (float) -tt.evi(now, dur)))
                 .collect(toList());
         l.forEach(System.out::println);
         System.out.println();

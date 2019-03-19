@@ -135,7 +135,7 @@ public final class Answer {
 
     }
 
-    static final FloatFunction<TaskRegion> EviAbsolute = x -> (x instanceof Task ? TruthIntegration.evi((Task) x) : (x.confMax() * x.range()));
+    static final FloatFunction<TaskRegion> EviAbsolute = x -> x instanceof Task ? (float) TruthIntegration.evi((Task) x) : (x.confMax() * x.range());
 
     public static FloatFunction<TaskRegion> temporalDistanceFn(TimeRange target) {
         long targetStart = target.start;
@@ -277,7 +277,7 @@ public final class Answer {
         //* x.originality()
         ;
 
-        return (x, min) -> x.evi();
+        return (x, min) -> (float) x.evi();
 
     }
 
@@ -291,7 +291,7 @@ public final class Answer {
      * TODO use FloatRank min
      */
     public static FloatRank<Task> temporalTaskStrength(long start, long end, int dur) {
-        return (x, min) -> TruthIntegration.evi(x, start, end, dur)
+        return (x, min) -> (float) TruthIntegration.evi(x, start, end, dur)
                 //* x.originality()
                 ;
     }
@@ -346,7 +346,7 @@ public final class Answer {
             }
         }
 
-        float eviMin = eviMin();
+        double eviMin = eviMin();
         if (t.evi() < eviMin)
             return null;
 
@@ -377,8 +377,8 @@ public final class Answer {
         }
     }
 
-    public float eviMin() {
-        return ditherTruth ? c2wSafe(nar.confMin.floatValue()) : Float.MIN_NORMAL;
+    public double eviMin() {
+        return ditherTruth ? c2wSafe(nar.confMin.floatValue()) : Double.MIN_NORMAL;
     }
 
     /**

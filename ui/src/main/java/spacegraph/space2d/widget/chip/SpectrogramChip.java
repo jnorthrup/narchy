@@ -4,7 +4,6 @@ import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.port.TypedPort;
-import spacegraph.space2d.widget.port.Wire;
 
 public class SpectrogramChip extends TypedPort<float[]> {
 
