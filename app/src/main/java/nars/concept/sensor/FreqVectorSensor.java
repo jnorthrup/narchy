@@ -74,8 +74,8 @@ public class FreqVectorSensor extends VectorSensor {
             float c = Util.lerp((i + 0.5f)/n, fMin, fMax);
             float a = c - fRad;
             float b = c + fRad;
-            float f = Util.interpSum(freqValue, a, b)/(b-a);
-            componentValue[i] = f;
+            double f = Util.interpSum(freqValue, a, b)/(b-a);
+            componentValue[i] = (float) f;
         }
         Util.normalize(componentValue, 0, intensity = Util.max(componentValue));
 

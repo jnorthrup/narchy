@@ -1,7 +1,7 @@
 package nars.audio;
 
 import jcog.math.FloatRange;
-import jcog.signal.wave1d.SignalReading;
+import jcog.signal.wave1d.SignalInput;
 import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
@@ -14,13 +14,13 @@ import nars.term.Term;
  */
 public class WaveIn extends NARService {
 
-    final SignalReading in;
+    final SignalInput in;
 
     /** updates per time unit */
     private final FloatRange rate = new FloatRange(30, 0.5f, 120);
 
 
-    WaveIn(Term id, SignalReading in, float rate) {
+    WaveIn(Term id, SignalInput in, float rate) {
         super(id);
         this.in = in;
         this.rate.set(rate);

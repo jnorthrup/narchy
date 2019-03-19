@@ -32,6 +32,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.Timeli
         return this;
     }
 
+
     @Override
     public void setTime(double start, double end) {
         this.tStart = start; this.tEnd = end;

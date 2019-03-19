@@ -329,13 +329,13 @@ public class CircularFloatBuffer extends CircularBuffer {
      * interpolates fractional areas
      * from inclusive, to exclusive (next integer ceiling)
      */
-    public float sum(float sStart, float sEnd) {
+    public double sum(double sStart, double sEnd) {
         return Util.interpSum(data, sStart, sEnd, true);
     }
 
-    public float mean(float sStart, float sEnd) {
-        float sum = sum(sStart, sEnd);
-        return sum / (sEnd - sStart);
+    public double mean(double sStart, double sEnd) {
+        double sum = sum(sStart, sEnd);
+        return sum / (1+(sEnd - sStart));
     }
 
 

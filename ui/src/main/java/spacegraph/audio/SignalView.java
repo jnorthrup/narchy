@@ -1,39 +1,52 @@
 package spacegraph.audio;
 
-import jcog.math.FloatRange;
+import jcog.Util;
+import jcog.math.v2;
+import jcog.pri.ScalarValue;
 import jcog.signal.Tensor;
 import jcog.signal.wave1d.FreqDomain;
-import jcog.signal.wave1d.SignalReading;
-import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.grid.Gridding;
+import jcog.signal.wave1d.SignalInput;
+import spacegraph.input.finger.Dragging;
+import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.FingerMove;
+import spacegraph.input.finger.Fingering;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.meter.WaveView;
-import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.video.Draw;
 
-public class SignalView extends Bordering {
-    private final SignalReading audio;
+import static java.lang.Float.NaN;
 
-    public final FloatRange gain = new FloatRange(1, 0, 100);
+public class SignalView extends Timeline2D {
 
-    public SignalView(SignalReading a) {
-        super();
+    final static int SELECT_BUTTON = 0;
+    final static int PAN_BUTTON = 2;
+    final static float PAN_SPEED = 1 / 100f;
+
+    private final SignalInput audio;
+
+//    public final FloatRange gain = new FloatRange(1, 0, 100);
+    static final float selectorAlpha = 0.5f;
+
+
+    public SignalView(SignalInput a) {
+        super(0, 1);
         this.audio = a;
 
-
-        south(new Gridding(
-            new FloatSlider(gain, "Gain"),
-            PushButton.awesome("play", "Record Clip").clicking(()-> {
-                //window(new MetaFrame(new WaveView(a, 1f, 1024, 256)), 400, 400);
-            })
-        ));
-
-
-
-        Timeline2D t = new Timeline2D(0, 1);
-
+//
+//        south(new Gridding(
+////            new FloatSlider(gain, "Gain"),
+//            PushButton.awesome("play", "Record Clip").clicking(()-> {
+//                //window(new MetaFrame(new WaveView(a, 1f, 1024, 256)), 400, 400);
+//            })
+//        ));
+//
+//
+//
+//        t = new Timeline2D(0, 1) {
 
         FreqDomain freqDomain = new FreqDomain(
                 a,
@@ -48,31 +61,111 @@ public class SignalView extends Bordering {
                 return Draw.colorHSB(0.3f * (1 - v), 0.9f, v);
             });
         });
-        t.add(g);
+        add(g);
 
         WaveView w = new WaveView(a, 500, 250);
         audio.wave.on(raw->{
             w.updateLive();
         });
-        t.add(w);
+        add(w);
 
 
         Timeline2D.SimpleTimelineModel tl = new Timeline2D.SimpleTimelineModel();
-        t.addEvents(tl, (nv)->{
+        addEvents(tl, (nv)->{
             nv.set(new PushButton(nv.id.toString()));
         });
         audio.wave.on(raw->{
             if(Math.random() < 0.1f) {
                 tl.clear();
-                //Math.round(t.tEnd),Math.round(t.tEnd)
+                //Math.round(tEnd),Math.round(tEnd)
                 tl.add(new Timeline2D.SimpleEvent("event", 0, 1));
-                //t.setTime(-1, 2, true); //HACK force update
+                //setTime(-1, 2, true); //HACK force update
             }
         });
 
-        center(t.withControls());
+    }
+    final Fingering pan = new FingerMove(PAN_BUTTON) {
+        @Override
+        protected void move(float tx, float ty) {
+            timeShiftPct(tx * PAN_SPEED);
+        }
+
+        @Override
+        public v2 pos(Finger finger) {
+            return finger.posRelative(SignalView.this);
+        }
+    };
+
+    volatile private float selectStart = NaN, selectEnd = NaN;
 
 
+
+
+    final Fingering select = new Dragging(SELECT_BUTTON) {
+
+        float sample(float x) {
+            return (float) (start + (end - start) * (x / w()));
+        }
+
+        @Override
+        protected boolean startDrag(Finger f) {
+            selectStart = sample(f.posGlobal(SignalView.this).x);
+            return true;
+        }
+
+        @Override
+        protected boolean drag(Finger f) {
+            selectEnd = sample(f.posGlobal(SignalView.this).x);
+            return true;
+        }
+    };
+
+    @Override
+    public Surface finger(Finger finger) {
+        Surface x = super.finger(finger);
+        if (x!=null)
+            return x;
+
+        //TODO if ctrl pressed or something
+
+        if (finger.pressedNow(2)) {
+            float wheel;
+            if ((wheel = finger.rotationY(true)) != 0) {
+                timeScale(((1f + wheel * 0.1f)));
+                //pan(+1);
+                return this;
+            }
+        }
+
+        if (finger.tryFingering(pan)) {
+            return this;
+        }
+        if (finger.tryFingering(select)) {
+            return this;
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void compileAbove(SurfaceRender r) {
+        float sStart = selectStart;
+        if (sStart == sStart) {
+            float sEnd = selectEnd;
+            if (sEnd == sEnd) {
+                r.on((gl, rr) -> {
+                    float ss = Util.clamp(x(selectStart), left(), right());
+                    gl.glColor4f(1f, 0.8f, 0, selectorAlpha);
+                    float ee = Util.clamp(x(selectEnd), left(), right());
+                    if (ee - ss > ScalarValue.EPSILON) {
+                        Draw.rect(x() + ss, y(), ee - ss, h(), gl);
+                    }
+                });
+                //System.ouprintln("select: " + sStart + ".." + sEnd);
+            }
+        }
+
+        //super.compileAbove(r);
     }
 
 }
@@ -194,7 +287,7 @@ public class SignalView extends Bordering {
 //
 //
 //
-//                float max = Float.NEGATIVE_INFINITY, min = Float.POSITIVE_INFINITY;
+//                float max = FloaNEGATIVE_INFINITY, min = FloaPOSITIVE_INFINITY;
 //                for (int i = 0; i < freqSamplesPerFrame; i++) {
 //
 //                    float s = 0;
@@ -228,7 +321,7 @@ public class SignalView extends Bordering {
 //                //new Plot2D.BitmapWave(512, 256)
 //                Plot2D.Line
 //        );
-//        audioPlot.addAt(rawWave);
+//        audioPloaddAt(rawWave);
 
 //            Plot2D audioPlot2 = new Plot2D(bufferSamples,
 //                    new Plot2D.BitmapPlot(1024, 256)

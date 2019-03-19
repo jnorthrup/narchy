@@ -21,7 +21,10 @@ public class Timeline2D extends Stacking {
     /**
      * viewable range
      */
-    private double start, end, startNext, endNext;
+    public double start;
+    public double end;
+    private double startNext;
+    private double endNext;
 
     public <X> Timeline2D addEvents(TimelineModel<X> e, Consumer<Graph2D.NodeVis<X>> r) {
         add(new Timeline2DEvents<>(e, r));
@@ -45,8 +48,62 @@ public class Timeline2D extends Stacking {
         setLayerTime(x, start, end);
     }
 
+    /** TODO move to Timeline2D */
+    public void timeShiftPct(float pct) {
+        if (Util.equals(pct, 0))
+            return;
+
+
+        synchronized (this) {
+            double width = endNext - startNext;
+//        int N = buffer.capacity();
+//        if (width < N) {
+            double mid = ((startNext + endNext) / 2);
+            double nextMid = mid + (pct * width);
+
+            double first = nextMid - width / 2;
+            double last = nextMid + width / 2;
+//            if (first < 0) {
+//                first = 0;
+//                last = first + width;
+//            } else if (last > N) {
+//                last = N;
+//                first = last -width;
+//            }
+
+            setTime(first, last);
+        }
+//        }
+
+    }
+
+    /** TODO move to Timeline2D */
+    public void scale(float pct) {
+        if (Util.equals(pct, 1))
+            return;
+
+        synchronized (this) {
+            double first = this.startNext, last = this.endNext;
+            double width = last - first;
+            double mid = (last + first) / 2;
+            double viewNext = width * pct;
+
+            first = mid - viewNext / 2;
+            last = mid + viewNext / 2;
+            if (last > 1) {
+                last = 1;
+                first = last - viewNext;
+            }
+            if (first < 0) {
+                first = 0;
+                last = first + viewNext;
+            }
+
+            setTime(first, last);
+        }
+    }
     public Surface withControls() {
-        return new Splitting(new Clipped(this), controls(), 0.2f);
+        return new Splitting(new Clipped(this), controls(), 0.07f);
     }
 
     public Bordering controls() {
@@ -58,7 +115,7 @@ public class Timeline2D extends Stacking {
                 float v = this.get();
                 float d = (v - 0.5f) * 2;
                 if (Math.abs(d) > 0.05f)
-                    viewShift(d * (end - start) * 0.1);
+                    timeShift(d * (end - start) * 0.1);
 
                 set(Util.lerp(0.6f, v, 0.5f));
 
@@ -77,7 +134,7 @@ public class Timeline2D extends Stacking {
             @Override
             public boolean prePaint(SurfaceRender r) {
                 float v = this.get();
-                viewScale((v + 0.5f));
+                timeScale((v + 0.5f));
                 set(Util.lerp(0.75f, v, 0.5f));
                 return super.prePaint(r);
             }
@@ -87,18 +144,29 @@ public class Timeline2D extends Stacking {
                 return "";
             }
         }.type(SliderModel.KnobVert);
-        b.borderSize(Bordering.E, 0.5f).east(zoomSlider);
+        b.borderSize(Bordering.E, 0.25f).east(zoomSlider);
 
         return b;
     }
 
-    private Timeline2D viewShift(double dt) {
+    public float x(float sample) {
+        double f = start;
+        return (float) ((sample - f) / (end - f) * w());
+    }
+
+    public Timeline2D timeShift(double dt) {
+        if (Util.equals(dt, 0))
+            return this;
+
         synchronized (this) {
             return setTime(startNext + dt, endNext + dt);
         }
     }
 
-    private Timeline2D viewScale(double dPct) {
+    public Timeline2D timeScale(double dPct) {
+        if (Util.equals(dPct, 1))
+            return this;
+
         synchronized (this) {
             double range = (endNext - startNext) * dPct;
             double tCenter = (endNext + startNext) / 2;
@@ -112,7 +180,7 @@ public class Timeline2D extends Stacking {
      */
     public Timeline2D setTime(double when) {
         synchronized (this) {
-            double range = end - start;
+            double range = endNext - startNext;
             assert (range > 0);
             return setTime(when - range / 2, when + range / 2);
         }

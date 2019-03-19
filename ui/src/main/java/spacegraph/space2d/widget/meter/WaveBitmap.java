@@ -1,25 +1,28 @@
 package spacegraph.space2d.widget.meter;
 
-import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.FloatRange;
-import jcog.signal.buffer.CircularFloatBuffer;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.time.Timeline2D;
-import spacegraph.space2d.container.unit.MutableUnitContainer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import static jcog.Util.unitizeSafe;
 
-public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView.BitmapPainter, Timeline2D.TimelineRenderable {
+public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainter, Timeline2D.TimelineRenderable {
 
     public final FloatRange height = new FloatRange(0.75f, 0.01f, 1f);
     public final FloatRange alpha = new FloatRange(0.75f, 0.01f, 1f);
 
     private final int w, h;
-    private final CircularFloatBuffer buffer;
+
+    public interface BitmapEvaluator {
+        float amplitude(double start, double end);
+    }
+
+    private final BitmapEvaluator buffer;
 
 
     private final transient float yMin;
@@ -32,24 +35,23 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
     /**
      * visualization bounds
      */
-    public long start;
-    public long end;
+    public double start, end;
 
-    public WaveBitmap(int w, int h, CircularFloatBuffer buffer) {
+    public WaveBitmap(int w, int h, BitmapEvaluator buffer) {
         this.w = w;
         this.h = h;
         this.yMin = -1;
         this.yMax = +1;
         this.buffer = buffer;
         this.start = 0;
-        this.end = buffer.capacity();
+        this.end = 1;
         update();
     }
     @Override
     public void setTime(double tStart, double tEnd) {
-        long start = Math.round(tStart);
-        long end = Math.round(tEnd);
-        if (start!=this.start || end!=this.end) {
+        double start = (tStart);
+        double end = (tEnd);
+        if (!Util.equals(start, this.start) || !Util.equals(end, this.end)) {
             this.start = start; this.end = end;
             update = true;
         }
@@ -68,12 +70,6 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
         super.stopping();
     }
 
-
-    @Override
-    protected void paintIt(GL2 g, SurfaceRender r) {
-
-    }
-
     @Override
     protected void compile(SurfaceRender r) {
         if (bmp == null) {
@@ -83,8 +79,7 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
                     return true;
                 }
             };
-            position(bmp);
-            set(bmp);
+            bmp.start(this);
         }
 
         if (update) {
@@ -92,7 +87,7 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
         }
 
         position(bmp);
-        super.compile(r);
+        bmp.recompile(r);
     }
 
     private void position(BitmapMatrixView bmp) {
@@ -106,16 +101,14 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
         update = true;
     }
 
-    public void updateLive() {
-        updateLive(Integer.MAX_VALUE);
-    }
+//    @Deprecated public void updateLive() {
+//        updateLive(Integer.MAX_VALUE);
+//    }
 
-    public void updateLive(int lastSamples) {
-        lastSamples = Math.min(buffer.capacity()-1, lastSamples);
-        this.end = buffer.bufEnd;
-        this.start = (this.end - lastSamples);
-        update = true;
-    }
+//    @Deprecated public void updateLive(int lastSamples) {
+//        lastSamples = Math.min(buffer.capacity()-1, lastSamples);
+//        setTime((this.end - lastSamples), buffer.bufEnd);
+//    }
 
     private static final Color transparent = new Color(0, 0, 0, 0);
 
@@ -155,24 +148,24 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
 //        this.end = buffer._bufEnd;
 //        System.out.println(start + ".." + end);
 
-        long start = this.start, end = this.end;
+        double start = this.start, end = this.end;
 
 
 //        int sn = buffer.capacity();
 
         //System.out.println(first + " "+ last);
 
-        long range = end - start;
+        double range = end - start;
         float W = w;
 
 //        float[] rgba = new float[4];
 //        float alpha = this.alpha.get();
         for (int x = 0; x < w; x++) {
 
-            float sStart = start + range * (x/ W);
-            float sEnd = start + range * ((x+1)/ W);
+            double sStart = start + range * (x/ W);
+            double sEnd = start + range * ((x+1)/ W);
 
-            float amp = buffer.mean(sStart, sEnd);
+            float amp = buffer.amplitude(sStart,sEnd);
 
             float intensity = unitizeSafe(Math.abs(amp) / absRange);
 
@@ -198,51 +191,5 @@ public class WaveBitmap extends MutableUnitContainer implements BitmapMatrixView
 //        return ((float) x) / w * (last - first) + first;
 //    }
 
-    public void pan(float pct) {
-        long width = end - start;
-        int N = buffer.capacity();
-        if (width < N) {
-            long mid = ((start + end)/2L);
-            long nextMid = Math.round(mid + (pct * width));
-
-            long first = nextMid - width/2;
-            long last = nextMid + width/2;
-            if (first < 0) {
-                first = 0;
-                last = first + width;
-            } else if (last > N) {
-                last = N;
-                first = last -width;
-            }
-
-            this.start = first;
-            this.end = last;
-            update();
-        }
-
-    }
-
-    public void scale(float pct) {
-
-        long first = this.start, last = this.end;
-        long width = last - first;
-        long mid = (last + first) / 2;
-        long viewNext = Util.clamp(Math.round(width * pct), 2, buffer.capacity());
-
-        first = mid - viewNext / 2;
-        last = mid + viewNext / 2;
-        if (last > 1) {
-            last = 1;
-            first = last - viewNext;
-        }
-        if (first < 0) {
-            first = 0;
-            last = first + viewNext;
-        }
-
-        this.start = first;
-        this.end = last;
-        update();
-    }
 
 }

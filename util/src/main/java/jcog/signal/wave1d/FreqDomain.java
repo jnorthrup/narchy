@@ -13,11 +13,11 @@ public class FreqDomain {
     @Deprecated
     public final RingTensor freq;
     final SlidingDFTTensor dft;
-    private final SignalReading in;
+    private final SignalInput in;
 
     private ArrayTensor next;
 
-    public FreqDomain(SignalReading in, int fftSize, int history) {
+    public FreqDomain(SignalInput in, int fftSize, int history) {
         this.in = in;
         dft = new SlidingDFTTensor( fftSize, true);
         freq = new RingTensor(dft.volume(), history);

@@ -2671,15 +2671,20 @@ public enum Util {
         return p != null ? Integer.parseInt(p) : defaultValue;
     }
 
-    public static float interpSum(float[] data, float sStart, float sEnd) {
+    public static double interpSum(float[] data, double sStart, double sEnd) {
         return interpSum(data, sStart, sEnd, false);
     }
 
-    public static float interpSum(float[] data, float sStart, float sEnd, boolean wrap) {
+    public static double interpSum(float[] data, double sStart, double sEnd, boolean wrap) {
         int iStart = (int) Math.ceil(sStart);
         int iEnd = (int) Math.floor(sEnd);
+        if (iEnd < 0 || iStart >= data.length)
+            return 0;
 
-        float sum = 0;
+        if (iEnd == iStart)
+            return data[iStart];
+
+        double sum = 0;
         int i = iStart - 1;
 
         if (i < 0) {

@@ -11,12 +11,11 @@ import jcog.signal.tensor.TensorTopic;
  * TODO enable/disable switch
  * TODO correct ringbuffer w/ notify of buffer change interval https://github.com/waynetam/CircularBuffer
  */
-public class SignalReading extends Loop {
+public class SignalInput extends Loop {
 
     public final int sampleRate;
-    /** procedure responsible for filling the next buffer */
-    @Deprecated
-    public SignalReader source;
+
+    public DigitizedSignal source;
 
     /** TODO make private */
     public final float[] data;
@@ -29,28 +28,19 @@ public class SignalReading extends Loop {
     //TODO FloatRange bufferTime;
 
 
-    /** 1D signal stream reader.  like an Iterator for continuous signal streams */
-    public interface SignalReader {
+    //    /** uses CircularFloatBuffer internally to buffer internal calls (ex: to line.read())
+//     *  TODO */
+//    abstract public static class BufferedSignalReader {
+//
+//        /** In multiples of buffer time */
+//        //public FloatRange chunkTimeMax = new FloatRange(0.5f, 0, 1);
+//    }
 
-        /** analogous to: line.read(...) */
-        int next(float[] x, int toPos, int max);
-
-        boolean hasNext(int atleast);
-    }
-
-    /** uses CircularFloatBuffer internally to buffer internal calls (ex: to line.read())
-     *  TODO */
-    abstract public static class BufferedSignalReader {
-
-        /** In multiples of buffer time */
-        //public FloatRange chunkTimeMax = new FloatRange(0.5f, 0, 1);
-    }
-
-    public SignalReading(SignalReader src, int sampleRate, float bufferSeconds) {
+    public SignalInput(DigitizedSignal src, int sampleRate, float bufferSeconds) {
         this(src, sampleRate, Math.round(bufferSeconds * sampleRate));
     }
 
-    private SignalReading(SignalReader src, int sampleRate, int bufferSamples) {
+    private SignalInput(DigitizedSignal src, int sampleRate, int bufferSamples) {
         this.source = src;
         this.sampleRate = sampleRate;
         data = new float[bufferSamples];
@@ -60,9 +50,9 @@ public class SignalReading extends Loop {
 
     @Override
     public boolean next() {
-
         boolean hasListeners = !wave.isEmpty();
         if (hasListeners) {
+            DigitizedSignal source = this.source;
             while (source.hasNext(data.length - dataPtr)) {
 
                 int read = source.next(data, dataPtr, data.length - dataPtr);

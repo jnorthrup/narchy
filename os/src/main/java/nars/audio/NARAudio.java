@@ -1,7 +1,7 @@
 package nars.audio;
 
 import jcog.signal.buffer.CircularFloatBuffer;
-import jcog.signal.wave1d.SignalReading;
+import jcog.signal.wave1d.SignalInput;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
@@ -23,11 +23,8 @@ public class NARAudio extends WaveIn {
 
     private final FreqVectorSensor hear;
 
-    public NARAudio(NAR nar, AudioSource src, float fps) {
-        super($.quote(src.name()),
-                new SignalReading(src, src.sampleRate,
-                1f/fps /* + tolerance? */
-        ), fps);
+    public NARAudio(NAR nar, SignalInput src, float fps) {
+        super($.quote(src.toString()/*HACK*/), src, fps);
 
         NAgent h = new NAgent("hear", nar);
 
@@ -43,10 +40,9 @@ public class NARAudio extends WaveIn {
         h.addSensor(hear);
 
         //addSensor(hear);
-        WaveView hearView = new WaveView(hear.buf, 300, 64);
+        WaveView hearView = new WaveView(hearBuf, 300, 64);
         h.onFrame(()->{
             hearView.updateLive();
-            hearBuf.rewind();
         });
 
         window(grid(new VectorSensorView(hear, nar).withControls(),
@@ -63,10 +59,10 @@ public class NARAudio extends WaveIn {
         NAR n = NARS.shell();
 
         AudioSource audio = new AudioSource().start();
+        SignalInput audioIn = new SignalInput(audio, audio.sampleRate, 1f / 30f/* + tolerance? */);
+        NARAudio na = new NARAudio(n, audioIn, 30f);
 
-        NARAudio na = new NARAudio(n, audio, 30f);
-
-        window(new SignalView(na.in), 800, 800);
+        window(new SignalView(na.in).withControls(), 800, 800);
 
         n.startFPS(5f);
 

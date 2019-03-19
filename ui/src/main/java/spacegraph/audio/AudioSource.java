@@ -1,7 +1,7 @@
 package spacegraph.audio;
 
 import jcog.math.IntRange;
-import jcog.signal.wave1d.SignalReading;
+import jcog.signal.wave1d.DigitizedSignal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Signal sampled from system sound devices (via Java Media)
  */
-public class AudioSource implements SignalReading.SignalReader {
+public class AudioSource implements DigitizedSignal {
 
     /** buffer time in milliseconds */
     public final IntRange bufferSize;
@@ -116,7 +116,7 @@ public class AudioSource implements SignalReading.SignalReader {
     }
 
     @Override
-    public int next(float[] x, int toPos, int capacitySamples) {
+    public int next(float[] target, int targetIndex, int capacitySamples) {
 
         if (!busy.compareAndSet(false, true))
             return 0;
@@ -178,7 +178,7 @@ public class AudioSource implements SignalReading.SignalReader {
                     short s = preShortBuffer[i++];
 //                    if (s < min) min = s;
 //                    if (s > max) max = s;
-                    x[j++] = (float) (s * gain); //compute in double for exra precision
+                    target[j++] = (float) (s * gain); //compute in double for exra precision
                 }
 
                 return nSamplesRead;
