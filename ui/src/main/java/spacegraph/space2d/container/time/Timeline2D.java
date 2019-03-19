@@ -27,7 +27,7 @@ public class Timeline2D extends Stacking {
      * viewable range
      */
     protected double tStart = 0;
-    protected double tEnd = 1;
+    public double tEnd = 1;
 
     public <X> Timeline2D addEvents(TimelineModel<X> e, Consumer<Graph2D.NodeVis<X>> r) {
         add(new Timeline2D.Timeline2DEvents<>(e, r));

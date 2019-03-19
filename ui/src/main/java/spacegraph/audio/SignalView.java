@@ -37,24 +37,40 @@ public class SignalView extends Bordering {
 
         FreqDomain freqDomain = new FreqDomain(
                 a,
-                2048, 256);
+                1024, 256);
 
 
         Spectrogram g = new Spectrogram(true, 256, 2048);
-        WaveView w = new WaveView(a, 500, 250);
-        audio.wave.on(raw->{
+        audio.wave.on(raw-> {
             Tensor fft = freqDomain.next(raw);
             g.next(i -> {
                 float v = fft.getAt(i);
-                return Draw.colorHSB(0.3f * (1-v),0.9f,v);
+                return Draw.colorHSB(0.3f * (1 - v), 0.9f, v);
             });
+        });
+        t.add(g);
 
+        WaveView w = new WaveView(a, 500, 250);
+        audio.wave.on(raw->{
             w.updateLive();
         });
-
-        t.add(g);
         t.add(w);
-        center(t);
+
+
+        Timeline2D.SimpleTimelineModel tl = new Timeline2D.SimpleTimelineModel();
+        t.addEvents(tl, (nv)->{
+            nv.set(new PushButton(nv.id.toString()));
+        });
+        audio.wave.on(raw->{
+            if(Math.random() < 0.1f) {
+                tl.clear();
+                //Math.round(t.tEnd),Math.round(t.tEnd)
+                tl.add(new Timeline2D.SimpleEvent("event", 0, 1));
+                t.setTime(-1, 2, true); //HACK force update
+            }
+        });
+
+        center(t.withControls());
 
 
     }
