@@ -753,7 +753,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     @Override
-    public final void clear() {
+    public void clear() {
         clearIfChanged();
     }
 

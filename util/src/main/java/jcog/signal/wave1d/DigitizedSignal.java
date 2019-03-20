@@ -7,4 +7,7 @@ public interface DigitizedSignal {
     int next(float[] target, int targetIndex, int samplesAtMost);
 
     boolean hasNext(int samplesAtLeast);
+
+    /** samples per unit time (ex: second = hz) */
+    int sampleRate();
 }

@@ -210,7 +210,7 @@ public interface Truth extends Truthed {
 
     }
 
-    static float w2cDithered(float evi, float confRes) {
+    static float w2cDithered(double evi, float confRes) {
         return confSafe(w2cSafe(evi), confRes);
     }
 
@@ -303,8 +303,8 @@ public interface Truth extends Truthed {
 
         float f = freq();
         float ff = freq(negate ? 1-f : f, freqRes);
-        double c0 = w2cSafe(e);
-        float cc = conf((float) c0, confRes);
+        float c0 = w2cSafe(e);
+        float cc = conf(c0, confRes);
         if (Util.equals(f,ff) && Util.equals(c0,cc))
             return this;
         else

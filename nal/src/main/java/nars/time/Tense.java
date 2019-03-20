@@ -115,7 +115,7 @@ public enum Tense {
 
         if (relative && Param.DT_DITHER_LOGARITHMICALLY && t > dither*dither) {
             //logarithmic dithering
-            long r = (long) Util.round(Math.pow(dither, Util.round(Math.log( t )/Math.log((double)dither), 1f/dither)), dither);
+            long r = (long) Util.round(Math.pow(dither, Util.round(Math.log( t )/Math.log(dither), 1f/dither)), dither);
             return r;
         } else return Util.round(t, dither);
     }

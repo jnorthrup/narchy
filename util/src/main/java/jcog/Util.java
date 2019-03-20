@@ -2672,39 +2672,39 @@ public enum Util {
     }
 
     public static double interpSum(float[] data, double sStart, double sEnd) {
-        return interpSum(data, sStart, sEnd, false);
+        return interpSum((i)->data[i], data.length, sStart, sEnd, false);
     }
 
-    public static double interpSum(float[] data, double sStart, double sEnd, boolean wrap) {
+    public static double interpSum(IntToFloatFunction data, int capacity, double sStart, double sEnd, boolean wrap) {
         int iStart = (int) Math.ceil(sStart);
         int iEnd = (int) Math.floor(sEnd);
-        if (iEnd < 0 || iStart >= data.length)
+        if (iEnd < 0 || iStart >= capacity)
             return 0;
 
         if (iEnd == iStart)
-            return data[iStart];
+            return data.valueOf(iStart);
 
         double sum = 0;
         int i = iStart - 1;
 
         if (i < 0) {
             if (wrap)
-                while (i < 0) i += data.length;
+                while (i < 0) i += capacity;
             else
                 i = 0;
-        } else if (i >= data.length) {
+        } else if (i >= capacity) {
             i = 0; //wrap?
         }
 
-        sum += iStart > 0 ? (iStart - sStart) * data[i++] : 0;
+        sum += iStart > 0 ? (iStart - sStart) * data.valueOf(i++) : 0;
 
         for (int k = iStart; k < iEnd; k++) {
-            if (i == data.length) i = 0;
-            sum += data[i++];
+            if (i == capacity) i = 0;
+            sum += data.valueOf(i++);
         }
 
-        if (i == data.length) i = 0;
-        sum += (sEnd - iEnd) * data[i];
+        if (i == capacity) i = 0;
+        sum += (sEnd - iEnd) * data.valueOf(i);
         return sum;
     }
 

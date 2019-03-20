@@ -63,16 +63,16 @@ public class NAL1GoalTest extends NALTest {
         test
                 .goal("--(nars --> stupid)")
                 .believe("(human --> stupid)")
-                .mustGoal(cycles, "(nars --> human)", 0f, 0.4f)
-                .mustGoal(cycles, "(human --> nars)", 0f, 0.4f);
+                .mustGoal(cycles, "(nars --> human)", 0f, 0.45f)
+                .mustGoal(cycles, "(human --> nars)", 0f, 0.45f);
     }
     @Test
     void inductionNegativeGoalPositiveBelief()  {
         test
                 .goal("--(human --> stupid)")
                 .believe("(nars --> stupid)")
-                .mustGoal(cycles, "(nars --> human)", 0f, 0.4f)
-                .mustGoal(cycles, "(human --> nars)", 0f, 0.4f);
+                .mustGoal(cycles, "(nars --> human)", 0f, 0.45f)
+                .mustGoal(cycles, "(human --> nars)", 0f, 0.45f);
     }
 
     @Test

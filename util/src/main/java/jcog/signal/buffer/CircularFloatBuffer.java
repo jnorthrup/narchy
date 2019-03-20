@@ -50,7 +50,7 @@ public class CircularFloatBuffer extends CircularBuffer {
     }
 
     @Override
-    protected void setCapacityInternal(int capacity) {
+    protected void reallocate(int capacity) {
         if (data == null || data.length != capacity)
             data = new float[capacity];
     }
@@ -77,7 +77,7 @@ public class CircularFloatBuffer extends CircularBuffer {
         try {
 
             int capacity = this.data.length;
-            int available = capacity - writeAt.get();
+            int available = available();
             while (blocking && available < length) {
                 try {
                     writCond.await();
@@ -137,7 +137,7 @@ public class CircularFloatBuffer extends CircularBuffer {
     }
 
     public float peek(long sample) {
-        return data[Math.toIntExact(sample % data.length)];
+        return peek(Math.toIntExact(sample % data.length));
     }
 
     public float peek(int sample) {
@@ -159,14 +159,13 @@ public class CircularFloatBuffer extends CircularBuffer {
         return sample % data.length;
     }
 
-    public int skip(int len) {
+    public void skip(int len) {
         lock.lock();
         try {
-            int s = writeAt.get();
-            len = Math.min(s, len);
-            bufStart += len;
-            writeAt.addAndGet(-len);
-            return s;
+//            int s = writeAt.get();
+//            len = Math.min(s, len);
+            bufStart-= len;
+            readAt.addAndGet(len);
         } finally {
             lock.unlock();
         }
@@ -330,7 +329,7 @@ public class CircularFloatBuffer extends CircularBuffer {
      * from inclusive, to exclusive (next integer ceiling)
      */
     public double sum(double sStart, double sEnd) {
-        return Util.interpSum(data, sStart, sEnd, true);
+        return Util.interpSum((i)->data[i], capacity(), sStart, sEnd, true);
     }
 
     public double mean(double sStart, double sEnd) {
@@ -339,8 +338,5 @@ public class CircularFloatBuffer extends CircularBuffer {
     }
 
 
-    public int available() {
-        int capacity = this.data.length;
-        return capacity - writeAt.get();
-    }
+
 }

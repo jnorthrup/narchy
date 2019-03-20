@@ -127,7 +127,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         builder.on(Runnable.class, (x, relation) -> new PushButton(objLabel(x, relation), x));
         builder.on(AtomicBoolean.class, (x, relation) -> new MyAtomicBooleanCheckBox(objLabel(x, relation), x));
 
-        builder.on(MutableEnum.class, (x, relation) -> EnumSwitch.newSwitch(x, relationLabel(relation)));
+        builder.on(MutableEnum.class, (x, relation) -> EnumSwitch.the(x, relationLabel(relation)));
 
         builder.on(String.class, (x, relation) -> new VectorLabel(x)); //TODO support multi-line word wrap etc
 

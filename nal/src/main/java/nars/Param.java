@@ -16,6 +16,7 @@ import nars.truth.polation.TruthProjection;
 import static java.lang.Float.NaN;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * NAR Parameters
@@ -240,7 +241,7 @@ public abstract class Param {
 
     /** whether timegraph should not return solutions with volume significantly less than the input's.
      *  set 0 to disable the filter */
-    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.25f;
+    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.05f;
 
     /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
     public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
@@ -294,10 +295,10 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
-    public static final int TTL_CONJ_BEFORE_AFTER = 3; //HACK this is a TTL supply, not a COST
+    public static final int TTL_CONJ_BEFORE_AFTER = 6; //HACK this is a TTL supply, not a COST
 
 
     /**
@@ -459,7 +460,7 @@ public abstract class Param {
     /**
      * truth confidence threshold necessary to form tasks
      */
-    public final FloatRange confMin = new FloatRange(TRUTH_EPSILON, TRUTH_EPSILON, TRUTH_CONF_MAX);
+    public final FloatRange confMin = new FloatRange(TRUTH_EPSILON, w2cSafe(TRUTH_EVI_MIN), TRUTH_CONF_MAX);
 
     /**
      * global truth frequency resolution by which reasoning is dithered
@@ -522,8 +523,8 @@ public abstract class Param {
                 //0.5f;
                 //1;
                 //1.618f; //phi
-                2; //nyquist
-                //4;
+                //2; //nyquist
+                4;
                 //dur;
                 //8;
                 //64;

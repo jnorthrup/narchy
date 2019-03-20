@@ -79,12 +79,12 @@ public enum Image {;
             if (xo == NEG) {
                 Term u = x.unneg();
                 if (u instanceof Compound && u.op() == INH) {
-                    Term y = normalize((Compound)u);
+                    Term y = _imgNormalize((Compound)u).normalize();
                     if (!y.equals(u))
                         return y.neg();
                 }
             } else if (xo == INH) {
-                return normalize((Compound) x);
+                return _imgNormalize((Compound) x).normalize();
             }
         }
 
@@ -92,7 +92,7 @@ public enum Image {;
     }
 
 
-    public static Term normalize(Compound x) {
+    public static Term _imgNormalize(Compound x) {
         return normalize(x, true);
     }
 

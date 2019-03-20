@@ -41,7 +41,7 @@ public final class CompoundNormalization extends VariableNormalization {
         /* if x is not the root target (ie. a subterm) */
         boolean hasImg = x.hasAll(Image.ImageBits);
         if (hasImg && x!=root && x.op()==INH) {
-            Term y = Image.normalize(x);
+            Term y = Image._imgNormalize(x);
             if (x!=y) {
 //                if (!(y instanceof Compound))
 //                    return Null; //wtf

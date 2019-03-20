@@ -9,7 +9,7 @@ import nars.agent.NAgent;
 import nars.concept.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorView;
 import spacegraph.audio.AudioSource;
-import spacegraph.audio.SignalView;
+import spacegraph.space2d.container.time.SignalView;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.WaveView;
 
@@ -58,14 +58,19 @@ public class NARAudio extends WaveIn {
 
         NAR n = NARS.shell();
 
-        AudioSource audio = new AudioSource().start();
-        SignalInput audioIn = new SignalInput(audio, audio.sampleRate, 1f / 30f/* + tolerance? */);
-        NARAudio na = new NARAudio(n, audioIn, 30f);
+        AudioSource audio = new AudioSource();
+        SignalInput i = new SignalInput();
+        i.set(audio, 1/30f);
 
-        window(new SignalView(na.in).withControls(), 800, 800);
+        audio.start();
 
-        n.startFPS(5f);
+        NARAudio na = new NARAudio(n, i, 30f);
+
+        window(new SignalView(i).withControls(), 800, 800);
+
+        n.startFPS(15f);
 
     }
+
 
 }

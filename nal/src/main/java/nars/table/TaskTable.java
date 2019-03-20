@@ -31,15 +31,15 @@ public interface TaskTable {
      * number of items in this collection
      * warning: size()==0 does not necessarily mean that isEmpty(), although this is true for the default implementation
      */
-    int size();
+    int taskCount();
 
     default boolean isEmpty() {
-        return size() == 0;
+        return taskCount() == 0;
     }
 
 
     default void forEachTask(Consumer<? super Task> x) {
-        streamTasks().forEach(x);
+        taskStream().forEach(x);
     }
 
     /**
@@ -69,10 +69,10 @@ public interface TaskTable {
     void clear();
 
     /** in dynamic implementations, this will be an empty stream */
-    Stream<? extends Task> streamTasks();
+    Stream<? extends Task> taskStream();
 
-    default Task[] toArray() {
-        return streamTasks().toArray(Task[]::new);
+    default Task[] taskArray() {
+        return taskStream().toArray(Task[]::new);
     }
 
     void match(Answer m);

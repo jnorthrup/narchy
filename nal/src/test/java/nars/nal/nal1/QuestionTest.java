@@ -15,6 +15,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 
+import static nars.$.$$$;
+import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -233,7 +235,14 @@ class QuestionTest {
     }
     @Test
     void testDepVarInIndepImpl3() {
-        new TestNAR(NARS.tmp())
+        assertTrue(!$$$("f(#2,#1)").isNormalized());
+        assertEq("f(#1,#2)", $$$("f(#2,#1)").normalize());
+        NAR n = NARS.tmp();
+//        n.onTask(t->{
+//            if (t.term().toString().equals("f(#2,#1)"))
+//                throw new WTF();
+//        });
+        new TestNAR(n)
                 .input("f(#x,#y).")
                 .input("(f($x,#y) ==> g($x,#y)).")
                 .mustBelieve(64, "g(#1,#2)", 1f, 0.81f)

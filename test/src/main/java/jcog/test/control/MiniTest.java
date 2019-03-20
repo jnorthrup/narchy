@@ -24,7 +24,7 @@ abstract public class MiniTest extends NAgent {
             float yy = myReward();
 
             rewardSum += yy;
-            dex.addValue(dexterity());
+            dex.addValue(dexteritySum());
 
             return yy;
         });

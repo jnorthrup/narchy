@@ -35,16 +35,16 @@ class SensorBeliefTablesTest {
 
         step(n, xb);
         step(n, xb);
-        assertEquals(1, xb.size());
+        assertEquals(1, xb.taskCount());
 
         xx.set(0.5f);
         step(n, xb);
         step(n, xb);
 
-        assertEquals(2, xb.size());
+        assertEquals(2, xb.taskCount());
 
         {
-            List<Task> tt = xb.streamTasks().collect(toList());
+            List<Task> tt = xb.taskStream().collect(toList());
             assertEquals(2, tt.size());
             assertEquals(3, tt.get(0).range());
             assertEquals(3, tt.get(1).range());
@@ -57,7 +57,7 @@ class SensorBeliefTablesTest {
         xx.set(0.75f);
         step(n, xb);
         {
-            List<Task> tt = xb.streamTasks().collect(toList());
+            List<Task> tt = xb.taskStream().collect(toList());
             assertEquals(3, tt.size());
         }
 

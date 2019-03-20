@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 import static nars.Op.*;
 
-public class TasksView implements Timeline2D.TimelineModel<Task> {
+public class TasksView implements Timeline2D.TimelineEvents<Task> {
 
     private static final Consumer<Graph2D.NodeVis<Task>> TaskRenderer = (n) -> {
         n.set(new Scale(new TaskIcon(n.id), 0.9f));

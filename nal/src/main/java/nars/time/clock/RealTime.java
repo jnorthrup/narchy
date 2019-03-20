@@ -108,10 +108,8 @@ public abstract class RealTime extends Time {
     }
 
     public Time durSeconds(double seconds) {
-        return dur(Math.max(1, (int) Math.ceil(secondsToUnits(seconds))));
+        return dur(Math.max(1, (int) Math.round(secondsToUnits(seconds))));
     }
-
-
 
     @Override
     public int dur() {

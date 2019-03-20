@@ -91,10 +91,10 @@ public final class ConceptAllocator implements Consumer<Concept> {
     private void apply(TaskConcept c) {
         BeliefTable cb = c.beliefs();
         if (cb instanceof BeliefTables)
-            ((BeliefTables)cb).tables.forEach(t -> setTaskCapacity(c, t, true));
+            ((BeliefTables)cb).forEach(t -> setTaskCapacity(c, t, true));
         BeliefTable cg = c.goals();
         if (cg instanceof BeliefTables)
-            ((BeliefTables)cg).tables.forEach(t -> setTaskCapacity(c, t, false));
+            ((BeliefTables)cg).forEach(t -> setTaskCapacity(c, t, false));
         c.questions().setTaskCapacity(questionCap(c, true));
         c.quests().setTaskCapacity(questionCap(c, false));
     }

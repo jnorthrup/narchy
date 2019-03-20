@@ -57,7 +57,7 @@ public class TruthWave {
     }
 
     public TruthWave(@NotNull BeliefTable b) {
-        this(b.size());
+        this(b.taskCount());
         set(b, Long.MIN_VALUE, Long.MAX_VALUE);
         //TODO update range
     }
@@ -68,7 +68,7 @@ public class TruthWave {
     public void set(BeliefTable b, long minT, long maxT) {
         clear();
         this.start = minT; this.end = maxT;
-        int s = b.size();
+        int s = b.taskCount();
         if (s == 0) {
             return;
         }

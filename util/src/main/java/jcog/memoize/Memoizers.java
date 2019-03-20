@@ -26,7 +26,7 @@ public class Memoizers {
     public static final int DEFAULT_MEMOIZE_CAPACITY;
     static {
         //1gb -> 64k
-        DEFAULT_MEMOIZE_CAPACITY = (int) (Runtime.getRuntime().maxMemory()/(12*1024));
+        DEFAULT_MEMOIZE_CAPACITY = (int) (Runtime.getRuntime().maxMemory()/(11*1024));
     }
 
     /** static instance */

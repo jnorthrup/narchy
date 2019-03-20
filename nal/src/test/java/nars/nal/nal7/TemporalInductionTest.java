@@ -105,7 +105,7 @@ class TemporalInductionTest {
 
         BeliefTable b = c.beliefs();
         b.print();
-        assertTrue(3 <= b.size());
+        assertTrue(3 <= b.taskCount());
 
 
         Task x = n.belief(c.term(), 5);

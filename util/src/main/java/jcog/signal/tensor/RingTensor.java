@@ -4,6 +4,7 @@ import jcog.data.atomic.AtomicCycle;
 import jcog.signal.Tensor;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
+import org.jetbrains.annotations.Nullable;
 
 /** TODO delegate not inherit */
 public class RingTensor extends AbstractShapedTensor implements WritableTensor {
@@ -48,16 +49,20 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
 
     @Override
     public void forEach(IntFloatProcedure each, int start, int end) {
-        assert(start == 0);
-        assert(end==volume());
-
-        int target = target();
-        for (int i = 0; i < num; i++) {
-            int ts = target * segment;
-            int tsNext = ts + segment;
-            buffer.forEach(each, ts, tsNext);
-
-            if (++target == num) target = 0;
+//        assert(start == 0);
+//        assert(end==volume());
+//
+//        int target = target();
+//        for (int i = 0; i < num; i++) {
+//            int ts = target * segment;
+//            buffer.forEach((x,y)->each.value(i, y), ts, ts + segment);
+//
+//            if (++target == num) target = 0;
+//        }
+        int v = volume();
+        int offset = segment * target();
+        for (int i = start; i < end; i++ ) {
+            each.value(i, getAt((i + offset)%v));
         }
     }
 
@@ -87,17 +92,18 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
     }
 
 
-    public float[] snapshot() {
-        return snapshot(new float[volume()]);
+    public final float[] snapshot() {
+        return snapshot(null);
     }
 
-    public float[] snapshot(float[] output) {
+    public final float[] snapshot(@Nullable float[] output) {
         int v = volume();
         if (output==null || output.length != v)
             output = new float[v];
         writeTo(output);
         return output;
     }
+
 
     @Override
     public void setAt(float newValue, int linearCell) {

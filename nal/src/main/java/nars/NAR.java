@@ -246,10 +246,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 rootOp.add(ct.op());
                 clazz.add(ct.getClass().toString());
 
-                beliefs.accept(c.beliefs().size());
-                goals.accept(c.goals().size());
-                questions.accept(c.questions().size());
-                quests.accept(c.quests().size());
+                beliefs.accept(c.beliefs().taskCount());
+                goals.accept(c.goals().taskCount());
+                questions.accept(c.questions().taskCount());
+                quests.accept(c.quests().taskCount());
             });
 
 

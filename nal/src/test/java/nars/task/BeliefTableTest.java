@@ -58,18 +58,18 @@ class BeliefTableTest {
         Truth bt = n.beliefTruth(b, n.time());
         assertNotNull(bt);
         assertEquals(0.5, bt.conf(), 0.001);
-        assertEquals(1, beliefs.size());
+        assertEquals(1, beliefs.taskCount());
 
         b.believe(1.0f, 0.5f);
         n.run();
         b.print();
-        assertEquals(3 /* revision */, beliefs.size());
+        assertEquals(3 /* revision */, beliefs.taskCount());
         assertEquals(0.669, beliefs.match(ETERNAL, ETERNAL, null, 0, n).conf(), 0.01);
 
         b.believe(1.0f, 0.5f);
         n.run();
         b.print();
-        assertEquals(5, beliefs.size());
+        assertEquals(5, beliefs.taskCount());
         @NotNull BeliefTable bb = beliefs;
         assertEquals(0.75, bb.match(ETERNAL, ETERNAL, null, 0, n).conf(), 0.001);
         assertEquals(0.75, n.beliefTruth(b, n.time()).conf(), 0.01);
@@ -78,7 +78,7 @@ class BeliefTableTest {
         n.run();
         b.print();
         assertEquals(0.79, beliefs.match(ETERNAL, ETERNAL, null, 0, n).conf(), 0.2);
-        assertEquals(7, beliefs.size());
+        assertEquals(7, beliefs.taskCount());
 
     }
 

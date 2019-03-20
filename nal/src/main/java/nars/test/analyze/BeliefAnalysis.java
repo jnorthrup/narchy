@@ -1,6 +1,5 @@
 package nars.test.analyze;
 
-import jcog.pri.Prioritized;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
@@ -94,13 +93,13 @@ public class BeliefAnalysis implements TermedDelegate {
 	}
 	public void print(boolean beliefOrGoal) {
 		BeliefTable table = table(beliefOrGoal);
-		System.out.println((beliefOrGoal ? "Beliefs" : "Goals") + "[@" + nar.time() + "] " + table.size());
+		System.out.println((beliefOrGoal ? "Beliefs" : "Goals") + "[@" + nar.time() + "] " + table.taskCount());
 		table.print(System.out);
 		
 	}
 
 	public int size(boolean beliefOrGoal) {
-		return table(beliefOrGoal).size();
+		return table(beliefOrGoal).taskCount();
 	}
 
 	@Nullable
@@ -109,10 +108,10 @@ public class BeliefAnalysis implements TermedDelegate {
 	}
 
 
-	/** sum of priorities of the belief table */
-	public float priSum() {
-		return (float) beliefs().streamTasks().mapToDouble(Prioritized::priElseZero).sum();
-	}
+//	/** sum of priorities of the belief table */
+//	public float priSum() {
+//		return (float) beliefs().taskStream().mapToDouble(Prioritized::priElseZero).sum();
+//	}
 
 	@NotNull
 	public BeliefAnalysis input(boolean beliefOrGoal, float f, float c) {

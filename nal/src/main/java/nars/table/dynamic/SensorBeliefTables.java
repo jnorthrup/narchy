@@ -47,9 +47,9 @@ public class SensorBeliefTables extends BeliefTables {
     SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<SeriesBeliefTable.SeriesTask> s) {
         super(new SeriesBeliefTable<>(term, beliefOrGoal, s));
 
-        this.series = tableFirst(SeriesBeliefTable.class);
+        this.series = tableFirst(SeriesBeliefTable.class); assert(series!=null);
 
-        tables.add(new MyRTreeBeliefTable());
+        add(new MyRTreeBeliefTable());
 
         tasklink = newTaskLink(term);
     }
@@ -103,7 +103,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
         if (x!=null) {
-            series.clean(tables, n);
+            series.clean(this, n);
             x.cause(new short[] { cause });
             remember(x, pri, n);
         } else {

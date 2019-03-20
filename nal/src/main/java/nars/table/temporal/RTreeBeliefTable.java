@@ -58,6 +58,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     public RTreeBeliefTable() {
         super(new RTree<>(RTreeBeliefModel.the));
     }
+    @Override
+    public final int taskCount() {
+        return size();
+    }
 
     /**
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing
@@ -116,7 +120,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
 
             float conf = //(((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
-                    ((float) r.coord(2, false));
+                    r.coordF(2, false);
 
             y = y * (1 - conf);
             //-Param.evi(c2wSafe(conf),  timeDist, perceptDur);
@@ -320,7 +324,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         float valueEvictWeakest = -taskStrength.floatValueOf(W);
 
-        float valueMergeLeaf = NEGATIVE_INFINITY;
+        double valueMergeLeaf = NEGATIVE_INFINITY;
         Pair<Task, TruthProjection> AB;
         if (!mergeableLeaf.isEmpty()) {
             Leaf<TaskRegion> ab = mergeableLeaf.get();
@@ -373,12 +377,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
     @Override
-    public Stream<? extends Task> streamTasks() {
+    public Stream<? extends Task> taskStream() {
         return stream().map(TaskRegion::task);
     }
 
     @Override
-    public Task[] toArray() {
+    public Task[] taskArray() {
         int s = size();
         if (s == 0) {
             return Task.EmptyArray;

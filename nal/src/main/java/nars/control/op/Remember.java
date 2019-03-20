@@ -346,9 +346,9 @@ public class Remember extends AbstractTask {
     }
 
 
-    public final boolean done() {
+    public final boolean active() {
         //return input == null || (remembered != null && remembered.containsInstance(input));
-        return done;
+        return !done;
     }
 
 }

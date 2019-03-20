@@ -1,6 +1,5 @@
 package nars.concept.action;
 
-import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -24,11 +23,11 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
-import static nars.truth.func.TruthFunctions.w2cSafe;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
@@ -80,9 +79,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         /** make sure to add curiosity table first in the list, as a filter */
         BeliefTables GOALS = ((BeliefTables) goals());
-        GOALS.tables.add(curiosityTable =
+        GOALS.add(curiosityTable =
                 new CuriosityBeliefTable(term));
-        GOALS.tables.add(mutableGoals);
+        GOALS.add(mutableGoals);
 
 
 
@@ -103,8 +102,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     @Override
     public double dexterity() {
         Truth t = actionDex;
-        double e = t != null ? w2cSafe(t.evi()) : 0;
-        return e;
+        return t != null ? t.evi() : 0;
     }
 
 
@@ -128,7 +126,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     public org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int agentDur, int narDur, NAR n) {
         Truth next = null;
-        FasterList<BeliefTable> tables = ((BeliefTables) (beliefsOrGoals ? beliefs() : goals())).tables;
+        List<BeliefTable> tables = ((BeliefTables) (beliefsOrGoals ? beliefs() : goals()));
 
         long ss = TIMELESS, ee = TIMELESS;
 
@@ -148,19 +146,19 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 switch (iter) {
                     case 0:
                         //duration-precision window
-                        //s = now - narDur / 2;
-                        //e = now + narDur / 2;
-                        s = now - Math.max(narDur, agentDur);
+                        s = now - narDur / 2;
+                        e = now + narDur / 2;
+                        //s = now - Math.max(narDur, agentDur);
                         //e = now;
-                        e = now;
+                        //e = now;
                         break;
                     case 1:
                     default:
-                        //s = now - narDur;
-                        //e = now + narDur;
-                        s = now - Math.max(narDur, agentDur)*2;
+                        s = now - narDur;
+                        e = now + narDur;
+                        //s = now - Math.max(narDur, agentDur)*2;
                         //e = now;
-                        e = now;
+                        //e = now;
                         break;
 //                    default:
 //                        //frame-precision window
@@ -176,8 +174,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
                 //shift forward to include some immediate future desire as part of present moment desire
                 int shift =
+                        0;
                         //dither/2;
-                        Math.max(dither/2, narDur/2);
+                        //Math.max(dither/2, narDur/2);
 
                 s += shift;
                 e += shift;
@@ -199,8 +198,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 }
 
                 //HACK
-                if (next!=null)
-                    break; //early finish on first non-null
+//                if (next!=null)
+//                    break; //early finish on first non-null
             }
         }
 

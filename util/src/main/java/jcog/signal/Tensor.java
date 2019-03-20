@@ -196,9 +196,7 @@ public interface Tensor  {
     }
 
     default void writeTo(float[] target, int offset) {
-        forEach((i, v) -> {
-            target[i + offset] = v;
-        });
+        forEach((i, v) -> target[i + offset] = v);
     }
 
     /** should not need subclassed */

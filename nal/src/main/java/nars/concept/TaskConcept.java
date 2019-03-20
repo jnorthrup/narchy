@@ -143,7 +143,7 @@ public class TaskConcept extends NodeConcept  {
         if (includeQuestions) tables.add(questions());
         if (includeQuests) tables.add(quests());
 
-        return tables.stream().flatMap(TaskTable::streamTasks)
+        return tables.stream().flatMap(TaskTable::taskStream)
                 //.filter(Objects::nonNull)
                 ;
     }

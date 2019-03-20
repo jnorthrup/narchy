@@ -16,29 +16,21 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/** view for one or more TimeRangeAware implementing surfaces that display aspects of a time-varying signal */
 public class Timeline2D extends Stacking {
 
     /**
      * viewable range
      */
-    public double start;
-    public double end;
-    private double startNext;
-    private double endNext;
-
-    public <X> Timeline2D addEvents(TimelineModel<X> e, Consumer<Graph2D.NodeVis<X>> r) {
-        add(new Timeline2DEvents<>(e, r));
-        return this;
-    }
+    public double start, end, startNext, endNext;
 
 
-    public interface TimelineRenderable {
+    public interface TimeRangeAware {
         void setTime(double tStart, double tEnd);
     }
 
-    @Deprecated
     public Timeline2D(double start, double end) {
-        this.setTime(start, end);
+        this.setTime(this.start = start, this.end = end);
     }
 
 
@@ -214,8 +206,8 @@ public class Timeline2D extends Stacking {
     }
 
     private void setLayerTime(Surface x, double s, double e) {
-        if (x instanceof TimelineRenderable)
-            ((TimelineRenderable) x).setTime(s, e);
+        if (x instanceof TimeRangeAware)
+            ((TimeRangeAware) x).setTime(s, e);
     }
 
     /**
@@ -225,8 +217,13 @@ public class Timeline2D extends Stacking {
         return (float) ((t - s) / (e - s) * W + X);
     }
 
+    public <X> Timeline2D addEvents(TimelineEvents<X> e, Consumer<Graph2D.NodeVis<X>> r) {
+        add(new Timeline2DEvents<>(e, r));
+        return this;
+    }
 
-    public interface TimelineModel<X> {
+    /** model for discrete events to be materialized on the timeline */
+    public interface TimelineEvents<X> {
         /**
          * any events intersecting with the provided range
          */
@@ -313,7 +310,7 @@ public class Timeline2D extends Stacking {
         }
     }
 
-    public static class SimpleTimelineModel extends ConcurrentSkipListSet<SimpleEvent> implements TimelineModel<SimpleEvent> {
+    public static class SimpleTimelineEvents extends ConcurrentSkipListSet<SimpleEvent> implements TimelineEvents<SimpleEvent> {
 
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
@@ -332,11 +329,11 @@ public class Timeline2D extends Stacking {
         }
     }
 
-    public static class FixedSizeTimelineModel extends ConcurrentSkipListSet<SimpleEvent> implements TimelineModel<SimpleEvent> {
+    public static class FixedSizeTimelineEvents extends ConcurrentSkipListSet<SimpleEvent> implements TimelineEvents<SimpleEvent> {
 
         private final int cap;
 
-        public FixedSizeTimelineModel(int cap) {
+        public FixedSizeTimelineEvents(int cap) {
             this.cap = cap;
         }
 

@@ -11,7 +11,6 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.builder.TermBuilder;
-import nars.term.util.builder.TermConstructor;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.var.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
@@ -158,7 +157,10 @@ public class LazyCompound {
     }
 
     public final Term get() {
-        return get(Op.terms);
+        return get(
+                Op.terms
+                //HeapTermBuilder.the
+        );
     }
 
     /**
@@ -243,7 +245,7 @@ public class LazyCompound {
 
 
         } else {
-            next = next(b, ctl);
+            next = next(ctl);
             //skip zero padding suffix
             while (range[0] < range[1] && code.at(range[0]) == 0) {
                 ++range[0];
@@ -285,7 +287,7 @@ public class LazyCompound {
         }
     }
 
-    protected Term next(TermConstructor b, byte ctl) {
+    protected Term next(byte ctl) {
         Term n = sub.interned((byte) (ctl - MAX_CONTROL_CODES));
         if (n == null)
             throw new NullPointerException();

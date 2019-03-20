@@ -38,7 +38,7 @@ public class BeliefContradictionDetector extends NARService implements Consumer<
             return; //TODO
         }
         TaskTable table = concept.table(punc);
-        int n = table.size();
+        int n = table.taskCount();
         if (n > 1) {
             FloatArrayList h = new FloatArrayList(n);
             table.forEachTask(t -> h.add(t.freq()));

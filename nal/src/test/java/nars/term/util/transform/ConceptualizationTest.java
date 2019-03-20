@@ -60,7 +60,7 @@ class ConceptualizationTest {
 
         assertEquals("(x ==>+- y)", xImplY.toString());
 
-        assertEquals(3, xImplY.beliefs().size());
+        assertEquals(3, xImplY.beliefs().taskCount());
 
         int indexSize = n.concepts.size();
         n.concepts.print(System.out);
@@ -69,7 +69,7 @@ class ConceptualizationTest {
         n.run();
 
 
-        assertEquals(4, xImplY.beliefs().size());
+        assertEquals(4, xImplY.beliefs().taskCount());
 
         n.concepts.print(System.out);
         assertEquals(indexSize, n.concepts.size());
@@ -302,7 +302,7 @@ class ConceptualizationTest {
 
         a.beliefs().print();
 
-        assertTrue(a.beliefs().size() >= 4);
+        assertTrue(a.beliefs().taskCount() >= 4);
     }
     @Test
     void testConjSeqConceptual2() throws Narsese.NarseseException {

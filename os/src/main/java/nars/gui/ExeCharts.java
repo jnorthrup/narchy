@@ -210,7 +210,7 @@ public class ExeCharts {
         }
 
         Surface controls = new Gridding(
-                EnumSwitch.newSwitch(mode, "Mode"),
+                EnumSwitch.the(mode, "Mode"),
                 new PushButton("Print", ()-> {
                     Appendable t = TextEdit.out();
                     nar.exe.print(t);

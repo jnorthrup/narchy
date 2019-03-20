@@ -45,7 +45,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
     @Override
-    public int size() {
+    public int taskCount() {
         return series.size();
     }
 
@@ -67,7 +67,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
     @Override
-    public Stream<? extends Task> streamTasks() {
+    public Stream<? extends Task> taskStream() {
         return series.stream();
     }
 

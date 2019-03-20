@@ -10,7 +10,7 @@
     //free structural Conjunction/Disjunction decomposition
     C, X, eventOfPN(C,X)                  |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
       C, X, eventOfPN(C,X), task("?@"), hasBelief()    |-   conjWithoutPN(C,X)
-    C, X, eventOfPN(C,X), conjParallel(C) |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
+    C, X, eventOfPN(C,X)                  |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
     //not right:
       //D, X, eventOfPN(C,X), conjParallel(D), --isVar(X)  |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)

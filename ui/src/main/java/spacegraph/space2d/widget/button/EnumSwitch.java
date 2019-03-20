@@ -5,10 +5,21 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.text.LabeledPane;
 
 import java.util.EnumSet;
+import java.util.Map;
 
-public class EnumSwitch {
+public enum EnumSwitch { ;
 
-    public static <C extends Enum<C>> Surface newSwitch(MutableEnum x, String label) {
+    protected static Surface newSwitch(ToggleButton[] b, int i2) {
+        ButtonSet editPane = new ButtonSet(ButtonSet.Mode.One, b);
+
+        if (i2 != -1) {
+            b[i2].on(true);
+        }
+
+        return editPane;
+    }
+
+    public static <C extends Enum<C>> Surface the(MutableEnum x, String label) {
 
 
         EnumSet<C> s = EnumSet.allOf(x.klass);
@@ -33,17 +44,8 @@ public class EnumSwitch {
         }
 
 
-        ButtonSet editPane = new ButtonSet(ButtonSet.Mode.One, b);
+        return LabeledPane.the(label, newSwitch(b, initialButton));
 
-        if (initialButton != -1) {
-            b[initialButton].on(true);
-        }
-
-        return LabeledPane.the(label, editPane);
-
-//        return new LabeledPane(label, new ToggleButton(states).on((nextState)->{
-//            states.set(1);
-//        }));
 
     }
 }

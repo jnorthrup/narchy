@@ -81,7 +81,7 @@ class RTreeBeliefTableTest {
                 .value("pri", (t) -> t.pri())
                 .value2D("truth", (t) -> new float[]{t.freq(), t.conf()})
                 .value("freqErr", (t) -> Math.abs(((t.freq() - 0.5f) * 2f) - func.valueOf(t.mid())))
-                .add(c.beliefs().streamTasks().collect(toList()));
+                .add(c.beliefs().taskStream().collect(toList()));
 
         System.out.println();
         m.print();

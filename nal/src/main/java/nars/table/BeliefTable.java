@@ -24,11 +24,11 @@ public interface BeliefTable extends TaskTable {
 
     BeliefTable Empty = new EmptyBeliefTable();
 
-    static float eternalTaskValue(Task eternal) {
-        return (float) eternal.evi();
+    static double eternalTaskValue(Task eternal) {
+        return eternal.evi();
     }
 
-    static float eternalTaskValueWithOriginality(Task eternal) {
+    static double eternalTaskValueWithOriginality(Task eternal) {
         return eternalTaskValue(eternal) * eternal.originality();
     }
 
@@ -43,6 +43,14 @@ public interface BeliefTable extends TaskTable {
      */
     @Override
     void add(/*@NotNull*/ Remember r,  /*@NotNull*/ NAR nar);
+
+
+
+    /** macro */
+    default /* final */ boolean tryAdd(/*@NotNull*/ Remember r,  /*@NotNull*/ NAR nar) {
+        add(r, nar);
+        return r.active();
+    }
 
 
     default Truth truth(long when, NAR nar) {

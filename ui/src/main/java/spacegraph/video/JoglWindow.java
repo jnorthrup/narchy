@@ -11,6 +11,7 @@ import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
 import jcog.util.ArrayUtils;
+import jogamp.opengl.GLWorkerThread;
 import spacegraph.UI;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.font.HersheyFont;
@@ -275,21 +276,15 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         GLWindow W = window();
         this.window = W;
 
-//        EDTUtil edt = window.getScreen().getDisplay().getEDTUtil();
-//        if (!edt.isRunning()) {
-//            edt.start();
-//            edt.setPollPeriod(EDT_POLL_PERIOD_MS);
-//        }
-
+        windows.add(this);
 
         W.addGLEventListener(this);
         W.addWindowListener(this);
 
-        windows.add(this);
-        W.setVisible(true);
 
-        //Exe.invokeLater(()->{
+        Threading.invokeOnOpenGLThread(false, () -> {
 
+            W.setVisible(true);
             W.setTitle(title);
             if (x != Integer.MIN_VALUE) {
                 setPositionAndSize(x, y, w, h);
@@ -299,7 +294,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 setSize(w, h);
                 W.setSize(w, h);
             }
-        //});
+        });
 
 
         return W;

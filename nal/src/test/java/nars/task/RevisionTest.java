@@ -663,7 +663,7 @@ public class RevisionTest {
         n.run(1);
 
         Concept c = n.concept($.$("(x ==> y)"));
-        assertEquals(2, c.beliefs().size());
+        assertEquals(2, c.beliefs().taskCount());
 
         Task tt = n.belief($.$("(x ==> y)"), 0);
         assertNotNull(tt);

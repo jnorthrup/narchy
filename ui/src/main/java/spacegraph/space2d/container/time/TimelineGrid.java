@@ -7,7 +7,7 @@ import spacegraph.video.Draw;
 
 import java.util.function.BiConsumer;
 
-public class TimelineGrid extends Surface implements Timeline2D.TimelineRenderable {
+public class TimelineGrid extends Surface implements Timeline2D.TimeRangeAware {
 
     int THICKNESS = 2;
     //int DIVISIONS = 10; //TODO

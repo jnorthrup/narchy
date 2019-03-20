@@ -138,13 +138,13 @@ public class DefaultDerivePri implements DerivePri {
 //            throw new WTF("spontaneous belief inflation"); //not actually
             return 1;
         else {
-            double cDerived = w2cSafe(eDerived);
-            double cParent = w2cSafe(eParent);
-            double lossFactor = 1 - ((cParent - cDerived) / cParent);
+            float cDerived = w2cSafe(eDerived);
+            float cParent = w2cSafe(eParent);
+            float lossFactor = 1 - ((cParent - cDerived) / cParent);
 
             //float lossFactor = 1 - ((eParent - eDerived) / eParent);
 
-            return (float) Util.lerp(eviImportance.floatValue(), 1f, lossFactor);
+            return Util.lerp(eviImportance.floatValue(), 1f, lossFactor);
         }
     }
 

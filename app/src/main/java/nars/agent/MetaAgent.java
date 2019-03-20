@@ -1,8 +1,6 @@
 package nars.agent;
 
 import jcog.Util;
-import jcog.math.FloatFirstOrderDifference;
-import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
@@ -58,7 +56,24 @@ public class MetaAgent extends NAgent {
 //                Math.max(n.goalPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
 //                n.goalPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
 
-//        int initialDur = n.dur();
+        int initialDur = n.dur();
+        FloatRange durRange = new FloatRange(initialDur, initialDur/4, initialDur*4) {
+            @Override
+            public float get() {
+                super.set(nar.time.dur());
+                return super.get();
+            }
+
+            @Override
+            public void set(float value) {
+                super.set(value);
+                value = super.get();
+                int nextDur = Math.round(value);
+                nar.time.dur(nextDur);
+                //assert(nar.dur()==nextDur);
+            }
+        };
+        actionDial($.inh(id, $.p(duration, $.the(1))), $.inh(id, $.p(duration, $.the(-1))), durRange, 5);
 //        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
 //            n.time.dur(Util.lerp(x * x, n.dtDither(), initialDur * 2));
 //            return x;
@@ -77,18 +92,16 @@ public class MetaAgent extends NAgent {
 
     private void add(NAgent a, boolean allowPause) {
 
-        long start = a.nar().time();
-
-
-        Reward r = reward($.inh(a.id, happy), new FloatNormalized(new FloatFirstOrderDifference(nar::time, () -> {
+        Reward r = rewardNormalized($.inh(a.id, happy), 0, 1, //(((new FloatNormalized(//new FloatFirstOrderDifference(nar::time,
+                ((((() -> {
 //            float h = a.happinessMean();
 //            float p = a.proficiency();
 //            float hp = Util.or(h, p);
             //System.out.println(h + " " + p + " -> " + hp);
 //            return hp;
-            float d = (float) a.dexterityMean();
+            float d = (float) (a.dexterityMean()*10);
             return d;
-        })));
+        })))));
         //reward($.inh(a.id, happy), a::happiness);
 
         //TODO other Emotion sensors

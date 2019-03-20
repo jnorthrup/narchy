@@ -1,10 +1,8 @@
-package spacegraph.audio;
+package spacegraph.space2d.container.time;
 
 import jcog.Util;
 import jcog.math.v2;
 import jcog.pri.ScalarValue;
-import jcog.signal.Tensor;
-import jcog.signal.wave1d.FreqDomain;
 import jcog.signal.wave1d.SignalInput;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
@@ -12,7 +10,6 @@ import spacegraph.input.finger.FingerMove;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.meter.WaveView;
@@ -26,15 +23,15 @@ public class SignalView extends Timeline2D {
     final static int PAN_BUTTON = 2;
     final static float PAN_SPEED = 1 / 100f;
 
-    private final SignalInput audio;
+    private final SignalInput in;
 
 //    public final FloatRange gain = new FloatRange(1, 0, 100);
     static final float selectorAlpha = 0.5f;
 
 
-    public SignalView(SignalInput a) {
+    public SignalView(SignalInput in) {
         super(0, 1);
-        this.audio = a;
+        this.in = in;
 
 //
 //        south(new Gridding(
@@ -48,42 +45,32 @@ public class SignalView extends Timeline2D {
 //
 //        t = new Timeline2D(0, 1) {
 
-        FreqDomain freqDomain = new FreqDomain(
-                a,
-                1024, 256);
-
-
-        Spectrogram g = new Spectrogram(true, 256, 2048);
-        audio.wave.on(raw-> {
-            Tensor fft = freqDomain.next(raw);
-            g.next(i -> {
-                float v = fft.getAt(i);
-                return Draw.colorHSB(0.3f * (1 - v), 0.9f, v);
-            });
-        });
+        Spectrogram g = new FreqSpectrogram(in, true,512, 2048);
         add(g);
 
-        WaveView w = new WaveView(a, 500, 250);
-        audio.wave.on(raw->{
+        WaveView w = new WaveView(in, 500, 250);
+        this.in.wave.on(raw->{
             w.updateLive();
         });
         add(w);
 
 
-        Timeline2D.SimpleTimelineModel tl = new Timeline2D.SimpleTimelineModel();
+        SimpleTimelineEvents tl = new SimpleTimelineEvents();
         addEvents(tl, (nv)->{
             nv.set(new PushButton(nv.id.toString()));
         });
-        audio.wave.on(raw->{
-            if(Math.random() < 0.1f) {
-                tl.clear();
-                //Math.round(tEnd),Math.round(tEnd)
-                tl.add(new Timeline2D.SimpleEvent("event", 0, 1));
-                //setTime(-1, 2, true); //HACK force update
-            }
-        });
+//        this.in.wave.on(raw->{
+//            if(Math.random() < 0.1f) {
+//                tl.clear();
+//                //Math.round(tEnd),Math.round(tEnd)
+//                tl.add(new Timeline2D.SimpleEvent("event", 0, 1));
+//                //setTime(-1, 2, true); //HACK force update
+//            }
+//        });
 
     }
+
+
     final Fingering pan = new FingerMove(PAN_BUTTON) {
         @Override
         protected void move(float tx, float ty) {

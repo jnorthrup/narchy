@@ -330,7 +330,7 @@ public final class TruthFunctions {
             throw new Truth.TruthException("non-finite evidence", w);
         return w2cSafe(w);
     }
-    public static double w2c(double w) {
+    public static float w2c(double w) {
         if (w < Param.TRUTH_EVI_MIN)
             throw new Truth.TruthException("insufficient evidence", w);
         if (!Double.isFinite(w))
@@ -341,8 +341,8 @@ public final class TruthFunctions {
     public static float w2cSafe(float w) {
         return w2cSafe(w, Param.HORIZON);
     }
-    public static double w2cSafe(double w) {
-        return w2cSafe(w, Param.HORIZON);
+    public static float w2cSafe(double w) {
+        return (float) w2cSafe(w, Param.HORIZON);
     }
 
 

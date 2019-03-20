@@ -40,7 +40,7 @@ public class Timeline2DTest {
     }
 
     protected static Timeline2DEvents<Timeline2D.SimpleEvent> events(int range) {
-        Timeline2D.SimpleTimelineModel dummyModel = new Timeline2D.SimpleTimelineModel();
+        Timeline2D.SimpleTimelineEvents dummyModel = new Timeline2D.SimpleTimelineEvents();
         int events = 30;
         for (int i = 0; i < events; i++) {
             long start = (long) (Math.random() * range);

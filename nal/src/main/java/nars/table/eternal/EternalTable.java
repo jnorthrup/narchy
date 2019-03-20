@@ -54,9 +54,13 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 //        }
     }
 
+    @Override
+    public final int taskCount() {
+        return size();
+    }
 
     @Override
-    public final Stream<? extends Task> streamTasks() {
+    public final Stream<? extends Task> taskStream() {
 
 
 //        Object[] list = this.items;
@@ -124,7 +128,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
     @Override
-    public Task[] toArray() {
+    public Task[] taskArray() {
 
         //long l = lock.readLock();
 //        try {
@@ -165,7 +169,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
      */
     @Override
     public final float floatValueOf(Task w) {
-        return -eternalTaskValueWithOriginality(w);
+        return (float) -eternalTaskValueWithOriginality(w);
     }
 
 
@@ -214,6 +218,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
         Task removed;
 
+        //TODO use optimistic read here
         long r = lock.readLock();
         try {
 
@@ -248,10 +253,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void add(Remember r, NAR nar) {
-        if (!r.input.isEternal())
-            return;
-
-        tryAdd(r, nar);
+        if (r.input.isEternal())
+            _add(r, nar);
+        //else: ignore
     }
 
     /** lock begins as read */
@@ -372,7 +376,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         return lock;
     }
 
-    public void tryAdd(Remember r, NAR nar) {
+    private void _add(Remember r, NAR nar) {
 
         Task input = r.input, existing = null;
 

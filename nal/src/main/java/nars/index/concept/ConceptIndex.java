@@ -89,7 +89,12 @@ public abstract class ConceptIndex {
         if (_x instanceof Concept && elideConceptGets() && !(((Concept) _x).isDeleted()))
             return ((Concept) _x);
 
-        Term x = _x.term().concept();
+
+        Term xt = _x.term();
+        if (!xt.isNormalized()) //pre-test
+            throw new WTF("concept term not normalized");
+
+        Term x = xt.concept();
         if (x == null || !x.op().conceptualizable) {
             if (Param.DEBUG)
                 throw new WTF(_x + " not conceptualizable");

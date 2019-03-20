@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public class EmptyBeliefTable implements BeliefTable {
 
     @Override
-    public Stream<? extends Task> streamTasks() {
+    public Stream<? extends Task> taskStream() {
         return Stream.empty();
     }
 
@@ -45,7 +45,7 @@ public class EmptyBeliefTable implements BeliefTable {
 
 
     @Override
-    public int size() {
+    public int taskCount() {
         return 0;
     }
 

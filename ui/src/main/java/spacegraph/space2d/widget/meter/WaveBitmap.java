@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 
 import static jcog.Util.unitizeSafe;
 
-public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainter, Timeline2D.TimelineRenderable {
+public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainter, Timeline2D.TimeRangeAware {
 
     public final FloatRange height = new FloatRange(0.75f, 0.01f, 1f);
     public final FloatRange alpha = new FloatRange(0.75f, 0.01f, 1f);
@@ -22,7 +22,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
         float amplitude(double start, double end);
     }
 
-    private final BitmapEvaluator buffer;
+    protected final BitmapEvaluator buffer;
 
 
     private final transient float yMin;

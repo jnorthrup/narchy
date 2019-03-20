@@ -42,7 +42,7 @@ public class CircularByteBuffer extends CircularBuffer {
     }
 
     @Override
-    protected void setCapacityInternal(int capacity) {
+    protected void reallocate(int capacity) {
         _circBuffer = new byte[capacity];
     }
 

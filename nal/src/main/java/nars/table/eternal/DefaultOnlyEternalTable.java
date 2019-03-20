@@ -1,12 +1,13 @@
 package nars.table.eternal;
 
-import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.time.Tense;
 import nars.truth.Truth;
+
+import java.util.List;
 
 /** provides an overriding eternal default answer only if the Answer has found no other options in other tables.
  *  should be added only to the end of BeliefTables */
@@ -15,7 +16,7 @@ public class DefaultOnlyEternalTable extends EternalTable {
     public DefaultOnlyEternalTable(Concept c, Truth t, NAR nar) {
         super(1);
 
-        FasterList<BeliefTable> tables = ((BeliefTables) c.beliefs()).tables;
+        List<BeliefTable> tables = ((BeliefTables) c.beliefs());
         assert(!tables.isEmpty()): "other tables should precede this in BeliefTables chain";
 
         tables.add(this);

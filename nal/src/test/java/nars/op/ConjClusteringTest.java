@@ -27,7 +27,7 @@ class ConjClusteringTest {
         n.run(1);
 
         BeliefTable b = n.concept($.$("(&&,x0,x1,x2,x3)")).beliefs();
-        assertEquals(1, b.size());
+        assertEquals(1, b.taskCount());
 
         assert1234(n, b);
     }
@@ -43,13 +43,13 @@ class ConjClusteringTest {
             n.believe($.the("x" + i).neg(), Tense.Present);
         n.run(1);
         BeliefTable b = n.concept($.$("(&&,(--,x0),(--,x1),(--,x2),(--,x3))")).beliefs();
-        assertEquals(1, b.size());
+        assertEquals(1, b.taskCount());
 
         assert1234(n, b);
     }
 
     private static void assert1234(NAR n, BeliefTable b) {
-        Task the = b.streamTasks().findFirst().get();
+        Task the = b.taskStream().findFirst().get();
         float p = the.pri();
         assertTrue(p==p);
         assertEquals("[1, 2, 3, 4]", Arrays.toString(the.stamp()));

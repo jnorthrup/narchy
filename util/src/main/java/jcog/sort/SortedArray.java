@@ -410,6 +410,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
 
     public boolean removeFast(X x, int index) {
+//        assert(x!=null);
         int totalOffset = this.size - index - 1;
         if (totalOffset >= 0) {
             X[] list = this.items;

@@ -37,12 +37,12 @@ public class NAL1MultistepTest extends NALTest {
     @Test
     void multistepSim3() {
 
-        new DeductiveChainTest(test, 3, 200, sim);
+        new DeductiveChainTest(test, 3, 500, sim);
     }
 
     @Test
     void multistepInh4() {
-        new DeductiveChainTest(test, 4, 400, inh);
+        new DeductiveChainTest(test, 4, 1000, inh);
     }
 
     @Test public void multistepSim4() {

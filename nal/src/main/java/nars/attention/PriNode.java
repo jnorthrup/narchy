@@ -31,7 +31,7 @@ public class PriNode extends PLink<Term> {
         return id + " pri=" + pri();
     }
 
-    @Deprecated /* move to subclass */ public float priComponent() {
+    @Deprecated /* move to subclass */ public final float priComponent() {
         return priFraction() * pri();
     }
 
@@ -41,7 +41,7 @@ public class PriNode extends PLink<Term> {
         if (n == 0)
             return 1;
         //i = 1; //each component important as a top level concept
-        i = (float) (1f / Math.sqrt((float)n)); //shared by sqrt of components
+        i = (float) (1.0 / Math.sqrt((float)n)); //shared by sqrt of components
         //i = 1f / n; //shared by all components
         return i;
     }
@@ -101,6 +101,11 @@ public class PriNode extends PLink<Term> {
         public ConstPriNode(Object id, FloatSupplier f) {
             super(id);
             this.f = f;
+        }
+
+        @Override
+        protected float priFraction() {
+            return 1;
         }
 
         @Override

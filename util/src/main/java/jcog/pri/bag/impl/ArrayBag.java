@@ -183,7 +183,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         if (lastToRemove!=null) {
             //removeFromMap(items.removeLast());
-            boolean removed = items.removeFast(lastToRemove, s-1); assert(removed);
+            boolean removed = items.removeFast(lastToRemove, s-1);
+            //assert(removed);
+            if (!removed)
+                throw new WTF();
             removeFromMap(lastToRemove);
         }
 
@@ -674,6 +677,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             }
 
 
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
         } finally {
             lock.unlock(l);
         }

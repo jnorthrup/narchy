@@ -15,16 +15,45 @@ import spacegraph.space2d.widget.button.PushButton;
 public class WaveView extends WaveBitmap implements MenuSupplier, Finger.WheelAbsorb {
 
 
+    private final CircularFloatBuffer data;
+
     public WaveView(CircularFloatBuffer wave, int pixWidth, int pixHeight) {
-        super(pixWidth, pixHeight, (s,e)-> (float) wave.mean(s, e));
+        super(pixWidth, pixHeight, (s,e)-> {
+            CircularFloatBuffer w = wave;
+            if (w!=null)
+                return (float) w.mean(s, e);
+            else
+                return Float.NaN;
+        });
+        this.data = wave;
     }
 
-    @Deprecated
-    public WaveView(SignalInput capture, int pixWidth, int pixHeight) {
-        this(new CircularFloatBuffer(capture.data), pixWidth, pixHeight);
+    @Deprecated static final float bufferScale = 3;
+
+    public WaveView(SignalInput i, int pixWidth, int pixHeight) {
+        this(new CircularFloatBuffer(new float[1]), pixWidth, pixHeight);
+        i.wave.on((s)->{
+            int sv = s.volume();
+
+            if (data.capacityInternal() < sv * bufferScale)
+                data.setCapacity(Math.round(sv * bufferScale));
+
+            if (data.available() < sv) {
+                //data.setPeekPosition((data.readAt() + (sv))%data.capacityInternal());
+                data.skip(sv);
+                //data.freeHead(sv - data.available()); //roll
+                assert(data.available() >= sv);
+            }
+
+
+
+            int written = data.write(s.data,  0, sv, true);
+            if (written > 0) {
+                updateLive();
+            }
+//            assert(written > 0);
+        });
     }
-
-
 
     @Override
     public Surface menu() {

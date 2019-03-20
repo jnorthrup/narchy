@@ -208,7 +208,7 @@ class TruthTest {
         double eviB = b.evi();
         float eviABintersect = TruthFunctions.c2w(0.81f);
         double eviABintersectRaw = eviA * eviB;
-        double eviABintersectRawToConf = w2c(eviA * eviB);
+        float eviABintersectRawToConf = w2c(eviA * eviB);
         System.out.println();
     }
 }

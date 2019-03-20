@@ -23,7 +23,7 @@ public interface QuestionTable extends TaskTable {
     /*@NotNull*/ QuestionTable Empty = new QuestionTable() {
 
         @Override
-        public Stream<? extends Task> streamTasks() {
+        public Stream<? extends Task> taskStream() {
             return Stream.empty();
         }
 
@@ -66,7 +66,7 @@ public interface QuestionTable extends TaskTable {
 
 
         @Override
-        public int size() {
+        public int taskCount() {
             return 0;
         }
 

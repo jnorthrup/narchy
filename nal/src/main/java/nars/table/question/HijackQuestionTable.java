@@ -72,6 +72,11 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
     }
 
     @Override
+    public final int taskCount() {
+        return size();
+    }
+
+    @Override
     public final void setTaskCapacity(int newCapacity) {
         setCapacity(newCapacity);
     }
@@ -93,7 +98,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
     }
 
     @Override
-    public Stream<? extends Task> streamTasks() {
+    public Stream<? extends Task> taskStream() {
         return stream();
     }
 

@@ -28,6 +28,10 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
         super.setCapacity(newCapacity);
     }
 
+    @Override
+    public final int taskCount() {
+        return size();
+    }
 
     @Override
     public void add(/*@NotNull*/ Remember r, NAR n) {
@@ -48,11 +52,11 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
     }
 
     @Override
-    public Stream<? extends Task> streamTasks() {
-        return ArrayIterator.stream(toArray());
+    public Stream<? extends Task> taskStream() {
+        return ArrayIterator.stream(taskArray());
     }
 
-    public Task[] toArray() {
+    public Task[] taskArray() {
 
         int s = size();
         if (s == 0) {
@@ -67,7 +71,7 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
 
     @Override
     public void forEachTask(Consumer<? super Task> x) {
-        Task[] t = toArray();
+        Task[] t = taskArray();
         for (Task y : t) {
             if (y == null)
                 continue;

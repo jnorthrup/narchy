@@ -79,7 +79,7 @@ class DynamicConjTest {
         //override or revise dynamic with an input belief
         {
             n.believe($$("--(a:x && a:y)"), 0);
-            assertEquals(1, n.concept("(a:x && a:y)").beliefs().size());
+            assertEquals(1, n.concept("(a:x && a:y)").beliefs().taskCount());
 
             Task ttEte = n.answerBelief($("(a:x && a:y)"), now);
 //            assertEquals(1, ttEte.stamp().length);
@@ -97,7 +97,7 @@ class DynamicConjTest {
         }
         {
             n.believe($$("--(a:x &| a:y)"), 0);
-            assertEquals(2, n.concept("(a:x && a:y)").beliefs().size());
+            assertEquals(2, n.concept("(a:x && a:y)").beliefs().taskCount());
 
             Task ttNow = n.answerBelief($("(a:x &| a:y)"), now);
             assertTrue(ttNow.isNegative());

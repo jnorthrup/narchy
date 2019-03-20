@@ -9,17 +9,17 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /** layers in which discretely renderable or interactable events can be materialized */
-public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimelineRenderable {
+public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRangeAware {
 
     double tStart, tEnd;
 
-    private final Timeline2D.TimelineModel<E> model;
+    private final Timeline2D.TimelineEvents<E> model;
 
     /** minimum displayed temporal width, for tasks less than this duration */
     private final float timeVisibleEpsilon = 0.5f;
 
 
-    public Timeline2DEvents(Timeline2D.TimelineModel<E> model, Consumer<NodeVis<E>> view) {
+    public Timeline2DEvents(Timeline2D.TimelineEvents<E> model, Consumer<NodeVis<E>> view) {
         super();
         this.model = model;
         build(view);

@@ -292,12 +292,14 @@ public interface NAct {
      *    a pair of up/down buttons for discretely incrementing and decrementing a value within a given range
      */
     default GoalActionConcept[] actionDial(Term down, Term up, FloatRange x, int steps) {
-        float delta = 1f/steps;
+        float delta = 1f/steps * (x.max - x.min);
         return actionStep(down,up, (c)->{
             float before = x.get();
             float next = Util.clamp(before + c * delta, x.min, x.max);
-            if (!Util.equals(before, next, delta/4f)) {
-                x.set(next);
+            x.set(next);
+            float actualNext = x.get();
+            if (!Util.equals(before, actualNext, delta/4)) {
+                /** a significant change */
                 return true;
             }
             return false;

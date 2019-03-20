@@ -217,8 +217,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
             if (!t.isNormalized()) {
 
-                @Nullable Term n = t.normalize();
-                if (!n.equals(t))
+//                @Nullable Term n = t.normalize();
+//                if (!n.equals(t))
                     return fail(t, "task target not a normalized Compound", safe);
             }
         }

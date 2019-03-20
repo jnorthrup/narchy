@@ -15,7 +15,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AudioSource implements DigitizedSignal {
 
-    /** buffer time in milliseconds */
+    /**
+     * buffer time in milliseconds
+     */
     public final IntRange bufferSize;
 
     public final int sampleRate;
@@ -24,9 +26,7 @@ public class AudioSource implements DigitizedSignal {
     public final AudioFormat audioFormat;
 
 
-
     private final int bytesPerSample;
-
 
 
     private static final Logger logger = LoggerFactory.getLogger(AudioSource.class);
@@ -38,9 +38,11 @@ public class AudioSource implements DigitizedSignal {
 
 
     //TODO parameterize with device
+
     /**
      * the constructor does not call start()
-     * frameRate determines buffer size and frequency that events are emitted; can also be considered a measure of latency */
+     * frameRate determines buffer size and frequency that events are emitted; can also be considered a measure of latency
+     */
     public AudioSource() {
 
         sampleRate = 44100;
@@ -50,7 +52,7 @@ public class AudioSource implements DigitizedSignal {
                 sampleRate * 4 /* ie. n seconds */,
                 sampleRate, sampleRate * 128);
 
-        audioFormat = new AudioFormat(sampleRate, 8*bytesPerSample, 1, true, false);
+        audioFormat = new AudioFormat(sampleRate, 8 * bytesPerSample, 1, true, false);
         dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat, bufferSize.intValue());
     }
 
@@ -67,7 +69,6 @@ public class AudioSource implements DigitizedSignal {
             System.out.println(i);
 
 
-
     }
 
     public int channelsPerSample() {
@@ -75,44 +76,51 @@ public class AudioSource implements DigitizedSignal {
     }
 
     public final AudioSource start() {
+        synchronized (this) {
+            try {
 
-        try {
+                logger.info("start {} {}", this, dataLineInfo);
 
-            logger.info("start {} {}", this, dataLineInfo);
+                line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
 
-            line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+                int numChannels = audioFormat.getChannels();
 
-            int numChannels = audioFormat.getChannels();
+                int audioBufferSamples = (int) Math.ceil(numChannels * bufferSize.intValue());
 
-            int audioBufferSamples = (int) Math.ceil(numChannels * bufferSize.intValue());
+                preByteBuffer = new byte[audioBufferSamples * bytesPerSample];
+                preShortBuffer = new short[audioBufferSamples];
 
-            preByteBuffer = new byte[audioBufferSamples * bytesPerSample];
-            preShortBuffer = new short[audioBufferSamples];
+                line.open(audioFormat, audioBufferSamples);
+                line.start();
 
-            line.open(audioFormat, audioBufferSamples);
-            line.start();
+                //TODO
+                //line.addLineListener();
 
-            //TODO
-            //line.addLineListener();
+                return this;
 
-            return this;
-
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-            return null;
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 
     public void stop() {
-        line.close();
-        logger.info("stopped {} {} {}", this, dataLineInfo);
+        synchronized (this) {
+            if (line != null) {
+                line.close();
+                line = null;
+                logger.info("stopped {} {} {}", this, dataLineInfo);
+            }
+        }
     }
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
 
     @Override
     public boolean hasNext(int atleast) {
-        return line.available() >= atleast;
+        TargetDataLine l = this.line;
+        return l !=null && l.available() >= atleast;
     }
 
     @Override
@@ -126,10 +134,10 @@ public class AudioSource implements DigitizedSignal {
 //            do {
 
 
-                int availableBytes = line.available();
+            int availableBytes = line.available();
 
-                //logger.trace
-                //System.out.println(available + "/" + capacity + " @ " + line.getMicrosecondPosition());
+            //logger.trace
+            //System.out.println(available + "/" + capacity + " @ " + line.getMicrosecondPosition());
 
 //                if (available > capacity) {
 //                    int excess = available - capacity;
@@ -150,38 +158,38 @@ public class AudioSource implements DigitizedSignal {
 //                        }
 //                    }
 //                }
-                int toRead = Math.min(capacitySamples * bytesPerSample, availableBytes);
-                if (toRead < availableBytes) {
-                    while (toRead % bytesPerSample != 0)
-                        toRead++;
-                } else {
-                    while (toRead % bytesPerSample != 0)
-                        toRead--;
-                }
+            int toRead = Math.min(capacitySamples * bytesPerSample, availableBytes);
+            if (toRead < availableBytes) {
+                while (toRead % bytesPerSample != 0)
+                    toRead++;
+            } else {
+                while (toRead % bytesPerSample != 0)
+                    toRead--;
+            }
 
-                //int availableBytes = Math.min(capacity, line.available());
-                audioBytesRead = line.read(preByteBuffer, 0, toRead);
-                if (audioBytesRead == 0)
-                    return 0;
-                int nSamplesRead = audioBytesRead / 2;
+            //int availableBytes = Math.min(capacity, line.available());
+            audioBytesRead = line.read(preByteBuffer, 0, toRead);
+            if (audioBytesRead == 0)
+                return 0;
+            int nSamplesRead = audioBytesRead / 2;
 
-                ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(preShortBuffer);
+            ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(preShortBuffer);
 
-                int start = 0;
-                int end = nSamplesRead;
-                int j = 0;
+            int start = 0;
+            int end = nSamplesRead;
+            int j = 0;
 //                short min = Short.MAX_VALUE, max = Short.MIN_VALUE;
-                double gain =
-                        1.0/shortRange;
-                        //this.gain.floatValue() / shortRange;
-                for (int i = start; i < end; ) {
-                    short s = preShortBuffer[i++];
+            double gain =
+                    1.0 / shortRange;
+            //this.gain.floatValue() / shortRange;
+            for (int i = start; i < end; ) {
+                short s = preShortBuffer[i++];
 //                    if (s < min) min = s;
 //                    if (s > max) max = s;
-                    target[j++] = (float) (s * gain); //compute in double for exra precision
-                }
+                target[j++] = (float) (s * gain); //compute in double for exra precision
+            }
 
-                return nSamplesRead;
+            return nSamplesRead;
 
 //            } while (line.available() > 0);
 

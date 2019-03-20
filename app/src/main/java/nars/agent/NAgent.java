@@ -37,6 +37,7 @@ import java.util.function.Consumer;
 
 import static nars.$.$$;
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * an integration of sensor concepts and motor functions
@@ -138,7 +139,7 @@ public class NAgent extends NARService implements NSense, NAct {
      * dexterity = sum(evidence(action))
      * evidence/confidence in action decisions, current measurement
      */
-    public double dexterity() {
+    public double dexteritySum() {
         int n = actions.size();
         if (n == 0)
             return 0;
@@ -148,7 +149,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public double dexterityMean() {
         int a = actions.size();
-        return a > 0 ? dexterity() / a : 0;
+        return a > 0 ? w2cSafe(dexteritySum() / a) : 0;
     }
 
 
@@ -223,7 +224,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
         return id +
-                " dex=" + /*n4*/(dexterity()) +
+                " dex=" + /*n4*/(dexteritySum()) +
 
                 /*" var=" + n4(varPct(nar)) + */ "\t" + nar.concepts.summary() + " " +
                 nar.emotion.summary();

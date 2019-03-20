@@ -77,7 +77,7 @@ public abstract class CircularBuffer {
     }
 
     public CircularBuffer(int capacity) {
-        setCapacityInternal(capacity);
+        reallocate(capacity);
     }
 
     public void setOnChangeListener(OnChangeListener listener) {
@@ -115,7 +115,7 @@ public abstract class CircularBuffer {
         lock.lock();
         try {
             clear();
-            setCapacityInternal(capacity);
+            reallocate(capacity);
         } finally {
             lock.unlock();
         }
@@ -130,7 +130,7 @@ public abstract class CircularBuffer {
         }
     }
 
-    abstract protected void setCapacityInternal(int capacity);
+    abstract protected void reallocate(int capacity);
 
     abstract public int capacityInternal();
 
@@ -152,10 +152,24 @@ public abstract class CircularBuffer {
 //        }
 //    }
 
-    public int freeSpace() {
+    public int available() {
         lock.lock();
         try {
-            return capacityInternal() - writeAt.get();
+
+            int w = writeAt.get();
+            int r = readAt.get();
+            int c = capacityInternal();
+            int s;
+            if (w > r)
+                s = w - r;
+            else if (w == r) {
+                s = 0;
+            } else {
+                s = r + (c-w);
+            }
+            int a = c - s;
+            assert(a >= 0 && a <= c);
+            return a;
         } finally {
             lock.unlock();
         }
@@ -290,11 +304,10 @@ public abstract class CircularBuffer {
      * @param length amount of data to remove.
      * TODO what happens if len < 0
      */
-    public int free(int atMost) {
+    public int freeHead(int atMost) {
         lock.lock();
         try {
             int bs = writeAt.get();
-            atMost = Math.min(writeAt.get(), atMost);
             if (atMost > 0) {
                 atMost = Math.max(atMost, bs);
                 bufStart = (bufStart + atMost) % capacityInternal();

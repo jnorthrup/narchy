@@ -84,7 +84,7 @@ public class Facts implements Function<Term, Stream<Term>> {
     }
 
     private boolean polarized(BeliefTable table, boolean trueOrFalse) {
-        return table.streamTasks().anyMatch(t -> exp(trueOrFalse ? t.expectation() : 1 - t.expectation()));
+        return table.taskStream().anyMatch(t -> exp(trueOrFalse ? t.expectation() : 1 - t.expectation()));
     }
 
     /**
