@@ -94,6 +94,10 @@ public interface Tensor  {
     }
 
 
+    default Tensor viewLinear(int linearStart, int linearEnd) {
+        Tensor parent = this;
+        return new LinearSubTensor(linearEnd, linearStart, parent);
+    }
 
     static Tensor normalize(Tensor vector) {
         return vector.scale(1f / sum(vector));
@@ -177,8 +181,11 @@ public interface Tensor  {
      * receives the pair: linearIndex,value (in increasing order)
      * should not be subclassed
      */
-    default void forEach(IntFloatProcedure sequential) {
-        forEach(sequential, 0, volume());
+    default /* final */ void forEach(IntFloatProcedure each) {
+        forEach(each, 0, volume());
+    }
+    default /* final */ void forEachReverse(IntFloatProcedure each) {
+        forEachReverse(each, 0, volume());
     }
 
     /**
@@ -189,7 +196,11 @@ public interface Tensor  {
             sequential.value(i, getAt(i));
         }
     }
-
+    default void forEachReverse(IntFloatProcedure sequential, int start, int end) {
+        for (int i = end-1; i >= start; i-- ) {
+            sequential.value(i, getAt(i));
+        }
+    }
 
     default /* final */ void writeTo(float[] target) {
         writeTo(target, 0);
@@ -268,7 +279,7 @@ public interface Tensor  {
     }
 
     default <X> Iterator<X> iterator(FloatToObjectFunction<X> map) {
-        return new AbstractIterator<X>() {
+        return new AbstractIterator<>() {
             int j;
             final int limit = volume();
             @Override
@@ -278,7 +289,17 @@ public interface Tensor  {
             }
         };
     }
+    default <X> Iterator<X> iteratorReverse(FloatToObjectFunction<X> map) {
+        return new AbstractIterator<>() {
+            int j = volume()-1;
 
+            @Override
+            protected X computeNext() {
+                if (j == -1) return endOfData();
+                return map.valueOf(getAt(j--));
+            }
+        };
+    }
     default boolean equalShape(Tensor b) {
         return this == b || Arrays.equals(shape(), b.shape());
     }
@@ -344,6 +365,7 @@ public interface Tensor  {
     default float[] toFloatArrayShared() {
         return toFloatArray();
     }
+
 
 
 }

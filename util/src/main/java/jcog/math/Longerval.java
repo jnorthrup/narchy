@@ -1,13 +1,16 @@
 package jcog.math;
 
 import jcog.WTF;
+import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Comparator;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 /** An immutable inclusive longerval a..b implementation of LongInterval */
-public class Longerval implements LongInterval {
+public class Longerval implements LongInterval, Comparable<Longerval> {
 
 
 
@@ -211,5 +214,18 @@ public class Longerval implements LongInterval {
 	}
 
 
+    public long[] toArray() {
+		return new long[] { a, b };
+    }
+
+	final static Comparator<Longerval> comparator = Comparators.byLongFunction((Longerval l)->l.a).thenComparing((Longerval l) -> l.b);
+
+	@Override
+	public final int compareTo(Longerval x) {
+		return this.equals(x) ?
+				0
+				:
+				comparator.compare(this, x);
+	}
 
 }

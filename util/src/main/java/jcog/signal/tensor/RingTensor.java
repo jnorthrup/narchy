@@ -8,38 +8,60 @@ import org.jetbrains.annotations.Nullable;
 
 /** TODO delegate not inherit */
 public class RingTensor extends AbstractShapedTensor implements WritableTensor {
-    public final int segment;
+    public final int width;
     private final int num;
     private final AtomicCycle.AtomicCycleN target;
-    private final WritableTensor buffer;
+    public final WritableTensor buffer;
+    private final int _volume;
 
 
-    public RingTensor(int volume, int history) {
-        this(new ArrayTensor(volume*history), volume, history);
+    public RingTensor(int width, int history) {
+        this(new ArrayTensor(width*history), width, history);
     }
 
-    public RingTensor(WritableTensor x, int volume, int history) {
-        super(/*new int[] { volume,history}*/ new int[] { volume * history });
-        assert(x.volume() >= (volume*history));
+    public RingTensor(WritableTensor x, int width, int history) {
+        super(/*new int[] { volume,history}*/ new int[] { width * history });
+        assert(x.volume() >= (width*history));
         this.buffer = x;
-        this.segment = volume;
+        this.width = width;
         this.num = history;
         this.target = new AtomicCycle.AtomicCycleN(history);
+        this._volume = width * history;
+    }
+
+    @Override
+    public final int volume() {
+        return _volume;
     }
 
     @Override
     public float get(int... cell) {
-        //assert(cell.length==2);
-        return getAt(r(cell[0], cell[1]));
+        assert(cell.length==2);
+        return getAtDirect(r(cell[0], cell[1]));
     }
 
     public int r(int c, int r) {
-        return ((c + target()))%num*segment + r;
+        return idx(0, c, num) * width + r;
     }
 
     @Override
     public float getAt(int linearCell) {
-        return buffer.getAt(linearCell);
+        return getAtDirect(idx(linearCell));
+        //throw new TODO();
+    }
+
+
+
+    protected int idx(int linearCell) {
+        return idx(linearCell, width * target());
+    }
+
+    protected int idx(int linearCell, int offset) {
+        return idx(linearCell, offset, volume());
+    }
+
+    protected int idx(int linearCell, int offset, int v) {
+        return (offset + linearCell) % v;
     }
 
     @Override
@@ -49,46 +71,83 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
 
     @Override
     public void forEach(IntFloatProcedure each, int start, int end) {
-//        assert(start == 0);
-//        assert(end==volume());
-//
-//        int target = target();
-//        for (int i = 0; i < num; i++) {
-//            int ts = target * segment;
-//            buffer.forEach((x,y)->each.value(i, y), ts, ts + segment);
-//
-//            if (++target == num) target = 0;
-//        }
         int v = volume();
-        int offset = segment * target();
+        int offset = width * target();
+        int ii = idx(offset, start, v);
         for (int i = start; i < end; i++ ) {
-            each.value(i, getAt((i + offset)%v));
+            each.value(i, getAtDirect(ii++));
+            if (ii == v) ii = 0;
         }
     }
 
-    public RingTensor commit(float[] t) {
-        buffer.setAt(t, spin()*segment);
-        return this;
+    @Override
+    public void forEachReverse(IntFloatProcedure each, int start, int end) {
+        int v = volume();
+        int offset = width * target();
+        for (int i = end-1; i >= start; i-- ) {
+            each.value(i, getAtDirect(idx(offset, i, v)));
+        }
+    }
+
+    protected float getAtDirect(int d) {
+        return buffer.getAt(d);
     }
 
     public int target() {
         return target.getOpaque();
     }
 
-    public Tensor commit(Tensor t) {
+    public void target(int nextTarget) {
+        target.set(nextTarget);
+    }
 
-        t.writeTo( ((ArrayTensor) buffer).data /* HACK */, spin() * segment);
+
+    @Override
+    public void setAt(float newValue, int linearCell) {
+        setAtDirect(newValue, idx(linearCell));
+    }
+
+    public void setAtDirect(float newValue, int i) {
+        buffer.setAt(newValue, i);
+    }
+    public void addAtDirect(float inc, int i) {
+        buffer.addAt(inc, i);
+    }
+
+    public void setAt(float[] values, int linearCellStart) {
+
+        int v = volume();
+        int i = idx(linearCellStart);
+        for (float x : values) {
+            buffer.setAt(x, i++);
+            if (i == v) i = 0;
+        }
+    }
+
+    @Override
+    public float addAt(float x, int linearCell) {
+        return buffer.addAt(x, idx(linearCell));
+    }
+
+    public Tensor set(Tensor t) {
+
+        t.writeTo( ((ArrayTensor) buffer).data /* HACK */, targetSpin() * width);
 
         return this;
     }
 
-    public int spin() {
-        return target.getAndIncrement();
+    public RingTensor set(float[] t) {
+        setAt(t,  target());
+        return this;
+    }
+
+    public int targetSpin() {
+        return target.incrementAndGet();
     }
 
     /** procedure receives the index of the next target */
-    public int spin(IntProcedure r) {
-        return target.getAndIncrement(r);
+    public int targetSpin(IntProcedure r) {
+        return target.incrementAndGet(r);
     }
 
 
@@ -104,15 +163,15 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
         return output;
     }
 
-
-    @Override
-    public void setAt(float newValue, int linearCell) {
-        buffer.setAt(newValue, linearCell);
-    }
-
-    @Override
-    public void fill(float x) {
+    public void fillAll(float x) {
         buffer.fill(x);
     }
+
+
+
+//    @Override
+//    public void fill(float x) {
+//        //TODO
+//    }
 
 }

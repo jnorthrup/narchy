@@ -22,7 +22,15 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     final RingTensor window;
     final AtomicDouble current = new AtomicDouble(Double.NaN);
 
+    @Override
+    public String toString() {
+        return window.toString();
+    }
 
+    public FloatAveragedWindow clear(float f) {
+        window.fillAll(f);
+        return this;
+    }
 
     private interface AverageStrategy {
         double apply(Tensor window, float alpha);
@@ -52,19 +60,21 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
         Exponential {
             @Override
             public double apply(Tensor window, float a) {
-                final double[] next = {Double.NaN};
+                double next = Double.NaN;
                 //TODO Tensor reduce function
-                window.forEach((int i, float n) -> {
-                    if (n != n)
-                        return;
+                int vol = window.volume();
+                for (int i = 0; i < vol; i++) { //reverse
+                    float v = window.getAt(i);
+                    if (v != v)
+                        continue;
 
-                    double prev = next[0];
-                    next[0] = (prev == prev) ?
-                            ((1 - a) * prev) + (a * n)
+                    double prev = next;
+                    next = (prev == prev) ?
+                            ((1 - a) * prev) + (a * v)
                             :
-                            n; //initial value
-                });
-                return next[0];
+                            v; //initial value
+                }
+                return next;
             }
         };
     }
@@ -77,7 +87,7 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
 
     public FloatAveragedWindow(int windowSize, FloatRange alpha) {
         this.window = new RingTensor(new AtomicArrayTensor(windowSize), 1, windowSize);
-        window.fill(Float.NaN);
+        window.fillAll(Float.NaN);
         this.alpha = alpha;
     }
 
@@ -114,35 +124,48 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
 
     /** warning: commits */
     @Override public final float valueOf(float next) {
-        setAndCommit(next);
+        next(next);
         return asFloat();
     }
 
 
-    /** add to current value */
-    public final void add(float inc) {
-        if (inc == inc) {
-            window.addAt(inc, window.target());
-        }
-    }
+
 
     /** set current value */
     public final void set(float x) {
         if (x == x) {
-            window.setAt(x, window.target());
+            _set(x);
         }
     }
 
-    public void setAndCommit(float v) {
-        if (v == v) {
+
+    public void next(float x) {
+        if (x == x) {
             //TODO make AtomicRingBufferTensor
-            window.commit(new float[]{v});
+            _set(x);
+            next();
+        }
+    }
+
+    public void next() {
+        window.targetSpin();
+    }
+
+    /** add to current value */
+    public final void add(float inc) {
+        if (inc == inc) {
+            window.addAtDirect(inc, window.target());
             invalidate();
         }
     }
+    protected void _set(float x) {
+        window.setAtDirect(x, window.target());
+        invalidate();
+    }
 
-    public void commit(float initialValueForNext) {
-        window.spin((i)-> window.setAt(initialValueForNext, i));
+    public void resetNext(float initialValueForNext) {
+        //window.targetSpin((i)-> window.setAt(initialValueForNext, i));
+        window.setAtDirect(initialValueForNext,  window.targetSpin()); //window.targetSpin()(i)-> window.setAt(initialValueForNext, i));
         invalidate();
     }
 

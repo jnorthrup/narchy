@@ -26,7 +26,7 @@ import nars.video.AutoclassifiedBitmap;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
-import spacegraph.space2d.widget.meter.WaveView;
+import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.video.GLScreenShot;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -173,8 +173,8 @@ public class Jake2Agent extends NAgentX implements Runnable {
         hear = new FreqVectorSensor(new CircularFloatBuffer(8*1024),
                 f->$.inh($.the(f), "hear"), 512,16, nar);
         addSensor(hear);
-        WaveView hearView = new WaveView(hear.buf, 300, 64);
-        onFrame((Runnable) hearView::updateLive);
+        WaveBitmap hearView = new WaveBitmap(hear.buf, 300, 64);
+        onFrame(hearView::update);
         window(grid(new VectorSensorView(hear, nar).withControls(),
                 //spectrogram(hear.buf, 0.1f,512, 16),
                 new ObjectSurface(hear), hearView), 400, 400);

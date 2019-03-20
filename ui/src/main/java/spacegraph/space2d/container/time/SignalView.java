@@ -12,7 +12,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.Spectrogram;
-import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.video.Draw;
 
 import static java.lang.Float.NaN;
@@ -41,16 +40,16 @@ public class SignalView extends Timeline2D {
         Spectrogram g = new FreqSpectrogram(in, true,512, 2048);
         add(g);
 
-        WaveView w = new WaveView(in, 500, 250);
-        add(w);
+//        WaveView w = new WaveView(in, 500, 250);
+//        add(w);
 
         addEvents(new SimpleTimelineEvents(), (nv)->{
             nv.set(new PushButton(nv.id.toString()));
         });
 
-        this.in.wave.on(raw->{
-            w.updateLive();
-        });
+//        this.in.wave.on(raw->{
+//            w.updateLive();
+//        });
     }
 
 

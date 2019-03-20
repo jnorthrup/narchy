@@ -3,10 +3,16 @@ package jcog.data.atomic;
 import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntUnaryOperator;
 
 abstract public class AtomicCycle  {
 
     final AtomicInteger i = new AtomicInteger();
+
+    @Override
+    public String toString() {
+        return i.toString();
+    }
 
     /** inclusive */
     abstract public int low();
@@ -76,23 +82,30 @@ abstract public class AtomicCycle  {
     }
 
     public int getAndIncrement() {
-        return i.getAndUpdate(x -> {
-            int y = x + 1;
-            if (y >= high())
-                y = low();
-            return y;
-        });
+        return i.getAndUpdate(spin);
+    }
+    public int incrementAndGet() {
+        return i.updateAndGet(spin);
+    }
+
+    private final IntUnaryOperator spin = x -> ++x >= high() ? low() : x;
+
+
+    /** procedure receives the index of the next target */
+    public int incrementAndGet(IntProcedure r) {
+        return i.updateAndGet(spinAfter(r));
     }
 
     /** procedure receives the index of the next target */
     public int getAndIncrement(IntProcedure r) {
-        return i.getAndUpdate(x -> {
-            int y = x + 1;
-            if (y >= high())
-                y = low();
-            r.value(y);
-            return y;
-        });
+        return i.getAndUpdate(spinAfter(r));
+    }
+
+    protected IntUnaryOperator spinAfter(IntProcedure r) {
+        return x -> {
+            r.value(x++);
+            return x >= high() ? low() : x;
+        };
     }
 
 // TODO

@@ -152,7 +152,7 @@ public class RLBooster implements Consumer<NAR> {
 
 
         int O = agent.act(feedback(env.prev, now), (float) reward,
-                _in = history.commit(input(start, end)).snapshot(_in) );
+                _in = history.set(input(start, end)).snapshot(_in) );
 
         float OFFfreq =
                 0f;

@@ -19,7 +19,7 @@ import spacegraph.space2d.widget.chip.AudioOutPort;
 import spacegraph.space2d.widget.chip.StringSynthChip;
 import spacegraph.space2d.widget.chip.WaveViewChip;
 import spacegraph.space2d.widget.console.TextEdit0;
-import spacegraph.space2d.widget.meter.WaveView;
+import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -170,7 +170,7 @@ public class GraphEditTest {
 //                buffer.write(new float[]{(float) Math.sin(i / 500f)});
 //            }
 
-                WaveView wave = new WaveView(buffer, 600, 400);
+                WaveBitmap wave = new WaveBitmap(buffer, 600, 400);
                 AtomicBoolean busy = new AtomicBoolean(false);
                 TypedPort p = new TypedPort<>(String.class, (String text) -> {
                     if (busy.compareAndSet(false, true)) {

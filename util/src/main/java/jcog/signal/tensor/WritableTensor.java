@@ -11,6 +11,7 @@ public interface WritableTensor extends Tensor {
         setAt(newValue, index(cell));
     }
 
+    /** returns the new value after adding */
     default float addAt(float x, int linearCell) {
         float next = getAt(linearCell);
         if (next!=next) next = 0; //reset to zero

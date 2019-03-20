@@ -8,10 +8,11 @@ import spacegraph.space2d.container.graph.Graph2D;
 import java.util.List;
 import java.util.function.Consumer;
 
-/** layers in which discretely renderable or interactable events can be materialized */
+/** layers in which discretely renderable or interactable events
+ * which can be materialized as arrangeable clips */
 public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRangeAware {
 
-    double tStart, tEnd;
+    double start, end;
 
     private final Timeline2D.TimelineEvents<E> model;
 
@@ -28,17 +29,18 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
     }
 
     private Timeline2DEvents update() {
-        set(model.events((long) Math.floor(tStart), (long) Math.ceil(tEnd - 1)));
+        set(model.events((long) Math.floor(start), (long) Math.ceil(end/* - 1 ?*/)));
         return this;
     }
 
 
     @Override
     public void setTime(double start, double end) {
-        this.tStart = start; this.tEnd = end;
+        this.start = start; this.end = end;
         update();
     }
 
+    /** staggered lane layout */
     private class DefaultTimelineUpdater implements Graph2DUpdater<E> {
 
 
@@ -118,8 +120,8 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
         }
     }
 
-    protected float x(float left) {
-        return Timeline2D.x(tStart, tEnd, x(), w(), left );
+    protected float x(float t) {
+        return Timeline2D.x(start, end, x(), w(), t );
     }
 
 }

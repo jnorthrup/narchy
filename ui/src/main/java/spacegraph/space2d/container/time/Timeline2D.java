@@ -2,6 +2,8 @@ package spacegraph.space2d.container.time;
 
 import jcog.Util;
 import jcog.math.Longerval;
+import jcog.tree.rtree.Spatialization;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
@@ -17,7 +19,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /** view for one or more TimeRangeAware implementing surfaces that display aspects of a time-varying signal */
-public class Timeline2D extends Stacking {
+public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
 
     /**
      * viewable range
@@ -101,15 +103,23 @@ public class Timeline2D extends Stacking {
     public Bordering controls() {
         Bordering b = new Bordering();
 
+        float sticking = 0; //0.05f;
+        double tEpsilon = Spatialization.EPSILON;
+        double speed = 0.1;
+
         FloatSlider whenSlider = new FloatSlider(0.5f, 0, 1) {
+
+
             @Override
             public boolean prePaint(SurfaceRender r) {
                 float v = this.get();
                 float d = (v - 0.5f) * 2;
-                if (Math.abs(d) > 0.05f)
-                    timeShift(d * (end - start) * 0.1);
+                double delta = d * (end - start) * speed;
 
-                set(Util.lerp(0.6f, v, 0.5f));
+                if (Math.abs(d) > tEpsilon) {
+                    timeShift(delta);
+                    set(Util.lerp(0.5f + sticking/2, v, 0.5f));
+                }
 
                 return super.prePaint(r);
             }
@@ -127,7 +137,8 @@ public class Timeline2D extends Stacking {
             public boolean prePaint(SurfaceRender r) {
                 float v = this.get();
                 timeScale((v + 0.5f));
-                set(Util.lerp(0.75f, v, 0.5f));
+                set(Util.lerp(0.5f + sticking/2, v, 0.5f));
+
                 return super.prePaint(r);
             }
 
@@ -136,7 +147,7 @@ public class Timeline2D extends Stacking {
                 return "";
             }
         }.type(SliderModel.KnobVert);
-        b.borderSize(Bordering.E, 0.25f).east(zoomSlider);
+        b.borderSize(Bordering.E, 0.2f).east(zoomSlider);
 
         return b;
     }

@@ -327,6 +327,7 @@ public class CircularFloatBuffer extends CircularBuffer {
     /**
      * interpolates fractional areas
      * from inclusive, to exclusive (next integer ceiling)
+     * needs tested
      */
     public double sum(double sStart, double sEnd) {
         return Util.interpSum((i)->data[i], capacity(), sStart, sEnd, true);

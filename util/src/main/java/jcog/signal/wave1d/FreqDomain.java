@@ -47,7 +47,7 @@ public class FreqDomain {
     }
 
     public boolean update(Tensor next) {
-        freq.commit(next(next));
+        freq.set(next(next));
         return true;
     }
 }

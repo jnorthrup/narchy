@@ -598,7 +598,7 @@ abstract public class NAgentX extends NAgent {
                 plot.commit();
 
                 float x = ((TaskBuffer.BagTaskBuffer) b).valve.floatValue();
-                sense = history.commit(new float[]{
+                sense = history.set(new float[]{
                         x, v, 0.5f + 0.5f * Util.tanhFast((float) -Math.log(dv))
                 }).snapshot(sense);
 
