@@ -1459,7 +1459,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         Term ct = concept.term();
 
         if (ct.volume() > termVolumeMax.intValue())
-            return null; //too complex
+            return null; //too complex to analyze for dynamic
 
         if (ConceptBuilder.dynamicModel(ct) != null) {
             //try conceptualizing the dynamic
@@ -1514,7 +1514,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 //        return answer(content, GOAL, start, end);
 //    }
 
-    /** stream of all currently registered internal events */
+    /** stream of all (explicitly and inferrable) internal events */
     public Stream<? extends InternalEvent> at() {
         return Streams.concat(
             //TODO Streams.stream(eventTask).map(t -> ), // -> AtTask events
@@ -1528,10 +1528,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         );
     }
 
+    /** map of internal events organized by category */
     public final Map<Term,List<InternalEvent>> atMap() {
         return at().collect(Collectors.groupingBy(InternalEvent::category));
     }
 
+    /** stream of all registered services */
     public final <X> Stream<X> services(Class<? extends X> nAgentClass) {
         return services().filter(x -> nAgentClass.isAssignableFrom(x.getClass()))
                 .map(x -> (X)x);
@@ -1590,13 +1592,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         private short[] append(short[] currentCause, int tcl) {
             int cc = Param.causeCapacity.intValue();
             short[] tc = Arrays.copyOf(currentCause, Math.min(cc, tcl + 1));
+            int target;
             if (tc.length == cc) {
                 //shift
                 System.arraycopy(tc, 1, tc, 0, tc.length - 1);
-                tc[tc.length - 1] = ci;
+                target = tc.length-1;
             } else {
-                tc[tcl] = ci;
+                target = tcl;
             }
+            tc[target] = ci;
             return tc;
         }
 

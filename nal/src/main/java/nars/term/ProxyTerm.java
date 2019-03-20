@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.WTF;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.compound.SameSubtermsCompound;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.util.function.Predicate;
 
 
-public class ProxyTerm implements Compound {
+public class ProxyTerm implements SameSubtermsCompound {
 
     public final /*HACK make unpublic */ Term ref;
 

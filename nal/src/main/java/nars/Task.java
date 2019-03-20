@@ -671,7 +671,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * @return value >= 0 indicating the evidence
      */
     default double evi(long when, final int dur) {
-        return EvidenceEvaluator.the(this, dur).evi(when);
+        return EvidenceEvaluator.at(this, dur,when);
     }
 
     @Override

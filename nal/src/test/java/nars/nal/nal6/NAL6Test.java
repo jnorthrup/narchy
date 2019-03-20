@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1500;
+    private static final int cycles = 900;
 
     @BeforeEach
     void setup() {
@@ -25,9 +25,9 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(14);
         //n.freqResolution.setAt(0.1f);
-        n.confMin.set(0.12f);
+        n.confMin.set(0.25f);
         return n;
     }
 
@@ -44,11 +44,11 @@ public class NAL6Test extends NALTest {
     void variable_unification2() {
 
         test
-            .termVolMax(8)
-            .believe("<($x --> bird) ==> <$x --> animal>>")
-            .believe("<<$y --> robin> ==> <$y --> bird>>")
-            .mustBelieve(cycles, "<<$1 --> robin> ==> <$1 --> animal>>", 1.00f, 0.81f)
-            .mustBelieve(cycles, "<<$1 --> animal> ==> <$1 --> robin>>", 1.00f, 0.45f);
+                .termVolMax(8)
+                .believe("<($x --> bird) ==> <$x --> animal>>")
+                .believe("<<$y --> robin> ==> <$y --> bird>>")
+                .mustBelieve(cycles, "<<$1 --> robin> ==> <$1 --> animal>>", 1.00f, 0.81f)
+                .mustBelieve(cycles, "<<$1 --> animal> ==> <$1 --> robin>>", 1.00f, 0.45f);
 
     }
 
@@ -98,6 +98,7 @@ public class NAL6Test extends NALTest {
         );
 
     }
+
     @Test
     void variable_unification5_neg() {
 
@@ -118,14 +119,15 @@ public class NAL6Test extends NALTest {
 
 
         TestNAR tester = test;
-        tester.believe("((&&,($x --> flyer),($x --> [chirping]), food($x, worms)) ==> ($x --> bird))");
-        tester.believe("((&&,($y --> [chirping]),($y --> [withWings])) ==> ($y --> bird))");
-        tester.mustBelieve(cycles, "((($1 --> flyer) && food($1,worms)) ==> ($1 --> [withWings]))", 1.00f,
+        tester.termVolMax(17)
+            .believe("((&&,($x --> flyer),($x --> [chirping]), food($x, worms)) ==> ($x --> bird))")
+            .believe("((&&,($y --> [chirping]),($y --> [withWings])) ==> ($y --> bird))")
+            .mustBelieve(cycles, "((($1 --> flyer) && food($1,worms)) ==> ($1 --> [withWings]))", 1.00f,
+                0.45f
+                /*0.45f*/)
+            .mustBelieve(cycles, "(($1 --> [withWings]) ==> (($1 --> flyer) && food($1,worms)))", 1.00f,
                 0.45f
                 /*0.45f*/);
-        tester.mustBelieve(cycles, "(($1 --> [withWings]) ==> (($1 --> flyer) && food($1,worms)))", 1.00f,
-                0.45f
-                /*0.45f*/); 
 
 
         /*
@@ -170,6 +172,7 @@ public class NAL6Test extends NALTest {
         tester.mustBelieve(cycles, "<(&&,($1 --> [withWings]),<($1,worms) --> food>) ==> ($1 --> bird)>", 1.00f, 0.45f);
 
     }
+
     @Test
     void variable_unification7_neg() {
 
@@ -285,19 +288,20 @@ public class NAL6Test extends NALTest {
 
         test
 
-            .believe("({Tweety} --> [withWings])")
-            .believe("((($x --> [chirping]) && ($x --> [withWings])) ==> ($x --> bird))")
-            .mustBelieve(cycles,
-                //"((({Tweety}-->[chirping])&&({Tweety}-->[withWings]))==>({Tweety}-->bird))",
-                "(({Tweety}-->[chirping])==>({Tweety}-->bird))",
-                1.00f,
-                0.81f
-        );
+                .believe("({Tweety} --> [withWings])")
+                .believe("((($x --> [chirping]) && ($x --> [withWings])) ==> ($x --> bird))")
+                .mustBelieve(cycles,
+                        //"((({Tweety}-->[chirping])&&({Tweety}-->[withWings]))==>({Tweety}-->bird))",
+                        "(({Tweety}-->[chirping])==>({Tweety}-->bird))",
+                        1.00f,
+                        0.81f
+                );
     }
 
     @Test
     void variable_elimination6() {
         test
+            .termVolMax(17)
             .believe("flyer:Tweety")
             .believe("((&&, flyer:$x, ($x-->[chirping]), food($x, worms)) ==> bird:$x)")
             .mustBelieve(cycles, "(((Tweety-->[chirping]) && food(Tweety,worms)) ==> bird:Tweety)",
@@ -416,13 +420,13 @@ public class NAL6Test extends NALTest {
     void multiple_variable_elimination4() {
 
 
-        test.termVolMax(11)
-            .believe("(&&,open(#y,#x),(#x --> lock),<#y --> key>)")
-            .believe("({lock1} --> lock)")
-            .mustBelieve(cycles, "((#1-->key) && open(#1,{lock1}))", 1.00f,
-                    //0.66f
-                0.43f
-        );
+        test.termVolMax(12)
+                .believe("(&&,open(#y,#x),(#x --> lock),<#y --> key>)")
+                .believe("({lock1} --> lock)")
+                .mustBelieve(cycles, "((#1-->key) && open(#1,{lock1}))", 1.00f,
+                        //0.66f
+                        0.43f
+                );
     }
 
 
@@ -430,11 +434,11 @@ public class NAL6Test extends NALTest {
     void variable_introduction() {
 
         test.termVolMax(7)
-            .believe("(swan --> bird)")
-            .believe("(swan --> swimmer)", 0.80f, 0.9f)
-            .mustBelieve(cycles, "(($1 --> swimmer) ==> ($1 --> bird))", 1.00f, 0.39f)
-            .mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> swimmer))", 0.80f, 0.45f)
-            .mustBelieve(cycles, "((#1 --> swimmer) && (#1 --> bird))", 0.80f, 0.81f);
+                .believe("(swan --> bird)")
+                .believe("(swan --> swimmer)", 0.80f, 0.9f)
+                .mustBelieve(cycles, "(($1 --> swimmer) ==> ($1 --> bird))", 1.00f, 0.39f)
+                .mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> swimmer))", 0.80f, 0.45f)
+                .mustBelieve(cycles, "((#1 --> swimmer) && (#1 --> bird))", 0.80f, 0.81f);
 
     }
 
@@ -501,7 +505,7 @@ public class NAL6Test extends NALTest {
     void variables_introduction() {
 
         test.termVolMax(10)
-            .confMin(0.35f)
+                .confMin(0.35f)
                 .believe("open({key1},{lock1})")
                 .believe("key:{key1}")
                 //.mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.45f)
@@ -563,7 +567,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((($1 --> lock)&&($2 --> key)) ==> open($1,$2))", 1.00f, 0.90f);
         tester.believe("({key1} --> key)", 1.00f, 0.90f);
-        tester.mustBelieve(cycles*2, "(($1-->lock)==>open($1,{key1}))", 1.00f,
+        tester.mustBelieve(cycles * 2, "(($1-->lock)==>open($1,{key1}))", 1.00f,
                 0.73f
                 /*0.81f*/);
     }
@@ -650,6 +654,7 @@ public class NAL6Test extends NALTest {
                 .believe("x(a)", 1.00f, 0.90f)
                 .mustBelieve(cycles, "y(a)", 1.00f, 0.81f);
     }
+
     @Test
     void deductionBeliefWithVariableNeg() {
         test
@@ -725,6 +730,7 @@ public class NAL6Test extends NALTest {
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
                 .mustGoal(cycles, "y(a)", 1.00f, 0.45f);
     }
+
     @Test
     void GoalMatchSubjOfImplWithVariableNeg() {
         test
@@ -745,19 +751,20 @@ public class NAL6Test extends NALTest {
     void variable_elimination_deduction() {
 
         test
-                .termVolMax(12)
+                .termVolMax(13)
                 .believe("((&&,(#1 --> lock),open($2,#1)) ==> ($2 --> key))", 1.00f, 0.90f)
                 .believe("(lock1 --> lock)", 1.00f, 0.90f)
                 //.mustBelieve(cycles, "((open($1,lock1)&&(lock1-->lock))==>($1-->key))", 1.00f, 0.81f)
                 .mustBelieve(cycles, "(open($1,lock1)==>($1-->key))", 1.00f, 0.81f)
-                ;
+        ;
 
     }
+
     @Test
     void variable_elimination_deduction_neg_conc() {
 
         test
-                .termVolMax(12)
+                .termVolMax(13)
                 .believe("((&&,(#1 --> lock),open($2,#1)) ==> ($2 --> key))", 0.00f, 0.90f)
                 .believe("(lock1 --> lock)", 1.00f, 0.90f)
                 //.mustBelieve(cycles, "((open($1,lock1)&&(lock1-->lock))==>($1-->key))", 0.00f, 0.81f)
@@ -769,46 +776,55 @@ public class NAL6Test extends NALTest {
     void variable_elimination_deduction_neg_condition() {
 
         test
-            .termVolMax(12)
-            .believe("((&&, --(#1 --> lock), open($2,#1)) ==> ($2 --> key))")
-            .believe("--(lock1 --> lock)")
-            //.mustBelieve(cycles, "((open($1,lock1)&&--(lock1-->lock))==>($1-->key))", 1.00f, 0.81f)
-            .mustBelieve(cycles, "(open($1,lock1)==>($1-->key))", 1.00f, 0.81f)
-            ;
+                .termVolMax(14)
+                .believe("((&&, --(#1 --> lock), open($2,#1)) ==> ($2 --> key))")
+                .believe("--(lock1 --> lock)")
+                //.mustBelieve(cycles, "((open($1,lock1)&&--(lock1-->lock))==>($1-->key))", 1.00f, 0.81f)
+                .mustBelieve(cycles, "(open($1,lock1)==>($1-->key))", 1.00f, 0.81f)
+        ;
     }
+
     @Test
     void abduction_without_variable_elimination() {
 
         test
-                .termVolMax(12)
+                .termVolMax(13)
                 .believe("(open(x,lock1) ==> (x --> key))", 1.00f, 0.90f)
                 .believe("(((lock1 --> lock) && open(x,lock1)) ==> (x --> key))", 1.00f, 0.90f)
                 .mustBelieve(cycles, "lock:lock1", 1.00f, 0.45f)
         ;
     }
 
-    @Test void abduction_neg_without_variable_elimination() {
+    @Test
+    void abduction_neg_without_variable_elimination() {
 
         test
-                .termVolMax(10)
+                .termVolMax(14)
                 .believe("(open(x,lock1) ==> (x --> key))", 1.00f, 0.90f)
                 .believe("((--(lock1 --> lock) && open(x,lock1)) ==> (x --> key))", 1.00f, 0.90f)
                 .mustBelieve(cycles, "lock:lock1", 0.00f, 0.45f)
         ;
     }
 
-    /** Conditional Abduction via Multi-conditional Syllogism */
-    @Test void abduction_with_variable_elimination() {
+    /**
+     * Conditional Abduction via Multi-conditional Syllogism
+     */
+    @Test
+    void abduction_with_variable_elimination() {
 
         test
-                .termVolMax(12)
+                .termVolMax(13)
                 .believe("(open($1,lock1) ==> ($1 --> key))", 1.00f, 0.90f)
                 .believe("(((#1 --> lock) && open($2,#1)) ==> ($2 --> key))", 1.00f, 0.90f)
                 .mustBelieve(cycles, "lock:lock1", 1.00f, 0.45f)
         ;
     }
-    /** Conditional Abduction via Multi-conditional Syllogism */
-    @Test void abduction_with_variable_elimination_negated() {
+
+    /**
+     * Conditional Abduction via Multi-conditional Syllogism
+     */
+    @Test
+    void abduction_with_variable_elimination_negated() {
 
         test
                 .termVolMax(14)
@@ -818,14 +834,18 @@ public class NAL6Test extends NALTest {
                 .mustNotOutput(cycles, "lock:lock1", BELIEF, 0.5f, 1f, 0, 1f, ETERNAL)
         ;
     }
-    /** Conditional Abduction via Multi-conditional Syllogism */
-    @Test void abduction_positive_negative_mix_depolarized() {
+
+    /**
+     * Conditional Abduction via Multi-conditional Syllogism
+     */
+    @Test
+    void abduction_positive_negative_mix_depolarized() {
 
         test
-           .termVolMax(7).confMin(0.35f)
-            .believe("(P ==> N)", 0.00f, 0.90f)
-            .believe("((A && --N) ==> P)", 1.00f, 0.90f)
-            .mustBelieve(cycles, "A", 1.00f, 0.45f)
+                .termVolMax(7).confMin(0.35f)
+                .believe("(P ==> N)", 0.00f, 0.90f)
+                .believe("((A && --N) ==> P)", 1.00f, 0.90f)
+                .mustBelieve(cycles, "A", 1.00f, 0.45f)
         ;
     }
 
@@ -833,35 +853,35 @@ public class NAL6Test extends NALTest {
     void strong_unification_simple() {
 
         test
-            .believe("(pair($a,$b) ==> ($a --> $b))", 1.00f, 0.90f)
-            .believe("pair(x,y)", 1.00f, 0.90f)
-            .mustBelieve(cycles * 4, "(x --> y)", 1.00f, 0.81f);
+                .believe("(pair($a,$b) ==> ($a --> $b))", 1.00f, 0.90f)
+                .believe("pair(x,y)", 1.00f, 0.90f)
+                .mustBelieve(cycles * 4, "(x --> y)", 1.00f, 0.81f);
     }
 
     @Test
     void strong_unification_dep_indep_pre() {
         test.termVolMax(7)
-            .believe("(#x --> y)")
-            .believe("(($x --> y) ==> ($x --> z))")
-            .mustBelieve(cycles, "(#x-->z)", 1f, 0.81f);
+                .believe("(#x --> y)")
+                .believe("(($x --> y) ==> ($x --> z))")
+                .mustBelieve(cycles, "(#x-->z)", 1f, 0.81f);
     }
+
     @Test
     void strong_unification_dep_indep_post() {
         test.termVolMax(7)
-            .believe("(#x --> z)")
-            .believe("(($x --> y) ==> ($x --> z))")
-            .mustBelieve(cycles, "(#x-->y)", 1f, 0.45f);
+                .believe("(#x --> z)")
+                .believe("(($x --> y) ==> ($x --> z))")
+                .mustBelieve(cycles, "(#x-->y)", 1f, 0.45f);
     }
 
     @Test
     void strong_unification_simple2() {
 
-        test.termVolMax(8)
+        test.termVolMax(9)
                 .believe("<<($a,$b) --> pair> ==> {$a,$b}>", 1.00f, 0.90f)
                 .believe("<(x,y) --> pair>", 1.00f, 0.90f)
                 .mustBelieve(cycles, "{x,y}", 1.00f, 0.81f);
     }
-
 
 
     @Test
@@ -1003,7 +1023,7 @@ public class NAL6Test extends NALTest {
 
 
     @Test
-    void testDecomposeImplPredConjQuestion()  {
+    void testDecomposeImplPredConjQuestion() {
         test
                 .ask("( x ==> (&&, y, z) )")
                 .mustOutput(cycles, "( x ==>+- y )", QUESTION)
@@ -1012,7 +1032,7 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    void testDecomposeImplPredDisjQuestion()  {
+    void testDecomposeImplPredDisjQuestion() {
         test
                 .ask("( x ==> (||, y, z) )")
                 .mustOutput(cycles, "( x ==>+- y )", QUESTION)
@@ -1058,7 +1078,7 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    void recursionSmall1()  {
+    void recursionSmall1() {
 
 
         test.nar.termVolumeMax.set(10);
@@ -1117,6 +1137,7 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "(&&,f(x),g(x))", 1f, 0.81f)
         ;
     }
+
     @Test
     void testHypothesizeSubconditionNeg_Conj_ShortCircuit() {
         test.nar.termVolumeMax.set(13);
@@ -1164,7 +1185,8 @@ public class NAL6Test extends NALTest {
 //    }
 
 
-    @Test void testMutexBelief() {
+    @Test
+    void testMutexBelief() {
         test
                 .believe("--(x && y)")
                 .believe("x")
@@ -1173,7 +1195,9 @@ public class NAL6Test extends NALTest {
                 .mustNotOutput(cycles, "y", BELIEF, 0.5f, 1f, 0, 1f, ETERNAL)
         ;
     }
-    @Test void testMutexConjBeliefInduction() {
+
+    @Test
+    void testMutexConjBeliefInduction() {
         test
                 .believe("(x && --y)")
                 .believe("(--x && y)")
@@ -1182,7 +1206,9 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "(y ==> x)", 0f, 0.45f)
         ;
     }
-    @Test void testMutexConjBeliefInduction2() {
+
+    @Test
+    void testMutexConjBeliefInduction2() {
         test
                 .believe("(&&,x,--y,a)")
                 .believe("(&&,--x,y,a)")
@@ -1198,14 +1224,17 @@ public class NAL6Test extends NALTest {
 //        ;
 //    }
 
-    @Test void testMutexAbduction() {
+    @Test
+    void testMutexAbduction() {
         test
                 .believe("(--(x && y) ==> z)")
                 .believe("(x && z)")
                 .mustBelieve(cycles, "y", 0f, 0.45f)
         ;
     }
-    @Test void testMutexDissociation() {
+
+    @Test
+    void testMutexDissociation() {
         test
                 .believe("(&&, x, --y, a)")
                 .believe("(&&, --x, y, b)")
@@ -1213,35 +1242,45 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-    @Test void testImplSubjQuestion() {
+    @Test
+    void testImplSubjQuestion() {
         test
                 .believe("(x ==> y)")
                 .ask("x")
                 .mustQuestion(cycles, "y")
         ;
     }
-    @Test void testImplSubjNegQuestion() {
+
+    @Test
+    void testImplSubjNegQuestion() {
         test
                 .believe("(--x ==> y)")
                 .ask("x")
                 .mustQuestion(cycles, "y")
         ;
     }
-    @Test void testImplPredQuestion() {
+
+    @Test
+    void testImplPredQuestion() {
         test
                 .believe("((x&&y)==>z)")
                 .ask("z")
                 .mustQuestion(cycles, "(x&&y)")
         ;
     }
-    @Test void testImplPredQuest()  {
+
+    @Test
+    void testImplPredQuest() {
         test
                 .believe("((x&&y)==>z)")
                 .quest("z")
                 .mustQuest(cycles, "(x&&y)")
         ;
     }
-    @Disabled @Test void testImplConjPredQuestion() {
+
+    @Disabled
+    @Test
+    void testImplConjPredQuestion() {
         test
                 .believe("((x&&y)==>z)")
                 .ask("z")
@@ -1250,21 +1289,26 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-    @Test void testImplSubjQuestionUnificationConst() {
+    @Test
+    void testImplSubjQuestionUnificationConst() {
         test
                 .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(x)")
                 .mustQuestion(cycles, "(&&,Sells(x,#2,#3),z)")
         ;
     }
-    @Test void testImplSubjNegQuestionUnificationConst() {
+
+    @Test
+    void testImplSubjNegQuestionUnificationConst() {
         test
                 .believe("(--Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(x)")
                 .mustQuestion(cycles, "(&&,Sells(x,#2,#3),z)")
         ;
     }
-    @Test void testImplSubjQuestionUnificationQuery() {
+
+    @Test
+    void testImplSubjQuestionUnificationQuery() {
         test
                 .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(?x)")
@@ -1272,7 +1316,8 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-    @Test void testImplPredQuestionUnification() {
+    @Test
+    void testImplPredQuestionUnification() {
         test
                 .believe("((&&,Sells($1,#2,#3),z)==>Criminal($1))")
                 .ask("Criminal(?x)")

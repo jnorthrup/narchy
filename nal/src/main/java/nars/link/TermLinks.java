@@ -48,7 +48,7 @@ public final class TermLinks {
         return match.sample( src.term(), bag, punc, filter, in, out, now, minUpdateCycles, rng);
     }
 
-    public boolean refresh(Term x, Iterable<TaskLink> items, int itemCount, boolean in, boolean out, long now, int minUpdateCycles) {
+    public boolean refresh(Term x, Iterable<TaskLink> items, int itemCount, boolean reverse, long now, int minUpdateCycles) {
         if (now - updated >= minUpdateCycles) {
 
             int cap = Math.max(4, (int) Math.ceil(2 * Math.sqrt(itemCount)) /* estimate */);
@@ -62,7 +62,7 @@ public final class TermLinks {
 
                 float xp = t.priElseZero();
                 if (match == null || match instanceof Set || (match instanceof RankedN && xp > match.minValueIfFull())) {
-                    Term y = other(x, t, in, out);
+                    Term y = t.other(x, reverse);
                     if (y != null) {
 
                         if (match == null) {
@@ -113,20 +113,8 @@ public final class TermLinks {
     }
 
     public final Term sample(Term srcTerm, Iterable<TaskLink> items, int itemCount, byte punc, Predicate<TaskLink> filter, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
-        return refresh(srcTerm, items, itemCount, in, out, now, minUpdateCycles) ?
+        return refresh(srcTerm, items, itemCount, out, now, minUpdateCycles) ?
                 sample(filter, punc, rng) : null;
     }
 
-    @Nullable static private Term other(Term x, TaskLink t, boolean in, boolean out) {
-        Term tt = t.target();
-        if (out && x.equals(tt)) {
-            Term y = t.source();
-            return y; //!t.isSelf() ? y : null;
-        }
-        if (in && x.equals(t.source())) {
-            Term y = tt;
-            return y; //!t.isSelf() ? y : null;
-        }
-        return null;
-    }
 }

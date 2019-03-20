@@ -152,12 +152,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      */
     private boolean tryInsertFull(Y toAdd, float toAddPri, long[] lock, @Nullable Consumer<Y> update) {
 
-        boolean writing = false;
+        boolean alreadyWriting = false;
 
         int s;
         if (cleanIfFull()) {
-            writing = true;
             lock[0] = this.writeFromRead(lock[0]);
+            alreadyWriting = true;
             s = clean(update);
         } else {
             s = size();
@@ -173,13 +173,16 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             float priMin = pri(lastToRemove);
             if (toAddPri <= priMin)
                 return false;
+
         } else {
             //space has been cleared for the new item
             lastToRemove = null;
         }
 
-        if (!writing)
+        if (!alreadyWriting) {
             lock[0] = writeFromRead(lock[0]);
+            alreadyWriting = true;
+        }
 
         if (lastToRemove!=null) {
             //removeFromMap(items.removeLast());
@@ -255,7 +258,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         } else {
             hist = hist.clear(0, histRange - 1, bins);
         }
-        float q = Float.NaN;
+//        float q = Float.NaN;
         for (int i = 0; i < s; ) {
             Y y = (Y) l[i];
             //assert y != null;
@@ -281,15 +284,15 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
                     }
                 }
 
-                if (q == q && p - q >= ScalarValue.EPSILON / 2) {
-                    //swap with previous (early progressive sorting pass)
-                    Object x = l[i - 1];
-                    l[i - 1] = y;
-                    l[i] = x;
-                    //q remains the previous of any next item
-                } else {
-                    q = p;
-                }
+//                if (q == q && p - q >= ScalarValue.EPSILON / 2) {
+//                    //swap with previous (early progressive sorting pass)
+//                    Object x = l[i - 1];
+//                    l[i - 1] = y;
+//                    l[i] = x;
+//                    //q remains the previous of any next item
+//                } else {
+//                    q = p;
+//                }
 
                 i++;
 
@@ -297,7 +300,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             } else {
                 removeFromMap(items2.remove(i));
                 s--;
-                q = Float.NaN;
+//                q = Float.NaN;
             }
         }
 

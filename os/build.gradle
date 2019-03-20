@@ -16,9 +16,9 @@ dependencies {
     compile project(':ui')
 
 
-    compile(group: 'org.boofcv', name: 'boofcv-feature', version: '0.32')
-    compile(group: 'org.boofcv', name: 'boofcv-geo', version: '0.32')
-    compile(group: 'org.boofcv', name: 'boofcv-sfm', version: '0.32')
+    compile(group: 'org.boofcv', name: 'boofcv-feature', version: '0.33.1')
+    compile(group: 'org.boofcv', name: 'boofcv-geo', version: '0.33.1')
+    compile(group: 'org.boofcv', name: 'boofcv-sfm', version: '0.33.1')
 
 
     compile (group: 'org.teavm', name: 'teavm-tooling', version: teaVMversion) {

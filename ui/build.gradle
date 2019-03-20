@@ -10,7 +10,7 @@ plugins {
 }
 
 def boofVersion =
-        '0.32'
+        '0.33.1'
 
 def jogampVersion = '2.3.2'
 
@@ -28,7 +28,7 @@ dependencies {
         exclude(module:'ejml-core')
     }
     // https://mvnrepository.com/artifact/org.ejml/ejml-core
-    compile group: 'org.ejml', name: 'ejml-core', version: '0.37.1'
+    compile group: 'org.ejml', name: 'ejml-core', version: '0.38'
 
 
     compile group: 'com.googlecode.lanterna', name: 'lanterna', version: '3.0.1'

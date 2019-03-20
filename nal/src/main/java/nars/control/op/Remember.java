@@ -214,6 +214,9 @@ public class Remember extends AbstractTask {
 
 
     public void forget(Task x) {
+        if (x == null)
+            throw new NullPointerException(); //TEMPORARY
+
         if (remembered != null && remembered.removeInstance(x)) {
             //throw new TODO();
             //TODO filter next tasks with any involving that task
@@ -327,10 +330,6 @@ public class Remember extends AbstractTask {
         return prev;
     }
 
-
-    public final void reject() {
-        forget(input);
-    }
 
 
     private static boolean add(ITask x, FasterList f) {

@@ -8,7 +8,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.op.FileFunc;
-import nars.subterm.AnonVector;
+import nars.subterm.AnonSubterms;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.task.TaskBuilder;
@@ -784,19 +784,19 @@ public enum $ {
             case 1: {
                 Term a = t[0];
                 if (a.unneg() instanceof AnonID)
-                    return new AnonVector(a);
+                    return new AnonSubterms(a);
                 break;
             }
             case 2: {
                 Term a = t[0], b = t[1];
                 if (a.unneg() instanceof AnonID && b.unneg() instanceof AnonID)
-                    return new AnonVector(a, b);
+                    return new AnonSubterms(a, b);
                 break;
             }
             case 3: {
                 Term a = t[0], b = t[1], c = t[2];
                 if (a.unneg() instanceof AnonID && b.unneg() instanceof AnonID && c.unneg() instanceof AnonID)
-                    return new AnonVector(a, b, c);
+                    return new AnonSubterms(a, b, c);
                 break;
             }
         }

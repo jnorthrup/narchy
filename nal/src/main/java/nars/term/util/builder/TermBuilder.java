@@ -63,7 +63,7 @@ public abstract class TermBuilder implements TermConstructor {
             return Op.EmptySubterms;
 
         if (tryAnon && isAnon(t))
-            return new AnonVector(t);
+            return new AnonSubterms(t);
         else
             return newSubtermsVector(t);
 

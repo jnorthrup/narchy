@@ -1,6 +1,7 @@
 package nars.table.eternal;
 
 import nars.NAR;
+import nars.Task;
 import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
@@ -21,8 +22,9 @@ public class DefaultOnlyEternalTable extends EternalTable {
 
         tables.add(this);
 
-        nar.believe(c.term(), Tense.Eternal, t.freq(), t.conf());
-
+        //TODO just direct insert
+        Task belief = nar.believe(c.term(), Tense.Eternal, t.freq(), t.conf());
+        assert(!belief.isDeleted());
         assert(!isEmpty());
     }
 

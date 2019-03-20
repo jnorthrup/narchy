@@ -20,6 +20,16 @@ import java.util.function.Predicate;
 public abstract class SeparateSubtermsCompound implements Compound {
 
     @Override
+    public String toString() {
+        return Compound.toString(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return Compound.equals(this, obj,true);
+    }
+
+    @Override
     public int hashCode() {
         return Compound.hashCode(this);
     }

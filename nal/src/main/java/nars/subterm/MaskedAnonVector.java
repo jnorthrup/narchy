@@ -5,9 +5,9 @@ import nars.term.anon.AnonID;
 
 import static nars.term.anon.AnonID.ATOM_MASK;
 
-abstract public class MaskedAnonVector extends ProxySubterms<AnonVector> {
+abstract public class MaskedAnonVector extends ProxySubterms<AnonSubterms> {
 
-    protected MaskedAnonVector(AnonVector ref) {
+    protected MaskedAnonVector(AnonSubterms ref) {
         super(ref);
     }
 
@@ -30,7 +30,7 @@ abstract public class MaskedAnonVector extends ProxySubterms<AnonVector> {
     public static class SubtermsMaskedAnonVector extends MaskedAnonVector {
         private final Subterms mask;
 
-        public SubtermsMaskedAnonVector(AnonVector skeleton, Subterms mask) {
+        public SubtermsMaskedAnonVector(AnonSubterms skeleton, Subterms mask) {
             super(skeleton);
             this.mask = mask;
         }

@@ -2,6 +2,7 @@ package nars.term.compound;
 
 import nars.term.Compound;
 
-/** TODO for building CompoundAnon term impl */
+/** provides access to subterms via its own methods (or dynamically)
+ *  as opposed to forwarding to another Subterms instance. */
 public interface SameSubtermsCompound extends Compound {
 }

@@ -4,7 +4,7 @@ import com.google.common.base.Joiner;
 import jcog.WTF;
 import nars.Op;
 import nars.Param;
-import nars.subterm.AnonVector;
+import nars.subterm.AnonSubterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
@@ -34,11 +34,11 @@ public final class CommonVariable extends UnnormalizedVariable {
 
         Op op = A.op();
 
-        AnonVector z;
+        AnonSubterms z;
         boolean ac = A instanceof CommonVariable;
         boolean bc = B instanceof CommonVariable;
         if (!ac && !bc) {
-            z = new AnonVector(Terms.sorted(A, B));
+            z = new AnonSubterms(Terms.sorted(A, B));
         } else {
             ShortHashSet t = new ShortHashSet();
 
@@ -73,14 +73,14 @@ public final class CommonVariable extends UnnormalizedVariable {
             if (bc && Arrays.equals(tt, ((CommonVariable)B).vars))
                 return B; //subsumed
 
-            z = new AnonVector(tt);
+            z = new AnonSubterms(tt);
 
         }
         return new CommonVariable(op, z);
     }
 
     /** vars must be sorted */
-    private CommonVariable(/*@NotNull*/ Op type, AnonVector vars) {
+    private CommonVariable(/*@NotNull*/ Op type, AnonSubterms vars) {
         super(type, key(type, vars));
         if (Param.DEBUG) {
             for (Term t : vars)
@@ -99,7 +99,7 @@ public final class CommonVariable extends UnnormalizedVariable {
         if (s.size() < 2 || s.size() > Param.UNIFY_COMMON_VAR_MAX)
             return Null;
 
-        return new CommonVariable(s.first().op(), new AnonVector(s.toArray(Op.EmptyTermArray)));
+        return new CommonVariable(s.first().op(), new AnonSubterms(s.toArray(Op.EmptyTermArray)));
     }
 
     @Override
@@ -115,8 +115,8 @@ public final class CommonVariable extends UnnormalizedVariable {
         return key(op(), common());
     }
 
-    public AnonVector common() {
-        return new AnonVector(vars);
+    public AnonSubterms common() {
+        return new AnonSubterms(vars);
     }
 
     static String key(Op o, Iterable<Term> vars) {

@@ -3,19 +3,15 @@ package spacegraph.space2d.widget.meter;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
-import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.video.Draw;
 import spacegraph.video.font.HersheyFont;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
@@ -501,198 +497,198 @@ public class Plot2D extends Widget {
     }
 
 
-    /**
-     * TODO merge with BitmapWave
-     */
-    @Deprecated
-    public static class BitmapPlot implements PlotVis, BitmapMatrixView.BitmapPainter {
-        BitmapMatrixView bmp = null;
-        private final int w;
-        private final int h;
-
-
-        transient private List<Series> series;
-        transient private float minValue, maxValue;
-        private Graphics gfx;
-
-        volatile boolean update = false;
-
-        /**
-         * visualization bounds
-         */
-        float first = 0f, last = 1f;
-
-        public BitmapPlot(int w, int h) {
-            this.w = w;
-            this.h = h;
-        }
-
-        public float first() {
-            return first;
-        }
-
-        public float last() {
-            return last;
-        }
-
-        public int firstSample() {
-            return (int) Math.floor(first * (series.get(0).size() - 1) /* TODO */);
-        }
-
-        public int lastSample() {
-            return (int) Math.ceil(last * (series.get(0).size() - 1) /* TODO */);
-        }
-
-        @Override
-        public void stop() {
-            if (gfx != null) {
-                gfx.dispose();
-                gfx = null;
-            }
-            if (bmp != null) {
-                bmp.stop();
-                bmp = null;
-            }
-        }
-
-        @Override
-        public void draw(List<Series> series, float minValue, float maxValue, GL2 g) {
-            if (bmp == null) {
-                bmp = new BitmapMatrixView(w, h, this) {
-                    @Override
-                    public boolean alpha() {
-                        return true;
-                    }
-                };
-            }
-            this.series = series;
-            this.minValue = minValue;
-            this.maxValue = maxValue;
-
-            if (update) {
-                update = !bmp.updateIfShowing(); //keep updating till updated
-            }
-
-            bmp.paint(g, null);
-        }
-
-        @Override
-        public void update() {
-            update = true;
-        }
-
-
-        @Override
-        public synchronized void color(BufferedImage buf, int[] pix) {
-
-
-            if (gfx == null) {
-                gfx = buf.getGraphics();
-            }
-
-            gfx.clearRect(0, 0, w, h);
-
-            int ns = series.size();
-            if (ns == 0)
-                return;
-
-            int w = this.w;
-            int h = this.h;
-            float minValue = this.minValue;
-            float maxValue = this.maxValue;
-
-
-            float yRange = ((maxValue) - (minValue));
-            float absRange = Math.max(Math.abs(maxValue), Math.abs(minValue));
-            if (absRange < Float.MIN_NORMAL) absRange = 1;
-
-
-            float alpha = 1f / ns;
-            int first = firstSample(), last = lastSample();
-            assert (series.size() == 1) : "only size=1 support for now";
-            int sn = series.get(0).size();
-            for (Series s : series) {
-
-                for (int x = 0; x < w; x++) {
-
-                    float sStart = first + (last - first) * (x / ((float) w));
-                    float sEnd = first + (last - first) * ((x + 1) / ((float) w));
-
-                    int iStart = Util.clampSafe((int) Math.ceil(sStart), 0, sn - 1);
-                    int iEnd = Util.clampSafe((int) Math.floor(sEnd), 0, sn - 1);
-                    float amp = 0;
-
-                    amp += (iStart - sStart) * s.get(iStart);
-                    for (int i = iStart + 1; i < iEnd - 1; i++)
-                        amp += s.get(i);
-                    amp += (sEnd - iEnd) * s.get(iEnd);
-
-                    amp /= (sEnd - sStart);
-
-                    float ampNormalized = (amp - minValue) / yRange;
-
-                    float intensity = Math.abs(amp) / absRange;
-                    //gfx.setColor(Color.getHSBColor(intensity, 0.7f, 0.7f));
-                    float[] sc = s.color();
-                    float iBase = Util.unitize(intensity / 2 + 0.5f);
-                    gfx.setColor(new Color(sc[0] * iBase, sc[1] * iBase, sc[2] * iBase, alpha));
-
-                    int ah = Math.round(ampNormalized * h);
-                    gfx.drawLine(x, h / 2 - ah / 2, x, h / 2 + ah / 2);
-                }
-            }
-        }
-
-        private float sampleX(int x, int w, int first, int last) {
-            return ((float) x) / w * (last - first) + first;
-        }
-
-        public synchronized void pan(float pct) {
-            float width = last - first;
-            if (width < 1) {
-                float mid = ((first + last) / 2);
-                float nextMid = mid + (pct * width);
-
-                float first = nextMid - width / 2;
-                float last = nextMid + width / 2;
-                if (first < 0) {
-                    first = 0;
-                    last = first + width;
-                } else if (last > 1) {
-                    last = 1;
-                    first = last - width;
-                }
-
-                this.first = first;
-                this.last = last;
-            }
-
-            update();
-        }
-
-        public synchronized void scale(float pct) {
-
-            float first = this.first, last = this.last;
-            float view = last - first;
-            float mid = (last + first) / 2;
-            float viewNext = Util.clamp(view * pct, ScalarValue.EPSILON, 1);
-
-            first = mid - viewNext / 2;
-            last = mid + viewNext / 2;
-            if (last > 1) {
-                last = 1;
-                first = last - viewNext;
-            }
-            if (first < 0) {
-                first = 0;
-                last = first + viewNext;
-            }
-
-            this.first = first;
-            this.last = last;
-            update();
-        }
-
-    }
+//    /**
+//     * TODO merge with BitmapWave
+//     */
+//    @Deprecated
+//    public static class BitmapPlot implements PlotVis, BitmapMatrixView.BitmapPainter {
+//        BitmapMatrixView bmp = null;
+//        private final int w;
+//        private final int h;
+//
+//
+//        transient private List<Series> series;
+//        transient private float minValue, maxValue;
+//        private Graphics gfx;
+//
+//        volatile boolean update = false;
+//
+//        /**
+//         * visualization bounds
+//         */
+//        float first = 0f, last = 1f;
+//
+//        public BitmapPlot(int w, int h) {
+//            this.w = w;
+//            this.h = h;
+//        }
+//
+//        public float first() {
+//            return first;
+//        }
+//
+//        public float last() {
+//            return last;
+//        }
+//
+//        public int firstSample() {
+//            return (int) Math.floor(first * (series.get(0).size() - 1) /* TODO */);
+//        }
+//
+//        public int lastSample() {
+//            return (int) Math.ceil(last * (series.get(0).size() - 1) /* TODO */);
+//        }
+//
+//        @Override
+//        public void stop() {
+//            if (gfx != null) {
+//                gfx.dispose();
+//                gfx = null;
+//            }
+//            if (bmp != null) {
+//                bmp.stop();
+//                bmp = null;
+//            }
+//        }
+//
+//        @Override
+//        public void draw(List<Series> series, float minValue, float maxValue, GL2 g) {
+//            if (bmp == null) {
+//                bmp = new BitmapMatrixView(w, h, this) {
+//                    @Override
+//                    public boolean alpha() {
+//                        return true;
+//                    }
+//                };
+//            }
+//            this.series = series;
+//            this.minValue = minValue;
+//            this.maxValue = maxValue;
+//
+//            if (update) {
+//                update = !bmp.updateIfShowing(); //keep updating till updated
+//            }
+//
+//            bmp.paint(g, null);
+//        }
+//
+//        @Override
+//        public void update() {
+//            update = true;
+//        }
+//
+//
+//        @Override
+//        public synchronized void color(BufferedImage buf, int[] pix) {
+//
+//
+//            if (gfx == null) {
+//                gfx = buf.getGraphics();
+//            }
+//
+//            gfx.clearRect(0, 0, w, h);
+//
+//            int ns = series.size();
+//            if (ns == 0)
+//                return;
+//
+//            int w = this.w;
+//            int h = this.h;
+//            float minValue = this.minValue;
+//            float maxValue = this.maxValue;
+//
+//
+//            float yRange = ((maxValue) - (minValue));
+//            float absRange = Math.max(Math.abs(maxValue), Math.abs(minValue));
+//            if (absRange < Float.MIN_NORMAL) absRange = 1;
+//
+//
+//            float alpha = 1f / ns;
+//            int first = firstSample(), last = lastSample();
+//            assert (series.size() == 1) : "only size=1 support for now";
+//            int sn = series.get(0).size();
+//            for (Series s : series) {
+//
+//                for (int x = 0; x < w; x++) {
+//
+//                    float sStart = first + (last - first) * (x / ((float) w));
+//                    float sEnd = first + (last - first) * ((x + 1) / ((float) w));
+//
+//                    int iStart = Util.clampSafe((int) Math.ceil(sStart), 0, sn - 1);
+//                    int iEnd = Util.clampSafe((int) Math.floor(sEnd), 0, sn - 1);
+//                    float amp = 0;
+//
+//                    amp += (iStart - sStart) * s.get(iStart);
+//                    for (int i = iStart + 1; i < iEnd - 1; i++)
+//                        amp += s.get(i);
+//                    amp += (sEnd - iEnd) * s.get(iEnd);
+//
+//                    amp /= (sEnd - sStart);
+//
+//                    float ampNormalized = (amp - minValue) / yRange;
+//
+//                    float intensity = Math.abs(amp) / absRange;
+//                    //gfx.setColor(Color.getHSBColor(intensity, 0.7f, 0.7f));
+//                    float[] sc = s.color();
+//                    float iBase = Util.unitize(intensity / 2 + 0.5f);
+//                    gfx.setColor(new Color(sc[0] * iBase, sc[1] * iBase, sc[2] * iBase, alpha));
+//
+//                    int ah = Math.round(ampNormalized * h);
+//                    gfx.drawLine(x, h / 2 - ah / 2, x, h / 2 + ah / 2);
+//                }
+//            }
+//        }
+//
+//        private float sampleX(int x, int w, int first, int last) {
+//            return ((float) x) / w * (last - first) + first;
+//        }
+//
+//        public synchronized void pan(float pct) {
+//            float width = last - first;
+//            if (width < 1) {
+//                float mid = ((first + last) / 2);
+//                float nextMid = mid + (pct * width);
+//
+//                float first = nextMid - width / 2;
+//                float last = nextMid + width / 2;
+//                if (first < 0) {
+//                    first = 0;
+//                    last = first + width;
+//                } else if (last > 1) {
+//                    last = 1;
+//                    first = last - width;
+//                }
+//
+//                this.first = first;
+//                this.last = last;
+//            }
+//
+//            update();
+//        }
+//
+//        public synchronized void scale(float pct) {
+//
+//            float first = this.first, last = this.last;
+//            float view = last - first;
+//            float mid = (last + first) / 2;
+//            float viewNext = Util.clamp(view * pct, ScalarValue.EPSILON, 1);
+//
+//            first = mid - viewNext / 2;
+//            last = mid + viewNext / 2;
+//            if (last > 1) {
+//                last = 1;
+//                first = last - viewNext;
+//            }
+//            if (first < 0) {
+//                first = 0;
+//                last = first + viewNext;
+//            }
+//
+//            this.first = first;
+//            this.last = last;
+//            update();
+//        }
+//
+//    }
 }
 

@@ -73,24 +73,19 @@ public enum Tense {
         return order(b - a, durationCycles);
     }
 
-    public static long getRelativeOccurrence(Tense tense, Timed m) {
-        return getRelativeOccurrence(m.time(), tense, 1 /*m.duration()*/);
-    }
-
-
-    private static long getRelativeOccurrence(long creationTime, Tense tense, int duration) {
+    @Deprecated public static long getRelativeOccurrence(Tense tense, Timed m) {
+        /*m.duration()*/
         switch (tense) {
             case Present:
-                return creationTime;
+                return m.time();
             case Past:
-                return creationTime - duration;
+                return m.time() - 1;
             case Future:
-                return creationTime + duration;
+                return m.time() + 1;
             default:
                 return ETERNAL;
         }
     }
-
 
 
     public static long dither(long t, int dither) {

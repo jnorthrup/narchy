@@ -1,6 +1,5 @@
 package spacegraph.space2d.container.unit;
 
-import com.jogamp.opengl.GL2;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
@@ -12,15 +11,16 @@ public class Clipped extends UnitContainer {
         super(the);
     }
 
-    @Override
-    protected void paintIt(GL2 gl, SurfaceRender r) {
-        Draw.stencilStart(gl);
-        Draw.rect(bounds, gl);
-        Draw.stencilUse(gl, true);
-    }
 
     @Override
-    protected void compileAbove(SurfaceRender r) {
+    protected void compileChildren(SurfaceRender r) {
+        r.on((gl, rr)->{
+            Draw.stencilStart(gl);
+            Draw.rect(bounds, gl);
+            Draw.stencilUse(gl, true);
+        });
+        super.compileChildren(r);
         r.on(Draw::stencilEnd);
     }
+
 }

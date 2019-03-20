@@ -1,12 +1,12 @@
 package nars.index.concept;
 
-import jcog.WTF;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -86,24 +86,34 @@ public abstract class ConceptIndex {
      */
     @Nullable
     public final Concept concept(Termed _x, boolean createIfMissing) {
-        if (_x instanceof Concept && elideConceptGets() && !(((Concept) _x).isDeleted()))
-            return ((Concept) _x);
-
+        if (_x instanceof Concept) {
+            if (elideConceptGets() && !(((Concept) _x).isDeleted())) {
+                return ((Concept) _x);
+            }
+        }
 
         Term xt = _x.term();
-        if (!xt.isNormalized()) //pre-test
-            throw new WTF("concept term not normalized");
-
-        Term x = xt.concept();
-        if (x == null || !x.op().conceptualizable) {
+        if (!xt.op().conceptualizable) {
             if (Param.DEBUG)
-                throw new WTF(_x + " not conceptualizable");
+                throw new TermException("not conceptualizable", xt);
             else
                 return null;
         }
 
-//        if (!xx.the())
-//            throw new WTF(_x + " not immutable");
+        if (Param.DEBUG) { if (!xt.the()) throw new TermException("not immutable", xt); }
+
+        if (!xt.isNormalized()) //pre-test
+            throw new TermException("concept term not normalized",xt);
+
+        Term x = xt.concept();
+        if (!x.op().conceptualizable) {
+            if (Param.DEBUG)
+                throw new TermException("not conceptualizable", xt);
+            else
+                return null;
+        }
+
+        if (Param.DEBUG) { if (!x.the()) throw new TermException("not immutable", x); }
 
         return (Concept) get(x, createIfMissing);
     }

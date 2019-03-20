@@ -1,5 +1,6 @@
 package nars.term;
 
+import nars.term.atom.Bool;
 import nars.term.util.TermTest;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +8,7 @@ import static nars.$.$$;
 import static nars.Op.SECTi;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** intersection / diff terms */
 public class SectTest {
@@ -85,5 +87,15 @@ public class SectTest {
 
         Term n = $$("(a-->(y-(&,(--,(&,(--,(x-y)),(--,y),x)),(--,(x-y)),(--,y),x)))");
 
+    }
+
+    @Test void testConceptualizationOfSectConjunctions() {
+        //TODO
+        //this should be possible. involves intersection or union of conjunction intervals.
+        String s = "((((--,(tetris-->score)) &&+96 (--,(tetris-->height)))&tetris)-->(((--,(tetris-->height)) &&+40 (--,(tetris-->score)))|((--,(tetris-->score)) &&+96 (--,(tetris-->height))))). 38440⋈38480 %.75;.11%";
+        Term x = $$(s);
+        Term y = x.concept();
+        assertTrue(!y.equals(Bool.Null));
+        //TODO assertEquals("", c.term().toString());
     }
 }

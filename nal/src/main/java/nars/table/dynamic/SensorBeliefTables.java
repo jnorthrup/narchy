@@ -11,6 +11,7 @@ import nars.Task;
 import nars.control.op.Remember;
 import nars.link.TaskLink;
 import nars.table.BeliefTables;
+import nars.table.dynamic.SeriesBeliefTable.SeriesTask;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
@@ -28,7 +29,7 @@ import static nars.time.Tense.TIMELESS;
  */
 public class SensorBeliefTables extends BeliefTables {
 
-    public final SeriesBeliefTable<SeriesBeliefTable.SeriesTask> series;
+    public final SeriesBeliefTable<SeriesTask> series;
 
     @Deprecated public FloatRange res;
 
@@ -44,7 +45,7 @@ public class SensorBeliefTables extends BeliefTables {
                 new RingBufferTaskSeries<>(  Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
     }
 
-    SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<SeriesBeliefTable.SeriesTask> s) {
+    SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s) {
         super(new SeriesBeliefTable<>(term, beliefOrGoal, s));
 
         this.series = tableFirst(SeriesBeliefTable.class); assert(series!=null);
@@ -61,19 +62,14 @@ public class SensorBeliefTables extends BeliefTables {
     @Override
     public final void add(Remember r, NAR n) {
 
-        Task x = r.input;
-        if (x instanceof SeriesBeliefTable.SeriesTask) {
-            r.input = null;
-            r.done = true;
-            return;
-        } else {
-
-            if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
-                if (!x.isEternal()) {
+        if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
+            Task x = r.input;
+            if (!(x instanceof SeriesTask)) { //shouldnt happen anyway
+                if (!x.isEternal() && !x.isInput() /* explicit overrides from user */) {
                     long seriesStart = series.start();
-                    if (seriesStart!=TIMELESS) {
+                    if (seriesStart != TIMELESS) {
                         if (series.absorbNonSignal(x, seriesStart, series.end())) {
-                            r.reject();
+                            r.forget(x);
                             return;
                         }
                     }
@@ -96,7 +92,7 @@ public class SensorBeliefTables extends BeliefTables {
             );
         }
 
-        SeriesBeliefTable.SeriesTask x = add(value,
+        SeriesTask x = add(value,
                 start, end,
                 series.term, series.punc(),
                 n);
@@ -118,9 +114,9 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    private SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, NAR nar) {
+    private SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, NAR nar) {
 
-        SeriesBeliefTable.SeriesTask nextT = null, last = series.series.last();
+        SeriesTask nextT = null, last = series.series.last();
         if (last != null) {
             long lastStart = last.start(), lastEnd = last.end();
             if (lastEnd > nextStart)
@@ -172,7 +168,7 @@ public class SensorBeliefTables extends BeliefTables {
 
     }
 
-    protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAR nar) {
+    protected SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAR nar) {
         long[] evi;
 
         if (Param.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
@@ -189,10 +185,10 @@ public class SensorBeliefTables extends BeliefTables {
 //            e = Tense.dither(e, dither);
 //        }
 
-        return new SeriesBeliefTable.SeriesTask(term, punc, next, s, e, evi);
+        return new SeriesTask(term, punc, next, s, e, evi);
     }
 
-    static private void stretch(SeriesBeliefTable.SeriesTask t, long e) {
+    static private void stretch(SeriesTask t, long e) {
 //        if (e - t.start() > 9*nar.dur())
 //            throw new WTF();
         t.setEnd(e);

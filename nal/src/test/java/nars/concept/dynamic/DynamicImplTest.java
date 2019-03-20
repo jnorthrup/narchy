@@ -32,6 +32,9 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         assertNotDynamicTable("(((x,#1) && (y,#1)) ==> a)"); //depvar shared between terms
         assertNotDynamicTable("((#1 && (y,#1)) ==> a)"); //raw depvar componnet
         assertNotDynamicTable("(((x,$1) && y) ==> (a,$1))"); //indepvar shared between subj and impl
+
+        assertNotDynamicTable("(((x,#1) && (y,#2)) ==> z(#2))"); //depvar imbalance, unnormalizable in some cases
+        assertNotDynamicTable("(((x,#1) && (y,#2)) ==> z(#1))"); //depvar imbalance, unnormalizable in some cases
     }
 
     private void assertNotDynamicTable(String t) {

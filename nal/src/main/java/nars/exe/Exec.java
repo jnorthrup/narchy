@@ -1,6 +1,7 @@
 package nars.exe;
 
 import nars.NAR;
+import nars.Param;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import org.slf4j.Logger;
@@ -39,14 +40,17 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
         try {
             ITask.run(t, nar);
         } catch (Throwable ee) {
-            error(t, x, ee, nar);
+            taskError(t, x, ee, nar);
         }
     }
-    static void error(ITask t, ITask x, Throwable ee, NAR nar) {
+    static void taskError(ITask t, ITask x, Throwable ee, NAR nar) {
         if (t == x)
             nar.logger.error("{} {}", x, ee);
         else
             nar.logger.error("{}->{} {}", t, x, ee);
+
+        if (Param.DEBUG)
+            throw new RuntimeException(ee);
     }
 
     @Override

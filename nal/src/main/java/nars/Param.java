@@ -295,7 +295,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 6; //HACK this is a TTL supply, not a COST
@@ -309,7 +309,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 3;
+    public static final int TIMEGRAPH_ITERATIONS = 2;
 
 
     @Range(min = 0, max = 64)
@@ -532,7 +532,7 @@ public abstract class Param {
         double decayTime = falloffDurs * dur;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        e = (evi / (1.0 + Util.sqr(dt / decayTime )));
+        //e = (evi / (1.0 + Util.sqr(dt / decayTime )));
         //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
@@ -548,7 +548,7 @@ public abstract class Param {
         //e = evi * Math.max(0, 1.0 - Util.sqr(dt / decayTime));
 
         //linear decay WARNING - not finite integral
-        //e = (float) (evi / (1.0 + dt / decayTime));
+        e = (float) (evi / (1.0 + dt / decayTime));
 
         //---------
 

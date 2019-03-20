@@ -3,11 +3,12 @@ package nars.term.compound;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Compound;
 import nars.term.Term;
 
+import static nars.time.Tense.DTERNAL;
+
 /** use with extreme caution when op is not PROD */
-public class LightCompound extends SeparateSubtermsCompound implements AbstractLightCompound {
+public class LightCompound extends SeparateSubtermsCompound  {
 
     private final Subterms subs;
     private final int hash;
@@ -32,10 +33,14 @@ public class LightCompound extends SeparateSubtermsCompound implements AbstractL
         this.hash = s.hashWith(o);
     }
 
+    @Override
+    public boolean the() {
+        return false;
+    }
 
     @Override
-    public boolean equals(Object obj) {
-        return Compound.equals(this, obj,true);
+    public int dt() {
+        return DTERNAL;
     }
 
     @Override
@@ -43,11 +48,6 @@ public class LightCompound extends SeparateSubtermsCompound implements AbstractL
         return hash;
     }
 
-
-    @Override
-    public String toString() {
-        return Compound.toString(this);
-    }
 
     @Override
     public final Op op() {

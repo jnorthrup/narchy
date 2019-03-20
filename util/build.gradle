@@ -34,10 +34,10 @@ dependencies {
 
     compile group: 'org.apache.lucene', name: 'lucene-core', version: '8.0.0'
 
-    compile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.4.0'
-    compile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.4.0'
-    compile group: 'org.junit.platform', name: 'junit-platform-engine', version: '1.4.0'
-    compile group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.4.0'
+    compile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.5.0-M1'
+    compile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.5.0-M1'
+    compile group: 'org.junit.platform', name: 'junit-platform-engine', version: '1.5.0-M1'
+    compile group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.5.0-M1'
 
 //    compile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.1'
 //    compile group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.0.2'

@@ -241,7 +241,7 @@ public class FactualEvaluator extends Evaluator {
         /*List<Predicate<VersionMap<Term, Term>>> l = */
         UnifySubst u = new UnifyAny();
         u.commonVariables = false;
-        factResolver.apply(x).forEach(y -> {
+        factResolver.apply(x.normalize()).forEach(y -> {
 
             boolean neg = y.op()==NEG;
             if (neg) y = y.unneg();

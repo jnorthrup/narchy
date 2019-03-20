@@ -81,6 +81,7 @@ public class NAL8Test extends NALTest {
     void firstGoalConjunctionEvent() {
 
         test
+                .termVolMax(19)
                 .input("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) && open({t001})))! |")
                 .mustGoal(cycles, "hold(SELF,{t002})", 1.0f, 0.81f, 0)
                 .mustNotOutput(cycles, "hold(SELF,{t002})", GOAL, ETERNAL);
@@ -90,6 +91,7 @@ public class NAL8Test extends NALTest {
     void subgoal_2_inner_dt() {
 
         test
+                .termVolMax(19)
                 .input("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001})))! |")
                 .mustGoal(cycles, "hold(SELF,{t002})", 1.0f, 0.73f, 0)
                 .mustNotOutput(cycles, "hold(SELF,{t002})", GOAL, ETERNAL);
@@ -105,6 +107,7 @@ public class NAL8Test extends NALTest {
         }
 
         test
+                .termVolMax(19)
                 .input("(hold(SELF,{t002}) &&+2 (at(SELF,{t001}) &&+2 open({t001}))). |")
                 .mustBelieve(cycles, "hold(SELF,{t002})", 1.0f, 0.73f, 0)
                 .mustBelieve(cycles, "(at(SELF,{t001}) &&+2 open({t001}))", 1.0f, 0.81f, 2)

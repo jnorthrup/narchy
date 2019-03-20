@@ -40,10 +40,11 @@ public final class AliasConcept extends TaskConcept {
 
     @Override
     public void add(Remember t, NAR n) {
+        Task x = t.input;
         if (abbr.isDeleted()) {
-            t.reject();
+            t.forget(x);
         } else {
-            ((TaskConcept) abbr).add(Remember.the(Task.clone(t.input, abbr.term()), n), n);
+            ((TaskConcept) abbr).add(Remember.the(Task.clone(x, abbr.term()), n), n);
         }
 
     }

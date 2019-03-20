@@ -17,12 +17,12 @@ import static nars.term.anon.AnonID.term;
 /**
  * a vector which consists purely of AnonID terms
  */
-public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCached*/ {
+public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytesCached*/ {
 
     /*@Stable*/
     public final short[] subterms;
 
-    public AnonVector(short[] s) {
+    public AnonSubterms(short[] s) {
         super(AnonID.subtermMetadata(s));
         this.subterms = s;
     }
@@ -30,7 +30,7 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
     /**
      * assumes the array contains only AnonID instances
      */
-    public AnonVector(Term... s) {
+    public AnonSubterms(Term... s) {
         super(s);
 
         boolean hasNeg = hasNeg();
@@ -136,7 +136,7 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
                     if (a[i] == fid) a[i] = tid;
             }
 
-            AnonVector v = new AnonVector(a);
+            AnonSubterms v = new AnonSubterms(a);
             v.normalized = preNormalize();
             return v;
 
@@ -321,8 +321,8 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
     public boolean equals(Object obj) {
         if (this == obj) return true;
 
-        if (obj instanceof AnonVector) {
-            return Arrays.equals(subterms, ((AnonVector) obj).subterms);
+        if (obj instanceof AnonSubterms) {
+            return Arrays.equals(subterms, ((AnonSubterms) obj).subterms);
         }
 
         if (obj instanceof Subterms) {

@@ -526,7 +526,7 @@ public class NAL5Test extends NALTest {
     void conditional_abduction_viaMultiConditionalSyllogism() {
 
         test
-        .termVolMax(7).confMin(0.4f)
+        .termVolMax(11).confMin(0.4f)
         .believe("(flying:robin ==> bird:robin)")
         .believe("((swimmer:robin && flying:robin) ==> bird:robin)")
         .mustBelieve(cycles, "swimmer:robin", 1.00f, 0.45f /*0.4f*/);

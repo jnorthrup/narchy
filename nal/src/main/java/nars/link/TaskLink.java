@@ -11,11 +11,9 @@ import jcog.pri.Weight;
 import jcog.pri.op.PriMerge;
 import jcog.signal.tensor.AtomicArrayTensor;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.NAR;
-import nars.Op;
-import nars.Param;
-import nars.Task;
+import nars.*;
 import nars.concept.Concept;
+import nars.subterm.Subterms;
 import nars.table.TaskTable;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
@@ -253,6 +251,17 @@ public interface TaskLink extends UnitPrioritizable {
         return new float[] { priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST) };
     }
 
+    @Nullable default Term other(Term x, boolean reverse) {
+        if (reverse) {
+            if (x.equals(target()))
+                return source();
+        } else {
+            if (x.equals(source()))
+                return target();
+        }
+        return null;
+    }
+
 
 //    /** special tasklink for signals which can stretch and so their target time would not correspond well while changing */
 //    class DirectTaskLink extends PLinkUntilDeleted<Task> implements TaskLink {
@@ -284,47 +293,57 @@ public interface TaskLink extends UnitPrioritizable {
 //    }
 
     abstract class AbstractTaskLink extends UnitPri implements TaskLink {
-        private final Term source;
-        private final Term target;
-        private final int hash;
+        /** source,target as a 2-ary subterm */
+        protected final Subterms sourceTarget;
 
         protected AbstractTaskLink(Term self) {
-            this(self, self);
+            this(self.concept(), null);
         }
 
         protected AbstractTaskLink(Term source, Term target) {
+
+            source = source.concept();
+            target = target == null ? source : target.concept();
+
             Op so = source.op();
             if (!so.taskable)
                 throw new TaskException(source, "source term not taskable");
             if (!so.conceptualizable)
                 throw new TaskException(source, "source term not conceptualizable");
-            this.source = source;
-            this.target = target;
-            this.hash = Util.hashCombine(source, target);
+            //if (Param.DEBUG) {
+            if (!source.isNormalized())
+                throw new TaskException(source, "source term not normalized");
+            //}
+
+            this.sourceTarget = Op.terms.subterms(source, target);
         }
 
         @Override
         public final boolean equals(Object obj) {
-            return this == obj || (
-                    (hash == obj.hashCode())
-                            && source.equals(((AbstractTaskLink) obj).source)
-                            && target.equals(((AbstractTaskLink) obj).target)
-            );
+            if (this == obj) return true;
+            if (obj instanceof GeneralTaskLink) {
+                return sourceTarget.equals(((GeneralTaskLink)obj).sourceTarget);
+            }
+            else if (obj instanceof TaskLink) {
+                if (hashCode() == obj.hashCode()) if (source().equals(((TaskLink) obj).source()))
+                    if (target().equals(((TaskLink) obj).target())) return true;
+            }
+            return false;
         }
 
         @Override
         public final int hashCode() {
-            return hash;
+            return sourceTarget.hashCodeSubterms();
         }
 
         @Override
         public final Term source() {
-            return source;
+            return sourceTarget.sub(0);
         }
 
         @Override
         public final Term target() {
-            return target;
+            return sourceTarget.sub(1);
         }
     }
 
@@ -338,11 +357,11 @@ public interface TaskLink extends UnitPrioritizable {
         final AtomicArrayTensor punc = new AtomicArrayTensor(4);
 
         public GeneralTaskLink(Term source, Term target) {
-            super(source.concept(), target.concept());
+            super(source, target);
         }
 
         public GeneralTaskLink(Term self) {
-            super(self.concept());
+            super(self);
         }
 
         public GeneralTaskLink(Term source, Term target, long when, byte punc, float pri) {

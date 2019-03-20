@@ -40,7 +40,7 @@ dependencies {
 // https://mvnrepository.com/artifact/org.codehaus.janino/janino
     compile group: 'org.codehaus.janino', name: 'janino', version: '3.0.12'
 
-    compile group: 'org.boofcv', name: 'boofcv-swing', version: '0.32'
+    compile group: 'org.boofcv', name: 'boofcv-swing', version: '0.33.1'
 
 //    compile(group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2') {
 ////        exclude(group: 'log4j')

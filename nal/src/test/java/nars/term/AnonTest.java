@@ -46,31 +46,31 @@ public class AnonTest {
     private static void testAnonTermVectorProducedByTermBuilder(TermBuilder b) {
         {
             Subterms tri = b.subterms($.varDep(1), Anom.the(2), Anom.the(1));
-            assertEquals(AnonVector.class, tri.getClass());
+            assertEquals(AnonSubterms.class, tri.getClass());
         }
 
         {
             Term triSub = b.compound(Op.PROD, $.varDep(1), Anom.the(2), Anom.the(1));
-            assertEquals(AnonVector.class, triSub.subterms().getClass());
+            assertEquals(AnonSubterms.class, triSub.subterms().getClass());
         }
 
         {
             Subterms bi = b.subterms($.varDep(1), Anom.the(2));
-            assertEquals(AnonVector.class, bi.getClass());
+            assertEquals(AnonSubterms.class, bi.getClass());
         }
 
         {
             Term biSub = b.compound(Op.PROD, $.varDep(1), Anom.the(2));
-            assertEquals(AnonVector.class, biSub.subterms().getClass());
+            assertEquals(AnonSubterms.class, biSub.subterms().getClass());
         }
 
         {
             Subterms uni = b.subterms($.varDep(1));
-            assertEquals(AnonVector.class, uni.getClass());
+            assertEquals(AnonSubterms.class, uni.getClass());
         }
         {
             Term uniSub = b.compound(PROD, $.varDep(1));
-            assertEquals(AnonVector.class, uniSub.subterms().getClass());
+            assertEquals(AnonSubterms.class, uniSub.subterms().getClass());
         }
     }
 
@@ -128,13 +128,13 @@ public class AnonTest {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2)};
 
-        TermTest.assertEq(new UniSubterm(x[0]), new AnonVector(x[0]));
+        TermTest.assertEq(new UniSubterm(x[0]), new AnonSubterms(x[0]));
         TermTest.assertEq(new UniSubterm(x[0]), new TermList(x[0]));
 
-        TermTest.assertEq(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
+        TermTest.assertEq(new BiSubterm(x[0], x[1]), new AnonSubterms(x[0], x[1]));
         TermTest.assertEq(new BiSubterm(x[0], x[1]), new TermList(x[0], x[1]));
 
-        TermTest.assertEq(new ArrayTermVector(x), new AnonVector(x));
+        TermTest.assertEq(new ArrayTermVector(x), new AnonSubterms(x));
         TermTest.assertEq(new ArrayTermVector(x), new TermList(x));
 
     }
@@ -144,7 +144,7 @@ public class AnonTest {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2).neg()};
 
-        AnonVector av = new AnonVector(x);
+        AnonSubterms av = new AnonSubterms(x);
         ArrayTermVector bv = new ArrayTermVector(x);
         TermTest.assertEq(bv, av);
 
@@ -173,9 +173,9 @@ public class AnonTest {
 
             ArrayUtils.shuffle(x, rng);
 
-            TermTest.assertEq(new UniSubterm(x[0]), new AnonVector(x[0]));
-            TermTest.assertEq(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
-            TermTest.assertEq(new ArrayTermVector(x), new AnonVector(x));
+            TermTest.assertEq(new UniSubterm(x[0]), new AnonSubterms(x[0]));
+            TermTest.assertEq(new BiSubterm(x[0], x[1]), new AnonSubterms(x[0], x[1]));
+            TermTest.assertEq(new ArrayTermVector(x), new AnonSubterms(x));
         }
     }
 
@@ -197,14 +197,14 @@ public class AnonTest {
     @Test
     void testTermSubs() {
         Term x = $$("(%1,%2)").normalize();
-        assertEquals(AnonVector.class, x.subterms().getClass());
+        assertEquals(AnonSubterms.class, x.subterms().getClass());
         for (Termlike t: new Termlike[]{x, x.subterms()}) {
             assertEquals(2, t.count(Op.VAR_PATTERN));
             assertEquals(0, t.count(Op.VAR_DEP));
         }
 
         Term y = $$("(%1,%2,(--,$3))").normalize();
-        assertEquals(AnonVector.class, y.subterms().getClass());
+        assertEquals(AnonSubterms.class, y.subterms().getClass());
         for (Termlike t: new Termlike[]{y, y.subterms()}) {
             assertEquals(2, t.count(Op.VAR_PATTERN));
             assertEquals(2, t.count(Op.VAR_PATTERN));
@@ -220,7 +220,7 @@ public class AnonTest {
             assertEquals(s, t.toString());
             assertTrue(
                     UniSubterm.class == t.subterms().getClass() ||
-                            AnonVector.class == t.subterms().getClass());
+                            AnonSubterms.class == t.subterms().getClass());
             assertTrue(t.isNormalized(), () -> t + " not auto-normalized but it could be");
         }
         for (String s: new String[]{"($2)", "($2,$1)", "($1,#3)", "(%1,%3,%2)"}) {
@@ -228,7 +228,7 @@ public class AnonTest {
             assertEquals(s, t.toString());
             assertTrue(
                     UniSubterm.class == t.subterms().getClass() ||
-                            AnonVector.class == t.subterms().getClass(),
+                            AnonSubterms.class == t.subterms().getClass(),
                     () -> t.getClass().toString() + " " + t.subterms().getClass());
             assertFalse(t.isNormalized(), () -> t + " auto-normalized but should not be");
         }
@@ -251,7 +251,7 @@ public class AnonTest {
 
     @Test
     void testAnonVectorReplace() {
-        AnonVector x = (AnonVector)
+        AnonSubterms x = (AnonSubterms)
             Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(1));
 
         {

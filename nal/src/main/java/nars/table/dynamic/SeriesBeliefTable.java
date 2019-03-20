@@ -5,7 +5,6 @@ import jcog.math.Longerval;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
@@ -40,11 +39,6 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
     @Override
-    public void add(Remember r, NAR nar) {
-        //ignore
-    }
-
-    @Override
     public int taskCount() {
         return series.size();
     }
@@ -53,7 +47,11 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     public final void match(Answer t) {
         long s = t.time.start, e;
         if (t.time.start == ETERNAL) {
-            s = e = t.nar.time();
+            //choose now as the default origin time
+            long now = t.nar.time();
+            int dur = t.dur;
+            s = now - dur/2;
+            e = now + dur/2;
         } else {
             e = t.time.end;
         }
@@ -182,17 +180,18 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             return Util.hashCombine(term().hashCode(), Util.hashCombine(stamp[0], start));
         }
 
+        /** series tasks can be assumed to be universally unique */
         @Override
         public boolean equals(Object x) {
             if (this == x) return true;
-            if (x instanceof SeriesTask) {
-                //TODO also involve Term?
-                Task xx = (Task) x;
-                if (hashCode() != x.hashCode())
-                    return false;
-                return stamp()[0] == xx.stamp()[0] && start() == xx.start() && term().equals(xx.term());
-            }
-            return false; //return super.equals(x);
+//            if (x instanceof SeriesTask) {
+//                //TODO also involve Term?
+//                Task xx = (Task) x;
+//                if (hashCode() != x.hashCode())
+//                    return false;
+//                return stamp()[0] == xx.stamp()[0] && start() == xx.start() && term().equals(xx.term());
+//            }
+            return false;
         }
 
         public void setEnd(long e) {

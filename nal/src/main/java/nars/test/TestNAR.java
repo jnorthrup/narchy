@@ -613,7 +613,7 @@ public class TestNAR {
     }
 
     public TestNAR termVolMax(int i) {
-        nar.termVolumeMax.set(15);
+        nar.termVolumeMax.set(i);
         return this;
     }
 

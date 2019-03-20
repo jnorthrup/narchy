@@ -11,7 +11,6 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.TermException;
-import org.jetbrains.annotations.NotNull;
 
 import static nars.time.Tense.DTERNAL;
 
@@ -23,7 +22,7 @@ import static nars.time.Tense.DTERNAL;
  * <p>
  * see IO.writeTerm()
  */
-public class SerialCompound extends DynBytes implements Compound, The {
+public class SerialCompound extends DynBytes implements SameSubtermsCompound, The {
 
     final short volume;
 
@@ -54,8 +53,14 @@ public class SerialCompound extends DynBytes implements Compound, The {
     }
 
     @Override
+    public Subterms subterms() {
+        //TODO this can be faster if it skips the op byte and builds the subterms directly from the remainder
+        return build().subterms();
+    }
+
+    @Override
     public final /*@NotNull*/ Op op() {
-        return Op.values()[bytes[0]];
+        return Op.ops[bytes[0]];
     }
 
     @Override
@@ -84,10 +89,6 @@ public class SerialCompound extends DynBytes implements Compound, The {
         throw new UnsupportedOperationException(); 
     }
 
-    @Override
-    public @NotNull Subterms subterms() {
-        return build().subterms(); 
-    }
 
 
 

@@ -146,7 +146,7 @@ public class Gradius extends NAgentX {
             else
                 return Float.NaN; //return +1;
         });
-        alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()*2/3));
+        alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()*2f/3));
 
         Reward destroy = rewardNormalized("destroy",0, 1, ()->{
 
@@ -161,7 +161,7 @@ public class Gradius extends NAgentX {
             //return Util.unitize(r);
             return r!=0 ? Util.unitize(r) : Float.NaN;
        });
-       destroy.setDefault($.t(0, nar.beliefConfDefault.floatValue()*2/3));
+       destroy.setDefault($.t(0, nar.beliefConfDefault.floatValue()*2f/3));
 
 
     }

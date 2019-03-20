@@ -29,45 +29,28 @@ public class SignalView extends Timeline2D {
     static final float selectorAlpha = 0.5f;
 
 
+    double time = 0;
+
+    boolean paused = false;
+
     public SignalView(SignalInput in) {
         super(0, 1);
         this.in = in;
 
-//
-//        south(new Gridding(
-////            new FloatSlider(gain, "Gain"),
-//            PushButton.awesome("play", "Record Clip").clicking(()-> {
-//                //window(new MetaFrame(new WaveView(a, 1f, 1024, 256)), 400, 400);
-//            })
-//        ));
-//
-//
-//
-//        t = new Timeline2D(0, 1) {
 
         Spectrogram g = new FreqSpectrogram(in, true,512, 2048);
         add(g);
 
         WaveView w = new WaveView(in, 500, 250);
+        add(w);
+
+        addEvents(new SimpleTimelineEvents(), (nv)->{
+            nv.set(new PushButton(nv.id.toString()));
+        });
+
         this.in.wave.on(raw->{
             w.updateLive();
         });
-        add(w);
-
-
-        SimpleTimelineEvents tl = new SimpleTimelineEvents();
-        addEvents(tl, (nv)->{
-            nv.set(new PushButton(nv.id.toString()));
-        });
-//        this.in.wave.on(raw->{
-//            if(Math.random() < 0.1f) {
-//                tl.clear();
-//                //Math.round(tEnd),Math.round(tEnd)
-//                tl.add(new Timeline2D.SimpleEvent("event", 0, 1));
-//                //setTime(-1, 2, true); //HACK force update
-//            }
-//        });
-
     }
 
 
@@ -156,6 +139,16 @@ public class SignalView extends Timeline2D {
     }
 
 }
+
+//
+//        south(new Gridding(
+////            new FloatSlider(gain, "Gain"),
+//            PushButton.awesome("play", "Record Clip").clicking(()-> {
+//                //window(new MetaFrame(new WaveView(a, 1f, 1024, 256)), 400, 400);
+//            })
+//        ));
+
+
 //        rawWave = new Plot2D.ArraySeries("Audio", 1);
 //        a.wave.on(x -> {
 //
