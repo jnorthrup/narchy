@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 750;
+    private final int cycles = 950;
 
     @Override
     protected NAR nar() {
@@ -85,13 +85,13 @@ public class NAL5Test extends NALTest {
     void depVarUniqueness() {
 
         test
-        .termVolMax(10)
-        .believe("f(x,#1)")
-        .believe("f(y,#1)")
-        //both forms
-        .mustBelieve(cycles, "(f(x,#1) ==> f(y,#2))", 1.00f, 0.45f)
-        .mustBelieve(cycles, "(f(y,#1) ==> f(x,#2))", 1.00f, 0.45f)
-        .mustBelieve(cycles, "(f(x,#1) ==> f(y,#1))", 1.00f, 0.45f)
+                .termVolMax(10)
+                .believe("f(x,#1)")
+                .believe("f(y,#1)")
+                //both forms
+                .mustBelieve(cycles, "(f(x,#1) ==> f(y,#2))", 1.00f, 0.45f)
+                .mustBelieve(cycles, "(f(y,#1) ==> f(x,#2))", 1.00f, 0.45f)
+                .mustBelieve(cycles, "(f(x,#1) ==> f(y,#1))", 1.00f, 0.45f)
         ;
 
     }
@@ -106,7 +106,7 @@ public class NAL5Test extends NALTest {
          */
         TestNAR tester = test;
         tester.nar.termVolumeMax.set(7);
-        tester.believe("(a ==> b)",1f,0.9f);
+        tester.believe("(a ==> b)", 1f, 0.9f);
         tester.believe("<(robin --> [flying]) ==> b>", 0.8f, 0.9f);
         tester.mustBelieve(cycles, "<a ==> (robin --> [flying])>", 1.00f, 0.39f);
         tester.mustBelieve(cycles, "<(robin --> [flying]) ==> a>", 0.80f, 0.45f);
@@ -147,11 +147,12 @@ public class NAL5Test extends NALTest {
 
         test.nar.termVolumeMax.set(3);
         test
-        .believe("(a ==> b)")
-        .believe("(a ==> c)", 0.8f, 0.9f)
-        .mustBelieve(cycles, "(c ==> b)", 1.00f, 0.39f)
-        .mustBelieve(cycles, "(b ==> c)", 0.80f, 0.45f);
+                .believe("(a ==> b)")
+                .believe("(a ==> c)", 0.8f, 0.9f)
+                .mustBelieve(cycles, "(c ==> b)", 1.00f, 0.39f)
+                .mustBelieve(cycles, "(b ==> c)", 0.80f, 0.45f);
     }
+
     @Test
     void abductionSimpleNeg() {
         test.nar.termVolumeMax.set(4);
@@ -216,6 +217,7 @@ public class NAL5Test extends NALTest {
                 .believe("a:x", 0.80f, 0.9f)
                 .mustBelieve(cycles, "y", 0.80f, 0.42f);
     }
+
     @Test
     void anonymous_analogy1_depvar_neg() {
         test.nar.termVolumeMax.set(8);
@@ -224,10 +226,10 @@ public class NAL5Test extends NALTest {
                 .believe("(x-->a)", 0.20f, 0.9f)
                 .mustBelieve(cycles, "y", 0.80f, 0.42f);
     }
+
     @Test
     void anonymous_analogy1_pos2() {
-        test
-
+        test.termVolMax(3)
                 .believe("(x && y)")
                 .believe("x", 0.80f, 0.9f)
                 .mustBelieve(cycles, "y",
@@ -247,7 +249,6 @@ public class NAL5Test extends NALTest {
 
     @Test
     void anonymous_analogy1_neg2() {
-        //solved by deduction at 0.65% actually
         test
                 .believe("(&&, --x, y, z)")
                 .believe("x", 0.20f, 0.9f)
@@ -283,7 +284,7 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("(bird:robin ==> animal:robin)");
         tester.believe("((robin-->[flying]) ==> animal:robin)", 0.9f, 0.81f);
-        tester.mustBelieve(cycles*2, " ((bird:robin && (robin-->[flying])) ==> animal:robin)", 0.9f, 0.73f);
+        tester.mustBelieve(cycles * 2, " ((bird:robin && (robin-->[flying])) ==> animal:robin)", 0.9f, 0.73f);
         //tester.mustBelieve(cycles*2, " ((bird:robin || (robin-->[flying])) ==> animal:robin)", 1f, 0.73f);
     }
 
@@ -295,7 +296,6 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, " ((bird:robin && (robin-->[flying])) ==> animal:nonRobin)", 0.1f, 0.73f);
         //tester.mustBelieve(cycles, " ((bird:robin || (robin-->[flying])) ==> animal:nonRobin)", 0f, 0.73f);
     }
-
 
 
     @Test
@@ -327,7 +327,8 @@ public class NAL5Test extends NALTest {
         ;
     }
 
-    @Disabled @Test
+    @Disabled
+    @Test
     void disjunction_decompose_one_premise() {
         test
                 .believe("(||, a, b)")
@@ -335,7 +336,9 @@ public class NAL5Test extends NALTest {
                 .mustBelieve(cycles, "b", 1f, 0.40f)
         ;
     }
-    @Disabled @Test
+
+    @Disabled
+    @Test
     void disjunction_decompose_one_premise_pos_neg() {
         test
                 .believe("(||, a, --b)")
@@ -407,18 +410,18 @@ public class NAL5Test extends NALTest {
         tester.believe("(--(robin --> bird) ==> (robin --> [flying]))", 0.1f, 0.9f);
         tester.mustBelieve(cycles, " (--(robin --> [flying]) ==> (robin --> bird))",
                 0.1f, 0.36f);
-                //0f, 0.45f);
+        //0f, 0.45f);
     }
 
     @Test
     void contrapositionPos() {
         test.nar.termVolumeMax.set(9);
         test
-            .believe("(--B ==> A)", 0.9f, 0.9f)
-            .mustBelieve(cycles, " (--A ==> B)",
-                    0.9f, 0.36f);
-                    //0.1f, 0.36f);
-                    //0f, 0.08f);
+                .believe("(--B ==> A)", 0.9f, 0.9f)
+                .mustBelieve(cycles, " (--A ==> B)",
+                        0.9f, 0.36f);
+        //0.1f, 0.36f);
+        //0f, 0.08f);
     }
 
     @Test
@@ -435,34 +438,35 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((x && y) ==> a)");
         tester.believe("x");
-        tester.mustBelieve(cycles, "(a && y)", 1.00f, 0.81f);
+        tester.mustBelieve(cycles, "(y && a)", 1.00f, 0.81f);
         tester.mustBelieve(cycles, "(y ==> a)", 1.00f, 0.81f);
     }
+
     @Test
     void conditional_deduction_neg_simple() {
         TestNAR tester = test;
         tester.believe("((--x && y) ==> a)");
         tester.believe("--x");
-        tester.mustBelieve(cycles, "(a && y)", 1.00f, 0.81f);
+        tester.mustBelieve(cycles, "(y && a)", 1.00f, 0.81f);
         tester.mustBelieve(cycles, "(y ==> a)", 1.00f, 0.81f);
     }
 
     @Test
     void conditional_deduction() {
         test
-        .believe("<(&&,(robin --> [flying]),(robin --> [withWings])) ==> a>")
-        .believe("(robin --> [flying])")
-        .mustBelieve(cycles, " <(robin --> [withWings]) ==> a>", 1.00f, 0.81f);
+                .believe("<(&&,(robin --> [flying]),(robin --> [withWings])) ==> a>")
+                .believe("(robin --> [flying])")
+                .mustBelieve(cycles, " <(robin --> [withWings]) ==> a>", 1.00f, 0.81f);
     }
 
     @Test
     void conditional_deduction_unification() {
 
         test
-        .termVolMax(12)
-        .believe("<(&&,(#x --> [flying]),(#x --> [withWings])) ==> a>")
-        .believe("(robin --> [flying])")
-        .mustBelieve(cycles, " ((robin-->[withWings])==>a)", 1.00f, 0.81f);
+                .termVolMax(12)
+                .believe("<(&&,(#x --> [flying]),(#x --> [withWings])) ==> a>")
+                .believe("(robin --> [flying])")
+                .mustBelieve(cycles, " ((robin-->[withWings])==>a)", 1.00f, 0.81f);
         //.mustBelieve(cycles, " (((robin-->[flying])&&(robin-->[withWings]))==>a)", 1.00f, 0.81f);
 
     }
@@ -484,10 +488,10 @@ public class NAL5Test extends NALTest {
 
 
         test
-            .termVolMax(15)
-            .believe("<(&&,(robin --> [chirping]),(robin --> [flying]),(robin --> [withWings])) ==> a>")
-            .believe("(robin --> [flying])")
-            .mustBelieve(cycles, " <(&&,(robin --> [chirping]),(robin --> [withWings])) ==> a>", 1.00f, 0.81f);
+                .termVolMax(15)
+                .believe("<(&&,(robin --> [chirping]),(robin --> [flying]),(robin --> [withWings])) ==> a>")
+                .believe("(robin --> [flying])")
+                .mustBelieve(cycles, " <(&&,(robin --> [chirping]),(robin --> [withWings])) ==> a>", 1.00f, 0.81f);
 
     }
 
@@ -505,31 +509,78 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    void conditional_abduction_viaMultiConditionalSyllogismSimple() {
-        test
+    void conditional_abduction_viaMultiConditionalSyllogism_simple() {
+        test.termVolMax(5)
             .believe("(x ==> y)")
             .believe("((z && x) ==> y)")
-            .mustBelieve(cycles, "z", 1.00f, 0.45f /*0.4f*/);
-
+            .mustBelieve(cycles, "z", 1.00f, 0.45f);
     }
+    @Test
+    void conditional_antiAbduction_viaMultiConditionalSyllogism_simple_a() {
+        test.termVolMax(6)
+                .believe("(x ==> --y)")
+                .believe("((z && x) ==> y)")
+                .mustBelieve(cycles, "z", 0.00f, 0.45f);
+    }
+    @Test
+    void conditional_antiAbduction_viaMultiConditionalSyllogism_simple_b() {
+        test.termVolMax(6)
+                .believe("(x ==> y)")
+                .believe("((z && x) ==> --y)")
+                .mustBelieve(cycles, "z", 0.00f, 0.45f);
+    }
+
+    @Test
+    void conditional_abduction_viaMultiConditionalSyllogismSimple_NegPredicate() {
+        test.termVolMax(6)
+            .believe("(x ==> --y)")
+            .believe("((z && x) ==> --y)")
+            .mustBelieve(cycles, "z", 1.00f, 0.45f);
+    }
+
+    @Test
+    void conditional_abduction_viaMultiConditionalSyllogismSimple_Predicate_Polarity_Mismatch() {
+        test
+                .believe("(x ==> y)")
+                .believe("((z && x) ==> --y)")
+                .mustNotBelieve(cycles, "z", 1.00f, 0.45f, (s,e)->true);
+    }
+    @Test
+    void conditional_abduction_viaMultiConditionalSyllogismSimple_NegSubCondition_The() {
+        test
+                .termVolMax(8)
+                .believe("(x ==> y)")
+                .believe("((--z && x) ==> y)")
+                .mustBelieve(cycles, "--z", 1.00f, 0.45f);
+    }
+    @Test
+    void conditional_abduction_viaMultiConditionalSyllogismSimple_NegSubCondition_Other() {
+        test
+                .termVolMax(7)
+                .believe("(--x ==> y)")
+                .believe("((z && --x) ==> y)")
+                .mustBelieve(cycles, "z", 1.00f, 0.45f);
+    }
+
     @Test
     void conditional_abduction_viaMultiConditionalSyllogismSimple2() {
 
         test
-            .termVolMax(9).confMin(0.4f)
-            .believe("((&&,x1,x2) ==> y)")
-            .believe("((&&,x1,x2,z) ==> y)")
-            .mustBelieve(cycles, "z", 1.00f, 0.45f /*0.4f*/);
+                .termVolMax(9).confMin(0.4f)
+                .believe("((&&,x1,x2) ==> y)")
+                .believe("((&&,x1,x2,z) ==> y)")
+                .mustBelieve(cycles, "z", 1.00f, 0.45f);
 
     }
+
     @Test
     void conditional_abduction_viaMultiConditionalSyllogism() {
 
         test
-        .termVolMax(11).confMin(0.4f)
-        .believe("(flying:robin ==> bird:robin)")
-        .believe("((swimmer:robin && flying:robin) ==> bird:robin)")
-        .mustBelieve(cycles, "swimmer:robin", 1.00f, 0.45f /*0.4f*/);
+                .termVolMax(11).confMin(0.4f)
+                .believe("(flying:robin ==> bird:robin)")
+                .believe("((swimmer:robin && flying:robin) ==> bird:robin)")
+                .mustBelieve(cycles, "swimmer:robin", 1.00f, 0.45f);
 
     }
 
@@ -538,13 +589,13 @@ public class NAL5Test extends NALTest {
     void conditional_abduction2_viaMultiConditionalSyllogism() {
 
         test
-            .termVolMax(15).confMin(0.4f)
-            .believe("<(&&,(robin --> [withWings]),(robin --> [chirping])) ==> a>")
-            .believe("<(&&,(robin --> [flying]),(robin --> [withWings]),(robin --> [chirping])) ==> a>")
-            .mustBelieve(cycles, "(robin --> [flying])",
-                    1.00f, 0.45f
-            )
-            .mustNotOutput(cycles, "(robin --> [flying])", BELIEF, 0f, 0.5f, 0, 1, ETERNAL);
+                .termVolMax(15).confMin(0.4f)
+                .believe("<(&&,(robin --> [withWings]),(robin --> [chirping])) ==> a>")
+                .believe("<(&&,(robin --> [flying]),(robin --> [withWings]),(robin --> [chirping])) ==> a>")
+                .mustBelieve(cycles, "(robin --> [flying])",
+                        1.00f, 0.45f
+                )
+                .mustNotOutput(cycles, "(robin --> [flying])", BELIEF, 0f, 0.5f, 0, 1, ETERNAL);
     }
 
 
@@ -615,16 +666,18 @@ public class NAL5Test extends NALTest {
                 1.00f, 0.45f);
 
     }
+
     @Test
     void conditional_induction() {
         test.nar.termVolumeMax.set(5);
         test
-        .believe("((x&&y) ==> z)")
-        .believe("(y ==> a)", 0.9f, 0.9f)
-        .mustBelieve(cycles, "((a && x) ==> z)", 1.00f, 0.45f);
+                .believe("((x&&y) ==> z)")
+                .believe("(y ==> a)", 0.9f, 0.9f)
+                .mustBelieve(cycles, "((a && x) ==> z)", 1.00f, 0.45f);
     }
 
-    @Test void conditional_abduction() {
+    @Test
+    void conditional_abduction() {
         test.nar.termVolumeMax.set(6);
         test
                 .believe("((x&&y) ==> z)")
@@ -637,12 +690,13 @@ public class NAL5Test extends NALTest {
         test.nar.confMin.set(0.3);
         test.termVolMax(5);
         test
-        .believe("((x && y) ==> z)")
-        .believe("(y ==> z)")
-        .mustBelieve(cycles, "x", 1.00f, 0.45f);
+                .believe("((x && y) ==> z)")
+                .believe("(y ==> z)")
+                .mustBelieve(cycles, "x", 1.00f, 0.45f);
     }
+
     @Test
-    void conditional_abduction2_depvar() {
+    void conditional_abduction2_depvar_2() {
         test.nar.confMin.set(0.3);
         test.termVolMax(5);
         test
@@ -650,11 +704,19 @@ public class NAL5Test extends NALTest {
                 .believe("(y ==> #1)")
                 .mustBelieve(cycles, "x", 1.00f, 0.45f);
     }
-
+    @Test
+    void conditional_abduction2_depvar() {
+        test.nar.confMin.set(0.3);
+        test.termVolMax(5);
+        test
+                .believe("((x && y) ==> z)")
+                .believe("(y ==> #1)")
+                .mustBelieve(cycles, "x", 1.00f, 0.45f);
+    }
     @Test
     void conditional_induction0Simple() {
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(6);
+        tester.nar.termVolumeMax.set(5);
         tester.believe("((x1 && a) ==> c)");
         tester.believe("((y1 && a) ==> c)");
         tester.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
@@ -662,13 +724,22 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
+    void conditional_induction0Simple_NegInner() {
+        test.termVolMax(6)
+                .believe("((x1 && a) ==> c)")
+                .believe("((--y1 && a) ==> c)")
+                .mustBelieve(cycles, "--(x1 ==> y1)", 1.00f, 0.45f)
+                .mustBelieve(cycles, "(--y1 ==> x1)", 1.00f, 0.45f);
+    }
+
+    @Test
     void conditional_induction0SimpleDepVar() {
         test
-        .termVolMax(6)
-        .believe("((x1 && #1) ==> c)")
-        .believe("((y1 && #1) ==> c)")
-        .mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f)
-        .mustBelieve(cycles, "(y1 ==> x1)", 1.00f, 0.45f);
+                .termVolMax(5)
+                .believe("((x1 && #1) ==> c)")
+                .believe("((y1 && #1) ==> c)")
+                .mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f)
+                .mustBelieve(cycles, "(y1 ==> x1)", 1.00f, 0.45f);
     }
 
     @Test
@@ -702,15 +773,28 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    void conditional_induction0() {
-
-
-        TestNAR tester = test;
-        test.nar.termVolumeMax.set(8);
-        tester.believe("((&&,x1,x2,a) ==> c)");
-        tester.believe("((&&,y1,y2,a) ==> c)");
-        tester.mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f);
-        tester.mustBelieve(cycles, "((y1&&y2) ==> (x1&&x2))", 1.00f, 0.45f);
+    void conditional_induction_3ary() {
+        test.termVolMax(8)
+            .believe("((&&,x1,x2,a) ==> c)")
+            .believe("((&&,y1,y2,a) ==> c)")
+            .mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f)
+            .mustBelieve(cycles, "((y1&&y2) ==> (x1&&x2))", 1.00f, 0.45f);
+    }
+    @Test
+    void conditional_induction_3ary_some_inner_Neg_other() {
+        test.termVolMax(8)
+                .believe("((&&,x1,--x2,a) ==> c)")
+                .believe("((&&,y1,y2,a) ==> c)")
+                .mustBelieve(cycles, "((x1&&--x2) ==> (y1&&y2))", 1.00f, 0.45f)
+                .mustBelieve(cycles, "((y1&&y2) ==> (x1&&--x2))", 1.00f, 0.45f);
+    }
+    @Test
+    void conditional_induction_3ary_some_inner_Neg_the() {
+        test.termVolMax(8)
+                .believe("((&&,x1,x2,--a) ==> c)")
+                .believe("((&&,y1,y2,--a) ==> c)")
+                .mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f)
+                .mustBelieve(cycles, "((y1&&y2) ==> (x1&&x2))", 1.00f, 0.45f);
     }
 
     @Test
@@ -784,7 +868,7 @@ public class NAL5Test extends NALTest {
                 .input("--x.")
                 .input("(--x ==> y).")
                 .mustBelieve(cycles, "y", 1.0f, 0.81f)
-               // .mustNotOutput(cycles, "((--,#1)==>y)", BELIEF, 0f, 0.5f, 0, 1, ETERNAL)
+        // .mustNotOutput(cycles, "((--,#1)==>y)", BELIEF, 0f, 0.5f, 0, 1, ETERNAL)
         //.mustNotOutput(cycles, "y", BELIEF, 0f, 0.5f, 0, 1, ETERNAL)
         ;
     }
@@ -899,49 +983,78 @@ public class NAL5Test extends NALTest {
     }
 
 
-    @Test public void testImplSubjQuestioned() {
-        test
+    @Test
+    public void testImplSubj_Questioned() {
+        test.termVolMax(4)
                 .input("(x ==> y)?")
                 .mustQuestion(cycles, "x")
                 .mustQuestion(cycles, "y")
         ;
     }
-    @Disabled /* moved to motivation.nal */ @Test public void testImplNegSubjQuestioned() {
+
+    @Test
+    public void testImplSubj_and_ConditionsQuestioned_fwd() {
+        test.termVolMax(4)
+                .ask("x")
+                .input("(x ==> y).")
+                .mustQuestion(cycles, "y")
+        ;
+    }
+    @Test
+    public void testImplSubj_and_ConditionsQuestioned_rev() {
+        test.termVolMax(4)
+                .ask("y")
+                .input("(x ==> y).")
+                .mustQuestion(cycles, "x")
+        ;
+    }
+
+    @Test
+    public void testImplNegSubjQuestioned() {
         test
                 .input("(--x ==> y)?")
                 .mustQuestion(cycles, "x")
                 .mustQuestion(cycles, "y")
         ;
     }
-    @Disabled /* moved to motivation.nal */ @Test public void testImplConjSubjQuestioned() {
+
+    @Test
+    public void testImplConjSubjQuestioned() {
         test
                 .input("((a && b) ==> y)?")
                 .mustQuestion(cycles, "(a && b)")
         ;
     }
 
-    @Test public void testAnonymousAbduction() {
+    @Test
+    public void testAnonymousAbduction() {
         test
                 .believe("(x ==> #1)")
                 .ask("x")
                 .mustBelieve(cycles, "x", 1f, 0.45f)
         ;
     }
-    @Test public void testAnonymousAbductionNeg() {
+
+    @Test
+    public void testAnonymousAbductionNeg() {
         test
                 .believe("(--x ==> #1)")
                 .ask("x")
                 .mustBelieve(cycles, "x", 0f, 0.45f)
         ;
     }
-    @Test public void testAnonymousDeduction() {
+
+    @Test
+    public void testAnonymousDeduction() {
         test
                 .believe("(#1 ==> x)")
                 .ask("x")
                 .mustBelieve(cycles, "x", 1f, 0.81f)
         ;
     }
-    @Test public void testAnonymousDeductionNeg() {
+
+    @Test
+    public void testAnonymousDeductionNeg() {
         test
                 .believe("(#1 ==> --x)")
                 .ask("x")
@@ -949,7 +1062,8 @@ public class NAL5Test extends NALTest {
         ;
     }
 
-    @Disabled /* moved to motivation.nal */ @Test public void conjPreconditionDecompositionToImpl_BackChaining_Question() {
+    @Test
+    public void conjPreconditionDecompositionToImpl_BackChaining_Question() {
         test
                 .ask("((x&&y)==>z)")
                 .mustQuestion(cycles, "(x&&y)")
@@ -959,7 +1073,9 @@ public class NAL5Test extends NALTest {
 //                .mustQuestion(cycles, "(y==>(x&&z))")
         ;
     }
-    @Disabled /* moved to motivation.nal */ @Test public void conjPostconditionDecompositionToImpl_BackChaining_Question() {
+
+    @Test
+    public void conjPostconditionDecompositionToImpl_BackChaining_Question() {
         test
                 .ask("(z==>(x&&y))")
                 .mustQuestion(cycles, "(x&&y)")
@@ -967,7 +1083,9 @@ public class NAL5Test extends NALTest {
                 .mustQuestion(cycles, "(z ==>+- y)")
         ;
     }
-    @Test public void implConjNeutralize() {
+
+    @Test
+    public void implConjNeutralize() {
         test
                 .believe("((x && y) ==> z)")
                 .believe("((x && --y) ==> --z)")

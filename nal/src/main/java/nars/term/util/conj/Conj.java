@@ -679,20 +679,30 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     //TODO public static ObjectIntPair<Term> diffX(Term include, Term exclude) { //returns the resulting dt shift, replacing ConjDiff class
 
+    /** include may be a conjunction or a negation of a conjunction. the result will be polarized accordingly */
     public static Term diff(Term include, Term exclude, @Deprecated boolean excludeNeg) {
 
-        if (excludeNeg) {
+        Op io = include.op();
+
+
+        Op eo = exclude.op();
+        boolean eitherNeg = io == NEG || eo == NEG;
+        if (excludeNeg && eitherNeg) {
             if (include.unneg().equals(exclude.unneg()))
                 return True;
         } else {
             if (include.equals(exclude))
                 return True;
         }
+        if (io == NEG) {
+            //negated conjunction
+            return diff(include.unneg(), exclude, excludeNeg).neg(); //TODO better
+        }
 
-        if (include.op() != CONJ)
+        if (io != CONJ)
             return include;
 
-        if (!excludeNeg && exclude.op() == CONJ) {
+        if (!excludeNeg && eo == CONJ) {
             return diffAll(include, exclude); //HACK
         }
 

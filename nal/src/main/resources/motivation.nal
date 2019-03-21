@@ -77,10 +77,6 @@
 //      (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (B && ?1)), (Punctuation:Question, Time:Task)
 //       (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question, Time:Task)
 
-//conj/impl question reduction
-    (A ==> B), B, task("?")             |- A, (Punctuation:Question)
-    (C ==> B), A, task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
-
 //--
 
 //    X, Y, task("!") |-          (polarize(Y,belief) ==> X), (Punctuation:Question, Time:Relative)

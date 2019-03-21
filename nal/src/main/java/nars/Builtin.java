@@ -111,9 +111,7 @@ public class Builtin {
                 @Override
                 protected Term apply(Term conj, Term event) {
                     Term x = Conj.diff(conj, event);
-                    if (conj.equals(x))
-                        return Null;
-                    return x;
+                    return conj.equals(x) ? Null : x;
                 }
             },
 

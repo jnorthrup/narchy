@@ -748,26 +748,36 @@ public class ConjTest {
     }
 
     @Test
-    void testConjWithout() {
+    void testConjDiff() {
 
-        assertEquals("(--,y)", Conj.diff($$("(--x && --y)"), $$("x"), true).toString());
-        assertEquals("(--,y)", Conj.diff($$("(--x &&+1 --y)"), $$("x"), true).toString());
-        assertEquals("(z &&+1 (--,y))", Conj.diff($$("((--x &&+1 z) &&+1 --y)"), $$("x"), true).toString());
-        assertEquals("(z &&+1 (--,y))", Conj.diff($$("((x &&+1 z) &&+1 --y)"), $$("x"), true).toString());
-        assertEquals("(z &&+1 (--,y))", Conj.diff($$("((--x &&+1 z) &&+1 --y)"), $$("--x"), true).toString());
-        assertEquals("(z &&+1 (--,y))", Conj.diff($$("((x &&+1 z) &&+1 --y)"), $$("--x"), true).toString());
-        assertEquals("((--,x)&&(--,y))", Conj.diff($$("(--x && --y)"), $$("x"), false).toString()); //unchanged
-        assertEquals("((--,x) &&+1 (--,y))", Conj.diff($$("(--x &&+1 --y)"), $$("x"), false).toString()); //unchanged
-        assertEquals("(((--,x) &&+1 z) &&+1 (--,y))", Conj.diff($$("((--x &&+1 z) &&+1 --y)"), $$("x"), false).toString());
+        assertConjDiff("(--x && --y)", "x", "(--,y)", true);
+        assertConjDiff("(--x &&+1 --y)", "x", "(--,y)", true);
+        assertConjDiff("((--x &&+1 z) &&+1 --y)", "x", "(z &&+1 (--,y))", true);
+        assertConjDiff("((x &&+1 z) &&+1 --y)", "x", "(z &&+1 (--,y))", true);
+        assertConjDiff("((--x &&+1 z) &&+1 --y)", "--x", "(z &&+1 (--,y))", true);
+        assertConjDiff("((x &&+1 z) &&+1 --y)", "--x", "(z &&+1 (--,y))", true);
+        assertConjDiff("(--x && --y)", "x", "((--,x)&&(--,y))", false);
+        assertConjDiff("(--x &&+1 --y)", "x", "((--,x) &&+1 (--,y))", false);
+        assertConjDiff("((--x &&+1 z) &&+1 --y)", "x", "(((--,x) &&+1 z) &&+1 (--,y))", false);
 
-        assertEquals("y", Conj.diff($$("(x && y)"), $$("x"), false).toString());
+        assertConjDiff("(x && y)", "x", "y", false);
 
-        assertEquals("(--,x)", Conj.diff($$("--x"), $$("x"), false).toString());
-        assertEquals("x", Conj.diff($$("x"), $$("--x"), false).toString());
-        assertEquals("true", Conj.diff($$("--x"), $$("x"), true).toString());
-        assertEquals("true", Conj.diff($$("x"), $$("--x"), true).toString());
+        assertConjDiff("--x", "x", "false", false);
+        assertConjDiff("x", "--x", "x", false);
+        assertConjDiff("--x", "x", "true", true);
+        assertConjDiff("--x", "--x", "true", false);
+        assertConjDiff("--x", "--x", "true", true);
+        assertConjDiff("x", "--x", "true", true);
+    }
 
+    @Test void testConjDiffOfNegatedConj() {
+        assertConjDiff("--(x && y)", "x", "(--,y)", false);
+        assertConjDiff("--(x && --y)", "x", "y", false);
+        assertConjDiff("--(--x &&+1 --y)", "x", "y", true);
+    }
 
+    private static void assertConjDiff(String inc, String exc, String expect, boolean excludeNeg) {
+        assertEq(expect, Conj.diff($$(inc), $$(exc), excludeNeg));
     }
 
     @Test

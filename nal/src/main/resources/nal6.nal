@@ -30,11 +30,6 @@
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B))
 
     B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:PostWeak, Goal:Post)
-            //--is(A,"#"),
-       B, (  (&&,  C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:Abduction)
-       B, (  (&&,--C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:AbductionN)
-       B, (--(&&,  C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:Abduction)
-       B, (--(&&,--C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:AbductionN)
 
         //antigoal:
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)
@@ -46,14 +41,25 @@
 
 
 
-          //B, ((&&,C,A..+) ==> X)         |- unisubst((&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)
-          //B, ((&&,--C,A..+) ==> X)       |- unisubst((&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
-              //B, (--(&&,C,A..+) ==> X)   |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)
-              //B, (--(&&,--C,A..+) ==> X) |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
+        //TODO chooseUnifiableSubterm
+          B, (  (&&,C,A..+) ==> X)     |- unisubst(  (&&,polarizeBelief(X),A..+),C,polarizeTask(B)), (Belief:DeductionDepolarized, Goal:DesireDepolarized)
+          B, (--(&&,C,A..+) ==> X)     |- unisubst(--(&&,polarizeBelief(X),A..+),C,polarizeTask(B)), (Belief:DeductionDepolarized, Goal:DesireDepolarized)
+//          B, ((&&,--C,A..+) ==> X)       |- unisubst((&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
+//              B, (--(&&,C,A..+) ==> X)   |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)
+//              B, (--(&&,--C,A..+) ==> X) |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
+//            //--is(A,"#"),
+//       B, (  (&&,  C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:Abduction)
+//       B, (  (&&,--C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:AbductionN)
+//       B, (--(&&,  C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:Abduction)
+//       B, (--(&&,--C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:AbductionN)
 
 
 
-        //TODO question variations
+//conj/impl question decomposition
+    (A ==> B), B, task("?")             |- A, (Punctuation:Question)
+    (C ==> B), A, task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
+
+        //TODO more question variations
 //        Y, (  C ==> Z), is(C,"&&"),eventOf(C,Y)    |- (  conjWithout(C,  Y) ==> Z), (Belief:Pre)
 //        Y, (--C ==> Z), is(C,"&&"),eventOf(C,Y)    |- (--conjWithout(C,  Y) ==> Z), (Belief:Pre)
 //        Y, (  C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (  conjWithout(C,--Y) ==> Z), (Belief:PreN)
@@ -114,7 +120,7 @@
        //(--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPNX)
 
         //(S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-            (S ==> X), (Y ==> P), eqPN(X,Y), task("?"), hasBelief() |- (S ==> P), (Punctuation:Question)
+            (S ==> X), (Y ==> P), eqPN(X,Y), task("?") |- (S ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
@@ -134,7 +140,7 @@
     (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction)
         (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
 
-                (X ==> S), (Y ==> P), eqPN(X,Y), task("?"), hasBelief() |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+                (X ==> S), (Y ==> P), eqPN(X,Y), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
     (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB)
@@ -146,7 +152,7 @@
     (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN)
     (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN)
 
-            (X ==> S), (P ==> Y), task("?"), eqPN(X,Y), hasBelief() |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+            (X ==> S), (P ==> Y), task("?"), eqPN(X,Y) |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
     //untested
@@ -251,6 +257,12 @@
     ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
       (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
 
+    //Conditional Abduction via Multi-conditional Syllogism
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
+    //Anti-conditional Abduction via Multi-conditional Syllogism
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR)
+
+        //((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
 
 
       //TODO check (--C ==> X), (--E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)    |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
