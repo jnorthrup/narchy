@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jcog.io;
+package jcog.grammar;
 
 import org.jetbrains.annotations.NotNull;
 

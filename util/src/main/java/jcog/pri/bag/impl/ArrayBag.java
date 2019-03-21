@@ -152,20 +152,17 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      */
     private boolean tryInsertFull(Y toAdd, float toAddPri, long[] lock, @Nullable Consumer<Y> update) {
 
-        boolean alreadyWriting = false;
+        lock[0] = writeFromRead(lock[0]);
 
         int s;
-        if (cleanIfFull()) {
-            lock[0] = this.writeFromRead(lock[0]);
-            alreadyWriting = true;
+        if (cleanIfFull())
             s = clean(update);
-        } else {
+        else
             s = size();
-        }
 
         int c = capacity();
 
-        boolean free = s+1 <= c;
+        boolean free = s + 1 <= c;
 
         Y lastToRemove;
         if (!free) {
@@ -179,10 +176,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             lastToRemove = null;
         }
 
-        if (!alreadyWriting) {
-            lock[0] = writeFromRead(lock[0]);
-            alreadyWriting = true;
-        }
 
         if (lastToRemove!=null) {
             //removeFromMap(items.removeLast());

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import jcog.Util;
-import jcog.io.Grok;
+import jcog.grammar.Grok;
 import jcog.net.UDPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

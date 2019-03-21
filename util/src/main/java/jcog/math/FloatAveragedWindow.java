@@ -15,6 +15,8 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
  *  * https://en.wikipedia.org/wiki/Exponential_smoothing
  *  * https://dsp.stackexchange.com/a/20336
  *  * <p>
+ *
+ *  TODO make the set/add fully atomic.  it is relatively easy
  * */
 public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction {
 
@@ -138,24 +140,32 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
         }
     }
 
-
+    /** for recording */
     public void next(float x) {
-        if (x == x) {
-            //TODO make AtomicRingBufferTensor
-            _set(x);
-            next();
-        }
+        _set(x);
+        next();
+    }
+
+    /** for accumulator use */
+    public void reset(float x) {
+        next();
+        _set(x);
     }
 
     public void next() {
         window.targetSpin();
     }
 
-    /** add to current value */
+    /** add to current value. for use in ordinary accumulator mode, it should not be necessary to invalidate after each add but only on reset. */
     public final void add(float inc) {
+        add(inc, false);
+    }
+
+    public final void add(float inc, boolean invalidate) {
         if (inc == inc) {
             window.addAtDirect(inc, window.target());
-            invalidate();
+            if (invalidate)
+                invalidate();
         }
     }
     protected void _set(float x) {

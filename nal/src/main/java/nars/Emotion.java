@@ -64,10 +64,10 @@ public class Emotion implements Meter {
      */
     public final float[] want = new float[MetaGoal.values().length];
 
-    static final int history = 8;
+    static final int history = 16;
     public final FloatAveragedWindow
-            busyVol = new FloatAveragedWindow(history, 0.9f).clear(0),
-            busyVolPriWeighted = new FloatAveragedWindow(history, 0.9f).clear(0);
+            busyVol = new FloatAveragedWindow(history, 0.1f).clear(0),
+            busyVolPriWeighted = new FloatAveragedWindow(history, 0.1f).clear(0);
 //    FastCounter busyVol = new FastCounter("busyVol"), busyVolPriWeighted = new FastCounter("busyVolPriWeighted");
 
     private final NAR nar;
@@ -120,8 +120,8 @@ public class Emotion implements Meter {
      * new frame started
      */
     public void commit() {
-        busyVol.next(0);
-        busyVolPriWeighted.next(0);
+        busyVol.reset(0);
+        busyVolPriWeighted.reset(0);
     }
 
     @Deprecated

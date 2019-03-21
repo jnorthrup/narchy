@@ -41,9 +41,9 @@ public class TestNAR {
      * holds mustNot (negative) conditions which are tested at the end
      */
     private final FasterList<NARCondition> failsIfAny = new FasterList();
-    public boolean quiet = false;
-    public boolean trace = true;
+    public boolean quiet = true;
     public boolean requireConditions = true;
+    
     /**
      * -1 = failure,
      * 0 = hasnt been determined yet by the end of the test,

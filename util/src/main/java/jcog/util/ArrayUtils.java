@@ -25,6 +25,7 @@ import org.eclipse.collections.api.block.function.primitive.*;
 import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 
 import java.lang.reflect.Array;
+import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
@@ -132,6 +133,7 @@ public enum ArrayUtils {
     public static final int INDEX_NOT_FOUND = -1;
     public static final double[][] EMPTY_DOUBLE_DOUBLE = new double[0][0];
     public static final Consumer[] EMPTY_CONSUMER_ARRAY = new Consumer[0];
+    public static final URL[] EMPTY_URL_ARRAY = new URL[0];
     private static final int SMALL = 7;
     private static final int MEDIUM = 40;
 

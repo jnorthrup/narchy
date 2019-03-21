@@ -103,14 +103,17 @@ class FloatAveragedWindowTest {
 //            assertEquals(1.25, F - G);
         }
     }
+
     @Test
     void testCumulative() {
         FloatAveragedWindow g = new FloatAveragedWindow(4, 0.5f).clear(0);
 
         assertEquals(0, g.window.target());
         g.add(1);
-
         assertEquals(0.125, g.asFloat());
+        g.add(0);
+        assertEquals(0.125, g.asFloat()); //unchanged
+
         //TODO decide when this should invalidate
         g.add(2);
         g.resetNext(0);

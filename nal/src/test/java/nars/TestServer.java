@@ -1,18 +1,27 @@
 package nars;
 
+import jcog.Texts;
 import jcog.data.list.FasterList;
+import jcog.table.DataTable;
+import org.gridkit.nanocloud.Cloud;
+import org.gridkit.nanocloud.CloudFactory;
+import org.gridkit.nanocloud.RemoteNode;
 import org.junit.jupiter.engine.JupiterTestEngine;
 import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
+import org.junit.platform.launcher.TestPlan;
 import org.junit.platform.launcher.core.LauncherConfig;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
+import tech.tablesaw.api.DateTimeColumn;
+import tech.tablesaw.api.LongColumn;
+import tech.tablesaw.api.StringColumn;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.concurrent.Callable;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage;
 
@@ -26,9 +35,9 @@ public class TestServer {
 
     }
 
-    protected SortedMap<String, TestExecutionResult> test() {
+    protected DataTable test() {
 
-        SortedMap<String,TestExecutionResult> results = new TreeMap();
+        DataTable results = newTestTable();
 
         //https://junit.org/junit5/docs/current/user-guide/#launcher-api-listeners-reporting
         LauncherConfig launcherConfig = LauncherConfig.builder()
@@ -36,41 +45,146 @@ public class TestServer {
                 .enableTestExecutionListenerAutoRegistration(false)
                 //.addTestEngines(new CustomTestEngine())
                 .addTestEngines(new JupiterTestEngine())
-                .addTestExecutionListeners(
-                        new TestExecutionListener() {
-                            @Override
-                            public void executionFinished(TestIdentifier id, TestExecutionResult result) {
-                                //System.out.println(id + " " + result);
-                                results.put(sid(id), result);
-                            }
-                        }
-                )
+                .addTestExecutionListeners(new MyTestExecutionListener(results))
                 //new LegacyXmlReportGeneratingListener(reportsDir, out)
-//                    .addTestExecutionListeners(new CustomTestExecutionListener())
                 .build();
 
 
-        Launcher launcher = LauncherFactory.create(launcherConfig);
 
         LauncherDiscoveryRequestBuilder b = LauncherDiscoveryRequestBuilder.request();
         for (String pkg : this.packages)
             b.selectors(selectPackage(pkg));
-        launcher.execute(b.build());
+
+        LauncherFactory.create(launcherConfig).execute(b.build());
 
         return results;
     }
 
     static private int _jupiterPrefixToRemove = "[engine:junit-jupiter]/[class:".length();
+
     protected static String sid(TestIdentifier id) {
-        return id.getUniqueId().substring(_jupiterPrefixToRemove).replace("]/[method:","/").replace("]", "");
+        String uid = id.getUniqueId();
+        try {
+            return uid.substring(_jupiterPrefixToRemove).replace("]/[method:", "/").replace("]", "").replace("()","");
+        } catch (Exception e) {
+            return uid;
+        }
+
     }
 
+
+    public static class TestMetrics implements Serializable {
+        public final LocalDateTime when;
+        public final String id;
+        public long wallTimeNS;
+
+        public enum Status {
+            Success, Fail, Error
+        }
+        public Status status;
+
+        public TestMetrics(TestIdentifier testIdentifier) {
+            this.when = LocalDateTime.now();
+            this.id = sid(testIdentifier);
+        }
+
+        @Override
+        public String toString() {
+            return "test(" +
+                    "id='" + id + '\'' +
+                    " " + status +
+                    " @ " + when +
+                    " wallTimeNS=" + Texts.timeStr(wallTimeNS) +
+                    '}';
+        }
+    }
+
+
+    protected static DataTable newTestTable() {
+        DataTable d = new DataTable();
+        d.addColumns(
+                StringColumn.create("test"),
+                DateTimeColumn.create("start"),
+                StringColumn.create("status"),
+                LongColumn.create("wallTimeNS")
+        );
+        return d;
+    }
+
+    private static class MyTestExecutionListener implements TestExecutionListener {
+
+        private final DataTable out;
+        transient long startNS, endNS;
+        transient private TestMetrics m;
+
+        public MyTestExecutionListener(DataTable out) {
+            this.out = out;
+        }
+
+        public void testPlanExecutionStarted(TestPlan testPlan) {
+            //this.testPlan = testPlan;
+        }
+
+        @Override
+        public void executionStarted(TestIdentifier testIdentifier) {
+            this.m = new TestMetrics(testIdentifier);
+            this.startNS = System.nanoTime();
+        }
+
+        @Override
+        public void executionFinished(TestIdentifier id, TestExecutionResult result) {
+            this.endNS = System.nanoTime();
+            m.wallTimeNS = (endNS - startNS);
+            switch (result.getStatus()) {
+                case SUCCESSFUL:
+                    m.status = TestMetrics.Status.Success;
+                    break;
+                case FAILED:
+                    m.status = TestMetrics.Status.Fail;
+                    break;
+                case ABORTED:
+                    m.status = TestMetrics.Status.Error;
+                    break;
+
+            }
+
+            out.add(m.id, m.when, m.status.name(), m.wallTimeNS);
+        }
+    }
+
+
+    /** local launcher */
     public static void main(String[] args) {
         TestServer s = new TestServer(
-    "nars.nal.nal1"
+                "nars.nal.nal1"
         );
-
-        s.test().forEach((k,v)->System.out.println(k + "\t" + v));
-
+        DataTable d = s.test();
+        d.write().csv(System.out);
     }
+
+    public static class RemoteLauncher {
+        public static void main(String[] args) {
+            Cloud cloud = CloudFactory.createCloud();
+
+            RemoteNode rn = RemoteNode.at(cloud.node("eus")).useSimpleRemoting();
+            rn.setRemoteAccount("me");
+            rn.setRemoteJavaExec("/home/me/jdk/bin/java");
+            rn.setRemoteJarCachePath("/aux/me/tmp");
+            rn.setProp("debug", "true");
+
+
+            DataTable s = cloud.node(/*"**"*/ "eus").exec(new Callable<>() {
+                @Override
+                public DataTable call() throws Exception {
+                    return new TestServer("nars.nal.nal1").test();
+                }
+            });
+
+            s.write().csv(System.out);
+
+            cloud.shutdown();
+
+        }
+    }
+
 }

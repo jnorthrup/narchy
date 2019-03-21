@@ -11,21 +11,47 @@ import tech.tablesaw.api.*;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.table.Rows;
 
-import java.io.FilterOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * specified semantics of a data record / structure
  * TODO move most of this to 'MutableDataTable' implementation of interface DataTable
  **/
-public class DataTable extends Table {
+public class DataTable extends Table implements Externalizable {
 
     protected final Map<String, String[]> nominalCats;
+
+    @Override
+    public void writeExternal(ObjectOutput objectOutput) throws IOException {
+        //HACK
+        ByteArrayOutputStream o = new ByteArrayOutputStream();
+        write().csv(new GZIPOutputStream(o));
+        objectOutput.writeInt(o.size());
+        objectOutput.write(o.toByteArray());
+    }
+
+    @Override public void readExternal(ObjectInput i) throws IOException {
+        //HACK
+        int size = i.readInt();
+        byte[] b = new byte[size];
+        i.readFully(b);
+        Table csv = read().csv(new GZIPInputStream(new ByteArrayInputStream(b)));
+        addColumns(csv.columnArray());
+    }
+
+    public DataTable() {
+        super("");
+//        this.attribute_names = new FasterList<>();
+//        this.attrTypes = new HashMap<>();
+        this.nominalCats = new HashMap<>();
+    }
 
     /** see: Table.copy() */
     public DataTable(Table copy) {
@@ -52,12 +78,7 @@ public class DataTable extends Table {
         this.nominalCats = copyMetadataFrom.nominalCats;
     }
 
-    public DataTable() {
-        super("");
-//        this.attribute_names = new FasterList<>();
-//        this.attrTypes = new HashMap<>();
-        this.nominalCats = new HashMap<>();
-    }
+
 
     public boolean equalSchema(DataTable other) {
 
@@ -142,11 +163,18 @@ public class DataTable extends Table {
 
         List<Column<?>> l = columns();
         for (int i = 0; i < point.length; i++) {
-            Object c = point[i];
-            if (c instanceof Number) {
-                c = ((Number)c).doubleValue(); //come on tablesaw
+            Column<?> c = l.get(i);
+            Object p = point[i];
+            //TODO use type cast graph
+            //come on tablesaw
+            if (p instanceof Number) {
+                if (c instanceof LongColumn) {
+                    p = ((Number) p).longValue();
+                } else {
+                    p = ((Number) p).doubleValue();
+                }
             }
-            l.get(i).appendObj(c);
+            c.appendObj(p);
         }
 
         return true;

@@ -13,7 +13,7 @@ buildscript {
             url "http://jcenter.bintray.com"
         }
         //maven { url "https://oss.sonatype.org/content/groups/public/" }
-
+        maven { url "http://repo.jenkins-ci.org/releases" }
     }
     dependencies {
 //        classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.0'
