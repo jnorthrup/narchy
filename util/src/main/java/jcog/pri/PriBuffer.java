@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Consumer;
 //import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,7 +32,7 @@ public class PriBuffer<Y> {
             //new ConcurrentHashMapUnsafe<>(512);
             //new java.util.concurrent.ConcurrentHashMap(512);
 
-    public final PriMerge merge;
+    public PriMerge merge;
 
     public PriBuffer(PriMerge merge) {
         this(merge, newMap());
@@ -41,8 +40,8 @@ public class PriBuffer<Y> {
 
 
     public PriBuffer(PriMerge merge, Map<Y, Prioritizable> items) {
-        this.merge = merge;
         this.items = items;
+        merge(merge);
     }
 
     public static Map newMap() {
@@ -85,15 +84,11 @@ public class PriBuffer<Y> {
         return items.isEmpty(); /* && termlink.isEmpty();*/
     }
 
-    public Y put(Y x, float pri) {
-        return put(x, pri, null);
+    public final Y put(Y x, float pri, PriMerge merge) {
+        return putRaw(x, pri, merge, null);
     }
 
-    public Y put(Y y, float pri, @Nullable OverflowDistributor<Y> overflow) {
-        return putRaw(y, pri, overflow);
-    }
-
-    private Y putRaw(Y x, float pri, @Nullable OverflowDistributor<Y> overflow) {
+    private Y putRaw(Y x, float pri, PriMerge merge, @Nullable OverflowDistributor<Y> overflow) {
         if (pri != pri)
             return null;
 
@@ -103,13 +98,13 @@ public class PriBuffer<Y> {
         );
 
         if (y != x) {
-            merge(y, x, pri, overflow);
+            merge(y, x, pri, merge, overflow);
             return (Y) y;
         }
         return x;
     }
 
-    protected void merge(Prioritizable existing, Y incoming, float pri, OverflowDistributor<Y> overflow) {
+    protected void merge(Prioritizable existing, Y incoming, float pri, PriMerge merge, OverflowDistributor<Y> overflow) {
         if (overflow!=null) {
             overflow.merge(incoming, existing, pri, merge);
         } else {
@@ -144,12 +139,12 @@ public class PriBuffer<Y> {
         }
     }
 
-    public final void put(OverflowDistributor<Y> overflow, Random random) {
-        overflow.shuffle(random).redistribute(this::put);
-    }
+//    public final void put(OverflowDistributor<Y> overflow, Random random) {
+//        overflow.shuffle(random).redistribute(this::put);
+//    }
 
-    public final <Z extends Prioritizable> void put(Z x) {
-        put((Y)x, x.pri());
+    public final <Z extends Prioritizable> void put(Z x, PriMerge merge) {
+        put((Y)x, x.pri(), merge);
     }
 
     public void clear() {
@@ -163,7 +158,12 @@ public class PriBuffer<Y> {
         return items.size();
     }
 
-//    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {
+    /** sets the merge function */
+    public void merge(PriMerge merge) {
+        this.merge = merge;
+    }
+
+    //    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {
 //
 //        public final static Comparator<TermLinkage> preciseComparator = Comparator
 //            .comparing((TermLinkage x)->x.Y.target())

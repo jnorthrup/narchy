@@ -16,7 +16,7 @@
 package org.oakgp.evolve;
 
 import jcog.pri.PLink;
-import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.random.XoRoShiRo128PlusRandom;
@@ -28,7 +28,6 @@ import org.oakgp.select.NodeSelector;
 import org.oakgp.select.RankSelector;
 
 import java.util.Collection;
-import java.util.HashMap;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,7 +44,7 @@ public class GenerationEvolverImplTest {
         
         float elitismRate = 0.5f;
 
-        ArrayBag<GeneticOperator, PLink<GeneticOperator>> operators = new PLinkArrayBag<>(PriMerge.plus, 2, new HashMap());
+        Bag<org.oakgp.evolve.GeneticOperator, PLink<GeneticOperator>> operators = new PLinkArrayBag(PriMerge.plus, 2);
         GeneticOperator generator1 = mock(GeneticOperator.class);
         GeneticOperator generator2 = mock(GeneticOperator.class);
         operators.put(new PLink(generator1, 0.3f));

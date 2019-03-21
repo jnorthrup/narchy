@@ -45,18 +45,18 @@ public final class Termify extends ProxyTerm {
         d.concOcc = null;
 
         NAR nar = d.nar;
-        nar.emotion.deriveTermify.increment();
+        nar.feel.deriveTermify.increment();
 
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
             //Term c1e = c1;
-            nar.emotion.deriveFailEval.increment(/*() ->
+            nar.feel.deriveFailEval.increment(/*() ->
                     rule + " |\n\t" + d.xy + "\n\t -> " + c1e
             */);
             return null;
         }
 
         if (x.volume() - (x.op()==NEG ? 1 : 0) > d.termVolMax) {
-            nar.emotion.deriveFailVolLimit.increment();
+            nar.feel.deriveFailVolLimit.increment();
             return null;
         }
 

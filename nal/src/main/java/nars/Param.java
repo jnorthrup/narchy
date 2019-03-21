@@ -169,8 +169,8 @@ public abstract class Param {
     public static boolean DEBUG_ENSURE_DITHERED_DT = false;
 
     public static final PriMerge tasklinkMerge =
-            //PriMerge.max;
             PriMerge.plus;
+            //PriMerge.max;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 
@@ -182,10 +182,10 @@ public abstract class Param {
      */
     public static final FloatFloatToFloatFunction DerivationPri =
         //tasklinkMerge::merge;
-        Util::or;
+        //Util::or;
         //(t,b)->Util.unitize(t+b);
         //Util::or;
-        //Math::max;
+        Math::max;
         //Util::and;
         //Util::mean;
 

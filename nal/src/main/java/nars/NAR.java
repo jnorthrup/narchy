@@ -110,7 +110,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Time time;
     public final ConceptIndex concepts;
     public final NARLoop loop;
-    public final Emotion emotion;
+    public final Emotion feel;
     public final Memory memory = new Memory(this);
     /**
      * cause->value table
@@ -158,7 +158,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         this.conceptBuilder = conceptBuilder;
         concepts.start(this);
 
-        this.emotion = new Emotion(this);
+        this.feel = new Emotion(this);
 
         Builtin.init(this);
 
@@ -272,7 +272,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         Util.toMap(clazz, "concept class", x::put);
 
-        emotion.commit(x::put);
+        feel.commit(x::put);
 
         return x;
 
@@ -1026,7 +1026,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Deprecated
     public final Stream<Activate> conceptsActive() {
         //HACK could be better
-        return attn.links.stream().flatMap(x -> Stream.of(x.source(), x.target()))
+        return attn.links.stream().flatMap(x -> Stream.of(x.from(), x.to()))
                 .distinct()
                 .map(this::concept)
                 .filter(Objects::nonNull).map(c -> new Activate(c, 1));

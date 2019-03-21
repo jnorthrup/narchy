@@ -11,14 +11,9 @@ public interface Pressurizable {
     /** depressurize a constant amount */
     void depressurize(float pri);
 
-    default void depressurize(Number pri) {
-        depressurize(pri.floatValue());
-    }
-
-
-
-    /** depressurize a percentage of what exists */
-    float depressurizePct(float rate);
+    /** depressurize a percentage of what exists.
+     * returns what that amount is, after atomically subtracting it from what existed */
+    float depressurizePct(float percentToRemove);
 
 
 }

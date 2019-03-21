@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.pri.*;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.HijackBag;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Tensor;
@@ -152,9 +153,9 @@ class BagTest {
         a.commit();
         assertEquals(0, a.size());
         assertTrue(a.isEmpty());
-        if (a instanceof ArrayBag) {
-            assertTrue(((ArrayBag) a).listCopy().isEmpty());
-            assertTrue(((ArrayBag) a).keySet().isEmpty());
+        if (a instanceof Bag) {
+            assertTrue(((PLinkArrayBag) a).listCopy().isEmpty());
+            //assertTrue(((PLinkArrayBag) a).keySet().isEmpty());
         }
 
     }
@@ -298,7 +299,7 @@ class BagTest {
 
         a.commit(null); 
         assertEquals(a.capacity(), a.size());
-        if (a instanceof ArrayBag) assertSorted((ArrayBag)a);
+        if (a instanceof Bag) assertSorted((ArrayBag)a);
 
         
 
@@ -312,7 +313,7 @@ class BagTest {
         assertEquals(pri, a.priMin(), 0.01f);
         assertEquals(a.priMin(), a.priMax(), 0.08f);
 
-        if (a instanceof HijackBag)
+        if (a instanceof Bag)
             assertTrue(((HijackBag)a).density() > 0.75f);
     }
 
@@ -329,7 +330,7 @@ class BagTest {
             );
         }
         a.commit(null);
-        if (a instanceof ArrayBag) assertSorted((ArrayBag)a);
+        if (a instanceof Bag) assertSorted((ArrayBag)a);
     }
 
     /**
@@ -353,7 +354,7 @@ class BagTest {
 
         bag.commit(null);
         assertEquals(c, bag.size());
-        if (bag instanceof ArrayBag) assertSorted((ArrayBag)bag);
+        if (bag instanceof Bag) assertSorted((ArrayBag)bag);
     }
     private static void fillRandom(ArrayBag<PLink<String>, PLink<String>> bag) {
         assertTrue(bag.isEmpty());

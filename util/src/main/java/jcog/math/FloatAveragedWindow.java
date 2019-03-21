@@ -87,10 +87,19 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
         this(windowSize, new FloatRange(alpha, 0, 1f));
     }
 
+    public FloatAveragedWindow(int windowSize, float alpha, float fill) {
+        this(windowSize, alpha);
+        window.fillAll(fill);
+    }
+
     public FloatAveragedWindow(int windowSize, FloatRange alpha) {
         this.window = new RingTensor(new AtomicArrayTensor(windowSize), 1, windowSize);
-        window.fillAll(Float.NaN);
         this.alpha = alpha;
+    }
+
+    public FloatAveragedWindow(int windowSize, FloatRange alpha, float fill) {
+        this(windowSize, alpha);
+        window.fillAll(fill);
     }
 
 

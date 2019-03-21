@@ -61,7 +61,7 @@ class DynamicImageTest extends AbstractDynamicTaskTest {
         NAR n = NARS.tmp(4);
         Term it = $$("(x --> (y,/))");
         n.believe(it);
-        Concept i = n.concept(it);
+        Concept i = n.conceptualize(it);
         Term pt = Image.imageNormalize(it);
         Concept p = n.concept(pt);
         assertTrue(i!=p);

@@ -1,5 +1,6 @@
 package jcog.math;
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongSupplier;
 
 /**
@@ -10,23 +11,20 @@ public class FloatCached implements FloatSupplier {
     final FloatSupplier in;
     final LongSupplier clock;
     /*volatile*/ float current = Float.NaN;
-    /*volatile*/ long lastTime;
+    final AtomicLong lastTime = new AtomicLong();
 
     public FloatCached(FloatSupplier in, LongSupplier clock) {
         this.in = in;
         this.clock = clock;
-        this.lastTime = clock.getAsLong()-1; 
+        this.lastTime.set(clock.getAsLong() - 1);
         asFloat();
     }
 
     @Override
     public float asFloat() {
-        synchronized (this) {
-            long now = clock.getAsLong();
-            if (now!=lastTime) {
-                lastTime = now;
-                current = in.asFloat();
-            }
+        long next = clock.getAsLong();
+        if (next != lastTime.getAndSet(next)) {
+            current = in.asFloat();
         }
         return current;
     }

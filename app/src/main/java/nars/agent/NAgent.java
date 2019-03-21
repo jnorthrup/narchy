@@ -227,7 +227,7 @@ public class NAgent extends NARService implements NSense, NAct {
                 " dex=" + /*n4*/(dexteritySum()) +
 
                 /*" var=" + n4(varPct(nar)) + */ "\t" + nar.concepts.summary() + " " +
-                nar.emotion.summary();
+                nar.feel.summary();
     }
 
     /**

@@ -50,11 +50,15 @@ public abstract class TaskLeak extends Causable {
 
     }
     protected TaskLeak(int capacity, @Nullable NAR n, byte... puncs) {
+        this(capacity, PriMerge.max, n, puncs);
+    }
+
+    protected TaskLeak(int capacity, PriMerge merge, @Nullable NAR n, byte... puncs) {
         this(
                 new BufferSource(
-                        new BufferedBag.SimpleBufferedBag<Task, PriReference<Task>>(
-                                new PLinkArrayBag<>(PriMerge.max, capacity),
-                                new PriBuffer(PriMerge.max))
+                        new BufferedBag.SimpleBufferedBag<>(
+                                new PLinkArrayBag<>(merge, capacity),
+                                new PriBuffer<>(merge))
                 )
                 , n, puncs
         );
@@ -218,7 +222,7 @@ public abstract class TaskLeak extends Causable {
 
                 if (c == null) return false; //TODO can this even happen
 
-                Concept cc = nar.concept(c.source());
+                Concept cc = nar.concept(c.from());
                 Term ct = cc.term();
 
                 if (ct.hasAny(Op.Temporal) || termFilter.test(cc.term())) { //TODO check for impl filters which assume the target is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's target

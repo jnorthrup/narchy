@@ -5,11 +5,11 @@ import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.pri.Forgetting;
 import jcog.pri.PriBuffer;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
-import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -113,7 +113,6 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     @Override
     protected void run(NAR n, long dt) {
-        forgetting.update(n);
         derivePri.update(n);
 
         root.pri(1);
@@ -128,11 +127,11 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     /** resolves and possibly sub-links a link target */
     @Nullable public Term term(TaskLink link, Task task, Derivation d) {
 
-        Term t = link.target();
+        Term t = link.to();
 
         NAR nar = d.nar;
         Random rng = d.random;
-        final Term s = link.source();
+        final Term s = link.from();
         byte punc = task.punc();
 
 
@@ -316,10 +315,6 @@ public class Attention extends DurService implements Sampler<TaskLink> {
             return value;
         }
 
-        @Override
-        protected float merge(TaskLink existing, TaskLink incoming) {
-            return existing.merge(incoming, Param.tasklinkMerge);
-        }
     }
 
     private static class TaskLinkHijackBag extends PriHijackBag<TaskLink, TaskLink> {
@@ -333,10 +328,6 @@ public class Attention extends DurService implements Sampler<TaskLink> {
             return value;
         }
 
-        @Override
-        protected PriMerge merge() {
-            return Param.tasklinkMerge;
-        }
     }
 
 

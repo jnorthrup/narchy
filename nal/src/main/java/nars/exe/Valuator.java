@@ -59,7 +59,7 @@ public abstract class Valuator {
 
         Cause[] ccc = causes.array();
 
-        float[] want = nar.emotion.want;
+        float[] want = nar.feel.want;
 
         for (int i = 0; i < cc; i++) {
 

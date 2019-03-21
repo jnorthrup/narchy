@@ -16,7 +16,7 @@
 package org.oakgp;
 
 import jcog.pri.PLink;
-import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.random.XoRoShiRo128PlusRandom;
@@ -587,14 +587,14 @@ public final class Evolution {
 
         private GenerationEvolver createDefaultGenerationEvolver() {
             float elitism = 0.5f;
-            ArrayBag<GeneticOperator, PLink<GeneticOperator>> operators = createDefaultGeneticOperators();
+            Bag<org.oakgp.evolve.GeneticOperator, PLink<GeneticOperator>> operators = createDefaultGeneticOperators();
             return new GenerationEvolverImpl(elitism,
                     new RankSelector(rng),
                     operators, rng);
         }
 
-        private ArrayBag<GeneticOperator, PLink<GeneticOperator>> createDefaultGeneticOperators() {
-            ArrayBag<GeneticOperator, PLink<GeneticOperator>> operators = new PLinkArrayBag<>(PriMerge.plus, 10, new HashMap());
+        private Bag<org.oakgp.evolve.GeneticOperator, PLink<GeneticOperator>> createDefaultGeneticOperators() {
+            Bag<org.oakgp.evolve.GeneticOperator, PLink<GeneticOperator>> operators = new PLinkArrayBag(PriMerge.plus, 10);
 
 
             TreeGenerator treeGenerator = TreeGeneratorImpl.grow(_primitiveSet, rng);

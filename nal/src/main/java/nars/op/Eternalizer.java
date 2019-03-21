@@ -60,7 +60,7 @@ public class Eternalizer extends LinkRanker<Task> {
 
     @Override
     protected Task apply(TaskLink x) {
-        Term xs = x.source();
+        Term xs = x.from();
         if (filter(xs.op()) && filter(xs.term())) {
             Task t = x.get(punc(), when, (tt)->!tt.isEternal());
 

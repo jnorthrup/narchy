@@ -18,6 +18,10 @@ abstract public class MetalBitSet {
 
     public abstract boolean get(int i);
 
+    final public boolean getNot(int i) {
+        return !get(i);
+    }
+
     public abstract void set(int i);
 
     public abstract void clear(int i);

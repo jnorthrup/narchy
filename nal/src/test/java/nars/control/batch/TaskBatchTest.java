@@ -1,6 +1,7 @@
 package nars.control.batch;
 
 import jcog.data.byt.DynBytes;
+import jcog.pri.op.PriMerge;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.BiConsumer;
@@ -41,7 +42,7 @@ class TaskBatchTest {
         @Override
         public void run(TaskBatch.TaskQueue next) {
             x.append("c_").append(param).append('@').append(n2(pri)).append(' ');
-            next.put(new MyTask(param, pri));
+            next.put(new MyTask(param, pri), PriMerge.max);
         }
     }
 

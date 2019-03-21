@@ -13,11 +13,7 @@ abstract public class PriHijackBag<K,V extends UnitPrioritizable> extends Hijack
 
     protected PriHijackBag(int cap, int reprobes) {
         super(cap, reprobes);
-    }
-
-
-    protected PriMerge merge() {
-        return PriMerge.plus;
+        merge(PriMerge.plus);
     }
 
     @Override

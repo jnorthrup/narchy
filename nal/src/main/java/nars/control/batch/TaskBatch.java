@@ -12,6 +12,8 @@ public final class TaskBatch {
     /** double buffered, page flipping strategy */
     final TaskQueue[] queue = new TaskQueue[2];
 
+    private PriMerge merge = PriMerge.max;
+
     /** oscillates between 0 and 1 */
     private int run = 0;
 
@@ -27,7 +29,7 @@ public final class TaskBatch {
     }
 
     public void add(BatchableTask x) {
-        queue[run].put(x);
+        queue[run].put(x, merge);
     }
 
     static class TaskQueue extends PriBuffer<BatchableTask> {
@@ -43,7 +45,7 @@ public final class TaskBatch {
         }
     }
 
-    public final synchronized void run() {
+    public final void run() {
         while (next());
     }
 

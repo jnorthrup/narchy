@@ -34,7 +34,7 @@ public class FloatAveraged implements FloatToFloatFunction {
     public float valueOf(float x) {
 
 
-        synchronized (this) {
+//        synchronized (this) {
             if (x != x)
                 return this.prev;
 
@@ -47,7 +47,7 @@ public class FloatAveraged implements FloatToFloatFunction {
             }
             this.prev = next;
             return lowOrHighPass ? next : x - next;
-        }
+//        }
     }
 
     /**

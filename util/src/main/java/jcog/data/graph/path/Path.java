@@ -198,10 +198,24 @@ public interface Path<N, E> {
         /**
          * Из вершины A в вершину B
          */
-        AB,
+        AB {
+            @Override
+            public <N, E> N next(FromTo<Node<N, E>, E> edge) {
+                return edge.from().id();
+            }
+        },
         /**
          * Из вершины B в вершину A
          */
-        BA
+        BA {
+            @Override
+            public <N, E> N next(FromTo<Node<N, E>, E> edge) {
+                return edge.to().id();
+            }
+        };
+
+
+        abstract public <N, E> N next(FromTo<Node<N, E>, E> edge);
+
     }
 }

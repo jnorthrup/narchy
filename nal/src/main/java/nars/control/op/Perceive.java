@@ -32,25 +32,20 @@ public enum Perceive { ;
 
     static final Logger logger = LoggerFactory.getLogger(Perceive.class);
 
-
-
-
     public static ITask perceive(Task task, NAR n) {
+
+        n.feel.perceivedTaskStart.increment();
+
         Term x = task.term();
-
         if (Evaluation.canEval(x)) {
-
             return task(new TaskEvaluation(task, n).result);
-
         } else {
-            return Perceive.remember(task, x, n);
+            return Perceive.perceive(task, x, n);
         }
-
-
     }
 
     /** deduplicate and bundle to one task */
-    @Nullable static ITask task(FastList<ITask> yy) {
+    private @Nullable static ITask task(FastList<ITask> yy) {
         if (yy == null)
             return null;
 
@@ -77,7 +72,7 @@ public enum Perceive { ;
     }
 
     /** returns true if the task is acceptable */
-    private static ITask remember(Task input, Term y, NAR n) {
+    private static ITask perceive(Task input, Term y, NAR n) {
 
         if (y == Bool.Null) {
             //logger.debug("nonsense {}", input);
@@ -169,7 +164,7 @@ public enum Perceive { ;
                 return true; //continue TODO maybe limit these
 
 
-            ITask next = Perceive.remember(t, y, nar);
+            ITask next = Perceive.perceive(t, y, nar);
             if (next != null) {
                 if (result==null)
                     result = new FasterList<>(1);

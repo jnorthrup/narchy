@@ -941,6 +941,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return t == null ? Float.NaN : t.expectation();
     }
 
+    /** default implementation involves the complete perception process */
     default ITask next(NAR n) {
         return Perceive.perceive(this, n);
     }

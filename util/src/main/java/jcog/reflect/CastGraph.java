@@ -1283,29 +1283,29 @@ public class CastGraph extends TypeCastGraph {
 //        return new BaseCastGraph(this);
 //    }
 
-    public SimpleDateFormat[] getDateFormats() {
-        synchronized (this) {
-            if (dateFormats == null) {
-                dateFormats = new SimpleDateFormat[]{
-                        new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ"),
-                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss.SSSZ"),
-                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss.SSS"),
-                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss"),
-                        new SimpleDateFormat("yyy-MM-dd HH:mm"),
-                        new SimpleDateFormat("yyy-MM-dd"),
-                };
-            }
-            return dateFormats;
-        }
-    }
+//    public SimpleDateFormat[] getDateFormats() {
+//        synchronized (this) {
+//            if (dateFormats == null) {
+//                dateFormats = new SimpleDateFormat[]{
+//                        new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ"),
+//                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss.SSSZ"),
+//                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss.SSS"),
+//                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss"),
+//                        new SimpleDateFormat("yyy-MM-dd HH:mm"),
+//                        new SimpleDateFormat("yyy-MM-dd"),
+//                };
+//            }
+//            return dateFormats;
+//        }
+//    }
     //</editor-fold>
     //</editor-fold>
 
-    public void setDateFormat(SimpleDateFormat[] df) {
-        synchronized (this) {
-            this.dateFormats = df;
-        }
-    }
+//    public void setDateFormat(SimpleDateFormat[] df) {
+//        synchronized (this) {
+//            this.dateFormats = df;
+//        }
+//    }
 
     public <X,Y> List<Function<X, Y>> convertors(Class<? extends X> cfrom, Class<? extends Y> cto) {
 

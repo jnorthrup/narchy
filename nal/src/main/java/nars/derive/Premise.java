@@ -367,7 +367,7 @@ public class Premise implements Comparable<Premise> {
 
         FastCounter result;
 
-        Emotion e = d.nar.emotion;
+        Emotion e = d.nar.feel;
 
         if (match(d, matchTTL)) {
 

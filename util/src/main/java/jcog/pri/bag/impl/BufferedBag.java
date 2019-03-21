@@ -6,6 +6,7 @@ import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.util.ProxyBag;
+import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -25,6 +26,7 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
     public BufferedBag(Bag<X, Y> bag, PriBuffer<B> pre) {
         super(bag);
         this.pre = pre;
+        merge(bag.merge()); //by default.  changing this later will set pre and bag's merges
     }
 
 
@@ -74,7 +76,7 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
     @Override
     public int size() {
-        return Math.max(bag.size(), Math.min(bag.capacity(), pre.size()));
+        return Math.max(bag.size(), pre.size());
     }
 
     @Override
@@ -88,7 +90,7 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
     }
 
     public final B put(B x, float p) {
-        return pre.put(x, p);
+        return pre.put(x, p, merge());
     }
 
     @Override
@@ -96,6 +98,12 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
         return bag.isEmpty() && pre.isEmpty();
     }
 
+
+    public void merge(PriMerge nextMerge) {
+        super.merge(nextMerge);
+        pre.merge(nextMerge);
+        bag.merge(nextMerge);
+    }
 
     public static class SimpleBufferedBag<X, Y extends Prioritizable> extends BufferedBag<X, Y, Y> {
 

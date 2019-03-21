@@ -375,10 +375,10 @@ abstract public class NAgentX extends NAgent {
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.6f);
+        n.feel.want(MetaGoal.Believe, 0.01f);
+        n.feel.want(MetaGoal.Desire, 0.6f);
 
-        n.emotion.want(MetaGoal.Action, +1f);
+        n.feel.want(MetaGoal.Action, +1f);
 
 
 //
@@ -417,7 +417,7 @@ abstract public class NAgentX extends NAgent {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        TaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 5f);
+        TaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 50f);
         //TaskBuffer injection = new TaskBuffer.DirectTaskBuffer();
         window(NARui.taskBufferView(injection, n), 500, 500);
 
@@ -593,7 +593,7 @@ abstract public class NAgentX extends NAgent {
                 float v = b.volume();
                 float reward =
                         //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
-                        (float) (Math.log(n.emotion.busyVol.asFloat())/5f);
+                        (float) (Math.log(n.feel.busyVol.asFloat())/5f);
                 rewardSum.addAndGet(reward);
                 plot.commit();
 

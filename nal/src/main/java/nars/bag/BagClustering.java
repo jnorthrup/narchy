@@ -193,7 +193,8 @@ public class BagClustering<X> {
             model.coord(x.get(), x.coord);
         }
 
-        x.centroid = net.put(x.coord).id;
+        Centroid y = net.put(x.coord);
+        x.centroid = y.id;
     }
 
     public void clear() {

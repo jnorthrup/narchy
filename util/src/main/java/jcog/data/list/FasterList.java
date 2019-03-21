@@ -34,7 +34,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public FasterList(int initialCapacity) {
-        this.items = initialCapacity == 0 ? (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY : (X[]) newArray(initialCapacity);
+        this.items = initialCapacity <= 0 ? (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY : (X[]) newArray(initialCapacity);
     }
 
 
@@ -732,8 +732,10 @@ public class FasterList<X> extends FastList<X> {
             X[] items = this.items;
             for (int i = 0; i < s; i++) {
                 X ii = items[i];
-                items[i] = null;
-                each.accept(ii);
+                if (ii!=null) {
+                    items[i] = null;
+                    each.accept(ii);
+                }
             }
             this.size = 0;
         }

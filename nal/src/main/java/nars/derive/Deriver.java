@@ -151,7 +151,7 @@ abstract public class Deriver extends Causable {
         return rules.planner.apply(d);
     }
 
-    public synchronized Deriver output(ConsumerX<ITask> target, TaskBuffer out, boolean cycleOrDur) {
+    public Deriver output(ConsumerX<ITask> target, TaskBuffer out, boolean cycleOrDur) {
         TaskBuffer prev = this.out;
         if (prev!=null) {
             if (prev == out) return this; //same instance

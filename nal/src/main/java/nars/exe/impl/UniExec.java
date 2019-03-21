@@ -1,16 +1,15 @@
 package nars.exe.impl;
 
 import jcog.Util;
+import jcog.data.list.FastCoWList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Offs;
 import jcog.pri.PLink;
-import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.PriArrayBag;
-import jcog.pri.op.PriMerge;
 import jcog.service.Service;
 import nars.NAR;
 import nars.exe.Causable;
 import nars.exe.Exec;
+import nars.term.Term;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -81,7 +80,8 @@ public class UniExec extends Exec {
         }
     }
 
-    public final ArrayBag<Causable, TimedLink> cpu = new PriArrayBag(PriMerge.replace, 64);
+    public final FastCoWList<TimedLink> cpu = new FastCoWList(TimedLink[]::new);
+
     Offs ons = null;
 
     public UniExec() {
@@ -154,12 +154,18 @@ public class UniExec extends Exec {
 
 
     private boolean remove(Causable s) {
-        return cpu.remove(s)!=null; //==s
+        return cpu.removeIf(x->x.get()==s);
     }
 
     private void add(Causable s) {
         //InstrumentedCausable r = can.computeIfAbsent(s, InstrumentedCausable::new);
-        cpu.put(new TimedLink(s));
+        Term sid = s.id;
+        if (cpu.containsInstance(s))
+            throw new RuntimeException("causable " + s + " already present");
+        if (cpu.OR(x->sid.equals(x.get().id)))
+            throw new RuntimeException("causable " + s + " name collision");
+
+        cpu.add(new TimedLink(s));
     }
 
 

@@ -9,14 +9,17 @@ import java.util.Map;
 
 public class PriArrayBag<X extends Prioritizable> extends ArrayBag<X,X> {
 
+    public PriArrayBag(PriMerge merge) {
+        this(merge, 0);
+    }
 
-    public PriArrayBag(PriMerge mergeFunction, int capacity) {
-        this(mergeFunction, new UnifiedMap<>(capacity));
+    public PriArrayBag(PriMerge merge, int capacity) {
+        this(merge, new UnifiedMap<>(capacity));
         setCapacity(capacity);
     }
 
-    public PriArrayBag(PriMerge mergeFunction, Map<X, X> map) {
-        super(mergeFunction, map);
+    public PriArrayBag(PriMerge merge, Map<X, X> map) {
+        super(merge, map);
     }
 
 //    @Override
@@ -28,4 +31,8 @@ public class PriArrayBag<X extends Prioritizable> extends ArrayBag<X,X> {
     @Override public X key(X k) {
         return k;
     }
+
+
+
+
 }

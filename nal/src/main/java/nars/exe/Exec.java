@@ -2,6 +2,7 @@ package nars.exe;
 
 import jcog.data.list.FasterList;
 import jcog.pri.bag.Bag;
+import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
 import nars.NAR;
@@ -142,18 +143,18 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
 
 
     /** asynchronously drain N elements from a bag as input */
-    public void input(Bag<?, ITask> taskBag, int max) {
-        Bag b;
-        if  (taskBag instanceof BufferedBag)
-            b = ((BufferedBag)taskBag).bag;
+    public void input(Sampler<nars.task.ITask> taskSampler, int max) {
+        Sampler b;
+        if  (taskSampler instanceof BufferedBag)
+            b = ((BufferedBag) taskSampler).bag;
         else
-            b = taskBag;
+            b = taskSampler;
 
         input(nn -> {
 
             FasterList batch = Exec.tmpTasks.get();
 
-            if (b instanceof ArrayBag) {
+            if (b instanceof Bag) {
                 boolean blocking = true;
                 ((ArrayBag) b).popBatch(max, blocking, batch::add);
             } else {

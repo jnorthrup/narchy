@@ -10,6 +10,7 @@ import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriArrayBag;
+import jcog.pri.op.PriMerge;
 import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
@@ -17,7 +18,6 @@ import nars.control.channel.ConsumerX;
 import nars.exe.Exec;
 import nars.task.ITask;
 import nars.task.NALTask;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -226,29 +226,29 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
-        public final Bag<ITask, ITask> tasks = new BufferedBag.SimpleBufferedBag<>(
-                new PriArrayBag<>(Param.tasklinkMerge,
-                        new UnifiedMap<>(0, 0.5f)
-                        //PriBuffer.newMap()
-                        //new HashMap(0, 0.5f)
-                ) {
-                    @Override
-                    protected float merge(ITask existing, ITask incoming) {
-                        return TaskBuffer.merge(existing, incoming);
-                    }
+        public final Bag<ITask, ITask> tasks;
 
-                    @Override
-                    protected int histogramBins() {
-                        return 0;
+        {
+            final PriMerge merge = Param.tasklinkMerge;
+            tasks = new BufferedBag.SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
+                        @Override
+                        protected float merge(ITask existing, ITask incoming) {
+                            return TaskBuffer.merge(existing, incoming);
+                        }
+
+                        @Override
+                        protected int histogramBins() {
+                            return 0; /* since sampling is not used */
+                        }
+                    },
+                    new PriBuffer<>(merge) {
+                        @Override
+                        protected void merge(Prioritizable existing, ITask incoming, float pri, PriMerge merge, OverflowDistributor<ITask> overflow) {
+                            TaskBuffer.merge((ITask) existing, incoming);
+                        }
                     }
-                },
-                new PriBuffer<>(Param.tasklinkMerge) {
-                    @Override
-                    protected void merge(Prioritizable existing, ITask incoming, float pri, OverflowDistributor<ITask> overflow) {
-                        TaskBuffer.merge((ITask) existing, incoming);
-                    }
-                }
-        );
+            );
+        }
 //                new PriArrayBag<ITask>(PriMerge.max, new HashMap()
 //                        //new UnifiedMap()
 //                ) {
@@ -265,7 +265,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
          * input rate
          * tasks per cycle
          */
-        public final FloatRange valve = new FloatRange(1, 0, 32);
+        public final FloatRange valve = new FloatRange(1, 0, 512);
         private transient long prev = Long.MIN_VALUE;
 
         /**

@@ -103,7 +103,7 @@ public class TaskConcept extends NodeConcept  {
 
     public void value(Task t, NAR n) {
 
-        n.emotion.perceive(t);
+        n.feel.perceive(t);
 
         byte punc = t.punc();
         if (punc == BELIEF || punc == GOAL) {

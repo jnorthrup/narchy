@@ -2,191 +2,244 @@ package jcog.pri.bag;
 
 import jcog.Util;
 import jcog.data.NumberX;
+import jcog.data.atomic.AtomicFloatFieldUpdater;
+import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.data.list.table.Table;
-import jcog.pri.op.PriForget;
+import jcog.pri.Forgetting;
+import jcog.pri.ScalarValue;
+import jcog.pri.op.PriMerge;
+import jcog.util.ArrayUtils;
 import jcog.util.FloatFloatToFloatFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static jcog.Util.assertUnitized;
+
 
 /**
- * K=key, V = item/value of type Item
+ * X=key, Y = item/value of type Item
+ * TODO make an abstract class by replacing ArrayBag's superclass inheritance with delegation
  */
-public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizable {
+public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pressurizable {
 
+    private static final AtomicFloatFieldUpdater<Sampler> MASS =
+            new AtomicFloatFieldUpdater(Bag.class, "mass");
+    private static final AtomicFloatFieldUpdater<Sampler> PRESSURE =
+            new AtomicFloatFieldUpdater(Bag.class, "pressure");
+    private static final MetalAtomicIntegerFieldUpdater<Sampler> CAPACITY =
+            new MetalAtomicIntegerFieldUpdater(Bag.class, "capacity");
 
-    @Nullable Bag EMPTY = new Bag() {
+    private PriMerge merge;
 
+    private volatile int mass, pressure, capacity;
 
-        @Override
-        public float mass() {
-            return 0;
+    protected static <X, Y> void forEachActive(Bag<X, Y> bag, AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
+        forEach(map, bag::active, e);
+    }
+
+    private static <Y> void forEach(AtomicReferenceArray<Y> map, Predicate<Y> accept, Consumer<? super Y> e) {
+        for (int c = map.length(), j = 0; j < c; j++) {
+            Y v = map.getOpaque(j);
+            if (v != null && accept.test(v)) {
+                e.accept(v);
+            }
         }
-
-        @Nullable
-        @Override
-        public Consumer forget(float temperature) {
-            return null;
+    }
+    protected static <Y> void forEach(AtomicReferenceArray<Y> map, int max, Consumer<? super Y> e) {
+        for (int c = map.length(), j = 0; j < c; j++) {
+            Y v = map.getOpaque(j);
+            if (v != null) {
+                e.accept(v);
+                if (--max <= 0)
+                    return;
+            }
         }
+    }
 
-        @Override
-        public void sample(Random rng, Function each) {
-            //nothing
+    /**TODO make version of this which optionally tests for deletion */
+    protected static <Y> void forEach(IntToObjectFunction<Y> accessor, int capacity, int max, Consumer<? super Y> e) {
+        for (int j = 0; j < capacity; j++) {
+            Y v = accessor.apply(j);
+            if (v != null) {
+                e.accept(v);
+                if (--max <= 0)
+                    return;
+            }
         }
+    }
 
-        @Override
-        public float pressure() {
-            return 0;
+    public static <Y> void forEach(AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
+        for (int c = map.length(), j = -1; ++j < c; ) {
+            Y v = map
+                    .getOpaque(j);
+
+            if (v != null) {
+                e.accept(v);
+            }
         }
+    }
 
-        @Override
-        public void clear() {
-        }
+//    @Nullable Bag EMPTY = new Bag() {
+//
+//        @Nullable
+//        @Override
+//        public Consumer forget(float temperature) {
+//            return null;
+//        }
+//
+//        @Override
+//        public void sample(Random rng, Function each) {
+//            //nothing
+//        }
+//
+//        @Override
+//        public void clear() {
+//        }
+//
+//        @Override
+//        public Object key(Object value) {
+//            throw new UnsupportedOperationException();
+//        }
+//
+//        @Override
+//        public float pri(Object key) {
+//            return 0;
+//        }
+//
+//
+//        @Nullable
+//        @Override
+//        public Object remove(Object x) {
+//            return null;
+//        }
+//
+//        @Override
+//        public Object put(Object b, NumberX overflowing) {
+//            return null;
+//        }
+//
+//        @Override
+//        public int size() {
+//            return 0;
+//        }
+//
+//
+//        @Override
+//        public Iterator iterator() {
+//            return Collections.emptyIterator();
+//        }
+//
+//        @Override
+//        public boolean contains(Object it) {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean isEmpty() {
+//            return true;
+//        }
+//
+//
+//        @Override
+//        public void setCapacity(int c) {
+//
+//        }
+//
+//        @Override
+//        public Iterable commit() {
+//            return this;
+//        }
+//
+//
+//        @Override
+//        public Bag commit(Consumer update) {
+//            return this;
+//        }
+//
+//        @Nullable
+//        @Override
+//        public Object get(Object key) {
+//            return null;
+//        }
+//
+//        @Override
+//        public void forEachKey(Consumer each) {
+//
+//        }
+//
+//        @Override
+//        public int capacity() {
+//            return 0;
+//        }
+//
+//    };
 
-        @Override
-        public Object key(Object value) {
-            throw new UnsupportedOperationException();
-        }
 
-        @Override
-        public float pri(Object key) {
-            return 0;
-        }
-
-
-        @Nullable
-        @Override
-        public Object remove(Object x) {
-            return null;
-        }
-
-        @Override
-        public Object put(Object b, NumberX overflowing) {
-            return null;
-        }
-
-        @Override
-        public int size() {
-            return 0;
-        }
-
-
-        @Override
-        public Iterator iterator() {
-            return Collections.emptyIterator();
-        }
-
-        @Override
-        public boolean contains(Object it) {
-            return false;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-
-        @Override
-        public void setCapacity(int c) {
-
-        }
-
-        @Override
-        public Iterable commit() {
-            return this;
-        }
-
-
-        @Override
-        public Bag commit(Consumer update) {
-            return this;
-        }
-
-        @Nullable
-        @Override
-        public Object get(Object key) {
-            return null;
-        }
-
-        @Override
-        public void forEachKey(Consumer each) {
-
-        }
-
-        @Override
-        public int capacity() {
-            return 0;
-        }
-
-        @Override
-        public float depressurizePct(float rate) {
-            return 0;
-        }
-
-        @Override
-        public void depressurize(float pri) {
-
-        }
-    };
+    abstract protected void onCapacityChange(int before, int after);
 
     @Override
     @Nullable
-    V remove(K x);
+    abstract public Y remove(X x);
 
-    default V put(V x) {
+    public Y put(Y x) {
         return put(x, null);
     }
 
-    default void putAsync(V b) {
+    public void putAsync(Y b) {
         put(b);
     }
 
-    default void putAll(Consumer<Consumer<V>> c) {
+    public void putAll(Consumer<Consumer<Y>> c) {
         c.accept(this::put);
     }
 
-    V put(V b, NumberX overflowing);
+    abstract public Y put(Y b, NumberX overflowing);
 
     /**
-     * returns the bag to an empty state
+     * returns the bag to an empty state.
+     * should also depressurize to zero
      */
     @Override
-    void clear();
+    abstract public void clear();
 
-    default Stream<V> stream() {
+    public Stream<Y> stream() {
         return StreamSupport.stream(this::spliterator, 0, false);
     }
 
-    /**
-     * The NumberX of items in the bag
-     *
-     * @return The NumberX of items
-     */
-    @Override
-    int size();
-
-    /**
-     * when adjusting the priority of links directly, to correctly absorb the pressure difference, call this
-     */
-    @Override
-    default void pressurize(float f) {
-
+    public final Y[] toArray(@Nullable Y[] _target) {
+        return toArray(_target, y->y);
     }
 
-    @Nullable default <X> X reduce(BiFunction<V,X,X> each, X init) {
+    /** subclasses may have more efficient ways of doing this */
+    public <Z> Z[] toArray(@Nullable Z[] _target, Function<Y,Z> apply) {
+        int s = size();
+        if (s == 0) return (Z[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+
+        Z[] target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
+
+        final int[] i = {0}; //HACK this is not good. use a AND predicate iteration or just plain iterator?
+
+        forEach(s, (y) -> target[i[0]++] = apply.apply(y));
+
+        //either trim the array. size could have decreased while iterating, or its perfect sized
+        return i[0] < target.length ? Arrays.copyOf(target, i[0]) : target;
+    }
+
+    @Nullable public <X> X reduce(BiFunction<Y,X,X> each, X init) {
         X x = init;
-        for (V v : this) {
-            x = each.apply(v, x);
+        for (Y y : this) {
+            x = each.apply(y, x);
         }
         return x;
     }
@@ -196,7 +249,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
      * forEach may be used to avoid allocation of iterator instances
      */
     @Override
-    Iterator<V> iterator();
+    abstract public Iterator<Y> iterator();
 
     /**
      * Check if an item is in the bag.  both its key and its value must match the parameter
@@ -204,41 +257,41 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
      * @param it An item
      * @return Whether the Item is in the Bag
      */
-    default boolean contains(K it) {
+    public boolean contains(X it) {
         return get(it) != null;
     }
 
-    default boolean isEmpty() {
+    public boolean isEmpty() {
         return size() == 0;
     }
 
     /**
      * @return null if this is an event which was rejected on input, non-null if it was a re
      */
-    default void onRemove(V value) {
+    public void onRemove(Y value) {
 
     }
 
     /**
      * called if an item which was attempted to be inserted was not
      */
-    default void onReject(V value) {
+    public void onReject(Y value) {
 
     }
 
-    default void onAdd(V v) {
+    public void onAdd(Y y) {
 
     }
 
     /**
      * returns the priority of a value, or NaN if such entry is not present
      */
-    float pri(V key);
+    abstract public float pri(Y key);
 
 
 
-    default float pri(Object key, float ifMissing) {
-        V x = get(key);
+    public float pri(Object key, float ifMissing) {
+        Y x = get(key);
         if (x == null)
             return ifMissing;
         else {
@@ -249,13 +302,13 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
     /**
      * true if an item is not deleted
      */
-    default boolean active(V key) {
+    public final boolean active(Y key) {
         float x = pri(key);
         return (x == x);
 
     }
 
-    default float priElse(V key, float valueIfMissing) {
+    public float priElse(Y key, float valueIfMissing) {
         float p = pri(key);
         return (p == p) ? p : valueIfMissing;
     }
@@ -263,24 +316,25 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
     /**
      * resolves the key associated with a particular value
      */
-    K key(V value);
+    abstract public X key(Y value);
 
-    default void print() {
+    public void print() {
         print(System.out);
     }
 
-    default void print(PrintStream p) {
+    public void print(PrintStream p) {
         forEach(p::println);
     }
 
+    abstract public void forEach(int max, Consumer<? super Y> action);
 
     /**
      * priIfy only non-deleted items
      */
-    default float priIfyNonDeleted(float initial, FloatFloatToFloatFunction reduce) {
+    public float priIfyNonDeleted(float initial, FloatFloatToFloatFunction reduce) {
         float[] x = new float[]{initial};
-        forEach(v -> {
-            float p = pri(v);
+        forEach(y -> {
+            float p = pri(y);
             if (p == p)
                 x[0] = reduce.apply(x[0], p);
         });
@@ -293,37 +347,43 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
      */
 
 
-    default float priSum() {
+    public float priSum() {
         return priIfyNonDeleted(0, (sum, x) -> (sum + x));
     }
 
     /**
-     * default slow implementation.
+     * public slow implementation.
      * returns a value between 0..1.0. if empty, returns 0
      */
-    default float priMin() {
+    public float priMin() {
         float m = priIfyNonDeleted(Float.POSITIVE_INFINITY, Math::min);
         return Float.isFinite(m) ? m : 0;
     }
 
     /**
-     * default slow implementation.
+     * public slow implementation.
      * returns a value between 0..1.0. if empty, returns 0
      */
-    default float priMax() {
+    public float priMax() {
         float m = priIfyNonDeleted(Float.NEGATIVE_INFINITY, Math::max);
         return Float.isFinite(m) ? m : 0;
     }
 
-    @Override
-    void setCapacity(int c);
 
-    default <B extends Bag> B capacity(int c) {
+
+    public final void setCapacity(int capNext) {
+        assert(capNext >= 0);
+        int capBefore = CAPACITY.getAndSet(this, capNext);
+        if (capBefore!=capNext)
+            onCapacityChange(capBefore, capNext);
+    }
+
+    public final <B extends Bag> B capacity(int c) {
         setCapacity(c);
         return (B) this;
     }
 
-    default float[] histogram(float[] x) {
+    public float[] histogram(float[] x) {
         int bins = x.length;
         forEach(budget -> {
             float p = priElse(budget, 0);
@@ -342,78 +402,126 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V>, jcog.pri.Pressurizab
     }
 
 
-    default Iterable<V> commit() {
+    public Iterable<Y> commit() {
         return commit(forget(1));
     }
 
     /**
      * creates a forget procedure for the current bag's
-     * state, which can be applied as a parameter to the commit(Consumer<V>) method
+     * state, which can be applied as a parameter to the commit(Consumer<Y>) method
      * temperature is a value between 0..1.0 controlling
-     * how fast the bag should allow new items. 0.5 is a default value
+     * how fast the bag should allow new items. 0.5 is a public value
      */
-    @Deprecated default @Nullable Consumer<V> forget(float temperature) {
-
-        if (temperature > Float.MIN_NORMAL) {
-            int size = size();
-            if (size > 0) {
-                int cap = capacity();
-                if (cap > 0) {
-
-                    float pressure = depressurizePct(1);
-
-                    float mass = mass();
-                    if (mass > Float.MIN_NORMAL) {
-
-                        Consumer eachMustForgetPct =
-
-
-                            //PriForget.forgetPressure(temperature, 0, size, cap, pressure, mass);
-                            PriForget.forgetIdeal(temperature, 0.5f, size, cap, pressure, mass);
-
-                                //OVERDRIVE (attenuated by size/capacity ratio)
-                                //PriForget.forgetPressure(temperature * (((float)size)/cap), cap, pressure, mass);
-
-//                                //..?
-//                                PriForget.forgetIdeal(temperature,
-//                                        ScalarValue.EPSILON * cap,
-//                                        //1f/size,
-//                                        //1f/cap,
-//                                        //0.1f,
-//                                        //0.5f,
-//                                        size, cap, pressure, mass);
-
-                        return eachMustForgetPct;
-
-                    }
-                }
-            }
-        }
-
-        return null;
-
+    @Deprecated public @Nullable Consumer<Y> forget(float temperature) {
+        return Forgetting.forget(this, 1, temperature);
     }
-
-    float mass();
 
     /**
      * commits the next set of changes and updates budgeting
      *
      * @return this bag
      */
-    Bag<K, V> commit(Consumer<V> update);
+    abstract public Bag<X, Y> commit(Consumer<Y> update);
 
     @Override
-    default void forEachKey(Consumer<? super K> each) {
+    public void forEachKey(Consumer<? super X> each) {
         forEach(b -> each.accept(key(b)));
+    }
+
+    /** sets the bag's merge strategy */
+    public void merge(PriMerge merge) {
+        this.merge = merge;
+    }
+
+    /** gets the bag's merge strategy */
+    public final PriMerge merge() {
+        return merge;
+    }
+    protected final void massAdd(float m) {
+        MASS.add(this, m);
+    }
+    protected final void massSet(float m) {
+        MASS.set(this, m);
+    }
+    protected final void massZero() {
+        MASS.zero(this);
+    }
+    protected final void pressureZero() {
+        MASS.zero(this);
+    }
+
+    /**
+     * The NumberX of items in the bag
+     *
+     * @return The NumberX of items
+     */
+    @Override
+    abstract public int size();
+
+    @Override
+    public int capacity() {
+        /** TODO move implementation to an AbstractBag instance that has such a field and implements an abstract method from this class */
+        return CAPACITY.getOpaque(this);
+    }
+
+    public float mass() {
+        /** TODO move implementation to an AbstractBag instance that has such a field and implements an abstract method from this class */
+        return MASS.getOpaque(this);
+    }
+    @Override
+    public float pressure() {
+        /** TODO move implementation to an AbstractBag instance that has such a field and implements an abstract method from this class */
+        return PRESSURE.getOpaque(this);
+    }
+
+    protected final void pressureSet(float m) {
+        PRESSURE.set(this, m);
+    }
+
+
+    /**
+     * WARNING this is a duplicate of code in hijackbag, they ought to share this through a common Pressure class extending AtomicDouble or something
+     */
+    @Override
+    public void pressurize(float f) {
+        if (f == f && Math.abs(f) > Float.MIN_NORMAL)
+            PRESSURE.add(this, f);
+    }
+
+    /**
+     * WARNING this is a duplicate of code in hijackbag, they ought to share this through a common Pressure class extending AtomicDouble or something
+     */
+    @Override
+    public void depressurize(float toRemove) {
+        if (toRemove == toRemove && toRemove > Float.MIN_NORMAL)
+            PRESSURE.update(this, (p, a) -> Math.max(0, p - a), toRemove);
+    }
+
+    @Override
+    public float depressurizePct(float percentToRemove) {
+        assertUnitized(percentToRemove);
+        if (percentToRemove < ScalarValue.EPSILON) {
+            return 0; //remove nothing
+        }
+
+        float percentToRemain = 1-percentToRemove;
+
+        float[] delta = new float[1];
+        PRESSURE.update(this, (priBefore, f) -> {
+            float priAfter = priBefore * f;
+            delta[0] = priBefore - priAfter;
+            return priAfter;
+        }, percentToRemain);
+
+        return Math.max(0, delta[0]);
     }
 
 
 //    /**
 //     * TODO super-bag acting as a router for N sub-bags
 //     */
-//    abstract class CompoundBag<K, V> implements Bag<K, V> {
-//        abstract public Bag<K, V> bag(int selector);
+//    abstract class CompoundBag<K, Y> implements Bag<K, Y> {
+//        abstract public Bag<K, Y> bag(int selector);
 //
 //        /**
 //         * which bag to associate with a keys etc

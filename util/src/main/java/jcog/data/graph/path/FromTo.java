@@ -2,25 +2,29 @@ package jcog.data.graph.path;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface FromTo<F, X> /* extends Triple<F,X,F> */ {
+/**
+ * F represents the node type
+ * X represents the edge type
+ */
+public interface FromTo<N, E> /* extends Triple<F,X,F> */ {
 
-    F from();
-    X id();
-    F to();
+    N from();
+    E id();
+    N to();
 
-    default F to(boolean outOrIn) {
+    default N to(boolean outOrIn) {
         return outOrIn ? to() : from();
     }
 
-    default F from(boolean outOrIn) {
+    default N from(boolean outOrIn) {
         return outOrIn ? from() : to();
     }
 
     @Nullable
-    default F other(F x) {
-        F f = from(), t = to();
-        if (f == x) return t;
-        else if (t == x) return f;
+    default N other(N x) {
+        N n = from(), t = to();
+        if (n == x) return t;
+        else if (t == x) return n;
         else return null;
     }
 

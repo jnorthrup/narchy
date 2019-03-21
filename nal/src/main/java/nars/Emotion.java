@@ -34,7 +34,12 @@ public class Emotion implements Meter {
 //    public final Counter conceptDelete = new FastCounter("concept delete");
 
 
-    public final FastCounter taskFire = new FastCounter("task fire");
+    /** perception attempted */
+    public final FastCounter perceivedTaskStart = new FastCounter("perceived task start");
+
+    /** perception complete */
+    public final FastCounter perceivedTaskEnd = new FastCounter("perceived task end");
+
     //public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
     public final FastCounter premiseFire = new FastCounter("premise fire");
 
@@ -66,8 +71,10 @@ public class Emotion implements Meter {
 
     static final int history = 4;
     public final FloatAveragedWindow
-            busyVol = new FloatAveragedWindow(history, 0.1f).clear(0),
-            busyVolPriWeighted = new FloatAveragedWindow(history, 0.1f).clear(0);
+            busyVol = new FloatAveragedWindow(history, 0.5f,0f),
+            busyVolPriWeighted = new FloatAveragedWindow(history, 0.5f, 0)
+        ;
+
 //    FastCounter busyVol = new FastCounter("busyVol"), busyVolPriWeighted = new FastCounter("busyVolPriWeighted");
 
     private final NAR nar;
@@ -153,7 +160,7 @@ public class Emotion implements Meter {
 
         busy(pri, vol);
 
-        taskFire.increment();
+        perceivedTaskEnd.increment();
     }
 
     public void print(PrintStream out) {
@@ -161,7 +168,7 @@ public class Emotion implements Meter {
     }
 
     public void commit(BiConsumer<String,Object> statConsumer) {
-        throw new TODO();
+        //TODO
     }
 
 //    public void onAnswer(Task questionTask, Task answer) {

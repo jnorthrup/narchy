@@ -157,7 +157,7 @@ public class Taskify extends ProxyTerm {
 
         if (same(x, punc, tru, S, E, d._task, d.nar) ||
                 (d._belief != null && same(x, punc, tru, S, E, d._belief, d.nar))) {
-            d.nar.emotion.deriveFailParentDuplicate.increment();
+            d.nar.feel.deriveFailParentDuplicate.increment();
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
 
@@ -169,7 +169,7 @@ public class Taskify extends ProxyTerm {
         );
 
         if (t == null) {
-            d.nar.emotion.deriveFailTaskify.increment();
+            d.nar.feel.deriveFailTaskify.increment();
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
@@ -177,7 +177,7 @@ public class Taskify extends ProxyTerm {
         float priority = d.deriver.pri.pri(t, d);
 
         if (priority != priority) {
-            d.nar.emotion.deriveFailPrioritize.increment();
+            d.nar.feel.deriveFailPrioritize.increment();
             return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
         }
 
@@ -194,7 +194,7 @@ public class Taskify extends ProxyTerm {
         Task u = d.add(t);
         if (u != t) {
 
-            d.nar.emotion.deriveFailDerivationDuplicate.increment();
+            d.nar.feel.deriveFailDerivationDuplicate.increment();
             cost = Param.TTL_DERIVE_TASK_REPEAT;
 
         } else {
@@ -202,7 +202,7 @@ public class Taskify extends ProxyTerm {
             if (Param.DEBUG)
                 t.log(channel.ruleString);
 
-            d.nar.emotion.deriveTask.increment();
+            d.nar.feel.deriveTask.increment();
             cost = Param.TTL_DERIVE_TASK_SUCCESS;
 
         }

@@ -8,6 +8,7 @@ import org.eclipse.collections.api.block.procedure.Procedure;
 import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
@@ -143,7 +144,6 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
             c.accept(x);
     }
 
-
     public <Y> void forEachWith(Procedure2<? super X, ? super Y> c, Y y) {
         for (X x : array())
             c.accept(x, y);
@@ -235,6 +235,9 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     //@Override
     public boolean contains(Object object) {
         return ArrayUtils.indexOf(array(), object)!=-1;
+    }
+    public boolean containsInstance(Object object) {
+        return ArrayUtils.indexOfIdentity(array(), object)!=-1;
     }
 
     //@Override
@@ -377,4 +380,26 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         }
         return i > 0 ? s/i : 0;
     }
+
+    public <Y> Y[] toArray(Y[] _target, Function<X, Y> f) {
+        int s = size();
+        if (s == 0) return (Y[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+
+        Y[] target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
+
+        int i = 0; //HACK this is not good. use a AND predicate iteration or just plain iterator?
+
+        for (X x : array()) {
+            if (x!=null) {
+                target[i++] = f.apply(x);
+                if (i >= s)
+                    break;
+            }
+        }
+
+        //either trim the array. size could have decreased while iterating, or its perfect sized
+        return i < target.length ? Arrays.copyOf(target, i) : target;
+
+    }
+
 }

@@ -236,9 +236,9 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 return;
 
 
-            Term targetTerm = l.target();//.concept();
+            Term targetTerm = l.to();//.concept();
 
-            EdgeVis<Term> e = graph.edge(l.source().concept(), targetTerm);
+            EdgeVis<Term> e = graph.edge(l.from().concept(), targetTerm);
             if (e != null) {
                 int r, g, b;
                 /*

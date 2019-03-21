@@ -1,21 +1,15 @@
-package nars.attention;
+package jcog.pri;
 
 import jcog.pri.bag.Bag;
 import jcog.pri.op.PriForget;
-import nars.NAR;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-/** TODO abstract */
 abstract public class Forgetting {
 
-    public void update(NAR n) {
 
-    }
-
-
-    public final @Nullable Consumer forget(Bag b, float depressurizationRate, float temperature) {
+    public static @Nullable Consumer forget(Bag b, float depressurizationRate, float temperature) {
 
         if (temperature > Float.MIN_NORMAL) {
             int size = b.size();
@@ -24,12 +18,12 @@ abstract public class Forgetting {
                 if (cap > 0) {
 
                     float pressure = b.depressurizePct(depressurizationRate);
-                    assert(pressure == pressure);
 
                     float mass = b.mass(); assert(mass == mass);
 
                     if (mass > Float.MIN_NORMAL) {
-                        return forget(temperature, size, cap, pressure, mass);
+                        //return PriForget.forgetPressure(temperature, 0, size, cap, pressure, mass);
+                        return PriForget.forgetIdeal(temperature, 0.5f, size, cap, pressure, mass);
                     }
                 }
             }
@@ -38,7 +32,7 @@ abstract public class Forgetting {
         return null;
     }
 
-    abstract protected @Nullable Consumer forget(float temperature, int size, int cap, float pressure, float mass);
+    //abstract protected @Nullable Consumer forget(float temperature, int size, int cap, float pressure, float mass);
 
     /** temporally oblivious; uses only incoming pressure to determine forget amounts */
     public static class AsyncForgetting extends Forgetting {
@@ -53,11 +47,7 @@ abstract public class Forgetting {
 //        }
 //
 //
-        @Override
-        protected Consumer forget(float temperature, int size, int cap, float pressure, float mass) {
-            //return PriForget.forgetPressure(temperature, 0, size, cap, pressure, mass);
-            return PriForget.forgetIdeal(temperature, 0.5f, size, cap, pressure, mass);
-        }
+
     }
 
 //    /** experimental */

@@ -4,7 +4,7 @@ import jcog.Texts;
 import jcog.data.NumberX;
 import jcog.pri.PriProxy;
 import jcog.pri.ScalarValue;
-import jcog.pri.bag.impl.HijackBag;
+import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -195,11 +195,8 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
             super.resize(newSpace);
         }
 
-
-
         @Override
-        public void setCapacity(int c) {
-            super.setCapacity(c);
+        protected void onCapacityChange(int oldCap, int c) {
 //
 //            float boost = i > 0 ?
 //                    (float) (1f / Math.sqrt(capacity()))
@@ -245,12 +242,17 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         }
 
         @Override
-        public void depressurize(float f) {
+        public void depressurize(float toRemove) {
 
         }
 
         @Override
-        public HijackBag<X, PriProxy<X, Y>> commit(@Nullable Consumer<PriProxy<X, Y>> update) {
+        public float depressurizePct(float percentToRemove) {
+            return 0;
+        }
+
+        @Override
+        public Bag<X, PriProxy<X,Y>> commit(@Nullable Consumer<PriProxy<X, Y>> update) {
             return this;
         }
 
@@ -258,8 +260,6 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         public X key(PriProxy<X, Y> value) {
             return value.x();
         }
-
-
 
         @Override
         protected boolean replace(float incomingPri, PriProxy<X, Y> existingValue, float existingPri) {

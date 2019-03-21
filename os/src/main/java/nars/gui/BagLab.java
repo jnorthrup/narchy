@@ -16,7 +16,6 @@ import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.util.math.Color3f;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -102,10 +101,10 @@ public class BagLab {
         int capacity = 512;
         BagLab bagLab;
         bagLab = new BagLab(
-                new PLinkArrayBag(PriMerge.avg, capacity,
+                new PLinkArrayBag(PriMerge.avg, capacity
                         //plus,
                         //replace,
-                        new HashMap())
+                      )
 
                 //new DefaultHijackBag<>(avg,capacity,4)
                 

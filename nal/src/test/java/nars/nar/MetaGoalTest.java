@@ -16,8 +16,8 @@ class MetaGoalTest {
     void test1() {
         NAR n = NARS.tmp(6);
 
-        n.emotion.want(MetaGoal.Believe, 0.05f);
-        n.emotion.want(MetaGoal.PerceiveCmplx, -0.05f);
+        n.feel.want(MetaGoal.Believe, 0.05f);
+        n.feel.want(MetaGoal.PerceiveCmplx, -0.05f);
 
         DeductiveMeshTest m = new DeductiveMeshTest(n, new int[] { 3, 3 }, 3500);
         m.test.test();

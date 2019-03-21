@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  * TODO find any inherited methods which would return the proxied
  * bag instead of this instance
  */
-public class ProxyBag<X,Y> implements Bag<X,Y> {
+public class ProxyBag<X,Y> extends Bag<X,Y> {
 
     public Bag<X,Y> bag;
 
@@ -27,11 +27,6 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
 
     public final void set(Bag<X,Y> delegate) {
         bag = delegate;
-    }
-
-    @Override
-    public float pressure() {
-        return bag.pressure();
     }
 
     @Override
@@ -51,13 +46,13 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
     }
 
     @Override
-    public int capacity() {
-        return bag.capacity();
+    public void forEach(Consumer<? super Y> action) {
+        bag.forEach(action);
     }
 
     @Override
-    public void forEach(Consumer<? super Y> action) {
-        bag.forEach(action);
+    public void forEach(int max, Consumer<? super Y> action) {
+        bag.forEach(max, action);
     }
 
     @Override
@@ -76,18 +71,13 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
     }
 
     @Override
-    public float depressurizePct(float rate) {
-        return bag.depressurizePct(rate);
-    }
-
-    @Override
-    public void depressurize(float pri) {
-        bag.depressurize(pri);
-    }
-
-    @Override
     public void clear() {
         bag.clear();
+    }
+
+    @Override
+    protected void onCapacityChange(int before, int after) {
+        bag.setCapacity(after);
     }
 
     @Nullable
@@ -111,16 +101,39 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
         return bag.size();
     }
 
-    
+    @Override
+    public final int capacity() {
+        return bag.capacity();
+    }
+
+    @Override
+    public final float mass() {
+        return bag.mass();
+    }
+
+    @Override
+    public final float pressure() {
+        return bag.pressure();
+    }
+
+    @Override
+    public final void pressurize(float f) {
+        bag.pressurize(f);
+    }
+
+    @Override
+    public final float depressurizePct(float percentToRemove) {
+        return bag.depressurizePct(percentToRemove);
+    }
+
+    @Override
+    public final void depressurize(float toRemove) {
+        bag.depressurize(toRemove);
+    }
+
     @Override
     public Iterator<Y> iterator() {
         return bag.iterator();
-    }
-
-
-    @Override
-    public void setCapacity(int c) {
-        bag.setCapacity(c);
     }
 
     @Override
@@ -133,13 +146,12 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
         return bag.priMin();
     }
 
-
-    
     @Override
     public Bag<X,Y> commit(Consumer<Y> update) {
         bag.commit(update);
         return this;
     }
+
 
     @Override
     public void onAdd(Y v) {
@@ -156,14 +168,4 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
         bag.onReject(v);
     }
 
-//    @Override
-//    public Iterable<Y> commit() {
-//        bag.commit();
-//        return this;
-//    }
-
-    @Override
-    public float mass() {
-        return bag.mass();
-    }
 }

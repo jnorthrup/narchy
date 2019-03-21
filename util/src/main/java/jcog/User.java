@@ -55,7 +55,7 @@ public class User {
     /**
      * general purpose user notification broadcast
      */
-    public final Topic<Object> notice = new ListTopic();
+    public final Topic<Object> notice = new ListTopic<>();
 
     private static final Logger logger = LoggerFactory.getLogger(User.class);
 
@@ -64,9 +64,13 @@ public class User {
     private IndexWriter iw;
     
 
-    public synchronized static User the() {
-        if (user == null)
-            user = new User(Paths.get(System.getProperty("user.home")).resolve(".me"));
+    public static User the() {
+        if (user == null) {
+            synchronized (User.class) {
+                if (user == null)
+                    user = new User(Paths.get(System.getProperty("user.home")).resolve(".me"));
+            }
+        }
         return user;
     }
 

@@ -261,7 +261,7 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
             if (a == null)
                 break;
 
-            Term at = a.source();
+            Term at = a.from();
             if (at instanceof Compound) {
                 tryEncode(at, a.priElseZero());
             }

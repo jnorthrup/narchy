@@ -173,8 +173,8 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     }
 
     private ObjectIntHashMap<N> getCountMap() {
-        if (countMap != null) return countMap;
-        synchronized (this) {
+//        if (countMap != null) return countMap;
+        //synchronized (this) {
             if (countMap != null) return countMap;
 
             Set<N> ns = nodeSet();
@@ -183,7 +183,7 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
                 countMap.put(n, count(n));
 
             return countMap;
-        }
+        //}
     }
 
     @Override
@@ -202,35 +202,29 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     public int nodeCount() {
         if (list == null) return 0;
         int lsize = list.size();
-        if (lsize < 1) return 0;
+        if (lsize < 1)
+            return 0;
         else if (lsize == 1) {
             FromTo<Node<N, E>, E> e = list.get(0);
-            if (e.id() != null && e.to().id() != null)
-                return 2;
-            else
-                return 1;
+            return ((e.id() != null) && (e.to().id() != null)) ? 2 : 1;
         } else
-            return lsize + 1;
+            return lsize + 1; //???
     }
 
     @Override
     public N node(int nodeIndex) {
         int ncnt = nodeCount();
         if (nodeIndex < 0) {
-            if ((ncnt + nodeIndex) < 0) return null;
-            return node(ncnt + nodeIndex);
+            return (ncnt + nodeIndex) < 0 ? null : node(ncnt + nodeIndex);
         }
 //        if (nodeIndex >= nodeCount())
 //            return null;
         if (nodeIndex == 0) {
-            FromTo<Node<N, E>, E> edge = list.get(0);
-            return next(Direction.AB, edge);
+            return Direction.AB.next(list.get(0));
         } else if (nodeIndex == 1) {
-            FromTo<Node<N, E>, E> edge = list.get(0);
-            return next(Direction.BA, edge);
+            return Direction.BA.next(list.get(0));
         } else {
-            FromTo<Node<N, E>, E> edge = list.get(nodeIndex - 1);
-            return next(Direction.BA, edge);
+            return Direction.BA.next(list.get(nodeIndex - 1)); //??
 //            switch (direction) {
 //                case AB:
 //                    return edge.to().id();
@@ -242,13 +236,5 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
 //        return null;
     }
 
-    protected N next(Direction direction, FromTo<Node<N, E>, E> edge) {
-        switch (direction) {
-            case AB:
-                return edge.from().id();
-            case BA:
-            default:
-                return edge.to().id();
-        }
-    }
+
 }

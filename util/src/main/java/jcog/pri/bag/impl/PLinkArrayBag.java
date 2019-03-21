@@ -1,9 +1,11 @@
 package jcog.pri.bag.impl;
 
+import jcog.data.list.FasterList;
 import jcog.pri.PriReference;
 import jcog.pri.op.PriMerge;
 
-import java.util.Map;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class PLinkArrayBag<X> extends PriReferenceArrayBag<X,PriReference<X>> {
 
@@ -11,8 +13,9 @@ public class PLinkArrayBag<X> extends PriReferenceArrayBag<X,PriReference<X>> {
         super(mergeFunction, cap);
     }
 
-    public PLinkArrayBag(PriMerge mergeFunction, int cap, Map<X, PriReference<X>> map) {
-        super(mergeFunction, cap, map);
+    @Deprecated public List<PriReference<X>> listCopy() {
+        List l = new FasterList(size());
+        forEach((Consumer) l::add);
+        return l;
     }
-
 }

@@ -8,12 +8,12 @@ import com.googlecode.lanterna.input.KeyType;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
+import jcog.data.list.table.Table;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.learn.ql.HaiQae;
 import jcog.math.Quantiler;
 import jcog.pri.VLink;
-import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Narsese;
 import nars.Task;
@@ -584,14 +584,14 @@ public class NARui {
         );
     }
 
-    public static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> b, int history) {
+    public static Surface tasklinkSpectrogram(NAR n, Table<?,nars.link.TaskLink> b, int history) {
         return tasklinkSpectrogram(n, b, history, b.capacity());
     }
     public static Surface tasklinkSpectrogram(NAR n, int history) {
         return tasklinkSpectrogram(n, n.attn.links, history);
     }
 
-    public static Surface tasklinkSpectrogram(NAR n, Bag<?, TaskLink> active, int history, int width) {
+    public static Surface tasklinkSpectrogram(NAR n, Table<?,nars.link.TaskLink> active, int history, int width) {
         Spectrogram s = new Spectrogram(true, history, width);
 
         return DurSurface.get(s, n, new Runnable() {

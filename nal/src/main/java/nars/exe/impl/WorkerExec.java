@@ -9,6 +9,7 @@ import nars.exe.Causable;
 import nars.exe.Exec;
 import nars.exe.Valuator;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -45,7 +46,7 @@ public class WorkerExec extends ThreadedExec {
 
         TimedLink.MyTimedLink[] play = new TimedLink.MyTimedLink[0];
 
-        private boolean alive = true;
+        private final AtomicBoolean alive = new AtomicBoolean(true);
 
         final SplitMix64Random rng;
         private long deadline;
@@ -98,7 +99,7 @@ public class WorkerExec extends ThreadedExec {
 
                 sleep();
 
-            } while (alive);
+            } while (alive.get());
 
 
         }
@@ -107,11 +108,6 @@ public class WorkerExec extends ThreadedExec {
         private final BooleanSupplier deadlineFn = this::deadline;
 
         private void play(long playTime) {
-
-            n = cpu.size();
-            if (n == 0)
-                return;
-
 
             long start = nanoTime();
             long until = start + playTime, after = start /* assigned for safety */;
@@ -127,11 +123,14 @@ public class WorkerExec extends ThreadedExec {
 
 
                     prioLast = now;
-                    prioritize(threadWorkTimePerCycle);
+                    if (!prioritize(threadWorkTimePerCycle))
+                        return;
                 }
 
-                TimedLink.MyTimedLink next = play[i++];
-                if (i == n) i = 0;
+                int playable = play.length; if (playable == 0) return;
+
+                if (i + 1 >= playable) i = 0; else i++;
+                TimedLink.MyTimedLink next = play[i];
 
                 long sTime = next.time;
 
@@ -181,12 +180,14 @@ public class WorkerExec extends ThreadedExec {
 
         /**
          * @param workTimeNS expected worktime nanoseconds per cycle
+         * @return
          */
-        private void prioritize(long workTimeNS) {
+        private boolean prioritize(long workTimeNS) {
 
-            int n = this.n;
-            if (n == 0)
-                return;
+            /** always refresh */
+            play = cpu.toArray(play, TimedLink::my);
+            if (play.length <= 0)
+                return false;
 
 //                /** expected time will be equal to or less than the max due to various overheads on resource constraints */
 //                double expectedWorkTimeNS = (((double)workTimeNS) * expectedWorkTimeFactor); //TODO meter and predict
@@ -199,12 +200,7 @@ public class WorkerExec extends ThreadedExec {
 
             subCycleMaxNS = (long) ((workTimeNS) / granularity);
 
-            if (play.length != n) {
-                //TODO more careful test for change
-                play = new TimedLink.MyTimedLink[n];
-                for (int i = 0; i < n; i++)
-                    play[i] = cpu.get(i).my();
-            }
+
 
             if (n > 2)
                 ArrayUtils.shuffle(play, rng); //each worker gets unique order
@@ -223,6 +219,7 @@ public class WorkerExec extends ThreadedExec {
                         -workTimeNS * rescheduleCycles, +workTimeNS * rescheduleCycles);
             }
 //                }
+            return true;
         }
 
         private boolean deadline() {
@@ -239,17 +236,13 @@ public class WorkerExec extends ThreadedExec {
 
         @Override
         public void off() {
-            if (alive) {
-                synchronized (this) {
-                    alive = false;
-
-                    //execute remaining tasks in callee's thread
-                    schedule.removeIf(x -> {
-                        if (x!=null)
-                            executeNow(x);
-                        return true;
-                    });
-                }
+            if (alive.compareAndSet(true,false)) {
+                //execute remaining tasks in callee's thread
+                schedule.removeIf(x -> {
+                    if (x!=null)
+                        executeNow(x);
+                    return true;
+                });
             }
         }
     }

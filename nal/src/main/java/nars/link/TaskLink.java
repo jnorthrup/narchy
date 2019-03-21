@@ -3,6 +3,7 @@ package nars.link;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.graph.path.FromTo;
 import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
@@ -11,7 +12,10 @@ import jcog.pri.Weight;
 import jcog.pri.op.PriMerge;
 import jcog.signal.tensor.AtomicArrayTensor;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.*;
+import nars.NAR;
+import nars.Op;
+import nars.Param;
+import nars.Task;
 import nars.concept.Concept;
 import nars.subterm.Subterms;
 import nars.table.TaskTable;
@@ -36,20 +40,10 @@ import static nars.time.Tense.ETERNAL;
  * <p>
  * note: seems to be important for Tasklink to NOT implement Termed when use with common Map's with Termlinks
  */
-public interface TaskLink extends UnitPrioritizable {
+public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
 
     TaskLink[] EmptyTaskLinkArray = new TaskLink[0];
 
-
-    /**
-     * concept term (source) where the link originates
-     */
-    Term source();
-
-    /**
-     * task term (target) of the task linked
-     */
-    Term target();
 
     //byte punc();
     float priPunc(byte punc);
@@ -110,7 +104,7 @@ public interface TaskLink extends UnitPrioritizable {
         if (punc == 0)
             return null; //flat-lined tasklink
 
-        Term x = source();
+        Term x = from();
 
         NAR n = when.nar;
 
@@ -228,14 +222,14 @@ public interface TaskLink extends UnitPrioritizable {
     float take(byte punc, float howMuch);
 
     default boolean isSelf() {
-        return source().equals(target());
+        return from().equals(to());
     }
 
     default Term other(Atomic x) {
-        if (target().equals(x)) {
-            return source();
-        } else if (!Param.DEBUG || source().equals(x)) {
-            return target();
+        if (to().equals(x)) {
+            return from();
+        } else if (!Param.DEBUG || from().equals(x)) {
+            return to();
         }
         throw new WTF();
     }
@@ -253,11 +247,11 @@ public interface TaskLink extends UnitPrioritizable {
 
     @Nullable default Term other(Term x, boolean reverse) {
         if (reverse) {
-            if (x.equals(target()))
-                return source();
+            if (x.equals(to()))
+                return from();
         } else {
-            if (x.equals(source()))
-                return target();
+            if (x.equals(from()))
+                return to();
         }
         return null;
     }
@@ -294,7 +288,7 @@ public interface TaskLink extends UnitPrioritizable {
 
     abstract class AbstractTaskLink extends UnitPri implements TaskLink {
         /** source,target as a 2-ary subterm */
-        protected final Subterms sourceTarget;
+        protected final Subterms xy;
 
         protected AbstractTaskLink(Term self) {
             this(self.concept(), null);
@@ -310,40 +304,45 @@ public interface TaskLink extends UnitPrioritizable {
                 throw new TaskException(source, "source term not taskable");
             if (!so.conceptualizable)
                 throw new TaskException(source, "source term not conceptualizable");
-            //if (Param.DEBUG) {
-            if (!source.isNormalized())
-                throw new TaskException(source, "source term not normalized");
-            //}
+            if (Param.DEBUG) {
+                if (!source.isNormalized())
+                    throw new TaskException(source, "source term not normalized");
+            }
 
-            this.sourceTarget = Op.terms.subterms(source, target);
+            this.xy = Op.terms.subterms(source, target);
+        }
+
+        @Override
+        final public TaskLink id() {
+            return this;
         }
 
         @Override
         public final boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj instanceof GeneralTaskLink) {
-                return sourceTarget.equals(((GeneralTaskLink)obj).sourceTarget);
+                return xy.equals(((GeneralTaskLink)obj).xy);
             }
             else if (obj instanceof TaskLink) {
-                if (hashCode() == obj.hashCode()) if (source().equals(((TaskLink) obj).source()))
-                    if (target().equals(((TaskLink) obj).target())) return true;
+                if (hashCode() == obj.hashCode()) if (from().equals(((TaskLink) obj).from()))
+                    if (to().equals(((TaskLink) obj).to())) return true;
             }
             return false;
         }
 
         @Override
         public final int hashCode() {
-            return sourceTarget.hashCodeSubterms();
+            return xy.hashCodeSubterms();
         }
 
         @Override
-        public final Term source() {
-            return sourceTarget.sub(0);
+        public final Term from() {
+            return xy.sub(0);
         }
 
         @Override
-        public final Term target() {
-            return sourceTarget.sub(1);
+        public final Term to() {
+            return xy.sub(1);
         }
     }
 
@@ -588,7 +587,7 @@ public interface TaskLink extends UnitPrioritizable {
 
         @Override
         public String toString() {
-            return toBudgetString() + ' ' + source() + (punc) + ':' + target();
+            return toBudgetString() + ' ' + from() + (punc) + ':' + to();
         }
 
 

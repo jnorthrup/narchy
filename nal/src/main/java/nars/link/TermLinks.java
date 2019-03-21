@@ -1,8 +1,8 @@
 package nars.link;
 
+import jcog.data.list.table.Table;
 import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
-import jcog.pri.bag.Bag;
 import jcog.sort.RankedN;
 import nars.concept.Concept;
 import nars.term.Term;
@@ -105,10 +105,10 @@ public final class TermLinks {
             }, rng::nextFloat);
             l = li >= 0 ? ll[li] : null;
         }
-        return l != null ? l.source() : null;
+        return l != null ? l.from() : null;
     }
 
-    public final Term sample(Term  srcTerm, Bag<TaskLink,TaskLink> bag, byte punc, Predicate<TaskLink> filter, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
+    public final Term sample(Term  srcTerm, Table<nars.link.TaskLink,nars.link.TaskLink> bag, byte punc, Predicate<TaskLink> filter, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
         return sample(srcTerm, bag, bag.capacity(), punc, filter, in, out, now, minUpdateCycles, rng);
     }
 

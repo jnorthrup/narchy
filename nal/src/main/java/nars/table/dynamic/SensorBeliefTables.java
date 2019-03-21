@@ -17,6 +17,7 @@ import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.checkerframework.checker.units.qual.min;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.TIMELESS;
@@ -265,21 +266,34 @@ public class SensorBeliefTables extends BeliefTables {
 
         @Override protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, int narDur, int tableDur) {
             FloatRank<Task> base = super.taskStrength(beliefOrGoal, now, narDur, tableDur);
-            return (t,min) -> {
-                float v = base.rank(t, min);
-                if (v == v) {
-                    long ss = series.start(), se = series.end();
-                    if (ss!=TIMELESS && se!=TIMELESS) {
-                        long l = Longerval.intersectLength(t.start(), t.end(), ss, se);
-                        if (l > 0) {
-                            //discount the rank in proportion to how much of the task overlaps with the series
-                            float overlap = (float) Util.unitizeSafe(l / ((double) t.range()));
-                            v *= (1-overlap);
+
+            int margin = narDur;
+
+            long ss = series.start() + margin;
+            if (ss != TIMELESS) {
+                long se = series.end() - margin;
+                if (se!=TIMELESS) {
+                    return (t, min) -> {
+                        float v = base.rank(t, min);
+                        if (v == v && v > min) {
+                            long l = Longerval.intersectLength(t.start(), t.end(), ss, se);
+                            if (l > 0) {
+                                //discount the rank in proportion to how much of the task overlaps with the series
+                                float overlap = (float) Util.unitizeSafe(l / ((double) t.range()));
+                                float keep =
+                                        //1 - overlap;
+                                        1 - (overlap*overlap); //less intense but still in effect
+                                v *= keep;
+                            }
+                            return v;
                         }
-                    }
+                        return Float.NaN;
+                    };
                 }
-                return v;
-            };
+            }
+
+            return base;
+
         }
     }
 }

@@ -2,12 +2,12 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.data.list.FastCoWList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.MutableEnum;
-import jcog.sort.SortedArray;
 import jcog.sort.TopN;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
@@ -71,7 +71,7 @@ public class ExeCharts {
         float min = -1f;
         float max = +1f;
 
-        float[] want = n.emotion.want;
+        float[] want = n.feel.want;
         Gridding g = grid(
 
 
@@ -115,7 +115,7 @@ public class ExeCharts {
         DurSurface d = DurSurface.get(g, n, new Consumer<NAR>() {
 
             final Off c = n.onCycle((nn) -> {
-                busyBuffer.offer(nn.emotion.busyVol.asFloat());
+                busyBuffer.offer(nn.feel.busyVol.asFloat());
                 queueSize.offer((float)((UniExec) n.exe).queueSize());
             });
 
@@ -192,7 +192,7 @@ public class ExeCharts {
     }
 
     public static Surface causeProfiler(NAR nar) {
-        SortedArray<TimedLink> cc = ((UniExec) nar.exe).cpu.items;
+        FastCoWList<TimedLink> cc = ((UniExec) nar.exe).cpu;
         int history = 128;
         Plot2D pp = new Plot2D(history,
                 //Plot2D.BarLanes

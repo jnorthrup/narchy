@@ -3,7 +3,7 @@ package nars.task;
 import jcog.event.Off;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
-import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
@@ -38,7 +38,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
     private final BiConsumer<? super ActiveQuestionTask /* Q */, Task /* A */> eachAnswer;
 
-    final ArrayBag<Task, PriReference<Task>> answers;
+    final Bag<nars.Task, PriReference<Task>> answers;
     private Off onTask;
 
     final Predicate<Term> test;
@@ -88,7 +88,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     public ITask next(NAR nar) {
 
 
-        synchronized (this) {
+        //synchronized (this) {
             if (onTask!=null)
                 return null; //already processed and active
             else {
@@ -97,7 +97,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
                 this.onTask = nar.onTask(this, punc() == QUESTION ? BELIEF : /* quest */ GOAL);
                 return next;
             }
-        }
+        //}
     }
 
     @Override
@@ -126,18 +126,21 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
     @Override
     public boolean delete() {
-        off();
-        return super.delete();
+        if (super.delete()) {
+            off();
+            return true;
+        }
+        return false;
     }
 
-    public synchronized void off() {
+    private void off() {
         if (this.onTask != null) {
             this.onTask.off();
             this.onTask = null;
         }
     }
 
-    @Deprecated private ArrayBag<Task, PriReference<Task>> newBag(int history) {
+    @Deprecated private Bag<nars.Task, PriReference<Task>> newBag(int history) {
         return new PLinkArrayBag<>(PriMerge.max, history) {
             @Override
             public void onAdd(PriReference<Task> t) {

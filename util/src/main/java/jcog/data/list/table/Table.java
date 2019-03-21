@@ -4,8 +4,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-/** nearly a Map */
-public interface Table<K,V> extends Iterable<V> {
+/**
+ * nearly a Map
+ */
+public interface Table<K, V> extends Iterable<V> {
 
     void clear();
 
@@ -23,25 +25,16 @@ public interface Table<K,V> extends Iterable<V> {
 //        setCapacity(0);
 //    }
 
-    /** iterates in sorted order */
+    /**
+     * iterates in sorted order
+     */
     void forEachKey(/*@NotNull*/ Consumer<? super K> each);
 
     int capacity();
 
-    void setCapacity(int i);
-
     default boolean isFull() {
         return size() >= capacity();
     }
-
-
-
-
-
-
-
-
-
 
 
 }

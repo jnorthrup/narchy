@@ -3212,7 +3212,8 @@ public enum ArrayUtils {
     }
 
     /**
-     * quick search for items by identity first
+     * quick search for items by identity
+     * returns first matching index, though others could exist
      */
     public static int indexOfIdentity(Object[] xx, Object y) {
         for (int i = 0; i < xx.length; i++) {

@@ -209,7 +209,7 @@ public class TestNAR {
 
 
         if (!quiet && reportStats) {
-            nar.emotion.print(System.out);
+            nar.feel.print(System.out);
             nar.stats(System.out);
         }
 

@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Random;
 import java.util.function.Consumer;
-
+import java.util.function.IntPredicate;
 
 import static nars.term.util.Intermpolate.dtDiff;
 import static nars.time.Tense.ETERNAL;
@@ -196,20 +196,26 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             ss = activeRemain;
 
             //something must be removed:
-            if (ss - conflicts < minComponents)
-                return null; //impossible: nothing else to remove
+            double valueConflicting = eviSum(conflict::get);
+            double valueOK  = eviSum(conflict::getNot);
+            if (valueOK > valueConflicting) {
+                if (ss - conflicts < minComponents)
+                    return null; //impossible: nothing else to remove
 
-            if (conflicts == 1) {
-                removeFast(conflict.first(true));
+                removeAll(conflict);
+
+                ss -= conflicts;
             } else {
-                for (int i = 0; i < ss; i++) {
-                    if (conflict.get(i))
-                        setFast(i, null);
-                }
-                removeNulls();
-            }
+                if (conflicts < minComponents)
+                    return null; //impossible: nothing else to remove
 
-            ss -= conflicts;
+                conflict.negate();
+
+                //TODO this could be destructive, so try it only: disableAll(conflict)
+                removeAll(conflict);
+
+                ss = conflicts;
+            }
 
         }
 
@@ -221,6 +227,22 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return e;
     }
 
+    private void removeAll(MetalBitSet x) {
+        int c = x.cardinality();
+        if (c == 0) {
+
+        } else if (c == 1) {
+            removeFast(x.first(true));
+        } else {
+            int ss = size();
+            for (int i = 0; i < ss; i++) {
+                if (x.get(i))
+                    setFast(i, null);
+            }
+            removeNulls();
+        }
+    }
+
     private boolean time(long bs, long be) {
         if (this.start!=bs || this.end != be) {
             this.start = bs; this.end = be;
@@ -229,12 +251,12 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return false;
     }
 
-    private void cull(int conflict) {
+//    private void cull(int minComponents, int conflict) {
 //        if (minComponents <= 1)
 //            oneForAll(conflict);
 //        else
-            removeFast(conflict);
-    }
+//            removeFast(conflict);
+//    }
 
     private void sortByEvidence() {
         if (size() > 1)
@@ -244,7 +266,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 //    /**
 //     * a one-for-all and all-for-one decision
 //     */
-//    private void oneForAll(int conflict) {
+//    private void resolve(int conflict) {
 //        if (size() == 2) {
 //            removeFast(1); //the weaker will obviously be the 1th one regardless
 //            return;
@@ -258,24 +280,21 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 //            add(cc);
 //        }
 //    }
-//
-//    public double eviSum() {
-//        return eviSumExcept(-1);
-//    }
-//
-//    public double eviSumExcept(int task) {
-//        double e = 0;
-//        int n = size();
-//        for (int i = 0; i < n; i++) {
-//            if (i != task) {
-//                TaskComponent c = get(i);
-//                float ce = c.evi;
-//                if (ce == ce)
-//                    e += ce;
-//            }
-//        }
-//        return e;
-//    }
+
+
+    public double eviSum(IntPredicate each) {
+        double e = 0;
+        int n = size();
+        for (int i = 0; i < n; i++) {
+            if (each.test(i)) {
+                TaskComponent c = get(i);
+                double ce = c.evi;
+                if (ce == ce)
+                    e += ce;
+            }
+        }
+        return e;
+    }
 
     private MetalLongSet only(boolean tCrop, boolean provideStamp) {
         refocus(tCrop, true);

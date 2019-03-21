@@ -4,7 +4,6 @@ import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
 import jcog.data.NumberX;
-import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.decide.Roulette;
 import jcog.mutex.SpinMutex;
@@ -44,14 +43,10 @@ import static jcog.pri.bag.impl.HijackBag.Mode.*;
  */
 @Paper
 @Skill("Concurrent_computing")
-public abstract class HijackBag<K, V> implements Bag<K, V> {
+public abstract class HijackBag<K, V> extends Bag<K, V> {
 
-    private static final MetalAtomicIntegerFieldUpdater<HijackBag> SIZE =
+    private static final MetalAtomicIntegerFieldUpdater<Bag> SIZE =
             new MetalAtomicIntegerFieldUpdater(HijackBag.class, "size");
-    private static final MetalAtomicIntegerFieldUpdater<HijackBag> CAPACITY =
-            new MetalAtomicIntegerFieldUpdater(HijackBag.class, "capacity");
-    private static final AtomicFloatFieldUpdater<HijackBag> PRESSURE =
-            new AtomicFloatFieldUpdater(HijackBag.class, "pressure");
 
     private static final AtomicReferenceFieldUpdater<HijackBag, AtomicReferenceArray> MAP =
             AtomicReferenceFieldUpdater.newUpdater(HijackBag.class, AtomicReferenceArray.class, "map");
@@ -61,7 +56,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     private static final int PUT_ATTEMPTS = 2;
 
-    private static final float VICTIM_NOISE = 0.5f;
+    private static final float VICTIM_NOISE = 0.25f;
 
 
     /**
@@ -69,8 +64,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      */
     private final int id;
 
-    private volatile int size, capacity, pressure;
-    private volatile float min, max, mass;
+    private volatile int size;
+    private volatile float min, max;
 
     /**
      * TODO make non-public
@@ -102,51 +97,12 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         assert (reprobes < Byte.MAX_VALUE - 1);
         this.reprobes = reprobes;
-        int initialSpace = spaceMin();
-        MAP.set(this, new AtomicReferenceArray(initialSpace));
-        CAPACITY.set(this, Math.max(spaceMin(), initialCapacity));
+        MAP.set(this, EMPTY_ARRAY);
+        setCapacity(initialCapacity);
     }
 
     public static boolean hijackGreedy(float newPri, float weakestPri) {
         return weakestPri <= newPri;
-    }
-
-    private static <X, Y> void forEachActive(HijackBag<X, Y> bag, AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
-        forEach(map, bag::active, e);
-    }
-
-    @Override
-    public float pressure() {
-        return PRESSURE.getOpaque(this);
-    }
-
-    @Override
-    public void pressurize(float f) {
-        if (f == f && Math.abs(f) > Float.MIN_NORMAL)
-            PRESSURE.add(this, f);
-    }
-
-    @Override
-    public void depressurize(float f) {
-        if (f == f && Math.abs(f) > Float.MIN_NORMAL)
-            PRESSURE.update(this, (p, a) -> Math.max(0, p - a), f);
-    }
-
-    @Override
-    public float depressurizePct(float percentage) {
-        return PRESSURE.getAndUpdate(this, (p, factor) -> Math.min(mass() /* limit */, p * factor), 1 - percentage) * percentage;
-    }
-
-
-    private static <Y> void forEach(AtomicReferenceArray<Y> map, Predicate<Y> accept, Consumer<? super Y> e) {
-        for (int c = map.length(), j = 0; j < c; j++) {
-            Y v = map
-                    .getOpaque(j);
-
-            if (v != null && accept.test(v)) {
-                e.accept(v);
-            }
-        }
     }
 
     private static <Y> void updateEach(AtomicReferenceArray<Y> map, Function<Y, Y> update) {
@@ -155,31 +111,16 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         }
     }
 
-    public static <Y> void forEach(AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
-        for (int c = map.length(), j = -1; ++j < c; ) {
-            Y v = map
-                    .getOpaque(j);
-
-            if (v != null) {
-                e.accept(v);
-            }
-        }
-    }
-
     @Override
-    public void setCapacity(int _newCap) {
+    protected void onCapacityChange(int oldCap, int newCap) {
 
-        int newCap = Math.max(_newCap, spaceMin());
-        int oldCap;
-        if ((oldCap = CAPACITY.getAndSet(this, newCap)) != newCap) {
-
-            int s = space();
-            if (((oldCap < _newCap && (size() >= oldCap - /* tolerance */ 1  /* should grow */)
-                    ||
-                    (newCap < s /* must shrink */)))) {
+//        int s = size();
+//            if (((oldCap < newCap && (s >= oldCap   /* should grow */)
+//                    ||
+//                    (newCap < space() /* must shrink */)))) {
                 resize(newCap);
-            }
-        }
+//            }
+
     }
 
     /**
@@ -191,7 +132,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     protected void resize(int newSpace) {
         final AtomicReferenceArray<V>[] prev = new AtomicReferenceArray[1];
-
 
         AtomicReferenceArray<V> next = newSpace != 0 ? new AtomicReferenceArray<>(newSpace) : EMPTY_ARRAY;
         if (next == MAP.updateAndGet(this, (x) -> {
@@ -215,16 +155,20 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     @Override
     public void clear() {
 
-        AtomicReferenceArray<V> x = reshrink(space()) ? reset(spaceMin()) : null;
-        PRESSURE.zero(this);
-        SIZE.set(this, 0);
-        min = max = mass = 0;
-        if (x != null) {
-//            if (x != m)
-//                forEachActive(this, x, this::onRemove);
-//            else
-            forEach(x, this::onRemove);
+        AtomicReferenceArray current = MAP.get(this);
+        AtomicReferenceArray<V> x = (current == null || reshrink(space())) ? reset(spaceMin()) : current;
+
+        for (int i = 0; i < x.length(); i++) {
+            V xi = x.getAndSet(i, null);
+            if (xi!=null) {
+                onRemove(xi);
+            }
         }
+        pressureZero();
+        massZero();
+        SIZE.set(this, 0);
+        min = max = 0;
+
 
     }
 
@@ -240,11 +184,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             AtomicReferenceArray<V> prevMap = MAP.getAndSet(this, newMap);
 
+            if (prevMap == newMap)
+
             commit();
 
             return prevMap;
         } else {
-            return null; //remains empty
+            return EMPTY_ARRAY; //remains empty
         }
     }
 
@@ -597,13 +543,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return update(key, null, GET, null);
     }
 
-    /**
-     * maximum capacity allowed
-     */
-    @Override
-    public int capacity() {
-        return CAPACITY.getOpaque(this);
-    }
 
     @Override
     public void sample(/*@NotNull*/ Random random, Function<? super V, SampleReaction> each) {
@@ -761,6 +700,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         forEachActive(this, map, e);
     }
 
+    @Override
+    public void forEach(int max, Consumer<? super V> e) {
+        Bag.forEach(map, max, e);
+    }
+
 
     @Override
     public Spliterator<V> spliterator() {
@@ -801,11 +745,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
 
     @Override
-    public float mass() {
-        return mass;
-    }
-
-    @Override
     public float priMin() {
         return min;
     }
@@ -817,7 +756,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
 
     @Override
-    public HijackBag<K, V> commit(@Nullable Consumer<V> update) {
+    public Bag<K,V> commit(@Nullable Consumer<V> update) {
 
 
         float mass = 0;
@@ -856,11 +795,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         SIZE.set(this, count);
 
         if (count > 0) {
-            this.mass = mass;
+            this.massSet(mass);
             this.min = min;
             this.max = max;
         } else {
-            this.mass = 0;
+            this.massZero();
             this.min = this.max = 0;
         }
 

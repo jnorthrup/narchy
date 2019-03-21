@@ -16,6 +16,8 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.LinearTruthProjection;
 import nars.truth.polation.TruthIntegration;
+import nars.truth.polation.TruthProjection;
+import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
@@ -78,10 +80,13 @@ public class RevisionTest {
      * result is best excluded.
      */
     @Test void testOverlapConflict() throws Narsese.NarseseException {
-        Task t = Revision.merge(n, true,
-                new Task[] { t(0, 0.71f, 0, 0).evidence(1,2).apply(n),
-                t(1, 0.7f, 0, 0).evidence(1).apply(n),
-                t(1, 0.7f, 0, 0).evidence(2).apply(n) }).getOne();
+        Pair<Task, TruthProjection> rr = Revision.merge(n, true,
+                new Task[]{
+                        t(0, 0.71f, 0, 0).evidence(1, 2).apply(n),
+                        t(1, 0.7f, 0, 0).evidence(1).apply(n),
+                        t(1, 0.7f, 0, 0).evidence(2).apply(n)});
+        assertNotNull(rr);
+        Task t = rr.getOne();
 
         assertNotNull(t);
         assertEquals("(b-->a). 0 %1.0;.82%", t.toStringWithoutBudget());

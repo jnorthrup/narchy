@@ -36,9 +36,8 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
         }
 
         @Override
-        protected void merge(Prioritizable existing, TaskLink incoming, float pri, OverflowDistributor<
+        protected void merge(Prioritizable existing, TaskLink incoming, float pri, PriMerge merge, OverflowDistributor<
                 TaskLink> overflow) {
-            //super.merge(existing, incoming, pri, overflow);
             ((TaskLink) existing).merge(incoming, merge);
         }
     }

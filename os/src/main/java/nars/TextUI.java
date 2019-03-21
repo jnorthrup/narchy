@@ -25,6 +25,7 @@ import jcog.math.MutableInteger;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
+import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
@@ -470,7 +471,7 @@ public class TextUI {
         }
 
         class BagListBox<X extends Prioritized> extends AbstractListBox {
-            protected final ArrayBag<X, PriReference<X>> bag;
+            protected final Bag<X, PriReference<X>> bag;
 
 
             protected final AtomicBoolean paused = new AtomicBoolean(false);
@@ -521,7 +522,7 @@ public class TextUI {
 
                             next.clear();
                             bag.commit();
-                            bag.forEach(visible.intValue(), (t) -> next.add(t.get()));
+                            ((ArrayBag<X,PriReference<X>>)bag).forEach(visible.intValue(), (t) -> next.add(t.get()));
 
                             guiThread.invokeLater(this::render);
                         }
