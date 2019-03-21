@@ -1,0 +1,4 @@
+//Conditional Abduction via Multi-conditional Syllogism
+// warning this is speculative and polarity biased
+(C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
+    //((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)

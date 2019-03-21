@@ -85,11 +85,11 @@ public class UniExec extends Exec {
     Offs ons = null;
 
     public UniExec() {
-        this(1, 1);
+        this(1);
     }
 
-    public UniExec(int concurrency, int concurrencyMax) {
-        super(concurrency, concurrencyMax);
+    public UniExec(int concurrencyMax) {
+        super(concurrencyMax);
         in = new MetalConcurrentQueue(inputQueueCapacityPerThread * concurrencyMax());
     }
 
@@ -97,6 +97,10 @@ public class UniExec extends Exec {
         return in.size();
     }
 
+    @Override
+    public int concurrency() {
+        return 1;
+    }
 
     @Override
     public void start(NAR n) {

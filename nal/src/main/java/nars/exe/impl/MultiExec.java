@@ -42,12 +42,12 @@ abstract public class MultiExec extends UniExec {
     /**
      * proportion of time spent in forced curiosity
      */
-    private final float explorationRate = 0.05f;
+    private final float explorationRate = 0.1f;
 
     protected long cycleIdealNS;
 
-    public MultiExec(Valuator valuator, int concurrency  /* TODO adjustable dynamically */) {
-        super(concurrency, concurrency);
+    public MultiExec(Valuator valuator, int concurrencyMax  /* TODO adjustable dynamically */) {
+        super(concurrencyMax);
         this.valuator = valuator;
     }
 

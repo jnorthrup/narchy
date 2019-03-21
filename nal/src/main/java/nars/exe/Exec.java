@@ -20,10 +20,9 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
     protected static final Logger logger = LoggerFactory.getLogger(Exec.class);
 
     protected NAR nar;
-    protected final int concurrency, concurrencyMax;
+    protected int concurrencyMax;
 
-    public Exec(int concurrency, int concurrencyMax) {
-        this.concurrency = concurrency;
+    public Exec(int concurrencyMax) {
         this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
     }
 
@@ -83,9 +82,7 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
      * current concurrency level; may change
      */
     @Override
-    public final int concurrency() {
-        return concurrency;
-    }
+    abstract public int concurrency();
 
     /**
      * maximum possible concurrency; should remain constant

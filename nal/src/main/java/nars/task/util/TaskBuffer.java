@@ -320,7 +320,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
          * input rate
          * tasks per cycle
          */
-        public final FloatRange valve = new FloatRange(1, 0, 8);
+        public final FloatRange valve = new FloatRange(1, 0, 32);
 
         final AtomicBoolean busy = new AtomicBoolean(false);
 

@@ -13,6 +13,7 @@ import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.function.Consumer;
 import java.util.function.LongPredicate;
@@ -41,7 +42,7 @@ public class TestNAR {
      * holds mustNot (negative) conditions which are tested at the end
      */
     private final FasterList<NARCondition> failsIfAny = new FasterList();
-    public boolean quiet = true;
+    public boolean quiet = false;
     public boolean requireConditions = true;
     
     /**
@@ -81,7 +82,24 @@ public class TestNAR {
         return this;
     }
 
-    public TestNAR run(long finalCycle  /* for use with JUnit */) {
+    public static class TestNARResult implements Serializable {
+        public final boolean success;
+        public final boolean error;
+
+        public TestNARResult(boolean success, boolean error) {
+            this.success = success;
+            this.error = error;
+        }
+        //TODO long wallTimeNS;
+        //TODO etc
+    }
+
+    public void run(long finalCycle) {
+        TestNARResult result = _run(finalCycle);
+        assertTrue(result.success);
+    }
+
+    public TestNARResult _run(long finalCycle) {
 
 
         score = 0; //Float.NEGATIVE_INFINITY;
@@ -92,16 +110,17 @@ public class TestNAR {
 
         String id = succeedsIfAll.toString();
 
-        for (NARCondition oc: succeedsIfAll) {
-            long oce = oc.getFinalCycle();
-            if (oce > finalCycle) finalCycle = oce + 1;
+        if (finalCycle <= 0) {
+            //auto-compute final cycle
+            for (NARCondition oc : succeedsIfAll) {
+                long oce = oc.getFinalCycle();
+                if (oce > finalCycle) finalCycle = oce + 1;
+            }
+            for (NARCondition oc : failsIfAny) {
+                long oce = oc.getFinalCycle();
+                if (oce > finalCycle) finalCycle = oce + 1;
+            }
         }
-        for (NARCondition oc: failsIfAny) {
-            long oce = oc.getFinalCycle();
-            if (oce > finalCycle) finalCycle = oce + 1;
-        }
-
-
 
         score = -finalCycle; //default score
         score = Math.min(-1, finalCycle);
@@ -118,10 +137,16 @@ public class TestNAR {
 
         long startTime = nar.time();
 
+        boolean success, error;
+        try {
+            runUntil(finalCycle);
+            success = true; error = false;
+        } catch (Throwable t) {
+            logger.error("{} {}", this, t);
+            t.printStackTrace();
+            success = false; error = true;
+        }
 
-        runUntil(finalCycle);
-
-        boolean success = true;
         for (NARCondition t: succeedsIfAll) {
             if (!t.isTrue()) {
                 success = false;
@@ -132,10 +157,10 @@ public class TestNAR {
             if (t.isTrue()) {
 
                 if (!quiet) {
-                    logger.error("mustNot: {}", t);
+                    logger.warn("mustNot: {}", t);
                     t.log(logger);
                     ((TaskCondition) t).matched.forEach(shouldntHave ->
-                            logger.error("Must not:\n{}\n{}", shouldntHave.proof(), MetaGoal.proof(shouldntHave,nar))
+                            logger.warn("Must not:\n{}\n{}", shouldntHave.proof(), MetaGoal.proof(shouldntHave,nar))
                     );
                 }
 
@@ -145,8 +170,8 @@ public class TestNAR {
         }
 
 
-        long time = nar.time();
-        int runtime = Math.max(0, (int) (time - startTime));
+        long endTime = nar.time();
+        int runtime = Math.max(0, (int) (endTime - startTime));
 
         assert(runtime <= finalCycle);
 
@@ -164,7 +189,7 @@ public class TestNAR {
 
         if (!quiet && reportStats) {
             String pattern = "{}\n\t{} {} {}IN \ninputs";
-            Object[] args = {id, time};
+            Object[] args = {id, endTime};
 
             logger.info(pattern, args);
 
@@ -186,15 +211,8 @@ public class TestNAR {
             nar.stats(System.out);
         }
 
-        assertSuccess(success);
 
-        return this;
-    }
-
-    private static void assertSuccess(boolean success) {
-
-        /** if success is false, the test will end here, throwing the appropriate JUnit exception */
-        assertTrue(success);
+        return success ? new TestNARResult(true, false) : new TestNARResult(false, error);
     }
 
 
@@ -604,12 +622,8 @@ public class TestNAR {
         return this;
     }
 
-    public TestNAR test(/* for use with JUnit */) {
-        return run(0);
-    }
-
-    public TestNAR test(long cycles) {
-        return run(cycles);
+    public void test(/* for use with JUnit */) {
+        run(0);
     }
 
     public TestNAR termVolMax(int i) {

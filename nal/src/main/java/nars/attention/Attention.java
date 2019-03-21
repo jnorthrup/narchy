@@ -163,18 +163,22 @@ public class Attention extends DurService implements Sampler<TaskLink> {
                     //grow-ahead: s -> t -> u
                     u = linker.sample(rng);
                 else {
-
+                    //loopback
                     if (t instanceof Atom) {
                         //why is this necessary
-                        if (d.random.nextFloat() > 1f/(1+ t.volume())) {
-                            //if (self || d.random.nextFloat() > 1f/(1+s.complexity())) {
+                        float probability =
+                                //1 - 1f / (1 + s.volume());
+                                1 - 1f / (1 + t.volume());
+                                //0.5f;
+                        if (d.random.nextFloat() <= probability) {
                             //sample active tasklinks for a tangent match to the atom
 //                            Atom tt = (Atom) t;
                             Predicate<TaskLink> filter =
                                     x -> !link.equals(x);
                             //x -> !link.equals(x) && !link.other(tt).equals(s);
 
-                            u = links.atomTangent(ct, punc, filter, d.time, 1, d.random);
+                            u = links.atomTangent(ct, punc, filter, d.time,
+                                    Param.REMEMBER_REPEAT_THRESH_DURS /* repurposed */, d.random);
 //                        if (u!=null && u.equals(s)) {
 ////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY
 //                            throw new WTF();

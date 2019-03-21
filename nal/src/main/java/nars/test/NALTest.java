@@ -49,28 +49,17 @@ public abstract class NALTest {
         }
 
         try {
-
-
-
             t.test.quiet = true;
-//        t.test.nar.random().setSeed(
-//                System.nanoTime()
-//        );
-
-
             t.test.test();
-
         } catch (AssertionFailedError ae) {
           //ignore
         } catch (Throwable ee) {
           ee.printStackTrace();
         }
         return t;
-
     }
 
     public static Stream<Method> tests(Class<? extends NALTest>... c) {
-
         return Stream.of(c)
                 .flatMap(cc -> Stream.of(cc.getDeclaredMethods())
                         .filter(x -> x.getAnnotation(Test.class) != null))

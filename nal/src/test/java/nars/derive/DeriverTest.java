@@ -145,7 +145,6 @@ class DeriverTest {
     @Test
     void testDeriveQuest() {
 
-        TestNAR t =
             test("(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
                 .ask("b:a")
                 .believe("a:b")

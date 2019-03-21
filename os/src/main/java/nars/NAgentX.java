@@ -417,7 +417,7 @@ abstract public class NAgentX extends NAgent {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        TaskBuffer injection = new TaskBuffer.BagTaskBuffer(256, 2.5f);
+        TaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 5f);
         //TaskBuffer injection = new TaskBuffer.DirectTaskBuffer();
         window(NARui.taskBufferView(injection, n), 500, 500);
 

@@ -1,5 +1,6 @@
 package jcog.exe;
 
+import jcog.WTF;
 import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
@@ -10,6 +11,7 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -21,14 +23,22 @@ public class AffinityExecutor implements Executor {
 //    private static final Logger logger = LoggerFactory.getLogger(AffinityExecutor.class);
 
     public final FastCoWList<Thread> threads = new FastCoWList<Thread>(Thread[]::new);
+    public final Semaphore running;
     public final String id;
+    public final int maxThreads;
 
-    public AffinityExecutor() {
-        this(Thread.currentThread().getThreadGroup().getName());
+    public AffinityExecutor(/* int maxThreads */) {
+        this(Runtime.getRuntime().availableProcessors());
+    }
+    public AffinityExecutor(int maxThreads) {
+        this(Thread.currentThread().getThreadGroup().getName(), maxThreads);
     }
 
-    public AffinityExecutor(String id) {
+    public AffinityExecutor(String id, int maxThreads) {
         this.id = id;
+
+        this.maxThreads = maxThreads;
+        this.running = new Semaphore(maxThreads);
     }
 
     @Override
@@ -41,12 +51,9 @@ public class AffinityExecutor implements Executor {
     }
 
     public int size() {
-        return threads.size();
+        return maxThreads - running.availablePermits();
     }
 
-    public void remove(int i) {
-        kill(threads.get(i));
-    }
 
     protected final class AffinityThread extends Thread {
 
@@ -66,6 +73,7 @@ public class AffinityExecutor implements Executor {
 
         @Override
         public void run() {
+
 
             try {
                 if (tryPin) {
@@ -99,6 +107,9 @@ public class AffinityExecutor implements Executor {
     }
 
     protected void kill(Thread thread) {
+
+        running.release(1);
+
         Runnable t = ((AffinityThread)thread).run;
         if (t instanceof Off) {
 
@@ -136,18 +147,16 @@ public class AffinityExecutor implements Executor {
     }
 
     protected void add(AffinityThread at) {
+
+        boolean ready = running.tryAcquire();
+        if (!ready)
+            throw new WTF();
         threads.add(at);
         at.start();
     }
-
-
-
-
-
-
-
-
-
+    public void remove(int i) {
+        kill(threads.get(i));
+    }
 
     private String dumpThreadInfo() {
         final StringBuilder sb = new StringBuilder();

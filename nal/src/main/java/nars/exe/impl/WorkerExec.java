@@ -22,7 +22,7 @@ public class WorkerExec extends ThreadedExec {
      * TODO auto-calculate
      */
     double granularity = 4;
-    private static final long subCycleMinNS = 100_000;
+    private static final long subCycleMinNS = 10_000;
     private long subCycleMaxNS;
 
     public WorkerExec(Valuator r, int threads) {
@@ -195,7 +195,7 @@ public class WorkerExec extends ThreadedExec {
             //randomize the rescheduling so that the workers tend to be out of phase with each other's next rescheduling
             rescheduleCycles =
                     //nar.dur(); //update current dur
-                    Util.lerp(nar.random().nextFloat(), 1 * nar.dtDither(), 2 * nar.dtDither());
+                    Util.lerp(nar.random().nextFloat(), 2 * nar.dtDither(), 4 * nar.dtDither());
 
             subCycleMaxNS = (long) ((workTimeNS) / granularity);
 
@@ -230,9 +230,10 @@ public class WorkerExec extends ThreadedExec {
         }
 
         void sleep() {
-            long i = nars.exe.impl.WorkerExec.this.threadIdleTimePerCycle;
+            long i = (long) (WorkerExec.this.threadIdleTimePerCycle * (((float)concurrency())/exe.maxThreads));
             if (i > 0) {
-                Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());
+                Util.sleepNS(NapTimeNS);
+                //Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());
             }
         }
 

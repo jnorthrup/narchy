@@ -128,7 +128,7 @@ public abstract class Param {
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
 
     /** TODO needs tested whether recursive Unification inherits TTL */
-    public static final int TASK_EVALUATION_TTL = 32;
+    public static final int TASK_EVALUATION_TTL = 16;
 
 //    /** within how many durations a difference in dt is acceptable for target unification */
 //    public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 1f;
@@ -140,8 +140,6 @@ public abstract class Param {
 
     /** >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity */
     public static final float ANSWER_COMPLETENESS = 1f;
-
-//    public static final boolean DERIVE_AUTO_IMAGE_NORMALIZE = true;
 
 
 //    /**
@@ -197,7 +195,7 @@ public abstract class Param {
     public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONsqrt;
 
     /** novelty threshold: >=0; higher values decrease the rate at which repeated tasks can be reactivated */
-    public static final float REMEMBER_REPEAT_THRESH_DURS = 1f;
+    public static final int REMEMBER_REPEAT_THRESH_DURS = 2;
 
 
     /**
@@ -295,7 +293,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 6; //HACK this is a TTL supply, not a COST
@@ -532,7 +530,7 @@ public abstract class Param {
         double decayTime = falloffDurs * dur;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        //e = (evi / (1.0 + Util.sqr(dt / decayTime )));
+        e = (evi / (1.0 + Util.sqr(dt / decayTime )));
         //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
@@ -548,7 +546,7 @@ public abstract class Param {
         //e = evi * Math.max(0, 1.0 - Util.sqr(dt / decayTime));
 
         //linear decay WARNING - not finite integral
-        e = (float) (evi / (1.0 + dt / decayTime));
+        //e = (float) (evi / (1.0 + dt / decayTime));
 
         //---------
 

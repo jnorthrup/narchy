@@ -5,6 +5,7 @@ import jcog.io.SparkLine;
 import nars.*;
 import nars.term.Term;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,9 +26,15 @@ class AIMATests {
 
         n.termVolumeMax.set(5);
         n.freqResolution.set((float) truthRes);
-        n.confMin.set(0.05f);
-        n.confResolution.set(0.1f);
+        n.confMin.set(0.15f);
+        n.attn.forgetRate.set(0.1f);
+//        n.confResolution.set(0.1f);
 
+        ObjectIntHashMap<Term> terms = new ObjectIntHashMap();
+        n.onTask(t -> {
+            terms.addToValue(t.term(), 1);
+        });
+//        Param.DEBUG = true; n.log();
         n.believe(
                 "(P ==> Q)",
                 "((L && M) ==> P)",
@@ -37,7 +44,13 @@ class AIMATests {
                 "A",
                 "B");
 
-        assertBelief(n, true, "Q", (int) (Param.TEST_TIME_MULTIPLIER * 1500));
+        try {
+            assertBelief(n, true, "Q", (int) (Param.TEST_TIME_MULTIPLIER * 3500));
+        } finally {
+            terms.keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(t -> {
+                System.out.println(t);
+            });
+        }
 
     }
 

@@ -213,7 +213,7 @@ class OperatorTest {
         t.mustOutput(16, output);
         t.input(input);
 
-        t.test(4);
+        t.run((long) 4);
 
     }
 
