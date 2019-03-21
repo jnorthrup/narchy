@@ -49,6 +49,8 @@ public abstract class ConsumerX<X extends Prioritizable> implements Consumer<X> 
         }
     }
 
+
+
     @Override
     public final void accept(X x) {
         input(x);

@@ -784,11 +784,15 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public final void removeRange(int start, int _end, Consumer<? super X> action) {
         int end = (_end == -1) ? size : Math.min(size, _end);
         if (start < end) {
-            X[] l = items;
-            for (int i = start; i < end; i++)
-                action.accept(l[i]);
-            removeRange(start, end);
+            removeRangeSafe(start, end, action);
         }
+    }
+
+    public void removeRangeSafe(int start, int end, Consumer<? super X> action) {
+        X[] l = items;
+        for (int i = start; i < end; i++)
+            action.accept(l[i]);
+        removeRange(start, end);
     }
 
 

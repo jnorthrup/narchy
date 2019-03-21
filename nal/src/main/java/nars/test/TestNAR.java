@@ -6,6 +6,8 @@ import nars.*;
 import nars.control.MetaGoal;
 import nars.task.ITask;
 import nars.task.Tasked;
+import nars.term.Term;
+import nars.term.util.TermException;
 import nars.test.condition.NARCondition;
 import nars.test.condition.TaskCondition;
 import nars.time.Tense;
@@ -393,17 +395,24 @@ public class TestNAR {
         cycleStart -= tt;
         cycleEnd += tt;
 
-        float hf = freqTolerance / 2.0f;
-        float hc = confTolerance / 2.0f;
+        Term term =
+                Narsese.term(sentenceTerm, true);
+        int tv = term.volume();
+        int tvMax = nar.termVolumeMax.intValue();
+        if (tv > tvMax) {
+            throw new TermException("condition term volume (" + tv + ") exceeds volume max (" + tvMax + ")", term);
+        }
+
+        float hf = freqTolerance / 2.0f, hc = confTolerance / 2.0f;
         TaskCondition tc =
                 new TaskCondition(nar,
                         cycleStart, cycleEnd,
-                        sentenceTerm, punc, freqMin - hf, freqMax + hf, confMin - hc, confMax + hc, time);
+                        term, punc,
+                        freqMin - hf, freqMax + hf,
+                        confMin - hc, confMax + hc, time);
 
-
-        for (ByteTopic<Tasked> cc: c) {
+        for (ByteTopic<Tasked> cc: c)
             cc.on(tc, punc);
-        }
 
         finished = false;
 

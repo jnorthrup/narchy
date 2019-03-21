@@ -1281,10 +1281,10 @@ public class NAL7Test extends NALTest {
 
 
         test
-                .termVolMax(5)
+                .termVolMax(6)
                 .inputAt(1, "(a &&+2 c). |")
                 .inputAt(3, "(b &| d). |")
-                .mustBelieve(cycles*2,
+                .mustBelieve(cycles,
                         "(a &&+2 (&|,b,c,d) )", 1f, 0.81f, 1);
     }
 

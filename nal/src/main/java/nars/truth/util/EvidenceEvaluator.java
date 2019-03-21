@@ -119,7 +119,7 @@ public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time 
     }
 
 
-    public static EvidenceEvaluator the(Task t, int dur) {
+    public static EvidenceEvaluator of(Task t, int dur) {
         long s = t.start();
         double ee = t.evi();
         if (s == ETERNAL)
@@ -133,7 +133,7 @@ public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time 
     }
 
     public static double at(Task task, int dur, long when) {
-        return the(task, dur).evi(when);
+        return of(task, dur).evi(when);
     }
 
 }

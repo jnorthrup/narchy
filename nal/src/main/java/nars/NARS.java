@@ -115,7 +115,7 @@ public class NARS {
 
             if (nal > 0)
                 withNAL(
-                        new TaskBuffer.BagTaskBuffer(128, 3f),
+                        new TaskBuffer.BagTaskBuffer(64, 3f),
                         //new TaskBuffer.MapTaskBuffer(64),
                         //new TaskBuffer.DirectTaskBuffer(),
                         1, nal);
@@ -126,10 +126,10 @@ public class NARS {
 
             then((n)->{
 
-                n.termVolumeMax.set(26);
+                n.termVolumeMax.set(24);
 
                 n.attn.linksCapacity.set(128);
-                n.attn.forgetRate.set(0.03f);
+                n.attn.forgetRate.set(0.02f);
 
                 n.beliefPriDefault.set(0.1f);
                 n.goalPriDefault.set(0.1f);
@@ -171,7 +171,7 @@ public class NARS {
                         //beliefs tmp
                         curve(termVolume,
                                 1, 64,
-                                16, 48,
+                                16, 32,
                                 32, 16
                         ),
                         //goals ete
@@ -183,7 +183,7 @@ public class NARS {
                         //goals tmp
                         curve(termVolume,
                                 1, 64,
-                                16, 48,
+                                16, 32,
                                 32, 16
                         ),
                         //questions

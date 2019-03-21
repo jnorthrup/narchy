@@ -57,7 +57,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     protected final TreeMap<Float, Task> similar = new TreeMap();
 
 
-    public TaskCondition(NAR n, long creationStart, long creationEnd, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) throws RuntimeException, nars.Narsese.NarseseException {
+    public TaskCondition(NAR n, long creationStart, long creationEnd, Term term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) throws RuntimeException, nars.Narsese.NarseseException {
 
 
         if (freqMax < freqMin) throw new RuntimeException("freqMax < freqMin");
@@ -76,8 +76,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         this.confMin = Math.max(0.0f, confMin);
         this.punc = punc;
 
-        Term term =
-                Narsese.term(sentenceTerm, true).term().normalize();
+
 
         if (term.op() == NEG) {
             term = term.unneg();

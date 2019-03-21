@@ -8,7 +8,6 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.util.ProxyBag;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -16,10 +15,7 @@ import java.util.function.Consumer;
  */
 abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBag<X, Y> {
 
-    /** how many times the bag can be grown above its conventional capacity for extra space during merge */
-    static final int OVER_CAPACITY_FACTOR = 4;
-
-    final AtomicBoolean busy = new AtomicBoolean(false);
+//    final AtomicBoolean busy = new AtomicBoolean(false);
 
     /**
      * pre-bag accumulating buffer
@@ -40,15 +36,11 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
     @Override
     public final Bag<X, Y> commit(@Nullable Consumer<Y> update) {
-        return commit(update, null);
-    }
 
-    private Bag<X, Y> commit(@Nullable Consumer<Y> before, @Nullable Consumer<Y> after) {
+//        if (busy.compareAndSet(false, true)) {
+//            try {
 
-        if (busy.compareAndSet(false, true)) {
-            try {
-
-                bag.commit(before);
+                bag.commit(update);
 
                 if (!pre.isEmpty()) {
 
@@ -70,10 +62,10 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
                     //bag.commit(after); //force sort after
                 }
 
-            } finally {
-                busy.set(false);
-            }
-        }
+//            } finally {
+//                busy.set(false);
+//            }
+//        }
 
         return this;
     }

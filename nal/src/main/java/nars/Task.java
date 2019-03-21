@@ -7,7 +7,10 @@ import jcog.pri.UnitPrioritizable;
 import jcog.tree.rtree.HyperRegion;
 import nars.control.op.Perceive;
 import nars.subterm.Subterms;
-import nars.task.*;
+import nars.task.DerivedTask;
+import nars.task.ITask;
+import nars.task.NALTask;
+import nars.task.UnevaluatedTask;
 import nars.task.proxy.SpecialNegatedTermTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
@@ -32,6 +35,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -653,10 +657,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
 
-    default EvidenceEvaluator eviEvaluator(int dur) {
-        return EvidenceEvaluator.the(this, dur);
-    }
-
     /**
      * POINT EVIDENCE
      * <p>
@@ -997,5 +997,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return beliefOrGoal ? isBelief() : isGoal();
     }
 
+    /** fast, imprecise sort.  for cache locality and concurrency purposes */
+    static final Comparator<Task> sloppySorter = Comparator
+            .comparingInt((Task x) -> x.term()/*.concept()*/.hashCode())
+            .thenComparing((Task x) -> -x.priElseZero());
 
 }

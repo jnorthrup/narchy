@@ -824,7 +824,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
     public final void clear(Consumer<? super Y> each) {
-        clear(-1, each);
+        clear(Integer.MAX_VALUE, each);
     }
 
     /**
@@ -836,11 +836,14 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         assert (n != 0);
 
-        Collection<Y> popped = new FasterList<>(n > 0 ? Math.min(n, size()) : size());
+        int s = Math.min(n, size());
+        if (s > 0) {
+            Collection<Y> popped = new FasterList<>();
 
-        popBatch(n, popped::add);
+            popBatch(n, popped::add);
 
-        popped.forEach(each);
+            popped.forEach(each);
+        }
 
     }
 
@@ -856,29 +859,29 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
 
-    public Sampler<Y> popBatch(int n, @Nullable Consumer<Y> popped) {
+    public final Sampler<Y> popBatch(int n, @Nullable Consumer<Y> popped) {
+        return popBatch(n, true, popped);
+    }
+
+    public Sampler<Y> popBatch(int n, boolean block, @Nullable Consumer<Y> popped) {
 
         if (n == 0) return this;
 
-        long l = lock.writeLock();
-        try {
+        Consumer<Y> each = popped != null ?
+                e -> popped.accept(removeFromMap(e))
+                :
+                this::removeFromMap;
 
-            int s = size();
-            if (s > 0) {
-
-                int toRemove = n == -1 ? s : Math.min(s, n);
-
-                items.removeRange(0, toRemove,
-                        popped != null ? e -> popped.accept(removeFromMap(e))
-                                :
-                                this::removeFromMap
-                );
-
+        long l = block ? lock.writeLock() : lock.tryWriteLock();
+        if (l != 0) {
+            try {
+                int toRemove = Math.min(n, size());
+                if (toRemove > 0)
+                    items.removeRangeSafe(0, toRemove, each);
+            } finally {
+                lock.unlockWrite(l);
             }
-        } finally {
-            lock.unlockWrite(l);
         }
-
         return this;
     }
 

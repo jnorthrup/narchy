@@ -32,7 +32,9 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
 	}
 
 
-    @Override
+
+
+	@Override
 	public long start() {
 		return a;
 	}
@@ -180,14 +182,23 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
 		long b = min(y1, y2);
 		return a <= b ? b - a : -1;
 	}
-	/** true if [x1..y1] intersects [x2..y2] */
-	public static boolean intersects(long x1, long y1, long x2, long y2) {
-		assert(x1!=TIMELESS && x2!=TIMELESS);
-		return (x1 == ETERNAL) || (x2 == ETERNAL) || (max(x1, x2) <= min(y1, y2));
+	/** true if [as..ae] intersects [bs..be] */
+	public static boolean intersects(long as, long ae, long bs, long be) {
+		assert(as!=TIMELESS && bs!=TIMELESS);
+		return intersectsSafe(as, ae, bs, be);
 	}
+
+	public static boolean intersectsSafe(long as, long ae, long bs, long be) {
+		return (as == ETERNAL) || (bs == ETERNAL) || (max(as, bs) <= min(ae, be));
+	}
+
 	/** true if [os..oe] contains [is..ie] */
 	public static boolean contains(long os, long oe, long is, long ie) {
 		assert(os!=TIMELESS && is!=TIMELESS);
+		return containsSafe(os, oe, is, ie);
+	}
+
+	protected static boolean containsSafe(long os, long oe, long is, long ie) {
 		return os == ETERNAL && is != ETERNAL || os <= is && oe >= ie;
 	}
 

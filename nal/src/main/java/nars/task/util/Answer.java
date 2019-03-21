@@ -1,5 +1,6 @@
 package nars.task.util;
 
+import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import nars.NAR;
@@ -125,17 +126,19 @@ public final class Answer {
      */
     public FloatFunction<TaskRegion> temporalDistanceFn() {
 
-        TimeRange target;
-        if (time.start == ETERNAL)
-            target = new TimeRange(nar.time()); //prefer closer to the current time
-        else
-            target = time;
+//        TimeRange target;
+//        if (time.start == ETERNAL) {
+//            //target = new TimeRange(nar.time()); //prefer closer to the current time
+//            throw new WTF();
+//        } else
+//            target = time;
 
-        return temporalDistanceFn(target);
+        return temporalDistanceFn(time);
 
     }
 
-    static final FloatFunction<TaskRegion> EviAbsolute = x -> x instanceof Task ? (float) TruthIntegration.evi((Task) x) : (x.confMax() * x.range());
+    static final FloatFunction<TaskRegion> EviAbsolute =
+            x -> x instanceof Task ? (float) TruthIntegration.evi((Task) x) : (x.confMax() * x.range());
 
     public static FloatFunction<TaskRegion> temporalDistanceFn(TimeRange target) {
         long targetStart = target.start;
@@ -146,7 +149,7 @@ public final class Answer {
             //return b -> -(Util.mean(b.minTimeTo(a.start), b.minTimeTo(a.end))) -b.range()/tableDur;
             //return b -> -(Util.mean(b.midTimeTo(a.start), b.minTimeTo(a.end))); // -b.range()/tableDur;
             // -b.minTimeTo(a.start, a.end); // -b.range()/tableDur;
-            return x -> -x.minTimeTo(targetStart, targetEnd);//-target.minTimeTo(x);
+            return x -> -LongInterval.minTimeTo(x, targetStart, targetEnd);//-target.minTimeTo(x);
 //            return b -> {
 //
 //                return a.minTimeTo(b);
@@ -156,7 +159,7 @@ public final class Answer {
 //                return r; //TODO make sure that the long cast to float is ok
 //            };
         } else {
-            return x -> -x.minTimeTo(targetStart); // -b.range()/tableDur;
+            return x -> -LongInterval.minTimeTo(x, targetStart); // -b.range()/tableDur;
         }
     }
 
@@ -275,7 +278,6 @@ public final class Answer {
     public static FloatRank<Task> eternalTaskStrength() {
         //return (x, min) -> (x.isEternal() ? x.evi() : x.eviEternalized() * x.range())
         //* x.originality()
-        ;
 
         return (x, min) -> (float) x.evi();
 

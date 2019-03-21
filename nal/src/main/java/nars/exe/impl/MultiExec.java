@@ -42,7 +42,7 @@ abstract public class MultiExec extends UniExec {
     /**
      * proportion of time spent in forced curiosity
      */
-    private final float explorationRate = 0.1f;
+    private final float explorationRate = 0.05f;
 
     protected long cycleIdealNS;
 

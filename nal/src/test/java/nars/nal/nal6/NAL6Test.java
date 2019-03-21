@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 900;
+    private static final int cycles = 1400;
 
     @BeforeEach
     void setup() {
@@ -504,12 +504,12 @@ public class NAL6Test extends NALTest {
     @Test
     void variables_introduction() {
 
-        test.termVolMax(10)
+        test.termVolMax(12)
                 .confMin(0.35f)
                 .believe("open({key1},{lock1})")
                 .believe("key:{key1}")
                 //.mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.45f)
-                .mustBelieve(cycles, "(key:$1 ==> open({$1},{lock1}))", 1.00f, 0.42f)
+                .mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.42f)
                 .mustBelieve(cycles, "(&&,open({#1},{lock1}),key:{#1})", 1.00f, 0.81f);
 
 
@@ -546,6 +546,7 @@ public class NAL6Test extends NALTest {
     void multiple_variables_introduction2() {
 
         TestNAR tester = test;
+        tester.termVolMax(15);
         tester.believe("(key:#x && open(#x,{lock1}))");
         tester.believe("lock:{lock1}");
 

@@ -1,7 +1,6 @@
 package nars.task.util;
 
 import jcog.TODO;
-import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.OverflowDistributor;
@@ -9,7 +8,6 @@ import jcog.pri.PriBuffer;
 import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriArrayBag;
 import nars.Param;
@@ -21,10 +19,8 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static nars.Op.*;
@@ -35,43 +31,7 @@ import static nars.Op.*;
 abstract public class TaskBuffer implements Consumer<ITask> {
 
 
-    /** returns
-     *      true if the implementation will manage async target suppliying,
-     *      false if it needs periodic flushing */
-    abstract public boolean async(ConsumerX<ITask> target);
-
-    /**
-     * returns the input task, or the existing task if a pending duplicate was present
-     */
-    public abstract <T extends ITask> T add(T x);
-
-    //public abstract void commit(long now, Consumer<ITask> target);
-    public abstract void commit(long now, ConsumerX<ITask> target);
-
-    public abstract void clear();
-
-    /**
-     * known or estimated number of tasks present
-     */
-    abstract public int size();
-
     public final IntRange capacity = new IntRange(0, 0, 4 * 1024);
-
-    /**
-     * calculate or estimate current capacity, as a value between 0 and 100% [0..1.0]
-     */
-    public final float volume() {
-        return size() / capacity.floatValue();
-    }
-
-    @Override
-    public final void accept(ITask task) {
-        add(task);
-    }
-
-    //TODO
-    //final AtomicLong in = new AtomicLong(), out = new AtomicLong(), drop = new AtomicLong(), merge = new AtomicLong();
-
 
     public static float merge(ITask pp, ITask tt) {
         if (pp == tt)
@@ -98,6 +58,43 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         return 0; //TODO calculate
 
+    }
+
+    /**
+     * returns
+     * true if the implementation will manage async target suppliying,
+     * false if it needs periodic flushing
+     */
+    abstract public boolean async(ConsumerX<ITask> target);
+
+    /**
+     * returns the input task, or the existing task if a pending duplicate was present
+     */
+    public abstract <T extends ITask> T add(T x);
+
+    //public abstract void commit(long now, Consumer<ITask> target);
+    public abstract void commit(long now, ConsumerX<ITask> target);
+
+    public abstract void clear();
+
+    /**
+     * known or estimated number of tasks present
+     */
+    abstract public int size();
+
+    /**
+     * calculate or estimate current capacity, as a value between 0 and 100% [0..1.0]
+     */
+    public final float volume() {
+        return size() / capacity.floatValue();
+    }
+
+    //TODO
+    //final AtomicLong in = new AtomicLong(), out = new AtomicLong(), drop = new AtomicLong(), merge = new AtomicLong();
+
+    @Override
+    public final void accept(ITask task) {
+        add(task);
     }
 
     abstract public float priMin();
@@ -226,7 +223,6 @@ abstract public class TaskBuffer implements Consumer<ITask> {
      */
     public static class BagTaskBuffer extends TaskBuffer {
 
-
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
@@ -249,7 +245,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                 new PriBuffer<>(Param.tasklinkMerge) {
                     @Override
                     protected void merge(Prioritizable existing, ITask incoming, float pri, OverflowDistributor<ITask> overflow) {
-                        TaskBuffer.merge((ITask)existing, incoming);
+                        TaskBuffer.merge((ITask) existing, incoming);
                     }
                 }
         );
@@ -263,26 +259,28 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 //                };
 
         //new HijackBag...
+        /**
+         * perceptual valve
+         * dilation factor
+         * input rate
+         * tasks per cycle
+         */
+        public final FloatRange valve = new FloatRange(1, 0, 32);
+        private transient long prev = Long.MIN_VALUE;
 
+        /**
+         * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
+         * input may happen concurrently (draining the bag) while inputs are inserted from another thread.
+         */
+        public BagTaskBuffer(int capacity, float rate) {
+            this.capacity.set(capacity);
+            this.valve.set(rate);
+            this.tasks.setCapacity(capacity);
+        }
 
         @Override
         public float priMin() {
             return tasks.isFull() ? tasks.priMin() : 0;
-        }
-
-        @Override
-        public void clear() {
-            tasks.clear();
-        }
-
-        @Override
-        public int size() {
-            return tasks.size();
-        }
-
-        @Override
-        public final boolean async(ConsumerX<ITask> target) {
-            return false;
         }
 
         //            @Override
@@ -313,29 +311,21 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 //                throw new UnsupportedOperationException("should not reach here");
 //            }
 
+        @Override
+        public void clear() {
+            tasks.clear();
+        }
 
-        /**
-         * perceptual valve
-         * dilation factor
-         * input rate
-         * tasks per cycle
-         */
-        public final FloatRange valve = new FloatRange(1, 0, 32);
+//        final AtomicBoolean busy = new AtomicBoolean(false);
 
-        final AtomicBoolean busy = new AtomicBoolean(false);
+        @Override
+        public int size() {
+            return tasks.size();
+        }
 
-        static final ThreadLocal<FasterList<ITask>> batch = ThreadLocal.withInitial(FasterList::new);
-
-        private transient long prev = Long.MIN_VALUE;
-
-        /**
-         * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
-         * input may happen concurrently (draining the bag) while inputs are inserted from another thread.
-         */
-        public BagTaskBuffer(int capacity, float rate) {
-            this.capacity.set(capacity);
-            this.valve.set(rate);
-            this.tasks.setCapacity(capacity);
+        @Override
+        public final boolean async(ConsumerX<ITask> target) {
+            return false;
         }
 
         @Override
@@ -346,86 +336,57 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         @Override
         public void commit(long now, ConsumerX<ITask> target) {
 
-            if (!busy.compareAndSet(false, true))
-                return; //an operation is in-progress
+//            if (!busy.compareAndSet(false, true))
+//                return; //an operation is in-progress
 
-            try {
+//            try {
 
-                if (prev == Long.MIN_VALUE)
-                    prev = now - 1;
+            if (prev == Long.MIN_VALUE)
+                prev = now - 1;
 
-                long dt = now - prev;
-                if (dt == 0)
-                    return;
+            long dt = now - prev;
 
-                prev = now;
+            prev = now;
 
-                tasks.setCapacity(capacity.intValue());
-                tasks.commit(null);
+            Bag<ITask, ITask> b = this.tasks;
 
-                int s = tasks.size();
-                if (s == 0)
-                    return;
+            b.setCapacity(capacity.intValue());
+            b.commit(null);
 
+            int s = b.size();
+            if (s != 0) {
                 int n = Math.min(s, batchSize(dt));
                 if (n > 0) {
+                    //TODO target.input(tasks, n, target.concurrency());
+
                     int c = target.concurrency();
                     if (c <= 1) {
-                        tasks.pop(null, n, target::input);
+                        b.pop(null, n, target::input);
                     } else {
-                        popChunked((Exec) target, n, c);
+                        int remain = n;
+                        int nEach = (int) Math.ceil(((float) remain) / c);
+                        for (int i = 0; i < c && remain > 0; i++) {
+                            ((Exec) target).input(b, Math.min(remain, nEach));
+                            remain -= nEach;
+                        }
                     }
+
                 }
-
-            } finally {
-                busy.set(false);
             }
 
-        }
-
-        public void popChunked(Exec target, int n, int c) {
-            //concurrency > 1
-            int nEach = (int) Math.ceil(((float) n) / c);
-            for (int i = 0; i < c && n > 0; i++) {
-
-                target/*HACK*/.input(nn -> {
-
-                    FasterList batch = BagTaskBuffer.batch.get();
-                    Bag<ITask, ITask> t = tasks;
-
-                    if  (t instanceof BufferedBag)
-                        t = ((BufferedBag)t).bag;
-
-                    if (t instanceof ArrayBag) {
-                        ((ArrayBag) t).popBatch(nEach, batch::add);
-                    } else {
-                        t.pop(null, nEach, batch::add); //per item.. may be slow
-                    }
-
-                    if (!batch.isEmpty()) {
-                        if (batch.size() > 2)
-                            batch.sortThis(sloppySorter);
-                        ITask.run(batch, nn);
-                        batch.clear();
-                    }
-                });
-                n -= nEach;
-            }
-
+//            } finally {
+//                busy.set(false);
+//            }
 
         }
-
-        /** fast, imprecise sort.  for cache locality and concurrency purposes */
-        static final Comparator<Task> sloppySorter = Comparator
-            .comparingInt((Task x) -> x.term()/*.concept()*/.hashCode())
-            .thenComparing((Task x) -> -x.priElseZero());
 
 
         /**
          * TODO abstract
          */
         protected int batchSize(long dt) {
-            return (int) Math.ceil(dt * valve.floatValue());
+            return 1 /* iff dt==0 */ + (int) Math.ceil(dt * valve.floatValue());
+
             //rateControl.apply(tasks.size(), tasks.capacity());
 
 //            float v = valve.floatValue();

@@ -1,8 +1,6 @@
 package nars.truth.polation;
 
 
-import jcog.WTF;
-import jcog.math.LongFloatTrapezoidalIntegrator;
 import jcog.math.Longerval;
 import nars.Task;
 import nars.truth.util.EvidenceEvaluator;
@@ -40,30 +38,24 @@ public class TruthIntegration {
         assert(qStart != ETERNAL && qStart <= qEnd);
 
         if (qStart == qEnd) {
+            //point question
             return t.evi(qStart, dur);
+        } else {
+            //range question
+            long tStart = t.start();
+            if (tStart == ETERNAL) {
+                //eternal task
+                long range = (qEnd - qStart + 1);
+                return t.evi() * range;
+            } else {
+                //temporal task
+                return eviIntegrate(t, qStart, qEnd, dur, tStart, t.end());
+            }
         }
+    }
 
-        long tStart = t.start();
-        if (tStart == ETERNAL) {
-            long range = (qEnd - qStart + 1);
-            return t.evi() * range;
-        }
-
-        long tEnd = t.end();
-
-        EvidenceEvaluator ee = t.eviEvaluator(dur);
-
-        //TODO: ee.integrate(...)
-
-        //possible optimization, needs tested:
-//        if (dur == 0) {
-//            //trim the question to the task because dur=0 means no residual evidence is measured outside of the task's bounds
-//            qStart = Math.max(qStart, tStart);
-//            qEnd = Math.min(qEnd, tEnd);
-//            if (qStart >= qEnd)
-//                return t.evi(qStart, dur); //reduced to a point
-//        }
-
+    protected static double eviIntegrate(Task t, long qStart, long qEnd, int dur, long tStart, long tEnd) {
+        EvidenceEvaluator ee = EvidenceEvaluator.of(t, dur);
 
         if (tStart <= qStart && tEnd >= qEnd) {
 
@@ -72,10 +64,8 @@ public class TruthIntegration {
 
             //return eviInteg(t, dur, qStart, qEnd);
             //return (qEnd - qStart) * t.evi(); //fast, assumes task evi is uniform between the end-points:
+         } else if (Longerval.intersects(tStart, tEnd, qStart, qEnd)) {
 
-        }
-
-        if (Longerval.intersects(tStart, tEnd, qStart, qEnd)) {
             if (qStart <= tStart && qEnd >= tEnd) {
                 //question contains task
 
@@ -111,7 +101,6 @@ public class TruthIntegration {
                     );
 
                 } else if (qStart >= tStart && qEnd <= tEnd) {
-                    assert(qEnd <= tEnd);
                     //starts before the task and ends in it
                     return ee.integrate(
                         qStart,
@@ -130,7 +119,8 @@ public class TruthIntegration {
                             Math.max(qEnd, (tEnd+qEnd)/2), //supersample
                             qEnd
                     );
-                } else if (tStart >= qStart && qEnd <= tEnd) {
+                } else { //if (tStart >= qStart && qEnd <= tEnd) {
+                    assert(tStart >= qStart && qEnd <= tEnd);
                     //qStart, tstart, qend
                     return ee.integrate(
                         qStart,
@@ -138,8 +128,8 @@ public class TruthIntegration {
                             tStart,
                             qEnd
                     );
-                } else
-                    throw new WTF();
+                } /*else
+                    throw new WTF();*/
 
 
             }

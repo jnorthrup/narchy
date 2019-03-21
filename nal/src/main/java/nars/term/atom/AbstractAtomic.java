@@ -4,6 +4,7 @@ import jcog.Util;
 import nars.Op;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static java.lang.System.arraycopy;
 
@@ -54,7 +55,13 @@ public abstract class AbstractAtomic implements Atomic {
 
     @Override
     public boolean equals(Object u) {
-        return this == u || Atomic.equals(this, u);
+        if (this == u) return true;
+        if (u instanceof Atomic) {
+            if (hashCode() == u.hashCode())
+                if (Arrays.equals(bytes(), ((Atomic) u).bytes()))
+                    return true;
+        }
+        return false;
     }
 
     @Override public String toString() {

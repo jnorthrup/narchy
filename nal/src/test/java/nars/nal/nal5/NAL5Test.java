@@ -85,7 +85,7 @@ public class NAL5Test extends NALTest {
     void depVarUniqueness() {
 
         test
-                .termVolMax(10)
+                .termVolMax(11)
                 .believe("f(x,#1)")
                 .believe("f(y,#1)")
                 //both forms

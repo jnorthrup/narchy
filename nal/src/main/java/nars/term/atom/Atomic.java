@@ -361,13 +361,6 @@ public interface Atomic extends Term {
     }
 
 
-    static boolean equals(Atomic x, Object y) {
-        return //(x == y) ||
-               ((y instanceof Atomic) &&
-               (x.hashCode() == y.hashCode()) &&
-               Arrays.equals(x.bytes(), ((Atomic)y).bytes()));
-    }
-
     default int height() { return 1; }
 
 

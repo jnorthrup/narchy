@@ -133,14 +133,13 @@ public interface LongInterval {
         }
     }
 
-    default long minTimeTo(long when) {
-
-        long s = start();
+    static long minTimeTo(LongInterval x, long when) {
+        long s = x.start();
         if (s == ETERNAL || s == when)
             return 0;
 
         //assert (when != ETERNAL);
-        long e = end();
+        long e = x.end();
 
         return minTimeTo(when, s, e);
     }
@@ -212,18 +211,36 @@ public interface LongInterval {
         } else {
             long sa = Math.abs(s - a);
             if (a == b) {
-                if (s == e) {
-                    return sa;
-                } else {
-                    return Math.min(sa, Math.abs(e - b));
-                }
+                return s == e ? sa : Math.min(sa, Math.abs(e - b));
             } else {
                 long sab = Math.min(sa, Math.abs(s - b));
-                if (s == e) {
-                    return sab;
-                } else {
-                    return Math.min(sab, Math.min(Math.abs(e - a), Math.abs(e - b)));
-                }
+                return s == e ? sab : Math.min(sab, Math.min(Math.abs(e - a), Math.abs(e - b)));
+
+            }
+        }
+    }
+    static long minTimeTo(LongInterval x, long a, long b) {
+
+        //assert (b >= a): a + " > " + b;
+
+        if (a == ETERNAL)
+            return 0;
+
+        long s = x.start();
+        if (s == ETERNAL)
+            return 0;
+
+        long e = x.end();
+        if (Longerval.intersectsSafe(a, b, s, e)) {
+            return 0;
+        } else {
+            long sa = Math.abs(s - a);
+            if (a == b) {
+                return s == e ? sa : Math.min(sa, Math.abs(e - b));
+            } else {
+                long sab = Math.min(sa, Math.abs(s - b));
+                return s == e ? sab : Math.min(sab, Math.min(Math.abs(e - a), Math.abs(e - b)));
+
             }
         }
     }

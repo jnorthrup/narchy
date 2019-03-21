@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 100;
+    static final int cycles = 200;
 
     @Override
     protected NAR nar() {
@@ -237,6 +237,7 @@ public class NAL3Test extends NALTest {
     void testDisjoint3() {
 
         test
+                .termVolMax(8)
                 .believe("--(x-->(&,RealNumber,ComplexNumber,Letter))")
                 .believe("(x-->RealNumber)")
                 .mustBelieve(cycles, "(x-->(ComplexNumber&Letter))", 0f, 0.81f)
@@ -250,6 +251,7 @@ public class NAL3Test extends NALTest {
 
 
         test
+                .termVolMax(5)
                 .believe("(#1-->(RealNumber&ComplexNumber))")
                 .believe("(x-->RealNumber)")
                 .mustBelieve(cycles, "(x-->ComplexNumber)", 1f, 0.81f)
@@ -271,6 +273,7 @@ public class NAL3Test extends NALTest {
     @Test
     void testDifferenceQuestion() {
         test
+                .termVolMax(6)
                 .believe("((x|y)-->a)")
                 .mustQuestion(cycles, "((x~y)-->a)")
                 .mustQuestion(cycles, "((y~x)-->a)")
@@ -279,6 +282,7 @@ public class NAL3Test extends NALTest {
     @Test
     void testDifferenceQuest() {
         test
+                .termVolMax(6)
                 .goal("((x|y)-->a)")
                 .mustQuest(cycles, "((x~y)-->a)")
                 .mustQuest(cycles, "((y~x)-->a)")

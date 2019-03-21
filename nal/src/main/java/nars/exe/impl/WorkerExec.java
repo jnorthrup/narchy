@@ -21,8 +21,8 @@ public class WorkerExec extends ThreadedExec {
      * process sub-timeslice divisor
      * TODO auto-calculate
      */
-    double granularity = 4;
-    private static final long subCycleMinNS = 10_000;
+    double granularity = 8;
+    private static final long subCycleMinNS = 50_000;
     private long subCycleMaxNS;
 
     public WorkerExec(Valuator r, int threads) {

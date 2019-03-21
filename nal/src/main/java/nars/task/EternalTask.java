@@ -39,7 +39,6 @@ public class EternalTask extends ActualNALTask {
         return truth().evi();
     }
 
-    @Override
     public final long minTimeTo(long when) {
         return 0;
     }
