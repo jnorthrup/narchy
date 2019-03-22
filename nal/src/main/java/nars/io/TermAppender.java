@@ -93,28 +93,40 @@ public enum TermAppender { ;
             case NEG:
                 negAppend(c, p);
                 return;
-        }
+            case FRAG:
+                fragAppend(c, p);
+                return;
 
-        if (op.statement || c.subs() == 2) {
+            default:
+                if (op.statement || c.subs() == 2) {
 
 
-            if (c.hasAll(Op.FuncBits)) {
-                Term subj = c.sub(0);
-                if (op == INH && subj.op() == Op.PROD) {
-                    Term pred = c.sub(1);
-                    Op pOp = pred.op();
-                    if (pOp == ATOM) {
-                        operationAppend((Compound) subj, (Atomic) pred, p);
-                        return;
+                    if (c.hasAll(Op.FuncBits)) {
+                        Term subj = c.sub(0);
+                        if (op == INH && subj.op() == Op.PROD) {
+                            Term pred = c.sub(1);
+                            Op pOp = pred.op();
+                            if (pOp == ATOM) {
+                                operationAppend((Compound) subj, (Atomic) pred, p);
+                                return;
+                            }
+                        }
                     }
+
+                    statementAppend(c, p, op);
+
+                } else {
+                    compoundAppend(c, p, op);
                 }
-            }
-
-            statementAppend(c, p, op);
-
-        } else {
-            compoundAppend(c, p, op);
+                break;
         }
+
+    }
+
+    private static void fragAppend(Compound c, Appendable p) throws IOException {
+        p.append(FRAG.ch);
+        appendSubterms(c.subterms(), p);
+        p.append(FRAG.ch);
     }
 
     static void sectAppend(Compound c, Appendable p) throws IOException {
@@ -202,15 +214,18 @@ public enum TermAppender { ;
 
     static void productAppend(Subterms product, Appendable p) throws IOException {
 
-        int s = product.subs();
         p.append(Op.COMPOUND_TERM_OPENER);
-        for (int i = 0; i < s; i++) {
-            product.sub(i).appendTo(p);
-            if (i < s - 1) {
-                p.append(',');
-            }
-        }
+        appendSubterms(product, p);
         p.append(Op.COMPOUND_TERM_CLOSER);
+    }
+
+    private static void appendSubterms(Subterms x, Appendable p) throws IOException {
+        int s = x.subs();
+        for (int i = 0; i < s; i++) {
+            x.sub(i).appendTo(p);
+            if (i < s - 1)
+                p.append(',');
+        }
     }
 
 

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
+import static nars.Op.FRAG;
 import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 
@@ -32,7 +33,7 @@ public interface TermTransform extends Function<Term,Term> {
             if (y == null || y == Bool.Null)
                 return false;
             else {
-                if (y instanceof EllipsisMatch) {
+                if (y.op() == FRAG) {
                     Subterms s = y.subterms();
                     if (s.subs() > 0) {
                         Subterms s2 = s.transformSubs(this, null);

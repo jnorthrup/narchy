@@ -1,4 +1,4 @@
-package nars;
+package nars.io;
 
 import com.github.fge.grappa.annotations.Cached;
 import com.github.fge.grappa.matchers.MatcherType;
@@ -10,6 +10,9 @@ import com.github.fge.grappa.stack.ArrayValueStack;
 import com.github.fge.grappa.support.Var;
 import jcog.Texts;
 import jcog.data.list.FasterList;
+import nars.$;
+import nars.Narsese;
+import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
@@ -214,9 +217,10 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         ),
 
                         seq(SETi.str,
-
                                 MultiArgTerm(SETi, SET_INT_CLOSER, false, false)
-
+                        ),
+                        seq(FRAG.str,
+                                MultiArgTerm(FRAG, FRAG.ch, false, false)
                         ),
 
                         seq(NEG.str, Term(), push(($.the(pop())).neg())),

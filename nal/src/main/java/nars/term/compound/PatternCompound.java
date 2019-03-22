@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.SortedSet;
 
 import static nars.Op.CONJ;
+import static nars.Op.FRAG;
 import static nars.time.Tense.XTERNAL;
 
 /**
@@ -131,25 +132,22 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
 
                         if (xi == xsize) {
                             //the ellipsis is at the right edge so capture the remainder
-                            if (!ellipsis.validSize(available))
-                                return false;
+                            return
+                                    ellipsis.validSize(available) &&
+                                    ellipsis.unify(EllipsisMatch.fragment(Y, yi, yi + available), u);
 
-                            return ellipsis.unify(EllipsisMatch.matched(Y, yi, yi + available), u);
 
                         } else {
                             //TODO ellipsis is in the center or beginning
                             throw new TODO();
                         }
                     } else {
-
-
-                        if (xResolved instanceof EllipsisMatch) {
+                        if (xResolved.op()==FRAG) {
                             EllipsisMatch xe = (EllipsisMatch) xResolved;
                             if (!xe.linearMatch(Y, yi, u))
                                 return false;
                             yi += xe.subs();
                         } else {
-
                             if (!sub(yi).unify(xResolved, u))
                                 yi++;
                         }
@@ -238,7 +236,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                         continue; //unassigned ellipsis
 
                     ellipsis = null;
-                    if (xxk instanceof EllipsisMatch) {
+                    if (xxk.op()==FRAG) {
                         for (Term ex : xxk.subterms()) {
                             if (!include(ex, xMatch, yFree, u))
                                 return false;
@@ -321,7 +319,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
 
             switch (xs) {
                 case 0:
-                    return ellipsis.unify(ys > 0 ? EllipsisMatch.matched(false, yFree) : EllipsisMatch.empty, u);
+                    return ellipsis.unify(ys > 0 ? EllipsisMatch.fragment(false, yFree) : EllipsisMatch.empty, u);
 
                 case 1:
                     if (xs == ys) {

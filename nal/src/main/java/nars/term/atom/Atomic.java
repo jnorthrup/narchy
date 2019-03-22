@@ -3,6 +3,7 @@ package nars.term.atom;
 import jcog.Texts;
 import nars.$;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -18,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static java.lang.Integer.MIN_VALUE;
+import static nars.Op.EmptySubterms;
 import static nars.Op.NEG;
 import static nars.term.atom.Bool.Null;
 
@@ -103,7 +105,11 @@ public interface Atomic extends Term {
         return t.op() == NEG && equals(t.unneg());
     }
 
+    @Override
+    default /* final */ Subterms subterms() { return EmptySubterms; }
 
+    @Override
+    default Term unneg() { return this; }
 
     @Override
     default Term normalize(byte offset) {

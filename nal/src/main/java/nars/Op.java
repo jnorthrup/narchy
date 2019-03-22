@@ -14,6 +14,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.SetSectDiff;
+import nars.term.util.TermException;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.builder.TermConstructor;
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import static nars.term.Terms.sorted;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -60,6 +62,11 @@ public enum Op {
                     return u.neg();
                 case NEG:
                     return u.unneg();
+
+                case FRAG:
+                    if (Param.DEBUG)
+                        throw new TermException("fragment can not be negated", u);
+                    return Null;
 
                 case IMG:
                     return u;
@@ -218,6 +225,12 @@ public enum Op {
 
     IMG("/", 4),
 
+    /**
+     * used for direct term/subterm construction.  supporting ellipsis and other macro transforms.
+     * functions like a PROD
+     */
+    FRAG("`", Op.ANY_LEVEL, Args.GTEZero)
+
 
     /**
      * for ellipsis, when seen as a target
@@ -316,7 +329,7 @@ public enum Op {
     public static final int[] NALLevelEqualAndAbove = new int[8 + 1];
 
 
-    static final ImmutableMap<String, Op> stringToOperator;
+    public static final ImmutableMap<String, Op> stringToOperator;
     /**
      * ops across which reflexivity of terms is allowed
      */

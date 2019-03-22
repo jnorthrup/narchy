@@ -2,7 +2,6 @@ package nars.term.var.ellipsis;
 
 import jcog.util.ArrayUtils;
 import nars.Op;
-import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.compound.LightCompound;
@@ -14,9 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.SortedSet;
 
-import static nars.Op.CONJ;
-import static nars.Op.PROD;
-import static nars.term.atom.Bool.Null;
+import static nars.Op.*;
 import static nars.time.Tense.XTERNAL;
 
 /**
@@ -24,17 +21,19 @@ import static nars.time.Tense.XTERNAL;
  */
 public final class EllipsisMatch extends LightCompound {
 
-    public static final Op EllipsisOp = PROD;
+    public final static EllipsisMatch empty = new EllipsisMatch();
 
-    public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptySubterms);
+    private EllipsisMatch() {
+        super(FRAG.id, EmptySubterms);
+    }
 
-
-    public EllipsisMatch(Subterms t) {
-        super(EllipsisOp.id, t);
+    public EllipsisMatch(Subterms x) {
+        super(FRAG.id, x);
+        assert(x.subs() > 1 || (x.subs() == 0 && empty == null /* HACK */));
     }
 
     private EllipsisMatch(Term[] x) {
-        super(EllipsisOp.id, x /*new DisposableTermList(t)*/);
+        super(FRAG.id, x);
         assert(x.length > 1 || (x.length == 0 && empty == null /* HACK */));
     }
 
@@ -43,12 +42,11 @@ public final class EllipsisMatch extends LightCompound {
     }
 
     /** the ellipsis itself contributes no op */
-    @Override public int structure() {
+    @Override public final int structure() {
         return subterms().structure();
     }
 
-
-    public static Term matched(Term... x) {
+    public static Term fragment(Term... x) {
 
         switch (x.length) {
             case 0:
@@ -61,19 +59,9 @@ public final class EllipsisMatch extends LightCompound {
 
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return this == obj || (obj instanceof EllipsisMatch && subterms().equals(((EllipsisMatch)obj).subterms()));
-    }
 
-    /** behave like a constant that only matches other EllipsisMatch */ @Override
-    public boolean unify(Term y, Unify u) {
-        return (this==y) || (y instanceof EllipsisMatch && (
-            equals(y) || (subs() == y.subs() && unifyLinear(y.subterms(), u))
-        ));
-    }
 
-    public static Term matched(@Deprecated boolean seq, SortedSet<Term> x) {
+    public static Term fragment(@Deprecated boolean seq, SortedSet<Term> x) {
         int num = x.size();
         switch (num) {
             case 0:
@@ -107,7 +95,7 @@ public final class EllipsisMatch extends LightCompound {
                     t[j++] = matched.sub(i);
             }
             assert(j == t.length);
-            return matched(t);
+            return fragment(t);
         }
     }
 
@@ -128,10 +116,10 @@ public final class EllipsisMatch extends LightCompound {
 
             t[j++] = matched[i];
         }
-        return matched(t);
+        return fragment(t);
     }
 
-    public static Term matched(/*@NotNull*/ Subterms y, int from, int to) {
+    public static Term fragment(/*@NotNull*/ Subterms y, int from, int to) {
 
         int len = to-from;
         switch (len) {
@@ -140,22 +128,10 @@ public final class EllipsisMatch extends LightCompound {
             case 1:
                 return y.sub(from);
             default:
-                return matched(y.subRangeArray(from, to));
+                return fragment(y.subRangeArray(from, to));
         }
     }
 
-    @Override
-    public final Term neg() {
-        int s = subs();
-        if (s ==0)
-            return this; //no change
-        else {
-            //assert(s!=1);
-            if (Param.DEBUG)
-                throw new UnsupportedOperationException();
-            return Null;
-        }
-    }
 
     @Override
     public final Term unneg() {

@@ -25,7 +25,9 @@ import java.util.Random;
 import java.util.Set;
 
 import static nars.$.$;
+import static nars.$.$$;
 import static nars.Op.VAR_PATTERN;
+import static nars.term.util.TermTest.assertEq;
 import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;
 import static org.junit.jupiter.api.Assertions.*;
 

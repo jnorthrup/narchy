@@ -58,7 +58,7 @@ import static nars.time.Tense.*;
 public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
-    public static final int ROARING_UPGRADE_THRESH = 16;
+    public static final int ROARING_UPGRADE_THRESH = 8;
 
     /**
      * TermBuilder to use internally

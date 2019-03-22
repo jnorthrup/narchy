@@ -3,9 +3,8 @@ package nars.term.util.builder;
 import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.Param;
-import nars.subterm.*;
+import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.AnonID;
 import nars.term.atom.Bool;
@@ -17,7 +16,6 @@ import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjCommutive;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.CompoundNormalization;
-import nars.term.var.ellipsis.EllipsisMatch;
 import nars.term.var.ellipsis.Ellipsislike;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
@@ -126,7 +124,7 @@ public abstract class TermBuilder implements TermConstructor {
 
     protected final Term conj(boolean preSorted, final int dt, Term... u) {
 
-        if (!preSorted)
+        if (!preSorted && u.length > 1)
             u = Conj.preSort(dt, u);
 
         switch (u.length) {
@@ -135,11 +133,11 @@ public abstract class TermBuilder implements TermConstructor {
 
             case 1:
                 Term only = u[0];
-                if (only instanceof EllipsisMatch)
-                    return conj(dt, only.arrayShared());
-                else
+//                if (only instanceof EllipsisMatch)
+//                    return conj(dt, only.arrayShared());
+//                else
                     return only instanceof Ellipsislike ?
-                            HeapTermBuilder.the.theCompound(CONJ, dt, only)
+                            theCompound(CONJ, dt, only) //special case
                             :
                             only;
         }

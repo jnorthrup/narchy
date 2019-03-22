@@ -535,16 +535,12 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
 
-    default Subterms subterms() {
-        return EmptySubterms;
-    }
+    Subterms subterms();
 
     /**
-     * unwraps any negation superterm
+     * unwraps negation
      */
-    default Term unneg() {
-        return this;
-    }
+    Term unneg();
 
 
     @Deprecated
@@ -615,18 +611,15 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     default boolean equalsRoot(Term x) {
-        return root().equals(x.root());
+        return this==x || root().equals(x.root());
     }
 
-
+    /** TODO make Compound only */
     default int dt() {
         return DTERNAL;
     }
 
-    default Term normalize(byte offset) {
-        return this;
-    }
-
+    Term normalize(byte offset);
 
     /* final */ @Nullable default /* final */ Term normalize() {
         return normalize((byte) 0);

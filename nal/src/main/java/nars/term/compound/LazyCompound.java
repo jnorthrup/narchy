@@ -12,7 +12,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
-import nars.term.var.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -116,7 +115,7 @@ public class LazyCompound {
      * add an already existent sub
      */
     public LazyCompound append(Term x) {
-        if (x instanceof Atomic || x instanceof EllipsisMatch) {
+        if (x instanceof Atomic) {
             return appendAtomic(x);
         } else {
             return append((Compound) x);
@@ -125,18 +124,21 @@ public class LazyCompound {
 
     protected final LazyCompound append(Compound x) {
         Op o = x.op();
-        if (o == NEG) {
-            return negStart().append(x.unneg()).compoundEnd(NEG);
-        } else {
-            return compoundStart(o, x.dt()).appendSubterms(x.subterms()).compoundEnd(o);
+        switch (o) {
+            case NEG:
+                return negStart().append(x.unneg()).compoundEnd(NEG);
+            case FRAG:
+                return appendAtomic(x); //store atomically until construction
+            default:
+                return compoundStart(o, x.dt()).appendSubterms(x.subterms()).compoundEnd(o);
         }
     }
 
-    public LazyCompound appendSubterms(Subterms s) {
+    private LazyCompound appendSubterms(Subterms s) {
         return subsStart((byte) s.subs()).subs(s).subsEnd();
     }
 
-    protected LazyCompound appendAtomic(Term x) {
+    private LazyCompound appendAtomic(Term x) {
         code.writeByte(MAX_CONTROL_CODES + intern(x));
         return this;
     }
@@ -324,7 +326,7 @@ public class LazyCompound {
             if (y == null)
                 throw new NullPointerException(); //WTF
 
-            if (y instanceof EllipsisMatch) {
+            if (y.op()==FRAG) { //if (y instanceof EllipsisMatch) {
                 //expand
                 int en = y.subs();
                 n += en - 1;
@@ -334,10 +336,10 @@ public class LazyCompound {
                     t = Arrays.copyOf(t, n);
                 }
                 if (en > 0) {
-                    for (Term e : ((EllipsisMatch) y)) {
+                    for (Term e : y.subterms()) {
                         if (e == null || e == Null)
                             throw new NullPointerException();
-                        t[i++] = e;
+                        t[i++] = e; //TODO recursively process?
                     }
                 }
             } else {

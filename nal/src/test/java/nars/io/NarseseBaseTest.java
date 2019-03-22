@@ -8,12 +8,16 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
+import nars.term.var.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static nars.$.$$;
+import static nars.Op.FRAG;
 import static nars.Op.PROD;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NarseseBaseTest extends NarseseTest {
@@ -564,14 +568,12 @@ class NarseseBaseTest extends NarseseTest {
     }
 
 
-
-
-
-
-
-
-
-
-
+    @Test void testEllipsisMatch_Fragment() {
+        assertEq("`a,b,c`", EllipsisMatch.fragment($$("a"), $$("b"), $$("c")));
+        assertEq("`a,b,c`", "`a,b,c`");
+        assertEquals(FRAG, $$("`a,b,c`").op());
+        assertEquals(3, $$("`a,b,c`").subs());
+        assertNotEquals($$("(a,b,c)"), $$("`a,b,c`").term());
+    }
 
 }

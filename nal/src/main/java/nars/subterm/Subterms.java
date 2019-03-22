@@ -7,7 +7,6 @@ import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSortedSet;
-import nars.$;
 import nars.Op;
 import nars.Param;
 import nars.subterm.util.TermMetadata;
@@ -18,7 +17,6 @@ import nars.term.Variable;
 import nars.term.atom.Bool;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
-import nars.term.var.ellipsis.EllipsisMatch;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
@@ -1172,7 +1170,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (yi == Bool.False && superOp == CONJ)
                 return Op.FalseSubterm;
 
-            if (yi instanceof EllipsisMatch) {
+            if (yi.op() == FRAG) {
 
                 Subterms ee = yi.subterms();
                 if (ee.subs()==0) {
@@ -1221,7 +1219,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             if (k == null || k == Bool.Null) {
                 return null;
-            } else if (k instanceof EllipsisMatch) {
+            } else if (k.op()==FRAG) {
                 if (Param.DEBUG)
                     throw new TODO("recursive EllipsisMatch unsupported");
                 else

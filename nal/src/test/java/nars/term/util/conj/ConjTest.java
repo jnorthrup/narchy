@@ -786,8 +786,7 @@ public class ConjTest {
                 $$("(&&,a,b,c)"),
                 $$("(&&,c,d,e)")).toString());
 
-        //unchanged because negative
-        assertEq("(--,(&&,a,b,c))", Conj.diff(
+        assertEq("(--,(a&&b))", Conj.diff(
                 $$("--(&&,a,b,c)"),
                 $$("(&&,c,d,e)")));
 
