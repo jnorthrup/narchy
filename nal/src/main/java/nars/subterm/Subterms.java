@@ -534,7 +534,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     /*@NotNull*/
     default Term[] terms(/*@NotNull*/ IntObjectPredicate<Term> filter) {
-        List<Term> l = $.newArrayList(subs());
+        TermList l = new TermList(subs());
         int s = subs();
         int added = 0;
         for (int i = 0; i < s; i++) {
@@ -544,7 +544,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 added++;
             }
         }
-        return added == 0 ? Op.EmptyTermArray : l.toArray(new Term[added]);
+        return added == 0 ? Op.EmptyTermArray : l.arrayKeep();
     }
 
 
@@ -562,14 +562,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * first index of; follows normal indexOf() semantics; -1 if not found
      */
     default int indexOf(/*@NotNull*/ Term t) {
-        if (!impossibleSubTerm(t)) {
-            int s = subs();
-            for (int i = 0; i < s; i++) {
-                if (t.equals(sub(i)))
-                    return i;
-            }
-        }
-        return -1;
+        return first(t::equals);
     }
 
     default int indexOf(/*@NotNull*/ Term t, int after) {
@@ -958,6 +951,18 @@ public interface Subterms extends Termlike, Iterable<Term> {
             prev = next;
         }
         return false;
+    }
+
+    default int first(/*@NotNull*/ Predicate<Term> p) {
+        int s = subs();
+        Term prev = null;
+        for (int i = 0; i < s; i++) {
+            Term next = sub(i);
+            if (prev!=next && p.test(next))
+                return i;
+            prev = next;
+        }
+        return -1;
     }
 
     /**

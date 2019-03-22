@@ -22,7 +22,6 @@ import static nars.time.Tense.XTERNAL;
  */
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
-
     /** global default transform procedure: can decide semi-optimal transform implementation */
     static Term transform(Term x, TermTransform transform) {
         if (x instanceof Compound && Param.TERMIFY_TRANSFORM_LAZY) {

@@ -110,7 +110,12 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     /** use this only if a (disposable) TermList is done being modified */
     public Term[] arrayKeep() {
-        return toArrayRecycled(Term[]::new);
+        Term[] x = array();
+        int s = size();
+        if (x.length == s)
+            return x;
+        else
+            return Arrays.copyOf(x, s);
     }
 
     @Override protected Term[] newArray(int newCapacity) {
@@ -172,4 +177,33 @@ public class TermList extends FasterList<Term> implements Subterms {
         }
     }
 
+    public Term[] sortAndDedup() {
+
+
+        //TODO if size > threshld: use original insertion sort method:
+//        SortedList<Term> sl = new SortedList<>(t, new Term[t.length]);
+//        return sl.orderChangedOrDeduplicated ?
+//                sl.toArrayRecycled(Term[]::new) : t;
+
+
+        int s = size();
+        Term[] ii = this.items;
+        Arrays.sort(ii, 0, s);
+
+        Term prev = ii[0];
+        boolean dedup = false;
+        for (int i = 1; i < s; i++) {
+            Term next = ii[i];
+            if (prev.equals(next)) {
+                setFast(i, null);
+                dedup = true;
+            } else {
+                prev = next;
+            }
+        }
+        if (dedup)
+            removeNulls();
+
+        return arrayKeep();
+    }
 }

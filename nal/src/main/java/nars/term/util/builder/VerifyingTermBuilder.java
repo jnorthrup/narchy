@@ -35,7 +35,7 @@ public class VerifyingTermBuilder extends TermBuilder {
     }
 
     @Override
-    protected Subterms subterms(@Nullable Op inOp, Term... u) {
+    public Subterms subterms(@Nullable Op inOp, Term... u) {
         Subterms aa = a.subterms(inOp, u);
         Subterms bb = b.subterms(inOp, u);
         if (!equals(aa, bb))

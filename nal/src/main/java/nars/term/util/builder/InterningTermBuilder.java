@@ -9,6 +9,7 @@ import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.anon.AnonID;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.cache.Intermed;
@@ -69,9 +70,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
         subterms = newOpCache("subterms",
-                (InternedSubterms x) -> theSubterms(resolve(x.subs)), cacheSizePerOp * 2);
+                x -> TermConstructor.theSubterms(false, resolve(x.subs)), cacheSizePerOp * 2);
         anonSubterms = newOpCache("anonSubterms",
-                (InternedSubterms x) -> new AnonSubterms(x.subs), cacheSizePerOp);
+                x -> new AnonSubterms(x.subs), cacheSizePerOp);
 
         Function statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
 
@@ -147,23 +148,20 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     @Override
-    protected Subterms subterms(Op inOp, Term... t) {
+    public Subterms subterms(@Nullable Op inOp, Term... t) {
 
         if (t.length == 0)
             return EmptySubterms;
-
-        if (internableSubs(t)) {
+        else if (!internableSubs(t))
+            return super.subterms(inOp, t);
+        else {
             //TODO separate cache for anon's
-            if (isAnon(t))
+            if (AnonID.isAnon(t))
                 return subsInterned(anonSubterms, t);
-
-            if (sortCanonically) {
+            else if (sortCanonically)
                 return SortedSubterms.the(t, this::newSubterms, false);
-            } else {
-                return subsInterned(subterms, t);
-            }
-        } else {
-            return theSubterms(t);
+            else
+                return newSubterms(t);
         }
     }
 
@@ -171,7 +169,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return subsInterned(subterms, u);
     }
 
-    private Subterms theSubterms(Term... t) { return super.theSubterms(false, t); }
+
 
 
     private Term[] resolve(Term[] t) {

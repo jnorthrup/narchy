@@ -731,6 +731,7 @@ public interface Compound extends Term, IPair, Subterms {
     default Term dt(int dt) {
         return dt(dt, Op.terms);
     }
+
     default Term dt(int nextDT, TermBuilder b) {
         return b.dt(this, nextDT);
     }

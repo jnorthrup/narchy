@@ -2,7 +2,6 @@ package nars.term;
 
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
-import jcog.sort.SortedList;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.io.IO;
@@ -17,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 import java.util.SortedSet;
@@ -40,17 +40,19 @@ public enum Terms {
 
 
     /** sort and deduplicates the elements; returns new array if modifications to order or deduplication are necessary  */
-    public static Term[] sorted(Term... t) {
-        int len = t.length;
+    public static Term[] sorted(Term... x) {
+        int len = x.length;
         switch (len) {
             case 0: return Op.EmptyTermArray;
-            case 1: return t;
-            case 2: return sorted2(t);
-            case 3: return sorted3(t);
+            case 1: return x;
+            case 2: return sorted2(x);
+            case 3: return sorted3(x);
             default: {
-                SortedList<Term> sl = new SortedList<>(t, new Term[t.length]);
-                return sl.orderChangedOrDeduplicated ?
-                        sl.toArrayRecycled(Term[]::new) : t;
+                Term[] y = new TermList(x.clone()).sortAndDedup();
+                if (y!=x && Arrays.equals(x,y))
+                    return x; //unchanged
+                else
+                    return y;
             }
         }
 

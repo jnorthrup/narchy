@@ -10,11 +10,10 @@ import java.util.Random;
  */
 public final class ShuffledSubterms extends RemappedSubterms {
 
-    private final ShuffledPermutations shuffle;
+    private final ShuffledPermutations shuffle = new ShuffledPermutations();
 
     public ShuffledSubterms(Subterms subterms, Random rng) {
         super(subterms);
-        this.shuffle = new ShuffledPermutations();
         reset(rng);
     }
 

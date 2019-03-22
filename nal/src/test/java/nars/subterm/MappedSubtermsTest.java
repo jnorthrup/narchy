@@ -1,5 +1,6 @@
 package nars.subterm;
 
+import nars.Op;
 import nars.term.Term;
 import nars.term.util.TermTest;
 import nars.term.var.CommonVariable;
@@ -48,7 +49,7 @@ public class MappedSubtermsTest {
     /** subterms as array/vector */
     public static Subterms assertEq(Term[] aa, Term[] bb) {
         ArrayTermVector a = new ArrayTermVector(aa);
-        Subterms b = SortedSubterms.the(bb);
+        Subterms b = SortedSubterms.the(bb, Op.terms::subterms, false);
         TermTest.assertEq(a, b);
         return b;
     }

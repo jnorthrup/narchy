@@ -19,6 +19,7 @@ import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.List;
 
+import static nars.Op.EmptyTermArray;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -290,7 +291,7 @@ abstract public class FastCompound implements SameSubtermsCompound /* The */ {
 
 
             return TermBuilder.newCompound(opAtSub,
-                    Op.terms.subterms(new SubtermView(this, offset))
+                    Op.terms.subterms(new SubtermView(this, offset).toArray(EmptyTermArray))
 
             );
         }

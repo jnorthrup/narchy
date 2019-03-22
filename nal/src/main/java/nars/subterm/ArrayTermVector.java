@@ -1,7 +1,6 @@
 package nars.subterm;
 
 import jcog.data.iterator.ArrayIterator;
-import jcog.util.ArrayUtils;
 import nars.term.Term;
 
 import java.util.Arrays;
@@ -28,17 +27,6 @@ public class ArrayTermVector extends TermVector {
         return Subterms.toString(terms);
     }
 
-
-    @Override
-    public int indexOf(Term t) {
-        //quick test for identity equality
-        if (terms.length < 5) {
-            int i = ArrayUtils.indexOfIdentity(terms, t);
-            if (i!=-1)
-                return i;
-        }
-        return super.indexOf(t);
-    }
 
     @Override
     public final boolean equals(/*@NotNull*/ Object obj) {

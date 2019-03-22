@@ -7,7 +7,7 @@ public abstract class MappedSubterms<S extends Termlike> extends ProxySubterms<S
 
     private boolean normalizedKnown = false, normalized = false;
 
-    public MappedSubterms(S ref) {
+    MappedSubterms(S ref) {
         super(ref);
     }
 
@@ -15,13 +15,14 @@ public abstract class MappedSubterms<S extends Termlike> extends ProxySubterms<S
     public final boolean hasXternal() {
         return ref.hasXternal();
     }
+
     @Override
-    public boolean these() {
+    public final boolean these() {
         return ref.these();
     }
 
     @Override
-    public boolean isNormalized() {
+    public final boolean isNormalized() {
         if (!normalizedKnown && !normalized) {
             normalized = TermMetadata.normalized(this);
             normalizedKnown = true;
@@ -30,13 +31,13 @@ public abstract class MappedSubterms<S extends Termlike> extends ProxySubterms<S
     }
 
     @Override
-    public String toString() {
-        return Subterms.toString(this);
+    public final void setNormalized() {
+        this.normalizedKnown = this.normalized = true;
     }
 
     @Override
-    public void setNormalized() {
-        this.normalizedKnown = this.normalized = true;
+    public final String toString() {
+        return Subterms.toString(this);
     }
 
 

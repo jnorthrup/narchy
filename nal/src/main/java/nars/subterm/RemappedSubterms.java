@@ -19,8 +19,7 @@ import static nars.Op.NEG;
 abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterms<S> {
 
 
-    public static <S extends Subterms> ArrayRemappedSubterms<S> the(Term[] target, S base, Term[] baseRaw) {
-        assert(base.subs()==baseRaw.length);
+    public static <S extends Subterms> ArrayRemappedSubterms<S> the(Term[] target, S base) {
 
         byte[] m = new byte[target.length];
         for (int i = 0, xLength = target.length; i < xLength; i++) {
@@ -42,7 +41,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
 
     /** make sure to calculate hash code in implementation's constructor */
-    protected RemappedSubterms(S base) {
+    RemappedSubterms(S base) {
         super(base);
     }
 
