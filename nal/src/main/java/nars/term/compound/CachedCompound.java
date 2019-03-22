@@ -1,6 +1,5 @@
 package nars.term.compound;
 
-import jcog.Util;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -8,8 +7,8 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.transform.Retemporalize;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
-import org.jetbrains.annotations.Nullable;
 
+import static jcog.Util.hashCombine;
 import static nars.time.Tense.DTERNAL;
 
 
@@ -22,12 +21,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
      * subterm vector
      */
     private final Subterms subterms;
-
-
-    /**
-     * content hash
-     */
-    protected final int hash;
 
     public final Op op;
 
@@ -149,10 +142,9 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
 
     private CachedCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
-
-        int h = (this.subterms = subterms).hashWith(this.op = op);
-        this.hash = (dt == DTERNAL) ? h : Util.hashCombine(h, dt);
-
+        super(dt == DTERNAL ? subterms.hashWith(op) : hashCombine(subterms.hashWith(op), dt) );
+        this.op = op;
+        this.subterms = subterms;
 
         this._structure = subterms.structure() | op.bit;
 
@@ -161,6 +153,11 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
 
     abstract public int dt();
+
+    @Override
+    public final int indexOf(Term t) {
+        return !impossibleSubTerm(t) ? super.indexOf(t) : -1;
+    }
 
     /**
      * since Neg compounds are disallowed for this impl
@@ -211,26 +208,8 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     }
 
     @Override
-    public final int hashCode() {
-        return hash;
-    }
-
-
-    @Override
     public final Op op() {
         return op;
     }
-
-    @Override
-    public final String toString() {
-        return Compound.toString(this);
-    }
-
-
-    @Override
-    public final boolean equals(@Nullable Object that) {
-        return Compound.equals(this, that, true);
-    }
-
 
 }

@@ -19,8 +19,21 @@ import java.util.function.Predicate;
 /** delegates certain methods to a specific impl */
 public abstract class SeparateSubtermsCompound implements Compound {
 
+    private final int hash;
+
+    protected SeparateSubtermsCompound(Op o, Subterms x) {
+        this(x.hashWith(o.id));
+    }
+    protected SeparateSubtermsCompound(byte op, Subterms x) {
+        this(x.hashWith(op));
+    }
+
+    protected SeparateSubtermsCompound(int hash) {
+        this.hash = hash;
+    }
+
     @Override
-    public String toString() {
+    public final String toString() {
         return Compound.toString(this);
     }
 
@@ -30,8 +43,9 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public int hashCode() {
-        return Compound.hashCode(this);
+    public final int hashCode() {
+        //return Compound.hashCode(this);
+        return hash;
     }
 
     @Override

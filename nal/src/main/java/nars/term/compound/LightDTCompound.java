@@ -6,7 +6,6 @@ import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.util.TermException;
-import org.jetbrains.annotations.NotNull;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
@@ -24,10 +23,14 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
      * numeric (target or "dt" temporal relation)
      */
     private final int dt;
-    private final int hashDT;
+
     private final Compound ref;
 
     public LightDTCompound(Compound base, int dt) {
+        super(dt != DTERNAL ? Util.hashCombine(
+                base.hashCode(), dt)
+                :
+                base.hashCode());
 
         Op op = base.op();
 
@@ -67,8 +70,6 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
 
         this.dt = dt;
 
-        int baseHash = base.hashCode();
-        this.hashDT = dt != DTERNAL ? Util.hashCombine(baseHash, dt) : baseHash;
     }
 
 //    @Override
@@ -115,39 +116,33 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
         return ref.structure();
     }
 
-    @NotNull
-    @Override
-    public String toString() {
-        return Compound.toString(this);
-    }
 
-
-    @Override
-    public boolean equals(Object that) {
-        if (this == that) return true;
-        if (!(that instanceof Compound) || (hashDT != that.hashCode()))
-            return false;
-
-        if (that instanceof LightDTCompound) {
-            LightDTCompound cthat = (LightDTCompound) that;
-            Compound thatRef = cthat.ref;
-            Compound myRef = this.ref;
-
-
-            if (myRef != thatRef) {
-                if (!myRef.equals(thatRef))
-                    return false;
-
-
-            }
-
-            return (dt == cthat.dt);
-
-        } else {
-            return Compound.equals(this, that, true);
-        }
-
-    }
+//    @Override
+//    public boolean equals(Object that) {
+//        if (this == that) return true;
+//        if (!(that instanceof Compound) || (hashDT != that.hashCode()))
+//            return false;
+//
+//        if (that instanceof LightDTCompound) {
+//            LightDTCompound cthat = (LightDTCompound) that;
+//            Compound thatRef = cthat.ref;
+//            Compound myRef = this.ref;
+//
+//
+//            if (myRef != thatRef) {
+//                if (!myRef.equals(thatRef))
+//                    return false;
+//
+//
+//            }
+//
+//            return (dt == cthat.dt);
+//
+//        } else {
+//            return Compound.equals(this, that, true);
+//        }
+//
+//    }
 
 
     @Override
@@ -166,10 +161,6 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
         return ref.complexity();
     }
 
-    @Override
-    public final int hashCode() {
-        return hashDT;
-    }
 
     @Override
     public final int dt() {

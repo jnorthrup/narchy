@@ -40,6 +40,9 @@ import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * scalar (1D) truth value "frequency", stored as a floating point value
+ *
+ * floating-point precision testing tool:
+ *      http://herbie.uwplse.org/demo/
  */
 public interface Truth extends Truthed {
 

@@ -11,7 +11,6 @@ import static nars.time.Tense.DTERNAL;
 public class LightCompound extends SeparateSubtermsCompound  {
 
     private final Subterms subs;
-    private final int hash;
     private final byte op;
 
 
@@ -28,9 +27,9 @@ public class LightCompound extends SeparateSubtermsCompound  {
     }
 
     protected LightCompound(byte o, Subterms s) {
+        super(o, s);
         this.op = o;
         this.subs = s;
-        this.hash = s.hashWith(o);
     }
 
     @Override
@@ -41,11 +40,6 @@ public class LightCompound extends SeparateSubtermsCompound  {
     @Override
     public int dt() {
         return DTERNAL;
-    }
-
-    @Override
-    public final int hashCode() {
-        return hash;
     }
 
 
