@@ -24,8 +24,8 @@ public class DefaultOnlyEternalTable extends EternalTable {
 
         //TODO just direct insert
         Task belief = nar.believe(c.term(), Tense.Eternal, t.freq(), t.conf());
-        assert(!belief.isDeleted());
-        assert(!isEmpty());
+//        assert(!belief.isDeleted());
+//        assert(!isEmpty());
     }
 
 //    @Override

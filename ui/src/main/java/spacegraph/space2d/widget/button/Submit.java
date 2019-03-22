@@ -15,8 +15,12 @@ import java.util.function.Function;
  * accepts a callback of what to do with that value when the
  * input is submitted, ie. an attached labeled pushbutton is clicked
  * where invocation demands explicit user volition.
+ *
+ * TODO cancel/reset option etc
+ * TODO graphics input type (for sketches)
  */
 public class Submit extends Bordering {
+
 
     public static Submit text(String label, Consumer<String> input) {
         return new Submit(label, new TextEdit(16), TextEdit::text, input);

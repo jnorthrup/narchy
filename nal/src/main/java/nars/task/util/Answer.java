@@ -315,7 +315,7 @@ public final class Answer {
      * <p>
      * clears the cache and tasks before returning
      */
-    public Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth, boolean ditherTime) {
+    private Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth, boolean ditherTime) {
 
         int s = tasks.size();
         if (s == 0)
@@ -508,11 +508,7 @@ public final class Answer {
         return this;
     }
 
-    public final Task sample(TaskTable t) {
-        return match(t).tasks.getRoulette(random());
-    }
-
-//    final static ThreadLocal<DequePool<CachedFloatRank<Task>>> pool =
+    //    final static ThreadLocal<DequePool<CachedFloatRank<Task>>> pool =
 //            //HEAP
 //            //() -> new CachedFloatRank<>(64);
 //

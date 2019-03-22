@@ -17,7 +17,6 @@ import nars.exe.Exec;
 import nars.exe.impl.UniExec;
 import nars.index.concept.Memory;
 import nars.index.concept.ProxyMemory;
-import nars.task.util.TaskBuffer;
 import nars.time.clock.RealTime;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
@@ -199,7 +198,7 @@ abstract public class NARWeb extends WebServer {
                 }
             };
 
-            NAR n = new NARS().withNAL(new TaskBuffer.MapTaskBuffer(32),1, 8)
+            NAR n = new NARS().withNAL(1, 8)
                     .time(new RealTime.MS()).exe(sharedExec).index(sharedIndex).get();
 
 

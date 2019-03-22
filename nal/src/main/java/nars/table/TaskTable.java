@@ -64,8 +64,6 @@ public interface TaskTable {
      */
     boolean removeTask(Task x, boolean delete);
 
-
-
     void clear();
 
     /** in dynamic implementations, this will be an empty stream */
@@ -77,17 +75,6 @@ public interface TaskTable {
 
     void match(Answer m);
 
-
-
-    @Nullable default Task match(When w, @Nullable Term template, Predicate<Task> filter) { return match(w.start, w.end, template, filter, w.dur, w.nar); }
-
-    @Nullable default Task match(long start, long end, Term template, int dur, NAR nar) { return match(start, end, template, null, dur, nar); }
-
-    @Deprecated @Nullable default Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
-        return !isEmpty() ? matching(start, end, template, filter, dur, nar)
-                .task(true, false, false) : null;
-    }
-
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
         boolean beliefOrQuestion = !(this instanceof QuestionTable);
         assert(beliefOrQuestion);
@@ -98,13 +85,23 @@ public interface TaskTable {
                 .match(this);
     }
 
-
-    @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, int dur, NAR n) {
-        return !isEmpty() ? matching(start, end, template, filter, dur, n)
-                .task(true, true, false) : null;
+    @Nullable default Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
+        return !isEmpty() ? matching(start, end, template, filter, dur, nar)
+                .task(true, forceProject, false) : null;
     }
 
+    @Nullable default /* final */ Task match(When w, @Nullable Term template, Predicate<Task> filter) {
+        return match(w.start, w.end, template, filter, w.dur, w.nar); }
 
+    @Nullable default /* final */ Task match(long start, long end, Term template, int dur, NAR nar) {
+        return match(start, end, template, null, dur, nar); }
+
+    @Nullable default /* final */ Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
+        return match(start, end, false, template, filter, dur,nar);
+    }
+    @Nullable default /* final */ Task matchExact(long start, long end, Term template, Predicate<Task> filter, int dur, NAR n) {
+        return match(start, end, true, template, filter, dur, n);
+    }
 
     default Task sample(When when, @Nullable Term template, @Nullable Predicate<Task> filter) {
 
@@ -113,11 +110,11 @@ public interface TaskTable {
 
         boolean isBeliefOrGoal = !(this instanceof QuestionTable);
 
-        return Answer.relevant(isBeliefOrGoal,
+        Answer answer = Answer.relevant(isBeliefOrGoal,
                 isBeliefOrGoal ? Answer.BELIEF_SAMPLE_CAPACITY : Answer.QUESTION_SAMPLE_CAPACITY,
-                when.start, when.end, template, filter, when.nar)
-            .sample(this);
+                when.start, when.end, template, filter, when.nar);
 
+        return answer.match(this).tasks.getRoulette(answer.random());
     }
 
     //    static Predicate<Task> filterConfMin(Predicate<Task> filter, NAR nar) {

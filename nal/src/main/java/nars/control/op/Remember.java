@@ -143,16 +143,20 @@ public class Remember extends AbstractTask {
                 c = (TaskConcept)
                         //n.conceptualizeDynamic(imgNormal);
                         n.conceptualize(imgNormal);
+                        //n.concept(imgNormal);
                 if (c == null)
                     return;
 
+                if (input instanceof Image.ImageBeliefTable.ImageTermTask)
+                    input = ((Image.ImageBeliefTable.ImageTermTask)input).task; //unwrap existing
+                else {
+                    input = new SpecialTermTask(imgNormal, input);
+                    input.pri(0); //prevent the product task from being activated significantly, because the image task will be emitted at its priority also.
 
-                boolean cyclic = input.isCyclic();
-
-                input = new SpecialTermTask(imgNormal, input);
-                input.pri(0); //prevent the product task from being activated significantly, because the image task will be emitted at its priority also.
-                if (cyclic)
-                    input.setCyclic(true); //inherit cyclic
+                    boolean cyclic = input.isCyclic();
+                    if (cyclic)
+                        input.setCyclic(true); //inherit cyclic
+                }
 
                 if (the) {
                     this.input = input;

@@ -6,7 +6,6 @@ import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
 import nars.NAR;
 import nars.Param;
-import nars.Task;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import org.slf4j.Logger;
@@ -162,8 +161,8 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
 
             if (!batch.isEmpty()) {
                 try {
-                    if (batch.size() > 2)
-                        batch.sortThis(Task.sloppySorter);
+//                    if (batch.size() > 2)
+//                        batch.sortThis(Task.sloppySorter);
 
                     ITask.run(batch, nn);
                 } finally {

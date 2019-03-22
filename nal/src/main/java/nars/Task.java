@@ -35,7 +35,6 @@ import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -671,7 +670,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * @return value >= 0 indicating the evidence
      */
     default double evi(long when, final int dur) {
-        return EvidenceEvaluator.at(this, dur,when);
+        return EvidenceEvaluator.evi(this, when, dur);
     }
 
     @Override
@@ -998,9 +997,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return beliefOrGoal ? isBelief() : isGoal();
     }
 
-    /** fast, imprecise sort.  for cache locality and concurrency purposes */
-    static final Comparator<Task> sloppySorter = Comparator
-            .comparingInt((Task x) -> x.term()/*.concept()*/.hashCode())
-            .thenComparing((Task x) -> -x.priElseZero());
+//    /** fast, imprecise sort.  for cache locality and concurrency purposes */
+//    static final Comparator<Task> sloppySorter = Comparator
+//            .comparingInt((Task x) ->
+//                    //x.term()
+//                    x.term().concept()
+//                        .hashCode())
+//            .thenComparing((Task x) -> -x.priElseZero());
 
 }

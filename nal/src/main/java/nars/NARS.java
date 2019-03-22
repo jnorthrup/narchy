@@ -41,7 +41,9 @@ public class NARS {
             index.get(),
             exec.get(),
             new Attention(),
-            time, rng,
+            time,
+            in.get(),
+            rng,
             conceptBuilder.get()
         );
         step.forEach(x -> x.accept(n));
@@ -54,6 +56,8 @@ public class NARS {
     protected Time time;
 
     protected Supplier<Exec> exec;
+
+    protected Supplier<TaskBuffer> in;
 
     protected Supplier<Random> rng;
 
@@ -93,11 +97,17 @@ public class NARS {
     /**
      * adds a deriver with the standard rules for the given range (inclusive) of NAL levels
      */
-    @Deprecated public NARS withNAL(TaskBuffer buffer, int minLevel, int maxLevel) {
+    @Deprecated public NARS withNAL(int minLevel, int maxLevel) {
         return then((n)->
-                new BatchDeriver(Derivers.nal(n, minLevel, maxLevel), buffer)
+                new BatchDeriver(Derivers.nal(n, minLevel, maxLevel))
             );
     }
+
+    public NARS input(TaskBuffer in) {
+        this.in = ()->in;
+        return this;
+    }
+
     /**
      * generic defaults
      */
@@ -114,11 +124,7 @@ public class NARS {
             ;
 
             if (nal > 0)
-                withNAL(
-                        new TaskBuffer.BagTaskBuffer(64, 5f),
-                        //new TaskBuffer.MapTaskBuffer(64),
-                        //new TaskBuffer.DirectTaskBuffer(),
-                        1, nal);
+                withNAL(1, nal);
 
             if (nal >= 7) {
                 then((nn)->new STMLinkage(nn, 1));
@@ -155,6 +161,12 @@ public class NARS {
         time = new CycleTime();
 
         exec = () -> new UniExec();
+
+        in =   ()->
+            //new TaskBuffer.BagTaskBuffer(256, 5f)
+            //new TaskBuffer.MapTaskBuffer(64)
+            new TaskBuffer.DirectTaskBuffer()
+        ;
 
         rng = ThreadLocalRandom::current;
 

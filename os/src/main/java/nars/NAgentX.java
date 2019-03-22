@@ -114,6 +114,8 @@ abstract public class NAgentX extends NAgent {
 
             window(new Gridding(n.services(NAgent.class).map(NARui::agent).collect(toList())), 500, 500);
             window(NARui.top(n), 800, 500);
+            window(NARui.inputUI(n), 500, 500);//.sizeRel(0.25f, 0.25f);
+
             window(NARui.attentionUI(n), 500, 500);
 
             Loop loop = n.startFPS(narFPS);
@@ -200,6 +202,9 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
+                .input(
+                        new TaskBuffer.BagTaskBuffer(512, 25)
+                )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
                 //new UniExec()
@@ -420,26 +425,21 @@ abstract public class NAgentX extends NAgent {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        TaskBuffer injection = new TaskBuffer.BagTaskBuffer(512, 50f);
-        //TaskBuffer injection = new TaskBuffer.DirectTaskBuffer();
-        window(NARui.taskBufferView(injection, n), 500, 500);
-
-
         BatchDeriver bd6_actWhen = new BatchDeriver(Derivers.nal(n, 6, 8,
-                "motivation.nal"), injection);
+                "motivation.nal"));
 
         BatchDeriver bd6_act = new BatchDeriver(Derivers.nal(n, 6, 8,
-                "motivation.nal"), injection);
+                "motivation.nal"));
         bd6_act.timing = new ActionTiming(n);
 
-        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 1, 1),
-                injection);
-        BatchDeriver bd2_4 = new BatchDeriver(Derivers.nal(n, 2, 4),
-                injection);
+        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 1, 1)
+        );
+        BatchDeriver bd2_4 = new BatchDeriver(Derivers.nal(n, 2, 4)
+        );
 
         BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n,
                 "nal4.sect.nal",
-                "relation_introduction.nal", "motivation.nal"), injection);
+                "relation_introduction.nal", "motivation.nal"));
 
 
 //        inputInjectionPID(injection, n);

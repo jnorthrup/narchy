@@ -332,10 +332,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
                     SampleReaction next = each.apply(y);
 
-                    if (next.remove) {
-                        y.delete();
-                        tryRemove(y, i);
-                    }
+                    if (next.remove)
+                        remove(y, i, 0, false /* strong */);
 
                     if (next.stop)
                         return;
@@ -526,21 +524,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      *  then the next commit will fully remove the item whether this fails in weak mode or not. */
     private void remove(Y y, int suspectedPosition, long l, boolean weak) {
 
-        boolean close = false;
-        if (l == 0) {
-            if (weak) {
-                l = lock.tryWriteLock();
-                if (l == 0)
-                    return;
-            } else {
-                l = lock.readLock();
-            }
-            close = true;
-        }
+        boolean close = l==0;
 
         try {
-            long ll = weak ? tryWriteFromRead(l) : writeFromRead(l);
-            if (ll == 0)
+            l = l!=0 ? writeFromRead(l) : (weak ? lock.tryWriteLock() : lock.writeLock());
+            if (l == 0)
                 return;
             boolean removed = table.items.removeFast(y,suspectedPosition);
             if (!removed) {
@@ -550,7 +538,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             }
             removeFromMap(y);
         } finally {
-            if (close)
+            if (close && l!=0)
                 lock.unlock(l);
         }
 

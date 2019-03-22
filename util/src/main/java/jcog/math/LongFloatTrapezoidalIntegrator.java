@@ -2,57 +2,54 @@ package jcog.math;
 
 import jcog.WTF;
 
-import java.util.Arrays;
-import java.util.function.LongToDoubleFunction;
-
 /** trapezoidally integrates a function where the x domain is long integers, and the y range is floats */
-public final class LongFloatTrapezoidalIntegrator {
+abstract public class LongFloatTrapezoidalIntegrator {
 
     private long xPrev = Long.MIN_VALUE;
     private double yPrev = Float.NaN;
     private double sum = Float.NaN;
 
+    abstract public double y(long x);
 
-    /** pre-sorts the input array */
-    public final static double sumSort(LongToDoubleFunction y, long... xNexts) {
-        if (xNexts.length > 1)
-            Arrays.sort(xNexts);
-        return sum(y, xNexts);
-    }
+//    /** pre-sorts the input array */
+//    public static double sumSort(LongToDoubleFunction y, long... xNexts) {
+//        if (xNexts.length > 1)
+//            Arrays.sort(xNexts);
+//        return sum(y, xNexts);
+//    }
 
-    public final static double sum(LongToDoubleFunction each, long... x) {
-
-        //return new LongFloatTrapezoidalIntegrator().sample(each, x).sum();
+    /** /** points must be ordered */
+    public double integrate(long... x) {
 
         switch (x.length) {
             case 0:
                 return 0;
             case 1:
-                return each.applyAsDouble(x[0]); //range=1
+                return y(x[0]); //range=1
             case 2: {
                 long a = x[0], b = x[1];
                 if (a == b)
-                    return each.applyAsDouble(a);
+                    return y(a);
                 else {
                     long range = b-a;
                     if (range < 0)
                         throw new WTF("x must be monotonically increasing");
-                    return ((each.applyAsDouble(a) + each.applyAsDouble(b)) / 2.0 * (range + 1));
+                    return ((y(a) + y(b)) / 2.0 * (range + 1));
                 }
             }
             //TODO 3-ary case?
             default:
-                return new LongFloatTrapezoidalIntegrator().sample(each, x).sum();
+                return sample(x).integrate();
         }
 
     }
 
-    private final LongFloatTrapezoidalIntegrator sample(LongToDoubleFunction y, long... xNexts) {
+    private final LongFloatTrapezoidalIntegrator sample(long... xNexts) {
         long xPrev = Long.MIN_VALUE;
         for (long xNext : xNexts) {
             if (xPrev == xNext)
                 continue;
-            sample(xNext, y.applyAsDouble(xPrev = xNext));
+            sample(xNext, y(xPrev = xNext));
         }
         return this;
     }
@@ -90,7 +87,7 @@ public final class LongFloatTrapezoidalIntegrator {
     }
 
     /** returns Float.Nan if empty */
-    private double sum() {
+    private double integrate() {
         if (sum != sum) {
             //zero or 1 points
             return yPrev;

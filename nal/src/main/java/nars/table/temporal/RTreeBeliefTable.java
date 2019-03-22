@@ -32,10 +32,10 @@ import static java.lang.Float.NEGATIVE_INFINITY;
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
     private static final float PRESENT_AND_FUTURE_BOOST_BELIEF =
-            1f;
+            1.0f;
             //1.5f;
     private static final float PRESENT_AND_FUTURE_BOOST_GOAL =
-            1f;
+                    1.0f;
             //2f;
 
     private static final int MAX_TASKS_PER_LEAF = 3;
@@ -105,7 +105,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private static FloatRank<TaskRegion> regionWeakness(long now, float futureFactor) {
 
 
-        float pastDiscount = 1f - (futureFactor - 1f);
+        float pastDiscount = 1.0f - (futureFactor - 1.0f);
 
         return (TaskRegion r, float min) -> {
 

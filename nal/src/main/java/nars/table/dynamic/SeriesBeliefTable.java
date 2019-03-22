@@ -87,20 +87,12 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         if (sStart != TIMELESS && (e = series.end()) != TIMELESS) {
             long sEnd = e;
 
-            List<Task> deleteAfter = new LinkedList();
+            TaskFEMABox deleteAfter = new TaskFEMABox(sStart, sEnd);
+            Consumer<Task> cleaner = deleteAfter::add;
             for (TaskTable b : tables) {
-                if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
-                    b.forEachTask(sStart, sEnd, t -> {
-                        if (t.isDeleted() || absorbNonSignal(t, sStart, sEnd)) {
-                            deleteAfter.add(t);
-                        } else {
-                            //System.out.println(t + " saved");
-                        }
-                    });
-                }
-                if (!deleteAfter.isEmpty()) {
-                    deleteAfter.forEach(t -> b.removeTask(t, true));
-                }
+                if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable))
+                    b.forEachTask(sStart, sEnd, cleaner);
+                deleteAfter.flush();
             }
 
         }
@@ -206,4 +198,29 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
 
+    private final class TaskFEMABox extends LinkedList<Task> {
+        private final long sStart;
+        private final long sEnd;
+
+        TaskFEMABox(long sStart, long sEnd) {
+            this.sStart = sStart;
+            this.sEnd = sEnd;
+        }
+
+        public void flush() {
+            if (!isEmpty()) {
+                forEach(t -> removeTask(t, true));
+                clear();
+            }
+        }
+
+        @Override
+        public boolean add(Task t) {
+            if (/*t.isDeleted() || */absorbNonSignal(t, sStart, sEnd)) {
+                super.add(t);
+                return true;
+            }
+            return false;
+        }
+    }
 }

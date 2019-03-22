@@ -70,7 +70,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
     /**
      * returns the input task, or the existing task if a pending duplicate was present
      */
-    public abstract <T extends ITask> T add(T x);
+    public abstract <T extends ITask> T put(T x);
 
     //public abstract void commit(long now, Consumer<ITask> target);
     public abstract void commit(long now, ConsumerX<ITask> target);
@@ -94,7 +94,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
     @Override
     public final void accept(ITask task) {
-        add(task);
+        put(task);
     }
 
     abstract public float priMin();
@@ -110,7 +110,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public <T extends ITask> T add(T x) {
+        public <T extends ITask> T put(T x) {
             each.accept(x);
             if (x.isDeleted())
                 return null;
@@ -187,7 +187,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public final <T extends ITask> T add(T n) {
+        public final <T extends ITask> T put(T n) {
             ITask p = tasks.putIfAbsent(n, n);
             if (p != null) {
                 merge(p, n);
@@ -283,34 +283,6 @@ abstract public class TaskBuffer implements Consumer<ITask> {
             return tasks.isFull() ? tasks.priMin() : 0;
         }
 
-        //            @Override
-//            protected boolean fastMergeMaxReject() {
-//                return true;
-//            }
-
-        //            @Override
-//            public Task put(Task incoming, NumberX overflow) {
-//                //fast merge intercept: avoids synchronization in normal insert procedure
-//                Task existing = map.get(incoming);
-//                if (existing!=null) {
-//                    DERIVATION_MERGE.apply(existing, incoming);
-//                    //TODO sort if order changed
-//                    return existing;
-//                }
-//
-//
-//                return super.put(incoming, overflow);
-//            }
-//
-//            /** returning null elides lookup which was already performed on the intercept */
-//            @Override protected Task getExisting(Task key) {
-//                return null;
-//            }
-//            @Override
-//            protected float merge(Task existing, Task incoming) {
-//                throw new UnsupportedOperationException("should not reach here");
-//            }
-
         @Override
         public void clear() {
             tasks.clear();
@@ -329,17 +301,13 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public <T extends ITask> T add(T x) {
+        public <T extends ITask> T put(T x) {
             return (T) tasks.put(x);
         }
 
         @Override
         public void commit(long now, ConsumerX<ITask> target) {
 
-//            if (!busy.compareAndSet(false, true))
-//                return; //an operation is in-progress
-
-//            try {
 
             if (prev == Long.MIN_VALUE)
                 prev = now - 1;
@@ -374,9 +342,6 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                 }
             }
 
-//            } finally {
-//                busy.set(false);
-//            }
 
         }
 
@@ -458,8 +423,8 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public <T extends ITask> T add(T x) {
-            return buffer(x.punc()).add(x);
+        public <T extends ITask> T put(T x) {
+            return buffer(x.punc()).put(x);
         }
 
         @Override

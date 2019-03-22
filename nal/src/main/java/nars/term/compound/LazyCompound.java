@@ -39,6 +39,13 @@ public class LazyCompound {
     final static int INITIAL_ANON_SIZE = 8;
     private boolean changed;
 
+
+    /** when true, non-dynamic constant sequences will be propagated to inline future repeats in instantiation.
+     *  if a non-deterministic functor evaluation occurrs, it must not propagate
+     *  because that will just cause the same value to be assumed when it should not be.
+     * */
+    private boolean constantPropagate = true;
+
     public LazyCompound() {
 
     }
@@ -224,7 +231,11 @@ public class LazyCompound {
                             Term z = ((Functor.InlineFunctor)s[1]).applyInline(s[0].subterms());
                             if (z == null)
                                 return Null;
+
                             next = z;
+
+                            //TODO determine if constantPropagate does not need disabled (specially marked "deterministic" functors)
+                            constantPropagate = false; //HACK
 
                             //TODO if Functor.isDeterministic { replaceAhead...
 
@@ -232,11 +243,14 @@ public class LazyCompound {
 
                             next = op.the(b, dt, s);
 
-                            assert (next != null);
+                            //assert (next != null);
 
-                            if (next != Null)
+                            if (next != Null && constantPropagate)
                                 replaceAhead(ii, range, from, next);
 
+                            //TODO
+//                            if (!constantPropagate && !next.hasAny)
+//                                constantPropagate = true; //return to constant propagation mode now that
                         }
 
                     }

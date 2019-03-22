@@ -10,7 +10,7 @@ class NAL7RealtimeTest {
     @Test
     void test1() throws Narsese.NarseseException {
         
-        NAR n = NARS.realtime(1f).withNAL(new TaskBuffer.MapTaskBuffer(64),1,8).get();
+        NAR n = NARS.realtime(1f).withNAL(1,8).get();
         
         n.input("wake. |");
         n.input("(wake &&+16hours sleep).");
@@ -22,7 +22,7 @@ class NAL7RealtimeTest {
     }
     @Test
     void test2() throws Narsese.NarseseException {
-        NAR n = NARS.realtime(1f).withNAL(new TaskBuffer.MapTaskBuffer(64),1,8).get();
+        NAR n = NARS.realtime(1f).withNAL(1,8).get();
 
         //n.log();
         n.input("(a &&+1min b).");

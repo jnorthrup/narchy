@@ -595,7 +595,7 @@ public class NARui {
         Attention attn = n.attn;
         m.center(new TabMenu(Map.of(
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
-                "Plot2D", ()->new BagView(attn.links, n),
+                "Histogram", ()->new BagView(attn.links, n),
                 "Concepts", ()->BagregateConceptGraph2D.get(attn, n).widget(),
                 "Flow", ()-> AttentionUI.attentionGraph(attn, n)
         )));
@@ -886,5 +886,10 @@ public class NARui {
 ////                ).collect(toList()))
 ////            , 800, 800);
 
+    }
+
+    public static Surface inputUI(NAR n) {
+        //TODO metrics: input rate, etc
+        return taskBufferView(n.in, n);
     }
 }

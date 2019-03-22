@@ -23,7 +23,7 @@ class MemoryTest {
 
     public static void testIndex(Memory i) throws Narsese.NarseseException {
 
-        NAR t = new NARS().index(i).withNAL(new TaskBuffer.MapTaskBuffer(64),1,1).get();
+        NAR t = new NARS().index(i).withNAL(1,1).get();
 
         //testTermSharing(i);
         testTaskConceptSharing(t);

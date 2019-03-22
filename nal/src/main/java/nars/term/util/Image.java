@@ -8,7 +8,6 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.subterm.Subterms;
-import nars.table.BeliefTable;
 import nars.table.dynamic.DynamicTaskTable;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.Answer;
@@ -18,6 +17,8 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.var.Img;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 
@@ -187,76 +188,43 @@ public enum Image {;
         }
 
         @Override
-        public void match(Answer m) {
-            BeliefTable table = table(m.nar, false);
-            if (table == null)
+        public @Nullable Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
+            Task t = super.match(start, end, forceProject, template, filter, dur, nar);
+            if (t!=null) {
+                //wrap the result as an image
+                return new ImageTermTask(this.term, t);
+            }
+            return null;
+        }
+
+        @Override
+        public void match(Answer t) {
+            //forward to the host concept's appropriate table
+            Concept h = host(t.nar, false);
+            if (h==null)
                 return;
 
-            table.match(m);
-
-            int results = m.tasks.size();
-            if (results > 0) {
-            //HACK apply this as an addAt-on transformation to a final result, not every intermediate possible result
-                Task[] tt = m.tasks.items;
-                Term image = this.term;
-                for (int i = 0; i < results; i++) {
-                    tt[i] = new ImgTermTask(image, (tt[i]));
-                }
-            }
-        }
-
-//        @Override
-//        public void add(Remember r, NAR nar) {
-//
-//
-//            table.add(r, nar);
-//
-//
-////            if (r.forgotten.containsInstance(transformedInput))
-////                return; //wasnt added
-//
-//
-////            if (rememberance.contains(transformedInput))
-////                rememberance.replaceAll((x)->x == transformedInput ? originalInput : x); //for TaskEvent emission
-////            else {
-////            rememberance.replaceAll(x -> {
-////                if (x == transformedInput)
-////                    return originalInput;
-//////               if (x instanceof Reaction) {
-//////                   if (((Reaction)x).task == transformedInput)
-//////                       return true;
-//////               }
-//////                if (x instanceof TaskLinkTask) {
-//////                    if (((TaskLinkTask)x).task == transformedInput)
-//////                        return true;
-//////                }
-////
-////               return x;
-////            });
-//
-////            if (!transformedInput.isDeleted()) {
-////                if (r.remembered != null) {
-////                    r.remembered.remove(transformedInput); //if it's present, it may not
-////                }
-////                r.remember(originalInput);
-////            }
-////            }
-//        }
-
-        @Nullable private BeliefTable table(NAR n, boolean conceptualize) {
-            Concept h = host(n, conceptualize);
             if (!(h instanceof TaskConcept))
-                return null; //TODO if this happens: may be a NodeConcept in certain cases involving $ vars.  investigate
-            else
-                return beliefOrGoal ? h.beliefs() : h.goals();
+                return; //TODO if this happens: may be a NodeConcept in certain cases involving $ vars.  investigate
+
+            (beliefOrGoal ? h.beliefs() : h.goals()).match(t);
         }
+
+        //
+//        @Nullable private BeliefTable table(NAR n, boolean conceptualize) {
+//            Concept h = host(n, conceptualize);
+//            if (!(h instanceof TaskConcept))
+//                return null; //TODO if this happens: may be a NodeConcept in certain cases involving $ vars.  investigate
+//            else
+//                return beliefOrGoal ? h.beliefs() : h.goals();
+//        }
 
         @Nullable private Concept host(NAR n, boolean conceptualize) {
             return n.concept(normal, conceptualize);
         }
 
-        private static class ImgTermTask extends SpecialTermTask {
-            public ImgTermTask(Term t, Task x) {
+        public static class ImageTermTask extends SpecialTermTask {
+            public ImageTermTask(Term t, Task x) {
                 super(t, x);
             }
 

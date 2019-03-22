@@ -29,11 +29,6 @@ public class SignalTask extends UnevaluatedTask {
     }
 
     @Override
-    public final boolean isEternal() {
-        return false;
-    }
-
-    @Override
     public final boolean isCyclic() {
         return false;
     }

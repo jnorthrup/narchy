@@ -15,28 +15,34 @@ import static nars.time.Tense.ETERNAL;
 public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time to evidence */  {
 
 
-
-    public final double evi(long when) {
-        return applyAsDouble(when);
+    public static double evi(Task task, long when, int dur) {
+        return task.isEternal() ? task.truth().evi() :
+                EvidenceEvaluator.of(task, dur).applyAsDouble(when);
     }
 
-    public final double[] evi(long... when) {
-        return evi(0, when.length, when);
+    public double eviIntegrate(long... points) {
+        return new MyIntegrator().integrate(points);
     }
 
-    public double[] evi(int arrayFrom, int arrayTo, long[] when) {
-        int n = arrayTo-arrayFrom;
-        double[] e = new double[n];
-        for (int i = 0; i < n; i++) {
-            e[i] = applyAsDouble(when[i + arrayFrom]);
+    private final class MyIntegrator extends LongFloatTrapezoidalIntegrator {
+        @Override public double y(long x) {
+            return applyAsDouble(x);
         }
-        return e;
     }
 
-    /** points must be ordered */
-    public double integrate(long... points) {
-        return LongFloatTrapezoidalIntegrator.sum(this, points);
-    }
+//    public final double[] evi(long... when) {
+//        return evi(0, when.length, when);
+//    }
+//
+//    public double[] evi(int arrayFrom, int arrayTo, long[] when) {
+//        int n = arrayTo-arrayFrom;
+//        double[] e = new double[n];
+//        for (int i = 0; i < n; i++) {
+//            e[i] = applyAsDouble(when[i + arrayFrom]);
+//        }
+//        return e;
+//    }
+
 
     static final class EternalEvidenceEvaluator extends EvidenceEvaluator {
         private final double evi;
@@ -52,17 +58,13 @@ public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time 
 
     }
 
-    static class TemporalPointEvidenceEvaluator extends EvidenceEvaluator {
+    private static class TemporalPointEvidenceEvaluator extends EvidenceEvaluator {
         public final long s;
         public final int dur;
         /**
          * max evidence during defined range
          */
         private final double evi;
-
-        protected long dt(long when) {
-            return Math.abs(when - s);
-        }
 
         protected TemporalPointEvidenceEvaluator(long w, double evi, int dur) {
             this.dur = dur;
@@ -77,11 +79,15 @@ public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time 
             return (dt == 0) ?
                     evi : ((dur > 0) ? Param.evi(evi, dt, dur) : 0 /* none */);
         }
+
+        protected long dt(long when) {
+            return Math.abs(when - s);
+        }
+
     }
 
     static final class TemporalSpanEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
-        public final long e;
-
+        final long e;
 
         public TemporalSpanEvidenceEvaluator(long s, long e, double evi, int dur) {
             super(s, evi, dur);
@@ -132,8 +138,6 @@ public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time 
             return new TemporalSpanEvidenceEvaluator(s, e, ee, dur);
     }
 
-    public static double at(Task task, int dur, long when) {
-        return of(task, dur).evi(when);
-    }
+
 
 }

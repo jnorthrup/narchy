@@ -20,15 +20,9 @@ public class BatchDeriver extends Deriver {
     public final IntRange tasklinksPerIteration = new IntRange(2, 1, 32);
     public final IntRange termlinksPerTaskLink = new IntRange(1, 1, 4);
 
-
     public BatchDeriver(PremiseDeriverRuleSet rules) {
-        this(rules, new TaskBuffer.DirectTaskBuffer());
-    }
-
-    public BatchDeriver(PremiseDeriverRuleSet rules, TaskBuffer out) {
         super(rules, rules.nar);
         this.nar = rules.nar;
-        output(rules.nar.exe, out, true);
     }
 
     @Override

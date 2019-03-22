@@ -239,7 +239,7 @@ public class TrackXY_NAR extends NAgentX {
                 1, 8
                 //2, 8
                 , "motivation.nal"
-        ), new TaskBuffer.BagTaskBuffer(64, 0.5f)) {
+        )) {
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
 //                        return conclusion == GOAL ? 1 : 0.01f; //super.puncFactor(conclusion);
@@ -327,7 +327,7 @@ public class TrackXY_NAR extends NAgentX {
 
                 g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
                 g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
-                g.add(NARui.taskBufferView(d.out, n)).sizeRel(0.25f, 0.25f);
+                g.add(NARui.taskBufferView(n.in, n)).sizeRel(0.25f, 0.25f);
 //                g.add(new PIDChip(new MiniPID(0.01, 0.01, 0.01))).sizeRel(0.1f, 0.1f);
                 g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
 

@@ -625,7 +625,7 @@ public class Derivation extends PreDerivation {
     }
 
     public final Task add(Task t) {
-        return deriver.out.add(t);
+        return nar.in.put(t);
     }
 
     public boolean concTruthEviMul(float ratio, boolean eternalize) {

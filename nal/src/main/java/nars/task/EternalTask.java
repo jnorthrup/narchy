@@ -30,27 +30,4 @@ public class EternalTask extends ActualNALTask {
         return ETERNAL;
     }
 
-    @Override
-    public final boolean isEternal() {
-        return true;
-    }
-
-    @Override public final double evi(long when, int dur) {
-        return truth().evi();
-    }
-
-    public final long minTimeTo(long when) {
-        return 0;
-    }
-
-    @Override
-    public final long minTimeTo(long a, long b) {
-        return 0;
-    }
-
-    @Override
-    public final long maxTimeTo(long x) {
-        return 0;
-    }
-
 }

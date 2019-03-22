@@ -94,6 +94,11 @@ public abstract class NALTask extends UnitPri implements Task {
         return causeMerge(incoming.cause(), merge);
     }
 
+//    @Override
+//    public boolean delete() {
+//        return super.delete();
+//    }
+
     /**
      * set the cause[]
      */

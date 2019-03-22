@@ -5,9 +5,7 @@ import com.google.common.collect.Streams;
 import com.google.common.primitives.Longs;
 import jcog.Texts;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.byt.DynBytes;
-import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.event.ListTopic;
 import jcog.event.Off;
@@ -36,11 +34,11 @@ import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.index.concept.Memory;
 import nars.io.IO;
-import nars.link.Activate;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.task.util.TaskBuffer;
 import nars.task.util.TaskException;
 import nars.task.util.TaskTopic;
 import nars.term.Functor;
@@ -109,6 +107,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final NARLoop loop;
     public final Emotion feel;
     public final Attention attn;
+    public final TaskBuffer in;  //perception?
     public final MemoryExternal memoryExternal = new MemoryExternal(this);
 
     public final Topic<NAR> eventClear = new ListTopic<>();
@@ -141,7 +140,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public final Evaluator evaluator = new Evaluator(this::axioms);
 
-    public NAR(Memory memory, Exec exe, Attention attn, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
+    public NAR(Memory memory, Exec exe, Attention attn, Time time, TaskBuffer in, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
 
         this.random = rng;
 
@@ -152,6 +151,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         named(Param.randomSelf());
 
         this.attn = attn;
+
+        this.in = in;
+        Exec target = exe;
+        if (!in.async(target)) {
+            Consumer<NAR> p = nn -> in.commit(nn.time(), target);
+            //if (cycleOrDur)
+                onCycle(p);
+//                DurService.on(this, p)
+        }
 
         this.exe = exe;
 
@@ -598,22 +606,24 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     @Override
     public final void input(ITask t) {
-        exe.input(t);
+        in.put(t);
+        //exe.input(t);
     }
 
     @Override
     public final void input(ITask... t) {
-
-        switch (t.length) {
-            case 0:
-                break;
-            case 1:
-                input(t[0]);
-                break;
-            default:
-                exe.input((Iterator) new ArrayIterator<>(t));
-                break;
-        }
+        for (ITask x : t)
+            in.put(x);
+//        switch (t.length) {
+//            case 0:
+//                break;
+//            case 1:
+//                input(t[0]);
+//                break;
+//            default:
+//                in.input((Iterator) new ArrayIterator<>(t));
+//                break;
+//        }
     }
 
     @Override
@@ -1074,18 +1084,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * if this is an Iterable<Task> , it can be more efficient to use the inputTasks method to bypass certain non-NALTask conditions
      */
     public void input(Iterable<? extends ITask> tasks) {
-        //if (tasks == null) return;
-        exe.input(tasks);
+        //exe.input(tasks);
+        tasks.forEach(in::put);
     }
 
     public final void input(Stream<? extends ITask> tasks) {
-
-        exe.input(tasks.filter(Objects::nonNull));
+        //exe.input(tasks.filter(Objects::nonNull));
+        tasks.forEach(in::put);
     }
 
     @Override
     public final boolean equals(Object obj) {
-
         return this == obj;
     }
 
@@ -1321,7 +1330,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         if (!(concept instanceof TaskConcept))
             return null;
 
-        Task answer = concept.table(punc).answer(start, end,
+        Task answer = concept.table(punc).matchExact(start, end,
                 t.term(), null, dur(), this);
 //        if (answer != null && !answer.isDeleted()) {
 //            input(answer);
@@ -1541,7 +1550,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         @Override
         public void input(ITask x) {
             if (process(x))
-                NAR.this.input(x);
+                in.put(x);
         }
 
         protected boolean process(Object x) {
