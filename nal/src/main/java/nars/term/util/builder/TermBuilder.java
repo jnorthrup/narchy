@@ -57,7 +57,7 @@ public abstract class TermBuilder implements TermConstructor {
         return subterms(s.toArray(Op.EmptyTermArray));
     }
 
-    protected Subterms theSubterms(boolean tryAnon, Term... t) {
+    protected static Subterms theSubterms(boolean tryAnon, Term... t) {
         final int tLength = t.length;
         if (tLength == 0)
             return Op.EmptySubterms;

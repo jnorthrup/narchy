@@ -61,7 +61,7 @@ public interface Truthed  {
     }
 
     default float conf() {
-        return (float) w2cSafe(evi());
+        return w2cSafe(evi());
     }
     /** weight of evidence ( confidence converted to weight, 'c2w()' )  */
     default double evi() {

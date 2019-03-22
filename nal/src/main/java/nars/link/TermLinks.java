@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.Random;
-import java.util.Set;
 import java.util.function.Predicate;
 
 /** caches an array of tasklinks tangent to an atom */
@@ -61,7 +60,7 @@ public final class TermLinks {
                     continue; //HACK
 
                 float xp = t.priElseZero();
-                if (match == null || match instanceof Set || (match instanceof RankedN && xp > match.minValueIfFull())) {
+                if (match == null || /*match instanceof Set ||*/ (match instanceof RankedN && xp > match.minValueIfFull())) {
                     Term y = t.other(x, reverse);
                     if (y != null) {
 

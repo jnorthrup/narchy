@@ -70,6 +70,8 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
                 return first().apply(x);
             default:
                 //HACK could be better
+                /* equals between Term and Unification:
+                Reports calls to .equals() where the target and argument are of incompatible types. While such a call might theoretically be useful, most likely it represents a bug. */
                 return Iterables.filter(
                         Iterables.transform(shuffle(this, base.random), a -> a.transform(x)),
                         z -> z != null

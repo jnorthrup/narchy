@@ -1,7 +1,6 @@
 package nars.exe;
 
 import jcog.data.list.FasterList;
-import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
@@ -154,7 +153,7 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
 
             FasterList batch = Exec.tmpTasks.get();
 
-            if (b instanceof Bag) {
+            if (b instanceof ArrayBag) {
                 boolean blocking = true;
                 ((ArrayBag) b).popBatch(max, blocking, batch::add);
             } else {

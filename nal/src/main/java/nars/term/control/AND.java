@@ -24,12 +24,12 @@ abstract public class AND<X> extends AbstractPred<X> {
                 $.pFast(cond)
         );
 
-        for (PREDICATE x : cond)
+        for (PREDICATE<X> x : cond)
             if (x instanceof AND)
                 throw new UnsupportedOperationException("should have been flattened");
 
         assert (cond.length >= 2) : "unnecessary use of AndCondition";
-        this.cost = Util.sum((FloatFunction<PREDICATE>) PREDICATE::cost, cond);
+        this.cost = Util.sum((FloatFunction<PREDICATE<X>>) PREDICATE::cost, cond);
     }
 
     private final static class ANDn<X> extends AND<X> {
@@ -43,9 +43,8 @@ abstract public class AND<X> extends AbstractPred<X> {
 
         @Override
         public final boolean test(X m) {
-            for (PREDICATE x : cond) {
-                boolean b = x.test(m);
-                if (!b)
+            for (PREDICATE<X> x : cond) {
+                if (!x.test(m))
                     return false;
             }
             return true;
@@ -171,22 +170,22 @@ abstract public class AND<X> extends AbstractPred<X> {
 
 
     /** chase the last of the last of the last(...etc.) condition in any number of recursive AND's */
-    public static PREDICATE last(PREDICATE b) {
+    public static <X> PREDICATE<X> last(PREDICATE<X> b) {
         while (b instanceof AND)
-            b = ((AND)b).last();
+            b = ((AND<X>)b).last();
         return b;
     }
 
      /** chase the last of the first of the first (...etc.) condition in any number of recursive AND's */
-    public static PREDICATE first(PREDICATE b) {
+    public static <X> PREDICATE<X>  irst(PREDICATE<X>  b) {
         while (b instanceof AND)
-            b = ((AND)b).first();
+            b = ((AND<X> )b).first();
         return b;
     }
-    @Nullable public static PREDICATE first(AND b, Predicate<PREDICATE> test) {
+    @Nullable public static <X> PREDICATE<X>  first(AND<X>  b, Predicate<PREDICATE<X> > test) {
         int s = b.subs();
         for (int i = 0; i < s; i++) {
-            PREDICATE x = (PREDICATE) b.sub(i);
+            PREDICATE<X>  x = (PREDICATE<X> ) b.sub(i);
             if (test.test(x))
                 return x;
         }

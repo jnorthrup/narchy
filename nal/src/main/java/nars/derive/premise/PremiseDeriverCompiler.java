@@ -244,7 +244,7 @@ public enum PremiseDeriverCompiler {
             if (fx.size() < 2) {
 
             } else {
-                Collection<PREDICATE<Derivation>> bundle = new HashSet();
+                Collection<PREDICATE<Derivation>> bundle = null;
                 int i = 0;
                 Iterator<PREDICATE<Derivation>> xx = x.iterator();
                 while (xx.hasNext()) {
@@ -257,6 +257,7 @@ public enum PremiseDeriverCompiler {
                             if (pxSub.contains(fx.p)) {
                                 px = AND.the((Term[]) pxSub.subsExcluding((Term)(fx.p)));
                             }
+                            if (bundle == null) bundle = new HashSet();
                             bundle.add(px);
                         } else {
 
@@ -264,7 +265,7 @@ public enum PremiseDeriverCompiler {
                     }
                     i++;
                 }
-                if (!bundle.isEmpty()) {
+                if (bundle!=null) {
                     assert (bundle.size() > 1);
                     x.add(AND.the(fx.p, FORK.fork(bundle, (Function)builder)));
 

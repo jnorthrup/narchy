@@ -1,6 +1,5 @@
 package nars.term.util;
 
-import jcog.WTF;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
@@ -165,12 +164,12 @@ public class Statement {
                         }
 
                         if (!newPred.equals(predicate)) { //HACK check again
-                            try {
+//                            try {
                                 return statement(B, IMPL, dt, subject, newPred); //recurse
-                            } catch (StackOverflowError e) {
-                                System.out.println("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
-                                throw new WTF("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
-                            }
+//                            } catch (StackOverflowError e) {
+//                                System.out.println("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
+//                                throw new WTF("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
+//                            }
                         }
 
 //                        predicate = newPred;

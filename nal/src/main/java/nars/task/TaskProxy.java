@@ -106,7 +106,9 @@ public class TaskProxy extends UnitPri implements Task {
     @Override
     public long creation() {
         //updated to the latest of this or the proxy'd task's creation (as it may change)
-        return this.creation = Math.max(task.creation(), creation);
+        long next = Math.max(task.creation(), creation);
+        this.creation = next;
+        return next;
     }
     @Override
     public void setCreation(long creation) {

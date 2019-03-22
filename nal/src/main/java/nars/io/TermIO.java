@@ -65,7 +65,7 @@ public interface TermIO {
         protected static final byte TEMPORAL_BIT_0 = 1 << 5;
         protected static final byte TEMPORAL_BIT_1 = 1 << 6;
 
-        static { assert(TEMPORAL_BIT_0 == OP_MASK + 1); }
+        //static { assert(TEMPORAL_BIT_0 == OP_MASK + 1); }
         static { assert(Op.values().length < OP_MASK); }
         static { for (Op o : Op.values()) assert !o.temporal || (o.id != OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */
         }

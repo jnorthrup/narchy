@@ -11,6 +11,7 @@ import jcog.pri.UnitPrioritizable;
 import jcog.pri.Weight;
 import jcog.pri.op.PriMerge;
 import jcog.signal.tensor.AtomicFloatArray;
+import jcog.signal.tensor.AtomicQuad16Vector;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.Op;
@@ -30,6 +31,8 @@ import java.util.function.Predicate;
 
 import static jcog.Util.assertFinite;
 import static nars.Op.*;
+import static nars.Task.i;
+import static nars.Task.p;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -85,7 +88,13 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
      * sample punctuation by relative priority
      * returns 0 for none
      */
-    byte priPunc(Random rng);
+    default byte priPunc(Random rng) {
+        int i = Roulette.selectRouletteCached(4, (j)->priPunc(p(j)), rng);
+        if (i!=-1)
+            return p(i);
+        else
+            return 0;
+    }
 
     default byte punc(Random rng) {
         return priPunc(rng);
@@ -204,19 +213,19 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
 
     float merge(TaskLink incoming, PriMerge merge);
 
-    default byte puncMax() {
-        switch (Util.maxIndex(priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST))) {
-            case 0:
-                return BELIEF;
-            case 1:
-                return GOAL;
-            case 2:
-                return QUESTION;
-            case 3:
-                return QUEST;
-        }
-        return -1;
-    }
+//    default byte puncMax() {
+//        switch (Util.maxIndex(priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST))) {
+//            case 0:
+//                return BELIEF;
+//            case 1:
+//                return GOAL;
+//            case 2:
+//                return QUESTION;
+//            case 3:
+//                return QUEST;
+//        }
+//        return -1;
+//    }
 
     float take(byte punc, float howMuch);
 
@@ -345,6 +354,106 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
         }
     }
 
+    public static class CompactTaskLink extends AtomicQuad16Vector implements TaskLink {
+        /** source,target as a 2-ary subterm */
+        final Term from, to;
+        private final int hash;
+
+        protected CompactTaskLink(Term self) {
+            this(self.concept(), null);
+        }
+
+        protected CompactTaskLink(Term source, Term target) {
+
+            source = source.concept();
+            target = target == null ? source : target.concept();
+
+            Op so = source.op();
+            if (!so.taskable)
+                throw new TaskException(source, "source term not taskable");
+            if (!so.conceptualizable)
+                throw new TaskException(source, "source term not conceptualizable");
+            if (Param.DEBUG) {
+                if (!source.isNormalized())
+                    throw new TaskException(source, "source term not normalized");
+            }
+
+            this.from = source;
+            this.to = target;
+            this.hash = Util.hashCombine(from, to);
+        }
+
+                @Override
+        final public TaskLink id() {
+            return this;
+        }
+
+        @Override
+        public final boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj instanceof TaskLink) {
+                if (hashCode() == obj.hashCode()) if (from().equals(((TaskLink) obj).from()))
+                    if (to().equals(((TaskLink) obj).to())) return true;
+            }
+            return false;
+        }
+
+        @Override
+        public final int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public final Term from() {
+            return from;
+        }
+
+        @Override
+        public final Term to() {
+            return to;
+        }
+
+        @Override
+        public float pri(float p) {
+            return 0;
+        }
+        @Override
+        public float merge(TaskLink incoming, PriMerge merge) {
+            return 0;
+        }
+
+        @Override
+        public float take(byte punc, float howMuch) {
+            return 0;
+        }
+        @Override
+        public float pri() {
+            //TODO add in integers convert to float after
+            return sumValues();
+        }
+
+        @Override
+        public float priPunc(byte punc) {
+            return getAt(i(punc));
+        }
+
+        @Override
+        public float getAndSetPriPunc(byte punc, float next) {
+            //TODO make atomic
+            int ii = i(punc);
+            float before = getAt(ii);
+            setAt(next, ii);
+            return before;
+        }
+
+        @Override
+        public void delete(byte punc) {
+            fill(0);
+        }
+
+
+    }
+
     /**
      * dynamically resolves a task.
      * serializable and doesnt maintain a direct reference to a task.
@@ -399,14 +508,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
             return false;
         }
 
-        @Override
-        public byte priPunc(Random rng) {
-            int i = Roulette.selectRouletteCached(4, punc::getAt, rng);
-            if (i!=-1)
-                return Task.p(i);
-            else
-                return 0;
-        }
+
 
         public final GeneralTaskLink priMerge(byte punc, float pri) {
             super.pri(mergeComponent(punc, pri, Param.tasklinkMerge, true));
@@ -442,7 +544,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
                 for (int i = 0; i < 4; i++) {
                     float p = ((GeneralTaskLink) incoming).punc.getAt(i);
                     if (Math.abs(p) > Float.MIN_NORMAL) {
-                        delta += priMergeGetDelta(Task.p(i), p, merge);
+                        delta += priMergeGetDelta(p(i), p, merge);
                     }
                 }
                 return delta / 4;
@@ -456,7 +558,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
 
             //assertAccurate();
 
-            float y = this.punc.update(pri, mergeComponent(merge), Task.i(punc), valueOrDelta);
+            float y = this.punc.update(pri, mergeComponent(merge), i(punc), valueOrDelta);
 
             //assertAccurate();
 
@@ -587,7 +689,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
 
         @Override
         public float priPunc(byte punc) {
-            float p = this.punc.getAt(Task.i(punc));
+            float p = this.punc.getAt(i(punc));
             ///assert(p<=1): this + " punc pri=" + p; //TEMPORARY
             return p;
         }

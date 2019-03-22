@@ -22,7 +22,7 @@ final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
 
     static DeriveAction action(PremiseRuleProto.RuleCause cause, PREDICATE<Derivation> POST) {
 
-        Truthify t = (Truthify) AND.first((AND)POST, x -> x instanceof Truthify);
+        Truthify t = (Truthify) AND.first((AND<Derivation>)POST, x -> x instanceof Truthify);
         if (t == null)
             throw new NullPointerException();
 

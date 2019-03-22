@@ -257,9 +257,7 @@ public interface Tensor  {
 
     default float sumValues() {
         final float[] sum = {0};
-        forEach((i,x) -> {
-            sum[0] += x;
-        });
+        forEach((i,x) -> sum[0] += x);
         return sum[0];
     }
 
