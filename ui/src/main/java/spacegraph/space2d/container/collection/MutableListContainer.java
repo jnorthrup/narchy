@@ -9,7 +9,7 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -175,8 +175,10 @@ public class MutableListContainer extends AbstractMutableContainer {
         return this;
     }
 
-    public final Container set(List<? extends Surface> next) {
-        set(next.toArray(Surface.EmptySurfaceArray));
+    public final Container set(Collection<? extends Surface> next) {
+        //set(next.toArray(Surface.EmptySurfaceArray));
+        children.set(next);
+
         return this;
     }
 

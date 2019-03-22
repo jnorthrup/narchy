@@ -81,16 +81,14 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
     @Override
     public final Y put(Y x) {
-        return (Y) put((B) x, ((Prioritized) x).pri());
+        float pri = ((Prioritized) x).pri();
+        bag.pressurize(pri); //TODO handle merge pressurize
+        return (Y) pre.put((B) x, pri, merge());
     }
 
     @Override
     public final Y put(Y b, @Nullable NumberX overflowingIgnored) {
         return put(b);
-    }
-
-    public final B put(B x, float p) {
-        return pre.put(x, p, merge());
     }
 
     @Override

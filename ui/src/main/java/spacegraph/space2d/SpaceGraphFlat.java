@@ -77,8 +77,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
             display.window.setPointerVisible(false); //HACK
             layers.start(this);
 
-            Ortho content = new ZoomOrtho(this, keyboard);
-            content.set(_content);
+            Ortho content = new ZoomOrtho(this, keyboard); content.set(_content);
             layers.add(content);
 
             layers.add(finger.zoomBoundsSurface(content.cam));

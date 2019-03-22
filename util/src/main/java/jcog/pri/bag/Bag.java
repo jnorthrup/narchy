@@ -413,7 +413,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      * how fast the bag should allow new items. 0.5 is a public value
      */
     @Deprecated public @Nullable Consumer<Y> forget(float temperature) {
-        return Forgetting.forget(this, 1, temperature);
+        return Forgetting.forget(this, temperature);
     }
 
     /**

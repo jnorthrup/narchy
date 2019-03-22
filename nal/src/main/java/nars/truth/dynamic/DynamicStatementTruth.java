@@ -382,7 +382,7 @@ public class DynamicStatementTruth {
 //        };
 
     private static class SectImplSubj extends DynamicInhSectTruth {
-        public SectImplSubj() {
+        private SectImplSubj() {
             super(false, true);
         }
 

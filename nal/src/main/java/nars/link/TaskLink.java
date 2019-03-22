@@ -17,7 +17,6 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
-import nars.subterm.Subterms;
 import nars.table.TaskTable;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
@@ -228,7 +227,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
     default Term other(Atomic x) {
         if (to().equals(x)) {
             return from();
-        } else if (!Param.DEBUG || from().equals(x)) {
+        } else if (from().equals(x)) {
             return to();
         }
         throw new WTF();
@@ -241,7 +240,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
 
 
     /** snapshots a 4-tuple: beliefs, goals, questions, quests */
-    default float[] priPuncArray() {
+    default float[] priGet() {
         return new float[] { priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST) };
     }
 
@@ -286,9 +285,10 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
 //        }
 //    }
 
-    abstract class AbstractTaskLink extends UnitPri implements TaskLink {
+    abstract class AbstractTaskLink extends UnitPri implements TaskLink /*, Subterms */ {
         /** source,target as a 2-ary subterm */
-        protected final Subterms xy;
+        final Term from, to;
+        private final int hash;
 
         protected AbstractTaskLink(Term self) {
             this(self.concept(), null);
@@ -309,7 +309,9 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
                     throw new TaskException(source, "source term not normalized");
             }
 
-            this.xy = Op.terms.subterms(source, target);
+            this.from = source;
+            this.to = target;
+            this.hash = Util.hashCombine(from, to);
         }
 
         @Override
@@ -320,10 +322,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
         @Override
         public final boolean equals(Object obj) {
             if (this == obj) return true;
-            if (obj instanceof GeneralTaskLink) {
-                return xy.equals(((GeneralTaskLink)obj).xy);
-            }
-            else if (obj instanceof TaskLink) {
+            if (obj instanceof TaskLink) {
                 if (hashCode() == obj.hashCode()) if (from().equals(((TaskLink) obj).from()))
                     if (to().equals(((TaskLink) obj).to())) return true;
             }
@@ -332,17 +331,17 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
 
         @Override
         public final int hashCode() {
-            return xy.hashCodeSubterms();
+            return hash;
         }
 
         @Override
         public final Term from() {
-            return xy.sub(0);
+            return from;
         }
 
         @Override
         public final Term to() {
-            return xy.sub(1);
+            return to;
         }
     }
 
@@ -373,7 +372,10 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
 
         @Override
         public float take(byte punc, float howMuch) {
-            return Math.max(ScalarValue.EPSILON, -priMergeGetDelta(punc, howMuch, PriMerge.minus));
+            return Math.max(ScalarValue.EPSILON,
+                    //-priMergeGetDelta(punc, howMuch, PriMerge.minus)
+                    -priMergeGetDelta(punc, -howMuch, PriMerge.plus)
+            );
         }
 
         private void assertAccurate() {
@@ -407,7 +409,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
         }
 
         public final GeneralTaskLink priMerge(byte punc, float pri) {
-            mergeComponent(punc, pri, Param.tasklinkMerge, true);
+            super.pri(mergeComponent(punc, pri, Param.tasklinkMerge, true));
             return this;
         }
 
@@ -454,11 +456,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
 
             //assertAccurate();
 
-            float y = this.punc.update(pri, mergeComponent(merge), (prev, next) -> {
-                float delta = (next - prev) / 4;
-                if (Math.abs(delta) > Float.MIN_NORMAL)
-                    super.priAdd(delta);
-            }, Task.i(punc), valueOrDelta);
+            float y = this.punc.update(pri, mergeComponent(merge), Task.i(punc), valueOrDelta);
 
             //assertAccurate();
 
@@ -522,30 +520,27 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
         }
 
         @Override
-        public float priMult(float a) {
-            assertFinite(a);
-            if (Util.equals(a, 1, Float.MIN_NORMAL))
+        public float priMult(float X) {
+            assertFinite(X);
+            if (Util.equals(X, 1, Float.MIN_NORMAL))
                 return pri();
 
             //assertAccurate();
 
-            assert (a < 1);
+//            assert (X < 1);
 
-            float y = priUpdateAndGet((p, aa) -> {
+            float Y = priUpdateAndGet((p, x) -> {
                 if (p != p) {
                     punc.fill(0);
                     return p; //stay deleted
                 } else {
-                    float newSum = 0;
-                    for (int i = 0; i < 4; i++)
-                        newSum += punc.update(aa, (x, aaa) -> Util.unitize/*Safe*/(x * aaa), i);
-                    return newSum / 4;
+                    float y = Util.unitizeSafe(p * x);
+                    renormalize(y);
+                    return y;
                 }
-            }, a);
+            }, X);
 
-            //assertAccurate();
-
-            return y;
+            return Y;
         }
 
         @Override
@@ -553,21 +548,20 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
             float y = super.pri((prev, x) -> {
                 float next = update.apply(prev, x);
                 if (next == next) {
+                    next = Util.unitizeSafe(next);
                     if (prev != prev) {
-                        punc.fill(next / 4);
+                        punc.fill(next / 4); //flat
                     } else {
-                        float delta = (next - prev) / 4;
-                        if (Math.abs(delta) > Float.MIN_NORMAL) {
-                            float newSum = 0;
-                            for (int i = 0; i < 4; i++)
-                                newSum += punc.addAt(delta, i);
-                            return newSum / 4;
+                        if (!Util.equals(next, prev)) {
+                            //renormalize
+                            renormalize(next);
                         }
                     }
+                    return next;
                 } else {
                     punc.fill(0);
+                    return Float.NaN;
                 }
-                return next;
             }, _x);
 
             assertAccurate();
@@ -576,8 +570,26 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
         }
 
         @Override
+        public float[] priGet() {
+            return punc.snapshot();
+        }
+
+        protected void renormalize(float next) {
+            float[] pp = priGet();
+            Util.normalizeHamming(pp, next);
+            priSet(pp);
+        }
+
+        protected void priSet(float[] pp) {
+            //assert(pp.length==4);
+            punc.setAt(pp, 0);
+        }
+
+        @Override
         public float priPunc(byte punc) {
-            return this.punc.getAt(Task.i(punc));
+            float p = this.punc.getAt(Task.i(punc));
+            ///assert(p<=1): this + " punc pri=" + p; //TEMPORARY
+            return p;
         }
 
         @Override

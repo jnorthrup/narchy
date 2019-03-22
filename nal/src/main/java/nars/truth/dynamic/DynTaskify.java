@@ -1,6 +1,7 @@
 package nars.truth.dynamic;
 
 import jcog.Paper;
+import jcog.TODO;
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
 import nars.Op;
@@ -73,10 +74,20 @@ public class DynTaskify extends TaskList {
 
         NAR nar = answer.nar;
 
-        Concept subConcept = nar.conceptualizeDynamic(subTerm);
-        if (!(subConcept instanceof TaskConcept))
+        Term st;
+        if (!subTerm.isNormalized()) {
+            if (Param.DEBUG) {
+                throw new TODO("unnormalize the result for inclusion in the super-compound");
+                //st = subTerm.normalize();
+            }
+            //HACK
             return false;
 
+        } else
+            st = subTerm;
+        Concept subConcept = nar.conceptualizeDynamic(st);
+        if (!(subConcept instanceof TaskConcept))
+            return false;
 
 
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);

@@ -32,17 +32,15 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         this.model = model;
     }
 
-
     @Override
     public final void match(Answer a) {
         if (a.term == null)
             a.term = term; //use default concept term
 
         DynTaskify d = new DynTaskify(model, beliefOrGoal, a);
-        if (!model.evalComponents(a, d::evalComponent))
-            return; //fail
 
-        taskify(d);
+        if (model.evalComponents(a, d::evalComponent))
+            taskify(d);
     }
 
     private void taskify(DynTaskify d) {

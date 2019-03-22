@@ -45,9 +45,9 @@ public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (hash!=obj.hashCode() || !(obj instanceof FromTo)) return false;
+        if (!(obj instanceof FromTo) || hash != obj.hashCode()) return false;
         ImmutableDirectedEdge ee = (ImmutableDirectedEdge) obj;
-        return from == ee.from && to == ee.to && Objects.equals(id, ee.id);
+        return from.equals(ee.from) && to.equals(ee.to) && Objects.equals(id, ee.id);
     }
 
     public boolean isSelfLoop() {

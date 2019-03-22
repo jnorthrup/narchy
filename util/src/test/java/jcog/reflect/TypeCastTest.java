@@ -45,7 +45,7 @@ public class TypeCastTest {
         //BaseCastGraph bcast = new BaseCastGraph();
         ExtendedCastGraph t = new ExtendedCastGraph();
 
-        List<Function<String, Byte>> convertors = t.convertors(String.class, byte.class);
+        List<Function<String, Byte>> convertors = t.applicable(String.class, byte.class);
         convertors.forEach(System.out::println);
 
         assertEquals((byte)9, (Object)convertors.get(0).apply("9"));
@@ -132,7 +132,7 @@ public class TypeCastTest {
         System.out.println("testFindStart");
         System.out.println("=============");
         
-        TypeCastGraph tcast = new TypeCastGraph();
+        CastGraph tcast = new CastGraph();
 
         tcast.addEdge(Interface1.class, from -> null, Interface2.class);
 
@@ -170,7 +170,7 @@ public class TypeCastTest {
             System.out.println("convert variants:");
             int i = -1;
             for( Class cf : roots ){
-                Path<Class, Function> path = bcast.findPath(cf, cto);
+                Path<Class, Function> path = bcast.pathFirst(cf, cto);
                 if( path!=null ){
                     i++;
                     Converter sc = Converter.the(path);
@@ -189,7 +189,7 @@ public class TypeCastTest {
         System.out.println("String2byteCast");
         System.out.println("===============");
         
-        CastGraph bcast = new CastGraph();
+        ExtendedCastGraph bcast = new ExtendedCastGraph();
         byte res = bcast.cast("12", byte.class);
         byte cmpRes = 12;
         assertTrue( res==cmpRes );

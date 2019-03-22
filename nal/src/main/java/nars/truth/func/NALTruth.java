@@ -46,7 +46,7 @@ public enum NALTruth implements TruthFunc {
     DeductionReverse() {
         @Override
         public Truth apply(Truth T, Truth B, NAR n, float minConf) {
-            return Deduction.apply(B,T, n, minConf);
+            return Deduction.apply(B, T, n, minConf);
         }
     },
 
@@ -65,31 +65,45 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    /** experimental */ Pre() {
+    /**
+     * experimental
+     */
+    Pre() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
             return TruthFunctions2.pre(T, B, false, minConf);
         }
     },
-    /** experimental */ PreWeak() {
+    /**
+     * experimental
+     */
+    PreWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
             return TruthFunctions2.pre(T, B, true, minConf);
         }
     },
-    /** experimental */ PostWeak() {
+    /**
+     * experimental
+     */
+    PostWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
             return TruthFunctions2.post(T, B, false, minConf);
         }
     },
-    /** experimental */ Post() {
+    /**
+     * experimental
+     */
+    Post() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
             return TruthFunctions2.post(T, B, true, minConf);
         }
     },
-    /** experimental */ @AllowOverlap PreRecursive() {
+    /**
+     * experimental
+     */@AllowOverlap PreRecursive() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
             return NALTruth.Pre.apply(T, B, n, minConf);
@@ -137,11 +151,6 @@ public enum NALTruth implements TruthFunc {
 //    },
 
 
-
-
-
-
-
 //    /**
 //     * polarizes according to an implication belief and its effective negation reduction
 //     * TODO rename 'PB' to 'Sym'
@@ -157,7 +166,6 @@ public enum NALTruth implements TruthFunc {
 //            }
 //        }
 //    },
-
 
 
     InductionPB() {
@@ -259,6 +267,18 @@ public enum NALTruth implements TruthFunc {
             return z != null ? z.neg() : null;
         }
     },
+    UnionPT() {
+        @Override
+        public Truth apply(Truth T, Truth B, NAR n, float minConf) {
+            return NALTruth.pt(T, B, n, minConf, Union);
+        }
+    },
+    IntersectionPT() {
+        @Override
+        public Truth apply(Truth T, Truth B, NAR n, float minConf) {
+            return NALTruth.pt(T, B, n, minConf, Intersection);
+        }
+    },
 
 //    IntersectionSym() {
 //        @Override
@@ -340,7 +360,9 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    /** experimental */
+    /**
+     * experimental
+     */
     Divide() {
         @Override
         public Truth apply(final Truth X, final Truth XY, NAR n, float minConf) {
@@ -440,7 +462,6 @@ public enum NALTruth implements TruthFunc {
 
     ;
 
-
     static final ImmutableMap<Term, TruthFunc> funcs;
 
     static {
@@ -451,12 +472,21 @@ public enum NALTruth implements TruthFunc {
 
     public final boolean single;
     public final boolean overlap;
-
-
     NALTruth() {
         Field f = Reflect.on(getClass()).field(name()).get();
         this.single = f.isAnnotationPresent(SinglePremise.class);
         this.overlap = f.isAnnotationPresent(AllowOverlap.class);
+    }
+
+    /** polarity symmetry, determined by task */
+    private static Truth pt(Truth T, Truth B, NAR n, float minConf, NALTruth which) {
+        boolean neg = T.isNegative();
+        if (neg) {
+            T = T.neg();
+            B = B.neg();
+        }
+        Truth tb = which.apply(T, B, n, minConf);
+        return tb != null ? neg ? tb.neg() : tb : null;
     }
 
     private static float confDefault(NAR m) {
@@ -478,7 +508,6 @@ public enum NALTruth implements TruthFunc {
     public final boolean allowOverlap() {
         return overlap;
     }
-
 
 
     final public @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR m) {

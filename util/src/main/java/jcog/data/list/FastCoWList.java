@@ -129,7 +129,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     }
 
-    public void set(Collection<X> newContent) {
+    public void set(Collection<? extends X> newContent) {
         synchronized (list) {
             list.clear();
             list.addAll(newContent);
@@ -383,7 +383,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     public <Y> Y[] toArray(Y[] _target, Function<X, Y> f) {
         int s = size();
-        if (s == 0) return (Y[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+        if (s == 0) return _target.length == 0 ? _target : null;
 
         Y[] target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
 

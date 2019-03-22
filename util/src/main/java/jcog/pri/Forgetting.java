@@ -9,14 +9,14 @@ import java.util.function.Consumer;
 abstract public class Forgetting {
 
 
-    public static @Nullable Consumer forget(Bag b, float depressurizationRate, float temperature) {
+    public static @Nullable Consumer forget(Bag b, float temperature) {
+        float depressurizationRate = 0.5f;
 
         if (temperature > Float.MIN_NORMAL) {
             int size = b.size();
             if (size > 0) {
                 int cap = b.capacity();
                 if (cap > 0) {
-
                     float pressure = b.depressurizePct(depressurizationRate);
 
                     float mass = b.mass(); assert(mass == mass);

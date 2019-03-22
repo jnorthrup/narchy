@@ -184,7 +184,7 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
 
     public void resetNext(float initialValueForNext) {
         //window.targetSpin((i)-> window.setAt(initialValueForNext, i));
-        window.setAtDirect(initialValueForNext,  window.targetSpin()); //window.targetSpin()(i)-> window.setAt(initialValueForNext, i));
+        window.setSpin(initialValueForNext);
         invalidate();
     }
 

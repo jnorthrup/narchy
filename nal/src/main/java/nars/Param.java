@@ -112,7 +112,7 @@ public abstract class Param {
     public static final boolean VOLMAX_RESTRICTS_INPUT = true; //input tasks
     public static final boolean VOLMAX_RESTRICTS = false; //all tasks
 
-    public static final boolean TERMIFY_TRANSFORM_LAZY = true;
+    public static final boolean TERMIFY_TRANSFORM_LAZY = false;
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 
@@ -122,7 +122,7 @@ public abstract class Param {
     public static final boolean INT_CONCEPTUALIZABLE = false;
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -169,9 +169,9 @@ public abstract class Param {
     public static boolean DEBUG_ENSURE_DITHERED_DT = false;
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.plus;
+            //PriMerge.plus;
             //PriMerge.max;
-            //PriMerge.or;
+            PriMerge.or;
             //PriMerge.avgGeoFast;
 
 
@@ -293,7 +293,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 6; //HACK this is a TTL supply, not a COST
@@ -522,9 +522,9 @@ public abstract class Param {
                 //1;
                 //1.618f; //phi
                 //2; //nyquist
-                4;
+                //4;
                 //dur;
-                //8;
+                8;
                 //64;
 
         double decayTime = falloffDurs * dur;

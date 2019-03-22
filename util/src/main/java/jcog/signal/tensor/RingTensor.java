@@ -110,6 +110,9 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
     public void setAtDirect(float newValue, int i) {
         buffer.setAt(newValue, i);
     }
+    public final void setSpin(float newValue) {
+        setAtDirect(newValue,  targetSpin());
+    }
     public void addAtDirect(float inc, int i) {
         buffer.addAt(inc, i);
     }

@@ -1,6 +1,7 @@
 package jcog.data.graph;
 
 import com.google.common.collect.Iterables;
+import com.google.common.graph.ValueGraph;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.set.ArrayHashSet;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public abstract class NodeGraph<N, E> {
+public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements ValueGraph<N,E> */ {
 
     abstract public Node<N, E> node(Object key);
 

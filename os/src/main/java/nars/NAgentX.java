@@ -365,10 +365,10 @@ abstract public class NAgentX extends NAgent {
         n.attn.linksCapacity.set(4096);
 
 
-        n.beliefPriDefault.set(0.1f);
-        n.goalPriDefault.set(0.5f);
-        n.questionPriDefault.set(0.05f);
-        n.questPriDefault.set(0.05f);
+        n.beliefPriDefault.set(0.01f);
+        n.goalPriDefault.set(0.05f);
+        n.questionPriDefault.set(0.005f);
+        n.questPriDefault.set(0.005f);
 
         n.beliefConfDefault.set(0.75f);
         n.goalConfDefault.set(0.75f);
@@ -448,7 +448,7 @@ abstract public class NAgentX extends NAgent {
 
 
         //new StatementLinker(n);
-        new PuncNoise(n);
+        //new PuncNoise(n);
         new Eternalizer(n);
 
 //        new STMLinkage(n, 1);

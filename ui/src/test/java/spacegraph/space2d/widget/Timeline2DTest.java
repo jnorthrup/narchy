@@ -27,7 +27,7 @@ public class Timeline2DTest {
         t.add(new TimelineGrid());
         t.add(wave(range));
         t.add(events(range));
-        t.add(waveEvents());
+        //t.add(waveEvents());
 
         SpaceGraph.window(t.withControls(), 800, 600);
     }

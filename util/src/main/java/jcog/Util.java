@@ -18,6 +18,7 @@ import jcog.data.list.FasterList;
 import jcog.io.BinTxt;
 import jcog.math.FloatSupplier;
 import jcog.math.NumberException;
+import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtils;
 import net.openhft.hashing.LongHashFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
@@ -2713,5 +2714,21 @@ public enum Util {
         if (x > Integer.MAX_VALUE-1 || x < Integer.MIN_VALUE+1)
             throw new NumberException("long exceeds int capacity", x);
         return (int)x;
+    }
+
+    /** faster than cartesian distance */
+    public static void normalizeHamming(float[] v, float target) {
+        float current = 0;
+        for (int i= 0; i < v.length; i++) {
+            current += Math.abs(v[i]);
+        }
+        if (current < ScalarValue.EPSILON) {
+            Arrays.fill(v, target/v.length);
+        } else {
+            float scale = target / current;
+            for (int i = 0; i < v.length; i++) {
+                v[i] *= scale;
+            }
+        }
     }
 }

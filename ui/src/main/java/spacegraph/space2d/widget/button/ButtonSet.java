@@ -75,7 +75,7 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
 
         }
 
-        set(this.buttons.list);
+        this.set(this.buttons.list);
 
 
     }

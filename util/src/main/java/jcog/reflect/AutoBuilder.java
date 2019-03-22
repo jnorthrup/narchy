@@ -3,8 +3,11 @@ package jcog.reflect;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
 import jcog.TODO;
+import jcog.data.bit.AtomicMetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.math.MutableInteger;
+import jcog.sort.FloatRank;
+import jcog.sort.RankedN;
 import jcog.util.Reflect;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -233,4 +237,83 @@ public class AutoBuilder<X, Y> {
     public interface AutoBuilding<X, Y> {
         Y build(Object context, List<Pair<X, Iterable<Y>>> features, X obj);
     }
+
+    abstract public static class Way<X> implements Supplier<X> {
+        public String name;
+    }
+
+    /** supplies zero or more chocies from a set */
+    public static class Some<X> implements Supplier<X[]> {
+        final Way<X>[] way;
+        final AtomicMetalBitSet enable = new AtomicMetalBitSet();
+
+        public Some(Way<X>[] way) {
+            this.way = way;
+            assert(way.length > 1 && way.length <= 31 /* AtomicMetalBitSet limit */);
+        }
+
+        public Some<X> set(int which, boolean enable) {
+            this.enable.set(which, enable);
+            return this;
+        }
+
+        @Override
+        public X[] get() {
+            throw new TODO();
+        }
+
+        public int size() {
+            return way.length;
+        }
+    }
+
+    public static class Best<X> extends RankedN implements Supplier<X> {
+        final Some<X> how;
+        final FloatRank<X> rank;
+
+        public Best(Some<X> how, FloatRank<X> rank) {
+            super(new Object[how.size()], rank);
+            this.how = how;
+            this.rank = rank;
+        }
+
+        @Override
+        public X get() {
+            clear();
+            X[] xx = how.get();
+            if (xx.length == 0)
+                return null;
+            for (X x : xx)
+                add(x);
+            return (X) top();
+        }
+    }
+
+    /** forces a one or none choice from a set */
+    public static class Either<X> implements Supplier<X> {
+        final Way<X>[] way;
+        volatile int which = -1;
+
+        public Either(Way<X>... way) {
+            assert(way.length > 1);
+            this.way = way;
+        }
+
+        public Either<X> set(int which) {
+            this.which = which;
+            return this;
+        }
+
+        public final Either<X> disable() {
+            set(-1);
+            return this;
+        }
+
+        @Override
+        public X get() {
+            int c = this.which;
+            return c >=0 ? way[c].get() : null;
+        }
+    }
+
 }

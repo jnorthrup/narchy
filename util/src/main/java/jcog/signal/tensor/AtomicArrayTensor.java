@@ -1,8 +1,6 @@
 package jcog.signal.tensor;
 
 import jcog.util.FloatFloatToFloatFunction;
-import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.stream.Collectors;
@@ -48,14 +46,10 @@ public class AtomicArrayTensor extends AbstractVector implements WritableTensor 
     }
 
     public final float update(float arg, FloatFloatToFloatFunction x, int linearCell) {
-        return update(arg, x, null, linearCell);
+        return update(arg, x, linearCell);
     }
 
-    public final float update(float arg, FloatFloatToFloatFunction x, @Nullable FloatFloatProcedure delta, int linearCell) {
-        return update(arg, x, delta, linearCell, true);
-    }
-
-    public final float update(float arg, FloatFloatToFloatFunction x, @Nullable FloatFloatProcedure delta, int linearCell, boolean returnValueOrDelta) {
+    public final float update(float arg, FloatFloatToFloatFunction x, int linearCell, boolean returnValueOrDelta) {
         int prevI, nextI;
         float prev, next;
 
@@ -66,8 +60,6 @@ public class AtomicArrayTensor extends AbstractVector implements WritableTensor 
             nextI = floatToIntBits(next);
         } while(prevI!=nextI && data.compareAndExchangeRelease(linearCell, prevI, nextI)!=prevI);
 
-        if (delta!=null)
-            delta.value(prev, next);
 
         return returnValueOrDelta ? next : (next-prev);
     }

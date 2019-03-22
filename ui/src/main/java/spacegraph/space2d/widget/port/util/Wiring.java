@@ -124,7 +124,7 @@ public class Wiring extends Dragging {
                     //ok
                 } else {
 
-                    List<Function> ab = CAST.convertors(aa, bb), ba = CAST.convertors(bb, aa);
+                    List<Function> ab = CAST.applicable(aa, bb), ba = CAST.applicable(bb, aa);
 
                     if (!ab.isEmpty() || !ba.isEmpty()) {
                         //wire with adapter

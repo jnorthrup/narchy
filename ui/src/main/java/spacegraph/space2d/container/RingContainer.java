@@ -42,9 +42,10 @@ public abstract class RingContainer<X extends Surface> extends Surface {
         int y = this.y.getAndIncrement();
 
         X[] x = this.x;
+        float[] c = this.coords;
         if (x == null || x.length!=t) { //TODO if history changes
             x = this.x = Arrays.copyOf(x, t);
-            coords = new float[t * 4];
+            c = this.coords = new float[t * 4];
             reallocate(x);
         } else if (x[0]==null)
             reallocate(x);
@@ -59,11 +60,11 @@ public abstract class RingContainer<X extends Surface> extends Surface {
             ii = (t - 1) - ii; //t-.. : for y-orientation HACK
             if (horizOrVert) {
                 float ix = ii * di;
-                coords[j++] = left + ix; coords[j++] = top; coords[j++] = left + ix + di; coords[j++] = bottom;
+                c[j++] = left + ix; c[j++] = top; c[j++] = left + ix + di; c[j++] = bottom;
                 //xyi.posSpectro(left, top + ix,  left + ix + di, bottom);
             } else {
                 float iy = ii * di;
-                coords[j++] = left; coords[j++] = top + iy; coords[j++] = right; coords[j++] = top+iy+di;
+                c[j++] = left; c[j++] = top + iy; c[j++] = right; c[j++] = top+iy+di;
                 //xyi.posSpectro(left,  top + iy, right, top + iy + di);
             }
         }

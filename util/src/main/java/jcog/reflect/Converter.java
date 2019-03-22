@@ -51,7 +51,7 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
 
     protected Function F;
 
-    public static Converter the(Path<Class, Function> path) {
+    public static <X,Y> Converter<X,Y> the(Path<Class, Function> path) {
         int steps = path.nodeCount();
         FasterList<Function> functions = new FasterList<>(steps);
         for (FromTo<jcog.data.graph.Node<Class, Function>, Function> ed : path.fetch(0, steps)) {
@@ -59,7 +59,7 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
                 functions.add(ed.id());
             }
         }
-        return new Converter(functions);
+        return new Converter<>(functions);
     }
 
     public Converter(FasterList<Function> functions) {
