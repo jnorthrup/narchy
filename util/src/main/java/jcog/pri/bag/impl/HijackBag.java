@@ -223,8 +223,6 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
      */
     private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, Mode mode, @Nullable NumberX overflowing) {
 
-
-
         AtomicReferenceArray<V> map = MAP.get(this);
         int c = map.length();
         if (c == 0)
@@ -618,30 +616,26 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                 if (v == null)
                     continue; //assert(v!=null);
 
+
                 SampleReaction next = each.apply(v);
 
                 if (next.stop) {
                     break restart;
                 } else if (next.remove) {
-
                     if (windowSize == windowCap) {
-
                         wVal[which] = null;
                         wPri[which] = 0;
                     } else {
                         //compact the array by swapping the empty cell with the entry cell's (TODO or any other non-null)
                         ArrayUtils.swap(wVal, windowSize - 1, which);
                         ArrayUtils.swap(wPri, windowSize - 1, which);
-
                     }
                     windowSize--;
                     remove(key(v));
                 }
 
-
                 if (map != this.map)
                     continue restart;
-
 
                 //shift window
 
@@ -677,14 +671,14 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         evict(map, i, potentialVictimPri, true);
     }
 
-    private void evict(AtomicReferenceArray<V> map, int i, V potentialVictimPri, boolean updateSize) {
-        if (map.compareAndSet(i, potentialVictimPri, null)) {
+    private void evict(AtomicReferenceArray<V> map, int i, V victim, boolean updateSize) {
+        if (map.compareAndSet(i, victim, null)) {
 
             //if the map is still active
             if (this.map == map) {
                 if (updateSize)
                     SIZE.getAndDecrement(this);
-                onRemove(potentialVictimPri);
+                onRemove(victim);
             }
         }
     }

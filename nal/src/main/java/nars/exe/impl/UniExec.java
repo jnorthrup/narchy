@@ -116,7 +116,7 @@ public class UniExec extends Exec {
             }
         };
         refreshServices();
-        n.services.change.on(serviceChange);
+        n.plugin.change.on(serviceChange);
         refreshServices(); //to be sure
 
         ons = new Offs();

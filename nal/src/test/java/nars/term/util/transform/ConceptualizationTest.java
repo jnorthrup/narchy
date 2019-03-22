@@ -62,8 +62,8 @@ class ConceptualizationTest {
 
         assertEquals(3, xImplY.beliefs().taskCount());
 
-        int indexSize = n.concepts.size();
-        n.concepts.print(System.out);
+        int indexSize = n.memory.size();
+        n.memory.print(System.out);
 
         n.input("(x ==>+1 y). :|:");
         n.run();
@@ -71,8 +71,8 @@ class ConceptualizationTest {
 
         assertEquals(4, xImplY.beliefs().taskCount());
 
-        n.concepts.print(System.out);
-        assertEquals(indexSize, n.concepts.size());
+        n.memory.print(System.out);
+        assertEquals(indexSize, n.memory.size());
 
         //n.conceptualize("(x==>y)").print();
     }

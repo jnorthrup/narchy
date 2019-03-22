@@ -19,9 +19,9 @@ import java.util.TreeSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-class ConceptIndexTest {
+class MemoryTest {
 
-    public static void testIndex(ConceptIndex i) throws Narsese.NarseseException {
+    public static void testIndex(Memory i) throws Narsese.NarseseException {
 
         NAR t = new NARS().index(i).withNAL(new TaskBuffer.MapTaskBuffer(64),1,1).get();
 
@@ -33,14 +33,14 @@ class ConceptIndexTest {
         assertTrue(5 < c1);
 
         t.stop();
-        t.concepts.clear();
+        t.memory.clear();
 
         long c2 = t.concepts().count();
         assertTrue(c1 > c2);
 
     }
 
-    private static void testTermSharing(ConceptIndex tt) throws Narsese.NarseseException {
+    private static void testTermSharing(Memory tt) throws Narsese.NarseseException {
 
         tt.start(NARS.shell());
         testShared(tt, "<<x-->w> --> <y-->z>>");
@@ -51,7 +51,7 @@ class ConceptIndexTest {
 
     }
 
-    private static void testShared(@NotNull ConceptIndex i, @NotNull String s) throws Narsese.NarseseException {
+    private static void testShared(@NotNull Memory i, @NotNull String s) throws Narsese.NarseseException {
 
         int t0 = i.size();
 
@@ -97,7 +97,7 @@ class ConceptIndexTest {
     }
 
     private static void testCommonPrefix(boolean direction) {
-        MapConceptIndex i = (MapConceptIndex) (NARS.shell().concepts);
+        MapMemory i = (MapMemory) (NARS.shell().memory);
         Atomic sui = Atomic.the("substituteIfUnifies");
         Atomic su = Atomic.the("substitute");
 
@@ -143,13 +143,13 @@ class ConceptIndexTest {
     @Test
     void testMapConceptIndex() throws Narsese.NarseseException {
         testIndex(
-                new MapConceptIndex(new HashMap(1024))
+                new MapMemory(new HashMap(1024))
         );
     }
     @Test
     void testHijackConceptIndex() throws Narsese.NarseseException {
         testIndex(
-                new HijackConceptIndex(1024, 4)
+                new HijackMemory(1024, 4)
         );
     }
     @Test
@@ -161,7 +161,7 @@ class ConceptIndexTest {
     @Test
     void testTreeConceptIndex() throws Narsese.NarseseException {
         testIndex(
-                new TreeConceptIndex(1024)
+                new TreeMemory(1024)
         );
     }
 
@@ -178,7 +178,7 @@ class ConceptIndexTest {
 
         NAR d = NARS.shell();
         Set<Term> t = new TreeSet();
-        d.concepts.forEach(x -> t.add(x.term()));
+        d.memory.forEach(x -> t.add(x.term()));
 
         assertTrue(t.size() > 100);
 

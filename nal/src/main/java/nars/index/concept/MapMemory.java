@@ -10,20 +10,20 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /** additionally caches subterm vectors */
-public class MapConceptIndex extends ConceptIndex {
+public class MapMemory extends Memory {
 
     protected Map<Term,Termed> map;
 
-    protected MapConceptIndex() {
+    protected MapMemory() {
         this(null);
     }
 
-    public MapConceptIndex(Map<Term, Termed> map) {
+    public MapMemory(Map<Term, Termed> map) {
         super();
         this.map = map;
     }
 
-    public MapConceptIndex map(Map<Term, Termed> map) {
+    public MapMemory map(Map<Term, Termed> map) {
         this.map = map;
         return this;
     }

@@ -11,7 +11,6 @@ import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
 import jcog.util.ArrayUtils;
-import jogamp.opengl.GLWorkerThread;
 import spacegraph.UI;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.font.HersheyFont;

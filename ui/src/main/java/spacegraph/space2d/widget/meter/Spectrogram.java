@@ -19,13 +19,8 @@ import java.util.function.ToIntFunction;
 public class Spectrogram extends RingContainer<BitmapMatrixView> implements BitmapMatrixView.ViewFunction2D {
 
 
-
-
     /** N item axis capacity ("bins", "states", "frequencies", etc..) */
     public final IntRange N = new IntRange(0, 0, 512);
-
-
-
 
     private int n;
 

@@ -90,7 +90,7 @@ public class NARService extends Service<NAR> implements TermedDelegate {
     public final void off() {
         NAR n = nar;
         if (n != null) {
-            n.services.remove(id);
+            n.plugin.remove(id);
         }
     }
 

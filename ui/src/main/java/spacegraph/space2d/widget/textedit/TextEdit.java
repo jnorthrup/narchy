@@ -21,6 +21,10 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
     public final Topic<TextEdit> onChange = new ListTopic<>();
 
 
+    public TextEdit(int cols) {
+        this(cols, 1, -1, -1);
+    }
+
     public TextEdit(int cols, int rows /*boolean editable*/) {
         this(cols, rows, -1, -1);
     }

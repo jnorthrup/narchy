@@ -500,7 +500,7 @@ public class Builtin {
                     case "sys":
                         return $.p(
                                 $.quote(nar.feel.summary()),
-                                $.quote(nar.concepts.summary()),
+                                $.quote(nar.memory.summary()),
                                 $.quote(nar.feel.summary()),
                                 $.quote(nar.exe.toString())
                         );
@@ -594,7 +594,7 @@ public class Builtin {
 
     private static void initMemoryOps(NAR nar) {
         nar.onOp1("load", (id, nn) -> {
-            Runnable r = nn.memory.copy(id, nn.self());
+            Runnable r = nn.memoryExternal.copy(id, nn.self());
             if (r != null)
                 nn.runLater(r);
         });

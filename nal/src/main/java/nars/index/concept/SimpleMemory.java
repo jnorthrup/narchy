@@ -9,17 +9,17 @@ import java.util.Collections;
 import java.util.Map;
 
 /** simple concept index that uses a LRU-evicting LinkedHashMap */
-public class SimpleConceptIndex extends MapConceptIndex {
+public class SimpleMemory extends MapMemory {
 
-    public SimpleConceptIndex(int capacity) {
+    public SimpleMemory(int capacity) {
         this(capacity,  false);
     }
 
-    public SimpleConceptIndex(int capacity, boolean threadSafe) {
+    public SimpleMemory(int capacity, boolean threadSafe) {
         this(capacity, 0.5f, threadSafe);
     }
 
-    protected SimpleConceptIndex(int capacity, float loadFactor, boolean threadSafe) {
+    protected SimpleMemory(int capacity, float loadFactor, boolean threadSafe) {
         super();
         map(synchronizedIf(new MyMRUMap(capacity, loadFactor), threadSafe));
     }

@@ -4,7 +4,7 @@ import jcog.data.byt.ArrayBytes;
 import jcog.tree.radix.MyRadixTree;
 import nars.$;
 import nars.Narsese;
-import nars.index.concept.TreeConceptIndex;
+import nars.index.concept.TreeMemory;
 import nars.term.Term;
 import nars.term.util.map.TermRadixTree;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 10/21/16.
  */
-class TreeConceptIndexTest {
+class TreeMemoryTest {
 
     @Test
     void testTermIndex() {
@@ -48,7 +48,7 @@ class TreeConceptIndexTest {
 
     @Test
     void testVolumeSubTrees() throws Narsese.NarseseException {
-        TreeConceptIndex t = new TreeConceptIndex( 128);
+        TreeMemory t = new TreeMemory( 128);
         t.set($("a"));
         t.set($("(a)"));
         t.set($("(a-->b)"));

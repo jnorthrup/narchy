@@ -5,6 +5,7 @@ import com.google.common.collect.Streams;
 import com.google.common.primitives.Longs;
 import jcog.Texts;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
@@ -33,7 +34,7 @@ import nars.eval.Evaluator;
 import nars.eval.Facts;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
-import nars.index.concept.ConceptIndex;
+import nars.index.concept.Memory;
 import nars.io.IO;
 import nars.link.Activate;
 import nars.subterm.Subterms;
@@ -100,18 +101,20 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled, Timed {
 
     static final String VERSION = "NARchy v?.?";
-    private static final Set<String> loggedEvents = java.util.Set.of("eventTask");
-    public final Exec exe;
-    public final Topic<NAR> eventClear = new ListTopic<>();
-    public final Topic<NAR> eventCycle = new ListTopic<>();
 
-    public final TaskTopic eventTask = new TaskTopic();
-    public final Services<NAR, Term> services;
+    public final Exec exe;
+    public final Services<NAR, Term> plugin;
     public final Time time;
-    public final ConceptIndex concepts;
+    public final Memory memory;
     public final NARLoop loop;
     public final Emotion feel;
-    public final Memory memory = new Memory(this);
+    public final Attention attn;
+    public final MemoryExternal memoryExternal = new MemoryExternal(this);
+
+    public final Topic<NAR> eventClear = new ListTopic<>();
+    public final Topic<NAR> eventCycle = new ListTopic<>();
+    public final TaskTopic eventTask = new TaskTopic();
+
     /**
      * cause->value table
      */
@@ -133,19 +136,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * default attention; other attentions can be attached as services
      */
-    public final Attention attn;
 
     public Logger logger;
 
     public final Evaluator evaluator = new Evaluator(this::axioms);
 
-    public NAR(ConceptIndex concepts, Exec exe, Attention attn, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
+    public NAR(Memory memory, Exec exe, Attention attn, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
 
         this.random = rng;
 
-        this.concepts = concepts;
-
         (this.time = time).reset();
+
+        this.memory = memory;
 
         named(Param.randomSelf());
 
@@ -153,16 +155,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.exe = exe;
 
-        services = new Services<>(this, exe);
+        this.plugin = new Services<>(this, exe);
 
         this.conceptBuilder = conceptBuilder;
-        concepts.start(this);
+        memory.start(this);
 
         this.feel = new Emotion(this);
 
-        Builtin.init(this);
-
         on(this.attn);
+
+        Builtin.init(this);
 
         this.loop = new NARLoop(this);
 
@@ -173,11 +175,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
         if (!chan.equals(previou)) {
-            out
-
-                    .append(chan)
-
-                    .append(": ");
+            out.append(chan).append(": ");
 
         } else {
 
@@ -260,7 +258,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             x.put("time", time());
 
 
-            x.put("concept count", concepts.size());
+            x.put("concept count", memory.size());
         }
 
         x.put("belief count", ((double) beliefs.getSum()));
@@ -627,11 +625,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * asynchronously adds the service
      */
     public final void on(NARService s) {
-        services.add(s.term(), s);
+        plugin.add(s.term(), s);
     }
 
     public final void off(NARService s) {
-        services.remove(s.term(), s);
+        plugin.remove(s.term(), s);
     }
 
     /**
@@ -691,7 +689,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final Operator onOp(Atom name, BiFunction<Task, NAR, Task> exe) {
         Operator op = Operator.simple(name, exe);
-        concepts.set(op);
+        memory.set(op);
         return op;
     }
 
@@ -770,7 +768,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             pause();
 
-            services.stop();
+            plugin.stop();
 
             exe.stop();
 
@@ -843,6 +841,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public NAR log(Appendable out, Predicate includeValue) {
         return trace(out, NAR.loggedEvents::contains, includeValue);
     }
+    private static final Set<String> loggedEvents = java.util.Set.of("eventTask");
 
     /**
      * Runs until stopped, at a given delay period between frames (0= no delay). Main loop
@@ -1020,22 +1019,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 //            }
 //        }
 
-        return concepts.concept(x, createIfMissing);
-    }
-
-    @Deprecated
-    public final Stream<Activate> conceptsActive() {
-        //HACK could be better
-        return attn.links.stream().flatMap(x -> Stream.of(x.from(), x.to()))
-                .distinct()
-                .map(this::concept)
-                .filter(Objects::nonNull).map(c -> new Activate(c, 1));
-        //return Stream.empty();
-        //return concepts.active();
+        return memory.concept(x, createIfMissing);
     }
 
     public final Stream<Concept> concepts() {
-        return concepts.stream()/*.filter(Concept.class::isInstance)*/.map(Concept.class::cast);
+        return memory.stream()/*.filter(Concept.class::isInstance)*/.map(Concept.class::cast);
     }
 
     /**
@@ -1112,7 +1100,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final Concept on(PermanentConcept c) {
 
-        Termed existing = concepts.remove(c.term());
+        Termed existing = memory.remove(c.term());
         if ((existing != null)) {
             if (existing != c) {
 
@@ -1122,7 +1110,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             }
         }
 
-        concepts.set(c);
+        memory.set(c);
 
         conceptBuilder.start(c);
 
@@ -1415,7 +1403,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
     public Stream<Service<NAR>> services() {
-        return services.stream();
+        return plugin.stream();
     }
 
     public void conceptualize(Term term, Consumer<Concept> with) {
@@ -1520,7 +1508,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             //TODO Streams.stream(eventTask).map(t -> ), // -> AtTask events
             Streams.stream(eventCycle).map(AtCycle::new),
             Streams.stream(eventClear).map(AtClear::new),
-            services.stream()
+            plugin.stream()
                 .map((s) -> ((NARService)s).event()).filter(Objects::nonNull),
             time.events()
                 .filter(t -> !(t instanceof DurService.AtDur)) //HACK (these are included in service's events)

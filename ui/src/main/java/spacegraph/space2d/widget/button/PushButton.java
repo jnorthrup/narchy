@@ -10,13 +10,7 @@ import spacegraph.video.ImageTexture;
 
 import java.util.function.Consumer;
 
-/**
- * Created by me on 11/11/16.
- */
 public class PushButton extends AbstractButton {
-
-
-
 
     @Nullable private Consumer<PushButton> onClick;
 
@@ -31,8 +25,6 @@ public class PushButton extends AbstractButton {
             //    new BitmapLabel(s)
         );
     }
-
-
 
     public PushButton(Surface content) {
         super(content);

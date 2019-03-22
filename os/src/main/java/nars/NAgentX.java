@@ -24,7 +24,10 @@ import nars.exe.Valuator;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
-import nars.op.*;
+import nars.op.Arithmeticize;
+import nars.op.AutoencodedBitmap;
+import nars.op.Eternalizer;
+import nars.op.Introduction;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -111,7 +114,7 @@ abstract public class NAgentX extends NAgent {
 
             window(new Gridding(n.services(NAgent.class).map(NARui::agent).collect(toList())), 500, 500);
             window(NARui.top(n), 800, 500);
-            window(NARui.tasklinkSpectrogram(n, n.attn.links, 64), 500, 500);
+            window(NARui.attentionUI(n), 500, 500);
 
             Loop loop = n.startFPS(narFPS);
 

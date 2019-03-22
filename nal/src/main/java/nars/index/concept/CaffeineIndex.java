@@ -16,7 +16,7 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
 
-public class CaffeineIndex extends ConceptIndex implements CacheLoader<Term, Termed>, RemovalListener<Term, Termed>, Executor {
+public class CaffeineIndex extends Memory implements CacheLoader<Term, Termed>, RemovalListener<Term, Termed>, Executor {
 
     private final Cache<Term, Termed> concepts;
     private final boolean weightDynamic;

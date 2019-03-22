@@ -542,12 +542,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             long ll = weak ? tryWriteFromRead(l) : writeFromRead(l);
             if (ll == 0)
                 return;
-
-            if (table.items.get(suspectedPosition) == y) {
-                boolean removed = table.items.removeFast(y,suspectedPosition);
-                assert(removed);
-            } else {
-                boolean removed = table.removeItem(y);
+            boolean removed = table.items.removeFast(y,suspectedPosition);
+            if (!removed) {
+                //exhaustive
+                removed = table.removeItem(y);
                 assert(removed);
             }
             removeFromMap(y);

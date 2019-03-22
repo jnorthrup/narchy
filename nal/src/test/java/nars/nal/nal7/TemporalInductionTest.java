@@ -171,7 +171,7 @@ class TemporalInductionTest {
         d.run(200);
 
         
-        int before = d.concepts.size();
+        int before = d.memory.size();
         int numBeliefs = getBeliefCount(d);
 
         
@@ -179,7 +179,7 @@ class TemporalInductionTest {
         d.run(60);
 
         
-        int after = d.concepts.size();
+        int after = d.memory.size();
         assertEquals(before, after);
         
 

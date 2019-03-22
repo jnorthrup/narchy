@@ -15,8 +15,8 @@ import jcog.pri.op.PriMerge;
 import nars.*;
 import nars.exe.Exec;
 import nars.exe.impl.UniExec;
-import nars.index.concept.ConceptIndex;
-import nars.index.concept.ProxyConceptIndex;
+import nars.index.concept.Memory;
+import nars.index.concept.ProxyMemory;
 import nars.task.util.TaskBuffer;
 import nars.time.clock.RealTime;
 import org.java_websocket.WebSocket;
@@ -145,12 +145,12 @@ abstract public class NARWeb extends WebServer {
         /**
          * adapter
          */
-        private final ConceptIndex sharedIndex;
+        private final Memory sharedIndex;
 
         public Multi() {
             this.nar = NARchy.core();
             //this.nar.loop.setFPS(10);
-            this.sharedIndex = new ProxyConceptIndex(nar.concepts);
+            this.sharedIndex = new ProxyMemory(nar.memory);
         }
 
         @Override

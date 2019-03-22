@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.googlecode.lanterna.input.KeyType;
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
@@ -14,6 +15,7 @@ import jcog.exe.Exe;
 import jcog.learn.ql.HaiQae;
 import jcog.math.Quantiler;
 import jcog.pri.VLink;
+import nars.AttentionUI;
 import nars.NAR;
 import nars.Narsese;
 import nars.Task;
@@ -47,6 +49,7 @@ import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.button.Submit;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.Menu;
 import spacegraph.space2d.widget.menu.TabMenu;
@@ -149,7 +152,7 @@ public class NARui {
                 //ExeCharts.focusPanel(n),
                 ///causePanel(n),
                 "grp", () -> BagregateConceptGraph2D.get(n).widget(),
-                "svc", () -> new ServicesTable(n.services),
+                "svc", () -> new ServicesTable(n.plugin),
                 "pri", () -> priView(n),
                 "cpt", () -> new ConceptBrowser(n)
         );
@@ -184,7 +187,7 @@ public class NARui {
                      new ObjectSurface(
 //                        new XYSlider(
 //                                cc.activationRate
-                                cc.forgetRate
+                                cc.decay
                                 //.subRange(1/1000f, 1/2f)
                         ) {
 //                            @Override
@@ -584,19 +587,46 @@ public class NARui {
         );
     }
 
-    public static Surface tasklinkSpectrogram(NAR n, Table<?,nars.link.TaskLink> b, int history) {
+    public static Surface tasklinkSpectrogram(Table<?, TaskLink> b, int history, NAR n) {
         return tasklinkSpectrogram(n, b, history, b.capacity());
     }
-    public static Surface tasklinkSpectrogram(NAR n, int history) {
-        return tasklinkSpectrogram(n, n.attn.links, history);
+    public static Surface attentionUI(NAR n) {
+        final Bordering m = new Bordering();
+        Attention attn = n.attn;
+        m.center(new TabMenu(Map.of(
+                "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
+                "Plot2D", ()->new BagView(attn.links, n),
+                "Concepts", ()->BagregateConceptGraph2D.get(attn, n).widget(),
+                "Flow", ()-> AttentionUI.attentionGraph(attn, n)
+        )));
+        m.south(new ObjectSurface(attn));
+        m.west(new Gridding(
+
+
+            new PushButton("Clear").clicking(n::clear),
+            Submit.text("Load", t->{
+                throw new TODO();
+            }),
+            Submit.text("Save", t->{
+                throw new TODO(); //tagging
+            }),
+            new PushButton("List").clicking(()->attn.links.bag.print()) //TODO better
+
+        ));
+        m.east(new Gridding(
+                //TODO interactive filter widgets
+        ));
+
+        return m;
     }
 
     public static Surface tasklinkSpectrogram(NAR n, Table<?,nars.link.TaskLink> active, int history, int width) {
+
         Spectrogram s = new Spectrogram(true, history, width);
 
         return DurSurface.get(s, n, new Runnable() {
 
-            final FasterList<TaskLink> snapshot = new FasterList();
+            final FasterList<TaskLink> snapshot = new FasterList(active.capacity());
 
             @Override
             public void run() {

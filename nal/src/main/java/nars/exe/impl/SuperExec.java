@@ -34,7 +34,7 @@ public class SuperExec extends ThreadedExec {
 
         private SubNARLoop(NAR sooper) {
             this.sub = new NARS()
-                    .index(sooper.concepts)
+                    .index(sooper.memory)
                     //.attention(new SubAttention())
                     .time(sooper.time)
                     .concepts(sooper.conceptBuilder)

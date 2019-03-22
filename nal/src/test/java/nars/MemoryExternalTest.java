@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 
-class MemoryTest {
+class MemoryExternalTest {
 
     @Test
     void testURLDirectory() {
-        Memory m = new Memory();
+        MemoryExternal m = new MemoryExternal();
         Term url = $$("file:///tmp");
         System.out.println(
             m.contents(url).collect(toList())

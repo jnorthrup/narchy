@@ -17,7 +17,7 @@ public class MemorySnapshot {
     }
 
     public MemorySnapshot(NAR n) {
-        n.concepts.forEach(this::add);
+        n.memory.forEach(this::add);
     }
 
     protected void add(Termed /*Concept*/ _c) {

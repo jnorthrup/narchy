@@ -3,6 +3,7 @@ package nars.gui.graph.run;
 import jcog.math.IntRange;
 import jcog.pri.bag.util.Bagregate;
 import nars.NAR;
+import nars.attention.Attention;
 import nars.term.Term;
 import nars.time.event.DurService;
 import spacegraph.space2d.container.grid.Gridding;
@@ -21,7 +22,11 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
     };
 
     public static nars.gui.graph.run.BagregateConceptGraph2D get(NAR n) {
-        Bagregate<Term> b = new Bagregate(() -> n.conceptsActive().iterator(), 256);
+        return get(n.attn, n);
+    }
+
+    public static nars.gui.graph.run.BagregateConceptGraph2D get(Attention attn, NAR n) {
+        Bagregate<Term> b = new Bagregate(() -> attn.concepts(n).iterator(), 256);
 
         return new nars.gui.graph.run.BagregateConceptGraph2D(b, n) {
             private DurService updater;

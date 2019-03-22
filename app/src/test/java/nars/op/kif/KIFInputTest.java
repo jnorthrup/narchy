@@ -39,7 +39,7 @@ class KIFInputTest {
         String inURL = "file:///home/me/sumo/" + sumo + ".kif";
 
         NAR n = NARS.shell();
-        n.memory.on(KIFInput.load);
+        n.memoryExternal.on(KIFInput.load);
 
 
         Term I = $$(inURL);
@@ -48,7 +48,7 @@ class KIFInputTest {
                 //Atomic.the("stdout");
                 Atomic.the("file:///tmp/x.nalz");
 
-        Runnable r = n.memory.copy(I, O);
+        Runnable r = n.memoryExternal.copy(I, O);
         r.run();
 
 
@@ -67,7 +67,7 @@ class KIFInputTest {
                 tmp();
 
 
-        n.memory.on(KIFInput.load);
+        n.memoryExternal.on(KIFInput.load);
 
 
         Term I = $.quote(inURL);
@@ -78,7 +78,7 @@ class KIFInputTest {
 
         n.log();
 
-        Runnable r = n.memory.copy(I, O);
+        Runnable r = n.memoryExternal.copy(I, O);
         r.run();
 
 
@@ -119,10 +119,10 @@ class KIFInputTest {
 
         NAR n = NARS.shell();
 
-        n.memory.on(KIFInput.load);
+        n.memoryExternal.on(KIFInput.load);
 
 
-        n.memory.contents(sumoDir).parallel().forEach(I -> {
+        n.memoryExternal.contents(sumoDir).parallel().forEach(I -> {
             String ii = Texts.unquote(I.toString());
             if (!ii.endsWith(".kif"))
                 return;
@@ -132,8 +132,8 @@ class KIFInputTest {
 
             String name = ii.substring(ii.lastIndexOf('/') + 1, ii.lastIndexOf('.')).toLowerCase();
 
-            n.memory.copy(I, Atomic.the("file:///tmp/sumo/" + name + ".nalz")).run();
-            n.memory.copy(I, Atomic.the("file:///tmp/sumo/" + name + ".nal")).run();
+            n.memoryExternal.copy(I, Atomic.the("file:///tmp/sumo/" + name + ".nalz")).run();
+            n.memoryExternal.copy(I, Atomic.the("file:///tmp/sumo/" + name + ".nal")).run();
         });
 
     }
@@ -152,7 +152,7 @@ class KIFInputTest {
 //        n.input("load(\"file:///tmp/sumo/FinancialOntology.kif.nalz\");");
 //        n.input("load(\"file:///tmp/sumo/Economy.kif.nalz\");");
         n.run(1);
-        System.err.println(n.concepts.size() + " concepts");
+        System.err.println(n.memory.size() + " concepts");
         n.clear();
 
         n.logPriMin(System.out, 0.01f);

@@ -329,7 +329,7 @@ public class TrackXY_NAR extends NAgentX {
                 g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
                 g.add(NARui.taskBufferView(d.out, n)).sizeRel(0.25f, 0.25f);
 //                g.add(new PIDChip(new MiniPID(0.01, 0.01, 0.01))).sizeRel(0.1f, 0.1f);
-                g.add(NARui.tasklinkSpectrogram(n, 200)).sizeRel(0.25f, 0.25f);
+                g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
 
                 g.add(new LogContainer(32) {
                     {

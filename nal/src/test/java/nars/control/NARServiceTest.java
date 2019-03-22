@@ -16,7 +16,7 @@ class NARServiceTest {
     void testRemoveDurServiceWhenOff() {
         NAR n = NARS.shell();
 
-        Set<Service<NAR>> before = n.services.stream().collect(toSet());
+        Set<Service<NAR>> before = n.plugin.stream().collect(toSet());
 
         DurService d = DurService.on(n, () -> {
             
@@ -24,13 +24,13 @@ class NARServiceTest {
 
         n.synch();
 
-        Set<Service<NAR>> during = n.services.stream().collect(toSet());
+        Set<Service<NAR>> during = n.plugin.stream().collect(toSet());
 
         d.off();
 
         n.synch();
 
-        Set<Service<NAR>> after = n.services.stream().collect(toSet());
+        Set<Service<NAR>> after = n.plugin.stream().collect(toSet());
 
         assertEquals(before, after);
         assertEquals(before.size()+1, during.size());

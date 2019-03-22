@@ -212,7 +212,7 @@ public class TemporalTermTest {
         n.run(5);
 
         TreeSet d = new TreeSet(Comparator.comparing(Object::toString));
-        n.conceptsActive().forEach(x -> d.add(x.get()));
+        n.attn.concepts(n).forEach(x -> d.add(x.get()));
 
 
         assertTrue(d.contains($("(x ==>+- y)")));

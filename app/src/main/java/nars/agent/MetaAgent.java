@@ -46,7 +46,7 @@ public class MetaAgent extends NAgent {
         super(n.self() /* HACK */,FrameTrigger.fps(fps),  n);
 
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
-        actionDial($.inh(id, $.p(forget, $.the(1))), $.inh(id, $.p(forget, $.the(-1))), n.attn.forgetRate, 40);
+        actionDial($.inh(id, $.p(forget, $.the(1))), $.inh(id, $.p(forget, $.the(-1))), n.attn.decay, 40);
 
 //        float priFactorMin = 0.1f, priFactorMax = 4f;
 //        beliefPriAction = actionUnipolar($.inh(id, beliefPri), n.beliefPriDefault.subRange(

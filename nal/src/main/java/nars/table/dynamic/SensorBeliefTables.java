@@ -17,7 +17,6 @@ import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.checkerframework.checker.units.qual.min;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.TIMELESS;

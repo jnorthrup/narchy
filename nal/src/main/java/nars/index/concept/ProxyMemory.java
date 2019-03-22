@@ -7,10 +7,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class ProxyConceptIndex extends ConceptIndex {
-    final ConceptIndex ref;
+public class ProxyMemory extends Memory {
+    final Memory ref;
 
-    public ProxyConceptIndex(ConceptIndex ref) {
+    public ProxyMemory(Memory ref) {
         this.ref = ref;
     }
 

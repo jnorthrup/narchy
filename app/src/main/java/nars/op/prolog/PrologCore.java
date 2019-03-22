@@ -7,7 +7,7 @@ import jcog.data.atomic.AtomicFloat;
 import jcog.math.Range;
 import nars.*;
 import nars.control.channel.ConsumerX;
-import nars.index.concept.ConceptIndex;
+import nars.index.concept.Memory;
 import nars.subterm.Subterms;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -100,7 +100,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     public static class MyClauseIndex extends MutableClauseIndex {
 
 
-        public MyClauseIndex(ConceptIndex t) {
+        public MyClauseIndex(Memory t) {
 
         }
 
@@ -108,7 +108,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     }
 
     public PrologCore(NAR n, String theory) {
-        super(theory, new MyClauseIndex(n.concepts));
+        super(theory, new MyClauseIndex(n.memory));
 
         if (Param.DEBUG)
             setSpy(true);

@@ -48,7 +48,10 @@ import org.oakgp.terminate.MaxGenerationsWithoutImprovementTerminator;
 import org.oakgp.terminate.TargetFitnessTerminator;
 import org.oakgp.util.NodeSimplifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;

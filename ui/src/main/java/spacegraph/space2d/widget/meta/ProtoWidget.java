@@ -51,9 +51,7 @@ public class ProtoWidget extends Bordering {
         }
     }
 
-    
 
-    private static final Supplier<Surface> TODO = () -> new VectorLabel("TODO");
     private static final WidgetLibrary LIBRARY  = new WidgetLibrary() {{
 
         add("Keyboard", KeyboardChip::new, "Input");

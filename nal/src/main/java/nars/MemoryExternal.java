@@ -93,7 +93,7 @@ import static nars.Op.ATOM;
  * the atomic operation is stopped.  https:
  * ```
  */
-public class Memory {
+public class MemoryExternal {
 
 
     final static Atomic stdin = Atomic.the("stdin");
@@ -154,14 +154,14 @@ public class Memory {
             }
         }
     };
-    final Logger logger = LoggerFactory.getLogger(Memory.class);
+    final Logger logger = LoggerFactory.getLogger(MemoryExternal.class);
     final Multimap<String, BytesToTasks> readFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
     final Multimap<String, TasksToBytes> writeFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
     final List<MemoryResolver> resolvers = new CopyOnWriteArrayList();
     final MemoryResolver StdIOResolver = new MemoryResolver() {
 
         @Override
-        public Stream<Supplier<Stream<Task>>> readers(Term x, Memory m) {
+        public Stream<Supplier<Stream<Task>>> readers(Term x, MemoryExternal m) {
             if (x.equals(stdin)) {
                 throw new TODO();
             }
@@ -169,7 +169,7 @@ public class Memory {
         }
 
         @Override
-        public Stream<Consumer<Stream<Task>>> writers(Term x, Memory m) {
+        public Stream<Consumer<Stream<Task>>> writers(Term x, MemoryExternal m) {
             if (x.equals(stdout)) {
                 return Stream.of((t) -> t.forEach(System.out::println
                 ));
@@ -184,12 +184,12 @@ public class Memory {
                 Atomic.the("http://github.com/automenta/narchy"));
 
         @Override
-        public Stream<Term> roots(Memory m) {
+        public Stream<Term> roots(MemoryExternal m) {
             return ROOTS.stream();
         }
 
         @Override
-        public Stream<Supplier<Stream<Task>>> readers(Term x, Memory m) {
+        public Stream<Supplier<Stream<Task>>> readers(Term x, MemoryExternal m) {
             Stream<URI> uri = termToURIs(x);
             if (uri != null) {
                 return uri.map((URI u) -> {
@@ -216,7 +216,7 @@ public class Memory {
         }
 
         @Override
-        public Stream<Consumer<Stream<Task>>> writers(Term x, Memory m) {
+        public Stream<Consumer<Stream<Task>>> writers(Term x, MemoryExternal m) {
             Stream<URI> uri = termToURIs(x);
             if (uri != null) {
                 return uri.map((u -> {
@@ -245,7 +245,7 @@ public class Memory {
         }
 
         @Override
-        public Stream<Term> contents(Term x, Memory m) {
+        public Stream<Term> contents(Term x, MemoryExternal m) {
             Stream<URI> uri = termToURIs(x);
             if (uri != null) {
                 //noinspection RedundantCast
@@ -299,7 +299,7 @@ public class Memory {
         }
     };
 
-    public Memory() {
+    public MemoryExternal() {
         resolvers.add(URIResolver);
         resolvers.add(StdIOResolver);
         on(Tasks_To_Text);
@@ -308,7 +308,7 @@ public class Memory {
         on(BinaryZipped_To_Tasks);
     }
 
-    public Memory(NAR nar) {
+    public MemoryExternal(NAR nar) {
         this();
         add(nar);
     }
@@ -360,14 +360,14 @@ public class Memory {
     }
 
     public Stream<Term> contents(Term address) {
-        return resolvers.stream().flatMap(r -> r.contents(address, Memory.this)).filter(Objects::nonNull).distinct();
+        return resolvers.stream().flatMap(r -> r.contents(address, MemoryExternal.this)).filter(Objects::nonNull).distinct();
     }
 
     public Stream<Term> roots() {
-        return resolvers.stream().flatMap(r -> r.roots(Memory.this)).filter(Objects::nonNull).distinct();
+        return resolvers.stream().flatMap(r -> r.roots(MemoryExternal.this)).filter(Objects::nonNull).distinct();
     }
 
-    public Memory add(NAR n) {
+    public MemoryExternal add(NAR n) {
         resolvers.add(new NARResolver(n));
         return this;
     }
@@ -383,11 +383,11 @@ public class Memory {
     }
 
     public Stream<Supplier<Stream<Task>>> readers(Term x) {
-        return resolvers.stream().flatMap(r -> r.readers(x, Memory.this)).filter(Objects::nonNull);
+        return resolvers.stream().flatMap(r -> r.readers(x, MemoryExternal.this)).filter(Objects::nonNull);
     }
 
     public Stream<Consumer<Stream<Task>>> writers(Term x) {
-        return resolvers.stream().flatMap(r -> r.writers(x, Memory.this)).filter(Objects::nonNull);
+        return resolvers.stream().flatMap(r -> r.writers(x, MemoryExternal.this)).filter(Objects::nonNull);
     }
 
     @Nullable
@@ -430,16 +430,16 @@ public class Memory {
 
     public interface MemoryResolver {
         @Nullable
-        Stream<Supplier<Stream<Task>>> readers(Term x, Memory m);
+        Stream<Supplier<Stream<Task>>> readers(Term x, MemoryExternal m);
 
         @Nullable
-        Stream<Consumer<Stream<Task>>> writers(Term x, Memory m);
+        Stream<Consumer<Stream<Task>>> writers(Term x, MemoryExternal m);
 
         /**
          * lists the contents, ie. if it is a directory / container.  items
          * returned may be resolvable by this or another resolver.
          */
-        default Stream<Term> contents(Term x, Memory m) {
+        default Stream<Term> contents(Term x, MemoryExternal m) {
             return Stream.empty();
         }
 
@@ -447,7 +447,7 @@ public class Memory {
         /**
          * entry points into memory.  none by default
          */
-        default Stream<Term> roots(Memory m) {
+        default Stream<Term> roots(MemoryExternal m) {
             return Stream.empty();
         }
     }
@@ -463,7 +463,7 @@ public class Memory {
         }
 
         @Override
-        public Stream<Supplier<Stream<Task>>> readers(Term x, Memory m) {
+        public Stream<Supplier<Stream<Task>>> readers(Term x, MemoryExternal m) {
             if (nar.self().equals(x)) {
                 return Stream.of(nar::tasks);
             }
@@ -471,7 +471,7 @@ public class Memory {
         }
 
         @Override
-        public Stream<Consumer<Stream<Task>>> writers(Term x, Memory m) {
+        public Stream<Consumer<Stream<Task>>> writers(Term x, MemoryExternal m) {
             if (nar.self().equals(x)) {
                 return Stream.of(nar::input);
             }

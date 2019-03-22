@@ -59,7 +59,7 @@ public class KIFInput {
     private static final Term SYMMETRIC_RELATION = $$("SymmetricRelation");
     private static final Term ASYMMETRIC_RELATION = $$("AsymmetricRelation");
 
-    public static Memory.BytesToTasks load = new Memory.BytesToTasks("kif") {
+    public static MemoryExternal.BytesToTasks load = new MemoryExternal.BytesToTasks("kif") {
 
         @Override
         public Stream<Task> apply(InputStream i) {

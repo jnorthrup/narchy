@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 /**
  * Created by me on 2/20/17.
  */
-public class HijackConceptIndex extends ConceptIndex {
+public class HijackMemory extends Memory {
 
     private final PriLinkHijackBag<Termed,PLink<Termed>> table;
 
@@ -43,7 +43,7 @@ public class HijackConceptIndex extends ConceptIndex {
     private DurService onDur;
 
 
-    public HijackConceptIndex(int capacity, int reprobes) {
+    public HijackMemory(int capacity, int reprobes) {
         super();
 
         initialTask = 1f/(reprobes+1);
@@ -88,7 +88,7 @@ public class HijackConceptIndex extends ConceptIndex {
 
             @Override
             public void onRemove(PLink<Termed> value) {
-                HijackConceptIndex.this.onRemove(value.get());
+                HijackMemory.this.onRemove(value.get());
             }
         };
 

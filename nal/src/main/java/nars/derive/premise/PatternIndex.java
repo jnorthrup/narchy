@@ -2,7 +2,7 @@ package nars.derive.premise;
 
 import nars.Builtin;
 import nars.Op;
-import nars.index.concept.MapConceptIndex;
+import nars.index.concept.MapMemory;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -23,7 +23,7 @@ import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;
 /**
  * Index which specifically holds the target components of a deriver ruleset.
  */
-public class PatternIndex extends MapConceptIndex {
+public class PatternIndex extends MapMemory {
 
 
     public PatternIndex() {

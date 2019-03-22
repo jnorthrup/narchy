@@ -236,7 +236,7 @@ public class TextUI {
                         NAR n = TextGUI.this.nar;
                         if (n == null)
                             return;
-                        n.conceptsActive().forEach(this::add);
+                        n.attn.concepts(n).forEach(this::add);
                         super.update();
                     }
                 };

@@ -18,6 +18,7 @@ import nars.attention.derive.DefaultDerivePri;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.derive.Derivation;
+import nars.link.Activate;
 import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
 import nars.link.TermLinker;
@@ -28,9 +29,11 @@ import nars.time.event.DurService;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /** abstract attention economy model */
 public class Attention extends DurService implements Sampler<TaskLink> {
@@ -41,29 +44,21 @@ public class Attention extends DurService implements Sampler<TaskLink> {
      */
     public TaskLinkBag links = null;
 
-//    /**
-//     * tasklink activation
-//     */
-//    @Deprecated
-//    public final FloatRange activationRate = new FloatRange(1f, Param.tasklinkMerge == plus ? ScalarValue.EPSILON : 1, 1);
+    /** tasklink forget rate */
+    public final FloatRange decay = new FloatRange(0.5f,  0, 1f /* 2f */);
 
-    public final FloatRange forgetRate = new FloatRange(0.5f,  0, 1f /* 2f */);
-
-    /** propagation (decay+growth) rate */
+    /** tasklink propagation rate */
     public final FloatRange amp = new FloatRange(0.5f,  0, 2f /* 2f */);
-    //TODO inflation free = 1-decay public final FloatRange ampFree = new FloatRange(0.5f,  0, 2f /* 2f */);
 
-    //0.25f;
-    //(float) (1f/(1 + Math.sqrt(t.volume())));
-    //1f/(1 + t.volume());
-    //1f/((s.volume() + t.volume())/2f); //1/vol_mean
-    //1f/(s.volume() + t.volume()); //1/vol_sum
-
+    /** tasklink retention rate:
+     *  0 = deducts all propagated priority from source tasklink
+     *  1 = deducts no propagated priority
+     **/
+    public final FloatRange sustain = new FloatRange(1f,  0, 1f );
 
     public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(PriBuffer.newMap(false));
-    public PriNode root = new PriNode.ConstPriNode("root", ()->1);
+    private PriNode root = new PriNode.ConstPriNode("root", ()->1);
     private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
-
 
 
     public final IntRange linksCapacity = new IntRange(256, 0, 8192) {
@@ -106,7 +101,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     protected final void onCycle() {
         links.commit(
-            forgetting.forget(links,  forgetRate.floatValue())
+            forgetting.forget(links,  decay.floatValue())
         );
     }
 
@@ -140,12 +135,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
                 link.priPunc(punc);
         //task.priElseZero();
 
-        ///* HACK */ getAndSetPriPunc(punc, p*0.9f /* decay */); //spend
-
-
-        //Math.max(ScalarValue.EPSILON, task.priElseZero() - priPunc(punc));
-
-//        float pDown = 1*p, pUp = Float.NaN;
+        float sustain = this.sustain.floatValue();
 
         Term u = null;
         Concept ct;
@@ -212,18 +202,19 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 //                float p =
 //                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
 
-                int n = 1;
-                float pp = p * amp.floatValue() / n;
+                float pAmp = p * amp.floatValue();
 
-                //link.take(punc, pp*n);
 
                 //CHAIN
-                link(s, u, punc, pp); //forward (hop)
+                link(s, u, punc, pAmp); //forward (hop)
                 //link(u, s, punc, pp); //reverse (hop)
                 //link(t, u, punc, pp); //forward (adjacent)
                 //link(u, t, punc, pp); //reverse (adjacent)
 
 
+                if (sustain < 1) {
+                    link.take(punc, pAmp * (1-sustain));
+                }
 
 
                 //link(s, t, punc, ); //redundant
@@ -240,6 +231,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
             }
         }
+        //link.take(punc, pp*n);
 
         //System.out.println(s + "\t" + t + "\t" + u);
 
@@ -297,6 +289,15 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         NodeGraph.MutableNode<PriNode, Object> a = graph.addNode(p);
         graph.addEdgeByNode(rootNode, "pri", a);
         return a;
+    }
+
+    /** active concepts */
+    public Stream<Activate> concepts(NAR n) {
+        //HACK could be better
+        return links.stream().flatMap(x -> Stream.of(x.from(), x.to()))
+                .distinct()
+                .map(n::concept)
+                .filter(Objects::nonNull).map(c -> new Activate(c, 1));
     }
 
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {

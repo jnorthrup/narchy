@@ -12,6 +12,7 @@ import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.meta.ErrorPanel;
 import spacegraph.space2d.widget.meta.WeakSurface;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.MutableRectFloat;
 
 import java.io.PrintStream;
@@ -26,12 +27,14 @@ import java.util.function.Supplier;
  */
 abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fingered {
 
+
     private static final AtomicReferenceFieldUpdater<Surface, RectFloat> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat.class, "bounds");
     private final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
 
 
 
     public static final Surface[] EmptySurfaceArray = new Surface[0];
+    public static final Supplier<Surface> TODO = () -> new VectorLabel("TODO");
 
     private final static AtomicInteger serial = new AtomicInteger();
 

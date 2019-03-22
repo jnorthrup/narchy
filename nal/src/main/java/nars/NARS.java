@@ -10,8 +10,8 @@ import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.exe.Exec;
 import nars.exe.impl.UniExec;
-import nars.index.concept.ConceptIndex;
-import nars.index.concept.SimpleConceptIndex;
+import nars.index.concept.Memory;
+import nars.index.concept.SimpleMemory;
 import nars.op.stm.STMLinkage;
 import nars.task.util.TaskBuffer;
 import nars.time.Time;
@@ -49,7 +49,7 @@ public class NARS {
         return n;
     }
 
-    protected Supplier<ConceptIndex> index;
+    protected Supplier<Memory> index;
 
     protected Time time;
 
@@ -66,7 +66,7 @@ public class NARS {
     protected final List<Consumer<NAR>> step = new FasterList<>(8);
 
 
-    public NARS index(@NotNull ConceptIndex concepts) {
+    public NARS index(@NotNull Memory concepts) {
         this.index = () -> concepts;
         return this;
     }
@@ -110,7 +110,7 @@ public class NARS {
             if (threadSafe)
                 index =
                         //() -> new CaffeineIndex(64 * 1024)
-                        () -> new SimpleConceptIndex(64 * 1024, true)
+                        () -> new SimpleMemory(64 * 1024, true)
             ;
 
             if (nal > 0)
@@ -129,7 +129,7 @@ public class NARS {
                 n.termVolumeMax.set(26);
 
                 n.attn.linksCapacity.set(96);
-                n.attn.forgetRate.set(0.001f);
+                n.attn.decay.set(0.001f);
 
                 n.beliefPriDefault.set(0.1f);
                 n.goalPriDefault.set(0.1f);
@@ -148,7 +148,7 @@ public class NARS {
     public NARS() {
 
         index = () ->
-                new SimpleConceptIndex(32 * 1024)
+                new SimpleMemory(32 * 1024)
                 //new TemporaryConceptIndex()
         ;
 

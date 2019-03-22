@@ -204,8 +204,8 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
             a1.meta(Abbreviation.class.getName(), a1);
             //nar.on(a1);
 
-            nar.concepts.set(abbreviated, a1); //redirect reference from the original concept to the alias
-            nar.concepts.set(a1.term(), a1);
+            nar.memory.set(abbreviated, a1); //redirect reference from the original concept to the alias
+            nar.memory.set(a1.term(), a1);
 
 
 

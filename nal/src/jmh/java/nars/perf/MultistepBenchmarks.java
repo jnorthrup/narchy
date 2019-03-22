@@ -50,7 +50,7 @@ public class MultistepBenchmarks {
 
     @TearDown
     public void end() {
-        concepts = n.concepts.size();
+        concepts = n.memory.size();
     }
 
     @Benchmark

@@ -3,7 +3,7 @@ package nars.term.util;
 import jcog.data.byt.AbstractBytes;
 import nars.NARS;
 import nars.Narsese;
-import nars.index.concept.TreeConceptIndex;
+import nars.index.concept.TreeMemory;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
@@ -60,9 +60,9 @@ class TermRadixTreeTest {
     @Test
     void testCompoundInsertion() throws Narsese.NarseseException {
 
-        TreeConceptIndex index;
+        TreeMemory index;
         new NARS().index(
-            index = new TreeConceptIndex(1000)
+            index = new TreeMemory(1000)
         ).get();
 
 

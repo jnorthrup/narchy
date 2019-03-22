@@ -2,7 +2,10 @@ package nars.test.condition;
 
 
 import jcog.Texts;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.task.Tasked;
 import nars.term.Term;
 import nars.truth.Truth;

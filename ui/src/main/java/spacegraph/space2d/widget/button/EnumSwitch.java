@@ -5,7 +5,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.text.LabeledPane;
 
 import java.util.EnumSet;
-import java.util.Map;
 
 public enum EnumSwitch { ;
 

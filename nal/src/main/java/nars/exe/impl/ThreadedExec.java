@@ -9,7 +9,6 @@ import nars.NAR;
 import nars.exe.Exec;
 import nars.exe.Valuator;
 
-import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
 

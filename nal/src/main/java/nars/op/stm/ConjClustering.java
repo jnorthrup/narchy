@@ -224,7 +224,7 @@ public class ConjClustering extends Causable {
     }
 
     protected float forgetRate() {
-        return nar.attn.forgetRate.floatValue();
+        return nar.attn.decay.floatValue();
         //return 1f;
         //return 0.9f;
         //return 0.75f;
