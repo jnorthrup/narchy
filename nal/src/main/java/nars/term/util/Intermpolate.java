@@ -227,7 +227,7 @@ public enum Intermpolate {;
         if (adt != bdt) {
             if (adt == XTERNAL || bdt == XTERNAL) {
                 //dDT = 0.25f; //undercut the DTERNAL case
-                dDT = ScalarValue.EPSILONsqrt;
+                dDT = ScalarValue.EPSILONcoarse;
             } else {
 
                 boolean ad = adt == DTERNAL, bd = bdt == DTERNAL;
@@ -238,7 +238,7 @@ public enum Intermpolate {;
                     dDT = Math.abs(adt - bdt) / (range);
                 } else {
                     //dDT = 0.5f; //one is dternal the other is not, record at least some difference (half time unit)
-                    dDT = ScalarValue.EPSILONsqrt * 2;
+                    dDT = ScalarValue.EPSILONcoarse * 2;
                 }
 
             }

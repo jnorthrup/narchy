@@ -10,10 +10,10 @@ import static java.lang.Float.floatToIntBits;
 import static java.lang.Float.intBitsToFloat;
 
 /** stores 32-bit float values in AtomicIntegerArray */
-public class AtomicArrayTensor extends AbstractVector implements WritableTensor {
+public class AtomicFloatArray extends AbstractVector implements WritableTensor {
     private final AtomicIntegerArray data;
 
-    public AtomicArrayTensor(int length) {
+    public AtomicFloatArray(int length) {
         this.data = new AtomicIntegerArray(length);
     }
 

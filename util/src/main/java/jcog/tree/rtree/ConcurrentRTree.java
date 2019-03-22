@@ -25,10 +25,7 @@ import jcog.util.LambdaStampedLock;
 
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 /**
@@ -83,7 +80,12 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
      */
     @Override
     public boolean add(X t) {
-        return write(() -> tree.add(t));
+        long l = writeLock();
+        try {
+            return tree.add(t);
+        } finally {
+            unlockWrite(l);
+        }
     }
 
 
@@ -101,9 +103,14 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
 
-    @Override
-    public boolean remove(X x) {
-        return write(() -> tree.remove(x));
+    /** TODO read -> write lock */
+    @Override public boolean remove(X x) {
+        long l = writeLock();
+        try {
+            return tree.remove(x);
+        } finally {
+            unlockWrite(l);
+        }
     }
 
     public void removeAll(Iterable<? extends X> t) {
@@ -112,7 +119,12 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
 
     public final void read(Consumer<RTree<X>> x) {
-        read(() -> x.accept(tree));
+        long l = readLock();
+        try {
+            x.accept(tree);
+        } finally {
+            unlockRead(l);
+        }
     }
 
 
@@ -124,11 +136,21 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final void write(Consumer<Space<X>> x) {
-        write(() -> x.accept(tree));
+        long l = writeLock();
+        try {
+            x.accept(tree);
+        } finally {
+            unlockWrite(l);
+        }
     }
 
     public final boolean write(Predicate<Space<X>> x) {
-        return write(() -> x.test(tree));
+        long l = writeLock();
+        try {
+            return x.test(tree);
+        } finally {
+            unlockWrite(l);
+        }
     }
 
     public final void readOptimistic(Consumer<Space<X>> x) {
@@ -148,17 +170,20 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
      *
      * @param told - entry to update
      * @param tnew - entry with new value
+     * TODO read -> write lock
      */
-    @Override
-    public final boolean replace(X told, X tnew) {
-        write(() -> tree.replace(told, tnew));
-        return false;
+    @Override public final boolean replace(X told, X tnew) {
+        long l = writeLock();
+        try {
+            return tree.replace(told, tnew);
+        } finally {
+            unlockWrite(l);
+        }
     }
 
     @Override
     public final int size() {
         return tree.size();
-
     }
 
     @Override
@@ -168,7 +193,12 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     @Override
     public final void forEach(Consumer<? super X> consumer) {
-        read(r -> r.forEach(consumer));
+        long l = readLock();
+        try {
+            tree.forEach(consumer);
+        } finally {
+            unlockRead(l);
+        }
     }
 
     public final void forEachOptimistic(Consumer<? super X> consumer) {
@@ -244,9 +274,13 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     @Override
     public boolean contains(X t, HyperRegion b, Spatialization<X> model) {
-        return test(r -> r.contains(t, b, model));
+        long l = readLock();
+        try {
+            return tree.contains(t, b, model);
+        } finally {
+            unlockRead(l);
+        }
     }
-
 
 
     public final Spatialization<X> model() {

@@ -72,7 +72,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     private void move(VerletParticle2D p, Vec2D delta, float distSq) {
         Vec2D f;
-        if (distSq <= ScalarValue.EPSILONsqrt) {
+        if (distSq <= ScalarValue.EPSILONcoarse) {
            if (strength < 0) {
                //random direction
                float theta = (float) ((rng.nextFloat()) * Math.PI * 2);

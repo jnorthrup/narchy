@@ -10,7 +10,7 @@ import jcog.pri.UnitPri;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.Weight;
 import jcog.pri.op.PriMerge;
-import jcog.signal.tensor.AtomicArrayTensor;
+import jcog.signal.tensor.AtomicFloatArray;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.Op;
@@ -352,7 +352,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term,TaskLink>  {
      */
     class GeneralTaskLink extends AbstractTaskLink {
 
-        final AtomicArrayTensor punc = new AtomicArrayTensor(4);
+        final AtomicFloatArray punc = new AtomicFloatArray(4);
 
         public GeneralTaskLink(Term source, Term target) {
             super(source, target);

@@ -95,7 +95,7 @@ public class SliderModel extends Surface {
         Util.assertFinite(pNext);
 
         float pPrev = this.p;
-        if (Util.equals(pPrev, pNext, ScalarValue.EPSILONsqrt))
+        if (Util.equals(pPrev, pNext, ScalarValue.EPSILONcoarse))
             return;
 
         this.p = pNext;

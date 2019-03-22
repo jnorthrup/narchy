@@ -116,7 +116,7 @@ public class XYSlider extends Surface implements HudHover {
         v2 hitPoint = f.posRelative(XYSlider.this);
 
         pressing = true;
-        if (knob.setIfChanged(unitize(hitPoint.x), unitize(hitPoint.y), ScalarValue.EPSILONsqrt))
+        if (knob.setIfChanged(unitize(hitPoint.x), unitize(hitPoint.y), ScalarValue.EPSILONcoarse))
             updated();
 
     }

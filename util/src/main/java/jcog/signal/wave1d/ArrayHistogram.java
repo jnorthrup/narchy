@@ -2,12 +2,12 @@ package jcog.signal.wave1d;
 
 import jcog.Util;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
-import jcog.signal.tensor.AtomicArrayTensor;
+import jcog.signal.tensor.AtomicFloatArray;
 
 import java.util.Random;
 
 /** dead-simple fixed range continuous histogram with fixed # and size of bins. supports PDF sampling */
-public class ArrayHistogram extends AtomicArrayTensor /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
+public class ArrayHistogram extends AtomicFloatArray /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     private final static AtomicFloatFieldUpdater<ArrayHistogram> MASS =
             new AtomicFloatFieldUpdater(ArrayHistogram.class, "mass");

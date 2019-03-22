@@ -18,9 +18,14 @@ public interface ScalarValue extends Prioritized {
     /**
      * global minimum difference necessary to indicate a significant modification in budget float number components
      * TODO find if there is a better number
+     *
+     * 32-bit float has about 7 decimal digits of precision
+     * https://en.wikipedia.org/wiki/Floating-point_arithmetic#Internal_representation
      */
-    float EPSILON = 0.0000001f;
-    float EPSILONsqrt = (float)Math.sqrt(EPSILON);
+    float EPSILON = 0.000001f;
+    float EPSILONcoarse =
+            EPSILON*10;
+            //(float)Math.sqrt(EPSILON);
 
     /** setter
      *  @return value after set

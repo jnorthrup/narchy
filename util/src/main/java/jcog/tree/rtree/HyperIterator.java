@@ -4,7 +4,6 @@ import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -21,8 +20,8 @@ public class HyperIterator<X>  {
     X next;
 
 
-    @Nullable
-    private NodeFilter<X> nodeFilter = null;
+//    @Nullable
+//    private NodeFilter<X> nodeFilter = null;
 
     /**
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
@@ -78,7 +77,7 @@ public class HyperIterator<X>  {
         Object z;
         while ((z = plan.pop()) != null) {
             if (z instanceof Node) {
-                expand((Node<X>) z);
+                ((Node) z).forEachLocal(this::push);
             } else {
                 return (X) z;
             }
@@ -88,21 +87,21 @@ public class HyperIterator<X>  {
     }
 
 
-    private void visit(Object x) {
+    private void push(Object x) {
         //inline 1-arity branches for optimization
         while (x instanceof Node && (((Node)x).size() == 1)) {
             Object next = ((Node) x).get(0);
-            if (next instanceof Branch)
+//            if (next instanceof Branch)
                 x = next; //this might indicate a problem in the tree structure that could have been flattened automatically
-            else {
-                //leaf node or item
-                break;
-            }
+//            else {
+//                //leaf node or item
+//                break;
+//            }
         }
 
-        //dont filter root node (traversed while plan is null)
-        if ((x instanceof Node) && nodeFilter != null && !plan.isEmpty() && !nodeFilter.tryVisit((Node)x))
-            return;
+//        //dont filter root node (traversed while plan is null)
+//        if ((x instanceof Node) && nodeFilter != null && !plan.isEmpty() && !nodeFilter.tryVisit((Node)x))
+//            return;
 
         plan.add(x);
     }
@@ -111,11 +110,7 @@ public class HyperIterator<X>  {
      * surveys the contents of the node, producing a new 'stack frame' for navigation
      */
     private void expand(Node<X> at) {
-//        if (at.size() == 0)
-//            return;
-
-        at.forEachLocal(this::visit);
-
+        at.forEachLocal(this::push);
     }
 
 
@@ -123,16 +118,16 @@ public class HyperIterator<X>  {
         return (this.next = find()) != null;
     }
 
-    public X next() {
+    public final X next() {
         X n = this.next;
-        if (n == null)
-            throw new NoSuchElementException();
+//        if (n == null)
+//            throw new NoSuchElementException();
         return n;
     }
 
-    public void setNodeFilter(NodeFilter<X> n) {
-        this.nodeFilter = n;
-    }
+//    public void setNodeFilter(NodeFilter<X> n) {
+//        this.nodeFilter = n;
+//    }
 
 
 //    public static final HyperIterator2 Empty = new HyperIterator2() {

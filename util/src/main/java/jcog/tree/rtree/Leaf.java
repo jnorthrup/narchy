@@ -185,7 +185,7 @@ public class Leaf<X> extends AbstractNode<X> {
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
                 X t = data[i];
-                if (t == null) continue;
+                //if (t == null) break;
                 if (t.equals(x)) {
                     if (t != x)
                         model.onMerge(t, x);
@@ -287,12 +287,12 @@ public class Leaf<X> extends AbstractNode<X> {
 
 
     @Override
-    public boolean isLeaf() {
+    public final boolean isLeaf() {
         return true;
     }
 
     @Override
-    public void forEach(Consumer<? super X> consumer) {
+    public final void forEach(Consumer<? super X> consumer) {
 //        short s = this.size;
 //        if (s > 0) {
 //            X[] data = this.data;

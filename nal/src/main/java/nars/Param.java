@@ -192,10 +192,10 @@ public abstract class Param {
 
     /** perceptible priority increase that warrants automatic reactivation.
      * used during Remember's merge repeat suppression filter */
-    public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONsqrt;
+    public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONcoarse;
 
     /** novelty threshold: >=0; higher values decrease the rate at which repeated tasks can be reactivated */
-    public static final int REMEMBER_REPEAT_THRESH_DURS = 2;
+    public static final int REMEMBER_REPEAT_THRESH_DURS = 1;
 
 
     /**
@@ -595,22 +595,22 @@ public abstract class Param {
     /**
      * Default priority of input judgment
      */
-    @Deprecated public final FloatRange beliefPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
+    @Deprecated public final FloatRange beliefPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONcoarse, 1f);
 
     /**
      * Default priority of input question
      */
-    @Deprecated public final FloatRange questionPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
+    @Deprecated public final FloatRange questionPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONcoarse, 1f);
 
     /**
      * Default priority of input judgment
      */
-    @Deprecated public final FloatRange goalPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
+    @Deprecated public final FloatRange goalPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONcoarse, 1f);
 
     /**
      * Default priority of input question
      */
-    public final FloatRange questPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
+    public final FloatRange questPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONcoarse, 1f);
 
 
     public float priDefault(byte punctuation) {
