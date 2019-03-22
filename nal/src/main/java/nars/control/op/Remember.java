@@ -16,6 +16,7 @@ import nars.term.Term;
 import nars.term.util.Image;
 import nars.time.Tense;
 import nars.truth.Truth;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Nullable;
 
 /**

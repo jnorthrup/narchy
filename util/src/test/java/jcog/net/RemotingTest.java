@@ -2,7 +2,6 @@ package jcog.net;
 
 import org.gridkit.nanocloud.Cloud;
 import org.gridkit.nanocloud.CloudFactory;
-import org.gridkit.nanocloud.RemoteNode;
 import org.gridkit.nanocloud.VX;
 import org.junit.jupiter.api.Test;
 
@@ -42,24 +41,24 @@ public class RemotingTest {
             }
         });
     }
-    @Test void test2() {
-
-        Cloud cloud = CloudFactory.createCloud();
-
-        RemoteNode rn = RemoteNode.at(cloud.node("**")).useSimpleRemoting();
-        rn.setRemoteAccount("me");
-        rn.setRemoteJavaExec("/home/me/jdk/bin/java");
-        rn.setProp("debug", "true");
-
-        cloud.node(/*"**"*/ "eus").exec(new Runnable() {
-            @Override
-            public void run() {
-//                    System.out.println(InetAddress.getLocalHost().getCanonicalHostName());
-                //String jvmName = ManagementFactory.getRuntimeMXBean().getName();
-                System.getProperties().forEach((k, v) ->
-                        System.out.println(k + "\t" + v)
-                );
-            }
-        });
-    }
+//    @Test void test2() {
+//
+//        Cloud cloud = CloudFactory.createCloud();
+//
+//        RemoteNode rn = RemoteNode.at(cloud.node("**")).useSimpleRemoting();
+//        rn.setRemoteAccount("me");
+//        rn.setRemoteJavaExec("/home/me/jdk/bin/java");
+//        rn.setProp("debug", "true");
+//
+//        cloud.node(/*"**"*/ "eus").exec(new Runnable() {
+//            @Override
+//            public void run() {
+////                    System.out.println(InetAddress.getLocalHost().getCanonicalHostName());
+//                //String jvmName = ManagementFactory.getRuntimeMXBean().getName();
+//                System.getProperties().forEach((k, v) ->
+//                        System.out.println(k + "\t" + v)
+//                );
+//            }
+//        });
+//    }
 }
