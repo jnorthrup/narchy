@@ -204,7 +204,7 @@ public enum MetaGoal {
                 int i = 0;
                 for (Traffic t : c.credit) {
                     MetaGoal m = MetaGoal.values()[i];
-                    double tt = t.total;
+                    double tt = t.total();
                     if (tt != 0) {
                         synchronized (this) {
                             addToValue(PrimitiveTuples.pair(c, (byte) i), tt);

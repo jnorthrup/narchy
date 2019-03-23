@@ -261,7 +261,7 @@ public class ExeCharts {
 
     private static void causeSummary(NAR nar, int top) {
         TopN[] tops = Stream.of(MetaGoal.values()).map(v -> new TopN<>(new Cause[top], (c) ->
-                (float)c.credit[v.ordinal()].total)).toArray(TopN[]::new);
+                (float) c.credit[v.ordinal()].total())).toArray(TopN[]::new);
         nar.causes.forEach((Cause c) -> {
             for (TopN t : tops)
                 t.add(c);

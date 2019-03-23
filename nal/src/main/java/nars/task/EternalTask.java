@@ -10,15 +10,15 @@ public class EternalTask extends ActualNALTask {
         super(term, punc, truth, creation, ETERNAL, ETERNAL, stamp);
     }
 
-    @Override
-    public final boolean intersects(long rangeStart, long rangeEnd) {
-        return true;
-    }
-
-    @Override
-    public final boolean contains(long rangeStart, long rangeEnd) {
-        return rangeStart!=ETERNAL;
-    }
+//    @Override
+//    public final boolean intersects(long rangeStart, long rangeEnd) {
+//        return true;
+//    }
+//
+//    @Override
+//    public final boolean contains(long rangeStart, long rangeEnd) {
+//        return rangeStart!=ETERNAL;
+//    }
 
     @Override
     public final long start() {

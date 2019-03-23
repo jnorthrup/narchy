@@ -275,10 +275,13 @@ public class SensorBeliefTables extends BeliefTables {
                     return (t, min) -> {
                         float v = base.rank(t, min);
                         if (v == v && v > min) {
-                            long l = Longerval.intersectLength(t.start(), t.end(), ss, se);
+                            long ts = t.start();
+                            long te = t.end();
+                            long l = Longerval.intersectLength(ts, te, ss, se);
                             if (l > 0) {
                                 //discount the rank in proportion to how much of the task overlaps with the series
-                                float overlap = (float) Util.unitizeSafe(l / ((double) t.range()));
+                                double range = (te-ts)+1;
+                                float overlap = (float) Util.unitizeSafe(l / range);
                                 float keep =
                                         //1 - overlap;
                                         1 - (overlap*overlap); //less intense but still in effect

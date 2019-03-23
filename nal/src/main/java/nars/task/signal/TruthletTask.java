@@ -67,10 +67,10 @@ public class TruthletTask extends SignalTask {
 
 
 
-    @Override
-    public boolean intersects(long start, long end) {
-        return truthlet.intersects(start, end);
-    }
+//    @Override
+//    public boolean intersects(long start, long end) {
+//        return truthlet.intersects(start, end);
+//    }
 
 
 

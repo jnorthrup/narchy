@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.meter;
 import jcog.math.IntRange;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.RingContainer;

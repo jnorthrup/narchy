@@ -1,5 +1,7 @@
 package nars.attention;
 
+import jcog.TODO;
+import jcog.data.NumberX;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
@@ -306,7 +308,12 @@ public class Attention extends DurService implements Sampler<TaskLink> {
             super(Param.tasklinkMerge, initialCapacity, new UnifiedMap());
         }
 
-//        @Override
+        @Override
+        protected float merge(TaskLink existing, TaskLink incoming) {
+            return existing.merge(incoming, merge());
+        }
+
+        //        @Override
 //        protected float sortedness() {
 //            return 0.33f;
 //        }
@@ -329,6 +336,10 @@ public class Attention extends DurService implements Sampler<TaskLink> {
             return value;
         }
 
+        @Override
+        protected TaskLink merge(TaskLink existing, TaskLink incoming, NumberX overflowing) {
+            throw new TODO();
+        }
     }
 
 

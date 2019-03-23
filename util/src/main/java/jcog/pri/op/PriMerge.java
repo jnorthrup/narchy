@@ -25,7 +25,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
     and {
         @Override public float merge(float e, float i) {  return e * i; }
 
-        @Override
+    @Override
         protected boolean undelete() {
             return false;
         }
@@ -49,6 +49,8 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
     //    AVG_GEO_FAST,
 
     ;
+
+
 
 
 
@@ -124,9 +126,18 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
         throw new TODO();
     }
 
-
-
-
+    /** merges for non-NaN 0..1.0 range */
+    public final float mergeUnitize(float existing, float incoming) {
+        if (existing != existing)
+            existing = 0;
+        float next = merge(existing, incoming);
+        if (next == next) {
+            if (next > 1) next = 1;
+            else if (next < 0) next = 0;
+        } else
+            next = 0;
+        return next;
+    }
 
 
 //

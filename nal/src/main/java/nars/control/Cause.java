@@ -1,7 +1,6 @@
 package nars.control;
 
 import jcog.Util;
-import jcog.math.RecycledSummaryStatistics;
 import jcog.pri.ScalarValue;
 import nars.$;
 import nars.term.Term;
@@ -115,22 +114,22 @@ public class Cause extends InternalEvent implements Comparable<Cause> {
         return Short.compare(id, o.id);
     }
 
-    public void commit(RecycledSummaryStatistics[] valueSummary) {
-        for (int i = 0, purposeLength = credit.length; i < purposeLength; i++) {
-            Traffic p = credit[i];
-            p.commit();
-            valueSummary[i].accept(p.last);
-        }
-    }
+//    public void commit(RecycledSummaryStatistics[] valueSummary) {
+//        for (int i = 0, purposeLength = credit.length; i < purposeLength; i++) {
+//            Traffic p = credit[i];
+//            p.commit();
+//            valueSummary[i].accept(p.last);
+//        }
+//    }
 
     public void commit() {
+//        for (Traffic aGoal : credit)
+//            aGoal.commit();
+//    }
+//
+//    public void commitFast() {
         for (Traffic aGoal : credit)
             aGoal.commit();
-    }
-
-    public void commitFast() {
-        for (Traffic aGoal : credit)
-            aGoal.commitFast();
     }
 
     public void print(PrintStream out) {

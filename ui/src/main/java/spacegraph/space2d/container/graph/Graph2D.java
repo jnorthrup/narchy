@@ -105,7 +105,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     public Graph2D(Graph2DUpdater<X> updater) {
         super();
-        clipBounds = false;
+//        clipBounds = false;
         update(updater);
     }
     public Surface widget() {

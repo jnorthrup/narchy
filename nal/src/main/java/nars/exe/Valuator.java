@@ -29,7 +29,7 @@ public abstract class Valuator {
     /** responsible for interpreting cur[], prev[] and setting all the values in out[] */
     abstract protected void process();
 
-    volatile long lastUpdate = ETERNAL;
+    private volatile long lastUpdate = ETERNAL;
 
     /**
      * intermediate calculation buffer
@@ -63,11 +63,12 @@ public abstract class Valuator {
 
         for (int i = 0; i < cc; i++) {
 
-            Traffic[] cg = ccc[i].credit;
+            Cause ci = ccc[i];
 
-            ccc[i].commitFast();
+            ci.commit();
 
             float v = 0;
+            Traffic[] cg = ci.credit;
             for (int j = 0; j < want.length; j++) {
                 v += want[j] * cg[j].last;
             }

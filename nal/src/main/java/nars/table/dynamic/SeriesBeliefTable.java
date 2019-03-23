@@ -83,9 +83,8 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         if (!Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 
-        long sStart = series.start(), e;
-        if (sStart != TIMELESS && (e = series.end()) != TIMELESS) {
-            long sEnd = e;
+        long sStart = series.start(), sEnd;
+        if (sStart != TIMELESS && (sEnd = series.end()) != TIMELESS) {
 
             TaskFEMABox deleteAfter = new TaskFEMABox(sStart, sEnd);
             Consumer<Task> cleaner = deleteAfter::add;
@@ -115,7 +114,6 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
                     boolean seriesDefinedThere = !series.isEmpty(t);
 
                     return seriesDefinedThere;
-
                 }
             }
         }
