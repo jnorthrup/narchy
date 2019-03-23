@@ -10,9 +10,7 @@ import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.ListMenu;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
-import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
-import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.slider.XYSlider;
@@ -21,6 +19,7 @@ import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.space2d.widget.windo.GraphEdit;
+import spacegraph.space3d.test.OSMTest;
 
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -36,8 +35,6 @@ public class WidgetTest {
     }
 
     static final Map<String, Supplier<Surface>> menu = Map.of(
-
-
             "Container", ()->grid(
                     LabeledPane.the("grid",
                         grid(randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton())
@@ -104,12 +101,9 @@ public class WidgetTest {
                         g.add(new ProtoWidget()).posRel(1, 1,0.25f, 0.2f);
                 });
                 return g;
-            }
-            ,
-            "Sketch", () -> new
-
-                    MetaFrame(new Sketch2DBitmap(256, 256))
-
+            },
+        //"Sketch", () -> new MetaFrame(new Sketch2DBitmap(256, 256))
+        "Geo", () -> OSMTest.osmTest()
     );
 
 

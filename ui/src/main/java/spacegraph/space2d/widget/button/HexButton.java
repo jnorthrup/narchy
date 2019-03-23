@@ -16,7 +16,7 @@ public class HexButton extends PushButton {
 
     @Override
     protected void paintWidget(RectFloat bounds, GL2 gl) {
-        super.paintWidget(bounds, gl);
+//        super.paintWidget(bounds, gl);
         gl.glColor3f(0, 0.75f, 0);
         float rad =
                 Math.min(w(), h())/2;

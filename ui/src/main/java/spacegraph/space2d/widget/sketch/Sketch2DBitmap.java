@@ -21,18 +21,19 @@ import java.awt.image.DataBufferInt;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
-/** see: http://perfectionkills.com/exploring-canvas-drawing-techniques/ */
+/**
+ * see: http://perfectionkills.com/exploring-canvas-drawing-techniques/
+ */
 public class Sketch2DBitmap extends Surface implements MenuSupplier {
 
-    private final Tex bmp = new Tex();
     public final int[] pix;
+    private final Tex bmp = new Tex();
     private final BufferedImage buf;
     private final int pw, ph;
-
+    private final MersenneTwister rng = new MersenneTwister();
     private float brushWidth = 0.2f;
     private float brushAlpha = 0.5f;
-
-    private final MersenneTwister rng = new MersenneTwister();
+    private float paintR = 0.75f, paintG = 0.75f, paintB = 0.75f;
 
 
     public Sketch2DBitmap(int w, int h) {
@@ -42,6 +43,13 @@ public class Sketch2DBitmap extends Surface implements MenuSupplier {
         this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
     }
 
+    public static void main(String[] args) {
+
+
+        SpaceGraph.window(new Sketch2DBitmap(256, 256)
+
+                , 800, 800);
+    }
 
     /**
      * must call this to re-generate texture so it will display
@@ -50,54 +58,36 @@ public class Sketch2DBitmap extends Surface implements MenuSupplier {
         bmp.set(buf);
     }
 
-
-
-
-
     @Override
     public Surface finger(Finger finger) {
 
+        v2 hitPoint = finger.posRelative(this);
+        if (hitPoint.inUnit() && finger.pressing(0)) {
 
-        if (finger!=null) {
-            v2 hitPoint = finger.posGlobal(this);
-            if (hitPoint.inUnit() && finger.pressing(0)) {
+            int ax = Math.round(hitPoint.x * pw);
 
-
-
-
-                int ax = Math.round(hitPoint.x * pw);
-
-                int ay = Math.round((1f - hitPoint.y) * ph);
+            int ay = Math.round((1f - hitPoint.y) * ph);
 
 
+            float w = this.brushWidth * this.brushWidth;
+            float a = brushAlpha * brushAlpha * 10;
+            for (int i = 0; i < a; i++) {
+                int px = (int) (ax + rng.nextGaussian() * w);
+                if (px >= 0 && px < pw) {
+                    int py = (int) (ay + rng.nextGaussian() * w);
+                    if (py >= 0 && py < ph) {
 
-
-
-                float w = this.brushWidth * this.brushWidth;
-                float a = brushAlpha * brushAlpha * 10;
-                for (int i = 0; i < a; i++) {
-                    int px = (int) (ax + rng.nextGaussian() * w);
-                    if (px >= 0 && px < pw) {
-                        int py = (int) (ay + rng.nextGaussian() * w);
-                        if (py >= 0 && py < ph) {
-                            
-                            mix(pix, py * pw + px);
-                        }
+                        mix(pix, py * pw + px);
                     }
                 }
-
-
-
-
-
-
-
-                update();
-                return this;
             }
+
+
+            update();
+            return this;
         }
 
-        return super.finger(finger);
+        return null;
     }
 
     private void mix(int[] pix, int i) {
@@ -107,8 +97,6 @@ public class Sketch2DBitmap extends Surface implements MenuSupplier {
         float b = Bitmap2D.decode8bBlue(e) * 0.5f + paintB * 0.5f;
         int f = Bitmap2D.encodeRGB8b(r, g, b);
         pix[i] = f;
-
-
 
 
     }
@@ -124,8 +112,6 @@ public class Sketch2DBitmap extends Surface implements MenuSupplier {
         bmp.paint(gl, bounds);
     }
 
-    private float paintR = 0.75f, paintG = 0.75f, paintB = 0.75f;
-
     /**
      * set paint (foreground) color
      */
@@ -135,44 +121,33 @@ public class Sketch2DBitmap extends Surface implements MenuSupplier {
         this.paintB = b;
     }
 
-
     @Override
     public Surface menu() {
         ButtonSet<ColorToggle> colorMenu = new ButtonSet<>(ButtonSet.Mode.One,
-                new ColorToggle(0f, 0, 0), 
-                new ColorToggle(1f, 0, 0), 
+                new ColorToggle(0f, 0, 0),
+                new ColorToggle(1f, 0, 0),
                 new ColorToggle(1f, 0.5f, 0),
                 new ColorToggle(0.75f, 0.75f, 0),
-                new ColorToggle(0f, 1, 0), 
-                new ColorToggle(0f, 0, 1), 
-                new ColorToggle(1f, 0, 1), 
-                new ColorToggle(0.5f, 0.5f, 0.5f), 
-                new ColorToggle(1f, 1, 1) 
+                new ColorToggle(0f, 1, 0),
+                new ColorToggle(0f, 0, 1),
+                new ColorToggle(1f, 0, 1),
+                new ColorToggle(0.5f, 0.5f, 0.5f),
+                new ColorToggle(1f, 1, 1)
         );
-        colorMenu.on((cc,e)->{
+        colorMenu.on((cc, e) -> {
             if (e) {
                 color(cc.r, cc.g, cc.b);
             }
         });
 
         Surface toolMenu = grid(
-                new XYSlider().on((_width, _alpha)->{
+                new XYSlider().on((_width, _alpha) -> {
                     brushWidth = Util.lerp(_width, 0.1f, 3f);
                     brushAlpha = Util.lerp(_alpha, 0.1f, 3f);
                 }).set(0.5f, 0.75f)
         );
 
         return grid(colorMenu, toolMenu);
-    }
-
-    
-
-    public static void main(String[] args) {
-
-
-        SpaceGraph.window(new Sketch2DBitmap(256, 256)
-                
-                , 800, 800);
     }
 }
 

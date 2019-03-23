@@ -9,8 +9,8 @@ import jcog.tree.rtree.rect.HyperRectFloat;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.ReSurface;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.geo.IRL;
@@ -26,36 +26,54 @@ import java.util.function.Supplier;
 public class OsmSurface extends Surface {
 
 
-
+    private static final Consumer<GL2> loading = (gl) -> {
+        gl.glColor3f(1, 0, 0);
+        Draw.rectFrame(0, 0, 1, 1, 0.1f, gl);
+    };
+    public final AtomicBoolean debugIndexBounds = new AtomicBoolean(false);
+    //new OsmSpace.ECEFProjection();
+    final v2 translate = new v2();
     private final IRL index;
-
     private final OsmSpace.LonLatProjection projection =
             new OsmSpace.RawProjection();
-            //new OsmSpace.ECEFProjection();
+    final FingerMove pan = new FingerMove(0) {
 
-    public final AtomicBoolean debugIndexBounds = new AtomicBoolean(false);
+        final v2 prev = new v2();
 
+        @Override
+        public v2 pos(Finger finger) {
+            return finger.posRelative(OsmSurface.this);
+        }
 
-    final v2 translate = new v2();
+        @Override
+        protected boolean startDrag(Finger f) {
+            prev.set(0, 0);
+            return super.startDrag(f);
+        }
 
-    private transient GL2 gl;
+        @Override
+        public void move(float tx, float ty) {
+            projection.pan(tx - prev.x, ty - prev.y, bounds);
+            prev.set(tx, ty);
+        }
+    };
     private final List<OsmElement> hilight = new FasterList(128);
+    @Deprecated
+    transient protected Osm o = null;
+    float[] touch = new float[3];
+    private transient GL2 gl;
 
     public OsmSurface(IRL i) {
         this.index = i;
     }
-
-
-
-    @Deprecated transient protected Osm o = null;
 
     @Override
     protected void paint(GL2 gl, ReSurface reSurface) {
         gl.glPushMatrix();
 
         gl.glTranslatef(
-                translate.x + bounds.x + bounds.w/2,
-                translate.y + bounds.y + bounds.h/2, 0); //center in view
+                translate.x + bounds.x + bounds.w / 2,
+                translate.y + bounds.y + bounds.h / 2, 0); //center in view
 
 
         projection.transform(gl, bounds);
@@ -68,11 +86,10 @@ public class OsmSurface extends Surface {
                 renderTouchedIndexBounds(gl);
             }
 
-            if (gl != null) {
-                hilight.forEach(each -> {
-                    renderBounds(gl, each);
-                });
-            }
+            hilight.forEach(each -> {
+                renderBounds(gl, each);
+            });
+
         }
 
         projection.untransform(gl, bounds);
@@ -82,7 +99,7 @@ public class OsmSurface extends Surface {
     }
 
     private void renderTouchedIndexBounds(GL2 gl) {
-        index.index.root().intersectingNodes(HyperRectFloat.cube(touch, 0), n->{
+        index.index.root().intersectingNodes(HyperRectFloat.cube(touch, 0), n -> {
             renderBounds(gl, n.bounds());
             return true;
         }, index.index.model);
@@ -99,9 +116,9 @@ public class OsmSurface extends Surface {
 
     private void renderBounds(GL2 gl, HyperRegion b) {
         if (b instanceof OsmWay)
-            b = ((OsmWay)b).bounds();
+            b = ((OsmWay) b).bounds();
         if (b instanceof HyperRectFloat) {
-            HyperRectFloat r = (HyperRectFloat)b;
+            HyperRectFloat r = (HyperRectFloat) b;
             rect(gl, r);
         }
     }
@@ -122,7 +139,7 @@ public class OsmSurface extends Surface {
         Draw.colorHash(gl, r.hashCode(), 0.75f);
         //Draw.rect(
         Draw.rectStroke(
-                x1, y1, x2-x1, y2-y1,
+                x1, y1, x2 - x1, y2 - y1,
                 gl
         );
     }
@@ -130,12 +147,11 @@ public class OsmSurface extends Surface {
     private void renderMap(GL2 gl) {
         this.gl = gl;
 
-        if (o !=null) {
+        if (o != null) {
 
             RectFloat b = o.geoBounds;
 
             if (b != null) {
-
 
 
                 Consumer<GL2> renderProc;
@@ -145,7 +161,7 @@ public class OsmSurface extends Surface {
                 else {
                     GLContext ctx = gl.getContext();
                     Object c = ctx.getAttachedObject(o.id);
-                    if (projection.changed() && c!=null) {
+                    if (projection.changed() && c != null) {
                         //detach and create new
                         ctx.detachObject(o.id);
                         c = null;
@@ -185,12 +201,6 @@ public class OsmSurface extends Surface {
         }
     }
 
-
-    private static final Consumer<GL2> loading = (gl)->{
-        gl.glColor3f(1, 0, 0);
-        Draw.rectFrame(0, 0, 1, 1, 0.1f, gl);
-    };
-
     public OsmSurface go(Osm o) {
         this.o = o;
         projection.center(o.geoBounds.cx(), o.geoBounds.cy());
@@ -202,44 +212,6 @@ public class OsmSurface extends Surface {
         projection.center(lon, lat);
         return this;
     }
-
-    private class AnimLabel extends VectorLabel {
-        final Supplier<String> text;
-
-        public AnimLabel(Supplier<String> text) {
-            this.text = text;
-        }
-
-        @Override
-        protected boolean prePaint(ReSurface r) {
-            text(text.get());
-            return super.prePaint(r);
-        }
-    }
-
-    final FingerMove pan = new FingerMove(0) {
-
-        @Override
-        public v2 pos(Finger finger) {
-            return finger.posRelative(OsmSurface.this);
-        }
-
-        final v2 prev = new v2();
-        @Override
-        protected boolean startDrag(Finger f) {
-            prev.set(0,0);
-            return super.startDrag(f);
-        }
-
-        @Override
-        public void move(float tx, float ty) {
-            projection.pan(tx - prev.x, ty - prev.y, bounds);
-            prev.set(tx, ty);
-        }
-    };
-
-    float[] touch = new float[3];
-
 
     @Override
     public Surface finger(Finger finger) {
@@ -257,8 +229,8 @@ public class OsmSurface extends Surface {
             return this;
         } else {
             v2 pos = finger.posPixel;
-            float wx = -bounds.w/2 + pos.x;
-            float wy = -bounds.h/2 + pos.y;
+            float wx = -bounds.w / 2 + pos.x;
+            float wy = -bounds.h / 2 + pos.y;
             float wz = 0;
 
             //TODO unproject screen to world
@@ -272,8 +244,8 @@ public class OsmSurface extends Surface {
 
             float rad = 0.0000f;
             HyperRectFloat cursor = HyperRectFloat.cube(touch, rad);
-            index.index.intersectsWhile(cursor, (each)->{
-                if (each.tags!=null) {
+            index.index.intersectsWhile(cursor, (each) -> {
+                if (each.tags != null) {
                     //System.out.println(each.tags);
                     hilight.add(each);
                 }
@@ -285,7 +257,7 @@ public class OsmSurface extends Surface {
         return null;
     }
 
-    public Surface view() {
+    public Surface widget() {
         return new Stacking(
                 this
 //                ,
@@ -296,6 +268,20 @@ public class OsmSurface extends Surface {
 //                    )
 //                )
         );
+    }
+
+    private class AnimLabel extends VectorLabel {
+        final Supplier<String> text;
+
+        public AnimLabel(Supplier<String> text) {
+            this.text = text;
+        }
+
+        @Override
+        protected boolean prePaint(ReSurface r) {
+            text(text.get());
+            return super.prePaint(r);
+        }
     }
 
 
