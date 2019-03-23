@@ -143,6 +143,10 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
         setAt(t,  target());
         return this;
     }
+    public RingTensor setSpin(float[] t) {
+        setAt(t,  targetSpin());
+        return this;
+    }
 
     public int targetSpin() {
         return target.incrementAndGet();

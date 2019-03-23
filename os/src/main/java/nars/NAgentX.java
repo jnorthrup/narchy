@@ -112,7 +112,7 @@ abstract public class NAgentX extends NAgent {
             initPlugins2(n, a);
             //initPlugins3(n, a);
 
-            window(new Gridding(n.services(NAgent.class).map(NARui::agent).collect(toList())), 500, 500);
+            window(new Gridding(n.plugins(NAgent.class).map(NARui::agent).collect(toList())), 500, 500);
             window(NARui.top(n), 800, 500);
             window(NARui.inputUI(n), 500, 500);//.sizeRel(0.25f, 0.25f);
 

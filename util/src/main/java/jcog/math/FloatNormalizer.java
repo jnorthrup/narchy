@@ -1,7 +1,6 @@
 package jcog.math;
 
 import jcog.Util;
-import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 public class FloatNormalizer implements FloatToFloatFunction  {
@@ -10,7 +9,7 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     protected float min;
     protected float max;
     /** relaxation rate: brings min and max closer to each other in proportion to the value. if == 0, disables */
-    private float relax = 0;
+    private float relax = 0.01f;
 
     public FloatNormalizer() {
         this(Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY);
@@ -63,6 +62,15 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     }
 
     FloatNormalizer updateRange(float raw) {
+        if (relax > 0) {
+            float range = max - min;
+            if (range > epsilon*2) {
+                float mid = (max+min)/2;
+                float rangeSensitized = Util.lerp(relax, range, epsilon*2); //shrunk
+                this.min = mid - rangeSensitized/2;
+                this.max = mid + rangeSensitized/2;
+            }
+        }
 
         if (min > raw) {
             min = raw;
@@ -72,14 +80,7 @@ public class FloatNormalizer implements FloatToFloatFunction  {
             max = raw;
         }
 
-        if (relax > 0) {
-            float range = max - min;
-            if (range > ScalarValue.EPSILON) {
-                float mid = (max+min)/2;
-                max = Util.lerp(relax, max, mid);
-                min = Util.lerp(relax, min, mid);
-            }
-        }
+
         return this;
     }
 

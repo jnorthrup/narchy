@@ -125,7 +125,7 @@ public class UniExec extends Exec {
     }
 
     private void refreshServices() {
-        nar.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
+        nar.plugins().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
     }
 
     @Override

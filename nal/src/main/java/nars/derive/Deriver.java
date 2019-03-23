@@ -88,7 +88,7 @@ abstract public class Deriver extends Causable {
     }
 
     public static Stream<Deriver> derivers(NAR n) {
-        return n.services().filter(Deriver.class::isInstance).map(Deriver.class::cast);
+        return n.plugins().filter(Deriver.class::isInstance).map(Deriver.class::cast);
     }
 
 

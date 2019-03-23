@@ -7,7 +7,7 @@ public class FloatNormalized implements FloatSupplier {
     private final FloatNormalizer normalizer;
 
     public FloatNormalized(FloatSupplier in) {
-        this(in, -1, +1);
+        this(in, -Float.MIN_NORMAL, +Float.MIN_NORMAL);
     }
 
     public FloatNormalized(FloatSupplier in, float minStart, float maxStart) {

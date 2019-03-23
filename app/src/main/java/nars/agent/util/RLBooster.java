@@ -132,7 +132,7 @@ public class RLBooster implements Consumer<NAR> {
     }
 
     @Override
-    public synchronized void accept(NAR ignored) {
+    public void accept(NAR ignored) {
         NAR nar = env.nar();
 
         double reward = (env.happinessMean() - 0.5)*2 /* polarize */;
@@ -152,7 +152,7 @@ public class RLBooster implements Consumer<NAR> {
 
 
         int O = agent.act(feedback(env.prev, now), (float) reward,
-                _in = history.set(input(start, end)).snapshot(_in) );
+                _in = history.setSpin(input(start, end)).snapshot(_in) );
 
         float OFFfreq =
                 0f;

@@ -1,6 +1,7 @@
 package nars.agent;
 
 import jcog.Util;
+import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
@@ -84,7 +85,7 @@ public class MetaAgent extends NAgent {
         senseNumberDifference($.inh(id, $$("deriveTask")), n.feel.deriveTask::get);
 
 
-        n.services(NAgent.class).forEach(a -> {
+        n.plugins(NAgent.class).forEach(a -> {
             if(MetaAgent.this!=a)
                 add(a, false);
         });
@@ -92,16 +93,16 @@ public class MetaAgent extends NAgent {
 
     private void add(NAgent a, boolean allowPause) {
 
-        Reward r = rewardNormalized($.inh(a.id, happy), 0, 1, //(((new FloatNormalized(//new FloatFirstOrderDifference(nar::time,
-                ((((() -> {
+        Reward r = rewardNormalized($.inh(a.id, happy), -Float.MIN_NORMAL, +Float.MIN_NORMAL,
+            new FloatFirstOrderDifference(nar::time, ((((() -> {
 //            float h = a.happinessMean();
 //            float p = a.proficiency();
 //            float hp = Util.or(h, p);
             //System.out.println(h + " " + p + " -> " + hp);
 //            return hp;
-            float d = (float) (a.dexterityMean()*10);
+            float d = (float) a.dexterityMean();
             return d;
-        })))));
+        }))))));
         //reward($.inh(a.id, happy), a::happiness);
 
         //TODO other Emotion sensors

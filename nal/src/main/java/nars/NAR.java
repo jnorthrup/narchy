@@ -1411,7 +1411,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
-    public Stream<Service<NAR>> services() {
+    public Stream<Service<NAR>> plugins() {
         return plugin.stream();
     }
 
@@ -1531,8 +1531,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     /** stream of all registered services */
-    public final <X> Stream<X> services(Class<? extends X> nAgentClass) {
-        return services().filter(x -> nAgentClass.isAssignableFrom(x.getClass()))
+    public final <X> Stream<X> plugins(Class<? extends X> nAgentClass) {
+        return plugins().filter(x -> nAgentClass.isAssignableFrom(x.getClass()))
                 .map(x -> (X)x);
     }
 

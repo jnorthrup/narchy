@@ -293,8 +293,8 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     @NotNull
-    public FloatNormalized normalize(FloatSupplier rewardFunc, float min, float max) {
-        return new FloatNormalized(new FloatClamped(rewardFunc, min, max), min, max, false);
+    public FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
+        return new FloatClamped(new FloatNormalized(rewardFunc, min, max, true), min, max);
     }
 
 //    @Deprecated

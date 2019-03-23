@@ -195,7 +195,7 @@ public interface NSense {
 
     default FloatNormalized difference(FloatSupplier v) {
         return new FloatNormalized(
-                new FloatFirstOrderDifference(nar()::time, v).nanIfZero(), -1, +1);
+                new FloatFirstOrderDifference(nar()::time, v).nanIfZero());
     }
 
     default FloatNormalized difference(FloatSupplier v, float clampRange) {
