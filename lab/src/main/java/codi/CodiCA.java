@@ -3,8 +3,8 @@ package codi;
 import com.jogamp.opengl.GL2;
 import jcog.exe.Loop;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
 import java.util.Arrays;
@@ -380,7 +380,7 @@ public class CodiCA extends CA {
         }
 
         @Override
-        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+        protected void paint(GL2 gl, ReSurface reSurface) {
             float tw = w()/c.sizeX;
             float th = h()/c.sizeY;
 

@@ -7,8 +7,8 @@ import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
 import com.jogamp.opengl.util.glsl.ShaderState;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -136,7 +136,7 @@ public class GLSL extends Surface {
 
 
     @Override
-    public void paint(GL2 gl, SurfaceRender surfaceRender) {
+    public void paint(GL2 gl, ReSurface reSurface) {
         Draw.bounds(gl, this, this::doPaint);
     }
 

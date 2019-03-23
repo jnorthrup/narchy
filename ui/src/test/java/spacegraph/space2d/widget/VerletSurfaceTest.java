@@ -6,8 +6,8 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.shape.VerletSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
@@ -85,7 +85,7 @@ class VerletSurfaceTest {
 
 
         @Override
-        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+        protected void paint(GL2 gl, ReSurface reSurface) {
             VerletSurface.render(physics, gl);
         }
 

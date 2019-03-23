@@ -10,8 +10,8 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
@@ -123,7 +123,7 @@ public class TsneTest {
                 }
 
                 @Override
-                protected void paintIt(GL2 gl, SurfaceRender r) {
+                protected void paintIt(GL2 gl, ReSurface r) {
                     paintNode(gl, this, node.id);
                 }
             }.clicking(()->{
@@ -197,7 +197,7 @@ public class TsneTest {
         Surface plot = new Surface() {
 
             @Override
-            protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+            protected void paint(GL2 gl, ReSurface surfaceRender) {
                 Draw.bounds(bounds, gl, this::paint);
             }
 

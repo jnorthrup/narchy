@@ -10,7 +10,7 @@ import spacegraph.audio.SoundProducer;
 import spacegraph.audio.sample.SampleLoader;
 import spacegraph.audio.synth.SineWave;
 import spacegraph.audio.synth.granular.Granulize;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.grid.Gridding;
 
 import java.util.Random;
@@ -92,7 +92,7 @@ public class HistogramSonification extends Gridding {
     }
 
     @Override
-    protected void paintIt(GL2 gl, SurfaceRender r) {
+    protected void paintIt(GL2 gl, ReSurface r) {
         super.paintIt(gl, r);
         update();
     }

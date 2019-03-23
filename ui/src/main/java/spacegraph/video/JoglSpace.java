@@ -8,7 +8,7 @@ import jcog.event.Off;
 import jcog.math.v3;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
 
@@ -114,7 +114,7 @@ abstract public class JoglSpace {
 
 
     /* render context */
-    public final SurfaceRender rendering = new SurfaceRender();
+    public final ReSurface rendering = new ReSurface();
 
 
     protected void renderOrthos(int dtMS) {
@@ -276,7 +276,7 @@ abstract public class JoglSpace {
 
     }
 
-    protected void update(SurfaceRender rendering) {
+    protected void update(ReSurface rendering) {
 
     }
 

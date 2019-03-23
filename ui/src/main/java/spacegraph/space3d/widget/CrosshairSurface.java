@@ -3,8 +3,8 @@ package spacegraph.space3d.widget;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
 import com.jogamp.opengl.GL2;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglWindow;
 
@@ -27,7 +27,7 @@ public class CrosshairSurface extends Surface implements MouseListener {
 
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
         gl.glPushMatrix();
 
         if (!mouseEnabled) {

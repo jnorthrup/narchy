@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.video.Draw;
 
 /**
@@ -46,7 +46,7 @@ public class SliderModel extends Surface {
     }
 
     @Override
-    protected final void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected final void paint(GL2 gl, ReSurface reSurface) {
         Draw.bounds(bounds, gl, g -> ui.paint(this.p, g));
     }
 

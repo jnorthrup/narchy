@@ -19,14 +19,14 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
     public final FloatRange repelSpeed = new FloatRange(0.5f, 0, 1f);
 
-    public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 1f);
+    public final FloatRange attractSpeed = new FloatRange(0.3f, 0, 1f);
 
     public final FloatRange nodeScale = new FloatRange(0.25f, 0.04f, 1.5f);
 
 
     public final FloatRange nodeSpacing  = new FloatRange(1f, 0.1f, 16f);
 
-    public final FloatRange needSpeedLimit = new FloatRange(0.1f, 0f, 1f);
+    public final FloatRange nodeSpeedMax = new FloatRange(0.5f, 0f, 1f);
 
 
 
@@ -74,7 +74,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         float repelSpeed = this.repelSpeed.floatValue() * gRad * /*~*/3 / iterations;
         float attractSpeed = this.attractSpeed.floatValue() * /*~*/(1f/10)  / iterations;
 
-        float maxSpeedPerIter = needSpeedLimit.floatValue()  * gRad;
+        float maxSpeedPerIter = nodeSpeedMax.floatValue()  * gRad;
 
 
         final v2 aCenter = new v2();

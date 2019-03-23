@@ -41,18 +41,18 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
 
         private transient int _w, _h;
 
-        private final BiConsumer<GL2, SurfaceRender> reset = (g, rr) -> {
+        private final BiConsumer<GL2, ReSurface> reset = (g, rr) -> {
             rr.pw = _w;
             rr.ph = _h;
             rr.x1 = rr.y1 = 0;
             rr.x2 = _w; rr.y2 = _h;
         };
 
-        @Override protected void compileChildren(SurfaceRender r) {
+        @Override protected void compileChildren(ReSurface r) {
             _w = display.getWidth(); _h = display.getHeight();
             forEach(c -> {
                 r.on(reset);
-                c.recompile(r);
+                c.rerender(r);
             });
         }
     };
@@ -110,7 +110,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
         GL2 g = display.gl;
 
         int w = display.window.getWidth(), h = display.window.getHeight();
-        rendering.restart(w, h, dtMS);
+        rendering.restart(w, h, dtMS, display.renderFPS);
 
         g.glDisable(GL.GL_DEPTH_TEST);
 
@@ -128,8 +128,8 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
     }
 
     @Override
-    protected void update(SurfaceRender rendering) {
-        layers.recompile(rendering);
+    protected void update(ReSurface rendering) {
+        layers.rerender(rendering);
     }
 
     @Override

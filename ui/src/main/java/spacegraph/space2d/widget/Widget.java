@@ -6,8 +6,8 @@ import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
@@ -90,7 +90,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 //    }
 
     @Override
-    protected void paintIt(GL2 gl, SurfaceRender rr) {
+    protected void paintIt(GL2 gl, ReSurface rr) {
 
         float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
         float bri = 0.25f * dim;
@@ -119,7 +119,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     }
 
     @Override
-    protected void compileAbove(SurfaceRender r) {
+    protected void compileAbove(ReSurface r) {
 
         if (focused) {
             r.on((gl)->{

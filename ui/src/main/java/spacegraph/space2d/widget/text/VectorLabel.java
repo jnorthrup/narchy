@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.text;
 
 import com.jogamp.opengl.GL2;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.EmptyContainer;
 import spacegraph.util.math.Color4f;
 
@@ -66,12 +66,12 @@ public class VectorLabel extends EmptyContainer {
     }
 
     @Override
-    protected void paintIt(GL2 gl, SurfaceRender r) {
+    protected void paintIt(GL2 gl, ReSurface r) {
         renderer.accept(this, gl);
     }
 
     @Override
-    protected boolean prePaint(SurfaceRender r) {
+    protected boolean prePaint(ReSurface r) {
         float p = r.visPMin(bounds);
         if (p < 7) {
             return false;

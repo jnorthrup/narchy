@@ -5,7 +5,7 @@ import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
 import jcog.math.IntRange;
 import jcog.signal.Tensor;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -131,9 +131,9 @@ public class Cluster2DChip extends Bordering {
     }
 
     @Override
-    protected void compile(SurfaceRender r) {
+    protected void render(ReSurface r) {
         centroids.set(g.nodeStream());
-        super.compile(r);
+        super.render(r);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.slider;
 
 import jcog.math.FloatSupplier;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 
 public class FloatGuage extends FloatSlider {
     private final FloatSupplier value;
@@ -12,7 +12,7 @@ public class FloatGuage extends FloatSlider {
     }
 
     @Override
-    public boolean prePaint(SurfaceRender r) {
+    public boolean prePaint(ReSurface r) {
         if (super.prePaint(r)) {
             set(value.asFloat());
             return true;

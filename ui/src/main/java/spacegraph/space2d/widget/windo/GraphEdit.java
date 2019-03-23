@@ -15,9 +15,9 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.collection.MutableMapContainer;
@@ -337,7 +337,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
     protected void doubleClick(v2 pos) {
 
         Windo z = add(
-                new WizardFrame(new ProtoWidget()) {
+                new WizardFrame(new ProtoWidget())
 //                    @Override
 //                    protected void become(Surface next) {
 //                        super.become(next);
@@ -350,7 +350,8 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 ////                        }
 //
 //                    }
-                });
+                //}
+                );
         z.pos(RectFloat.XYWH(pos.x, pos.y, 0.1f*w(), 0.1f*h()));
         z.root().zoomNext(z);
     }
@@ -441,10 +442,10 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
         abstract protected class VisibleLinkSurface extends Surface {
 
-            abstract protected void paintLink(GL2 gl, SurfaceRender surfaceRender);
+            abstract protected void paintLink(GL2 gl, ReSurface reSurface);
 
             @Override
-            protected final void paint(GL2 gl, SurfaceRender surfaceRender) {
+            protected final void paint(GL2 gl, ReSurface reSurface) {
                 SurfaceBase p = parent;
                 if (p instanceof Surface)
                     pos(((Surface) p).bounds); //inherit bounds
@@ -454,7 +455,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 //                    Draw.rect(p.x - t / 2, p.y - t / 2, t, t, gl);
 //                }
 
-                paintLink(gl, surfaceRender);
+                paintLink(gl, reSurface);
 
             }
 

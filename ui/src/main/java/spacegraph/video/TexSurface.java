@@ -2,7 +2,7 @@ package spacegraph.video;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.hud.Ortho;
 
 import java.awt.image.BufferedImage;
@@ -21,7 +21,7 @@ public class TexSurface extends Surface {
 
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
         tex.paint(gl, bounds);
     }
 

@@ -16,6 +16,8 @@ import jcog.signal.tensor.ArrayTensor;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Clob;
 import java.util.Date;
 import java.util.ServiceLoader;
@@ -214,13 +216,13 @@ public class ExtendedCastGraph extends CastGraph {
 
         addEdge(String.class, String2BigDecimal, BigDecimal.class);
 
-//        byte[] ba = new byte[]{};
-//        Byte[] Ba = new Byte[]{};
+        byte[] ba = new byte[]{};
+        Byte[] Ba = new Byte[]{};
         char[] ca = new char[]{};
         Character[] Ca = new Character[]{};
 
         // TODO use proj text
-//        setAt( String.class, ba.getClass(), String2byteArr );
+        addEdge( String.class, String2byteArr, ba.getClass() );
         // TODO use proj text
 //        setAt( ba.getClass(), String.class, byteArr2String );
 
@@ -242,14 +244,14 @@ public class ExtendedCastGraph extends CastGraph {
         addEdge(java.sql.Time.class, SqlTime2Date, Date.class);
         //        set(java.sql.Timestamp.class, Date.class, SqlTimestamp2Date);
 
-//        set(Date.class, String.class, Date2String);
-//        set(String.class, Date.class, String2Date);
+//        addEdge(Date.class, String.class, Date2String);
+//        addEdge(String.class, Date.class, String2Date);
 
 //        setAt( Clob.class, String.class, Clob2String );
 //        setAt( NClob.class, String.class, NClob2String );
 //
-//        setAt( java.net.URL.class, String.class, URL2String );
-//        setAt( String.class, java.net.URL.class, String2URL );
+        addEdge( java.net.URL.class, URL2String, String.class );
+        addEdge( String.class, String2URL, java.net.URL.class );
 //
 //        setAt( java.net.URI.class, String.class, URI2String );
 //        setAt( String.class, java.net.URI.class, String2URI );
@@ -1150,13 +1152,14 @@ public class ExtendedCastGraph extends CastGraph {
 //    // TODO use proj text
 //    //<editor-fold defaultstate="collapsed" desc="byte / char arrays">
 //    //<editor-fold defaultstate="collapsed" desc="String 2 byte[]">
-////    public static final Convertor String2byteArr = new MutableWeightedCaster() {
-////        @Override
-////        public Object convert(Object from) {
-////            return xyz.cofe.text.Text.decodeHex( (String)from );
-////        }
-////        @Override public String toString(){ return "String2byteArr"; }
-////    };
+    public static final Function String2byteArr = new Function<String,byte[]>() {
+        @Override
+        public byte[] apply(String from) {
+            //return xyz.cofe.text.Text.decodeHex( (String)from );
+            return from.getBytes();
+        }
+        @Override public String toString(){ return "String2byteArr"; }
+    };
 //    //</editor-fold>
 //
 //    // TODO use proj text
@@ -1365,33 +1368,29 @@ public class ExtendedCastGraph extends CastGraph {
 //
 //    //<editor-fold defaultstate="collapsed" desc="URL - String">
 //    //<editor-fold defaultstate="collapsed" desc="URL2String">
-//    public static final Convertor URL2String = new MutableWeightedCaster() {
-//        @Override
-//        public Object convert(Object from) {
-//            java.net.URL url = ((java.net.URL)from);
-//            return url.toString();
-//        }
-//        @Override public String toString(){ return "URL2String"; }
-//    };
-//    //</editor-fold>
-//
-//    //<editor-fold defaultstate="collapsed" desc="String2URL">
-//    public static final Convertor String2URL = new MutableWeightedCaster() {
-//        @Override
-//        public Object convert(Object from) {
-//            String url = ((String)from);
-//            try {
-//                return new java.net.URL(url);
-//            } catch (MalformedURLException ex) {
-//                throw new ClassCastException(
-//                        "can't cast from "+url+" to java.net.URL\n"+
-//                                ex.getMessage()
-//                );
-//            }
-//        }
-//        @Override public String toString(){ return "String2URL"; }
-//    };
-//    //</editor-fold>
+    public static final Function<URL,String> URL2String = new Function<>() {
+        @Override
+        public String apply(URL from) {
+            return from.toString();
+        }
+        @Override public String toString(){ return "URL2String"; }
+    };
+    public static final Function<String,URL> String2URL = new Function<>() {
+        @Override
+        public URL apply(String from) {
+            String url = from;
+            try {
+                return new java.net.URL(url);
+            } catch (MalformedURLException ex) {
+                throw new ClassCastException(
+                        "can't cast from "+url+" to java.net.URL\n"+
+                                ex.getMessage()
+                );
+            }
+        }
+        @Override public String toString(){ return "String2URL"; }
+    };
+
 ////</editor-fold>
 //
 //    //<editor-fold defaultstate="collapsed" desc="URI - String">

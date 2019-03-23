@@ -10,8 +10,8 @@ import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.phys.collision.AABB;
@@ -950,7 +950,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         @Override
-        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+        protected void paint(GL2 gl, ReSurface reSurface) {
 
             Dynamics2D w = physics;
 

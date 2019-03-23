@@ -10,7 +10,7 @@ import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.unit.AspectAlign;
 
 import java.awt.image.BufferedImage;
@@ -100,11 +100,11 @@ public class Tex {
 
         return new TexSurface() {
             @Override
-            protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+            protected void paint(GL2 gl, ReSurface reSurface) {
                 Tex t = this.tex;
                 if (t !=null && t.data == null)
                     t.set(b);
-                super.paint(gl, surfaceRender);
+                super.paint(gl, reSurface);
             }
         };
     }

@@ -18,6 +18,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
 
     abstract public Node<N, E> node(Object key);
 
+    abstract public Iterable<Node<N,E>> nodes();
 
     abstract int nodeCount();
 

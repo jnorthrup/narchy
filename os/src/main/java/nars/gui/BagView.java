@@ -82,7 +82,7 @@ public class BagView<X extends Prioritized> extends TabMenu {
                 });
 
         return Splitting.column(
-            hc, 0.1f, new Gridding(
+            hc, 0.9f, new Gridding(
                     new WindowToggleButton("Sonify", ()->
                         new HistogramSonification(d)
                     )

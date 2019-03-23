@@ -9,7 +9,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.util.math.Point2i;
 import spacegraph.video.Draw;
 import spacegraph.video.Tex;
@@ -165,8 +165,8 @@ public class BitmapMatrixView extends TexSurface {
     }
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        super.paint(gl, surfaceRender);
+    protected void paint(GL2 gl, ReSurface reSurface) {
+        super.paint(gl, reSurface);
         /* paint cursor hilited cell */
         if (cellTouch) {
             float w = w() / this.w, h = h() / this.h;

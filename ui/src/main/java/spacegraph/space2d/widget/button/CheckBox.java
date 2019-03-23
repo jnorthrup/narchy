@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.button;
 
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,7 +50,7 @@ public class CheckBox extends ToggleButton {
 
 
     @Override
-    protected boolean prePaint(SurfaceRender r) {
+    protected boolean prePaint(ReSurface r) {
         if (on())
             pri(0.5f);
 

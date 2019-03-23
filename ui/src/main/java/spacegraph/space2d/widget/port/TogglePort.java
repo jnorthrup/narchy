@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.port;
 
 import com.jogamp.opengl.GL2;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -27,7 +27,7 @@ public class TogglePort extends Stacking {
 
         this.port = new BoolPort() {
             @Override
-            protected void paintIt(GL2 gl, SurfaceRender r) {
+            protected void paintIt(GL2 gl, ReSurface r) {
                 if (toggle.on()) {
                     gl.glColor4f(0f,0.75f,0.1f,0.8f);
                 } else {

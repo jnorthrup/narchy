@@ -9,7 +9,7 @@ import nars.term.Compound;
 import nars.truth.Truth;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.Draw;
 import spacegraph.video.font.HersheyFont;
@@ -106,7 +106,7 @@ public class TruthLab extends Gridding {
 
 
         @Override
-        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+        protected void paint(GL2 gl, ReSurface reSurface) {
             float sw = 0.9f * timeScale;
             float sh = 0.9f;
 

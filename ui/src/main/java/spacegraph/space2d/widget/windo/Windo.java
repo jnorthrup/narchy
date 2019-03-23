@@ -6,7 +6,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.hud.ZoomOrtho;
@@ -237,7 +237,7 @@ public class Windo extends MutableUnitContainer {
     }
 
     @Override
-    protected void paintIt(GL2 gl, SurfaceRender r) {
+    protected void paintIt(GL2 gl, ReSurface r) {
         if (opaque()) {
             //default
             gl.glColor4f(0.25f, 0.25f, 0.25f, 0.75f);
@@ -246,7 +246,7 @@ public class Windo extends MutableUnitContainer {
     }
 
     @Override
-    protected void compileAbove(SurfaceRender r) {
+    protected void compileAbove(ReSurface r) {
         r.on(this::postpaint);
     }
 

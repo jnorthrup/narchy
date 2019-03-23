@@ -55,7 +55,7 @@ public class PushButton extends AbstractButton {
     }
     public static PushButton awesome(String icon, String label) {
         return new PushButton(Splitting.column(
-                new VectorLabel(label), 0.9f,
+                new VectorLabel(label), 0.1f,
                 ImageTexture.awesome(icon).view(1)));
     }
 

@@ -9,7 +9,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.video.Draw;
@@ -117,7 +117,7 @@ public class SignalView extends Timeline2D {
     }
 
     @Override
-    protected void compileAbove(SurfaceRender r) {
+    protected void compileAbove(ReSurface r) {
         float sStart = selectStart;
         if (sStart == sStart) {
             float sEnd = selectEnd;

@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.v2;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.util.math.Color4f;
 import spacegraph.video.Draw;
 import spacegraph.video.font.HersheyFont;
@@ -24,7 +24,7 @@ public abstract class SurfaceHiliteOverlay extends Surface {
     Surface last = null;
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
         if (!enabled())
             return;
 
@@ -37,7 +37,7 @@ public abstract class SurfaceHiliteOverlay extends Surface {
 
                 paintFrame(t, gl);
 
-                paintCaption(t, surfaceRender, gl);
+                paintCaption(t, reSurface, gl);
 
             }
         }
@@ -48,13 +48,13 @@ public abstract class SurfaceHiliteOverlay extends Surface {
     String caption = null;
     int captionFlashtimeMS = 500;
     int captionFlashRemain = 0;
-    private void paintCaption(Surface t, SurfaceRender s, GL2 gl) {
+    private void paintCaption(Surface t, ReSurface s, GL2 gl) {
         if (t != last) {
             //update
             caption = t.toString();
             captionFlashRemain = captionFlashtimeMS;
         } else {
-            captionFlashRemain = Math.max(0, captionFlashRemain - s.dtMS);
+            captionFlashRemain = Math.max(0, captionFlashRemain - s.dtMS());
         }
 
         //if (captionFlashRemain > 0) {

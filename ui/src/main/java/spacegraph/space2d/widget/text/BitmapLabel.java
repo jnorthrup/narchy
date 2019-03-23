@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.text;
 
 import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.widget.console.BitmapTextGrid;
@@ -42,7 +42,7 @@ public class BitmapLabel extends BitmapTextGrid {
     }
 
     @Override
-    protected boolean prePaint(SurfaceRender r) {
+    protected boolean prePaint(ReSurface r) {
         return r.visP(bounds, minPixelsToBeVisible);
     }
 

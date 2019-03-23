@@ -2,7 +2,7 @@ package spacegraph.space2d.phys;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.v2;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.dyn2d.jbox2d.BlobTest4;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 
@@ -23,9 +23,9 @@ class Dynamics2DViewTest {
 
         window(new Dynamics2DView(w) {
             @Override
-            protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+            protected void paint(GL2 gl, ReSurface reSurface) {
                 w.step(0.04f, 4, 1);
-                super.paint(gl, surfaceRender);
+                super.paint(gl, reSurface);
             }
         }, 800, 800);
 

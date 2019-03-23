@@ -2,12 +2,15 @@ package spacegraph.space2d.container;
 
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
-import org.jetbrains.annotations.NotNull;
+import jcog.reflect.ExtendedCastGraph;
 import org.ujmp.core.Matrix;
 import org.ujmp.core.util.matrices.SystemEnvironmentMatrix;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.layout.ForceDirected2D;
+
+import java.util.function.Function;
 
 public enum Graph2DTest {;
 
@@ -36,30 +39,30 @@ public enum Graph2DTest {;
 
     }
 
-    public static Graph2D<Node<Object, Object>> newSimpleGraph() {
-        return new Graph2D<Node<Object, Object>>()
-
-                    .update(new ForceDirected2D<>())
-
-                    .render(new Graph2D.NodeGraphRenderer<>())
-
-                    .set(h.nodes());
-    }
 
     public static class Ujmp1 {
         public static void main(String[] args) {
-
-
-            Graph2D<Node<Object, Object>> sg = newUjmpGraph();
-
-
-            SpaceGraph.window(sg, 800, 800);
+            SpaceGraph.window(newUjmpGraph(), 800, 800);
         }
 
     }
+    public static Surface newTypeGraph() {
+        return new Graph2D<Node<Class, Function>>()
+                .update(new ForceDirected2D<>())
+                .render(new Graph2D.NodeGraphRenderer<>())
+                .set(new ExtendedCastGraph()).widget();
+    }
 
-    @NotNull
-    public static Graph2D<Node<Object, Object>> newUjmpGraph() {
+    public static Graph2D<Node<Object, Object>> newSimpleGraph() {
+        return new Graph2D<Node<Object, Object>>()
+
+                .update(new ForceDirected2D<>())
+
+                .render(new Graph2D.NodeGraphRenderer<>())
+
+                .set(h);
+    }
+    public static Surface newUjmpGraph() {
         MapNodeGraph<Object,Object> h = new MapNodeGraph();
 
         SystemEnvironmentMatrix env = Matrix.Factory.systemEnvironment();
@@ -70,13 +73,13 @@ public enum Graph2DTest {;
         });
 
 
-        return (Graph2D<Node<Object, Object>>) new Graph2D<Node<Object, Object>>()
+        return new Graph2D<Node<Object, Object>>()
 
                 .update(new ForceDirected2D())
 
                 .render(new Graph2D.NodeGraphRenderer())
 
-                .set(h.nodes());
+                .set(h).widget();
     }
 
 }

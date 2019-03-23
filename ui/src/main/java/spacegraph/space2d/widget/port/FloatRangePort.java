@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.port;
 
 import jcog.math.FloatRange;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.widget.port.util.Wiring;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -34,12 +34,12 @@ public class FloatRangePort extends FloatPort {
 
 
     @Override
-    protected void compile(SurfaceRender r) {
+    protected void render(ReSurface r) {
         if (autoUpdate) {
             if (active())
                 LOAD();
         }
-        super.compile(r);
+        super.render(r);
     }
 
 

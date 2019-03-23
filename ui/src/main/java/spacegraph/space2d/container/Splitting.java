@@ -31,16 +31,16 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         split(split);
     }
 
-    public static Splitting<?, ?> column(Surface x, float v, Surface y) {
-        return new Splitting(x, y, v, true);
+    public static Splitting<?, ?> column(Surface top, float v, Surface bottom) {
+        return new Splitting(bottom, top, /* semantically reversed */ 1-v, true);
     }
 
-    public static Splitting<?, ?> column(Surface x, Surface y) {
-        return column(x, 0.5f, y);
+    public static Splitting<?, ?> column(Surface top, Surface bottom) {
+        return column(top, 0.5f, bottom);
     }
 
-    public static Splitting row(Surface x, float v, Surface y) {
-        return new Splitting(x, y, v, false);
+    public static Splitting row(Surface left, float v, Surface right) {
+        return new Splitting(left, right, v, false);
     }
 
     public static Splitting<?, ?> row(Surface x, Surface y) {

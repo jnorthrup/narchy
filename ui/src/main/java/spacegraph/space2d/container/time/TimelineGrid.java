@@ -1,8 +1,8 @@
 package spacegraph.space2d.container.time;
 
 import com.jogamp.opengl.GL2;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
 import java.util.function.BiConsumer;
@@ -13,7 +13,7 @@ public class TimelineGrid extends Surface implements Timeline2D.TimeRangeAware {
     //int DIVISIONS = 10; //TODO
 
     double start, end;
-    private BiConsumer<GL2, SurfaceRender> paintGrid;
+    private BiConsumer<GL2, ReSurface> paintGrid;
 
     @Override
     public void setTime(double tStart, double tEnd) {
@@ -22,7 +22,7 @@ public class TimelineGrid extends Surface implements Timeline2D.TimeRangeAware {
     }
 
     @Override
-    protected void compile(SurfaceRender r) {
+    protected void render(ReSurface r) {
         if (paintGrid == null) {
             double range = end-start;
             double interval = interval(range);

@@ -61,7 +61,7 @@ public class ExeCharts {
                 ),
                 s, Draw::colorBipolar);
 
-        return Splitting.column(DurSurface.get(bmp, nar), 0.05f, new FloatSlider(gain, "Display Gain"));
+        return Splitting.column(DurSurface.get(bmp, nar), 0.95f, new FloatSlider(gain, "Display Gain"));
     }
 
     public static Surface metaGoalControls(NAR n) {
@@ -218,7 +218,7 @@ public class ExeCharts {
                 }),
                 new PushButton("Clear", ()->pp.series.forEach(Plot2D.Series::clear))
         );
-        return DurSurface.get(Splitting.column(pp, 0.1f, controls), nar, pp::commit);
+        return DurSurface.get(Splitting.column(pp, 0.9f, controls), nar, pp::commit);
     }
 
     public static Surface focusPanel(NAR nar) {

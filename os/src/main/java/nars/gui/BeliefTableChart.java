@@ -14,8 +14,8 @@ import nars.term.Termed;
 import nars.truth.TruthWave;
 import spacegraph.space2d.Labeled;
 import spacegraph.space2d.MenuSupplier;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.button.PushButton;
@@ -42,7 +42,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
     private long start, end;
 
     @Override
-    protected void paintIt(GL2 gl, SurfaceRender r) {
+    protected void paintIt(GL2 gl, ReSurface r) {
         gl.glColor3f(0, 0, 0);
         Draw.rect(bounds, gl);
     }
@@ -181,7 +181,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
 
         @Override
-        protected void paint(GL2 _gl, SurfaceRender surfaceRender) {
+        protected void paint(GL2 _gl, ReSurface reSurface) {
 
             float mid = xTime(nar.time());
 

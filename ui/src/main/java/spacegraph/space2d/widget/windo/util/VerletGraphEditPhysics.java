@@ -6,8 +6,8 @@ import jcog.Util;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.port.Wire;
@@ -164,9 +164,9 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
                 this.chain = chain;
             }
 
-            @Override protected void paintLink(GL2 gl, SurfaceRender surfaceRender) {
+            @Override protected void paintLink(GL2 gl, ReSurface reSurface) {
                 int window = 100 * 1000 * 1000;
-                long renderStart = surfaceRender.restartNS;
+                long renderStart = reSurface.restartNS;
 
                 Wire id = VerletVisibleLink.this.id;
                 float aa = id.activity(true, renderStart, window);

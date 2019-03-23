@@ -59,8 +59,8 @@ public class RankedN<X> extends TopN<X> {
 //    }
 
     @Override
-    protected int addEnd(X e, float elementRank) {
-        int i = super.addEnd(e, elementRank);
+    protected int addEnd(X x, float elementRank) {
+        int i = super.addEnd(x, elementRank);
         if (i!=-1)
             insertValue(i, elementRank);
         return i;
@@ -81,7 +81,10 @@ public class RankedN<X> extends TopN<X> {
     }
 
     private void insertValue(int i, float elementRank) {
-        System.arraycopy(value, i, value, i+1, size-1-i );
+        int shift = size-1-i;
+        if (shift > 0)
+            System.arraycopy(value, i, value, i+1, shift );
+
         value[i] = elementRank;
     }
 

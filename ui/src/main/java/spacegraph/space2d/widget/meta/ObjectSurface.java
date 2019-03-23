@@ -9,8 +9,8 @@ import jcog.math.MutableEnum;
 import jcog.reflect.AutoBuilder;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
@@ -234,7 +234,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 
 
         @Override
-        protected void paintIt(GL2 gl, SurfaceRender r) {
+        protected void paintIt(GL2 gl, ReSurface r) {
             super.paintIt(gl, r);
             Draw.colorHash(gl, instanceHash, 0.25f);
             Draw.rect(bounds, gl);
@@ -288,7 +288,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         }
 
         @Override
-        public boolean prePaint(SurfaceRender r) {
+        public boolean prePaint(ReSurface r) {
             on((a.getOpaque())); //load
             return super.prePaint(r);
         }

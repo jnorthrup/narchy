@@ -3,6 +3,7 @@ package spacegraph.space2d.container.graph;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.graph.Node;
+import jcog.data.graph.NodeGraph;
 import jcog.data.map.CellMap;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.data.map.MRUMap;
@@ -10,8 +11,8 @@ import jcog.data.pool.MetalPool;
 import jcog.data.pool.Pool;
 import jcog.data.set.ArrayHashSet;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableMapContainer;
@@ -126,7 +127,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                 this
         ) {
             @Override
-            protected void paintIt(GL2 gl, SurfaceRender r) {
+            protected void paintIt(GL2 gl, ReSurface r) {
 
                 gl.glColor4f(0,0,0, 0.9f);
                 Draw.rect(bounds, gl);
@@ -191,11 +192,11 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     @Override
-    protected boolean prePaint(SurfaceRender r) {
+    protected boolean prePaint(ReSurface r) {
         if (super.prePaint(r)) {
             if (busy.compareAndSet(false, true)) {
                 try {
-                    updater.update(this, r.dtMS);
+                    updater.update(this, r.dtMS());
                 } finally {
                     busy.set(false);
                 }
@@ -207,7 +208,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
     @Override
-    protected void paintIt(GL2 gl, SurfaceRender r) {
+    protected void paintIt(GL2 gl, ReSurface r) {
         cells.forEachValue(n -> {
             if (n.visible())
                 n.paintEdges(gl);
@@ -224,6 +225,13 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     public final Graph2D<X> add(Iterable<X> nodes) {
         return update(nodes, true);
+    }
+
+    public final Graph2D<X> set(NodeGraph g) {
+        return set(g.nodes());
+    }
+    public final Graph2D<X> add(NodeGraph g) {
+        return add(g.nodes());
     }
 
     public final Graph2D<X> set(Iterable<X> nodes) {
@@ -467,7 +475,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
 
         @Override
-        protected void paintIt(GL2 gl, SurfaceRender r) {
+        protected void paintIt(GL2 gl, ReSurface r) {
             gl.glColor4f(this.r, g, b, a);
             Draw.rect(bounds, gl);
         }

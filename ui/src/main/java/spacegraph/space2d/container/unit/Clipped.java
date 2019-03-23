@@ -1,7 +1,7 @@
 package spacegraph.space2d.container.unit;
 
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.video.Draw;
 
 /** renders contents only within the bounds of the container */
@@ -13,7 +13,7 @@ public class Clipped extends UnitContainer {
 
 
     @Override
-    protected void compileChildren(SurfaceRender r) {
+    protected void compileChildren(ReSurface r) {
         r.on((gl, rr)->{
             Draw.stencilStart(gl);
             Draw.rect(bounds, gl);

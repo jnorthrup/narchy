@@ -8,7 +8,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
@@ -66,19 +66,19 @@ abstract public class Container extends Surface {
     /**
      * first sub-layer
      */
-    @Deprecated protected void paintIt(GL2 gl, SurfaceRender r) {
+    @Deprecated protected void paintIt(GL2 gl, ReSurface r) {
 
     }
 
     @Override
-    protected void compile(SurfaceRender r) {
+    protected void render(ReSurface r) {
         if (!prePaint(r)) {
             showing = false;
         } else {
             showing = true;
 
             if (MUSTLAYOUT.compareAndSet(this, 1, 0)) {
-                doLayout(r.dtMS);
+                doLayout(r.dtMS());
             }
 
             r.on(this::paintIt); //TODO if transparent this doesnt need rendered
@@ -90,20 +90,20 @@ abstract public class Container extends Surface {
 
     }
 
-    protected void compileChildren(SurfaceRender r) {
-        forEach(c -> c.recompile(r));
+    protected void compileChildren(ReSurface r) {
+        forEach(c -> c.rerender(r));
     }
 
-    protected void compileAbove(SurfaceRender r) {
+    protected void compileAbove(ReSurface r) {
 
     }
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
 
     }
 
-    protected boolean prePaint(SurfaceRender r) {
+    protected boolean prePaint(ReSurface r) {
         return true;
     }
 

@@ -5,8 +5,8 @@ import jcog.math.FloatRange;
 import jcog.signal.Tensor;
 import jcog.signal.buffer.CircularFloatBuffer;
 import spacegraph.space2d.MenuSupplier;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.widget.button.PushButton;
@@ -94,7 +94,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     }
 
     @Override
-    protected void compile(SurfaceRender r) {
+    protected void render(ReSurface r) {
         if (bmp == null) {
             bmp = new BitmapMatrixView(w, h, this) {
                 @Override
@@ -110,7 +110,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
         }
 
         position(bmp);
-        bmp.recompile(r);
+        bmp.rerender(r);
     }
 
     private void position(BitmapMatrixView bmp) {

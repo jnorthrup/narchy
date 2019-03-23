@@ -6,7 +6,7 @@ import jcog.math.FloatSupplier;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.grid.DynGrid;
 import spacegraph.space2d.container.grid.GridModel;
 import spacegraph.space2d.container.grid.GridRenderer;
@@ -313,7 +313,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         }
 
         @Override
-        public boolean prePaint(SurfaceRender r) {
+        public boolean prePaint(ReSurface r) {
 
             float k = knob.asFloat();
 

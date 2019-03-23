@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.console;
 import com.googlecode.lanterna.TextCharacter;
 import com.jogamp.opengl.GL2;
 import jcog.TODO;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.video.Draw;
 import spacegraph.video.font.HersheyFont;
 
@@ -47,7 +47,7 @@ import java.awt.*;
     }
 
     @Override
-    protected void paintIt(GL2 gl, SurfaceRender r) {
+    protected void paintIt(GL2 gl, ReSurface r) {
         Draw.bounds(bounds, gl, this::doPaint);
     }
 

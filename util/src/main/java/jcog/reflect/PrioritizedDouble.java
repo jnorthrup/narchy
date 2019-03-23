@@ -30,5 +30,5 @@ package jcog.reflect;
  * @author Kamnev Georgiy (nt.gocha@gmail.com)
  */
 public interface PrioritizedDouble /* TODO extends DoubleSupplier */ {
-    Double weight();
+    double weight();
 }

@@ -3,8 +3,8 @@ package spacegraph.space2d.widget.meta;
 import com.jogamp.opengl.GL2;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.unit.UnitContainer;
 
 import java.util.List;
@@ -16,7 +16,7 @@ abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitCo
     private Off on;
 
     final AtomicBoolean invalid = new AtomicBoolean(false);
-    final List<BiConsumer<GL2,SurfaceRender>> render = new FasterList();
+    final List<BiConsumer<GL2, ReSurface>> render = new FasterList();
 
     protected AbstractTriggeredSurface(X the) {
         super(the);
@@ -40,7 +40,7 @@ abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitCo
     }
 
     /** TODO double buffer to prevent 'tearing' */
-    @Override protected void compileChildren(SurfaceRender r) {
+    @Override protected void compileChildren(ReSurface r) {
         if (invalid.compareAndSet(true, false))
             r.record(the(), render);
         else

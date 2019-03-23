@@ -1,7 +1,9 @@
 package spacegraph.space2d;
 
 import com.jogamp.opengl.GL2;
+import jcog.Paper;
 import jcog.data.list.FasterList;
+import jcog.math.FloatAveragedWindow;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.hud.Ortho;
@@ -11,32 +13,41 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /** surface rendering context */
-public class SurfaceRender {
+public class ReSurface {
 
 
-    private final FasterList<BiConsumer<GL2, SurfaceRender>>
+    private final FasterList<BiConsumer<GL2, ReSurface>>
             main = new FasterList<>();
 
     /** viewable pixel resolution */
     public float pw, ph;
-    /** ms since last update */
-    public int dtMS;
+
+    /** time since last frame */
+    private float frameDT;
+
+    /** can be used to calculate frame latency */
+    public float frameDTideal;
+
+    /** load metric as a temporal level-of-detail (QoS criteria)
+     *    (0 = perfectly on-time, >= 1  stalled ) */
+    @Paper
+    public FloatAveragedWindow load = new FloatAveragedWindow(8, 0.5f);
+
+
     public long restartNS;
 
     public float scaleX, scaleY;
     public float x1, x2, y1, y2;
     transient float w, h;
 
-    public SurfaceRender() {
 
-    }
 
     public final void on(Consumer<GL2> renderable) {
         on((gl, rr)->renderable.accept(gl));
     }
 
     /** encodes the rendering sequence */
-    public final void on(BiConsumer<GL2, SurfaceRender> renderable) {
+    public final void on(BiConsumer<GL2, ReSurface> renderable) {
         main.add(renderable);
     }
 
@@ -45,10 +56,10 @@ public class SurfaceRender {
     }
 
     //public static class CachedSurfaceRender extends SurfaceRender {}
-    public void record(Surface compiled, List<BiConsumer<GL2,SurfaceRender>> buffer) {
+    public void record(Surface compiled, List<BiConsumer<GL2, ReSurface>> buffer) {
 
         int before = main.size();
-        compiled.recompile(this);
+        compiled.rerender(this);
         int after = main.size();
 
         buffer.clear();
@@ -67,47 +78,25 @@ public class SurfaceRender {
         }, gl);
     }
 
-    public SurfaceRender restart(float pw, float ph) {
+    public ReSurface restart(float pw, float ph) {
         this.pw = pw;
         this.ph = ph;
         this.restartNS = System.nanoTime();
         return this;
     }
 
-    public SurfaceRender restart(float pw, float ph, int dtMS) {
-        this.dtMS = dtMS;
+    public ReSurface restart(float pw, float ph, int frameDT, float fps) {
+        this.frameDT = frameDT;
+        this.frameDTideal = (float) (1.0/Math.max(1.0E-9,fps));
+        this.load.next( Math.max(0, frameDT - frameDTideal) / frameDTideal );
         return restart(pw, ph);
     }
 
-//    public void clone(float scale, v2 offset, Consumer<SurfaceRender> run, GL2 gl) {
-//        SurfaceRender s = clone(scale, offset);
-//        if (s!=this) {
-//            gl.glPushMatrix();
-//            {
-//                gl.glTranslatef(offset.x, offset.y, 0);
-//                gl.glScalef(scale, scale, 1);
-//                run.accept(s);
-//            }
-//            gl.glPopMatrix();
-//        } else {
-//            run.accept(this);
-//        }
-//    }
-
-//    public SurfaceRender clone(float scale, v2 offset) {
-//        if (Util.equals(scale, 1f, ScalarValue.EPSILON) && offset.equalsZero())
-//            return this; //unchanged
-//        else
-//            return new SurfaceRender(pw, ph, dtMS)
-//                    .setAt(scaleX * scale, scaleY * scale,
-//                        (x1 + x2)/2 + offset.x, (y1 + y2)/2 + offset.y);
-//    }
-
-    public SurfaceRender set(Ortho.Camera cam, v2 scale) {
+    public ReSurface set(Ortho.Camera cam, v2 scale) {
         return set(cam.x, cam.y, scale.x, scale.y);
     }
 
-    public SurfaceRender set(float cx, float cy, float sx, float sy) {
+    public ReSurface set(float cx, float cy, float sx, float sy) {
 
         this.scaleX = sx;
         this.scaleY = sy;
@@ -129,7 +118,7 @@ public class SurfaceRender {
         return RectFloat.XYXY(0, 0, pw, ph);
     }
 
-    public final boolean visible(RectFloat r) {
+    public final boolean isVisible(RectFloat r) {
 //        if (r.w < pixelScaleX)
 //            return false;
 //        if (r.h < pixelScaleY)
@@ -138,19 +127,13 @@ public class SurfaceRender {
         return v;
     }
 
-    /** percentage of screen visible */
-    public v2 visP(RectFloat bounds) {
-        return new v2(bounds.w * scaleX, bounds.h * scaleY);
-    }
-
     public float visPMin(RectFloat bounds) {
         return Math.min(bounds.w * scaleX, bounds.h * scaleY);
     }
 
 
     public final boolean visP(RectFloat bounds, int minPixelsToBeVisible) {
-
-        return !(bounds.w * scaleX < minPixelsToBeVisible) && !(bounds.h * scaleY < minPixelsToBeVisible);
+        return !(bounds.w * scaleX < minPixelsToBeVisible) || !(bounds.h * scaleY < minPixelsToBeVisible);
     }
 
     @Override
@@ -158,8 +141,16 @@ public class SurfaceRender {
         return scaleX + "x" + scaleY + " " + main.size() + " renderables";
     }
 
-    public void play(List<BiConsumer<GL2, SurfaceRender>> render) {
+    public void play(List<BiConsumer<GL2, ReSurface>> render) {
         main.addAll(render);
+    }
+
+    /** ms since last update */
+    public int dtMS() {
+        return Math.max(1,Math.round(1000/ frameDT));
+    }
+    public float load() {
+        return load.asFloat();
     }
 
 

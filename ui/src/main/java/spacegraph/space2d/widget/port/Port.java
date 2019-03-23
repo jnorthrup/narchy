@@ -5,8 +5,8 @@ import jcog.data.graph.Node;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
 import spacegraph.input.finger.Finger;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.util.Wiring;
@@ -229,11 +229,11 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
 
     @Override
-    public boolean prePaint(SurfaceRender r) {
+    public boolean prePaint(ReSurface r) {
         if (super.prePaint(r)) {
             IntObjectProcedure<Port<X>> u = this.updater;
             if (u != null)
-                u.value(r.dtMS, this);
+                u.value(r.dtMS(), this);
 
             return true;
         }

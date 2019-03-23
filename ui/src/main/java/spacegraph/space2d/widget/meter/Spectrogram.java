@@ -3,9 +3,8 @@ package spacegraph.space2d.widget.meter;
 import jcog.math.IntRange;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
-import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.RingContainer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -82,8 +81,8 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
     }
 
     @Override
-    public void compile(SurfaceRender r) {
-        super.compile(r);
+    public void render(ReSurface r) {
+        super.render(r);
         r.on((gl,sr)->{
             //float W = w(), H = h();
 

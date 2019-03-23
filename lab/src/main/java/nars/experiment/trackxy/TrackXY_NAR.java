@@ -18,11 +18,10 @@ import nars.gui.sensor.VectorSensorView;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
-import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.LogContainer;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -362,8 +361,8 @@ public class TrackXY_NAR extends NAgentX {
                 if (a.cam != null) {
                     g.add(Splitting.column(new VectorSensorView(a.cam, n) {
                         @Override
-                        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                            super.paint(gl, surfaceRender);
+                        protected void paint(GL2 gl, ReSurface reSurface) {
+                            super.paint(gl, reSurface);
                             RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
                             gl.glColor4f(1, 0, 0, 0.9f);
                             Draw.rect(at.move(x(), y(), 0.01f), gl);

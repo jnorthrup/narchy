@@ -5,7 +5,7 @@ import com.jogamp.opengl.GL2;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.util.Path2D;
 
 /**
@@ -49,7 +49,7 @@ public class PathSurface extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
         //System.out.println(path);
         if (path.points() > 1) {
             gl.glLineWidth(lineWidth);

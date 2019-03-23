@@ -7,7 +7,7 @@ import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.SurfaceHiliteOverlay;
 
@@ -410,9 +410,9 @@ abstract public class Finger {
         }
 
         @Override
-        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+        protected void paint(GL2 gl, ReSurface reSurface) {
             if (focused()) {
-                renderer.paint(posPixel, Finger.this, surfaceRender.dtMS, gl);
+                renderer.paint(posPixel, Finger.this, reSurface.dtMS(), gl);
 
                 //for debugging:
 //                if (ortho!=null) {

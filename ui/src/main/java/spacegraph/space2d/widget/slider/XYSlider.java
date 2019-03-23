@@ -9,8 +9,8 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.hud.HudHover;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -64,7 +64,7 @@ public class XYSlider extends Surface implements HudHover {
     public Surface caption() {
         return new VectorLabel() {
             @Override
-            protected boolean prePaint(SurfaceRender r) {
+            protected boolean prePaint(ReSurface r) {
                 text(summary());
                 return super.prePaint(r);
             }
@@ -141,7 +141,7 @@ public class XYSlider extends Surface implements HudHover {
 
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
 
         Draw.rectRGBA(bounds, 0f, 0f, 0f, 0.8f, gl);
 

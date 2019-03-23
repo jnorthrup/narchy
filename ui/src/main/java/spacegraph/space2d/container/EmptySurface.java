@@ -1,8 +1,8 @@
 package spacegraph.space2d.container;
 
 import com.jogamp.opengl.GL2;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 
 public final class EmptySurface extends Surface {
 
@@ -18,7 +18,7 @@ public final class EmptySurface extends Surface {
 
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
 
     }
 

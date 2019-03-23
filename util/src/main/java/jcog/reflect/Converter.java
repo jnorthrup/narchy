@@ -43,7 +43,7 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
     
     private final WeightChangeListener listener = event -> {
         Double oldw = Converter.this.weight;
-        Converter.this.weight = null;
+        Converter.this.weight = Double.NaN;
         fireEvent(oldw, null);
     };
 
@@ -108,25 +108,23 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
     }
 
     @Override
-    public Double weight() {
-        if (weight != null) return weight;
+    public double weight() {
+        double weight = this.weight;
+        if (weight==weight) return weight;
 
         double w = 0;
         for (Function conv : functionsArray) {
             if (conv instanceof PrioritizedDouble) {
-                Double wc = ((PrioritizedDouble) conv).weight();
-                if (wc != null)
-                    w += wc;
-                else
-                    w += defaultItemWeight;
+                double wc = ((PrioritizedDouble) conv).weight();
+                w += wc == wc ? wc : defaultItemWeight;
             } else {
                 w += defaultItemWeight;
             }
         }
 
-        weight = w;
+        this.weight = w;
         fireEvent(null, w);
-        return weight;
+        return w;
     }
 
     @Override

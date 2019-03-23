@@ -2,8 +2,8 @@ package spacegraph.space2d.container;
 
 import jcog.math.IntRange;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -91,11 +91,11 @@ public abstract class RingContainer<X extends Surface> extends Surface {
         this.T.set(t);
     }
     @Override
-    protected void compile(SurfaceRender r) {
-        super.compile(r);
+    protected void render(ReSurface r) {
+        super.render(r);
         forEach((z, b)->{
             z.pos(b);
-            z.recompile(r);
+            z.rerender(r);
         });
     }
 

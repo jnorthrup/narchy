@@ -28,7 +28,7 @@ public class RouletteMix<X> extends RankedN<X> implements Function<FloatSupplier
 
     private boolean addUnsorted(X x, float value) {
         int s = size();
-        if (s + 1 >= capacity())
+        if (s + 1 > capacity())
             throw new WTF("capacity exceeded");
 
         return addEnd(x, value)!=-1;
@@ -36,6 +36,7 @@ public class RouletteMix<X> extends RankedN<X> implements Function<FloatSupplier
 
     private RouletteMix(int n) {
         super((X[])new Object[n]);
+
     }
 
     public final X get(Random random) {

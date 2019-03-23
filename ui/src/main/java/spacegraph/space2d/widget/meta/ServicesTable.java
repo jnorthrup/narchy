@@ -6,7 +6,7 @@ import jcog.service.Service;
 import jcog.service.Services;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.grid.DynGrid;
@@ -112,7 +112,7 @@ public class ServicesTable extends Gridding implements GridModel, GridRenderer {
         }
 
         @Override
-        protected void paintIt(GL2 gl, SurfaceRender r) {
+        protected void paintIt(GL2 gl, ReSurface r) {
             if (s.isOff()) {
                 Draw.rectRGBA(bounds, 1, 0, 0, 0.5f, gl);
             } else if (s.isOn()) {

@@ -4,8 +4,8 @@ import jcog.Util;
 import jcog.math.Longerval;
 import jcog.tree.rtree.Spatialization;
 import spacegraph.input.finger.Finger;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Stacking;
@@ -111,7 +111,7 @@ public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
 
 
             @Override
-            public boolean prePaint(SurfaceRender r) {
+            public boolean prePaint(ReSurface r) {
                 float v = this.get();
                 float d = (v - 0.5f) * 2;
                 double delta = d * (end - start) * speed;
@@ -134,7 +134,7 @@ public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
 
         FloatSlider zoomSlider = new FloatSlider(0.5f, 0.48f, 0.52f) {
             @Override
-            public boolean prePaint(SurfaceRender r) {
+            public boolean prePaint(ReSurface r) {
                 float v = this.get();
                 timeScale((v + 0.5f));
                 set(Util.lerp(0.5f + sticking/2, v, 0.5f));
@@ -190,7 +190,7 @@ public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
     }
 
     @Override
-    protected void compileChildren(SurfaceRender r) {
+    protected void compileChildren(ReSurface r) {
         _setTime(startNext, endNext);
 
         super.compileChildren(r);

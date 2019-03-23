@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.term.Termed;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.video.Draw;
@@ -26,7 +26,7 @@ public class ConceptColorIcon extends ConceptView {
     }
 
     @Override
-    protected void paintIt(GL2 gl, SurfaceRender rd) {
+    protected void paintIt(GL2 gl, ReSurface rd) {
         gl.glColor3f(color.x, color.y, color.z);
         Draw.rect(bounds, gl);
     }

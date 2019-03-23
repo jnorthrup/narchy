@@ -10,7 +10,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.geo.IRL;
@@ -50,7 +50,7 @@ public class OsmSurface extends Surface {
     @Deprecated transient protected Osm o = null;
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
         gl.glPushMatrix();
 
         gl.glTranslatef(
@@ -211,7 +211,7 @@ public class OsmSurface extends Surface {
         }
 
         @Override
-        protected boolean prePaint(SurfaceRender r) {
+        protected boolean prePaint(ReSurface r) {
             text(text.get());
             return super.prePaint(r);
         }

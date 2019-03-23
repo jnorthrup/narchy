@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.Widget;
 
@@ -28,7 +28,7 @@ public class MetaHover extends Stacking {
     }
 
     @Override
-    protected boolean prePaint(SurfaceRender r) {
+    protected boolean prePaint(ReSurface r) {
         if (super.prePaint(r)) {
             boolean nextHovering = hoverVisible.valueOf(hovering);
             if (nextHovering!=hovering) {

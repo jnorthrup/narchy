@@ -10,7 +10,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.SpaceGraphPhys3D;
@@ -153,15 +153,15 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
             gl.glDepthMask(false);
 
-            float pixelScale = 1;
-            front.render(gl, rendering.restart(1, 1, dtMS).set(pixelScale/2, pixelScale/2, pixelScale, pixelScale));
+            //float pixelScale = 1;
+            //front.rerender(gl, rendering.restart(1, 1, dtMS).set(pixelScale/2, pixelScale/2, pixelScale, pixelScale));
 
             gl.glDepthMask(true);
 
         }
     }
 
-    private final SurfaceRender rendering = new SurfaceRender();
+    private final ReSurface rendering = new ReSurface();
 
     @Override
     public void renderAbsolute(GL2 gl, int dtMS) {

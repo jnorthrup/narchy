@@ -4,9 +4,11 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Graph2DTest;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.button.Submitter;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.ListMenu;
 import spacegraph.space2d.widget.menu.TabMenu;
@@ -18,14 +20,16 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.BitmapLabel;
+import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.space2d.widget.windo.GraphEdit;
 
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
-import static spacegraph.space2d.container.grid.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.*;
 
 public class WidgetTest {
 
@@ -35,22 +39,35 @@ public class WidgetTest {
     }
 
     static final Map<String, Supplier<Surface>> menu = Map.of(
+
+
+            "Container", ()->grid(
+                    LabeledPane.the("grid",
+                        grid(randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton())
+                    ),
+                    LabeledPane.the("grid wide",
+                        new Gridding(0.618f, randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton())
+                    ),
+                    LabeledPane.the("grid tall",
+                        new Gridding(1/0.618f, randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton())
+                    ),
+                    LabeledPane.the("column",
+                        column(randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton())
+                    ),
+                    LabeledPane.the("row",
+                        row(randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton(),randomIconButton())
+                    ),
+                    LabeledPane.the("vsplit",
+                        Splitting.column(randomIconButton(),0.618f, randomIconButton())
+                    ),
+                    LabeledPane.the("hsplit",
+                        Splitting.row(randomIconButton(),0.618f, randomIconButton())
+                    )
+            ),
             "Button", () -> grid(
                     new PushButton("PushButton"),
-                    new CheckBox("checkbox"),
-                    grid(
-                            PushButton.awesome("code"),
-                            PushButton.awesome("trash"),
-                            PushButton.awesome("fighter-jet"),
-                            PushButton.awesome("wrench")
-                    )
-            )
-            ,
-            "Dialog", () -> grid(
-                        new TextEdit0("xyz").show(),
-                        new FloatSlider(0, 0.25f, 1, "Level"),
-                        new ButtonSet(ButtonSet.Mode.One, new CheckBox("X"), new CheckBox("y"), new CheckBox("z"))
-                    ),
+                    new CheckBox("checkbox")
+            ),
             "Slider", () -> grid(
                     Splitting.row(
                             grid(new FloatSlider(.25f, 0, 1, "solid slider"   /* pause */),
@@ -60,22 +77,27 @@ public class WidgetTest {
                     ),
                     new XYSlider()
             ),
+            "Dialog", () -> grid(
+                        new TextEdit0("xyz").show(),
+                        new FloatSlider(0.33f, 0.25f, 1, "Level"),
+                        new ButtonSet(ButtonSet.Mode.One, new CheckBox("X"), new CheckBox("y"), new CheckBox("z")),
+
+                        Submitter.text("OK", (String result) -> {  })
+                    ),
+
+            "Wizard", () -> new ProtoWidget(),
             "Label", () -> grid(
                     new VectorLabel("vector"),
                     new BitmapLabel("bitmap")
             ),
             "TextEdit", () ->
-                    new TextEdit("Edit this\n...").
-
-                            focus(), //new TextEdit0(new DummyConsole())
-            "Graph2D", () ->
-                    new
-
-                            TabMenu(Map.of(
-                            "Graph2D Simple", () -> Graph2DTest.newSimpleGraph(),
-                            "Graph2D UJMP", () -> Graph2DTest.newUjmpGraph()
-                    )),
-            "Wiring", () -> {
+                    new TextEdit("Edit this\n...").focus(), //new TextEdit0(new DummyConsole())
+            "Graph2D", () -> new TabMenu(Map.of(
+                    "Simple", () -> Graph2DTest.newSimpleGraph(),
+                    "UJMP", () -> Graph2DTest.newUjmpGraph(),
+                    "Types", () -> Graph2DTest.newTypeGraph()
+            )),
+        "Wiring", () -> {
                 GraphEdit<Surface> g;
                 g = new GraphEdit<>();
                 g.physics.invokeLater(()->{
@@ -86,11 +108,34 @@ public class WidgetTest {
                 return g;
             }
             ,
-            "Toy", () -> new
+            "Sketch", () -> new
 
                     MetaFrame(new Sketch2DBitmap(256, 256))
 
     );
+
+
+    private static Surface randomIconButton() {
+        String s;
+        switch (ThreadLocalRandom.current().nextInt(6)) {
+            case 0: s = "code"; break;
+            case 1: s = "trash"; break;
+            case 2: s = "wrench"; break;
+            case 3: s = "fighter-jet"; break;
+            case 4: s = "exclamation-triangle"; break;
+            case 5: s = "shopping-cart"; break;
+//            case 6: s = "dna"; break;
+            default: s = null; break;
+        }
+        return PushButton.awesome(s);
+
+
+                //            switch (ThreadLocalRandom.current().nextInt(6)) {
+//                case 0-> "code";
+//                default -> null;
+//            });
+
+    }
 
     public static void main(String[] args) {
         SpaceGraph.window(widgetDemo(), 1200, 800);

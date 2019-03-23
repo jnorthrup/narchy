@@ -482,18 +482,18 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return true;
     }
 
-    protected int addEnd(X e, float elementRank) {
+    protected int addEnd(X x, float elementRank) {
         int s = this.size;
         Object[] l = this.items;
 
-        if (capacity() == s) {
+        if (capacity() <= s) {
             if (grows()) {
                 l = resize(grow(s));
             } else {
                 return -1;
             }
         }
-        l[SIZE.getAndIncrement(this)] = e;
+        l[SIZE.getAndIncrement(this)] = x;
         return s;
     }
 

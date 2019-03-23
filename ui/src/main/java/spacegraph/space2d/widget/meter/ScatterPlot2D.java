@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.meter;
 
 import jcog.Util;
 import jcog.data.map.CellMap;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -194,9 +194,9 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
     }
 
     @Override
-    protected boolean prePaint(SurfaceRender r) {
+    protected boolean prePaint(ReSurface r) {
         if (super.prePaint(r)) {
-            extent.animate(r.dtMS);
+            extent.animate(r.dtMS());
             return true;
         }
         return false;

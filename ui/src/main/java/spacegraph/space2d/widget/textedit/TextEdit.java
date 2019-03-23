@@ -7,7 +7,7 @@ import jcog.event.ListTopic;
 import jcog.event.Topic;
 import jcog.math.v2;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.container.unit.UnitContainer;
@@ -154,7 +154,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
     private class MyTextEditView extends TextEditModel {
 
         @Override
-        protected void paintIt(GL2 gl, SurfaceRender rr) {
+        protected void paintIt(GL2 gl, ReSurface rr) {
             //super.paintIt(gl, rr);
             paint(content.bounds, view(), focused, gl);
         }

@@ -6,7 +6,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Labeled;
 import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.collection.MutableListContainer;
@@ -73,7 +73,7 @@ public class MetaFrame extends Bordering implements HudHover {
     SatelliteMetaFrame satellite = null;
 
     @Override
-    protected boolean prePaint(SurfaceRender r) {
+    protected boolean prePaint(ReSurface r) {
         if (expanded) {
             clipBounds = false;
 

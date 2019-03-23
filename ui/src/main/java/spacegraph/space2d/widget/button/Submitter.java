@@ -19,18 +19,18 @@ import java.util.function.Function;
  * TODO cancel/reset option etc
  * TODO graphics input type (for sketches)
  */
-public class Submit extends Bordering {
+public class Submitter extends Bordering {
 
 
-    public static Submit text(String label, Consumer<String> input) {
-        return new Submit(label, new TextEdit(16), TextEdit::text, input);
+    public static Submitter text(String label, Consumer<String> input) {
+        return new Submitter(label, new TextEdit(16), TextEdit::text, input);
     }
 
-    public <S extends Surface, X> Submit(String label, S editable, Function<S,X> valueAccessor, Consumer<X> input) {
+    public <S extends Surface, X> Submitter(String label, S editable, Function<S,X> valueAccessor, Consumer<X> input) {
         this(new PushButton(label), editable, valueAccessor, (s, x)->input.accept(x));
     }
 
-    public <S extends Surface, X> Submit(PushButton submitButton, S editable, Function<S,X> valueAccessor, BiConsumer<S,X> input) {
+    public <S extends Surface, X> Submitter(PushButton submitButton, S editable, Function<S,X> valueAccessor, BiConsumer<S,X> input) {
         super(editable);
         east(submitButton);
         submitButton.clicking(()->{

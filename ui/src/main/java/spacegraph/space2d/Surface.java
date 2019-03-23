@@ -116,7 +116,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return id;
     }
 
-    @Deprecated protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    @Deprecated protected void paint(GL2 gl, ReSurface reSurface) {
 
     }
 
@@ -250,23 +250,19 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
     /** prepares the rendering procedures in the rendering context */
-    public final void recompile(SurfaceRender r) {
+    public final void rerender(ReSurface r) {
         if (!showing) {
-            if (!(showing = (visible() && (!clipBounds || r.visible(bounds)))))
+            if (!(showing = (visible() && (!clipBounds || r.isVisible(bounds)))))
                 return;
         }
 
-        compile(r);
+        render(r);
     }
 
-    protected void compile(SurfaceRender r) {
-        r.on(this::render);
+    protected void render(ReSurface r) {
+        r.on(this::paint);
     }
 
-    @Deprecated public final void render(GL2 gl, SurfaceRender r) {
-        if (showing = visible(r))
-            paint(gl, r);
-    }
 
     public Surface hide() {
         visible = false;
@@ -286,8 +282,8 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     public boolean visible() {
         return parent!=null && visible;
     }
-    public final boolean visible(SurfaceRender r) {
-         return visible() && (!clipBounds || r.visible(bounds));
+    public final boolean visible(ReSurface r) {
+         return visible() && (!clipBounds || r.isVisible(bounds));
     }
 
     public float radius() {

@@ -12,8 +12,8 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.key.KeyPressed;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.util.animate.AnimVector3f;
@@ -97,7 +97,7 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
         return super.finger(finger);
     }
 
-    @Override public final void compile(SurfaceRender render) {
+    @Override public final void render(ReSurface render) {
 
         render.on((gl)->{
 
@@ -112,7 +112,7 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
             gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
         });
 
-        the().recompile(render);
+        the().rerender(render);
 
         render.on((gl)->{
            gl.glPopMatrix();

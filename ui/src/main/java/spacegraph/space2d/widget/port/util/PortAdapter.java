@@ -1,6 +1,6 @@
 package spacegraph.space2d.widget.port.util;
 
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.TypedPort;
@@ -53,7 +53,7 @@ public class PortAdapter<X,Y> extends Widget {
     }
 
     @Override
-    protected boolean prePaint(SurfaceRender r) {
+    protected boolean prePaint(ReSurface r) {
         if ((x!=null && !x.active()) || (y!=null && !y.active())) {
             //done
             parent(Windo.class).remove();

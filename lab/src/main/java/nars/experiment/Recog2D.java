@@ -19,8 +19,8 @@ import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -143,7 +143,7 @@ public class Recog2D extends NAgentX {
 
                 new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i -> new VectorLabel(String.valueOf(i)) {
                     @Override
-                    protected void paintIt(GL2 gl, SurfaceRender r) {
+                    protected void paintIt(GL2 gl, ReSurface r) {
                         Concept c = tv.concepts[i];
                         BeliefVector.Neuron nn = tv.neurons[i];
 

@@ -2,7 +2,7 @@ package spacegraph.video;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 
 /**
  * from: http:
@@ -30,7 +30,7 @@ public class GridTex extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
 
         if (tex.texture == null) {
             tex.set(rr128, 128, 128);

@@ -25,8 +25,9 @@
 package jcog.reflect;
 
 
+import jcog.data.list.FasterList;
+
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -37,10 +38,10 @@ import java.util.HashSet;
  */
 public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> implements SetWeight, WeightChangeSender {
 
-    protected final Collection<WeakReference<WeightChangeListener>> weakListeners =
-            new ArrayList<>();
+    private final Collection<WeakReference<WeightChangeListener>> weakListeners =
+            new FasterList<>(0);
     protected final Collection<WeightChangeListener> listeners =
-            new ArrayList<>();
+            new FasterList<>(0);
 
     public MutableWeightedCaster() {
     }
@@ -52,7 +53,8 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
     //</editor-fold>
 
     protected void fireEventWeakListeners(WeightChangeEvent ev) {
-        Collection<WeakReference> removeSet = new HashSet<>();
+        if (!weakListeners.isEmpty()) {
+            Collection<WeakReference> removeSet = new HashSet<>();
 //        weakListeners.stream().forEach((wref) -> {
 //            WeightChangeListener l = wref.get();
 //            if( l==null ){
@@ -61,15 +63,16 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
 //                l.weightChanged(ev);
 //            }
 //        });
-        for (WeakReference<WeightChangeListener> wref : weakListeners) {
-            WeightChangeListener l = wref.get();
-            if (l == null) {
-                removeSet.add(wref);
-            } else {
-                l.weightChanged(ev);
+            for (WeakReference<WeightChangeListener> wref : weakListeners) {
+                WeightChangeListener l = wref.get();
+                if (l == null) {
+                    removeSet.add(wref);
+                } else {
+                    l.weightChanged(ev);
+                }
             }
+            weakListeners.removeAll(removeSet);
         }
-        weakListeners.removeAll(removeSet);
     }
 
     protected void fireEventHardListeners(WeightChangeEvent ev) {

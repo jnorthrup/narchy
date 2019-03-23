@@ -119,7 +119,7 @@ public class Gridding extends MutableListContainer {
             float actualAspect = h / w;
 
             int x;
-            int s = (int) Math.floor((float)Math.sqrt(n));
+            int s = (int) Math.ceil((float)Math.sqrt(n));
             if (actualAspect/a > 1f) {
                 x = Math.round(lerp((actualAspect)/n, s, 1f));
             } else if (actualAspect/a < 1f) {

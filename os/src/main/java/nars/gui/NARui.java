@@ -49,7 +49,7 @@ import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.button.Submit;
+import spacegraph.space2d.widget.button.Submitter;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.Menu;
 import spacegraph.space2d.widget.menu.TabMenu;
@@ -604,10 +604,10 @@ public class NARui {
 
 
             new PushButton("Clear").clicking(n::clear),
-            Submit.text("Load", t->{
+            Submitter.text("Load", t->{
                 throw new TODO();
             }),
-            Submit.text("Save", t->{
+            Submitter.text("Save", t->{
                 throw new TODO(); //tagging
             }),
             new PushButton("List").clicking(()->attn.links.bag.print()) //TODO better

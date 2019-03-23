@@ -6,8 +6,8 @@ import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
 import java.io.InputStream;
@@ -186,7 +186,7 @@ public class BmpFont {
 
 
             @Override
-            protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+            protected void paint(GL2 gl, ReSurface reSurface) {
                 if (f == null)
                     f = BmpFont.the(gl);
 

@@ -9,7 +9,7 @@ import jcog.math.FloatSupplier;
 import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.Widget;
@@ -89,7 +89,7 @@ public class FloatSlider extends Widget {
     @Deprecated volatile float lastValue = Float.NaN;
 
     @Override
-    public boolean prePaint(SurfaceRender r) {
+    public boolean prePaint(ReSurface r) {
 
         slider.update();
 

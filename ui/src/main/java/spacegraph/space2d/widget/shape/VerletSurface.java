@@ -7,8 +7,8 @@ import jcog.event.Off;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.Draw;
 import toxi.geom.QuadtreeIndex;
@@ -92,7 +92,7 @@ public class VerletSurface extends Surface implements Animated {
     }
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
         if (debugRender.getOpaque())
             VerletSurface.render(physics, gl);
     }

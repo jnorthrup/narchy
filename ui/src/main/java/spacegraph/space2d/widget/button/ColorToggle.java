@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.button;
 
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 import spacegraph.video.Draw;
 
 public class ColorToggle extends ToggleButton {
@@ -21,7 +21,7 @@ public class ColorToggle extends ToggleButton {
 
 
     @Override
-    protected void compileAbove(SurfaceRender r) {
+    protected void compileAbove(ReSurface r) {
         super.compileAbove(r);
 
         if (on.get()) {

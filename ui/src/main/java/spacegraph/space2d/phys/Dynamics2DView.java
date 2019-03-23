@@ -2,8 +2,8 @@ package spacegraph.space2d.phys;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.v2;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.phys.callbacks.DebugDraw;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
@@ -35,7 +35,7 @@ public class Dynamics2DView extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
         this.gl = gl;
 
         drawParticles();

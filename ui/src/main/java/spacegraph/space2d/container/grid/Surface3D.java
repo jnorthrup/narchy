@@ -5,8 +5,8 @@ import com.google.common.graph.MutableGraph;
 import com.jogamp.opengl.GL2;
 import jcog.data.graph.MapNodeGraph;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space3d.AbstractSpace;
@@ -27,7 +27,7 @@ public class Surface3D extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
         //TODO
 
     }

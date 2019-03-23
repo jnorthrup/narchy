@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL2;
-import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.ReSurface;
 
 
 /** TODO use TriggeredMatrixView for async which should cause less updates */
@@ -15,9 +15,9 @@ public class PaintUpdateMatrixView extends BitmapMatrixView {
     }
 
     @Override
-    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+    protected void paint(GL2 gl, ReSurface reSurface) {
         updateIfShowing();
-        super.paint(gl, surfaceRender);
+        super.paint(gl, reSurface);
     }
 
 }
