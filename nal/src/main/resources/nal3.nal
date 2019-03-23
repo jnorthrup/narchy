@@ -9,13 +9,13 @@
     (P --> M), (S --> M),               neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S), "&") --> M), (Belief:UnionDepolarized)
 
         (P --> M), (S --> M), task("!"),   neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeRandom(S), "|") --> M), (Punctuation:Quest)
-         (P --> M), (S --> M), task("?@"), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeRandom(P),polarizeRandom(S), "|") --> M)
+         (P --> M), (S --> M), task("?@"), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,polarizeRandom(S), "|") --> M)
 
 
     (M --> P), (M --> S),               neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeBelief(S), "&")), (Belief:IntersectionDepolarized)
     (M --> P), (M --> S),               neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S), "|")), (Belief:UnionDepolarized)
         (M --> P), (M --> S), task("!"),   neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeRandom(S), "&")), (Punctuation:Quest)
-         (M --> P), (M --> S), task("?@"), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeRandom(P),polarizeRandom(S), "&"))
+         (M --> P), (M --> S), task("?@"), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,polarizeRandom(S), "&"))
 
 
 //  union of opposites (coincidentia oppositorum)

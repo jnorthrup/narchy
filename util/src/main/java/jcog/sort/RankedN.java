@@ -127,10 +127,6 @@ public class RankedN<X> extends TopN<X> {
         super.clear();
     }
 
-    @Override
-    public void clearWeak() {
-        super.clearWeak();
-    }
 
     @Nullable
     public X getRoulette(FloatSupplier rng, Predicate<X> filter, boolean cached) {
