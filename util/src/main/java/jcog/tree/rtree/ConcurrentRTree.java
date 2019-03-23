@@ -276,10 +276,10 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     @Override
-    public boolean contains(X t, HyperRegion b, Spatialization<X> model) {
+    public boolean contains(X x, HyperRegion b, Spatialization<X> model) {
         long l = readLock();
         try {
-            return tree.contains(t, b, model);
+            return tree.contains(x, b, model);
         } finally {
             unlockRead(l);
         }

@@ -257,8 +257,8 @@ public class RTree<T> implements Space<T> {
     }
 
     @Override
-    public boolean contains(T t, HyperRegion b, Spatialization<T> model) {
-        return root.contains(t, b, model);
+    public boolean contains(T x, HyperRegion b, Spatialization<T> model) {
+        return root.contains(x, b, model);
     }
 
     public boolean contains(T t) {

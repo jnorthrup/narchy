@@ -83,8 +83,6 @@ public class SensorBeliefTables extends BeliefTables {
 
 
     public void add(Truth value, long start, long end, FloatSupplier pri, short cause, NAR n) {
-
-
         if (value!=null) {
             value = value.dither(
                     Math.max(n.freqResolution.asFloat(), res.asFloat()),
@@ -97,7 +95,6 @@ public class SensorBeliefTables extends BeliefTables {
                 series.term, series.punc(),
                 n);
 
-
         if (x!=null) {
             series.clean(this, n);
             x.cause(new short[] { cause });
@@ -107,12 +104,7 @@ public class SensorBeliefTables extends BeliefTables {
         }
     }
 
-
-
-
-    long[] eviShared = null;
-
-
+//    long[] eviShared = null;
 
     private SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, NAR nar) {
 
@@ -158,26 +150,22 @@ public class SensorBeliefTables extends BeliefTables {
         }
 
         if (next != null) {
-            nextT = newTask(term, punc, nextStart, nextEnd, next, nar);
-            if (nextT != null)
-                series.add(nextT);
-
+            series.add(nextT = newTask(term, punc, nextStart, nextEnd, next, nar));
         }
 
         return nextT;
-
     }
 
-    protected SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAR nar) {
+    private SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAR nar) {
         long[] evi;
 
-        if (Param.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
-            if (eviShared == null)
-                eviShared = nar.evidence();
-            evi = eviShared;
-        } else {
+//        if (Param.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
+//            if (eviShared == null)
+//                eviShared = nar.evidence();
+//            evi = eviShared;
+//        } else {
             evi = nar.evidence(); //unique
-        }
+//        }
 
 //        if (Param.SIGNAL_TASK_OCC_DITHER) {
 //            int dither = nar.dtDither();

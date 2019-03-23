@@ -1,6 +1,7 @@
 package nars.table.dynamic;
 
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import nars.NAR;
 import nars.Param;
@@ -15,7 +16,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -91,7 +91,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             for (TaskTable b : tables) {
                 if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable))
                     b.forEachTask(sStart, sEnd, cleaner);
-                deleteAfter.flush();
+                deleteAfter.flush(b);
             }
 
         }
@@ -102,6 +102,8 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
      */
     boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
 
+        if (t.isDeleted())
+            return true;
 
         long tStart = t.start();
         if (tStart != ETERNAL) {
@@ -109,11 +111,8 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             long tEnd = t.end();
             if (seriesEnd >= tEnd) {
                 if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
-
                     //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption
-                    boolean seriesDefinedThere = !series.isEmpty(t);
-
-                    return seriesDefinedThere;
+                    return !series.isEmpty(t);
                 }
             }
         }
@@ -155,9 +154,9 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         /**
          * current endpoint
          */
-        long e;
+        protected long e;
 
-        public SeriesTask(Term term, byte punc, Truth value, long start, long end, long[] stamp) {
+        SeriesTask(Term term, byte punc, Truth value, long start, long end, long[] stamp) {
             super(SeriesBeliefTable.taskTerm(term), punc, value, start, start, end, stamp);
             if (stamp.length != 1)
                 throw new UnsupportedOperationException("requires stamp of length 1 so it can be considered an Input Task and thus have consistent hashing even while its occurrrence time is stretched");
@@ -196,29 +195,25 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
 
-    private final class TaskFEMABox extends LinkedList<Task> {
-        private final long sStart;
-        private final long sEnd;
+    private final class TaskFEMABox extends FasterList<Task> {
+        private final long sStart, sEnd;
 
         TaskFEMABox(long sStart, long sEnd) {
+            super(0);
             this.sStart = sStart;
             this.sEnd = sEnd;
         }
 
-        public void flush() {
+        public void flush(TaskTable b) {
             if (!isEmpty()) {
-                forEach(t -> removeTask(t, true));
+                forEachWith((t,B) -> B.removeTask(t, true), b);
                 clear();
             }
         }
 
         @Override
         public boolean add(Task t) {
-            if (/*t.isDeleted() || */absorbNonSignal(t, sStart, sEnd)) {
-                super.add(t);
-                return true;
-            }
-            return false;
+            return absorbNonSignal(t, sStart, sEnd) && super.add(t);
         }
     }
 }

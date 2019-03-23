@@ -58,6 +58,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     public RTreeBeliefTable() {
         super(new RTree<>(RTreeBeliefModel.the));
     }
+
+    @Override
+    public boolean isEmpty() {
+        return super.isEmpty();
+    }
+
     @Override
     public final int taskCount() {
         return size();
@@ -76,17 +82,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             for (int i = 0; i < s; i++) {
                 Task x = (Task) data[i];
                 if (x.isDeleted()) {
-
                     boolean removed = tree.remove(x);
-
                     assert (removed);
                     return false;
                 }
 
                 weakest.accept(x);
-
-//                if (closest != null)
-//                    closest.accept(x);
             }
 
             if (s >= 2)
@@ -151,12 +152,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         };
     }
 
-    //    private static Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
-//        return t -> {
-//            Task tt = ((Task) t);
-//            return tt.isDeleted() || each.test(tt);
-//        };
-//    }
+
 
 
     @Override
@@ -177,17 +173,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     @Override
-    public boolean isEmpty() {
-        return super.isEmpty();
-    }
-
-
-    @Override
     public final void match(Answer a) {
 
         HyperIterator.iterate(this,
                 a::temporalDistanceFn,
-                n->a.tryAccept((Task)n)
+                x -> a.tryAccept((Task)x)
         );
     }
 

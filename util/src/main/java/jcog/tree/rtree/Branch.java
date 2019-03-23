@@ -124,16 +124,11 @@ public class Branch<X> extends AbstractNode<X> {
 
             for (int i = 0; i < size; i++) {
                 Node ci = child[i];
-                if (ci != null && ci.bounds().contains(tRect)) {
-
-                    Node di = ci.add(x, false, model, null);
-                    if (di == null)
-                        return null; //duplicate found
-                    if (ci!=di) {
-                        child[i] = di;
-                    }
-
-                }
+                Node di = ci.add(x, false, model, null);
+                if (di == null)
+                    return null; //duplicate found
+                if (ci!=di)
+                    child[i] = di;
             }
             if (!addOrMerge)
                 return this;
