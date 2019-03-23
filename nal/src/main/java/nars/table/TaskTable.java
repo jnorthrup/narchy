@@ -117,19 +117,8 @@ public interface TaskTable {
         return answer.match(this).tasks.getRoulette(answer.random());
     }
 
-    //    static Predicate<Task> filterConfMin(Predicate<Task> filter, NAR nar) {
-//        float eviMin = c2wSafe(nar.confMin.floatValue());
-//
-//        return (filter == null) ?
-//            t -> t.evi() >= eviMin
-//            :
-//            t -> t.evi() >= eviMin && filter.test(t)
-//        ;
-//    }
-
     /** clear and fully deallocate if possible */
     default void delete() {
         clear();
     }
-
 }

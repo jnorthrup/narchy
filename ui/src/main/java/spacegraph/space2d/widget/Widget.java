@@ -11,6 +11,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
+import spacegraph.util.math.Color4f;
 import spacegraph.video.Draw;
 
 /**
@@ -23,7 +24,13 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
     private static final float border = 0.05f;
 
-    static final float backgroundAlpha = 0.8f;
+    /** the fundamental current 'color' of the widget. not necessarily to match or conflict
+     * with what it actually displays but instead to provide a distinctive color for widgets
+     * which otherwise do not specify styling.
+     */
+    public final Color4f color = new Color4f()
+            //default random color tint
+            .hsl(System.identityHashCode(this), 0.2f, 0.1f).a(0.9f);
 
     /**
      * z-raise/depth: a state indicating push/pull (ex: buttons)
@@ -33,7 +40,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
      */
     protected float dz = 0;
 
-    public boolean focused;
+    protected boolean focused;
 
     /**
      * indicates current level of activity of this component, which can be raised by various
@@ -43,8 +50,6 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
      * negative: disabled, hidden, irrelevant
      */
     private float pri = 0;
-
-    protected transient Finger touchedBy = null;
 
     public Widget() {
         this(new EmptySurface());
@@ -65,61 +70,18 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         return (W) this;
     }
 
-//    @Override
-//    public boolean prePaint(SurfaceRender r) {
-//        if (super.prePaint(r)) {
-//
-////            int dtMS = r.dtMS;
-////
-////            if (dtMS > 0) {
-////                if (touchedBy != null) {
-////                    temperature = Math.min(1f, temperature + dtMS / 100f);
-////                }
-////
-////                if (temperature != 0) {
-////                    float decayRate = (float) Math.exp(-dtMS / 1000f);
-////                    temperature *= decayRate;
-////                    if (Math.abs(temperature) < 0.01f)
-////                        temperature = 0f;
-////                }
-////            }
-//            return true;
-//        }
-//        return false;
-//
-//    }
+
 
     @Override
     protected void paintIt(GL2 gl, ReSurface rr) {
-
-        float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
-        float bri = 0.25f * dim;
-        float r, g, b;
-        r = g = b = bri;
-
-
-        float t = this.pri;
-        pri = Util.clamp(pri * 0.95f, 0, 1f);
-        if (t >= 0) {
-
-
-            r += t / 4f;
-            g += t / 4f;
-            b += t / 4f;
-        } else {
-
-            b += -t / 2f;
-            g += -t / 4f;
-        }
-
-
-        Draw.rectRGBA(bounds, r, g, b, backgroundAlpha, gl);
 
         paintWidget(bounds, gl);
     }
 
     @Override
     protected void compileAbove(ReSurface r) {
+        //pri decay
+        pri = Util.clamp(pri * 0.95f, 0, 1f); //TODO Math.exp(-r.dt/...) or something
 
         if (focused) {
             r.on((gl)->{
@@ -133,18 +95,28 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     }
 
 
-//    @Override
-//    protected void paintAbove(GL2 gl, SurfaceRender r) {
-//        if (touchedBy != null) {
-//            Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz / 2f);
-//
-//            gl.glLineWidth(6 + dz * 6);
-//            Draw.rectStroke(gl, x(), y(), w(), h());
-//        }
-//    }
-
-
     protected void paintWidget(RectFloat bounds, GL2 gl) {
+
+        float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
+        float bri = 0.25f * dim;
+//        float r, g, b;
+//        r = g = b = bri;
+//
+//
+//        float t = this.pri;
+
+
+//        if (t >= 0) {
+//            r += t / 4f;
+//            g += t / 4f;
+//            b += t / 4f;
+//        } else {
+//            b += -t / 2f;
+//            g += -t / 4f;
+//        }
+
+        color.set( rgb-> Util.or(rgb,bri,pri/4), gl);
+        Draw.rect(bounds, gl);
 
     }
 
@@ -158,7 +130,6 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
             if (!focused && finger.pressedNow(0) || finger.pressedNow(2))
                 focus();
-
 
             return this;
         }
@@ -186,9 +157,8 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     public void fingerTouch(Finger finger, boolean touching) {
         if (touching) {
             pri(0.5f);
-            touchedBy = finger;
         } else {
-            touchedBy = null;
+
         }
     }
 

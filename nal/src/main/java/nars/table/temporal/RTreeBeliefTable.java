@@ -60,7 +60,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     @Override
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
         return super.isEmpty();
     }
 

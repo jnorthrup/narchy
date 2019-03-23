@@ -172,23 +172,21 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 //        ar *= ar;
 //        br *= br;
 
-        float radii = (ar + br);
+
 
         v2 delta = aCenter.clone().subbed(b.cx(), b.cy());
         float len = delta.normalize();
-        if (len <= radii) {
+        if (len <= ar || len < br) {
             //coincident, apply random vector
             double theta = (float) (rng.nextFloat()*Math.PI*2);
             float tx = (float) Math.cos(theta);
             float ty = (float) Math.sin(theta);
             delta.set(tx, ty);
-            len = radii;
-        } else if (len >= maxRepelDist)
-            return;
-        else {
-            len -= (radii * equilibriumDistFactor);
-            len = Math.max(radii, len);
         }
+        if (len >= maxRepelDist)
+            return;
+
+//        len -= (radii * equilibriumDistFactor);
 
         float s = repelSpeed /
                 (1 + (len * len));
@@ -196,6 +194,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
         delta.scaled(s);
 
+        float radii = (ar + br);
         double baRad = br / radii;
         a.move(delta.x * baRad, delta.y * baRad);
         double abRad = -ar / radii;

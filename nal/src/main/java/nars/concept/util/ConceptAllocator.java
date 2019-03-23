@@ -4,8 +4,8 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
+import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
-import nars.table.temporal.TemporalBeliefTable;
 
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
@@ -83,7 +83,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
     private void setTaskCapacity(TaskConcept c, BeliefTable t, boolean beliefOrGoal) {
         if (t instanceof EternalTable) {
             t.setTaskCapacity(beliefCap(c, beliefOrGoal, true));
-        } else if (t instanceof TemporalBeliefTable) {
+        } else if (t instanceof TaskTable) {
             t.setTaskCapacity(beliefCap(c, beliefOrGoal, false));
         }
     }

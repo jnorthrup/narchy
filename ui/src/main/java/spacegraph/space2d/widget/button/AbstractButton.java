@@ -31,7 +31,6 @@ public abstract class AbstractButton extends Widget {
         super(content);
     }
 
-
     @Override
     public Surface finger(Finger finger) {
         Surface f = super.finger(finger);
@@ -73,8 +72,6 @@ public abstract class AbstractButton extends Widget {
                 onClick();
         }
     }
-
-
 
     @Override
     public boolean key(KeyEvent e, boolean pressedOrReleased) {

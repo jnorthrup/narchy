@@ -668,14 +668,14 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         public void node(NodeVis<N> node, GraphEditing<N> graph) {
             if (node.id instanceof Node) {
                 node.color(0.5f, 0.5f, 0.5f);
-                node.move((float) Math.random() * 100, (float) Math.random() * 100);
+//                node.move((float) Math.random() * 100, (float) Math.random() * 100);
                 node.size(20f, 10f);
 
                 Node<N, E> nn = (Node<N, E>) node.id;
                 nn.edges(false, true).forEach((e) -> {
                     Graph2D.EdgeVis<N> ee = graph.edge(node, e.other(nn));
                     ee.weight= 0.1f;
-                    ee.a = 1;
+                    ee.a = 0.75f;
                     ee.r = ee.g = ee.b = 0.5f;
                 });
 

@@ -32,6 +32,8 @@
 package spacegraph.util.math;
 
 import com.jogamp.opengl.GL2;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import spacegraph.video.Draw;
 
 import java.awt.*;
 
@@ -184,4 +186,28 @@ public class Color4f extends Tuple4f {
         return this;
     }
 
+    public Color4f hsl(int hash, float sat, float lightness) {
+        return hsl(Math.abs(hash)/1000f % 1, sat, lightness, 1f);
+    }
+
+    public Color4f hsl(float hue, float sat, float lightness, float a) {
+        //HACK
+        float[] f = new float[3];
+
+        //hsb(f, hue, saturation, brightness, a);
+        Draw.hsl(f, hue, sat, lightness);
+
+        x = f[0]; y = f[1]; z = f[2]; w = a;
+        return this;
+    }
+
+    /** does not mutate the stored values.
+     * componentFunction applied to the RGB but not the alpha channel */
+    public void set(FloatToFloatFunction componentFunction, GL2 gl) {
+        float r = componentFunction.valueOf(x);
+        float g = componentFunction.valueOf(y);
+        float b = componentFunction.valueOf(z);
+        float a = this.w;
+        gl.glColor4f(r, g, b, a);
+    }
 }

@@ -57,3 +57,8 @@ provide feedback of some type.  Or this may exist virtually as a chemical signal
 emitted by 'leaves' that asynchronously affects a 'branch'
 
 # External Computer Interface and User-Interface
+...
+
+# Links
+ * Diverse and robust molecular algorithms using reprogrammable DNA self-assembly https://sci-hub.tw/https://www.nature.com/articles/s41586-019-1014-9
+ * Computing exponentially faster:implementing a non-deterministicuniversal Turing machine using DNA https://royalsocietypublishing.org/doi/pdf/10.1098/rsif.2016.0990

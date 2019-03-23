@@ -5,10 +5,7 @@ import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Graph2DTest;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.button.ButtonSet;
-import spacegraph.space2d.widget.button.CheckBox;
-import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.button.Submitter;
+import spacegraph.space2d.widget.button.*;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.ListMenu;
 import spacegraph.space2d.widget.menu.TabMenu;
@@ -66,7 +63,8 @@ public class WidgetTest {
             ),
             "Button", () -> grid(
                     new PushButton("PushButton"),
-                    new CheckBox("checkbox")
+                    new CheckBox("CheckBox"),
+                    new HexButton("gears", "HexButton")
             ),
             "Slider", () -> grid(
                     Splitting.row(
