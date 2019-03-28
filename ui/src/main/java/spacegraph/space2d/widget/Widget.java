@@ -49,7 +49,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
      * zero: neutral
      * negative: disabled, hidden, irrelevant
      */
-    private float pri = 0;
+    protected float pri = 0;
 
     public Widget() {
         this(new EmptySurface());
@@ -96,28 +96,10 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
 
     protected void paintWidget(RectFloat bounds, GL2 gl) {
-
         float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
         float bri = 0.25f * dim;
-//        float r, g, b;
-//        r = g = b = bri;
-//
-//
-//        float t = this.pri;
-
-
-//        if (t >= 0) {
-//            r += t / 4f;
-//            g += t / 4f;
-//            b += t / 4f;
-//        } else {
-//            b += -t / 2f;
-//            g += -t / 4f;
-//        }
-
         color.set( rgb-> Util.or(rgb,bri,pri/4), gl);
         Draw.rect(bounds, gl);
-
     }
 
 

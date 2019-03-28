@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static systems.comodal.collision.cache.AtomicLogCounters.MAX_COUNT;
 
-public class AtomicLogCountersTest {
+class AtomicLogCountersTest {
 
   private static final int numCounters = 8;
   private static final int initCount = 3;
@@ -18,12 +18,13 @@ public class AtomicLogCountersTest {
   private AtomicLogCounters counters;
 
   @BeforeEach
-  public void before() {
+  void before() {
     this.counters = AtomicLogCounters.create(numCounters, initCount, maxCounterVal);
   }
 
+  /** note: this test occaisionally fails spuriously */
   @Test
-  public void testCounters() throws ExecutionException, InterruptedException {
+  void testCounters() throws ExecutionException, InterruptedException {
     int expected = (int) ((((256 * 256) / 2.0) / maxCounterVal) * 100.0);
     if (expected % 2 == 1) {
       expected++;
@@ -95,7 +96,7 @@ public class AtomicLogCountersTest {
   }
 
   @Test
-  public void testDecay() {
+  void testDecay() {
     int initCount = 2;
     for (int i = 0; i < numCounters; ++i) {
       counters.setOpaque(i, initCount);

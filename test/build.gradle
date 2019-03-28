@@ -1,8 +1,0 @@
-
-dependencies {
-    compile project(':util')
-    //compile project(':logic')
-    //compile project(':gp')
-    compile project(':app')
-
-}

@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.button;
 
 import com.jogamp.opengl.GL2;
+import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.video.Draw;
 import spacegraph.video.ImageTexture;
@@ -17,7 +18,12 @@ public class HexButton extends PushButton {
     @Override
     protected void paintWidget(RectFloat bounds, GL2 gl) {
 //        super.paintWidget(bounds, gl);
-        gl.glColor3f(0, 0.75f, 0);
+
+        //copied from: Widget.java paintWidget
+        float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
+        float bri = 0.25f * dim;
+        color.set( rgb-> Util.or(rgb,bri,pri/4), gl);
+
         float rad =
                 Math.min(w(), h())/2;
                 //bounds.radius()

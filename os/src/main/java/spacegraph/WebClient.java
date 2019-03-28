@@ -5,7 +5,6 @@ import org.teavm.jso.dom.html.HTMLBodyElement;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLElement;
-import org.teavm.jso.typedarrays.Float32Array;
 import org.teavm.jso.webgl.WebGLBuffer;
 import org.teavm.jso.webgl.WebGLProgram;
 import org.teavm.jso.webgl.WebGLRenderingContext;
@@ -170,17 +169,17 @@ public class WebClient {
         buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         // Interleave vertex positions and colors
-        float[] vertexData = new float[]{
-                // X    Y     Z     R     G     B     A
-                0.0f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                // X    Y     Z     R     G     B     A
-                -0.8f, -0.8f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                // X    Y     Z     R     G     B     A
-                0.8f, -0.8f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
-        };
-        Float32Array a = Float32Array.create(vertexData.length);
-        a.set(vertexData);
-        gl.bufferData(gl.ARRAY_BUFFER, a, gl.STATIC_DRAW);
+//        float[] vertexData = new float[]{
+//                // X    Y     Z     R     G     B     A
+//                0.0f, 0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+//                // X    Y     Z     R     G     B     A
+//                -0.8f, -0.8f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+//                // X    Y     Z     R     G     B     A
+//                0.8f, -0.8f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+//        };
+//        Float32Array a = Float32Array.create(vertexData.length);
+//        a.set(vertexData);
+//        gl.bufferData(gl.ARRAY_BUFFER, a, gl.STATIC_DRAW);
     }
 
 
