@@ -1,7 +1,7 @@
 package spacegraph.space2d.container.unit;
 
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.ReSurface;
+import spacegraph.space2d.Surface;
 import spacegraph.video.Draw;
 
 /** renders contents only within the bounds of the container */

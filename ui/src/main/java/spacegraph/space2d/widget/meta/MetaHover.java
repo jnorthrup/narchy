@@ -1,8 +1,8 @@
 package spacegraph.space2d.widget.meta;
 
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.ReSurface;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.Widget;
 

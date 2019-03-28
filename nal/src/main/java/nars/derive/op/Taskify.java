@@ -17,6 +17,7 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import nars.unify.unification.DeterministicUnification;
 import nars.unify.unification.Termutifcation;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,16 +42,16 @@ public class Taskify extends ProxyTerm {
 
             int fanOut = Math.min(s, TermUnifyForkMax);
             for (int i = 0; i < fanOut; i++) {
-                if (!test(ii.get(i), d))
+                test(ii.get(i), d);
+                if (!d.live())
                     return false;
             }
         }
         return true;
     }
 
-    public final boolean test(DeterministicUnification xy, Derivation d) {
+    public final Term test(DeterministicUnification xy, Derivation d) {
 //        assert(d.transform.xy == null);
-
 //            int start = d.size();
         d.transform.xy = xy::xy;
         d.retransform.clear();
@@ -58,14 +59,13 @@ public class Taskify extends ProxyTerm {
 //      d.revert(start);
         d.transform.xy = null;
         return test(y, d);
-
-
     }
 
 
-    public boolean test(Term x, Derivation d) {
+    @Nullable
+    public Term test(Term x, Derivation d) {
         Term y = termify.test(x, d);
-        return y != null && taskify(y, d);
+        return y != null && taskify(y, d) ? y : null;
     }
 
 
@@ -79,8 +79,14 @@ public class Taskify extends ProxyTerm {
             super($.funcFast(TASKIFY, $.func(IntroVars.VarIntro, termify), $.the(channel.id)), termify, channel);
         }
 
-        public boolean test(Term x, Derivation d) {
-            return super.test(x, d) && introVars.test(d) && taskify(d.concTerm, d);
+        public Term test(Term x, Derivation d) {
+            Term y = super.test(x, d);
+            if (y!=null) {
+                Term z = introVars.test(y, d);
+                return taskify(z, d) ? z : null;
+            }
+            else
+                return null;
         }
 
         //TODO
@@ -94,6 +100,8 @@ public class Taskify extends ProxyTerm {
      * note: the return value here shouldnt matter so just return true anyway
      */
     protected boolean taskify(Term x0, Derivation d) {
+        if (x0 == null)
+            return false; //HACK
 
         final byte punc = d.concPunc;
         if (punc == 0)
@@ -242,10 +250,8 @@ public class Taskify extends ProxyTerm {
 
     protected static boolean spam(Derivation d, int cost) {
         d.use(cost);
-        d.concTerm = null; //erase immediately
         return true;
     }
-
 
     protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Task parent, NAR n) {
 
@@ -276,7 +282,6 @@ public class Taskify extends ProxyTerm {
 
         return false;
     }
-
 
     //    @Deprecated
 //    protected boolean same(Task derived, Task parent, float truthResolution) {

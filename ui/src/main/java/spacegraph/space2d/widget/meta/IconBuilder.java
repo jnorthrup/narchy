@@ -1,8 +1,8 @@
 package spacegraph.space2d.widget.meta;
 
 import com.jogamp.opengl.GL2;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.ReSurface;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 

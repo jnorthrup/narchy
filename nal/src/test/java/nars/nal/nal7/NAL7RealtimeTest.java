@@ -3,7 +3,6 @@ package nars.nal.nal7;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.task.util.TaskBuffer;
 import org.junit.jupiter.api.Test;
 
 class NAL7RealtimeTest {

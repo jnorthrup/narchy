@@ -8,8 +8,8 @@ import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedur
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.ReSurface;
+import spacegraph.space2d.Surface;
 import spacegraph.video.Draw;
 
 /**

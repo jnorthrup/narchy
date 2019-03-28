@@ -6,8 +6,8 @@ import jcog.data.bit.AtomicMetalBitSet;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.ReSurface;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.SurfaceHiliteOverlay;
 

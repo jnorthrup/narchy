@@ -3,7 +3,6 @@ package nars.term.index;
 import nars.*;
 import nars.index.concept.*;
 import nars.subterm.Subterms;
-import nars.task.util.TaskBuffer;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;

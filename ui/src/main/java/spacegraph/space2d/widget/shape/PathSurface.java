@@ -4,8 +4,8 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.ReSurface;
+import spacegraph.space2d.Surface;
 import spacegraph.util.Path2D;
 
 /**

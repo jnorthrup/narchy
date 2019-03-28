@@ -64,7 +64,7 @@ public class Derivation extends PreDerivation {
     private final static int ANON_INITIAL_CAPACITY = 16;
 
 
-    public final UnifyPremise unifyPremise = new UnifyPremise(); {
+    final UnifyPremise unifyPremise = new UnifyPremise(); {
         unifyPremise.commonVariables = false; //disable common variables for the query variables matched in premise formation; since the task target is not transformed like the belief target is.
     }
     public final Collection<Premise> premiseBuffer =
@@ -89,7 +89,7 @@ public class Derivation extends PreDerivation {
         }
     };
 
-    protected final Functor polarizeRandom = new Functor.AbstractInlineFunctor1("polarizeRandom") {
+    final Functor polarizeRandom = new Functor.AbstractInlineFunctor1("polarizeRandom") {
         @Override
         protected Term apply1(Term arg) {
             return random.nextBoolean() ? arg : arg.neg();
@@ -142,7 +142,7 @@ public class Derivation extends PreDerivation {
         }
 
     };
-    protected final Subst mySubst = new Subst("substitute") {
+    final Subst mySubst = new Subst("substitute") {
 
         @Override
         public @Nullable Term apply(Evaluation e, Subterms xx) {
@@ -211,17 +211,17 @@ public class Derivation extends PreDerivation {
      * whether to attempt before beginning,
      * or whether to continue deriving during the procedure.
      */
-    public transient float priSingle, priDouble;
+    private transient float priSingle, priDouble;
 
 
     public transient short[] parentCause;
     public transient boolean concSingle;
     public transient float parentVoluplexitySum;
 
-    public transient long[] concOcc;
-    public transient Truth concTruth;
+    @Deprecated public transient long[] concOcc;
+    @Deprecated public transient Truth concTruth;
     public transient byte concPunc;
-    @Deprecated public transient Term concTerm;
+
     public transient Task _task, _belief;
 
     public transient int dur;
@@ -271,7 +271,7 @@ public class Derivation extends PreDerivation {
         this._belief = resetBelief(nextBelief, nextBeliefTerm);
     }
 
-    public Task resetBelief(Task nextBelief, Term nextBeliefTerm) {
+    private Task resetBelief(Task nextBelief, Term nextBeliefTerm) {
 
         if (nextBelief != null) {
 
@@ -328,7 +328,7 @@ public class Derivation extends PreDerivation {
         return nextBelief;
     }
 
-    public Task resetTask(Task nextTask, Task currentTask) {
+    private Task resetTask(Task nextTask, Task currentTask) {
 
         Term nextTaskTerm = nextTask.term();
 
@@ -415,7 +415,6 @@ public class Derivation extends PreDerivation {
         this.forEachMatch = null;
         this.concTruth = null;
         this.concPunc = 0;
-        this.concTerm = null;
         this.concSingle = false;
         this.truthFunction = null;
         this.evidenceDouble = evidenceSingle = null;
@@ -586,7 +585,6 @@ public class Derivation extends PreDerivation {
         taskStamp.clear();
         parentCause = null;
         concTruth = null;
-        concTerm = null;
         taskTerm = beliefTerm = null;
         taskTruth = beliefTruthTask = beliefTruthBelief = null;
         canCollector.clear();
@@ -635,7 +633,7 @@ public class Derivation extends PreDerivation {
         return concTruthEvi(e);
     }
 
-    public boolean concTruthEvi(double e) {
+    private boolean concTruthEvi(double e) {
         return e >= eviMin && (this.concTruth = PreciseTruth.byEvi(concTruth.freq(), e)) != null;
     }
 

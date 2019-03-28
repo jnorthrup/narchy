@@ -6,9 +6,9 @@ import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.ReSurface;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;

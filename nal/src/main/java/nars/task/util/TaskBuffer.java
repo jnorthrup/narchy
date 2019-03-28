@@ -85,7 +85,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
     /**
      * calculate or estimate current capacity, as a value between 0 and 100% [0..1.0]
      */
-    public final float volume() {
+    public final float load() {
         return size() / capacity.floatValue();
     }
 

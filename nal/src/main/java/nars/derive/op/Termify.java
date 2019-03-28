@@ -40,8 +40,6 @@ public final class Termify extends ProxyTerm {
 
     public final @Nullable Term test(Term x, Derivation d) {
 
-
-        d.concTerm = null;
         d.concOcc = null;
 
         NAR nar = d.nar;
@@ -76,7 +74,6 @@ public final class Termify extends ProxyTerm {
                 assertDithered(y, d.ditherDT);
         }
 
-        d.concTerm = y;
 
 
 

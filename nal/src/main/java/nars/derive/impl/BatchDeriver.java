@@ -6,7 +6,6 @@ import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.Premise;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import nars.time.When;
 

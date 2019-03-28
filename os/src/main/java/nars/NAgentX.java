@@ -593,7 +593,7 @@ abstract public class NAgentX extends NAgent {
             @Override
             public void run() {
 
-                float v = b.volume();
+                float v = b.load();
                 float reward =
                         //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
                         (float) (Math.log(n.feel.busyVol.asFloat())/5f);

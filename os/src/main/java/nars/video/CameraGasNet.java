@@ -14,8 +14,8 @@ import nars.term.atom.Atomic;
 import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.ReSurface;
+import spacegraph.space2d.Surface;
 import spacegraph.video.Draw;
 
 import java.util.function.Consumer;

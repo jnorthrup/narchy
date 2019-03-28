@@ -1,9 +1,7 @@
 package nars.term.util.builder;
 
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Term;
-import org.jetbrains.annotations.Nullable;
 
 /** stateless implementation */
 public class HeapTermBuilder extends TermBuilder {

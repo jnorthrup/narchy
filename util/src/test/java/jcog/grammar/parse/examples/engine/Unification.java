@@ -1,8 +1,8 @@
 package jcog.grammar.parse.examples.engine;
 
-import java.util.ArrayList;
+import jcog.data.set.ArrayHashSet;
+
 import java.util.Iterator;
-import java.util.List;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.
@@ -26,7 +26,7 @@ import java.util.List;
 
 public class Unification {
 	public static final Unification empty = new Unification();
-	private List<Variable> variables;
+	private final ArrayHashSet<Variable> variables = new ArrayHashSet();
 
 	/**
 	 * Creates an empty unification.
@@ -53,9 +53,7 @@ public class Unification {
 	 * @return this unification
 	 */
     private Unification addVariable(Variable v) {
-		if (!variables().contains(v)) {
-			variables.add(v);
-		}
+		variables.add(v);
 		return this;
 	}
 
@@ -68,9 +66,9 @@ public class Unification {
 	 * @return this unification
 	 */
 	public Unification append(Unification u) {
-		for (int i = 0; i < u.size(); i++) {
+		int s = u.size();
+		for (int i = 0; i < s; i++)
 			addVariable(u.variableAt(i));
-		}
 		return this;
 	}
 
@@ -133,9 +131,10 @@ public class Unification {
 	 * Asks all the contained variables to unbind.
 	 */
 	public void unbind() {
-		for (int i = 0; i < size(); i++) {
-			variableAt(i).unbind();
-		}
+//		for (int i = 0; i < size(); i++) {
+//			variableAt(i).unbind();
+//		}
+		variables.forEach(Variable::unbind);
 	}
 
 	/*
@@ -146,16 +145,16 @@ public class Unification {
 	 * @return variable the variable at the indicated index
 	 */
     private Variable variableAt(int i) {
-		return variables().get(i);
+		return variables.get(i);
 	}
 
 	/*
 	 * lazy-initialize this unification's vector
 	 */
-    private List<Variable> variables() {
-		if (variables == null) {
-			variables = new ArrayList<Variable>();
-		}
+    private ArrayHashSet<Variable> variables() {
+//		if (variables == null) {
+//			variables = new ArrayList<Variable>();
+//		}
 		return variables;
 	}
 }

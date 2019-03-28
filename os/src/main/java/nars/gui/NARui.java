@@ -573,15 +573,15 @@ public class NARui {
     }
 
     public static Surface taskBufferView(TaskBuffer b, NAR n) {
-        Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::volume, 0, 1);
+        Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::load, 0, 1);
         DurSurface plotSurface = DurSurface.get(plot, n, plot::commit);
         return new Gridding(
                 plotSurface,
                 new MetaFrame(b),
                 new Gridding(
                     new FloatRangePort(
-                        DurService.cache(b::volume, 0, 1, 1, n).getOne(),
-                    "volume"
+                        DurService.cache(b::load, 0, 1, 1, n).getOne(),
+                    "load"
                     )
                 )
         );

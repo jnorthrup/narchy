@@ -63,6 +63,11 @@ public class ByteAnonMap {
         throw new TODO();
     }
 
+    @Override
+    public String toString() {
+        return idToTerm.toString();
+    }
+
     public boolean updateMap(Function<Term, Term> m) {
         boolean changed = false;
         for (int i = 0, idToTermSize = idToTerm.size(); i < idToTermSize; i++) {

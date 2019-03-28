@@ -30,7 +30,7 @@ import static nars.Param.TermutatorSearchTTL;
 public class Premisify extends AbstractPred<Derivation> {
 
 
-    public final Term taskPat, beliefPat;
+    private final Term taskPat, beliefPat;
     final boolean fwd;
 
     private static final Atomic FWD = Atomic.the("fwd");
@@ -125,16 +125,18 @@ public class Premisify extends AbstractPred<Derivation> {
     protected boolean test(Unification u, Derivation d) {
 
         if (u instanceof Termutifcation)
-            return taskify.test(((Termutifcation)u), d);
+            taskify.test(((Termutifcation)u), d);
 
         else if (u instanceof DeterministicUnification)
-            return taskify.test((DeterministicUnification) u, d);
+            taskify.test((DeterministicUnification) u, d);
 
         else
             throw new WTF();
+
+        return d.live(); //HACK
     }
 
-    protected static final Atomic UNIFY = $.the("unify");
+    private static final Atomic UNIFY = $.the("unify");
 
 
     public final static PREDICATE<Derivation> preUnify = new AbstractPred<>($$("preUnify")) {

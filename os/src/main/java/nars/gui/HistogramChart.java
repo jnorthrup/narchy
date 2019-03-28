@@ -2,8 +2,8 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.ReSurface;
+import spacegraph.space2d.Surface;
 import spacegraph.util.math.Color3f;
 import spacegraph.video.Draw;
 
