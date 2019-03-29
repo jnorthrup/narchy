@@ -74,7 +74,6 @@ public class PremiseRuleSource extends ProxyTerm {
     private final MutableSet<PREDICATE<PreDerivation>> pre;
     protected final PREDICATE[] PRE;
     protected final Occurrify.OccurrenceSolver time;
-    protected final boolean varIntro;
 
 
     protected final Term beliefTruth;
@@ -371,7 +370,7 @@ public class PremiseRuleSource extends ProxyTerm {
         Occurrify.OccurrenceSolver time = Occurrify.mergeDefault;
 
         Term[] modifiers = postcon != null && postcon.length > 1 ? Terms.sorted(postcon[1].arrayShared()) : Op.EmptyTermArray;
-        boolean varIntro = false;
+
         for (Term m : modifiers) {
             if (m.op() != Op.INH)
                 throw new RuntimeException("Unknown postcondition format: " + m);
@@ -381,13 +380,6 @@ public class PremiseRuleSource extends ProxyTerm {
 
             switch (type.toString()) {
 
-                case "Also":
-                    switch (which.toString()) {
-                        case "VarIntro":
-                            varIntro = true;
-                            break;
-                    }
-                    break;
                 case "Punctuation":
                     switch (which.toString()) {
                         case "Belief":
@@ -572,7 +564,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
         this.truthify = Truthify.the(concPunc, beliefTruthOp, goalTruthOp, time);
         this.time = time;
-        this.varIntro = varIntro;
+
         this.taskPunc = taskPunc;
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;
@@ -725,7 +717,6 @@ public class PremiseRuleSource extends ProxyTerm {
         this.constraints = raw.constraints;
         this.pre = raw.pre;
         this.time = raw.time;
-        this.varIntro = raw.varIntro;
         this.taskPunc = raw.taskPunc;
         this.beliefTruth = raw.beliefTruth;
         this.goalTruth = raw.goalTruth;

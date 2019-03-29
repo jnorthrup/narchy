@@ -2,7 +2,7 @@ package nars.task.signal;
 
 public abstract class PointTruthlet extends Truthlet {
 
-    long when;
+    private long when;
 
     @Override
     public final long start() {

@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 public abstract class Memory {
 
 
-    public NAR nar;
+    protected NAR nar;
 
     /**
      * internal get procedure (synchronous)
@@ -169,7 +169,7 @@ public abstract class Memory {
     }
 
     /** useful for map-like impl */
-    public static final BiFunction<? super Termed, ? super Termed, ? extends Termed> setOrReplaceNonPermanent = (prev, next) -> {
+    static final BiFunction<? super Termed, ? super Termed, ? extends Termed> setOrReplaceNonPermanent = (prev, next) -> {
         if (prev instanceof PermanentConcept && !(next instanceof PermanentConcept))
             return prev;
         return next;

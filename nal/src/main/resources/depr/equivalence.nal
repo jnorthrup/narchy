@@ -9,7 +9,8 @@
 //If when S happens, P happens, and before P happens, S has happened, then they are truth-related equivalent
 
 //equivalent, and equivalent to negative cases
- (X==>Y), (Y==>X), neq(X,Y)     |-  (polarize((X==>Y),task)&&polarize((Y==>X),belief)), (Belief:IntersectionDepolarized, Time:TimeRange, Also:VarIntro)
+ (X==>Y), (Y==>X), neq(X,Y)     |-  (polarize((X==>Y),task)&&polarize((Y==>X),belief)), (Belief:IntersectionDepolarized, Time:TimeRange)
+ (X==>Y), (Y==>X), neq(X,Y)     |-  varIntro((polarize((X==>Y),task)&&polarize((Y==>X),belief))), (Belief:IntersectionDepolarized, Time:TimeRange)
 
 //opposite / inequivalent
  //(--X==>Y), (--Y==>X), neq(X,Y) |-  --(polarize((X==>Y),task)&polarize((Y==>X),belief)), (Belief:IntersectionDepolarized, Time:TimeRange)

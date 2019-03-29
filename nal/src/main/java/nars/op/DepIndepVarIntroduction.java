@@ -54,10 +54,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     @Override
     public Pair<Term, Map<Term, Term>> apply(Term x, Random rng) {
-        if (x.hasAny(ConjOrStatementBits)) {
-            return super.apply(x, rng);
-        } else
-            return null;
+        return x.hasAny(ConjOrStatementBits) ? super.apply(x, rng) : null;
     }
 
     @Override

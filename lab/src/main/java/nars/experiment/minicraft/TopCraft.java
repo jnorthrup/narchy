@@ -73,7 +73,7 @@ public class TopCraft extends NAgentX {
             if (ds == 0)
                 return Float.NaN;
             this.prevScore = nextScore;
-            System.out.println("score delta:" + ds);
+            //System.out.println("score delta:" + ds);
             return ds;
         });
         rewardNormalized("health", -1, +1, ()-> {
@@ -82,7 +82,7 @@ public class TopCraft extends NAgentX {
             if (dh == 0)
                 return Float.NaN;
             this.prevHealth = nextHealth;
-            System.out.println("health delta: " + dh);
+            //System.out.println("health delta: " + dh);
             return dh;
             //return (craft.player.health / ((float) craft.player.maxHealth));
         });

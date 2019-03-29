@@ -308,11 +308,11 @@ public enum ConjCommutive {;
 //            throw new WTF("why wasnt this simple case caught earlier");
 //    }
 
-    static Term conjDirect(int dt, Term[] u) {
+    private static Term conjDirect(int dt, Term[] u) {
         return Op.terms.theCompound(CONJ, dt, u);
     }
 
-    static boolean coNegate(MetalBitSet pos, MetalBitSet neg, Term[] u) {
+    private static boolean coNegate(MetalBitSet pos, MetalBitSet neg, Term[] u) {
         int P = pos.cardinality();
         if (P == 1) {
             int pn = pos.first(true);
@@ -362,7 +362,7 @@ public enum ConjCommutive {;
         }
     }
 
-    static MetalBitSet set(MetalBitSet disj, int i, int uLength) {
+    private static MetalBitSet set(MetalBitSet disj, int i, int uLength) {
         if (disj == null) disj = MetalBitSet.bits(uLength);
         disj.set(i);
         return disj;

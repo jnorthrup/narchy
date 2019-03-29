@@ -22,7 +22,7 @@ import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.time.event.DurService;
 import nars.truth.PreciseTruth;
-import nars.util.AtomicExec;
+import nars.util.AtomicOperations;
 import nars.util.Timed;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
@@ -456,7 +456,7 @@ public class Opjects extends DefaultTermizer {
         }
     }
 
-    private class MethodExec extends AtomicExec implements BiConsumer<Term, Timed> {
+    private class MethodExec extends AtomicOperations implements BiConsumer<Term, Timed> {
         private final Term methodName;
         public Operator operator;
 

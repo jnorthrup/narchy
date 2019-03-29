@@ -69,32 +69,25 @@ public class Taskify extends ProxyTerm {
     }
 
 
-    public static class VarTaskify extends Taskify {
-        /**
-         * return this to being a inline evaluable functor
-         */
-        static final IntroVars introVars = new IntroVars();
-
-        public VarTaskify(Termify termify, PremiseRuleProto.RuleCause channel) {
-            super($.funcFast(TASKIFY, $.func(IntroVars.VarIntro, termify), $.the(channel.id)), termify, channel);
-        }
-
-        public Term test(Term x, Derivation d) {
-            Term y = super.test(x, d);
-            if (y!=null) {
-                Term z = introVars.test(y, d);
-                return taskify(z, d) ? z : null;
-            }
-            else
-                return null;
-        }
-
-        //TODO
-        //                varIntro ?
-        //                        AND.the(taskify, introVars, taskify)
-        //                        :
-        //                        taskify
-    }
+//    /** applies variable introduction between Termify and Taskify step */
+//    public static class VarTaskify extends Taskify {
+//
+//        private static final IntroVars introVars = new IntroVars();
+//
+//        public VarTaskify(Termify termify, PremiseRuleProto.RuleCause channel) {
+//            super($.funcFast(TASKIFY, $.func(IntroVars.VarIntro, termify), $.the(channel.id)), termify, channel);
+//        }
+//
+//        public Term test(Term x, Derivation d) {
+//            Term y = termify.test(x, d);
+//            if (y!=null) {
+//                Term z = introVars.test(y, d);
+//                return (z != null) ? (taskify(z, d) ? z : null) : null; //HACK
+//            } else
+//                return null;
+//        }
+//
+//    }
 
     /**
      * note: the return value here shouldnt matter so just return true anyway

@@ -328,13 +328,10 @@ public class Builtin {
 
         }));
 
-        nar.on(Functor.f1("varIntro", (x) -> {
+        nar.on(Functor.f1Inline("varIntro", x -> {
             Pair<Term, Map<Term, Term>> result = nars.op.DepIndepVarIntroduction.the.apply(x, nar.random());
             return result != null ? result.getOne() : Null;
         }));
-
-
-
 
         /** subterm, but specifically inside an ellipsis. otherwise pass through */
         nar.on(Functor.f("esubterm", (Subterms c) -> {

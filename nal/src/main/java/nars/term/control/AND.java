@@ -19,7 +19,7 @@ abstract public class AND<X> extends AbstractPred<X> {
 
     private final float cost;
 
-    protected AND(PREDICATE<X>[] cond) {
+    AND(PREDICATE<X>[] cond) {
         super(
                 $.pFast(cond)
         );
@@ -36,7 +36,7 @@ abstract public class AND<X> extends AbstractPred<X> {
         /*@Stable*/
         private final PREDICATE<X>[] cond;
 
-        protected ANDn(PREDICATE<X>[] cond) {
+        ANDn(PREDICATE<X>[] cond) {
             super(cond);
             this.cond = cond;
         }
@@ -159,8 +159,8 @@ abstract public class AND<X> extends AbstractPred<X> {
         }
     }
 
-    abstract public PREDICATE<X> first();
-    abstract public PREDICATE<X> last();
+    protected abstract PREDICATE<X> first();
+    protected abstract PREDICATE<X> last();
 
 
     @Override

@@ -19,25 +19,25 @@ public abstract class RealTime extends Time {
 
     private final int unitsPerSecond;
 
-    protected long startNS;
-    protected long startMS;
+    long startNS;
+    private long startMS;
     public final boolean relativeToStart;
-    protected long start;
+    long start;
 
-    final static AtomicLongFieldUpdater<RealTime> T = AtomicLongFieldUpdater.newUpdater(RealTime.class, "t");
+    private final static AtomicLongFieldUpdater<RealTime> T = AtomicLongFieldUpdater.newUpdater(RealTime.class, "t");
     private volatile long t;
 
 
-    final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000; 
+    private final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000;
 
-    final AtomicLong nextStamp = new AtomicLong(seed);
+    private final AtomicLong nextStamp = new AtomicLong(seed);
 
     private int dur = 1, nextDur = 1;
     private long last;
 
 
 
-    protected RealTime(int unitsPerSecond, boolean relativeToStart) {
+    RealTime(int unitsPerSecond, boolean relativeToStart) {
         super();
 
         this.relativeToStart = relativeToStart;
@@ -85,7 +85,7 @@ public abstract class RealTime extends Time {
 //        return unitsToSeconds(now() - start);
 //    }
 
-    protected final double unitsToSeconds(long l) {
+    private double unitsToSeconds(long l) {
         return l / ((double) unitsPerSecond);
     }
 
@@ -107,7 +107,7 @@ public abstract class RealTime extends Time {
         return this;
     }
 
-    public Time durSeconds(double seconds) {
+    private Time durSeconds(double seconds) {
         return dur(Math.max(1, (int) Math.round(secondsToUnits(seconds))));
     }
 
@@ -157,14 +157,14 @@ public abstract class RealTime extends Time {
 
 
     /** decisecond (0.1) accuracy */
-    public static class DS extends RealTime {
+    protected static class DS extends RealTime {
 
 
         public DS() {
             this(false);
         }
 
-        public DS(boolean relativeToStart) {
+        DS(boolean relativeToStart) {
             super(10, relativeToStart);
         }
 
@@ -184,7 +184,7 @@ public abstract class RealTime extends Time {
             this(false);
         }
 
-        public CS(boolean relativeToStart) {
+        CS(boolean relativeToStart) {
             super(100, relativeToStart);
         }
 
@@ -216,7 +216,7 @@ public abstract class RealTime extends Time {
     }
 
     /** nanosecond accuracy */
-    public static class NS extends RealTime {
+    protected static class NS extends RealTime {
 
 
         protected NS(boolean relativeToStart) {

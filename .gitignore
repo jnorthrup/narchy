@@ -47,3 +47,5 @@ gradle.properties
 dumps/
 .attach_*
 
+dependency-reduced-pom.xml
+

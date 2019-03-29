@@ -100,10 +100,7 @@ public final class Int implements Intlike, The {
     }
 
 
-    @Override
-    public void forEachInt(IntConsumer c) {
-        c.accept(id);
-    }
+
 
 
 //    public static class RotatedInt implements Termed {

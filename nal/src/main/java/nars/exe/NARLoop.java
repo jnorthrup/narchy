@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NARLoop extends InstrumentedLoop {
 
-    static final Atom NAR_LOOP = $.the(NARLoop.class);
+    private static final Atom NAR_LOOP = $.the(NARLoop.class);
 
     private final NAR nar;
 

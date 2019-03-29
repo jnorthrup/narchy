@@ -16,7 +16,7 @@ public abstract class AbstractAtomic implements Atomic {
 
     /*@Stable*/
     private final transient byte[] bytesCached;
-    final transient int hash;
+    private final transient int hash;
 
     protected AbstractAtomic(byte[] raw) {
         this.bytesCached = raw;
@@ -28,7 +28,7 @@ public abstract class AbstractAtomic implements Atomic {
         this(bytes(op, s));
     }
 
-    protected static byte[] bytes(Op op, String str) {
+    private static byte[] bytes(Op op, String str) {
         return bytes(op.id, str);
     }
 
@@ -36,7 +36,7 @@ public abstract class AbstractAtomic implements Atomic {
         return bytes(opID, str.getBytes());
     }
 
-    public static byte[] bytes(byte opID, byte[] stringbytes) {
+    protected static byte[] bytes(byte opID, byte[] stringbytes) {
         int slen = stringbytes.length;
 
         byte[] sbytes = new byte[slen + 3];

@@ -36,8 +36,8 @@ public class NAL7Test extends NALTest {
     void induction_on_events_neg2() {
 
         test
-                .input("x:before. :|:")
-                .inputAt(1, "(--,x:after). :|:")
+                .input("x:before. |")
+                .inputAt(1, "(--,x:after). |")
                 .mustBelieve(cycles, "(x:before ==>+1 x:after)", 0.00f, 0.45f /*abductionConf*/, 0)
                 .mustBelieve(cycles, "((--,x:after) ==>-1 x:before)", 1.00f, 0.45f /*inductionConf*/, 1)
                 .mustBelieve(cycles, "(x:before &&+1 (--,x:after))", 1.00f, 0.81f /*intersectionConf*/, 0)

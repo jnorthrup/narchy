@@ -36,16 +36,11 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
             CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
-
         try (InputStream nn = NAR.class.getClassLoader().getResourceAsStream(n)) {
-
             bb = nn.readAllBytes();
-
         } catch (IOException e) {
-
             e.printStackTrace();
             bb = ArrayUtils.EMPTY_BYTE_ARRAY;
-
         }
         return (PremiseRuleSource.parse(load(bb)).collect(Collectors.toSet()));
 

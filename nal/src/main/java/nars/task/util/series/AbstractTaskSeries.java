@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T> {
 
-    protected final int cap;
+    private final int cap;
 
 
     public abstract void push(T t);
@@ -14,7 +14,7 @@ abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T
     /** remove the oldest task, and delete it */
     @Nullable protected abstract T pop();
 
-    public AbstractTaskSeries(int cap) {
+    AbstractTaskSeries(int cap) {
         this.cap = cap;
     }
 

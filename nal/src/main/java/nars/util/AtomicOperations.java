@@ -28,7 +28,7 @@ import java.util.function.BiFunction;
  * debounced and atomically/asynchronously executable operation
  * TODO support asych executions that delay or stretch feedback until they complete
  */
-public class AtomicExec implements BiFunction<Task, NAR, Task> {
+public class AtomicOperations implements BiFunction<Task, NAR, Task> {
 
     /**
      * expectation threhold (in range 0.5..1.0 indicating the minimum expectation minimum
@@ -41,7 +41,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     public final FloatRange exeThresh;
 
 
-    static final Logger logger = LoggerFactory.getLogger(AtomicExec.class);
+    static final Logger logger = LoggerFactory.getLogger(AtomicOperations.class);
 
     final BiConsumer<Term, Timed> exe;
 
@@ -50,11 +50,11 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
     private final AtomicReference<DurService> onCycle = new AtomicReference(null);
 
-    public AtomicExec(@Nullable BiConsumer<Term, Timed> exe, float exeThresh) {
+    public AtomicOperations(@Nullable BiConsumer<Term, Timed> exe, float exeThresh) {
         this(exe, new FloatRange(exeThresh, 0.5f, 1f));
     }
 
-    public AtomicExec(@Nullable BiConsumer<Term, Timed> exe, FloatRange exeThresh) {
+    public AtomicOperations(@Nullable BiConsumer<Term, Timed> exe, FloatRange exeThresh) {
         this.exe = exe == null ? ((BiConsumer) this) : exe;
         active.setCapacity(ACTIVE_CAPACITY);
         this.exeThresh = exeThresh;

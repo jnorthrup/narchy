@@ -84,11 +84,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     /**
      * but events are unique
      */
-    public static Conj newConjSharingTermMap(Conj x) {
+    static Conj newConjSharingTermMap(Conj x) {
         return new Conj(x.termToId, x.idToTerm);
     }
 
-    public Conj(ObjectByteHashMap<Term> x, FasterList<Term> y) {
+    Conj(ObjectByteHashMap<Term> x, FasterList<Term> y) {
         super(x, y);
         event = new LongObjectHashMap<>(2);
     }
@@ -109,7 +109,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return c;
     }
 
-    public static ConjLazy fromLazy(Term t) {
+    private static ConjLazy fromLazy(Term t) {
         return ConjLazy.events(t);
     }
 
@@ -290,7 +290,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return e != null ? Conj.eventCount(e) : 0;
     }
 
-    public static int eventCount(Object what) {
+    private static int eventCount(Object what) {
         if (what instanceof byte[]) {
             byte[] b = (byte[]) what;
             int i = indexOfZeroTerminated(b, (byte) 0);
@@ -598,7 +598,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             return !dtSpecial(dt);
     }
 
-    protected static boolean _isSeq(Term x) {
+    private static boolean _isSeq(Term x) {
         Subterms xx = x.subterms();
         return xx.hasAny(CONJ) && //inner conjunction
                 xx.subs() > 1 &&
@@ -613,8 +613,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return x.dt() == DTERNAL && _isSeq(x);
     }
 
-    static final Predicate<Term> isTemporalComponent = Conj::isSeq;
-    static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
+    private static final Predicate<Term> isTemporalComponent = Conj::isSeq;
+    private static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
 
     /**
      * extracts the eternal components of a seq. assumes the conj actually has been determined to be a sequence
@@ -624,7 +624,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return seqEternal(seq.subterms());
     }
 
-    public static Term seqEternal(Subterms ss) {
+    private static Term seqEternal(Subterms ss) {
         return seqEternal(ss, ss.subsTrue(isEternalComponent));
     }
 
@@ -648,7 +648,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return seqTemporal(seq.subterms());
     }
 
-    public static Term seqTemporal(Subterms s) {
+    private static Term seqTemporal(Subterms s) {
         Term t = s.subFirst(isTemporalComponent);
         assert (Conj.isSeq(t));
         return t;
@@ -788,7 +788,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     /**
      * note this doesnt remove the terms which only appeared in the target time being removed
      */
-    public boolean removeAll(long when) {
+    boolean removeAll(long when) {
         if (event.remove(when) != null) {
             this.result = null;
             return true;
@@ -867,7 +867,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return !dtSpecial(dt) ? conjSeqFinal(B, dt, left, right) : conjoin(B, left, right, dt==DTERNAL);
     }
 
-    static Term conjSeqFinal(TermBuilder b, int dt, Term left, Term right) {
+    private static Term conjSeqFinal(TermBuilder b, int dt, Term left, Term right) {
         assert (dt != XTERNAL);
 
         if (left == Null) return Null;
@@ -948,11 +948,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         result = null;
     }
 
-    protected int conflictOrSame(long at, byte what) {
+    int conflictOrSame(long at, byte what) {
         return conflictOrSame(event.get(at), what);
     }
 
-    protected static int conflictOrSame(Object e, byte id) {
+    private static int conflictOrSame(Object e, byte id) {
         if (e instanceof byte[]) {
             byte[] b = (byte[]) e;
             for (byte bi : b) {
@@ -1156,7 +1156,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      * 0: default, continue
      * +1: ignore and continue
      */
-    protected int filterAdd(long at, byte id, Term x) {
+    int filterAdd(long at, byte id, Term x) {
         return 0;
     }
 
@@ -1331,7 +1331,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      * erases contradiction (both cases) between both so may modify X and Y.  probably should .distribute() x and y first
      */
     @Nullable
-    public static Conj intersect(Conj x, Conj y) {
+    private static Conj intersect(Conj x, Conj y) {
 
         assert (x.termToId == y.termToId) : "x and y should share target map";
 
@@ -1367,7 +1367,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return (!modified[0] && c.event.isEmpty()) ? null : c;
     }
 
-    public ByteSet eventSet(long e) {
+    private ByteSet eventSet(long e) {
         Object ee = event.get(e);
         if (ee == null)
             return ByteSets.immutable.empty();
@@ -1699,7 +1699,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return remove(at, i);
     }
 
-    protected boolean remove(long at, byte... what) {
+    private boolean remove(long at, byte... what) {
 
         Object o = event.get(at);
         if (o == null)
@@ -2081,7 +2081,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return ArrayUtils.contains(events, b);
     }
 
-    protected static void events(byte[] events, ByteProcedure each) {
+    private static void events(byte[] events, ByteProcedure each) {
         for (byte e : events) {
             if (e != 0) {
                 each.value(e);
@@ -2165,7 +2165,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return term(when, new FasterList(1));
     }
 
-    public Term term(long when, List<Term> tmp) {
+    private Term term(long when, List<Term> tmp) {
         return term(when, event.get(when), tmp);
     }
 
@@ -2196,7 +2196,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     }
 
-    public Term term(long when, Object what, List<Term> tmp) {
+    private Term term(long when, Object what, List<Term> tmp) {
 
         tmp.clear();
 

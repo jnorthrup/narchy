@@ -29,14 +29,12 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
     public final Pair<PREDICATE<Derivation>[], DeriveAction> rule;
 
-    public PremiseRuleProto(PremiseRuleSource raw, NAR nar) {
+    PremiseRuleProto(PremiseRuleSource raw, NAR nar) {
         super(raw);
 
         RuleCause cause = nar.newCause(s -> new RuleCause(this, s));
 
-        Taskify taskify = !raw.varIntro ?
-                new Taskify(termify, cause) :
-                new Taskify.VarTaskify(termify, cause);
+        Taskify taskify = new Taskify(termify, cause);
 
         boolean fwd = ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.vars() <= beliefPattern.vars());
         Premisify premisify =

@@ -519,7 +519,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return t;
     }
 
-    public void forEachTask(Consumer<Task> each) {
+    public final void forEachTask(Consumer<Task> each) {
         forEachWith((x, e) -> {
             if (x.valid())
                 e.accept(x.task);

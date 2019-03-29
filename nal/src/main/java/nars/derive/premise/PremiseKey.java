@@ -6,7 +6,7 @@ import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.io.TermIO;
 
-public class PremiseKey extends ByteKeyExternalWithParameter<PreDerivation> {
+class PremiseKey extends ByteKeyExternalWithParameter<PreDerivation> {
 
     public PremiseKey(PreDerivation d) {
         this(d, ((Derivation)d).ditherDT);

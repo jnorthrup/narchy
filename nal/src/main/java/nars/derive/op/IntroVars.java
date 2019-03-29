@@ -23,6 +23,7 @@ public final class IntroVars  {
         if (x == null)
             return null;
 
+
         @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, d.random);
         if (xy == null)
             return null;

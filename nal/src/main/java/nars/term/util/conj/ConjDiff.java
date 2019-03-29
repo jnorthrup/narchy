@@ -21,7 +21,7 @@ public class ConjDiff extends Conj {
 
     }
     /** warning: invert may not work the way you expect. it is designed for use in IMPL construction */
-    public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert, @Nullable Conj seed) {
+    private static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert, @Nullable Conj seed) {
         Conj e = seed == null ? new Conj() : Conj.newConjSharingTermMap(seed);
         e.add(excludeAt, exclude);
 
@@ -29,7 +29,7 @@ public class ConjDiff extends Conj {
     }
 
     @NotNull
-    public static ConjDiff the(Term include, long includeAt, boolean invert, Conj exclude) {
+    private static ConjDiff the(Term include, long includeAt, boolean invert, Conj exclude) {
         if (exclude.eventCount(ETERNAL)>0 && exclude.event.size() > 1) {
             //has both eternal and temporal components;
             // mask the eternal components so they are not eliminated from the result
@@ -39,7 +39,7 @@ public class ConjDiff extends Conj {
         return new ConjDiff(include, exclude, includeAt, invert);
     }
 
-    ConjDiff(Term include, Conj exclude, long offset, boolean invert) {
+    private ConjDiff(Term include, Conj exclude, long offset, boolean invert) {
         super(exclude.termToId, exclude.idToTerm);
         this.exc = exclude;
         this.excludeEvents = exc.event.keySet().toArray();
