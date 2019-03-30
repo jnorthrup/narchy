@@ -2,6 +2,7 @@ package spacegraph.audio.speech;
 
 import jcog.Util;
 import jcog.random.XoRoShiRo128PlusRandom;
+import spacegraph.audio.Audio;
 import spacegraph.audio.sample.SamplePlayer;
 import spacegraph.audio.sample.SoundSample;
 
@@ -77,10 +78,16 @@ public class TinySpeech {
         }
         g_phonemes = g;
     }
+    public static void say(String text) {
+        Audio.the().play( saySample(text, 80, 1f  ) );
+    }
 
+    public static float[] _say(String text) {
+        return _say(text, 80, 1f);
+    }
 
     // Synthesizes speech and adds it to specified buffer
-    public static float[] say(String text, float f0, float speed) {
+    public static float[] _say(String text, float f0, float speed) {
 
         XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(1);
         float[] buf = new float[10 * SAMPLE_FREQUENCY];
@@ -154,12 +161,9 @@ public class TinySpeech {
         return aa;
     }
 
-    public SamplePlayer saySample(String text, float f0, float speed) {
-        return new SamplePlayer(new SoundSample(say(text, f0, speed), SAMPLE_FREQUENCY));
+    public static SamplePlayer saySample(String text, float f0, float speed) {
+        return new SamplePlayer(new SoundSample(_say(text, f0, speed), SAMPLE_FREQUENCY));
     }
-
-
-
 
 
 }

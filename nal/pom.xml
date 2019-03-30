@@ -47,13 +47,13 @@
     <dependency>
       <groupId>org.pitest</groupId>
       <artifactId>pitest</artifactId>
-      <version>1.4.6</version>
+      <version>1.4.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.pitest</groupId>
       <artifactId>pitest-entry</artifactId>
-      <version>1.4.6</version>
+      <version>1.4.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.port;
 
 import com.jogamp.opengl.GL2;
 import jcog.data.graph.Node;
+import jcog.data.graph.path.FromTo;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
 import spacegraph.input.finger.Finger;
@@ -33,15 +34,15 @@ public class Port<X> extends Widget implements Wiring.Wireable {
      */
     public In<? super X> in = null;
 
-    /**
-     * prototype (example) builder.  stipulates a protocol as specified by an example instance
-     */
-    private Supplier specifyHow = null;
+//    /**
+//     * prototype (example) builder.  stipulates a protocol as specified by an example instance
+//     */
+//    private Supplier specifyHow = null;
 
-    /**
-     * prototype (example) acceptor. accepts a protocol (on connect / re-connect)
-     */
-    private final Consumer obeyHow = null;
+//    /**
+//     * prototype (example) acceptor. accepts a protocol (on connect / re-connect)
+//     */
+//    private final Consumer obeyHow = null;
 
     private IntObjectProcedure<Port<X>> updater = null;
 
@@ -68,9 +69,9 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         on(i);
     }
 
-    public static final boolean connectable(Port a, Port b) {
+    public static boolean canConnect(Port a, Port b) {
         //synchronized (this) {
-        return a.connectable(b) && b.connectable(a);
+        return a.canConnect(b) && b.canConnect(a);
         //}
     }
 
@@ -83,10 +84,10 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return on((w, x) -> i.run());
     }
 
-    public Port<X> specify(Supplier<X> proto) {
-        this.specifyHow = proto;
-        return this;
-    }
+//    public Port<X> specify(Supplier<X> proto) {
+//        this.specifyHow = proto;
+//        return this;
+//    }
 
 //    public Port<X> obey(Consumer<? super X> withRecievedProto) {
 //        this.obeyHow = withRecievedProto;
@@ -116,24 +117,23 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return this;
     }
 
-
     public boolean enabled() {
         return enabled;
     }
 
-    final boolean connectable(Port other) {
-        if (other.specifyHow != null) {
-
-            if (specifyHow != null) {
-
-                return specifyHow.get().equals(other.specifyHow.get());
-            }
-
-            if (obeyHow != null) {
-
-                obeyHow.accept(other.specifyHow.get());
-            }
-        }
+    final boolean canConnect(Port other) {
+//        if (other.specifyHow != null) {
+//
+//            if (specifyHow != null) {
+//
+//                return specifyHow.get().equals(other.specifyHow.get());
+//            }
+//
+//            if (obeyHow != null) {
+//
+//                obeyHow.accept(other.specifyHow.get());
+//            }
+//        }
 
         return true;
     }
@@ -281,19 +281,19 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         if (enabled) {
             Node<spacegraph.space2d.Surface, Wire> n = this.node;
             if (n != null) {
-                n.edges(true, true).forEach(t -> {
+                for (FromTo<Node<Surface, Wire>, Wire> t : n.edges(true, true)) {
                     Wire wire = t.id();
                     Port recv = ((Port) wire.other(Port.this));
                     if (recv != sender) //1-level cycle block
                         wire.send(this, recv, x);
-                });
+                }
                 return true;
             }
         }
         return false;
     }
 
-    public final boolean recv(Wire from, X s) {
+    final boolean recv(Wire from, X s) {
         if (!enabled) {
             return false;
         } else {

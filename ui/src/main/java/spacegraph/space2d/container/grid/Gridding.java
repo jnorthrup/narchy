@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.stream.Stream;
 
 import static jcog.Util.lerp;
 
@@ -207,6 +208,10 @@ public class Gridding extends MutableListContainer {
 
     public static Gridding grid(Iterable<? extends Surface> content) {
         return grid( Iterables.toArray(content, Surface.class ) );
+    }
+
+    public static Gridding grid(Stream<Surface> content) {
+        return grid(content.toArray(Surface[]::new));
     }
 
     public static Gridding grid(Surface... content) {

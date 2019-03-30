@@ -216,19 +216,19 @@ public class OsmSurface extends Surface {
     @Override
     public Surface finger(Finger finger) {
 
-        hilight.clear();
 
 
         float wheel;
         if ((wheel = finger.rotationY(true)) != 0) {
             projection.zoom(wheel);
-            return this;
         }
+
+        hilight.clear();
 
         if (finger.tryFingering(pan)) {
             return this;
         } else {
-            v2 pos = finger.posPixel;
+            v2 pos = finger.posGlobal(this); //posPixel;
             float wx = -bounds.w / 2 + pos.x;
             float wy = -bounds.h / 2 + pos.y;
             float wz = 0;

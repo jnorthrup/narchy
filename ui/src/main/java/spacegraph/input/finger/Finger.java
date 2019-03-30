@@ -28,7 +28,7 @@ abstract public class Finger {
     private final int buttons;
 
     /** drag threshold (in screen pixels) */
-    float dragThresholdPx = 5f;
+    private float dragThresholdPx = 5f;
 
     public final v2 posPixel = new v2(), posScreen = new v2();
 
@@ -38,7 +38,7 @@ abstract public class Finger {
      * last local and global positions on press (downstroke).
      * TODO is it helpful to also track upstroke position?
      */
-    public final v2[] pressPosPixel;
+    final v2[] pressPosPixel;
 
 
 
@@ -56,6 +56,10 @@ abstract public class Finger {
     public final AtomicReference<Surface> touching = new AtomicReference<>();
 
     protected final AtomicBoolean focused = new AtomicBoolean(false);
+
+    /** caches current ortho while traversing it */
+    @Nullable @Deprecated
+    protected transient Ortho _ortho;
 
 
     protected Finger(int buttons) {
@@ -178,7 +182,7 @@ abstract public class Finger {
     }
 
     /** call once per frame */
-    public final void clearRotation() {
+    protected final void clearRotation() {
         for (AtomicFloat r : rotation)
             r.getAndZero();
     }
@@ -247,7 +251,7 @@ abstract public class Finger {
         return !wasPressed(button);
     }
 
-    public boolean releasedNow(int button) {
+    private boolean releasedNow(int button) {
         return !pressing(button) && wasPressed(button);
     }
 
@@ -325,15 +329,14 @@ abstract public class Finger {
 //    }
 
 
-
     public v2 posGlobal(Surface c) {
-        Ortho orthoParent = c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class);
-        if (orthoParent!=null)
-            return posGlobal( posPixel, orthoParent);
+        Ortho co = this._ortho;
+        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class));
+        if (o!=null)
+            return posGlobal(posPixel, o);
         else
             return posPixel.clone();
     }
-
 
     private final AtomicFloat[] rotation = new AtomicFloat[3];
 
@@ -343,26 +346,29 @@ abstract public class Finger {
         rotation[2] = new AtomicFloat();
     }
 
-    public void rotationAdd(float[] next) {
+    protected void rotationAdd(float[] next) {
         for (int i = 0; i < next.length; i++) {
             float r = next[i];
             if (r != 0)
                 this.rotation[i].set(r);
         }
     }
-
-    public float rotationX() {
-        return rotation[0].floatValue();
+    public final float rotationX(boolean take) {
+        return rotation(0, take);
+    }
+    public final float rotationY(boolean take) {
+        return rotation(1, take);
+    }
+    public final float rotationZ(boolean take) {
+        return rotation(2, take);
     }
 
-    public float rotationY(boolean absorb) {
-        AtomicFloat r = rotation[1];
-        return absorb ? r.getAndSet(0) : r.get();
+
+    protected float rotation(int which, boolean take) {
+        AtomicFloat r = rotation[which];
+        return take ? r.getAndSet(0) : r.get();
     }
 
-    public float rotationZ() {
-        return rotation[2].floatValue();
-    }
 
     final FingerRenderer rendererDefault =
             FingerRenderer.rendererCrossHairs1;
@@ -381,11 +387,11 @@ abstract public class Finger {
         return new FingerZoomBoundsSurface(cam);
     }
 
-    public boolean focused() {
+    private boolean focused() {
         return focused.getOpaque();
     }
 
-    public static v2 posRelative(v2 p, Surface s) {
+    private static v2 posRelative(v2 p, Surface s) {
         v2 y = new v2(p);
         RectFloat b = s.bounds;
         y.sub(b.x, b.y);
@@ -425,7 +431,7 @@ abstract public class Finger {
     }
     private final class FingerZoomBoundsSurface extends SurfaceHiliteOverlay {
 
-        public FingerZoomBoundsSurface(Ortho.Camera cam) {
+        FingerZoomBoundsSurface(Ortho.Camera cam) {
             super(cam);
         }
 

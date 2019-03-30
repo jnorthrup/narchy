@@ -49,7 +49,7 @@ import static spacegraph.space2d.container.grid.Gridding.row;
 
 public class ExeCharts {
 
-    public static Surface metaGoalPlot(NAR nar) {
+    private static Surface metaGoalPlot(NAR nar) {
 
         int s = nar.causes.size();
 
@@ -61,10 +61,10 @@ public class ExeCharts {
                 ),
                 s, Draw::colorBipolar);
 
-        return Splitting.column(DurSurface.get(bmp, nar), 0.95f, new FloatSlider(gain, "Display Gain"));
+        return Splitting.column(DurSurface.get(bmp, nar), 0.1f, new FloatSlider(gain, "Display Gain"));
     }
 
-    public static Surface metaGoalControls(NAR n) {
+    private static Surface metaGoalControls(NAR n) {
         CheckBox auto = new CheckBox("Auto");
         auto.on(false);
 
@@ -72,34 +72,29 @@ public class ExeCharts {
         float max = +1f;
 
         float[] want = n.feel.want;
-        Gridding g = grid(
+        Gridding g = grid( IntStream.range(0, want.length).mapToObj(
+                        w -> new FloatSlider(want[w], min, max) {
 
-
-                IntStream.range(0, want.length).mapToObj(
-                        w -> {
-                            return new FloatSlider(want[w], min, max) {
-
-                                @Override
-                                protected void paintWidget(RectFloat bounds, GL2 gl) {
-                                    if (auto.on()) {
-                                        set(want[w]);
-                                    }
-
+                            @Override
+                            protected void paintWidget(RectFloat bounds, GL2 gl) {
+                                if (auto.on()) {
+                                    set(want[w]);
                                 }
+
                             }
-                                    .text(MetaGoal.values()[w].name())
-                                    .type(SliderModel.KnobHoriz)
-                                    .on((s, v) -> {
-                                        if (!auto.on())
-                                            want[w] = v;
-                                    });
                         }
-                ).toArray(Surface[]::new));
+                    .text(MetaGoal.values()[w].name())
+                    .type(SliderModel.KnobHoriz)
+                    .on((s, v) -> {
+                        if (!auto.on())
+                            want[w] = v;
+                    })
+                ));
 
         return g;
     }
 
-    public static Surface exePanel(NAR n) {
+    static Surface exePanel(NAR n) {
 
         int plotHistory = 500;
         MetalConcurrentQueue busyBuffer = new MetalConcurrentQueue(plotHistory);
@@ -133,7 +128,7 @@ public class ExeCharts {
 
     }
 
-    public static Surface valuePanel(NAR n) {
+    static Surface valuePanel(NAR n) {
         return row(
                 metaGoalPlot(n),
                 metaGoalControls(n)
@@ -191,7 +186,7 @@ public class ExeCharts {
          */
     }
 
-    public static Surface causeProfiler(NAR nar) {
+    static Surface causeProfiler(NAR nar) {
         FastCoWList<TimedLink> cc = ((UniExec) nar.exe).cpu;
         int history = 128;
         Plot2D pp = new Plot2D(history,
@@ -287,7 +282,7 @@ public class ExeCharts {
         final IntRange durMS = new IntRange(1, 1, 1000);
         private final RealTime time;
 
-        public NARLoopPanel(NARLoop loop) {
+        NARLoopPanel(NARLoop loop) {
             super(loop);
             this.nar = loop.nar();
             durMS.set(nar.dur());
@@ -321,7 +316,7 @@ public class ExeCharts {
         }
     }
 
-    public static Surface runPanel(NAR n) {
+    static Surface runPanel(NAR n) {
         BitmapLabel nameLabel;
         LoopPanel control = new NARLoopPanel(n.loop);
         Surface p = new Splitting(

@@ -142,8 +142,8 @@ public class Sketch2DBitmap extends Surface implements MenuSupplier {
 
         Surface toolMenu = grid(
                 new XYSlider().on((_width, _alpha) -> {
-                    brushWidth = Util.lerp(_width, 0.1f, 3f);
-                    brushAlpha = Util.lerp(_alpha, 0.1f, 3f);
+                    brushWidth = Util.lerp(_width, 0.1f, 4f);
+                    brushAlpha = Util.lerp(_alpha, 0.1f, 4f);
                 }).set(0.5f, 0.75f)
         );
 

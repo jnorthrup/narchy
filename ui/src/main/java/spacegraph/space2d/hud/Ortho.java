@@ -50,7 +50,6 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
     private final float zoomMargin = 0.1f;
     private final static float focusAngle = (float) Math.toRadians(45);
 
-    @Deprecated public v2 posOrtho = new v2(0,0);
     /** parent */
     public final JoglSpace space;
 
@@ -86,15 +85,6 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
 
             layout();
         }
-    }
-
-    @Override
-    public Surface finger(Finger finger) {
-
-        /*finger(this,*/posOrtho.set(cam.screenToWorld(finger.posPixel));
-        //System.out.println(posPixel + " pixel -> " + posOrtho + " world");
-
-        return super.finger(finger);
     }
 
     @Override public final void render(ReSurface render) {
@@ -186,7 +176,7 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
             if (zoomStack.size() > 1 && su.bounds.contains(x0.x, x0.y) && zoomStack.peekLast().equals(x0, epsilon)) {
 
 
-                unzoom(su);
+                unzoom();
 
 
             } else {
@@ -220,7 +210,7 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
 
     }
 
-    void unzoom(Surface su) {
+    void unzoom() {
         zoomStack.removeLast();
         v3 prev = zoomStack.peekLast();
         zoom(prev);

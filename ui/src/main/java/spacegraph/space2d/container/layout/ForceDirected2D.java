@@ -4,6 +4,7 @@ import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.math.FloatRange;
 import jcog.math.v2;
 import jcog.random.XoRoShiRo128PlusRandom;
+import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.util.MutableRectFloat;
@@ -13,20 +14,22 @@ import java.util.Random;
 public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
-    private final int iterations = 1;
+    private final int iterations = 2;
     private float AUTOSCALE = 0f;
 
 
-    public final FloatRange repelSpeed = new FloatRange(0.5f, 0, 1f);
+    public final FloatRange repelSpeed = new FloatRange(0.25f, 0, 2f);
 
-    public final FloatRange attractSpeed = new FloatRange(0.3f, 0, 1f);
+    public final FloatRange attractSpeed = new FloatRange(0.03f, 0, 2f);
 
+    /** in (visible) graph radii */
     public final FloatRange nodeScale = new FloatRange(0.25f, 0.04f, 1.5f);
 
+    /** in node radii */
+    public final FloatRange nodeSpacing  = new FloatRange(1f, 0.1f, 6f);
 
-    public final FloatRange nodeSpacing  = new FloatRange(1f, 0.1f, 16f);
-
-    public final FloatRange nodeSpeedMax = new FloatRange(0.5f, 0f, 1f);
+    /** in (visible) graph radii per iter */
+    public final FloatRange nodeSpeedMax = new FloatRange(0.02f, 0f, 0.5f);
 
 
 
@@ -55,27 +58,29 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         if (n == 0)
             return;
 
-        AUTOSCALE = nodeScale.floatValue() *
-                (float) (Math.min(g.bounds.w, g.bounds.h)
-                        / Math.sqrt(1f + n));
+        float gRad = g.radius();
+
+        AUTOSCALE = (float) (nodeScale.floatValue() * gRad / Math.sqrt(1f + n));
 
         assert (AUTOSCALE == AUTOSCALE);
 
-        for (MutableRectFloat<X> m : nodes)
-            size(m, AUTOSCALE);
 
-        float gRad = g.radius();
         maxRepelDist = (float) ((2 * gRad) * Math.sqrt(2)); //estimate
 
         equilibriumDistFactor = nodeSpacing.floatValue();
 
 
         int iterations = this.iterations;
-        float repelSpeed = this.repelSpeed.floatValue() * gRad * /*~*/3 / iterations;
-        float attractSpeed = this.attractSpeed.floatValue() * /*~*/(1f/10)  / iterations;
+        float repelSpeed = this.repelSpeed.floatValue() * gRad / iterations;
+        float attractSpeed = this.attractSpeed.floatValue()   / iterations;
 
-        float maxSpeedPerIter = nodeSpeedMax.floatValue()  * gRad;
+        float maxSpeedPerIter = nodeSpeedMax.floatValue() * gRad / iterations;
 
+
+        for (MutableRectFloat<X> m : nodes)
+            size(m, AUTOSCALE);
+
+        RectFloat gg = g.bounds;
 
         final v2 aCenter = new v2();
         for (int ii = 0; ii < iterations; ii++) {
@@ -92,16 +97,14 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
                     repel(a, aCenter, ar, nodes.get(y), repelSpeed);
 
             }
-
-            RectFloat gg = g.bounds;
-
             for (MutableRectFloat b : nodes) {
                 b.commit(maxSpeedPerIter);
                 b.fenceInside(gg);
             }
-
-
         }
+
+
+
 
     }
 
@@ -176,7 +179,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
         v2 delta = aCenter.clone().subbed(b.cx(), b.cy());
         float len = delta.normalize();
-        if (len <= ar || len < br) {
+        if (len < Spatialization.EPSILONf) {
             //coincident, apply random vector
             double theta = (float) (rng.nextFloat()*Math.PI*2);
             float tx = (float) Math.cos(theta);

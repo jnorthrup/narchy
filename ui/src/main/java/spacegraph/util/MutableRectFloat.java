@@ -80,17 +80,13 @@ public class MutableRectFloat<X> {
         return cy;
     }
 
+
     public void commit(float speedLimit) {
-        v2 delta = new v2(cx, cy);
+        v2 delta = new v2(cx-cxPrev, cy-cyPrev);
         float lenSq = delta.lengthSquared();
         if (lenSq > speedLimit * speedLimit) {
-
-            delta.subbed(cxPrev, cyPrev);
-
             float len = (float) Math.sqrt(lenSq);
             delta.scaled(speedLimit / len);
-            //x = Util.lerp(momentum, x0 + delta.x, x0);
-            //y = Util.lerp(momentum, y0 + delta.y, y0);
             cx = cxPrev + delta.x;
             cy = cyPrev + delta.y;
         }

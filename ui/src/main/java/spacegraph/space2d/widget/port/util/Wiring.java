@@ -112,7 +112,7 @@ public class Wiring extends Dragging {
     }
 
     static boolean tryWire(Port start, Port end, GraphEdit g) {
-        if (Port.connectable(start, end)) {
+        if (Port.canConnect(start, end)) {
 
             if (start instanceof TypedPort && end instanceof TypedPort) {
 

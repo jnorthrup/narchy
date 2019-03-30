@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.hud.Ortho;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 
@@ -40,10 +41,18 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
         Fingering ff = this.fingering.get();
 
-        if (this.touchNext ==null) {
-            this.touchNext = (ff == Fingering.Null || ff.escapes()) ? s.finger(this) : touching.get();
+        if (touchNext == null) {
+
+            if (s instanceof Ortho) _ortho = (Ortho)s; //HACK
+
+            Surface next = touchNext = (ff == Fingering.Null || ff.escapes()) ? s.finger(this) : touching.get();
+
+            if (s instanceof Ortho) _ortho = null; //HACK
+
+            return next == null;
         }
-        return touchNext==null;
+
+        return true;
     }
 
     protected void update() {

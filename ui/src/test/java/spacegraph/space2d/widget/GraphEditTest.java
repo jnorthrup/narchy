@@ -176,7 +176,7 @@ public class GraphEditTest {
                     if (busy.compareAndSet(false, true)) {
                         try {
                             buffer.clear();
-                            buffer.write(TinySpeech.say(text, 80, 1f));
+                            buffer.write(TinySpeech._say(text));
                             wave.update();
                         } finally {
                             busy.set(false);
