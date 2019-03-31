@@ -2,7 +2,6 @@ package nars.derive.premise;
 
 import nars.Builtin;
 import nars.Op;
-import nars.index.concept.MapMemory;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -14,52 +13,43 @@ import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.Ellipsislike;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import static nars.Op.ATOM;
 import static nars.Op.NEG;
 import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;
 
 /**
  * Index which specifically holds the target components of a deriver ruleset.
  */
-public class PatternIndex extends MapMemory {
+public class PatternTermBuilder /* implements TermBuilder ? */ {
 
+//    final Map<Term,Term> map = new UnifiedMap<>(512);
 
-    public PatternIndex() {
-        super(new ConcurrentHashMap<>(512));
-    }
-
-
-    @SuppressWarnings("Java8MapApi")
-    @Override
-    public Termed get(/*@NotNull*/ Term x, boolean createIfMissing) {
+//    @SuppressWarnings("Java8MapApi")
+    public Term get(/*@NotNull*/ Term x) {
         //return x.target();
         Op xop = x.op();
         if (xop == NEG) {
             Term u = x.unneg();
-            Termed v = get(u, createIfMissing);
+            Termed v = get(u);
             return v == u ? x : v.term().neg();
         }
 
-        if (!xop.conceptualizable)
+        if (xop.atomic || !xop.conceptualizable)
             return x;
 
-        Termed y = map.get(x);
-        if (y != null) {
-            return y;
-        }
-        if (nar != null && xop == ATOM) {
+//        Term y = map.get(x);
+//        if (y != null)
+//            return y;
 
-            Termed xx = nar.concept(x);
-            if (xx != null) {
-                map.put(xx.term(), xx);
-                return xx;
-            }
-        }
+//        if (nar != null && xop == ATOM) {
+//            Concept xx = nar.concept(x);
+//            if (xx != null) {
+//                map.put(xx.term(), xx);
+//                return xx;
+//            }
+//        }
 
         Term yy = patternify(x);
-        map.put(yy, yy);
+//        map.put(x, yy);
         return yy;
     }
 
@@ -71,7 +61,7 @@ public class PatternIndex extends MapMemory {
 
 
     public /*@NotNull*/ Term rule(Term x) {
-        return get(new PremiseRuleNormalization().apply(x), true).term();
+        return get(new PremiseRuleNormalization().apply(x));
     }
 
 //    public final PrediTerm<Derivation> intern(@Nullable PrediTerm<Derivation> x) {
@@ -81,10 +71,10 @@ public class PatternIndex extends MapMemory {
 //        return y != null ? y : x;
 //    }
 
-
-    public final Termed intern(Term x) {
-        return get(x, true); //.target();
-    }
+//
+//    public final Termed intern(Term x) {
+//        return get(x); //.target();
+//    }
 
     public static final class PremiseRuleNormalization extends VariableNormalization {
 

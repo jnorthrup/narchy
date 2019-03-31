@@ -84,7 +84,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
 
-    private static final PatternIndex INDEX = new PatternIndex();
+    private static final PatternTermBuilder INDEX = new PatternTermBuilder();
     protected final Termify termify;
 
     private final BytePredicate taskPunc;
@@ -109,8 +109,8 @@ public class PremiseRuleSource extends ProxyTerm {
         Term[] postcon = ref.sub(1).arrayShared();
 
 
-        this.taskPattern = PatternIndex.patternify(precon[0]);
-        this.beliefPattern = PatternIndex.patternify(precon[1]);
+        this.taskPattern = PatternTermBuilder.patternify(precon[0]);
+        this.beliefPattern = PatternTermBuilder.patternify(precon[1]);
         if (beliefPattern.op() == Op.ATOM) {
             throw new RuntimeException("belief target must contain no atoms: " + beliefPattern);
         }
@@ -599,7 +599,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     private Term conclusion(Term x) {
         if (!x.unneg().op().var)
-            return conclusionOptimize(ConcTransform.apply(PatternIndex.patternify(x)));
+            return conclusionOptimize(ConcTransform.apply(PatternTermBuilder.patternify(x)));
         else
             return x;
     }

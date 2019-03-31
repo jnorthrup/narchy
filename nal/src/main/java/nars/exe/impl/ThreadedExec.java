@@ -110,7 +110,6 @@ abstract public class ThreadedExec extends MultiExec {
                     //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
                     Math.max(1, (int) Math.floor(((responsibility * available) / workGranularity)));
                     //)
-                    ;
 
             int got = in.remove(buffer, batchSize);
             if (got > 0)

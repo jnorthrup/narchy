@@ -154,7 +154,7 @@ class MemoryTest {
     @Test
     void testCaffeineConceptIndex() throws Narsese.NarseseException {
         testIndex(
-                new CaffeineIndex(1024)
+                new CaffeineMemory(1024)
         );
     }
     @Test

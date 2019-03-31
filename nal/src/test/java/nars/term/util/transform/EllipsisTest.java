@@ -4,7 +4,7 @@ import jcog.random.XorShift128PlusRandom;
 import nars.$;
 import nars.Narsese;
 import nars.Param;
-import nars.derive.premise.PatternIndex;
+import nars.derive.premise.PatternTermBuilder;
 import nars.derive.premise.PremiseRuleSource;
 import nars.term.Compound;
 import nars.term.Term;
@@ -46,7 +46,7 @@ public class EllipsisTest {
         default Set<Term> test(int arity, int repeats) throws Narsese.NarseseException {
             Set<Term> selectedFixed = new HashSet(arity);
 
-            PatternIndex index = new PatternIndex();
+            PatternTermBuilder index = new PatternTermBuilder();
 
             Term y = /*index.patternify*/(getMatchable(arity));
 
@@ -59,7 +59,7 @@ public class EllipsisTest {
 
             Term r = /*index.patternify*/( getResult() );
 
-            Term x = PatternIndex.patternify(index.rule( getPattern() ));
+            Term x = PatternTermBuilder.patternify(index.rule( getPattern() ));
 
 
             
@@ -407,7 +407,7 @@ public class EllipsisTest {
 
 
     private static Set<String> testCombinations(Compound _X, Compound Y, int expect) {
-        Compound X = (Compound) new PatternIndex().rule(_X);
+        Compound X = (Compound) new PatternTermBuilder().rule(_X);
 
         Set<String> results = new HashSet(0);
         for (int seed = 0; seed < (expect+1)*(expect+1); seed++) {

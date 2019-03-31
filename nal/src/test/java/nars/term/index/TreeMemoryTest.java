@@ -3,6 +3,7 @@ package nars.term.index;
 import jcog.data.byt.ArrayBytes;
 import jcog.tree.radix.MyRadixTree;
 import nars.$;
+import nars.NARS;
 import nars.Narsese;
 import nars.index.concept.TreeMemory;
 import nars.term.Term;
@@ -49,12 +50,13 @@ class TreeMemoryTest {
     @Test
     void testVolumeSubTrees() throws Narsese.NarseseException {
         TreeMemory t = new TreeMemory( 128);
-        t.set($("a"));
-        t.set($("(a)"));
-        t.set($("(a-->b)"));
-        t.set($("(a-->(b,c,d))"));
-        t.set($("(a-->(b,c,d,e,f,g))"));
-        t.set($("(a-->(b,c,d,e,f,g,h,i,j,k))"));
+        t.start(NARS.tmp(1));
+        t.concept($("a"), true);
+        t.concept($("(a)"), true);
+        t.concept($("(a-->b)"), true);
+        t.concept($("(a-->(b,c,d))"), true);
+        t.concept($("(a-->(b,c,d,e,f,g))"), true);
+        t.concept($("(a-->(b,c,d,e,f,g,h,i,j,k))"), true);
         t.concepts.prettyPrint(System.out);
         t.print(System.out);
         assertEquals(6, t.size());

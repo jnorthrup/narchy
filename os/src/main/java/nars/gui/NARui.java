@@ -233,7 +233,7 @@ public class NARui {
                         nar.tasks(true, false, false, false).forEach(t ->
                                 {
                                     try {
-                                        float c = (float) w2cSafe(t.evi(now, dur));
+                                        float c = w2cSafe(t.evi(now, dur));
                                         //i.recordValue(Math.round(c * scaleFactor));
                                         q.add(c);
                                     } catch (Throwable e) {

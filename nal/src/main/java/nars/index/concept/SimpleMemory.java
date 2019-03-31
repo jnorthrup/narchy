@@ -1,9 +1,9 @@
 package nars.index.concept;
 
 import jcog.data.map.MRUMap;
+import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
-import nars.term.Termed;
 
 import java.util.Collections;
 import java.util.Map;
@@ -28,14 +28,14 @@ public class SimpleMemory extends MapMemory {
         return threadSafe ? Collections.synchronizedMap(m) : m;
     }
 
-    private final class MyMRUMap extends MRUMap<Term, Termed> {
+    private final class MyMRUMap extends MRUMap<Term, Concept> {
         public MyMRUMap(int capacity, float loadFactor) {
             super(capacity, loadFactor);
         }
 
         @Override
-        protected void onEvict(Map.Entry<Term, Termed> entry) {
-            Termed c = entry.getValue();
+        protected void onEvict(Map.Entry<Term, Concept> entry) {
+            Concept c = entry.getValue();
             if (c instanceof PermanentConcept) {
                 //throw new TODO("Should not evict " + c);
                 put(entry.getKey(), c);

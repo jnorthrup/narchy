@@ -3,19 +3,19 @@ package nars.index.concept.map;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.index.concept.CaffeineIndex;
+import nars.concept.Concept;
+import nars.index.concept.CaffeineMemory;
 import nars.term.Term;
-import nars.term.Termed;
 import org.junit.jupiter.api.Test;
 
-class CaffeineIndexTest {
+class CaffeineMemoryTest {
 
     @Test
     void testDynamicWeight() throws Narsese.NarseseException {
         StringBuilder log = new StringBuilder();
-        CaffeineIndex index;
+        CaffeineMemory index;
         NAR n = new NARS().index(
-            index = new CaffeineIndex(4000, (w) -> {
+            index = new CaffeineMemory(4000, (w) -> {
                 int newWeight = Math.round(1000 * (w.beliefs().taskCount()));
                 log.append("weigh ").append(w).append(' ').append(newWeight).append('\n');
 
@@ -27,7 +27,7 @@ class CaffeineIndexTest {
                 return newWeight;
             }) {
                 @Override
-                public Termed get(Term x, boolean createIfMissing) {
+                public Concept get(Term x, boolean createIfMissing) {
                     log.append("get ").append(x).append(createIfMissing ? " createIfMissing\n" : "\n");
                     return super.get(x, createIfMissing);
                 }

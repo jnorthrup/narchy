@@ -32,12 +32,12 @@ public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
         if (!get(g))
             return;
 
-        layout(g);
+        layout(g, dtMS);
 
         put();
     }
 
-    protected abstract void layout(Graph2D<X> g);
+    protected abstract void layout(Graph2D<X> g, int dtMS);
 
     private boolean get(Graph2D<X> g) {
         g.forEachValue(v -> {
@@ -61,7 +61,7 @@ public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
      * default impl: copy directly
      * */
     protected void put(MutableRectFloat<X> mover, Graph2D.NodeVis node) {
-        node.posXYWH(mover.cx, mover.cy, mover.w, mover.h);
+        node.posXYWH(mover.x, mover.y, mover.w, mover.h);
     }
 
 }

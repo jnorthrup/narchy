@@ -18,6 +18,6 @@ public class ErrorPanel extends TextEdit {
 
     public ErrorPanel(Throwable t, Object cause) {
         this(t);
-        insert("because:\n" + cause.toString());
+        insert("because:\n" + cause);
     }
 }

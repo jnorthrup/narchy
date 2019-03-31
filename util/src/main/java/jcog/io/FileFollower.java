@@ -367,7 +367,7 @@ public class FileFollower {
             continueRunning_ = false;
             logger.error(MessageFormat.format(
                     getBundle().getString("message.bad.charset"),
-                    new Object[]{file_.getName()}));
+                    file_.getName()));
         }
     }
 

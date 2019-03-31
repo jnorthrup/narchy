@@ -522,7 +522,7 @@ public class TextUI {
 
                             next.clear();
                             bag.commit();
-                            ((ArrayBag<X,PriReference<X>>)bag).forEach(visible.intValue(), (t) -> next.add(t.get()));
+                            bag.forEach(visible.intValue(), (t) -> next.add(t.get()));
 
                             guiThread.invokeLater(this::render);
                         }

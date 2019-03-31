@@ -1,5 +1,6 @@
 package nars.index.concept;
 
+import nars.concept.Concept;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.NotNull;
@@ -12,23 +13,23 @@ import java.util.stream.Stream;
 /** additionally caches subterm vectors */
 public class MapMemory extends Memory {
 
-    protected Map<Term,Termed> map;
+    protected Map<Term,Concept> map;
 
     protected MapMemory() {
         this(null);
     }
 
-    public MapMemory(Map<Term, Termed> map) {
+    public MapMemory(Map<Term, Concept> map) {
         super();
         this.map = map;
     }
 
-    public MapMemory map(Map<Term, Termed> map) {
+    public MapMemory map(Map<Term, Concept> map) {
         this.map = map;
         return this;
     }
 
-    @Override public Stream<Termed> stream() {
+    @Override public Stream<Concept> stream() {
         return map.values().stream();
     }
 
@@ -49,12 +50,12 @@ public class MapMemory extends Memory {
 
 
     @Override
-    public Termed remove(Term entry) {
+    public @Nullable Concept remove(Term entry) {
         return map.remove(entry);
     }
 
     @Override
-    public void set(@NotNull Term src, @NotNull Termed target) {
+    public void set(@NotNull Term src, Concept target) {
         map.merge(src, target, setOrReplaceNonPermanent);
     }
 
@@ -64,7 +65,7 @@ public class MapMemory extends Memory {
     }
 
     @Override
-    public void forEach(@NotNull Consumer<? super Termed> c) {
+    public void forEach(Consumer<? super Concept> c) {
         map.forEach((k, v)-> c.accept(v));
     }
 

@@ -172,7 +172,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         /** series tasks can be assumed to be universally unique */
         @Override
         public boolean equals(Object x) {
-            if (this == x) return true;
+            return this == x;
 //            if (x instanceof SeriesTask) {
 //                //TODO also involve Term?
 //                Task xx = (Task) x;
@@ -180,7 +180,6 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 //                    return false;
 //                return stamp()[0] == xx.stamp()[0] && start() == xx.start() && term().equals(xx.term());
 //            }
-            return false;
         }
 
         public void setEnd(long e) {

@@ -58,8 +58,7 @@ public abstract class AbstractAtomic implements Atomic {
         if (this == u) return true;
         if (u instanceof Atomic) {
             if (hashCode() == u.hashCode())
-                if (Arrays.equals(bytes(), ((Atomic) u).bytes()))
-                    return true;
+                return Arrays.equals(bytes(), ((Atomic) u).bytes());
         }
         return false;
     }

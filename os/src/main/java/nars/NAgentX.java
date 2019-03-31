@@ -23,7 +23,7 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.Valuator;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.CaffeineMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Eternalizer;
@@ -240,7 +240,7 @@ abstract public class NAgentX extends NAgent {
 
                         //CaffeineIndex.soft()
 
-                        new CaffeineIndex(
+                        new CaffeineMemory(
                             64 * 1024
                     //96 * 1024
 //                                64 * 1024

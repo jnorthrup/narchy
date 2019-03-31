@@ -28,7 +28,7 @@ abstract public class Finger {
     private final int buttons;
 
     /** drag threshold (in screen pixels) */
-    private float dragThresholdPx = 5f;
+    private final float dragThresholdPx = 5f;
 
     public final v2 posPixel = new v2(), posScreen = new v2();
 

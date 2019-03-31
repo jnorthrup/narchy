@@ -52,7 +52,7 @@ import java.util.Collection;
  */
 public class MemoryWarningSystem {
     private final Collection<Listener> listeners = new ArrayList<Listener>();
-    private MemoryPoolMXBean tenuredGenPool;
+    private final MemoryPoolMXBean tenuredGenPool;
 
     public interface Listener {
         void memoryUsageLow(long usedMemory, long maxMemory);

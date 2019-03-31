@@ -1,7 +1,7 @@
 package nars.derive;
 
 import nars.Narsese;
-import nars.derive.premise.PatternIndex;
+import nars.derive.premise.PatternTermBuilder;
 import nars.term.Compound;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
@@ -13,20 +13,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatternCompoundTest {
 
-    private final PatternIndex i = new PatternIndex();
+    private final PatternTermBuilder i = new PatternTermBuilder();
 
     @Test
     void testPatternCompoundWithXTERNAL() throws Narsese.NarseseException {
-        Compound p = (Compound) i.get($("((x) ==>+- (y))"), true).term();
+        Compound p = (Compound) i.get($("((x) ==>+- (y))")).term();
         assertEquals(XTERNAL, p.dt());
 
     }
 
     @Test public void testPatternTermConjHasXTERNAL() {
-        Term p = PatternIndex.patternify($$("(x && y)"));
+        Term p = PatternTermBuilder.patternify($$("(x && y)"));
         assertEquals("(x &&+- y)", p.toString());
 
-        Term r = PatternIndex.patternify($$("(x || y)"));
+        Term r = PatternTermBuilder.patternify($$("(x || y)"));
         assertEquals(
                 //"(--,((--,x) &&+- (--,y)))",
                 "(||+- ,x,y)",

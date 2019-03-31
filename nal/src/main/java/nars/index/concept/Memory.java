@@ -38,20 +38,17 @@ public abstract class Memory {
      * sets or replaces the existing value, unless the existing value is a PermanentConcept it must not
      * be replaced with a non-Permanent concept
      */
-    public abstract void set(Term src, Termed target);
+    public abstract void set(Term src, Concept target);
 
-    public final void set(Termed t) {
+    public final void set(Concept t) {
         set(t.term(), t);
     }
 
     abstract public void clear();
 
-
     public void start(NAR nar) {
         this.nar = nar;
-
     }
-
 
     /**
      * # of contained terms
@@ -63,20 +60,21 @@ public abstract class Memory {
      */
     public abstract String summary();
 
-    @Nullable public abstract Termed remove(Term entry);
+    public abstract @Nullable Concept remove(Term entry);
 
     public void print(PrintStream out) {
         stream().forEach(out::println);
         out.println();
     }
 
-    abstract public Stream<Termed> stream();
+    abstract public Stream<Concept> stream();
 
 
     /**
      * default impl
+     * @param c
      */
-    public void forEach(Consumer<? super Termed> c) {
+    public void forEach(Consumer<? super Concept> c) {
         stream().forEach(c);
     }
 
@@ -158,18 +156,18 @@ public abstract class Memory {
         });
     }
 
-    final void onRemove(Termed value) {
+    final void onRemove(Concept value) {
 //        if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
                 nar.runLater(() -> set(value));
             } else {
-                ((Concept) value).delete(nar);
+                value.delete(nar);
             }
 //        }
     }
 
     /** useful for map-like impl */
-    static final BiFunction<? super Termed, ? super Termed, ? extends Termed> setOrReplaceNonPermanent = (prev, next) -> {
+    static final BiFunction<? super Concept, ? super Concept, ? extends Concept> setOrReplaceNonPermanent = (prev, next) -> {
         if (prev instanceof PermanentConcept && !(next instanceof PermanentConcept))
             return prev;
         return next;

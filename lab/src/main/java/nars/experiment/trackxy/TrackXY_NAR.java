@@ -15,7 +15,7 @@ import nars.derive.impl.BatchDeriver;
 import nars.exe.impl.UniExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.CaffeineMemory;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -196,7 +196,7 @@ public class TrackXY_NAR extends NAgentX {
                 //.time(new RealTime.MS().dur(durMS))
                 .time(new CycleTime().dur(dur))
                 .index(
-                        new CaffeineIndex(4 * 1024 * 10)
+                        new CaffeineMemory(4 * 1024 * 10)
                         //new HijackConceptIndex(4 * 1024, 4)
                 );
 

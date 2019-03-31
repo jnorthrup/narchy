@@ -474,7 +474,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
     @Nullable
     @Override
-    public V remove(K k) {
+    public V remove(Object k) {
         return update(k, null, REMOVE, null);
     }
 

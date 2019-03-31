@@ -1,7 +1,7 @@
 package nars.op.language;
 
 import nars.*;
-import nars.derive.premise.PatternIndex;
+import nars.derive.premise.PatternTermBuilder;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.time.Tense;
@@ -20,7 +20,7 @@ import static nars.Op.VAR_PATTERN;
 public class NLPGen {
 
     final NAR terminal = NARS.shell();
-    final PatternIndex index = new PatternIndex();
+    final PatternTermBuilder index = new PatternTermBuilder();
 
     public interface Rule {
         @NotNull String get(Term t, float freq, float conf, Tense tense);
@@ -67,7 +67,7 @@ public class NLPGen {
     }
 
     private void train(String natural, Task t) {
-        Compound pattern = (Compound)(index.get(t.term(), true).term());
+        Compound pattern = (Compound)(index.get(t.term()).term());
 
         rules.add((tt, freq, conf, tense) -> {
             if (timeMatch(t, tense)) {

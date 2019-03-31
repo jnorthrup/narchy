@@ -81,7 +81,6 @@ public class Eternalizer extends LinkRanker<Task> {
         return (t,min)->{
             float base = (float) ((t.conf()) * ((1/(1f+Math.sqrt(t.complexity())))));
                     //* (t.originality()) //polarity()
-                    ;
             float noise = this.noise.floatValue();
             return base + (noise > 0 ? noise * ((rng.nextFloat()-0.5f)*2) : 0);
         };

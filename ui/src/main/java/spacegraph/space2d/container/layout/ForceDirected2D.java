@@ -44,24 +44,18 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         newNode.posXYWH(g.cx() + rx, g.cy() + ry, 1, 1);
     }
 
-//    @Override protected void put(MovingRectFloat2D mover, Graph2D.NodeVis node) {
-//        node.posX0Y0WH(
-//                Util.lerp(_momentum, mover.x, node.bounds.x),
-//                Util.lerp(_momentum, mover.y, node.bounds.y),
-//                mover.w, mover.h);
-//    }
-
     @Override
-    protected void layout(Graph2D<X> g) {
+    protected void layout(Graph2D<X> g, int dtMS) {
 
         int n = nodes.size();
         if (n == 0)
             return;
 
         float gRad = g.radius();
+        float dtS = dtMS/1000f;
+        float gRadPerSec = gRad / dtS;
 
         AUTOSCALE = (float) (nodeScale.floatValue() * gRad / Math.sqrt(1f + n));
-
         assert (AUTOSCALE == AUTOSCALE);
 
 
@@ -71,10 +65,11 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
 
         int iterations = this.iterations;
-        float repelSpeed = this.repelSpeed.floatValue() * gRad / iterations;
+        float repelSpeed = this.repelSpeed.floatValue() * gRadPerSec / iterations;
         float attractSpeed = this.attractSpeed.floatValue()   / iterations;
 
-        float maxSpeedPerIter = nodeSpeedMax.floatValue() * gRad / iterations;
+
+        float maxSpeedPerIter = dtS * nodeSpeedMax.floatValue() * gRadPerSec / iterations;
 
 
         for (MutableRectFloat<X> m : nodes)

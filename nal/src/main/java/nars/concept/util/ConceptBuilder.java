@@ -14,7 +14,6 @@ import nars.table.question.QuestionTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.truth.dynamic.AbstractDynamicTruth;
@@ -33,7 +32,7 @@ import static nars.Op.*;
 /**
  * TODO make this BiFunction<Term,Concept,Concept>
  */
-public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed> {
+public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concept> {
 
 //    private final Map<Term, Conceptor> conceptors = new ConcurrentHashMap<>();
 
@@ -267,9 +266,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
     }
 
     @Override
-    public final Termed apply(Term x, Termed prev) {
+    public final Concept apply(Term x, Concept prev) {
         if (prev != null) {
-            Concept c = ((Concept) prev);
+            Concept c = prev;
             if (!c.isDeleted())
                 return c;
         }
@@ -279,7 +278,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
 
 
-    public final Termed apply(Term x) {
+    public final Concept apply(Term x) {
 
         Concept c = construct(x);
 

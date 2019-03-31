@@ -84,7 +84,7 @@ public enum OsmSpace  { ;
 
     /** for debugging; this will be distorted, increasingly towards the poles (extreme latitudes) */
     public static final class RawProjection extends LonLatProjection {
-        private v2 center = new v2();
+        private final v2 center = new v2();
 
         /** TODO move scale, center, translate to a generic 2D projection impl */
         final FloatRange scale = new FloatRange(16f, 0.001f, 1000f);
@@ -268,7 +268,7 @@ public enum OsmSpace  { ;
 
         @Deprecated
         public transient GL2 gl;
-        public List<Consumer<GL2>> draw = new FasterList();;
+        public List<Consumer<GL2>> draw = new FasterList();
 
         boolean wireframe = false;
 
@@ -631,10 +631,10 @@ public enum OsmSpace  { ;
 
                 if (pointer.length >= 7) {
 //                    gl.glColor3fv(pointer, 3);
-                    vbuf.add((float) pointer[3]);
-                    vbuf.add((float) pointer[4]);
-                    vbuf.add((float) pointer[5]);
-                    vbuf.add((float) pointer[6]);
+                    vbuf.add(pointer[3]);
+                    vbuf.add(pointer[4]);
+                    vbuf.add(pointer[5]);
+                    vbuf.add(pointer[6]);
                 } else {
                     vbuf.add(1);
                     vbuf.add(1);

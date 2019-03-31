@@ -53,8 +53,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     final ConcurrentFastIteratingHashMap<Surface, PhySurface> w =
             new ConcurrentFastIteratingHashMap<>(new PhySurface[0]);
 
-    private int velIter = 4;
-    private int posIter = 4;
+    private final int velIter = 4;
+    private final int posIter = 4;
     float timeScale = 1f;
     static final float minDimension = 0.5f;
     static final float scaling = 10f;
@@ -1059,7 +1059,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         }
 
-        ; //TODO
+        //TODO
     }
 
 

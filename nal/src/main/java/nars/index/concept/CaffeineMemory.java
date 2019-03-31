@@ -6,7 +6,6 @@ import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.time.event.DurService;
 
 import java.util.Objects;
@@ -16,35 +15,35 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
 
-public class CaffeineIndex extends Memory implements CacheLoader<Term, Termed>, RemovalListener<Term, Termed>, Executor {
+public class CaffeineMemory extends Memory implements CacheLoader<Term, Concept>, RemovalListener<Term, Concept>, Executor {
 
-    private final Cache<Term, Termed> concepts;
+    private final Cache<Term, Concept> concepts;
     private final boolean weightDynamic;
     private DurService cleanup;
 
-    public static CaffeineIndex soft() {
-        return new CaffeineIndex(Caffeine.newBuilder().softValues(), false);
+    public static CaffeineMemory soft() {
+        return new CaffeineMemory(Caffeine.newBuilder().softValues(), false);
     }
 
-    public static CaffeineIndex weak() {
-        return new CaffeineIndex(Caffeine.newBuilder().weakValues(), false);
+    public static CaffeineMemory weak() {
+        return new CaffeineMemory(Caffeine.newBuilder().weakValues(), false);
     }
 
-    public CaffeineIndex(long capacity) {
+    public CaffeineMemory(long capacity) {
         this(capacity, false, c->1);
     }
 
-    public CaffeineIndex(long capacity, ToIntFunction<Concept> w) {
+    public CaffeineMemory(long capacity, ToIntFunction<Concept> w) {
         this(capacity, false, w);
     }
-    public CaffeineIndex(long capacity, boolean weightDynamic, ToIntFunction<Concept> w) {
+    public CaffeineMemory(long capacity, boolean weightDynamic, ToIntFunction<Concept> w) {
         this(Caffeine.newBuilder().maximumWeight(capacity).weigher((k,v)->{
             if (v instanceof PermanentConcept) return 0;
             return w.applyAsInt((Concept)v);
         }), weightDynamic);
     }
 
-    private CaffeineIndex(Caffeine builder, boolean weightDynamic) {
+    private CaffeineMemory(Caffeine builder, boolean weightDynamic) {
         super();
         this.weightDynamic = weightDynamic;
 
@@ -60,7 +59,7 @@ public class CaffeineIndex extends Memory implements CacheLoader<Term, Termed>, 
 
 
     @Override
-    public Stream<Termed> stream() {
+    public Stream<Concept> stream() {
         return concepts.asMap().values().stream().filter(Objects::nonNull);
     }
 
@@ -71,13 +70,13 @@ public class CaffeineIndex extends Memory implements CacheLoader<Term, Termed>, 
     }
 
     @Override
-    public Termed remove(Term x) {
+    public @org.jetbrains.annotations.Nullable Concept remove(Term x) {
         return concepts.asMap().remove(x);
     }
 
 
     @Override
-    public void set(Term src, Termed target) {
+    public void set(Term src, Concept target) {
         concepts.asMap().merge(src, target, setOrReplaceNonPermanent);
     }
 
@@ -88,7 +87,7 @@ public class CaffeineIndex extends Memory implements CacheLoader<Term, Termed>, 
     }
 
     @Override
-    public void forEach(Consumer<? super Termed> c) {
+    public void forEach(Consumer<? super Concept> c) {
         concepts.asMap().values().forEach(c);
     }
 
@@ -99,8 +98,8 @@ public class CaffeineIndex extends Memory implements CacheLoader<Term, Termed>, 
 
 
     @Override
-    public Termed get(Term x, boolean createIfMissing) {
-        Termed y;
+    public Concept get(Term x, boolean createIfMissing) {
+        Concept y;
         if (createIfMissing)
             y = concepts.get(x, nar.conceptBuilder::apply);
         else
@@ -142,7 +141,7 @@ public class CaffeineIndex extends Memory implements CacheLoader<Term, Termed>, 
      * this will be called from within a worker task
      */
     @Override
-    public final void onRemoval(Term key, Termed value, RemovalCause cause) {
+    public final void onRemoval(Term key, Concept value, RemovalCause cause) {
         
         if (value != null)
             onRemove(value);
@@ -163,12 +162,12 @@ public class CaffeineIndex extends Memory implements CacheLoader<Term, Termed>, 
 
 
     @Override
-    public Termed load(Term key) {
+    public Concept load(Term key) {
         return nar.conceptBuilder.apply(key, null);
     }
 
     @Override
-    public Termed reload(Term key, Termed oldValue) {
+    public Concept reload(Term key, Concept oldValue) {
         return nar.conceptBuilder.apply(key, oldValue);
     }
 }

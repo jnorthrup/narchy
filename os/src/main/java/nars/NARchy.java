@@ -4,7 +4,7 @@ import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.exe.Valuator;
 import nars.exe.impl.WorkerExec;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.CaffeineMemory;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
@@ -28,7 +28,7 @@ public class NARchy extends NARS {
 
         NAR nar = new DefaultNAR(0, true)
 
-                .index(new CaffeineIndex(32*1024))
+                .index(new CaffeineMemory(32*1024))
                 //.index(new HijackConceptIndex(32*1024, 4))
 
                 .exe(new WorkerExec(new Valuator.DefaultValuator(), threads))

@@ -662,7 +662,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                 if (ee instanceof Absolute) {
                                     start = EE;
                                 } else {
-                                    long sss = ((Absolute) ss).start();
+                                    long sss = ss.start();
                                     start = SS - dt - b.eventRange();
                                 }
                             }
@@ -708,11 +708,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         if (event.op() == CONJ && event.dt() != XTERNAL) {
             boolean seq = Conj.isSeq(event);
             if (!seq) {
-                if (event.contains(subEvent))
-                    return true;
+                return event.contains(subEvent);
             } else if (seq) {
-                if (event.eventFirst().equals(subEvent))
-                    return true;
+                return event.eventFirst().equals(subEvent);
             }
 
         }
@@ -978,8 +976,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     protected final boolean solution(Event y) {
         if (!(y.start() == TIMELESS && solving.equals(y.id)) && validPotentialSolution(y.id)) {
             if (solutions.add(y)) {
-                if (!target.test(y))
-                    return false;
+                return target.test(y);
             }
         }
         return true;
@@ -1072,8 +1069,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             if (toTry != null) {
                 if (toTry.size() > 1)
                     toTry.shuffleThis(random());
-                if (!toTry.allSatisfy(z -> each.test(z)))
-                    return false;
+                return toTry.allSatisfy(z -> each.test(z));
             }
 
         }
@@ -1206,14 +1202,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             return true;
 
         if (y.hasXternal()) {
-            if (!solveAll(y, each))
-                return false;
+            return solveAll(y, each);
         } else {
-            if (!solveDtAndOccTop(y, each))
-                return false;
+            return solveDtAndOccTop(y, each);
         }
-
-        return true;
 
     }
 

@@ -138,11 +138,11 @@ public class Gradius extends NAgentX {
         initToggle();
         //initBipolar();
 
-        Reward alive = rewardNormalized("alive", 0, +1, ()->{
+        Reward alive = rewardNormalized("alive", -1, +1, ()->{
             if (g.paused) return Float.NaN;
 
             if (g.playerDead > 1)
-                return 0f;
+                return -1f;
             else
                 return Float.NaN; //return +1;
         });

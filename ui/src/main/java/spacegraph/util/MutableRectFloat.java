@@ -9,11 +9,12 @@ import spacegraph.space2d.container.graph.Graph2D;
 /**
  * similar to RectFloat2D with additional
  * except the x,y components are mutable
+ *
+ * the x and y correspond to the center of the float (unlke RectFloat which corresponds to bottom-left corner)
  */
-public class MutableRectFloat<X> {
+public class MutableRectFloat<X> extends v2 {
 
-    public float cx, cy;
-    public float cxPrev, cyPrev;
+    private float cxPrev, cyPrev;
     public float w, h;
 
     /**
@@ -33,21 +34,21 @@ public class MutableRectFloat<X> {
     }
 
     public final MutableRectFloat setXYXY(float x1, float y1, float x2, float y2) {
-        this.cx = (x1+x2)/2; this.cy = (y1+y2)/2;
+        this.x = (x1+x2)/2; this.y = (y1+y2)/2;
         return size(
             (x2-x1), (y2-y1)
         );
     }
 
     public final MutableRectFloat set(float x, float y, float w, float h) {
-        this.cxPrev = this.cx = x + w / 2;
-        this.cyPrev = this.cy = y + h / 2;
+        this.cxPrev = this.x = x + w / 2;
+        this.cyPrev = this.y = y + h / 2;
         return size(w, h);
 
     }
 
     public final void set(MutableRectFloat r) {
-        set(r.cx, r.cy, r.w, r.h);
+        set(r.x, r.y, r.w, r.h);
     }
 
     public final void set(RectFloat r) {
@@ -60,35 +61,35 @@ public class MutableRectFloat<X> {
     }
 
     public MutableRectFloat pos(float x, float y) {
-        this.cx = x;
-        this.cy = y;
+        this.x = x;
+        this.y = y;
         return this;
     }
 
     public MutableRectFloat move(float dx, float dy) {
-        this.cx += dx;
-        this.cy += dy;
+        this.x += dx;
+        this.y += dy;
         return this;
     }
 
 
     public float cx() {
-        return cx;
+        return x;
     }
 
     public float cy() {
-        return cy;
+        return y;
     }
 
 
     public void commit(float speedLimit) {
-        v2 delta = new v2(cx-cxPrev, cy-cyPrev);
+        v2 delta = new v2(x -cxPrev, y -cyPrev);
         float lenSq = delta.lengthSquared();
         if (lenSq > speedLimit * speedLimit) {
             float len = (float) Math.sqrt(lenSq);
             delta.scaled(speedLimit / len);
-            cx = cxPrev + delta.x;
-            cy = cyPrev + delta.y;
+            x = cxPrev + delta.x; cxPrev = x;
+            y = cyPrev + delta.y; cyPrev = y;
         }
 
     }
@@ -124,9 +125,9 @@ public class MutableRectFloat<X> {
      * keeps this rectangle within the given bounds
      */
     public void fenceInside(RectFloat bounds) {
-        if ((cx != cx) || (cy != cy)) randomize(bounds);
-        cx = Util.clamp(cx, bounds.left() + w / 2, bounds.right() - w / 2);
-        cy = Util.clamp(cy, bounds.bottom() + h / 2, bounds.top() - h / 2);
+        if ((x != x) || (y != y)) randomize(bounds);
+        x = Util.clamp(x, bounds.left() + w / 2, bounds.right() - w / 2);
+        y = Util.clamp(y, bounds.bottom() + h / 2, bounds.top() - h / 2);
     }
 
     public void randomize(RectFloat bounds) {
@@ -142,8 +143,8 @@ public class MutableRectFloat<X> {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +
-                "cx=" + cx +
-                ", cy=" + cy +
+                "cx=" + x +
+                ", cy=" + y +
                 ", w=" + w +
                 ", h=" + h +
                 '}';
@@ -158,7 +159,7 @@ public class MutableRectFloat<X> {
     }
 
     public RectFloat immutable() {
-        return RectFloat.XYWH(cx, cy, w, h);
+        return RectFloat.XYWH(x, y, w, h);
     }
 
     /** stretch to maximum bounding rectangle of this rect and the provided point */
@@ -192,19 +193,19 @@ public class MutableRectFloat<X> {
     }
 
     public final float left() {
-        return cx - w / 2;
+        return x - w / 2;
     }
 
     public final float right() {
-        return cx + w / 2;
+        return x + w / 2;
     }
 
     public final float top() {
-        return cy + h / 2;
+        return y + h / 2;
     }
 
     public final float bottom() {
-        return cy - h / 2;
+        return y - h / 2;
     }
 
 

@@ -59,7 +59,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     public final FloatRange sustain = new FloatRange(1f,  0, 1f );
 
     public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(PriBuffer.newMap(false));
-    private PriNode root = new PriNode.ConstPriNode("root", ()->1);
+    private final PriNode root = new PriNode.ConstPriNode("root", ()->1);
     private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
 
 
@@ -103,7 +103,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     protected final void onCycle() {
         links.commit(
-            forgetting.forget(links,  decay.floatValue())
+            Forgetting.forget(links,  decay.floatValue())
         );
     }
 

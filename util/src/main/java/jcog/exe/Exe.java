@@ -43,15 +43,12 @@ public enum Exe {;
         return timer;
     }
 
+    /** soon */
     public static void invoke(Runnable r) {
         executor.execute(r);
     }
 
-//    static Runnable runnable(Runnable r) {
-//        Profiler p = profiler;
-//        return p == null ? r : p.runnable(r);
-//    }
-
+    /** later */
     public static void invokeLater(Runnable r) {
         timer.submit(r);
     }
@@ -60,9 +57,11 @@ public enum Exe {;
         return executor;
     }
 
-    public static synchronized void setExecutor(Executor e) {
-        logger.info("global executor = {} ", e);
-        executor = e;
+    public static void setExecutor(Executor e) {
+        synchronized (Exe.class) {
+            logger.info("global executor = {} ", e);
+            executor = e;
+        }
     }
 
     /**
@@ -74,14 +73,14 @@ public enum Exe {;
             p.profiled(what, start, end);
     }
 
-    public static void run(Object what, Runnable r) {
-        Profiler p = profiler;
-        if (p != null) {
-            p.run(what, r);
-        } else {
-            r.run();
-        }
-    }
+//    public static void run(Object what, Runnable r) {
+//        Profiler p = profiler;
+//        if (p != null) {
+//            p.run(what, r);
+//        } else {
+//            r.run();
+//        }
+//    }
 
     private static final ThreadLocal<Boolean> singleThreaded = ThreadLocal.withInitial(()->false);
 
@@ -120,7 +119,7 @@ public enum Exe {;
         private class ProfiledRunnable implements Runnable {
             private final Runnable r;
 
-            public ProfiledRunnable(Runnable r) {
+            ProfiledRunnable(Runnable r) {
                 this.r = r;
             }
 

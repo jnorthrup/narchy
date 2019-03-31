@@ -97,9 +97,8 @@ public class Evaluation {
 
     private boolean recurse(Evaluator e, Term y) {
         Term z = y.replace(subst);
-        if (z != y && !eval(e, z)) //recurse
-            return false;  //CUT
-        return true;
+        //recurse
+        return z == y || eval(e, z);  //CUT
     }
 
 
@@ -437,7 +436,7 @@ public class Evaluation {
         }
     }
     public void canBePairs(List<Term> y) {
-        canBe((Predicate<VersionMap<Term,Term>>)(VersionMap<Term,Term> e)->{
+        canBe((VersionMap<Term,Term> e)->{
             int n = y.size();
             for (int i = 0; i < n; ) {
                 if (!e.set(y.get(i++), y.get(i++)))
@@ -448,7 +447,7 @@ public class Evaluation {
     }
 
     public void canBe(Term x, Iterable<Term> y) {
-        canBe((Iterable<Predicate<VersionMap<Term, Term>>>) Iterables.transform(y, yy -> assign(x, yy)));
+        canBe(Iterables.transform(y, yy -> assign(x, yy)));
     }
 
     public void canBe(Term a, Term b, Term x, Term y) {

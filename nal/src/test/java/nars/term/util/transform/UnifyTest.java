@@ -3,7 +3,7 @@ package nars.term.util.transform;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.random.XorShift128PlusRandom;
 import nars.*;
-import nars.derive.premise.PatternIndex;
+import nars.derive.premise.PatternTermBuilder;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -48,7 +48,7 @@ public class UnifyTest {
     }
 
     private static Term pattern(Term ss) {
-        return new PatternIndex().rule(ss);
+        return new PatternTermBuilder().rule(ss);
     }
 
 

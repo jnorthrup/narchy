@@ -23,28 +23,28 @@ import java.util.stream.Stream;
  */
 public class TreeMemory extends Memory implements Consumer<NAR> {
 
-    float maxFractionThatCanBeRemovedAtATime = 0.05f;
-    float descentRate = 0.5f;
+    private final float maxFractionThatCanBeRemovedAtATime = 0.05f;
+    private final float descentRate = 0.5f;
 
 
-    public final ConcurrentRadixTree<Termed> concepts;
+    public final ConcurrentRadixTree<Concept> concepts;
 
-    int sizeLimit;
+    private final int sizeLimit;
 
-    static AbstractBytes key(Term k) {
+    private static AbstractBytes key(Term k) {
         return TermBytes.termByVolume(k.concept());
     }
 
     public TreeMemory(int sizeLimit) {
 
-        this.concepts = new ConcurrentRadixTree<Termed>() {
+        this.concepts = new ConcurrentRadixTree<>() {
 
             @Override
-            public boolean onRemove(Termed r) {
+            public boolean onRemove(Concept r) {
                 if (r instanceof Concept) {
-                    Concept c = (Concept) r;
+                    Concept c = r;
                     if (removeable(c)) {
-                        onRemoval((Concept) r);
+                        onRemoval(r);
                         return true;
                     } else {
                         return false;
@@ -59,7 +59,7 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
     }
 
     @Override
-    public Stream<Termed> stream() {
+    public Stream<Concept> stream() {
         return Streams.stream(concepts.iterator());
     }
 
@@ -149,17 +149,18 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
 
 
     @Override
-    public @Nullable Termed get(Term t, boolean createIfMissing) {
+    public @Nullable Concept get(Term t, boolean createIfMissing) {
         AbstractBytes k = key(t);
 
         return createIfMissing ? _get(k, t) : _get(k);
     }
 
-    protected @Nullable Termed _get(AbstractBytes k) {
+    @Nullable
+    private Concept _get(AbstractBytes k) {
         return concepts.get(k);
     }
 
-    protected Termed _get(AbstractBytes k, Term finalT) {
+    private Concept _get(AbstractBytes k, Term finalT) {
         return concepts.putIfAbsent(k, () -> nar.conceptBuilder.apply(finalT, null));
     }
 
@@ -169,7 +170,7 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
 
 
     @Override
-    public void set(Term src, Termed target) {
+    public void set(Term src, Concept target) {
 
         AbstractBytes k = key(src);
 
@@ -190,7 +191,7 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
     }
 
     @Override
-    public void forEach(Consumer<? super Termed> c) {
+    public void forEach(Consumer<? super Concept> c) {
         concepts.forEach(c);
     }
 
@@ -208,9 +209,9 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
 
 
     @Override
-    public Termed remove(Term entry) {
+    public @Nullable Concept remove(Term entry) {
         AbstractBytes k = key(entry);
-        Termed result = concepts.get(k);
+        Concept result = concepts.get(k);
         if (result != null) {
             boolean removed = concepts.remove(k);
             if (removed)
@@ -220,7 +221,7 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
     }
 
 
-    protected void onRemoval(Concept value) {
+    private void onRemoval(Concept value) {
         onRemove(value);
     }
 

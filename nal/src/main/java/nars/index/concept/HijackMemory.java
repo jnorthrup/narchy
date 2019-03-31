@@ -8,7 +8,6 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.time.event.DurService;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +20,7 @@ import java.util.stream.Stream;
  */
 public class HijackMemory extends Memory {
 
-    private final PriLinkHijackBag<Termed,PLink<Termed>> table;
+    private final PriLinkHijackBag<Concept,PLink<Concept>> table;
 
 
     private final int forgetPeriodDurs = 64;
@@ -59,8 +58,8 @@ public class HijackMemory extends Memory {
 
 
             @Override
-            public Termed key(PLink<Termed> value) {
-                return value.get().term();
+            public Concept key(PLink<Concept> value) {
+                return value.get();
             }
 
             @Override
@@ -79,7 +78,7 @@ public class HijackMemory extends Memory {
             }
 
             @Override
-            protected boolean replace(float incoming, PLink<Termed> existing, float existingPri) {
+            protected boolean replace(float incoming, PLink<Concept> existing, float existingPri) {
                 if (existing.get() instanceof PermanentConcept)
                     return false;
                 else
@@ -87,7 +86,7 @@ public class HijackMemory extends Memory {
             }
 
             @Override
-            public void onRemove(PLink<Termed> value) {
+            public void onRemove(PLink<Concept> value) {
                 HijackMemory.this.onRemove(value.get());
             }
         };
@@ -114,8 +113,8 @@ public class HijackMemory extends Memory {
     }
 
     @Override
-    public @Nullable Termed get(Term key, boolean createIfMissing) {
-        @Nullable PLink<Termed> x = table.get(key);
+    public @Nullable Concept get(Term key, boolean createIfMissing) {
+        @Nullable PLink<Concept> x = table.get(key);
         if (x != null) {
 
 
@@ -125,9 +124,9 @@ public class HijackMemory extends Memory {
         }
 
         if (createIfMissing) {
-            Termed kc = nar.conceptBuilder.apply(key, null);
+            Concept kc = nar.conceptBuilder.apply(key, null);
             if (kc != null) {
-                PLink<Termed> inserted = table.put(new PLinkHashCached<>(kc, priPut(key, (Concept)kc)));
+                PLink<Concept> inserted = table.put(new PLinkHashCached<>(kc, priPut(key, kc)));
                 if (inserted != null) {
                     return inserted.get();
                 } else {
@@ -147,18 +146,18 @@ public class HijackMemory extends Memory {
         return kc instanceof TaskConcept ? initialTask : initialNode;
     }
 
-    private void boost(PLink<Termed> x, float boost) {
+    private void boost(PLink<Concept> x, float boost) {
         x.priAdd(boost);
         table.pressurize(boost);
     }
 
 
     @Override
-    public void set(Term key, Termed value) {
-        PLink<Termed> existing = table.get(key);
+    public void set(Term key, Concept value) {
+        PLink<Concept> existing = table.get(key);
         if (existing==null || existing.get()!=value) {
             remove(key);
-            PLink<Termed> inserted = table.put(new PLinkHashCached<>(value, initialTask));
+            PLink<Concept> inserted = table.put(new PLinkHashCached<>(value, initialTask));
             if (inserted == null && value instanceof PermanentConcept) {
                 throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + inserted + ' ' + value);
             }
@@ -171,7 +170,7 @@ public class HijackMemory extends Memory {
     }
 
     @Override
-    public void forEach(Consumer<? super Termed> c) {
+    public void forEach(Consumer<? super Concept> c) {
 
         table.forEachKey(c);
 
@@ -188,13 +187,13 @@ public class HijackMemory extends Memory {
     }
 
     @Override
-    public Termed remove(Term entry) {
-        PLink<Termed> e = table.remove(entry);
+    public @Nullable Concept remove(Term entry) {
+        PLink<Concept> e = table.remove(entry);
         return e != null ? e.get() : null;
     }
 
     @Override
-    public Stream<Termed> stream() {
+    public Stream<Concept> stream() {
         return table.stream().map(Supplier::get);
     }
 

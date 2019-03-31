@@ -78,7 +78,7 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
                 }
                 return next;
             }
-        };
+        }
     }
 
     public Mode mode = Mode.Exponential;

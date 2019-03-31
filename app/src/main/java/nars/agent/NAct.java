@@ -298,11 +298,8 @@ public interface NAct {
             float next = Util.clamp(before + c * delta, x.min, x.max);
             x.set(next);
             float actualNext = x.get();
-            if (!Util.equals(before, actualNext, delta/4)) {
-                /** a significant change */
-                return true;
-            }
-            return false;
+            /** a significant change */
+            return !Util.equals(before, actualNext, delta / 4);
         });
 
     }

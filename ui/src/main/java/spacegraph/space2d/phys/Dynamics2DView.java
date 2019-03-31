@@ -1,5 +1,6 @@
 package spacegraph.space2d.phys;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.math.v2;
 import spacegraph.space2d.ReSurface;
@@ -182,7 +183,7 @@ public class Dynamics2DView extends Surface {
         public void drawPoint(v2 argPoint, float argRadiusOnScreen, Color3f argColor) {
             v2 vec = getWorldToScreen(argPoint);
             gl.glPointSize(argRadiusOnScreen);
-            gl.glBegin(GL2.GL_POINTS);
+            gl.glBegin(GL.GL_POINTS);
             gl.glVertex2f(vec.x, vec.y);
             gl.glEnd();
         }
@@ -194,7 +195,7 @@ public class Dynamics2DView extends Surface {
 
             gl.glPushMatrix();
             transformViewport(gl, zero);
-            gl.glBegin(GL2.GL_LINE_LOOP);
+            gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor4f(color.x, color.y, color.z, 1f);
             for (int i = 0; i < vertexCount; i++) {
                 v2 v = vertices[i];
@@ -209,7 +210,7 @@ public class Dynamics2DView extends Surface {
 
             gl.glPushMatrix();
             transformViewport(gl, zero);
-            gl.glBegin(GL2.GL_TRIANGLE_FAN);
+            gl.glBegin(GL.GL_TRIANGLE_FAN);
             gl.glColor4f(color.x, color.y, color.z, .8f);
             for (int i = 0; i < vertexCount; i++) {
                 v2 w = b.getWorldPoint(vertices[i]);
@@ -239,7 +240,7 @@ public class Dynamics2DView extends Surface {
             float y = 0;
             float cx = center.x;
             float cy = center.y;
-            gl.glBegin(GL2.GL_LINE_LOOP);
+            gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor4f(color.x, color.y, color.z, 1);
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
@@ -264,7 +265,7 @@ public class Dynamics2DView extends Surface {
             float y = 0;
             float cx = center.x;
             float cy = center.y;
-            gl.glBegin(GL2.GL_LINE_LOOP);
+            gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor4f(color.x, color.y, color.z, 1);
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
@@ -274,7 +275,7 @@ public class Dynamics2DView extends Surface {
                 y = s * temp + c * y;
             }
             gl.glEnd();
-            gl.glBegin(GL2.GL_LINES);
+            gl.glBegin(GL.GL_LINES);
             gl.glVertex3f(cx, cy, 0);
             gl.glVertex3f(cx + axis.x * radius, cy + axis.y * radius, 0);
             gl.glEnd();
@@ -293,7 +294,7 @@ public class Dynamics2DView extends Surface {
             float y = 0;
             float cx = center.x;
             float cy = center.y;
-            gl.glBegin(GL2.GL_TRIANGLE_FAN);
+            gl.glBegin(GL.GL_TRIANGLE_FAN);
             gl.glColor4f(color.x, color.y, color.z, .4f);
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
@@ -303,7 +304,7 @@ public class Dynamics2DView extends Surface {
                 y = s * temp + c * y;
             }
             gl.glEnd();
-            gl.glBegin(GL2.GL_LINE_LOOP);
+            gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor4f(color.x, color.y, color.z, 1);
             for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
                 gl.glVertex3f(x + cx, y + cy, 0);
@@ -313,7 +314,7 @@ public class Dynamics2DView extends Surface {
                 y = s * temp + c * y;
             }
             gl.glEnd();
-            gl.glBegin(GL2.GL_LINES);
+            gl.glBegin(GL.GL_LINES);
             gl.glVertex3f(cx, cy, 0);
             gl.glVertex3f(cx + axis.x * radius, cy + axis.y * radius, 0);
             gl.glEnd();
@@ -325,7 +326,7 @@ public class Dynamics2DView extends Surface {
 
             gl.glPushMatrix();
             transformViewport(gl, zero);
-            gl.glBegin(GL2.GL_LINES);
+            gl.glBegin(GL.GL_LINES);
             gl.glColor3f(color.x, color.y, color.z);
             gl.glVertex3f(p1.x, p1.y, 0);
             gl.glVertex3f(p2.x, p2.y, 0);
@@ -350,7 +351,7 @@ public class Dynamics2DView extends Surface {
                 v2 center = centers[i];
                 float cx = center.x;
                 float cy = center.y;
-                gl.glBegin(GL2.GL_TRIANGLE_FAN);
+                gl.glBegin(GL.GL_TRIANGLE_FAN);
                 if (colors == null) {
                     gl.glColor4f(1, 1, 1, .4f);
                 } else {
@@ -386,7 +387,7 @@ public class Dynamics2DView extends Surface {
                 v2 center = centers[i];
                 float cx = center.x;
                 float cy = center.y;
-                gl.glBegin(GL2.GL_LINE_LOOP);
+                gl.glBegin(GL.GL_LINE_LOOP);
                 if (colors == null) {
                     gl.glColor4f(1, 1, 1, 1);
                 } else {
@@ -414,7 +415,7 @@ public class Dynamics2DView extends Surface {
             temp2.setZero();
             float k_axisScale = 0.4f;
 
-            gl.glBegin(GL2.GL_LINES);
+            gl.glBegin(GL.GL_LINES);
             gl.glColor3f(1, 0, 0);
 
             temp2.x = xf.pos.x + k_axisScale * xf.c;
