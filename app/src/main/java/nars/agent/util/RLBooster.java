@@ -5,7 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.learn.Agent;
 import jcog.math.FloatRange;
 import jcog.signal.tensor.RingTensor;
-import jcog.util.IntIntToObjectFunc;
+import jcog.func.IntIntToObjectFunction;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -50,7 +50,7 @@ public class RLBooster implements Consumer<NAR> {
 //        this(env, rl, true);
 //    }
 
-    @Deprecated public RLBooster(NAgent env, IntIntToObjectFunc<Agent> agent, boolean nothingAction) {
+    @Deprecated public RLBooster(NAgent env, IntIntToObjectFunction<Agent> agent, boolean nothingAction) {
         this(env, agent, 1, 1, nothingAction);
     }
 
@@ -59,7 +59,7 @@ public class RLBooster implements Consumer<NAR> {
      * @param agent
      * @param nothingAction        reserve 0 for nothing
      */
-    public RLBooster(NAgent env, IntIntToObjectFunc<Agent> agent, int history, int actionDiscetization, boolean nothingAction) {
+    public RLBooster(NAgent env, IntIntToObjectFunction<Agent> agent, int history, int actionDiscetization, boolean nothingAction) {
 
         this.actionDiscretization = actionDiscetization;
 

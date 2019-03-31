@@ -5,7 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
-import jcog.util.Int2Function;
+import jcog.func.IntIntToObjectFunction;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
@@ -32,12 +32,12 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public final P src;
 
     public final Array2DIterable<Signal> iter;
-    private final Int2Function<Term> pixelTerm;
+    private final IntIntToObjectFunction<nars.term.Term> pixelTerm;
 
     /** TODO abstract pixel neighbor linking strategies */
     @Deprecated private final boolean linkNESW = false;
 
-    protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, FloatRange res, NAR n) {
+    protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, FloatRange res, NAR n) {
 
         this.width = src.width();
         this.height = src.height();
@@ -59,7 +59,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
                 FloatSupplier f = () -> src.brightness(xx, yy);
 
-                Signal sss = new Signal(pixelTerm.get(x, y), cause, f, pixelLinker(xx, yy), n).setResolution(res);
+                Signal sss = new Signal(pixelTerm.apply(x, y), cause, f, pixelLinker(xx, yy), n).setResolution(res);
 
                 matrix[x][y] = sss;
             }
@@ -72,17 +72,17 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         //n.conceptBuilder.termlinker(target)
 
         Term[] nn;
-        Term center = pixelTerm.get(xx, yy);
+        Term center = pixelTerm.apply(xx, yy);
         if (linkNESW) {
             List<Term> neighbors = new FasterList(4);
             if (xx > 0)
-                neighbors.add(pixelTerm.get(xx - 1, yy));
+                neighbors.add(pixelTerm.apply(xx - 1, yy));
             if (yy > 0)
-                neighbors.add(pixelTerm.get(xx, yy - 1));
+                neighbors.add(pixelTerm.apply(xx, yy - 1));
             if (xx < width - 1)
-                neighbors.add(pixelTerm.get(xx + 1, yy));
+                neighbors.add(pixelTerm.apply(xx + 1, yy));
             if (yy < height - 1)
-                neighbors.add(pixelTerm.get(xx, yy + 1));
+                neighbors.add(pixelTerm.apply(xx, yy + 1));
 
             nn = neighbors.toArray(EmptyTermArray);
         } else {

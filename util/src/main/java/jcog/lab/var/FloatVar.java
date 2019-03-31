@@ -2,7 +2,7 @@ package jcog.lab.var;
 
 import jcog.data.list.FasterList;
 import jcog.lab.Var;
-import jcog.util.ObjectFloatToFloatFunction;
+import jcog.func.ObjectFloatToFloatFunction;
 
 import java.util.List;
 import java.util.Map;

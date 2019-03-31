@@ -31,7 +31,7 @@
 
 package spacegraph.util.math;
 
-import jcog.math.Tuple3f;
+import jcog.math.v3;
 import jcog.math.VecMathUtil;
 import jcog.math.v3;
 
@@ -2097,7 +2097,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      *
      * @param t the tuple to be multiplied by this matrix and then replaced
      */
-    public final void transform(Tuple3f t) {
+    public final void transform(v3 t) {
 
         float tx = t.x;
         float ty = t.y;
@@ -2115,7 +2115,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * @param t      the tuple to be multiplied by this matrix
      * @param result the tuple into which the product is placed
      */
-    public final void transform(Tuple3f t, Tuple3f result) {
+    public final void transform(v3 t, v3 result) {
 
         float x = m00 * t.x + m01 * t.y + m02 * t.z;
         float y = m10 * t.x + m11 * t.y + m12 * t.z;

@@ -7,7 +7,7 @@ import jcog.learn.Autoencoder;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.ArrayUtils;
-import jcog.util.IntIntToFloatFunction;
+import jcog.func.IntIntToFloatFunction;
 import nars.$;
 import nars.NAR;
 import nars.agent.NAgent;

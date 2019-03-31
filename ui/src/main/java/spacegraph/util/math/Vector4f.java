@@ -31,8 +31,6 @@
 
 package spacegraph.util.math;
 
-import jcog.math.Tuple3f;
-
 /**
  * A 4-element vector represented by single-precision floating point x,y,z,w 
  * coordinates.
@@ -104,18 +102,6 @@ public class Vector4f extends Tuple4f {
     }
 
 
-    /**
-     * Constructs and initializes a Vector4f from the specified Tuple3f.
-     * The x,y,z components of this vector are set to the corresponding
-     * components of tuple t1.  The w component of this vector
-     * is set to 0.
-     * @param t1 the tuple to be copied
-     *
-     * @since vecmath 1.2
-     */
-    public Vector4f(Tuple3f t1) {
-	super(t1.x, t1.y, t1.z, 0.0f);
-    }
 
 
   /**
@@ -126,21 +112,6 @@ public class Vector4f extends Tuple4f {
       super();
   }
 
-
-    /**
-     * Sets the x,y,z components of this vector to the corresponding
-     * components of tuple t1.  The w component of this vector
-     * is set to 0.
-     * @param t1 the tuple to be copied
-     *
-     * @since vecmath 1.2
-     */
-    public final void set(Tuple3f t1) {
-	this.x = t1.x;
-	this.y = t1.y;
-	this.z = t1.z;
-	this.w = 0.0f;
-    }
 
 
  /**

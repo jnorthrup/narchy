@@ -23,7 +23,6 @@
 
 package spacegraph.space3d.phys.shape;
 
-import jcog.math.Tuple3f;
 import jcog.math.v3;
 import spacegraph.space3d.phys.math.VectorUtil;
 
@@ -38,17 +37,17 @@ public abstract class VertexData {
 
 	public abstract int getIndexCount();
 
-	public abstract <T extends Tuple3f> T getVertex(int idx, T out);
+	public abstract <T extends v3> T getVertex(int idx, T out);
 
 	protected abstract void setVertex(int idx, float x, float y, float z);
 
-	public void setVertex(int idx, Tuple3f t) {
+	public void setVertex(int idx, v3 t) {
 		setVertex(idx, t.x, t.y, t.z);
 	}
 
 	public abstract int getIndex(int idx);
 
-	public void getTriangle(int firstIndex, v3 scale, v3[] triangle) {
+	void getTriangle(int firstIndex, v3 scale, v3[] triangle) {
 		for (int i=0; i<3; i++) {
 			getVertex(getIndex(firstIndex+i), triangle[i]);
 			VectorUtil.mul(triangle[i], triangle[i], scale);

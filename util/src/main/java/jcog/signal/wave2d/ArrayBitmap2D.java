@@ -1,6 +1,6 @@
 package jcog.signal.wave2d;
 
-import jcog.util.IntIntToFloatFunction;
+import jcog.func.IntIntToFloatFunction;
 
 import java.lang.reflect.Array;
 

@@ -1,7 +1,6 @@
 package jcog.signal.wave1d;
 
 import jcog.Util;
-import jcog.math.freq.OneDHaar;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 

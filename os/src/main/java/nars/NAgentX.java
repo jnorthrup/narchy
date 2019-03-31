@@ -9,7 +9,7 @@ import jcog.signal.tensor.RingTensor;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
-import jcog.util.Int2Function;
+import jcog.func.IntIntToObjectFunction;
 import nars.agent.FrameTrigger;
 import nars.agent.MetaAgent;
 import nars.agent.NAgent;
@@ -691,7 +691,7 @@ abstract public class NAgentX extends NAgent {
         return c;
     }
 
-    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable Int2Function<Term> id, C bc) {
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable IntIntToObjectFunction<nars.term.Term> id, C bc) {
         Bitmap2DSensor c = new Bitmap2DSensor(id, bc, nar());
         addSensor(c);
         return c;

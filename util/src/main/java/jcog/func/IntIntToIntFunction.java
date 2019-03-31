@@ -1,4 +1,4 @@
-package jcog.util;
+package jcog.func;
 
 /**
  * two argument non-variable integer functor (convenience method)

@@ -4,7 +4,7 @@ import jcog.learn.Agent;
 import jcog.math.FloatSupplier;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ScalarTensor;
-import jcog.util.IntIntToObjectFunc;
+import jcog.func.IntIntToObjectFunction;
 import nars.$;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -18,13 +18,13 @@ public class AgentBuilder {
     final List<Tensor> sensors = $.newArrayList();
     final List<IntObjectPair<? extends IntConsumer>> actions = $.newArrayList();
     final FloatSupplier reward;
-    private final IntIntToObjectFunc<Agent> a;
+    private final IntIntToObjectFunction<Agent> a;
     float durations = 1f;
 
     /** whether to add an extra NOP action */
     private final static boolean NOP_ACTION = true;
 
-    public AgentBuilder(IntIntToObjectFunc<Agent> a, FloatSupplier reward) {
+    public AgentBuilder(IntIntToObjectFunction<Agent> a, FloatSupplier reward) {
         this.a = a;
         this.reward = reward;
     }
@@ -96,7 +96,7 @@ public class AgentBuilder {
         protected final float[] in;
 
 
-        public WiredAgent(IntIntToObjectFunc<Agent> agentBuilder, int inputs, Consumer<float[]> input, FloatSupplier reward, int outputs, IntConsumer act) {
+        public WiredAgent(IntIntToObjectFunction<Agent> agentBuilder, int inputs, Consumer<float[]> input, FloatSupplier reward, int outputs, IntConsumer act) {
             this.input = input;
             this.in = new float[inputs];
             this.reward = reward;

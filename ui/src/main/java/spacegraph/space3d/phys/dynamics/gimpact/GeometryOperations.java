@@ -67,10 +67,12 @@ class GeometryOperations {
 		cp.sub(v, e1);
 		float _scalar = cp.dot(n) / n.dot(n);
 		if (_scalar < 0.0f) {
-			cp = e1;
+			//cp = e1;
+			cp.set(e1);
 		}
 		else if (_scalar > 1.0f) {
-			cp = e2;
+			//cp = e2;
+			cp.set(e2);
 		}
 		else {
 			cp.scaleAdd(_scalar, n, e1);

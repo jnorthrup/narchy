@@ -20,8 +20,8 @@ package jcog.data.graph;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
-import jcog.util.TriConsumer;
-import jcog.util.TriFunction;
+import jcog.func.TriConsumer;
+import jcog.func.TriFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;

@@ -4,7 +4,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.net.UDPeer;
-import jcog.util.TriConsumer;
+import jcog.func.TriConsumer;
 import nars.bag.leak.TaskLeak;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;

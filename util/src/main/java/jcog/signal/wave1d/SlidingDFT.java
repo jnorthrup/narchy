@@ -10,7 +10,7 @@
  *  For further information, please contact Hanns Holger Rutz at
  *  contact@sciss.de
  */
-package jcog.math.freq;
+package jcog.signal.wave1d;
 
 import org.jetbrains.annotations.Nullable;
 

@@ -1,7 +1,7 @@
 package nars.term;
 
 import jcog.Util;
-import jcog.util.TriFunction;
+import jcog.func.TriFunction;
 import nars.$;
 import nars.NAR;
 import nars.Op;

@@ -11,7 +11,7 @@ import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.table.ARFF;
-import jcog.util.ObjectFloatToFloatFunction;
+import jcog.func.ObjectFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.BooleanFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;

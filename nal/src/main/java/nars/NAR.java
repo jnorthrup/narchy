@@ -15,7 +15,7 @@ import jcog.math.MutableInteger;
 import jcog.pri.Prioritized;
 import jcog.service.Service;
 import jcog.service.Services;
-import jcog.util.TriConsumer;
+import jcog.func.TriConsumer;
 import nars.Narsese.NarseseException;
 import nars.attention.Attention;
 import nars.concept.Concept;

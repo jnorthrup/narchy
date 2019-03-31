@@ -23,7 +23,6 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import jcog.math.Tuple3f;
 import jcog.math.v3;
 
 /**
@@ -39,12 +38,6 @@ import jcog.math.v3;
         super(argX, argY, argZ);
     }
 
-    private Vec3(Tuple3f copy) {
-        super(copy);
-    }
-
-
-
     public v3 addLocal(v3 argVec) {
         x += argVec.x;
         y += argVec.y;
@@ -57,15 +50,13 @@ import jcog.math.v3;
         z -= argVec.z;
         return this;
     }
-    public v3 add(v3 argVec) {
-        return new Vec3(x + argVec.x, y + argVec.y, z + argVec.z);
-    }
-
-
-
-    public v3 sub(v3 argVec) {
-        return new Vec3(x - argVec.x, y - argVec.y, z - argVec.z);
-    }
+//    public v3 add(v3 argVec) {
+//        return new Vec3(x + argVec.x, y + argVec.y, z + argVec.z);
+//    }
+//
+//    public v3 sub(v3 argVec) {
+//        return new Vec3(x - argVec.x, y - argVec.y, z - argVec.z);
+//    }
 
     public v3 mul(float argScalar) {
         return new Vec3(x * argScalar, y * argScalar, z * argScalar);

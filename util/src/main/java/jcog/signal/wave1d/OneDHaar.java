@@ -1,4 +1,4 @@
-package jcog.math.freq;
+package jcog.signal.wave1d;
 
 import jcog.Util;
 

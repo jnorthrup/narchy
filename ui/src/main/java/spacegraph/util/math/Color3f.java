@@ -31,71 +31,63 @@
 
 package spacegraph.util.math;
 
-import jcog.math.Tuple3f;
+import jcog.math.v3;
 
 import java.awt.*;
 
 
 /**
- * A three-element color value represented by single precision floating 
- * point x,y,z values.  The x,y,z values represent the red, green, and 
- * blue color values, respectively. Color components should be in the 
+ * A three-element color value represented by single precision floating
+ * point x,y,z values.  The x,y,z values represent the red, green, and
+ * blue color values, respectively. Color components should be in the
  * range of [0.0, 1.0].
  * <p>
  * Java 3D assumes that a linear (gamma-corrected) visual is used for
  * all colors.
- *
  */
-public class Color3f extends Tuple3f {
+public class Color3f extends v3 {
 
-    
-    static final long serialVersionUID = -1861792981817493659L;
 
     /**
      * Constructs and initializes a Color3f from the three xyz values.
+     *
      * @param x the red color value
      * @param y the green color value
      * @param z the blue color value
      */
     public Color3f(float x, float y, float z) {
-        super(x,y,z);
+        super(x, y, z);
     }
 
 
     /**
      * Constructs and initializes a Color3f from the array of length 3.
+     *
      * @param v the array of length 3 containing xyz in order
      */
     public Color3f(float[] v) {
-	super(v);
+        super(v);
     }
 
 
     /**
      * Constructs and initializes a Color3f from the specified Color3f.
+     *
      * @param v1 the Color3f containing the initialization x y z data
      */
     public Color3f(Color3f v1) {
-	super(v1);
+        super(v1);
     }
 
 
     /**
-     * Constructs and initializes a Color3f from the specified Tuple3f.
-     * @param t1 the Tuple3f containing the initialization x y z data
+     * Constructs and initializes a Color3f from the specified v3.
+     *
+     * @param t1 the v3 containing the initialization x y z data
      */
-    public Color3f(Tuple3f t1) {
-	super(t1);
+    public Color3f(v3 t1) {
+        super(t1);
     }
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -105,14 +97,13 @@ public class Color3f extends Tuple3f {
      * gamma correction.
      *
      * @param color the AWT color with which to initialize this
-     * Color3f object
-     *
+     *              Color3f object
      * @since vecmath 1.2
      */
     public Color3f(Color color) {
-	super(color.getRed() / 255.0f,
-	      color.getGreen() / 255.0f,
-	      color.getBlue() / 255.0f);
+        super(color.getRed() / 255.0f,
+                color.getGreen() / 255.0f,
+                color.getBlue() / 255.0f);
     }
 
 
@@ -131,13 +122,12 @@ public class Color3f extends Tuple3f {
      * gamma correction.
      *
      * @param color the AWT color to copy into this Color3f object
-     *
      * @since vecmath 1.2
      */
     public final void set(Color color) {
-	x = color.getRed() / 255.0f;
-	y = color.getGreen() / 255.0f;
-	z = color.getBlue() / 255.0f;
+        x = color.getRed() / 255.0f;
+        y = color.getGreen() / 255.0f;
+        z = color.getBlue() / 255.0f;
     }
 
 
@@ -146,15 +136,57 @@ public class Color3f extends Tuple3f {
      * values of this Color3f object.
      *
      * @return a new AWT Color object
-     *
      * @since vecmath 1.2
      */
     public final Color get() {
-	int r = Math.round(x * 255.0f);
-	int g = Math.round(y * 255.0f);
-	int b = Math.round(z * 255.0f);
+        int r = Math.round(x * 255.0f);
+        int g = Math.round(y * 255.0f);
+        int b = Math.round(z * 255.0f);
 
-	return new Color(r, g, b);
+        return new Color(r, g, b);
     }
+
+    /**
+     * Returns a string that contains the values of this v3.
+     * The form is (x,y,z).
+     *
+     * @return the String representation
+     */
+    public String toString() {
+        return "(" + this.x + ", " + this.y + ", " + this.z + ')';
+    }
+
+    /**
+     * Sets the value of this tuple to the specified xyz coordinates.
+     *
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     */
+    public void set(float x, float y, float z) {
+
+
+        this.x = (x);
+        this.y = (y);
+        this.z = (z);
+
+    }
+
+    /**
+     * assumes z=0
+     */
+    public void set(float x, float y) {
+        set(x, y, this.z);
+    }
+
+
+    public void add(float dx, float dy) {
+        add(dx, dy, 0);
+    }
+
+    public void add(float dx, float dy, float dz) {
+        set(this.x + dx, this.y + dy, this.z + dz);
+    }
+
 
 }

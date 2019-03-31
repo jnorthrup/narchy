@@ -2,7 +2,7 @@ package nars.sensor;
 
 import com.google.common.collect.Iterables;
 import jcog.signal.wave2d.Bitmap2D;
-import jcog.util.Int2Function;
+import jcog.func.IntIntToObjectFunction;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
@@ -40,7 +40,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
                 , src, n);
     }
 
-    public Bitmap2DSensor(@Nullable Int2Function<Term> pixelTerm, P src, NAR n) {
+    public Bitmap2DSensor(@Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, P src, NAR n) {
         super(n);
         this.width = src.width();
         this.height = src.height();
@@ -111,16 +111,16 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     final FloatFloatToObjectFunction<Truth> DIFF;
 
 
-    public static Int2Function<Term> XY(Term root) {
+    public static IntIntToObjectFunction<nars.term.Term> XY(Term root) {
         return (x, y) -> $.inh($.p(x, y), root);
     }
 
-    public static Int2Function<Term> XY(Term root, int radix, int width, int height) {
+    public static IntIntToObjectFunction<nars.term.Term> XY(Term root, int radix, int width, int height) {
         return (x, y) ->
                 $.p(root, $.pRadix(x, radix, width), $.pRadix(y, radix, height));
     }
 
-    public static Int2Function<Term> RadixProduct(@Nullable Term root, int width, int height, int radix) {
+    public static IntIntToObjectFunction<nars.term.Term> RadixProduct(@Nullable Term root, int width, int height, int radix) {
         return (x, y) -> {
             Term coords = radix > 1 ?
                     $.p(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
@@ -131,7 +131,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         };
     }
 
-    public static Int2Function<Term> RadixRecurse(@Nullable Term root, int width, int height, int radix) {
+    public static IntIntToObjectFunction<nars.term.Term> RadixRecurse(@Nullable Term root, int width, int height, int radix) {
         return (x, y) -> {
             Term coords = radix > 1 ?
                     $.pRecurse(true, zipCoords(coord(x, width, radix), coord(y, height, radix))) :
@@ -140,7 +140,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         };
     }
 
-    public static Int2Function<Term> InhRecurse(@Nullable Term root, int width, int height, int radix) {
+    public static IntIntToObjectFunction<nars.term.Term> InhRecurse(@Nullable Term root, int width, int height, int radix) {
         return (x, y) -> {
             Term coords = radix > 1 ?
                     $.inhRecurse(zipCoords(coord(x, width, radix), coord(y, height, radix))) :

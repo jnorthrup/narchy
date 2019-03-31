@@ -2993,39 +2993,39 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
         vec.z = z;
     }
 
-    /**
-     * Transforms the point parameter with this Matrix4f and
-     * places the result into pointOut.  The fourth element of the
-     * point input paramter is assumed to be one.
-     *
-     * @param point    the input point to be transformed.
-     * @param pointOut the transformed point
-     */
-    public final void transform(Point3f point, Point3f pointOut) {
-        float y;
-        float x = m00 * point.x + m01 * point.y + m02 * point.z + m03;
-        y = m10 * point.x + m11 * point.y + m12 * point.z + m13;
-        pointOut.z = m20 * point.x + m21 * point.y + m22 * point.z + m23;
-        pointOut.x = x;
-        pointOut.y = y;
-    }
+//    /**
+//     * Transforms the point parameter with this Matrix4f and
+//     * places the result into pointOut.  The fourth element of the
+//     * point input paramter is assumed to be one.
+//     *
+//     * @param point    the input point to be transformed.
+//     * @param pointOut the transformed point
+//     */
+//    public final void transform(Point3f point, Point3f pointOut) {
+//        float y;
+//        float x = m00 * point.x + m01 * point.y + m02 * point.z + m03;
+//        y = m10 * point.x + m11 * point.y + m12 * point.z + m13;
+//        pointOut.z = m20 * point.x + m21 * point.y + m22 * point.z + m23;
+//        pointOut.x = x;
+//        pointOut.y = y;
+//    }
 
-
-    /**
-     * Transforms the point parameter with this Matrix4f and
-     * places the result back into point.  The fourth element of the
-     * point input paramter is assumed to be one.
-     *
-     * @param point the input point to be transformed.
-     */
-    public final void transform(Point3f point) {
-        float y;
-        float x = m00 * point.x + m01 * point.y + m02 * point.z + m03;
-        y = m10 * point.x + m11 * point.y + m12 * point.z + m13;
-        point.z = m20 * point.x + m21 * point.y + m22 * point.z + m23;
-        point.x = x;
-        point.y = y;
-    }
+//
+//    /**
+//     * Transforms the point parameter with this Matrix4f and
+//     * places the result back into point.  The fourth element of the
+//     * point input paramter is assumed to be one.
+//     *
+//     * @param point the input point to be transformed.
+//     */
+//    public final void transform(Point3f point) {
+//        float y;
+//        float x = m00 * point.x + m01 * point.y + m02 * point.z + m03;
+//        y = m10 * point.x + m11 * point.y + m12 * point.z + m13;
+//        point.z = m20 * point.x + m21 * point.y + m22 * point.z + m23;
+//        point.x = x;
+//        point.y = y;
+//    }
 
 
     /**
