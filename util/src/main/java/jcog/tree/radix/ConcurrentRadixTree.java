@@ -10,8 +10,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /** TODO use StampedLock? */
 public class ConcurrentRadixTree<X> extends MyRadixTree<X> {
 
-    @Nullable
-    private final Lock readLock, writeLock;
+    private @Nullable final Lock readLock;
+    private final Lock writeLock;
 
     /**
      * essentially a version number which increments each acquired write lock, to know if the tree has changed
@@ -32,6 +32,7 @@ public class ConcurrentRadixTree<X> extends MyRadixTree<X> {
      */
     public ConcurrentRadixTree(boolean restrictConcurrency) {
         super();
+        //TODO if !restrictConcurrency maybe use Lock direct instead of thru ReentrantRWLock
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         this.writeLock = readWriteLock.writeLock();
         this.readLock = restrictConcurrency ? readWriteLock.readLock() : null;
