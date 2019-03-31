@@ -13,10 +13,11 @@ import nars.term.Term;
 public class PriNode extends PLink<Term> {
 
 
-    /** boost, relative among peers
+    /**
+     * amplitude, factor, boost, relative priority among peers
      * TODO use separate PriNode as the factor
      * */
-    public final FloatRange factor = new FloatRange(1f, 0.01f, 2f);
+    public final FloatRange amp = new FloatRange(1f, 0.01f, 2f);
 
     /** cached */
     @Deprecated transient private Node<PriNode, Object> node;
@@ -53,7 +54,7 @@ public class PriNode extends PLink<Term> {
         }
         fanOut = node.edgeCount(false,true); //TODO cache
 
-        final double[] factor = {this.factor.floatValue()};
+        final double[] factor = {this.amp.floatValue()};
 
         if (node.edgeCount(true,false) > 0) {
 
@@ -110,7 +111,7 @@ public class PriNode extends PLink<Term> {
 
         @Override
         public void update(MapNodeGraph<PriNode, Object> graph) {
-            this.factor.set(f.asFloat());
+            this.amp.set(f.asFloat());
             super.update(graph);
         }
     }

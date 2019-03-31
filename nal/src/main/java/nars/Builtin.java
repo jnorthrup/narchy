@@ -13,6 +13,9 @@ import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.functor.AbstractInlineFunctor1;
+import nars.term.functor.AbstractInlineFunctor2;
+import nars.term.functor.UnaryBidiFunctor;
 import nars.term.obj.QuantityTerm;
 import nars.term.util.Image;
 import nars.term.util.conj.Conj;
@@ -99,7 +102,7 @@ public class Builtin {
 //                    return inh;
 //                }
 //            },
-            new Functor.AbstractInlineFunctor2("eventOf") {
+            new AbstractInlineFunctor2("eventOf") {
                 @Override
                 protected Term apply(Term conj, Term event) {
                     return Conj.containsEvent(conj, event) ? True : False;
@@ -107,7 +110,7 @@ public class Builtin {
             },
 
             /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
-            new Functor.AbstractInlineFunctor2("conjWithout") {
+            new AbstractInlineFunctor2("conjWithout") {
                 @Override
                 protected Term apply(Term conj, Term event) {
                     Term x = Conj.diff(conj, event);
@@ -223,7 +226,7 @@ public class Builtin {
                             $.the(Texts.levenshteinDistance(a.toString(), b.toString()))
             ),
 
-            new Functor.UnaryBidiFunctor("anon") {
+            new UnaryBidiFunctor("anon") {
 
                 @Override
                 protected Term compute(Term x) {
@@ -366,18 +369,18 @@ public class Builtin {
 
         }));
 
-        nar.on(new Functor.AbstractInlineFunctor1("negateEvents") {
+        nar.on(new AbstractInlineFunctor1("negateEvents") {
             @Override protected Term apply1(Term arg) {
                 return Conj.negateEvents(arg);
             }
         });
-        nar.on(new Functor.AbstractInlineFunctor2("without") {
+        nar.on(new AbstractInlineFunctor2("without") {
             @Override
             protected Term apply(Term container, Term content) {
                 return Terms.without(container, x -> x.equals(content), nar.random());
             }
         });
-        nar.on(new Functor.AbstractInlineFunctor2("withoutPosOrNeg") {
+        nar.on(new AbstractInlineFunctor2("withoutPosOrNeg") {
             @Override
             protected Term apply(Term container, Term content) {
                 Term c = content.unneg();
@@ -440,7 +443,7 @@ public class Builtin {
 
 
         /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
-        nar.on(new Functor.AbstractInlineFunctor2("conjWithoutPN") {
+        nar.on(new AbstractInlineFunctor2("conjWithoutPN") {
             @Override
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.diff(conj, event, true);
@@ -451,7 +454,7 @@ public class Builtin {
         });
 
 
-    nar.on(new Functor.AbstractInlineFunctor1("chooseAnySubEvent") {
+    nar.on(new AbstractInlineFunctor1("chooseAnySubEvent") {
 
         @Override
         protected Term apply1(Term conj) {
@@ -461,7 +464,7 @@ public class Builtin {
         }
     });
 
-   nar.on(new Functor.AbstractInlineFunctor2("chooseUnifiableSubEvent") {
+   nar.on(new AbstractInlineFunctor2("chooseUnifiableSubEvent") {
            @Override
            protected Term apply(Term conj, Term event) {
                if (event instanceof nars.term.Variable)

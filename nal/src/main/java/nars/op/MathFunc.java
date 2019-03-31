@@ -9,11 +9,12 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.functor.InlineCommutiveBinaryBidiFunctor;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INT;
-import static nars.term.Functor.CommutiveBinaryBidiFunctor.commute;
 import static nars.term.atom.Bool.*;
+import static nars.term.functor.CommutiveBinaryBidiFunctor.commute;
 
 public enum MathFunc { ;
 
@@ -121,7 +122,7 @@ public enum MathFunc { ;
     }
 
     /** TODO abstract CommutiveBooleanBidiFunctor */
-    public static final class XOR extends Functor.InlineCommutiveBinaryBidiFunctor implements The {
+    public static final class XOR extends InlineCommutiveBinaryBidiFunctor implements The {
 
         public static final XOR the = new XOR();
 
@@ -152,7 +153,7 @@ public enum MathFunc { ;
     }
 
 
-    abstract static class ArithmeticCommutiveBinaryBidiFunctor extends Functor.InlineCommutiveBinaryBidiFunctor implements The /* THE */ {
+    abstract static class ArithmeticCommutiveBinaryBidiFunctor extends InlineCommutiveBinaryBidiFunctor implements The /* THE */ {
 
         ArithmeticCommutiveBinaryBidiFunctor(String name) {
             super(name);

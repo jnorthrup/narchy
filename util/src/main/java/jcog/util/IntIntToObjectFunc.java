@@ -1,4 +1,4 @@
-package jcog.math;
+package jcog.util;
 
 /** two argument non-variable integer functor (convenience method) */
 @FunctionalInterface public interface IntIntToObjectFunc<X> {

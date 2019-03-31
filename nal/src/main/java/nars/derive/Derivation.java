@@ -25,6 +25,8 @@ import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.functor.AbstractInlineFunctor1;
+import nars.term.functor.AbstractInlineFunctor2;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -79,7 +81,7 @@ public class Derivation extends PreDerivation {
 
     public final UniSubst uniSubst = new UniSubst(this);
 
-    protected final Functor polarizeTask = new Functor.AbstractInlineFunctor1("polarizeTask") {
+    protected final Functor polarizeTask = new AbstractInlineFunctor1("polarizeTask") {
         @Override
         protected Term apply1(Term arg) {
             Truth t = Derivation.this.taskTruth;
@@ -89,14 +91,14 @@ public class Derivation extends PreDerivation {
         }
     };
 
-    final Functor polarizeRandom = new Functor.AbstractInlineFunctor1("polarizeRandom") {
+    final Functor polarizeRandom = new AbstractInlineFunctor1("polarizeRandom") {
         @Override
         protected Term apply1(Term arg) {
             return random.nextBoolean() ? arg : arg.neg();
         }
     };
 
-    protected final Functor polarizeBelief = new Functor.AbstractInlineFunctor1("polarizeBelief") {
+    protected final Functor polarizeBelief = new AbstractInlineFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
             Truth t = Derivation.this.beliefTruthBelief;
@@ -107,7 +109,7 @@ public class Derivation extends PreDerivation {
     };
 
     @Deprecated
-    protected final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
+    protected final Functor polarizeFunc = new AbstractInlineFunctor2("polarize") {
         @Override
         protected Term apply(Term subterm, Term whichTask) {
             if (subterm instanceof Bool)

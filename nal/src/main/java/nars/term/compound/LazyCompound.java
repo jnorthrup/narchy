@@ -7,9 +7,9 @@ import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.functor.InlineFunctor;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import org.jetbrains.annotations.Nullable;
@@ -228,9 +228,9 @@ public class LazyCompound {
 
 //                        for (Term x : s) if (x == null) throw new NullPointerException();
 
-                        if (op==INH && evalInline() && s[1] instanceof Functor.InlineFunctor && s[0].op()==PROD) {
+                        if (op==INH && evalInline() && s[1] instanceof InlineFunctor && s[0].op()==PROD) {
 
-                            Term z = ((Functor.InlineFunctor)s[1]).applyInline(s[0].subterms());
+                            Term z = ((InlineFunctor)s[1]).applyInline(s[0].subterms());
                             if (z == null)
                                 return Null;
 

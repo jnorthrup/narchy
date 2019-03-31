@@ -301,7 +301,7 @@ abstract public class NAgentX extends NAgent {
         RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
                 8, 2,false);
 
-        meta.attn.factor.set(0.5f);
+        meta.attn.amp.set(0.5f);
 //        window(NARui.agent(meta), 500, 500);
         window(NARui.rlbooster(metaBoost), 500, 500);
 
@@ -370,7 +370,7 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(30);
 
 
-        n.attn.linksCapacity.set(4096);
+        n.attn.linksCapacity.set(1024);
 
 
         n.beliefPriDefault.set(0.01f);

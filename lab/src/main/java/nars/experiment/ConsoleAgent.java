@@ -296,10 +296,10 @@ public class ConsoleAgent extends NAgentX {
 //        }
 
 
-        @Override
-        public boolean key(com.jogamp.newt.event.KeyEvent e, boolean pressedOrReleased) {
-            return false;
-        }
+//        @Override
+//        public boolean key(com.jogamp.newt.event.KeyEvent e, boolean pressedOrReleased) {
+//            return false;
+//        }
 
         public int H() {
             return chars[0].length;

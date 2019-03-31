@@ -3,7 +3,6 @@ package nars.term.var;
 import nars.Op;
 import nars.term.Term;
 import nars.term.anon.AnonID;
-import nars.term.atom.Bool;
 import nars.unify.Unify;
 
 import java.io.IOException;
@@ -26,7 +25,12 @@ public final class Img extends AnonID {
 
     @Override
     public Term concept() {
-        return Bool.Null;
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Term root() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

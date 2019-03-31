@@ -8,6 +8,8 @@ import nars.op.SetFunc;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.functor.AbstractInlineFunctor2;
+import nars.term.functor.InlineFunctor;
 import nars.term.util.Image;
 import nars.term.util.conj.ConjMatch;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -38,7 +40,7 @@ public enum DerivationFunctors {
         };
 
         for (Term s : Builtin.statik)
-            if (s instanceof Functor.InlineFunctor)
+            if (s instanceof InlineFunctor)
                 add(m, s);
 
         NAR nar = d.nar;
@@ -72,13 +74,13 @@ public enum DerivationFunctors {
 //                (Functor) nar.concept("dropAnyEvent"),
                 (Functor) nar.concept("without"),
                 (Functor) nar.concept("withoutPosOrNeg"),
-                new Functor.AbstractInlineFunctor2("conjBefore") {
+                new AbstractInlineFunctor2("conjBefore") {
                     @Override protected Term apply(Term conj, Term event) {
                         Term x = ConjMatch.beforeOrAfter(conj, event, true, d, Param.TTL_CONJ_BEFORE_AFTER);
                         return x == null ? Null : x;
                     }
                 },
-                new Functor.AbstractInlineFunctor2("conjAfter") {
+                new AbstractInlineFunctor2("conjAfter") {
                     @Override protected Term apply(Term conj, Term event) {
                         Term x = ConjMatch.beforeOrAfter(conj, event, false, d, Param.TTL_CONJ_BEFORE_AFTER);
                         return x == null ? Null : x;

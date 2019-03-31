@@ -175,14 +175,12 @@ public class NARui {
         return mm;
     }
 
-    public static Surface priView(NAR n) {
-
+    private static Surface priView(NAR n) {
         Attention cc = n.attn;
-
 
         return Splitting.row(
                 new BagView<>(cc.links, n),
-                0.8f,
+                0.2f,
                 new Gridding(
                      new ObjectSurface(
 //                        new XYSlider(

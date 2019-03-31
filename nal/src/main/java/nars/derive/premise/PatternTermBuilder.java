@@ -1,8 +1,10 @@
 package nars.derive.premise;
 
 import nars.Builtin;
-import nars.Op;
-import nars.term.*;
+import nars.term.Compound;
+import nars.term.Functor;
+import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.compound.PatternCompound;
@@ -21,37 +23,6 @@ import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;
  */
 public class PatternTermBuilder /* implements TermBuilder ? */ {
 
-//    final Map<Term,Term> map = new UnifiedMap<>(512);
-
-//    @SuppressWarnings("Java8MapApi")
-    public Term get(/*@NotNull*/ Term x) {
-        //return x.target();
-        Op xop = x.op();
-        if (xop == NEG) {
-            Term u = x.unneg();
-            Termed v = get(u);
-            return v == u ? x : v.term().neg();
-        }
-
-        if (xop.atomic || !xop.conceptualizable)
-            return x;
-
-//        Term y = map.get(x);
-//        if (y != null)
-//            return y;
-
-//        if (nar != null && xop == ATOM) {
-//            Concept xx = nar.concept(x);
-//            if (xx != null) {
-//                map.put(xx.term(), xx);
-//                return xx;
-//            }
-//        }
-
-        Term yy = patternify(x);
-//        map.put(x, yy);
-        return yy;
-    }
 
     public static Term patternify(Term x) {
         if (x instanceof Compound)
@@ -61,7 +32,7 @@ public class PatternTermBuilder /* implements TermBuilder ? */ {
 
 
     public /*@NotNull*/ Term rule(Term x) {
-        return get(new PremiseRuleNormalization().apply(x));
+        return patternify(new PremiseRuleNormalization().apply(x));
     }
 
 //    public final PrediTerm<Derivation> intern(@Nullable PrediTerm<Derivation> x) {
@@ -76,7 +47,7 @@ public class PatternTermBuilder /* implements TermBuilder ? */ {
 //        return get(x); //.target();
 //    }
 
-    public static final class PremiseRuleNormalization extends VariableNormalization {
+    private static final class PremiseRuleNormalization extends VariableNormalization {
 
 
         @Override
@@ -92,35 +63,26 @@ public class PatternTermBuilder /* implements TermBuilder ? */ {
             if (x instanceof Atom) {
                 Functor f = Builtin.functor(x);
                 return f != null ? f : x;
-            }
-            return super.applyAtomic(x);
+            } else
+                return super.applyAtomic(x);
         }
 
         /*@NotNull*/
         @Override
         protected Variable newVariable(/*@NotNull*/ Variable x) {
-
-
-            if (x instanceof Ellipsis.EllipsisPrototype) {
+            if (x instanceof Ellipsis.EllipsisPrototype)
                 return Ellipsis.EllipsisPrototype.make((byte) count,
-                        ((Ellipsis.EllipsisPrototype) x).minArity);
-            } else if (x instanceof Ellipsis) {
+                    ((Ellipsis.EllipsisPrototype) x).minArity);
+            else if (x instanceof Ellipsis)
                 return x;
-
-
-            } /*else if (v instanceof GenericVariable) {
-                return ((GenericVariable) v).normalize(actualSerial); 
-            } else {
-                return v(v.op(), actualSerial);
-            }*/
-            return super.newVariable(x);
+            else
+                return super.newVariable(x);
         }
 
 
     }
 
     private static final AbstractTermTransform.NegObliviousTermTransform Ellipsify = new AbstractTermTransform.NegObliviousTermTransform() {
-
 
         @Override
         protected @Nullable Term applyPosCompound(Compound x) {

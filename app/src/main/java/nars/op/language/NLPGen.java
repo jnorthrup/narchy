@@ -67,7 +67,7 @@ public class NLPGen {
     }
 
     private void train(String natural, Task t) {
-        Compound pattern = (Compound)(index.get(t.term()).term());
+        Compound pattern = (Compound)(PatternTermBuilder.patternify(t.term()).term());
 
         rules.add((tt, freq, conf, tense) -> {
             if (timeMatch(t, tense)) {

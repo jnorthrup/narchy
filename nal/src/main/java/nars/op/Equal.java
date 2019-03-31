@@ -10,13 +10,15 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Int;
+import nars.term.functor.InlineCommutiveBinaryBidiFunctor;
+import nars.term.functor.SimpleBinaryFunctor;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INH;
 import static nars.Op.INT;
 import static nars.term.atom.Bool.*;
 
-public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implements The {
+public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The {
 
     public static final Equal the = new Equal();
 
@@ -153,7 +155,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
     /**
      * general purpose comparator: cmp(x, y, x.compareTo(y))
      */
-    public final static Functor cmp = new Functor.SimpleBinaryFunctor("cmp") {
+    public final static Functor cmp = new SimpleBinaryFunctor("cmp") {
 
         final Int zero = Int.the(0);
 

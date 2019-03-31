@@ -5,10 +5,10 @@ import nars.Param;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;
-import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
+import nars.term.functor.InlineFunctor;
 import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,8 +98,8 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     default Term appliedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
         if (yy != xx) {
             Term[] a = yy instanceof TermList ? ((TermList) yy).arrayKeep() : yy.arrayShared();
-            if (op == INH && evalInline() && a[1] instanceof Functor.InlineFunctor && a[0].op() == PROD) {
-                Term v = ((Functor.InlineFunctor) a[1] /* pred */).applyInline(a[0] /* args */);
+            if (op == INH && evalInline() && a[1] instanceof InlineFunctor && a[0].op() == PROD) {
+                Term v = ((InlineFunctor) a[1] /* pred */).applyInline(a[0] /* args */);
                 if (v != null)
                     return v;
             }
@@ -108,8 +108,8 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
             //same subterms
             if (op == INH && evalInline()) {
                 Term p = xx.sub(1), s;
-                if (p instanceof Functor.InlineFunctor && (s = xx.sub(0)).op() == PROD) {
-                    Term v = ((Functor.InlineFunctor) p /* pred */).applyInline(s /* subj = args */);
+                if (p instanceof InlineFunctor && (s = xx.sub(0)).op() == PROD) {
+                    Term v = ((InlineFunctor) p /* pred */).applyInline(s /* subj = args */);
                     if (v != null)
                         return v;
                 }

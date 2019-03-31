@@ -598,11 +598,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * returns this target in a form which can identify a concept, or Null if it can't
      * generally this is equivalent to root() but for compound it includes
      * unnegation and normalization steps. this is why conceptual() and root() are
-     * different
+     * different.  usually 'this'
      */
-    default Term concept() {
-        return this;
-    }
+    Term concept();
 
     /**
      * the skeleton of a target, without any temporal or other meta-assumptions

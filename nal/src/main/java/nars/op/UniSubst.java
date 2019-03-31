@@ -9,6 +9,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.functor.InlineFunctor;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_DEP;
@@ -64,7 +65,7 @@ import static nars.term.util.Image.imageNormalize;
  * <patham9_> and require at least one dep-var to be unified in dep-var unification.
  * <patham9_> in principle the restriction to have at least one dep-var unified could be skipped, but the additional weaker result doesn't add any value to the system
  */
-public class UniSubst extends Functor implements Functor.InlineFunctor {
+public class UniSubst extends Functor implements InlineFunctor {
 
 
     public final static Term STRICT = Atomic.the("strict");

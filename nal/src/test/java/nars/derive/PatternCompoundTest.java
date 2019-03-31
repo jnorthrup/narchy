@@ -17,7 +17,7 @@ class PatternCompoundTest {
 
     @Test
     void testPatternCompoundWithXTERNAL() throws Narsese.NarseseException {
-        Compound p = (Compound) i.get($("((x) ==>+- (y))")).term();
+        Compound p = (Compound) PatternTermBuilder.patternify($("((x) ==>+- (y))")).term();
         assertEquals(XTERNAL, p.dt());
 
     }

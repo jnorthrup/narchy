@@ -46,6 +46,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.functor.LambdaFunctor;
 import nars.time.ScheduledTask;
 import nars.time.Tense;
 import nars.time.Time;
@@ -1134,8 +1135,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * registers a target rewrite functor
      */
 
-    public final Functor.LambdaFunctor on(String termAtom, Function<Subterms, Term> f) {
-        return (Functor.LambdaFunctor) on(f(termAtom, f));
+    public final LambdaFunctor on(String termAtom, Function<Subterms, Term> f) {
+        return (LambdaFunctor) on(f(termAtom, f));
     }
 
 

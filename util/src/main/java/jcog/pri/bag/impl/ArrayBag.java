@@ -332,8 +332,14 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
                     SampleReaction next = each.apply(y);
 
-                    if (next.remove)
-                        remove(y, i, 0, false /* strong */);
+                    if (next.remove) {
+                        //TODO this is the point where a writelock should be attempted. otherwise it can be moved/removed in the meantime
+                        if (ii[i] == x) {
+                            remove(y, i, 0, false /* strong */);
+                        } else {
+                            //its not there any more
+                        }
+                    }
 
                     if (next.stop)
                         return;

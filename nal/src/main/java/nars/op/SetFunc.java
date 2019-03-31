@@ -10,6 +10,8 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.functor.InlineFunctor;
+import nars.term.functor.UnaryParametricBidiFunctor;
 import nars.term.util.SetSectDiff;
 import org.jetbrains.annotations.Nullable;
 
@@ -136,7 +138,7 @@ public class SetFunc {
      * output: a product containing the inputs, sorted according to (the most) natural ordering
      */
     public static Functor sort(NAR nar) {
-        return new Functor.UnaryParametricBidiFunctor("sort") {
+        return new UnaryParametricBidiFunctor("sort") {
 
             @Override
             protected Term compute(Term x, Term param) {
@@ -194,7 +196,7 @@ public class SetFunc {
 
     }
 
-    abstract static class AbstractBinarySetFunctor extends Functor implements Functor.InlineFunctor, The {
+    abstract static class AbstractBinarySetFunctor extends Functor implements InlineFunctor, The {
 
         protected AbstractBinarySetFunctor(String id) {
             super(id);

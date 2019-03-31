@@ -26,7 +26,6 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.control.NARService;

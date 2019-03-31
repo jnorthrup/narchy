@@ -3,8 +3,8 @@ package nars.op.data;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Functor;
 import nars.term.Term;
+import nars.term.functor.AbstractInlineFunctor1;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +19,7 @@ import java.util.List;
  * <p>
  * TODO recursive version with order=breadth|depth option
  */
-public abstract class flat extends Functor.AbstractInlineFunctor1 {
+public abstract class flat extends AbstractInlineFunctor1 {
 
     public static final flat flatProduct = new flat() {
 

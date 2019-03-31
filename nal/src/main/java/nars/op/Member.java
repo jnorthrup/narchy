@@ -7,6 +7,7 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.term.functor.InlineFunctor;
 
 import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.True;
@@ -14,7 +15,7 @@ import static nars.term.atom.Bool.True;
 /** equivalent to prolog member/2:
  *      member(U,S)  |-   U is in S
  */
-public final class Member extends Functor implements The, Functor.InlineFunctor {
+public final class Member extends Functor implements The, InlineFunctor {
 
     public static final Functor the = new Member();
 

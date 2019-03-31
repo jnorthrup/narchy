@@ -7,6 +7,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.functor.InlineFunctor;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.term.atom.Bool.Null;
@@ -16,7 +17,7 @@ import static nars.term.atom.Bool.Null;
  * if STRICT is 4th argument, then there will only be a valid result
  * if the input has changed (not if nothing changed, and not if the attempted change had no effect)
  */
-public class Subst extends Functor implements Functor.InlineFunctor, The {
+public class Subst extends Functor implements InlineFunctor, The {
 
 
     public static final Subst replace = new Subst("replace");

@@ -5,7 +5,6 @@ import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
 import nars.NAR;
-import nars.time.event.DurService;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.Graph2D;
@@ -22,52 +21,34 @@ import java.util.Map;
 
 public class BagView<X extends Prioritized> extends TabMenu {
 
-    public BagView(Bag<?,X> bag, NAR nar) {
+    public BagView(Bag<?, X> bag, NAR nar) {
         super(Map.of(
-                        "info", () -> new Gridding(
-                                new VectorLabel(bag.getClass().toString()),
-                                new PushButton("clear", bag::clear),
-                                new PushButton("print", bag::print)
-                        ),
-                        "stat", ()->{
-                            Plot2D budgetChart = new Plot2D(64, Plot2D.Line)
-                                    .add("Mass", bag::mass)
-                                    .add("Pressure", bag::pressure)
-                                    ;
+                "info", () -> new Gridding(
+                        new VectorLabel(bag.getClass().toString()),
+                        new PushButton("clear", bag::clear),
+                        new PushButton("print", bag::print)
+                ),
+                "stat", () -> {
+                    Plot2D budgetChart = new Plot2D(64, Plot2D.Line)
+                            .add("Mass", bag::mass)
+                            .add("Pressure", bag::pressure);
 
-                            return DurSurface.get(budgetChart, nar, budgetChart::commit);
-                        },
-                        "histo", () -> bagHistogram(bag::iterator, 20, nar),
-                        "treechart", () -> {
-                            BagChart<X> b = new BagChart<>(bag, (Graph2D.NodeVis<X> n) -> {
-                                Prioritized p = n.id;
-                                float pri = n.pri = Math.max(p.priElseZero(), 1f/(2*bag.capacity()));
-                                n.color(pri, 0.25f, 0.25f);
-
-                                if (!(n.the() instanceof PushButton)) {
-                                    String label = p instanceof NLink ? ((NLink) p).get().toString() : p.toString();
-                                    n.set(new PushButton(new VectorLabel(p.toString())/*.click(()->{})*/));
-                                }
-
-                            }) {
-                                DurService on;
-
-                                @Override
-                                protected void starting() {
-                                    super.starting();
-                                    on = DurService.on(nar, (Runnable) this::update);
-                                }
-
-                                @Override
-                                protected void stopping() {
-                                    on.off();
-                                    on = null;
-                                    super.stopping();
-                                }
-                            };
-                            return b;
+                    return DurSurface.get(budgetChart, nar, budgetChart::commit);
+                },
+                "histo", () -> bagHistogram(bag::iterator, 20, nar),
+                "treechart", () -> {
+                    BagChart<X> b = new BagChart<>(bag, (Graph2D.NodeVis<X> n) -> {
+                        Prioritized p = n.id;
+                        float pri = n.pri = Math.max(p.priElseZero(), 1f / (2 * bag.capacity()));
+                        n.color(pri, 0.25f, 0.25f);
+                        if (!(n.the() instanceof PushButton)) {
+                            String label = p instanceof NLink ? ((NLink) p).get().toString() : p.toString();
+                            n.set(new PushButton(new VectorLabel(label)/*.click(()->{})*/));
                         }
-                ));
+                    });
+                    return DurSurface.get(b, nar, (Runnable) (b::update));
+                }
+        ));
 
         set("histo", true);
     }
@@ -82,11 +63,11 @@ public class BagView<X extends Prioritized> extends TabMenu {
                 });
 
         return Splitting.column(
-            hc, 0.9f, new Gridding(
-                    new WindowToggleButton("Sonify", ()->
-                        new HistogramSonification(d)
-                    )
-            )
+                hc, 0.1f, new Gridding(
+                        new WindowToggleButton("Sonify", () ->
+                                new HistogramSonification(d)
+                        )
+                )
         );
     }
 }

@@ -122,6 +122,9 @@ public interface Atomic extends Term {
 //    }
 
     @Override
+    default Term concept() { return this; }
+
+    @Override
     default Term replace(Map<? extends Term, Term> m) {
         Term y = m.get(this); 
         return y != null ? y : this;

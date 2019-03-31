@@ -9,8 +9,6 @@ import nars.The;
 import nars.io.IO;
 import nars.term.Term;
 
-import java.util.function.IntConsumer;
-
 import static nars.Op.INT;
 
 /**

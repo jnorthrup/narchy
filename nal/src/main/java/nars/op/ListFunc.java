@@ -12,6 +12,8 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.functor.BinaryBidiFunctor;
+import nars.term.functor.UnaryBidiFunctor;
 import nars.term.util.conj.Conj;
 
 import java.util.Collection;
@@ -63,7 +65,7 @@ public enum ListFunc {
     /**
      * emulates prolog append/3
      */
-    public final static Functor append = new Functor.BinaryBidiFunctor("append") {
+    public final static Functor append = new BinaryBidiFunctor("append") {
 
         @Override
         protected Term compute(Evaluation e, Term x, Term y) {
@@ -148,7 +150,7 @@ public enum ListFunc {
     };
 
 
-    public static final Functor reverse = new Functor.UnaryBidiFunctor("reverse") {
+    public static final Functor reverse = new UnaryBidiFunctor("reverse") {
 
         @Override
         protected Term compute(Term x) {
