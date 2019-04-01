@@ -23,7 +23,7 @@ public class AtomicFloatArray extends AbstractVector implements WritableTensor {
     }
 
     @Override
-    public final void setAt(float newValue, int linearCell) {
+    public final void setAt(int linearCell, float newValue) {
         data.set(linearCell, floatToIntBits(newValue));
     }
 

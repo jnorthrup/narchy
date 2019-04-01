@@ -103,12 +103,12 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
 
 
     @Override
-    public void setAt(float newValue, int linearCell) {
+    public void setAt(int linearCell, float newValue) {
         setAtDirect(newValue, idx(linearCell));
     }
 
     public void setAtDirect(float newValue, int i) {
-        buffer.setAt(newValue, i);
+        buffer.setAt(i, newValue);
     }
     public final void setSpin(float newValue) {
         setAtDirect(newValue,  targetSpin());
@@ -117,12 +117,12 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
         buffer.addAt(inc, i);
     }
 
-    public void setAt(float[] values, int linearCellStart) {
+    public void setAt(int linearCellStart, float[] values) {
 
         int v = volume();
         int i = idx(linearCellStart);
         for (float x : values) {
-            buffer.setAt(x, i++);
+            buffer.setAt(i++, x);
             if (i == v) i = 0;
         }
     }
@@ -140,11 +140,11 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
     }
 
     public RingTensor set(float[] t) {
-        setAt(t,  target());
+        setAt(target(), t);
         return this;
     }
     public RingTensor setSpin(float[] t) {
-        setAt(t,  targetSpin());
+        setAt(targetSpin(), t);
         return this;
     }
 

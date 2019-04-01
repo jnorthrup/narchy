@@ -239,7 +239,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      *
      * @param dtMS
      */
-    abstract protected void render(int dtMS);
+    abstract protected void render(float dtS);
 
 
     @Override
@@ -250,7 +250,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         this.lastRenderNS = nowNS;
 
         /* ns -> ms */
-        render((int) Math.min(Integer.MAX_VALUE, Math.round(renderDtNS / 1_000_000.0)));
+        //render((int) Math.min(Integer.MAX_VALUE, Math.round(renderDtNS / 1_000_000.0)));
+        render((float) (renderDtNS / 1.0E9));
 
         gl.glFlush();
         //gl.glFinish();

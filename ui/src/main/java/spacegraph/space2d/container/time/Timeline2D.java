@@ -97,7 +97,7 @@ public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
         }
     }
     public Surface withControls() {
-        return new Splitting(new Clipped(this), controls(), 0.07f);
+        return new Splitting(new Clipped(this), 0.07f, controls());
     }
 
     public Bordering controls() {

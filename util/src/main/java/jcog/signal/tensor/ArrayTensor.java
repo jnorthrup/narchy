@@ -43,7 +43,7 @@ public class ArrayTensor extends AbstractMutableTensor
     }
 
     @Override
-    public void setAt(float[] values, int linearCellStart) {
+    public void setAt(int linearCellStart, float[] values) {
         System.arraycopy(values, 0, data, linearCellStart, values.length);
     }
 
@@ -73,7 +73,7 @@ public class ArrayTensor extends AbstractMutableTensor
 
 
     @Override
-    public void setAt(float newValue, int linearCell) {
+    public void setAt(int linearCell, float newValue) {
         data[linearCell] = newValue;
     }
 
@@ -111,6 +111,7 @@ public class ArrayTensor extends AbstractMutableTensor
      * downsample 64 to 32
      */
     public void set(double[] d) {
+        float[] data = this.data;
         assert (data.length == d.length);
         for (int i = 0; i < d.length; i++)
             data[i] = (float) d[i];

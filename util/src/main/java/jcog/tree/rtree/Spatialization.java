@@ -9,11 +9,11 @@ import java.util.function.Function;
 public class Spatialization<X> {
 
     public static final double EPSILON =
-            //Math.sqrt(Float.MIN_NORMAL);
-            Float.MIN_NORMAL;
+            Math.sqrt(Float.MIN_NORMAL);
+            //Float.MIN_NORMAL;
     public static final float EPSILONf =
-            //(float) Math.sqrt(Float.MIN_NORMAL);
-            Float.MIN_NORMAL;
+            (float) Math.sqrt(Float.MIN_NORMAL);
+            //Float.MIN_NORMAL;
 
     public final Split<X> split;
     public final Function<X, HyperRegion> bounds;

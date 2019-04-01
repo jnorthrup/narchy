@@ -30,7 +30,7 @@ abstract public class Dragging extends Fingering {
         stopped = true;
     }
 
-    public boolean isStopped() {
+    public final boolean isStopped() {
         return stopped;
     }
 

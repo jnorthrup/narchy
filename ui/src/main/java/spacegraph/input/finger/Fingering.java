@@ -23,6 +23,7 @@ abstract public class Fingering {
 
     /** whether this is allowed to continue updating the finger's currently
      * touched widget after it activates.
+     * TODO maybe invert and name 'capture' or 'exlusive' or 'allowEscape'
      */
     public boolean escapes() {
         return false;
@@ -34,7 +35,7 @@ abstract public class Fingering {
     }
 
     /** whether this state should automatically defer to a new incoming state
-     * @param finger*/
+     * */
     public boolean defer(Finger finger) {
         return false;
     }

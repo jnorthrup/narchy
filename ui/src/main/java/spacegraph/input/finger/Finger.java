@@ -21,6 +21,8 @@ import java.util.function.Predicate;
  * possible intersection with a surface and/or its sub-surfaces.
  * <p>
  * tracks state changes and signals widgets of these
+ *
+ * TODO differentiate this between subclasses which touch only one surface at a time, and those which can touch several (multi-select)
  */
 abstract public class Finger {
 
@@ -28,19 +30,15 @@ abstract public class Finger {
     private final int buttons;
 
     /** drag threshold (in screen pixels) */
-    private final float dragThresholdPx = 5f;
+    private final float dragThresholdPx = 3f;
 
     public final v2 posPixel = new v2(), posScreen = new v2();
-
-
 
     /**
      * last local and global positions on press (downstroke).
      * TODO is it helpful to also track upstroke position?
      */
     final v2[] pressPosPixel;
-
-
 
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
@@ -401,6 +399,10 @@ abstract public class Finger {
 
     public v2 posRelative(Surface s) {
         return posRelative(posGlobal(s), s);
+    }
+
+    public Fingering fingering() {
+        return fingering.getOpaque();
     }
 
 

@@ -8,7 +8,7 @@ import spacegraph.video.ImageTexture;
 public class LabeledPane extends Splitting {
 
     public LabeledPane(Surface label, Surface content) {
-        super(label, content, 0.9f);
+        super(label, 0.9f, content);
     }
 
     public static Surface awesome(Surface x, String icon) {

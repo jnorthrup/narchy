@@ -263,7 +263,7 @@ public class WebCam {
             window(new ChannelView(wc), 400, 400);
         }));
 
-        window(new Splitting(new Gridding(menu, new ObjectSurface(wc)), new WebCamSurface(wc), 0.9f), 1000, 1000);
+        window(new Splitting(new Gridding(menu, new ObjectSurface(wc)), 0.9f, new WebCamSurface(wc)), 1000, 1000);
     }
 
 }

@@ -69,7 +69,7 @@ public class C4 {
                 e.printStackTrace();
             }
 
-            SpaceGraph.window(new Splitting(NARui.top(n), beliefCharts(), 0.3f), 800, 800);
+            SpaceGraph.window(new Splitting(NARui.top(n), 0.3f, beliefCharts()), 800, 800);
         }
 
         void inputAssumptions() {

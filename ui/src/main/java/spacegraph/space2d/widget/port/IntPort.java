@@ -22,7 +22,7 @@ public class IntPort extends EditablePort<Integer> {
         incButton.clicking(()-> out(get() +1));
         decButton.clicking(()-> out((get() -1))); //TODO fully atomic
 
-        set(new Splitting(edit, column(incButton, decButton), false, 0.8f));
+        set(new Splitting(edit, 0.8f, false, column(incButton, decButton)));
     }
 
     public IntPort(IntConsumer i) {

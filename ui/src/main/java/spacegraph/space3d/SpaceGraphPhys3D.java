@@ -29,6 +29,7 @@ import com.jogamp.opengl.fixedfunc.GLLightingFunc;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUquadric;
 import com.jogamp.opengl.util.texture.Texture;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.Bitmap2D;
 import spacegraph.input.finger.Finger;
@@ -188,8 +189,9 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
 
     }
 
-    protected void renderVolume(int dtMS) {
+    protected void renderVolume(float  dtS) {
 
+        int dtMS = Math.max(1, Math.round(1000 * dtS));
 
         forEach(s -> s.renderAbsolute(display.gl, dtMS));
 

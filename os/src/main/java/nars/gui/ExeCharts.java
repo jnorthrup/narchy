@@ -246,9 +246,9 @@ public class ExeCharts {
 
         return DurSurface.get(
                 new Splitting(s,
-                        new Gridding(new PushButton("Stats")
+                        0.1f, new Gridding(new PushButton("Stats")
                                 .clicking(()->causeSummary(nar, 10))
-                                , s.configWidget()), 0.1f),
+                                , s.configWidget())),
                 nar, () -> {
                     s.set(((UniExec) nar.exe).cpu);
                 });
@@ -321,8 +321,7 @@ public class ExeCharts {
         LoopPanel control = new NARLoopPanel(n.loop);
         Surface p = new Splitting(
                 nameLabel = new BitmapLabel(n.self().toString()),
-                control,
-                false, 0.25f
+                0.25f, false, control
         );
         return DurSurface.get(p, n, control::update);
     }

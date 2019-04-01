@@ -44,25 +44,25 @@ public class WidgetTest {
         Map<String, Supplier<Surface>> m = Map.of(
                 "Container", () -> grid(
                         LabeledPane.the("grid",
-                                grid(randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton())
+                                grid(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
                         ),
                         LabeledPane.the("grid wide",
-                                new Gridding(0.618f, randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton())
+                                new Gridding(0.618f, iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
                         ),
                         LabeledPane.the("grid tall",
-                                new Gridding(1 / 0.618f, randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton())
+                                new Gridding(1 / 0.618f, iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
                         ),
                         LabeledPane.the("column",
-                                column(randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton())
+                                column(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
                         ),
                         LabeledPane.the("row",
-                                row(randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton(), randomIconButton())
+                                row(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
                         ),
                         LabeledPane.the("vsplit",
-                                Splitting.column(randomIconButton(), 0.618f, randomIconButton())
+                                Splitting.column(iconButton(), 0.618f, iconButton())
                         ),
                         LabeledPane.the("hsplit",
-                                Splitting.row(randomIconButton(), 0.618f, randomIconButton())
+                                Splitting.row(iconButton(), 0.618f, iconButton())
                         )
                 ),
                 "Button", () -> grid(
@@ -116,10 +116,11 @@ public class WidgetTest {
         m = new HashMap<>(m); //escape arg limitation of Map.of()
         m.put("Sketch", () -> new MetaFrame(new Sketch2DBitmap(256, 256)));
         m.put("Speak", () -> new SpeakChip());
+        m.put("Resplit", () -> new Splitting<>(iconButton(), 0.618f, iconButton()).resizeable());
         menu = m;
     }
 
-    private static Surface randomIconButton() {
+    private static Surface iconButton() {
         String s;
         switch (ThreadLocalRandom.current().nextInt(6)) {
             case 0: s = "code"; break;

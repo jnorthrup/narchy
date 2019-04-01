@@ -3,6 +3,7 @@ package spacegraph.input.finger;
 import jcog.math.v2;
 import spacegraph.space2d.Surface;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class DoubleClicking {
@@ -42,46 +43,47 @@ public class DoubleClicking {
     public void reset() {
         doubleClickSpot = null;
         doubleClickTime = Long.MIN_VALUE;
-        count = 0;
+        count.set(0);
     }
 
-    int count = 0;
+
+    final AtomicInteger count = new AtomicInteger();
+
     public boolean update(Finger finger) {
 
         if (!finger.clickedNow(button, clicked))
-            return count > 0; //could be in-between presses
+            return count.get() > 0; //could be in-between presses
 
-        count++;
+        int c = count.incrementAndGet();
 
         v2 downHit = finger.pressPosPixel[button].clone();
+        long now = System.nanoTime();
 
-        if (count == 2) {
+        boolean unclick = false;
+        if (c > 1 && doubleClickSpot != null && now - doubleClickTime > maxDoubleClickTimeNS) {
+            //taking too long, assume only one click so far
+            unclick = true;
+        } else if (c == 2 && doubleClickSpot != null && !doubleClickSpot.equals(downHit, PIXEL_DISTANCE_THRESHOLD)) {
+            //moved, not on original point
+            unclick = true;
+        }
 
-            if (doubleClickSpot!=null) {
-                if (System.nanoTime() - doubleClickTime > maxDoubleClickTimeNS) {
-                    reset();
-                    return false; //too long
-                }
-            }
+        if (unclick) {
+            count.set(c = 1);
+        }
 
-            if (doubleClickSpot!=null && !doubleClickSpot.equals(downHit, PIXEL_DISTANCE_THRESHOLD)) {
+        switch (c) {
+            case 1:
+                doubleClickSpot = downHit;
+                doubleClickTime = now;
+                break;
+            case 2:
                 reset();
-                return false; //not on same point
-            }
-
-
-
-            reset();
-            onDoubleClick.accept(finger.posGlobal(clicked));
-            return true;
-
-        } else if (count == 1) {
-            doubleClickSpot = downHit;
-            doubleClickTime = System.nanoTime();
+                onDoubleClick.accept(finger.posGlobal(clicked));
+                return true;
         }
 
         return true; //continues
-
     }
 
 }

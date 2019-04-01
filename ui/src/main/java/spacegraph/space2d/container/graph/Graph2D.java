@@ -134,7 +134,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
                 super.paintIt(gl, r);
             }
-        }, cfg, 0.1f);
+        }, 0.1f, cfg).resizeable();
     }
 
 //    @Override

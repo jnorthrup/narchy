@@ -22,7 +22,7 @@ public class ReSurface {
     /** viewable pixel resolution */
     public float pw, ph;
 
-    /** time since last frame */
+    /** time since last frame (seconds) */
     private float frameDT;
 
     /** can be used to calculate frame latency */
@@ -85,10 +85,10 @@ public class ReSurface {
         return this;
     }
 
-    public ReSurface restart(float pw, float ph, int frameDT, float fps) {
-        this.frameDT = frameDT;
+    public ReSurface restart(float pw, float ph, float dtS, float fps) {
+        this.frameDT = dtS;
         this.frameDTideal = (float) (1.0/Math.max(1.0E-9,fps));
-        this.load.next( Math.max(0, frameDT - frameDTideal) / frameDTideal );
+        this.load.next( Math.max(0, dtS - frameDTideal) / frameDTideal );
         return restart(pw, ph);
     }
 
@@ -147,8 +147,14 @@ public class ReSurface {
 
     /** ms since last update */
     public int dtMS() {
-        return Math.max(1,Math.round(1000/ frameDT));
+        //return Math.max(1,Math.round(1000/ frameDT));
+        return Math.max(1, Math.round(1000 * frameDT));
     }
+
+    public float dtS() {
+        return frameDT;
+    }
+
     public float load() {
         return load.asFloat();
     }

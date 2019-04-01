@@ -1,81 +1,87 @@
 package spacegraph.space2d.container;
 
 import jcog.Util;
+import jcog.math.v2;
+import jcog.tree.rtree.Spatialization;
+import org.jetbrains.annotations.Nullable;
+import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.FingerMoveSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableArrayContainer;
+import spacegraph.space2d.widget.Widget;
 
 /**
  * Splits a surface into a top and bottom or left and right sections
  */
 public class Splitting<X extends Surface, Y extends Surface> extends MutableArrayContainer {
 
-    private float split;
+    private float split = Float.NaN;
     private boolean vertical;
 
+    //TODO float marginPct = ...;
+    private float minSplit = 0, maxSplit = 1;
+    private static final float resizeMargin = 0.025f;
+
     public Splitting() {
-        this(new EmptySurface(), new EmptySurface(), 0.5f, true);
+        this(null, 0.5f, true, null);
     }
 
     @Deprecated
-    public Splitting(X top, Y bottom, float split) {
-        this(top, bottom, split, true);
+    public Splitting(X top, float split, Y bottom) {
+        this(top, split, true, bottom );
     }
 
-    public Splitting(X top, Y bottom, boolean vertical, float split) {
-        this(top, bottom, split, vertical);
-    }
-
-    private Splitting(Surface top, Surface bottom, float split, boolean vertical) {
-        super(top, bottom);
+    public Splitting(X top, float split, boolean vertical, Y bottom) {
+        super(null, null, null);
         this.vertical = vertical;
-        split(split);
+        set(top, split, bottom);
     }
 
     public static Splitting<?, ?> column(Surface top, float v, Surface bottom) {
-        return new Splitting(bottom, top, /* semantically reversed */ 1-v, true);
+        return new Splitting<>(bottom,1-v, true, top /* semantically reversed */ );
     }
 
     public static Splitting<?, ?> column(Surface top, Surface bottom) {
         return column(top, 0.5f, bottom);
     }
 
-    public static Splitting row(Surface left, float v, Surface right) {
-        return new Splitting(left, right, v, false);
+    public static Splitting<?,?> row(Surface left, float v, Surface right) {
+        return new Splitting<>(left, v, false, right);
     }
 
     public static Splitting<?, ?> row(Surface x, Surface y) {
         return row(x, 0.5f, y);
     }
 
-    public Splitting vertical() {
-        if (!this.vertical) {
-            vertical = true;
-            layout();
-        }
+    public Splitting<X,Y> vertical() {
+        vertical = true;
+        layout();
         return this;
     }
 
-    Splitting horizontal() {
-        if (this.vertical) {
-            vertical = false;
-            layout();
-        }
+    Splitting<X,Y> horizontal() {
+        vertical = false;
+        layout();
         return this;
     }
 
-    public Splitting split(float split) {
+    public Splitting<X,Y> split(float split) {
         float s = this.split;
-        this.split = split;
-        if (!Util.equals(s, split, 0.0001f))
+        if (!Util.equals(s, Spatialization.EPSILON)) {
+            this.split = split;
             layout();
+        }
         return this;
     }
 
-    public Splitting set(X top, Y bottom, float split) {
-        put(0, top);
-        put(1, bottom);
+    public Splitting<X,Y> set(X top, float split, Y bottom) {
         split(split);
+        T(top); B(bottom);
         return this;
+    }
+
+    @Nullable public Widget resizer() {
+        return (Widget) get(2);
     }
 
     @Override
@@ -83,6 +89,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
         Surface a = T(), b = B();
 
+        Widget r = this.resizer();
         if (a != null && b != null /*&& a.visible() && b.visible()*/) {
 
             float X = x(), Y = y(), h = h(), w = w();
@@ -94,6 +101,11 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
                 a.pos(X, Ysplit, X + w, Y + h);
 
                 b.pos(X, Y, X + w, Ysplit);
+
+                if (r !=null) {
+                    r.pos(X, Ysplit - resizeMargin/2*h, X+w, Ysplit + resizeMargin/2*h);
+                    r.show();
+                }
             } else {
                 float Xsplit = X + split * w;
 
@@ -101,50 +113,111 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
                 b.pos(Xsplit, Y, X + w, Y + h);
 
+                if (r !=null) {
+                    r.pos(Xsplit - resizeMargin/2*w, Y, Xsplit + resizeMargin/2*w, Y+h);
+                    r.show();
+                }
             }
+
+            a.show();
+            b.show();
         } else if (a != null /*&& a.visible()*/) {
+            a.show();
+            b.hide();
             a.pos(bounds);
+            if (r!=null)  r.hide();
         } else if (b != null /*&& b.visible()*/) {
+            a.hide();
+            b.show();
             b.pos(bounds);
+            if (r!=null)  r.hide();
+        } else {
+            a.hide();
+            b.hide();
+            if (r!=null)  r.hide();
         }
+
 
 
     }
 
+    @Override
+    protected int childrenCount() {
+        return 2;
+    }
+
     public final Splitting<X, Y> T(X s) {
-        put(0, s);
+        setAt(0, s);
         return this;
     }
 
     public final Splitting<X, Y> B(Y s) {
-        put(1, s);
+        setAt(1, s);
         return this;
     }
 
     public final Splitting<X, Y> L(X s) {
-        put(0, s);
+        T(s);
         return this;
     }
 
     public final Splitting<X, Y> R(Y s) {
-        put(1, s);
+        B(s);
         return this;
     }
 
-    private X T() {
+    public final X T() {
         return (X) get(0);
     }
 
-    private Y B() {
+    public final Y B() {
         return (Y) get(1);
     }
 
     public final X L() {
-        return (X) get(0);
+        return T();
     }
 
     public final Y R() {
-        return (Y) get(1);
+        return B();
+    }
+
+
+    public Surface resizeable() {
+        return resizeable(0.1f, 0.9f);
+    }
+
+    public Surface resizeable(float minSplit, float maxSplit) {
+        this.minSplit = minSplit;
+        this.maxSplit = maxSplit;
+        synchronized (this) {
+            if (this.resizer() == null) {
+                setAt(2, new Resizer()); //TODO
+            }
+        }
+        return this;
+    }
+
+    private class Resizer extends Widget {
+
+        final FingerMoveSurface drag = new FingerMoveSurface(this) {
+            @Override
+            public boolean drag(Finger f) {
+                if (super.drag(f)) {
+                    v2 b = f.posRelative(Splitting.this);
+                    float pct = vertical ? b.y : b.x;
+                    float p = Util.clamp(pct, minSplit, maxSplit);
+                    split(p);
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        @Override
+        public Surface finger(Finger finger) {
+            return finger.tryFingering(drag) ? this : null;
+        }
     }
 
 }

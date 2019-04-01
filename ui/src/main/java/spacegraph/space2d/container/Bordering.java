@@ -206,7 +206,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         if (direction >= 9)
             throw new ArrayIndexOutOfBoundsException();
 
-        put(direction, next);
+        setAt(direction, next);
         return this;
     }
 

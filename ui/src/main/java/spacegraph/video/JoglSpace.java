@@ -108,7 +108,7 @@ abstract public class JoglSpace {
 
     }
 
-    protected void renderVolume(int dtMS) {
+    protected void renderVolume(float dtS) {
 
     }
 
@@ -117,7 +117,7 @@ abstract public class JoglSpace {
     public final ReSurface rendering = new ReSurface();
 
 
-    protected void renderOrthos(int dtMS) {
+    protected void renderOrthos(float dtS) {
 
     }
 
@@ -129,7 +129,7 @@ abstract public class JoglSpace {
     }
 
 
-    private void updateCamera(int dtMS) {
+    private void updateCamera(float dtS) {
         perspective();
     }
 
@@ -239,16 +239,15 @@ abstract public class JoglSpace {
         }
 
         @Override
-        protected final void render(int dtMS) {
+        protected final void render(float dtS) {
 
             clear();
 
-            updateCamera(dtMS);
+            updateCamera(dtS);
 
-            renderVolume(dtMS);
+            renderVolume(dtS);
 
-            renderOrthos(dtMS);
-
+            renderOrthos(dtS);
         }
 
         @Override

@@ -24,7 +24,7 @@ public class AtomicDoubleArrayTensor extends AbstractMutableTensor {
     }
 
     @Override
-    public void setAt(float newValue, int linearCell) {
+    public void setAt(int linearCell, float newValue) {
         data.set(linearCell, newValue);
     }
 

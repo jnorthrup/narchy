@@ -262,7 +262,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
     public Splitting withControls() {
-        return new Splitting(this, new CameraSensorViewControls(this), 0.1f);
+        return new Splitting(this, 0.1f, new CameraSensorViewControls(this));
     }
 
 

@@ -100,7 +100,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
     }
 
     @Override
-    protected void renderOrthos(int dtMS) {
+    protected void renderOrthos(float dtS) {
 
         int n = layers.size();
         if (n <= 0) {
@@ -110,7 +110,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
         GL2 g = display.gl;
 
         int w = display.window.getWidth(), h = display.window.getHeight();
-        rendering.restart(w, h, dtMS, display.renderFPS);
+        rendering.restart(w, h, dtS, display.renderFPS);
 
         g.glDisable(GL.GL_DEPTH_TEST);
 

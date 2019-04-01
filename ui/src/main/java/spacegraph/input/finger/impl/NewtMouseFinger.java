@@ -9,17 +9,13 @@ import spacegraph.space2d.hud.Ortho;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /** ordinary desktop/laptop computer mouse, as perceived through jogamp NEWT's native interface */
 public class NewtMouseFinger extends MouseFinger implements MouseListener, WindowListener {
 
-    final static int MAX_BUTTONS = 5;
+
 
     private final JoglSpace space;
 
-    final AtomicBoolean updating = new AtomicBoolean(false);
-    protected Surface touchNext;
 
     public NewtMouseFinger(JoglSpace s) {
         super(MAX_BUTTONS);
@@ -55,32 +51,25 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         return true;
     }
 
-    protected void update() {
 
-        if (!updating.compareAndSet(false, true))
-            return; //busy
+    @Override protected void doUpdate() {
+        touchNext = null;
 
-        try {
-            touchNext = null;
+        ((SpaceGraphFlat) this.space).layers.whileEachReverse(this::touch);
 
-            ((SpaceGraphFlat) this.space).layers.whileEachReverse(this::touch);
+        Surface touchNext = this.touchNext;
 
-            Surface touchNext = this.touchNext;
+        Fingering ff = this.fingering.get();
 
-            Fingering ff = this.fingering.get();
-
-            @Nullable Surface touchPrev = touching(touchNext);
-            if (ff != Fingering.Null) {
-                if (!ff.update(this)) {
-                    ff.stop(this);
-                    fingering.set(Fingering.Null);
-                }
+        @Nullable Surface touchPrev = touching(touchNext);
+        if (ff != Fingering.Null) {
+            if (!ff.update(this)) {
+                ff.stop(this);
+                fingering.set(Fingering.Null);
             }
-
-            clearRotation();
-        } finally {
-            updating.set(false);
         }
+
+        clearRotation();
     }
 
     private boolean update(boolean moved, MouseEvent e) {

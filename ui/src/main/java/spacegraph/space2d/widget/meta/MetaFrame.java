@@ -110,7 +110,7 @@ public class MetaFrame extends Bordering implements HudHover {
     public boolean detachChild(Surface s) {
         synchronized (this) {
             if (get(0) == s) {
-                put(0, null, false);
+                setAt(0, null, false);
                 return true;
             }
         }
@@ -121,7 +121,7 @@ public class MetaFrame extends Bordering implements HudHover {
     public boolean attachChild(Surface s) {
         synchronized (this) {
             if (get(0) == null) {
-                put(0, s, false);
+                setAt(0, s, false);
                 return true;
             }
         }

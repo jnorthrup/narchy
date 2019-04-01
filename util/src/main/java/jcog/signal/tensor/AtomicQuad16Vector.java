@@ -62,7 +62,7 @@ public class AtomicQuad16Vector implements WritableTensor {
     }
 
     @Override
-    public void setAt(float newValue, int linearCell) {
+    public void setAt(int linearCell, float newValue) {
         int shift = linearCell * 16;
         X.accumulateAndGet(this, toShort(newValue)<<shift,
                 (long x, long b) -> {

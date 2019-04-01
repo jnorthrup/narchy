@@ -64,13 +64,9 @@ public class User {
     private IndexWriter iw;
     
 
-    public static User the() {
-        if (user == null) {
-            synchronized (User.class) {
-                if (user == null)
-                    user = new User(Paths.get(System.getProperty("user.home")).resolve(".me"));
-            }
-        }
+    public static synchronized User the() {
+        if (user == null)
+            user = new User(Paths.get(System.getProperty("user.home")).resolve(".me"));
         return user;
     }
 

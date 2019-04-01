@@ -378,14 +378,14 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
         // generate state:
         int observations = numInputs();
         for( int i = 0; i < observations; ++i ) {
-            state.setAt(sequenceState.get(seq, i), i);
+            state.setAt(i, sequenceState.get(seq, i));
         }
     }
 
     protected void updateIdealActions() {
         // generate ideal actions
         for(int i = 0; i < targets; ++i ) {
-            idealActions.setAt(sequenceActions.get(seq, i), i);
+            idealActions.setAt(i, sequenceActions.get(seq, i));
         }
     }
 
@@ -440,7 +440,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
 
         int nextAction = a.act(reward, state.data);
         actions.fill(0);
-        actions.setAt(1f, nextAction);
+        actions.setAt(nextAction, 1f);
 
         ++seq;
 

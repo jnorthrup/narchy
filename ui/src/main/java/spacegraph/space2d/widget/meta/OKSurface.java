@@ -16,10 +16,9 @@ public class OKSurface extends Splitting {
         super();
         vertical().set(
             content,
-            Splitting.row(new EmptySurface(), 0.8f,
+                0.1f, Splitting.row(new EmptySurface(), 0.8f,
                 new PushButton("OK").clicking((Runnable)(OKSurface.this::remove))
-            ),
-            0.1f
+            )
         );
     }
 }

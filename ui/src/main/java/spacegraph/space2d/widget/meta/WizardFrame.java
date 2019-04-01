@@ -37,7 +37,7 @@ public class WizardFrame extends Splitting {
     public void replace(Surface existingChild, Surface nextChild) {
 
         synchronized (this) {
-            if (get(1) == existingChild) {
+            if (B() == existingChild) {
                 if (stack.isEmpty())
                     backButton.show();
                 stack.add(existingChild);

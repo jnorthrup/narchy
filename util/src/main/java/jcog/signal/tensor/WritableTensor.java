@@ -5,10 +5,10 @@ import jcog.signal.Tensor;
 
 public interface WritableTensor extends Tensor {
 
-    void setAt(float newValue, int linearCell);
+    void setAt(int linearCell, float newValue);
 
     default void set(float newValue, int[] cell) {
-        setAt(newValue, index(cell));
+        setAt(index(cell), newValue);
     }
 
     /** returns the new value after adding */
@@ -16,14 +16,14 @@ public interface WritableTensor extends Tensor {
         float next = getAt(linearCell);
         if (next!=next) next = 0; //reset to zero
         next += x;
-        setAt(next, linearCell);
+        setAt(linearCell, next);
         return next;
     }
 
-    default void setAt(float[] values, int linearCellStart) {
+    default void setAt(int linearCellStart, float[] values) {
         int i = linearCellStart;
         for (float v: values)
-            setAt(v, i++);
+            setAt(i++, v);
     }
 
     default void readFrom(Tensor from, int[] fromStart, int[] fromEnd, int[] myStart, int[] myEnd) {
@@ -33,7 +33,7 @@ public interface WritableTensor extends Tensor {
     default void fill(float x) {
         int v = volume();
         for (int i = 0; i < v; i++)
-            setAt(x, i);
+            setAt(i, x);
     }
 
 }

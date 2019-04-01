@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 /** TODO support resizing */
 public class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer {
 
+    /** TODO varhandle */
     private final AtomicReferenceArray<S> children;
     public final int length;
 
@@ -22,7 +23,8 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
         this(items.length);
         for (int i = 0, itemsLength = items.length; i < itemsLength; i++) {
             S s = items[i];
-            put(i, s);
+            if (s!=null)
+                setAt(i, s);
         }
     }
 
@@ -31,16 +33,17 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
     }
 
     public final S remove(int index) {
-        return put(index, null);
+        return setAt(index, null);
     }
 
 
-    public final S put(int index, S s) {
-        return put(index, s, true);
+    /** put semantics */
+    public final S setAt(int index, S s) {
+        return setAt(index, s, true);
     }
 
     /** returns the removed element */
-    public S put(int index, S s, boolean startAndStop) {
+    public S setAt(int index, S s, boolean startAndStop) {
         return children.getAndUpdate(index, (r) -> {
             if (r != s) {
                 if (startAndStop) {
@@ -73,7 +76,7 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
     @Override
     protected TextEdit clear() {
         for (int i= 0; i < length; i++)
-            put(i, null);
+            setAt(i, null);
         return null;
     }
 

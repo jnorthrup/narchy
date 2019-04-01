@@ -3,6 +3,7 @@ package spacegraph.space2d;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.WTF;
+import jcog.math.v2;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.Container;
@@ -364,4 +365,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return rootParent()!=null;
     }
 
+    public v2 pos() {
+        return new v2(x(), y());
+    }
 }

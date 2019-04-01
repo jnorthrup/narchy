@@ -141,8 +141,8 @@ class GeometryOperations {
 			_M.z = vA1.dot(AD);
 			_M.w = vA2.dot(AD);
 			
-			N.x = (_M.x + _M.y) * 0.5f;
-			N.y = (_M.z + _M.w) * 0.5f;
+			N.x = (_M.x + _M.y) /2;
+			N.y = (_M.z + _M.w) /2;
 
 			if (N.x < N.y) {
 				if (_M.y < _M.z) {

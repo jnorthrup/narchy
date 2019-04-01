@@ -25,10 +25,10 @@ public class IntSpinner extends Widget {
         set(
             new Splitting(
                 label = new VectorLabel(),
-                new Splitting(
+                    0.8f, false, new Splitting(
                     new PushButton("+", ()-> update(+1)),
-                    new PushButton("-", ()-> update(-1)),0.5f),
-                    false, 0.8f)
+                        0.5f, new PushButton("-", ()-> update(-1)))
+            )
         );
         update(0);
     }

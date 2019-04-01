@@ -12,13 +12,13 @@ class AtomicQuad16VectorTest {
         assertEquals("0,0,0,0", x.toString());
         assertEquals(0, x.getAt(0));
 
-        x.setAt(1f, 0);
+        x.setAt(0, 1f);
         assertEquals(1f, x.getAt(0), 0.001f);
         assertEquals("1,0,0,0", x.toString());
         
-        x.setAt(0.5f, 1); assertEquals("1,0.5,0,0", x.toString());
-        x.setAt(0.25f, 2); assertEquals("1,0.5,.25,0", x.toString());
-        x.setAt(0.125f, 3); assertEquals("1,0.5,.25,.13", x.toString());
+        x.setAt(1, 0.5f); assertEquals("1,0.5,0,0", x.toString());
+        x.setAt(2, 0.25f); assertEquals("1,0.5,.25,0", x.toString());
+        x.setAt(3, 0.125f); assertEquals("1,0.5,.25,.13", x.toString());
 
     }
 

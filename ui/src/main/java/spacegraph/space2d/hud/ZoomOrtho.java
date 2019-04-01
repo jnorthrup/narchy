@@ -106,8 +106,12 @@ public class ZoomOrtho extends Ortho {
 
         @Override
         protected boolean startDrag(Finger f) {
-            camStart = new v3(cam);
-            return super.startDrag(f);
+            if (f.fingering()==Fingering.Null) {
+                camStart = new v3(cam);
+                return super.startDrag(f);
+            } else {
+                return false;
+            }
         }
 
         @Override

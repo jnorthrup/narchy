@@ -156,15 +156,12 @@ public class NARui {
                 "pri", () -> priView(n),
                 "cpt", () -> new ConceptBrowser(n)
         );
-        HashMap<String, Supplier<Surface>> mm = new HashMap();
-        mm.putAll(m);
-        mm.put(
-                "snp", () -> memoryView(n)
-        );
-        mm.put(
-                "tsk", () -> taskView(n)
-        );
-//        mm.put("mem", () -> ScrollGrid.list(
+        HashMap<String, Supplier<Surface>> mm = new HashMap<>()
+        {{
+            putAll(m);
+            put("snp", () -> memoryView(n));
+            put("tsk", () -> taskView(n));
+//            put("mem", () -> ScrollGrid.list(
 //                (int x, int y, Term v) -> new PushButton(m.toString()).click(() ->
 //                        window(
 //                                ScrollGrid.list((xx, yy, zm) -> new PushButton(zm.toString()), n.memory.contents(v).collect(toList())), 800, 800, true)
@@ -172,6 +169,8 @@ public class NARui {
 //                n.memory.roots().collect(toList())
 //                )
 //        );
+        }};
+
         return mm;
     }
 

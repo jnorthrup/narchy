@@ -46,7 +46,7 @@ public class TabMenu extends Menu {
                 .map(x -> toggle(buttonBuilder, x.getKey(), x.getValue()))
                 .collect(toList()));
 
-        wrap = new Splitting(tabs, content.view(),0);
+        wrap = new Splitting(tabs, 0, content.view());
 
         set(wrap);
     }
