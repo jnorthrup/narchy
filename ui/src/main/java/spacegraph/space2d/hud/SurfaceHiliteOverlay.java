@@ -46,15 +46,15 @@ public abstract class SurfaceHiliteOverlay extends Surface {
     }
 
     String caption = null;
-    int captionFlashtimeMS = 500;
-    int captionFlashRemain = 0;
+    float captionFlashtimeS = 0.5f;
+    float captionFlashRemain = 0;
     private void paintCaption(Surface t, ReSurface s, GL2 gl) {
         if (t != last) {
             //update
             caption = t.toString();
-            captionFlashRemain = captionFlashtimeMS;
+            captionFlashRemain = captionFlashtimeS;
         } else {
-            captionFlashRemain = Math.max(0, captionFlashRemain - s.dtMS());
+            captionFlashRemain = Math.max(0, captionFlashRemain - s.dtS());
         }
 
         //if (captionFlashRemain > 0) {
@@ -66,7 +66,7 @@ public abstract class SurfaceHiliteOverlay extends Surface {
 //                    //GL_EQUIV
 //            );
         gl.glLineWidth(1f);
-        float i = Util.lerp((captionFlashRemain / ((float) captionFlashtimeMS)), 0.25f, 0.9f);
+        float i = Util.lerp((captionFlashRemain / ((float) captionFlashtimeS)), 0.25f, 0.9f);
         gl.glColor3f(i,i,i);
 
         float w = s.pw, h = s.ph;

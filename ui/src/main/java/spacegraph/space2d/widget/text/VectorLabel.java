@@ -39,7 +39,7 @@ public class VectorLabel extends EmptyContainer {
     }
 
     @Override
-    protected void doLayout(int dtMS) {
+    protected void doLayout(float dtS) {
 
         int len = text.length();
         if (len == 0) return;

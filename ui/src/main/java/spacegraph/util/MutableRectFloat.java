@@ -44,7 +44,6 @@ public class MutableRectFloat<X> extends v2 {
         this.cxPrev = this.x = x + w / 2;
         this.cyPrev = this.y = y + h / 2;
         return size(w, h);
-
     }
 
     public final void set(MutableRectFloat r) {

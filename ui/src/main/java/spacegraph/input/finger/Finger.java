@@ -314,6 +314,7 @@ abstract public class Finger {
 
                 } else {
                     next.stop(this);
+                    renderer = rendererDefault;
                 }
             }
         }
@@ -321,11 +322,6 @@ abstract public class Finger {
 
         return false;
     }
-
-//    public boolean isFingering() {
-//        return fingering.get() != Fingering.Null;
-//    }
-
 
     public v2 posGlobal(Surface c) {
         Ortho co = this._ortho;
@@ -420,7 +416,7 @@ abstract public class Finger {
         @Override
         protected void paint(GL2 gl, ReSurface reSurface) {
             if (focused()) {
-                renderer.paint(posPixel, Finger.this, reSurface.dtMS(), gl);
+                renderer.paint(posPixel, Finger.this, reSurface.dtS(), gl);
 
                 //for debugging:
 //                if (ortho!=null) {

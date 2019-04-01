@@ -47,7 +47,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
         FasterList<NodeVis<E>> next = new FasterList<>();
 
         @Override
-        public void update(Graph2D<E> g, int dtMS) {
+        public void update(Graph2D<E> g, float dtS) {
             next.clear();
 
             g.forEachValue(t -> {

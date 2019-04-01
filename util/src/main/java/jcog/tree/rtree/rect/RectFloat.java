@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
+import org.jetbrains.annotations.NotNull;
 
 import static jcog.Util.lerp;
 import static jcog.tree.rtree.Spatialization.EPSILON;
@@ -20,19 +21,19 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
 
     protected RectFloat(RectFloat r) {
-        this.x = r.x;
-        this.y = r.y;
-        this.w = r.w;
-        this.h = r.h;
-
-//        this.x = r.x;
-//        this.y = r.y;
-//        this.w = r.w;
-//        this.h = r.h;
-
+        this(r.x, r.y, r.w, r.h);
     }
 
-    private RectFloat(float x1, float y1, float x2, float y2) {
+    private RectFloat(float left, float bottom, float w, float h) {
+        assert(w >= 0 && h >= 0);
+        this.x = left; this.y = bottom; this.w = w; this.h = h;
+    }
+
+
+    /**
+     * specified as a pair of X,Y coordinate pairs defining the diagonal extent
+     */
+    public static RectFloat XYXY(float x1 /* left */, float y1 /* bottom */, float x2, float y2) {
         if (x2 < x1) {
             float t = x2;
             x2 = x1;
@@ -44,35 +45,32 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
             y1 = t;
         }
 
-        x = x1;
-        w = (x2 - x1);
-        y = y1;
-        h = (y2 - y1);
-    }
-
-    /**
-     * specified as a pair of X,Y coordinate pairs defining the diagonal extent
-     */
-    public static RectFloat XYXY(float x1, float y1, float x2, float y2) {
-        return new RectFloat(x1, y1, x2, y2);
+        return RectFloat._X0Y0WH(x1, y1, (x2 - x1), (y2 - y1));
     }
 
     /**
      * specified as a center point (cx,cy) and width,height extent (w,h)
      */
     public static RectFloat XYWH(float cx, float cy, float w, float h) {
-        return new RectFloat(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2);
+        w = Math.abs(w); h = Math.abs(h);
+        return X0Y0WH(cx - w / 2, cy - h / 2, w, h);
     }
 
     /** x,y corresponds to "lower left" corner rather than XYWH's center */
     public static RectFloat X0Y0WH(float x0, float y0, float w, float h) {
-        return XYXY(x0, y0, x0+w, y0+h);
+        w = Math.abs(w); h = Math.abs(h);
+        return _X0Y0WH(x0, y0, w, h);
     }
+
+    @NotNull
+    private static RectFloat _X0Y0WH(float x0, float y0, float w, float h) {
+        return new RectFloat(x0, y0, w, h);
+    }
+
 
     public static RectFloat XYWH(double cx, double cy, double w, double h) {
         return XYWH((float)cx, ((float)cy), (float)w, (float)h);
     }
-
     /**
      * interpolates the coordinates, and the scale is proportional to the mean dimensions of each
      */
@@ -105,7 +103,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
     public RectFloat pos(float x, float y, float epsilon) {
         return Util.equals(this.x, x, epsilon) && Util.equals(this.y, y, epsilon) ? this :
-                XYXY(x , y , x + w, y + h);
+                X0Y0WH(x , y, x + w, y + h);
     }
 
 

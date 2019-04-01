@@ -92,7 +92,7 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
 
 
     @Override
-    protected void doLayout(int dtMS) {
+    protected void doLayout(float dtS) {
 
         if (parent == null)
             return;

@@ -143,7 +143,7 @@ public class NARui {
         Map<String, Supplier<Surface>> m = Map.of(
                 //"inp", () -> taskBufferPanel(n),
                 //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
-                "nar", () -> new ObjectSurface<>(n),
+                "nar", () -> new ObjectSurface<>(n, 1),
                 "on", () -> new ObjectSurface(n.atMap(), 2),
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),
@@ -151,7 +151,7 @@ public class NARui {
                 "can", () -> ExeCharts.causeProfiler(n),
                 //ExeCharts.focusPanel(n),
                 ///causePanel(n),
-                "grp", () -> BagregateConceptGraph2D.get(n).widget(),
+                "grp", () -> BagregateConceptGraph2D.get(n),
                 "svc", () -> new ServicesTable(n.plugin),
                 "pri", () -> priView(n),
                 "cpt", () -> new ConceptBrowser(n)
@@ -593,7 +593,7 @@ public class NARui {
         m.center(new TabMenu(Map.of(
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
                 "Histogram", ()->new BagView(attn.links, n),
-                "Concepts", ()->BagregateConceptGraph2D.get(attn, n).widget(),
+                "Concepts", ()->BagregateConceptGraph2D.get(attn, n),
                 "Flow", ()-> AttentionUI.attentionGraph(attn, n)
         )));
         m.south(new ObjectSurface(attn));

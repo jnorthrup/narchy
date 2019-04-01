@@ -39,7 +39,7 @@ abstract public class Container extends Surface {
         MUSTLAYOUT.set(this, 1);
     }
 
-    abstract protected void doLayout(int dtMS);
+    abstract protected void doLayout(float dtS);
 
     @Override
     public void print(PrintStream out, int indent) {
@@ -78,7 +78,7 @@ abstract public class Container extends Surface {
             showing = true;
 
             if (MUSTLAYOUT.compareAndSet(this, 1, 0)) {
-                doLayout(r.dtMS());
+                doLayout(r.dtS());
             }
 
             r.on(this::paintIt); //TODO if transparent this doesnt need rendered

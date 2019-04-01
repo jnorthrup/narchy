@@ -79,7 +79,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
     }
 
     @Override
-    protected void doLayout(int dtMS) {
+    protected void doLayout(float dtS) {
 
         float X = x();
         float Y = y();

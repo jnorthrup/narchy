@@ -60,7 +60,7 @@ public class BitmapLabel extends BitmapTextGrid {
     }
 
     @Override
-    public void doLayout(int dtMS) {
+    public void doLayout(float dtS) {
         //HACK override the auto-sizing
         layoutText();
     }

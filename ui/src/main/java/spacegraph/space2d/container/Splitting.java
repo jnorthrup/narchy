@@ -6,6 +6,7 @@ import jcog.tree.rtree.Spatialization;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMoveSurface;
+import spacegraph.input.finger.FingerRenderer;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableArrayContainer;
 import spacegraph.space2d.widget.Widget;
@@ -85,7 +86,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     }
 
     @Override
-    public void doLayout(int dtMS) {
+    public void doLayout(float dtS) {
 
         Surface a = T(), b = B();
 
@@ -198,12 +199,25 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         return this;
     }
 
+    /** TODO button to toggle horiz/vert/auto and swap */
     private class Resizer extends Widget {
+        {
+            color.set(0.1f,  0.1f, 0.1f, 0.5f);
+        }
 
         final FingerMoveSurface drag = new FingerMoveSurface(this) {
+//            @Override
+//            public boolean escapes() {
+//                return false;
+//            }
+            @Override
+            public @Nullable FingerRenderer renderer() {
+                return vertical ? FingerRenderer.rendererResizeNS : FingerRenderer.rendererResizeEW;
+            }
             @Override
             public boolean drag(Finger f) {
                 if (super.drag(f)) {
+                    focus();
                     v2 b = f.posRelative(Splitting.this);
                     float pct = vertical ? b.y : b.x;
                     float p = Util.clamp(pct, minSplit, maxSplit);
@@ -216,7 +230,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
         @Override
         public Surface finger(Finger finger) {
-            return finger.tryFingering(drag) ? this : null;
+            return finger.tryFingering(drag) ? this : this /*null*/;
         }
     }
 

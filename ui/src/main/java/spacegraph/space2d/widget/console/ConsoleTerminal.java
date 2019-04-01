@@ -158,7 +158,7 @@ public class ConsoleTerminal extends Widget implements Appendable, KeyPressed {
     public class MyBitmapTextGrid extends BitmapTextGrid {
 
         @Override
-        protected void doLayout(int dtMS) {
+        protected void doLayout(float dtS) {
             TerminalSize ts = term.getTerminalSize();
             if (ts.getColumns() != cols || ts.getRows() != rows) {
                 term.setTerminalSize(new TerminalSize(cols, rows));

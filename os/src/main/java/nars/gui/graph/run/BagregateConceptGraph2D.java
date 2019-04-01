@@ -4,8 +4,9 @@ import jcog.math.IntRange;
 import jcog.pri.bag.util.Bagregate;
 import nars.NAR;
 import nars.attention.Attention;
+import nars.gui.DurSurface;
 import nars.term.Term;
-import nars.time.event.DurService;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 
@@ -17,36 +18,37 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
         @Override
         public void changed() {
             if (bag!=null)
-                bag.bag.setCapacity(intValue());
+                bag.setCapacity(intValue());
         }
     };
 
-    public static nars.gui.graph.run.BagregateConceptGraph2D get(NAR n) {
+    public static Surface get(NAR n) {
         return get(n.attn, n);
     }
 
-    public static nars.gui.graph.run.BagregateConceptGraph2D get(Attention attn, NAR n) {
-        Bagregate<Term> b = new Bagregate(() -> attn.concepts(n).iterator(), 256);
+    public static Surface get(Attention attn, NAR n) {
+        Bagregate<Term> b = new Bagregate(() -> attn.concepts().iterator(), 256);
 
-        return new nars.gui.graph.run.BagregateConceptGraph2D(b, n) {
-            private DurService updater;
-
-            @Override
-            protected void starting() {
-                super.starting();
-                updater = DurService.on(n, () -> {
-                    if (visible())
-                        b.commit();
-                });
-            }
-
-            @Override
-            public void stopping() {
-                updater.off();
-                updater= null;
-                super.stopping();
-            }
-        };
+        return DurSurface.get(new nars.gui.graph.run.BagregateConceptGraph2D(b, n).widget(), n, b::commit);
+//        return new nars.gui.graph.run.BagregateConceptGraph2D(b, n) {
+//            private DurService updater;
+//
+//            @Override
+//            protected void starting() {
+//                super.starting();
+//                updater = DurService.on(n, () -> {
+//                    if (visible())
+//                        b.commit();
+//                });
+//            }
+//
+//            @Override
+//            public void stopping() {
+//                updater.off();
+//                updater= null;
+//                super.stopping();
+//            }
+//        };
     }
 
     private BagregateConceptGraph2D(Bagregate<Term> bag, NAR n) {

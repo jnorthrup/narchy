@@ -116,7 +116,13 @@ public class WidgetTest {
         m = new HashMap<>(m); //escape arg limitation of Map.of()
         m.put("Sketch", () -> new MetaFrame(new Sketch2DBitmap(256, 256)));
         m.put("Speak", () -> new SpeakChip());
-        m.put("Resplit", () -> new Splitting<>(iconButton(), 0.618f, iconButton()).resizeable());
+        m.put("Resplit", () -> new Splitting(
+            new Splitting<>(iconButton(), 0.618f, true,  iconButton()).resizeable(),
+            0.618f,
+            new Splitting<>(iconButton(), 0.618f, false, iconButton()).resizeable()
+            ).resizeable()
+        );
+
         menu = m;
     }
 

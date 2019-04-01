@@ -57,7 +57,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     private Offs onClear;
     private DurService updater;
 
-    public DynamicConceptSpace(NAR nar, @Nullable Iterable<? extends PriReference<Concept>> concepts, int maxNodes, int maxEdgesPerNodeMax) {
+    public DynamicConceptSpace(NAR nar, @Nullable Iterable<? extends Concept> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super();
 
         this.spaceID = DynamicConceptSpace.class + "." + (serial++);
@@ -68,11 +68,11 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         if (concepts == null)
             concepts = (Iterable) this;
 
-        this.concepts = new Bagregate<Concept>(concepts, maxNodes) {
+        this.concepts = new Bagregate<>(concepts, maxNodes) {
 
             @Override
             public void onRemove(PriReference<Concept> value) {
-                
+
                 ConceptWidget cw = value.get().meta(spaceID);
                 if (cw != null) {
                     cw.deactivate();

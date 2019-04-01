@@ -124,7 +124,7 @@ protected void layoutChild(Surface aChild, float newPW, float newPH)
 }
 
     @Override
-    protected void doLayout(int dtMS) {
+    protected void doLayout(float dtS) {
 
     }
 

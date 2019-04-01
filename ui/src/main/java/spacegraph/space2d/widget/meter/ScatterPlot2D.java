@@ -112,7 +112,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         );
 
 
-        update((g, dtMS)->{
+        update((g, dtS)->{
             float minVis = this.minVisPct;
             int n = g.nodes();
             float w = w(), h = h();
@@ -196,7 +196,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
     @Override
     protected boolean prePaint(ReSurface r) {
         if (super.prePaint(r)) {
-            extent.animate(r.dtMS());
+            extent.animate(r.dtS());
             return true;
         }
         return false;

@@ -8,7 +8,6 @@ import nars.concept.Concept;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.gui.graph.DynamicConceptSpace;
-import nars.link.Activate;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.console.ConsoleGUI;
 import spacegraph.space2d.widget.console.TextEdit0;
@@ -20,12 +19,12 @@ public class Concepts3D extends DynamicConceptSpace {
 //    private final TextEdit inputbox;
 
     private Concepts3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
-        this(nar, () -> nar.attn.concepts(nar).iterator(),
+        this(nar, () -> nar.attn.concepts().iterator(),
                 visibleNodes, maxEdgesPerNodeMax);
 
     }
 
-    private Concepts3D(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
+    private Concepts3D(NAR nar, Iterable<Concept> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
 
         SpaceGraphPhys3D sg = show(1400, 1000, false);

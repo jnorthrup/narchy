@@ -324,7 +324,7 @@ public class FasterList<X> extends FastList<X> {
         return (float) (sumOfFloat(function) / size());
     }
 
-    public final long longify(LongObjectToLongFunction<X> f, long l) {
+    protected final long longify(LongObjectToLongFunction<X> f, long l) {
         int thisSize = this.size;
         if (thisSize > 0) {
             X[] ii = this.items;
@@ -339,7 +339,7 @@ public class FasterList<X> extends FastList<X> {
     /**
      * reduce
      */
-    public float reapply(FloatFunction<? super X> function, FloatFloatToFloatFunction combine) {
+    protected float reapply(FloatFunction<? super X> function, FloatFloatToFloatFunction combine) {
         int n = size;
         switch (n) {
             case 0:
@@ -475,7 +475,7 @@ public class FasterList<X> extends FastList<X> {
 //        return array;
 //    }
 
-    public final X[] fillArray(X[] array, boolean nullRemainder) {
+    final X[] fillArray(X[] array, boolean nullRemainder) {
 
         int l = array.length;
         int s = Math.min(l, size);
@@ -552,7 +552,7 @@ public class FasterList<X> extends FastList<X> {
         return addIfNotNull(x.get());
     }
 
-    public final boolean addIfNotNull(@Nullable X x) {
+    private final boolean addIfNotNull(@Nullable X x) {
         return x != null && add(x);
     }
 
@@ -897,7 +897,7 @@ public class FasterList<X> extends FastList<X> {
     /**
      * assumes all elements are non-null, eliding null checks
      */
-    public boolean nonNullEquals(FasterList<X> x) {
+    protected boolean nonNullEquals(FasterList<X> x) {
         if (this == x) return true;
         int s = this.size;
         if (s != x.size) {
@@ -913,7 +913,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
 
-    public void replaceLast(X y) {
+    protected void replaceLast(X y) {
         items[size - 1] = y;
     }
 
@@ -930,12 +930,12 @@ public class FasterList<X> extends FastList<X> {
     /**
      * modified from MutableIterator
      */
-    static class FasterListIterator<T> implements Iterator<T> {
+    static final class FasterListIterator<T> implements Iterator<T> {
         protected final FasterList<T> list;
-        protected int currentIndex;
-        protected int lastIndex = -1;
+        int currentIndex;
+        int lastIndex = -1;
 
-        public FasterListIterator(FasterList<T> list) {
+        FasterListIterator(FasterList<T> list) {
             this.list = list;
         }
 
@@ -966,20 +966,24 @@ public class FasterList<X> extends FastList<X> {
     public boolean allSatisfy(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
         //return InternalArrayIterate.allSatisfy(this.items, this.size, predicate);
         int s = size;
-        X[] items = this.items;
-        for (int i = 0; i < s; i++) {
-            if (!predicate.test(items[i]))
-                return false;
+        if (s > 0) {
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                if (!predicate.test(items[i]))
+                    return false;
+            }
         }
         return true;
     }
     @Override
     public boolean anySatisfy(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
         int s = size;
-        X[] items = this.items;
-        for (int i = 0; i < s; i++) {
-            if (predicate.test(items[i]))
-                return true;
+        if (s > 0) {
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                if (predicate.test(items[i]))
+                    return true;
+            }
         }
         return false;
     }

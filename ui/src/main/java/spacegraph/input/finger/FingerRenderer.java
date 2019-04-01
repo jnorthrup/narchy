@@ -11,7 +11,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
 /** cursor renderer */
 @FunctionalInterface public interface FingerRenderer {
 
-    void paint(v2 posPixel, Finger finger, int dtMS, GL2 gl);
+    void paint(v2 posPixel, Finger finger, float dtS, GL2 gl);
 
     FingerRenderer rendererCrossHairs1 = new FingerRenderer() {
 
@@ -19,7 +19,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
         final FloatAveragedWindow speedFilter = new FloatAveragedWindow(8, 0.5f);
 
         @Override
-        public void paint(v2 posPixel, Finger finger, int dtMS, GL2 gl) {
+        public void paint(v2 posPixel, Finger finger, float dtS, GL2 gl) {
 
 
             float smx = posPixel.x, smy = posPixel.y;
@@ -84,17 +84,17 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
         float pixelDistSq = 0;
         final v2 lastPixel = new v2();
         final FloatAveragedWindow smoothedRad = new FloatAveragedWindow(8, 0.25f);
-        long timeMS = 0;
+        double timeMS = 0;
 
         @Override
-        public void paint(v2 posPixel, Finger finger, int dtMS, GL2 gl) {
+        public void paint(v2 posPixel, Finger finger, float dtS, GL2 gl) {
 
             float smx = posPixel.x, smy = posPixel.y;
 
             pixelDistSq = lastPixel.distanceSq(posPixel);
             lastPixel.set(posPixel);
 
-            timeMS += dtMS;
+            timeMS += dtS*1000;
 
             float freq = 8f;
             float phaseSec = (float) Math.sin(freq * ((double)timeMS) / (2 * Math.PI * 1000));
@@ -119,11 +119,27 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
             gl.glPopMatrix();
         }
 
+        protected void drawTri(float rad, GL2 gl) {
+            float w = rad/2;
+            float x1 = rad * 0.5f;
+            float x2 = rad * 1f;
+            Draw.tri2f(gl, x1, -w/2, x1, +w/2,   x2, 0);
+        }
+
         protected void renderInside(float rad, GL2 gl) {
             float radh = rad * 0.75f;
-            Draw.line(0, -radh, 0, +radh, gl);
-            Draw.line(-radh, 0, +radh, 0, gl);
+            if (renderHorizontal())
+                Draw.line(0, -radh, 0, +radh, gl);
+            if (renderVertical())
+                Draw.line(-radh, 0, +radh, 0, gl);
         }
+
+        /** whether to render the internal crosshair dimension */
+        protected boolean renderVertical() { return true; }
+
+        /** whether to render the internal crosshair dimension */
+        protected boolean renderHorizontal() { return true; }
+
 
         protected void renderOutside(float rad, GL2 gl) {
             gl.glLineWidth(lineWidth);
@@ -148,11 +164,23 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
         protected void renderInside(float rad, GL2 gl) {
             super.renderInside(rad, gl);
 
-            float w = rad/2;
-            float x1 = rad * 0.5f;
-            float x2 = rad * 1f;
-//            gl.glRotatef(arrowAngle, 0,0,1);
-            Draw.tri2f(gl, x1, -w/2, x1, +w/2,   x2, 0);
+            drawTri(rad, gl);
         }
     }
+
+    /** TODO arrowheads */
+    FingerRenderer rendererResizeNS = new PolygonCrosshairs() {
+        @Override
+        protected boolean renderVertical() {
+            return false;
+        }
+    };
+    /** TODO arrowheads */
+    FingerRenderer rendererResizeEW = new PolygonCrosshairs() {
+        @Override
+        protected boolean renderHorizontal() {
+            return false;
+        }
+    };
+
 }

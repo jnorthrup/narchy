@@ -196,7 +196,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         if (super.prePaint(r)) {
             if (busy.compareAndSet(false, true)) {
                 try {
-                    updater.update(this, r.dtMS());
+                    updater.update(this, r.dtS());
                 } finally {
                     busy.set(false);
                 }
@@ -376,7 +376,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
      */
     @FunctionalInterface public interface Graph2DUpdater<X> {
 
-        void update(Graph2D<X> g, int dtMS);
+        void update(Graph2D<X> g, float dtS);
 
         /**
          * set an initial location (and/or size) for a newly created NodeVis
@@ -532,9 +532,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
 
         protected void invalidateEdges() {
-            outs.forEachValue(e -> {
-                e.invalid = true;
-            });
+            outs.forEachValue(e -> e.invalid = true);
         }
 
         public void color(float r, float g, float b, float a) {

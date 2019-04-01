@@ -207,7 +207,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
                 float pAmp = p * amp.floatValue();
 
 
-                //CHAIN
+                //CHAIN pattern
                 link(s, u, punc, pAmp); //forward (hop)
                 //link(u, s, punc, pp); //reverse (hop)
                 //link(t, u, punc, pp); //forward (adjacent)
@@ -293,13 +293,22 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         return a;
     }
 
+    @Deprecated public Stream<Term> terms() {
+        return links.stream()
+                .flatMap(x -> Stream.of(x.from(), x.to()))
+                .distinct();
+    }
+    @Deprecated public Stream<Concept> concepts() {
+        return terms()
+            .map(nar::concept)
+            .filter(Objects::nonNull)
+        ;
+    }
+
     /** active concepts */
-    public Stream<Activate> concepts(NAR n) {
+    @Deprecated public Stream<Activate> _concepts() {
         //HACK could be better
-        return links.stream().flatMap(x -> Stream.of(x.from(), x.to()))
-                .distinct()
-                .map(n::concept)
-                .filter(Objects::nonNull).map(c -> new Activate(c, 1));
+        return concepts().map(c -> new Activate(c, 1));
     }
 
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {

@@ -13,6 +13,7 @@ public class FloatRangePort extends FloatPort {
 
     public final FloatRange f;
     private final boolean autoUpdate = true; //TODO configurable rate
+    public final FloatSlider slider;
 
     public FloatRangePort(float val, float min, float max) {
         this(new FloatRange(val, min, max));
@@ -25,7 +26,7 @@ public class FloatRangePort extends FloatPort {
         super();
         this.f = f;
 
-        FloatSlider s = new FloatSlider(f).on((FloatProcedure) FloatRangePort.this::out);
+        FloatSlider s = (slider = new FloatSlider(f)).on((FloatProcedure) FloatRangePort.this::out);
 
         set(LabeledPane.the(label, s));
 

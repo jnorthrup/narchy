@@ -5,6 +5,7 @@ import nars.NARS;
 import nars.op.rdfowl.NQuadsRDF;
 import nars.test.impl.DeductiveMeshTest;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 
 import java.io.File;
@@ -19,13 +20,13 @@ class ConceptGraph2DTest {
             n.termVolumeMax.set(14);
 
 
-            ConceptGraph2D g = BagregateConceptGraph2D.get(n);
+            Surface g = BagregateConceptGraph2D.get(n);
 
-            SpaceGraph.window(g.widget(), 1200, 800 );
+            SpaceGraph.window(g, 1200, 800 );
 
             new DeductiveMeshTest(n, 5,5);
 
-            n.startFPS(32f);
+            n.startFPS(24f);
         }
 
     }
@@ -38,9 +39,9 @@ class ConceptGraph2DTest {
 
             NQuadsRDF.input(n, new File("/home/me/d/valueflows.nquad"));
 
-            ConceptGraph2D g = BagregateConceptGraph2D.get(n);
+            Surface g = BagregateConceptGraph2D.get(n);
 
-            SpaceGraph.window( new Windo(g.widget()), 1200, 800 );
+            SpaceGraph.window( new Windo(g), 1200, 800 );
 
             n.startFPS(16f);
         }

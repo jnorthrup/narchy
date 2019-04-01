@@ -146,11 +146,12 @@ public class ReSurface {
     }
 
     /** ms since last update */
-    public int dtMS() {
+    @Deprecated public int dtMS() {
         //return Math.max(1,Math.round(1000/ frameDT));
         return Math.max(1, Math.round(1000 * frameDT));
     }
 
+    /** seconds since last update */
     public float dtS() {
         return frameDT;
     }

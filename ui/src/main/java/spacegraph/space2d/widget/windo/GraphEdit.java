@@ -162,7 +162,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
 
     @Override
-    public void doLayout(int dtMS) {
+    public void doLayout(float dtS) {
         RectFloat graphBounds = this.bounds;
         physics.surface.pos(graphBounds);
         raw.pos(graphBounds);

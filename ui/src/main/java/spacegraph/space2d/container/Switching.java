@@ -80,7 +80,7 @@ public class Switching extends Container {
     }
 
     @Override
-    public void doLayout(int dtMS) {
+    public void doLayout(float dtS) {
         current.pos(bounds);
     }
 

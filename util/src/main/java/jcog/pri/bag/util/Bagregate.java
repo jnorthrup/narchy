@@ -23,18 +23,16 @@ import java.util.stream.Stream;
 public class Bagregate<X> implements Iterable<PriReference<X>> {
 
     public final Bag<?, PriReference<X>> bag;
-    private final Iterable<? extends PriReference<X>> src;
+    private final Iterable<? extends X> src;
 
     public final FloatRange preAmp = new FloatRange(1, 0f, 1f);
     public final FloatRange forgetRate = new FloatRange(0.5f, 0, 1);
-//    private final AtomicBoolean busy = new AtomicBoolean();
 
-
-    public Bagregate(Stream<PriReference<X>> src, int capacity) {
+    public Bagregate(Stream<X> src, int capacity) {
         this(src::iterator, capacity);
     }
 
-    public Bagregate(Iterable<? extends PriReference<X>> src, int capacity) {
+    public Bagregate(Iterable<? extends X> src, int capacity) {
         this.bag = new PLinkArrayBag<>(PriMerge.max /*PriMerge.replace*/, capacity) {
             @Override
             public void onRemove(PriReference<X> value) {
@@ -52,29 +50,23 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
         if (src==null /*|| !busy.compareAndSet(false, true)*/)
             return false;
 
-//        try {
-
-
-
         float preAmp = this.preAmp.floatValue();
 
         bag.commit(bag.forget(this.forgetRate.floatValue()));
 
-        src.forEach(x -> {
-            X xx = x.get();
+        src.forEach(xx -> {
             if (include(xx)) {
-                float pri = x.pri();
+                float pri = pri(xx);
                 if (pri==pri)
                     bag.putAsync(new PLink<>(xx, pri*preAmp ));
             }
         });
 
-
-
-//        } finally {
-//            busy.setAt(false);
-//        }
         return true;
+    }
+
+    protected float pri(X xx) {
+        return 1f;
     }
 
     /**
@@ -109,10 +101,7 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
         return Iterables.transform(Iterables.filter(bag, Objects::nonNull) /* HACK */, (b)->f.apply(b.get()));
     }
 
-
-    
-
-
-
-
+    public final void setCapacity(int c) {
+        bag.setCapacity(c);
+    }
 }

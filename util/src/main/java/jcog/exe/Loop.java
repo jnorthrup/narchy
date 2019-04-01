@@ -98,7 +98,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     static int fpsToMS(float fps) {
-        return Math.round(1000 / fps);
+        return Math.max(1, Math.round(1000 / fps));
     }
 
 
@@ -128,7 +128,7 @@ abstract public class Loop extends FixedRateTimedFuture {
                 }
             } else if (prevPeriodMS >= 0) {
 
-                logger.info("continue {}fps (each {}ms)", n2(1000f/nextPeriodMS), nextPeriodMS);
+                //logger.info("continue {}fps (each {}ms)", n2(1000f/nextPeriodMS), nextPeriodMS);
 
                 super.setPeriodMS(nextPeriodMS);
 

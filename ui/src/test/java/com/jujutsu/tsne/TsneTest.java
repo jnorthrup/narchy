@@ -47,7 +47,7 @@ public class TsneTest {
         final ArrayHashSet<Graph2D.NodeVis<DataTable.Instance>> nn = new ArrayHashSet<>();
         double[][] X = new double[0][0];
 
-        @Override public void update(Graph2D<DataTable.Instance> g, int dtMS) {
+        @Override public void update(Graph2D<DataTable.Instance> g, float dtS) {
             g.forEachValue(nn::add);
             if (!nn.equals(xx)) {
                 xx.clear();

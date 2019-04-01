@@ -88,14 +88,9 @@ public class ConceptGraph2D extends Graph2D<Term> {
             }
 
             @Override
-            public void update(Graph2D<Term> g, int dtMS) {
-
-                g.forEachValue(nn -> {
-                    updateNode(nn);
-                });
-
-                super.update(g, dtMS);
-
+            public void update(Graph2D<Term> g, float dtS) {
+                g.forEachValue(nn -> updateNode(nn));
+                super.update(g, dtS);
             }
         };
     }

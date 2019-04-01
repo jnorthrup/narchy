@@ -28,16 +28,16 @@ public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
     }
 
     @Override
-    public void update(Graph2D<X> g, int dtMS) {
+    public void update(Graph2D<X> g, float dtS) {
         if (!get(g))
             return;
 
-        layout(g, dtMS);
+        layout(g, dtS);
 
         put();
     }
 
-    protected abstract void layout(Graph2D<X> g, int dtMS);
+    protected abstract void layout(Graph2D<X> g, float dtS);
 
     private boolean get(Graph2D<X> g) {
         g.forEachValue(v -> {

@@ -15,7 +15,10 @@ public enum DragEdit {
     RESIZE_NW,
     RESIZE_SW,
     RESIZE_NE,
-    RESIZE_SE;
+    RESIZE_SE,
+    ;
+
+
 
     static final EnumMap<DragEdit, FingerRenderer> cursor = new EnumMap(DragEdit.class);
     static final EnumMap<DragEdit, RenderWhileHovering> hover = new EnumMap(DragEdit.class);
@@ -31,6 +34,7 @@ public enum DragEdit {
         cursor.put(DragEdit.RESIZE_E, new FingerRenderer.PolygonWithArrow(0));
         cursor.put(DragEdit.RESIZE_W, new FingerRenderer.PolygonWithArrow(180));
         //cursor.put(DragEdit.MOVE, new FingerRenderer.PolygonCrosshairs().angle(45)); //TODO something special
+
 
         cursor.forEach((k,v)-> hover.put(k, new RenderWhileHoveringOnWindow(v)));
     }

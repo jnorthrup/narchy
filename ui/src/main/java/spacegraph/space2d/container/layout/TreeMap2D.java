@@ -19,7 +19,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
 
 
     @Override
-    protected void layout(Graph2D<X> g, int dtMS) {
+    protected void layout(Graph2D<X> g, float dtS) {
         RectFloat b = g.bounds;
         //sort descending
         nodes.sortThisByFloat((a)-> {
@@ -30,7 +30,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
         int end = nodes.size() - 1;
         total = areaSum(0, end);
 
-        RectFloat newBounds = layout(0, end, b);
+//        RectFloat newBounds = layout(0, end, b);
 //
 //        //normalize
 //        float nw = b.w / newBounds.w;

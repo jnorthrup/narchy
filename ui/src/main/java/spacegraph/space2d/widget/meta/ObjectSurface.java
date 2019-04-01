@@ -42,14 +42,11 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             }
         };
         for (Pair<Object, Iterable<Surface>> p : target) {
-            //Object o = p.getOne();
-            List<Surface> cx = new FasterList(0) {
-                @Override
-                protected Object[] newArray(int newCapacity) {
-                    return new Surface[newCapacity]; //HACK
-                }
-            };
-            p.getTwo().forEach(cx::add);
+            List<Surface> cx = new SurfaceList();
+            p.getTwo().forEach(e -> {
+                assert(e!=null);
+                cx.add(e);
+            });
             switch (cx.size()) {
                 case 0:
                     break; //TODO shouldnt happen
@@ -119,9 +116,12 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         builder.on(Map.Entry.class, (Map.Entry x, Object relation) ->
                 new VectorLabel(x.toString())
         );
-        builder.on(FloatRange.class, (FloatRange x, Object relation) ->
-            new FloatRangePort(x, objLabel(x, relation))
-        );
+        builder.on(FloatRange.class, (FloatRange x, Object relation) -> {
+            FloatRangePort f = new FloatRangePort(x);
+            f.slider.text(objLabel(x, relation));
+            return f;
+        });
+
         builder.on(IntRange.class, (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
 
         builder.on(Runnable.class, (x, relation) -> new PushButton(objLabel(x, relation), x));
@@ -291,6 +291,17 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         public boolean prePaint(ReSurface r) {
             on((a.getOpaque())); //load
             return super.prePaint(r);
+        }
+    }
+
+    public static class SurfaceList extends FasterList {
+        public SurfaceList() {
+            super(0);
+        }
+
+        @Override
+        protected Object[] newArray(int newCapacity) {
+            return new Surface[newCapacity]; //HACK
         }
     }
 

@@ -27,9 +27,9 @@ abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitCo
     abstract protected void update();
 
     @Override
-    protected void doLayout(int dtMS) {
+    protected void doLayout(float dtS) {
         invalid.set(true);
-        super.doLayout(dtMS);
+        super.doLayout(dtS);
     }
 
     protected final void updateIfShowing() {

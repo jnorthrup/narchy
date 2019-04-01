@@ -12,7 +12,7 @@ public class Stacking extends MutableListContainer {
     }
 
     @Override
-    public void doLayout(int dtMS) {
+    public void doLayout(float dtS) {
         forEach(c -> c.pos(bounds));
     }
 

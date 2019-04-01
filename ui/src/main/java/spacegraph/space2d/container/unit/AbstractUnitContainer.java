@@ -20,9 +20,10 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
         //}
     }
 
-    /** default behavior: inherit bounds directly */
+    /** default behavior: inherit bounds directly
+     * @param dtS*/
     @Override
-    @Deprecated protected void doLayout(int dtMS) {
+    @Deprecated protected void doLayout(float dtS) {
         the().pos(innerBounds());
     }
 

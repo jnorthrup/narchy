@@ -7,15 +7,19 @@ import spacegraph.space2d.Surface;
 
 public class FingerMoveSurface extends FingerMove {
 
-    /** what is being moved */
+    /**
+     * what is being moved
+     */
     private final Surface moving;
 
-    /** bounds of moved surface, captured at drag start */
+    /**
+     * bounds of moved surface, captured at drag start
+     */
     @Nullable
     private RectFloat before;
 
     public FingerMoveSurface(Surface moving) {
-        this(moving, 0 /* LEFT BUTTON */ , true, true);
+        this(moving, 0 /* LEFT BUTTON */, true, true);
     }
 
     private FingerMoveSurface(Surface moving, int button, boolean xAxis, boolean yAxis) {
@@ -23,7 +27,7 @@ public class FingerMoveSurface extends FingerMove {
         this.moving = moving;
     }
 
-//    @Override
+    //    @Override
 //    public boolean drag(Finger f) {
 //        if (super.drag(f)) {
 //            if (before == null)
@@ -34,14 +38,22 @@ public class FingerMoveSurface extends FingerMove {
 //            return false;
 //        }
 //    }
-@Override
-public boolean drag(Finger f) {
-    if (before == null)
-        this.before = moving.bounds;
+    @Override
+    public boolean drag(Finger f) {
+        if (before == null)
+            this.before = moving.bounds;
 
-    return super.drag(f);
-}
-    @Override public v2 pos(Finger finger) {
+        return super.drag(f);
+    }
+
+//    @Override
+//    public void stop(Finger finger) {
+//        before = null;
+//        super.stop(finger);
+//    }
+
+    @Override
+    public v2 pos(Finger finger) {
         return finger.posGlobal(moving);
     }
 
@@ -52,8 +64,9 @@ public boolean drag(Finger f) {
 //            tx += before.x;
 //            ty += before.y;
 ////        }
-        //moving.pos(tx, ty, moving.w() + tx, moving.h() + ty);
-        moving.pos(tx + before.x, ty + before.y);
+        moving.pos(RectFloat.X0Y0WH(tx + before.x, ty + before.y, moving.w(), moving.h()));
+        //moving.pos(RectFloat.XYWH(tx + before.x, ty + before.y, moving.w() + tx, moving.h() + ty));
+        //moving.pos(tx + before.x, ty + before.y);
     }
 
 
