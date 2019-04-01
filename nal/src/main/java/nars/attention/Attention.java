@@ -316,7 +316,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
         @Override
         protected float merge(TaskLink existing, TaskLink incoming) {
-            return existing.merge(incoming, merge());
+            return existing.mergeAndGetDelta(incoming, merge());
         }
 
         //        @Override

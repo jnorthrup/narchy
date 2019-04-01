@@ -191,7 +191,7 @@ public class KIFInput {
         }
 
         beliefs.removeIf(b -> {
-            if (b.hasAny(BOOL)) {
+            if (b.has(BOOL)) {
                 return true;
             }
             Term bb = b.unneg().normalize();

@@ -356,7 +356,7 @@ public class Occurrify extends TimeGraph {
             beliefTerm = d.retransform(d.beliefTerm);
 
         //auto-neg first
-        if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
+        if (taskTerm.has(NEG) || beliefTerm.has(NEG) || pattern.has(NEG)) {
             setAutoNeg(pattern, taskTerm, beliefTerm);
         }
 

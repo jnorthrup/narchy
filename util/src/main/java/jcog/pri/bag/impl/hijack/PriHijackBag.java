@@ -1,6 +1,7 @@
 package jcog.pri.bag.impl.hijack;
 
 import jcog.data.NumberX;
+import jcog.pri.Prioritized;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.bag.impl.HijackBag;
 import jcog.pri.op.PriMerge;
@@ -18,7 +19,7 @@ abstract public class PriHijackBag<K,V extends UnitPrioritizable> extends Hijack
 
     @Override
     protected V merge(V existing, V incoming, NumberX overflowing) {
-        float overflow = merge().merge(existing, incoming);
+        float overflow = merge().merge(existing, ((Prioritized) incoming).pri(), PriMerge.MergeResult.Overflow);
         if (overflow > 0) {
             if (overflowing!=null) overflowing.add(overflow);
         }

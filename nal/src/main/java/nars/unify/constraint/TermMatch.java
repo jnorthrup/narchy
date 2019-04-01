@@ -11,7 +11,7 @@ import nars.unify.Unify;
 
 import javax.annotation.Nullable;
 
-import static nars.Op.VAR_PATTERN;
+import static nars.Op.*;
 
 abstract public class TermMatch {
 
@@ -169,7 +169,7 @@ abstract public class TermMatch {
 
         @Override
         public boolean test(Term term) {
-            return term.has(struct, anyOrAll) && (volMin == 0 || term.volume() >= volMin);
+            return (anyOrAll ? term.hasAny(struct) : term.hasAll(struct)) && (volMin == 0 || term.volume() >= volMin);
         }
 
         @Override
@@ -177,7 +177,7 @@ abstract public class TermMatch {
 
             if (volMin == 0 || superTerm.volume() >= 1+volMin) {
                 Subterms subs = superTerm.subterms();
-                return subs.has(struct, anyOrAll) && subs.OR(x -> x.has(struct, anyOrAll));
+                return (anyOrAll ? subs.hasAny(struct) : subs.hasAll(struct)) && subs.OR(x -> anyOrAll ? x.hasAny(struct) : x.hasAll(struct));
             }
             return false;
         }

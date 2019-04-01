@@ -24,7 +24,7 @@ public class OverflowDistributor<X> extends MutableFloat {
     }
 
     public final void merge(X x, Prioritizable existing, float incoming, PriMerge merge) {
-        overflow(x, merge.merge(existing, incoming), 1f - existing.priElseZero());
+        overflow(x, merge.merge(existing, incoming, PriMerge.MergeResult.Overflow), 1f - existing.priElseZero());
     }
 
     /** headroom = remaining demand that can be supplied */

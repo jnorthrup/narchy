@@ -116,10 +116,19 @@ public interface Atomic extends Term {
         return this;
     }
 
-    //    @Override
-//    default boolean equalsNegRoot(Term t) {
-//        return equalsNeg(t.root());
-//    }
+    @Override
+    default boolean has(Op op) {
+        return isAny(op.bit);
+    }
+
+    @Override
+    default boolean hasAny(int structuralVector) {
+        return isAny(structuralVector);
+    }
+    @Override
+    default boolean hasAll(int structuralVector) {
+        return opBit() == structuralVector;
+    }
 
     @Override
     default Term concept() { return this; }
@@ -195,7 +204,7 @@ public interface Atomic extends Term {
             case "null":
                 return Null;
             default: {
-                if (isQuoteNecessary(id, l)) {
+                if (quoteable(id, l)) {
 
                     if (l > 1 /* already handled single digit cases in the above switch */ && Character.isDigit(id.charAt(0))) {
 
@@ -332,30 +341,30 @@ public interface Atomic extends Term {
     }
 
     @Override
-    default Term sub(int i, Term ifOutOfBounds) {
+    default /* final */ Term sub(int i, Term ifOutOfBounds) {
         return ifOutOfBounds;
     }
 
     @Override
-    default Term sub(int i) {
+    default /* final */ Term sub(int i) {
         throw new ArrayIndexOutOfBoundsException();
     }
 
     @Override
-    default int structure() {
+    default /* final */ int structure() {
         return opBit();
     }
 
     @Override
-    default int structureSurface() {
-        return structure();
+    default /* final */ int structureSurface() {
+        return opBit();
     }
 
     /**
      * determines if the string is invalid as an unquoted target according to the characters present
      * assumes len > 0
      */
-    private static boolean isQuoteNecessary(CharSequence t, int len) {
+    private static boolean quoteable(CharSequence t, int len) {
 
         if ((t.charAt(0) == '\"') && (t.charAt(len - 1) == '\"'))
             return false;

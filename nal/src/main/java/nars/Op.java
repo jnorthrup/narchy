@@ -597,6 +597,10 @@ public enum Op {
         }
     }
 
+    public static boolean has(int haystack, int needle, boolean allOrAny) {
+        return allOrAny ? Op.hasAll(haystack, needle) : Op.hasAny(haystack, needle);
+    }
+
 
     public final Term the(Subterms s) {
         return the(DTERNAL, s);

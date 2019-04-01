@@ -195,7 +195,7 @@ public enum Intermpolate {;
             if (ao == CONJ) {
                 if (a.dt() == XTERNAL || b.dt() == XTERNAL)
                     return 0;
-                if (aa.hasAny(CONJ) || bb.hasAny(CONJ)) { // sub-conj of any type, include &| which is not a sequence:
+                if (aa.has(CONJ) || bb.has(CONJ)) { // sub-conj of any type, include &| which is not a sequence:
                     //if ((Conj.isSeq(a) || Conj.isSeq(b))) {
                     //estimate difference
                     int ar = a.eventRange(), br = b.eventRange();

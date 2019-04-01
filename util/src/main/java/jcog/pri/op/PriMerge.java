@@ -56,33 +56,39 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
 
     abstract public float merge(float e, float i);
 
-    /**
-     * merge 'incoming' budget (scaled by incomingScale) into 'existing'
-     *
-     * @return any resultng overflow priority which was not absorbed by the target, >=0
-     */
-    public final float merge(Prioritizable existing, Prioritized incoming) {
-        return merge(existing, incoming.pri());
-    }
-
 
     @Override public final void accept(Prioritizable existing, Prioritized incoming) {
         merge(existing, incoming.pri());
     }
 
+    public enum MergeResult {
+
+        /** any resultng overflow priority which was not absorbed by the target, >=0 */
+        Overflow,
+
+        /** the value before the update */
+        Before,
+
+        /** the value after the update */
+        After,
+
+        /** delta = after - before */
+        Delta
+    }
+
+    public final void merge(Prioritizable existing, float incoming) {
+        merge(existing, incoming, MergeResult.After);
+    }
+
     /**
      * merge 'incoming' budget (scaled by incomingScale) into 'existing'
-     *
-     * @return any resultng overflow priority which was not absorbed by the target, >=0
      */
-    public final float merge(Prioritizable existing, float incoming) {
+    public final float merge(Prioritizable existing, float incoming, MergeResult mode) {
 
-
-        if (incoming!=incoming && ignoreDeletedIncoming()) {
+        if (incoming!=incoming && ignoreDeletedIncoming())
             return 0;
-        }
 
-        final float[] pBefore = new float[1];
+        final float[] _pBefore = new float[1];
         float pAfter = existing.pri((x, y) -> {
 
             if (x != x) {
@@ -92,26 +98,39 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
                 x = 0; //undelete
             }
 
-            pBefore[0] = x;
+            _pBefore[0] = x;
 
             return merge(x, y);
         }, incoming);
 
 
-        float z;
-        if (pAfter != pAfter) {
-            //deleted
-            if (incoming!=incoming)
-                z = 0;
-            else
-                z = incoming;
-        } else {
-            z = incoming - (pAfter - pBefore[0]);
+        float pBefore = _pBefore[0];
+
+        switch(mode) {
+            case Before:
+                return pBefore;
+
+            case After:
+                return pAfter;
+
+            case Delta:
+                return pAfter - pBefore;
+
+            case Overflow:
+                float z;
+                if (pAfter != pAfter) {
+                    z = (incoming != incoming) ? 0 : incoming; //deleted
+                } else {
+                    z = incoming - (pAfter - pBefore);
+                }
+
+                assert(z==z);
+
+                return z;
+
+            default:
+                throw new UnsupportedOperationException();
         }
-
-        assert(z==z);
-
-        return z;
     }
 
     protected boolean ignoreDeletedIncoming() {
@@ -122,6 +141,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
     protected boolean undelete() {
         return true;
     }
+
     protected boolean commutative() {
         throw new TODO();
     }

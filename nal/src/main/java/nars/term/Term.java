@@ -361,8 +361,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * true if the operator bit is included in the enabld bits of the provided vector
      */
     default boolean isAny(int bitsetOfOperators) {
-        int s = opBit();
-        return commonStructure(bitsetOfOperators, s);
+        return (opBit() & bitsetOfOperators) != 0;
     }
 
     default int opBit() {

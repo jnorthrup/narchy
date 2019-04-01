@@ -396,14 +396,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     /*@NotNull*/
     default Set<Term> recurseSubtermsToSet(Op onlyType) {
-        if (onlyType != null && !hasAny(onlyType))
+        if (onlyType != null && !has(onlyType))
             return Sets.mutable.empty();
 
         Set<Term> t = new HashSet(volume());
 
 
         recurseTerms(
-                tt -> tt.hasAny(onlyType),
+                tt -> tt.has(onlyType),
                 tt -> {
                     if (tt.op() == onlyType)
                         t.add(tt);
@@ -630,7 +630,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (x.op() == NEG)
             return contains(x.unneg());
         else {
-            return !impossibleSubTerm(x) && hasAny(NEG) && contains(x.neg());
+            return !impossibleSubTerm(x) && has(NEG) && contains(x.neg());
         }
     }
 

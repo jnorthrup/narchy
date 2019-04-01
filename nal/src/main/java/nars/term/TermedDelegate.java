@@ -22,6 +22,20 @@ public interface TermedDelegate extends Termlike, Termed {
         return term().structure();
     }
 
+    @Override
+    default boolean hasAny(int structuralVector) {
+        return term().hasAny(structuralVector);
+    }
+
+    @Override
+    default boolean hasAll(int structuralVector) {
+        return term().hasAny(structuralVector);
+    }
+
+    @Override
+    default int structureSurface() {
+        return term().structureSurface();
+    }
 
     @Override
     default int count(Predicate<Term> match) {
@@ -72,6 +86,8 @@ public interface TermedDelegate extends Termlike, Termed {
     default boolean contains(Term t) {
         return term().contains(t);
     }
+
+
 
     @Override
     default boolean hasXternal() {

@@ -39,7 +39,7 @@ public class Conceptualization {
         @Override
         protected  Term transformConj(Compound y) {
             Subterms yy = y.subterms();
-            if (yy.hasAny(CONJ) && yy.OR(yyy -> yyy.op() == CONJ)) {
+            if (yy.has(CONJ) && yy.OR(yyy -> yyy.op() == CONJ)) {
                 //collapse any embedded CONJ which will inevitably have dt=XTERNAL
                 UnifiedSet<Term> t = new UnifiedSet(yy.subs());
                 for (Term yyy : yy) {
@@ -64,7 +64,7 @@ public class Conceptualization {
         @Override
         protected  Term transformConj(Compound y) {
             Subterms yy = y.subterms();
-            if (yy.hasAny(CONJ) /*&& yy.OR(yyy -> yyy.unneg().op() == CONJ)*/) {
+            if (yy.has(CONJ) /*&& yy.OR(yyy -> yyy.unneg().op() == CONJ)*/) {
                 TreeSet<Term> t = new TreeSet();
                 yy.recurseTerms(x -> true, (yyy,parent)->{
                     if (parent.unneg().op()==CONJ && yyy.unneg().op()!=CONJ)

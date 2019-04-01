@@ -55,7 +55,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
             //2. handle dynamic truth tables
             B = dmt.newTable(t, true, this);
-            G = !t.hasAny(IMPL) ?
+            G = !t.has(IMPL) ?
                     dmt.newTable(t, false, this) :
                     BeliefTable.Empty;
         } else {
@@ -73,7 +73,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
             //4. default task concept
             B = this.newTable(t, true);
-            G = !t.hasAny(IMPL) ? this.newTable(t, false) : BeliefTable.Empty;
+            G = !t.has(IMPL) ? this.newTable(t, false) : BeliefTable.Empty;
         }
 
 
@@ -102,13 +102,13 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
     private static boolean validDynamicSubtermsAndNoSharedVars(Term conj) {
         Subterms conjSubterms = conj.subterms();
         if (validDynamicSubterms(conjSubterms)) {
-            if (conjSubterms.hasAny(VAR_DEP)) {
+            if (conjSubterms.has(VAR_DEP)) {
 
                 Map<Term, Term> varLocations = new UnifiedMap(conjSubterms.subs());
 
                 return conj.eventsWhile((when, event) ->
-                                !event.hasAny(VAR_DEP) ||
-                                        event.recurseTerms(x -> x.hasAny(VAR_DEP),
+                                !event.has(VAR_DEP) ||
+                                        event.recurseTerms(x -> x.has(VAR_DEP),
                                                 (possiblyVar, parent) ->
                                                         (possiblyVar.op() != VAR_DEP) ||
                                                                 varLocations.putIfAbsent(possiblyVar, event) == null
@@ -142,7 +142,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 //            //TODO not done yet
             case IMPL: {
                 //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
-                if (t.hasAny(Op.VAR_INDEP))
+                if (t.has(Op.VAR_INDEP))
                     return null;
                 Subterms tt = t.subterms();
                 Term su = tt.sub(0);

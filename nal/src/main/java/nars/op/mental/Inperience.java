@@ -135,7 +135,7 @@ abstract public class Inperience extends TaskLeakTransform {
 
     public static Term reifyQuestion(Term x, byte punc, NAR nar) {
         x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-        x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.apply(x) : x;
+        x = x.has(VAR_QUERY) ? VariableTransform.queryToDepVar.apply(x) : x;
         if (x instanceof Bool) return Bool.Null;
 
         x = Image.imageNormalize(x);

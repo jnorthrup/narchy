@@ -30,7 +30,7 @@ public final class ConjParallel extends TermMatch {
 
     @Override
     public boolean testSuper(Term x) {
-        return x.hasAny(CONJ);
+        return x.has(CONJ);
     }
 
     @Nullable

@@ -43,7 +43,7 @@ public class Eternalizer extends LinkRanker<Task> {
         return false;
     }
     public boolean filter(Term t) {
-        return t.hasAny(Op.ATOM); //prevent variable-only compounds
+        return t.has(Op.ATOM); //prevent variable-only compounds
     }
 
     @Override

@@ -231,7 +231,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         if (!o.taskable)
             return fail(t, "not taskable", safe);
 
-        if (t.hasAny(Op.VAR_PATTERN))
+        if (t.has(Op.VAR_PATTERN))
             return fail(t, "target has pattern variables", safe);
 
         if (!t.hasAny(Op.ATOM.bit | Op.INT.bit | Op.varBits))
@@ -245,7 +245,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         }
 
 
-        if ((punc == Op.GOAL || punc == Op.QUEST) && !!t.hasAny(IMPL))
+        if ((punc == Op.GOAL || punc == Op.QUEST) && !!t.has(IMPL))
             return fail(t, "Goal/Quest task target may not be Implication", safe);
 
         return !(t instanceof Compound) || validTaskCompound((Compound) t, safe);

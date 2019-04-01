@@ -600,10 +600,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     private static boolean _isSeq(Term x) {
         Subterms xx = x.subterms();
-        return xx.hasAny(CONJ) && //inner conjunction
+        return xx.has(CONJ) && //inner conjunction
                 xx.subs() > 1 &&
                 xx.count(Conj::isSeq) == 1 &&
-                (   !xx.hasAny(NEG)
+                (   !xx.has(NEG)
                         ||
                     /** TODO weird disjunctive seq cases */
                     xx.count(xxx-> xxx.op()==NEG && xxx.unneg().op()==CONJ) == 0);
@@ -932,7 +932,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //        }
 
         //HACK sometimes this seems to happen
-        if (t.hasAny(BOOL)) {
+        if (t.has(BOOL)) {
             if (t.contains(False))
                 return False;
             if (t.contains(Null))

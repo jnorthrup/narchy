@@ -2,6 +2,7 @@ package nars.task;
 
 import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
+import jcog.pri.Prioritized;
 import jcog.pri.UnitPri;
 import jcog.pri.op.PriMerge;
 import nars.Param;
@@ -89,7 +90,7 @@ public abstract class NALTask extends UnitPri implements Task {
         if (incoming == this) return this;
 
         /*(incoming.isInput() ? PriMerge.replace : Param.taskEquivalentMerge).*/
-        PriMerge.max.merge(this, incoming);
+        PriMerge.max.merge(this, ((Prioritized) incoming).pri(), PriMerge.MergeResult.Overflow);
 
         return causeMerge(incoming.cause(), merge);
     }

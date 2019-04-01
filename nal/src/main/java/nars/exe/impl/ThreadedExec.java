@@ -39,10 +39,10 @@ abstract public class ThreadedExec extends MultiExec {
         this.affinity = affinity;
 
 
-//        if (maxThreads > Runtime.getRuntime().availableProcessors() / 2) {
-//            /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
-//            Exe.setExecutor(this);
-//        }
+        if (maxThreads > Runtime.getRuntime().availableProcessors() / 2) {
+            /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
+            Exe.setExecutor(this);
+        }
 
     }
 

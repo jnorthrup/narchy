@@ -492,7 +492,7 @@ public class TextUI {
 
                 bag = new PLinkArrayBag<>(PriMerge.replace, capacity * 2) {
                     @Override
-                    protected boolean cleanIfFull() {
+                    protected boolean cleanAuto() {
                         return true;
                     }
                 };

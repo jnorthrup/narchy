@@ -198,38 +198,29 @@ public interface Termlike {
 
 
     default boolean hasAll(int structuralVector) {
-        return Op.hasAll(structure(), structuralVector);
+        return Op.has(structure(), structuralVector, true);
     }
 
     default boolean hasAny(int structuralVector) {
-        return
-                //(structuralVector==(~0)) ||
-                Op.hasAny(structure(), structuralVector);
+        return Op.has(structure(), structuralVector, false);
     }
 
-    default boolean has(int structuralVector, boolean anyOrAll) {
-        return anyOrAll ? hasAny(structuralVector) : hasAll(structuralVector);
-    }
+//    default boolean hasAny(Op... oo) {
+//        if (oo.length == 0)
+//            return false;
+//
+//        int checkStruct = 0;
+//        for (Op o : oo)
+//            checkStruct |= o.bit;
+//
+//        return hasAny(checkStruct);
+//    }
 
-    default boolean hasAny(Op... oo) {
-        if (oo.length == 0)
-            return false;
-
-        int checkStruct = 0;
-        for (Op o : oo)
-            checkStruct |= o.bit;
-
-        return hasAny(checkStruct);
-    }
-
-
-    default boolean hasAny(/*@NotNull*/ Op op) {
+    default /* final */ boolean has(/*@NotNull*/ Op op) {
         return hasAny(op.bit);
     }
 
-    default boolean hasVarIndep() {
-        return hasAny(Op.VAR_INDEP.bit);
-    }
+    default boolean hasVarIndep() { return hasAny(Op.VAR_INDEP.bit); }
 
     default boolean hasVarDep() {
         return hasAny(Op.VAR_DEP.bit);

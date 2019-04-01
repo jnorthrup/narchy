@@ -188,7 +188,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
     void delete(byte punc);
 
-    float merge(TaskLink incoming, PriMerge merge);
+    float mergeAndGetDelta(TaskLink incoming, PriMerge merge);
 
     float take(byte punc, float howMuch);
 

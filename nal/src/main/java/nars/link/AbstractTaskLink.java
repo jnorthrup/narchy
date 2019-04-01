@@ -106,7 +106,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override
     public void delete(byte punc) {
-        priSet(punc, 0);
+        priSet(i(punc), 0);
     }
 
     @Override
@@ -152,17 +152,20 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     protected abstract void fill(float pri);
 
-    public float getAndSetPriPunc(byte punc, float next) {
-        return mergeComponent(punc, next, PriMerge.replace, true);
+    public float getAndSetPriPunc(byte index, float next) {
+        return merge(index, next, PriMerge.replace, true);
     }
 
     @Override abstract public String toString();
-    public final void priSet(byte punc, float pri) {
-        priMergeGetValue(punc, pri, PriMerge.replace);
+
+    private void priSet(byte index, float next) {
+        float before = merge(index, next, PriMerge.replace, true);
+        if (Math.abs(before-next) >= Float.MIN_NORMAL)
+            invalidate();
     }
 
     @Override
-    public /* HACK */ float merge(TaskLink incoming, PriMerge merge) {
+    public /* HACK */ float mergeAndGetDelta(TaskLink incoming, PriMerge merge) {
         if (incoming instanceof AtomicTaskLink) {
             float delta = 0;
             for (byte i = 0; i < 4; i++) {

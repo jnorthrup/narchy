@@ -82,7 +82,7 @@ class PriMergeTest {
 
         UnitPri x0 = new UnitPri(x);
 
-        float overflow = m.merge(x, y);
+        float overflow = m.merge(x, y.pri(), PriMerge.MergeResult.Overflow);
 
         System.out.println(x0 + " <-merge<- " + y + " x "  + "\t\texpect:" + new UnitPri(ouPri) + " ?? actual:" + x);
         assertEquals(ouPri, x.pri(), tol);
