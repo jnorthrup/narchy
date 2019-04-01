@@ -56,6 +56,10 @@ import java.util.stream.Stream;
 public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public static final int BINARY_SEARCH_THRESHOLD = 2;
+
+    /** when scanning for identity equality */
+    public static final int BINARY_SEARCH_THRESHOLD_SCAN = 32;
+
     protected static final AtomicIntegerFieldUpdater<SortedArray> SIZE =
             new MetalAtomicIntegerFieldUpdater(SortedArray.class, "size");
     private static final float GROWTH_RATE = 1.25f;
@@ -625,19 +629,18 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return indexOf(element, Float.NaN, cmp, false, false);
     }
 
-    public final int indexOf(final X element, FloatFunction<X> cmp, boolean eqByIdentity) {
-        return indexOf(element, Float.NaN, cmp, eqByIdentity, false);
-    }
 
     public final int indexOf(final X element, float elementRank /* can be NaN for forFind */, FloatFunction<X> cmp, boolean eqByIdentity, boolean forInsertionOrFind) {
+
         int s = size;
         if (s == 0)
             return forInsertionOrFind ? 0 : -1;
 
         int left = 0, right = s;
         X[] items = this.items;
+        int searchThresh = (!forInsertionOrFind && eqByIdentity) ?  BINARY_SEARCH_THRESHOLD_SCAN : BINARY_SEARCH_THRESHOLD;
         main:
-        while (right - left >= BINARY_SEARCH_THRESHOLD) {
+        while (right - left >= searchThresh) {
 
             final int mid = left + (right - left) / 2;
 

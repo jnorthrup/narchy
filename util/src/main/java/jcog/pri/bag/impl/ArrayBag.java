@@ -670,24 +670,26 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         Y result;
 
-        float priBefore = existing.pri();
+        float overflo, delta;
 
-        float overflo = merge(existing, incoming);
-        float priAfter = existing.pri();
-        if (priAfter != priAfter) {
-            priAfter = 0;
-            result = null;
-        } else {
-            result = existing;
-        }
+        l = writeFromRead(l);
+        try {
+            float priBefore = existing.pri();
 
-        float delta = priAfter - priBefore;
+            overflo = merge(existing, incoming);
+            float priAfter = existing.pri();
+            if (priAfter != priAfter) {
+                priAfter = 0;
+                result = null;
+            } else {
+                result = existing;
+            }
 
-        if (result == null || Math.abs(delta) >= ScalarValue.EPSILON) {
-            //if removed, or significant change occurred
-            l = writeFromRead(l);
+            delta = priAfter - priBefore;
 
-            try {
+            if (result == null || Math.abs(delta) >= ScalarValue.EPSILON) {
+                //if removed, or significant change occurred
+
                 if (result != null) {
                     table.items.reprioritize(existing, posBefore(existing, priBefore), delta, priAfter, table);
                 } else {
@@ -696,13 +698,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                         throw new ConcurrentModificationException();
                     removeFromMap(existing);
                 }
-            } finally {
-                lock.unlockWrite(l);
-            }
-        } else {
-            lock.unlockRead(l);
-        }
 
+            }
+        } finally {
+            lock.unlockWrite(l);
+        }
 
         if (overflo != 0 && overflow != null)
             overflow.add(overflo);
