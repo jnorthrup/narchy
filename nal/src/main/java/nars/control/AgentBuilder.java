@@ -1,10 +1,10 @@
 package nars.control;
 
+import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.math.FloatSupplier;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ScalarTensor;
-import jcog.func.IntIntToObjectFunction;
 import nars.$;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;

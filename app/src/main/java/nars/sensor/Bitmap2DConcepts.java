@@ -2,10 +2,10 @@ package nars.sensor;
 
 import jcog.data.iterator.Array2DIterable;
 import jcog.data.list.FasterList;
+import jcog.func.IntIntToObjectFunction;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
-import jcog.func.IntIntToObjectFunction;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;

@@ -2,9 +2,9 @@ package nars;
 
 import jcog.Texts;
 import jcog.Util;
+import jcog.func.TriConsumer;
 import jcog.math.FloatRange;
 import jcog.net.UDPeer;
-import jcog.func.TriConsumer;
 import nars.bag.leak.TaskLeak;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;

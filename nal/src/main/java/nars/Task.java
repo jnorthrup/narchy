@@ -599,7 +599,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return x;
     }
 
-    static int i(byte p) {
+    static byte i(byte p) {
         switch (p) {
             case BELIEF:
                 return 0;

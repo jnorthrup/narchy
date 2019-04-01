@@ -9,7 +9,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.op.Remember;
-import nars.link.TaskLink;
+import nars.link.AtomicTaskLink;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SeriesBeliefTable.SeriesTask;
 import nars.table.temporal.RTreeBeliefTable;
@@ -36,7 +36,7 @@ public class SensorBeliefTables extends BeliefTables {
     /**
      * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
      */
-    public final TaskLink.GeneralTaskLink tasklink;
+    public final AtomicTaskLink tasklink;
 
     public SensorBeliefTables(Term c, boolean beliefOrGoal) {
         this(c, beliefOrGoal,
@@ -55,8 +55,8 @@ public class SensorBeliefTables extends BeliefTables {
         tasklink = newTaskLink(term);
     }
 
-    protected TaskLink.GeneralTaskLink newTaskLink(Term term) {
-        return new TaskLink.GeneralTaskLink(term);
+    protected AtomicTaskLink newTaskLink(Term term) {
+        return new AtomicTaskLink(term);
     }
 
     @Override

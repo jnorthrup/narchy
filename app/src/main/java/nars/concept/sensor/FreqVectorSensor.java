@@ -3,8 +3,8 @@ package nars.concept.sensor;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.math.FloatRange;
-import jcog.signal.wave1d.SlidingDFT;
 import jcog.signal.buffer.CircularFloatBuffer;
+import jcog.signal.wave1d.SlidingDFT;
 import nars.NAR;
 import nars.term.Term;
 

@@ -83,9 +83,8 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         //pri decay
         //////            1 - (float) Math.exp(-(((double) dt) / n.dur()) / memoryDuration.floatValue());
         float DECAY_PERIOD = 1; //TODO use exponential decay formula
-        float decayRate =
-                (float) Math.exp(-(((double) r.dtS()) / DECAY_PERIOD));
-        pri = pri * decayRate;
+        double decayRate = Math.exp(-(((double) r.dtS()) / DECAY_PERIOD));
+        pri = (float) (pri * decayRate);
         //float PRI_DECAY = 0.97f; //TODO use exponential decay formula
         //pri = Util.clamp(pri * PRI_DECAY, 0, 1f);
 

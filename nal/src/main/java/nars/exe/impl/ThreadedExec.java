@@ -38,10 +38,11 @@ abstract public class ThreadedExec extends MultiExec {
         this.exe = new AffinityExecutor(maxThreads);
         this.affinity = affinity;
 
-        if (maxThreads > Runtime.getRuntime().availableProcessors() / 2) {
-            /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
-            Exe.setExecutor(this);
-        }
+
+//        if (maxThreads > Runtime.getRuntime().availableProcessors() / 2) {
+//            /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
+//            Exe.setExecutor(this);
+//        }
 
     }
 
@@ -143,7 +144,9 @@ abstract public class ThreadedExec extends MultiExec {
 
     @Override
     public void stop() {
-        Exe.setExecutor(ForkJoinPool.commonPool()); //TODO use the actual executor replaced by the start() call instead of assuming FJP
+
+        if (Exe.executor() == this) //HACK
+            Exe.setExecutor(ForkJoinPool.commonPool()); //TODO use the actual executor replaced by the start() call instead of assuming FJP
 
         exe.shutdownNow();
 

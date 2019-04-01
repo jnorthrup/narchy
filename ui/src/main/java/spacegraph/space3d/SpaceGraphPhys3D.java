@@ -29,7 +29,6 @@ import com.jogamp.opengl.fixedfunc.GLLightingFunc;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUquadric;
 import com.jogamp.opengl.util.texture.Texture;
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.Bitmap2D;
 import spacegraph.input.finger.Finger;

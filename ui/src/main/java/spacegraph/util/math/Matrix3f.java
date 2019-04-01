@@ -31,7 +31,6 @@
 
 package spacegraph.util.math;
 
-import jcog.math.v3;
 import jcog.math.VecMathUtil;
 import jcog.math.v3;
 

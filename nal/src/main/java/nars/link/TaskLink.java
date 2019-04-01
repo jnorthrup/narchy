@@ -1,36 +1,24 @@
 package nars.link;
 
-import jcog.TODO;
-import jcog.Util;
-import jcog.WTF;
 import jcog.data.graph.path.FromTo;
 import jcog.decide.Roulette;
-import jcog.pri.ScalarValue;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
-import jcog.signal.tensor.AtomicFloatArray;
-import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.table.TaskTable;
 import nars.task.NALTask;
-import nars.task.util.TaskException;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.function.Predicate;
 
-import static jcog.Util.assertFinite;
 import static nars.Op.*;
-import static nars.Task.i;
 import static nars.Task.p;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * the function of a tasklink is to be a prioritizable strategy for resolving a Task in a NAR.
@@ -44,15 +32,14 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
     TaskLink[] EmptyTaskLinkArray = new TaskLink[0];
 
     static TaskLink tasklink(Term src, Term tgt, byte punc, float pri) {
-        return new GeneralTaskLink(src, tgt).priMerge(punc, pri);
+        return new AtomicTaskLink(src, tgt).priMerge(punc, pri);
     }
 
-    //byte punc();
-    float priPunc(byte punc);
+    default /* final */ float priPunc(byte punc) { return priIndex(Task.i(punc)); }
 
-    default float pri(byte punc) {
-        throw new WTF("use priPunc");
-    }
+    /** index will be either 0, 1, 2, or 3 */
+    float priIndex(byte index);
+
 
     float getAndSetPriPunc(byte punc, float next);
 
@@ -95,18 +82,11 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return priPunc(rng);
     }
 
-    @Nullable
-    default /* final */Task get(When when) {
+    @Nullable default /* final */Task get(When when) {
         return get(punc(when.nar.random()), when, null);
     }
 
-    @Nullable
-    default Task get(byte punc, When when) {
-        return get(punc, when, null);
-    }
-
-    @Nullable
-    default Task get(byte punc, When when, Predicate<Task> filter) {
+    @Nullable default Task get(byte punc, When when, Predicate<Task> filter) {
         if (punc == 0)
             return null; //flat-lined tasklink
 
@@ -210,6 +190,28 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
     float merge(TaskLink incoming, PriMerge merge);
 
+    float take(byte punc, float howMuch);
+
+    default boolean isSelf() {
+        return from().equals(to());
+    }
+
+    @Nullable
+    default Term other(Term x, boolean reverse) {
+        return x.equals(reverse ? to() : from()) ? (reverse ? from() : to()) : null;
+    }
+//    /**
+//     * returns the delta
+//     */
+//    float priMax(byte punc, float p);
+
+    /**
+     * snapshots a 4-tuple: beliefs, goals, questions, quests
+     */
+    default float[] priGet() {
+        return new float[]{priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST)};
+    }
+
 //    default byte puncMax() {
 //        switch (Util.maxIndex(priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST))) {
 //            case 0:
@@ -223,46 +225,6 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //        }
 //        return -1;
 //    }
-
-    float take(byte punc, float howMuch);
-
-    default boolean isSelf() {
-        return from().equals(to());
-    }
-
-    default Term other(Atomic x) {
-        if (to().equals(x)) {
-            return from();
-        } else if (from().equals(x)) {
-            return to();
-        }
-        throw new WTF();
-    }
-
-//    /**
-//     * returns the delta
-//     */
-//    float priMax(byte punc, float p);
-
-
-    /**
-     * snapshots a 4-tuple: beliefs, goals, questions, quests
-     */
-    default float[] priGet() {
-        return new float[]{priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST)};
-    }
-
-    @Nullable
-    default Term other(Term x, boolean reverse) {
-        if (reverse) {
-            if (x.equals(to()))
-                return from();
-        } else {
-            if (x.equals(from()))
-                return to();
-        }
-        return null;
-    }
 
 
 //    /** special tasklink for signals which can stretch and so their target time would not correspond well while changing */
@@ -294,72 +256,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //        }
 //    }
 
-    abstract class AbstractTaskLink implements TaskLink /*, Subterms */ {
-        /**
-         * source,target as a 2-ary subterm
-         */
-        final Term from, to;
-        private final int hash;
-
-        protected AbstractTaskLink(Term self) {
-            this(self.concept(), null);
-        }
-
-        protected AbstractTaskLink(Term source, Term target) {
-
-            source = source.concept();
-            target = target == null ? source : target.concept();
-
-            Op so = source.op();
-            if (!so.taskable)
-                throw new TaskException(source, "source term not taskable");
-            if (!so.conceptualizable)
-                throw new TaskException(source, "source term not conceptualizable");
-            if (Param.DEBUG) {
-                if (!source.isNormalized())
-                    throw new TaskException(source, "source term not normalized");
-            }
-
-            this.from = source;
-            this.to = target;
-            this.hash = Util.hashCombine(from, to);
-        }
-
-        @Override
-        final public TaskLink id() {
-            return this;
-        }
-
-        @Override
-        public final boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj instanceof TaskLink) {
-                if (hashCode() == obj.hashCode()) {
-                    TaskLink t = (TaskLink) obj;
-                    if (from().equals(t.from()))
-                        return to().equals(t.to());
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public final int hashCode() {
-            return hash;
-        }
-
-        @Override
-        public final Term from() {
-            return from;
-        }
-
-        @Override
-        public final Term to() {
-            return to;
-        }
-    }
-
-//    public static class CompactTaskLink extends AtomicQuad16Vector implements TaskLink {
+    //    public static class CompactTaskLink extends AtomicQuad16Vector implements TaskLink {
 //        /**
 //         * source,target as a 2-ary subterm
 //         */
@@ -462,232 +359,6 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //
 //
 //    }
-
-    /**
-     * dynamically resolves a task.
-     * serializable and doesnt maintain a direct reference to a task.
-     * may delete itself if the target concept is not conceptualized.
-     */
-    class GeneralTaskLink extends AbstractTaskLink {
-
-        final AtomicFloatArray punc = new AtomicFloatArray(4);
-        /**
-         * cached; NaN means invalidated
-         */
-        private volatile float pri = 0;
-
-        public GeneralTaskLink(Term source, Term target) {
-            super(source, target);
-        }
-
-        public GeneralTaskLink(Term self) {
-            super(self);
-        }
-
-        public GeneralTaskLink(Term source, Term target, long when, byte punc, float pri) {
-            this(source, target);
-            if (when != ETERNAL) throw new TODO("non-eternal tasklink not supported yet");
-            if (pri > 0)
-                priMerge(punc, pri);
-        }
-
-        @Override
-        public float pri() {
-            float p = this.pri;
-            if (p != p)
-                return this.pri = _pri(); //update cached value
-            return p;
-        }
-
-        @Override
-        public int priComparable() {
-            return Float.floatToIntBits(pri());
-        }
-
-        /**
-         * calculates the priority from the components
-         */
-        private float _pri() {
-            return punc.sumValues() / 4;
-        }
-
-        private void invalidate() {
-            this.pri = Float.NaN;
-        }
-
-        @Override
-        public float take(byte punc, float howMuch) {
-            return Math.max(ScalarValue.EPSILON,
-                    //-priMergeGetDelta(punc, howMuch, PriMerge.minus)
-                    -priMergeGetDelta(punc, -howMuch, PriMerge.plus)
-            );
-        }
-
-        @Override
-        public void delete(byte punc) {
-            priSet(punc, 0);
-        }
-
-        @Override
-        public final boolean delete() {
-            punc.fill(0);
-            pri = 0; //invalidate
-            return true;
-        }
-
-        @Override
-        public boolean isDeleted() {
-            return false;
-        }
-
-        public final GeneralTaskLink priMerge(byte punc, float pri) {
-            mergeComponent(punc, pri, Param.tasklinkMerge, true);
-            return this;
-        }
-
-        public final TaskLink priMerge(byte punc, float pri, PriMerge merge) {
-            priMergeGetValue(punc, pri, merge);
-            return this;
-        }
-
-        public final float priMergeGetValue(byte punc, float pri, PriMerge merge) {
-            return mergeComponent(punc, pri, merge, true);
-        }
-
-        public final float priMergeGetDelta(byte punc, float pri, PriMerge merge) {
-            return mergeComponent(punc, pri, merge, false);
-        }
-
-        /**
-         * returns delta
-         */
-        public void priSet(byte punc, float pri) {
-            priMergeGetDelta(punc, pri, PriMerge.replace);
-        }
-
-        @Override
-        public /* HACK */ float merge(TaskLink incoming, PriMerge merge) {
-            if (incoming instanceof GeneralTaskLink) {
-                float delta = 0;
-                for (int i = 0; i < 4; i++) {
-                    float p = ((GeneralTaskLink) incoming).punc.getAt(i);
-                    delta += priMergeGetDelta(p(i), p, merge);
-                }
-                return delta / 4;
-            } else {
-                throw new TODO();
-            }
-        }
-
-        private float mergeComponent(byte punc, float pri, PriMerge merge, boolean valueOrDelta) {
-            return mergeIthComponent(i(punc), pri, merge, valueOrDelta);
-        }
-
-
-        private float mergeIthComponent(int ith, float pri, PriMerge merge, boolean valueOrDelta) {
-            assertFinite(pri);
-            float y = mergeIthComponent(ith, pri, merge::mergeUnitize, valueOrDelta);
-            if (valueOrDelta || y != 0)
-                invalidate();
-            return y;
-        }
-
-        private float mergeIthComponent(int ith, float pri, FloatFloatToFloatFunction componentMerge, boolean valueOrDelta) {
-            return this.punc.update(pri, componentMerge, ith, valueOrDelta);
-        }
-
-        @Override
-        public float pri(float p) {
-            throw new TODO();
-        }
-
-        @Override
-        public void priAdd(float a) {
-            throw new TODO();
-        }
-
-        @Override
-        public float priMult(float X) {
-            assertFinite(X);
-            if (!Util.equals(X, 1)) {
-                //HACK not fully atomic but at least consistent
-                FloatFloatToFloatFunction mult = PriMerge.and::mergeUnitize;
-                boolean changed = false;
-                for (int i = 0; i < 4; i++) {
-                    float d = mergeIthComponent(i, X, mult, false);
-                    changed |= d!=0;
-                }
-                if (changed)
-                    invalidate();
-            }
-            return pri();
-        }
-
-        @Override
-        public float pri(FloatFloatToFloatFunction update, float scalar) {
-            throw new UnsupportedOperationException();
-
-            //TODO make fully atomic:
-//            float prev = this.pri();
-//            float next = update.apply(prev, x);
-//            if (next == next) {
-//                next = Util.unitizeSafe(next);
-//                if (prev != prev) {
-//                    punc.fill(next); //flat
-//                } else {
-//                    if (!Util.equals(next, prev)) {
-//                        //renormalize
-//                        renormalize(next);
-//                    }
-//                }
-//            } else {
-//                punc.fill(0);
-//                next = 0;
-//            }
-//            invalidate();
-//            return next;
-
-//            }, _x);
-
-//            return y;
-        }
-
-        @Override
-        public float[] priGet() {
-            return punc.snapshot();
-        }
-
-//        protected void renormalize(float next) {
-//            float[] pp = priGet();
-//            Util.normalizeHamming(pp, next);
-//            priSet(pp);
-//        }
-
-//        protected void priSet(float[] pp) {
-//            //assert(pp.length==4);
-//            punc.setAt(pp, 0);
-//        }
-
-        @Override
-        public float priPunc(byte punc) {
-            float p = this.punc.getAt(i(punc));
-            //assertUnitized(p); //TEMPORARY
-            ///assert(p<=1): this + " punc pri=" + p; //TEMPORARY
-            return p;
-        }
-
-        @Override
-        public float getAndSetPriPunc(byte punc, float next) {
-            return mergeComponent(punc, next, PriMerge.replace, true);
-        }
-
-        @Override
-        public String toString() {
-            return toBudgetString() + ' ' + from() + (punc) + ':' + to();
-        }
-
-
-    }
 
 
 //    class DirectTaskLink extends PLinkUntilDeleted<Task> implements TaskLink {

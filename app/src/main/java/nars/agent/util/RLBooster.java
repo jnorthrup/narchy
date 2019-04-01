@@ -2,10 +2,10 @@ package nars.agent.util;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.math.FloatRange;
 import jcog.signal.tensor.RingTensor;
-import jcog.func.IntIntToObjectFunction;
 import nars.$;
 import nars.NAR;
 import nars.Task;

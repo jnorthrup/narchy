@@ -4,6 +4,7 @@ import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
+import nars.link.AtomicTaskLink;
 import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
 import nars.time.event.DurService;
@@ -39,7 +40,7 @@ public class PuncNoise extends DurService {
         if (delta == delta) {
             float amt = delta / 4;
             for (int i = 0; i < 4; i++) {
-                ((TaskLink.GeneralTaskLink) t).priMerge(p(i), amt, PriMerge.plus);
+                ((AtomicTaskLink) t).priMerge(p(i), amt, PriMerge.plus);
             }
         }
 

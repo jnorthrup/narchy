@@ -1,7 +1,7 @@
 package nars.concept.dynamic;
 
 import nars.*;
-import nars.link.TaskLink;
+import nars.link.AtomicTaskLink;
 import nars.time.When;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +25,7 @@ class DynamicTruthBeliefTableTest {
         n.believe("x", 0f, 0.50f);
         n.believe("y", 0f, 0.50f);
         n.run(1);
-        TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink($$("(x && y)"), Op.EmptyProduct, ETERNAL, BELIEF,  1f);
+        AtomicTaskLink tl = new AtomicTaskLink($$("(x && y)"), Op.EmptyProduct, ETERNAL, BELIEF,  1f);
         Set<Task> tasks = new HashSet();
         When w = When.eternal(n);
         for (int i = 0; i < 10; i++)
@@ -40,7 +40,7 @@ class DynamicTruthBeliefTableTest {
         n.input("x. +1");
         n.input("y. +2");
         n.run(1);
-        TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink($$("(x && y)"), Op.EmptyProduct, ETERNAL, BELIEF, 1f);
+        AtomicTaskLink tl = new AtomicTaskLink($$("(x && y)"), Op.EmptyProduct, ETERNAL, BELIEF, 1f);
         Set<Task> tasks = new HashSet();
         When w = new When(1, n);
         for (int i = 0; i < 100; i++)

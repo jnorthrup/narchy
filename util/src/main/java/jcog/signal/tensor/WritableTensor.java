@@ -2,6 +2,7 @@ package jcog.signal.tensor;
 
 import jcog.TODO;
 import jcog.signal.Tensor;
+import jcog.util.FloatFloatToFloatFunction;
 
 public interface WritableTensor extends Tensor {
 
@@ -28,6 +29,24 @@ public interface WritableTensor extends Tensor {
 
     default void readFrom(Tensor from, int[] fromStart, int[] fromEnd, int[] myStart, int[] myEnd) {
         throw new TODO();
+    }
+
+    default /* final */ float mergeAndGet(int linearCell, float arg, FloatFloatToFloatFunction x) {
+        return merge(linearCell, arg, x, true);
+    }
+
+    default /* final */ float mergeAndGetDelta(int linearCell, float arg, FloatFloatToFloatFunction x) {
+        return merge(linearCell, arg, x, false);
+    }
+
+    default float merge(int linearCell, float arg, FloatFloatToFloatFunction x, boolean returnValueOrDelta) {
+        float prev = getAt(linearCell);
+
+        float next = x.apply(prev, arg);
+
+        setAt(linearCell, next);
+
+        return returnValueOrDelta ? next : (next-prev);
     }
 
     default void fill(float x) {

@@ -45,11 +45,7 @@ public class AtomicFloatArray extends AbstractVector implements WritableTensor {
         return nextFloat;
     }
 
-    public final float update(float arg, FloatFloatToFloatFunction x, int linearCell) {
-        return update(arg, x, linearCell);
-    }
-
-    public final float update(float arg, FloatFloatToFloatFunction x, int linearCell, boolean returnValueOrDelta) {
+    @Override public final float merge(int linearCell, float arg, FloatFloatToFloatFunction x, boolean returnValueOrDelta) {
         int prevI, nextI;
         float prev, next;
 
@@ -59,7 +55,6 @@ public class AtomicFloatArray extends AbstractVector implements WritableTensor {
             next = x.apply(prev, arg);
             nextI = floatToIntBits(next);
         } while(prevI!=nextI && data.compareAndExchangeRelease(linearCell, prevI, nextI)!=prevI);
-
 
         return returnValueOrDelta ? next : (next-prev);
     }

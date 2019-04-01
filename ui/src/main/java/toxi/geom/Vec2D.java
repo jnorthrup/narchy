@@ -37,8 +37,9 @@ import java.util.Random;
 /**
  * Comprehensive 2D vector class with additional basic intersection and
  * collision detection features.
+ * TODO extend v2
  */
-public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
+@Deprecated public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
 
     public enum Axis {
 

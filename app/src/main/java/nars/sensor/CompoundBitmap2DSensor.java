@@ -1,7 +1,7 @@
 package nars.sensor;
 
-import jcog.signal.wave2d.Bitmap2D;
 import jcog.func.IntIntToObjectFunction;
+import jcog.signal.wave2d.Bitmap2D;
 import nars.util.Timed;
 import org.jetbrains.annotations.Nullable;
 

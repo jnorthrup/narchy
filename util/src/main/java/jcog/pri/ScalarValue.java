@@ -1,6 +1,5 @@
 package jcog.pri;
 
-import jcog.TODO;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -36,7 +35,7 @@ public interface ScalarValue extends Prioritized {
     float pri();
 
     default int priComparable() {
-        throw new TODO();
+        return Float.floatToIntBits(pri());
     }
 
     default float pri(FloatSupplier update) {

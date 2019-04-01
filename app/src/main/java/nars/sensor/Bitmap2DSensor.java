@@ -1,8 +1,8 @@
 package nars.sensor;
 
 import com.google.common.collect.Iterables;
-import jcog.signal.wave2d.Bitmap2D;
 import jcog.func.IntIntToObjectFunction;
+import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;

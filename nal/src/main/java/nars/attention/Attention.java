@@ -20,10 +20,7 @@ import nars.attention.derive.DefaultDerivePri;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.derive.Derivation;
-import nars.link.Activate;
-import nars.link.TaskLink;
-import nars.link.TaskLinkBag;
-import nars.link.TermLinker;
+import nars.link.*;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
@@ -277,7 +274,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
             return false;
 
 
-        link(new TaskLink.GeneralTaskLink(c.term()).priMerge(task.punc(), pri));
+        link(new AtomicTaskLink(c.term()).priMerge(task.punc(), pri));
 
 
         ((TaskConcept) c).value(task, n);
