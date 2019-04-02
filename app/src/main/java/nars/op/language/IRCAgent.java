@@ -5,7 +5,6 @@ import nars.NARS;
 import nars.Param;
 import nars.Task;
 import nars.bag.leak.TaskLeak;
-import nars.exe.Valuator;
 import nars.exe.impl.WorkerExec;
 import nars.op.language.util.IRC;
 import nars.op.stm.ConjClustering;
@@ -216,7 +215,7 @@ public class IRCAgent extends IRC {
 
         float durFPS = 1f;
         NAR n = new NARS.DefaultNAR(8, true)
-                .exe(new WorkerExec(new Valuator.DefaultValuator(0.5f),4))
+                .exe(new WorkerExec(4))
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
         new ConjClustering(n, BELIEF, 4, 16);

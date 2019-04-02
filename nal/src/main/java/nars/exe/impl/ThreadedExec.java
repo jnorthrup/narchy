@@ -7,7 +7,6 @@ import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import nars.NAR;
 import nars.exe.Exec;
-import nars.exe.Valuator;
 
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
@@ -28,12 +27,12 @@ abstract public class ThreadedExec extends MultiExec {
     public interface Worker extends Runnable, Off {
     }
 
-    public ThreadedExec(Valuator r, int threads) {
-        this(r, threads, false);
+    public ThreadedExec(int threads) {
+        this(threads, false);
     }
 
-    public ThreadedExec(Valuator valuator, int maxThreads, boolean affinity) {
-        super(valuator, maxThreads);
+    public ThreadedExec(int maxThreads, boolean affinity) {
+        super(maxThreads);
 
         this.exe = new AffinityExecutor(maxThreads);
         this.affinity = affinity;
@@ -46,8 +45,7 @@ abstract public class ThreadedExec extends MultiExec {
 
     }
 
-    @Override protected void executeLater(/*@NotNull */Object x) {
-
+    @Override protected void execute(/*@NotNull */Object x) {
         in.add(x, (xx)->{
             Exec.logger.warn("{} blocked queue on: {}", this, xx);
             executeNow(xx);

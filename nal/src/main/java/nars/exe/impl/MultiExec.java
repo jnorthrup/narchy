@@ -6,14 +6,16 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatAveragedWindow;
 import nars.NAR;
+import nars.control.Cause;
+import nars.control.Traffic;
 import nars.exe.Causable;
 import nars.exe.Exec;
-import nars.exe.Valuator;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
+import nars.time.event.DurService;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -23,8 +25,6 @@ import static java.lang.System.nanoTime;
 abstract public class MultiExec extends UniExec {
 
     protected static final float inputQueueSizeSafetyThreshold = 1f;
-
-    private final Valuator valuator;
 
     protected long threadWorkTimePerCycle, threadIdleTimePerCycle;
 
@@ -44,11 +44,10 @@ abstract public class MultiExec extends UniExec {
      */
     private final float explorationRate = 0.05f;
 
-    protected long cycleIdealNS;
+    long cycleIdealNS;
 
-    public MultiExec(Valuator valuator, int concurrencyMax  /* TODO adjustable dynamically */) {
+    MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
         super(concurrencyMax);
-        this.valuator = valuator;
     }
 
     @Override
@@ -56,38 +55,87 @@ abstract public class MultiExec extends UniExec {
         if (x instanceof NALTask || x instanceof TaskProxy)
             input((ITask) x);
         else
-            executeLater(x);
+            execute(x);
     }
 
     @Override
     public final void input(Consumer<NAR> r) {
-        executeLater(r);
+        execute(r);
     }
+
+    /** execute later */
+    abstract protected void execute(Object r);
 
     @Override
-    public final void execute(Runnable r) {
-        executeLater(r);
+    public final void execute(Runnable async) {
+        execute((Object)async);
     }
-
-    abstract protected void executeLater(/*@NotNull */Object x);
 
     long lastCycle = System.nanoTime();
 
     protected void update() {
-
         long now = System.nanoTime();
         long last = this.lastCycle;
         this.lastCycle = now;
         updateTiming(now - last);
 
-        valuator.update(nar);
+        value();
 
         prioritize();
+    }
 
+    protected void value() {
+
+//        long time = nar.time();
+//        if (lastUpdate == ETERNAL)
+//            lastUpdate = time;
+//        dt = (time - lastUpdate);
+
+
+//        lastUpdate = time;
+
+        FasterList<Cause> causes = nar.causes;
+
+
+        int cc = causes.size();
+        if (cc == 0)
+            return;
+
+//        if (cur.length != cc) {
+//            resize(cc);
+//        }
+
+        Cause[] ccc = causes.array();
+
+        float[] want = nar.feel.want;
+
+        for (int i = 0; i < cc; i++) {
+
+            Cause ci = ccc[i];
+
+            ci.commit();
+
+            float v = 0;
+            Traffic[] cg = ci.credit;
+            for (int j = 0; j < want.length; j++) {
+                v += want[j] * cg[j].last;
+            }
+
+            ccc[i].setValue(v);
+
+//            prev[i] = cur[i];
+//            cur[i] = v;
+        }
+
+
+//        process();
+
+//        for (int i = 0; i < cc; i++)
+//            ccc[i].setValue(out[i]);
     }
 
     @Override protected void onCycle(NAR nar) {
-        nar.time.schedule(this::executeLater);
+        nar.time.schedule(this::execute);
     }
 
     final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(16, 0.25f);
@@ -128,8 +176,8 @@ abstract public class MultiExec extends UniExec {
 
         super.start(n);
 
-        //ons.add(DurService.on(n, this::update));
-        ons.add(n.onCycle(this::update));
+        ons.add(DurService.on(n, this::update));
+        //ons.add(n.onCycle(this::update));
 
     }
 

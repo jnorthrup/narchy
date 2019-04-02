@@ -65,7 +65,9 @@ public abstract class Param {
 
 
     /** return <= 0 to disable */
-    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0.75f;
+    @Deprecated public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE =
+            0;
+            //0.75f;
 
     /** true will filter sub-confMin revision results.  false will not, allowing sub-confMin
      * results to reside in the belief table (perhaps combinable with something else that would
@@ -239,7 +241,7 @@ public abstract class Param {
 
     /** whether timegraph should not return solutions with volume significantly less than the input's.
      *  set 0 to disable the filter */
-    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.01f;
+    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.1f;
 
     /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
     public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
@@ -270,7 +272,7 @@ public abstract class Param {
             //TODO abstract this frequence response curve
             float deltaFreq = prev!=next? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
             if (deltaFreq > Float.MIN_NORMAL) {
-                float perceived = 0.1f + 0.9f * (float) Math.pow(deltaFreq, 1 / 2f /* etc*/);
+                float perceived = 0.01f + 0.99f * (float) Math.pow(deltaFreq, 1 / 2f /* etc*/);
                 p *= perceived;
             }
             //p *= Util.lerp(deltaFreq, perceived, 1);
@@ -293,7 +295,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(16, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 6; //HACK this is a TTL supply, not a COST
@@ -303,7 +305,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 3f;
+    public static final float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)

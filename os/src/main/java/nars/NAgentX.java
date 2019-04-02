@@ -20,7 +20,6 @@ import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
-import nars.exe.Valuator;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineMemory;
@@ -194,10 +193,6 @@ abstract public class NAgentX extends NAgent {
 
         clock.durFPS(durFPS);
 
-        Valuator val =
-            new Valuator.DefaultValuator(0.5f);
-            //new Valuator.AEValuator(new XoRoShiRo128PlusRandom());
-
         int threads = _threads <= 0 ? Util.concurrencyExcept(1) : _threads;
 
         NAR n = new NARS()
@@ -210,7 +205,7 @@ abstract public class NAgentX extends NAgent {
                 //new UniExec()
 
                 new WorkerExec(
-                        val, threads,
+                        threads,
                         false/* affinity */)
 
 //                new ForkJoinExec(val, threads)

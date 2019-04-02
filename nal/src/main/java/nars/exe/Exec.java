@@ -1,5 +1,6 @@
 package nars.exe;
 
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
@@ -9,7 +10,6 @@ import nars.Param;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  */
 abstract public class Exec extends ConsumerX<ITask> implements Executor {
 
-    protected static final Logger logger = LoggerFactory.getLogger(Exec.class);
+    protected static final Logger logger = Util.logger(Exec.class);
 
     protected NAR nar;
     private final int concurrencyMax;
@@ -56,8 +56,8 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
             throw new RuntimeException(ee);
     }
 
-    @Override
-    public void execute(Runnable async) {
+    /** execute later */
+    @Override public void execute(Runnable async) {
         if (concurrent()) {
             ForkJoinPool.commonPool().execute(async);
         } else {

@@ -2,7 +2,6 @@ package nars;
 
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
-import nars.exe.Valuator;
 import nars.exe.impl.WorkerExec;
 import nars.index.concept.CaffeineMemory;
 import nars.op.language.NARHear;
@@ -31,7 +30,7 @@ public class NARchy extends NARS {
                 .index(new CaffeineMemory(32*1024))
                 //.index(new HijackConceptIndex(32*1024, 4))
 
-                .exe(new WorkerExec(new Valuator.DefaultValuator(), threads))
+                .exe(new WorkerExec(threads))
 
                 .time(new RealTime.MS(false ).durFPS(10f))
                 

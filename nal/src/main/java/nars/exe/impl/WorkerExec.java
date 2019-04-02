@@ -2,12 +2,10 @@ package nars.exe.impl;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.math.FloatAveragedWindow;
 import jcog.random.SplitMix64Random;
 import jcog.util.ArrayUtils;
 import nars.exe.Causable;
 import nars.exe.Exec;
-import nars.exe.Valuator;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
@@ -26,12 +24,12 @@ public class WorkerExec extends ThreadedExec {
     private static final long subCycleMinNS = 50_000;
     private long subCycleMaxNS;
 
-    public WorkerExec(Valuator r, int threads) {
-        super(r, threads);
+    public WorkerExec(int threads) {
+        super(threads);
     }
 
-    public WorkerExec(Valuator valuator, int threads, boolean affinity) {
-        super(valuator, threads, affinity);
+    public WorkerExec(int threads, boolean affinity) {
+        super(threads, affinity);
     }
 
     @Override
@@ -53,50 +51,25 @@ public class WorkerExec extends ThreadedExec {
 
         int i = 0;
         long prioLast = ETERNAL;
-        private int n;
 
         private long rescheduleCycles;
         boolean reprioritize = true;
+
+
+        private final BooleanSupplier deadlineFn = this::deadline;
+        private int n;
 
         WorkPlayLoop() {
 
             rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
         }
 
-//        public void run0() {
-//
-//            while (alive) {
-//
-//                long workTime = work(1f, schedule);
-//
-//                long playTime =
-//                        threadWorkTimePerCycle - workTime;
-//                //threadWorkTimePerCycle;
-//                if (playTime > 0)
-//                    play(playTime);
-//
-//                sleep();
-//            }
-//        }
-
-
-        //TODO use a double averaged
-        final FloatAveragedWindow workTimeMean = new FloatAveragedWindow(4, 0.5f);
-
         @Override
         public void run() {
 
             do {
 
-                long workTime = work(1, schedule);
-                //TODO use time-averaged workTime
-                float workTimeMean = this.workTimeMean.valueOf((float) (workTime / 1.0E6)/*, i++ % 100 == 0 */);
-                long playTime =
-                        (long) (threadWorkTimePerCycle - (workTimeMean * 1.0E6));
-
-                if (playTime > 0)
-                    play(playTime);
-
+                play(threadWorkTimePerCycle);
                 sleep();
 
             } while (alive.get());
@@ -105,26 +78,25 @@ public class WorkerExec extends ThreadedExec {
         }
 
 
-        private final BooleanSupplier deadlineFn = this::deadline;
 
         private void play(long playTime) {
 
             long start = nanoTime();
             long until = start + playTime, after = start /* assigned for safety */;
 
-
             int skip = 0;
 
             do {
+                if (!queueSafe())
+                    work(1, schedule);
 
                 long now = nar.time();
                 if (reprioritize || now > prioLast + rescheduleCycles) {
-                    reprioritize = false;
-
-
-                    prioLast = now;
                     if (!prioritize(threadWorkTimePerCycle))
                         return;
+
+                    reprioritize = false;
+                    prioLast = now;
                 }
 
                 int playable = play.length; if (playable == 0) return;
@@ -171,11 +143,13 @@ public class WorkerExec extends ThreadedExec {
                     //break; //go to work early
                 }
 
-            } while ((until > after) && queueSafe());
+            } while (until > after);
+
 //                System.out.println(
 //                    this + "\tplaytime=" + Texts.timeStr(playTime) + " " +
 //                        Texts.n2((((double)(after - start))/playTime)*100) + "% used"
 //                );
+
         }
 
         /**
@@ -186,7 +160,7 @@ public class WorkerExec extends ThreadedExec {
 
             /** always refresh */
             play = cpu.toArray(play, TimedLink::my);
-            if (play.length <= 0)
+            if ((n = play.length) <= 0)
                 return false;
 
 //                /** expected time will be equal to or less than the max due to various overheads on resource constraints */
@@ -202,7 +176,7 @@ public class WorkerExec extends ThreadedExec {
 
 
 
-            if (n > 2)
+            if (play.length > 2)
                 ArrayUtils.shuffle(play, rng); //each worker gets unique order
 
 

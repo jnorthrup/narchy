@@ -2,7 +2,6 @@ package nars.exe.impl;
 
 import jcog.Util;
 import nars.NAR;
-import nars.exe.Valuator;
 
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
@@ -13,8 +12,8 @@ public class ForkJoinExec extends MultiExec  {
 
     private ForkJoinPool pool = ForkJoinPool.commonPool(); //temporary setting
 
-    public ForkJoinExec(Valuator valuator, int concurrency) {
-        super(valuator, concurrency);
+    public ForkJoinExec(int concurrency) {
+        super(concurrency);
 
 
 
@@ -74,7 +73,7 @@ public class ForkJoinExec extends MultiExec  {
     }
 
     @Override
-    protected void executeLater(Object x) {
+    protected void execute(Object x) {
         pool.execute(x instanceof Runnable ? ((Runnable)x) : ()->{
             executeNow(x);
         }); //HACK

@@ -3,14 +3,13 @@ package nars.exe.impl;
 import nars.NAR;
 import nars.NARS;
 import nars.attention.Attention;
-import nars.exe.Valuator;
 
 import java.util.function.Supplier;
 
 public class SuperExec extends ThreadedExec {
 
-    public SuperExec(Valuator valuator, int concurrency) {
-        super(valuator, concurrency);
+    public SuperExec(int concurrency) {
+        super(concurrency);
     }
 
     @Override
@@ -23,7 +22,7 @@ public class SuperExec extends ThreadedExec {
         //TODO
     }
     private static class SubAttention extends Attention {
-
+        //TODO
     }
 
     private final class SubNARLoop implements Worker {
