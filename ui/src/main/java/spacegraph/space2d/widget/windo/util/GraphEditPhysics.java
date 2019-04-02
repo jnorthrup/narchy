@@ -3,8 +3,8 @@ package spacegraph.space2d.widget.windo.util;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.graph.EditGraph2D;
-import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.container.graph.Link;
+import spacegraph.space2d.widget.port.Wire;
 
 public abstract class GraphEditPhysics {
 

@@ -6,13 +6,13 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.DerivePri;
+import nars.control.Causable;
 import nars.control.Cause;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
-import nars.control.Causable;
 import nars.term.Term;
 
 import java.util.Set;

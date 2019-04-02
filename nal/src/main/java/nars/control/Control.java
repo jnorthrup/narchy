@@ -176,12 +176,11 @@ public final class Control {
                 c.value = Float.NaN;
                 vr = 0;
             } else {
-                float v = Math.max(0, c.value = c.value());
+                double v = Math.max(0, c.value = c.value());
                 //double cyclesUsed = ((double) tUsed) / cycleIdealNS;
                 //vr = (float) (v / (1 + cyclesUsed));
 
-                double epsilon = 1.0E-8; //10nS
-                vr = (float) (v / (epsilon + tUsed));
+                vr = v > Float.MIN_NORMAL ? (float) (v / ((1 + tUsed)/1.0E-9)) : 0;
                 assert (vr == vr);
             }
 

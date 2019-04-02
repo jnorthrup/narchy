@@ -39,12 +39,12 @@ import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space2d.container.graph.EditGraph2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

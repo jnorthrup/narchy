@@ -55,7 +55,10 @@ import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.Menu;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
-import spacegraph.space2d.widget.meta.*;
+import spacegraph.space2d.widget.meta.MetaFrame;
+import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.meta.ServicesTable;
+import spacegraph.space2d.widget.meta.TriggeredSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.meter.ScatterPlot2D;
@@ -599,7 +602,7 @@ public class NARui {
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
                 "Histogram", ()->new BagView(attn.links, n),
                 "Concepts", ()->BagregateConceptGraph2D.get(attn, n),
-                "Flow", ()-> AttentionUI.attentionGraph(n)
+                "Attention", ()-> AttentionUI.attentionGraph(n)
         )));
         m.south(new ObjectSurface(attn));
         m.west(new Gridding(

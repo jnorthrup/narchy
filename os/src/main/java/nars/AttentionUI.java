@@ -7,23 +7,22 @@ import nars.gui.DurSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.EdgeVis;
 import spacegraph.space2d.container.graph.Graph2D;
-import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.util.MutableRectFloat;
 
 public class AttentionUI {
 
-    static class NodeUI extends Gridding {
-        public final PriNode node;
-
-        NodeUI(PriNode node) {
-            this.node = node;
-            add(new VectorLabel(node.toString()));
-            add(new ObjectSurface(node));
-        }
-    }
+//    static class NodeUI extends Gridding {
+//        public final PriNode node;
+//
+//        NodeUI(PriNode node) {
+//            this.node = node;
+//            add(new VectorLabel(node.toString()));
+//            add();
+//        }
+//    }
 
 //    public static GraphEdit serviceGraph(NAR n, NAgent a) {
 //        GraphEdit<Surface> g = GraphEdit.window(800, 500);
@@ -35,6 +34,9 @@ public class AttentionUI {
 
     public static Surface attentionGraph(NAR n) {
         Graph2D<PriNode> aaa = new Graph2D<PriNode>()
+                .build(x->{
+                    x.set(LabeledPane.the(x.id.toString(), new ObjectSurface<>(x.id, 2)));
+                })
                 .render((Graph2D.Graph2DRenderer<PriNode>) (node, graph) -> {
                     n.control.graph.node(node.id).nodes(false,true).forEach(c -> {
                         EdgeVis<PriNode> e = graph.edge(node, c.id());
@@ -47,9 +49,7 @@ public class AttentionUI {
                     float d = 0.5f * node.id.pri();
 //                            float r = Math.min(1, s/d);
                     node.color(Math.min(d, 1), Math.min(s, 1), 0);
-                    if (!(node.the() instanceof NodeUI)) {
-                        node.set(new NodeUI(node.id));
-                    }
+
                 })
                 .update(new ForceDirected2D<>() {
                     @Override

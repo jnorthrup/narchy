@@ -11,7 +11,7 @@ import nars.unify.Unify;
 
 import javax.annotation.Nullable;
 
-import static nars.Op.*;
+import static nars.Op.VAR_PATTERN;
 
 abstract public class TermMatch {
 

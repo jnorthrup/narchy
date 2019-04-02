@@ -3,7 +3,6 @@ package spacegraph.video;
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.hud.Ortho;
 
 import java.awt.image.BufferedImage;
 

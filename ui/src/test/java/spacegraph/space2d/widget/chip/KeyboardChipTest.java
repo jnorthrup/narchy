@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.chip;
 
-import spacegraph.space2d.widget.port.IntPort;
 import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.widget.port.IntPort;
 
 class KeyboardChipTest {
 

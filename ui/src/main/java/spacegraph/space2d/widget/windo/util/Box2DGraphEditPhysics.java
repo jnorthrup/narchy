@@ -15,6 +15,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.Link;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
@@ -31,7 +32,6 @@ import spacegraph.space2d.widget.meta.WeakSurface;
 import spacegraph.space2d.widget.port.CopyPort;
 import spacegraph.space2d.widget.port.Port;
 import spacegraph.space2d.widget.port.Wire;
-import spacegraph.space2d.container.graph.Link;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.Draw;
 
