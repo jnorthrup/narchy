@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 950;
+    private final int cycles = 1250;
 
     @Override
     protected NAR nar() {
@@ -941,21 +941,12 @@ public class NAL5Test extends NALTest {
     }
 
 
-    @Test
-    void testConversion0() {
-
-        test
-                .input("(x==>y)?")
-                .input("(y==>x).")
-                .mustBelieve(cycles, "(x==>y).", 1.0f, 0.47f)
-        ;
-    }
 
     @Test
     void testConversion() {
 
         test
-
+                .termVolMax(3)
                 .input("(x==>y)?")
                 .input("(y==>x).")
                 .mustBelieve(cycles, "(x==>y).", 1.0f, 0.47f)
@@ -966,9 +957,10 @@ public class NAL5Test extends NALTest {
     void testConversionNeg() {
 
         test
+                .termVolMax(4)
                 .input("(x ==> y)?")
                 .input("(--y ==> x).")
-                .mustBelieve(cycles, "(x==>y).", 0.0f, 0.47f)
+                .mustBelieve(cycles, "(x ==> y).", 0.0f, 0.47f)
         ;
     }
 
@@ -976,6 +968,7 @@ public class NAL5Test extends NALTest {
     @Test
     void testConversionNeg3() {
         test
+                .termVolMax(4)
                 .input("(--x ==> y)?")
                 .input("(y ==> --x).")
                 .mustBelieve(cycles, "(--x ==> y).", 0f, 0.47f)
@@ -985,10 +978,11 @@ public class NAL5Test extends NALTest {
 
     @Test
     public void testImplSubj_Questioned() {
-        test.termVolMax(4)
-                .input("(x ==> y)?")
-                .mustQuestion(cycles, "x")
-                .mustQuestion(cycles, "y")
+        test
+            .termVolMax(4)
+            .input("(x ==> y)?")
+            .mustQuestion(cycles, "x")
+            .mustQuestion(cycles, "y")
         ;
     }
 

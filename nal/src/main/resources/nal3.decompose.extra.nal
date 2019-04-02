@@ -1,0 +1,114 @@
+//temporary file for suspecious and untested nal3 rules
+
+ //similarity coercion (S==P)! (symmetric: DecomposeNegative....)
+ ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff)
+   //((&,--P,A..+) --> M), ((&,A..+) --> M) |- (P --> M), (Goal:DecomposeDiff,Time:Intersect) //not working yet
+ (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)
+    ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff)
+    (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff)
+
+
+
+//union decompose
+(M --> S), X, is(S,"|"), subOf(S,X)   |-       --(M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+(S --> M), X, is(S,"&"), subOf(S,X)   |-       --(X --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+
+////     //difference --(S==P)! (asymmetric: DecomposePositive... )
+//     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP,Time:Intersect)
+//     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP,Time:Intersect)
+//        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN,Time:Intersect)
+//        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN,Time:Intersect)
+//
+
+
+
+
+//     (M --> (&,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePP,Time:Intersect)
+//     (M --> (|,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePN,Time:Intersect)
+
+
+
+
+    //(S --> M), X, is(S,"&"), subPosOrNeg(S,X) |- (withoutPosOrNeg(S,X) --> M), (Belief:StructuralDeduction)
+        //(S --> M), X, is(S,"|"), subOfNeg(S,X) |- (without(S,--X) --> M), (Belief:StructuralDeduction)
+
+//    (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)
+//        (S --> (B - G)), G |- --(S --> G), (Belief:StructuralDeduction)
+//
+//    ((B ~ G) --> S), B |- (B --> S), (Belief:StructuralDeduction)
+//        ((B ~ G) --> S), G |- --(G --> S), (Belief:StructuralDeduction)
+
+    //raw
+    //S, X, is(S,"|"), subPosOrNeg(S,X) |- without(S,X), (Belief:StructuralDeduction)
+
+            //B, (B ~ G), task("@") |- G, (Punctuation:Quest)
+            //G, (B ~ G), task("@") |- B, (Punctuation:Quest)
+
+
+        //1D:
+        //(X --> C), (X --> C), is(X,"+") |- (dropAnySet(X) --> C), (Belief:StructuralDeduction)
+            //(Y --> M), (X --> M), is(Y,"+"), is(X,"+") |- (differ(Y,X) --> M), (Belief:StructuralDeduction)
+
+        //2D:
+        //((X,Y) --> C), ((X,Y) --> C), is(X,"+") |- ((dropAnySet(X),Y) --> C), (Belief:StructuralDeduction)
+        //((X,Y) --> C), ((X,Y) --> C), is(Y,"+") |- ((X,dropAnySet(Y)) --> C), (Belief:StructuralDeduction)
+
+
+
+//Difference Goal Decompose TODO review
+
+//        //DIFFi
+//        (S-->B), (S --> (B - G)) |- (S --> G), (Goal:DecomposeDiff)
+//        (S-->G), (S --> (B - G)) |- (S --> B), (Goal:DecomposeDiffX)
+//
+//        //DIFFe
+//        (B-->S), ((B ~ G) --> S) |- (G --> S), (Goal:DecomposeDiff)
+//        (G-->S), ((B ~ G) --> S) |- (B --> S), (Goal:DecomposeDiffX)
+
+//            //Raw DIFFe
+//            B, (B ~ G) |- G, (Goal:DecomposeDiff)
+//            G, (B ~ G) |- B, (Goal:DecomposeDiffX)
+
+
+//experimental
+
+
+        //if want X > Y ie. (X ~ Y), then to the extent that X == Y, decrease Y while increasing X
+        //S:(X ~ Y), S:(X ~ Y), task("!") |- (S:X && (--,S:Y)), (Goal:WeakPN)
+        //(X - Y):S, (X - Y):S, task("!") |- (X:S && (--,Y:S)), (Goal:WeakPN)
+        //(X ~ Y), (X ~ Y), task("!") |- (X && --Y), (Goal:WeakPN)
+
+        //if want X == Y ie. --(X ~ Y), then to the extent that X > Y, increase Y while decreasing X
+        //S:(X ~ Y), S:(X ~ Y), task("!") |- (S:Y && (--,S:X)), (Goal:WeakN)
+        //(X - Y):S, (X - Y):S, task("!") |- (Y:S && (--,X:S)), (Goal:WeakN)
+        //(X ~ Y), (X ~ Y), task("!") |- (Y && --X), (Goal:WeakN)
+
+//     (M --> (S - P)), (M --> S), task("!") |- (M --> P), (Goal:DecomposePositiveNegativeNegative)
+//     (M --> (S - P)), (M --> P), task("!") |- (M --> S), (Goal:DecomposeNegativeNegativeNegative)
+
+//raw product composition, may be redundant because general induction via && does the equivalent
+//  (already in induction.nal)
+ //    A, B, task("*"), belief("*") |- (A | B), (Belief:Intersection)
+ //   A, B, task("*"), belief("*") |- (A & B), (Belief:Union)
+//    A, B, task("*"), belief("*"), neq(A,B) |- (A - B), (Belief:Difference)
+//    A, B, task("*"), belief("*"), neq(A,B) |- (B - A), (Belief:DifferenceReverse)
+
+
+
+//     //DIFFi
+     //(M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposeDiffX)
+//       (M --> S), (M --> (|,S,--P,A..*)) |- (M --> P), (Belief:DecomposeDiffX,Time:Intersect)
+     //(M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeDiffX)
+//       (M --> P), (M --> (|,S,--P,A..*)) |- (M --> S), (Belief:DecomposeDiffX,Time:Intersect)
+////        (M --> S), (M --> (S - P)) |- --(M --> P), (Belief:DecomposePP)
+////        (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNP)
+////
+//     //DIFFe
+     //(S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposeDiffX)
+//       (S --> M), ((&,S,--P,A..*) --> M) |- (P --> M), (Belief:DecomposeDiffX,Time:Intersect)
+     //(P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeDiffX)
+//       (P --> M), ((&,S,--P,A..*) --> M) |- (S --> M), (Belief:DecomposeDiffX,Time:Intersect)
+////        (S --> M), ((S ~ P) --> M) |- --(P --> M), (Belief:DecomposePP)
+////        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNP)
+
+//

@@ -22,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 550;
+    private final static int cycles = 850;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.termVolumeMax.set(18);
-        test.nar.confMin.set(0.35f);
+        test.nar.confMin.set(0.3f);
     }
 
 

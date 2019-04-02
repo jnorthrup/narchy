@@ -160,12 +160,6 @@
 
 
 
-// Contraposition (structural)
-//    a→b == ¬b→¬a		# contra positition [Lex contrapositionis]
-// "If not smoking causes health, being not healthy may be the result of smoking"
-// "If smoking causes not health, being healthy may be the result of not smoking"
-
-    (--S ==> P), P |- (--P ==> --S), (Belief:Contraposition)
 
 
 

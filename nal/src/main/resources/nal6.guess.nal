@@ -1,19 +1,19 @@
-//NAL6---------------
+// Contraposition (structural)
+//    a→b == ¬b→¬a		# contra positition [Lex contrapositionis]
+// "If not smoking causes health, being not healthy may be the result of smoking"
+// "If smoking causes not health, being healthy may be the result of not smoking"
+
+    (--S ==> P), P |- (--P ==> --S), (Belief:Contraposition)
 
 
-//If S can stand for P, P can to a certain low degree also represent the class S
-//If after S usually P happens, then it might be a good guess that usually before P happens, S happens.
+// Conversion
+//  If S can stand for P, P can to a certain low degree also represent the class S
+//  If after S usually P happens, then it might be a good guess that usually before P happens, S happens.
 
-    (P ==> S),   (S ==> P),  task("?"), hasBelief() |-   (P ==> S),   (Belief:Conversion, Punctuation:Belief)
-    (P ==> S),   (S ==> P),  task("?"), hasBelief() |- (--P ==> S),   (Belief:ConversionPN, Punctuation:Belief)
-    (P ==> S), (--S ==> P),  task("?"), hasBelief() |-   (P ==> --S), (Belief:Conversion, Punctuation:Belief)
-    (P ==> S), (--S ==> P),  task("?"), hasBelief() |- (--P ==> --S), (Belief:ConversionPN, Punctuation:Belief)
-
-    (--P ==> S),   (S ==> P),  task("?"), hasBelief() |-   (P ==> --S), (Belief:Conversion, Punctuation:Belief)
-    (--P ==> S),   (S ==> P),  task("?"), hasBelief() |- (--P ==> --S), (Belief:ConversionPN, Punctuation:Belief)
-    (--P ==> S), (--S ==> P),  task("?"), hasBelief() |-   (P ==> S),   (Belief:Conversion, Punctuation:Belief)
-    (--P ==> S), (--S ==> P),  task("?"), hasBelief() |- (--P ==> S),   (Belief:ConversionPN, Punctuation:Belief)
-
+    (P ==> S),   (S ==> P),  task("?"), neq(S,P), hasBelief()   |-     (polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
+    (--P ==> S), (S ==> P),  task("?"), neq(S,P), hasBelief()   |-     (polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
+    (P ==> S),   (--S ==> P),  task("?"), neq(S,P), hasBelief() |-   --(polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
+    (--P ==> S), (--S ==> P),  task("?"), neq(S,P), hasBelief() |-   --(polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
 
 
 

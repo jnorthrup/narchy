@@ -154,10 +154,9 @@ public class NAL3Test extends NALTest {
     @Test
     void diff_compound_decomposition_single() {
 
-        TestNAR tester = test;
 
-        tester.believe("(robin --> (bird - swimmer))", 0.9f, 0.9f);
-        tester.mustBelieve(cycles, "<robin --> bird>", 0.90f, 0.73f);
+        test.believe("(robin --> (bird - swimmer))", 0.9f, 0.9f);
+        test.mustBelieve(cycles, "<robin --> bird>", 0.90f, 0.73f);
 
     }
 

@@ -99,6 +99,12 @@ public interface Truth extends Truthed {
         }
     }
 
+    /** returns the un-negated, positive only form */
+    default Truth pos() {
+        return isNegative() ? neg() : this;
+    }
+
+
 
     class TruthException extends RuntimeException {
         public TruthException(String reason, double value) {

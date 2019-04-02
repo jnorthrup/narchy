@@ -180,16 +180,6 @@ public class Statement {
                 }
             }
 
-        } else if (op == SIM) {
-            if (subject instanceof Bool || predicate instanceof Bool) {
-
-            }
-            if (subject.compareTo(predicate) > 0) {
-                //swap order
-                Term x = predicate;
-                predicate = subject;
-                subject = x;
-            }
         }
 
         if ((op != IMPL
@@ -221,7 +211,36 @@ public class Statement {
 //            }
         }
 
-        //return builder.compound(op, dt, subject, predicate);
+        boolean negate = false;
+        if (op == INH) {
+            //EXPERIMENTAL support for negated inheritance subterms
+            boolean sn = subject.op() == NEG;
+            boolean pn = predicate.op() == NEG;
+            if (!sn && !pn) {
+                //normal
+            } else if (sn && pn) {
+                return Null; // (--x --> --y) => (x --> y)??
+            } else if (sn) {
+                negate = true;
+                subject = subject.unneg();
+            } else /* pn */ {
+                negate = true;
+                predicate = predicate.unneg();
+            }
+        }
+
+        if (op == SIM) {
+//            if (subject instanceof Bool || predicate instanceof Bool) {
+//
+//            }
+            if (subject.compareTo(predicate) > 0) {
+                //swap order
+                Term x = predicate;
+                predicate = subject;
+                subject = x;
+            }
+        }
+
         Term t = B.theCompound(op, dt, subject, predicate);
 
         //if (Param.DEBUG) {
@@ -235,7 +254,7 @@ public class Statement {
         }
         //}
 
-        return t;
+        return t.negIf(negate);
     }
 
 }

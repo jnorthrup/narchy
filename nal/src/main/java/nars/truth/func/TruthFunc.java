@@ -147,12 +147,17 @@ public interface TruthFunc {
         }
 
         @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, NAR n, float minConf) {
-            return o.apply(T.negIf(T.isNegative()), B!=null ? B.negIf(B.isNegative()) : null, n, minConf);
+            return o.apply(unnegIfNotNull(T), unnegIfNotNull(B), n, minConf);
         }
 
         @Override public final String toString() {
             return o + "Depolarized";
         }
+    }
+
+
+    @Nullable static Truth unnegIfNotNull(@Nullable Truth x) {
+        return x != null ? x.pos() : null;
     }
 //    final class DepolarizedTaskTruth extends ProxyTruthOperator {
 //

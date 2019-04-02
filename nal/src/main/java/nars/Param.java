@@ -196,8 +196,10 @@ public abstract class Param {
      * used during Remember's merge repeat suppression filter */
     public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONcoarse;
 
-    /** novelty threshold: >=0; higher values decrease the rate at which repeated tasks can be reactivated */
-    public static final int REMEMBER_REPEAT_THRESH_DURS = 1;
+    /** memory reconsolidation period - time period for a memory to be refreshed as new
+     *  useful as a novelty threshold:
+     *          >=0, higher values decrease the rate at which repeated tasks can be reactivated */
+    public static int REMEMBER_REPEAT_THRESH_DURS = 1;
 
 
     /**
@@ -295,7 +297,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(16, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 6; //HACK this is a TTL supply, not a COST

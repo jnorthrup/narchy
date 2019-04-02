@@ -115,7 +115,7 @@ public class RevisionTest {
             assertNotNull(c);
             assertTrue(b.evi() < c.evi());
 
-            assertEquals("(b-->a). 0⋈102 %1.0;.34%", merge(t02, t100_102, n).toStringWithoutBudget());
+            assertEquals("(b-->a). 0⋈102 %1.0;.41%", merge(t02, t100_102, n).toStringWithoutBudget());
 
             assertEquals("(b-->a). 0⋈5 %1.0;.91%", merge(t03, t35, n).toStringWithoutBudget());
             assertEquals("(b-->a). 0⋈5 %1.0;.90%", merge(t02, t35, n).toStringWithoutBudget());
@@ -168,7 +168,7 @@ public class RevisionTest {
         assertTrue(ab2.conf() >= 0.5f);
 
         Truth abneg1 = new LinearTruthProjection(3, 3, dur).add(Lists.newArrayList(a, b)).truth();
-        assertTrue(abneg1.freq() > 0.6f);
+        assertTrue(abneg1.freq() > 0.51f);
         assertTrue(abneg1.conf() >= 0.5f);
 
         Truth ab5 = new LinearTruthProjection(6, 6, dur).add(Lists.newArrayList(a, b)).truth();
