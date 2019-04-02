@@ -106,30 +106,25 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     /**
      * TODO use the same heuristics as task strength
      */
-    private static FloatRank<TaskRegion> regionWeakness(long now, float futureFactor) {
+    private static FloatRank<TaskRegion> regionWeakness(long now, float futureFactor, float dur) {
 
 
         float pastDiscount = 1.0f - (futureFactor - 1.0f);
 
         return (TaskRegion r, float min) -> {
 
-//            double y;
-//            double timeDist =
-//                    Math.log(1 + r.maxTimeTo(now)); //ensure that the number is small enough for when it gets returned as float
-//            y = timeDist;
-//            if (y < min) return Float.NaN;
             float y =
-                    (float)Math.log(1+r.meanTimeTo(now));
-            //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
+                    //(float)Math.log(1+r.meanTimeTo(now));
+                    (1+r.maxTimeTo(now))/dur;
+
             if (y < min)
                 return Float.NaN;
 
             float conf =
-                    (((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
-                    //r.coordF(2, false);
+                    //(((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
+                    Math.max(Param.TRUTH_EPSILON, r.coordF(2, false));
 
             y = y * (1 - conf);
-            //-Param.evi(c2wSafe(conf),  timeDist, perceptDur);
             if (y < min)
                 return Float.NaN;
 
@@ -268,8 +263,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
                 atStart = nar.time();
-                taskStrength = taskStrength(beliefOrGoal, atStart, nar.dur(), Tense.occToDT(tableDur()));
-                leafRegionWeakness = regionWeakness(atStart, beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
+                int tableDur = Tense.occToDT(tableDur());
+                taskStrength = taskStrength(beliefOrGoal, atStart, nar.dur(), tableDur);
+                leafRegionWeakness = regionWeakness(atStart, beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL, tableDur);
             }
             if (!compress(treeRW,  /** only limit by inputRegion on first iter */
                     taskStrength, leafRegionWeakness,
