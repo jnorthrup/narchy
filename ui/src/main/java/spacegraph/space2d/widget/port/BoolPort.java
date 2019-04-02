@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.port;
 
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 
 public class BoolPort extends TypedPort<Boolean> {
 
@@ -8,10 +9,8 @@ public class BoolPort extends TypedPort<Boolean> {
         super(Boolean.class);
     }
 
-    public BoolPort(BooleanConsumer b) {
+    public BoolPort(BooleanProcedure b) {
         this();
-        on(B->{
-            b.accept(B.booleanValue());
-        });
+        on(B-> b.value(B.booleanValue()));
     }
 }

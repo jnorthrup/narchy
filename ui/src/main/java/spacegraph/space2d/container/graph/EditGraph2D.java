@@ -1,4 +1,4 @@
-package spacegraph.space2d.widget.windo;
+package spacegraph.space2d.container.graph;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
@@ -29,77 +29,72 @@ import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WeakSurface;
 import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.space2d.widget.port.Wire;
+import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.BitmapLabel;
+import spacegraph.space2d.widget.windo.DependentWindow;
+import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.space2d.widget.windo.util.Box2DGraphEditPhysics;
 import spacegraph.space2d.widget.windo.util.GraphEditPhysics;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
  * wall which organizes its sub-surfaces according to 2D phys dynamics
+ * TODO unify this with Graph2D
+ * TODO remove all synchronized(links) with appropriate reliance on its ConcurrentHashMap and any additional per-node/per-edge locking
  */
-public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, Container> {
+public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface, Container> {
 
+    /**
+     * default/ambient link graph
+     * TODO use weakref's
+     */
+    @Deprecated
+    public static final MapNodeGraph<Surface, Wire> staticLinks = new LinkGraph();
     public final GraphEditPhysics physics =
             //new VerletGraphEditPhysics();
             new Box2DGraphEditPhysics();
-
-    private final DoubleClicking doubleClicking;
-
-    public final v2 windoSizeMinRel = new v2(0.005f, 0.005f); //visible
-    private Off loop;
+    /**
+     * practically invisibile epsilon TODO is this absolute or relative
+     */
+    public final v2 windoSizeMinRel = new v2(0.002f, 0.002f);
+    /**
+     * TODO use more efficient graph representation
+     * TODO encapsulate so its private
+     */
+    public final MapNodeGraph<Surface, Wire> links = new LinkGraph();
 
 //    /** TODO abstract fence rules */
 //    private static final boolean fenceInside = true;
+    /**
+     * for links and other supporting geometry that is self-managed
+     * TODO encapsulate so its private
+     */
+    public final MutableListContainer raw = new MutableListContainer();
+    private final DoubleClicking doubleClicking;
+    private Off loop;
 
-    public GraphEdit() {
+    public EditGraph2D() {
         super();
         physics.surface = physics.start(this);
         doubleClicking = new DoubleClicking(0, this::doubleClick, this);
     }
 
-    public GraphEdit(float w, float h) {
+    public EditGraph2D(float w, float h) {
         this(RectFloat.X0Y0WH(0, 0, w, h));
     }
 
-    public GraphEdit(RectFloat bounds) {
+    public EditGraph2D(RectFloat bounds) {
         this();
         pos(bounds);
     }
 
-    //TODO use weakref's
-    @Deprecated public static final MapNodeGraph<Surface, Wire> staticLinks = new MapNodeGraph<>();
 
-    /**
-     * TODO use more efficient graph representation
-     * TODO encapsulate so its private
-     */
-    public final MapNodeGraph<Surface, Wire> links = new MapNodeGraph<>() {
-        @Override
-        protected void onRemoved(Node<Surface, Wire> r) {
-            r.edges(true, true).forEach(e -> e.id().remove());
-        }
-    };
-
-
-
-    /**
-     * for links and other supporting geometry that is self-managed
-     * TODO encapsulate so its private
-     */
-    public final MutableListContainer raw = new MutableListContainer(); /* {
-        @Override
-        protected boolean tangible() {
-            return true;
-        }
-    };*/
-
-
-
-    public static <X extends Surface> GraphEdit<X> window(int w, int h) {
-        GraphEdit<X> g = new GraphEdit<>();
+    public static <X extends Surface> EditGraph2D<X> window(int w, int h) {
+        EditGraph2D<X> g = new EditGraph2D<>();
         SpaceGraph.window(g, w, h);
         return g;
     }
@@ -111,7 +106,10 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 
         raw.start(this);
 
-        loop = root().animate(((float dt)->{ this.physics.update(GraphEdit.this,dt); return parent!=null; } ));
+        loop = root().animate(((float dt) -> {
+            this.physics.update(EditGraph2D.this, dt);
+            return parent != null;
+        }));
 
         layout();
     }
@@ -125,7 +123,9 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
     }
 
 
-    /** wraps window content for a new window */
+    /**
+     * wraps window content for a new window
+     */
     protected Scale windowContent(Surface xx) {
         return new Scale(new MetaFrame(xx), 0.98f);
     }
@@ -147,9 +147,8 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
                 super.delete();
 
                 DependentWindow w = parent(DependentWindow.class);
-                if (w!=null) {
+                if (w != null)
                     w.remove();
-                }
             }
         }));
     }
@@ -168,8 +167,8 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
         raw.pos(graphBounds);
 
         forEach(w -> {
-            if (w.parent==null)
-                w.start(GraphEdit.this);
+            if (w.parent == null)
+                w.start(EditGraph2D.this);
 
 //            if (fenceInside)
 //                w.pos(w.bounds.fenceInside(graphBounds));
@@ -183,7 +182,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
     @Override
     public Container remove(Object key) {
         Container w = super.remove(key);
-        if (w!=null) {
+        if (w != null) {
             w.stop();
             physics.remove(w);
             return w;
@@ -192,12 +191,13 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
     }
 
 
-
-    /** uses put() semantics */
+    /**
+     * uses put() semantics
+     */
     public final Windo add(Surface x, Function<Surface, Container> windowize) {
         Windo w = (Windo) computeIfAbsent(x, (xx) -> {
             Container ww = windowize.apply(xx);
-            if (ww!=null && parent!=null) {
+            if (ww != null && parent != null) {
                 ww.start(this);
             }
             physics.add(ww);
@@ -244,45 +244,32 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 //
 //    }
 
-    /** sub-window minimum size, relative to the workspace */
+    /**
+     * sub-window minimum size, relative to the workspace
+     */
     public void windoSizeMinRel(float w, float h) {
-        windoSizeMinRel.set(w,h);
+        windoSizeMinRel.set(w, h);
     }
 
-    public <X,Z extends S> Windo build(X value, AutoBuilder<X, Z> builder) {
+    public <X, Z extends S> Windo build(X value, AutoBuilder<X, Z> builder) {
         Z z = builder.build(value);
         return add(z);
     }
 
-
-    class Debugger extends Gridding {
-
-        private final BitmapLabel boundsInfo, children;
-
-        {
-            add(boundsInfo = new BitmapLabel());
-            add(children = new BitmapLabel());
-
-        }
-
-        void update() {
-            boundsInfo.text(GraphEdit.this.bounds.toString());
-
-            children.text(Joiner.on("\n").join(Iterables.transform(
-                    GraphEdit.this.keySet(), t -> info(t, GraphEdit.this.get(t)))));
-        }
-
-        protected String info(Surface x, Container w) {
-            return x + "\n  " + (w != null ? w.bounds : "?");
-        }
-
-    }
-
-
-
     public Animating<Debugger> debugger() {
         Debugger d = new Debugger();
         return new Animating<>(d, d::update, 0.25f);
+    }
+
+    public final void addRaw(Surface s) {
+        raw.add(s);
+    }
+
+    @Override
+    public void forEach(Consumer<Surface> each) {
+        each.accept(physics.surface);
+        each.accept(raw);
+        super.forEach(each);
     }
 
 
@@ -291,8 +278,9 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 //        return true;
 //    }
 
-    public final void addRaw(Surface s) {
-        raw.add(s);
+    public Iterable<FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire>> edges(Surface s) {
+        Node<spacegraph.space2d.Surface, Wire> n = links.node(s);
+        return n != null ? n.edges(true, true) : List.of();
     }
 
 
@@ -305,19 +293,6 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 //    public boolean whileEachReverse(Predicate<Surface> o) {
 //        return super.whileEachReverse(o);
 //    }
-
-
-    @Override
-    public void forEach(Consumer<Surface> each) {
-        each.accept(physics.surface);
-        each.accept(raw);
-        super.forEach(each);
-    }
-
-    public Iterable<FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire>> edges(Surface s) {
-        Node<spacegraph.space2d.Surface, Wire> n = links.node(s);
-        return n != null ? n.edges(true, true) : List.of();
-    }
 
     @Override
     public final Surface finger(Finger finger) {
@@ -351,9 +326,53 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 //
 //                    }
                 //}
-                );
-        z.pos(RectFloat.XYWH(pos.x, pos.y, 0.1f*w(), 0.1f*h()));
+        );
+        z.pos(RectFloat.XYWH(pos.x, pos.y, 0.1f * w(), 0.1f * h()));
         z.root().zoomNext(z);
+    }
+
+    /**
+     * undirected link
+     */
+    @Nullable
+    public Wire addWire(final Wire wire) {
+
+        Surface aa = wire.a, bb = wire.b;
+
+        synchronized (links) {
+            if (!links.addEdgeByNode(links.addNode(aa), wire, links.addNode(bb)))
+                return null; //already exists
+        }
+
+        wire.connected();
+
+        physics.invokeLater(() -> physics.link(wire));
+
+        return wire;
+    }
+
+    //protected Wire removeWire(Surface source, Surface target) {
+    boolean removeWire(Wire wire) {
+        boolean removed = false;
+        synchronized (links) {
+            //Wire wire = new Wire(source, target);
+            Node<spacegraph.space2d.Surface, Wire> an = links.node(wire.a);
+            if (an != null) {
+                Node<spacegraph.space2d.Surface, Wire> bn = links.node(wire.b);
+                if (bn != null) {
+                    removed = links.edgeRemove(new ImmutableDirectedEdge<>(
+                            an, wire, bn)
+                    );
+                }
+            }
+        }
+
+        if (removed) {
+            wire.remove();
+            //TODO log( unwire(..) )
+            return true;
+        }
+        return false;
     }
 
 //    public void removeRaw(Surface x) {
@@ -377,52 +396,18 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
 //        return to;
 //    }
 
+    private static class LinkGraph extends MapNodeGraph<Surface, Wire> {
 
-    /**
-     * undirected link
-     */
-    @Nullable
-    public Wire addWire(final Wire wire) {
-
-        Surface aa = wire.a, bb = wire.b;
-
-        synchronized (links) {
-            if (!links.addEdgeByNode(links.addNode(aa), wire, links.addNode(bb)))
-                return null; //already exists
+        public LinkGraph() {
+            super(new ConcurrentHashMap<>());
         }
 
-        wire.connected();
+        @Override
+        protected void onRemoved(Node<Surface, Wire> r) {
+            r.edges(true, true).forEach(e -> e.id().remove());
+        }
 
-        physics.invokeLater(() -> physics.link(wire));
-
-        return wire;
     }
-
-
-    //protected Wire removeWire(Surface source, Surface target) {
-    protected boolean removeWire(Wire wire) {
-        boolean removed = false;
-        synchronized (links) {
-            //Wire wire = new Wire(source, target);
-            Node<spacegraph.space2d.Surface, Wire> an = links.node(wire.a);
-            if (an != null) {
-                Node<spacegraph.space2d.Surface, Wire> bn = links.node(wire.b);
-                if (bn != null) {
-                    removed = links.edgeRemove(new ImmutableDirectedEdge<>(
-                            an, wire, bn)
-                    );
-                }
-            }
-        }
-
-        if (removed) {
-            wire.remove();
-            //TODO log( unwire(..) )
-            return true;
-        }
-        return false;
-    }
-
 
     public static class VisibleLink extends Link {
 
@@ -462,9 +447,9 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
             @Override
             public final boolean visible() {
                 if (a().parent == null || b().parent == null) {
-                    GraphEdit graphParent = parent(GraphEdit.class);
-                    if (graphParent!=null) {
-                        GraphEdit.VisibleLink.this.remove(graphParent);
+                    EditGraph2D graphParent = parent(EditGraph2D.class);
+                    if (graphParent != null) {
+                        EditGraph2D.VisibleLink.this.remove(graphParent);
                         remove();
                     }
                     return false;
@@ -474,38 +459,30 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, C
             }
         }
     }
+
+    class Debugger extends Gridding {
+
+        private final AbstractLabel boundsInfo, children;
+
+        {
+            add(boundsInfo = new BitmapLabel());
+            add(children = new BitmapLabel());
+
+        }
+
+        void update() {
+            boundsInfo.text(EditGraph2D.this.bounds.toString());
+
+            children.text(Joiner.on("\n").join(Iterables.transform(
+                    EditGraph2D.this.keySet(), t -> info(t, EditGraph2D.this.get(t)))));
+        }
+
+        protected String info(Surface x, Container w) {
+            return x + "\n  " + (w != null ? w.bounds : "?");
+        }
+
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //    @Override

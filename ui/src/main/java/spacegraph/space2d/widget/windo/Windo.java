@@ -8,6 +8,7 @@ import spacegraph.input.finger.*;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.windo.util.DragEdit;
@@ -261,12 +262,12 @@ public class Windo extends MutableUnitContainer {
     }
 
     public Windo sizeRel(float pctX, float pctY) {
-        GraphEdit p = parent(GraphEdit.class);
+        EditGraph2D p = parent(EditGraph2D.class);
         return p!=null ? (Windo) size(p.w() * pctX, p.h() * pctY) : null;
     }
 
     public Windo posRel(float cx, float cy, float pctX, float pctY) {
-        GraphEdit p = parent(GraphEdit.class);
+        EditGraph2D p = parent(EditGraph2D.class);
         return p!=null ? posRel(p, cx, cy, pctX, pctY) : null;
     }
 

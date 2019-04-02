@@ -4,6 +4,7 @@ import jcog.data.list.FasterList;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 
 import java.util.List;
 import java.util.function.Consumer;

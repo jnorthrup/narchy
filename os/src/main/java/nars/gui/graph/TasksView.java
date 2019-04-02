@@ -7,7 +7,7 @@ import nars.Task;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.PushButton;
@@ -19,7 +19,7 @@ import static nars.Op.*;
 
 public class TasksView implements Timeline2D.TimelineEvents<Task> {
 
-    private static final Consumer<Graph2D.NodeVis<Task>> TaskRenderer = (n) -> {
+    private static final Consumer<NodeVis<Task>> TaskRenderer = (n) -> {
         n.set(new Scale(new TaskIcon(n.id), 0.9f));
     };
 

@@ -1,7 +1,5 @@
 package jcog.exe;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * potentially executable procedure of some value N >=1 iterations per invocation.
  * represents a functional skill or ability the system is able to perform, particularly
@@ -11,14 +9,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Can  {
 
-    private final static AtomicInteger serial = new AtomicInteger();
 
 
     public final String id;
 
-    public Can() {
-        this(String.valueOf(serial.incrementAndGet()));
-    }
 
     public Can(String id) {
         super();

@@ -14,7 +14,7 @@ abstract public class EmptyContainer extends Container {
     }
 
     @Override
-    public void forEach(Consumer<Surface> o) {
+    public final void forEach(Consumer<Surface> o) {
 
     }
 
@@ -22,13 +22,14 @@ abstract public class EmptyContainer extends Container {
     public Surface finger(Finger finger) {
         return null;
     }
+
     @Override
-    public boolean whileEach(Predicate<Surface> o) {
+    public final boolean whileEach(Predicate<Surface> o) {
         return true;
     }
 
     @Override
-    public boolean whileEachReverse(Predicate<Surface> o) {
+    public final boolean whileEachReverse(Predicate<Surface> o) {
         return true;
     }
 }

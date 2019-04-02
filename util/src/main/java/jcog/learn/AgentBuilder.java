@@ -1,11 +1,10 @@
-package nars.control;
+package jcog.learn;
 
+import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
-import jcog.learn.Agent;
 import jcog.math.FloatSupplier;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ScalarTensor;
-import nars.$;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 
@@ -14,9 +13,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
+/** TODO test */
 public class AgentBuilder {
-    final List<Tensor> sensors = $.newArrayList();
-    final List<IntObjectPair<? extends IntConsumer>> actions = $.newArrayList();
+    final List<Tensor> sensors = new FasterList();
+    final List<IntObjectPair<? extends IntConsumer>> actions = new FasterList();
     final FloatSupplier reward;
     private final IntIntToObjectFunction<Agent> a;
     float durations = 1f;

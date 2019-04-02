@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.meter;
 
 import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.layout.TreeMap2D;
 
 import java.util.function.Consumer;

@@ -61,7 +61,7 @@ public class BitmapLabel extends AbstractLabel {
     protected void doLayout(float dtS) {
         int c = view.cols, r = view.rows;
         if (c > 0 && r > 0) {
-            textBounds = AspectAlign.innerBounds(bounds, (r * charAspect) / c);
+            textBounds = AspectAlign.innerBounds(bounds, (r * characterAspectRatio) / c);
         } else
             textBounds = bounds; //nothing
     }
@@ -81,19 +81,19 @@ public class BitmapLabel extends AbstractLabel {
 
 
         if (view.cols > 0 && view.rows > 0) {
-            textBounds = AspectAlign.innerBounds(bounds, (view.rows * charAspect) / view.cols);
+            textBounds = AspectAlign.innerBounds(bounds, (view.rows * characterAspectRatio) / view.cols);
         } else
             textBounds = bounds; //nothing
     }
 
 
 
-    public BitmapLabel textColor(float rr, float gg, float bb) {
+    public AbstractLabel textColor(float rr, float gg, float bb) {
         fgColor.set((rr), (gg), (bb), 1f);
         return this;
     }
 
-    public BitmapLabel backgroundColor(float rr, float gg, float bb) {
+    public AbstractLabel backgroundColor(float rr, float gg, float bb) {
         bgColor.set((rr), (gg), (bb), 1f);
         return this;
     }

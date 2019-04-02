@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.data.map.CellMap;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.MutableRectFloat;

@@ -8,9 +8,9 @@ import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.shape.VerletSurface;
-import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.util.animate.Animated;
 import toxi.geom.QuadtreeIndex;
 import toxi.geom.Vec2D;
@@ -181,7 +181,7 @@ class VerletSurfaceTest {
 
     }
 
-    public static class VerletLinkTest extends GraphEdit {
+    public static class VerletLinkTest extends EditGraph2D {
 
 //        @Override
 //        protected void starting() {

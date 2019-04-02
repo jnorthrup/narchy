@@ -6,6 +6,7 @@ import nars.attention.Attention;
 import nars.attention.PriNode;
 import nars.gui.DurSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.graph.EdgeVis;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.layout.ForceDirected2D;
@@ -37,7 +38,7 @@ public class AttentionUI {
         Graph2D<PriNode> aaa = new Graph2D<PriNode>()
                 .render((Graph2D.Graph2DRenderer<PriNode>) (node, graph) -> {
                     attn.graph.node(node.id).nodes(false,true).forEach(c -> {
-                        Graph2D.EdgeVis<PriNode> e = graph.edge(node, c.id());
+                        EdgeVis<PriNode> e = graph.edge(node, c.id());
                         if (e!=null) {
                             e.weight(1f);
                             e.color(0.5f, 0.5f, 0.5f);

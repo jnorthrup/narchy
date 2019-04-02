@@ -4,8 +4,8 @@ import jcog.exe.Exe;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.widget.port.Wire;
-import spacegraph.space2d.widget.windo.GraphEdit;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -25,7 +25,7 @@ public class HubMenuChip extends Bordering {
     protected void starting() {
         super.starting();
 
-        GraphEdit g = parent(GraphEdit.class); //TODO generic Spawnable interface
+        EditGraph2D g = parent(EditGraph2D.class); //TODO generic Spawnable interface
         menu.forEach((name, i)->{
             ExpandingChip ii = new ExpandingChip(name, i);
             Container iii = g.add(ii).posRel(bounds, 1, 1, 0.1f, 0.1f); //TODO radial layout

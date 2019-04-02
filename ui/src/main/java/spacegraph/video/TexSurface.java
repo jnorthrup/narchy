@@ -27,11 +27,7 @@ public class TexSurface extends Surface {
 
     @Override
     protected void stopping() {
-        Ortho r = (Ortho) root();
-        if (r!=null && r.space!=null) {
-            tex.stop(r.space.gl());
-        }
-
+        tex.stop(this);
     }
 
     public TexSurface set(BufferedImage img) {

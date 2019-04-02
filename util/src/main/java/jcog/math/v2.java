@@ -893,4 +893,9 @@ public class v2 implements java.io.Serializable, Cloneable {
         return true;
 
     }
+
+    public final v2 setNaN() {
+        set(Float.NaN, Float.NaN);
+        return this;
+    }
 }

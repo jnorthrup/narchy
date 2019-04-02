@@ -14,6 +14,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
@@ -30,8 +31,7 @@ import spacegraph.space2d.widget.meta.WeakSurface;
 import spacegraph.space2d.widget.port.CopyPort;
 import spacegraph.space2d.widget.port.Port;
 import spacegraph.space2d.widget.port.Wire;
-import spacegraph.space2d.widget.windo.GraphEdit;
-import spacegraph.space2d.widget.windo.Link;
+import spacegraph.space2d.container.graph.Link;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.Draw;
 
@@ -171,7 +171,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     }
 
     @Override
-    public Surface starting(GraphEdit g) {
+    public Surface starting(EditGraph2D g) {
         return new Dyn2DRenderer(true, true, true);
         //new EmptySurface();
     }
@@ -180,7 +180,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     float wMin, hMin;
 
     @Override
-    public void update(GraphEdit g, float dt) {
+    public void update(EditGraph2D g, float dt) {
         wMin = g.windoSizeMinRel.x * g.w();
         hMin = g.windoSizeMinRel.y * g.h();
         fence = g.bounds;
@@ -207,13 +207,10 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     }
 
     private RectFloat preBoundsSize(RectFloat r) {
-        float rw = r.w; if (rw != rw) rw = 0;
-        float rh = r.h; if (rh != rh) rh = 0;
+        float rw = r.w; if (!Float.isFinite(rw)) rw = 0;
+        float rh = r.h; if (!Float.isFinite(rh)) rh = 0;
         float nw = Util.clamp(rw, wMin, fence.w), nh = Util.clamp(rh, hMin, fence.h);
-        if (!Util.equals(r.w, nw, SHAPE_SIZE_EPSILON) || !Util.equals(r.h, nh, SHAPE_SIZE_EPSILON))
-            return r.size(nw, nh);
-        else
-            return r;
+        return r.size(nw, nh);
     }
 
     @Override
@@ -240,7 +237,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         return w.get(x);
     }
 
-    abstract class Box2DLink extends GraphEdit.VisibleLink {
+    abstract class Box2DLink extends EditGraph2D.VisibleLink {
 
         public Box2DLink(Wire wire) {
             super(wire);

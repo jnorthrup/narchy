@@ -34,13 +34,13 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     private BufferedImage backbuffer = null;
     private Font font;
     private Graphics2D backbufferGraphics;
-    private final Color cursorColor = new Color(255, 200, 0, 127);
+    @Deprecated private final Color cursorColor = new Color(255, 200, 0, 127);
 
     private final boolean antialias = true;
-    private final boolean quality = false;
+    private final boolean quality = true;
 
     /** pixel scale of each rendered character bitmap */
-    static final int DEFAULT_FONT_SCALE = 16;
+    static final int DEFAULT_FONT_SCALE = 32;
 
     protected int cursorCol, cursorRow;
     protected int fontWidth, fontHeight;
@@ -85,9 +85,6 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         if (this.backbuffer != null && this.backbuffer.getWidth() == this.pixelWidth() && this.backbuffer.getHeight() == this.pixelHeight())
             return true;
 
-
-        
-
         BufferedImage newBackbuffer = new BufferedImage(pixelWidth(), pixelHeight(), BufferedImage.TYPE_INT_ARGB);
 
         newBackbuffer.setAccelerationPriority(1f);
@@ -96,16 +93,28 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
         if (antialias) {
             backbufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+            );
             backbufferGraphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+                    //RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_DEFAULT
+                    //RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED
+            );
         } else {
+            backbufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_OFF
+            );
             backbufferGraphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                    RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED
+            );
         }
 
         backbufferGraphics.setRenderingHint(RenderingHints.KEY_RENDERING,
-                quality ? RenderingHints.VALUE_RENDER_QUALITY : RenderingHints.VALUE_RENDER_SPEED);
+                quality ? RenderingHints.VALUE_RENDER_QUALITY
+                        :
+                        //RenderingHints.VALUE_RENDER_SPEED
+                        RenderingHints.VALUE_RENDER_DEFAULT
+        );
 
 //        AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f);
 //        backbufferGraphics.setComposite(composite);

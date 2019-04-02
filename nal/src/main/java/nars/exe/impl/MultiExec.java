@@ -118,7 +118,7 @@ abstract public class MultiExec extends UniExec {
             float v = 0;
             Traffic[] cg = ci.credit;
             for (int j = 0; j < want.length; j++) {
-                v += want[j] * cg[j].last;
+                v += want[j] * cg[j].current;
             }
 
             ccc[i].setValue(v);

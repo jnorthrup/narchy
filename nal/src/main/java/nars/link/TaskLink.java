@@ -97,7 +97,8 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
         Concept c =
                 //n.concept(t);
-                beliefOrGoal ? n.conceptualizeDynamic(x) : n.concept(x);
+                n.conceptualizeDynamic(x);
+                //beliefOrGoal ? n.conceptualizeDynamic(x) : n.concept(x);
 
         if (c == null)
             delete();

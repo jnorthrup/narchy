@@ -522,7 +522,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         acquireWriteLock();
         try {
             SearchResult searchResult = searchTree(key);
-            return removeHavingAcquiredWriteLock(searchResult, false);
+            return removeWithWriteLock(searchResult, false);
         } finally {
             releaseWriteLock();
         }
@@ -531,7 +531,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     public boolean remove(SearchResult searchResult, boolean recurse) {
         acquireWriteLock();
         try {
-            return removeHavingAcquiredWriteLock(searchResult, recurse);
+            return removeWithWriteLock(searchResult, recurse);
         } finally {
             releaseWriteLock();
         }
@@ -545,7 +545,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         return true;
     }
 
-    public boolean removeHavingAcquiredWriteLock(SearchResult searchResult, boolean recurse) {
+    public boolean removeWithWriteLock(SearchResult searchResult, boolean recurse) {
         SearchResult.Classification classification = searchResult.classification;
         switch (classification) {
             case EXACT_MATCH:
@@ -877,7 +877,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
      * estimated size
      */
     public int sizeEst() {
-        return estSize.get();
+        return estSize.getOpaque();
     }
 
     @Override

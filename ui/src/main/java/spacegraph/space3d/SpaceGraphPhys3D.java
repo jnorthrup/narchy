@@ -31,9 +31,7 @@ import com.jogamp.opengl.glu.GLUquadric;
 import com.jogamp.opengl.util.texture.Texture;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.Bitmap2D;
-import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.util.FPSLook;
-import spacegraph.input.finger.util.OrbSpaceMouse;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.collision.DefaultCollisionConfiguration;
 import spacegraph.space3d.phys.collision.DefaultIntersecter;
@@ -129,9 +127,9 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
 
 
         display.addMouseListenerPost(new FPSLook(this));
-        display.addMouseListenerPost(new OrbSpaceMouse(this, new Finger(3) {
-            /* TODO */
-        }));
+//        display.addMouseListenerPost(new OrbSpaceMouse(this, new Finger(3) {
+//            /* TODO */
+//        }));
 
         super.initInput();
     }

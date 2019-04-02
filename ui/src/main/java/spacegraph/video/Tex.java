@@ -8,10 +8,12 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
+import jcog.TODO;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.AspectAlign;
+import spacegraph.space2d.hud.Ortho;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -29,23 +31,21 @@ import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
  */
 public class Tex {
 
-    public com.jogamp.opengl.util.texture.Texture texture;
-
-
-    private boolean mipmap = false;
-
-
     private final AtomicBoolean updated = new AtomicBoolean(false);
+    public com.jogamp.opengl.util.texture.Texture texture;
     public GLProfile profile;
-    private TextureData data;
-
     /**
      * weird rotation correction.. dunno why yet
      */
     boolean inverted = false;
-
+    private boolean mipmap = false;
+    private TextureData data;
     private Object src;
 //    @Deprecated private GL2 gl;
+
+    public static TexSurface view(BufferedImage b) {
+        return new MyTexSurface(b);
+    }
 
     public Tex mipmap(boolean mipmap) {
         this.mipmap = mipmap;
@@ -71,39 +71,25 @@ public class Tex {
 
     }
 
-    /** try to commit */
+    /**
+     * try to commit
+     */
     public Tex commit(GL2 gl) {
+        if (profile == null)
+            profile = gl.getGLProfile();
 
         if (data != null) {
-
             if (texture == null) {
                 texture = TextureIO.newTexture(gl, data);
             }
+        }
+        if (texture!=null && data!=null) {
             if (updated.compareAndSet(true, false)) {
-                    texture.updateImage(gl, data);
-
+                texture.updateImage(gl, data);
             }
-        } else {
-            //first step:
-            if (profile == null)
-                profile = gl.getGLProfile();
         }
 
         return this;
-    }
-
-    public static TexSurface view(BufferedImage b) {
-
-
-        return new TexSurface() {
-            @Override
-            protected void paint(GL2 gl, ReSurface reSurface) {
-                Tex t = this.tex;
-                if (t !=null && t.data == null)
-                    t.set(b);
-                super.paint(gl, reSurface);
-            }
-        };
     }
 
     public boolean set(BufferedImage iimage) {
@@ -117,7 +103,8 @@ public class Tex {
                 set(((DataBufferInt) b).getData(), W, H, iimage.getColorModel().hasAlpha());
             else if (b instanceof DataBufferByte) {
                 set(((DataBufferByte) b).getData(), W, H);
-            }
+            } else
+                throw new TODO();
         }
 
         updated.set(true);
@@ -125,20 +112,22 @@ public class Tex {
     }
 
     private void set(byte[] iimage, int width, int height) {
+        if (this.src != iimage) {
 
-        this.src = iimage;
+            this.src = iimage;
 
-        ByteBuffer buffer = ByteBuffer.wrap(iimage);
-        data = new TextureData(profile, GL_RGB,
-                width, height,
-                0 /* border */,
-                GL_RGB,
-                GL_UNSIGNED_BYTE,
-                mipmap,
-                false,
-                false,
-                buffer, null
-        );
+            ByteBuffer buffer = ByteBuffer.wrap(iimage);
+            data = new TextureData(profile, GL_RGB,
+                    width, height,
+                    0 /* border */,
+                    GL_RGB,
+                    GL_UNSIGNED_BYTE,
+                    mipmap,
+                    false,
+                    false,
+                    buffer, null
+            );
+        }
     }
 
     void set(int[] iimage, int width, int height) {
@@ -147,19 +136,21 @@ public class Tex {
 
     void set(int[] iimage, int width, int height, boolean alpha) {
 
-        this.src = iimage;
-        //TODO if iimage is the same instance
+        if (this.src != iimage) {
+            this.src = iimage;
+            //TODO if iimage is the same instance
 
-        IntBuffer buffer = IntBuffer.wrap(iimage);
-        data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
-                width, height,
-                0 /* border */,
-                GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
-                mipmap,
-                false,
-                false,
-                buffer, null
-        );
+            IntBuffer buffer = IntBuffer.wrap(iimage);
+            data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
+                    width, height,
+                    0 /* border */,
+                    GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
+                    mipmap,
+                    false,
+                    false,
+                    buffer, null
+            );
+        }
     }
 
     public TexSurface view() {
@@ -192,14 +183,37 @@ public class Tex {
     }
 
     public final boolean ready() {
-        return texture!=null;
+        return texture != null;
     }
 
-    public void stop(GL2 gl) {
-        if (texture!=null) {
-            texture.destroy(gl);
-            texture = null;
+    public void stop(Surface x) {
+        Ortho r = (Ortho) x.root();
+        if (r != null) {
+            JoglSpace s = r.space;
+            if (s != null) {
+                if (texture != null) {
+                    this.texture.destroy(s.gl());
+                    this.texture = null;
+                }
+            }
         }
     }
 
+
+    @Deprecated
+    private static class MyTexSurface extends TexSurface {
+        private final BufferedImage b;
+
+        public MyTexSurface(BufferedImage b) {
+            this.b = b;
+        }
+
+        @Override
+        protected void paint(GL2 gl, ReSurface reSurface) {
+            Tex t = this.tex;
+            if (t != null && t.data == null)
+                t.set(b);
+            super.paint(gl, reSurface);
+        }
+    }
 }

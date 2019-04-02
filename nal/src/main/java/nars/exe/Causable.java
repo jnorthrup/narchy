@@ -24,8 +24,6 @@ abstract public class Causable extends NARService {
 
 //    private static final Logger logger = LoggerFactory.getLogger(Causable.class);
 
-    public final Can can;
-
     public final AtomicBoolean busy;
 
     private volatile long sleepUntil = TIMELESS;
@@ -47,7 +45,6 @@ abstract public class Causable extends NARService {
 
     private Causable(NAR nar, Term id) {
         super(id);
-        can = new Can(term().toString());
         this.nar = nar;
         this.busy = //new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
             singleton() ? new AtomicBoolean(false) : null;
@@ -57,7 +54,7 @@ abstract public class Causable extends NARService {
 
     @Override
     public String toString() {
-        return can.toString();
+        return new Can(term().toString()).toString();
     }
 
     /**

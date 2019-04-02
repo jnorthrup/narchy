@@ -7,7 +7,7 @@ import jcog.pri.bag.Bag;
 import nars.NAR;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.menu.TabMenu;
@@ -37,7 +37,7 @@ public class BagView<X extends Prioritized> extends TabMenu {
                 },
                 "histo", () -> bagHistogram(bag::iterator, 20, nar),
                 "treechart", () -> {
-                    BagChart<X> b = new BagChart<>(bag, (Graph2D.NodeVis<X> n) -> {
+                    BagChart<X> b = new BagChart<>(bag, (NodeVis<X> n) -> {
                         Prioritized p = n.id;
                         float pri = n.pri = Math.max(p.priElseZero(), 1f / (2 * bag.capacity()));
                         n.color(pri, 0.25f, 0.25f);

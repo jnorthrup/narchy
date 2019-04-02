@@ -1,6 +1,7 @@
 package com.jujutsu.tsne;
 
 import com.jujutsu.tsne.barneshut.TSneConfiguration;
+import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 
 import static com.jujutsu.tsne.matrix.MatrixOps.*;
@@ -18,18 +19,28 @@ import static com.jujutsu.tsne.matrix.MatrixOps.*;
  * optimization parameters: number of iterations T, learning rate η, momentum α(
  */
 public class SimpleTSne implements TSne {
+
+    /**
+     * The perplexity can be interpreted as a smooth measure of the effective number of neighbors. The
+     * performance of SNE is fairly robust to changes in the perplexity, and typical values are between 5
+     * and 50.
+     */
+    public final FloatRange perplexity = new FloatRange(10, 0.5f, 50f);
+
+    public final FloatRange momentum = new FloatRange(0.5f, 0f, 1f);
+
     private double[][] P;
-    protected double[][] X, Y;
+    protected double[][] X;
+    public double[][] Y;
     private double[][] dY;
     private double[][] iY;
     protected double[][] gains;
 
-    private final double momentum = .85;
 
     private final double eta =
             //0.1f;
-            //0.5;
-            1f;
+            0.5;
+            //1f;
 
     private final double min_gain =
             //Double.MIN_NORMAL;
@@ -39,7 +50,7 @@ public class SimpleTSne implements TSne {
 
     private double[][] numMatrix;
 
-    private final boolean pca = true;
+    private final boolean pca = false;
 
     @Override
     public double[][] reset(double[][] X, TSneConfiguration config) {
@@ -52,7 +63,7 @@ public class SimpleTSne implements TSne {
 
         this.X = X;
         int no_dims = config.getOutputDims();
-        double perplexity = config.getPerplexity();
+        double perplexity = this.perplexity.getAsDouble();
 
 //        String IMPLEMENTATION_NAME = this.getClass().getSimpleName();
 //        System.out.println("X:Shape is = " + X.length + " x " + X[0].length);
@@ -111,10 +122,11 @@ public class SimpleTSne implements TSne {
                 scalarMultiply(scalarMult(gains, .8), abs(equal(biggerThan(dY, 0.0), biggerThan(iY, 0.0)))));
 
         assignAllLessThan(gains, min_gain, min_gain);
-        iY = minus(scalarMult(iY, momentum), scalarMult(scalarMultiply(gains, dY), eta*n));
+        iY = minus(iY, scalarMult(scalarMultiply(gains, dY), eta*n));
+        iY = scalarMult(iY,  (1-momentum.getAsDouble()));
         Y = plus(Y, iY);
 
-        Y = minus(Y, tile(mean(Y, 0), n, 1));
+        //Y = minus(Y, tile(mean(Y, 0), n, 1));
 
 
         if (logger.isDebugEnabled()) {

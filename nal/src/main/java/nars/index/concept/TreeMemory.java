@@ -23,8 +23,9 @@ import java.util.stream.Stream;
  */
 public class TreeMemory extends Memory implements Consumer<NAR> {
 
-    private final float maxFractionThatCanBeRemovedAtATime = 0.05f;
-    private final float descentRate = 0.5f;
+    private final float maxIterationRemovalPct = 0.05f;
+    private final float descentRate = 0.75f;
+    float overflowSafetyPct = 0.1f;
 
 
     public final ConcurrentRadixTree<Concept> concepts;
@@ -38,6 +39,11 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
     public TreeMemory(int sizeLimit) {
 
         this.concepts = new ConcurrentRadixTree<>() {
+
+            @Override
+            public final Concept put(Concept value) {
+                return super.put(key(value.term()), value);
+            }
 
             @Override
             public boolean onRemove(Concept r) {
@@ -80,13 +86,19 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
         if (overflow < 0)
             return;
 
+        int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxIterationRemovalPct);
+//        if (overflow < maxConceptsThatCanBeRemovedAtATime)
+//            return;
 
-        int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxFractionThatCanBeRemovedAtATime);
+        if ((((float)overflow)/sizeLimit) > overflowSafetyPct) {
+            //major collection, strong
+            concepts.acquireWriteLock();
+        } else {
+            //minor collection, weak
+            if (!concepts.tryAcquireWriteLock())
+                return;
+        }
 
-        if (overflow < maxConceptsThatCanBeRemovedAtATime)
-            return;
-
-        concepts.acquireWriteLock();
         try {
             MyRadixTree.SearchResult s = null;
 
@@ -105,10 +117,7 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
                     int subTreeSize = concepts.sizeIfLessThan(f, maxConceptsThatCanBeRemovedAtATime);
 
                     if (subTreeSize > 0) {
-
-                        concepts.removeHavingAcquiredWriteLock(s, true);
-
-
+                        concepts.removeWithWriteLock(s, true);
                     }
 
                     s = null;

@@ -7,6 +7,7 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeGraphRenderer;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 
 /** debugging/meta-view */
@@ -29,7 +30,7 @@ public class Inspector extends Bordering {
 
                 .update(new ForceDirected2D())
 
-                .render(new Graph2D.NodeGraphRenderer() {
+                .render(new NodeGraphRenderer() {
 
                 })
 

@@ -6,7 +6,7 @@ import jcog.signal.buffer.CircularFloatBuffer;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.container.time.Timeline2DEvents;
 import spacegraph.space2d.container.time.Timeline2DSequence;
@@ -58,7 +58,7 @@ public class Timeline2DTest {
         }
 
         return new Timeline2DEvents<>(dummyModel,
-                (Graph2D.NodeVis<Timeline2D.SimpleEvent> e) ->
+                (NodeVis<Timeline2D.SimpleEvent> e) ->
                         e.set(new Scale(new PushButton(e.id.toString()), 0.8f)));
     }
 

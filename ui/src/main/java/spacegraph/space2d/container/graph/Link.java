@@ -1,4 +1,4 @@
-package spacegraph.space2d.widget.windo;
+package spacegraph.space2d.container.graph;
 
 import jcog.event.Off;
 import spacegraph.space2d.Surface;
@@ -22,7 +22,7 @@ abstract public class Link {
         return on(hostage::remove);
     }
 
-    public final void remove(GraphEdit g) {
+    public final void remove(EditGraph2D g) {
         g.removeWire(id); //id.a, id.b);
     }
 

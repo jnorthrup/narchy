@@ -23,9 +23,11 @@ import java.util.Date;
 import java.util.ServiceLoader;
 import java.util.function.Function;
 
-/** @author Kamnev Georgiy (nt.gocha@gmail.com)
+/**
+ * @author Kamnev Georgiy (nt.gocha@gmail.com)
  * @see xyz.cofe.typeconv.spi.GetTypeConvertor
  */
+
 /**
  * Граф конвертирования типов с базовым набором типов. <br>
  * Базовые числа между собой: <br>
@@ -114,217 +116,6 @@ import java.util.function.Function;
  */
 public class ExtendedCastGraph extends CastGraph {
 
-
-    public ExtendedCastGraph() {
-
-        super();
-
-        addEdge(Integer.class, integer2Int, int.class);
-        addEdge(int.class, int2Integer, Integer.class);
-
-        addEdge(Byte.class, Byte2byte, byte.class);
-        addEdge(byte.class, byte2Byte, Byte.class);
-
-        addEdge(Short.class, Short2short, short.class);
-        addEdge(short.class, short2Short, Short.class);
-
-        addEdge(Long.class, Long2long, long.class);
-        addEdge(long.class, long2Long, Long.class);
-
-        addEdge(Float.class, Float2float, float.class);
-        addEdge(float.class, float2Float, Float.class);
-
-        addEdge(Double.class, Double2double, double.class);
-        addEdge(double.class, double2Double, Double.class);
-
-        addEdge(Number.class, Number2Byte, Byte.class);
-        addEdge(Byte.class, Byte2Number, Number.class);
-
-        addEdge(Number.class, Number2Short, Short.class);
-        addEdge(Short.class, Short2Number, Number.class);
-
-        addEdge(Number.class, Number2Integer, Integer.class);
-        addEdge(Integer.class, Integer2Number, Number.class);
-
-        addEdge(Number.class, Number2Long, Long.class);
-        addEdge(Long.class, Long2Number, Number.class);
-
-        addEdge(Number.class, Number2Float, Float.class);
-        addEdge(Float.class, Float2Number, Number.class);
-
-        addEdge(Number.class, Number2Double, Double.class);
-        addEdge(Double.class, Double2Number, Number.class);
-
-        addEdge(Number.class, Number2BigDecimal, BigDecimal.class);
-        addEdge(BigDecimal.class, BigDecimal2Number, Number.class);
-
-        addEdge(Number.class, Number2BigInteger, BigInteger.class);
-        addEdge(BigInteger.class, BigInteger2Number, Number.class);
-
-        addEdge(Boolean.class, Boolean2boolean, boolean.class);
-        addEdge(boolean.class, boolean2Boolean, Boolean.class);
-
-        addEdge(Character.class, Character2char, char.class);
-        addEdge(char.class, char2Character, Character.class);
-
-        // ..........
-
-        addEdge(Number.class, Number2String, String.class);
-
-        addEdge(char.class, char2int, int.class);
-        addEdge(Character.class, char2int, int.class);
-        addEdge(char.class, char2int, Integer.class);
-        addEdge(Character.class, char2int, Integer.class);
-
-        addEdge(int.class, int2char, char.class);
-        addEdge(int.class, int2char, Character.class);
-        addEdge(Integer.class, int2char, char.class);
-        addEdge(Integer.class, int2char, Character.class);
-
-        addEdge(char.class, char2String, String.class);
-        addEdge(Character.class, char2String, String.class);
-        addEdge(String.class, String2char, char.class);
-        addEdge(String.class, String2char, Character.class);
-
-        addEdge(Integer.class, Integer2Boolean, Boolean.class);
-        addEdge(int.class, Integer2Boolean, Boolean.class);
-        addEdge(Integer.class, Integer2Boolean, boolean.class);
-        addEdge(int.class, Integer2Boolean, boolean.class);
-
-        addEdge(Boolean.class, Boolean2Integer, Integer.class);
-        addEdge(Boolean.class, Boolean2Integer, int.class);
-        addEdge(boolean.class, Boolean2Integer, Integer.class);
-        addEdge(boolean.class, Boolean2Integer, int.class);
-
-        addEdge(Boolean.class, Boolean2String, String.class);
-        addEdge(boolean.class, Boolean2String, String.class);
-
-        addEdge(String.class, String2Boolean, Boolean.class);
-        addEdge(String.class, String2Boolean, boolean.class);
-
-        addEdge(BigInteger.class, BigInteger2BigDecimal, BigDecimal.class);
-        addEdge(BigDecimal.class, BigDecimal2BigInteger, BigInteger.class);
-
-        addEdge(String.class, String2Integer, Integer.class);
-        addEdge(String.class, String2int, int.class);
-
-        addEdge(String.class, String2Long, Long.class);
-        addEdge(String.class, String2long, long.class);
-
-        addEdge(String.class, String2Double, Double.class);
-        addEdge(String.class, String2double, double.class);
-
-        addEdge(String.class, String2BigDecimal, BigDecimal.class);
-
-        byte[] ba = new byte[]{};
-        Byte[] Ba = new Byte[]{};
-        char[] ca = new char[]{};
-        Character[] Ca = new Character[]{};
-
-        // TODO use proj text
-        addEdge( String.class, String2byteArr, ba.getClass() );
-        // TODO use proj text
-//        setAt( ba.getClass(), String.class, byteArr2String );
-
-        // TODO use proj text
-//        setAt( Ba.getClass(), String.class, ByteArr2String );
-        // TODO use proj text
-//        setAt( String.class, Ba.getClass(), String2ByteArr );
-
-        addEdge(ca.getClass(), charArr2String, String.class);
-        addEdge(Ca.getClass(), CharArr2String, String.class);
-
-        addEdge(String.class, String2charArr, ca.getClass());
-        addEdge(String.class, String2CharArr, Ca.getClass());
-
-        addEdge(Date.class, Date2SqlDate, java.sql.Date.class);
-        addEdge(Date.class, Date2SqlTime, java.sql.Time.class);
-        addEdge(Date.class, Date2SqlTimestamp, java.sql.Timestamp.class);
-        addEdge(java.sql.Date.class, SqlDate2Date, Date.class);
-        addEdge(java.sql.Time.class, SqlTime2Date, Date.class);
-        //        set(java.sql.Timestamp.class, Date.class, SqlTimestamp2Date);
-
-//        addEdge(Date.class, String.class, Date2String);
-//        addEdge(String.class, Date.class, String2Date);
-
-//        setAt( Clob.class, String.class, Clob2String );
-//        setAt( NClob.class, String.class, NClob2String );
-//
-        addEdge( java.net.URL.class, URL2String, String.class );
-        addEdge( String.class, String2URL, java.net.URL.class );
-//
-//        setAt( java.net.URI.class, String.class, URI2String );
-//        setAt( String.class, java.net.URI.class, String2URI );
-//
-//        setAt( java.io.File.class, String.class, JavaIoFile2String );
-//        setAt( String.class, java.io.File.class, String2JavaIoFile );
-//
-//        setAt( java.io.File.class, java.net.URI.class, JavaIoFile2URI );
-//        setAt( java.io.File.class, java.net.URL.class, JavaIoFile2URL );
-
-        // TODO export to spi
-//        setAt( xyz.cofe.fs.File.class, String.class, XyzCofeFile2String );
-//        setAt( String.class, xyz.cofe.fs.File.class, String2XyzCofeFile );
-
-//        setAt( Charset.class, String.class, Charset2String );
-//        setAt( String.class, Charset.class, String2Charset );
-//
-//        setAt( xyz.cofe.io.File.class, String.class, CofeIOFile2String );
-//        setAt( String.class, xyz.cofe.io.File.class, String2CofeIOFile );
-//
-//        setAt( xyz.cofe.io.File.class, java.nio.file.Path.class, CofeIOFile2Path );
-//        setAt( java.nio.file.Path.class, xyz.cofe.io.File.class, Path2CofeIOFile );
-//
-//        setAt( xyz.cofe.io.File.class, java.io.File.class, CofeIOFile2File );
-//        setAt( java.io.File.class, xyz.cofe.io.File.class, JavaFile2CofeIOFile );
-
-        for (GetTypeConvertor gtc : ServiceLoader.load(GetTypeConvertor.class)) {
-            if (gtc == null) continue;
-            Function conv = gtc.getConvertor();
-            if (conv == null) continue;
-            Class srcType = gtc.getSourceType();
-            if (srcType == null) continue;
-            Class trgType = gtc.getTargetType();
-            if (trgType == null) continue;
-            addEdge(srcType, conv, trgType);
-        }
-
-        //add: generic Supplier<X> -> X -- requires generic argument processing
-
-        addEdge(Boolean.class, (Function<Boolean, Integer>) (i3)-> i3 ? 1 : 0, Integer.class);
-        addEdge(Integer.class, (Function<Integer, Float>) Integer::floatValue, Float.class);
-        addEdge(Integer.class, (Function<Integer, Boolean>) (i2)-> i2 >= 0, Boolean.class);
-        addEdge(Short.class, (Function<Short, Boolean>) (i1)-> i1 >= 0, Boolean.class);
-        addEdge(Byte.class, (Function<Byte, Boolean>) (i)->i >= 0, Boolean.class);
-        //1-element
-        addEdge(Float.class, (Function<Float,Double>)(Float::doubleValue), Double.class);
-        //1-element
-        addEdge(Double.class, (Function<Double,Float>)(Double::floatValue), Float.class);
-
-        addEdge(float[].class, (Function<float[], double[]>) Util::toDouble, double[].class);
-
-        //default scalar value projection
-        //addEdge(v2.class, (Function<v2, Either<Double>>)(v4 -> Math.sqrt(Util.sqr(v4.x)+Util.sqr(v4.y))), Double.class);
-
-        addEdge(v2.class, (Function<v2, float[]>)(v3 -> new float[] { v3.x, v3.y }), float[].class);
-        addEdge(v3.class, (Function<v3, float[]>)(v2 -> new float[] { v2.x, v2.y, v2.z }), float[].class);
-        addEdge(v2.class, (Function<v2, v3>)(v1 -> new v3( v1.x, v1.y, 0)), v3.class);
-
-        addEdge(float[].class, (Function<float[], Tensor>)(ArrayTensor::new), Tensor.class);
-        addEdge(double[].class, (Function<double[], float[]>) Util::toFloat, float[].class);
-        //1-element
-        addEdge(Float.class, (Function<Float,float[]>)(v -> v!=null ? new float[] { v } : new float[] { Float.NaN } ), float[].class);
-        //        setAt(Float.class, Tensor.class, (Function<Float,Tensor>)((f) -> new ArrayTensor(new float[] { f} ))); //1-element
-        //does this happen
-        addEdge(Tensor.class, (Function<Tensor, ArrayTensor>)(t -> {
-            if (t instanceof ArrayTensor) {
-                return (ArrayTensor) t; //does this happen
-            }
-            return new ArrayTensor(t.toFloatArrayShared());
-        }), ArrayTensor.class);
-        addEdge(ArrayTensor.class, (Function<ArrayTensor,float[]>)(a->a.data), float[].class);
-
-    }
 
     //<editor-fold defaultstate="collapsed" desc="Базовые типы">
     //<editor-fold defaultstate="collapsed" desc="Числовые типы">
@@ -619,7 +410,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function BigDecimal2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            return (((BigDecimal)from)).doubleValue();
+            return (((BigDecimal) from)).doubleValue();
         }
 
         @Override
@@ -932,7 +723,7 @@ public class ExtendedCastGraph extends CastGraph {
         @Override
         public Object apply(Object from) {
             String str = (String) from;
-            return (int)Math.round(Double.parseDouble(str));
+            return (int) Math.round(Double.parseDouble(str));
         }
 
         @Override
@@ -1086,6 +877,109 @@ public class ExtendedCastGraph extends CastGraph {
         }
     };
     //</editor-fold>
+    //</editor-fold>
+//
+//    // TODO use proj text
+//    //<editor-fold defaultstate="collapsed" desc="byte / char arrays">
+//    //<editor-fold defaultstate="collapsed" desc="String 2 byte[]">
+    public static final Function String2byteArr = new Function<String, byte[]>() {
+        @Override
+        public byte[] apply(String from) {
+            //return xyz.cofe.text.Text.decodeHex( (String)from );
+            return from.getBytes();
+        }
+
+        @Override
+        public String toString() {
+            return "String2byteArr";
+        }
+    };
+    /**
+     * Базовый конструктор
+     */
+//    public ExtendedCastGraph() {
+//    }
+
+//    /**
+//     * Клонирование объекта
+//     *
+//     * @return клон
+//     */
+//    @Override
+//    public BaseCastGraph clone() {
+//        return new BaseCastGraph(this);
+//    }
+
+//    public SimpleDateFormat[] getDateFormats() {
+//        synchronized (this) {
+//            if (dateFormats == null) {
+//                dateFormats = new SimpleDateFormat[]{
+//                        new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ"),
+//                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss.SSSZ"),
+//                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss.SSS"),
+//                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss"),
+//                        new SimpleDateFormat("yyy-MM-dd HH:mm"),
+//                        new SimpleDateFormat("yyy-MM-dd"),
+//                };
+//            }
+//            return dateFormats;
+//        }
+//    }
+    //</editor-fold>
+    //</editor-fold>
+
+//    public void setDateFormat(SimpleDateFormat[] df) {
+//        synchronized (this) {
+//            this.dateFormats = df;
+//        }
+//    }
+
+    //</editor-fold>
+//
+//    //<editor-fold defaultstate="collapsed" desc="NClob 2 String">
+//    public static final Convertor NClob2String = new MutableWeightedCaster() {
+//        @Override
+//        public Object convert(Object from) {
+//            NClob clob = ((NClob)from);
+//            return NClobToString.getStringOf(clob);
+//        }
+//        @Override public String toString(){ return "NClob2String"; }
+//    };
+//    //</editor-fold>
+//
+//    //<editor-fold defaultstate="collapsed" desc="URL - String">
+//    //<editor-fold defaultstate="collapsed" desc="URL2String">
+    public static final Function<URL, String> URL2String = new Function<>() {
+        @Override
+        public String apply(URL from) {
+            return from.toString();
+        }
+
+        @Override
+        public String toString() {
+            return "URL2String";
+        }
+    };
+    public static final Function<String, URL> String2URL = new Function<>() {
+        @Override
+        public URL apply(String from) {
+            String url = from;
+            try {
+                return new java.net.URL(url);
+            } catch (MalformedURLException ex) {
+                throw new ClassCastException(
+                        "can't cast from " + url + " to java.net.URL\n" +
+                                ex.getMessage()
+                );
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "String2URL";
+        }
+    };
+    //</editor-fold>
     public final Function Date2SqlDate = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -1132,33 +1026,6 @@ public class ExtendedCastGraph extends CastGraph {
         public String toString() {
             return "SqlTime2Date";
         }
-    };
-    //</editor-fold>
-    public final Function Date2SqlTimestamp = new MutableWeightedCaster() {
-        @Override
-        public Object apply(Object from) {
-            Date d = (Date) from;
-            return new java.sql.Timestamp(d.getTime());
-        }
-
-        @Override
-        public String toString() {
-            return "Date2SqlTimestamp";
-        }
-    };
-    //</editor-fold>
-    //</editor-fold>
-//
-//    // TODO use proj text
-//    //<editor-fold defaultstate="collapsed" desc="byte / char arrays">
-//    //<editor-fold defaultstate="collapsed" desc="String 2 byte[]">
-    public static final Function String2byteArr = new Function<String,byte[]>() {
-        @Override
-        public byte[] apply(String from) {
-            //return xyz.cofe.text.Text.decodeHex( (String)from );
-            return from.getBytes();
-        }
-        @Override public String toString(){ return "String2byteArr"; }
     };
 //    //</editor-fold>
 //
@@ -1312,84 +1179,236 @@ public class ExtendedCastGraph extends CastGraph {
 //            this.dateFormats = src.dateFormats;
 //        }
 //    }
-
-    /**
-     * Базовый конструктор
-     */
-//    public ExtendedCastGraph() {
-//    }
-
-//    /**
-//     * Клонирование объекта
-//     *
-//     * @return клон
-//     */
-//    @Override
-//    public BaseCastGraph clone() {
-//        return new BaseCastGraph(this);
-//    }
-
-//    public SimpleDateFormat[] getDateFormats() {
-//        synchronized (this) {
-//            if (dateFormats == null) {
-//                dateFormats = new SimpleDateFormat[]{
-//                        new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ"),
-//                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss.SSSZ"),
-//                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss.SSS"),
-//                        new SimpleDateFormat("yyy-MM-dd HH:mm:ss"),
-//                        new SimpleDateFormat("yyy-MM-dd HH:mm"),
-//                        new SimpleDateFormat("yyy-MM-dd"),
-//                };
-//            }
-//            return dateFormats;
-//        }
-//    }
     //</editor-fold>
-    //</editor-fold>
-
-//    public void setDateFormat(SimpleDateFormat[] df) {
-//        synchronized (this) {
-//            this.dateFormats = df;
-//        }
-//    }
-
-    //</editor-fold>
-//
-//    //<editor-fold defaultstate="collapsed" desc="NClob 2 String">
-//    public static final Convertor NClob2String = new MutableWeightedCaster() {
-//        @Override
-//        public Object convert(Object from) {
-//            NClob clob = ((NClob)from);
-//            return NClobToString.getStringOf(clob);
-//        }
-//        @Override public String toString(){ return "NClob2String"; }
-//    };
-//    //</editor-fold>
-//
-//    //<editor-fold defaultstate="collapsed" desc="URL - String">
-//    //<editor-fold defaultstate="collapsed" desc="URL2String">
-    public static final Function<URL,String> URL2String = new Function<>() {
+    public final Function Date2SqlTimestamp = new MutableWeightedCaster() {
         @Override
-        public String apply(URL from) {
-            return from.toString();
+        public Object apply(Object from) {
+            Date d = (Date) from;
+            return new java.sql.Timestamp(d.getTime());
         }
-        @Override public String toString(){ return "URL2String"; }
-    };
-    public static final Function<String,URL> String2URL = new Function<>() {
+
         @Override
-        public URL apply(String from) {
-            String url = from;
-            try {
-                return new java.net.URL(url);
-            } catch (MalformedURLException ex) {
-                throw new ClassCastException(
-                        "can't cast from "+url+" to java.net.URL\n"+
-                                ex.getMessage()
-                );
+        public String toString() {
+            return "Date2SqlTimestamp";
+        }
+    };
+    public ExtendedCastGraph() {
+
+        super();
+
+        addEdge(Integer.class, integer2Int, int.class);
+        addEdge(int.class, int2Integer, Integer.class);
+
+        addEdge(Byte.class, Byte2byte, byte.class);
+        addEdge(byte.class, byte2Byte, Byte.class);
+
+        addEdge(Short.class, Short2short, short.class);
+        addEdge(short.class, short2Short, Short.class);
+
+        addEdge(Long.class, Long2long, long.class);
+        addEdge(long.class, long2Long, Long.class);
+
+        addEdge(Float.class, Float2float, float.class);
+        addEdge(float.class, float2Float, Float.class);
+
+        addEdge(Double.class, Double2double, double.class);
+        addEdge(double.class, double2Double, Double.class);
+
+        addEdge(Number.class, Number2Byte, Byte.class);
+        addEdge(Byte.class, Byte2Number, Number.class);
+
+        addEdge(Number.class, Number2Short, Short.class);
+        addEdge(Short.class, Short2Number, Number.class);
+
+        addEdge(Number.class, Number2Integer, Integer.class);
+        addEdge(Integer.class, Integer2Number, Number.class);
+
+        addEdge(Number.class, Number2Long, Long.class);
+        addEdge(Long.class, Long2Number, Number.class);
+
+        addEdge(Number.class, Number2Float, Float.class);
+        addEdge(Float.class, Float2Number, Number.class);
+
+        addEdge(Number.class, Number2Double, Double.class);
+        addEdge(Double.class, Double2Number, Number.class);
+
+        addEdge(Number.class, Number2BigDecimal, BigDecimal.class);
+        addEdge(BigDecimal.class, BigDecimal2Number, Number.class);
+
+        addEdge(Number.class, Number2BigInteger, BigInteger.class);
+        addEdge(BigInteger.class, BigInteger2Number, Number.class);
+
+        addEdge(Boolean.class, Boolean2boolean, boolean.class);
+        addEdge(boolean.class, boolean2Boolean, Boolean.class);
+
+        addEdge(Character.class, Character2char, char.class);
+        addEdge(char.class, char2Character, Character.class);
+
+        // ..........
+
+        addEdge(Number.class, Number2String, String.class);
+
+        addEdge(char.class, char2int, int.class);
+        addEdge(Character.class, char2int, int.class);
+        addEdge(char.class, char2int, Integer.class);
+        addEdge(Character.class, char2int, Integer.class);
+
+        addEdge(int.class, int2char, char.class);
+        addEdge(int.class, int2char, Character.class);
+        addEdge(Integer.class, int2char, char.class);
+        addEdge(Integer.class, int2char, Character.class);
+
+        addEdge(char.class, char2String, String.class);
+        addEdge(Character.class, char2String, String.class);
+        addEdge(String.class, String2char, char.class);
+        addEdge(String.class, String2char, Character.class);
+
+        addEdge(Integer.class, Integer2Boolean, Boolean.class);
+        addEdge(int.class, Integer2Boolean, Boolean.class);
+        addEdge(Integer.class, Integer2Boolean, boolean.class);
+        addEdge(int.class, Integer2Boolean, boolean.class);
+
+        addEdge(Boolean.class, Boolean2Integer, Integer.class);
+        addEdge(Boolean.class, Boolean2Integer, int.class);
+        addEdge(boolean.class, Boolean2Integer, Integer.class);
+        addEdge(boolean.class, Boolean2Integer, int.class);
+
+        addEdge(Boolean.class, Boolean2String, String.class);
+        addEdge(boolean.class, Boolean2String, String.class);
+
+        addEdge(String.class, String2Boolean, Boolean.class);
+        addEdge(String.class, String2Boolean, boolean.class);
+
+        addEdge(BigInteger.class, BigInteger2BigDecimal, BigDecimal.class);
+        addEdge(BigDecimal.class, BigDecimal2BigInteger, BigInteger.class);
+
+        addEdge(String.class, String2Integer, Integer.class);
+        addEdge(String.class, String2int, int.class);
+
+        addEdge(String.class, String2Long, Long.class);
+        addEdge(String.class, String2long, long.class);
+
+        addEdge(String.class, String2Double, Double.class);
+        addEdge(String.class, String2double, double.class);
+
+        addEdge(String.class, String2BigDecimal, BigDecimal.class);
+
+        byte[] ba = new byte[]{};
+        Byte[] Ba = new Byte[]{};
+        char[] ca = new char[]{};
+        Character[] Ca = new Character[]{};
+
+        // TODO use proj text
+        addEdge(String.class, String2byteArr, ba.getClass());
+        // TODO use proj text
+//        setAt( ba.getClass(), String.class, byteArr2String );
+
+        // TODO use proj text
+//        setAt( Ba.getClass(), String.class, ByteArr2String );
+        // TODO use proj text
+//        setAt( String.class, Ba.getClass(), String2ByteArr );
+
+        addEdge(ca.getClass(), charArr2String, String.class);
+        addEdge(Ca.getClass(), CharArr2String, String.class);
+
+        addEdge(String.class, String2charArr, ca.getClass());
+        addEdge(String.class, String2CharArr, Ca.getClass());
+
+        addEdge(Date.class, Date2SqlDate, java.sql.Date.class);
+        addEdge(Date.class, Date2SqlTime, java.sql.Time.class);
+        addEdge(Date.class, Date2SqlTimestamp, java.sql.Timestamp.class);
+        addEdge(java.sql.Date.class, SqlDate2Date, Date.class);
+        addEdge(java.sql.Time.class, SqlTime2Date, Date.class);
+        //        set(java.sql.Timestamp.class, Date.class, SqlTimestamp2Date);
+
+//        addEdge(Date.class, String.class, Date2String);
+//        addEdge(String.class, Date.class, String2Date);
+
+//        setAt( Clob.class, String.class, Clob2String );
+//        setAt( NClob.class, String.class, NClob2String );
+//
+        addEdge(java.net.URL.class, URL2String, String.class);
+        addEdge(String.class, String2URL, java.net.URL.class);
+//
+//        setAt( java.net.URI.class, String.class, URI2String );
+//        setAt( String.class, java.net.URI.class, String2URI );
+//
+//        setAt( java.io.File.class, String.class, JavaIoFile2String );
+//        setAt( String.class, java.io.File.class, String2JavaIoFile );
+//
+//        setAt( java.io.File.class, java.net.URI.class, JavaIoFile2URI );
+//        setAt( java.io.File.class, java.net.URL.class, JavaIoFile2URL );
+
+        // TODO export to spi
+//        setAt( xyz.cofe.fs.File.class, String.class, XyzCofeFile2String );
+//        setAt( String.class, xyz.cofe.fs.File.class, String2XyzCofeFile );
+
+//        setAt( Charset.class, String.class, Charset2String );
+//        setAt( String.class, Charset.class, String2Charset );
+//
+//        setAt( xyz.cofe.io.File.class, String.class, CofeIOFile2String );
+//        setAt( String.class, xyz.cofe.io.File.class, String2CofeIOFile );
+//
+//        setAt( xyz.cofe.io.File.class, java.nio.file.Path.class, CofeIOFile2Path );
+//        setAt( java.nio.file.Path.class, xyz.cofe.io.File.class, Path2CofeIOFile );
+//
+//        setAt( xyz.cofe.io.File.class, java.io.File.class, CofeIOFile2File );
+//        setAt( java.io.File.class, xyz.cofe.io.File.class, JavaFile2CofeIOFile );
+
+        for (GetTypeConvertor gtc : ServiceLoader.load(GetTypeConvertor.class)) {
+            if (gtc == null) continue;
+            Function conv = gtc.getConvertor();
+            if (conv == null) continue;
+            Class srcType = gtc.getSourceType();
+            if (srcType == null) continue;
+            Class trgType = gtc.getTargetType();
+            if (trgType == null) continue;
+            addEdge(srcType, conv, trgType);
+        }
+
+        //add: generic Supplier<X> -> X -- requires generic argument processing
+
+
+        addEdge(Boolean.class, (Function<Boolean, Integer>) (i) -> i ? 1 : 0, Integer.class);
+        addEdge(Number.class, (Function<Number, Boolean>) (i) -> i.intValue() > 0, Boolean.class);
+
+        addEdge(Short.class, (Function<Short, Integer>) Short::intValue, Integer.class);
+
+        //1-element
+        addEdge(Float.class, (Function<Float, Integer>) (Math::round), Integer.class);
+        addEdge(Integer.class, (Function<Integer, Float>) Integer::floatValue, Float.class);
+
+        addEdge(Integer.class, (Function<Integer, Long>) Integer::longValue, Long.class);
+        addEdge(Long.class, (Function<Long, Integer>) Long::intValue, Integer.class);
+
+        addEdge(Float.class, (Function<Float, Double>) (Float::doubleValue), Double.class);
+        addEdge(Double.class, (Function<Double, Float>) (Double::floatValue), Float.class);
+
+
+        addEdge(float[].class, (Function<float[], double[]>) Util::toDouble, double[].class);
+
+        //default scalar value projection
+        //addEdge(v2.class, (Function<v2, Either<Double>>)(v4 -> Math.sqrt(Util.sqr(v4.x)+Util.sqr(v4.y))), Double.class);
+
+        addEdge(v2.class, (Function<v2, float[]>) (v3 -> new float[]{v3.x, v3.y}), float[].class);
+        addEdge(v3.class, (Function<v3, float[]>) (v2 -> new float[]{v2.x, v2.y, v2.z}), float[].class);
+        addEdge(v2.class, (Function<v2, v3>) (v1 -> new v3(v1.x, v1.y, 0)), v3.class);
+
+        addEdge(float[].class, (Function<float[], Tensor>) (ArrayTensor::new), Tensor.class);
+        addEdge(double[].class, (Function<double[], float[]>) Util::toFloat, float[].class);
+        //1-element
+        addEdge(Float.class, (Function<Float, float[]>) (v -> v != null ? new float[]{v} : new float[]{Float.NaN}), float[].class);
+        //        setAt(Float.class, Tensor.class, (Function<Float,Tensor>)((f) -> new ArrayTensor(new float[] { f} ))); //1-element
+        //does this happen
+        addEdge(Tensor.class, (Function<Tensor, ArrayTensor>) (t -> {
+            if (t instanceof ArrayTensor) {
+                return (ArrayTensor) t; //does this happen
             }
-        }
-        @Override public String toString(){ return "String2URL"; }
-    };
+            return new ArrayTensor(t.toFloatArrayShared());
+        }), ArrayTensor.class);
+        addEdge(ArrayTensor.class, (Function<ArrayTensor, float[]>) (a -> a.data), float[].class);
+
+    }
 
 ////</editor-fold>
 //

@@ -5,13 +5,12 @@ import jcog.Util;
 import jcog.data.list.FastCoWList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
+import jcog.exe.Can;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.MutableEnum;
-import jcog.sort.TopN;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
-import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.exe.NARLoop;
 import nars.exe.impl.UniExec;
@@ -42,7 +41,6 @@ import spacegraph.video.Draw;
 
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
@@ -142,7 +140,7 @@ public class ExeCharts {
 
         CausableWidget(TimedLink c) {
             this.c = c;
-            label = new VectorLabel(c.get().can.id);
+            label = new VectorLabel(new Can(c.get().term().toString()).id);
             set(label);
 
         }
@@ -247,31 +245,33 @@ public class ExeCharts {
 
         return DurSurface.get(
                 new Splitting(s,
-                        0.1f, new Gridding(new PushButton("Stats")
-                                .clicking(()->causeSummary(nar, 10))
-                                , s.configWidget())),
+                        0.1f, s.configWidget()),
+//        new Gridding(
+//                                new PushButton("Stats")
+//                                .clicking(()->causeSummary(nar, 10)
+//                                )
+//                                , )),
                 nar, () -> {
                     s.set(((UniExec) nar.exe).cpu);
                 });
     }
 
-    private static void causeSummary(NAR nar, int top) {
-        TopN[] tops = Stream.of(MetaGoal.values()).map(v -> new TopN<>(new Cause[top], (c) ->
-                (float) c.credit[v.ordinal()].total())).toArray(TopN[]::new);
-        nar.causes.forEach((Cause c) -> {
-            for (TopN t : tops)
-                t.add(c);
-        });
-
-        for (int i = 0, topsLength = tops.length; i < topsLength; i++) {
-            TopN t = tops[i];
-            System.out.println(MetaGoal.values()[i]);
-            t.forEach(tt->{
-                System.out.println("\t" + tt);
-            });
-        }
-
-    }
+//    private static void causeSummary(NAR nar, int top) {
+//        TopN[] tops = Stream.of(MetaGoal.values()).map(v -> new TopN<>(new Cause[top], (c) ->
+//                (float) c.credit[v.ordinal()].total())).toArray(TopN[]::new);
+//        nar.causes.forEach((Cause c) -> {
+//            for (TopN t : tops)
+//                t.add(c);
+//        });
+//
+//        for (int i = 0, topsLength = tops.length; i < topsLength; i++) {
+//            TopN t = tops[i];
+//            System.out.println(MetaGoal.values()[i]);
+//            t.forEach(tt->{
+//                System.out.println("\t" + tt);
+//            });
+//        }
+//    }
 
 
     /**
@@ -318,7 +318,7 @@ public class ExeCharts {
     }
 
     static Surface runPanel(NAR n) {
-        BitmapLabel nameLabel;
+        AbstractLabel nameLabel;
         LoopPanel control = new NARLoopPanel(n.loop);
         Surface p = new Splitting(
                 nameLabel = new BitmapLabel(n.self().toString()),

@@ -6,7 +6,9 @@ import jcog.math.v2;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.space2d.container.graph.EdgeVis;
 import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.util.MutableRectFloat;
 
 import java.util.Random;
@@ -39,7 +41,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
     private float equilibriumDistFactor;
 
     @Override
-    public void init(Graph2D<X> g, Graph2D.NodeVis<X> newNode) {
+    public void init(Graph2D<X> g, NodeVis<X> newNode) {
         float rx = g.w()/2*(rng.nextFloat()*2-1), ry = g.h()/2*(rng.nextFloat()*2-1);
         newNode.posXYWH(g.cx() + rx, g.cy() + ry, 1, 1);
     }
@@ -116,20 +118,20 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
      */
     private void attract(MutableRectFloat a, float attractSpeed) {
 
-        Graph2D.NodeVis<X> from = a.node;
+        NodeVis<X> from = a.node;
         float px = a.cx(), py = a.cy();
 
 
         float fromRad = a.radius();
 
-        ConcurrentFastIteratingHashMap<X, Graph2D.EdgeVis<X>> read = from.outs;
+        ConcurrentFastIteratingHashMap<X, EdgeVis<X>> read = from.outs;
         //int neighbors = read.size();
 
         read.forEachValue(edge -> {
             if (edge == null)
                 return; //wtf
 
-            Graph2D.NodeVis<X> who = edge.to;
+            NodeVis<X> who = edge.to;
             if (who == null)
                 return;
 

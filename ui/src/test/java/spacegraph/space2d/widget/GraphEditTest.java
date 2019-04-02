@@ -1,7 +1,5 @@
 package spacegraph.space2d.widget;
 
-import jcog.Texts;
-import jcog.exe.Loop;
 import jcog.signal.Tensor;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.tree.rtree.rect.RectFloat;
@@ -12,7 +10,7 @@ import spacegraph.audio.sample.SoundSample;
 import spacegraph.audio.speech.TinySpeech;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.chip.AudioOutPort;
@@ -23,7 +21,6 @@ import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Windo;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -52,35 +49,11 @@ public class GraphEditTest {
 //
 //    }
 
-    static class SwitchedSignal {
-
-        public static void main(String[] args) {
-
-            GraphEdit s = GraphEdit.window(1000, 1000);
-
-
-            Port A = new Port();
-            Container a = s.add(A).pos(RectFloat.Unit.transform(500, 250, 250));
-
-
-            Port B = LabeledPort.generic();
-            Container b = s.add(B).pos(RectFloat.XYWH(+1, 0, 0.25f, 0.25f).scale(500));
-
-            TogglePort AB = new TogglePort();
-            s.add(AB).pos(RectFloat.XYWH(0, 0, 0.25f, 0.25f).scale(500));
-
-            Loop.of(() -> {
-                A.out(Texts.n4(Math.random()));
-            }).setFPS(0.3f);
-        }
-
-    }
-
 
         public static void main(String[] args) {
 
 
-            GraphEdit s = GraphEdit.window(1000, 1000);
+            EditGraph2D s = EditGraph2D.window(1000, 1000);
 
             Surface mux = new Gridding(HORIZONTAL, LabeledPane.the("->", new Gridding(VERTICAL,
                     new Port(),
@@ -147,11 +120,11 @@ public class GraphEditTest {
 //        }
 //    }
 
-    public static class TinySpeechTest extends GraphEdit {
+    public static class TinySpeechTest extends EditGraph2D {
         {
             //Audio.the().play(TinySpeech.say("eee", 60, 1 ), 1, 1, 0 );
 
-            GraphEdit g = window(1000, 1000);
+            EditGraph2D g = window(1000, 1000);
 
             {
                 TextEdit0 e = new TextEdit0("a b c d e", true);
@@ -206,7 +179,7 @@ public class GraphEditTest {
 
     public static class StringSynthTest {
         public static void main(String[] args) {
-            GraphEdit<Surface> g = new GraphEdit<>(1000, 1000);
+            EditGraph2D<Surface> g = new EditGraph2D<>(1000, 1000);
 
 
             g.add(new StringSynthChip()).pos(0, 0, 250, 250);
@@ -282,7 +255,7 @@ public class GraphEditTest {
     public static class AutoAdaptTest {
 
         public static void main(String[] args) {
-            GraphEdit w = GraphEdit.window(1000, 1000);
+            EditGraph2D w = EditGraph2D.window(1000, 1000);
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
@@ -295,7 +268,7 @@ public class GraphEditTest {
     public static class SproutPortTest {
 
         public static void main(String[] args) {
-            GraphEdit w = GraphEdit.window(1000, 1000);
+            EditGraph2D w = EditGraph2D.window(1000, 1000);
 
             //w.addBox(0f, 0f, 0.2f, 0.2f, 0.01f);
 

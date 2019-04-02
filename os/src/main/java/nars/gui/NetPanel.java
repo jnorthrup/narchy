@@ -5,13 +5,14 @@ import jcog.net.UDPeer;
 import nars.InterNAR;
 import nars.NAR;
 import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.BitmapLabel;
 
 public class NetPanel extends Bordering {
 
     private final NAR nar;
     private final InterNAR net;
-    private final BitmapLabel status;
+    private final AbstractLabel status;
 
     public NetPanel(NAR n, InterNAR net) {
         this.nar = n;

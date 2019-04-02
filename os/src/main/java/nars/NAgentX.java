@@ -22,7 +22,7 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineMemory;
+import nars.index.concept.TreeMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Eternalizer;
@@ -44,7 +44,7 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space2d.widget.windo.GraphEdit;
+import spacegraph.space2d.container.graph.EditGraph2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -233,17 +233,17 @@ abstract public class NAgentX extends NAgent {
                 .time(clock)
                 .index(
 
+                        new TreeMemory(64*1024)
                         //CaffeineIndex.soft()
 
-                        new CaffeineMemory(
-                            64 * 1024
+//                        new CaffeineMemory(
+//                            64 * 1024
                     //96 * 1024
 //                                64 * 1024
 ////                                //32 * 1024
 ////////                                //16 * 1024
                                  //, c -> (int) Math.ceil(c.term().voluplexity()))
-                        )
-
+//                )
 //                        new HijackConceptIndex(
 //
 //                                //192 * 1024,
@@ -540,7 +540,7 @@ abstract public class NAgentX extends NAgent {
 //            valve.set(Util.unitize(nextV ));
 //        });
 
-        GraphEdit<Surface> g = GraphEdit.window(800, 800);
+        EditGraph2D<Surface> g = EditGraph2D.window(800, 800);
         g.add(NARui.taskBufferView(b, n)).sizeRel(0.75f,0.25f);
         //g.add(new PIDChip(pid)).sizeRel(0.2f,0.2f);
 

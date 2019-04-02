@@ -7,6 +7,7 @@ import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 import org.jetbrains.annotations.NotNull;
 
+import static jcog.Texts.n4;
 import static jcog.Util.lerp;
 import static jcog.tree.rtree.Spatialization.EPSILON;
 import static jcog.tree.rtree.Spatialization.EPSILONf;
@@ -237,26 +238,12 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
                 Util.equals(h, hh, epsilon);
     }
 
-
-
-
-
-
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append('(');
-        sb.append(x);
-        sb.append(',');
-        sb.append(y);
-        sb.append(')');
-        sb.append(' ');
-        sb.append('(');
-        sb.append((x + w));
-        sb.append(',');
-        sb.append((y + h));
-        sb.append(')');
-
-        return sb.toString();
+        return new StringBuilder(64 /* estimate */)
+                .append('(').append(n4(cx())).append(',').append(n4(cy())).append(')')
+                .append('x')
+                .append('(').append(n4(w)).append(',').append(n4(h)).append(')')
+                .toString();
     }
 
     @Override
@@ -264,6 +251,8 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         throw new TODO();
     }
 
+
+    /** max dimensional extent */
     public final float mag() {
         return Math.max(w, h);
     }
@@ -324,6 +313,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return w * h;
     }
 
+    /** note: this is sloppy lerp (non-cartesian) on dimensions independently */
     public RectFloat posLerp(float x, float y, float p) {
         return RectFloat.XYWH(lerp(p, cx(), x),lerp(p, cy(), y) ,w , h);
     }
@@ -355,7 +345,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     /** computes the average of both position and scale parameters */
     public RectFloat mean(RectFloat o) {
         if (this == o) return this;
-        return orThisIfEqual(XYWH((x + o.x)/2, (y+o.y)/2, (w + o.w)/2, (h + o.h)/2));
+        return orThisIfEqual(X0Y0WH((x + o.x)/2, (y+o.y)/2, (w + o.w)/2, (h + o.h)/2));
     }
 
     public RectFloat fenceInside(RectFloat outer) {
@@ -367,9 +357,12 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
                 throw new WTF(this +  " is too large to fit inside " + outer);
 
             //if ((cx != cx) || (cy != cy)) randomize(bounds);
+            float x = cx(); if (!Float.isFinite(x)) x = 0;
+            float y = cy(); if (!Float.isFinite(y)) y = 0;
+
             return orThisIfEqual(XYWH(
-                    Util.clamp(cx(), outer.left() + w / 2, outer.right() - w / 2),
-                    Util.clamp(cy(), outer.bottom() + h / 2, outer.top() - h / 2),
+                    Util.clamp(x, outer.left() + w / 2, outer.right() - w / 2),
+                    Util.clamp(y, outer.bottom() + h / 2, outer.top() - h / 2),
                     w,h));
         }
 

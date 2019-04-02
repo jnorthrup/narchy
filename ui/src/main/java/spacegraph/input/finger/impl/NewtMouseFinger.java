@@ -1,6 +1,7 @@
 package spacegraph.input.finger.impl;
 
 import com.jogamp.newt.event.*;
+import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.SpaceGraphFlat;
@@ -39,11 +40,16 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
         if (touchNext == null) {
 
-            if (s instanceof Ortho) _ortho = (Ortho)s; //HACK
+            if (s instanceof Ortho) {
+                _ortho = (Ortho)s; //HACK
+                _posGlobal.setNaN(); //invalidate
+            }
 
             Surface next = touchNext = (ff == Fingering.Null || ff.escapes()) ? s.finger(this) : touching.get();
 
-            if (s instanceof Ortho) _ortho = null; //HACK
+            if (s instanceof Ortho) {
+                _ortho = null; //HACK
+            }
 
             return next == null;
         }
@@ -51,6 +57,22 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         return true;
     }
 
+    @Override
+    public v2 posGlobal(Surface c) {
+
+        Ortho co = this._ortho;
+        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class));
+        if (o!=null) {
+            if (_posGlobal.isNaN())
+                _posGlobal.set(posGlobal(posPixel, o));
+            return _posGlobal;
+        } else
+            return posPixel;//.clone(); //WTF?
+    }
+
+    private static v2 posGlobal(v2 x, Ortho o) {
+        return o.cam.screenToWorld(x);
+    }
 
     @Override protected void doUpdate() {
         touchNext = null;

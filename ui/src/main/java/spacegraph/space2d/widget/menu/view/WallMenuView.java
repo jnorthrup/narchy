@@ -4,19 +4,19 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.menu.Menu;
-import spacegraph.space2d.widget.windo.GraphEdit;
+import spacegraph.space2d.container.graph.EditGraph2D;
 
 /** TODO */
 public class WallMenuView extends Menu.MenuView {
 
-    private final GraphEdit wall;
+    private final EditGraph2D wall;
 
     public WallMenuView() {
         super();
 //            setContent(new GraphEdit());
 //            setWrapper(x -> new Windo(new MetaFrame(x)).size(w()/2, h()/2));
 
-        this.wall = new GraphEdit() {
+        this.wall = new EditGraph2D() {
 //            @Override
 //            public void doLayout(int dtMS) {
 //                super.doLayout(dtMS);

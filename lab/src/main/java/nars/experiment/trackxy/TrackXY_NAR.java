@@ -24,8 +24,8 @@ import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.LogContainer;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -315,7 +315,7 @@ public class TrackXY_NAR extends NAgentX {
         if (gui) {
             n.runLater(() -> {
 
-                GraphEdit g = GraphEdit.window(800, 800);
+                EditGraph2D g = EditGraph2D.window(800, 800);
                 g.windoSizeMinRel(0.02f, 0.02f);
 
 //                g.build(a, new AutoBuilder<>(2, (context, features, obj) -> {

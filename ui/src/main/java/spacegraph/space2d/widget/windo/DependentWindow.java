@@ -4,8 +4,9 @@ import jcog.event.Off;
 import jcog.event.Offs;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.graph.EditGraph2D;
 
-class DependentWindow extends Windo {
+public class DependentWindow extends Windo {
 
 
     private final Surface content;
@@ -21,16 +22,16 @@ class DependentWindow extends Windo {
     protected void starting() {
         super.starting();
 
-        GraphEdit graphEdit = parent(GraphEdit.class);
+        EditGraph2D g = parent(EditGraph2D.class);
 
         this.on = new Offs(()->{
-            graphEdit.physics.remove(this);
+            g.physics.remove(this);
 
             //remove any associated links, recursively
             if (content instanceof Container) {
-                ((Container) content).forEachRecursively(graphEdit::removeComponent);
+                ((Container) content).forEachRecursively(g::removeComponent);
             } else {
-                graphEdit.removeComponent(content);
+                g.removeComponent(content);
             }
         });
 

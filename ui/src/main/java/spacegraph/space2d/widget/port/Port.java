@@ -9,9 +9,9 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRoot;
+import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.util.Wiring;
-import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
 
 import javax.annotation.Nullable;
@@ -255,11 +255,11 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     protected void starting() {
         super.starting();
 
-        GraphEdit graph = parent(GraphEdit.class);
+        EditGraph2D graph = parent(EditGraph2D.class);
         if (graph != null)
             this.node = graph.links.addNode(this);
         else
-            this.node = GraphEdit.staticLinks.addNode(this); //HACK
+            this.node = EditGraph2D.staticLinks.addNode(this); //HACK
 
         IntObjectProcedure<Port<X>> u = this.updater;
         if (u != null)
@@ -271,7 +271,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     protected void stopping() {
         node = null;
         enabled = false;
-        GraphEdit p = parent(GraphEdit.class);
+        EditGraph2D p = parent(EditGraph2D.class);
         if (p != null)
             p.links.removeNode(this);
         super.stopping();
@@ -293,6 +293,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return false;
     }
 
+    /** returns true if sent */
     final boolean recv(Wire from, X s) {
         if (!enabled) {
             return false;
@@ -311,7 +312,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
                     return false;
                 }
             }
-            return true;
+            return false;
         }
 
     }

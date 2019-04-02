@@ -114,7 +114,7 @@ public abstract class Param {
     public static final boolean VOLMAX_RESTRICTS_INPUT = true; //input tasks
     public static final boolean VOLMAX_RESTRICTS = false; //all tasks
 
-    public static final boolean TERMIFY_TRANSFORM_LAZY = false;
+    public static final boolean TERMIFY_TRANSFORM_LAZY = true;
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 

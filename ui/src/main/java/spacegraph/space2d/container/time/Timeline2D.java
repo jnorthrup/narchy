@@ -9,7 +9,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Stacking;
-import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
@@ -228,7 +228,7 @@ public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
         return (float) ((t - s) / (e - s) * W + X);
     }
 
-    public <X> Timeline2D addEvents(TimelineEvents<X> e, Consumer<Graph2D.NodeVis<X>> r) {
+    public <X> Timeline2D addEvents(TimelineEvents<X> e, Consumer<NodeVis<X>> r) {
         add(new Timeline2DEvents<>(e, r));
         return this;
     }

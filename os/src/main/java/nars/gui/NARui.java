@@ -43,7 +43,7 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Stacking;
-import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
 import spacegraph.space2d.widget.Widget;
@@ -542,7 +542,7 @@ public class NARui {
             final float[] c = new float[4];
 
             @Override
-            public void colorize(VLink<Task> v, Graph2D.NodeVis<VLink<Task>> node) {
+            public void colorize(VLink<Task> v, NodeVis<VLink<Task>> node) {
                 int centroid = v.centroid;
 
                 float a = 0.8f;//v.priElseZero() * 0.5f + 0.5f;

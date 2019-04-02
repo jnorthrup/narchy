@@ -9,6 +9,7 @@ public class TypedPort<X> extends Port<X> {
     public final static ExtendedCastGraph CAST = new ExtendedCastGraph();
 
     public final Class<? super X> type;
+//    private final transient X lastValue;
 
     public TypedPort(Class<? super X> type) {
         super();

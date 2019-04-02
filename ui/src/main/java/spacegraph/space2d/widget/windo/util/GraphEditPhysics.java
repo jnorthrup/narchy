@@ -2,13 +2,13 @@ package spacegraph.space2d.widget.windo.util;
 
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
+import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.widget.port.Wire;
-import spacegraph.space2d.widget.windo.GraphEdit;
-import spacegraph.space2d.widget.windo.Link;
+import spacegraph.space2d.container.graph.Link;
 
 public abstract class GraphEditPhysics {
 
-    protected GraphEdit<?> graph = null;
+    protected EditGraph2D<?> graph = null;
 
     transient public Surface surface = new EmptySurface();
 
@@ -16,11 +16,11 @@ public abstract class GraphEditPhysics {
 
     abstract public void remove(Surface w);
 
-    public final Surface start(GraphEdit parent) {
+    public final Surface start(EditGraph2D parent) {
         this.graph = parent;
         return starting(graph);
     }
-    abstract protected Surface starting(GraphEdit<?> graph);
+    abstract protected Surface starting(EditGraph2D<?> graph);
 
     abstract public void stop();
 
@@ -28,7 +28,7 @@ public abstract class GraphEditPhysics {
 
     public abstract void invokeLater(Runnable o);
 
-    public void update(GraphEdit g, float dt) {
+    public void update(EditGraph2D g, float dt) {
 
     }
 

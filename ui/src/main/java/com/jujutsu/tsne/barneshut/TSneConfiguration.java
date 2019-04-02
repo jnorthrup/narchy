@@ -7,11 +7,6 @@ public interface TSneConfiguration {
 	void setOutputDims(int n);
 
 
-
-	double getPerplexity();
-
-	void setPerplexity(double perplexity);
-
 	boolean silent();
 
 	void setSilent(boolean silent);

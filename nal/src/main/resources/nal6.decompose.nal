@@ -80,7 +80,7 @@
 
 
         //TODO chooseUnifiableSubterm
-          B, ( (&&,C,A..+) ==> X)     |- unisubst((&&,polarizeBelief(X),       A..+ ),C,polarizeTask(B)), (Belief:DeductionDepolarized)
+          B, ( (&&,C,A..+) ==> X), --isVar(C)     |- unisubst((&&,polarizeBelief(X),       A..+ ),C,polarizeTask(B)), (Belief:DeductionDepolarized)
 //          B, (--(&&,C,A..+) ==> X)     |- unisubst((&&,polarizeBelief(X), --(&&,A..+)),C,polarizeTask(B)), (Belief:DeductionDepolarized)
 //          B, ((&&,--C,A..+) ==> X)       |- unisubst((&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
 //              B, (--(&&,C,A..+) ==> X)   |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)

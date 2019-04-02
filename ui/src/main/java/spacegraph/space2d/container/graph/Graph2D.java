@@ -1,14 +1,10 @@
 package spacegraph.space2d.container.graph;
 
 import com.jogamp.opengl.GL2;
-import jcog.Util;
-import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.data.map.CellMap;
-import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.data.map.MRUMap;
 import jcog.data.pool.MetalPool;
-import jcog.data.pool.Pool;
 import jcog.data.set.ArrayHashSet;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
@@ -22,8 +18,6 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
-import spacegraph.space2d.widget.windo.Windo;
-import spacegraph.util.MutableRectFloat;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -40,7 +34,7 @@ import java.util.stream.Stream;
  *
  * TODO generify for use in Dynamics3D
  */
-public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
+public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
@@ -297,7 +291,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     }
 
-    private Graph2D.NodeVis<X> materialize(X x) {
+    private NodeVis<X> materialize(X x) {
         NodeVis<X> yy = nodeCache.computeIfAbsent(x, x0 -> {
             NodeVis<X> y = new NodeVis<>();
             y.start(x0);
@@ -420,266 +414,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             });
         }
 
-    }
-
-    public static class NodeVis<X> extends Windo {
-
-        public transient volatile X id; //TODO WeakReference
-
-        /**
-         * optional priority component
-         */
-        public float pri;
-
-        /**
-         * current layout movement instance
-         */
-        public /*volatile*/ transient MutableRectFloat mover = null;
-
-        /**
-         * outgoing edges
-         */
-        public final ConcurrentFastIteratingHashMap<X, EdgeVis<X>> outs = new ConcurrentFastIteratingHashMap(new EdgeVis[0]);
-
-        private float r, g, b, a;
-
-        /** general re-purposeable serial integer */
-        public transient int i;
-
-        void start(X id) {
-            this.i = Integer.MIN_VALUE;
-            this.id = id;
-            pri = 0.5f;
-            r = g = b = 0.5f;
-        }
-
-        void end(Pool<EdgeVis<X>> edgePool) {
-            hide();
-            removeOuts(edgePool);
-            this.mover = null;
-            this.id = null;
-            this.i = Integer.MIN_VALUE;
-        }
-
-
-
-        //        @Override
-//        public boolean stop() {
-//            if (super.stop()) {
-//                return true;
-//            }
-//            return false;
-//        }
-
-        void paintEdges(GL2 gl) {
-            outs.forEachValue(x -> x.draw(this, gl));
-        }
-
-        @Override
-        protected void paintIt(GL2 gl, ReSurface r) {
-            gl.glColor4f(this.r, g, b, a);
-            Draw.rect(bounds, gl);
-        }
-
-        public void color(float r, float g, float b) {
-            color(r,g,b,1);
-        }
-
-        public boolean pinned() {
-
-            return false;
-        }
-
-        private void removeOuts(Pool<EdgeVis<X>> pool) {
-            outs.clear(pool::put);
-        }
-
-//        private boolean removeOut(EdgeVis<X> x, Pool<EdgeVis<X>> pool) {
-//            EdgeVis<X> y = outs.remove(x.to.id);
-//            if (y != null) {
-//                pool.put(y);
-//                return true;
-//            }
-//            return false;
-//        }
-
-        /**
-         * adds or gets existing edge
-         */
-        private EdgeVis<X> out(NodeVis<X> target, Pool<EdgeVis<X>> pool) {
-
-            X tid = target.id;
-            if (tid == null)
-                return null;
-
-            EdgeVis<X> y = outs.compute(tid, (tt, yy) -> {
-                if (yy == null) {
-                    yy = pool.get();
-                    yy.to = target;
-                }
-                return yy;
-            });
-            y.invalid = false;
-            return y;
-        }
-
-        public void update() {
-            //remove dead edges, or edges to NodeVis's which have been recycled after removal
-            outs.removeIf((x, e) -> {
-                if (e.invalid) return true;
-                NodeVis<X> ee = e.to;
-                return ee == null || !x.equals(ee.id);
-            });
-        }
-
-        protected void invalidateEdges() {
-            outs.forEachValue(e -> e.invalid = true);
-        }
-
-        public void color(float r, float g, float b, float a) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
-        }
-    }
-
-    public static class EdgeVis<X> {
-        volatile public NodeVis<X> to;
-
-        public volatile boolean invalid;
-
-        float r, g, b, a;
-        public float weight;
-        volatile public EdgeVisRenderer renderer;
-
-        public EdgeVis() {
-            clear();
-        }
-
-        public void clear() {
-            invalid = true;
-            r = g = b = 0f;
-            a = 0.75f;
-            to = null;
-            weight = 1f;
-            renderer = EdgeVisRenderer.Triangle;
-        }
-
-
-
-//        protected void merge(EdgeVis<X> x) {
-//            weight += x.weight;
-//            r = Util.or(r, x.r);
-//            g = Util.or(g, x.g);
-//            b = Util.or(b, x.b);
-//            a = Util.or(a, x.a);
-//        }
-
-        enum EdgeVisRenderer {
-            Line {
-                @Override
-                public void render(EdgeVis e, NodeVis from, GL2 gl) {
-                    float x = from.cx(), y = from.cy();
-                    gl.glLineWidth(1f + e.weight * 4f);
-                    e.color(gl);
-                    NodeVis to = e.to;
-                    Draw.line(x, y, to.cx(), to.cy(), gl);
-                }
-            },
-            Triangle {
-                @Override
-                public void render(EdgeVis e, NodeVis from, GL2 gl) {
-
-                    NodeVis to = e.to;
-                    if (to == null)
-                        return;
-
-
-                    float scale = Math.min(from.w(), from.h());
-                    float base = Util.lerp(e.weight, scale / 2, scale);
-
-                    e.color(gl);
-                    float fx = from.cx(), fy = from.cy();
-                    float tx = to.cx(), ty = to.cy();
-                    Draw.halfTriEdge2D(fx, fy, tx, ty, base, gl);
-
-                }
-            };
-
-            abstract public void render(EdgeVis e, NodeVis from, GL2 gl);
-        }
-
-        private void color(GL2 gl) {
-            gl.glColor4f(r, g, b, a);
-        }
-
-
-        public EdgeVis<X> weight(float w) {
-            weight = w;
-            return this;
-        }
-
-        public EdgeVis<X> weightAddLerp(float w, float rate) {
-            this.weight = Util.lerp(rate, this.weight, this.weight + w);
-            return this;
-        }
-        public EdgeVis<X> weightLerp(float w, float rate) {
-            this.weight = Util.lerp(rate, this.weight, w);
-            return this;
-        }
-
-        public EdgeVis<X> color(float r, float g, float b) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            return this;
-        }
-
-        public EdgeVis<X> colorLerp(float r, float g, float b /* TODO type */, float rate) {
-            if (r==r) this.r = Util.lerp(rate, this.r, r);
-            if (g==g) this.g = Util.lerp(rate, this.g, g);
-            if (b==b) this.b = Util.lerp(rate, this.b, b);
-            return this;
-        }
-        public EdgeVis<X> colorAdd(float r, float g, float b /* TODO type */, float rate) {
-            if (r==r) this.r = Util.lerp(rate, this.r, r + this.r);
-            if (g==g) this.g = Util.lerp(rate, this.g, g + this.g);
-            if (b==b) this.b = Util.lerp(rate, this.b, b + this.b);
-            return this;
-        }
-
-        final void draw(NodeVis<X> from, GL2 gl) {
-
-            NodeVis<X> t = this.to;
-            if (t == null || !t.visible())
-                return;
-
-            renderer.render(this, from, gl);
-        }
-    }
-
-    /**
-     * layer which renders NodeGraph nodes and edges
-     */
-    public static class NodeGraphRenderer<N, E> implements Graph2DRenderer<N> {
-        @Override
-        public void node(NodeVis<N> node, GraphEditing<N> graph) {
-            if (node.id instanceof Node) {
-                node.color(0.5f, 0.5f, 0.5f);
-//                node.move((float) Math.random() * 100, (float) Math.random() * 100);
-                node.size(20f, 10f);
-
-                Node<N, E> nn = (Node<N, E>) node.id;
-                nn.edges(false, true).forEach((e) -> {
-                    Graph2D.EdgeVis<N> ee = graph.edge(node, e.other(nn));
-                    ee.weight= 0.1f;
-                    ee.a = 0.75f;
-                    ee.r = ee.g = ee.b = 0.5f;
-                });
-
-            }
-        }
     }
 
     /**

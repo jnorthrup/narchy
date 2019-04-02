@@ -8,6 +8,7 @@ import org.ujmp.core.util.matrices.SystemEnvironmentMatrix;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeGraphRenderer;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 
 import java.util.function.Function;
@@ -49,7 +50,7 @@ public enum Graph2DTest {;
     public static Surface newTypeGraph() {
         return new Graph2D<Node<Class, Function>>()
                 .update(new ForceDirected2D<>())
-                .render(new Graph2D.NodeGraphRenderer<>())
+                .render(new NodeGraphRenderer<>())
                 .set(new ExtendedCastGraph()).widget();
     }
 
@@ -58,7 +59,7 @@ public enum Graph2DTest {;
 
                 .update(new ForceDirected2D<>())
 
-                .render(new Graph2D.NodeGraphRenderer<>())
+                .render(new NodeGraphRenderer<>())
 
                 .set(h);
     }
@@ -77,7 +78,7 @@ public enum Graph2DTest {;
 
                 .update(new ForceDirected2D())
 
-                .render(new Graph2D.NodeGraphRenderer())
+                .render(new NodeGraphRenderer())
 
                 .set(h).widget();
     }

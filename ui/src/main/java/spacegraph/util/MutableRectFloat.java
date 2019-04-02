@@ -4,7 +4,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 
 /**
  * similar to RectFloat2D with additional
@@ -21,7 +21,7 @@ public class MutableRectFloat<X> extends v2 {
      * TODO make a MutableFloatRect proxy and adapter class for transparently controlling a graph2d node
      */
     @Deprecated
-    public Graph2D.NodeVis<X> node;
+    public NodeVis<X> node;
 
 
     public MutableRectFloat() {
@@ -106,7 +106,7 @@ public class MutableRectFloat<X> extends v2 {
         return h / w;
     }
 
-    public void set(Graph2D.NodeVis<X> v) {
+    public void set(NodeVis<X> v) {
         set((this.node = v).bounds);
         v.mover = this;
     }

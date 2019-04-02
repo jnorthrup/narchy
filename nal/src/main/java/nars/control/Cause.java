@@ -1,5 +1,6 @@
 package nars.control;
 
+import jcog.Paper;
 import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.$;
@@ -26,6 +27,7 @@ import static java.util.stream.Collectors.toList;
  *
  * https://cogsci.indiana.edu/pub/parallel-terraced-scan.pdf
  */
+@Paper
 public class Cause extends InternalEvent implements Comparable<Cause> {
 
     /**
@@ -123,11 +125,6 @@ public class Cause extends InternalEvent implements Comparable<Cause> {
 //    }
 
     public void commit() {
-//        for (Traffic aGoal : credit)
-//            aGoal.commit();
-//    }
-//
-//    public void commitFast() {
         for (Traffic aGoal : credit)
             aGoal.commit();
     }

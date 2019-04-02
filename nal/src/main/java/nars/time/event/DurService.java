@@ -123,9 +123,16 @@ abstract public class DurService extends NARService {
     public static Pair<FloatRange, Off> cache(FloatSupplier o, float min, float max, float durPeriod, NAR n) {
         assert (min < max);
         FloatRange r = new FloatRange((min + max) / 2, min, max);
-        DurService d = DurService.on(n, () -> r.set(
-                Util.clampSafe(o.asFloat(), min, max)
-        ));
+        DurService d = DurService.on(n, () -> {
+            float x = o.asFloat();
+            if (x==x) {
+                r.set(
+                        Util.clampSafe(x, min, max)
+                );
+            } else {
+                //r.set(Float.NaN);
+            }
+        });
         d.durs(durPeriod);
         return Tuples.pair(r, d);
     }

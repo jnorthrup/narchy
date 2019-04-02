@@ -278,17 +278,19 @@ public class Remember extends AbstractTask {
         } else {
             dPri = 0;
         }
+        if (next!=null) {
 
-        @Nullable Task r = rememberMerged(prev, next);
-        if (r != null) {
-            if (rememberFilter(prev, next, r, dPri, n))
-                remember(r);
-            else
-                input = null;
+            @Nullable Task r = rememberMerged(prev, next);
+            if (r != null) {
+                if (rememberFilter(prev, next, r, dPri, n))
+                    remember(r);
+                else
+                    input = null;
+            }
+
+            if (!identity && r == null)
+                forget(next);
         }
-
-        if (!identity && r == null)
-            forget(next);
 
         done = true;
     }

@@ -1,11 +1,15 @@
 package spacegraph.test;
 
+import jcog.tree.rtree.rect.RectFloat;
+import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.*;
+import spacegraph.space2d.widget.chip.NoiseVectorChip;
 import spacegraph.space2d.widget.chip.SpeakChip;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.ListMenu;
@@ -14,6 +18,9 @@ import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
+import spacegraph.space2d.widget.port.LabeledPort;
+import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.port.TogglePort;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
@@ -22,11 +29,11 @@ import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
-import spacegraph.space2d.widget.windo.GraphEdit;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static spacegraph.space2d.container.grid.Gridding.*;
@@ -100,16 +107,9 @@ public class WidgetTest {
                         "UJMP", () -> Graph2DTest.newUjmpGraph(),
                         "Types", () -> Graph2DTest.newTypeGraph()
                 )),
-                "Wiring", () -> {
-                    GraphEdit<Surface> g;
-                    g = new GraphEdit<>();
-                    g.physics.invokeLater(() -> {
-                        g.add(WidgetTest.widgetDemo()).posRel(1, 1, 0.5f, 0.25f);
-                        for (int i = 0; i < 1; i++)
-                            g.add(new WizardFrame(new ProtoWidget())).posRel(1, 1, 0.25f, 0.2f);
-                    });
-                    return g;
-                },
+
+                "Wiring", () ->  new TabMenu(wiringDemos()),
+
                 "Geo", () -> OSMTest.osmTest()
         );
 
@@ -123,8 +123,49 @@ public class WidgetTest {
             ).resizeable()
         );
         m.put("Timeline", ()->Timeline2DTest.timeline2dTest());
-
+        m.put("Tsne", ()-> TsneTest.testTsneModel());
         menu = m;
+    }
+
+    @NotNull
+    private static Map<String, Supplier<Surface>> wiringDemos() {
+        return Map.of(
+            "Intro", ()->wiringDemo((EditGraph2D g)->{
+                    g.add(WidgetTest.widgetDemo()).posRel(1, 1, 0.5f, 0.25f);
+                    for (int i = 1; i < 3; i++)
+                        g.add(new WizardFrame(new ProtoWidget())).posRel(0.5f, 0.5f, 0.45f/i, 0.35f/i);
+                }),
+                //"", ()-> wiringDemo((g)->{})
+                "Basic", ()-> wiringDemo((g)->{
+                    /** switched signal */
+
+                    NoiseVectorChip A = new NoiseVectorChip();
+                    Container a = g.add(A).pos(RectFloat.Unit.transform(500, 250, 250));
+
+
+                    Port B = LabeledPort.generic();
+                    Container b = g.add(B).pos(RectFloat.XYWH(+1, 0, 0.25f, 0.25f).scale(500));
+
+                    TogglePort AB = new TogglePort();
+                    g.add(AB).pos(RectFloat.XYWH(0, 0, 0.25f, 0.25f).scale(500));
+
+//                    Loop.of(() -> {
+//                        A.out(Texts.n4(Math.random()));
+//                    }).setFPS(0.3f);
+                })
+        );
+    }
+
+    private static Surface wiringDemo(Consumer<EditGraph2D> o) {
+        EditGraph2D<Surface> g;
+        g = new EditGraph2D<>() {
+            @Override
+            protected void starting() {
+                super.starting();
+                physics.invokeLater(()->o.accept(this)); //() -> {
+            }
+        };
+        return g;
     }
 
     private static Surface iconButton() {

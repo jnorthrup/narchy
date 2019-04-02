@@ -4,6 +4,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.TypedPort;
+import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.Windo;
 
 import java.util.List;
@@ -28,14 +29,17 @@ public class PortAdapter<X,Y> extends Widget {
 
         this.xClass = xClass; this.yClass = yClass;
 
-        TypedPort<X> x = null;
-        TypedPort<Y> y = null;
-        Gridding g = new Gridding();
+        TypedPort<X> x = null; TypedPort<Y> y = null;
+        Gridding g = new Gridding(
+            LabeledPane.the(xClass.getName(), x = new TypedPort<>(xClass)),
+            LabeledPane.the(yClass.getName(), y = new TypedPort<>(yClass))
+        );
+        this.x = x; this.y = y;
+
         if (!fxy.isEmpty()) {
             whichXY = 0;
             this.fxy = fxy;
 
-            g.add(x = new TypedPort<>(xClass));
             x.on((xx)->PortAdapter.this.out(xx, true));
 
         } else { this.fxy = null; }
@@ -43,12 +47,10 @@ public class PortAdapter<X,Y> extends Widget {
             whichYX = 0;
             this.fyx = fyx;
 
-            g.add(y = new TypedPort<>(yClass));
             y.on((yy)->PortAdapter.this.out(yy, false));
 
         } else this.fyx = null;
 
-        this.x = x; this.y = y;
         set(g);
     }
 

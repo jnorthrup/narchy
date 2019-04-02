@@ -3,6 +3,7 @@ package spacegraph.space2d.container.layout;
 import jcog.data.list.FasterList;
 import jcog.data.pool.MetalPool;
 import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.util.MutableRectFloat;
 
 public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
@@ -60,7 +61,7 @@ public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
     /** apply to node after layout
      * default impl: copy directly
      * */
-    protected void put(MutableRectFloat<X> mover, Graph2D.NodeVis node) {
+    protected void put(MutableRectFloat<X> mover, NodeVis node) {
         node.posXYWH(mover.x, mover.y, mover.w, mover.h);
     }
 

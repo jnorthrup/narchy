@@ -1289,6 +1289,21 @@ public enum MatrixOps { ;
 		return matrix;
 	}
 
+	public static double[][] plusLerp(double[][] a, double[][] b, double ab) {
+		if (ab == 0) return a;
+		else if (ab == 1) return b;
+		double ba = 1-ab;
+		double[][] c = new double[a.length][a[0].length];
+		for (int i = 0; i < a.length; i++) {
+			double[] ci = c[i];
+			double[] ai = a[i];
+			double[] bi = b[i];
+			for (int j = 0; j < a[0].length; j++) {
+				ci[j] = (ab* ai[j]) + (ba* bi[j]);
+			}
+		}
+		return c;
+	}
 	
 	public static double[][] scalarPlus(double[][] m1, double m2) {
 		double[][] matrix = new double[m1.length][m1[0].length];

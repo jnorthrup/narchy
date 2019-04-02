@@ -64,4 +64,7 @@ public class ConcurrentRadixTree<X> extends MyRadixTree<X> {
             readLock.unlock();
     }
 
+    public boolean tryAcquireWriteLock() {
+        return writeLock.tryLock();
+    }
 }

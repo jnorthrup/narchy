@@ -58,6 +58,7 @@ abstract public class Finger {
     /** caches current ortho while traversing it */
     @Nullable @Deprecated
     protected transient Ortho _ortho;
+    protected final v2 _posGlobal = new v2();
 
 
     protected Finger(int buttons) {
@@ -119,9 +120,6 @@ abstract public class Finger {
         return touching.getOpaque();
     }
 
-    private v2 posGlobal(v2 x, Ortho o) {
-        return o.cam.screenToWorld(x);
-    }
 
     /**
      * call when finger exits the window / screen, the window becomes unfingerable, etc..
@@ -323,14 +321,16 @@ abstract public class Finger {
         return false;
     }
 
-    public v2 posGlobal(Surface c) {
-        Ortho co = this._ortho;
-        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class));
-        if (o!=null)
-            return posGlobal(posPixel, o);
-        else
-            return posPixel.clone();
-    }
+    abstract public v2 posGlobal(Surface c);
+    //{
+//        Ortho co = this._ortho;
+//        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class));
+//        if (o!=null)
+//            return posGlobal(posPixel, o);
+//        else
+//            return posPixel;//.clone();
+    //    return posGlobal;
+    //}
 
     private final AtomicFloat[] rotation = new AtomicFloat[3];
 
