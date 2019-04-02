@@ -5,6 +5,7 @@ import jcog.math.MutableInteger;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.function.IntFunction;
@@ -13,7 +14,7 @@ public class IntSpinner extends Widget {
 
     private final int min;
     private final int max;
-    private final VectorLabel label;
+    private final AbstractLabel label;
     private final MutableInteger i;
     private final IntFunction<String> labeller;
 

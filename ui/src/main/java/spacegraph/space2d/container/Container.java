@@ -72,7 +72,7 @@ abstract public class Container extends Surface {
 
     @Override
     protected void render(ReSurface r) {
-        if (!prePaint(r)) {
+        if (!preRender(r)) {
             showing = false;
         } else {
             showing = true;
@@ -85,7 +85,6 @@ abstract public class Container extends Surface {
 
             compileChildren(r);
 
-            compileAbove(r);
         }
 
     }
@@ -94,16 +93,12 @@ abstract public class Container extends Surface {
         forEach(c -> c.rerender(r));
     }
 
-    protected void compileAbove(ReSurface r) {
-
-    }
-
     @Override
     protected void paint(GL2 gl, ReSurface reSurface) {
 
     }
 
-    protected boolean prePaint(ReSurface r) {
+    protected boolean preRender(ReSurface r) {
         return true;
     }
 

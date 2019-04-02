@@ -2,7 +2,6 @@ package nars.task.util;
 
 import jcog.TODO;
 import jcog.Util;
-import nars.Param;
 import nars.Task;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,27 +19,23 @@ public final class TasksRegion implements TaskRegion {
     private final float freqMin, freqMax;
     private final float confMin, confMax;
 
-
-
-
-
     protected TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {
         this.start = start;
         this.end = end;
         
-        if (Util.equals(freqMin, freqMax, Param.TRUTH_EPSILON)) {
-            float mid = (freqMin + freqMax)/2;
-            this.freqMin = mid - Param.TRUTH_EPSILON/2; this.freqMax = mid + Param.TRUTH_EPSILON/2;
-        } else {
+//        if (Util.equals(freqMin, freqMax, e)) {
+//            float mid = (freqMin + freqMax)/2;
+//            this.freqMin = mid - e; this.freqMax = mid + e;
+//        } else {
             this.freqMin = freqMin; this.freqMax = freqMax;
-        }
+//        }
 
-        if (Util.equals(confMin, confMax, Param.TRUTH_EPSILON)) {
-            float mid = (confMin + confMax)/2;
-            this.confMin = mid - Param.TRUTH_EPSILON/2; this.confMax = mid + Param.TRUTH_EPSILON/2;
-        } else {
+//        if (Util.equals(confMin, confMax, e)) {
+//            float mid = (confMin + confMax)/2;
+//            this.confMin = mid - e; this.confMax = mid + e;
+//        } else {
             this.confMin = confMin; this.confMax = confMax;
-        }
+//        }
     }
 
     public static TasksRegion mbr(TaskRegion r, long xs, long xe, float ef, float ec) {

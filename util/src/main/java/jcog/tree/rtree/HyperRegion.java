@@ -57,11 +57,8 @@ public interface HyperRegion {
     static <X> HyperRegion mbr(Function<X, HyperRegion> builder, X[] rect, short size) {
         assert (size > 0);
         HyperRegion bounds = builder.apply(rect[0]);
-        for (int k = 1; k < size; k++) {
-            X rr = rect[k];
-            HyperRegion r = builder.apply(rr);
-            bounds = bounds.mbr(r);
-        }
+        for (int k = 1; k < size; k++)
+            bounds = bounds.mbr(builder.apply(rect[k]));
         return bounds;
     }
 
@@ -170,11 +167,6 @@ public interface HyperRegion {
     default boolean intersects(HyperRegion x) {
         if (this == x) return true;
         int d = dim();
-
-        /*
-           return !((x > r2.x + r2.w) || (r2.x > x + w) ||
-                (y > r2.y + r2.h) || (r2.y > y + h));
-         */
         for (int i = 0; i < d; i++) {
             if (coord(i, false) > x.coord(i, true) ||
                     coord(i, true) < x.coord(i, false))
@@ -201,7 +193,7 @@ public interface HyperRegion {
     }
 
     /**
-     * Calculate the perimeter of this HyperRect - across all dimesnions
+     * Calculate the perimeter of this HyperRect - across all dimensions
      *
      * @return - perimeter
      */

@@ -13,6 +13,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.Widget;
+import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 /**
@@ -21,7 +22,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
  */
 public class FloatSlider extends Widget {
 
-    private final VectorLabel label = new VectorLabel();
+    private final AbstractLabel label = new VectorLabel();
     FloatSupplier input;
     protected String labelText = "";
 
@@ -89,7 +90,7 @@ public class FloatSlider extends Widget {
     @Deprecated volatile float lastValue = Float.NaN;
 
     @Override
-    public boolean prePaint(ReSurface r) {
+    public boolean preRender(ReSurface r) {
 
         slider.update();
 
@@ -100,7 +101,7 @@ public class FloatSlider extends Widget {
         }
 
 
-        return super.prePaint(r);
+        return super.preRender(r);
     }
 
 

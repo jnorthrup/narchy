@@ -244,14 +244,14 @@ class ConceptualizationTest {
 
 
     @Test
-    void testConceptualizationWithoutConjReduction() throws Narsese.NarseseException {
+    void testConceptualizationWithoutConjReduction() {
         String s = "((--,((happy-->#1) &&+345 (#1,zoom))) &&+1215 (--,((#1,zoom) &&+10 (happy-->#1))))";
         assertEq("((--,((happy-->#1) &&+- (#1,zoom))) &&+- (--,((happy-->#1) &&+- (#1,zoom))))",
                 $$(s).concept().toString());
     }
 
     @Test
-    void testCoNegatedSubtermConceptConj() throws Narsese.NarseseException {
+    void testCoNegatedSubtermConceptConj() {
         assertEq("(x &&+- x)", n.conceptualize($$("(x &&+10 x)")).toString());
 
         assertEq("((--,x) &&+- x)", n.conceptualize($$("(x &&+10 (--,x))")).toString());
@@ -272,7 +272,7 @@ class ConceptualizationTest {
 
 
     @Test
-    void testStableConceptualization6a() throws Narsese.NarseseException {
+    void testStableConceptualization6a() {
         Term s = $$("((tetris($1,#2) &&+290 tetris(isRow,(8,false),true))=|>(tetris(checkScore,#2)&|tetris($1,#2)))");
         assertEq("((tetris(isRow,(8,false),true) &&+- tetris($1,#2)) ==>+- (tetris(checkScore,#2) &&+- tetris($1,#2)))", s.concept().toString());
     }

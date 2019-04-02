@@ -3,8 +3,8 @@ package spacegraph.space2d.widget.button;
 import jcog.exe.Exe;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.ImageTexture;
 
@@ -15,15 +15,12 @@ public class PushButton extends AbstractButton {
     @Nullable private Consumer<PushButton> onClick;
 
     public PushButton() {
-        this(new EmptySurface());
+        super();
     }
 
     public PushButton(String s) {
-
-        this(
-            new VectorLabel(s)
-            //    new BitmapLabel(s)
-        );
+        this();
+        label(s);
     }
 
     public PushButton(Surface content) {
@@ -74,7 +71,8 @@ public class PushButton extends AbstractButton {
     }
     public PushButton label(String s) {
         set(
-            new VectorLabel(s)
+            //new VectorLabel(s)
+            s.length() < 32 ? new BitmapLabel(s) : new VectorLabel(s)
         );
         return this;
     }

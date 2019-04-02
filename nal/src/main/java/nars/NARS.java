@@ -176,26 +176,26 @@ public class NARS {
                 new ConceptAllocator(
                         //beliefs ete
                         curve(termVolume,
-                        1, 8,
+                        1, 10,
                                 12, 5,
                                 18, 3
                         ),
                         //beliefs tmp
                         curve(termVolume,
-                                1, 64,
-                                16, 32,
+                                1, 96,
+                                16, 64,
                                 32, 16
                         ),
                         //goals ete
                         curve(termVolume,
-                                1, 4,
-                                16, 3,
+                                1, 8,
+                                16, 5,
                                 32, 2
                         ),
                         //goals tmp
                         curve(termVolume,
-                                1, 64,
-                                16, 32,
+                                1, 96,
+                                16, 64,
                                 32, 16
                         ),
                         //questions

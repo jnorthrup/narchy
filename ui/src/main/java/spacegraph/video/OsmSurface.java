@@ -278,10 +278,11 @@ public class OsmSurface extends Surface {
         }
 
         @Override
-        protected boolean prePaint(ReSurface r) {
+        protected void compileChildren(ReSurface r) {
             text(text.get());
-            return super.prePaint(r);
+            super.compileChildren(r);
         }
+
     }
 
 

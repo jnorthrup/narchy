@@ -3,6 +3,7 @@ package jcog.tree.rtree;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import jcog.tree.rtree.split.LinearSplitLeaf;
 import jcog.tree.rtree.split.QuadraticSplitLeaf;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -45,18 +46,28 @@ public class Spatialization<X> {
         return split.split(x, leaf, this);
     }
 
-
-    /** existing may be the same instance, or .equals() to the incoming */
-    protected void onMerge(X existing, X incoming) {
-        //default: do nothing
-    }
-
     public Leaf<X> transfer(X[] sortedMbr, int from, int to) {
         return new Leaf<>(this, sortedMbr, from, to);
     }
 
     public double epsilon() {
         return EPSILON;
+    }
+
+    /** if a merge is possible, either a or b or a new task will be returned.  null otherwise
+     *  existing and incoming will not be the same instance.
+     *  default implementation: test for equality and re-use existing item
+     * */
+    @Nullable
+    public X merge(X existing, X incoming) {
+        return existing.equals(incoming) ? existing : null;
+    }
+
+    /** one-way merge for containment test.
+     * container and content will not be the same instance.
+     * default implementation simply tests for equality */
+    public boolean mergeContain(X container, X content) {
+        return container.equals(content);
     }
 
 

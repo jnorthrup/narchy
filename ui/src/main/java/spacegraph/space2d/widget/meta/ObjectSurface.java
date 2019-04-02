@@ -19,6 +19,7 @@ import spacegraph.space2d.widget.button.EnumSwitch;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.slider.IntSlider;
+import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
@@ -254,7 +255,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             if (s == null) {
                 return provided;
             } else {
-                VectorLabel l = new VectorLabel(s);
+                AbstractLabel l = new VectorLabel(s);
                 if (provided == null) return l;
                 else return Splitting.row(l, 0.3f, provided);
             }
@@ -288,9 +289,9 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         }
 
         @Override
-        public boolean prePaint(ReSurface r) {
+        public boolean preRender(ReSurface r) {
             on((a.getOpaque())); //load
-            return super.prePaint(r);
+            return super.preRender(r);
         }
     }
 

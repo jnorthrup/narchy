@@ -60,7 +60,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     protected final TreeMap<Float, Task> similar = new TreeMap();
 
 
-    public TaskCondition(NAR n, long creationStart, long creationEnd, Term term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) throws RuntimeException, nars.Narsese.NarseseException {
+    public TaskCondition(NAR n, long creationStart, long creationEnd, Term term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) throws RuntimeException {
 
 
         if (freqMax < freqMin) throw new RuntimeException("freqMax < freqMin");

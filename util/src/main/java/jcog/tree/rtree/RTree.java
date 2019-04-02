@@ -130,8 +130,12 @@ public class RTree<T> implements Space<T> {
         int before = SIZE.get(this);
         if (before == 0)
             return false;
+        HyperRegion bx = model.bounds(x);
+        if (!root.bounds().contains(bx))
+            return false;
+
         boolean[] removed = new boolean[1];
-        @Nullable Node<T> nextRoot = root.remove(x, model.bounds(x), model, removed);
+        @Nullable Node<T> nextRoot = root.remove(x, bx, model, removed);
         if (removed[0]) {
 
             root = nextRoot!=null ? nextRoot : model.newLeaf();

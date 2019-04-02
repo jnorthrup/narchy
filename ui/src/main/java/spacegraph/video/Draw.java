@@ -516,33 +516,35 @@ public enum Draw {
     }
 
 
-    public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, float alpha) {
-        rectTex(gl, tt, x, y, z, w, h, repeatScale, alpha, false);
+    public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, boolean mipmap, float alpha) {
+        rectTex(gl, tt, x, y, z, w, h, repeatScale, alpha, mipmap, false);
     }
 
-    public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, float alpha, boolean inverted) {
+    public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, float alpha, boolean mipmap, boolean inverted) {
 
 
         tt.enable(gl);
         tt.bind(gl);
 
-
         gl.glColor4f(1.0f, 1.0f, 1.0f, alpha);
 
+        if (mipmap)  {
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 64);
+            gl.glGenerateMipmap(GL_TEXTURE_2D);
+        } else {
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        }
 
         boolean repeat = repeatScale > 0;
         if (repeat) {
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
-            gl.glGenerateMipmap(GL_TEXTURE_2D);
         } else {
-
-            //https://www.khronos.org/registry/OpenGL-Refpages/es2.0/xhtml/glTexParameter.xml
-            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             repeatScale = 1f;
         }
 

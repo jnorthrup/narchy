@@ -309,6 +309,11 @@ public class ConsoleAgent extends NAgentX {
             return cols();
         }
 
+        @Override
+        public void invalidate() {
+
+        }
+
 //        public Stream<SignalTask> input() {
 //
 //            return IntStream.range(0, rows() * cols()).mapToObj(i -> {

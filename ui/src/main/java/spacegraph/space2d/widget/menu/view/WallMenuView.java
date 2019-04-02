@@ -38,7 +38,7 @@ public class WallMenuView extends Menu.MenuView {
 
     @Override
     public boolean inactive(Surface surface) {
-        return wall.remove((Object)surface)!=null;
+        return wall.remove((Object)(((Surface)surface.parent).parent /* HACK */) )!=null;
     }
 
     @Override

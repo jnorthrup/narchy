@@ -117,7 +117,9 @@ public class SignalView extends Timeline2D {
     }
 
     @Override
-    protected void compileAbove(ReSurface r) {
+    protected void compileChildren(ReSurface r) {
+        super.compileChildren(r);
+
         float sStart = selectStart;
         if (sStart == sStart) {
             float sEnd = selectEnd;

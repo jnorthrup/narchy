@@ -118,17 +118,37 @@ public class Branch<X> extends AbstractNode<X> {
 
         final HyperRegion tRect = model.bounds(x);
 
-        Node[] child = this.data;
+        Node[] data = this.data;
 
-        if (bounds.contains(tRect)) {
+        if (bounds.intersects /*contains if simple equals*/(tRect)) {
 
-            for (int i = 0; i < size; i++) {
-                Node ci = child[i];
+            short s = this.size;
+            for (int i = 0; i < s; i++) {
+                Node ci = data[i];
+
+                HyperRegion ciBefore = ci.bounds();
+
                 Node di = ci.add(x, false, model, null);
-                if (di == null)
+
+                if (di == null) {
+                    //merge occurred
+                    if (ciBefore != ci.bounds()) {
+                        //grow HACK
+                        HyperRegion b = i == 0 ? ciBefore : data[0].bounds();
+                        for (int k = 1; k < s; k++)
+                            b = b.mbr(i == k ? ciBefore : data[k].bounds());
+                        bounds = b;
+                    }
+//                    updateBounds();
                     return null; //duplicate found
-                if (ci!=di)
-                    child[i] = di;
+                }
+
+                if (ci!=di) {
+                    data[i] = di; //merge
+                    if (ciBefore != di.bounds())
+                        updateBounds();
+                    return null;
+                }
             }
             if (!addOrMerge)
                 return this;
@@ -140,7 +160,7 @@ public class Branch<X> extends AbstractNode<X> {
         assert (!added[0]);
 
 
-        if (size < child.length) {
+        if (size < data.length) {
 
 
             grow(addChild(model.newLeaf().add(x, addOrMerge, model, added)));
@@ -152,25 +172,26 @@ public class Branch<X> extends AbstractNode<X> {
 
             final int bestLeaf = chooseLeaf(tRect);
 
-            Node nextBest = child[bestLeaf].add(x, true, model, added);
+            Node nextBest = data[bestLeaf].add(x, true, model, added);
             if (nextBest == null) {
+                updateBounds();
                 return null; /*merged*/
+            } else {
+
+                //inline
+                if (size < data.length && nextBest.size() == 2 && !nextBest.isLeaf()) {
+                    Node[] bc = ((Branch<X>) nextBest).data;
+                    data[bestLeaf] = bc[0];
+                    data[size++] = bc[1];
+                } else {
+                    data[bestLeaf] = nextBest;
+                }
+
+                updateBounds();
+                return this;
             }
 
-            child[bestLeaf] = nextBest;
 
-
-            grow(nextBest);
-
-
-            if (size < child.length && nextBest.size() == 2 && !nextBest.isLeaf()) {
-                Node[] bc = ((Branch<X>) nextBest).data;
-                child[bestLeaf] = bc[0];
-                child[size++] = bc[1];
-            }
-
-
-            return this;
         }
     }
 
@@ -178,31 +199,25 @@ public class Branch<X> extends AbstractNode<X> {
         grow(data[i]);
     }
 
-    private static HyperRegion grow(HyperRegion region, Node node) {
-        return region.mbr(node.bounds());
-    }
-
     @Override
     public Node<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
 
-        assert (!removed[0]);
+        //assert (!removed[0]);
 
         for (int i = 0; i < size; i++) {
-            Node<X> cBefore = data[i];
+            Node<X> y = data[i];
 //            HyperRegion cBeforeBounds = cBefore.bounds();
-            if (cBefore.bounds().contains(xBounds)) {
+            if (y.bounds().contains(xBounds)) {
 
-                @Nullable Node<X> cAfter = cBefore.remove(x, xBounds, model, removed);
+                @Nullable Node<X> cAfter = y.remove(x, xBounds, model, removed);
 
                 if (removed[0]) {
 
                     data[i] = cAfter;
 
                     if (cAfter == null) {
-                        if (i < size - 1)
+                        if (i < --size)
                             Arrays.sort(data, NullCompactingComparator);
-
-                        size--;
                     }
 
 
@@ -211,6 +226,7 @@ public class Branch<X> extends AbstractNode<X> {
                             bounds = null;
                             return null;
                         case 1:
+                            bounds = null;
                             return data[0]; //reduce to only leaf
                         default: {
                             //TODO possibly rebalance
@@ -243,7 +259,7 @@ public class Branch<X> extends AbstractNode<X> {
                     }
 
                 } else {
-                    assert (cAfter == cBefore);
+                    assert (cAfter == y);
                 }
             }
         }
@@ -255,9 +271,8 @@ public class Branch<X> extends AbstractNode<X> {
     private void updateBounds() {
         Node<X>[] dd = this.data;
         HyperRegion region = dd[0].bounds();
-        for (int j = 1; j < size; j++) {
-            region = grow(region, dd[j]);
-        }
+        for (int j = 1; j < size; j++)
+            region = region.mbr(dd[j].bounds());
         if (bounds == null || !bounds.equals(region))
             this.bounds = region;
     }
@@ -277,7 +292,7 @@ public class Branch<X> extends AbstractNode<X> {
                     cc[i] = cc[i].replace(OLD, oldBounds, NEW, model);
                     found = true;
                 }
-                region = i == 0 ? cc[0].bounds() : grow(region, cc[i]);
+                region = i == 0 ? cc[0].bounds() : region.mbr(cc[i].bounds());
             }
             if (found) {
                 this.bounds = region;

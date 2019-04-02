@@ -64,10 +64,11 @@ public class XYSlider extends Surface implements HudHover {
     public Surface caption() {
         return new VectorLabel() {
             @Override
-            protected boolean prePaint(ReSurface r) {
+            protected void compileChildren(ReSurface r) {
                 text(summary());
-                return super.prePaint(r);
+                super.compileChildren(r);
             }
+
         };
     }
 
@@ -116,7 +117,8 @@ public class XYSlider extends Surface implements HudHover {
         v2 hitPoint = f.posRelative(XYSlider.this);
 
         pressing = true;
-        if (knob.setIfChanged(unitize(hitPoint.x), unitize(hitPoint.y), ScalarValue.EPSILONcoarse))
+        float p = hitPoint.x;
+        if (Float.isFinite(p) && knob.setIfChanged(unitize(p), unitize(hitPoint.y), ScalarValue.EPSILONcoarse))
             updated();
 
     }

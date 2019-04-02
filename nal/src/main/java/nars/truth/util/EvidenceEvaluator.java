@@ -14,12 +14,6 @@ import static nars.time.Tense.ETERNAL;
  */
 public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time to evidence */  {
 
-
-    public static double evi(Task task, long when, int dur) {
-        return task.isEternal() ? task.truth().evi() :
-                EvidenceEvaluator.of(task, dur).applyAsDouble(when);
-    }
-
     public double eviIntegrate(long... points) {
         return new MyIntegrator().integrate(points);
     }
@@ -130,12 +124,12 @@ public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time 
         double ee = t.evi();
         if (s == ETERNAL)
             return new EternalEvidenceEvaluator(ee);
-
-        long e = t.end();
-        if (s == e)
-            return new TemporalPointEvidenceEvaluator(s, ee, dur);
-        else
-            return new TemporalSpanEvidenceEvaluator(s, e, ee, dur);
+        else {
+            long e = t.end();
+            return s == e ?
+                    new TemporalPointEvidenceEvaluator(s, ee, dur) :
+                    new TemporalSpanEvidenceEvaluator(s, e, ee, dur);
+        }
     }
 
 

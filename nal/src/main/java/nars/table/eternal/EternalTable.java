@@ -223,9 +223,17 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         try {
 
             int index = indexOf(x, this);
+
             if (index != -1) {
+                Task xx = get(index);
                 long rr = lock.tryConvertToWriteLock(r);
                 if (rr==0) { lock.unlockRead(r); r = lock.writeLock(); } else { r = rr; }
+
+                if (get(index)!=xx) { //moved while waiting for lock, retry:
+                    index = indexOf(x, this);
+                    assert(index!=-1);
+                }
+
                 removed = remove(index);
                 assert (removed != null);
             } else {
@@ -270,40 +278,45 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Term newTerm = null;
         Term inputTerm = input.term();
         float aProp = Float.NaN;
+        final double ie = input.evi();
 
-        for (Object aList : list) {
-            if (aList == null)
-                break;
-            Task x = (Task) aList;
-            float xconf = x.conf();
+        for (Object _x : list) {
+            if (_x == null)  break; //HACK
+            Task x = (Task) _x;
+
+            Truth yt = null;
+
+            Term nt;
+            Term xTerm = x.term();
+            Truth xt = x.truth();
+
             if (Stamp.overlapsAny(input, x)) {
 
                 //HACK interpolate truth if only freq differs
                 if ((!x.isCyclic() && !input.isCyclic()) &&
                         Arrays.equals(x.stamp(), input.stamp()) &&
-                        Util.equals(xconf, input.conf(), nar.confResolution.floatValue())) {
+                        Util.equals(x.conf(), input.conf(), nar.confResolution.floatValue())) {
 
-                    conclusion = $.t((x.freq() + input.freq()) / 2, xconf).dither(nar);
-
+                    yt = $.t((x.freq() + input.freq()) / 2, x.conf()).dither(nar);
                 }
 
             } else {
 
-                Truth xt = x.truth();
 
-                final double newBeliefWeight = input.evi();
+                yt = Revision.revise(input.truth(), xt);
+            }
 
-                aProp = (float) (newBeliefWeight / (newBeliefWeight + x.evi()));
+            if (yt!=null) {
 
-                Term xTerm = x.term();
-                Term nt;
+                float _aProp = (float) (ie / (ie + x.evi()));
                 if (inputTerm.equals(xTerm)) {
                     nt = inputTerm;
                 } else {
+
                     nt =
                             Intermpolate.intermpolate(
                                     inputTerm, xTerm,
-                                    aProp,
+                                    _aProp,
                                     nar
                             );
 
@@ -313,21 +326,23 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                         continue;
                 }
 
-                Truth newBeliefTruth = input.truth();
-
-                Truth yt = Revision.revise(newBeliefTruth, xt);
-                if (yt == null)
-                    continue;
-
                 yt = yt.dither(nar);
-                if (yt == null || (nt.equals(inputTerm) && ((yt.equalsIn(xt, nar) || yt.equalsIn(newBeliefTruth, nar)))))
+
+                if (yt == null || (nt.equals(inputTerm) && ((yt.equalsIn(xt, nar) || yt.equalsIn(input.truth(), nar)))))
                     continue;
+
+                if (conclusion!=null) {
+                    //a previous conclusion exists; try if by originality this one is stronger
+                    if (conclusion.evi() * oldBelief.originality() >= yt.evi() * x.originality()) {
+                        continue;
+                    }
+                }
 
                 newTerm = nt;
                 conclusion = yt;
                 oldBelief = x;
+                aProp = _aProp;
             }
-
         }
 
         NALTask revised;

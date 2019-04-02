@@ -79,7 +79,12 @@
     //TODO nal3 shortcut - decompose trailing intersection/union event
 
 
-
+        //TODO chooseUnifiableSubterm
+          B, ( (&&,C,A..+) ==> X)     |- unisubst((&&,polarizeBelief(X),       A..+ ),C,polarizeTask(B)), (Belief:DeductionDepolarized)
+//          B, (--(&&,C,A..+) ==> X)     |- unisubst((&&,polarizeBelief(X), --(&&,A..+)),C,polarizeTask(B)), (Belief:DeductionDepolarized)
+//          B, ((&&,--C,A..+) ==> X)       |- unisubst((&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
+//              B, (--(&&,C,A..+) ==> X)   |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)
+//              B, (--(&&,--C,A..+) ==> X) |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
 
 
 //Anonymous Deduction and Abduction

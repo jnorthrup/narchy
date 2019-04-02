@@ -122,6 +122,7 @@ public class WidgetTest {
             new Splitting<>(iconButton(), 0.618f, false, iconButton()).resizeable()
             ).resizeable()
         );
+        m.put("Timeline", ()->Timeline2DTest.timeline2dTest());
 
         menu = m;
     }

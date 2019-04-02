@@ -229,8 +229,8 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
 
     @Override
-    public boolean prePaint(ReSurface r) {
-        if (super.prePaint(r)) {
+    public boolean preRender(ReSurface r) {
+        if (super.preRender(r)) {
             IntObjectProcedure<Port<X>> u = this.updater;
             if (u != null)
                 u.value(r.dtMS(), this);

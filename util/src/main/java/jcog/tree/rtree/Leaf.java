@@ -118,17 +118,33 @@ public class Leaf<X> extends AbstractNode<X> {
 
 
     @Override
-    public Node<X> add(/*@NotNull*/ final X t, boolean addOrMerge, Spatialization<X> model, boolean[] added) {
+    public Node<X> add(/*@NotNull*/ final X x, boolean addOrMerge, Spatialization<X> model, boolean[] added) {
 
-        final HyperRegion tb = model.bounds(t);
+        final HyperRegion B = model.bounds(x);
 
         if (addOrMerge) {
-            boolean mightContain = size > 0 && bounds.contains(tb);
+            boolean mightContain = size > 0 && (/* TODO model.mergeEqualOnly() ? bounds.contains(tb) : */ bounds.intersects(B));
             if (mightContain) {
                 for (int i = 0, s = size; i < s; i++) {
-                    X x = data[i];
-                    if (x.equals(t)) {
-                        model.onMerge(x, t);
+                    X y = data[i];
+                    if (y == x)
+                        return null; //identical instance found
+
+                    X xy = model.merge(y, x);
+                    if (xy != null) {
+                        if (xy != y) {
+
+                            data[i] = xy;
+
+                            HyperRegion xtb = model.bounds(xy);
+                            //if (!bounds.contains(xtb)) {
+                                //grow HACK
+                                HyperRegion b = i == 0 ? xtb : model.bounds(data[0]);
+                                for (int k = 1; k < s; k++)
+                                    b = b.mbr(i == k ? xtb : model.bounds(data[k]));
+                                bounds = b;
+                            //}
+                        }
                         return null;
                     }
                 }
@@ -138,16 +154,16 @@ public class Leaf<X> extends AbstractNode<X> {
 
             if (size < data.length) {
 
-                grow(tb);
-                data[this.size++] = t;
+                grow(B);
+                data[this.size++] = x;
 
                 return this;
             } else {
-                return model.split(t, this);
+                return model.split(x, this);
             }
 
         } else {
-            return contains(t, tb, model) ? null : this;
+            return contains(x, B, model) ? null : this;
         }
     }
 
@@ -185,10 +201,7 @@ public class Leaf<X> extends AbstractNode<X> {
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
                 X t = data[i];
-                //if (t == null) break;
-                if (t.equals(x)) {
-                    if (t != x)
-                        model.onMerge(t, x);
+                if (x == t || model.mergeContain(x, t)) {
                     return true;
                 }
             }
@@ -201,13 +214,13 @@ public class Leaf<X> extends AbstractNode<X> {
     public Node<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
 
         final int size = this.size;
-        assert(size>0); //        if (size == 0)            return this;
+        assert (size > 0); //        if (size == 0)            return this;
         X[] data = this.data;
         int i;
         for (i = 0; i < size; i++) {
             X d = data[i];
             if (x.equals(d))
-                break; 
+                break;
         }
         if (i == size)
             return this; //not found
@@ -303,7 +316,7 @@ public class Leaf<X> extends AbstractNode<X> {
 //            }
 //        }
         for (X x : data)
-            if (x!=null)
+            if (x != null)
                 consumer.accept(x);
             else
                 break; //null-terminator reached
@@ -326,9 +339,9 @@ public class Leaf<X> extends AbstractNode<X> {
     /**
      * Figures out which newly made leaf node (see split method) to add a data entry to.
      *
-     * @param a left node
-     * @param b right node
-     * @param x      data entry to be added
+     * @param a     left node
+     * @param b     right node
+     * @param x     data entry to be added
      * @param model
      */
     public final void transfer(final Node<X> a, final Node<X> b, final X x, Spatialization<X> model) {
@@ -337,7 +350,7 @@ public class Leaf<X> extends AbstractNode<X> {
         double tCost = xReg.cost();
 
         final HyperRegion aReg = a.bounds();
-        final HyperRegion aMbr = aReg!=null ? xReg.mbr(aReg) : xReg;
+        final HyperRegion aMbr = aReg != null ? xReg.mbr(aReg) : xReg;
         double axCost = aMbr.cost();
         final double aCostInc = Math.max(axCost - ((/*aReg!=null ? */aReg.cost() /*: 0*/) + tCost), 0.0);
 
@@ -354,7 +367,7 @@ public class Leaf<X> extends AbstractNode<X> {
                 final double aMbrMargin = aMbr.perimeter(), bMbrMargin = bMbr.perimeter();
 
                 if (Util.equals(aMbrMargin, bMbrMargin, eps)) {
-                    
+
                     target = ((a.size() <= b.size()) ? a : b);
                 } else {
                     target = (aMbrMargin <= bMbrMargin) ? a : b;

@@ -20,6 +20,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.MutableRectFloat;
@@ -95,7 +96,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     private final Consumer<NodeVis<X>> DEFAULT_NODE_BUILDER = x -> x.set(
             //new Scale(
-                    new PushButton(x.id.toString())
+                    new PushButton(new VectorLabel(x.id.toString()))
                     //, 0.75f)
     );
     private transient Consumer<NodeVis<X>> builder = DEFAULT_NODE_BUILDER;
@@ -192,8 +193,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     @Override
-    protected boolean prePaint(ReSurface r) {
-        if (super.prePaint(r)) {
+    protected boolean preRender(ReSurface r) {
+        if (super.preRender(r)) {
             if (busy.compareAndSet(false, true)) {
                 try {
                     updater.update(this, r.dtS());

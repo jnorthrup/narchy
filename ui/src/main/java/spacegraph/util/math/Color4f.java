@@ -33,6 +33,7 @@ package spacegraph.util.math;
 
 import com.jogamp.opengl.GL2;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.video.Draw;
 
 import java.awt.*;
@@ -48,6 +49,8 @@ import java.awt.*;
  * all colors.
  */
 public class Color4f extends Tuple4f {
+
+    public static final Color3f BLACK = new Color3f(0, 0, 0);
 
     /**
      * Constructs and initializes a Color4f from the specified xyzw
@@ -209,5 +212,9 @@ public class Color4f extends Tuple4f {
         float b = componentFunction.valueOf(z);
         float a = this.w;
         gl.glColor4f(r, g, b, a);
+    }
+
+    public Color toAWT() {
+        return new Color(x, y, z, w);
     }
 }

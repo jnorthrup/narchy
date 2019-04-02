@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1400;
+    private static final int cycles = 1200;
 
     @BeforeEach
     void setup() {
@@ -588,7 +588,6 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification() {
-//        test.nar.termVolumeMax.setAt(10);
         TestNAR tester = test;
         ////there is a lock which is opened by all keys
         tester.believe("(((#1 --> lock) && ($2 --> key)) ==> open($2, #1))", 1.00f, 0.90f);
@@ -598,8 +597,6 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification_neg() {
-//        test.nar.termVolumeMax.setAt(10);
-
         TestNAR tester = test;
         ////there is a lock which is opened by all non-keys
         tester.believe("(((#1 --> lock) && --($2 --> key)) ==> open($2, #1))");
@@ -843,7 +840,7 @@ public class NAL6Test extends NALTest {
     void abduction_positive_negative_mix_depolarized() {
 
         test
-                .termVolMax(7).confMin(0.35f)
+                .termVolMax(7).confMin(0.3f)
                 .believe("(P ==> N)", 0.00f, 0.90f)
                 .believe("((A && --N) ==> P)", 1.00f, 0.90f)
                 .mustBelieve(cycles, "A", 1.00f, 0.45f)
@@ -1189,6 +1186,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testMutexBelief() {
         test
+                .termVolMax(3)
                 .believe("--(x && y)")
                 .believe("x")
                 .mustBelieve(cycles, "y", 0f, 0.81f)
@@ -1200,6 +1198,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testMutexConjBeliefInduction() {
         test
+                .termVolMax(8)
                 .believe("(x && --y)")
                 .believe("(--x && y)")
                 .mustBelieve(cycles, "(x && y)", 0f, 0.81f)
@@ -1211,6 +1210,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testMutexConjBeliefInduction2() {
         test
+                .termVolMax(8)
                 .believe("(&&,x,--y,a)")
                 .believe("(&&,--x,y,a)")
                 .mustBelieve(cycles, "(--(x && y) && a)", 1f, 0.81f)
@@ -1228,6 +1228,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testMutexAbduction() {
         test
+                .termVolMax(8)
                 .believe("(--(x && y) ==> z)")
                 .believe("(x && z)")
                 .mustBelieve(cycles, "y", 0f, 0.45f)
@@ -1311,6 +1312,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplSubjQuestionUnificationQuery() {
         test
+                .termVolMax(13)
                 .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(?x)")
                 .mustQuestion(cycles, "(&&,Sells(?1,#2,#3),z)")

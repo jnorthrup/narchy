@@ -197,7 +197,7 @@ public class TemporalTermTest {
 
 
     @Test
-    void testTransformedImplDoesntActuallyOverlap() throws Narsese.NarseseException {
+    void testTransformedImplDoesntActuallyOverlap() {
         assertEquals("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+7 (_1,_2))",
                 $$c("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+- (_1,_2))").dt(7).toString());
     }

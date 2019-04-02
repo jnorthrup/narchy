@@ -70,41 +70,43 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         return (W) this;
     }
 
-
-
     @Override
-    protected void paintIt(GL2 gl, ReSurface rr) {
-
-        paintWidget(bounds, gl);
-    }
-
-    @Override
-    protected void compileAbove(ReSurface r) {
+    protected void paintIt(GL2 gl, ReSurface r) {
         //pri decay
         //////            1 - (float) Math.exp(-(((double) dt) / n.dur()) / memoryDuration.floatValue());
-        float DECAY_PERIOD = 1; //TODO use exponential decay formula
+        float DECAY_PERIOD = 2; //TODO use exponential decay formula
         double decayRate = Math.exp(-(((double) r.dtS()) / DECAY_PERIOD));
         pri = (float) (pri * decayRate);
         //float PRI_DECAY = 0.97f; //TODO use exponential decay formula
         //pri = Util.clamp(pri * PRI_DECAY, 0, 1f);
 
+        paintWidget(bounds, gl);
+    }
+
+    @Override
+    protected void compileChildren(ReSurface r) {
+        super.compileChildren(r);
 
         if (focused) {
+            //focused indicator
             r.on((gl)->{
-                float t = this.pri;
-                RectFloat b = this.bounds;
-                float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
-                gl.glColor4f(0.5f + 0.5f * t,0.25f, 0.15f, 0.5f);
-                Draw.rectFrame(b,  th, gl);
+                if (focused) {
+                    float t = this.pri;
+                    RectFloat b = this.bounds;
+                    float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
+                    gl.glColor4f(0.5f + 0.5f * t, 0.25f, 0.15f, 0.5f);
+                    Draw.rectFrame(b, th, gl);
+                }
             });
         }
     }
 
 
+
     protected void paintWidget(RectFloat bounds, GL2 gl) {
         float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
-        float bri = 0.25f * dim;
-        color.set( rgb-> Util.or(rgb,bri,pri/4), gl);
+        float bri = 0.1f * dim;
+        color.set( rgb-> Util.or(rgb,bri,pri/8), gl);
         Draw.rect(bounds, gl);
     }
 
@@ -114,7 +116,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         Surface s = super.finger(finger);
         if (s == null) {
 
-            priAtleast(0.3f);
+            priAtleast(0.1f);
 
             if (!focused && finger.pressedNow(0) || finger.pressedNow(2))
                 focus();

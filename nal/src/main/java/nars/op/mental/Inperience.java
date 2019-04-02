@@ -82,8 +82,9 @@ abstract public class Inperience extends TaskLeakTransform {
             int dt = term.dt();
             switch (term.op()) {
 
+                case BOOL:
                 case NEG: {
-                    throw new UnsupportedOperationException("shouldnt be called due to NegObliviosity");
+                    throw new UnsupportedOperationException();
                 }
 
                 case INH: {

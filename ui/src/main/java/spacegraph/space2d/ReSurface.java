@@ -133,7 +133,7 @@ public class ReSurface {
 
 
     public final boolean visP(RectFloat bounds, int minPixelsToBeVisible) {
-        return !(bounds.w * scaleX < minPixelsToBeVisible) || !(bounds.h * scaleY < minPixelsToBeVisible);
+        return (bounds.w * scaleX >= minPixelsToBeVisible) && (bounds.h * scaleY >= minPixelsToBeVisible);
     }
 
     @Override

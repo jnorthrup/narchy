@@ -24,6 +24,7 @@ import nars.agent.util.RLBooster;
 import nars.attention.Attention;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
+import nars.control.NARService;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
@@ -54,15 +55,13 @@ import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.Menu;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
-import spacegraph.space2d.widget.meta.MetaFrame;
-import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meta.ServicesTable;
-import spacegraph.space2d.widget.meta.TriggeredSurface;
+import spacegraph.space2d.widget.meta.*;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.meter.ScatterPlot2D;
 import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.port.FloatRangePort;
+import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
@@ -109,11 +108,11 @@ public class NARui {
     }
 
 
-    public static VectorLabel label(Object x) {
+    public static AbstractLabel label(Object x) {
         return label(x.toString());
     }
 
-    public static VectorLabel label(String text) {
+    public static AbstractLabel label(String text) {
         return new VectorLabel(text);
     }
 
@@ -126,22 +125,27 @@ public class NARui {
 
 
     public static Surface top(NAR n) {
-        HashMap<String, Supplier<Surface>> mm = menu(n);
-        return
-                new Bordering(
-                        new TabMenu(mm,
-                                new GridMenuView()
-                                //new WallMenuView()
-                        )
-                )
-                        .north(ExeCharts.runPanel(n))
-                //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
-                ;
+        return new Bordering(
+                new Splitting(
+                    new TabMenu(menu(n) /* , new WallMenuView() */ ),
+                    0.5f,
+                    new TabMenu(pluginsMenu(n), new GridMenuView().aspect(2))
+                ).resizeable()
+            ).north(ExeCharts.runPanel(n))
+            //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
+            ;
+    }
+
+    public static HashMap<String, Supplier<Surface>> pluginsMenu(NAR n) {
+        HashMap<String,Supplier<Surface>> m = new HashMap<>();
+        n.plugins().forEach(s -> {
+            m.put( ((NARService)s).term().toString(), ()-> new ObjectSurface(s));
+        });
+        return m;
     }
 
     public static HashMap<String, Supplier<Surface>> menu(NAR n) {
         Map<String, Supplier<Surface>> m = Map.of(
-                //"inp", () -> taskBufferPanel(n),
                 //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
                 "nar", () -> new ObjectSurface<>(n, 1),
                 "on", () -> new ObjectSurface(n.atMap(), 2),
@@ -159,6 +163,7 @@ public class NARui {
         HashMap<String, Supplier<Surface>> mm = new HashMap<>()
         {{
             putAll(m);
+            put("inp", () -> taskBufferView(n.in, n));
             put("snp", () -> memoryView(n));
             put("tsk", () -> taskView(n));
 //            put("mem", () -> ScrollGrid.list(

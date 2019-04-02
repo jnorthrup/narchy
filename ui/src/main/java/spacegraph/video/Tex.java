@@ -66,7 +66,7 @@ public class Tex {
 
         Texture t = this.texture;
         if (t != null) {
-            Draw.rectTex(gl, t, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale, alpha, inverted);
+            Draw.rectTex(gl, t, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale, alpha, mipmap, inverted);
         }
 
     }
@@ -76,15 +76,12 @@ public class Tex {
 
         if (data != null) {
 
-
-            if ((texture == null || updated.compareAndSet(true, false))) {
-
-                if (texture == null) {
-                    texture = TextureIO.newTexture(gl, data);
-                }
-                if (texture != null) {
+            if (texture == null) {
+                texture = TextureIO.newTexture(gl, data);
+            }
+            if (updated.compareAndSet(true, false)) {
                     texture.updateImage(gl, data);
-                }
+
             }
         } else {
             //first step:
@@ -151,6 +148,7 @@ public class Tex {
     void set(int[] iimage, int width, int height, boolean alpha) {
 
         this.src = iimage;
+        //TODO if iimage is the same instance
 
         IntBuffer buffer = IntBuffer.wrap(iimage);
         data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,

@@ -266,11 +266,14 @@ public class Remember extends AbstractTask {
             //TODO decide how much to re-activate
             //TODO consider forgetting rate
 
-            dPri = next.priElseZero() - prev.priElseZero();
+            if (prev!=null && next!=null) {
+                dPri = next.priElseZero() - prev.priElseZero();
 
-            if (prev instanceof NALTask)
-                ((NALTask) prev).priCauseMerge(next, CauseMerge.AppendUnique);
-
+                if (prev instanceof NALTask)
+                    ((NALTask) prev).priCauseMerge(next, CauseMerge.AppendUnique);
+            } else {
+                dPri = 0; //TODO?
+            }
 
         } else {
             dPri = 0;

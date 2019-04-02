@@ -629,31 +629,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         }
     }
 
-
-    @Override
-    default float freqMin() {
-        return freq();
-    }
-
     @Override
     default float freqMean() {
         return freq();
     }
 
-    @Override
-    default float freqMax() {
-        return freq();
-    }
-
-    @Override
-    default float confMin() {
-        return conf();
-    }
-
-    @Override
-    default float confMax() {
-        return conf();
-    }
 
 
     /**
@@ -670,7 +650,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * @return value >= 0 indicating the evidence
      */
     default double evi(long when, final int dur) {
-        return EvidenceEvaluator.evi(this, when, dur);
+        return EvidenceEvaluator.of(this, dur).applyAsDouble(when);
     }
 
     @Override

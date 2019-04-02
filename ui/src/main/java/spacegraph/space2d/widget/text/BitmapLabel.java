@@ -5,36 +5,26 @@ import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.unit.AspectAlign;
-import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.widget.console.BitmapTextGrid;
 
 import java.util.Arrays;
 
-public class BitmapLabel extends BitmapTextGrid {
+public class BitmapLabel extends AbstractLabel {
 
-    static final float charAspect = 1.6f;
+    private final BitmapTextGrid view;
     static final int minPixelsToBeVisible = 7;
 
-    private volatile String text = "";
-    private final Color3f fgColor = Color3f.WHITE;
-    private final Color3f bgColor= Color3f.BLACK;
     private volatile RectFloat textBounds;
 
     public BitmapLabel(String text) {
         super();
 
         textBounds = bounds;
-        cursorCol = cursorRow = -1; //hidden
 
-        setFillTextBackground(false);
-        textColor(1f,1f,1f);
+        view = new MyBitmapTextGrid();
+        view.start(this);
 
         text(text);
-
-
-
-        //setUpdateNecessary();
-
     }
 
     public BitmapLabel() {
@@ -42,86 +32,111 @@ public class BitmapLabel extends BitmapTextGrid {
     }
 
     @Override
-    protected boolean prePaint(ReSurface r) {
-        return r.visP(bounds, minPixelsToBeVisible);
+    public AbstractLabel text(String next) {
+        String prev = text;
+        if (prev==null || !prev.equals(next)) {
+
+            int rows = 1 + Texts.count(next, '\n');
+            boolean resized;
+            if (rows == 1) {
+                resized = view.resize(next.length(), 1);
+            } else {
+                //HACK do better
+                int cols = Arrays.stream(next.split("\n")).mapToInt(String::length).max().getAsInt();
+                resized = view.resize(cols, rows);
+            }
+
+            super.text(next);
+
+            view.invalidate();
+
+            layout();
+
+
+        }
+        return this;
     }
 
     @Override
-    protected RectFloat textBounds() {
-        return textBounds;
-    }
-    protected void layoutText() {
-        if (cols > 0 && rows > 0) {
-
-            textBounds = AspectAlign.innerBounds(bounds, (rows * charAspect) / cols);
-
+    protected void doLayout(float dtS) {
+        int c = view.cols, r = view.rows;
+        if (c > 0 && r > 0) {
+            textBounds = AspectAlign.innerBounds(bounds, (r * charAspect) / c);
         } else
             textBounds = bounds; //nothing
     }
 
     @Override
-    public void doLayout(float dtS) {
-        //HACK override the auto-sizing
-        layoutText();
+    protected void compileChildren(ReSurface r) {
+        view.pos(bounds);
+        view.rerender(r);
     }
 
-    public BitmapLabel text(String newText) {
-        if (!this.text.equals(newText)) {
-            this.text = newText;
-
-            int rows = 1 + Texts.count(newText, '\n');
-            if (rows == 1) {
-                resize(newText.length(), 1);
-            } else {
-                //HACK do better
-                int cols = Arrays.stream(newText.split("\n")).mapToInt(String::length).max().getAsInt();
-                resize(cols, rows);
-            }
-            layoutText();
-            invalidate();
-        }
-
-        return this;
+    @Override
+    protected boolean preRender(ReSurface r) {
+        return r.visP(bounds, minPixelsToBeVisible);
     }
 
-    public String text() {
-        return text;
+    protected void layoutText() {
+
+
+        if (view.cols > 0 && view.rows > 0) {
+            textBounds = AspectAlign.innerBounds(bounds, (view.rows * charAspect) / view.cols);
+        } else
+            textBounds = bounds; //nothing
     }
+
+
 
     public BitmapLabel textColor(float rr, float gg, float bb) {
-        fgColor.set((rr), (gg), (bb));
+        fgColor.set((rr), (gg), (bb), 1f);
         return this;
     }
 
     public BitmapLabel backgroundColor(float rr, float gg, float bb) {
-        bgColor.set((rr), (gg), (bb));
+        bgColor.set((rr), (gg), (bb), 1f);
         return this;
     }
 
 
+    private class MyBitmapTextGrid extends BitmapTextGrid {
 
-
-
-    @Override
-    protected boolean renderText() {
-
-        clearBackground(); //may not be necessary if only one line and all characters are used but in multiline the matrix currently isnt regular so some chars will not be redrawn
-
-        int n = text.length();
-        int row = 0, col =0;
-        for (int i = 0; i < n; i++) {
-            char c = text.charAt(i);
-            if (c == '\n') {
-                row++;
-                col = 0;
-            } else {
-                redraw(c, col++, row, fgColor, bgColor);
-            }
+        public MyBitmapTextGrid() {
+            cursorCol = cursorRow = -1; //hidden
+            setFillTextBackground(false);
         }
-        return true;
+
+        @Override
+        protected RectFloat textBounds() {
+            return textBounds;
+        }
+
+
+        @Override
+        public void doLayout(float dtS) {
+
+        }
+
+
+        @Override
+        protected boolean renderText() {
+
+            clearBackground(); //may not be necessary if only one line and all characters are used but in multiline the matrix currently isnt regular so some chars will not be redrawn
+
+            int n = text.length();
+            int row = 0, col =0;
+            for (int i = 0; i < n; i++) {
+                char c = text.charAt(i);
+                if (c == '\n') {
+                    row++;
+                    col = 0;
+                } else {
+                    redraw(c, col++, row, fgColor, bgColor);
+                }
+            }
+            return true;
+        }
+
+
     }
-
-
-
-
 }

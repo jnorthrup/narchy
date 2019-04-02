@@ -34,6 +34,7 @@ import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
+import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
@@ -137,7 +138,7 @@ public class ExeCharts {
 
     static class CausableWidget extends Widget {
         private final TimedLink c;
-        private final VectorLabel label;
+        private final AbstractLabel label;
 
         CausableWidget(TimedLink c) {
             this.c = c;

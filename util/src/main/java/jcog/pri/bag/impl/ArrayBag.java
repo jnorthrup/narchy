@@ -344,7 +344,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                     if (next.remove) {
                         //TODO this is the point where a writelock should be attempted. otherwise it can be moved/removed in the meantime
                         if (ii[i] == x) {
-                            remove(y, i, 0, false /* strong */);
+                            remove(y, i, 0, true);
+                            y.delete();
+                                    //false /* strong */
+
                         } else {
                             //its not there any more
                         }
@@ -533,10 +536,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         boolean close = l == 0;
 
+        l = l != 0 ? writeFromRead(l) : (weak ? lock.tryWriteLock() : lock.writeLock());
+        if (l == 0)
+            return;
         try {
-            l = l != 0 ? writeFromRead(l) : (weak ? lock.tryWriteLock() : lock.writeLock());
-            if (l == 0)
-                return;
             boolean removed = table.items.removeFast(y, suspectedPosition);
             if (!removed) {
                 //exhaustive
@@ -546,7 +549,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             removeFromMap(y);
         } finally {
             if (close && l != 0)
-                lock.unlock(l);
+                lock.unlockWrite(l);
         }
 
     }

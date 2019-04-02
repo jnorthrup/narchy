@@ -3,13 +3,20 @@ package spacegraph.space2d.widget.console;
 import spacegraph.space2d.container.EmptyContainer;
 
 public abstract class AbstractConsoleSurface extends EmptyContainer {
-    protected int rows;
-    protected int cols;
+    public int rows;
+    public int cols;
 
-    public void resize(int cols, int rows) {
-        this.cols = cols;
-        this.rows = rows;
+    public boolean resize(int cols, int rows) {
+        if (this.cols!=cols || this.rows!=rows) {
+            this.cols = cols;
+            this.rows = rows;
+            invalidate();
+            return true;
+        }
+        return false;
     }
+
+    abstract public void invalidate();
 
 
 //    abstract public TextCharacter charAt(int col, int row);

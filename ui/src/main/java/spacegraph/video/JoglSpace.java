@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import static com.jogamp.opengl.GL.*;
 import static com.jogamp.opengl.GL2ES1.GL_PERSPECTIVE_CORRECTION_HINT;
 import static com.jogamp.opengl.GL2ES3.GL_STENCIL;
+import static com.jogamp.opengl.GL2GL3.GL_POLYGON_SMOOTH;
 import static com.jogamp.opengl.GL2GL3.GL_POLYGON_SMOOTH_HINT;
 import static com.jogamp.opengl.GLES2.GL_MAX;
 import static com.jogamp.opengl.fixedfunc.GLLightingFunc.*;
@@ -198,25 +199,24 @@ abstract public class JoglSpace {
 
             gl.glEnable(GL_STENCIL);
 
-
             gl.glEnable(GL_LINE_SMOOTH);
+            gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+            gl.glEnable(GL_POLYGON_SMOOTH);
+            gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
             gl.glEnable(GL_MULTISAMPLE);
 
 
-            gl.glHint(GL_POLYGON_SMOOTH_HINT,
-                    GL_NICEST);
+            gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
-            gl.glHint(GL_LINE_SMOOTH_HINT,
-                    GL_NICEST);
+            gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-            gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT,
-                    GL_NICEST);
+            gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 
             gl.glColorMaterial(GL_FRONT_AND_BACK,
                     GL_AMBIENT_AND_DIFFUSE
-
             );
             gl.glEnable(GL_COLOR_MATERIAL);
             gl.glEnable(GL_NORMALIZE);

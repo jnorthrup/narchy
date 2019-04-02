@@ -111,7 +111,7 @@ public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
 
 
             @Override
-            public boolean prePaint(ReSurface r) {
+            public boolean preRender(ReSurface r) {
                 float v = this.get();
                 float d = (v - 0.5f) * 2;
                 double delta = d * (end - start) * speed;
@@ -121,7 +121,7 @@ public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
                     set(Util.lerp(0.5f + sticking/2, v, 0.5f));
                 }
 
-                return super.prePaint(r);
+                return super.preRender(r);
             }
 
             @Override
@@ -134,12 +134,12 @@ public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
 
         FloatSlider zoomSlider = new FloatSlider(0.5f, 0.48f, 0.52f) {
             @Override
-            public boolean prePaint(ReSurface r) {
+            public boolean preRender(ReSurface r) {
                 float v = this.get();
                 timeScale((v + 0.5f));
                 set(Util.lerp(0.5f + sticking/2, v, 0.5f));
 
-                return super.prePaint(r);
+                return super.preRender(r);
             }
 
             @Override

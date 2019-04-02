@@ -34,9 +34,12 @@ class RTreeBeliefTableTest {
 
     private static final LongToFloatFunction stepFunction = (t) -> (Math.sin(t) / 2f + 0.5f) >= 0.5 ? 1f : 0f;
 
-    @NotNull
     private static Task add(BeliefTable r, Termed x, float freq, float conf, long start, long end, NAR n) {
-        Task a = $.task(x.term(), BELIEF, freq, conf).time(start, start, end).apply(n);
+        return add(r, x, freq, conf, start, end, n.evidence()[0], n);
+    }
+
+    private static Task add(BeliefTable r, Termed x, float freq, float conf, long start, long end, long evi, NAR n) {
+        Task a = $.task(x.term(), BELIEF, freq, conf).time(start, start, end).evidence(evi).apply(n);
         a.pri(0.5f);
         r.add(Remember.the(a, n), n);
         return a;
@@ -56,7 +59,7 @@ class RTreeBeliefTableTest {
         cb.tableFirst(EternalTable.class).setTaskCapacity(0);
         cb.tableFirst(TemporalBeliefTable.class).setTaskCapacity(cap);
 
-        
+
         System.out.println("points:");
         long time;
         long start = n.time();
@@ -68,7 +71,7 @@ class RTreeBeliefTableTest {
             c.beliefs().print();
             System.out.println();
 
-            
+
         }
         System.out.println();
         System.out.println();
@@ -89,7 +92,7 @@ class RTreeBeliefTableTest {
 
         c.beliefs().print();
 
-        
+
         CSVOutput csv = new CSVOutput(System.out, "time", "actual", "approx");
 
         double errSum = 0;
@@ -109,7 +112,7 @@ class RTreeBeliefTableTest {
             errSum += err;
 
             csv.out(i, actual, approx);
-            
+
         }
         double avgErr = errSum / (end - start + 1);
         System.out.println();
@@ -117,10 +120,10 @@ class RTreeBeliefTableTest {
         assertTrue(avgErr < 0.4f);
     }
 
+    static final Term ab = nars.$.$$("a:b");
     @Test
-    void testBasicOperations() throws Narsese.NarseseException {
+    void testBasicOperations() {
         NAR n = NARS.shell();
-        Term ab = nars.$.$("a:b");
         TaskConcept X = (TaskConcept) n.conceptualize(ab);
         RTreeBeliefTable r = new RTreeBeliefTable();
         r.setTaskCapacity(4);
@@ -139,9 +142,9 @@ class RTreeBeliefTableTest {
 
         r.add(Remember.the(a, n), n);
         r.print(System.out);
-        assertEquals(1, r.size()); 
+        assertEquals(1, r.size());
 
-        Task b = add(r, x, 0f, 0.5f, 1, 1, n); 
+        Task b = add(r, x, 0f, 0.5f, 1, 1, n);
         assertEquals(2, r.size());
 
         Task c = add(r, x, 0.1f, 0.9f, 2, 2, n);
@@ -153,14 +156,14 @@ class RTreeBeliefTableTest {
         System.out.println("at capacity");
         r.print(System.out);
 
-        
+
         Task e = add(r, x, 0.3f, 0.9f, 3, 4, n);
 
         System.out.println("\nat capacity?");
         r.print(System.out);
         r.forEachTask(System.out::println);
 
-        assertEquals(4, r.size()); 
+        assertEquals(4, r.size());
 
         System.out.println("after capacity compress inserting " + e.toString(true));
         r.print(System.out);
@@ -199,7 +202,7 @@ class RTreeBeliefTableTest {
     @Test
     void testAccuracyFlat() {
 
-        testAccuracy(1, 1, 20, 8, (t) -> 0.5f); 
+        testAccuracy(1, 1, 20, 8, (t) -> 0.5f);
     }
 
     @Test
@@ -220,7 +223,7 @@ class RTreeBeliefTableTest {
 
     @Test
     void testAccuracySawtoothWave() {
-        
+
         testAccuracy(1, 3, 15, 5, stepFunction);
     }
 
@@ -229,7 +232,8 @@ class RTreeBeliefTableTest {
         testAccuracy(1, 1, 7, 5, stepFunction);
     }
 
-    @Test void testHyperIterator() {
+    @Test
+    void testHyperIterator() {
         NAR n = NARS.shell();
 
         n.time.dur(1);
@@ -249,7 +253,7 @@ class RTreeBeliefTableTest {
         int maxRange = 8;
 
         //populate table randomly
-        for (int i= 0; i < cap; i++) {
+        for (int i = 0; i < cap; i++) {
             long start = n.random().nextInt(horizon);
             long end = start + n.random().nextInt(maxRange);
             add(table, term, 1f, 0.9f, start, end, n);
@@ -259,19 +263,20 @@ class RTreeBeliefTableTest {
 
         List<TaskRegion> shouldBeAscendingTimes = seek(table, -1, -1);
         print("shouldBeAscendingTimes", shouldBeAscendingTimes);
-        List<TaskRegion> shouldBeDescendingTimes = seek(table, horizon+1, horizon+1);
+        List<TaskRegion> shouldBeDescendingTimes = seek(table, horizon + 1, horizon + 1);
         print("shouldBeDescendingTimes", shouldBeDescendingTimes);
-        List<TaskRegion> shouldOscillateOutwardFromMidpoint = seek(table, horizon/2, horizon/2);
+        List<TaskRegion> shouldOscillateOutwardFromMidpoint = seek(table, horizon / 2, horizon / 2);
         print("shouldOscillateOutwardFromMidpoint", shouldOscillateOutwardFromMidpoint);
     }
 
-    @Deprecated static List<TaskRegion> seek(RTreeBeliefTable table, long s, long e) {
+    @Deprecated
+    static List<TaskRegion> seek(RTreeBeliefTable table, long s, long e) {
         int c = table.capacity();
         List<TaskRegion> seq = new FasterList(c);
-        table.read(t->{
+        table.read(t -> {
             HyperIterator<TaskRegion> h = new HyperIterator(t.model,
                     new TaskRegion[Math.min(c, 32)],
-                    Answer.temporalDistanceFn( new TimeRange(s, e)));
+                    Answer.temporalDistanceFn(new TimeRange(s, e)));
             while (h.hasNext()) {
                 seq.add(h.next());
             }
@@ -283,11 +288,12 @@ class RTreeBeliefTableTest {
         System.out.println(msg);
         int i = 0;
         for (TaskRegion t : seq)
-            System.out.println("\t" + (i++) + ": "+ t);
+            System.out.println("\t" + (i++) + ": " + t);
         System.out.println();
     }
 
-    @Test void testSplitOrdering() {
+    @Test
+    void testSplitOrdering() {
         NAR n = NARS.shell();
 
         n.time.dur(1);
@@ -307,17 +313,44 @@ class RTreeBeliefTableTest {
         int maxRange = 8;
 
         //populate table randomly
-        for (int i= 0; i < cap; i++) {
+        for (int i = 0; i < cap; i++) {
             long start = n.random().nextInt(horizon);
             long end = start + n.random().nextInt(maxRange);
-            add(table, term, n.random().nextFloat(), n.random().nextFloat()*0.8f + 0.1f, start, end, n);
+            add(table, term, n.random().nextFloat(), n.random().nextFloat() * 0.8f + 0.1f, start, end, n);
         }
         table.print();
 
-        table.read(t->{
-           t.root().streamNodesRecursively().forEach(r -> {
-               System.out.println(r);
-           });
+        table.read(t -> {
+            t.root().streamNodesRecursively().forEach(r -> {
+                System.out.println(r);
+            });
         });
+    }
+
+    @Test
+    void testSubsumeContainedEvent() {
+        testSubsumeContainedEvent(true);
+    }
+
+    @Test
+    void testSubsumeContainedByEvent() {
+        testSubsumeContainedEvent(false);
+    }
+
+    static void testSubsumeContainedEvent(boolean forward) {
+        NAR n = NARS.shell();
+        TaskConcept AB = (TaskConcept) n.conceptualize(ab);
+        RTreeBeliefTable r = new RTreeBeliefTable();
+        r.setTaskCapacity(4);
+
+        long as, ae, bs, be;
+        as = 0; ae = 3; bs = 1; be = 2;
+        long sameStamp = 1;
+        Task x = add(r, AB, 1f, 0.9f, forward ?  as : bs, forward ? ae : be, sameStamp, n);
+        Task y = add(r, AB, 1f, 0.9f, forward ?  bs : as, forward ? be : ae, sameStamp, n);
+
+        assertEquals(1, r.size());
+        assertEquals(4, r.iterator().next().range());
+        assertEquals(4, r.bounds().range(0));
     }
 }

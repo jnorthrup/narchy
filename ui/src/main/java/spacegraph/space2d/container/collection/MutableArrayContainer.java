@@ -43,8 +43,8 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
     }
 
     /** returns the removed element */
-    public S setAt(int index, S s, boolean startAndStop) {
-        return children.getAndUpdate(index, (r) -> {
+    public S setAt(int index, S ss, boolean startAndStop) {
+        return children.getAndAccumulate(index, ss, (r, s) -> {
             if (r != s) {
                 if (startAndStop) {
                     if (r != null) {
@@ -56,12 +56,12 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
                         assert (sParent == null || sParent == this);
 
 
-                        synchronized (this) {
+//                        synchronized (this) {
                             if (sParent == null && this.parent != null) {
                                 s.start(this);
                             }
                             //otherwise it is started, or this isnt started
-                        }
+//                        }
 
                     }
                 }
@@ -89,7 +89,7 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
     protected int childrenCount() {
         int count = 0;
         for (int i = 0; i < length; i++) {
-            if (children.get(i)!=null)
+            if (children.getOpaque(i)!=null)
                 count++;
         }
         return count;

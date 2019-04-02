@@ -175,7 +175,7 @@ public class TestServer {
 
             DataTable s = cloud.node(/*"**"*/ "eus").exec(new Callable<>() {
                 @Override
-                public DataTable call() throws Exception {
+                public DataTable call() {
                     return new TestServer("nars.nal.nal1").test();
                 }
             });

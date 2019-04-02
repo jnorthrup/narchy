@@ -34,6 +34,8 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
      */
     float CONF_COST = 0.125f;
 
+
+
     static Consumer<TaskRegion> asTask(Consumer<? super Task> each) {
         return r -> {
             Task x = r.task();
@@ -50,83 +52,13 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         };
     }
 
-
-    @Override
-    boolean equals(Object obj);
-
-    @Override
-    int hashCode();
-
-
-    default float expectation() {
-        return TruthFunctions.expectation(freqMean(), confMin());
-    }
-
-    default short[] cause() {
-        return ArrayUtils.EMPTY_SHORT_ARRAY;
-    }
-
-
-//    @Override
-//    default double cost() {
-//        double x = timeCost() * freqCost() * confCost();
-//        assert (x == x);
-//        return x;
-//    }
-
-//    @Override
-//    default double perimeter() {
-//        return timeCost() + freqCost() + confCost();
-//    }
-
-
-    @Override
-    default double cost(final int dim) {
-        switch (dim) {
-            case 0:
-                return (1+range(0)) * TIME_COST;
-            case 1:
-                return range(1) * FREQ_COST;
-            case 2:
-                return range(2) * CONF_COST;
-        }
-        throw new UnsupportedOperationException();
-    }
-
-
-    @Override
-    default double range(final int dim) {
-        switch (dim) {
-            case 0:
-                return end() - start();
-            default:
-                return Math.max(Param.TRUTH_EPSILON, /*Math.abs*/(coordF(dim, true) - coordF(dim, false)));
-        }
-
-    }
-
-    @Override
-    default int dim() {
-        return 3;
-    }
-
-
-    @Override
-    default TaskRegion mbr(HyperRegion r) {
-        if (this == r)
-            return this;
-        else {
-            return mbr(this, (TaskRegion) r);
-        }
-    }
-
     static TasksRegion mbr(TaskRegion r, Task x) {
         return TasksRegion.mbr(r, x.start(), x.end(), x.freq(), x.conf());
     }
 
     static TaskRegion mbr(TaskRegion x, TaskRegion y) {
         if (y instanceof Task) {
-            assert(!(x instanceof Task)): "mbr(task,task) should force creation of TasksRegion";
+            assert (!(x instanceof Task)) : "mbr(task,task) should force creation of TasksRegion";
             return TaskRegion.mbr(x, (Task) y);
         }
 
@@ -145,52 +77,123 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             return z; //enlarged (intersecting or disjoint)
     }
 
+    @Override
+    boolean equals(Object obj);
 
+
+//    @Override
+//    default double cost() {
+//        double x = timeCost() * freqCost() * confCost();
+//        assert (x == x);
+//        return x;
+//    }
+
+//    @Override
+//    default double perimeter() {
+//        return timeCost() + freqCost() + confCost();
+//    }
+
+    @Override
+    int hashCode();
+
+    default float expectation() {
+        return TruthFunctions.expectation(freqMean(), confMin());
+    }
+
+    default short[] cause() {
+        return ArrayUtils.EMPTY_SHORT_ARRAY;
+    }
+
+    @Override
+    default double cost(final int dim) {
+        switch (dim) {
+            case 0:
+                return range(0) * TIME_COST;
+            case 1:
+                return range(1) * FREQ_COST;
+            case 2:
+                return range(2) * CONF_COST;
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default double range(final int dim) {
+        switch (dim) {
+            case 0:
+                return 1 + (end() - start());
+            case 1:
+                return Param.TRUTH_EPSILON/2 + (freqMax() - freqMin());
+            case 2:
+                return Param.TRUTH_EPSILON/2 + (confMax() - confMin());
+            default:
+                throw new UnsupportedOperationException();
+        }
+
+    }
+
+    @Override
+    default int dim() {
+        return 3;
+    }
+
+    @Override
+    default TaskRegion mbr(HyperRegion r) {
+        return this.equals(r) ? this : mbr(this, (TaskRegion) r);
+    }
 
     @Override
     default boolean intersects(HyperRegion x) {
         if (x == this) return true;
         long start = start();
         if (x instanceof TimeRange) {
+            TimeRange t = (TimeRange) x;
+            if (start > t.end || end() < t.start)
+                return false;
             if (x instanceof TimeConfRange) {
-                TimeConfRange t = (TimeConfRange) x;
-                return start <= t.end && end() >= t.start && confMin() <= t.cMax && confMax() >= t.cMin;
+                TimeConfRange tt = (TimeConfRange) x;
+                return confMin() <= tt.cMax && confMax() >= tt.cMin;
             } else {
-                TimeRange t = (TimeRange) x;
-                return start <= t.end && end() >= t.start;
+                return true;
             }
         } else {
             TaskRegion t = (TaskRegion) x;
             return start <= t.end() &&
                     end() >= t.start() &&
-                    coordF(1, false) <= t.coordF(1, true) &&
-                    coordF(1, true) >= t.coordF(1, false) &&
-                    coordF(2, false) <= t.coordF(2, true) &&
-                    coordF(2, true) >= t.coordF(2, false);
+                    freqMin() <= t.freqMax() &&
+                    freqMax() >= t.freqMin() &&
+                    confMin() <= t.confMax() &&
+                    confMax() >= t.confMin();
         }
     }
 
     @Override
     default boolean contains(HyperRegion x) {
-        if (x == this) return true;
+        if (x.equals(this)) return true;
+        //if (x==this) return true;
+
 
         long start = start();
         if (x instanceof TimeRange) {
+            TimeRange t = (TimeRange) x;
+            if (start > t.start || end() < t.end)
+                return false;
+
             if (x instanceof TimeConfRange) {
-                TimeConfRange t = (TimeConfRange) x;
-                return start <= t.start && end() >= t.end && confMin() <= t.cMin && confMax() >= t.cMax;
+                TimeConfRange cr = (TimeConfRange) x;
+                return confMin() <= cr.cMin && confMax() >= cr.cMax;
             } else {
-                TimeRange t = (TimeRange) x;
-                return start <= t.start && end() >= t.end;
+                return true;
             }
+
         } else {
             TaskRegion t = (TaskRegion) x;
             return
                     start <= t.start() && end() >= t.end() &&
-                            coordF(1, false) <= t.coordF(1, false) &&
-                            coordF(1, true) >= t.coordF(1, true) &&
-                            coordF(2, false) <= t.coordF(2, false) &&
-                            coordF(2, true) >= t.coordF(2, true);
+                            freqMin() <= t.freqMin() &&
+                            freqMax() >= t.freqMax() &&
+                            confMin() <= t.confMin() &&
+                            confMax() >= t.confMax();
         }
     }
 
@@ -209,12 +212,12 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         return (confMin() <= cMin && confMax() >= cMax);
     }
 
-    default float freqMin() {
-        return coordF(1, false);
-    }
-
     default float freqMean() {
         return (freqMin() + freqMax()) * 0.5f;
+    }
+
+    default float freqMin() {
+        return coordF(1, false);
     }
 
     default float freqMax() {
@@ -228,13 +231,5 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default float confMax() {
         return coordF(2, true);
     }
-
-
-//    /**
-//     * intersects only the time dimension
-//     */
-//    default boolean intersectsTime(LongInterval x) {
-//        return this == x || intersects(x.start(), x.end());
-//    }
 
 }

@@ -154,7 +154,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
     private class MyTextEditView extends TextEditModel {
 
         @Override
-        protected void paintIt(GL2 gl, ReSurface rr) {
+        protected void paintIt(GL2 gl, ReSurface r) {
             //super.paintIt(gl, rr);
             paint(content.bounds, view(), focused, gl);
         }

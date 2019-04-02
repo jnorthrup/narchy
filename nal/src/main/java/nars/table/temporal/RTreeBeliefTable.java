@@ -1,5 +1,6 @@
 package nars.table.temporal;
 
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.sort.FloatRank;
@@ -7,6 +8,7 @@ import jcog.sort.Top;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.QuadraticSplitLeaf;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.Revision;
@@ -16,6 +18,7 @@ import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import nars.time.Tense;
+import nars.truth.Truth;
 import nars.truth.polation.TruthProjection;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
@@ -115,13 +118,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                    Math.log(1 + r.maxTimeTo(now)); //ensure that the number is small enough for when it gets returned as float
 //            y = timeDist;
 //            if (y < min) return Float.NaN;
-            float y = 1;
-
-            //r.midTimeTo(when);
+            float y =
+                    (float)Math.log(1+r.meanTimeTo(now));
             //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
+            if (y < min)
+                return Float.NaN;
 
-            float conf = //(((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
-                    r.coordF(2, false);
+            float conf =
+                    (((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
+                    //r.coordF(2, false);
 
             y = y * (1 - conf);
             //-Param.evi(c2wSafe(conf),  timeDist, perceptDur);
@@ -219,7 +224,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        }
 
 
-        /** inserted but not necessarily kept */
+        RTreeBeliefModel.merged.remove();
+
         write(treeRW -> {
             if (treeRW.add(input)) {
                 ensureCapacity(treeRW, input.isBelief() /* else Goal*/, r, n);
@@ -227,9 +233,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         });
 
         Task existing = RTreeBeliefModel.merged.get();
-        if (existing != null && existing.equals(input)) {
-            r.merge(existing, n);
-            RTreeBeliefModel.merged.remove();
+        if (existing != null && existing!=input) {
+           r.merge(existing, n);
+           onReject(input, n);
         } else {
             if (!input.isDeleted()) {
                 r.remember(input);
@@ -349,10 +355,30 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (treeRW.remove(W)) {
                 r.forget(W);
                 return true;
+            } else {
+
+                //treeRW.remove(W); //TEMPORARY
+
+//            Spatialization model = ((RTree) treeRW).model;
+//            HyperRegion ww = model.bounds(W);
+//            List<Node<TaskRegion>> containingNodes = treeRW.root().streamNodesRecursively().filter((Node n) -> {
+//                return n.contains(W, ww, model);
+//            }).sorted(Comparators.byFloatFunction( w -> (float)w.bounds().cost())).collect(toList());
+//            if (!containingNodes.isEmpty()) {
+//
+//                HyperRegion tb = treeRW.root().bounds();
+//                System.out.println("tree bounds=" + tb);
+//                for (Node n : containingNodes) {
+//                    System.out.println("\t" + n + " bounds contained: " + tb.contains(n.bounds()));
+//                }
+//                treeRW.remove(W);
+//            }
+                throw new
+                        WTF();
+                //UnsupportedOperationException();
             }
         }
 
-        throw new UnsupportedOperationException();
     }
 
 
@@ -475,9 +501,37 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         @Deprecated
         final static ThreadLocal<Task> merged = new ThreadLocal();
 
+        @Nullable
         @Override
-        protected void onMerge(TaskRegion existing, TaskRegion incoming) {
-            merged.set((Task) existing);
+        public TaskRegion merge(TaskRegion existing, TaskRegion incoming) {
+
+            Task ee = (Task) existing;
+            Task ii = (Task) incoming;
+
+            Task m = null;
+            if (ee.equals(ii))
+                m = ee;
+            else {
+                if (Arrays.equals(ee.stamp(), ii.stamp())) {
+                    if (ee.term().equals(ii.term())) {
+                        Truth et = ee.truth(), it = ii.truth();
+                        if (Util.equals(et.freq(), it.freq(), Param.TRUTH_EPSILON)) {
+                            double ete = et.conf();
+                            double ite = it.conf();
+                            if (ete >= ite && ee.contains(ii.start(), ii.end())) {
+                                m = ee;
+                            } else if (ite >= ete && ii.contains(ee.start(), ee.end())) {
+                                m = ii;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (m!=null)
+                merged.set(m);
+
+            return m;
         }
 
     }

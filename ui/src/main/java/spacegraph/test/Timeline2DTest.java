@@ -1,4 +1,4 @@
-package spacegraph.space2d.widget;
+package spacegraph.test;
 
 import jcog.math.Longerval;
 import jcog.signal.Tensor;
@@ -12,6 +12,7 @@ import spacegraph.space2d.container.time.Timeline2DEvents;
 import spacegraph.space2d.container.time.Timeline2DSequence;
 import spacegraph.space2d.container.time.TimelineGrid;
 import spacegraph.space2d.container.unit.Scale;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.WaveBitmap;
 
@@ -20,7 +21,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Timeline2DTest {
 
     public static void main(String[] args) {
+        Surface t = timeline2dTest();
+        SpaceGraph.window(t, 800, 600);
+    }
 
+    protected static Surface timeline2dTest() {
         int range = 50;
 
         Timeline2D t = new Timeline2D(0, range + 1);
@@ -28,8 +33,7 @@ public class Timeline2DTest {
         t.add(wave(range));
         t.add(events(range));
         //t.add(waveEvents());
-
-        SpaceGraph.window(t.withControls(), 800, 600);
+        return t.withControls();
     }
 
     private static Surface wave(int range) {

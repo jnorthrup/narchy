@@ -28,8 +28,8 @@ public class MetaHover extends Stacking {
     }
 
     @Override
-    protected boolean prePaint(ReSurface r) {
-        if (super.prePaint(r)) {
+    protected boolean preRender(ReSurface r) {
+        if (super.preRender(r)) {
             boolean nextHovering = hoverVisible.valueOf(hovering);
             if (nextHovering!=hovering) {
                 if (nextHovering) {

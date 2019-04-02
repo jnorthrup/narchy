@@ -3,9 +3,12 @@ package spacegraph.space2d.widget.console;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.opengl.GL2;
+import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat;
+import org.slf4j.Logger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.phys.common.Color3f;
+import spacegraph.util.math.Color4f;
 import spacegraph.video.Tex;
 
 import java.awt.*;
@@ -13,6 +16,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -23,45 +27,50 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
-    private final Tex tex = new Tex();
-    final AtomicBoolean needUpdate = new AtomicBoolean(true);
+    private static final Logger logger = Util.logger(BitmapTextGrid.class);
+
+    private final Tex tex = new Tex().mipmap(true);
+    final AtomicBoolean invalid = new AtomicBoolean(true);
     private BufferedImage backbuffer = null;
     private Font font;
     private Graphics2D backbufferGraphics;
     private final Color cursorColor = new Color(255, 200, 0, 127);
 
     private final boolean antialias = true;
-    private final boolean quality = true;
+    private final boolean quality = false;
+
+    /** pixel scale of each rendered character bitmap */
+    static final int DEFAULT_FONT_SCALE = 16;
 
     protected int cursorCol, cursorRow;
     protected int fontWidth, fontHeight;
 
     private float alpha = 1f;
-    private boolean fillTextBackground = true;
+    private boolean fillTextBackground = false;
 
     private static final Font defaultFont;
     static {
         Font f;
-        try (InputStream in = BitmapTextGrid.class.getClassLoader().getResourceAsStream("font/CourierPrimeCode.ttf")) {
+        try (InputStream in = BitmapTextGrid.class.getClassLoader()
+                .getResourceAsStream("font/CourierPrimeCode.ttf")) {
 
-            f = Font.createFont(Font.TRUETYPE_FONT, in);
+            ByteArrayInputStream in2 = new ByteArrayInputStream(in.readAllBytes()); //cache completely
 
+            f = Font.createFont(Font.TRUETYPE_FONT, in2);
 
         } catch (Exception e) {
 
-            f = new Font("monospace", 0, 28);
+            f = new Font("monospace", 0, 1);
 
         }
+        logger.info("bitmap font={}", f);
 
         defaultFont = f;
     }
 
     protected BitmapTextGrid() {
-
         font(defaultFont);
-        fontSize(28);
-
-
+        fontSize(DEFAULT_FONT_SCALE);
     }
 
 //    protected BitmapTextGrid(int cols, int rows) {
@@ -86,12 +95,17 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         Graphics2D backbufferGraphics = newBackbuffer.createGraphics();
 
         if (antialias) {
-            backbufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            backbufferGraphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+            backbufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            backbufferGraphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        } else {
+            backbufferGraphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
         }
-        if (quality) {
-            backbufferGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        }
+
+        backbufferGraphics.setRenderingHint(RenderingHints.KEY_RENDERING,
+                quality ? RenderingHints.VALUE_RENDER_QUALITY : RenderingHints.VALUE_RENDER_SPEED);
 
 //        AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f);
 //        backbufferGraphics.setComposite(composite);
@@ -118,9 +132,12 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     }
 
     protected void clearBackground() {
-        Arrays.fill(((DataBufferInt)backbuffer.getRaster().getDataBuffer()).getData(), 0);
+        Arrays.fill(intData(), 0);
     }
 
+    private int[] intData() {
+        return ((DataBufferInt)backbuffer.getRaster().getDataBuffer()).getData();
+    }
 
     public void setFillTextBackground(boolean fillTextBackground) {
         this.fillTextBackground = fillTextBackground;
@@ -134,11 +151,11 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
     @Override
     protected final void paintIt(GL2 gl, ReSurface r) {
-        if (needUpdate.compareAndSet(true, false)) {
+        if (invalid.compareAndSet(true, false)) {
             if (ensureBufferSize()) {
                 renderText();
                 if (!tex.set(backbuffer)) {
-                    needUpdate.set(true); //try again
+                    invalid.set(true); //try again
                 }
             }
         }
@@ -148,7 +165,6 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     protected RectFloat textBounds() {
         return bounds;
     }
-
 
     public BitmapTextGrid font(String fontName) {
         font(new Font(fontName, font.getStyle(), font.getSize()));
@@ -180,9 +196,11 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
             Rectangle2D b = font.getStringBounds("X", ctx);
             this.fontWidth = (int) Math.ceil((float) b.getWidth());
             this.fontHeight = (int) Math.ceil((float) b.getHeight());
+            //TODO b.getCenterY()
 
             if (backbufferGraphics != null)
                 backbufferGraphics.setFont(font);
+
             //this.charAspect = ((float)fontHeight) / fontWidth;
             //layout();
         }
@@ -211,7 +229,13 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 //    }
 
     private FontRenderContext getFontRenderContext() {
-        return new FontRenderContext(null, antialias ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF, RenderingHints.VALUE_FRACTIONALMETRICS_DEFAULT);
+        return new FontRenderContext(null,
+                antialias ?
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON :
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_OFF,
+                quality ?
+                    RenderingHints.VALUE_FRACTIONALMETRICS_ON :
+                    RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
     }
 
 
@@ -244,6 +268,10 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         redraw(c, columnIndex, rowIndex, foregroundColor.toAWT(), backgroundColor.toAWT(), false, false);
     }
 
+    public void redraw(char c, int columnIndex, int rowIndex, Color4f foregroundColor, Color4f backgroundColor) {
+        redraw(c, columnIndex, rowIndex, foregroundColor.toAWT(), backgroundColor.toAWT(), false, false);
+    }
+
     public void redraw(char c, int columnIndex, int rowIndex, Color foregroundColor, Color backgroundColor) {
         redraw(c, columnIndex, rowIndex, foregroundColor, backgroundColor, false, false);
     }
@@ -259,21 +287,15 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         int y = rowIndex * fontHeight;
 
         if (fillTextBackground) {
-
             g.setColor(backgroundColor);
-            
             g.fillRect(x, y, characterWidth, fontHeight);
-        } else {
         }
 
         g.setColor(foregroundColor);
 
-        
-        
-        final int descent = 8;
+        final int descent = font.getSize()/4; //estimate
         if (c != ' ')
             g.drawChars(new char[]{c}, 0, 1, x, y + fontHeight + 1 - descent);
-
 
         if (crossedOut) {
             int lineStartY = y + fontHeight / 2;
@@ -290,17 +312,11 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         boolean drawCursor = (columnIndex == cursorCol) && (rowIndex == cursorRow);
         if (drawCursor) {
             g.setColor(cursorColor == null ? foregroundColor : cursorColor);
-
-
-
-
             g.fillRect(x, y + 1, characterWidth, fontHeight - 2);
-
         }
-
     }
 
-    protected void invalidate() {
-        needUpdate.set(true);
+    public void invalidate() {
+        invalid.set(true);
     }
 }

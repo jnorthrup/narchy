@@ -1,11 +1,12 @@
 package spacegraph.space2d.widget.port;
 
+import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.function.Function;
 
 public class LabeledPort<X> extends Port<X> {
-    private final VectorLabel l = new VectorLabel("?");
+    private final AbstractLabel l = new VectorLabel("?");
     private final Function<X, String> toString;
 
     public static LabeledPort<?> generic() {
@@ -22,7 +23,7 @@ public class LabeledPort<X> extends Port<X> {
         });
     }
 
-    protected VectorLabel update(Wire w, X x) {
+    protected AbstractLabel update(Wire w, X x) {
         return l.text(toString.apply(x));
     }
 

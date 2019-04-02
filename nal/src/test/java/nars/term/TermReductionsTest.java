@@ -463,7 +463,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    void testCommutizeRepeatingImpl() throws Narsese.NarseseException {
+    void testCommutizeRepeatingImpl() {
 
         assertEquals(Bool.True,
                 $$c("(a ==>+1 a)").dt(DTERNAL));

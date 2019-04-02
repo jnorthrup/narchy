@@ -7,11 +7,12 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.TypedPort;
+import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 public class KeyboardChip extends Widget implements KeyPressed {
 
-    private final VectorLabel txt;
+    private final AbstractLabel txt;
     private final TypedPort<Integer> out;
 
     public KeyboardChip() {

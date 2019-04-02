@@ -19,10 +19,9 @@ public class ColorToggle extends ToggleButton {
 
     }
 
-
     @Override
-    protected void compileAbove(ReSurface r) {
-        super.compileAbove(r);
+    protected void compileChildren(ReSurface r) {
+        super.compileChildren(r);
 
         if (on.get()) {
             

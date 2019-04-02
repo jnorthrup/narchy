@@ -97,7 +97,8 @@ public class TabMenu extends Menu {
             } else {
 
                 if (created[0] != null) {
-                    content.inactive(created[0]);
+                    boolean removed = content.inactive(created[0]);
+                    assert(removed);
                     created[0] = null;
                 }
                 if (content.isEmpty()) {

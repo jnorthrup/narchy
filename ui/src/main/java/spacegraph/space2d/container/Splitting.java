@@ -3,6 +3,7 @@ package spacegraph.space2d.container;
 import jcog.Util;
 import jcog.math.v2;
 import jcog.tree.rtree.Spatialization;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMoveSurface;
@@ -10,6 +11,8 @@ import spacegraph.input.finger.FingerRenderer;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableArrayContainer;
 import spacegraph.space2d.widget.Widget;
+import spacegraph.space2d.widget.button.CheckBox;
+import spacegraph.space2d.widget.button.PushButton;
 
 /**
  * Splits a surface into a top and bottom or left and right sections
@@ -54,6 +57,18 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         return row(x, 0.5f, y);
     }
 
+    public final void horizontal(boolean h) {
+        vertical(!h);
+    }
+
+    public void vertical(boolean v) {
+        boolean w = this.vertical;
+        if (w!=v) {
+            this.vertical = v;
+            layout();
+        }
+    }
+
     public Splitting<X,Y> vertical() {
         vertical = true;
         layout();
@@ -81,8 +96,8 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         return this;
     }
 
-    @Nullable public Widget resizer() {
-        return (Widget) get(2);
+    @Nullable public Surface resizer() {
+        return get(2);
     }
 
     @Override
@@ -90,7 +105,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
         Surface a = T(), b = B();
 
-        Widget r = this.resizer();
+        Surface r = this.resizer();
         if (a != null && b != null /*&& a.visible() && b.visible()*/) {
 
             float X = x(), Y = y(), h = h(), w = w();
@@ -193,7 +208,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         this.maxSplit = maxSplit;
         synchronized (this) {
             if (this.resizer() == null) {
-                setAt(2, new Resizer()); //TODO
+                setAt(2, new ResizeBar()); //TODO
             }
         }
         return this;
@@ -226,6 +241,11 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
                 }
                 return false;
             }
+
+            @Override
+            public void move(float tx, float ty) {
+                //dont actually move
+            }
         };
 
         @Override
@@ -233,6 +253,44 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
             return finger.tryFingering(drag) ? this : this /*null*/;
         }
     }
+
+    private class ResizeBar extends Bordering {
+
+        final Surface hv = new CheckBox("*").on(vertical).on((BooleanProcedure)
+                (Splitting.this::vertical));
+
+        final PushButton swap = new PushButton("<->").clicking(()->{
+            synchronized (Splitting.this) {
+                X a = Splitting.this.L();
+                Y b = Splitting.this.R();
+                //TODO some swap that works directly on the elements. otherwise interference from atomic parent start/stop protocol makes this tricky
+//                try {
+//                    if (a!=null) a.remove();
+//                    if (b!=null) b.remove();
+//                    Splitting.this.L((X) b);
+//                    Splitting.this.R((Y) a);
+//                } catch (Throwable e) {
+//                    throw new jcog.TODO(e); //TODO
+//                }
+            }
+        });
+
+        ResizeBar() {
+            set(new Resizer());
+        }
+
+        @Override
+        protected void doLayout(float dtS) {
+            if (vertical) {
+                north(null); south(null); east(hv); west(swap);
+            } else {
+                east(null); west(null); north(hv); south(swap);
+            }
+
+            super.doLayout(dtS);
+        }
+    }
+
 
 }
 

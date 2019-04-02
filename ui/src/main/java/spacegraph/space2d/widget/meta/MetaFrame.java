@@ -73,7 +73,7 @@ public class MetaFrame extends Bordering implements HudHover {
     SatelliteMetaFrame satellite = null;
 
     @Override
-    protected boolean prePaint(ReSurface r) {
+    protected boolean preRender(ReSurface r) {
         if (expanded) {
             clipBounds = false;
 
@@ -97,7 +97,7 @@ public class MetaFrame extends Bordering implements HudHover {
             return true;
         } else {
             clipBounds = true;
-            return super.prePaint(r);
+            return super.preRender(r);
         }
     }
 

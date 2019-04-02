@@ -27,6 +27,10 @@ public abstract class AbstractButton extends Widget {
 
     private final AtomicBoolean enabled = new AtomicBoolean(true);
 
+    protected AbstractButton() {
+        super();
+    }
+
     protected AbstractButton(Surface content) {
         super(content);
     }

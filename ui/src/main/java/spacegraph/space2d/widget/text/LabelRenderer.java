@@ -13,7 +13,7 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
      * hershey vector font renderer
      */
     LabelRenderer Hershey = (label, gl2) -> Draw.bounds(label.bounds, gl2, (gl) -> {
-        label.textColor.apply(gl);
+        label.fgColor.apply(gl);
         gl.glLineWidth(label.textThickness);
 
         HersheyFont.hersheyText(gl, label.text, label.textScaleX, label.textScaleY, 0, label.textY, 0, Draw.TextAlignment.Left);
