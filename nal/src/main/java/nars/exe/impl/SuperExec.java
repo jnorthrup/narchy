@@ -40,7 +40,7 @@ public class SuperExec extends ThreadedExec {
                     .exe(new SubExec())
                     .get();
 
-            sub.attn.linksCapacity.set(activeCapacity);
+            sub.attn.linksMax.set(activeCapacity);
             sub.log();
             running = true;
         }

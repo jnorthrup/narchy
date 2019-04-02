@@ -13,7 +13,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
-import nars.exe.Causable;
+import nars.control.Causable;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.time.When;
@@ -103,6 +103,7 @@ public abstract class TaskLeak extends Causable {
 
     @Override
     protected void starting(NAR nar) {
+        super.starting(nar);
 
         on(nar.eventClear.on(this::clear));
 

@@ -599,7 +599,7 @@ public class NARui {
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
                 "Histogram", ()->new BagView(attn.links, n),
                 "Concepts", ()->BagregateConceptGraph2D.get(attn, n),
-                "Flow", ()-> AttentionUI.attentionGraph(attn, n)
+                "Flow", ()-> AttentionUI.attentionGraph(n)
         )));
         m.south(new ObjectSurface(attn));
         m.west(new Gridding(

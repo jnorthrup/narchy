@@ -33,6 +33,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 import static nars.$.$$;
@@ -67,8 +68,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final Curiosity curiosity = DefaultCuriosity.defaultCuriosity(this);
 
-    public final PriNode attn;
     public final PriNode attnReward, attnAction, attnSensor;
+    private final PriNode pri;
 
     public volatile long prev = ETERNAL;
     protected volatile long now = ETERNAL;
@@ -95,13 +96,15 @@ public class NAgent extends NARService implements NSense, NAct {
         super(id);
         this.nar = nar;
 
-        this.attn = nar.attn.add(new PriNode.ConstPriNode(id,()->1)).id();
+        this.frameTrigger = frameTrigger;
+
+        this.pri = nar.control.newPri(id);
         this.attnAction = new PriNode($.func("action", id))
-                .parent(nar, attn, nar.goalPriDefaultNode);
+                .parent(nar, this.pri, nar.goalPriDefaultNode);
         this.attnSensor = new PriNode($.func("sensor", id))
-                .parent(nar, attn, nar.beliefPriDefaultNode);
+                .parent(nar, this.pri, nar.beliefPriDefaultNode);
         this.attnReward = new PriNode($.func("reward", id))
-                .parent(nar, attn, nar.goalPriDefaultNode /* TODO avg */);
+                .parent(nar, this.pri, nar.goalPriDefaultNode /* TODO avg */);
         /*             float pb = nar.priDefault(BELIEF), pg = nar.priDefault(GOAL);
             //TODO adjustable balance
             attnSensor.factor.set(pb);
@@ -109,29 +112,8 @@ public class NAgent extends NARService implements NSense, NAct {
             attnReward.factor.set((pb + pg));
         */
 
-
-
-        this.frameTrigger = frameTrigger;
-
-        //        actReward = new AttnDistributor(
-//                Iterables.concat(
-//                    //() -> Iterators.singletonIterator(nar.conceptualize(target())),
-//                    Iterables.concat(actions,
-//                    Iterables.concat(rewards))),
-//            (_p)->{
-//                //float p = 0.5f + _p/2f; //HACK
-//                float p = _p;
-//                actions.forEach(a->a.pri.pri(p));
-////                rewards.forEach(r->r.pri(p));
-////                pri.setAt(p);
-//
-//                rewards.forEach(r->r.pri(pri.floatValue()));
-//        }, nar);
-
-        nar.runLater(()->{
-            nar.on(this);
-        });
-
+        //nar.runLater(()-> nar.on(this));
+        nar.on(this);
     }
 
 
@@ -258,6 +240,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
         super.stopping(nar);
     }
+
 
 
     public Reward reward(FloatSupplier rewardfunc) {

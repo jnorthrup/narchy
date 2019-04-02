@@ -6,7 +6,6 @@ import com.google.common.primitives.Longs;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.byt.DynBytes;
-import jcog.data.list.FasterList;
 import jcog.event.ListTopic;
 import jcog.event.Off;
 import jcog.event.Topic;
@@ -24,10 +23,9 @@ import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.Cause;
-import nars.control.MetaGoal;
+import nars.control.Control;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
-import nars.control.op.Remember;
 import nars.eval.Evaluator;
 import nars.eval.Facts;
 import nars.exe.Exec;
@@ -102,28 +100,29 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     static final String VERSION = "NARchy v?.?";
 
     public final Exec exe;
-    public final Services<NAR, Term> plugin;
-    public final Time time;
-    public final Memory memory;
     public final NARLoop loop;
+
+    public final Services<NAR, Term> plugin;
+
+    public final Time time;
+
+    public final Memory memory;
+    public final MemoryExternal memoryExternal = new MemoryExternal(this);
+
+    public final ConceptBuilder conceptBuilder;
+
     public final Emotion feel;
     public final Attention attn;
+
     public final TaskBuffer in;  //perception?
-    public final MemoryExternal memoryExternal = new MemoryExternal(this);
 
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
     public final TaskTopic eventTask = new TaskTopic();
 
-    /**
-     * cause->value table
-     */
-    public final FasterList<Cause> causes = new FasterList<>(512) {
-        @Override
-        protected Cause[] newArray(int newCapacity) {
-            return new Cause[newCapacity];
-        }
-    };
+    public final Control control;
+
+    public final Evaluator evaluator = new Evaluator(this::axioms);
 
     protected final Supplier<Random> random;
 
@@ -131,15 +130,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * atomic for thread-safe schizophrenia
      */
     private final AtomicReference<Term> self = new AtomicReference<>(null);
-    public final ConceptBuilder conceptBuilder;
 
     /**
      * default attention; other attentions can be attached as services
      */
-
     public Logger logger;
-
-    public final Evaluator evaluator = new Evaluator(this::axioms);
 
     public NAR(Memory memory, Exec exe, Attention attn, Time time, TaskBuffer in, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
 
@@ -153,6 +148,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.attn = attn;
 
+        //TODO extract to a method which can be used to change .in at runtime
         this.in = in;
         Exec target = exe;
         if (!in.async(target)) {
@@ -172,6 +168,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         this.feel = new Emotion(this);
 
         on(this.attn);
+
+        this.control = new Control(this);
+
 
         Builtin.init(this);
 
@@ -1372,15 +1371,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * +Infinity -> amp=2
      */
     public float amp(short[] effect) {
-        return 1f + Util.tanhFast(value(effect));
+        return control.amp(effect);
     }
 
     public final float amp(Task task) {
-        return amp(task.cause());
+        return control.amp(task);
     }
 
     public float value(short[] effect) {
-        return MetaGoal.privaluate(causes, effect);
+        return control.value(effect);
     }
 
 
@@ -1392,23 +1391,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public Cause newCause(Object name) {
-        return newCause((id) -> new Cause(id, name));
+        return control.newCause(name);
     }
 
     /**
      * automatically adds the cause id to each input
      */
     public CauseChannel<ITask> newChannel(Object id) {
-        return new TaskChannel(newCause(id));
+        return control.newChannel(id);
     }
 
     public <C extends Cause> C newCause(ShortToObjectFunction<C> idToChannel) {
-        synchronized (causes) {
-            short next = (short) (causes.size());
-            C c = idToChannel.valueOf(next);
-            causes.add(c);
-            return c;
-        }
+        return control.newCause(idToChannel);
     }
 
 
@@ -1537,71 +1531,5 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 .map(x -> (X)x);
     }
 
-    private class TaskChannel extends CauseChannel<ITask> {
-
-        private final short ci;
-        final short[] uniqueCause;
-
-        TaskChannel(Cause cause) {
-            super(cause);
-            this.ci = cause.id;
-            uniqueCause = new short[]{ci};
-        }
-
-        @Override
-        public void input(ITask x) {
-            if (process(x))
-                in.put(x);
-        }
-
-        protected boolean process(Object x) {
-            if (x instanceof NALTask) {
-                NALTask t = (NALTask) x;
-                short[] currentCause = t.cause();
-                int tcl = currentCause.length;
-                switch (tcl) {
-                    case 0:
-                        //shared one-element cause
-                        //assert (uniqueCause[0] == ci);
-                        t.cause(uniqueCause);
-                        break;
-                    case 1:
-                        if (currentCause == uniqueCause) {
-                            /* same instance */
-                        } else if (currentCause[0] == ci) {
-                            //replace with shared instance
-                            t.cause(uniqueCause);
-                        } else {
-                            t.cause(append(currentCause, tcl));
-                        }
-                        break;
-                    default:
-                        t.cause(append(currentCause, tcl));
-                        break;
-                }
-            } else if (x instanceof Remember) {
-                return process(((Remember) x).input);
-            } else
-                return x != null;
-
-            return true;
-        }
-
-        private short[] append(short[] currentCause, int tcl) {
-            int cc = Param.causeCapacity.intValue();
-            short[] tc = Arrays.copyOf(currentCause, Math.min(cc, tcl + 1));
-            int target;
-            if (tc.length == cc) {
-                //shift
-                System.arraycopy(tc, 1, tc, 0, tc.length - 1);
-                target = tc.length-1;
-            } else {
-                target = tcl;
-            }
-            tc[target] = ci;
-            return tc;
-        }
-
-    }
 
 }

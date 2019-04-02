@@ -57,11 +57,11 @@ public class ForkJoinExec extends MultiExec  {
         pool.awaitQuiescence(1, TimeUnit.SECONDS);
     }
 
-    @Override
-    protected void update() {
-        super.update();
-        System.out.println(summary());
-    }
+//    @Override
+//    protected void update() {
+//        super.update();
+//        System.out.println(summary());
+//    }
 
     protected String summary() {
         return Map.of(

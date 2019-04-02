@@ -14,7 +14,7 @@ import nars.Task;
 import nars.bag.BagClustering;
 import nars.control.CauseMerge;
 import nars.control.channel.CauseChannel;
-import nars.exe.Causable;
+import nars.control.Causable;
 import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
 import nars.task.util.TaskException;
@@ -127,6 +127,8 @@ public class ConjClustering extends Causable {
 
     @Override
     protected void starting(NAR nar) {
+
+        super.starting(nar);
 
         //on(DurService.on(nar, () -> learn.set(true)));
         on(nar.onCycle(()->learn.set(true)));

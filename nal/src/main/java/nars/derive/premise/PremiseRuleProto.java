@@ -69,13 +69,16 @@ public class PremiseRuleProto extends PremiseRuleSource {
      * holds the deriver id also that it can be applied at the end of a derivation.
      */
     public static final class RuleCause extends Cause {
+
         public final PremiseRuleSource rule;
         public final String ruleString;
+        public final Term term;
 
         RuleCause(PremiseRuleSource rule, short id) {
             super(id);
             this.rule = rule;
             this.ruleString = rule.source;
+            this.term = $.pFast(rule.ref, $.the(id));
         }
 
         @Override
@@ -84,7 +87,7 @@ public class PremiseRuleProto extends PremiseRuleSource {
         }
 
         @Override public Term term() {
-            return $.pFast(rule.ref, $.the(id));
+            return term;
         }
 
     }

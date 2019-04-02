@@ -15,7 +15,8 @@ class MetaGoalTest {
     @Test
     void test1() {
         NAR n = NARS.tmp(6);
-        analyzeCauses(n); //init total summing
+        //analyzeCauses(n); //init total summing
+
 
         n.feel.want(MetaGoal.Believe, 0.01f);
         n.feel.want(MetaGoal.PerceiveCmplx, -0.01f);
@@ -33,7 +34,7 @@ class MetaGoalTest {
             System.out.println(k + "\t" + v);
         });
 
-        n.causes.forEach(c -> {
+        n.control.causes.forEach(c -> {
             c.commit();
 //            double perceive = c.credit[MetaGoal.PerceiveCmplx.ordinal()].total();
 //            double believe = c.credit[MetaGoal.Believe.ordinal()].total();

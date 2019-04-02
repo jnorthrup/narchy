@@ -229,7 +229,7 @@ public enum MetaGoal {
         short[] tc = t.cause();
         StringBuilder sb = new StringBuilder();
         for (short s : tc) {
-            Cause c = nar.causes.get(s);
+            Cause c = nar.control.causes.get(s);
             sb.append(c).append('\n');
         }
         return sb.toString().trim();

@@ -8,7 +8,7 @@ import nars.Op;
 import nars.Task;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
-import nars.exe.Causable;
+import nars.control.Causable;
 import nars.link.TaskLink;
 import nars.task.ITask;
 import nars.task.proxy.SpecialPuncTermAndTruthTask;

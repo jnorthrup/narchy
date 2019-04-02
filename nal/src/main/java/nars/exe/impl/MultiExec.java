@@ -6,9 +6,6 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatAveragedWindow;
 import nars.NAR;
-import nars.control.Cause;
-import nars.control.Traffic;
-import nars.exe.Causable;
 import nars.exe.Exec;
 import nars.task.AbstractTask;
 import nars.task.ITask;
@@ -26,6 +23,10 @@ abstract public class MultiExec extends UniExec {
 
     protected static final float inputQueueSizeSafetyThreshold = 1f;
 
+    private static final float UPDATE_DURS =
+            1;
+            //2; //<- untested
+
     protected long threadWorkTimePerCycle, threadIdleTimePerCycle;
 
     /**
@@ -39,15 +40,19 @@ abstract public class MultiExec extends UniExec {
             1.0;
             //1.5;
 
-    /**
-     * proportion of time spent in forced curiosity
-     */
-    private final float explorationRate = 0.05f;
-
     long cycleIdealNS;
 
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
         super(concurrencyMax);
+    }
+
+    @Deprecated @Override
+    public void print(Appendable out) {
+        try {
+            Joiner.on('\n').appendTo(out, nar.control.active);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -56,6 +61,10 @@ abstract public class MultiExec extends UniExec {
             input((ITask) x);
         else
             execute(x);
+    }
+
+    @Override protected void onCycle(NAR nar) {
+        nar.time.schedule(this::execute);
     }
 
     @Override
@@ -79,66 +88,11 @@ abstract public class MultiExec extends UniExec {
         this.lastCycle = now;
         updateTiming(now - last);
 
-        value();
 
-        prioritize();
     }
 
-    protected void value() {
 
-//        long time = nar.time();
-//        if (lastUpdate == ETERNAL)
-//            lastUpdate = time;
-//        dt = (time - lastUpdate);
-
-
-//        lastUpdate = time;
-
-        FasterList<Cause> causes = nar.causes;
-
-
-        int cc = causes.size();
-        if (cc == 0)
-            return;
-
-//        if (cur.length != cc) {
-//            resize(cc);
-//        }
-
-        Cause[] ccc = causes.array();
-
-        float[] want = nar.feel.want;
-
-        for (int i = 0; i < cc; i++) {
-
-            Cause ci = ccc[i];
-
-            ci.commit();
-
-            float v = 0;
-            Traffic[] cg = ci.credit;
-            for (int j = 0; j < want.length; j++) {
-                v += want[j] * cg[j].current;
-            }
-
-            ccc[i].setValue(v);
-
-//            prev[i] = cur[i];
-//            cur[i] = v;
-        }
-
-
-//        process();
-
-//        for (int i = 0; i < cc; i++)
-//            ccc[i].setValue(out[i]);
-    }
-
-    @Override protected void onCycle(NAR nar) {
-        nar.time.schedule(this::execute);
-    }
-
-    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(16, 0.25f);
+    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(4, 0.25f);
 
     private void updateTiming(long _cycleDeltaNS) {
 
@@ -176,83 +130,14 @@ abstract public class MultiExec extends UniExec {
 
         super.start(n);
 
-        ons.add(DurService.on(n, this::update));
+        DurService updater = DurService.on(n, this::update);
+        updater.durs(UPDATE_DURS);
+        ons.add(updater);
         //ons.add(n.onCycle(this::update));
 
     }
 
 
-    private void prioritize() {
-        int n = cpu.size();
-        if (n == 0)
-            return;
-
-        float[] valMin = {Float.POSITIVE_INFINITY}, valMax = {Float.NEGATIVE_INFINITY};
-
-        long now = nar.time();
-
-
-        cpu.forEach(s -> {
-            Causable c = s.get();
-
-            boolean sleeping = c.sleeping(now);
-            if (sleeping)
-                return;
-
-            float vr;
-            long tUsed = s.used();
-            if (tUsed <= 0) {
-                s.value = Float.NaN;
-                vr = 0;
-            } else {
-                float v = Math.max(0, s.value = c.value());
-                double cyclesUsed = ((double) tUsed) / cycleIdealNS;
-                vr = (float) (v / (1 + cyclesUsed));
-                assert (vr == vr);
-            }
-
-            s.valueRate = vr;
-
-            if (vr > valMax[0]) valMax[0] = vr;
-            if (vr < valMin[0]) valMin[0] = vr;
-
-        });
-
-        float valRange = valMax[0] - valMin[0];
-        if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
-            float exploreMargin = explorationRate * valRange;
-            cpu.forEach(s -> {
-                Causable c = s.get();
-                if (c.sleeping()) {
-                    s.pri(0);
-                } else {
-                    float vNorm = Util.normalize(s.valueRate, valMin[0] - exploreMargin, valMax[0]);
-                    //pri(s, vNorm);
-                    s.pri(vNorm);
-                }
-            });
-        } else {
-            //FLAT
-            float pFlat = 1f / n;
-            cpu.forEach(s -> s.pri(pFlat));
-        }
-
-    }
-
-//    protected void pri(Prioritizable s, float p) {
-//        //s.pri(p);
-//        s.pri(s.priElseZero() * momentum + (1-momentum) * p);
-//    }
-
-
-    @Override
-    public void print(Appendable out) {
-        try {
-            Joiner.on('\n').appendTo(out, cpu);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     static boolean execute(FasterList b, int concurrency, Consumer each) {
         //TODO sort, distribute etc

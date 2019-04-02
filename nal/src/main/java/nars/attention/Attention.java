@@ -2,13 +2,10 @@ package nars.attention;
 
 import jcog.TODO;
 import jcog.data.NumberX;
-import jcog.data.graph.MapNodeGraph;
-import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.Forgetting;
-import jcog.pri.PriBuffer;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
@@ -34,33 +31,33 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-/** abstract attention economy model */
+/** abstract attention economy model.
+ *  determines the active attention dynamics */
 public class Attention extends DurService implements Sampler<TaskLink> {
 
     public Forgetting forgetting = new Forgetting.AsyncForgetting();
+
     /**
-     * short target memory, TODO abstract and remove
+     * short target memory, TODO abstract and remove, for other forms of attention that dont involve TaskLinks or anything like them
      */
-    public TaskLinkBag links = null;
+    @Deprecated public TaskLinkBag links = null;
 
     /** tasklink forget rate */
     public final FloatRange decay = new FloatRange(0.5f,  0, 1f /* 2f */);
 
-    /** tasklink propagation rate */
+    /** (post-)Amp: tasklink propagation rate */
     public final FloatRange amp = new FloatRange(0.5f,  0, 2f /* 2f */);
 
     /** tasklink retention rate:
-     *  0 = deducts all propagated priority from source tasklink
-     *  1 = deducts no propagated priority
+     *  0 = deducts all propagated priority from source tasklink (full resistance)
+     *  1 = deducts no propagated priority (superconductive)
      **/
     public final FloatRange sustain = new FloatRange(1f,  0, 1f );
 
-    public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(PriBuffer.newMap(false));
-    private final PriNode root = new PriNode.ConstPriNode("root", ()->1);
-    private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
 
 
-    public final IntRange linksCapacity = new IntRange(256, 0, 8192) {
+    /** capacity of the links bag */
+    public final IntRange linksMax = new IntRange(256, 0, 8192) {
         @Override
         @Deprecated protected void changed() {
             TaskLinkBag a = links;
@@ -69,8 +66,10 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         }
     };
 
-    /** default derivePri for derivers */
-    public DerivePri derivePri =
+    /** system default deriver pri model
+     *  however, each deriver instance can be configured individually.
+     * */
+    @Deprecated public DerivePri derivePri =
             //new DirectDerivePri();
             new DefaultDerivePri();
             //new DefaultPuncWeightedDerivePri();
@@ -78,13 +77,13 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     @Override
     protected void starting(NAR nar) {
-        int c = linksCapacity.intValue();
+        int c = linksMax.intValue();
         links = new TaskLinkBag(
                 new TaskLinkArrayBag(c)
                 //new TaskLinkHijackBag(c, 5)
         );
 
-        links.setCapacity(linksCapacity.intValue());
+        links.setCapacity(linksMax.intValue());
 
 
 
@@ -109,8 +108,6 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     protected void run(NAR n, long dt) {
         derivePri.update(n);
 
-        root.pri(1);
-        graph.forEachBF(root, (PriNode x)->x.update(graph));
     }
 
     @Override
@@ -280,14 +277,6 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         ((TaskConcept) c).value(task, n);
 
         return true;
-    }
-
-    /** attaches a priority node to the priority graph
-     * @return*/
-    public NodeGraph.MutableNode<PriNode, Object> add(PriNode p) {
-        NodeGraph.MutableNode<PriNode, Object> a = graph.addNode(p);
-        graph.addEdgeByNode(rootNode, "pri", a);
-        return a;
     }
 
     @Deprecated public Stream<Term> terms() {

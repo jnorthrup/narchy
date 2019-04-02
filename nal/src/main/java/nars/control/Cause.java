@@ -40,8 +40,10 @@ public class Cause extends InternalEvent implements Comparable<Cause> {
      * the value measured contributed by its effect on each MetaGoal.
      * the index corresponds to the ordinal of MetaGoal enum entries.
      * these values are used in determining the scalar 'value' field on each update.
+     *
+     * TODO allow redefinition at runtime
      */
-    public final Traffic[] credit;
+    public Traffic[] credit;
 
 
     public float value() {

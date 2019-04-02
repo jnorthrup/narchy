@@ -20,7 +20,8 @@ public class PriNode extends PLink<Term> {
     public final FloatRange amp = new FloatRange(1f, 0.01f, 2f);
 
     /** cached */
-    @Deprecated transient private Node<PriNode, Object> node;
+    @Deprecated transient private Node<PriNode, Object> _node;
+
     private int fanOut;
 
     public PriNode(Object id) {
@@ -49,16 +50,16 @@ public class PriNode extends PLink<Term> {
 
     public void update(MapNodeGraph<PriNode,Object> graph) {
 
-        if (node == null) {
-            node = graph.node(this); //cache
+        if (_node == null) {
+            _node = graph.node(this); //cache
         }
-        fanOut = node.edgeCount(false,true); //TODO cache
+        fanOut = _node.edgeCount(false,true); //TODO cache
 
         final double[] factor = {this.amp.floatValue()};
 
-        if (node.edgeCount(true,false) > 0) {
+        if (_node.edgeCount(true,false) > 0) {
 
-            node.nodes(true, false).forEach((Node<PriNode, Object> n) -> {
+            _node.nodes(true, false).forEach((Node<PriNode, Object> n) -> {
                 PriNode nn = n.id();
                 float p = nn.priComponent();
                 if (p == p) {
@@ -73,7 +74,7 @@ public class PriNode extends PLink<Term> {
 
 
     public PriNode parent(NAR n, PriNode... parent) {
-        MapNodeGraph<PriNode, Object> g = n.attn.graph;
+        MapNodeGraph<PriNode, Object> g = n.control.graph;
 
         NodeGraph.MutableNode<PriNode,Object> thisNode = g.addNode(this);
         parent(parent, g, thisNode);

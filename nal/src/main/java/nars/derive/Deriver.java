@@ -12,7 +12,7 @@ import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
-import nars.exe.Causable;
+import nars.control.Causable;
 import nars.term.Term;
 
 import java.util.Set;

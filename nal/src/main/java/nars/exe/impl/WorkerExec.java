@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.random.SplitMix64Random;
 import jcog.util.ArrayUtils;
-import nars.exe.Causable;
+import nars.control.Causable;
 import nars.exe.Exec;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,7 +42,7 @@ public class WorkerExec extends ThreadedExec {
 
         private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
 
-        TimedLink.MyTimedLink[] play = new TimedLink.MyTimedLink[0];
+        Causable.CausableMetrics[] play = new Causable.CausableMetrics[0];
 
         private final AtomicBoolean alive = new AtomicBoolean(true);
 
@@ -102,7 +102,7 @@ public class WorkerExec extends ThreadedExec {
                 int playable = play.length; if (playable == 0) return;
 
                 if (i + 1 >= playable) i = 0; else i++;
-                TimedLink.MyTimedLink next = play[i];
+                Causable.CausableMetrics next = play[i];
 
                 long sTime = next.time;
 
@@ -159,7 +159,7 @@ public class WorkerExec extends ThreadedExec {
         private boolean prioritize(long workTimeNS) {
 
             /** always refresh */
-            play = cpu.toArray(play, TimedLink::my);
+            play = nar.control.active.toArray(play, Causable::timing);
             if ((n = play.length) <= 0)
                 return false;
 
@@ -184,10 +184,10 @@ public class WorkerExec extends ThreadedExec {
             //TODO Util.max((TimedLink.MyTimedLink m) -> m.time, play);
 //            long existingTime = Util.sum((TimedLink.MyTimedLink x) -> Math.max(0, x.time), play);
 //            long remainingTime = workTimeNS - existingTime;
-            long minTime = -Util.max((TimedLink.MyTimedLink x) -> -x.time, play);
+            long minTime = -Util.max((Causable.CausableMetrics x) -> -x.time, play);
             long shift = minTime < 0 ? 1 - minTime : 0;
 //            System.out.println(subCycleMinNS + " " + subCycleMaxNS /* actualCycleNS */);
-            for (TimedLink.MyTimedLink m : play) {
+            for (Causable.CausableMetrics m : play) {
                 double t = workTimeNS * m.pri();
                 m.add(Math.max(subCycleMinNS, (long) (shift + t * rescheduleCycles)),
                         -workTimeNS * rescheduleCycles, +workTimeNS * rescheduleCycles);

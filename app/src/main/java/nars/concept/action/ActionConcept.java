@@ -71,7 +71,7 @@ public abstract class ActionConcept extends TaskConcept implements AgentLoop, Pe
             super.value(t, n);
 
             if (t.isGoal()) {
-                MetaGoal.Action.learn(t.cause(), t.priElseZero(), n.causes);
+                MetaGoal.Action.learn(t.cause(), t.priElseZero(), n.control.causes);
             }
         }
     }

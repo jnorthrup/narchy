@@ -11,10 +11,10 @@ import jcog.math.IntRange;
 import jcog.math.MutableEnum;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
+import nars.control.Causable;
 import nars.control.MetaGoal;
 import nars.exe.NARLoop;
 import nars.exe.impl.UniExec;
-import nars.exe.impl.UniExec.TimedLink;
 import nars.time.clock.RealTime;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
@@ -50,13 +50,13 @@ public class ExeCharts {
 
     private static Surface metaGoalPlot(NAR nar) {
 
-        int s = nar.causes.size();
+        int s = nar.control.causes.size();
 
         FloatRange gain = new FloatRange(1f, 0f, 5f);
 
         BitmapMatrixView bmp = new BitmapMatrixView(i ->
                 Util.tanhFast(
-                    gain.floatValue() * nar.causes.get(i).value()
+                    gain.floatValue() * nar.control.causes.get(i).value()
                 ),
                 s, Draw::colorBipolar);
 
@@ -135,34 +135,34 @@ public class ExeCharts {
     }
 
     static class CausableWidget extends Widget {
-        private final TimedLink c;
+        private final Causable c;
         private final AbstractLabel label;
 
-        CausableWidget(TimedLink c) {
+        CausableWidget(Causable c) {
             this.c = c;
-            label = new VectorLabel(new Can(c.get().term().toString()).id);
+            label = new VectorLabel(new Can(c.term().toString()).id);
             set(label);
 
         }
 
     }
 
-    enum CauseProfileMode implements FloatFunction<TimedLink> {
+    enum CauseProfileMode implements FloatFunction<Causable> {
         Pri() {
             @Override
-            public float floatValueOf(TimedLink w) {
+            public float floatValueOf(Causable w) {
                 return w.pri();
             }
         },
         Value() {
             @Override
-            public float floatValueOf(TimedLink w) {
+            public float floatValueOf(Causable w) {
                 return w.value;
             }
         },
         ValueRate() {
             @Override
-            public float floatValueOf(TimedLink w) {
+            public float floatValueOf(Causable w) {
                 return w.valueRate;
             }
         },
@@ -186,7 +186,7 @@ public class ExeCharts {
     }
 
     static Surface causeProfiler(NAR nar) {
-        FastCoWList<TimedLink> cc = ((UniExec) nar.exe).cpu;
+        FastCoWList<Causable> cc = nar.control.active;
         int history = 128;
         Plot2D pp = new Plot2D(history,
                 //Plot2D.BarLanes
@@ -197,8 +197,8 @@ public class ExeCharts {
         final MutableEnum<CauseProfileMode> mode = new MutableEnum<>(CauseProfileMode.Pri);
 
         for (int i = 0, ccLength = cc.size(); i < ccLength; i++) {
-            TimedLink c = cc.get(i);
-            String label = c.get().toString();
+            Causable c = cc.get(i);
+            String label = c.toString();
             //pp[i] = new Plot2D(history, Plot2D.Line).addAt(label,
             pp.add(label, ()-> mode.get().floatValueOf(c));
         }
@@ -217,16 +217,13 @@ public class ExeCharts {
 
     public static Surface focusPanel(NAR nar) {
 
-//        ForceDirected2D<UniExec.TimedLink> fd = new ForceDirected2D<>();
-//        fd.repelSpeed.setAt(0.5f);
-
-        Graph2D<TimedLink> s = new Graph2D<TimedLink>()
+        Graph2D<Causable> s = new Graph2D<Causable>()
                 .render((node, g) -> {
-                    TimedLink c = node.id;
+                    Causable c = node.id;
 
                     final float epsilon = 0.01f;
-                    float p = Math.max(c.priElse(epsilon), epsilon);
-                    float v = c.get().value();
+                    float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
+                    float v = c.value();
                     node.color(p, v, 0.25f);
 
 
@@ -252,7 +249,7 @@ public class ExeCharts {
 //                                )
 //                                , )),
                 nar, () -> {
-                    s.set(((UniExec) nar.exe).cpu);
+                    s.set(nar.control.active);
                 });
     }
 

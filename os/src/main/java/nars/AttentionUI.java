@@ -2,7 +2,6 @@ package nars;
 
 import com.google.common.collect.Iterables;
 import jcog.data.graph.Node;
-import nars.attention.Attention;
 import nars.attention.PriNode;
 import nars.gui.DurSurface;
 import spacegraph.space2d.Surface;
@@ -34,10 +33,10 @@ public class AttentionUI {
 //        return g;
 //    }
 
-    public static Surface attentionGraph(Attention attn, NAR n) {
+    public static Surface attentionGraph(NAR n) {
         Graph2D<PriNode> aaa = new Graph2D<PriNode>()
                 .render((Graph2D.Graph2DRenderer<PriNode>) (node, graph) -> {
-                    attn.graph.node(node.id).nodes(false,true).forEach(c -> {
+                    n.control.graph.node(node.id).nodes(false,true).forEach(c -> {
                         EdgeVis<PriNode> e = graph.edge(node, c.id());
                         if (e!=null) {
                             e.weight(1f);
@@ -64,7 +63,7 @@ public class AttentionUI {
                     }
                 });
         return DurSurface.get(aaa.widget(), n, () -> {
-            aaa.set(Iterables.transform(attn.graph.nodes(), Node::id));
+            aaa.set(Iterables.transform(n.control.graph.nodes(), Node::id));
         } );
     }
 }

@@ -14,7 +14,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.control.channel.CauseChannel;
-import nars.exe.Causable;
+import nars.control.Causable;
 import nars.link.TaskLink;
 import nars.subterm.Subterms;
 import nars.task.ITask;

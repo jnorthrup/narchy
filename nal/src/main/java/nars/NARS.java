@@ -134,7 +134,7 @@ public class NARS {
 
                 n.termVolumeMax.set(26);
 
-                n.attn.linksCapacity.set(96);
+                n.attn.linksMax.set(96);
                 n.attn.decay.set(0.001f);
 
                 n.beliefPriDefault.set(0.1f);
