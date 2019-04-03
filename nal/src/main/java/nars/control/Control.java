@@ -80,23 +80,31 @@ import java.util.function.Consumer;
      */
     @Deprecated private final float explorationRate = 0.05f;
 
+    private float updatePeriods =
+            //1;
+            2;
+
+    private final DurService updater;
+
     public Control(NAR nar) {
         this.nar = nar;
 
         Consumer<ObjectBooleanPair<Service<NAR>>> serviceChange = (xb) -> {
             Service<NAR> s = xb.getOne();
             if (s instanceof Causable) {
+                Causable c = (Causable) s;
                 if (xb.getTwo())
-                    add((Causable) s);
+                    add(c);
                 else
-                    remove((Causable) s);
+                    remove(c);
             }
         };
         refreshServices();
         nar.plugin.change.on(serviceChange);
         refreshServices(); //again to be sure
 
-        DurService.on(nar, this::update);
+        updater = DurService.on(nar, this::update);
+        updater.durs(updatePeriods);
     }
 
     private void update() {
@@ -171,11 +179,12 @@ import java.util.function.Consumer;
                 c.value = Float.NaN;
                 vr = 0;
             } else {
-                double v = Math.max(0, c.value = c.value());
+                double v = c.value();
+                //double v = Math.max(0, c.value = c.value());
                 //double cyclesUsed = ((double) tUsed) / cycleIdealNS;
                 //vr = (float) (v / (1 + cyclesUsed));
 
-                vr = v > Float.MIN_NORMAL ? (float) (v / ((1 + tUsed)/1.0E-9)) : 0;
+                vr = v > Float.MIN_NORMAL ? (float) (v / ((1.0 + tUsed)/1.0E-3)) : 0;
                 assert (vr == vr);
             }
 

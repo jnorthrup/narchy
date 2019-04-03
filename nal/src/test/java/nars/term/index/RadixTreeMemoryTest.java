@@ -5,7 +5,7 @@ import jcog.tree.radix.MyRadixTree;
 import nars.$;
 import nars.NARS;
 import nars.Narsese;
-import nars.index.concept.TreeMemory;
+import nars.index.concept.RadixTreeMemory;
 import nars.term.Term;
 import nars.term.util.map.TermRadixTree;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 10/21/16.
  */
-class TreeMemoryTest {
+class RadixTreeMemoryTest {
 
     @Test
     void testTermIndex() {
@@ -49,7 +49,7 @@ class TreeMemoryTest {
 
     @Test
     void testVolumeSubTrees() throws Narsese.NarseseException {
-        TreeMemory t = new TreeMemory( 128);
+        RadixTreeMemory t = new RadixTreeMemory( 128);
         t.start(NARS.tmp(1));
         t.concept($("a"), true);
         t.concept($("(a)"), true);

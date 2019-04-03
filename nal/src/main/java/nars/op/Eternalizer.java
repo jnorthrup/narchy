@@ -19,7 +19,7 @@ import static nars.Op.GOAL;
 
 public class Eternalizer extends LinkRanker<Task> {
 
-    public final FloatRange eviFactor = new FloatRange(0.5f, 0, 1);
+    public final FloatRange eviFactor = new FloatRange(1f, 0, 1);
     public final FloatRange priFactor = new FloatRange(0.5f, 0, 1);
     public final FloatRange noise = new FloatRange(0.1f, 0, 1);
     private final CauseChannel<ITask> in;

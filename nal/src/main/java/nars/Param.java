@@ -61,7 +61,7 @@ public abstract class Param {
 
     public static final boolean DT_DITHER_LOGARITHMICALLY = false;
 
-    public static final boolean PREMISE_FOCUS_TIME_DITHER = false;
+    public static final boolean PREMISE_FOCUS_TIME_DITHER = true;
 
 
     /** return <= 0 to disable */
@@ -107,6 +107,23 @@ public abstract class Param {
 
 
 
+    /** applies certain reductions to INH and SIM terms when one or both of their immediate subterms
+     *  are negated.  in assuming a "closed-boolean-world" in which there is one and only one
+     *  opposite for any truth frequency in 0..1,
+     *
+     *  then the following statements should be equivalent:
+     *
+     *  INH
+     *  (x --> --y)    |-  --(x --> y)
+     *  (--x --> y)    |-  --(x --> y)
+     *  (--x --> --y)  |-    (x --> y)
+     *
+     *  SIM
+     *  (x <-> --y)    |-  --(x <-> y)
+     *  (--x <-> --y)  |-    (x <-> y)
+     *
+     * */
+    public static final boolean INH_SIM_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM = true;
 
 //    /** can produce varieties of terms with dt below the dithered threshold time */
 //    public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS = false;

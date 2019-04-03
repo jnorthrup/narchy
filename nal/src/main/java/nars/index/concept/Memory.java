@@ -90,7 +90,7 @@ public abstract class Memory {
             }
         }
 
-        Term xt = _x.term();
+        Term xt = _x.term().unneg();
         if (!xt.op().conceptualizable) {
             if (Param.DEBUG)
                 throw new TermException("not conceptualizable", xt);
@@ -128,7 +128,7 @@ public abstract class Memory {
         return true;
     }
 
-    public final void conceptAsync(Term x, boolean createIfMissing, Consumer<Concept> with) {
+    public final void conceptAsync(Termed x, boolean createIfMissing, Consumer<Concept> with) {
 
         Term y;
         if (x instanceof Concept) {

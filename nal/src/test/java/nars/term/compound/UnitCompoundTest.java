@@ -8,7 +8,7 @@ import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.key.TermBytes;
+import nars.term.util.map.TermRadixTree;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -42,7 +42,7 @@ class UnitCompoundTest {
         assertEquals(0, u.compareTo(g));
         assertEquals(0, g.compareTo(u));
         assertEquals(g.toString(), u.toString());
-        assertTrue(Arrays.equals(TermBytes.termByVolume(g).arrayCompactDirect(), TermBytes.termByVolume(u).arrayCompactDirect()));
+        assertTrue(Arrays.equals(TermRadixTree.termByVolume(g).arrayCompactDirect(), TermRadixTree.termByVolume(u).arrayCompactDirect()));
         assertTrue(Arrays.equals(IO.termToBytes(g), IO.termToBytes(u)));
     }
 

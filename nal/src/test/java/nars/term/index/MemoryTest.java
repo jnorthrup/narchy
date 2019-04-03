@@ -160,7 +160,7 @@ class MemoryTest {
     @Test
     void testTreeConceptIndex() throws Narsese.NarseseException {
         testIndex(
-                new TreeMemory(1024)
+                new RadixTreeMemory(1024)
         );
     }
 

@@ -173,9 +173,9 @@
     //Same as for inheritance
     //classically: union/intersection assymmetry: union if subj, intersect if pred
 
-     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionPT)
+     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:UnionPT)
          //(P ==> M), (S ==> M) |- --((P && S) ==> M), (Belief:IntersectionNN)
-       (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionPT)
+       (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:IntersectionPT)
            //(P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
 
 //     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)

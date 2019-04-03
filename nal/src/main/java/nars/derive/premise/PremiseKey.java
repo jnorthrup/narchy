@@ -15,16 +15,16 @@ class PremiseKey extends ByteKeyExternalWithParameter<PreDerivation> {
     public PremiseKey(PreDerivation d, int ditherDT) {
         super(d);
 
-        if (ditherDT > 0) {
-            TermIO.DeferredTemporalTermIO io = new TermIO.DeferredTemporalTermIO();
-            io.write(d.taskTerm, key);
-            io.write(d.beliefTerm, key);
-            io.writeDTs(ditherDT, key);
-        } else {
+//        if (ditherDT > 0) {
+//            TermIO.DeferredTemporalTermIO io = new TermIO.DeferredTemporalTermIO();
+//            io.write(d.taskTerm, key);
+//            io.write(d.beliefTerm, key);
+//            io.writeDTs(ditherDT, key);
+//        } else {
             TermIO io = TermIO.the;
             io.write(d.taskTerm, key);
             io.write(d.beliefTerm, key);
-        }
+//        }
 
         key.writeByte(
           ((d.hasBeliefTruth() ? 1 : 0) << 3)

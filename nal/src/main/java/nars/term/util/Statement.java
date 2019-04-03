@@ -213,20 +213,28 @@ public class Statement {
         }
 
         boolean negate = false;
-        if (op == INH) {
-            //EXPERIMENTAL support for negated inheritance subterms
-            boolean sn = subject.op() == NEG;
-            boolean pn = predicate.op() == NEG;
-            if (!sn && !pn) {
-                //normal
-            } else if (sn && pn) {
-                return Null; // (--x --> --y) => (x --> y)??
-            } else if (sn) {
-                negate = true;
-                subject = subject.unneg();
-            } else /* pn */ {
-                negate = true;
-                predicate = predicate.unneg();
+        if (op == INH || op == SIM) {
+            if (Param.INH_SIM_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
+                //EXPERIMENTAL support for negated inheritance subterms
+                boolean sn = subject.op() == NEG;
+                boolean pn = predicate.op() == NEG;
+                if (!sn && !pn) {
+                    //normal
+                } else if (sn && pn) {
+                    //double-negative
+
+                    //return Null; // (--x --> --y) => (x --> y)??
+
+                    subject = subject.unneg();
+                    predicate = predicate.unneg();
+
+                } else if (sn) {
+                    negate = true;
+                    subject = subject.unneg();
+                } else /* pn */ {
+                    negate = true;
+                    predicate = predicate.unneg();
+                }
             }
         }
 

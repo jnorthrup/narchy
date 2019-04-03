@@ -2,8 +2,10 @@ package nars.term.util.map;
 
 import jcog.data.byt.AbstractBytes;
 import jcog.data.byt.ArrayBytes;
+import jcog.data.byt.RecycledDynBytes;
 import jcog.tree.radix.MyRadixTree;
 import nars.io.IO;
+import nars.io.TermIO;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
@@ -12,6 +14,24 @@ import nars.term.atom.Atomic;
  * bidirectionally with a globally shared Atomic concept
  */
 public class TermRadixTree<X> extends MyRadixTree<X> {
+
+    /**
+     * target with volume byte prepended for sorting by volume
+     */
+    public static AbstractBytes termByVolume(Term x) {
+
+        int vol = x.volume();
+
+        //TermBytes y = new TermBytes(vol * 4 + 64 /* ESTIMATE */);
+        try (RecycledDynBytes y = RecycledDynBytes.tmpKey()) {
+
+            y.writeShort(vol);
+
+            TermIO.the.write(x, y);
+
+            return new ArrayBytes(y.arrayCopy());
+        }
+    }
 
     @Override
     public final X put(X value) {

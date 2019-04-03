@@ -3,11 +3,10 @@ package nars.term.util;
 import jcog.data.byt.AbstractBytes;
 import nars.NARS;
 import nars.Narsese;
-import nars.index.concept.TreeMemory;
+import nars.index.concept.RadixTreeMemory;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
-import nars.term.util.key.TermBytes;
 import nars.term.util.map.TermRadixTree;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -27,23 +26,23 @@ class TermRadixTreeTest {
 
         TermRadixTree tree = new TermRadixTree();
 
-        AbstractBytes s4 = TermBytes.termByVolume($("concept"));
+        AbstractBytes s4 = TermRadixTree.termByVolume($("concept"));
         tree.putIfAbsent(s4, (Atomic.the(s4.toString())));
-        AbstractBytes s3 = TermBytes.termByVolume($("target"));
+        AbstractBytes s3 = TermRadixTree.termByVolume($("target"));
         tree.putIfAbsent(s3, (Atomic.the(s3.toString())));
-        AbstractBytes s2 = TermBytes.termByVolume($("termutator"));
+        AbstractBytes s2 = TermRadixTree.termByVolume($("termutator"));
         tree.putIfAbsent(s2, (Atomic.the(s2.toString())));
-        
 
-        assertNotNull(tree.get(TermBytes.termByVolume($("target"))));
-        assertNull(tree.get(TermBytes.termByVolume($("xerm"))));
-        assertNull(tree.get(TermBytes.termByVolume($("te")))); 
 
-        AbstractBytes s1 = TermBytes.termByVolume($("target"));
+        assertNotNull(tree.get(TermRadixTree.termByVolume($("target"))));
+        assertNull(tree.get(TermRadixTree.termByVolume($("xerm"))));
+        assertNull(tree.get(TermRadixTree.termByVolume($("te"))));
+
+        AbstractBytes s1 = TermRadixTree.termByVolume($("target"));
         assertNotNull(tree.putIfAbsent(s1, (Atomic.the(s1.toString()))));
         assertEquals(3, tree.size());
 
-        AbstractBytes s = TermBytes.termByVolume($("termunator"));
+        AbstractBytes s = TermRadixTree.termByVolume($("termunator"));
         assertNotNull(tree.putIfAbsent(s, (Atomic.the(s.toString()))));
 
         tree.prettyPrint(System.out);
@@ -60,9 +59,9 @@ class TermRadixTreeTest {
     @Test
     void testCompoundInsertion() throws Narsese.NarseseException {
 
-        TreeMemory index;
+        RadixTreeMemory index;
         new NARS().index(
-            index = new TreeMemory(1000)
+            index = new RadixTreeMemory(1000)
         ).get();
 
 
@@ -97,9 +96,9 @@ class TermRadixTreeTest {
 
         System.out.println(index.concepts.prettyPrint());
         index.print(System.out);
-        
 
-        
+
+
 
 
 

@@ -44,11 +44,6 @@ public interface TermIO {
 
     void writeSubterms(Subterms subs, ByteArrayDataOutput out);
 
-    /**
-     * default term codec
-     */
-    DefaultTermIO the = new DefaultTermIO();
-
     default void writeSubterms(Term[] subs, ByteArrayDataOutput out) {
         int n = subs.length;
         //assert(n < Byte.MAX_VALUE);
@@ -56,6 +51,13 @@ public interface TermIO {
         for (Term s : subs)
             write(s, out);
     }
+
+    /**
+     * default term codec
+     */
+    DefaultTermIO the = new DefaultTermIO();
+
+
 
     class DefaultTermIO implements TermIO {
 

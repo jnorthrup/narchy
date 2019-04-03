@@ -23,7 +23,7 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
-import nars.index.concept.TreeMemory;
+import nars.index.concept.CaffeineMemory;
 import nars.op.*;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
@@ -57,6 +57,7 @@ import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -232,17 +233,18 @@ abstract public class NAgentX extends NAgent {
                 .time(clock)
                 .index(
 
-                        new TreeMemory(64*1024)
+//                        new RadixTreeMemory(64*1024)
                         //CaffeineIndex.soft()
 
-//                        new CaffeineMemory(
-//                            64 * 1024
+                        new CaffeineMemory(
+                                16*1024
+                            //64 * 1024
                     //96 * 1024
 //                                64 * 1024
 ////                                //32 * 1024
 ////////                                //16 * 1024
                                  //, c -> (int) Math.ceil(c.term().voluplexity()))
-//                )
+                )
 //                        new HijackConceptIndex(
 //
 //                                //192 * 1024,
@@ -454,7 +456,7 @@ abstract public class NAgentX extends NAgent {
 
 
         //new StatementLinker(n);
-        new PuncNoise(n);
+        //new PuncNoise(n);
         new Eternalizer(n);
 
 //        new STMLinkage(n, 1);
@@ -469,7 +471,7 @@ abstract public class NAgentX extends NAgent {
             //new ConjClustering(n, GOAL, 4, 16)
         );
 
-//        window(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
+        window(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
 
 
 

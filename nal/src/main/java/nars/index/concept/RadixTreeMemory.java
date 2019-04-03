@@ -9,7 +9,7 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.util.key.TermBytes;
+import nars.term.util.map.TermRadixTree;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -21,44 +21,24 @@ import java.util.stream.Stream;
  * concurrent radix tree index
  * TODO restore byte[] sequence writing that doesnt prepend atom length making leaves unfoldable by natural ordering
  */
-public class TreeMemory extends Memory implements Consumer<NAR> {
+public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
     private final float maxIterationRemovalPct = 0.05f;
-    private final float descentRate = 0.75f;
+    private final float descentRate = 0.618f;
     float overflowSafetyPct = 0.1f;
 
 
-    public final ConcurrentRadixTree<Concept> concepts;
+    public final ConceptRadixTree concepts;
 
     private final int sizeLimit;
 
     private static AbstractBytes key(Term k) {
-        return TermBytes.termByVolume(k.concept());
+        return TermRadixTree.termByVolume(k.concept());
     }
 
-    public TreeMemory(int sizeLimit) {
+    public RadixTreeMemory(int sizeLimit) {
 
-        this.concepts = new ConcurrentRadixTree<>() {
-
-            @Override
-            public final Concept put(Concept value) {
-                return super.put(key(value.term()), value);
-            }
-
-            @Override
-            public boolean onRemove(Concept r) {
-                if (r instanceof Concept) {
-                    Concept c = r;
-                    if (removeable(c)) {
-                        onRemoval(r);
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-                return false;
-            }
-        };
+        this.concepts = new ConceptRadixTree(sizeLimit);
         this.sizeLimit = sizeLimit;
 
 
@@ -77,59 +57,6 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
     }
 
 
-    private void forgetNext() {
-
-        int sizeBefore = sizeEst();
-
-        int overflow = sizeBefore - sizeLimit;
-
-        if (overflow < 0)
-            return;
-
-        int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxIterationRemovalPct);
-//        if (overflow < maxConceptsThatCanBeRemovedAtATime)
-//            return;
-
-        if ((((float)overflow)/sizeLimit) > overflowSafetyPct) {
-            //major collection, strong
-            concepts.acquireWriteLock();
-        } else {
-            //minor collection, weak
-            if (!concepts.tryAcquireWriteLock())
-                return;
-        }
-
-        try {
-            MyRadixTree.SearchResult s = null;
-
-            while (/*(iterationLimit-- > 0) &&*/ ((sizeEst() - sizeLimit) > maxConceptsThatCanBeRemovedAtATime)) {
-
-                Random rng = nar.random();
-
-                MyRadixTree.Node subRoot = volumeWeightedRoot(rng);
-
-                if (s == null)
-                    s = concepts.random(subRoot, descentRate, rng);
-
-                MyRadixTree.Node f = s.found;
-
-                if (f != null && f != subRoot) {
-                    int subTreeSize = concepts.sizeIfLessThan(f, maxConceptsThatCanBeRemovedAtATime);
-
-                    if (subTreeSize > 0) {
-                        concepts.removeWithWriteLock(s, true);
-                    }
-
-                    s = null;
-                }
-
-            }
-        } finally {
-            concepts.releaseWriteLock();
-        }
-
-
-    }
 
     /**
      * since the terms are sorted by a volume-byte prefix, we can scan for removals in the higher indices of this node
@@ -161,22 +88,13 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
     public @Nullable Concept get(Term t, boolean createIfMissing) {
         AbstractBytes k = key(t);
 
-        return createIfMissing ? _get(k, t) : _get(k);
+        ConceptRadixTree c = this.concepts;
+
+        return createIfMissing ?
+                c.putIfAbsent(k, () -> nar.conceptBuilder.apply(t, null))
+                :
+                c.get(k);
     }
-
-    @Nullable
-    private Concept _get(AbstractBytes k) {
-        return concepts.get(k);
-    }
-
-    private Concept _get(AbstractBytes k, Term finalT) {
-        return concepts.putIfAbsent(k, () -> nar.conceptBuilder.apply(finalT, null));
-    }
-
-//    public final AbstractBytes key(Termed t) {
-//        return key(t.term());
-//    }
-
 
     @Override
     public void set(Term src, Concept target) {
@@ -236,8 +154,90 @@ public class TreeMemory extends Memory implements Consumer<NAR> {
 
     @Override
     public void accept(NAR eachFrame) {
-        forgetNext();
+        concepts.forgetNext();
     }
 
 
+    public class ConceptRadixTree extends ConcurrentRadixTree<Concept> {
+
+        private final int sizeLimit;
+
+        public ConceptRadixTree(int sizeLimit) {
+            this.sizeLimit = sizeLimit;
+        }
+
+        @Override
+        public final Concept put(Concept value) {
+            return super.put(key(value.term()), value);
+        }
+
+        @Override
+        public boolean onRemove(Concept r) {
+            if (r instanceof Concept) {
+                Concept c = r;
+                if (removeable(c)) {
+                    onRemoval(r);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        private void forgetNext() {
+
+            int sizeBefore = sizeEst();
+
+            int overflow = sizeBefore - sizeLimit;
+
+            if (overflow < 0)
+                return;
+
+            int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxIterationRemovalPct);
+//        if (overflow < maxConceptsThatCanBeRemovedAtATime)
+//            return;
+
+            if ((((float)overflow)/ sizeLimit) > overflowSafetyPct) {
+                //major collection, strong
+                concepts.acquireWriteLock();
+            } else {
+                //minor collection, weak
+                if (!concepts.tryAcquireWriteLock())
+                    return;
+            }
+
+            try {
+                SearchResult s = null;
+
+                while (/*(iterationLimit-- > 0) &&*/ ((sizeEst() - sizeLimit) > maxConceptsThatCanBeRemovedAtATime)) {
+
+                    Random rng = nar.random();
+
+                    Node subRoot = volumeWeightedRoot(rng);
+
+                    if (s == null)
+                        s = concepts.random(subRoot, descentRate, rng);
+
+                    Node f = s.found;
+
+                    if (f != null && f != subRoot) {
+                        int subTreeSize = concepts.sizeIfLessThan(f, maxConceptsThatCanBeRemovedAtATime);
+
+                        if (subTreeSize > 0) {
+                            concepts.removeWithWriteLock(s, true);
+                        }
+
+                        s = null;
+                    }
+
+                }
+            } finally {
+                concepts.releaseWriteLock();
+            }
+
+
+        }
+
+    }
 }
