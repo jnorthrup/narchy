@@ -34,11 +34,11 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
     Iterable<Term> source;
 
-    public class Controls {
+//    public class Controls {
         public final AtomicBoolean update = new AtomicBoolean(true);
-    }
+//    }
 
-    public final Controls controls = new Controls();
+//    public final Controls controls = new Controls();
 
     public ConceptGraph2D(Iterable<? extends Termed> source, NAR n) {
         super();
@@ -135,7 +135,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
 
     protected void commit() {
-        if (showing() && controls.update.get()) {
+        if (showing() && update.get()) {
             set(source);
         }
     }

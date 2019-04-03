@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 public class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer {
 
     /** TODO varhandle */
-    private final AtomicReferenceArray<S> children;
+    protected final AtomicReferenceArray<S> children;
     public final int length;
 
     public MutableArrayContainer(int size) {

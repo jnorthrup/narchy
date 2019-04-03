@@ -5,6 +5,7 @@ import jcog.exe.Exe;
 import jcog.math.FloatRange;
 import jcog.math.v2;
 import jcog.pri.ScalarValue;
+import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.input.finger.Dragging;
@@ -119,7 +120,7 @@ public class XYSlider extends SimpleSurface implements HudHover {
 
         pressing = true;
         float p = hitPoint.x;
-        if (Float.isFinite(p) && knob.setIfChanged(unitize(p), unitize(hitPoint.y), ScalarValue.EPSILONcoarse))
+        if (Float.isFinite(p) && knob.setIfChanged(unitize(p), unitize(hitPoint.y), Spatialization.EPSILONf))
             updated();
 
     }

@@ -31,7 +31,6 @@
 
 package jcog.math;
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.signal.Tensor;
 import jcog.tree.rtree.Spatialization;
@@ -855,18 +854,14 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     /**
      * returns true if changed
      */
-    public boolean setAnim(v2 other, float rate, boolean lerpOrLinear) {
+    private boolean setAnim(v2 other, float rate, boolean lerpOrLinear) {
         if (rate < Float.MIN_NORMAL || this == other)
             return false;
 
-
         float nx = other.x, ny = other.y;
         float px = this.x, py = this.y;
-        if (nx == px && ny == py)
-            return false;
-
         float dx = nx - px;
-        if (dx < Float.MIN_NORMAL) {
+        if (dx < Spatialization.EPSILONf) {
             px = this.x = nx;
             dx = 0;
         }
@@ -880,7 +875,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
             return false;
 
         if (lerpOrLinear) {
-            throw new TODO();
+            set(Util.lerp(rate, px, nx), Util.lerp(rate, py, ny));
         } else {
 
             float lenSq = dx * dx + dy * dy;

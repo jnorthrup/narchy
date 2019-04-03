@@ -99,7 +99,7 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
     protected final void onCycle() {
         links.commit(
-            Forgetting.forget(links,  decay.floatValue())
+            Forgetting.forget(links,  1 - decay.floatValue())
         );
     }
 

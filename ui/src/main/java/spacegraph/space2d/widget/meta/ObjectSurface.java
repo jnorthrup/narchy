@@ -91,8 +91,11 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         return new ObjectSurface<>(List.of(x));
     }
 
+
     public ObjectSurface(X x) {
         this(x, 1);
+        if (x == null)
+            throw new NullPointerException();
     }
 
     public ObjectSurface(X x, int depth) {

@@ -20,18 +20,18 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
     private float AUTOSCALE = 0f;
 
 
-    public final FloatRange repelSpeed = new FloatRange(0.25f, 0, 2f);
+    public final FloatRange repelSpeed = new FloatRange(0.05f, 0, 1f);
 
-    public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 2f);
+    public final FloatRange attractSpeed = new FloatRange(0.05f, 0, 1f);
 
     /** in (visible) graph radii */
-    public final FloatRange nodeScale = new FloatRange(0.1f, 0.04f, 1.5f);
+    public final FloatRange nodeScale = new FloatRange(0.25f, 0.04f, 1.5f);
 
     /** in node radii */
-    public final FloatRange nodeSpacing  = new FloatRange(2f, 0.1f, 16f);
+    public final FloatRange nodeSpacing  = new FloatRange(2f, 0.25f, 16f);
 
-    /** in (visible) graph radii per iter */
-    public final FloatRange nodeSpeedMax = new FloatRange(0.5f, 0f, 2f);
+    /** 1.0 - momentum LERP */
+    public final FloatRange speed = new FloatRange(0.5f, 0f, 1f);
 
 
 
@@ -60,7 +60,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         assert (AUTOSCALE == AUTOSCALE);
 
 
-        maxRepelDist = (float) ((2 * gRad) * Math.sqrt(2)); //estimate
+        maxRepelDist = (float) ((2 * gRad)); //estimate
 
         equilibriumDistFactor = nodeSpacing.floatValue();
 
@@ -70,7 +70,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         float attractSpeed = this.attractSpeed.floatValue()   / iterations;
 
 
-        float maxSpeedPerIter = (nodeSpeedMax.floatValue() * dtS) * gRad / iterations;
+//        float maxSpeedPerIter = (nodeSpeedMax.floatValue() * dtS) * gRad / iterations;
 
 
         RectFloat gg = g.bounds;
@@ -81,7 +81,9 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         }
 
 
-        final v2 aCenter = new v2();
+
+        float speed = this.speed.floatValue();
+
         for (int ii = 0; ii < iterations; ii++) {
 
             for (int aa = 0; aa < n; aa++) {
@@ -92,18 +94,16 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
                 attract(a, attractSpeed);
 
                 final float ar = a.radius();
-                aCenter.set(a.cx(), a.cy());
 
                 for (int y = aa + 1; y < n; y++)
-                    repel(a, aCenter, ar, nodes.get(y), repelSpeed);
+                    repel(a, ar, nodes.get(y), repelSpeed);
 
             }
             for (MutableRectFloat a : nodes) {
-                a.commit(maxSpeedPerIter);
+                a.commitLerp(speed);
                 a.fenceInside(gg);
             }
         }
-
 
     }
 
@@ -143,32 +143,36 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
             v2 delta = new v2(b.cx() - px, b.cy() - py);
             float len = delta.normalize();
-            //if (len > idealLen) {
+            if (len > idealLen) {
 //            len = len * (1+Util.tanhFast(len - (scale)))/2;
 
 
                 //attractSpeed/=neighbors;
 
                 float s = (len - idealLen) * attractSpeed * weightToVelocity(edge.weight);
-                if (Math.abs(s) > Float.MIN_NORMAL) {
+
+                //s = Util.tanhFast(s);...
+                //s = (float) Math.sqrt(s);
+
+                if (Math.abs(s) > Spatialization.EPSILONf) {
                     delta.scale(s);
                     a.move(delta.x, delta.y);
                     b.move(-delta.x, -delta.y);
                 }
-            //}
+            }
         });
 
     }
 
     private float weightToVelocity(float weight) {
-        return weight;
+        return 1;
+        //return weight;
         //return weight * weight;
     }
 
-    private void repel(MutableRectFloat a, v2 aCenter, float ar, MutableRectFloat b, float repelSpeed) {
+    private void repel(MutableRectFloat a, float ar, MutableRectFloat b, float repelSpeed) {
 
-
-
+        v2 aCenter = a;
 
         float br = b.radius();
 //        ar *= ar;
@@ -189,19 +193,24 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         if (len >= maxRepelDist)
             return;
 
+        float radii = (ar + br) * equilibriumDistFactor;
 //        len -= (radii * equilibriumDistFactor);
+//        if (len < 0)
+//            len = 0;
 
         float s = repelSpeed /
                 (1 + (len * len));
                 //Util.sqr(1 + len);
 
-        delta.scale(s);
+        if (s > Spatialization.EPSILONf) {
 
-        float radii = (ar + br);
-        double baRad = br / radii;
-        a.move(delta.x * baRad, delta.y * baRad);
-        double abRad = -ar / radii;
-        b.move(delta.x * abRad, delta.y * abRad);
+            delta.scale(s);
+
+            float baRad = br / radii;
+            a.move(delta.x * baRad, delta.y * baRad);
+            float abRad = -ar / radii;
+            b.move(delta.x * abRad, delta.y * abRad);
+        }
 
     }
 

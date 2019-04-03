@@ -22,9 +22,11 @@ public interface ScalarValue extends Prioritized {
      * https://en.wikipedia.org/wiki/Floating-point_arithmetic#Internal_representation
      */
     float EPSILON = 0.000001f;
+
+    /** > 2 * EPSILON */
     float EPSILONcoarse =
-            EPSILON*2;
-            //(float)Math.sqrt(EPSILON);
+            //EPSILON*8;
+            (float)Math.sqrt(EPSILON);
 
     /** setter
      *  @return value after set

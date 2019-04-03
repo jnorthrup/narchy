@@ -6,6 +6,7 @@ import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.data.list.table.Table;
 import jcog.pri.Forgetting;
+import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.util.ArrayUtils;
@@ -265,11 +266,14 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
         return size() == 0;
     }
 
-    /**
-     * @return null if this is an event which was rejected on input, non-null if it was a re
-     */
+
     public void onRemove(Y value) {
 
+    }
+
+    public void onEvict(Y incoming) {
+        if (incoming instanceof Prioritizable)
+            ((Prioritizable)incoming).delete();
     }
 
     /**

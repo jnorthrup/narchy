@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.slider;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.v2;
-import jcog.pri.ScalarValue;
+import jcog.tree.rtree.Spatialization;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Dragging;
@@ -96,7 +96,7 @@ public class SliderModel extends SimpleSurface {
         Util.assertFinite(pNext);
 
         float pPrev = this.p;
-        if (Util.equals(pPrev, pNext, ScalarValue.EPSILONcoarse))
+        if (Util.equals(pPrev, pNext, Spatialization.EPSILONf))
             return;
 
         this.p = pNext;

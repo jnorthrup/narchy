@@ -67,14 +67,14 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
 
         @Override
         public MutableRectFloat layout(float[][] in, float[][] out) {
-            if (in.length == 0) return new MutableRectFloat().set(0,0, 1,1);
+            if (in.length == 0) return new MutableRectFloat().setX0Y0WH(0,0, 1,1);
 
             int dim = dimensionExternal();
             for (int i = 0; i < in.length; i++) {
                 System.arraycopy(in[i], 0, out[i], 0, dim); //TODO make this unnecessary by making in==out
             }
 
-            MutableRectFloat m = new MutableRectFloat().set(out[0][0], out[0][1], 0, 0);
+            MutableRectFloat m = new MutableRectFloat().setX0Y0WH(out[0][0], out[0][1], 0, 0);
             for (int i = 1; i < in.length; i++) {
                 m.mbr(out[i][0], out[i][1]);
             }

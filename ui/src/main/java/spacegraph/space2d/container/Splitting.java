@@ -24,7 +24,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
     //TODO float marginPct = ...;
     private float minSplit = 0, maxSplit = 1;
-    private static final float resizeMargin = 0.025f;
+    private static final float resizeMargin = 0.0125f;
 
     public Splitting() {
         this(null, 0.5f, true, null);
@@ -260,19 +260,17 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
                 (Splitting.this::vertical));
 
         final PushButton swap = new PushButton("<->").clicked(()->{
-            synchronized (Splitting.this) {
+            //synchronized (Splitting.this) {
                 X a = Splitting.this.L();
-                Y b = Splitting.this.R();
-                //TODO some swap that works directly on the elements. otherwise interference from atomic parent start/stop protocol makes this tricky
-//                try {
-//                    if (a!=null) a.remove();
-//                    if (b!=null) b.remove();
-//                    Splitting.this.L((X) b);
-//                    Splitting.this.R((Y) a);
-//                } catch (Throwable e) {
-//                    throw new jcog.TODO(e); //TODO
-//                }
-            }
+                if (a!=null) {
+                    Y b = Splitting.this.R();
+                    if (b != null) {
+                        if (children.compareAndSet(0, a, b)) {
+                            children.set(1, a);
+                        }
+                    }
+                }
+
         });
 
         ResizeBar() {

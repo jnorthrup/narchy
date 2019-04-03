@@ -616,22 +616,22 @@ public abstract class Param {
     /**
      * Default priority of input judgment
      */
-    @Deprecated public final FloatRange beliefPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONcoarse, 1f);
+    @Deprecated public final FloatRange beliefPriDefault = new FloatRange(0.5f, ScalarValue.EPSILON, 1f);
 
     /**
      * Default priority of input question
      */
-    @Deprecated public final FloatRange questionPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONcoarse, 1f);
+    @Deprecated public final FloatRange questionPriDefault = new FloatRange(0.5f, ScalarValue.EPSILON, 1f);
 
     /**
      * Default priority of input judgment
      */
-    @Deprecated public final FloatRange goalPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONcoarse, 1f);
+    @Deprecated public final FloatRange goalPriDefault = new FloatRange(0.5f, ScalarValue.EPSILON, 1f);
 
     /**
      * Default priority of input question
      */
-    public final FloatRange questPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONcoarse, 1f);
+    public final FloatRange questPriDefault = new FloatRange(0.5f, ScalarValue.EPSILON, 1f);
 
 
     public float priDefault(byte punctuation) {

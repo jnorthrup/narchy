@@ -367,13 +367,13 @@ abstract public class NAgentX extends NAgent {
 
     public static void config(NAR n) {
         n.dtDither.set(
-                //10
-                20
+                10
+                //20
                 //40
         );
 
         n.confMin.set(0.01f);
-        n.termVolumeMax.set(30);
+        n.termVolumeMax.set(32);
 
 
         n.attn.linksMax.set(1024);
@@ -384,8 +384,8 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.005f);
         n.questPriDefault.set(0.005f);
 
-        n.beliefConfDefault.set(0.9f);
-        n.goalConfDefault.set(0.9f);
+        n.beliefConfDefault.set(0.8f);
+        n.goalConfDefault.set(0.8f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 

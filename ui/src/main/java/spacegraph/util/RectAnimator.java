@@ -39,7 +39,7 @@ abstract public class RectAnimator implements Animator<MutableRectFloat> {
     /** rect being animated */
     private final MutableRectFloat rect;
 
-    private final MutableRectFloat target = new MutableRectFloat().set(0, 0, 0, 1);
+    private final MutableRectFloat target = new MutableRectFloat().setX0Y0WH(0, 0, 0, 1);
 
 
 

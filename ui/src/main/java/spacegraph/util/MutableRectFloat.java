@@ -40,18 +40,24 @@ public class MutableRectFloat<X> extends v2 {
         );
     }
 
-    public final MutableRectFloat set(float x, float y, float w, float h) {
+    public final MutableRectFloat setXYWH(float x, float y, float w, float h) {
+        this.cxPrev = this.x = x;
+        this.cyPrev = this.y = y;
+        return size(w, h);
+    }
+
+    public final MutableRectFloat setX0Y0WH(float x, float y, float w, float h) {
         this.cxPrev = this.x = x + w / 2;
         this.cyPrev = this.y = y + h / 2;
         return size(w, h);
     }
 
     public final void set(MutableRectFloat r) {
-        set(r.x, r.y, r.w, r.h);
+        setXYWH(r.x, r.y, r.w, r.h);
     }
 
     public final void set(RectFloat r) {
-        set(r.x, r.y, r.w, r.h);
+        setX0Y0WH(r.x, r.y, r.w, r.h);
     }
 
     public float radius() {
@@ -80,18 +86,23 @@ public class MutableRectFloat<X> extends v2 {
         return y;
     }
 
-
-    public void commit(float speedLimit) {
-        v2 delta = new v2(x -cxPrev, y -cyPrev);
-        float lenSq = delta.lengthSquared();
-        if (lenSq > speedLimit * speedLimit) {
-            float len = (float) Math.sqrt(lenSq);
-            delta.scale(speedLimit / len);
-            x = cxPrev + delta.x; cxPrev = x;
-            y = cyPrev + delta.y; cyPrev = y;
-        }
-
+    public void commitLerp(float rate) {
+        v2 v = new v2(cxPrev, cyPrev);
+        v.lerp(new v2(x, y)/*this*/, rate);
+        set(v);
     }
+
+//    public void commit(float speedLimit) {
+//        v2 delta = new v2(x -cxPrev, y -cyPrev);
+//        float lenSq = delta.lengthSquared();
+//        if (lenSq > speedLimit * speedLimit) {
+//            float len = (float) Math.sqrt(lenSq);
+//            delta.scale(speedLimit / len);
+//            x = cxPrev + delta.x; cxPrev = x;
+//            y = cyPrev + delta.y; cyPrev = y;
+//        }
+//
+//    }
 
     public void move(double dx, double dy) {
         move((float) dx, (float) dy);

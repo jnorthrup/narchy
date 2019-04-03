@@ -27,7 +27,7 @@
 
 package toxi.physics2d.behavior;
 
-import jcog.pri.ScalarValue;
+import jcog.tree.rtree.Spatialization;
 import toxi.geom.SpatialIndex;
 import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
@@ -72,7 +72,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     private void move(VerletParticle2D p, Vec2D delta, float distSq) {
         Vec2D f;
-        if (distSq <= ScalarValue.EPSILONcoarse) {
+        if (distSq <= Spatialization.EPSILONf) {
            if (strength < 0) {
                //random direction
                float theta = (float) ((rng.nextFloat()) * Math.PI * 2);

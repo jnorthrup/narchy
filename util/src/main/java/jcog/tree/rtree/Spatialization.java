@@ -10,8 +10,8 @@ import java.util.function.Function;
 public class Spatialization<X> {
 
     public static final double EPSILON =
-            //Math.pow(Float.MIN_NORMAL, 1f/4); //E-10
-            Math.pow(Float.MIN_NORMAL, 1f/3); //E-15?
+            Math.pow(Float.MIN_NORMAL, 1f/4); //E-10
+            //Math.pow(Float.MIN_NORMAL, 1f/3); //E-15?
             //Math.pow(Float.MIN_NORMAL, 1/2); //E-19
             //Float.MIN_NORMAL; //E-38
     public static final float EPSILONf = (float)EPSILON;
