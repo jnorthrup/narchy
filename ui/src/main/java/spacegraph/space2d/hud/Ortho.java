@@ -30,28 +30,24 @@ import static java.lang.Math.sin;
  */
 public class Ortho<S extends Surface> extends MutableUnitContainer implements WindowListener, KeyPressed {
 
-    @Deprecated private final NewtKeyboard keyboard;
-
-
     private static final int ZOOM_STACK_MAX = 8;
-    private final Deque<v3> zoomStack = new ArrayDeque();
-
-
+    private final static float focusAngle = (float) Math.toRadians(45);
     /**
      * current view area, in absolute world coords
      */
     public final v2 scale = new v2(1, 1);
-
     public final Camera cam;
+    /**
+     * parent
+     */
+    public final JoglSpace space;
+    @Deprecated
+    private final NewtKeyboard keyboard;
+    private final Deque<RectFloat> zoomStack = new ArrayDeque();
     private final float camZmin = 1;
-    private float camZmax = 640000;
+    private final float zoomMargin = 0.1f;
     private float camXmin = -1, camXmax = +1;
     private float camYmin = -1, camYmax = +1;
-    private final float zoomMargin = 0.1f;
-    private final static float focusAngle = (float) Math.toRadians(45);
-
-    /** parent */
-    public final JoglSpace space;
 
 
 //    /** finger position local to this layer/camera */
@@ -73,23 +69,35 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
     public void windowResized(WindowEvent e) {
         int W = space.display.window.getWidth();
         int H = space.display.window.getHeight();
-        if (posChanged(RectFloat.WH( W, H))) {
+        if (posChanged(RectFloat.WH(W, H))) {
 
-            float camZ = targetDepth(Math.min(W, H));
-            camZmax = camZ;
 
             if (autosize()) {
                 the().pos(bounds);
-                cam.set(bounds.w / 2f, bounds.h / 2f, camZ);
+            }
+            if (autosize()) {
+                unzoom();
             }
 
             layout();
         }
     }
 
-    @Override public final void render(ReSurface render) {
+    /**
+     * full unzoom
+     */
+    public void unzoom() {
+        cam.set(bounds.w / 2f, bounds.h / 2f, camZMax());
+    }
 
-        render.on((gl)->{
+    private float camZMax() {
+        return targetDepth(Math.min(space.display.window.getWidth(), space.display.window.getHeight()));
+    }
+
+    @Override
+    public final void render(ReSurface render) {
+
+        render.on((gl) -> {
 
             float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
             float s = zoom * Math.min(w(), h());
@@ -99,13 +107,13 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
             gl.glPushMatrix();
 
             gl.glScalef(scale.x, scale.y, 1);
-            gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
+            gl.glTranslatef((w() / 2) / scale.x - cam.x, (h() / 2) / scale.y - cam.y, 0);
         });
 
         the().tryRender(render);
 
-        render.on((gl)->{
-           gl.glPopMatrix();
+        render.on((gl) -> {
+            gl.glPopMatrix();
         });
     }
 
@@ -135,6 +143,7 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
             windowResized(null);
 
             animate(cam);
+
         }
 
     }
@@ -152,57 +161,41 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
      */
     public void zoomDelta(Finger finger, float delta) {
         v2 xy = cam.screenToWorld(delta < 0 ?
-                finger.posPixel
-                :
-                //TODO fix this zoom-out calculation
-                new v2(finger.posPixel.x, finger.posPixel.y)
+                        finger.posPixel
+                        :
+                        //TODO fix this zoom-out calculation
+                        new v2(finger.posPixel.x, finger.posPixel.y)
                 //new v2(w()-finger.posPixel.x, h()-finger.posPixel.y)
         );
         cam.set(xy.x, xy.y, cam.z * (1f + delta));
     }
 
-    public void zoomNext(Surface su) {
+    public void zoomNext(Surface x) {
 
-        //TODO not right
+        //TODO fix
         synchronized (zoomStack) {
 
-            //System.out.println("before: " + zoomStack);
-            if (zoomStack.isEmpty()) {
-                zoomStack.add(new v3(cam.snapshot()));
-            }
+            RectFloat cc = x.bounds;
 
-            float epsilon = Math.min(h() / scale.y, w() / scale.x);
-            v3 c = new v3(cam.snapshot());
-            if (zoomStack.size() > 1 && su.bounds.contains(c.x, c.y) && zoomStack.peekLast().equals(c, epsilon)) {
+            int s = zoomStack.size();
+            float epsilon = Math.min(1 / h(), 1 / w());
+            boolean camSame = s > 0 && zoomStack.peekLast().equals(cc, epsilon);
+            if (s > 1 && camSame) {
 
+                zoomStack.removeLast(); //POP
+                zoom(zoomStack.peekLast());
 
-                unzoom();
+            } else if (s > 0 && camSame) {
 
+                unzoom(); //unzoom completely
 
-            } else {
+            } else if (!camSame) {
 
+                if (s + 1 >= ZOOM_STACK_MAX)
+                    zoomStack.removeFirst(); //EVICT
+                zoomStack.addLast(cc); //PUSH
 
-                {
-                    float[] xyz = cam.snapshot();
-
-                    { //if (zoomStack.isEmpty() || !zoomStack.peekLast().equals(x, epsilon)) {
-                        if (zoomStack.size() >= ZOOM_STACK_MAX)
-                            zoomStack.removeFirst();
-
-                        zoomStack.addLast(new v3(xyz));
-                    }
-                }
-
-                zoom(su.bounds);
-
-                {
-                    float[] xyz = cam.snapshot();
-
-                    if (zoomStack.size() >= ZOOM_STACK_MAX)
-                        zoomStack.removeFirst();
-
-                    zoomStack.addLast(new v3(xyz));
-                }
+                zoom(cc);
 
             }
 
@@ -210,17 +203,13 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
 
     }
 
-    void unzoom() {
-        zoomStack.removeLast();
-        v3 prev = zoomStack.peekLast();
-        zoom(prev);
-    }
-
     public void zoom(RectFloat b) {
         zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin);
     }
 
-    /** choose best zoom radius for the target rectangle according to current view aspect ratio */
+    /**
+     * choose best zoom radius for the target rectangle according to current view aspect ratio
+     */
     private float targetDepth(float w, float h, float margin) {
         float d = Math.max(w, h);
 //        if (((((float) pw()) / ph()) >= 1) == ((w / h) >= 1))
@@ -228,7 +217,7 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
 //        else
 //            d = w; //limit by width
 
-        return targetDepth(d * (1+margin));
+        return targetDepth(d * (1 + margin));
     }
 
 
@@ -275,7 +264,6 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
     }
 
 
-
     @Override
     public void windowRepaint(WindowUpdateEvent e) {
         visible = true;
@@ -301,11 +289,11 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
 //    }
 
 
-
-
     public class Camera extends AnimVector3f {
 
-        /** TODO atomic */
+        /**
+         * TODO atomic
+         */
         private final float CAM_RATE = 3f;
 
         {
@@ -352,7 +340,7 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
         }
 
         public float camZ(float z) {
-            return Util.clamp(z, camZmin, Math.max(camZmin, camZmax));
+            return Util.clamp(z, camZmin, Math.max(camZmin, camZMax()));
         }
 
         public float camY(float y) {
@@ -379,18 +367,21 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
         public final v2 worldToScreen(v2 xy) {
             return worldToScreen(xy.x, xy.y);
         }
+
         public final v2 screenToWorld(v2 xy) {
             return screenToWorld(xy.x, xy.y);
         }
 
         public v2 screenToWorld(float x, float y) {
             return new v2(
-                    ((x- w() /2) /scale.x + cam.x) ,
-                    ((y- h() /2) /scale.y + cam.y)
+                    ((x - w() / 2) / scale.x + cam.x),
+                    ((y - h() / 2) / scale.y + cam.y)
             );
         }
 
-        /** immediately get to where its going */
+        /**
+         * immediately get to where its going
+         */
         public void complete() {
             setDirect(target.x, target.y, target.z);
         }
@@ -400,7 +391,9 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
         }
 
 
-        /** TODO optimize */
+        /**
+         * TODO optimize
+         */
         public RectFloat worldToScreen(RectFloat b) {
             v2 ul = worldToScreen(new v2(b.left(), b.bottom()));
             v2 br = worldToScreen(new v2(b.right(), b.top()));

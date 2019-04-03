@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.math.Longerval;
+import jcog.pri.op.PriMerge;
 import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Param;
@@ -224,13 +225,13 @@ public class SensorBeliefTables extends BeliefTables {
         if (next == null)
             return; //?
 
-        float p = Param.surprise(prev, next, pri, n);
-        if (p!=p)
+        float surprise = Param.surprise(prev, next, pri, n);
+        if (surprise!=surprise)
             return;
 
-        next.pri(p); //set the task's pri too
+        next.pri(surprise); //set the task's pri too
 
-        float delta = tasklink.priMergeGetDelta(next.punc(), p, Param.tasklinkMerge);
+        float delta = tasklink.priMergeGetDelta(next.punc(), surprise, PriMerge.max);
 
 //        float delta = tasklink.priMax(next.punc(), p/2);
 //        delta += tasklink.priMax(QUESTION, p/4);

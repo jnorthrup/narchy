@@ -97,7 +97,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public void clear() {
         pressureZero();
-        popBatch(Integer.MAX_VALUE, this::onRemove);
+        popBatch(Integer.MAX_VALUE,
+                //this::removed
+                this::onRemove
+        );
     }
 
     @Override
@@ -342,13 +345,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                     SampleReaction next = each.apply(y);
 
                     if (next.remove) {
-                        //explicit deletion; remove immediately
-                        //TODO this is the point where a writelock should be attempted. otherwise it can be moved/removed in the meantime
-                        if (ii[i] == x) {
-                            remove(y, i, true);
-                            y.delete();
-                            //false /* strong */
+                        //explicit removal
+                        y.delete();
 
+                        if (ii[i] == x) {
+                            remove(y, i, false);
                         } /*else {
                             //its not there any more
                         }*/
@@ -716,7 +717,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     /** whether to attempt re-sorting the list after each merge, in-between commits */
     protected boolean sortContinuously() {
-        return false;
+        //TODO try policy of: randomly in proportion to bag fill %
+        return true;
+        //return false;
     }
 
 

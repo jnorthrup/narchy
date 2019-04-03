@@ -55,10 +55,10 @@ import java.util.stream.Stream;
  */
 public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
-    public static final int BINARY_SEARCH_THRESHOLD = 2;
+    public static final int BINARY_SEARCH_THRESHOLD = 4;
 
     /** when scanning for identity equality */
-    public static final int BINARY_SEARCH_THRESHOLD_SCAN = 32;
+    public static final int BINARY_SEARCH_THRESHOLD_SCAN = 16;
 
     protected static final AtomicIntegerFieldUpdater<SortedArray> SIZE =
             new MetalAtomicIntegerFieldUpdater(SortedArray.class, "size");

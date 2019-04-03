@@ -187,12 +187,11 @@ public abstract class Param {
     public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE = false;
     public static boolean DEBUG_ENSURE_DITHERED_DT = false;
 
+    /** should be monotonically increasing at most */
     public static final PriMerge tasklinkMerge =
+            PriMerge.or;
             //PriMerge.plus;
             //PriMerge.max;
-            PriMerge.or;
-            //PriMerge.avgGeoFast;
-
 
     /**
      * budget factor for combining 2 tasks in derivation
@@ -200,13 +199,15 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
+        (t,b)->Util.unitize(t+b); //plus, max=1
+        //Util::mean;
         //tasklinkMerge::merge;
         //Util::or;
-        (t,b)->Util.unitize(t+b); //plus
+
         //Util::or;
         //Math::max;
         //Util::and;
-        //Util::mean;
+
 
 
     /** perceptible priority increase that warrants automatic reactivation.
@@ -216,7 +217,7 @@ public abstract class Param {
     /** memory reconsolidation period - time period for a memory to be refreshed as new
      *  useful as a novelty threshold:
      *          >=0, higher values decrease the rate at which repeated tasks can be reactivated */
-    public static int REMEMBER_REPEAT_THRESH_DURS = 1;
+    public static int REMEMBER_REPEAT_THRESH_DURS = 2;
 
 
     /**
@@ -314,8 +315,8 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange matchTTL = new IntRange(8, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(5 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange matchTTL = new IntRange(12, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 4; //HACK this is a TTL supply, not a COST
 
@@ -328,7 +329,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 2;
+    public static final int TIMEGRAPH_ITERATIONS = 3;
 
 
     @Range(min = 0, max = 64)
@@ -499,6 +500,8 @@ public abstract class Param {
         }
     };
 
+    /** should be enough to account for an expected evidence integration error rate */
+    public static final float PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE = 0.1f;
 
     /**
      * computes the projected evidence at a specific distance (dt) from a perceptual moment evidence
@@ -542,8 +545,8 @@ public abstract class Param {
                 //0.5f;
                 //1;
                 //1.618f; //phi
-                //2; //nyquist
-                4;
+                2; //nyquist
+                //4;
                 //dur;
                 //8;
                 //64;

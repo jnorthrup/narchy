@@ -561,12 +561,12 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
         return equals(t1, Spatialization.EPSILONf);
     }
 
-    public boolean equals(@Nullable v3 t1, float epsilon) {
-        return (this == t1) ||
-                ((t1 != null) &&
-                        Util.equals(x, t1.x, epsilon) &&
-                        Util.equals(y, t1.y, epsilon) &&
-                        Util.equals(z, t1.z, epsilon));
+    public boolean equals(@Nullable v3 o, float epsilon) {
+        return (this == o) ||
+                ((o != null) &&
+                        Util.equals(x, o.x, epsilon) &&
+                        Util.equals(y, o.y, epsilon) &&
+                        Util.equals(z, o.z, epsilon));
     }
 
     /**
