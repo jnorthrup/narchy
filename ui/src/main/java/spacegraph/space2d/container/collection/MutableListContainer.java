@@ -5,7 +5,7 @@ import jcog.data.list.FastCoWList;
 import org.eclipse.collections.api.set.primitive.IntSet;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
@@ -66,7 +66,7 @@ public class MutableListContainer extends AbstractMutableContainer {
      */
     protected Surface set(int index, Surface next) {
         synchronized (this) {
-            SurfaceBase p = this.parent;
+            Surfacelike p = this.parent;
             if (p == null) {
                 return children.set(index, next);
             } else {

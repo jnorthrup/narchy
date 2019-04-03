@@ -5,6 +5,11 @@ import org.slf4j.event.Level;
 
 import java.util.function.Supplier;
 
+/** inspired by logging frameworks like slf4j, the analogy of this class would be slf4j.Logger
+ *
+ *  TODO extend the logging model to include
+ *  more detailed and flexible realtime interactive aspects of user perception,
+ *  and supportive defer and remind capabilities.*/
 public interface SpaceLogger {
 
     /** new log message will likely replace an existing log message by the same key. */

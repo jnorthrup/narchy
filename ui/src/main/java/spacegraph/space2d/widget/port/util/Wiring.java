@@ -79,30 +79,36 @@ public class Wiring extends Dragging {
     }
 
     private final EditGraph2D graph() {
-        return start.parent(EditGraph2D.class);
+        return start.parentOrSelf(EditGraph2D.class);
     }
 
     @Override
     public final void stop(Finger finger) {
 
-        if (start == end)
-            return; //same instance
-
-        if (end != null) {
-            if (!tryWire())
-                return; //fail
-        }
-
-        if (this.start instanceof Wireable)
-            ((Wireable) start).onWireOut(this, false);
-
-        if (this.end instanceof Wireable)
-            ((Wireable) end).onWireIn(this, false);
-
         if (pathVis != null) {
             pathVis.remove();
             pathVis = null;
         }
+
+        if (start == end)
+            return; //same instance
+
+        if (end != null) {
+            if (tryWire()) {
+                if (this.start instanceof Wireable)
+                    ((Wireable) start).onWireOut(this, false);
+
+                if (this.end instanceof Wireable)
+                    ((Wireable) end).onWireIn(this, false);
+
+                return;
+            }
+
+        }
+
+
+
+        return;
 
     }
 
@@ -119,25 +125,29 @@ public class Wiring extends Dragging {
                 //TODO lazy construct and/or cache these
 
                 //apply type checking and auto-conversion if necessary
-                Class aa = ((TypedPort) start).type, bb = ((TypedPort) end).type;
-                if (aa.equals(bb)) {
-                    //ok
-                } else {
+                Class ta = ((TypedPort) start).type;
+                Class tb = ((TypedPort) end).type;
+                if (!ta.equals(tb) /* TODO && direct ancestor comparison */ ) {
+                    Class aa = ta, bb = tb;
+                    if (aa.equals(bb)) {
+                        //ok
+                    } else {
 
-                    List<Function> ab = CAST.applicable(aa, bb), ba = CAST.applicable(bb, aa);
+                        List<Function> ab = CAST.applicable(aa, bb), ba = CAST.applicable(bb, aa);
 
-                    if (!ab.isEmpty() || !ba.isEmpty()) {
-                        //wire with adapter
-                        PortAdapter adapter = new PortAdapter(aa, ab, bb, ba);
-                        g.addWeak(adapter).pos(start.bounds.mean(end.bounds).scale(0.1f));
+                        if (!ab.isEmpty() || !ba.isEmpty()) {
+                            //wire with adapter
+                            PortAdapter adapter = new PortAdapter(aa, ab, bb, ba);
+                            g.addUndecorated(adapter).pos(start.bounds.mean(end.bounds).scale(0.5f));
 
-                        TypedPort ax = adapter.port(true);
-                        TypedPort ay = adapter.port(false);
+                            TypedPort ax = adapter.port(true);
+                            TypedPort ay = adapter.port(false);
 
-                        g.addWire(new Wire(start, ax));
-                        g.addWire(new Wire(ay, end));
+                            g.addWire(new Wire(start, ax));
+                            g.addWire(new Wire(ay, end));
 
-                        return true;
+                            return true;
+                        }
                     }
                 }
             }

@@ -106,7 +106,7 @@ public class NewtKeyboard extends Finger implements KeyListener {
                 return Float.NaN;
             }
         });
-        Container parent = ((Surface)x.parent).parent(Container.class);
+        Container parent = ((Surface)x.parent).parentOrSelf(Container.class);
         parent.whileEach(c -> {
             if (c == x)
                 return true;

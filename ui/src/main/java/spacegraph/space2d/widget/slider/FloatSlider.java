@@ -140,7 +140,7 @@ public class FloatSlider extends Widget {
         }
 
         public void update() {
-            FloatSlider p = parent(FloatSlider.class);
+            FloatSlider p = parentOrSelf(FloatSlider.class);
             if (p!=null) {
                 FloatSupplier input = p.input; 
                 if (input != null)

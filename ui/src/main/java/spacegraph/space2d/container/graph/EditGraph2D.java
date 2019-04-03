@@ -17,7 +17,7 @@ import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.collection.MutableMapContainer;
@@ -79,7 +79,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     public EditGraph2D() {
         super();
-        physics.surface = physics.start(this);
+        physics.start(this);
         doubleClicking = new DoubleClicking(0, this::doubleClick, this);
     }
 
@@ -111,7 +111,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
             return parent != null;
         }));
 
-        layout();
+//        layout();
     }
 
     @Override
@@ -146,7 +146,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
             protected void delete() {
                 super.delete();
 
-                DependentWindow w = parent(DependentWindow.class);
+                DependentWindow w = parentOrSelf(DependentWindow.class);
                 if (w != null)
                     w.remove();
             }
@@ -162,9 +162,10 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     @Override
     public void doLayout(float dtS) {
-        RectFloat graphBounds = this.bounds;
-        physics.surface.pos(graphBounds);
-        raw.pos(graphBounds);
+        RectFloat b = this.bounds;
+        physics.below.pos(b);
+        physics.above.pos(b);
+        raw.pos(b);
 
         forEach(w -> {
             if (w.parent == null)
@@ -269,9 +270,10 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     @Override
     public void forEach(Consumer<Surface> each) {
-        each.accept(physics.surface);
+        each.accept(physics.below);
         each.accept(raw);
         super.forEach(each);
+        each.accept(physics.above);
     }
 
 
@@ -330,7 +332,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
                 //}
         );
         z.pos(RectFloat.XYWH(pos.x, pos.y, 0.1f * w(), 0.1f * h()));
-        z.root().zoomNext(z);
+        //((SpaceGraphFlat)(z.root())).zoomNext(z);
     }
 
     /**
@@ -433,7 +435,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
             @Override
             protected final void paint(GL2 gl, ReSurface reSurface) {
-                SurfaceBase p = parent;
+                Surfacelike p = parent;
                 if (p instanceof Surface)
                     pos(((Surface) p).bounds); //inherit bounds
 
@@ -449,7 +451,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
             @Override
             public final boolean visible() {
                 if (a().parent == null || b().parent == null) {
-                    EditGraph2D graphParent = parent(EditGraph2D.class);
+                    EditGraph2D graphParent = parentOrSelf(EditGraph2D.class);
                     if (graphParent != null) {
                         EditGraph2D.VisibleLink.this.remove(graphParent);
                         remove();

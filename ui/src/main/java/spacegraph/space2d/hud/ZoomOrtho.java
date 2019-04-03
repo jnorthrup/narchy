@@ -210,7 +210,7 @@ public class ZoomOrtho extends Ortho {
 
             Surface nextTouch = finger.touching();
             if (nextTouch!=null)
-                nextTouch = (Surface) nextTouch.parent(HudHover.class);
+                nextTouch = (Surface) nextTouch.parentOrSelf(HudHover.class);
 
             if (nextTouch != prevTouch) {
 

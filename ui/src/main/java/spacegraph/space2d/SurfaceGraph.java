@@ -8,18 +8,11 @@ import spacegraph.video.JoglWindow;
 
 import java.util.function.Consumer;
 
-public interface SurfaceRoot extends SurfaceBase, SpaceLogger {
+/** global UI context for a hierarchy of surfaces */
+public interface SurfaceGraph extends Surfacelike, SpaceLogger {
 
-    default SurfaceRoot root() {
+    default SurfaceGraph root() {
         return this;
-    }
-
-    default void zoomNext(Surface s) {
-
-    }
-
-    default void unzoom() {
-
     }
 
 

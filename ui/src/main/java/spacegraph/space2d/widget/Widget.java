@@ -8,7 +8,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRoot;
+import spacegraph.space2d.SurfaceGraph;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.util.math.Color4f;
@@ -63,7 +63,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
     /** request focus */
     public <W extends Widget> W focus() {
-        SurfaceRoot r = root();
+        SurfaceGraph r = root();
         if (r!=null) {
             r.keyFocus(this);
         }

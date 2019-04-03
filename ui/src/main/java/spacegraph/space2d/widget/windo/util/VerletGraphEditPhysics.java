@@ -51,13 +51,14 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
     }
 
     @Override
-    protected Surface starting(EditGraph2D<?> parent) {
+    protected void starting(EditGraph2D<?> parent) {
         physics.physics.setDrag(0.25f);
         physics.debugRender.set(false);
         physics.pos(parent.bounds);
         physics.start(parent);
-        return physics;
+        below = physics;
     }
+
     @Override
     public final void invokeLater(Runnable o) {
         //physics.invoke(o);
@@ -70,8 +71,8 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
     }
 
     @Override
-    public void add(Surface x) {
-        this.w.computeIfAbsent(x, (ww->{
+    public PhySurface add(Surface x) {
+        return this.w.computeIfAbsent(x, (ww->{
             PhySurface wd = new PhySurface(ww);
             physics.physics.addBehavior(wd.repel);
             return wd;

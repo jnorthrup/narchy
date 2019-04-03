@@ -27,7 +27,7 @@ import java.util.function.BiConsumer;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
-public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
+public class SpaceGraphFlat extends JoglSpace implements SurfaceGraph {
 
 
 //    private final Ortho<MutableListContainer> hud;
@@ -178,7 +178,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceRoot {
 
 
     @Override
-    public final SurfaceRoot root() {
+    public final SurfaceGraph root() {
         return this;
     }
 

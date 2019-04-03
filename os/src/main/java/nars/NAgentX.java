@@ -24,10 +24,7 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.index.concept.TreeMemory;
-import nars.op.Arithmeticize;
-import nars.op.AutoencodedBitmap;
-import nars.op.Eternalizer;
-import nars.op.Introduction;
+import nars.op.*;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -457,7 +454,7 @@ abstract public class NAgentX extends NAgent {
 
 
         //new StatementLinker(n);
-        //new PuncNoise(n);
+        new PuncNoise(n);
         new Eternalizer(n);
 
 //        new STMLinkage(n, 1);

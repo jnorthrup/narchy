@@ -8,7 +8,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.Surfacelike;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
@@ -26,7 +26,7 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public final boolean start(SurfaceBase parent) {
+    public final boolean start(Surfacelike parent) {
         if (super.start(parent)) {
             layout();
             return true;

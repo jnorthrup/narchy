@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import jcog.exe.Exe;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.text.VectorLabel;
 
@@ -25,7 +25,7 @@ public class LazySurface extends MutableUnitContainer<Surface> {
     protected void starting() {
         super.starting();
 
-        SurfaceBase p = parent;
+        Surfacelike p = parent;
         Exe.invokeLater(()->{
             //TODO profile option
             Surface next = safe(async);

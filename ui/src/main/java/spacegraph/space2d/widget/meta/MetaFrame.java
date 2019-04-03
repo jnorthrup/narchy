@@ -218,7 +218,7 @@ public class MetaFrame extends Bordering implements HudHover {
     }
 
     private MutableListContainer hud() {
-        return (MutableListContainer) parent(ZoomOrtho.class).hud().get(3);
+        return (MutableListContainer) parentOrSelf(ZoomOrtho.class).hud().get(3);
     }
 
 

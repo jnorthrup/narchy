@@ -8,7 +8,7 @@ import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRoot;
+import spacegraph.space2d.SurfaceGraph;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.util.Wiring;
@@ -255,7 +255,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     protected void starting() {
         super.starting();
 
-        EditGraph2D graph = parent(EditGraph2D.class);
+        EditGraph2D graph = parentOrSelf(EditGraph2D.class);
         if (graph != null)
             this.node = graph.links.addNode(this);
         else
@@ -271,7 +271,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     protected void stopping() {
         node = null;
         enabled = false;
-        EditGraph2D p = parent(EditGraph2D.class);
+        EditGraph2D p = parentOrSelf(EditGraph2D.class);
         if (p != null)
             p.links.removeNode(this);
         super.stopping();
@@ -304,7 +304,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
                     in.accept(from, s);
                     return true;
                 } catch (Throwable t) {
-                    SurfaceRoot r = root();
+                    SurfaceGraph r = root();
                     if (r != null)
                         r.error(this, 1f, t);
                     else

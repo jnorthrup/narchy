@@ -11,7 +11,7 @@ import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRoot;
+import spacegraph.space2d.SurfaceGraph;
 import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.phys.Collidable;
@@ -31,7 +31,7 @@ import static jcog.math.v3.v;
  * https:
  * Serves as a mount for an attached (forward-facing) 2D surface (embeds a surface in 3D space)
  */
-public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
+public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceGraph {
 
     @Nullable
     public volatile Surface front;

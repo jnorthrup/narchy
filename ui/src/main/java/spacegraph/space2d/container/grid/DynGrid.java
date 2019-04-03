@@ -97,7 +97,7 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
         if (parent == null)
             return;
 
-        ScrollXY xy = parent(ScrollXY.class);
+        ScrollXY xy = parentOrSelf(ScrollXY.class);
         RectFloat v = xy.view();
         float vx = v.x, vy = v.y, vw = v.w, vh = v.h;
         this.x1 = Math.max(0, (int) Math.floor(vx));

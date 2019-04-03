@@ -25,7 +25,7 @@ public class HubMenuChip extends Bordering {
     protected void starting() {
         super.starting();
 
-        EditGraph2D g = parent(EditGraph2D.class); //TODO generic Spawnable interface
+        EditGraph2D g = parentOrSelf(EditGraph2D.class); //TODO generic Spawnable interface
         menu.forEach((name, i)->{
             ExpandingChip ii = new ExpandingChip(name, i);
             Container iii = g.add(ii).posRel(bounds, 1, 1, 0.1f, 0.1f); //TODO radial layout

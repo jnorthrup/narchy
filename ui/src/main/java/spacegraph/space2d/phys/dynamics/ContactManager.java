@@ -108,7 +108,7 @@ public class ContactManager implements PairCallback {
         Body2D bodyB = fixtureB.getBody();
 
         
-        if (bodyA == bodyB || !bodyB.shouldCollide(bodyA)) {
+        if (bodyA == bodyB || !bodyB.colllide(bodyA)) {
             return;
         }
 
@@ -282,7 +282,7 @@ public class ContactManager implements PairCallback {
             
             if ((c.m_flags & Contact.FILTER_FLAG) == Contact.FILTER_FLAG) {
                 
-                if (!bodyB.shouldCollide(bodyA)) {
+                if (!bodyB.colllide(bodyA)) {
                     Contact cNuke = c;
                     c = cNuke.next();
                     destroy(cNuke);

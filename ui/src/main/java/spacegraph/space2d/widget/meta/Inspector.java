@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.meta;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.graph.Graph2D;
@@ -43,7 +43,7 @@ public class Inspector extends Bordering {
         if (!graph.addNewNode(s) || depth <= 0)
             return;
 
-        SurfaceBase p = s.parent;
+        Surfacelike p = s.parent;
         if (p instanceof Surface) {
             Surface pp = (Surface) p;
             include(pp, depth-1);

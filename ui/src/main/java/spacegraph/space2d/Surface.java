@@ -26,13 +26,13 @@ import java.util.function.Supplier;
  * planar subspace.
  * (fractal) 2D Surface embedded relative to a parent 2D surface or 3D space
  */
-abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fingered {
+abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fingered {
 
 
     public static final Surface[] EmptySurfaceArray = new Surface[0];
     public static final Supplier<Surface> TODO = () -> new VectorLabel("TODO");
     private static final AtomicReferenceFieldUpdater<Surface, RectFloat> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat.class, "bounds");
-    private final static AtomicReferenceFieldUpdater<Surface, SurfaceBase> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
+    private final static AtomicReferenceFieldUpdater<Surface, Surfacelike> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, Surfacelike.class, "parent");
     private final static AtomicInteger serial = new AtomicInteger();
     /**
      * serial id unique to each instanced surface
@@ -47,7 +47,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
      */
 
     public volatile RectFloat bounds = RectFloat.Unit;
-    public volatile SurfaceBase parent;
+    public volatile Surfacelike parent;
     protected volatile boolean visible = true, showing = false;
 
 //    public volatile int zIndex;
@@ -153,41 +153,44 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return new AspectAlign(this, 1.0f, align, 1.0f);
     }
 
-    public SurfaceRoot root() {
+    public SurfaceGraph root() {
         return rootParent();
     }
 
     /**
      * default root() impl
      */
-    public final SurfaceRoot rootParent() {
-        SurfaceBase parent = this.parent;
+    public final SurfaceGraph rootParent() {
+        Surfacelike parent = this.parent;
         return parent == null ? null : parent.root();
     }
 
     /**
      * finds the most immediate parent matching the class
      */
-    public <S> S parent(Class<S> s) {
-        return (S) (s.isInstance(this) ? this : parent(s::isInstance));
+    public <S> S parentOrSelf(Class<S> s) {
+        return (S) (s.isInstance(this) ? this : parent(s::isInstance, false));
     }
 
     /**
      * finds the most immediate parent matching the predicate
      */
-    private SurfaceBase parent(Predicate<SurfaceBase> test) {
+    public Surfacelike parent(Predicate<Surfacelike> test, boolean includeSelf) {
 
-        SurfaceBase p = this.parent;
+        if (includeSelf && test.test(this))
+            return this;
+
+        Surfacelike p = this.parent;
 
         if (p instanceof Surface)
-            return test.test(p) ? p : ((Surface) p).parent(test);
+            return test.test(p) ? p : ((Surface) p).parent(test, true);
         else
             return null;
     }
 
-    public boolean start(SurfaceBase parent) {
+    public boolean start(Surfacelike parent) {
         assert (parent != null);
-        SurfaceBase p = PARENT.getAndSet(this, parent);
+        Surfacelike p = PARENT.getAndSet(this, parent);
 
         if (p != parent) {
             if (p != null) {  //throw new WTF();
@@ -321,7 +324,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
      * TODO common remove(x) interface
      */
     public boolean remove() {
-        SurfaceBase p = this.parent;
+        Surfacelike p = this.parent;
 
         if (p instanceof MutableUnitContainer) {
             ((MutableUnitContainer) p).set(new EmptySurface());
@@ -343,7 +346,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         if (this == nextParent)
             return true;
 
-        SurfaceBase prevParent = this.parent;
+        Surfacelike prevParent = this.parent;
         if (prevParent instanceof AbstractMutableContainer && nextParent instanceof AbstractMutableContainer) {
             AbstractMutableContainer prevMutableParent = (AbstractMutableContainer) prevParent;
             AbstractMutableContainer nextMutableParent = (AbstractMutableContainer) nextParent;

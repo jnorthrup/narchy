@@ -257,7 +257,7 @@ public class ProtoWidget extends Bordering {
     private PushButton becoming(String label, Supplier<Surface> replacement) {
         return new PushButton(label,
             () -> {
-                parent(WizardFrame.class).replace(ProtoWidget.this,
+                parentOrSelf(WizardFrame.class).replace(ProtoWidget.this,
                     safe(replacement)
                 );
             });

@@ -61,7 +61,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
     public v2 posGlobal(Surface c) {
 
         Ortho co = this._ortho;
-        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class));
+        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parentOrSelf(Ortho.class));
         if (o!=null) {
             if (_posGlobal.isNaN())
                 _posGlobal.set(posGlobal(posPixel, o));

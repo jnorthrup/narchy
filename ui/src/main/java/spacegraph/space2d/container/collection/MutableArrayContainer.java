@@ -1,7 +1,7 @@
 package spacegraph.space2d.container.collection;
 
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
@@ -52,7 +52,7 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
                     }
 
                     if (s != null) {
-                        SurfaceBase sParent = s.parent;
+                        Surfacelike sParent = s.parent;
                         assert (sParent == null || sParent == this);
 
 

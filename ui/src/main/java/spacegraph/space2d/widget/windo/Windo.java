@@ -262,12 +262,12 @@ public class Windo extends MutableUnitContainer {
     }
 
     public Windo sizeRel(float pctX, float pctY) {
-        EditGraph2D p = parent(EditGraph2D.class);
+        EditGraph2D p = parentOrSelf(EditGraph2D.class);
         return p!=null ? (Windo) size(p.w() * pctX, p.h() * pctY) : null;
     }
 
     public Windo posRel(float cx, float cy, float pctX, float pctY) {
-        EditGraph2D p = parent(EditGraph2D.class);
+        EditGraph2D p = parentOrSelf(EditGraph2D.class);
         return p!=null ? posRel(p, cx, cy, pctX, pctY) : null;
     }
 

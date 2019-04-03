@@ -1241,7 +1241,7 @@ public class Body2D extends Transform {
      * @param other
      * @return
      */
-    public boolean shouldCollide(Body2D other) {
+    public boolean colllide(Body2D other) {
 
         if (type != DYNAMIC && other.type != DYNAMIC) {
             return false;
