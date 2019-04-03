@@ -29,24 +29,19 @@ import java.util.function.Supplier;
 abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fingered {
 
 
-    private static final AtomicReferenceFieldUpdater<Surface, RectFloat> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat.class, "bounds");
-    private final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
-
-
-
     public static final Surface[] EmptySurfaceArray = new Surface[0];
     public static final Supplier<Surface> TODO = () -> new VectorLabel("TODO");
-
+    private static final AtomicReferenceFieldUpdater<Surface, RectFloat> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat.class, "bounds");
+    private final static AtomicReferenceFieldUpdater<Surface, SurfaceBase> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
     private final static AtomicInteger serial = new AtomicInteger();
-
-    /** whether content can be expected outside of the bounds, ex: in order to react to events */
-    public boolean clipBounds = true;
-
     /**
      * serial id unique to each instanced surface
      */
     public final int id = serial.incrementAndGet();
-
+    /**
+     * whether content can be expected outside of the bounds, ex: in order to react to events
+     */
+    public boolean clipBounds = true;
     /**
      * scale can remain the unit 1 vector, normally
      */
@@ -83,11 +78,13 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return bounds.cy();
     }
 
-    @Deprecated public final float x() {
+    @Deprecated
+    public final float x() {
         return left();
     }
 
-    @Deprecated public final float y() {
+    @Deprecated
+    public final float y() {
         return top();
     }
 
@@ -117,7 +114,8 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return id;
     }
 
-    @Deprecated protected void paint(GL2 gl, ReSurface reSurface) {
+    @Deprecated
+    protected void paint(GL2 gl, ReSurface reSurface) {
 
     }
 
@@ -133,7 +131,9 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return (S) this;
     }
 
-    /** override and return false to prevent movement */
+    /**
+     * override and return false to prevent movement
+     */
     protected boolean posChanged(RectFloat next) {
         RectFloat last = BOUNDS.getAndSet(this, next);
 //        if (bounds.area() < ScalarValue.EPSILON)
@@ -157,7 +157,9 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return rootParent();
     }
 
-    /** default root() impl */
+    /**
+     * default root() impl
+     */
     public final SurfaceRoot rootParent() {
         SurfaceBase parent = this.parent;
         return parent == null ? null : parent.root();
@@ -167,7 +169,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
      * finds the most immediate parent matching the class
      */
     public <S> S parent(Class<S> s) {
-        return (S)(s.isInstance(this) ? this : parent(s::isInstance));
+        return (S) (s.isInstance(this) ? this : parent(s::isInstance));
     }
 
     /**
@@ -184,23 +186,28 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
     public boolean start(SurfaceBase parent) {
-        assert(parent!=null);
+        assert (parent != null);
         SurfaceBase p = PARENT.getAndSet(this, parent);
 
-            if (p != parent) {
-                if (p != null)
-                    throw new WTF();
-
-                //synchronized (this) {
-                starting();
-                //}
-                return true;
+        if (p != parent) {
+            if (p != null) {  //throw new WTF();
+                remove();
+                parent = PARENT.getAndSet(this, parent);
+                if (parent!=null) throw new WTF();
             }
+
+            //synchronized (this) {
+            starting();
+            //}
+            return true;
+        }
 
         return false;
     }
 
-    /** TODO */
+    /**
+     * TODO
+     */
     public String term() {
         return toString();
     }
@@ -216,8 +223,8 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     public final boolean stop() {
         if (PARENT.getAndSet(this, null) != null) {
             //synchronized (this) {
-                showing = false;
-                stopping();
+            showing = false;
+            stopping();
             //}
             return true;
         }
@@ -225,7 +232,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
     public void layout() {
-        
+
     }
 
     public float w() {
@@ -240,6 +247,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         pos(bounds.pos(x, y, Spatialization.EPSILONf));
         return this;
     }
+
     public Surface move(float dx, float dy) {
         pos(bounds.move(dx, dy, Spatialization.EPSILONf));
         return this;
@@ -250,7 +258,9 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         out.println(this);
     }
 
-    /** prepares the rendering procedures in the rendering context */
+    /**
+     * prepares the rendering procedures in the rendering context
+     */
     public final void rerender(ReSurface r) {
         if (!showing) {
             if (!(showing = (visible() && (!clipBounds || r.isVisible(bounds)))))
@@ -281,10 +291,11 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
     public boolean visible() {
-        return parent!=null && visible;
+        return parent != null && visible;
     }
+
     public final boolean visible(ReSurface r) {
-         return visible() && (!clipBounds || r.isVisible(bounds));
+        return visible() && (!clipBounds || r.isVisible(bounds));
     }
 
     public float radius() {
@@ -301,28 +312,29 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
     public void posxyWH(float x, float y, float w, float h) {
-        pos(RectFloat.X0Y0WH(x,y,w,h));
+        pos(RectFloat.X0Y0WH(x, y, w, h));
     }
 
 
-    /** detach from parent, if possible
+    /**
+     * detach from parent, if possible
      * TODO common remove(x) interface
-     * */
+     */
     public boolean remove() {
         SurfaceBase p = this.parent;
 
         if (p instanceof MutableUnitContainer) {
-            ((MutableUnitContainer)p).set(new EmptySurface());
+            ((MutableUnitContainer) p).set(new EmptySurface());
             return true;
         }
         if (p instanceof AbstractMutableContainer) {
             return ((AbstractMutableContainer) p).remove(this);
         }
-        if(p instanceof WeakSurface) {
+        if (p instanceof WeakSurface) {
             return ((WeakSurface) p).remove();
         }
         if (p instanceof Container) {
-            return ((Container)p).remove();
+            return ((Container) p).remove();
         }
         return false;
     }
@@ -362,7 +374,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
 
     public boolean exist() {
         //TODO optimize with boolean flag
-        return rootParent()!=null;
+        return rootParent() != null;
     }
 
     public v2 pos() {

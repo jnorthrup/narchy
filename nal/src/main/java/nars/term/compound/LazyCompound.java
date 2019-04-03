@@ -30,12 +30,12 @@ import static nars.time.Tense.DTERNAL;
  * when executed construct the target
  */
 public class LazyCompound {
-    final static int INITIAL_CODE_SIZE = 16;
+    private final static int INITIAL_CODE_SIZE = 16;
 
     ByteAnonMap sub = null;
     final DynBytes code = new DynBytes(INITIAL_CODE_SIZE);
 
-    final static int INITIAL_ANON_SIZE = 8;
+    private final static int INITIAL_ANON_SIZE = 8;
     private boolean changed;
 
 
@@ -102,7 +102,7 @@ public class LazyCompound {
         return this;
     }
 
-    final static byte MAX_CONTROL_CODES = (byte) Op.ops.length;
+    private final static byte MAX_CONTROL_CODES = (byte) Op.ops.length;
 
 
     public final LazyCompound negStart() {
@@ -122,7 +122,7 @@ public class LazyCompound {
         }
     }
 
-    protected final LazyCompound append(Compound x) {
+    private LazyCompound append(Compound x) {
         Op o = x.op();
         switch (o) {
             case NEG:
@@ -148,7 +148,7 @@ public class LazyCompound {
         return sub().intern(x);
     }
 
-    final LazyCompound subs(Iterable<Term> subs) {
+    private LazyCompound subs(Iterable<Term> subs) {
         subs.forEach(this::append);
         return this;
     }
@@ -178,13 +178,13 @@ public class LazyCompound {
     public Term get(TermBuilder b) {
 
         DynBytes c = code;
-        if (code == null)
-            return Null; //nothing
-        else {
+//        if (code == null)
+//            return Null; //nothing
+//        else {
 //            if (sub != null)
 //                sub.readonly(); //optional
             return getNext(b, c.arrayDirect(), new int[]{0, c.len});
-        }
+//        }
     }
 
     private Term getNext(TermBuilder b, byte[] ii, int[] range) {
@@ -303,7 +303,7 @@ public class LazyCompound {
         }
     }
 
-    protected Term next(byte ctl) {
+    private Term next(byte ctl) {
         Term n = sub.interned((byte) (ctl - MAX_CONTROL_CODES));
         if (n == null)
             throw new NullPointerException();

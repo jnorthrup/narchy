@@ -1,10 +1,15 @@
 package nars.control;
 
+import jcog.Skill;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
 import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
+import jcog.func.IntIntToObjectFunction;
+import jcog.learn.Agent;
+import jcog.learn.AgentBuilder;
+import jcog.math.FloatSupplier;
 import jcog.pri.PriBuffer;
 import jcog.service.Service;
 import nars.NAR;
@@ -19,6 +24,7 @@ import nars.term.Term;
 import nars.time.event.DurService;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -40,7 +46,7 @@ import java.util.function.Consumer;
  *          reinforcement learning control interface
  *
  *  */
-public final class Control {
+@Skill("Multi-armed_bandit") public final class Control {
 
     /**
      * raw cause id (short int) -> cause table
@@ -88,7 +94,7 @@ public final class Control {
         };
         refreshServices();
         nar.plugin.change.on(serviceChange);
-        refreshServices(); //to be sure
+        refreshServices(); //again to be sure
 
         DurService.on(nar, this::update);
     }
@@ -96,31 +102,18 @@ public final class Control {
     private void update() {
         value();
 
-        prioritize();
+        schedule();
 
-        root.pri(1);
-        graph.forEachBF(root, (PriNode x)->x.update(graph));
+        prioritize();
     }
 
+
+
     protected void value() {
-
-//        long time = nar.time();
-//        if (lastUpdate == ETERNAL)
-//            lastUpdate = time;
-//        dt = (time - lastUpdate);
-
-
-//        lastUpdate = time;
-
-
 
         int cc = causes.size();
         if (cc == 0)
             return;
-
-//        if (cur.length != cc) {
-//            resize(cc);
-//        }
 
         Cause[] ccc = causes.array();
 
@@ -137,22 +130,24 @@ public final class Control {
             for (int j = 0; j < want.length; j++) {
                 v += want[j] * cg[j].current;
             }
-
             ccc[i].setValue(v);
-
-//            prev[i] = cur[i];
-//            cur[i] = v;
         }
 
-
-//        process();
-
-//        for (int i = 0; i < cc; i++)
-//            ccc[i].setValue(out[i]);
+        @Nullable Consumer<Cause[]> g = this.governor;
+        if (g!=null)
+            g.accept(ccc);
     }
 
+    /** implements value/pri feedback */
+    @Nullable private Consumer<Cause[]> governor = null;
 
-    private void prioritize() {
+    /** sets the governor to be used in next value/pri feedback iteration */
+    public Control governor(Consumer<Cause[]> governor) {
+        this.governor = governor;
+        return this;
+    }
+
+    private void schedule() {
 
         FastCoWList<Causable> cpu = active;
         int n = cpu.size();
@@ -212,7 +207,10 @@ public final class Control {
 
     }
 
-
+    private void prioritize() {
+        root.pri(1);
+        graph.forEachBF(root, (PriNode x)->x.update(graph));
+    }
 
 
 
@@ -363,4 +361,43 @@ public final class Control {
         nar.plugins().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
     }
 
+    /** creates a base agent that can be used to interface with external controller
+     *  it will be consistent as long as the NAR architecture remains the same.
+     *  TODO kill signal notifying changed architecture and unwiring any created WiredAgent
+     *  */
+    public AgentBuilder.WiredAgent agent(FloatSupplier reward, IntIntToObjectFunction<Agent> a) {
+        AgentBuilder b = new AgentBuilder(reward);
+        for (MetaGoal m : MetaGoal.values()) {
+            b.out(5, i->{
+                float w;
+                switch(i) {
+                    default:
+                    case 0: w = -1; break;
+                    case 1: w = -0.5f; break;
+                    case 2: w = 0; break;
+                    case 3: w = +0.5f; break;
+                    case 4: w = +1; break;
+                }
+                nar.feel.want(m, w);
+            });
+        }
+
+        for (Cause c : causes) {
+
+            //b.in(c::amp);
+
+            for (MetaGoal m : MetaGoal.values()) {
+                Traffic mm = c.credit[m.ordinal()];
+                b.in(()-> mm.current);
+            }
+            //TODO other data
+        }
+
+        for (Causable c : active) {
+            b.in(c::pri);
+            //TODO other data
+        }
+
+        return b.get(a);
+    }
 }

@@ -2,6 +2,8 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.learn.AgentBuilder;
+import jcog.learn.ql.HaiQae;
 import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
@@ -315,8 +317,17 @@ public class TrackXY_NAR extends NAgentX {
         if (gui) {
             n.runLater(() -> {
 
+
+
                 EditGraph2D g = EditGraph2D.window(800, 800);
                 g.windoSizeMinRel(0.02f, 0.02f);
+
+
+                g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
+                g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
+                g.add(NARui.taskBufferView(n.in, n)).sizeRel(0.25f, 0.25f);
+                g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
+
 
 //                g.build(a, new AutoBuilder<>(2, (context, features, obj) -> {
 //                        //return new TextEdit(features.toString());
@@ -324,32 +335,26 @@ public class TrackXY_NAR extends NAgentX {
 //                    return features.isEmpty() ? new ObjectSurface(obj) : new ObjectSurface(features, 2);
 //                })).sizeRel(0.2f, 0.2f);
 
-                g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
-                g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
-                g.add(NARui.taskBufferView(n.in, n)).sizeRel(0.25f, 0.25f);
 //                g.add(new PIDChip(new MiniPID(0.01, 0.01, 0.01))).sizeRel(0.1f, 0.1f);
-                g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
+
+                {
+                    AgentBuilder.WiredAgent aa = n.control.agent(
+                            () -> Util.or((float) a.dexteritySum(), a.happinessMean()),
+                            (i, o) -> new HaiQae(i, 64, o));
+                    HaiQChip haiQChip = new HaiQChip((HaiQae) aa.agent);
+                    g.add(haiQChip).posRel(0.5f, 0.5f, 0.2f, 0.2f);
+
+//                    g.add(LabeledPane.the("Q", haiQChip)).sizeRel(0.2f, 0.2f);
+
+//        n.onCycle(()->haiQChip.next(reward));
+                    n.onCycle(
+                    //DurService.on(n,
+                            ()->{ aa.next(); haiQChip.next(); });
+                }
 
                 g.add(new LogContainer(32) {
                     {
                         LogContainer z = this; //HACK
-
-                        //        Param.DEBUG = true;
-//                        n.log(new FilterPrintStream(System.out) {
-//
-//                                  @Override
-//                                  public void print(String s) {
-//                                      //super.print(s);
-//                                      if (showing() && Math.random() > 0.1f)
-//                                        z.append(s);
-//                                  }
-//
-//                                  @Override
-//                                  public void println() {
-//
-//                                  }
-//                              }//, (t)->log.getOpaque() /*&& t instanceof Task && ((Task)t).isGoal()*/
-//                        );
                         n.onTask(t->z.append(t.toStringWithoutBudget()));
                     }
                 }).sizeRel(0.25f, 0.25f);

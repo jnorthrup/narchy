@@ -15,6 +15,7 @@ import nars.agent.MetaAgent;
 import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
 import nars.concept.Concept;
+import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
@@ -35,6 +36,7 @@ import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.clock.RealTime;
+import nars.time.event.DurService;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
@@ -49,6 +51,7 @@ import spacegraph.space2d.widget.text.LabeledPane;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -57,7 +60,6 @@ import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
-import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 
 /**
  * Extensions to NAgent interface:
@@ -289,6 +291,15 @@ abstract public class NAgentX extends NAgent {
 //        );
 //        senseReward.timing = new ActionTiming(n);
 
+        a.nar().control.governor((cc)->{
+           final Random rng = n.random();
+           for (Cause c : cc) {
+               if (c==null) continue;
+               float v = c.value();
+               c.setValue(v + rng.nextFloat()*0.1f);
+
+           }
+        });
     }
     static void initPlugins3(NAR n, NAgent a) {
 
@@ -546,40 +557,14 @@ abstract public class NAgentX extends NAgent {
 
         RingTensor history = new RingTensor(3, 8);
         HaiQae q = new HaiQae(history.volume(), 32,5);
-        float[] in = new float[q.ae.inputs()];
-        Plot2D plot;
-        Gridding inner = new Gridding(
-                new ObjectSurface(q),
-                new Gridding(VERTICAL,
-                        new PaintUpdateMatrixView(in),
-                        new PaintUpdateMatrixView(q.ae.x),
-                        new PaintUpdateMatrixView(q.ae.W),
-                        new PaintUpdateMatrixView(q.ae.y)
-                ),
-                new Gridding(VERTICAL,
-                        new PaintUpdateMatrixView(q.q),
-                        new PaintUpdateMatrixView(q.et)
-                ),
-                plot = new Plot2D(100, Plot2D.Line)
-        );
-//        hw.add(LabeledPane.the("input", new TypedPort<>(float[].class, (i) -> {
-//            System.arraycopy(i, 0, in, 0, i.length);
-//        })));
-        //hw.add(LabeledPane.the("act", new IntPort(q.actions)));
 
+        HaiQChip haiQChip = new HaiQChip(q);
 
+        g.add(LabeledPane.the("Q", haiQChip)).sizeRel(0.2f, 0.2f);
 
-        g.add(LabeledPane.the("Q", inner)).sizeRel(0.2f, 0.2f);
-
-
-        AtomicDouble rewardSum = new AtomicDouble();
-        plot.add("Reward", ()->{
-            return rewardSum.getAndSet(0); //clear
-        });
-
-
-        n.onCycle(
-        //DurService.on(n,
+//        n.onCycle(()->haiQChip.next(reward));
+        //n.onCycle(
+        DurService.on(n,
                 new Runnable() {
 
             private float[] sense;
@@ -592,8 +577,9 @@ abstract public class NAgentX extends NAgent {
                 float reward =
                         //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
                         (float) (Math.log(n.feel.busyVol.asFloat())/5f);
-                rewardSum.addAndGet(reward);
-                plot.commit();
+
+                haiQChip.rewardSum.addAndGet(reward);
+                haiQChip.next();
 
                 float x = ((TaskBuffer.BagTaskBuffer) b).valve.floatValue();
                 sense = history.set(new float[]{
@@ -704,6 +690,67 @@ abstract public class NAgentX extends NAgent {
         Bitmap2DSensor c = new Bitmap2DSensor(id, new AutoencodedBitmap(bc, sx, sy, ox, oy), nar());
         addSensor(c);
         return c;
+    }
+
+
+    public static class HaiQChip extends Gridding {
+        private HaiQae q;
+        private Plot2D plot;
+        private AtomicDouble rewardSum;
+
+        public HaiQChip(HaiQae q) {
+            super();
+            this.q = q;
+
+
+        }
+
+        @Override
+        protected void starting() {
+            super.starting();
+            float[] in = new float[q.ae.inputs()];
+            Gridding inner = new Gridding(
+                    new ObjectSurface(q),
+                    new Gridding(VERTICAL,
+                            new PaintUpdateMatrixView(in),
+                            new PaintUpdateMatrixView(q.ae.x),
+                            new PaintUpdateMatrixView(q.ae.W),
+                            new PaintUpdateMatrixView(q.ae.y)
+                    ),
+                    new Gridding(VERTICAL,
+                            new PaintUpdateMatrixView(q.q),
+                            new PaintUpdateMatrixView(q.et)
+                    ),
+                    plot = new Plot2D(100, Plot2D.Line)
+            );
+//        hw.add(LabeledPane.the("input", new TypedPort<>(float[].class, (i) -> {
+//            System.arraycopy(i, 0, in, 0, i.length);
+//        })));
+            //hw.add(LabeledPane.the("act", new IntPort(q.actions)));
+
+
+
+
+            rewardSum = new AtomicDouble();
+            plot.add("Reward", ()->{
+                return rewardSum.getAndSet(0); //clear
+            });
+
+            set(inner, plot);
+        }
+
+        public Plot2D getPlot() {
+            return plot;
+        }
+
+        public AtomicDouble getRewardSum() {
+            return rewardSum;
+        }
+
+        public void next() {
+
+            plot.commit();
+        }
     }
 
 

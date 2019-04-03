@@ -197,10 +197,12 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
     public final Windo add(Surface x, Function<Surface, Container> windowize) {
         Windo w = (Windo) computeIfAbsent(x, (xx) -> {
             Container ww = windowize.apply(xx);
-            if (ww != null && parent != null) {
-                ww.start(this);
+            if (ww != null) {
+                if (parent != null) {
+                    ww.start(this);
+                }
+                physics.add(ww);
             }
-            physics.add(ww);
             return ww;
         }).value;
         return w;

@@ -96,7 +96,7 @@ public class Tex {
         if (iimage == null || profile == null)
             return false;
 
-        if (data == null || this.src != iimage) {
+        if (data == null/* || this.src != iimage*/) {
             DataBuffer b = iimage.getRaster().getDataBuffer();
             int W = iimage.getWidth(), H = iimage.getHeight();
             if (b instanceof DataBufferInt)

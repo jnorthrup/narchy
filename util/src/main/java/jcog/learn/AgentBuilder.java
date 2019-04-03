@@ -18,29 +18,23 @@ public class AgentBuilder {
     final List<Tensor> sensors = new FasterList();
     final List<IntObjectPair<? extends IntConsumer>> actions = new FasterList();
     final FloatSupplier reward;
-    private final IntIntToObjectFunction<Agent> a;
     float durations = 1f;
 
     /** whether to add an extra NOP action */
     private final static boolean NOP_ACTION = true;
 
-    public AgentBuilder(IntIntToObjectFunction<Agent> a, FloatSupplier reward) {
-        this.a = a;
+    public AgentBuilder(FloatSupplier reward) {
         this.reward = reward;
     }
 
-    public AgentBuilder durations(float runEveryDurations) {
-        this.durations = runEveryDurations;
-        return this;
-    }
-
-    public WiredAgent get() {
+    /** builds the constructed agent */
+    public WiredAgent get(IntIntToObjectFunction<Agent> controller) {
 
         final int inputs = sensors.stream().mapToInt(Tensor::volume).sum();
         final int outputs = actions.stream().mapToInt(IntObjectPair::getOne).sum() + (NOP_ACTION ? 1 : 0);
 
         Consumer<float[]> inputter = (f) -> {
-            int s = sensors.size();
+//            int s = sensors.size();
             int j = 0;
             for (Tensor x: sensors) {
                 x.writeTo(f, j);
@@ -49,8 +43,7 @@ public class AgentBuilder {
             assert(j == f.length);
         };
         IntConsumer act = (c) -> {
-
-            int s = actions.size();
+//            int s = actions.size();
             for (IntObjectPair<? extends IntConsumer> aa: actions) {
                 int bb = aa.getOne();
                 if (c >= bb) {
@@ -61,7 +54,12 @@ public class AgentBuilder {
                 }
             }
         };
-        return new WiredAgent(a, inputs, inputter, reward, outputs, act);
+        return new WiredAgent(controller, inputs, inputter, reward, outputs, act);
+    }
+
+    public AgentBuilder durations(float runEveryDurations) {
+        this.durations = runEveryDurations;
+        return this;
     }
 
     public AgentBuilder in(FloatSupplier f) {
@@ -87,7 +85,7 @@ public class AgentBuilder {
     public static class WiredAgent implements Serializable {
 
         protected final Consumer<float[]> input;
-        protected final Agent agent;
+        public final Agent agent;
         protected final IntConsumer act;
         protected final FloatSupplier reward;
         /**
@@ -104,9 +102,12 @@ public class AgentBuilder {
             this.act = act;
         }
 
-        public void next() {
+        /** returns the next reward value */
+        public float next() {
             input.accept(in);
-            act.accept(agent.act(reward.asFloat(), in));
+            float r;
+            act.accept(agent.act(r = reward.asFloat(), in));
+            return r;
         }
     }
 }
