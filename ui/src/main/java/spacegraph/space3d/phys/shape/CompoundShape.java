@@ -132,14 +132,14 @@ public class CompoundShape extends CollisionShape {
 	public void getAabb(Transform trans, v3 aabbMin, v3 aabbMax) {
 		v3 localHalfExtents = new v3();
 		localHalfExtents.sub(localAabbMax, localAabbMin);
-		localHalfExtents.scale(0.5f);
+		localHalfExtents.scaled(0.5f);
 		localHalfExtents.x += collisionMargin;
 		localHalfExtents.y += collisionMargin;
 		localHalfExtents.z += collisionMargin;
 
 		v3 localCenter = new v3();
 		localCenter.add(localAabbMax, localAabbMin);
-		localCenter.scale(0.5f);
+		localCenter.scaled(0.5f);
 
 		Matrix3f abs_b = new Matrix3f(trans.basis);
 		MatrixUtil.absolute(abs_b);
@@ -212,7 +212,7 @@ public class CompoundShape extends CollisionShape {
 
 		v3 halfExtents = new v3();
 		halfExtents.sub(aabbMax, aabbMin);
-		halfExtents.scale(0.5f);
+		halfExtents.scaled(0.5f);
 
 		float lx = 2f * halfExtents.x;
 		float ly = 2f * halfExtents.y;
@@ -272,7 +272,7 @@ public class CompoundShape extends CollisionShape {
 			center.scaleAdd(masses[k], children.get(k).transform, center);
 			totalMass += masses[k];
 		}
-		center.scale(1f / totalMass);
+		center.scaled(1f / totalMass);
 		principal.set(center);
 
 		Matrix3f tensor = new Matrix3f();

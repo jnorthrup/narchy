@@ -306,9 +306,9 @@ public class Body3D<X> extends Collidable<X> {
 		
 		
 		if (linearDamping > 0)
-			linearVelocity.scale((float) Math.pow(1f - linearDamping, timeStep));
+			linearVelocity.scaled((float) Math.pow(1f - linearDamping, timeStep));
 		if (angularDamping > 0)
-			angularVelocity.scale((float) Math.pow(1f - angularDamping, timeStep));
+			angularVelocity.scaled((float) Math.pow(1f - angularDamping, timeStep));
 		
 
 
@@ -395,7 +395,7 @@ public class Body3D<X> extends Collidable<X> {
 		
 		float angvel = angularVelocity.lengthSquared();
 		if (angvel > Util.sqr(MAX_ANGVEL/step)) {
-			angularVelocity.scale((MAX_ANGVEL / step) / angvel);
+			angularVelocity.scaled((MAX_ANGVEL / step) / angvel);
 		}
 	}
 
@@ -460,7 +460,7 @@ public class Body3D<X> extends Collidable<X> {
 			if (angularFactor != 0f) {
 				v3 tmp = new v3();
 				tmp.cross(rel_pos, impulse);
-				tmp.scale(angularFactor);
+				tmp.scaled(angularFactor);
 				torqueImpulse(tmp);
 			}
 		}

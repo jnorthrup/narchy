@@ -97,7 +97,7 @@ public class TheoJansen {
         {
             RevoluteJointDef jd = new RevoluteJointDef();
 
-            jd.initialize(wheel, chassis, pivot.add(center));
+            jd.initialize(wheel, chassis, pivot.addClone(center));
             jd.collideConnected = false;
             jd.motorSpeed = 0;
             jd.maxMotorTorque = 40.0f;
@@ -107,7 +107,7 @@ public class TheoJansen {
 
         v2 wheelAnchor;
 
-        wheelAnchor = pivot.add(new v2(scale * 0.0f, scale * -0.8f));
+        wheelAnchor = pivot.addClone(new v2(scale * 0.0f, scale * -0.8f));
 
         createLeg(-scale, wheelAnchor);
         createLeg(scale, wheelAnchor);
@@ -148,8 +148,8 @@ public class TheoJansen {
             poly1.set(vertices, 3);
 
             vertices[0] = new v2();
-            vertices[1] = p5.sub(p4);
-            vertices[2] = p6.sub(p4);
+            vertices[1] = p5.subClone(p4);
+            vertices[2] = p6.subClone(p4);
             poly2.set(vertices, 3);
         } else {
             v2[] vertices = new v2[3];
@@ -160,8 +160,8 @@ public class TheoJansen {
             poly1.set(vertices, 3);
 
             vertices[0] = new v2();
-            vertices[1] = p6.sub(p4);
-            vertices[2] = p5.sub(p4);
+            vertices[1] = p6.subClone(p4);
+            vertices[2] = p5.subClone(p4);
             poly2.set(vertices, 3);
         }
 
@@ -174,7 +174,7 @@ public class TheoJansen {
         bd1.type = BodyType.DYNAMIC;
         bd2.type = BodyType.DYNAMIC;
         bd1.position = center;
-        bd2.position = p4.add(center);
+        bd2.position = p4.addClone(center);
 
         bd1.angularDamping = 10.0f;
         bd2.angularDamping = 10.0f;
@@ -194,21 +194,21 @@ public class TheoJansen {
         djd.dampingRatio = 0.5f;
         djd.frequencyHz = 10.0f;
 
-        djd.initialize(body1, body2, p2.add(center), p5.add(center));
+        djd.initialize(body1, body2, p2.addClone(center), p5.addClone(center));
         world.addJoint(djd);
 
-        djd.initialize(body1, body2, p3.add(center), p4.add(center));
+        djd.initialize(body1, body2, p3.addClone(center), p4.addClone(center));
         world.addJoint(djd);
 
-        djd.initialize(body1, wheel, p3.add(center), wheelAnchor.add(center));
+        djd.initialize(body1, wheel, p3.addClone(center), wheelAnchor.addClone(center));
         world.addJoint(djd);
 
-        djd.initialize(body2, wheel, p6.add(center), wheelAnchor.add(center));
+        djd.initialize(body2, wheel, p6.addClone(center), wheelAnchor.addClone(center));
         world.addJoint(djd);
 
         RevoluteJointDef rjd = new RevoluteJointDef();
 
-        rjd.initialize(body2, chassis, p4.add(center));
+        rjd.initialize(body2, chassis, p4.addClone(center));
         world.addJoint(rjd);
     }
 }

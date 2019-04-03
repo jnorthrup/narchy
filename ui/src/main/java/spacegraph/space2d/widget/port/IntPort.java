@@ -19,8 +19,8 @@ public class IntPort extends EditablePort<Integer> {
 
         PushButton incButton = new PushButton("+");
         PushButton decButton = new PushButton("-");
-        incButton.clicking(()-> out(get() +1));
-        decButton.clicking(()-> out((get() -1))); //TODO fully atomic
+        incButton.clicked(()-> out(get() +1));
+        decButton.clicked(()-> out((get() -1))); //TODO fully atomic
 
         set(new Splitting(edit, 0.8f, false, column(incButton, decButton)));
     }

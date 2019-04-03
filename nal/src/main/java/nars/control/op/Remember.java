@@ -36,6 +36,8 @@ public class Remember extends AbstractTask {
     public final boolean store, link, notify;
     public boolean done = false;
 
+    public final NAR nar;
+
     @Nullable
     public static Remember the(Task x, NAR n) {
         return the(x, true, true, true, n);
@@ -84,13 +86,14 @@ public class Remember extends AbstractTask {
             }
         }
 
-        return new Remember(x, store, link, notify);
+        return new Remember(x, store, link, notify, n);
     }
 
-    public Remember(Task input, boolean store, boolean link, boolean notify) {
+    public Remember(Task input, boolean store, boolean link, boolean notify, NAR n) {
         this.store = store;
         this.link = link;
         this.notify = notify;
+        this.nar = n;
         setInput(input);
     }
 
@@ -250,7 +253,7 @@ public class Remember extends AbstractTask {
     /**
      * called by belief tables when the input task is matched by an existing equal (or identical) task
      */
-    public void merge(Task prev, NAR n) {
+    public void merge(Task prev) {
 
         Task next = this.input;
 
@@ -282,7 +285,7 @@ public class Remember extends AbstractTask {
 
             @Nullable Task r = rememberMerged(prev, next);
             if (r != null) {
-                if (rememberFilter(prev, next, r, dPri, n))
+                if (rememberFilter(prev, next, r, dPri, this.nar))
                     remember(r);
                 else
                     input = null;

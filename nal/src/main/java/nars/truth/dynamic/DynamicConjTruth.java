@@ -1,16 +1,22 @@
 package nars.truth.dynamic;
 
 import jcog.data.list.FasterList;
+import jcog.util.ArrayUtils;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
+import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjLazy;
+import nars.time.Tense;
 import nars.truth.Stamp;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static nars.time.Tense.*;
 
@@ -20,11 +26,6 @@ public class DynamicConjTruth {
 
         @Override
         public Term reconstruct(Term superterm, List<Task> components, NAR nar, long start, long end) {
-
-
-
-//            int ditherDT = nar.dtDither();
-
 
             long range;
             if (start!=ETERNAL) {
@@ -84,26 +85,73 @@ public class DynamicConjTruth {
             boolean xternal = superDT == XTERNAL;
             boolean parallel = superDT == 0;
 
-            LongObjectPredicate<Term> sub;
             if (xternal || dternal) {
+                Subterms ss = conj.subterms();
+                if (xternal && containsCoNegations((Compound) conj)) {
+                    int n = ss.subs();
+                    int subRange = Tense.occToDT((end-start) / (n));
+                    if (subRange >= 1) {
+                        //HACK randomly assign each component to a partitioned sub-ranges
+
+                        int[] order = new int[n];
+                        for (int i = 0; i < n; i++) order[i] = i;
+                        ArrayUtils.shuffle(order, ThreadLocalRandom.current());
+
+                        int o = 0;
+                        for (Term x : ss) {
+                            int offset = order[o++] * subRange;
+                            long subStart = start + offset;
+                            long subEnd = subStart + subRange;
+                            if (!each.accept(x, subStart, subEnd))
+                                return false;
+                        }
+                        return true;
+                    } else {
+                        //TODO try to determine some interval relative to the first found task which could separate start..end to allow differentiation
+                    }
+                }
+
                 //propagate start,end to each subterm.  allowing them to match freely inside
-                sub = (whenIgnored, event) -> each.accept(event, start, end);
+                for (Term x : ss) {
+                    if (!each.accept(x, start, end))
+                        return false;
+                }
+                return true;
             } else {
+
+                LongObjectPredicate<Term> sub;
+
                 //??subterm refrences a specific point as a result of event time within the target. so start/end range gets collapsed at this point
                 long range = (end - start);
                 if (range != 0)
-                    sub = (when, event) -> each.accept(event, when, when + range);
+                    sub = (when, event) -> each.accept(event, when, when + range); //within range
                 else
-                    sub = (when, event) -> each.accept(event, when, when);
+                    sub = (when, event) -> each.accept(event, when, when); //point-like
+
+                return conj.eventsWhile(sub, start,
+                        parallel,
+                        dternal,
+                        xternal);
             }
 
-            return conj.eventsWhile(sub, start,
-                    parallel,
-                    dternal,
-                    xternal);
+
 
         }
+
+
     };
+    static private boolean containsCoNegations(Compound conjXternal) {
+        Subterms ss = conjXternal.subterms();
+        if (ss.hasAny(Op.NEG)) {
+            //quick test
+            if (ss.subs()==2) {
+                return ss.sub(0).equalsNeg(ss.sub(1));
+            } else {
+                return conjXternal.dt(DTERNAL).volume()<conjXternal.volume(); //collapses will result in reduced volume
+            }
+        }
+        return false;
+    }
 }
 //                if (dternal || xternal || parallel) {
 //

@@ -86,7 +86,7 @@ public class MutableRectFloat<X> extends v2 {
         float lenSq = delta.lengthSquared();
         if (lenSq > speedLimit * speedLimit) {
             float len = (float) Math.sqrt(lenSq);
-            delta.scaled(speedLimit / len);
+            delta.scale(speedLimit / len);
             x = cxPrev + delta.x; cxPrev = x;
             y = cyPrev + delta.y; cyPrev = y;
         }

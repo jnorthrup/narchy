@@ -27,21 +27,17 @@ public class PushButton extends AbstractButton {
         super(content);
     }
 
-    public PushButton(Consumer<PushButton> onClick) {
+    public PushButton(Consumer<PushButton> clicked) {
         this();
-        clicking(onClick);
+        clicked(clicked);
     }
 
-    public PushButton(String s, Runnable onClick) {
+    public PushButton(String s, Runnable clicked) {
         //this(s, (p) -> onClick.run());
         this(s);
-        clicking(onClick);
+        clicked(clicked);
     }
 
-//    public PushButton(String s, @Nullable Consumer<PushButton> onClick) {
-//        this(s);
-//        click(onClick);
-//    }
 
     public PushButton(ImageTexture tex) {
         this(tex.view());
@@ -56,11 +52,11 @@ public class PushButton extends AbstractButton {
                 ImageTexture.awesome(icon).view(1)));
     }
 
-    public PushButton clicking(@Nullable Runnable onClick) {
-        return clicking((cb)->onClick.run());
+    public PushButton clicked(@Nullable Runnable onClick) {
+        return clicked((cb)->onClick.run());
     }
 
-    public PushButton clicking(@Nullable Consumer<PushButton> onClick) {
+    public PushButton clicked(@Nullable Consumer<PushButton> onClick) {
         this.onClick = onClick;
         return this;
     }
@@ -69,6 +65,7 @@ public class PushButton extends AbstractButton {
         set(new ImageTexture(s).view());
         return this;
     }
+
     public PushButton label(String s) {
         set(
             //new VectorLabel(s)

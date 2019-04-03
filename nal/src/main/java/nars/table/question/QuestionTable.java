@@ -33,7 +33,7 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public void add(/*@NotNull*/ Remember r, NAR n) {
+        public void remember(/*@NotNull*/ Remember r) {
 
         }
 

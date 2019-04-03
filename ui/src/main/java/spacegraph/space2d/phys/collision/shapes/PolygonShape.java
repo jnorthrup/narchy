@@ -541,13 +541,13 @@ public class PolygonShape extends Shape {
             area += triangleArea;
 
 
-            e1.set(p1).added(p2).added(p3).scaled(triangleArea * inv3);
+            e1.set(p1).added(p2).added(p3).scale(triangleArea * inv3);
             out.addLocal(e1);
         }
 
 
         assert (area > Settings.EPSILON);
-        out.scaled(1.0f / area);
+        out.scale(1.0f / area);
     }
 
     public void computeMass(final MassData massData, float density) {
@@ -568,7 +568,7 @@ public class PolygonShape extends Shape {
         for (int i = 0; i < vertices; ++i) {
             s.addLocal(vertex[i]);
         }
-        s.scaled(1.0f / vertices);
+        s.scale(1.0f / vertices);
 
         final float k_inv3 = 1.0f / 3.0f;
 
@@ -603,7 +603,7 @@ public class PolygonShape extends Shape {
         massData.mass = density * area;
 
 
-        center.scaled(1.0f / area);
+        center.scale(1.0f / area);
         massData.center.set(center).added(s);
 
 

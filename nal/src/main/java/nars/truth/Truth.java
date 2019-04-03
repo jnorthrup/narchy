@@ -263,19 +263,19 @@ public interface Truth extends Truthed {
         return PreciseTruth.byConf(1f - freq(), conf());
     }
 
-    default boolean equalsIn(@Nullable Truth x, float fTol, float cTol) {
+    default boolean equalTruth(@Nullable Truth x, float fTol, float cTol) {
         return x == this || (x != null
                 && Util.equals(conf(), x.conf(), cTol)
                 && Util.equals(freq(), x.freq(), fTol)
         );
     }
 
-    default boolean equalsIn(@Nullable Truth x, float tolerance) {
-        return equalsIn(x, tolerance, tolerance);
+    default boolean equalTruth(@Nullable Truth x, float tolerance) {
+        return equalTruth(x, tolerance, tolerance);
     }
 
-    default boolean equalsIn(@Nullable Truth x, NAR nar) {
-        return equalsIn(x, nar.freqResolution.floatValue(), nar.confResolution.floatValue());
+    default boolean equalTruth(@Nullable Truth x, NAR nar) {
+        return equalTruth(x, nar.freqResolution.floatValue(), nar.confResolution.floatValue());
     }
 
     default Truth negIf(boolean negate) {

@@ -32,6 +32,7 @@
 package jcog.math;
 
 import jcog.Util;
+import jcog.signal.Tensor;
 import jcog.tree.rtree.Spatialization;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +45,7 @@ import static jcog.Util.notNaN;
  * x,y,z coordinates.  If this value represents a normal, then it should
  * be normalized.
  */
-public class v3 implements java.io.Serializable, Cloneable {
+public class v3 implements java.io.Serializable, Cloneable, Tensor {
 
 
     public static v2 one = new v2(1, 1);
@@ -246,7 +247,7 @@ public class v3 implements java.io.Serializable, Cloneable {
 
     public final v3 normalized(float scale) {
         normalize();
-        scale(scale);
+        scaled(scale);
         return this;
     }
 
@@ -270,7 +271,7 @@ public class v3 implements java.io.Serializable, Cloneable {
 
     public void normalize(float thenScale) {
         normalize();
-        scale(thenScale);
+        scaled(thenScale);
     }
 
 
@@ -484,6 +485,21 @@ public class v3 implements java.io.Serializable, Cloneable {
      */
     public final void scale(float s) {
         set(s * x, s * y, s * z);
+    }
+
+    @Override
+    public final float getAt(int linearCell) {
+        switch(linearCell) {
+            case 0: return x;
+            case 1: return y;
+            case 2: return z;
+        }
+        throw new ArrayIndexOutOfBoundsException(linearCell);
+    }
+
+    @Override
+    public final int[] shape() {
+        return v3Shape;
     }
 
     /**

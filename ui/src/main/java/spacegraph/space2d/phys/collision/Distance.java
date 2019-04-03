@@ -213,8 +213,8 @@ public class Distance {
                     out.set(m_v1.w);
                     return;
                 case 2:
-                    case22.set(m_v2.w).scaled(m_v2.a);
-                    case2.set(m_v1.w).scaled(m_v1.a).added(case22);
+                    case22.set(m_v2.w).scale(m_v2.a);
+                    case2.set(m_v1.w).scale(m_v1.a).added(case22);
                     out.set(case2);
                     return;
                 case 3:
@@ -242,19 +242,19 @@ public class Distance {
                     break;
 
                 case 2:
-                    case2.set(m_v1.wA).scaled(m_v1.a);
-                    pA.set(m_v2.wA).scaled(m_v2.a).added(case2);
+                    case2.set(m_v1.wA).scale(m_v1.a);
+                    pA.set(m_v2.wA).scale(m_v2.a).added(case2);
                     
                     
-                    case2.set(m_v1.wB).scaled(m_v1.a);
-                    pB.set(m_v2.wB).scaled(m_v2.a).added(case2);
+                    case2.set(m_v1.wB).scale(m_v1.a);
+                    pB.set(m_v2.wB).scale(m_v2.a).added(case2);
 
                     break;
 
                 case 3:
-                    pA.set(m_v1.wA).scaled(m_v1.a);
-                    case3.set(m_v2.wA).scaled(m_v2.a);
-                    case33.set(m_v3.wA).scaled(m_v3.a);
+                    pA.set(m_v1.wA).scale(m_v1.a);
+                    case3.set(m_v2.wA).scale(m_v2.a);
+                    case33.set(m_v3.wA).scale(m_v3.a);
                     pA.addLocal(case3).addLocal(case33);
                     pB.set(pA);
                     
@@ -762,15 +762,15 @@ public class Distance {
                 output.distance -= rA + rB;
                 normal.set(output.pointB).subbed(output.pointA);
                 normal.normalize();
-                temp.set(normal).scaled(rA);
+                temp.set(normal).scale(rA);
                 output.pointA.addLocal(temp);
-                temp.set(normal).scaled(rB);
+                temp.set(normal).scale(rB);
                 output.pointB.subLocal(temp);
             } else {
                 
                 
                 
-                output.pointA.addLocal(output.pointB).scaled(.5f);
+                output.pointA.addLocal(output.pointB).scale(.5f);
                 output.pointB.set(output.pointA);
                 output.distance = 0.0f;
             }

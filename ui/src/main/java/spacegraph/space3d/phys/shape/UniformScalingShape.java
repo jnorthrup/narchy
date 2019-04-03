@@ -55,14 +55,14 @@ public class UniformScalingShape extends ConvexShape {
 	@Override
 	public v3 localGetSupportingVertex(v3 vec, v3 out) {
 		childConvexShape.localGetSupportingVertex(vec, out);
-		out.scale(uniformScalingFactor);
+		out.scaled(uniformScalingFactor);
 		return out;
 	}
 
 	@Override
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec, v3 out) {
 		childConvexShape.localGetSupportingVertexWithoutMargin(vec, out);
-		out.scale(uniformScalingFactor);
+		out.scaled(uniformScalingFactor);
 		return out;
 	}
 
@@ -70,7 +70,7 @@ public class UniformScalingShape extends ConvexShape {
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
 		childConvexShape.batchedUnitVectorGetSupportingVertexWithoutMargin(vectors, supportVerticesOut, numVectors);
 		for (int i=0; i<numVectors; i++) {
-			supportVerticesOut[i].scale(uniformScalingFactor);
+			supportVerticesOut[i].scaled(uniformScalingFactor);
 		}
 	}
 
@@ -79,11 +79,11 @@ public class UniformScalingShape extends ConvexShape {
 		childConvexShape.getAabbSlow(t, aabbMin, aabbMax);
 		v3 aabbCenter = new v3();
 		aabbCenter.add(aabbMax, aabbMin);
-		aabbCenter.scale(0.5f);
+		aabbCenter.scaled(0.5f);
 
 		v3 scaledAabbHalfExtends = new v3();
 		scaledAabbHalfExtends.sub(aabbMax, aabbMin);
-		scaledAabbHalfExtends.scale(0.5f * uniformScalingFactor);
+		scaledAabbHalfExtends.scaled(0.5f * uniformScalingFactor);
 
 		aabbMin.sub(aabbCenter, scaledAabbHalfExtends);
 		aabbMax.add(aabbCenter, scaledAabbHalfExtends);
@@ -126,11 +126,11 @@ public class UniformScalingShape extends ConvexShape {
 		childConvexShape.getAabb(t, aabbMin, aabbMax);
 		v3 aabbCenter = new v3();
 		aabbCenter.add(aabbMax, aabbMin);
-		aabbCenter.scale(0.5f);
+		aabbCenter.scaled(0.5f);
 
 		v3 scaledAabbHalfExtends = new v3();
 		scaledAabbHalfExtends.sub(aabbMax, aabbMin);
-		scaledAabbHalfExtends.scale(0.5f * uniformScalingFactor);
+		scaledAabbHalfExtends.scaled(0.5f * uniformScalingFactor);
 
 		aabbMin.sub(aabbCenter, scaledAabbHalfExtends);
 		aabbMax.add(aabbCenter, scaledAabbHalfExtends);
@@ -145,7 +145,7 @@ public class UniformScalingShape extends ConvexShape {
 	public void calculateLocalInertia(float mass, v3 inertia) {
 		
 		childConvexShape.calculateLocalInertia(mass, inertia);
-		inertia.scale(uniformScalingFactor);
+		inertia.scaled(uniformScalingFactor);
 	}
 
 	@Override

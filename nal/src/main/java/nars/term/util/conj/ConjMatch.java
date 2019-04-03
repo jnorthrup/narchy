@@ -105,7 +105,7 @@ public class ConjMatch {
             } else {
                 //sequence
                 //TODO
-                if (event.subs()==2 && !event.subterms().has(CONJ)) {
+                if (event.subs()==2 && !event.subterms().hasAny(CONJ)) {
                     Term a = event.eventFirst();
                     assert(a!=event);
                     Term b = null;

@@ -162,7 +162,7 @@ public class GraphEditTest {
                         new Bordering(wave)
                                 .set(Bordering.W, p, 0.1f)
                                 .set(Bordering.S, new Gridding(
-                                        PushButton.awesome("play").clicking(() -> {
+                                        PushButton.awesome("play").clicked(() -> {
                                             Audio.the().play(new SamplePlayer(new SoundSample(buffer.data, TinySpeech.SAMPLE_FREQUENCY)));
                                         })
                                 ), 0.1f)

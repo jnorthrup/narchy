@@ -173,10 +173,10 @@ public class Polygon implements Iterable<v2>, Cloneable {
             m += s;
             g.set(b1);
             g.added(b2);
-            g.scaled(s);
+            g.scale(s);
             C.added(g);
         }
-        C.scaled((float) (1 / (3 * m)));
+        C.scale((float) (1 / (3 * m)));
         return C;
     }
 

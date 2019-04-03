@@ -33,7 +33,7 @@ public class Submitter extends Bordering {
     public <S extends Surface, X> Submitter(PushButton submitButton, S editable, Function<S,X> valueAccessor, BiConsumer<S,X> input) {
         super(submitButton);
         north(editable);
-        submitButton.clicking(()->{
+        submitButton.clicked(()->{
             try {
                 input.accept(editable, valueAccessor.apply(editable));
             } catch (Exception e) {

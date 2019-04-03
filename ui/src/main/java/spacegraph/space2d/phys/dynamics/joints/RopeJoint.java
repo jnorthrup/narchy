@@ -99,7 +99,7 @@ public class RopeJoint extends Joint {
 
         if (C > Settings.linearSlop) {
 
-            m_u.scaled(1.0f / length);
+            m_u.scale(1.0f / length);
 
                 state = LimitState.AT_UPPER;
 
@@ -274,7 +274,7 @@ public class RopeJoint extends Joint {
 
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
-        argOut.set(m_u).scaled(inv_dt).scaled(m_impulse * positionFactor);
+        argOut.set(m_u).scale(inv_dt).scale(m_impulse * positionFactor);
     }
 
     @Override

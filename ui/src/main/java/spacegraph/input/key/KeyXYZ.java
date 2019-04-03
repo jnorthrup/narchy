@@ -20,14 +20,14 @@ public class KeyXYZ extends KeyXY {
         
         x.cross(x, space.camUp);
         x.normalize();
-        x.scale(-speed);
+        x.scaled(-speed);
         space.camPos.add(x);
     }
 
     @Override void moveY(float speed) {
         v3 y = v(space.camUp);
         y.normalize();
-        y.scale(speed);
+        y.scaled(speed);
         
         space.camPos.add(y);
     }
@@ -36,7 +36,7 @@ public class KeyXYZ extends KeyXY {
     @Override void moveZ(float speed) {
         v3 z = v(space.camFwd);
         
-        z.scale(speed);
+        z.scaled(speed);
         space.camPos.add(z);
     }
 

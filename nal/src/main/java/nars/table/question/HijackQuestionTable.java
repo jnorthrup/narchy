@@ -51,19 +51,19 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
 
 
     @Override
-    public void add(Remember r, NAR n) {
+    public void remember(Remember r) {
         Task x = r.input;
         Task y = put(x, null);
         if (y == x) {
             r.remember(x);
         } else {
             if (y != null) {
-                r.merge(y, n); //existing
+                r.merge(y); //existing
             } else
                 r.forget(x);
         }
 
-        commit(forget(n.attn.decay.floatValue() /* estimate */));
+        commit(forget(r.nar.attn.decay.floatValue() /* estimate */));
 
         //TODO track displaced questions
     }

@@ -39,6 +39,7 @@ import nars.task.NALTask;
 import nars.task.util.TaskBuffer;
 import nars.task.util.TaskException;
 import nars.task.util.TaskTopic;
+import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -722,12 +723,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @Nullable
-    public final BeliefTable truths(Termed concept, byte punc) {
+    public final BeliefTable table(Termed concept, byte punc) {
         assert (punc == BELIEF || punc == GOAL);
         @Nullable Concept c = conceptualizeDynamic(concept);
-        if (c == null)
-            return null;
-        return (BeliefTable) c.table(punc);
+        return c!=null ? (BeliefTable) c.table(punc): null;
     }
 
     /**
@@ -735,7 +734,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     @Nullable
     public final Truth truth(Termed concept, byte punc, long start, long end) {
-        @Nullable BeliefTable table = truths(concept, punc);
+        @Nullable BeliefTable table = table(concept, punc);
         return table != null ? table.truth(start, end, concept instanceof Term ? ((Term) concept) : null, null, this) : null;
     }
 
@@ -1323,19 +1322,27 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Nullable
     public Task answer(Termed t, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
-        Concept concept =
-                conceptualizeDynamic(t);
 
+        boolean negate;
+        Term tt = t.term();
+        if (tt.op()==NEG) {
+            negate = true;
+            t = tt = tt.unneg();
+        } else {
+            negate = false;
+        }
 
+        Concept concept = conceptualizeDynamic(t);
         if (!(concept instanceof TaskConcept))
             return null;
 
         Task answer = concept.table(punc).matchExact(start, end,
-                t.term(), null, dur(), this);
-//        if (answer != null && !answer.isDeleted()) {
+                tt, null, dur(), this);
+
+//        if (answer != null && !answer.isDeleted())
 //            input(answer);
-//        }
-        return answer;
+
+        return Task.negIf(answer, negate);
     }
 
     public SortedMap<String, Object> stats(Appendable out) {
@@ -1453,7 +1460,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         if (ct.volume() > termVolumeMax.intValue())
             return null; //too complex to analyze for dynamic
 
-        if (ConceptBuilder.dynamicModel(ct) != null) {
+        if (ct instanceof Compound && ConceptBuilder.dynamicModel((Compound) ct) != null) {
             //try conceptualizing the dynamic
 
             if (Param.DYNAMIC_CONCEPT_TRANSIENT) {

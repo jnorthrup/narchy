@@ -104,7 +104,7 @@ public class TransformUtil {
 
 	public static void calculateVelocity(Transform transform0, Transform transform1, float timeStep, v3 linVel, v3 angVel) {
 		linVel.sub(transform1, transform0);
-		linVel.scale(1f / timeStep);
+		linVel.scaled(1f / timeStep);
 
 		v3 axis = new v3();
 		float[] angle = new float[1];
@@ -144,7 +144,7 @@ public class TransformUtil {
 		if (lenSq < BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON) {
 			axis.set(1f, 0f, 0f);
 		} else {
-			axis.scale(1f / (float) Math.sqrt(lenSq));
+			axis.scaled(1f / (float) Math.sqrt(lenSq));
 		}
 	}
 	

@@ -66,7 +66,7 @@ public class ConstantVolumeJoint extends Joint {
         float[] targetLengths = new float[n];
         for (int i = 0; i < targetLengths.length; ++i) {
             final int next = (i == targetLengths.length - 1) ? 0 : i + 1;
-            float dist = bodies[i].getWorldCenter().sub(bodies[next].getWorldCenter()).length();
+            float dist = bodies[i].getWorldCenter().subClone(bodies[next].getWorldCenter()).length();
             targetLengths[i] = dist;
         }
         targetVolume = getBodyArea();
@@ -163,7 +163,7 @@ public class ConstantVolumeJoint extends Joint {
 
             float normSqrd = delta.lengthSquared();
             if (normSqrd > Settings.maxLinearCorrection * Settings.maxLinearCorrection) {
-                delta.scaled(Settings.maxLinearCorrection / (float) Math.sqrt(normSqrd));
+                delta.scale(Settings.maxLinearCorrection / (float) Math.sqrt(normSqrd));
             }
             if (normSqrd > Settings.linearSlop * Settings.linearSlop) {
                 done = false;

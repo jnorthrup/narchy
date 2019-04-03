@@ -23,6 +23,13 @@ import java.util.Random;
  */
 public interface Tensor  {
 
+    /** 2d vectors */
+    int[] v2Shape = new int[] { 2 };
+    /** 3d vectors */
+    int[] v3Shape = new int[] { 3 };
+    /** quaternions */
+    int[] v4Shape = new int[] { 4 };
+
     static Tensor vectorFromTo(int start, int end) {
 
         return vectorFromToBy(start, end, 1);
@@ -75,7 +82,7 @@ public interface Tensor  {
     }
 
     /** element-wise multiplication */
-    default TensorFunc scale(float v) {
+    default TensorFunc scaled(float v) {
         return apply((x) -> x * v);
     }
 
@@ -100,7 +107,7 @@ public interface Tensor  {
     }
 
     static Tensor normalize(Tensor vector) {
-        return vector.scale(1f / sum(vector));
+        return vector.scaled(1f / sum(vector));
     }
 
     static float sum(Tensor vector) {

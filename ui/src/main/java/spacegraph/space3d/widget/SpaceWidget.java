@@ -26,7 +26,7 @@ abstract public class SpaceWidget<T> extends Cuboid<T> {
         setFront(
             
                 
-                new PushButton(x.toString()).clicking(this::onClicked)
+                new PushButton(x.toString()).clicked(this::onClicked)
                 
                         
                     

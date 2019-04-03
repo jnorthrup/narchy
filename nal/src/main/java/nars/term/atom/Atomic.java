@@ -117,7 +117,7 @@ public interface Atomic extends Term {
     }
 
     @Override
-    default boolean has(Op op) {
+    default boolean hasAny(Op op) {
         return isAny(op.bit);
     }
 

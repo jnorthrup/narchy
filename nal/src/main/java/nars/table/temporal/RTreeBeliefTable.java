@@ -187,7 +187,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     @Override
-    public void add(Remember r, NAR n) {
+    public void remember(Remember r) {
 
         if (r.input.isEternal())
             return;
@@ -223,43 +223,43 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         write(treeRW -> {
             if (treeRW.add(input)) {
-                ensureCapacity(treeRW, input.isBelief() /* else Goal*/, r, n);
+                ensureCapacity(treeRW, input.isBelief() /* else Goal*/, r);
             }
         });
 
         Task existing = RTreeBeliefModel.merged.get();
         if (existing != null && existing!=input) {
-           r.merge(existing, n);
-           onReject(input, n);
+           r.merge(existing);
+           onReject(input);
         } else {
             if (!input.isDeleted()) {
                 r.remember(input);
-                onRemember(input, n);
+                onRemember(input);
             } else {
                 r.forget(input);
-                onReject(input, n);
+                onReject(input);
             }
         }
 
 
     }
 
-    protected void onReject(Task input, NAR n) {
+    protected void onReject(Task input) {
         /* optional: implement in subclasses */
     }
 
-    protected void onRemember(Task input, NAR n) {
+    protected void onRemember(Task input) {
         /* optional: implement in subclasses */
 
     }
 
-    private boolean ensureCapacity(Space<TaskRegion> treeRW, boolean beliefOrGoal, Remember remember, NAR
-            nar) {
+    private boolean ensureCapacity(Space<TaskRegion> treeRW, boolean beliefOrGoal, Remember remember) {
 
         FloatFunction<Task> taskStrength = null;
         FloatRank<TaskRegion> leafRegionWeakness = null;
         int e = 0, cap;
         long atStart;
+        NAR nar = remember.nar;
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
                 atStart = nar.time();

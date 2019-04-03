@@ -60,12 +60,12 @@ class BvhTree {
 			primitive_boxes.getBoundMax(i, tmp1);
 			primitive_boxes.getBoundMin(i, tmp2);
 			center.add(tmp1, tmp2);
-			center.scale(0.5f);
+			center.scaled(0.5f);
 			diff2.sub(center, means);
 			VectorUtil.mul(diff2, diff2, diff2);
 			variance.add(diff2);
 		}
-		variance.scale(1f / (numIndices - 1));
+		variance.scaled(1f / (numIndices - 1));
 
 		return VectorUtil.maxAxis(variance);
 	}
@@ -75,10 +75,10 @@ class BvhTree {
 			primitive_boxes.getBoundMax(i, tmp1);
 			primitive_boxes.getBoundMin(i, tmp2);
 			center.add(tmp1, tmp2);
-			center.scale(0.5f);
+			center.scaled(0.5f);
 			means.add(center);
 		}
-		means.scale(1f / numIndices);
+		means.scaled(1f / numIndices);
 	}
 
 	private static int _sort_and_calc_splitting_index(BvhDataArray primitive_boxes, int startIndex, int endIndex, int splitAxis) {
@@ -105,7 +105,7 @@ class BvhTree {
 			primitive_boxes.getBoundMax(i, tmp1);
 			primitive_boxes.getBoundMin(i, tmp2);
 			center.add(tmp1, tmp2);
-			center.scale(0.5f);
+			center.scaled(0.5f);
 
 			if (VectorUtil.coord(center, splitAxis) > splitValue) {
 				

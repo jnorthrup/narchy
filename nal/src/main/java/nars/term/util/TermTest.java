@@ -129,7 +129,7 @@ public enum TermTest { ;
     }
 
     public static void assertEq(String exp, Term x) {
-        assertEquals(exp, x.toString(), () -> exp + " reduces to " + x);
+        assertEquals(exp, x.toString(), () -> exp + " != " + x);
     }
 
     public static void assertEq(Termlike x, Termlike y) {

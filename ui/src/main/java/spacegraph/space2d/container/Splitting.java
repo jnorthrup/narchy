@@ -259,7 +259,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         final Surface hv = new CheckBox("*").on(vertical).on((BooleanProcedure)
                 (Splitting.this::vertical));
 
-        final PushButton swap = new PushButton("<->").clicking(()->{
+        final PushButton swap = new PushButton("<->").clicked(()->{
             synchronized (Splitting.this) {
                 X a = Splitting.this.L();
                 Y b = Splitting.this.R();

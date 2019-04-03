@@ -620,19 +620,19 @@ public class SliderConstraint extends TypedConstraint {
 			v3 normal = new v3();
 			normal.normalize(velrelOrthog);
 			float denom = rbA.computeAngularImpulseDenominator(normal) + rbB.computeAngularImpulseDenominator(normal);
-			velrelOrthog.scale((1f / denom) * dampingOrthoAng * softnessOrthoAng);
+			velrelOrthog.scaled((1f / denom) * dampingOrthoAng * softnessOrthoAng);
 		}
 
 		
 		v3 angularError = new v3();
 		angularError.cross(axisA, axisB);
-		angularError.scale(1f / timeStep);
+		angularError.scaled(1f / timeStep);
 		float len2 = angularError.length();
 		if (len2 > 0.00001f) {
 			v3 normal2 = new v3();
 			normal2.normalize(angularError);
 			float denom2 = rbA.computeAngularImpulseDenominator(normal2) + rbB.computeAngularImpulseDenominator(normal2);
-			angularError.scale((1f / denom2) * restitutionOrthoAng * softnessOrthoAng);
+			angularError.scaled((1f / denom2) * restitutionOrthoAng * softnessOrthoAng);
 		}
 
 		

@@ -556,8 +556,8 @@ public class ContactSolver {
                          */
                         if (DEBUG_SOLVER) {
                             
-                            v2 dv1 = vB.add(v2.cross(wB, cp1rB).subbed(vA).subbed(v2.cross(wA, cp1rA)));
-                            v2 dv2 = vB.add(v2.cross(wB, cp2rB).subbed(vA).subbed(v2.cross(wA, cp2rA)));
+                            v2 dv1 = vB.addClone(v2.cross(wB, cp1rB).subbed(vA).subbed(v2.cross(wA, cp1rA)));
+                            v2 dv2 = vB.addClone(v2.cross(wB, cp2rB).subbed(vA).subbed(v2.cross(wA, cp2rA)));
                             
                             vn1 = v2.dot(dv1, normal);
                             vn2 = v2.dot(dv2, normal);
@@ -621,7 +621,7 @@ public class ContactSolver {
                          */
                         if (DEBUG_SOLVER) {
                             
-                            v2 dv1 = vB.add(v2.cross(wB, cp1rB).subbed(vA).subbed(v2.cross(wA, cp1rA)));
+                            v2 dv1 = vB.addClone(v2.cross(wB, cp1rB).subbed(vA).subbed(v2.cross(wA, cp1rA)));
                             
                             vn1 = v2.dot(dv1, normal);
 
@@ -681,7 +681,7 @@ public class ContactSolver {
                          */
                         if (DEBUG_SOLVER) {
                             
-                            v2 dv2 = vB.add(v2.cross(wB, cp2rB).subbed(vA).subbed(v2.cross(wA, cp2rA)));
+                            v2 dv2 = vB.addClone(v2.cross(wB, cp2rB).subbed(vA).subbed(v2.cross(wA, cp2rA)));
                             
                             vn2 = v2.dot(dv2, normal);
 

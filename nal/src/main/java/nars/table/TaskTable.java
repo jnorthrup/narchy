@@ -24,7 +24,7 @@ public interface TaskTable {
     /**
      * attempt to insert a task.
      */
-    void add(Remember r, NAR n);
+    void remember(Remember r);
 
 
     /**

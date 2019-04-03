@@ -259,7 +259,7 @@ public class WebCam {
         WebCam wc = the();
 
         Gridding menu = new Gridding();
-        menu.add(new PushButton("++").clicking(() -> {
+        menu.add(new PushButton("++").clicked(() -> {
             window(new ChannelView(wc), 400, 400);
         }));
 

@@ -151,7 +151,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
                 float s = (len - idealLen) * attractSpeed * weightToVelocity(edge.weight);
                 if (Math.abs(s) > Float.MIN_NORMAL) {
-                    delta.scaled(s);
+                    delta.scale(s);
                     a.move(delta.x, delta.y);
                     b.move(-delta.x, -delta.y);
                 }
@@ -183,7 +183,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
             double theta = (float) (rng.nextFloat()*Math.PI*2);
             float tx = (float) Math.cos(theta);
             float ty = (float) Math.sin(theta);
-            delta.scale(Spatialization.EPSILONf * 2);
+            delta.scaleClone(Spatialization.EPSILONf * 2);
             delta.set(tx, ty);
         }
         if (len >= maxRepelDist)
@@ -195,7 +195,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
                 (1 + (len * len));
                 //Util.sqr(1 + len);
 
-        delta.scaled(s);
+        delta.scale(s);
 
         float radii = (ar + br);
         double baRad = br / radii;

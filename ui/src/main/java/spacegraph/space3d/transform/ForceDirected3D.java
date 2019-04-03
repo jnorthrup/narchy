@@ -147,11 +147,11 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
 
         
         float len = (float) Math.sqrt(lenSq);
-        delta.scale( Math.min(len, len*  speed ) );
+        delta.scaled( Math.min(len, len*  speed ) );
 
         ((Body3D) x).velAdd(delta);
         
-        delta.scale(-1 );
+        delta.scaled(-1 );
         ((Body3D) y).velAdd(delta);
 
     }

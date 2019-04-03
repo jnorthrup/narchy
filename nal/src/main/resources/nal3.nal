@@ -39,3 +39,9 @@
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
+
+//union/intersection belief/goal to diff question/quest
+    (W --> (A&B)), A, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)
+     (W --> (A|B)), A, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)
+    ((A|B) --> W), A, --isVar(W) |- ((A~B) --> W), (Punctuation:Ask)
+     ((A&B) --> W), A, --isVar(W) |- ((A~B) --> W), (Punctuation:Ask)

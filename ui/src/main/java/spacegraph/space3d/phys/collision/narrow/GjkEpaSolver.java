@@ -338,7 +338,7 @@ public class GjkEpaSolver {
 			ray.negated(simplex[0].w);
 			for (; iterations < GJK_maxiterations; ++iterations) {
 				float rl = ray.length();
-				ray.scale(1f / (rl > 0f ? rl : 1f));
+				ray.scaled(1f / (rl > 0f ? rl : 1f));
 				if (FetchSupport()) {
 					boolean found = false;
 					switch (order) {
@@ -521,7 +521,7 @@ public class GjkEpaSolver {
 
 			float sm = out.x + out.y + out.z;
 
-			out.scale(1f / (sm > 0f ? sm : 1f));
+			out.scaled(1f / (sm > 0f ? sm : 1f));
 
 			return out;
 		}

@@ -6,6 +6,7 @@ import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.util.Image;
@@ -25,7 +26,7 @@ public class DynamicStatementTruth {
     /**
      * statement component
      */
-    protected static Term stmtDecomposeStructural(Op superOp, boolean subjOrPred, Term subterm, Term common) {
+    private static Term stmtDecomposeStructural(Op superOp, boolean subjOrPred, Term subterm, Term common) {
         return stmtDecompose(superOp, subjOrPred, subterm, common, DTERNAL, false, true);
     }
 
@@ -68,7 +69,7 @@ public class DynamicStatementTruth {
     /**
      * statement common component
      */
-    protected static Term stmtCommon(boolean subjOrPred, Term superterm) {
+    private static Term stmtCommon(boolean subjOrPred, Term superterm) {
         return subjOrPred ? superterm.sub(1) : superterm.sub(0);
     }
 
@@ -106,161 +107,37 @@ public class DynamicStatementTruth {
         return tt;
     }
 
-    @Nullable
-    protected static Term stmtReconstruct(Term superterm, List<Task> components, boolean subjOrPred, boolean union, boolean subjNeg) {
-        Term superSect = superterm.sub(subjOrPred ? 0 : 1);
-        Op op = superterm.op();
-        if (union) {
-            if (superSect.op() == NEG) {
-                if (op == CONJ || op == IMPL /* will be subj only, pred is auto unnegated */)
-                    superSect = superSect.unneg();
-                else {
-                    throw new WTF();
-                }
-
-            }
-        }
-
-        //may not be correct TODO
-//        if (!Param.DEBUG) {
-//            //elide reconstruction when superterm will not differ by temporal terms
-//            //TODO improve
-//            if (superSect.subs() == components.size() && ((FasterList<Task>) components).allSatisfy(t -> t != null && !((Task) t).target().sub(subjOrPred ? 0 : 1).isTemporal())) {
-//                if (!superSect.isTemporal())
-//                    return superterm;
-//            }
-//        }
-
-
-        Term sect;
-        int outerDT;
-        if (op == IMPL) {
-            //TODO DynamicConjTruth.ConjIntersection.reconstruct()
-
-            //IMPL: compute innerDT for the conjunction
-            ConjBuilder c =
-                    //new Conj(); //TODO LazyConj
-                    new ConjLazy(components.size());
-
-            for (TaskRegion x : components) {
-                Term xx = ((Task) x).term();
-
-                Term xxu = xx.unneg();
-                int tdt = xxu.dt();
-                long tWhen = tdt == DTERNAL ? ETERNAL :
-                        (subjOrPred ? (-tdt) : (+tdt));
-
-                boolean forceNegate = false;
-                if (xx.op() == NEG) {
-
-                    if (xxu.op() == IMPL) {
-                        xx = xxu;
-                        forceNegate = true;
-                    } else {
-                        if (!subjOrPred) {
-                            //assume this is the reduced (true ==> --x)
-                            if (!c.add(tWhen, xx.neg()))
-                                break;
-                            continue;
-                        } else {
-                            throw new WTF(); //return null;
-                        }
-                    }
-                } else if (xx.op() != IMPL) {
-                    if (!subjOrPred) {
-                        //assume this is the reduced (true ==> x)
-                        if (!c.add(tWhen, xx))
-                            break;
-                        continue;
-                    } else {
-                        throw new WTF(); //return null;
-                    }
-                }
-
-                if (!c.add(tWhen, xx.sub(subjOrPred ? 0 : 1).negIf(union ^ forceNegate)))
-                    break;
-            }
-
-            sect = c.term();
-            if (sect == Null)
-                return null; //allow non-Null Bool's?
-
-            int cs = c.shiftOrDTERNAL();
-            if (cs == DTERNAL || cs == ETERNAL) {
-                outerDT = DTERNAL; //some temporal information destroyed
-            } else {
-                outerDT = Tense.occToDT(subjOrPred ? -cs - sect.eventRange() : cs);
-            }
-
-        } else {
-
-            Term[] subs = stmtReconstruct(subjOrPred, components);
-            if (subs == null)
-                return null;
-
-            if (union && superSect.op() == CONJ) {
-                for (int i = 0, subsLength = subs.length; i < subsLength; i++) {
-                    subs[i] = subs[i].neg();
-                }
-            }
-
-            sect = superSect.op().the(subs);
-            outerDT = DTERNAL;
-        }
-
-        Term common = superterm.sub(subjOrPred ? 1 : 0);
-
-        if (union || (subjOrPred && subjNeg)) {
-            if (op == CONJ || op == IMPL /* but not Sect's */)
-                sect = sect.neg();
-        }
-
-        return subjOrPred ? op.the(sect, outerDT, common) : op.the(common, outerDT, sect);
-    }
-
-    static public boolean decomposeImplConj(Term superterm, long start, long end, AbstractDynamicTruth.ObjectLongLongPredicate<Term> each, Term common, Term decomposed, boolean subjOrPred, boolean negateComponents) {
+    private static boolean decomposeImplConj(Term superterm, long start, long end, AbstractDynamicTruth.ObjectLongLongPredicate<Term> each, Term common, Term decomposed, boolean subjOrPred, boolean negateComponents) {
 
         int superDT = superterm.dt();
         int decRange = decomposed.eventRange();
         return DynamicConjTruth.ConjIntersection.evalComponents(decomposed, start, end, (what, s, e) -> {
-            //TODO fix
-//            int innerDT = (s == ETERNAL) ? XTERNAL : Tense.occToDT(
-//                    //(e-s)-outerDT
-//                    e - s
-//            );
+
             int innerDT;
             if (superDT == DTERNAL || superDT == XTERNAL) {
-                if (s!=ETERNAL)
-                    innerDT = 0;
-                else
-                    innerDT = DTERNAL;
+                innerDT = s != ETERNAL ? 0 : DTERNAL;
             } else {
-                if (s == start && e - s>=decRange)
+                if (s == start && e - s >= decRange)
                     innerDT = DTERNAL; //eternal component
                 else
                     innerDT = Tense.occToDT(decRange - (s-start));
             }
 
-            Term i;
-            if (subjOrPred) {
-                if (negateComponents)
-                    what = what.neg();
-                i = IMPL.the(what, innerDT, common);
-            } else {
-                i = IMPL.the(common, innerDT, what);
-                if (negateComponents)
-                    i = i.neg();
-            }
+            Term i = subjOrPred ?
+                    IMPL.the(what.negIf(negateComponents), innerDT, common)
+                    :
+                    IMPL.the(common, innerDT, what).negIf(negateComponents);
 
             return each.accept(i, start, end);
         });
     }
 
-    static class DynamicInhSectTruth extends AbstractSectTruth {
+    /** functionality shared between INH and IMPL */
+    static class AbstractInhImplSectTruth extends AbstractSectTruth {
 
         final boolean subjOrPred;
 
-        private DynamicInhSectTruth(boolean union, boolean subjOrPred) {
+        private AbstractInhImplSectTruth(boolean union, boolean subjOrPred) {
             super(union);
             this.subjOrPred = subjOrPred;
         }
@@ -276,7 +153,114 @@ public class DynamicStatementTruth {
         }
 
         protected static Term reconstruct(Term superterm, List<Task> components, boolean subjOrPred, boolean union) {
-            return stmtReconstruct(superterm, components, subjOrPred, union, false);
+            Term superSect = superterm.sub(subjOrPred ? 0 : 1);
+            Op op = superterm.op();
+            if (union) {
+                if (superSect.op() == NEG) {
+                    if (op == CONJ || op == IMPL /* will be subj only, pred is auto unnegated */)
+                        superSect = superSect.unneg();
+                    else {
+                        throw new WTF();
+                    }
+
+                }
+            }
+
+            //may not be correct TODO
+//        if (!Param.DEBUG) {
+//            //elide reconstruction when superterm will not differ by temporal terms
+//            //TODO improve
+//            if (superSect.subs() == components.size() && ((FasterList<Task>) components).allSatisfy(t -> t != null && !((Task) t).target().sub(subjOrPred ? 0 : 1).isTemporal())) {
+//                if (!superSect.isTemporal())
+//                    return superterm;
+//            }
+//        }
+
+
+            Term sect;
+            int outerDT;
+            if (op == IMPL) {
+                //TODO DynamicConjTruth.ConjIntersection.reconstruct()
+
+                //IMPL: compute innerDT for the conjunction
+                ConjBuilder c =
+                        //new Conj(); //TODO LazyConj
+                        new ConjLazy(components.size());
+
+                for (TaskRegion x : components) {
+                    Term xx = ((Task) x).term();
+
+                    Term xxu = xx.unneg();
+                    int tdt = xxu.dt();
+                    long tWhen = tdt == DTERNAL ? ETERNAL :
+                            (subjOrPred ? (-tdt) : (+tdt));
+
+                    boolean forceNegate = false;
+                    if (xx.op() == NEG) {
+
+                        if (xxu.op() == IMPL) {
+                            xx = xxu;
+                            forceNegate = true;
+                        } else {
+                            if (!subjOrPred) {
+                                //assume this is the reduced (true ==> --x)
+                                if (!c.add(tWhen, xx.neg()))
+                                    break;
+                                continue;
+                            } else {
+                                throw new WTF(); //return null;
+                            }
+                        }
+                    } else if (xx.op() != IMPL) {
+                        if (!subjOrPred) {
+                            //assume this is the reduced (true ==> x)
+                            if (!c.add(tWhen, xx))
+                                break;
+                            continue;
+                        } else {
+                            throw new WTF(); //return null;
+                        }
+                    }
+
+                    if (!c.add(tWhen, xx.sub(subjOrPred ? 0 : 1).negIf(union ^ forceNegate)))
+                        break;
+                }
+
+                sect = c.term();
+                if (sect == Null)
+                    return null; //allow non-Null Bool's?
+
+                int cs = c.shiftOrDTERNAL();
+                if (cs == DTERNAL) {
+                    outerDT = DTERNAL; //some temporal information destroyed
+                } else {
+                    outerDT = Tense.occToDT(subjOrPred ? -cs - sect.eventRange() : cs);
+                }
+
+            } else {
+
+                Term[] subs = stmtReconstruct(subjOrPred, components);
+                if (subs == null)
+                    return null;
+
+                if (union && superSect.op() == CONJ) {
+                    for (int i = 0, subsLength = subs.length; i < subsLength; i++) {
+                        subs[i] = subs[i].neg();
+                    }
+                }
+
+                sect = superSect.op().the(subs);
+                outerDT = DTERNAL;
+            }
+
+            Term common = superterm.sub(subjOrPred ? 1 : 0);
+
+            if (union || (subjOrPred && false)) {
+                if (op == CONJ || op == IMPL /* but not Sect's */)
+                    sect = sect.neg();
+            }
+
+            return subjOrPred ? op.the(sect, outerDT, common) : op.the(common, outerDT, sect);
         }
 
         @Override
@@ -320,33 +304,16 @@ public class DynamicStatementTruth {
     }
 
 
-    public static final AbstractDynamicTruth UnionSubj = new DynamicInhSectTruth(true, true);
-    public static final AbstractDynamicTruth SectSubj = new DynamicInhSectTruth(false, true);
+    public static final AbstractDynamicTruth SubjUnion = new AbstractInhImplSectTruth(true, true);
+    public static final AbstractDynamicTruth SubjInter = new AbstractInhImplSectTruth(false, true);
 
+    public static final AbstractDynamicTruth PredUnion = new AbstractInhImplSectTruth(true, false);
+    public static final AbstractDynamicTruth PredInter = new AbstractInhImplSectTruth(false, false);
 
-    public static final AbstractDynamicTruth UnionPred = new DynamicInhSectTruth(true, false);
-    public static final AbstractDynamicTruth SectPred = new DynamicInhSectTruth(false, false);
+    public static final AbstractDynamicTruth ImplSubjDisj = new ImplSubjDisj();
+    public static final AbstractDynamicTruth ImplSubjConj = new ImplSubjConj();
 
-    /**
-     * according to composition rules, the intersection target is computed with union truth, and vice versa
-     */
-    public static final AbstractDynamicTruth SectImplSubj = new SectImplSubj();
-//        public static final DynamicTruthModel SectImplSubjNeg = new SectImplSubj() {
-//            @Override
-//            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-//                return components(superterm, start, end, each, superterm.sub(0).unneg());
-//            }
-//
-//            @Override
-//            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
-//                return stmtReconstruct(superterm, components, subjOrPred, union, true);
-//
-//            }
-//        };
-
-    public static final AbstractDynamicTruth UnionImplSubj = new UnionImplSubj();
-
-    public static final AbstractDynamicTruth SectImplPred = new DynamicInhSectTruth(false, false) {
+    public static final AbstractDynamicTruth ImplPred = new AbstractInhImplSectTruth(false, false) {
         @Override
         public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             Term common = stmtCommon(subjOrPred, superterm);
@@ -381,30 +348,37 @@ public class DynamicStatementTruth {
 //
 //        };
 
-    private static class SectImplSubj extends DynamicInhSectTruth {
-        private SectImplSubj() {
-            super(false, true);
-        }
 
-        @Override
-        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            return decomposeImplConj(superterm, start, end, each, superterm.sub(1), superterm.sub(0), true, false);
-        }
-
-        @Override
-        public Term reconstruct(Term superterm, List<Task> components, NAR nar, long start, long end) {
-            return reconstruct(superterm, components, true, false);
-        }
-    }
-
-    private static class UnionImplSubj extends DynamicInhSectTruth {
-        public UnionImplSubj() {
+    /** &&, truth = union */
+    private static class ImplSubjConj extends AbstractInhImplSectTruth {
+        ImplSubjConj() {
             super(true, true);
         }
 
         @Override
         public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            return decomposeImplConj(superterm, start, end, each, superterm.sub(1), superterm.sub(0).unneg(), true, true);
+            Subterms ss = superterm.subterms();
+            return decomposeImplConj(superterm, start, end, each, ss.sub(1), ss.sub(0), true, false /* reconstruct as-is; union only applies to the truth calculation */);
+        }
+
+        @Override
+        public Term reconstruct(Term superterm, List<Task> components, NAR nar, long start, long end) {
+            return reconstruct(superterm, components, true, false /* reconstruct as-is; union only applies to the truth calculation */);
+        }
+    }
+
+    /** ||, truth = intersection */
+    private static class ImplSubjDisj extends AbstractInhImplSectTruth {
+        private ImplSubjDisj() {
+            super(false, true);
+        }
+
+        @Override
+        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            Subterms ss = superterm.subterms();
+            Term subj = ss.sub(0);
+            assert(subj.op()==NEG);
+            return decomposeImplConj(superterm, start, end, each, ss.sub(1), subj.unneg(), true, true);
         }
 
         @Override
@@ -412,4 +386,5 @@ public class DynamicStatementTruth {
             return reconstruct(superterm, components, true, true);
         }
     }
+
 }

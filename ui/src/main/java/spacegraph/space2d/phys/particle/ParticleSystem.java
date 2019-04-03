@@ -926,7 +926,7 @@ public class ParticleSystem {
                 Rot rotation = tempRot;
                 rotation.set(step.dt * group.m_angularVelocity);
                 Rot.mulToOutUnsafe(rotation, group.m_center, cross);
-                temp.set(group.m_linearVelocity).scaled(step.dt).added(group.m_center).subbed(cross);
+                temp.set(group.m_linearVelocity).scale(step.dt).added(group.m_center).subbed(cross);
                 tempXf.pos.set(temp);
                 tempXf.set(rotation);
                 Transform.mulToOut(tempXf, group.m_transform, group.m_transform);

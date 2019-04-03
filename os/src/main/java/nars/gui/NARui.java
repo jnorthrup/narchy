@@ -288,7 +288,7 @@ public class NARui {
                 path,
                 new Gridding(
                         mode,
-                        new PushButton("save").clicking(() -> {
+                        new PushButton("save").clicked(() -> {
                             Exe.invokeLater(() -> {
                                 try {
                                     nar.output(new File(path.text()), false);
@@ -420,7 +420,7 @@ public class NARui {
         return new ScrollXY<>(new KeyValueGrid(new MemorySnapshot(n).byAnon),
                 (x, y, v) -> {
                     if (x == 0) {
-                        return new PushButton(v.toString()).clicking(() -> {
+                        return new PushButton(v.toString()).clicked(() -> {
 
                         });
                     } else {
@@ -608,14 +608,14 @@ public class NARui {
         m.west(new Gridding(
 
 
-            new PushButton("Clear").clicking(n::clear),
+            new PushButton("Clear").clicked(n::clear),
             Submitter.text("Load", t->{
                 throw new TODO();
             }),
             Submitter.text("Save", t->{
                 throw new TODO(); //tagging
             }),
-            new PushButton("List").clicking(()->attn.links.bag.print()) //TODO better
+            new PushButton("List").clicked(()->attn.links.bag.print()) //TODO better
 
         ));
         m.east(new Gridding(

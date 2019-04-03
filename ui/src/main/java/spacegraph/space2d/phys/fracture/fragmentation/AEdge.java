@@ -47,8 +47,8 @@ abstract class AEdge {
      * @return Vrati prienik 2 hran. Pokial neexistuje, vrati null.
      */
     public static Vec2Intersect intersect(AEdge a, AEdge b) {
-        v2 U = a.p2.sub(a.p1);
-        v2 V = b.p2.sub(b.p1);
+        v2 U = a.p2.subClone(a.p1);
+        v2 V = b.p2.subClone(b.p1);
         v2 A = new v2(a.p1);
         v2 C = new v2(b.p1);
         double uv = dCross(U, V); 
@@ -73,8 +73,8 @@ abstract class AEdge {
      * @return Vrati true, ak sa hrany pretinaju.
      */
     public boolean intersectAre(v2 b1, v2 b2) {
-        v2 U = p2.sub(p1);
-        v2 V = b2.sub(b1);
+        v2 U = p2.subClone(p1);
+        v2 V = b2.subClone(b1);
         v2 A = new v2(p1);
         v2 C = new v2(b1);
         float uv = cross(U, V);
@@ -91,7 +91,7 @@ abstract class AEdge {
      * @return Vrati najvlizsi bod na priamke voci bodu z parametra.
      */
     public v2 kolmicovyBod(v2 point) {
-        v2 U = p2.sub(p1);
+        v2 U = p2.subClone(p1);
         v2 V = new v2(p1.y - p2.y, p2.x - p1.x);
         float uv = cross(U, V);
         if (uv == 0) {
@@ -99,8 +99,8 @@ abstract class AEdge {
         }
         float k = (cross(point, V) - cross(p1, V)) / uv;
         if (k >= 0 && k <= 1) {
-            U.scaled(k);
-            return p1.add(U);
+            U.scale(k);
+            return p1.addClone(U);
         } else {
             double dist1 = p1.distanceSq(point);
             double dist2 = p2.distanceSq(point);

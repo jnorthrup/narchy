@@ -68,11 +68,11 @@ public abstract class IDebugDraw {
 	public void drawAabb(v3 from, v3 to, v3 color) {
 		v3 halfExtents = new v3(to);
 		halfExtents.sub(from);
-		halfExtents.scale(0.5f);
+		halfExtents.scaled(0.5f);
 
 		v3 center = new v3(to);
 		center.add(from);
-		center.scale(0.5f);
+		center.scaled(0.5f);
 
 		int i, j;
 

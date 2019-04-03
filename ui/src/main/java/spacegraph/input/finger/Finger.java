@@ -389,7 +389,7 @@ abstract public class Finger {
         v2 y = new v2(p);
         RectFloat b = s.bounds;
         y.sub(b.x, b.y);
-        y.scaled(1f / b.w, 1f / b.h);
+        y.scale(1f / b.w, 1f / b.h);
         return y;
     }
 

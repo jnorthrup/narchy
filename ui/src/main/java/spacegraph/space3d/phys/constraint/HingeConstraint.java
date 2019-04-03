@@ -139,7 +139,7 @@ public class HingeConstraint extends TypedConstraint {
 
 		float projection = rbAxisA1.dot(axisInA);
 		if (projection > BulletGlobals.FLT_EPSILON) {
-			rbAxisA1.scale(projection);
+			rbAxisA1.scaled(projection);
 			rbAxisA1.sub(axisInA);
 		}
 		else {
@@ -450,7 +450,7 @@ public class HingeConstraint extends TypedConstraint {
                     getRigidBodyB().computeAngularImpulseDenominator(normal);
             
             
-            velrelOrthog.scale((1f / denom) * relaxationFactor);
+            velrelOrthog.scaled((1f / denom) * relaxationFactor);
         }
 
         
@@ -459,7 +459,7 @@ public class HingeConstraint extends TypedConstraint {
         v3 angularError = new v3();
         angularError.cross(axisA, axisB);
         angularError.negated();
-        angularError.scale(1f / timeStep);
+        angularError.scaled(1f / timeStep);
         float len2 = angularError.length();
         if (len2 > 0.00001f) {
             v3 normal2 = new v3();
@@ -467,7 +467,7 @@ public class HingeConstraint extends TypedConstraint {
 
             float denom2 = getRigidBodyA().computeAngularImpulseDenominator(normal2) +
                     getRigidBodyB().computeAngularImpulseDenominator(normal2);
-            angularError.scale((1f / denom2) * relaxation);
+            angularError.scaled((1f / denom2) * relaxation);
         }
 
         tmp.negated(velrelOrthog);

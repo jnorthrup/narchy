@@ -78,7 +78,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         public boolean test(PreDerivation d) {
-            return d.taskTerm.has(Op.NEG) || d.beliefTerm.has(Op.NEG);
+            return d.taskTerm.hasAny(Op.NEG) || d.beliefTerm.hasAny(Op.NEG);
         }
 
         @Override
@@ -240,7 +240,7 @@ public final class NotEqualConstraint extends RelationConstraint {
                 case SECTi:
                 case SECTe: {
                     Iterable<Term> x = b.subterms();
-                    if (b.has(NEG))
+                    if (b.hasAny(NEG))
                         x = Iterables.transform(x, Term::unneg);
                     return x;
                 }

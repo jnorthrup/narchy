@@ -389,7 +389,7 @@ public class ContactConstraint {
 
         if (cpd.appliedImpulse > 0) {
             if (lat_rel_vel > BulletGlobals.FLT_EPSILON) {
-                lat_vel.scale(1f / lat_rel_vel);
+                lat_vel.scaled(1f / lat_rel_vel);
 
                 v3 temp1 = new v3();
                 temp1.cross(rel_pos1, lat_vel);

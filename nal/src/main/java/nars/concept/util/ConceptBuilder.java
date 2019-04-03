@@ -47,15 +47,13 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
     private Concept taskConcept(final Term t) {
 
         BeliefTable B, G;
-
-
-        AbstractDynamicTruth dmt = ConceptBuilder.dynamicModel(t);
+        AbstractDynamicTruth dmt = t instanceof Compound ? ConceptBuilder.dynamicModel((Compound) t) : null;
 
         if (dmt != null) {
 
             //2. handle dynamic truth tables
             B = dmt.newTable(t, true, this);
-            G = !t.has(IMPL) ?
+            G = !t.hasAny(IMPL) ?
                     dmt.newTable(t, false, this) :
                     BeliefTable.Empty;
         } else {
@@ -73,7 +71,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
             //4. default task concept
             B = this.newTable(t, true);
-            G = !t.has(IMPL) ? this.newTable(t, false) : BeliefTable.Empty;
+            G = !t.hasAny(IMPL) ? this.newTable(t, false) : BeliefTable.Empty;
         }
 
 
@@ -102,13 +100,13 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
     private static boolean validDynamicSubtermsAndNoSharedVars(Term conj) {
         Subterms conjSubterms = conj.subterms();
         if (validDynamicSubterms(conjSubterms)) {
-            if (conjSubterms.has(VAR_DEP)) {
+            if (conjSubterms.hasAny(VAR_DEP)) {
 
                 Map<Term, Term> varLocations = new UnifiedMap(conjSubterms.subs());
 
                 return conj.eventsWhile((when, event) ->
-                                !event.has(VAR_DEP) ||
-                                        event.recurseTerms(x -> x.has(VAR_DEP),
+                                !event.hasAny(VAR_DEP) ||
+                                        event.recurseTerms(x -> x.hasAny(VAR_DEP),
                                                 (possiblyVar, parent) ->
                                                         (possiblyVar.op() != VAR_DEP) ||
                                                                 varLocations.putIfAbsent(possiblyVar, event) == null
@@ -125,7 +123,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
      * returns the builder for the target, or null if the target is not dynamically truthable
      */
     @Nullable
-    public static AbstractDynamicTruth dynamicModel(Term t) {
+    public static AbstractDynamicTruth dynamicModel(Compound t) {
 
         if (t.hasAny(Op.VAR_QUERY.bit))
             return null; //TODO maybe this can answer query questions by index query
@@ -142,7 +140,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 //            //TODO not done yet
             case IMPL: {
                 //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
-                if (t.has(Op.VAR_INDEP))
+                if (t.hasAny(Op.VAR_INDEP))
                     return null;
                 Subterms tt = t.subterms();
                 Term su = tt.sub(0);
@@ -172,15 +170,14 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
                 }
 
                 if (subjDyn) {
-                    if (suo == NEG) {
-                        return DynamicStatementTruth.UnionImplSubj;
-//                        return DynamicTruthModel.DynamicSectTruth.SectImplSubjNeg;
+                    //remember: these are reversed (NAL6)
+                    if (suo != NEG) {
+                        return DynamicStatementTruth.ImplSubjConj;
                     } else {
-                        return DynamicStatementTruth.SectImplSubj;
+                        return DynamicStatementTruth.ImplSubjDisj;
                     }
                 } else if (predDyn) {
-                    //TODO infer union case if the subterms of the pred's conj are all negative
-                    return DynamicStatementTruth.SectImplPred;
+                    return DynamicStatementTruth.ImplPred;
                 }
 
                 break;
@@ -229,9 +226,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
                     switch (so) {
                         case SECTi:
-                            return DynamicStatementTruth.SectSubj;
+                            return DynamicStatementTruth.SubjInter;
                         case SECTe:
-                            return DynamicStatementTruth.UnionSubj;
+                            return DynamicStatementTruth.SubjUnion;
                     }
 
 
@@ -250,9 +247,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
                     switch (po) {
                         case SECTi:
-                            return DynamicStatementTruth.UnionPred;
+                            return DynamicStatementTruth.PredUnion;
                         case SECTe:
-                            return DynamicStatementTruth.SectPred;
+                            return DynamicStatementTruth.PredInter;
                     }
                 }
             }

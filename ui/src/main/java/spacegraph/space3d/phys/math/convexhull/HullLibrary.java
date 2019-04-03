@@ -333,7 +333,7 @@ public class HullLibrary {
 		
 		
 		VectorUtil.add(center, verts.get(p.getCoord(0)), verts.get(p.getCoord(1)), verts.get(p.getCoord(2)), verts.get(p.getCoord(3)));
-		center.scale(1f / 4f);
+		center.scaled(1f / 4f);
 
 		Tri t0 = allocateTriangle(p.getCoord(2), p.getCoord(3), p.getCoord(1));
 		t0.n.set(2, 3, 1);
@@ -919,7 +919,7 @@ public class HullLibrary {
 				tmp1.scale(s, u);
 				tmp2.scale(c, v);
 				tmp.add(tmp1, tmp2);
-				tmp.scale(0.025f);
+				tmp.scaled(0.025f);
 				tmp.add(dir);
 				int mb = maxdirfiltered(p, count, tmp, allow);
 				if (ma == m && mb == m) {
@@ -935,7 +935,7 @@ public class HullLibrary {
 						tmp1.scale(s, u);
 						tmp2.scale(c, v);
 						tmp.add(tmp1, tmp2);
-						tmp.scale(0.025f);
+						tmp.scaled(0.025f);
 						tmp.add(dir);
 
 						int md = maxdirfiltered(p, count, tmp, allow);

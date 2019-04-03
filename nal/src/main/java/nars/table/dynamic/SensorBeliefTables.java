@@ -60,7 +60,7 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
     @Override
-    public final void add(Remember r, NAR n) {
+    public final void remember(Remember r) {
 
         if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
             Task x = r.input;
@@ -77,7 +77,7 @@ public class SensorBeliefTables extends BeliefTables {
             }
         }
 
-        super.add(r, n);
+        super.remember(r);
     }
 
 

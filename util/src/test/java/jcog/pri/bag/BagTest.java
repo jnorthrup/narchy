@@ -140,7 +140,7 @@ class BagTest {
 
         
 
-        return f.scale(1f / total);
+        return f.scaled(1f / total);
     }
 
     public static void testRemoveByKey(Bag<String, PriReference<String>> a) {

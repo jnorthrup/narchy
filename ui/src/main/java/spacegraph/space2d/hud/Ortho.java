@@ -168,12 +168,12 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
 
             //System.out.println("before: " + zoomStack);
             if (zoomStack.isEmpty()) {
-                zoomStack.add(cam.snapshot());
+                zoomStack.add(new v3(cam.snapshot()));
             }
 
             float epsilon = Math.min(h() / scale.y, w() / scale.x);
-            v3 x0 = cam.snapshot();
-            if (zoomStack.size() > 1 && su.bounds.contains(x0.x, x0.y) && zoomStack.peekLast().equals(x0, epsilon)) {
+            v3 c = new v3(cam.snapshot());
+            if (zoomStack.size() > 1 && su.bounds.contains(c.x, c.y) && zoomStack.peekLast().equals(c, epsilon)) {
 
 
                 unzoom();
@@ -183,25 +183,25 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
 
 
                 {
-                    v3 x = cam.snapshot();
+                    float[] xyz = cam.snapshot();
 
                     { //if (zoomStack.isEmpty() || !zoomStack.peekLast().equals(x, epsilon)) {
                         if (zoomStack.size() >= ZOOM_STACK_MAX)
                             zoomStack.removeFirst();
 
-                        zoomStack.addLast(x);
+                        zoomStack.addLast(new v3(xyz));
                     }
                 }
 
                 zoom(su.bounds);
 
                 {
-                    v3 x = cam.snapshot();
+                    float[] xyz = cam.snapshot();
 
                     if (zoomStack.size() >= ZOOM_STACK_MAX)
                         zoomStack.removeFirst();
 
-                    zoomStack.addLast(x);
+                    zoomStack.addLast(new v3(xyz));
                 }
 
             }
@@ -316,9 +316,9 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
             super(1);
         }
 
-        public v3 snapshot() {
-            return new v3(target.x, target.y, target.z);
-        }
+//        public v3 snapshot() {
+//            return new v3(target.x, target.y, target.z);
+//        }
 
         @Override
         public boolean animate(float dt) {

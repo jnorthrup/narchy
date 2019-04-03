@@ -127,7 +127,7 @@ public class ConeShape extends ConvexInternalShape {
 
 		v3 halfExtents = new v3();
 		halfExtents.sub(aabbMax, aabbMin);
-		halfExtents.scale(0.5f);
+		halfExtents.scaled(0.5f);
 
 		float margin = getMargin();
 
@@ -140,7 +140,7 @@ public class ConeShape extends ConvexInternalShape {
 		float scaledmass = mass * 0.08333333f;
 
 		inertia.set(y2 + z2, x2 + z2, x2 + y2);
-		inertia.scale(scaledmass);
+		inertia.scaled(scaledmass);
 
 		
 		

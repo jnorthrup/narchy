@@ -121,8 +121,8 @@ public class WheelJoint extends Joint {
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
         final v2 temp = pool.popVec2();
-        temp.set(m_ay).scaled(m_impulse);
-        argOut.set(m_ax).scaled(m_springImpulse).added(temp).scaled(inv_dt);
+        temp.set(m_ay).scale(m_impulse);
+        argOut.set(m_ax).scale(m_springImpulse).added(temp).scale(inv_dt);
         pool.pushVec2(1);
     }
 

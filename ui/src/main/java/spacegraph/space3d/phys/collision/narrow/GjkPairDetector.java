@@ -81,7 +81,7 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
 		Transform localTransB = new Transform(input.transformB);
 		v3 positionOffset = new v3();
         positionOffset.add(localTransA, localTransB);
-		positionOffset.scale(0.5f);
+		positionOffset.scaled(0.5f);
 		localTransA.sub(positionOffset);
 		localTransB.sub(positionOffset);
 
@@ -237,7 +237,7 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
             }
             if (lenSqr > BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON) {
                 float rlen = 1f / (float) Math.sqrt(lenSqr);
-                normalInB.scale(rlen); 
+                normalInB.scaled(rlen);
                 float s = (float) Math.sqrt(squaredDistance);
 
                 assert (s > 0f);
@@ -282,7 +282,7 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
 
                     float lenSqr = tmpNormalInB.lengthSquared();
                     if (lenSqr > (BulletGlobals.FLT_EPSILON * BulletGlobals.FLT_EPSILON)) {
-                        tmpNormalInB.scale(1f / (float) Math.sqrt(lenSqr));
+                        tmpNormalInB.scaled(1f / (float) Math.sqrt(lenSqr));
                         tmp.sub(tmpPointOnA, tmpPointOnB);
                         float distance2 = -tmp.length();
                         

@@ -239,7 +239,7 @@ public class DistanceJoint extends Joint {
             m_impulse *= data.step.dtRatio;
 
             v2 P = pool.popVec2();
-            P.set(m_u).scaled(m_impulse);
+            P.set(m_u).scale(m_impulse);
 
             vA.x -= m_invMassA * P.x;
             vA.y -= m_invMassA * P.y;

@@ -72,7 +72,7 @@ public class CapsuleShape extends ConvexInternalShape {
 		}
 		else {
 			float rlen = 1f / (float) Math.sqrt(lenSqr);
-			vec.scale(rlen);
+			vec.scaled(rlen);
 		}
 
 		v3 vtx = new v3();
@@ -88,7 +88,7 @@ public class CapsuleShape extends ConvexInternalShape {
         VectorUtil.setCoord(pos, upAxis, getHalfHeight());
 
         VectorUtil.mul(tmp1, vec, localScaling);
-        tmp1.scale(radius);
+        tmp1.scaled(radius);
         tmp2.scale(getMargin(), vec);
         vtx.add(pos, tmp1);
         vtx.sub(tmp2);
@@ -101,7 +101,7 @@ public class CapsuleShape extends ConvexInternalShape {
 		VectorUtil.setCoord(pos, upAxis, -getHalfHeight());
 
 		VectorUtil.mul(tmp1, vec, localScaling);
-		tmp1.scale(radius);
+		tmp1.scaled(radius);
 		tmp2.scale(getMargin(), vec);
 		vtx.add(pos, tmp1);
 		vtx.sub(tmp2);

@@ -17,12 +17,17 @@ public class AbstractDynamicTaskTest {
     }
 
     protected boolean isDynamicTable(Term $$) {
+        return isDynamicTable(n, $$);
+    }
+
+    public static boolean isDynamicTable(NAR n, Term $$) {
         return ((BeliefTables)n.conceptualize($$).beliefs()).tableFirst(DynamicTruthTable.class) != null;
     }
     protected void assertDynamicTable(String s) {
         assertTrue(isDynamicTable(s));
     }
-    protected void assertDynamicTable(Term t) {
-        assertTrue(isDynamicTable(t));
+
+    public static void assertDynamicTable(NAR n, Term t) {
+        assertTrue(isDynamicTable(n, t));
     }
 }

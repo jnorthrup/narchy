@@ -160,11 +160,11 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
                 nearest.add(from, tmp);
 
                 tmp.sub(simplexPointsP[1], simplexPointsP[0]);
-                tmp.scale(t);
+                tmp.scaled(t);
                 cachedP1.add(simplexPointsP[0], tmp);
 
                 tmp.sub(simplexPointsQ[1], simplexPointsQ[0]);
-                tmp.scale(t);
+                tmp.scaled(t);
                 cachedP2.add(simplexPointsQ[0], tmp);
 
                 cachedV.sub(cachedP1, cachedP2);

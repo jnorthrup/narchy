@@ -126,7 +126,7 @@ public class WeldJoint extends Joint {
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
         argOut.set(m_impulse.x, m_impulse.y);
-        argOut.scaled(inv_dt);
+        argOut.scale(inv_dt);
     }
 
     @Override
@@ -224,7 +224,7 @@ public class WeldJoint extends Joint {
         if (data.step.warmStarting) {
             final v2 P = pool.popVec2();
 
-            m_impulse.scale(data.step.dtRatio);
+            m_impulse.scaled(data.step.dtRatio);
 
             P.set(m_impulse.x, m_impulse.y);
 

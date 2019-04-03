@@ -69,7 +69,7 @@ public abstract class AbstractButton extends Widget {
     }
 
     /** when clicked by key press */
-    protected void onClick(KeyEvent key) {
+    private void onClick(KeyEvent key) {
         if (enabled()) {
             int keyCode = key.getKeyCode();
             if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_ENTER)

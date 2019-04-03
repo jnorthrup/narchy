@@ -38,19 +38,6 @@ public interface BeliefTable extends TaskTable {
      */
     void forEachTask(long minT, long maxT, Consumer<? super Task> x);
 
-    /**
-     * attempt to insert a task; returns what was input or null if nothing changed (rejected)
-     */
-    @Override
-    void add(/*@NotNull*/ Remember r,  /*@NotNull*/ NAR nar);
-
-
-
-    /** macro */
-    default /* final */ boolean tryAdd(/*@NotNull*/ Remember r,  /*@NotNull*/ NAR nar) {
-        add(r, nar);
-        return r.active();
-    }
 
 
     default Truth truth(long when, NAR nar) {

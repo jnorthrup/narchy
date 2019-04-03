@@ -90,7 +90,7 @@ public class MouseJoint extends Joint {
 
     @Override
     public void getReactionForce(float invDt, v2 argOut) {
-        argOut.set(m_impulse).scaled(invDt);
+        argOut.set(m_impulse).scale(invDt);
     }
 
     @Override
@@ -192,13 +192,13 @@ public class MouseJoint extends Joint {
         K.invertToOut(m_mass);
 
         m_C.set(cB).added(m_rB).subbed(m_targetA);
-        m_C.scaled(m_beta);
+        m_C.scale(m_beta);
 
         
         wB *= 0.98f;
 
         if (data.step.warmStarting) {
-            m_impulse.scaled(data.step.dtRatio);
+            m_impulse.scale(data.step.dtRatio);
             vB.x += m_invMassB * m_impulse.x;
             vB.y += m_invMassB * m_impulse.y;
             wB += m_invIB * v2.cross(m_rB, m_impulse);
@@ -233,7 +233,7 @@ public class MouseJoint extends Joint {
         final v2 impulse = pool.popVec2();
         final v2 temp = pool.popVec2();
 
-        temp.set(m_impulse).scaled(m_gamma).added(m_C).added(Cdot).negated();
+        temp.set(m_impulse).scale(m_gamma).added(m_C).added(Cdot).negated();
         Mat22.mulToOutUnsafe(m_mass, temp, impulse);
 
         v2 oldImpulse = temp;
@@ -242,7 +242,7 @@ public class MouseJoint extends Joint {
         float maxImpulse = data.step.dt * m_maxForce;
         float mImpulseLenSq = m_impulse.lengthSquared();
         if (mImpulseLenSq > maxImpulse * maxImpulse) {
-            m_impulse.scaled((float) (maxImpulse / Math.sqrt(mImpulseLenSq)));
+            m_impulse.scale((float) (maxImpulse / Math.sqrt(mImpulseLenSq)));
         }
         impulse.set(m_impulse).subbed(oldImpulse);
 

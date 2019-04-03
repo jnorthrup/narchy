@@ -98,11 +98,11 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 
 		v3 localHalfExtents = new v3();
 		localHalfExtents.sub(localAabbMax, localAabbMin);
-		localHalfExtents.scale(0.5f);
+		localHalfExtents.scaled(0.5f);
 
 		v3 localCenter = new v3();
 		localCenter.add(localAabbMax, localAabbMin);
-		localCenter.scale(0.5f);
+		localCenter.scaled(0.5f);
 
 		Matrix3f abs_b = new Matrix3f(trans.basis);
 		MatrixUtil.absolute(abs_b);

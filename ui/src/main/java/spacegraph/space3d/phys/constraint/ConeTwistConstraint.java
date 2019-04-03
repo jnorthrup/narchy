@@ -225,7 +225,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 			swingAxis.normalize();
 
 			float swingAxisSign = (b2Axis1.dot(b1Axis1) >= 0.0f) ? 1.0f : -1.0f;
-			swingAxis.scale(swingAxisSign);
+			swingAxis.scaled(swingAxisSign);
 
 			kSwing = 1f / (getRigidBodyA().computeAngularImpulseDenominator(swingAxis) +
 					getRigidBodyB().computeAngularImpulseDenominator(swingAxis));
@@ -248,9 +248,9 @@ public class ConeTwistConstraint extends TypedConstraint {
 				solveTwistLimit = true;
 
 				twistAxis.add(b2Axis1, b1Axis1);
-				twistAxis.scale(0.5f);
+				twistAxis.scaled(0.5f);
 				twistAxis.normalize();
-				twistAxis.scale(-1.0f);
+				twistAxis.scaled(-1.0f);
 
 				kTwist = 1f / (getRigidBodyA().computeAngularImpulseDenominator(twistAxis) +
 						getRigidBodyB().computeAngularImpulseDenominator(twistAxis));
@@ -261,7 +261,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 				solveTwistLimit = true;
 
 				twistAxis.add(b2Axis1, b1Axis1);
-				twistAxis.scale(0.5f);
+				twistAxis.scaled(0.5f);
 				twistAxis.normalize();
 
 				kTwist = 1f / (getRigidBodyA().computeAngularImpulseDenominator(twistAxis) +

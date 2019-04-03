@@ -75,7 +75,7 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 		}
 		else {
 			float rlen = 1f / (float) Math.sqrt(lenSqr);
-			vec.scale(rlen);
+			vec.scaled(rlen);
 		}
 
 		v3 vtx = new v3();
@@ -140,7 +140,7 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 
 		v3 halfExtents = new v3();
 		halfExtents.sub(aabbMax, aabbMin);
-		halfExtents.scale(0.5f);
+		halfExtents.scaled(0.5f);
 
 		float lx = 2f * (halfExtents.x + margin);
 		float ly = 2f * (halfExtents.y + margin);
@@ -151,7 +151,7 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 		float scaledmass = mass * 0.08333333f;
 
 		inertia.set(y2 + z2, x2 + z2, x2 + y2);
-		inertia.scale(scaledmass);
+		inertia.scaled(scaledmass);
 	}
 
 	private void getNonvirtualAabb(Transform trans, v3 aabbMin, v3 aabbMax, float margin) {

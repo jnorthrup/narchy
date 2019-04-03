@@ -41,13 +41,15 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         if (touchNext == null) {
 
             if (s instanceof Ortho) {
+                //ENTER ORTHO
                 _ortho = (Ortho)s; //HACK
-                _posGlobal.setNaN(); //invalidate
+                _posGlobal.setNaN(); //invalidate, will be lazily computed
             }
 
             Surface next = touchNext = (ff == Fingering.Null || ff.escapes()) ? s.finger(this) : touching.get();
 
             if (s instanceof Ortho) {
+                //EXIT ORTHO
                 _ortho = null; //HACK
             }
 

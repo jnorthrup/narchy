@@ -69,10 +69,10 @@ public class AabbUtil2 {
 		v3 hitNormal = new v3();
 
 		aabbHalfExtent.sub(aabbMax, aabbMin);
-		aabbHalfExtent.scale(0.5f);
+		aabbHalfExtent.scaled(0.5f);
 
 		aabbCenter.add(aabbMax, aabbMin);
-		aabbCenter.scale(0.5f);
+		aabbCenter.scaled(0.5f);
 
 		source.sub(rayFrom, aabbCenter);
 		target.sub(rayTo, aabbCenter);
@@ -175,7 +175,7 @@ public class AabbUtil2 {
 
 		v3 localHalfExtents = new v3();
 		localHalfExtents.sub(localAabbMax, localAabbMin);
-		localHalfExtents.scale(0.5f);
+		localHalfExtents.scaled(0.5f);
 
 		localHalfExtents.x += margin;
 		localHalfExtents.y += margin;
@@ -183,7 +183,7 @@ public class AabbUtil2 {
 
 		v3 localCenter = new v3();
 		localCenter.add(localAabbMax, localAabbMin);
-		localCenter.scale(0.5f);
+		localCenter.scaled(0.5f);
 
 		Matrix3f abs_b = new Matrix3f(trans.basis);
 		MatrixUtil.absolute(abs_b);

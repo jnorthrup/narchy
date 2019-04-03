@@ -23,7 +23,7 @@ import java.util.function.Function;
  */
 public abstract class NALTask extends UnitPri implements Task {
     protected final Term term;
-    protected final Truth truth;
+    private final Truth truth;
     protected final byte punc;
     protected final int hash;
     public long creation;
@@ -120,11 +120,6 @@ public abstract class NALTask extends UnitPri implements Task {
         //}
 
         return this;
-    }
-
-    @Override
-    public float freq(long start, long end) {
-        return truth.freq();
     }
 
     @Nullable

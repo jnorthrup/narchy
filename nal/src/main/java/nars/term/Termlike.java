@@ -216,7 +216,7 @@ public interface Termlike {
 //        return hasAny(checkStruct);
 //    }
 
-    default /* final */ boolean has(/*@NotNull*/ Op op) {
+    default /* final */ boolean hasAny(/*@NotNull*/ Op op) {
         return hasAny(op.bit);
     }
 

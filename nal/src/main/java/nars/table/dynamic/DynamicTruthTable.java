@@ -8,13 +8,13 @@ import nars.Param;
 import nars.Task;
 import nars.task.util.Answer;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.dynamic.AbstractDynamicTruth;
 import nars.truth.dynamic.DynTaskify;
 
+import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 
@@ -34,8 +34,8 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 
     @Override
     public final void match(Answer a) {
-        if (a.term == null)
-            a.term = term; //use default concept term
+        if (a.term() == null)
+            a.template(term); //use default concept term
 
         DynTaskify d = new DynTaskify(model, beliefOrGoal, a);
 
@@ -56,10 +56,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
             earliest = LongInterval.ETERNAL;
         } else {
 
-            earliest = d.minValue(t -> {
-                long ts = t.start();
-                return ts != LongInterval.ETERNAL ? ts : LongInterval.TIMELESS;
-            });
+            earliest = d.earliest();
 
 
             if (model == ConjIntersection) {
@@ -94,21 +91,22 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 
 
         NAR nar = a.nar;
-        Term template = a.term;
+        Term template = a.term();
         Term term1 = model.reconstruct(template, d, nar, s, e);
-        if (term1 == null || term1 instanceof Bool || !term1.unneg().op().taskable) { //quick tests
-            if (Param.DEBUG)
+        if (term1 == null || !term1.unneg().op().taskable) { //quick tests
+            //if (Param.DEBUG)
                 throw new WTF("could not reconstruct: " + template + ' ' + d);
-            return;
+            //return;
         }
 
 
         boolean absolute = model != ConjIntersection || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
             Task x = d.get(i);
-            long shift = absolute || x.isEternal() ? 0 : x.start()-earliest;
+            long xStart = x.start();
+            long shift = absolute || (xStart==ETERNAL) ? 0 : xStart - earliest;
             long ss = s + shift, ee = e + shift;
-            if (x.start() != ss || x.end() != ee) {
+            if (xStart != ss || x.end() != ee) {
                 Task tt = Task.project(x, ss, ee,
                         0, /* use no evidence threshold while accumulating sub-evidence */
                         false,

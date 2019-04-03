@@ -3,7 +3,6 @@ package nars.table.question;
 import jcog.TODO;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.map.MRUMap;
-import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.util.Answer;
@@ -34,12 +33,12 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
     }
 
     @Override
-    public void add(/*@NotNull*/ Remember r, NAR n) {
+    public void remember(/*@NotNull*/ Remember r) {
         Task u;
         Task t = r.input;
         synchronized (this) {
             u = merge(t, t, (prev, next) -> {
-                r.merge(prev, n);
+                r.merge(prev);
                 return next;
             });
         }

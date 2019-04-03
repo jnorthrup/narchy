@@ -18,7 +18,7 @@ class TermHashTest {
     @Test
     void testStructureIsVsHas() throws Narsese.NarseseException {
 
-        assertTrue(inh("a", "b").has(Op.ATOM));
+        assertTrue(inh("a", "b").hasAny(Op.ATOM));
         assertTrue(inh(p("a"), $("b"))
                 .hasAny(or(Op.ATOM, Op.PROD)));
 
@@ -28,9 +28,9 @@ class TermHashTest {
                 .op(), Op.PROD);
 
         assertSame(inh("a", "b").op(), INH);
-        assertTrue(inh("a", "b").has(INH));
-        assertTrue(inh("a", "b").has(Op.ATOM));
-        assertFalse(inh("a", "b").has(SIM));
+        assertTrue(inh("a", "b").hasAny(INH));
+        assertTrue(inh("a", "b").hasAny(Op.ATOM));
+        assertFalse(inh("a", "b").hasAny(SIM));
     }
 
     @Test

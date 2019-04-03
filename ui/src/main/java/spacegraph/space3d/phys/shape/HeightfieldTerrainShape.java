@@ -310,7 +310,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		localHalfExtents.sub(m_localAabbMax, m_localAabbMin);
 		VectorUtil.mul(localHalfExtents,localHalfExtents,m_localScaling);
 		
-		localHalfExtents.scale(0.5f);
+		localHalfExtents.scaled(0.5f);
 
 		v3 localOrigin = new v3();
 		localOrigin.set(0f,0f,0f);

@@ -51,7 +51,7 @@ public class Statement {
                 return predicate;
             if (subject == False)
                 return Null;
-            if (subject.has(IMPL))
+            if (subject.hasAny(IMPL))
                 return Null;
 
             //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input

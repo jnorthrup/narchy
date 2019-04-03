@@ -137,7 +137,7 @@ public class Wiring extends Dragging {
 
                         if (!ab.isEmpty() || !ba.isEmpty()) {
                             //wire with adapter
-                            PortAdapter adapter = new PortAdapter(aa, ab, bb, ba);
+                            PortAdapter adapter = new PortAdapter(aa, ba, bb, ab);
                             g.addUndecorated(adapter).pos(start.bounds.mean(end.bounds).scale(0.5f));
 
                             TypedPort ax = adapter.port(true);

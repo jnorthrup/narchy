@@ -119,8 +119,8 @@ public class PrismaticJoint extends Joint {
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
         v2 temp = pool.popVec2();
-        temp.set(m_axis).scaled(m_motorImpulse + m_impulse.z);
-        argOut.set(m_perp).scaled(m_impulse.x).added(temp).scaled(inv_dt);
+        temp.set(m_axis).scale(m_motorImpulse + m_impulse.z);
+        argOut.set(m_perp).scale(m_impulse.x).added(temp).scale(inv_dt);
         pool.pushVec2(1);
     }
 
@@ -425,12 +425,12 @@ public class PrismaticJoint extends Joint {
 
         if (data.step.warmStarting) {
 
-            m_impulse.scale(data.step.dtRatio);
+            m_impulse.scaled(data.step.dtRatio);
             m_motorImpulse *= data.step.dtRatio;
 
             final v2 P = pool.popVec2();
-            temp.set(m_axis).scaled(m_motorImpulse + m_impulse.z);
-            P.set(m_perp).scaled(m_impulse.x).added(temp);
+            temp.set(m_axis).scale(m_motorImpulse + m_impulse.z);
+            P.set(m_perp).scale(m_impulse.x).added(temp);
 
             float LA = m_impulse.x * m_s1 + m_impulse.y + (m_motorImpulse + m_impulse.z) * m_a1;
             float LB = m_impulse.x * m_s2 + m_impulse.y + (m_motorImpulse + m_impulse.z) * m_a2;
@@ -481,7 +481,7 @@ public class PrismaticJoint extends Joint {
             impulse = m_motorImpulse - oldImpulse;
 
             final v2 P = pool.popVec2();
-            P.set(m_axis).scaled(impulse);
+            P.set(m_axis).scale(impulse);
             float LA = impulse * m_a1;
             float LB = impulse * m_a2;
 
@@ -532,7 +532,7 @@ public class PrismaticJoint extends Joint {
             final v2 b = pool.popVec2();
             final v2 f2r = pool.popVec2();
 
-            temp.set(m_K.ez.x, m_K.ez.y).scaled(m_impulse.z - f1.z);
+            temp.set(m_K.ez.x, m_K.ez.y).scale(m_impulse.z - f1.z);
             b.set(Cdot1).negated().subbed(temp);
 
             m_K.solve22ToOut(b, f2r);
@@ -545,8 +545,8 @@ public class PrismaticJoint extends Joint {
             df.sub(f1);
 
             final v2 P = pool.popVec2();
-            temp.set(m_axis).scaled(df.z);
-            P.set(m_perp).scaled(df.x).added(temp);
+            temp.set(m_axis).scale(df.z);
+            P.set(m_perp).scale(df.x).added(temp);
 
             float LA = df.x * m_s1 + df.y + df.z * m_a1;
 
@@ -571,7 +571,7 @@ public class PrismaticJoint extends Joint {
             m_impulse.y += df.y;
 
             final v2 P = pool.popVec2();
-            P.set(m_perp).scaled(df.x);
+            P.set(m_perp).scale(df.x);
             float LA = df.x * m_s1 + df.y;
             float LB = df.x * m_s2 + df.y;
 

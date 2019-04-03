@@ -10,6 +10,7 @@ import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import jcog.TODO;
 import jcog.tree.rtree.rect.RectFloat;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.AspectAlign;
@@ -61,20 +62,20 @@ public class Tex {
     }
 
     void paint(GL2 gl, RectFloat bounds, float repeatScale, float alpha) {
-
-        commit(gl);
-
-        Texture t = this.texture;
-        if (t != null) {
-            Draw.rectTex(gl, t, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale, alpha, mipmap, inverted);
-        }
-
+        Texture t = commit(gl);
+        if (t != null)
+            Draw.rectTex(gl, t,
+                    bounds.x, bounds.y, bounds.w, bounds.h,
+                    0, repeatScale,
+                    alpha, mipmap,
+                    inverted);
     }
 
     /**
      * try to commit
      */
-    public Tex commit(GL2 gl) {
+    @Nullable
+    public Texture commit(GL2 gl) {
         if (profile == null)
             profile = gl.getGLProfile();
 
@@ -89,14 +90,14 @@ public class Tex {
             }
         }
 
-        return this;
+        return texture;
     }
 
     public boolean set(BufferedImage iimage) {
         if (iimage == null || profile == null)
             return false;
 
-        if (data == null/* || this.src != iimage*/) {
+        if (data == null || this.src != iimage) {
             DataBuffer b = iimage.getRaster().getDataBuffer();
             int W = iimage.getWidth(), H = iimage.getHeight();
             if (b instanceof DataBufferInt)

@@ -1,7 +1,6 @@
 package nars.table;
 
 import jcog.data.list.FasterList;
-import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.util.Answer;
@@ -33,22 +32,29 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     @Override
     public void match(Answer a) {
-        int triesBefore = a.ttl;
-        allSatisfyWith((t,aa) -> {
+        int triesEach = a.ttl;
+        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+            BeliefTable t = this.get(i);
+
             //TODO better TTL distribution system
-            aa.ttl = triesBefore; //restore for next
-            t.match(aa);
-            return aa.active();
-        }, a);
+            a.ttl = triesEach; //restore for next
+
+            t.match(a);
+
+            if (!a.active())
+                return;
+        }
     }
 
-    @Override
-    public void add(Remember r, NAR n) {
+    /** stops after the first table accepts it */
+    @Override public void remember(Remember r) {
 
-//        activateAll();
-
-        //stops if one of the tables accepts it
-        allSatisfyWith((t,N)->t.tryAdd(r,N), n);
+        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+            BeliefTable t = this.get(i);
+            t.remember(r);
+            if (!r.active())
+                return;
+        }
 
 //        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {
 //            if (eternal != EternalTable.EMPTY && !r.forgotten.isEmpty() &&
@@ -130,7 +136,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     public static final BeliefTables Empty = new BeliefTables() {
 
         @Override
-        public void add(Remember r, NAR n) {
+        public void remember(Remember r) {
 
         }
 

@@ -260,14 +260,14 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
     @Override
-    public final void add(Remember r, NAR nar) {
+    public final void remember(Remember r) {
         if (r.input.isEternal())
-            _add(r, nar);
+            _add(r);
         //else: ignore
     }
 
     /** lock begins as read */
-    private long reviseOrTryInsertion(Remember r, NAR nar, long lock) {
+    private long reviseOrTryInsertion(Remember r, long lock) {
         Object[] list = this.items;
 
         Task input = r.input;
@@ -279,6 +279,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Term inputTerm = input.term();
         float aProp = Float.NaN;
         final double ie = input.evi();
+
+        NAR nar = r.nar;
 
         for (Object _x : list) {
             if (_x == null)  break; //HACK
@@ -328,7 +330,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
                 yt = yt.dither(nar);
 
-                if (yt == null || (nt.equals(inputTerm) && ((yt.equalsIn(xt, nar) || yt.equalsIn(input.truth(), nar)))))
+                if (yt == null || (nt.equals(inputTerm) && ((yt.equalTruth(xt, nar) || yt.equalTruth(input.truth(), nar)))))
                     continue;
 
                 if (conclusion!=null) {
@@ -391,7 +393,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         return lock;
     }
 
-    private void _add(Remember r, NAR nar) {
+    private void _add(Remember r) {
 
         Task input = r.input, existing = null;
 
@@ -414,7 +416,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             }
 
             if (existing==null) {
-                l = reviseOrTryInsertion(r, nar, l);
+                l = reviseOrTryInsertion(r, l);
                 return;
             }
         } finally {
@@ -422,7 +424,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
 
         if (existing != null) {
-            r.merge(existing, nar);
+            r.merge(existing);
             return;
         }
 

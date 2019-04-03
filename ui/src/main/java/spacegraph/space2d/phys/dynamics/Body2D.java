@@ -770,7 +770,7 @@ public class Body2D extends Transform {
             f.getMassData(massData);
             mass += massData.mass;
 
-            temp.set(massData.center).scaled(massData.mass);
+            temp.set(massData.center).scale(massData.mass);
             localCenter.added(temp);
             m_I += massData.I;
         }
@@ -778,7 +778,7 @@ public class Body2D extends Transform {
 
         if (mass > 0.0f) {
             m_invMass = 1.0f / mass;
-            localCenter.scaled(m_invMass);
+            localCenter.scale(m_invMass);
         } else {
 
             mass = 1.0f;
@@ -1265,7 +1265,7 @@ public class Body2D extends Transform {
         this.set(sweep.a);
 
         Rot.mulToOutUnsafe(this, sweep.localCenter, pos);
-        pos.scaled(-1).added(sweep.c);
+        pos.scale(-1).added(sweep.c);
     }
 
     /**

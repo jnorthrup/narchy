@@ -42,10 +42,7 @@ public final class Answer {
 
     public final NAR nar;
 
-    /**
-     * specific term template
-     */
-    public Term term = null;
+    @Nullable private Term term = null;
 
     public final RankedN<Task> tasks;
     public TimeRangeFilter time;
@@ -197,7 +194,10 @@ public final class Answer {
         return r;
     }
 
-    public Answer template(Term template) {
+    public Answer template(@Nullable Term template) {
+        if (template!=null && !template.op().taskable)
+            throw new TaskException(template, "not Answerable");
+
         this.term = template;
         return this;
     }
@@ -595,4 +595,10 @@ public final class Answer {
         return this;
     }
 
+    /**
+     * term template
+     */
+    @Nullable public Term term() {
+        return term;
+    }
 }

@@ -207,7 +207,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
         v3 rayFrom = new v3(space.camPos);
         v3 rayForward = new v3(space.camFwd);
 
-        rayForward.scale(space.zFar);
+        rayForward.scaled(space.zFar);
 
 
         v3 vertical = new v3(space.camUp);
@@ -226,21 +226,21 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
         float aspect = hh / ww;
 
-        hor.scale(2f * space.zFar * tanfov);
-        vertical.scale(2f * space.zFar * tanfov);
+        hor.scaled(2f * space.zFar * tanfov);
+        vertical.scaled(2f * space.zFar * tanfov);
 
         if (aspect < 1f) {
-            hor.scale(1f / aspect);
+            hor.scaled(1f / aspect);
         } else {
-            vertical.scale(aspect);
+            vertical.scaled(aspect);
         }
 
         v3 rayToCenter = new v3();
         rayToCenter.add(rayFrom, rayForward);
         v3 dHor = new v3(hor);
-        dHor.scale(1f / ww);
+        dHor.scaled(1f / ww);
         v3 dVert = new v3(vertical);
-        dVert.scale(1f / hh);
+        dVert.scaled(1f / hh);
 
         v3 tmp1 = new v3();
         v3 tmp2 = new v3();

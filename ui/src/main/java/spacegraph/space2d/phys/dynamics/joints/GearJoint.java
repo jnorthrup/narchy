@@ -191,8 +191,8 @@ public class GearJoint extends Joint {
 
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
-        argOut.set(m_JvAC).scaled(m_impulse);
-        argOut.scaled(inv_dt);
+        argOut.set(m_JvAC).scale(m_impulse);
+        argOut.scale(inv_dt);
     }
 
     @Override
@@ -287,7 +287,7 @@ public class GearJoint extends Joint {
             Rot.mulToOutUnsafe(qD, m_localAxisD, u);
             Rot.mulToOutUnsafe(qD, temp.set(m_localAnchorD).subbed(m_lcD), rD);
             Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_lcB), rB);
-            m_JvBD.set(u).scaled(m_ratio);
+            m_JvBD.set(u).scale(m_ratio);
             m_JwD = m_ratio * v2.cross(rD, u);
             m_JwB = m_ratio * v2.cross(rB, u);
             m_mass += m_ratio * m_ratio * (m_mD + m_mB) + m_iD * m_JwD * m_JwD + m_iB * m_JwB * m_JwB;
@@ -453,7 +453,7 @@ public class GearJoint extends Joint {
             Rot.mulToOutUnsafe(qD, m_localAxisD, u);
             Rot.mulToOutUnsafe(qD, temp.set(m_localAnchorD).subbed(m_lcD), rD);
             Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_lcB), rB);
-            JvBD.set(u).scaled(m_ratio);
+            JvBD.set(u).scale(m_ratio);
             JwD = v2.cross(rD, u);
             JwB = v2.cross(rB, u);
             mass += m_ratio * m_ratio * (m_mD + m_mB) + m_iD * JwD * JwD + m_iB * JwB * JwB;

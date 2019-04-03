@@ -957,7 +957,7 @@ public class NAL5Test extends NALTest {
     void testConversionNeg() {
 
         test
-                .termVolMax(4)
+                .termVolMax(4).confMin(0.4f)
                 .input("(x ==> y)?")
                 .input("(--y ==> x).")
                 .mustBelieve(cycles, "(x ==> y).", 0.0f, 0.47f)
@@ -968,18 +968,17 @@ public class NAL5Test extends NALTest {
     @Test
     void testConversionNeg3() {
         test
-                .termVolMax(4)
+                .termVolMax(4).confMin(0.4f)
                 .input("(--x ==> y)?")
                 .input("(y ==> --x).")
-                .mustBelieve(cycles, "(--x ==> y).", 0f, 0.47f)
+                .mustBelieve(cycles, "(--x ==> y).", 1f, 0.47f)
         ;
     }
-
 
     @Test
     public void testImplSubj_Questioned() {
         test
-            .termVolMax(4)
+            .termVolMax(3)
             .input("(x ==> y)?")
             .mustQuestion(cycles, "x")
             .mustQuestion(cycles, "y")
@@ -988,7 +987,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     public void testImplSubj_and_ConditionsQuestioned_fwd() {
-        test.termVolMax(4)
+        test.termVolMax(3)
                 .ask("x")
                 .input("(x ==> y).")
                 .mustQuestion(cycles, "y")
@@ -996,7 +995,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     public void testImplSubj_and_ConditionsQuestioned_rev() {
-        test.termVolMax(4)
+        test.termVolMax(3)
                 .ask("y")
                 .input("(x ==> y).")
                 .mustQuestion(cycles, "x")
@@ -1005,7 +1004,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     public void testImplNegSubjQuestioned() {
-        test
+        test.termVolMax(4)
                 .input("(--x ==> y)?")
                 .mustQuestion(cycles, "x")
                 .mustQuestion(cycles, "y")

@@ -13,7 +13,6 @@
     (P ==> S),   (S ==> P),  task("?"), neq(S,P), hasBelief()   |-     (polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
     (--P ==> S), (S ==> P),  task("?"), neq(S,P), hasBelief()   |-     (polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
     (P ==> S),   (--S ==> P),  task("?"), neq(S,P), hasBelief() |-   --(polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
-    (--P ==> S), (--S ==> P),  task("?"), neq(S,P), hasBelief() |-   --(polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
 
 
 

@@ -629,10 +629,10 @@ public class OptimizedBvh implements Serializable {
 		v3 center = new v3();
 		for (i = startIndex; i < endIndex; i++) {
 			center.add(getAabbMax(i), getAabbMin(i));
-			center.scale(0.5f);
+			center.scaled(0.5f);
 			means.add(center);
 		}
-		means.scale(1f / numIndices);
+		means.scaled(1f / numIndices);
 
 		splitValue = VectorUtil.coord(means, splitAxis);
 
@@ -640,7 +640,7 @@ public class OptimizedBvh implements Serializable {
 		for (i = startIndex; i < endIndex; i++) {
 			
 			center.add(getAabbMax(i), getAabbMin(i));
-			center.scale(0.5f);
+			center.scaled(0.5f);
 
 			if (VectorUtil.coord(center, splitAxis) > splitValue) {
 				
@@ -683,21 +683,21 @@ public class OptimizedBvh implements Serializable {
 		v3 center = new v3();
 		for (i = startIndex; i < endIndex; i++) {
 			center.add(getAabbMax(i), getAabbMin(i));
-			center.scale(0.5f);
+			center.scaled(0.5f);
 			means.add(center);
 		}
-		means.scale(1f / numIndices);
+		means.scaled(1f / numIndices);
 
 		v3 diff2 = new v3();
 		for (i = startIndex; i < endIndex; i++) {
 			center.add(getAabbMax(i), getAabbMin(i));
-			center.scale(0.5f);
+			center.scaled(0.5f);
 			diff2.sub(center, means);
 			
 			VectorUtil.mul(diff2, diff2, diff2);
 			variance.add(diff2);
 		}
-		variance.scale(1f / ((float) numIndices - 1));
+		variance.scaled(1f / ((float) numIndices - 1));
 
 		return VectorUtil.maxAxis(variance);
 	}

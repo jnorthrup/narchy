@@ -65,12 +65,12 @@ public class StaticPlaneShape extends ConcaveShape {
 
 		v3 halfExtents = new v3();
 		halfExtents.sub(aabbMax, aabbMin);
-		halfExtents.scale(0.5f);
+		halfExtents.scaled(0.5f);
 
 		float radius = halfExtents.length();
 		v3 center = new v3();
 		center.add(aabbMax, aabbMin);
-		center.scale(0.5f);
+		center.scaled(0.5f);
 
 		
 

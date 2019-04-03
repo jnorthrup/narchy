@@ -133,7 +133,7 @@ public class DistanceConstraint extends TypedConstraint {
         float currDist = (float) Math.sqrt(del.dot(del));
 
         v3 ortho = del;
-        ortho.scale(1f / currDist);
+        ortho.scaled(1f / currDist);
 
 
         Matrix3f tmpMat1 = new Matrix3f(), tmpMat2 = new Matrix3f();

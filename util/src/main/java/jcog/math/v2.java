@@ -33,13 +33,16 @@ package jcog.math;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.signal.Tensor;
 import jcog.tree.rtree.Spatialization;
+
+import static java.lang.Float.NaN;
 
 /**
  * A generic 2-element tuple that is represented by single-precision
  * floating point x,y coordinates.
  */
-public class v2 implements java.io.Serializable, Cloneable {
+public class v2 implements java.io.Serializable, Cloneable, Tensor {
 
 
     /**
@@ -388,17 +391,17 @@ public class v2 implements java.io.Serializable, Cloneable {
     }
 
 
-    /**
-     * Sets the value of this tuple to the scalar multiplication
-     * of tuple t1.
-     *
-     * @param s  the scalar value
-     * @param t1 the source tuple
-     */
-    public final void scaled(float s, v2 t1) {
-        this.x = s * t1.x;
-        this.y = s * t1.y;
-    }
+//    /**
+//     * Sets the value of this tuple to the scalar multiplication
+//     * of tuple t1.
+//     *
+//     * @param s  the scalar value
+//     * @param t1 the source tuple
+//     */
+//    public final void scaled(float s, v2 t1) {
+//        this.x = s * t1.x;
+//        this.y = s * t1.y;
+//    }
 
 
     public static void crossToOut(v2 a, float s, v2 out) {
@@ -436,7 +439,7 @@ public class v2 implements java.io.Serializable, Cloneable {
      *
      * @param s the scalar value
      */
-    public v2 scaled(float s) {
+    public v2 scale(float s) {
         this.x *= s;
         this.y *= s;
         return this;
@@ -445,13 +448,13 @@ public class v2 implements java.io.Serializable, Cloneable {
     /**
      * multiplies each component
      */
-    public final v2 scaled(v2 z) {
+    public final v2 scale(v2 z) {
         this.x *= z.x;
         this.y *= z.y;
         return this;
     }
 
-    public final v2 scaled(float sx, float sy) {
+    public final v2 scale(float sx, float sy) {
         this.x *= sx;
         this.y *= sy;
         return this;
@@ -462,31 +465,31 @@ public class v2 implements java.io.Serializable, Cloneable {
         return target;
     }
 
-    /**
-     * Sets the value of this tuple to the scalar multiplication
-     * of tuple t1 and then adds tuple t2 (this = s*t1 + t2).
-     *
-     * @param s  the scalar value
-     * @param t1 the tuple to be multipled
-     * @param t2 the tuple to be added
-     */
-    public final void scaledAdded(float s, v2 t1, v2 t2) {
-        this.x = s * t1.x + t2.x;
-        this.y = s * t1.y + t2.y;
-    }
+//    /**
+//     * Sets the value of this tuple to the scalar multiplication
+//     * of tuple t1 and then adds tuple t2 (this = s*t1 + t2).
+//     *
+//     * @param s  the scalar value
+//     * @param t1 the tuple to be multipled
+//     * @param t2 the tuple to be added
+//     */
+//    public final void scaledAdded(float s, v2 t1, v2 t2) {
+//        this.x = s * t1.x + t2.x;
+//        this.y = s * t1.y + t2.y;
+//    }
 
 
-    /**
-     * Sets the value of this tuple to the scalar multiplication
-     * of itself and then adds tuple t1 (this = s*this + t1).
-     *
-     * @param s  the scalar value
-     * @param t1 the tuple to be added
-     */
-    public final void scaledAdded(float s, v2 t1) {
-        this.x = s * this.x + t1.x;
-        this.y = s * this.y + t1.y;
-    }
+//    /**
+//     * Sets the value of this tuple to the scalar multiplication
+//     * of itself and then adds tuple t1 (this = s*this + t1).
+//     *
+//     * @param s  the scalar value
+//     * @param t1 the tuple to be added
+//     */
+//    public final void scaledAdded(float s, v2 t1) {
+//        this.x = s * this.x + t1.x;
+//        this.y = s * this.y + t1.y;
+//    }
 
 
     /**
@@ -802,19 +805,19 @@ public class v2 implements java.io.Serializable, Cloneable {
         set(0, 0);
     }
 
-    public v2 add(v2 u) {
+    public v2 addClone(v2 u) {
         return new v2(x + u.x, y + u.y);
     }
 
-    public v2 sub(v2 u) {
+    public v2 subClone(v2 u) {
         return new v2(x - u.x, y - u.y);
     }
 
-    public v2 scale(float s) {
+    public v2 scaleClone(float s) {
         return new v2(x * s, y * s);
     }
 
-    public v2 scale(float sx, float sy) {
+    public v2 scaleClone(float sx, float sy) {
         return new v2(x * sx, y * sy);
     }
 
@@ -885,7 +888,7 @@ public class v2 implements java.io.Serializable, Cloneable {
             if (lenSq < rate * rate) {
                 set(nx, ny); //finished
             } else {
-                this.addLocal(new v2(dx, dy).scaled((float) (rate / Math.sqrt(lenSq))));
+                this.addLocal(new v2(dx, dy).scale((float) (rate / Math.sqrt(lenSq))));
             }
 
         }
@@ -894,8 +897,21 @@ public class v2 implements java.io.Serializable, Cloneable {
 
     }
 
-    public final v2 setNaN() {
-        set(Float.NaN, Float.NaN);
-        return this;
+    @Override
+    public final float getAt(int linearCell) {
+        switch(linearCell) {
+            case 0: return x;
+            case 1: return y;
+        }
+        throw new ArrayIndexOutOfBoundsException(linearCell);
+    }
+
+    @Override
+    public final int[] shape() {
+        return v2Shape;
+    }
+
+    public void setNaN() {
+        x = y = NaN;
     }
 }

@@ -434,9 +434,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                 b = shadow(b()).body;
 
             Bordering l = new Bordering<>(
-                    new PushButton("X").clicking((@Nullable Runnable) this::remove)
+                    new PushButton("X").clicked((@Nullable Runnable) this::remove)
             );
-            l.set(E, new PushButton("Tap").clicking(() -> {
+            l.set(E, new PushButton("Tap").clicked(() -> {
                 splice(new CopyPort());
             })); //as in wire-tap, aka splice
             l.set(S, new PushButton("Split"));
@@ -571,7 +571,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
             Body2D from = null;
 
-            v2 center = sourceCenterWorld().add(targetCenterWorld()).scale(0.5f);
+            v2 center = sourceCenterWorld().addClone(targetCenterWorld()).scaleClone(0.5f);
 
             int mid = num / 2;
             for (int i = 0; i < num; ++i) {
@@ -1068,7 +1068,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                             float r = circle.skinRadius;
                             v2 v = new v2();
                             body.getWorldPointToOut(circle.center, v);
-                            v.scale(scaling);
+                            v.scaleClone(scaling);
 
                             Draw.circle(gl, v, true, r * scaling, 9);
                             break;

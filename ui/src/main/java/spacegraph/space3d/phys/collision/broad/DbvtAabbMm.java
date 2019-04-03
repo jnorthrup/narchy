@@ -75,7 +75,7 @@ public class DbvtAabbMm {
 
 	public v3 center(v3 out) {
 		out.add(mi, mx);
-		out.scale(0.5f);
+		out.scaled(0.5f);
 		return out;
 	}
 	
@@ -86,7 +86,7 @@ public class DbvtAabbMm {
 
 	public v3 extents(v3 out) {
 		out.sub(mx, mi);
-		out.scale(0.5f);
+		out.scaled(0.5f);
 		return out;
 	}
 	

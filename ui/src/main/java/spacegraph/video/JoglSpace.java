@@ -104,7 +104,7 @@ abstract public class JoglSpace {
         fwd.normalize();
         camFwd.set(fwd);
 
-        fwd.scale(radius * 1.25f + zNear * 1.25f);
+        fwd.scaled(radius * 1.25f + zNear * 1.25f);
         camPos.sub(target, fwd);
 
     }

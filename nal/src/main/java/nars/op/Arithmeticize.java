@@ -65,7 +65,7 @@ public class Arithmeticize {
         @Override
         protected boolean filter(Term x) {
             return
-                    x.has(Op.INT) &&
+                    x.hasAny(Op.INT) &&
                             x.complexity() >= 3 &&
                             nar.termVolumeMax.intValue() >= x.volume() + 6 /* for && equals(x,y)) */;
         }
@@ -110,7 +110,7 @@ public class Arithmeticize {
 
 
     public static Term apply(Term x, @Nullable Anon anon, int volMax, boolean eternal, Random random) {
-        if (anon == null && !x.has(INT))
+        if (anon == null && !x.hasAny(INT))
             return null;
 
         int cdt = eternal ? DTERNAL : 0;
@@ -122,20 +122,20 @@ public class Arithmeticize {
 
         if (xxs == 1) {
             Term xxx = xx.iterator().next();
-            if (!xxx.has(INT))
+            if (!xxx.hasAny(INT))
                 return null;
             else
                 x = xxx;
         } else if (xxs > 1) {
             Term xxx = CONJ.the(cdt, xx);
-            if (!xxx.has(INT))
+            if (!xxx.hasAny(INT))
                 return null;
             else
                 x = xxx;
         }
 
         IntHashSet ints = new IntHashSet(4);
-        x.recurseTerms(t -> t.has(Op.INT), t -> {
+        x.recurseTerms(t -> t.hasAny(Op.INT), t -> {
             if (anon != null && t instanceof Anom) {
                 t = anon.get(t);
             }
@@ -287,7 +287,7 @@ public class Arithmeticize {
         @Override
         public Term apply(Term x, int cdt, @Nullable Anon anon) {
 
-            Term var = x.has(A.op()) ? A : $.v(A.op(), (byte) 1); //safe to use normalized var?
+            Term var = x.hasAny(A.op()) ? A : $.v(A.op(), (byte) 1); //safe to use normalized var?
 
             Term baseTerm = Int.the(base);
             if (anon != null)
@@ -343,7 +343,7 @@ public class Arithmeticize {
 
         @Override
         public @Nullable Term applyCompound(Compound c) {
-            if (c.has(Op.INT))
+            if (c.hasAny(Op.INT))
                 return super.applyCompound(c);
             else
                 return c;

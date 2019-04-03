@@ -664,7 +664,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                                 float lat_rel_vel = cp.lateralFrictionDir1.lengthSquared();
                                 if (lat_rel_vel > BulletGlobals.FLT_EPSILON)
                                 {
-                                    cp.lateralFrictionDir1.scale(1f / (float) Math.sqrt(lat_rel_vel));
+                                    cp.lateralFrictionDir1.scaled(1f / (float) Math.sqrt(lat_rel_vel));
                                     addFrictionConstraint(cp.lateralFrictionDir1, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
                                     cp.lateralFrictionDir2.cross(cp.lateralFrictionDir1, cp.normalWorldOnB);
                                     cp.lateralFrictionDir2.normalize(); 

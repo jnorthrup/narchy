@@ -97,7 +97,7 @@ public class TaskConcept extends NodeConcept  {
         Task ti = t.input;
         //if (ti!=null) {
             assert !Param.DEBUG_EXTRA || (ti.term().concept().equals(term));
-            table(ti.punc()).add(t, n);
+            table(ti.punc()).remember(t);
         //}
     }
 

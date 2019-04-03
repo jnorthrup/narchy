@@ -207,10 +207,10 @@ public class DbvtBroadphase extends Broadphase {
 			if (DbvtAabbMm.intersect(proxy.leaf.volume, aabb)) {/* Moving				*/
 				v3 delta = new v3();
 				delta.add(aabbMin, aabbMax);
-				delta.scale(0.5f);
+				delta.scaled(0.5f);
 				delta.sub(proxy.aabb.center(new v3()));
 				
-				delta.scale(predictedframes);
+				delta.scaled(predictedframes);
 				sets[0].update(proxy.leaf, aabb, delta, DBVT_BP_MARGIN);
 				
 				

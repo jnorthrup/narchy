@@ -804,8 +804,8 @@ public class Collision {
         assert (den > 0.0f);
 
         
-        P.set(A).scaled(u).added(temp.set(B).scaled(v));
-        P.scaled(1.0f / den);
+        P.set(A).scale(u).added(temp.set(B).scale(v));
+        P.scale(1.0f / den);
         d.set(Q).subbed(P);
         float dd = v2.dot(d, d);
         if (dd > radius * radius) {

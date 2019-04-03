@@ -41,7 +41,7 @@ class RTreeBeliefTableTest {
     private static Task add(BeliefTable r, Termed x, float freq, float conf, long start, long end, long evi, NAR n) {
         Task a = $.task(x.term(), BELIEF, freq, conf).time(start, start, end).evidence(evi).apply(n);
         a.pri(0.5f);
-        r.add(Remember.the(a, n), n);
+        r.remember(Remember.the(a, n));
         return a;
     }
 
@@ -140,7 +140,7 @@ class RTreeBeliefTableTest {
         assertEquals(1, r.size());
 
 
-        r.add(Remember.the(a, n), n);
+        r.remember(Remember.the(a, n));
         r.print(System.out);
         assertEquals(1, r.size());
 

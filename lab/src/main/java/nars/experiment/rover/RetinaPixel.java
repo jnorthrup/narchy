@@ -33,7 +33,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
         worldPosition = x.transform(v(localPosition));
 
         worldTarget = v(localDirection);
-        worldTarget.scale(rangeMax);
+        worldTarget.scaled(rangeMax);
         worldTarget.add(localPosition);
         x.transform(worldTarget);
 

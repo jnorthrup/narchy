@@ -92,7 +92,7 @@ class DynamicConjTest {
                     $.t(0.32f, 0.93f /*0.87f*/)
                     //$.t(0.00f, 0.90f)
                     //$.t(0.32f, 0.90f /*0.87f*/)
-                            .equalsIn(tNow, n), ()->"was " + tNow + " at " + now);
+                            .equalTruth(tNow, n), ()->"was " + tNow + " at " + now);
 
         }
         {
@@ -137,6 +137,8 @@ class DynamicConjTest {
     assertEquals(0, atZero.start());
 
         Task atOne = n.belief(xye, 1);
+        assertNotNull(atOne);
+
         Task atEte = n.belief(xye, ETERNAL);
 
 //        assertEquals(xx, atZero.target().toString());
@@ -165,7 +167,7 @@ class DynamicConjTest {
 
 
         Truth tt = n.belief($("(a:x && a:y)"), now).truth();
-        assertTrue($.t(0.32f, 0.93f).equalsIn(tt, n), () -> tt.toString());
+        assertTrue($.t(0.32f, 0.93f).equalTruth(tt, n), () -> tt.toString());
     }
 
     @Test
@@ -179,7 +181,7 @@ class DynamicConjTest {
         TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, a:x, a:y, a:z)"));
         Truth now = n.beliefTruth(cc, n.time());
         assertNotNull(now);
-        assertTrue($.t(1f, 0.73f).equalsIn(now, 0.1f), now + " truth at " + n.time());
+        assertTrue($.t(1f, 0.73f).equalTruth(now, 0.1f), now + " truth at " + n.time());
 
 
         {
@@ -400,17 +402,15 @@ class DynamicConjTest {
         n.believe($("z"), 2);
         n.time.dur(8);
 
-        {
-            Term xyz = $("(x && (y &&+2 z))");
-            Task t = n.answerBelief(xyz, 0);
-            assertNotNull(t);
-            assertEquals(1f, t.freq(), 0.05f);
-            assertEquals(0.81f, t.conf(), 0.4f);
-            assertEq("((y &&+2 z)&&x)", t.term());
-        }
+        Term xyz = $("(x && (y &&+2 z))");
+        Task t = n.answerBelief(xyz, 0);
+        assertNotNull(t);
+        assertEquals(1f, t.freq(), 0.05f);
+        assertEquals(0.81f, t.conf(), 0.4f);
+        assertEq("((y &&+2 z)&&x)", t.term());
     }
 
-    public static List<String> components(AbstractDynamicTruth model, Term xyz, long s, long e) {
+    static List<String> components(AbstractDynamicTruth model, Term xyz, long s, long e) {
         List<String> components = new FasterList();
         model.evalComponents(xyz,s, e,
                 (what,whenStart,whenEnd)->{
@@ -423,6 +423,31 @@ class DynamicConjTest {
         return components(ConjIntersection, xyz, s, e);
     }
 
+    @Test void testCoNegatedXternal() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.believe($("x"), 0, 0);
+        n.believe($("--x"), 2,2);
+        n.time.dur(2);
+
+        //try all combinations.  there is only one valid result
+        for (int i = 0; i < 8; i++) {
+            Task t = n.answerBelief($("(x &&+- --x)"), 0, 2);
+            assertNotNull(t);
+            switch(t.term().toString()) {
+                case "(x &&+2 (--,x))":
+                    assertEquals(1f, t.freq(), 0.05f);
+                    assertEquals(0.58f, t.conf(), 0.2f);
+                    break;
+                case "((--,x) &&+2 x)":
+                    assertEquals(0f, t.freq(), 0.05f);
+                    assertEquals(0.58f, t.conf(), 0.2f);
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
+
+    }
 
 //    @Test public void testDynamicIntersectionInvalidCommon() throws Narsese.NarseseException {
 //        //TODO

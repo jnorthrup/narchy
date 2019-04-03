@@ -23,7 +23,7 @@ class TruthletTaskTest {
                 Truthlet.impulse(1, 2, 1f, 0f, c2w(conf)), n)
         );
 
-        BeliefTable xb = n.truths(x, BELIEF);
+        BeliefTable xb = n.table(x, BELIEF);
         for (int i = -1; i < 5; i++) {
             Truth ti = xb.truth(i, n);
             assertEquals((i <= 0 || i >= 3) ? 0 : 1, ti.freq());
@@ -51,7 +51,7 @@ class TruthletTaskTest {
 
             n.input(new TruthletTask(x, BELIEF, t, n));
 
-            BeliefTable xb = n.truths(x, BELIEF);
+            BeliefTable xb = n.table(x, BELIEF);
             for (int i = -3; i < 7; i++) {
                 Truth ti = xb.truth(i, n);
                 if (i < 0 || i > 3) {

@@ -98,6 +98,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         yy.take(xx, priSharePct * factor, false, copyOrMove);
     }
 
+    public static Task negIf(Task answer, boolean negate) {
+        return negate ? Task.negated(answer) : answer;
+    }
+
     @Override
     default <X extends HyperRegion> Function<X, HyperRegion> mbrBuilder() {
         long s = start(), e = end();
@@ -231,7 +235,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         if (!o.taskable)
             return fail(t, "not taskable", safe);
 
-        if (t.has(Op.VAR_PATTERN))
+        if (t.hasAny(Op.VAR_PATTERN))
             return fail(t, "target has pattern variables", safe);
 
         if (!t.hasAny(Op.ATOM.bit | Op.INT.bit | Op.varBits))
@@ -245,7 +249,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         }
 
 
-        if ((punc == Op.GOAL || punc == Op.QUEST) && !!t.has(IMPL))
+        if ((punc == Op.GOAL || punc == Op.QUEST) && !!t.hasAny(IMPL))
             return fail(t, "Goal/Quest task target may not be Implication", safe);
 
         return !(t instanceof Compound) || validTaskCompound((Compound) t, safe);
@@ -472,7 +476,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
         Truth tt;
         if (t.isBeliefOrGoal()) {
-            tt = t.truth(start, end, n.dur());
+            tt = t.truth(start, end, 0); //0 dur
             if (tt == null || tt.evi() < eviMin)
                 return null;
 
@@ -483,7 +487,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
                 tt = ttd;
             }
 
-            tt = tt;
+            if (tt.evi() > t.evi()) {
+                throw new Truth.TruthException("inflation, %=", (tt.evi()-t.evi()) / (t.evi()));
+            }
         } else {
             tt = null;
         }
@@ -536,10 +542,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * creates negated proxy of a task
      */
     static Task negated(@Nullable Task t) {
-        if (t instanceof SpecialNegatedTermTask) {
+        if (t instanceof SpecialNegatedTermTask)
             return ((SpecialNegatedTermTask) t).task;
-        }
-        return new SpecialNegatedTermTask(t);
+        else
+            return new SpecialNegatedTermTask(t);
     }
 
 //    static Task eternalized(Task tx) {
@@ -970,7 +976,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     /**
      * computes the average frequency during the given interval
      */
-    float freq(long start, long end);
+    default float freq(long start, long end) {
+        return truth().freq();
+    }
 
 
     default boolean isBeliefOrGoal(boolean beliefOrGoal) {

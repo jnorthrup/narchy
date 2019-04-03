@@ -90,7 +90,7 @@ public abstract class Memory {
             }
         }
 
-        Term xt = _x.term().unneg();
+        Term xt = _x.term();
         if (!xt.op().conceptualizable) {
             if (Param.DEBUG)
                 throw new TermException("not conceptualizable", xt);

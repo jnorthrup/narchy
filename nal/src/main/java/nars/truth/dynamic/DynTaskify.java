@@ -3,6 +3,7 @@ package nars.truth.dynamic;
 import jcog.Paper;
 import jcog.TODO;
 import jcog.data.set.MetalLongSet;
+import jcog.math.LongInterval;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -12,6 +13,7 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.time.When;
 import nars.truth.Stamp;
 
 import java.util.Random;
@@ -48,7 +50,7 @@ public class DynTaskify extends TaskList {
 
         this.beliefOrGoal = beliefOrGoal;
 
-        Term template = a.term;
+        Term template = a.term();
         assert (template.op() != NEG);
 
         this.model = model;
@@ -66,11 +68,14 @@ public class DynTaskify extends TaskList {
         Op so = subTerm.op();
 
         boolean negated = so == Op.NEG;
-        if (!negated && !so.taskable)
+        if (negated) {
+            subTerm = subTerm.unneg();
+            so = subTerm.op();
+        }
+        if (!so.taskable)
             return false;
 
-        if (negated)
-            subTerm = subTerm.unneg();
+
 
         NAR nar = answer.nar;
 
@@ -93,8 +98,8 @@ public class DynTaskify extends TaskList {
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
         Task bt = //forceProjection ?
                 //table.answer(subStart, subEnd, subTerm, filter, nar);
-                table.match(subStart, subEnd, subTerm, filter, dur, nar);
-                //table.sample(subStart, subEnd, subTerm, filter, nar);
+                //table.match(subStart, subEnd, subTerm, filter, dur, nar);
+                table.sample(new When(subStart, subEnd, nar), subTerm, filter);
 
 
         if (bt == null || !model.acceptComponent(template(), bt.term(), bt))
@@ -216,6 +221,14 @@ public class DynTaskify extends TaskList {
     }
 
     public final Term template() {
-        return answer.term;
+        return answer.term();
+    }
+
+    /** excludes ETERNALs */
+    public long earliest() {
+        return minValue(t -> {
+            long ts = t.start();
+            return ts != LongInterval.ETERNAL ? ts : LongInterval.TIMELESS;
+        });
     }
 }

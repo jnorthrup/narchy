@@ -1,6 +1,5 @@
 package nars.table;
 
-import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.util.Answer;
@@ -51,7 +50,7 @@ public class EmptyBeliefTable implements BeliefTable {
 
 
     @Override
-    public void add(/*@NotNull*/ Remember r,  /*@NotNull*/ NAR nar) {
+    public void remember(/*@NotNull*/ Remember r  /*@NotNull*/) {
 
     }
 

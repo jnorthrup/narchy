@@ -261,7 +261,7 @@ public class BoxCollision {
 
 			v3 center = new v3();
 			center.add(max, min);
-			center.scale(0.5f);
+			center.scaled(0.5f);
 
 			v3 extends_ = new v3();
 			extends_.sub(max, center);
@@ -295,7 +295,7 @@ public class BoxCollision {
 
 			v3 center = new v3();
 			center.add(max, min);
-			center.scale(0.5f);
+			center.scaled(0.5f);
 
 			v3 extends_ = new v3();
 			extends_.sub(max, center);
@@ -352,7 +352,7 @@ public class BoxCollision {
 		 */
         void get_center_extend(v3 center, v3 extend) {
 			center.add(max, min);
-			center.scale(0.5f);
+			center.scaled(0.5f);
 
 			extend.sub(max, center);
 		}

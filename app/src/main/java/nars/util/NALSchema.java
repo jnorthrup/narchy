@@ -125,7 +125,7 @@ public class NALSchema {
             byte p = punc != 0 ?
                     punc 
                     :
-                    (point.has(VAR_QUERY) ? QUESTION : BELIEF);
+                    (point.hasAny(VAR_QUERY) ? QUESTION : BELIEF);
 
             @Nullable Truth truth = p==QUESTION || p == QUEST ? null :
                 $.t(1f, n.confDefault(p));
@@ -165,7 +165,7 @@ public class NALSchema {
     public static Function<Term[], Term> typed(Function<Term[], Term> pointGenerator, DataTable dataset) {
         return (x) -> {
             Term y = pointGenerator.apply(x);
-            if (y.has(Op.VAR_QUERY)) {
+            if (y.hasAny(Op.VAR_QUERY)) {
                 Set<Term> qVar = y.subterms().toSet(s -> s.op()==VAR_QUERY);
 
                 Term[] typing = qVar.stream().map(q -> {

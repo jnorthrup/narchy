@@ -117,10 +117,10 @@ import java.util.function.Function;
 public class ExtendedCastGraph extends CastGraph {
 
 
-    //<editor-fold defaultstate="collapsed" desc="Базовые типы">
-    //<editor-fold defaultstate="collapsed" desc="Числовые типы">
-    //<editor-fold defaultstate="collapsed" desc="числовые примитивы integer, byte, ... Integer, Byte, ...">
-    //<editor-fold defaultstate="collapsed" desc="integer - int">
+    //<ed_itor-fold defaultstate="collapsed" desc="Базовые типы">
+    //<ed_itor-fold defaultstate="collapsed" desc="Числовые типы">
+    //<ed_itor-fold defaultstate="collapsed" desc="числовые примитивы integer, byte, ... Integer, Byte, ...">
+    //<ed_itor-fold defaultstate="collapsed" desc="integer - int">
     public static final Function int2Integer = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -143,7 +143,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "integer2Int";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="Byte - byte">
+    //<ed_itor-fold defaultstate="collapsed" desc="Byte - byte">
     public static final Function byte2Byte = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -166,7 +166,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "Byte2byte";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="Short - short">
+    //<ed_itor-fold defaultstate="collapsed" desc="Short - short">
     public static final Function short2Short = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -189,7 +189,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "Short2short";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="Long - long">
+    //<ed_itor-fold defaultstate="collapsed" desc="Long - long">
     public static final Function long2Long = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -201,7 +201,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "long2Long";
         }
     };
-    //</editor-fold>
+    //</ed_itor-fold>
     public static final Function Long2long = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -213,7 +213,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "Long2long";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="Float - float">
+    //<ed_itor-fold defaultstate="collapsed" desc="Float - float">
     public static final Function float2Float = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -236,7 +236,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "Float2float";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="Double - double">
+    //<ed_itor-fold defaultstate="collapsed" desc="Double - double">
     public static final Function double2Double = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -259,9 +259,9 @@ public class ExtendedCastGraph extends CastGraph {
             return "Double2double";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="byte, short,int,... - Number">
-    //<editor-fold defaultstate="collapsed" desc="Number - Byte">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="byte, short,int,... - Number">
+    //<ed_itor-fold defaultstate="collapsed" desc="Number - Byte">
     public static final Function Byte2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -284,8 +284,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Number2Byte";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Number - Short">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Number - Short">
     public static final Function Short2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -308,8 +308,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Number2Short";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Number - Integer">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Number - Integer">
     public static final Function Integer2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -332,8 +332,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Number2Integer";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Number - Long">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Number - Long">
     public static final Function Long2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -356,8 +356,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Number2Long";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Number - Float">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Number - Float">
     public static final Function Float2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -380,9 +380,9 @@ public class ExtendedCastGraph extends CastGraph {
             return "Number2Float";
         }
     };
-    //</editor-fold>
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Number - Double">
+    //</ed_itor-fold>
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Number - Double">
     public static final Function Double2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -405,8 +405,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Number2Double";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Number - BigDecimal">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Number - BigDecimal">
     public static final Function BigDecimal2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -457,8 +457,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Number2BigDecimal";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Number - BigInteger">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Number - BigInteger">
     public static final Function BigInteger2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -508,8 +508,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Number2BigInteger";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="BigDecimal - BigInteger">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="BigDecimal - BigInteger">
     public static final Function BigInteger2BigDecimal = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -534,8 +534,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "BigDecimal2BigInteger";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Boolean - boolean">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Boolean - boolean">
     public static final Function boolean2Boolean = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -558,8 +558,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Boolean2boolean";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Boolean - String">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Boolean - String">
     public static final Function Boolean2String = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -585,9 +585,9 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2Boolean";
         }
     };
-    //</editor-fold>
-//</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Character - char">
+    //</ed_itor-fold>
+//</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Character - char">
     public static final Function char2Character = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -610,8 +610,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Character2char";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="char - int">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="char - int">
     public static final Function char2int = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -635,8 +635,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "int2char";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="char - string">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="char - string">
     public static final Function char2String = new MutableWeightedCaster(2) {
         @Override
         public Object apply(Object from) {
@@ -661,9 +661,9 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2char";
         }
     };
-    //</editor-fold>
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Integer - boolean">
+    //</ed_itor-fold>
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Integer - boolean">
     public static final Function Integer2Boolean = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -689,8 +689,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Boolean2Integer";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="Number - String">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="Number - String">
     public static final Function Number2String = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -702,8 +702,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "Number2String";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="parse string to number">
-    //<editor-fold defaultstate="collapsed" desc="String 2 Integer">
+    //<ed_itor-fold defaultstate="collapsed" desc="parse string to number">
+    //<ed_itor-fold defaultstate="collapsed" desc="String 2 Integer">
     public static final Function String2Integer = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -716,9 +716,9 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2Integer";
         }
     };
-    //</editor-fold>
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="String 2 int">
+    //</ed_itor-fold>
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="String 2 int">
     public static final Function String2int = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -731,7 +731,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2int";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="String 2 Long">
+    //<ed_itor-fold defaultstate="collapsed" desc="String 2 Long">
     public static final Function String2Long = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -744,9 +744,9 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2Long";
         }
     };
-    //</editor-fold>
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="String 2 long">
+    //</ed_itor-fold>
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="String 2 long">
     public static final Function String2long = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -759,7 +759,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2long";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="String 2 Double">
+    //<ed_itor-fold defaultstate="collapsed" desc="String 2 Double">
     public static final Function String2Double = new MutableWeightedCaster(2) {
         @Override
         public Object apply(Object from) {
@@ -772,9 +772,9 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2Double";
         }
     };
-    //</editor-fold>
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="String 2 Double">
+    //</ed_itor-fold>
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="String 2 Double">
     public static final Function String2double = new MutableWeightedCaster(2) {
         @Override
         public Object apply(Object from) {
@@ -787,7 +787,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2double";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="String 2 BigDecimal">
+    //<ed_itor-fold defaultstate="collapsed" desc="String 2 BigDecimal">
     public static final Function String2BigDecimal = new MutableWeightedCaster(2) {
         @Override
         public Object apply(Object from) {
@@ -800,8 +800,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2BigDecimal";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="char[] 2 String">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="char[] 2 String">
     public static final Function charArr2String = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -814,7 +814,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "charArr2String";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="Character[] 2 String">
+    //<ed_itor-fold defaultstate="collapsed" desc="Character[] 2 String">
     public static final Function CharArr2String = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -831,8 +831,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "CharArr2String";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="String 2 char[]">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="String 2 char[]">
     public static final Function String2charArr = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -847,8 +847,8 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2charArr";
         }
     };
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="String 2 Character[]">
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="String 2 Character[]">
     public static final Function String2CharArr = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -863,7 +863,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2CharArr";
         }
     };
-    //<editor-fold defaultstate="collapsed" desc="Clob 2 String">
+    //<ed_itor-fold defaultstate="collapsed" desc="Clob 2 String">
     public static final Function Clob2String = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -876,12 +876,12 @@ public class ExtendedCastGraph extends CastGraph {
             return "Clob2String";
         }
     };
-    //</editor-fold>
-    //</editor-fold>
+    //</ed_itor-fold>
+    //</ed_itor-fold>
 //
 //    // TODO use proj text
-//    //<editor-fold defaultstate="collapsed" desc="byte / char arrays">
-//    //<editor-fold defaultstate="collapsed" desc="String 2 byte[]">
+//    //<ed_itor-fold defaultstate="collapsed" desc="byte / char arrays">
+//    //<ed_itor-fold defaultstate="collapsed" desc="String 2 byte[]">
     public static final Function String2byteArr = new Function<String, byte[]>() {
         @Override
         public byte[] apply(String from) {
@@ -925,8 +925,8 @@ public class ExtendedCastGraph extends CastGraph {
 //            return dateFormats;
 //        }
 //    }
-    //</editor-fold>
-    //</editor-fold>
+    //</ed_itor-fold>
+    //</ed_itor-fold>
 
 //    public void setDateFormat(SimpleDateFormat[] df) {
 //        synchronized (this) {
@@ -934,9 +934,9 @@ public class ExtendedCastGraph extends CastGraph {
 //        }
 //    }
 
-    //</editor-fold>
+    //</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="NClob 2 String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="NClob 2 String">
 //    public static final Convertor NClob2String = new MutableWeightedCaster() {
 //        @Override
 //        public Object convert(Object from) {
@@ -945,10 +945,10 @@ public class ExtendedCastGraph extends CastGraph {
 //        }
 //        @Override public String toString(){ return "NClob2String"; }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="URL - String">
-//    //<editor-fold defaultstate="collapsed" desc="URL2String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="URL - String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="URL2String">
     public static final Function<URL, String> URL2String = new Function<>() {
         @Override
         public String apply(URL from) {
@@ -979,7 +979,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "String2URL";
         }
     };
-    //</editor-fold>
+    //</ed_itor-fold>
     public final Function Date2SqlDate = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -1003,7 +1003,7 @@ public class ExtendedCastGraph extends CastGraph {
             return "SqlDate2Date";
         }
     };
-    //</editor-fold>
+    //</ed_itor-fold>
     public final Function Date2SqlTime = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -1027,10 +1027,10 @@ public class ExtendedCastGraph extends CastGraph {
             return "SqlTime2Date";
         }
     };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //
 //    // TODO use proj text
-//    //<editor-fold defaultstate="collapsed" desc="byte[] 2 String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="byte[] 2 String">
 ////    public static final Convertor byteArr2String = new MutableWeightedCaster() {
 ////        @Override
 ////        public Object convert(Object from) {
@@ -1039,10 +1039,10 @@ public class ExtendedCastGraph extends CastGraph {
 ////        }
 ////        @Override public String toString(){ return "byteArr2String"; }
 ////    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //
 //    // TODO use proj text
-//    //<editor-fold defaultstate="collapsed" desc="Byte[] 2 String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="Byte[] 2 String">
 ////    public static final Convertor ByteArr2String = new MutableWeightedCaster() {
 ////        @Override
 ////        public Object convert(Object from) {
@@ -1051,10 +1051,10 @@ public class ExtendedCastGraph extends CastGraph {
 ////        }
 ////        @Override public String toString(){ return "ByteArr2String"; }
 ////    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //
 //    // TODO use proj text
-//    //<editor-fold defaultstate="collapsed" desc="String 2 Byte[]">
+//    //<ed_itor-fold defaultstate="collapsed" desc="String 2 Byte[]">
 ////    public static final Convertor String2ByteArr = new MutableWeightedCaster() {
 ////        @Override
 ////        public Object convert(Object from) {
@@ -1062,7 +1062,7 @@ public class ExtendedCastGraph extends CastGraph {
 ////        }
 ////        @Override public String toString(){ return "String2ByteArr"; }
 ////    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //    public final Function SqlTimestamp2Date = new MutableWeightedCaster() {
 //        @Override
 //        public Object apply(Object from) {
@@ -1074,7 +1074,7 @@ public class ExtendedCastGraph extends CastGraph {
 //            return "SqlTimestamp2Date";
 //        }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //    public final Function String2SqlDate = new MutableWeightedCaster() {
 //        @Override
 //        public Object apply(Object from) {
@@ -1090,7 +1090,7 @@ public class ExtendedCastGraph extends CastGraph {
 //            return "String2SqlDate";
 //        }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //    public final Function String2SqlTime = new MutableWeightedCaster() {
 //        @Override
 //        public Object apply(Object from) {
@@ -1105,7 +1105,7 @@ public class ExtendedCastGraph extends CastGraph {
 //            return "String2SqlTime";
 //        }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //    public final Function String2SqlTimestamp = new MutableWeightedCaster() {
 //        @Override
 //        public Object apply(Object from) {
@@ -1120,15 +1120,15 @@ public class ExtendedCastGraph extends CastGraph {
 //            return "String2SqlTimestamp";
 //        }
 //    };
-    //</editor-fold>
-//</editor-fold>
-    //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc="date and time">
-    //<editor-fold defaultstate="collapsed" desc="date string format">
+    //</ed_itor-fold>
+//</ed_itor-fold>
+    //</ed_itor-fold>
+    //<ed_itor-fold defaultstate="collapsed" desc="date and time">
+    //<ed_itor-fold defaultstate="collapsed" desc="date string format">
 //    private SimpleDateFormat[] dateFormats = new SimpleDateFormat[]{
 //            new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ")
 //    };
-//    //<editor-fold defaultstate="collapsed" desc="date time convertors">
+//    //<ed_itor-fold defaultstate="collapsed" desc="date time convertors">
 //    public final Function Date2String = new MutableWeightedCaster() {
 //        @Override
 //        public Object apply(Object from) {
@@ -1166,7 +1166,7 @@ public class ExtendedCastGraph extends CastGraph {
 //            return "String2Date";
 //        }
 //    };
-    //</editor-fold>
+    //</ed_itor-fold>
 
 //    /**
 //     * Конструктор копирования
@@ -1179,7 +1179,7 @@ public class ExtendedCastGraph extends CastGraph {
 //            this.dateFormats = src.dateFormats;
 //        }
 //    }
-    //</editor-fold>
+    //</ed_itor-fold>
     public final Function Date2SqlTimestamp = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
@@ -1369,6 +1369,9 @@ public class ExtendedCastGraph extends CastGraph {
         //add: generic Supplier<X> -> X -- requires generic argument processing
 
 
+        //single element vector/tensor
+        addEdge(Tensor.class, (Function<Tensor, Float>) (t) -> { if (t.volume()==1) return t.getAt(0); else return Float.NaN;}, Float.class);
+
         addEdge(Boolean.class, (Function<Boolean, Integer>) (i) -> i ? 1 : 0, Integer.class);
         addEdge(Number.class, (Function<Number, Boolean>) (i) -> i.intValue() > 0, Boolean.class);
 
@@ -1410,10 +1413,10 @@ public class ExtendedCastGraph extends CastGraph {
 
     }
 
-////</editor-fold>
+////</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="URI - String">
-//    //<editor-fold defaultstate="collapsed" desc="URI2String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="URI - String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="URI2String">
 //    public static final Convertor URI2String = new MutableWeightedCaster() {
 //        @Override
 //        public Object convert(Object from) {
@@ -1422,9 +1425,9 @@ public class ExtendedCastGraph extends CastGraph {
 //        }
 //        @Override public String toString(){ return "URI2String"; }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="String2URI">
+//    //<ed_itor-fold defaultstate="collapsed" desc="String2URI">
 //    public static final Convertor String2URI = new MutableWeightedCaster() {
 //        @Override
 //        public Object convert(Object from) {
@@ -1440,11 +1443,11 @@ public class ExtendedCastGraph extends CastGraph {
 //        }
 //        @Override public String toString(){ return "String2URI"; }
 //    };
-//    //</editor-fold>
-////</editor-fold>
+//    //</ed_itor-fold>
+////</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="java.io.File - String">
-//    //<editor-fold defaultstate="collapsed" desc="JavaIoFile2String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="java.io.File - String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="JavaIoFile2String">
 //    public static final Convertor JavaIoFile2String = new MutableWeightedCaster() {
 //        @Override
 //        public Object convert(Object from) {
@@ -1453,9 +1456,9 @@ public class ExtendedCastGraph extends CastGraph {
 //        }
 //        @Override public String toString(){ return "JavaIoFile2String"; }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="String2JavaIoFile">
+//    //<ed_itor-fold defaultstate="collapsed" desc="String2JavaIoFile">
 //    public static final Convertor String2JavaIoFile = new MutableWeightedCaster() {
 //        @Override
 //        public Object convert(Object from) {
@@ -1464,10 +1467,10 @@ public class ExtendedCastGraph extends CastGraph {
 //        }
 //        @Override public String toString(){ return "String2JavaIoFile"; }
 //    };
-//    //</editor-fold>
-//    //</editor-fold>
+//    //</ed_itor-fold>
+//    //</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="xyz.cofe.io.File String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="xyz.cofe.io.File String">
 //    public static final Convertor CofeIOFile2String = new MutableWeightedCaster(){
 //        @Override
 //        public Object convert(Object from) {
@@ -1518,9 +1521,9 @@ public class ExtendedCastGraph extends CastGraph {
 //            return file;
 //        }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="JavaIoFile2URI">
+//    //<ed_itor-fold defaultstate="collapsed" desc="JavaIoFile2URI">
 //    public final Convertor JavaIoFile2URI = new MutableWeightedCaster() {
 //        @Override
 //        public Object convert(Object from) {
@@ -1529,9 +1532,9 @@ public class ExtendedCastGraph extends CastGraph {
 //        }
 //        @Override public String toString(){ return "JavaIoFile2URI"; }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="JavaIoFile2URI">
+//    //<ed_itor-fold defaultstate="collapsed" desc="JavaIoFile2URI">
 //    public final Convertor JavaIoFile2URL = new MutableWeightedCaster() {
 //        @Override
 //        public Object convert(Object from) {
@@ -1547,9 +1550,9 @@ public class ExtendedCastGraph extends CastGraph {
 //        }
 //        @Override public String toString(){ return "JavaIoFile2URL"; }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="Charset2String">
+//    //<ed_itor-fold defaultstate="collapsed" desc="Charset2String">
 //    public final Convertor Charset2String = new MutableWeightedCaster() {
 //        @Override
 //        public Object convert(Object from) {
@@ -1558,9 +1561,9 @@ public class ExtendedCastGraph extends CastGraph {
 //        }
 //        @Override public String toString(){ return "Charset2String"; }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 //
-//    //<editor-fold defaultstate="collapsed" desc="String2Charset">
+//    //<ed_itor-fold defaultstate="collapsed" desc="String2Charset">
 //    public final Convertor String2Charset = new MutableWeightedCaster() {
 //        @Override
 //        public Object convert(Object from) {
@@ -1569,6 +1572,6 @@ public class ExtendedCastGraph extends CastGraph {
 //        }
 //        @Override public String toString(){ return "String2Charset"; }
 //    };
-//    //</editor-fold>
+//    //</ed_itor-fold>
 
 }

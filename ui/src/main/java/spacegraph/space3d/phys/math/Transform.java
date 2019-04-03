@@ -127,7 +127,7 @@ public final class Transform extends v3 {
 	
 	public Transform inverse() {
 		basis.transpose();
-		this.scale(-1f);
+		this.scaled(-1f);
 		basis.transform(this);
 		return this;
 	}
@@ -223,7 +223,7 @@ public final class Transform extends v3 {
 
 	public void setTransScale(float x, float y, float scale) {
 		set(x, y, 0);
-		scale(scale);
+		scaled(scale);
 	}
 
 }

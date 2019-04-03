@@ -335,7 +335,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         }
 
         @Override
-        public void add(Remember r, NAR nar) {
+        public void remember(Remember r) {
             if (r.input instanceof CuriosityTask) {
                 add(r.input);
                 r.remember(r.input);

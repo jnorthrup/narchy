@@ -14,11 +14,6 @@
 //    ((S ~ A) --> (S ~ B)), (B --> A), task("?") |- ((S~A) --> (S~B)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
 
-//union/intersection belief/goal to diff question/quest
-    (W --> (A&B)), A, --isVar(W), --is(B,"--") |- (W --> (A-B)), (Punctuation:Ask)
-     (W --> (A|B)), A, --isVar(W), --is(B,"--") |- (W --> (A-B)), (Punctuation:Ask)
-    ((A|B) --> W), A, --isVar(W), --is(B,"--") |- ((A~B) --> W), (Punctuation:Ask)
-     ((A&B) --> W), A, --isVar(W), --is(B,"--") |- ((A~B) --> W), (Punctuation:Ask)
 
         //(W --> (A|B)), W |- (W --> (A-B)), (Punctuation:Ask)
         //((A&B) --> W), W |- ((A~B) --> W), (Punctuation:Ask)

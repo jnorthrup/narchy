@@ -86,23 +86,23 @@ public class CachedUnitCompound extends UnitCompound implements The {
 
     @Override
     public int varPattern() {
-        return has(Op.VAR_PATTERN) ? sub().varPattern() : 0;
+        return hasAny(Op.VAR_PATTERN) ? sub().varPattern() : 0;
     }
 
     @Override
     public int varDep() {
-        return has(Op.VAR_DEP) ? sub().varDep() : 0;
+        return hasAny(Op.VAR_DEP) ? sub().varDep() : 0;
     }
 
     @Override
     public int varIndep() {
-        return has(Op.VAR_INDEP) ? sub().varIndep() : 0;
+        return hasAny(Op.VAR_INDEP) ? sub().varIndep() : 0;
 
     }
 
     @Override
     public int varQuery() {
-        return has(Op.VAR_QUERY) ? sub().varQuery() : 0;
+        return hasAny(Op.VAR_QUERY) ? sub().varQuery() : 0;
     }
 
     @Override
