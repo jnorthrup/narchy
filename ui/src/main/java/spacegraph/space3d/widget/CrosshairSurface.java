@@ -4,14 +4,14 @@ import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglWindow;
 
 /**
  * Created by me on 6/27/16.
  */
-public class CrosshairSurface extends Surface implements MouseListener {
+public class CrosshairSurface extends SimpleSurface implements MouseListener {
 
     private final JoglWindow space;
     private int mx;

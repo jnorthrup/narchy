@@ -15,7 +15,6 @@ import nars.agent.MetaAgent;
 import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
 import nars.concept.Concept;
-import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
@@ -24,7 +23,10 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineMemory;
-import nars.op.*;
+import nars.op.Arithmeticize;
+import nars.op.AutoencodedBitmap;
+import nars.op.Eternalizer;
+import nars.op.Introduction;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -48,7 +50,6 @@ import spacegraph.space2d.widget.text.LabeledPane;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -237,8 +238,8 @@ abstract public class NAgentX extends NAgent {
                         //CaffeineIndex.soft()
 
                         new CaffeineMemory(
-                                16*1024
-                            //64 * 1024
+                            //    16*1024
+                            64 * 1024
                     //96 * 1024
 //                                64 * 1024
 ////                                //32 * 1024
@@ -290,15 +291,15 @@ abstract public class NAgentX extends NAgent {
 //        );
 //        senseReward.timing = new ActionTiming(n);
 
-        a.nar().control.governor((cc)->{
-           final Random rng = n.random();
-           for (Cause c : cc) {
-               if (c==null) continue;
-               float v = c.value();
-               c.setValue(v + rng.nextFloat()*0.1f);
-
-           }
-        });
+//        a.nar().control.governor((cc)->{
+//           final Random rng = n.random();
+//           for (Cause c : cc) {
+//               if (c==null) continue;
+//               float v = c.value();
+//               c.setValue(v + rng.nextFloat()*0.1f);
+//
+//           }
+//        });
     }
     static void initPlugins3(NAR n, NAgent a) {
 
@@ -383,8 +384,8 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.005f);
         n.questPriDefault.set(0.005f);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.9f);
+        n.goalConfDefault.set(0.9f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 

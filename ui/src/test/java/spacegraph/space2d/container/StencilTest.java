@@ -3,11 +3,10 @@ package spacegraph.space2d.container;
 import com.jogamp.opengl.GL2;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.Surface;
 import spacegraph.video.Draw;
 
 /** https://gist.github.com/daltonks/4c2d1c5e6fd5017ea9f0 */
-public class StencilTest extends Surface {
+public class StencilTest extends SimpleSurface {
 
     public static void main(String[] args) {
         SpaceGraph.window(new StencilTest(), 800, 800);

@@ -12,10 +12,10 @@
 //    (S <-> P), (S --> P), task("?") |- (--,(S <-> P)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
 ////inheritance transform
-//    X, (S --> P), task("?"), in(X,P), neq(X,S) |- (X <-> substitute(X,P,S,strict)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
-//    X, (S --> P), task("?"), in(X,S), neq(X,P) |- (X <-> substitute(X,S,P,strict)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
-    //X, (S --> P), task("?"), in(X,P) |- substitute(X,P,S,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
-    //X, (S --> P), task("?"), in(X,S) |- substitute(X,S,P,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+//    X, (S --> P), task("?"), in(X,P), neq(X,S) |- (X <-> substitute(X,P,S,novel)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+//    X, (S --> P), task("?"), in(X,S), neq(X,P) |- (X <-> substitute(X,S,P,novel)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+    //X, (S --> P), task("?"), in(X,P) |- substitute(X,P,S,novel),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+    //X, (S --> P), task("?"), in(X,S) |- substitute(X,S,P,novel),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
 
     //(X --> Y), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (?1 --> Y),   (Punctuation:Question)
@@ -23,8 +23,8 @@
     //(Y --> X), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Question)
         //(Y --> X), Y, task("@"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Quest)
 
-    //(A --> X), (B --> X), task("?"), neq(A,B) |- unisubst((A --> X), A, B, strict),   (Belief:BeliefStructuralReduction, Punctuation:Belief)
-    //(X --> A), (X --> B), task("?"), neq(A,B) |- unisubst((X --> A), A, B, strict),   (Belief:BeliefStructuralReduction, Punctuation:Belief)
+    //(A --> X), (B --> X), task("?"), neq(A,B) |- unisubst((A --> X), A, B, novel),   (Belief:BeliefStructuralReduction, Punctuation:Belief)
+    //(X --> A), (X --> B), task("?"), neq(A,B) |- unisubst((X --> A), A, B, novel),   (Belief:BeliefStructuralReduction, Punctuation:Belief)
 
     //(X --> Y), (Z --> W), subOf(Y,Z), task(".") |- (X --> W),   (Punctuation:Question)
 

@@ -63,15 +63,7 @@ public enum TruthFunctions2 {
 //        return c >= minConf ? t(f, c) : null;
 //    }
 
-    @Nullable
-    public static Truth analogyNew(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
-        float c = Util.and(bf,
-                TruthFunctions.confCompose(a.conf(), bc)
-                //a.conf() * bc
-        );
-        return c >= minConf ? t(a.freq(), c) : null;
-    }
-//    @Nullable
+    //    @Nullable
 //    public static Truth deduction(Truth a, float bF, float bC, float minConf) {
 //
 //        float f;
@@ -161,11 +153,7 @@ public enum TruthFunctions2 {
 
     }
 
-    @Nullable
-    public static Truth analogy(Truth a, Truth b, float minConf) {
 
-        return analogyNew(a, b.freq(), b.conf(), minConf);
-    }
 
 
     //    /**
@@ -217,9 +205,9 @@ public enum TruthFunctions2 {
     }
 
     /**
-     * X, (  X ==> Y) |- Y
+     *   X, (  X ==> Y) |- Y
      * --X, (--X ==> Y) |- Y
-     * frequency determined by the impl
+     * frequency determined by the XimplY
      */
     public static Truth pre(Truth X, Truth XimplY, boolean weak, float minConf) {
         float c = confCompose(X, XimplY);
@@ -234,7 +222,7 @@ public enum TruthFunctions2 {
     }
 
     /**
-     * Y, (X ==>   Y) |- X
+     *   Y, (X ==>   Y) |- X
      * --Y, (X ==> --Y) |- X
      */
     public static Truth post(Truth Y, Truth XimplY, boolean strong, float minConf) {

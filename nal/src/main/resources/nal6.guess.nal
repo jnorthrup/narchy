@@ -26,13 +26,13 @@
 
 //      ex: ((f(x) && f($1)) ==> g($1))  |-   (f(x) ==> g(x))
 
-    ((&&,X,Y,A..*) ==> Z), X, neq(X,Y), --isVar(X), --isVar(Y)   |- unisubst(((&&,X,Y,A..*) ==> Z),X,Y,strict), (Belief:StructuralReduction)
-      ((&&,X,--Y,A..*) ==> Z), X, --isVar(X), --isVar(Y)   |- unisubst(((&&,X,--Y,A..*) ==> Z),X,Y,strict), (Belief:StructuralReduction)
-    (Z ==> (&&,X,Y,A..*)), X, neq(X,Y), --isVar(X), --isVar(Y)    |- unisubst((Z ==> (&&,X,Y,A..*)),X,Y,strict), (Belief:StructuralReduction)
-      (Z ==> (&&,X,--Y,A..*)), X, --isVar(X), --isVar(Y)    |- unisubst((Z ==> (&&,X,--Y,A..*)),X,Y,strict), (Belief:StructuralReduction)
+    ((&&,X,Y,A..*) ==> Z), X, neq(X,Y), --isVar(X), --isVar(Y)   |- unisubst(((&&,X,Y,A..*) ==> Z),X,Y,novel), (Belief:StructuralReduction)
+      ((&&,X,--Y,A..*) ==> Z), X, --isVar(X), --isVar(Y)   |- unisubst(((&&,X,--Y,A..*) ==> Z),X,Y,novel), (Belief:StructuralReduction)
+    (Z ==> (&&,X,Y,A..*)), X, neq(X,Y), --isVar(X), --isVar(Y)    |- unisubst((Z ==> (&&,X,Y,A..*)),X,Y,novel), (Belief:StructuralReduction)
+      (Z ==> (&&,X,--Y,A..*)), X, --isVar(X), --isVar(Y)    |- unisubst((Z ==> (&&,X,--Y,A..*)),X,Y,novel), (Belief:StructuralReduction)
 
-    (&&,X,Y,A..*), X, neq(X,Y), --isVar(X), --isVar(Y)       |- unisubst((&&,X,Y,A..*),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-      (&&,X,--Y,A..*), X, --isVar(X), --isVar(Y)   |- unisubst((&&,X,--Y,A..*),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (&&,X,Y,A..*), X, neq(X,Y), --isVar(X), --isVar(Y)       |- unisubst((&&,X,Y,A..*),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+      (&&,X,--Y,A..*), X, --isVar(X), --isVar(Y)   |- unisubst((&&,X,--Y,A..*),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
 
@@ -69,11 +69,11 @@
    //(&&,--B,A..+), B, task("?") |- (--,((&&,A..+) && --B)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
 ////composition on both sides of a statement  TODO - quests handling of these
-    //((A..+) --> Z), (X --> Y), task("?") |- ((A..+) --> substitute((A..+),X,Y,strict)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    //((A..+) --> Z), (X --> Y), task("?") |- ((A..+) --> substitute((A..+),X,Y,novel)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
         //contains(A..+,X),
-    //(Z --> (A..+)), (X --> Y), task("?") |- (substitute((A..+),X,Y,strict) --> (A..+)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    //(Z --> (A..+)), (X --> Y), task("?") |- (substitute((A..+),X,Y,novel) --> (A..+)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
-    //((A..+) <-> Z), (X <-> Y), task("?") |- ((A..+) <-> substitute((A..+),X,Y,strict)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    //((A..+) <-> Z), (X <-> Y), task("?") |- ((A..+) <-> substitute((A..+),X,Y,novel)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
         //this one needs reviewed, it might need to be subIfUnified, and other problems
 
 
@@ -85,4 +85,4 @@
 //    ((A&B) ==> X), X, task("?")  |- ((A~B) ==> X), (Punctuation:Question)
 //      (--(A&B) ==> X), X, task("?")  |- (--(A~B) ==> X), (Punctuation:Question)
 
-//    Z, (X==>Y), task("?"), neq(Y,Z) |- unisubst((X ==> Y), Y, Z, "$", strict), (Belief:BeliefStructuralReduction, Punctuation:Belief)
+//    Z, (X==>Y), task("?"), neq(Y,Z) |- unisubst((X ==> Y), Y, Z, "$", novel), (Belief:BeliefStructuralReduction, Punctuation:Belief)

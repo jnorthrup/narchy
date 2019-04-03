@@ -19,6 +19,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.container.grid.Gridding;
@@ -429,7 +430,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
         }
 
 
-        abstract protected class VisibleLinkSurface extends Surface {
+        abstract protected class VisibleLinkSurface extends SimpleSurface {
 
             abstract protected void paintLink(GL2 gl, ReSurface reSurface);
 

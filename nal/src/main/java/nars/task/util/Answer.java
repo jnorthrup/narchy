@@ -37,8 +37,8 @@ public final class Answer {
             Math.max(1, 2 * (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
             //3;
 
-    public static final int BELIEF_SAMPLE_CAPACITY = 4;
-    public static final int QUESTION_SAMPLE_CAPACITY = 4;
+    public static final int BELIEF_SAMPLE_CAPACITY = BELIEF_MATCH_CAPACITY/2;
+    public static final int QUESTION_SAMPLE_CAPACITY = 2;
 
     public final NAR nar;
 

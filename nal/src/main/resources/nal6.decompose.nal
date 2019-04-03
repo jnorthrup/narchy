@@ -49,7 +49,7 @@
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
     G, C, is(C,"&&")                  |-    conjBefore(C,  G),  (Goal:Desire)
     G, C, is(C,"&&"),  has(C,"--")    |-    conjBefore(C,--G),  (Goal:DesireN)
-            //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional restriction of anti-goal not present anywhere in the sequence
+            //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional renovelion of anti-goal not present anywhere in the sequence
 
     //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
     G, C, is(C,"&&"), has(C,"--")     |-              --conjBefore(C,--G),  (Goal:Desire)
@@ -135,22 +135,23 @@
 //  originally this only unified depvar (dep var elimination)
 
 //TODO merge these 4 rules into one, requires a variation on unisubst that can apply chooseUnifiableSubEvent in 2 ways
-C, Y, is(C,"&&"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",strict), (Belief:Analogy,Goal:Analogy)
-C, Y, is(C,"&&"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",strict), (Belief:AnalogyPN,Goal:AnalogyPN)
+C, Y, is(C,"&&"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogy)
+C, Y, is(C,"&&"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN)
+    //Goal: ?
 
-    (&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
-      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'strict'
+    //(&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
+      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'novel'
       //C, X, eventOf(C,X)    |- conjWithout(C,X), (Belief:AnonymousAnalogy)
-    (&&,--X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
-      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'strict'
+    //(&&,--X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
+      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'novel'
       //C, X, eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:AnonymousAnalogyPN)
 
-//    Y, (&&,X,A..+)                  |- unisubst((&&,  X,A..+),X,Y,"#",strict), (Belief:Deduction)
-//    Y, (&&,--X,A..+)                |- unisubst((&&,--X,A..+),X,Y,"#",strict), (Belief:DeductionN)
-//        Y, (&&,X,A..+), task("?")       |- unisubst((&&,  X,A..+),X,Y,"#",strict), (Punctuation:Question)
-//        Y, (&&,--X,A..+), task("?")     |- unisubst((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Question)
-//        Y, (&&,X,A..+), task("@")       |- unisubst((&&,  X,A..+),X,Y,"#",strict), (Punctuation:Quest)
-//        Y, (&&,--X,A..+), task("@")     |- unisubst((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Quest)
+//    Y, (&&,X,A..+)                  |- unisubst((&&,  X,A..+),X,Y,"#",novel), (Belief:Deduction)
+//    Y, (&&,--X,A..+)                |- unisubst((&&,--X,A..+),X,Y,"#",novel), (Belief:DeductionN)
+//        Y, (&&,X,A..+), task("?")       |- unisubst((&&,  X,A..+),X,Y,"#",novel), (Punctuation:Question)
+//        Y, (&&,--X,A..+), task("?")     |- unisubst((&&,--X,A..+),X,Y,"#",novel), (Punctuation:Question)
+//        Y, (&&,X,A..+), task("@")       |- unisubst((&&,  X,A..+),X,Y,"#",novel), (Punctuation:Quest)
+//        Y, (&&,--X,A..+), task("@")     |- unisubst((&&,--X,A..+),X,Y,"#",novel), (Punctuation:Quest)
 
 
           //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)

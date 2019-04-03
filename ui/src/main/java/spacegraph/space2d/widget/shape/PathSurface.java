@@ -5,13 +5,13 @@ import com.jogamp.opengl.GL2;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.util.Path2D;
 
 /**
  * rendered using GL LINE_STRIP / lineWidth
  */
-public class PathSurface extends Surface {
+public class PathSurface extends SimpleSurface {
 
     private final Path2D path;
 

@@ -23,8 +23,8 @@ class NAL7ImplTruthProjectionTest {
 
         /* eventTime, relative to impl belief */
         int ts = 2;
-        for (int implTime = 0; implTime < 5; implTime+= ts) {
-            for (int eventTime = 0; eventTime < 5; eventTime+= ts) {
+        for (int implTime = 0; implTime < 3; implTime+= ts) {
+            for (int eventTime = 0; eventTime < 3; eventTime+= ts) {
 
                 Term y = $.the("y");
 

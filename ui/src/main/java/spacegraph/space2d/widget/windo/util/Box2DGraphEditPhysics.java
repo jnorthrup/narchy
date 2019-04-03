@@ -14,6 +14,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.graph.Link;
 import spacegraph.space2d.phys.collision.AABB;
@@ -967,7 +968,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 //
 //    }
 
-    private class Dyn2DRenderer extends Surface {
+    private class Dyn2DRenderer extends SimpleSurface {
         final boolean drawJoints, drawBodies, drawParticles;
 
         Dyn2DRenderer(boolean drawJoints, boolean drawBodies, boolean drawParticles) {

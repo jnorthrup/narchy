@@ -193,6 +193,7 @@ public class Tex {
             JoglSpace s = r.space;
             if (s != null) {
                 if (texture != null) {
+                    //TODO if texure is shared, dont?
                     this.texture.destroy(s.gl());
                     this.texture = null;
                 }

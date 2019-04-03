@@ -33,7 +33,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
 //        super("unifiable", x, y, $.the(varBits), isStrict ? $.the("strict") : Op.EmptyProduct);
 
     Unifiable(byte[] xpInT, byte[] xpInB, byte[] ypInT, byte[] ypInB, int varBits, boolean isStrict) {
-        super($.func(UnifyPreFilter, $.intRadix(varBits, 2), UniSubst.STRICT.negIf(!isStrict),
+        super($.func(UnifyPreFilter, $.intRadix(varBits, 2), UniSubst.NOVEL.negIf(!isStrict),
                 PremiseRuleSource.pp(xpInT), PremiseRuleSource.pp(xpInB),
                 PremiseRuleSource.pp(ypInT), PremiseRuleSource.pp(ypInB)));
         this.xpInT = xpInT;
@@ -94,7 +94,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
 
                     int varBits = (a.contains(UniSubst.DEP_VAR)) ? VAR_DEP.bit : (VAR_INDEP.bit | VAR_DEP.bit);
 
-                    boolean strict = a.contains(UniSubst.STRICT);
+                    boolean strict = a.contains(UniSubst.NOVEL);
 
                     tryAdd(x, y,
                             p.taskPattern, p.beliefPattern,

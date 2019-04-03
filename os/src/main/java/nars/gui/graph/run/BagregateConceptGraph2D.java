@@ -12,7 +12,7 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 
 public class BagregateConceptGraph2D extends ConceptGraph2D {
 
-    private final Bagregate<Term> bag;
+    private final Bagregate<? extends Term> bag;
 
     public final IntRange maxNodes = new IntRange(256, 1, 512) {
         @Override
@@ -27,9 +27,12 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
     }
 
     public static Surface get(Attention attn, NAR n) {
-        Bagregate<Term> b = new Bagregate(() -> attn.concepts().iterator(), 256);
+        Bagregate<Term> b = new Bagregate<Term>(() -> attn.terms().iterator(), 256);
 
-        return DurSurface.get(new nars.gui.graph.run.BagregateConceptGraph2D(b, n).widget(), n, b::commit);
+        return DurSurface.get(
+                new nars.gui.graph.run.BagregateConceptGraph2D(b, n).widget(),
+                n, b::commit)
+                    .layoutAnimated();
 //        return new nars.gui.graph.run.BagregateConceptGraph2D(b, n) {
 //            private DurService updater;
 //
@@ -51,7 +54,7 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
 //        };
     }
 
-    private BagregateConceptGraph2D(Bagregate<Term> bag, NAR n) {
+    private BagregateConceptGraph2D(Bagregate<? extends Term> bag, NAR n) {
         super(bag.iterable(), n);
         this.bag = bag;
     }

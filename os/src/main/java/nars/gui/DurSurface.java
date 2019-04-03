@@ -3,8 +3,9 @@ package nars.gui;
 import jcog.event.Off;
 import nars.NAR;
 import nars.time.event.DurService;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.meta.AbstractTriggeredSurface;
+import spacegraph.space2d.widget.meta.AbstractCachedSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.util.function.Consumer;
@@ -14,13 +15,14 @@ import java.util.function.Consumer;
  * automatically attaches update handler on start (ex: added to graph) and
  * removes on stop (ex: removal from graph)
  */
-abstract public class DurSurface<S extends Surface> extends AbstractTriggeredSurface<S> {
+abstract public class DurSurface<S extends Surface> extends AbstractCachedSurface<S> {
 
     public static final double minUpdateTimeSeconds = 1 / 30.0; /* 30fps */
 
     protected final NAR nar;
     DurService on;
     final long minUpdateTimeNS;
+    private boolean autolayout;
 
     @Deprecated protected DurSurface(S x, NAR nar) {
         this(x, nar, minUpdateTimeSeconds);
@@ -103,4 +105,19 @@ abstract public class DurSurface<S extends Surface> extends AbstractTriggeredSur
         return get(narConsumer, n, (Consumer<NAR>)narConsumer);
     }
 
+    public DurSurface layoutAnimated() {
+        //if caching, during pre-render step if not invalid, then only call .layout()
+        autolayout = true;
+        return this;
+    }
+
+    @Override
+    protected boolean preRender(ReSurface r) {
+        if (super.preRender(r)) {
+            if (autolayout && cache)
+                layout();
+            return true;
+        }
+        return false;
+    }
 }

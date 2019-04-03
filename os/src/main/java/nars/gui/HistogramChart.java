@@ -3,7 +3,7 @@ package nars.gui;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.util.math.Color3f;
 import spacegraph.video.Draw;
 
@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 /**
  * Created by me on 9/2/16.
  */
-public class HistogramChart extends Surface {
+public class HistogramChart extends SimpleSurface {
 
 
     private final Supplier<float[]> data;

@@ -67,9 +67,9 @@ public class BitmapLabel extends AbstractLabel {
     }
 
     @Override
-    protected void compileChildren(ReSurface r) {
+    protected void renderChildren(ReSurface r) {
         view.pos(bounds);
-        view.rerender(r);
+        view.tryRender(r);
     }
 
     @Override

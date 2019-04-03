@@ -83,20 +83,16 @@ abstract public class Container extends Surface {
 
             r.on(this::paintIt); //TODO if transparent this doesnt need rendered
 
-            compileChildren(r);
+            renderChildren(r);
 
         }
 
     }
 
-    protected void compileChildren(ReSurface r) {
-        forEach(c -> c.rerender(r));
+    protected void renderChildren(ReSurface r) {
+        forEach(c -> c.tryRender(r));
     }
 
-    @Override
-    protected void paint(GL2 gl, ReSurface reSurface) {
-
-    }
 
     protected boolean preRender(ReSurface r) {
         return true;

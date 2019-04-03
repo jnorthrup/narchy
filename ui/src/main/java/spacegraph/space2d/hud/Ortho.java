@@ -102,7 +102,7 @@ public class Ortho<S extends Surface> extends MutableUnitContainer implements Wi
             gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
         });
 
-        the().rerender(render);
+        the().tryRender(render);
 
         render.on((gl)->{
            gl.glPopMatrix();

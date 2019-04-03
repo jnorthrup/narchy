@@ -18,22 +18,22 @@
 //    Y, (&&,X,A..+), neq(X,Y) |- unisubst((&&,A..+),X,Y), (Belief:Deduction)
 //        Y, (&&,--X,A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y), (Belief:DeductionN)
 
-//    (Y --> P), (&&,(X-->P),A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y,strict), (Belief:Deduction)
-//        (Y --> P), (&&,--(X-->P),A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y,strict), (Belief:DeductionN)
+//    (Y --> P), (&&,(X-->P),A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y,novel), (Belief:Deduction)
+//        (Y --> P), (&&,--(X-->P),A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y,novel), (Belief:DeductionN)
 
 
-    //(Y --> P), (&&,(X-->P),A..+),neq(X,Y) |- unisubst((&&,(X-->P),A..+), X,Y,strict), (Belief:Deduction)
-        //(Y --> P), (&&,--(X-->P),A..+),neq(X,Y) |- unisubst((&&,--(X-->P),A..+), X,Y,strict), (Belief:DeductionN)
-      //(P --> Y), (&&,(P-->X),A..+),neq(X,Y) |- unisubst((&&,(P-->X),A..+), X,Y,strict), (Belief:Deduction)
-        //  (P --> Y), (&&,--(P-->X),A..+),neq(X,Y) |- unisubst((&&,--(P-->X),A..+), X,Y,strict), (Belief:DeductionN)
+    //(Y --> P), (&&,(X-->P),A..+),neq(X,Y) |- unisubst((&&,(X-->P),A..+), X,Y,novel), (Belief:Deduction)
+        //(Y --> P), (&&,--(X-->P),A..+),neq(X,Y) |- unisubst((&&,--(X-->P),A..+), X,Y,novel), (Belief:DeductionN)
+      //(P --> Y), (&&,(P-->X),A..+),neq(X,Y) |- unisubst((&&,(P-->X),A..+), X,Y,novel), (Belief:Deduction)
+        //  (P --> Y), (&&,--(P-->X),A..+),neq(X,Y) |- unisubst((&&,--(P-->X),A..+), X,Y,novel), (Belief:DeductionN)
 
-//      Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
-      //(P --> Y), ((&&,(P-->X),A..+) ==> Z),neq(X,Y) |- unisubst(((&&,(P-->X),A..+) ==> Z), X,Y,strict), (Belief:Deduction)
-          //(P --> Y), ((&&,--(P-->X),A..+) ==> Z),neq(X,Y) |- unisubst(((&&,--(P-->X),A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
+//      Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,novel), (Belief:Deduction)
+      //(P --> Y), ((&&,(P-->X),A..+) ==> Z),neq(X,Y) |- unisubst(((&&,(P-->X),A..+) ==> Z), X,Y,novel), (Belief:Deduction)
+          //(P --> Y), ((&&,--(P-->X),A..+) ==> Z),neq(X,Y) |- unisubst(((&&,--(P-->X),A..+) ==> Z), X,Y,novel), (Belief:DeductionN)
 
-//      Y, (Z ==> (&&,X,A..+)),neq(X,Y) |- unisubst((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Deduction)
-      //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,(P-->X),A..+)), X,Y,strict), (Belief:Deduction)
-        //(P --> Y), (Z ==> (&&,--(P-->X),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,--(P-->X),A..+)), X,Y,strict), (Belief:DeductionN)
+//      Y, (Z ==> (&&,X,A..+)),neq(X,Y) |- unisubst((Z ==> (&&,X,A..+)), X,Y,novel), (Belief:Deduction)
+      //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,(P-->X),A..+)), X,Y,novel), (Belief:Deduction)
+        //(P --> Y), (Z ==> (&&,--(P-->X),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,--(P-->X),A..+)), X,Y,novel), (Belief:DeductionN)
 
 
 //conditional abduction by dependent variable

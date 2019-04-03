@@ -114,10 +114,6 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         return id;
     }
 
-    @Deprecated
-    protected void paint(GL2 gl, ReSurface reSurface) {
-
-    }
 
     public <S extends Surface> S pos(MutableRectFloat next) {
         //TODO equality test?
@@ -264,7 +260,7 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
     /**
      * prepares the rendering procedures in the rendering context
      */
-    public final void rerender(ReSurface r) {
+    public final void tryRender(ReSurface r) {
         if (!showing) {
             if (!(showing = (visible() && (!clipBounds || r.isVisible(bounds)))))
                 return;
@@ -274,7 +270,7 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
     }
 
     protected void render(ReSurface r) {
-        r.on(this::paint);
+
     }
 
 

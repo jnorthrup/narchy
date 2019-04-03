@@ -621,13 +621,7 @@ public class TestNAR {
 
 
     public TestNAR believe(String termString, float freq, float conf) {
-        try {
-            nar.believe(termString, freq, conf);
-        } catch (Narsese.NarseseException e) {
-            e.printStackTrace();
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        nar.believe(termString, freq, conf);
         return this;
     }
 

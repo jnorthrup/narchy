@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class NAL6DecomposeTest extends NALTest {
     private static final int cycles = 350;
@@ -43,6 +44,7 @@ public class NAL6DecomposeTest extends NALTest {
             PreciseTruth tA = $.t(fA, c);
             PreciseTruth tAB = $.t(fAB, c);
             Truth tAB_decompose_tA = TruthFunctions.decompose(tA, tAB, true, true, true, 0);
+            assertNotNull(tAB_decompose_tA);
             System.out.println(tAB + " <= " + tA + " * " + tAB_decompose_tA);
 
             assertEquals(fB, tAB_decompose_tA.freq(), 0.01f);

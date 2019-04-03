@@ -59,7 +59,7 @@ public class ReSurface {
     public void record(Surface compiled, List<BiConsumer<GL2, ReSurface>> buffer) {
 
         int before = main.size();
-        compiled.rerender(this);
+        compiled.tryRender(this);
         int after = main.size();
 
         buffer.clear();

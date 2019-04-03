@@ -8,6 +8,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.shape.VerletSurface;
@@ -24,7 +25,7 @@ import java.util.Random;
 
 class VerletSurfaceTest {
 
-    public static class AttractTest2D extends Surface implements Animated {
+    public static class AttractTest2D extends SimpleSurface implements Animated {
 
         final int W = 800;
 

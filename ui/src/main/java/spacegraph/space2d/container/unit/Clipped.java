@@ -13,13 +13,13 @@ public class Clipped extends UnitContainer {
 
 
     @Override
-    protected void compileChildren(ReSurface r) {
+    protected void renderChildren(ReSurface r) {
         r.on((gl, rr)->{
             Draw.stencilStart(gl);
             Draw.rect(bounds, gl);
             Draw.stencilUse(gl, true);
         });
-        super.compileChildren(r);
+        super.renderChildren(r);
         r.on(Draw::stencilEnd);
     }
 

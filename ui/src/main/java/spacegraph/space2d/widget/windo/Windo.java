@@ -247,8 +247,8 @@ public class Windo extends MutableUnitContainer {
     }
 
     @Override
-    protected void compileChildren(ReSurface r) {
-        super.compileChildren(r);
+    protected void renderChildren(ReSurface r) {
+        super.renderChildren(r);
         r.on(this::postpaint);
     }
 

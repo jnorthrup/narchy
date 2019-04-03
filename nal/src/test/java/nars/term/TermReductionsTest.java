@@ -135,20 +135,6 @@ public class TermReductionsTest extends NarseseTest {
     }
 
 
-    @Test
-    void testSimilarityNegatedSubtermsDoubleNeg() {
-        assertEq("((--,(P))<->(--,(Q)))", "((--,(P))<->(--,(Q)))");
-        /*
-        <patham9> <-> is a relation in meaning not in truth
-        <patham9> so negation can't enforce any equivalence here
-        */
-    }
-
-    @Test
-    void testSimilarityNegatedSubterms() {
-        assertEq("((--,(Q))<->(P))", "((P)<->(--,(Q)))");
-        assertEq("((--,(P))<->(Q))", "((--,(P))<->(Q))");
-    }
 
 
     @Test
@@ -403,35 +389,53 @@ public class TermReductionsTest extends NarseseTest {
         assertEq(Null, "((x=|>y)-->(x ==>-10 y))");
     }
 
-    @Test
-    void testAllowInhNegationStatements() throws Narsese.NarseseException {
-        assertEq(Bool.True, "(a-->a)");
 
-        assertEq("((--,a)-->b)", "((--,a) --> b)");
-        assertNotEquals("(a-->b)", $("((--,a) --> b)").toString());
-        assertEq("(b-->(--,a))", "(b --> (--,a))");
-        assertNotEquals("(a-->b)", $("(b --> (--,a))").toString());
-        assertEq("((--,a)-->(--,b))", "(--a --> --b)");
+    @Disabled static class StructuralMobius {
+        @Test
+        void testAllowSimNegationStatements() throws Narsese.NarseseException {
+            assertEq(Bool.True, "(a<->a)");
 
-        assertEq(Null /*"((--,a)-->a)"*/, "((--,a)-->a)");
-        assertEq(Null /*"(a-->(--,a))"*/, "(a-->(--,a))");
+            assertNotEquals($("(--a <-> b)"), $("(a <-> --b)"));
 
-    }
-
-    @Test
-    void testAllowSimNegationStatements() throws Narsese.NarseseException {
-        assertEq(Bool.True, "(a<->a)");
-
-        assertNotEquals($("(--a <-> b)"), $("(a <-> --b)"));
-
-        assertEq("((--,a)<->b)", "((--,a) <-> b)");
-        assertNotEquals("(a<->b)", $("((--,a) <-> b)").toString());
-        assertEq("((--,a)<->b)", "(b <-> (--,a))");
-        assertNotEquals("(a<->b)", $("(b <-> (--,a))").toString());
-        assertEq("((--,a)<->(--,b))", "(--a <-> --b)");
+            assertEq("((--,a)<->b)", "((--,a) <-> b)");
+            assertNotEquals("(a<->b)", $("((--,a) <-> b)").toString());
+            assertEq("((--,a)<->b)", "(b <-> (--,a))");
+            assertNotEquals("(a<->b)", $("(b <-> (--,a))").toString());
+            assertEq("((--,a)<->(--,b))", "(--a <-> --b)");
 
 //        assertEq("((--,a)<->a)", "((--,a)<->a)");
 
+        }
+
+        @Test
+        void testAllowInhNegationStatements() throws Narsese.NarseseException {
+            assertEq(Bool.True, "(a-->a)");
+
+            assertEq("((--,a)-->b)", "((--,a) --> b)");
+            assertNotEquals("(a-->b)", $("((--,a) --> b)").toString());
+            assertEq("(b-->(--,a))", "(b --> (--,a))");
+            assertNotEquals("(a-->b)", $("(b --> (--,a))").toString());
+            assertEq("((--,a)-->(--,b))", "(--a --> --b)");
+
+            assertEq(Null /*"((--,a)-->a)"*/, "((--,a)-->a)");
+            assertEq(Null /*"(a-->(--,a))"*/, "(a-->(--,a))");
+
+        }
+
+        @Test
+        void testSimilarityNegatedSubtermsDoubleNeg() {
+            assertEq("((--,(P))<->(--,(Q)))", "((--,(P))<->(--,(Q)))");
+        /*
+        <patham9> <-> is a relation in meaning not in truth
+        <patham9> so negation can't enforce any equivalence here
+        */
+        }
+
+        @Test
+        void testSimilarityNegatedSubterms() {
+            assertEq("((--,(Q))<->(P))", "((P)<->(--,(Q)))");
+            assertEq("((--,(P))<->(Q))", "((--,(P))<->(Q))");
+        }
     }
 
 

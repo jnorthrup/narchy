@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.exe.Loop;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.video.Draw;
 
 import java.util.Arrays;
@@ -370,7 +370,7 @@ public class CodiCA extends CA {
 //        }
 //    }
 
-    public static class CodiSurface extends Surface {
+    public static class CodiSurface extends SimpleSurface {
 
         private final CodiCA c;
 

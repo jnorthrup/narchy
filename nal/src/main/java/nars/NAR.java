@@ -447,21 +447,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return Tense.getRelativeOccurrence(tense, this);
     }
 
-    public NAR believe(String termString, float freq, float conf) throws NarseseException {
+    public NAR believe(String termString, float freq, float conf)  {
         return believe(termString, freq, conf, ETERNAL, ETERNAL);
     }
 
-    public NAR believe(String termString, float freq, float conf, long start, long end) throws NarseseException {
-        believe($(termString), start, end, freq, conf);
+    public NAR believe(String termString, float freq, float conf, long start, long end)  {
+        believe($$(termString), start, end, freq, conf);
         return this;
     }
 
     public Task want(String termString) {
-        try {
-            return want($(termString), true);
-        } catch (NarseseException e) {
-            throw new RuntimeException(e);
-        }
+        return want($$(termString), true);
     }
 
     public NAR believe(String... tt) throws NarseseException {

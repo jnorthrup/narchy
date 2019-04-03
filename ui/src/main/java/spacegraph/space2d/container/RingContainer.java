@@ -90,13 +90,16 @@ public abstract class RingContainer<X extends Surface> extends Surface {
     public void t(int t) {
         this.T.set(t);
     }
+
+
     @Override
     protected void render(ReSurface r) {
         super.render(r);
         forEach((z, b)->{
             z.pos(b);
-            z.rerender(r);
+            z.tryRender(r);
         });
     }
+
 
 }

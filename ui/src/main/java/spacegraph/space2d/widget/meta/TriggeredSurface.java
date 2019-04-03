@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 
 /** abstract update triggered */
-public class TriggeredSurface<X extends Surface> extends AbstractTriggeredSurface<X> {
+public class TriggeredSurface<X extends Surface> extends AbstractCachedSurface<X> {
 
     private final Function<Runnable, Off> trigger;
     private final Consumer<X> update;

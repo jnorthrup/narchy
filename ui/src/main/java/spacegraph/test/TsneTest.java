@@ -10,6 +10,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.graph.TsneModel;
@@ -81,7 +82,7 @@ public class TsneTest {
         ));
         System.out.println(MatrixOps.doubleArrayToPrintString(y));
 
-        Surface plot = new Surface() {
+        Surface plot = new SimpleSurface() {
 
             @Override
             protected void paint(GL2 gl, ReSurface surfaceRender) {

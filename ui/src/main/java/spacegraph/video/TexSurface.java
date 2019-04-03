@@ -2,11 +2,11 @@ package spacegraph.video;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 
 import java.awt.image.BufferedImage;
 
-public class TexSurface extends Surface {
+public class TexSurface extends SimpleSurface {
 
     public final Tex tex;
 

@@ -5,11 +5,12 @@ import jcog.Util;
 import jcog.math.v2;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.util.math.Color4f;
 import spacegraph.video.Draw;
 import spacegraph.video.font.HersheyFont;
 
-public abstract class SurfaceHiliteOverlay extends Surface {
+public abstract class SurfaceHiliteOverlay extends SimpleSurface {
 
     protected final Ortho.Camera cam;
 

@@ -1,5 +1,6 @@
 package nars.term.util.builder;
 
+import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.Param;
@@ -173,7 +174,8 @@ public abstract class TermBuilder implements TermConstructor {
         Term term = x.unneg().root();
 
         Op op = term.op();
-        assert (op != NEG) : this + " concept() to NEG: " + x.unneg().root();
+        if (op==NEG)
+            throw new WTF(" concept() to NEG: " + x.unneg().root());
         if (!op.conceptualizable)
             return Bool.Null;
 

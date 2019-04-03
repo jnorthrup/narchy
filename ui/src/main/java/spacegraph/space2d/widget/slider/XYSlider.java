@@ -11,6 +11,7 @@ import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.space2d.hud.HudHover;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -22,7 +23,7 @@ import static jcog.Util.unitize;
 /**
  * x and y are in 0..1.0 domain
  */
-public class XYSlider extends Surface implements HudHover {
+public class XYSlider extends SimpleSurface implements HudHover {
 
     public static final int BUTTON = 0;
     private final v2 knob = new v2(0.5f, 0.5f);
@@ -64,9 +65,9 @@ public class XYSlider extends Surface implements HudHover {
     public Surface caption() {
         return new VectorLabel() {
             @Override
-            protected void compileChildren(ReSurface r) {
+            protected void renderChildren(ReSurface r) {
                 text(summary());
-                super.compileChildren(r);
+                super.renderChildren(r);
             }
 
         };

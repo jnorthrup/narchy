@@ -41,7 +41,7 @@ public class Subst extends Functor implements InlineFunctor, The {
     }
 
     protected @Nullable static Term apply(Subterms xx, Term input, Term x, Term y) {
-        boolean strict = xx.subEquals(3, UniSubst.STRICT);
+        boolean strict = xx.subEquals(3, UniSubst.NOVEL);
 
         Term result = !x.equals(y) ? input.replace(x, y) : (strict ? Null : input);
 //        if (result==null)

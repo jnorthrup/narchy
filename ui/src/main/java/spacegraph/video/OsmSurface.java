@@ -11,6 +11,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.geo.IRL;
@@ -23,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class OsmSurface extends Surface {
+public class OsmSurface extends SimpleSurface {
 
 
     private static final Consumer<GL2> loading = (gl) -> {
@@ -278,9 +279,9 @@ public class OsmSurface extends Surface {
         }
 
         @Override
-        protected void compileChildren(ReSurface r) {
+        protected void renderChildren(ReSurface r) {
             text(text.get());
-            super.compileChildren(r);
+            super.renderChildren(r);
         }
 
     }

@@ -54,9 +54,9 @@ public class VectorLabel extends AbstractLabel {
     }
 
     @Override
-    protected void compileChildren(ReSurface r) {
+    protected void renderChildren(ReSurface r) {
         r.on(this::paintLabel);
-        super.compileChildren(r);
+        super.renderChildren(r);
     }
 
     protected void paintLabel(GL2 gl, ReSurface r) {

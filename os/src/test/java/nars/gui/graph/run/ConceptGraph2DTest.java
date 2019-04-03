@@ -16,19 +16,37 @@ class ConceptGraph2DTest {
     static class GraphMesh {
         public static void main(String[] args) {
 
-            NAR n = NARS.tmp(4);
+            NAR n = NARS
+                    //.tmp(4);
+                    .threadSafe(4);
             n.termVolumeMax.set(14);
 
+            SpaceGraph.window(BagregateConceptGraph2D.get(n), 1200, 800 );
 
-            Surface g = BagregateConceptGraph2D.get(n);
-
-            SpaceGraph.window(g, 1200, 800 );
+            n.startFPS(24f);
 
             new DeductiveMeshTest(n, 5,5);
 
-            n.startFPS(24f);
         }
 
+    }
+    static class InhibitionTest {
+        public static void main(String[] args) {
+            NAR n = NARS
+                    //.tmp(4);
+                    .threadSafe(4);
+            n.termVolumeMax.set(5);
+
+            SpaceGraph.window(BagregateConceptGraph2D.get(n), 1200, 800 );
+
+            n.startFPS(4f);
+
+            n.want("reward");
+            n.believe("(good ==> reward)", 1, 0.9f);
+            n.believe("(--bad ==> reward)", 1, 0.9f);
+            //.mustGoal(cycles, "good", 1.0f, 0.81f)
+            //.mustGoal(cycles, "bad", 0.0f, 0.81f);
+        }
     }
     static class GraphRDFTest1 {
         public static void main(String[] args) throws FileNotFoundException {

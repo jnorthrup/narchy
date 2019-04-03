@@ -48,11 +48,11 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceGraph {
             rr.x2 = _w; rr.y2 = _h;
         };
 
-        @Override protected void compileChildren(ReSurface r) {
+        @Override protected void renderChildren(ReSurface r) {
             _w = display.getWidth(); _h = display.getHeight();
             forEach(c -> {
                 r.on(reset);
-                c.rerender(r);
+                c.tryRender(r);
             });
         }
     };
@@ -129,7 +129,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceGraph {
 
     @Override
     protected void update(ReSurface rendering) {
-        layers.rerender(rendering);
+        layers.tryRender(rendering);
     }
 
     @Override

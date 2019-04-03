@@ -27,6 +27,7 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
+import static jcog.Util.or;
 import static nars.$.t;
 import static nars.truth.func.TruthFunctions2.weak;
 
@@ -70,34 +71,35 @@ public final class TruthFunctions {
      * @param reliance Confidence of the second (analytical) premise
      * @return AnalyticTruth value of the conclusion, because it is structural
      */
-    @Nullable
-    public static Truth deductionR(Truth a, float reliance, float minConf) {
+    @Nullable private static Truth deductionR(Truth a, float reliance, float minConf) {
         float f = a.freq();
         float c = and(f, confCompose(a.conf(), reliance));
         return (c >= minConf) ? t(f, c) : null;
     }
 
 
-    @Nullable
-    public static Truth deduction(Truth a, float bF, float bC, boolean strong, float minConf) {
+    /**
+     * {<S ==> M>, <M ==> P>} |- <S ==> P>
+     * @param v1 Truth value of the first premise
+     * @param v2 Truth value of the second premise
+     * @return Truth value of the conclusion
+     */
+    @Nullable public static Truth deduction(Truth a, Truth b, boolean strong, float minConf) {
 
-        float f = and(a.freq(), bF);
-        float c = and(f,
-                confCompose(a.conf(), bC)
-        );
+        float f = and(a.freq(), b.freq());
+
+        float c = and(f, confCompose(a.conf(), b.conf()));
         if (!strong)
             c = weak(c);
 
-        return c >= minConf ? t(f, c) : null;
+        return (c < minConf) ? null : t(f, c);
     }
 
 
     /**
      * {<S ==> M>, <M <=> P>} |- <S ==> P>
      *
-     * @param a Truth value of the first premise
-     * @param b Truth value of the second premise
-     * @return Truth value of the conclusion
+     * stronger than deduction such that A's frequency does not reduce the output confidence
      */
     @Nullable
     public static Truth analogy(Truth a, float bf, float bc, float minConf) {
@@ -105,6 +107,21 @@ public final class TruthFunctions {
         return c >= minConf ? t(and(a.freq(), bf), c) : null;
     }
 
+
+    /**
+     * {<S <=> M>, <M <=> P>} |- <S <=> P>
+     * @param v1 Truth value of the first premise
+     * @param v2 Truth value of the second premise
+     * @return Truth value of the conclusion
+     *
+     * stronger than analogy
+     */
+    static final Truth resemblance(final Truth  v1, final Truth  v2, float minConf) {
+        final float f1 = v1.freq();
+        final float f2 = v2.freq();
+        final float c = and(confCompose(v1.conf(), v2.conf()), or(f1, f2));
+        return c >= minConf ? t(and(f1, f2), c) : null;
+    }
 
     /**
      * {<S ==> M>, <P ==> M>} |- <S ==> P>
@@ -126,7 +143,7 @@ public final class TruthFunctions {
      * @param b Truth value of the second premise
      * @return Truth value of the conclusion
      */
-    public static Truth exemplification(Truth a, Truth b, float minConf) {
+    static Truth exemplification(Truth a, Truth b, float minConf) {
         float c = w2cSafe(a.freq() * b.freq() * confCompose(a, b));
         return c >= minConf ? t(1, c) : null;
     }
@@ -134,7 +151,7 @@ public final class TruthFunctions {
 
     @Nullable
     public static Truth comparison(Truth a, Truth b, float minConf) {
-        return comparison(a, b, false, minConf);
+        return comparison(a, false, b, minConf);
     }
 
     /**
@@ -145,14 +162,15 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     @Nullable
-    public static Truth comparison(Truth a, Truth b, boolean invertA, float minConf) {
+    public static Truth comparison(Truth a, boolean negA, Truth b, float minConf) {
         float f1 = a.freq();
-        if (invertA) f1 = 1 - f1;
+        if (negA) f1 = 1 - f1;
 
         float f2 = b.freq();
 
 
-        float f0 = //or(f1, f2);
+        float f0 =
+                //or(f1, f2);
                 Math.max(and(f1, f2), and(1 - f1, 1 - f2));
         float c = w2cSafe(and(f0, TruthFunctions.confCompose(a, b)));
         if (c >= minConf) {
@@ -162,6 +180,8 @@ public final class TruthFunctions {
 
         return null;
     }
+
+
 
 
     public static float confCompose(Truth a, Truth b) {
@@ -182,8 +202,8 @@ public final class TruthFunctions {
     /**
      * {<M --> S>, <M <-> P>} |- <M --> (S&P)>
      *
-     * @param v1 Truth value of the first premise
-     * @param v2 Truth value of the second premise
+     * @param x Truth value of the first premise
+     * @param y Truth value of the second premise
      * @return Truth value of the conclusion
      * <p>
      * In the confidence functions, each case for the conclusion to reach its
@@ -206,37 +226,41 @@ public final class TruthFunctions {
      * https://en.wikipedia.org/wiki/T-norm
      */
     @Nullable
-    public static Truth intersection(Truth v1, Truth v2, float minConf) {
+    public static Truth intersection(Truth x, Truth y, float minConf) {
 
 
-        //not commutive
+        //not commutive:
 //        float c1 = v1.conf(), c2 = v2.conf();
 //        float c = or(and((1-f1), c1), and((1-f2), c2)) + and(f1, c1, f2, c2);
 //        c = Util.min(c, Util.max(c1, c2));
 
-        float c = confCompose(v1, v2);
-
-        return (c < minConf) ? null : $.t(and(v1.freq(), v2.freq()), c);
+        return intersection(x, false, y, false, minConf);
+    }
+    @Nullable
+    public static Truth intersection(Truth x, boolean negX, Truth y, boolean negY, float minConf) {
+        float c = confCompose(x, y);
+        return (c < minConf) ? null : $.t(and(negIf(x.freq(),negX), negIf(y.freq(),negY)), c);
     }
 
+    static float negIf(float f, boolean neg) {
+        return neg ? (1-f) : f;
+    }
 
     /**
      * {(--, (&&, A, B)), B} |- (--, A)
      *
-     * @return Truth value of the conclusion
+     * alternate names: "interdeduction" "deductersection"
+     * return neg(deduct(intersect(neg(v1), v2), 1f));
      */
     @Nullable
-    public static Truth reduceConjunction(Truth v1, Truth v2, float minConf) {
-
-        Truth i12 = intersection(v1.neg(), v2, minConf);
+    static Truth reduceConjunction(Truth a, Truth b, float minConf) {
+        Truth i12 = intersection(a, true, b, false, minConf);
         if (i12 == null) return null;
 
         Truth v11 = deductionR(i12, 1.0f, minConf);
         if (v11 == null) return null;
 
         return v11.neg();
-
-
     }
 
 
@@ -247,10 +271,10 @@ public final class TruthFunctions {
      * @param b Truth value of the second premise
      * @return Truth value of the conclusion
      */
-    public static Truth anonymousAnalogy(Truth a, Truth b, float minConf) {
+    static Truth anonymousAnalogy(Truth a, Truth b, float minConf) {
         float v0c = w2cSafe(a.conf());
 
-        return v0c < minConf ? null : TruthFunctions2.analogyNew(b, a.freq(), v0c, minConf);
+        return v0c < minConf ? null : TruthFunctions.analogy(b, a.freq(), v0c, minConf);
     }
 
     /**

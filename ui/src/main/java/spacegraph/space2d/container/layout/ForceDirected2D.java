@@ -25,10 +25,10 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
     public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 2f);
 
     /** in (visible) graph radii */
-    public final FloatRange nodeScale = new FloatRange(0.25f, 0.04f, 1.5f);
+    public final FloatRange nodeScale = new FloatRange(0.1f, 0.04f, 1.5f);
 
     /** in node radii */
-    public final FloatRange nodeSpacing  = new FloatRange(1f, 0.1f, 6f);
+    public final FloatRange nodeSpacing  = new FloatRange(2f, 0.1f, 16f);
 
     /** in (visible) graph radii per iter */
     public final FloatRange nodeSpeedMax = new FloatRange(0.5f, 0f, 2f);
@@ -62,7 +62,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
         maxRepelDist = (float) ((2 * gRad) * Math.sqrt(2)); //estimate
 
-        equilibriumDistFactor = nodeSpacing.floatValue() * nodeScale.floatValue();
+        equilibriumDistFactor = nodeSpacing.floatValue();
 
 
         int iterations = this.iterations;

@@ -215,7 +215,7 @@ public class NAL5Test extends NALTest {
         test
                 .believe("(a:#1 && y)")
                 .believe("a:x", 0.80f, 0.9f)
-                .mustBelieve(cycles, "y", 0.80f, 0.42f);
+                .mustBelieve(cycles, "y", 0.80f, 0.65f);
     }
 
     @Test
@@ -224,7 +224,7 @@ public class NAL5Test extends NALTest {
         test
                 .believe("(--(#1-->a) && y)")
                 .believe("(x-->a)", 0.20f, 0.9f)
-                .mustBelieve(cycles, "y", 0.80f, 0.42f);
+                .mustBelieve(cycles, "y", 0.80f, 0.65f);
     }
 
     @Test

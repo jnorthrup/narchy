@@ -190,10 +190,10 @@ public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
     }
 
     @Override
-    protected void compileChildren(ReSurface r) {
+    protected void renderChildren(ReSurface r) {
         _setTime(startNext, endNext);
 
-        super.compileChildren(r);
+        super.renderChildren(r);
     }
 
     public Timeline2D setTime(double start, double end) {

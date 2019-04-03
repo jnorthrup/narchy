@@ -34,7 +34,6 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
     Iterable<Term> source;
 
-
     public class Controls {
         public final AtomicBoolean update = new AtomicBoolean(true);
     }

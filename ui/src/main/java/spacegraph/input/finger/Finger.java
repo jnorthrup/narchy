@@ -8,6 +8,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.SimpleSurface;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.SurfaceHiliteOverlay;
 
@@ -408,7 +409,7 @@ abstract public class Finger {
     public interface WheelAbsorb {
     }
 
-    private final class FingerRendererSurface extends Surface {
+    private final class FingerRendererSurface extends SimpleSurface {
         {
             clipBounds = false;
         }

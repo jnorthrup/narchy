@@ -11,14 +11,17 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
-abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitContainer<X> {
+abstract public class AbstractCachedSurface<X extends Surface> extends UnitContainer<X> {
 
     private Off on;
 
     final AtomicBoolean invalid = new AtomicBoolean(false);
     final List<BiConsumer<GL2, ReSurface>> render = new FasterList();
 
-    protected AbstractTriggeredSurface(X the) {
+    /** set to false to disable the caching */
+    protected boolean cache = true;
+
+    protected AbstractCachedSurface(X the) {
         super(the);
     }
 
@@ -39,12 +42,25 @@ abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitCo
         }
     }
 
+
+    public AbstractCachedSurface<X> cache(boolean cache) {
+        this.cache = cache;
+        return this;
+    }
+
     /** TODO double buffer to prevent 'tearing' */
-    @Override protected void compileChildren(ReSurface r) {
-        if (invalid.compareAndSet(true, false))
-            r.record(the(), render);
-        else
-            r.play(render);
+    @Override protected void renderChildren(ReSurface r) {
+        if (cache) {
+            if (!invalid.compareAndSet(true, false)) {
+                r.play(render);
+            } else {
+                r.record(the(), render);
+            }
+        } else {
+            render.clear();
+            invalid.set(false);
+            super.renderChildren(r);
+        }
     }
 
     @Override
@@ -65,6 +81,7 @@ abstract public class AbstractTriggeredSurface<X extends Surface> extends UnitCo
         on = null;
         super.stopping();
     }
+
 
 
 }

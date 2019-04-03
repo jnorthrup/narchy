@@ -16,10 +16,4 @@ public final class EmptySurface extends Surface {
         return this; 
     }
 
-
-    @Override
-    protected void paint(GL2 gl, ReSurface reSurface) {
-
-    }
-
 }

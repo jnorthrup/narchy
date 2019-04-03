@@ -1,6 +1,7 @@
 //temporary file for suspecious and untested nal3 rules
 
  //similarity coercion (S==P)! (symmetric: DecomposeNegative....)
+ //maybe use ReduceConjunction
  ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff)
    //((&,--P,A..+) --> M), ((&,A..+) --> M) |- (P --> M), (Goal:DecomposeDiff,Time:Intersect) //not working yet
  (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)

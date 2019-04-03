@@ -68,7 +68,9 @@ import static nars.term.util.Image.imageNormalize;
 public class UniSubst extends Functor implements InlineFunctor {
 
 
-    public final static Term STRICT = Atomic.the("strict");
+    /** must involve a variable substitution, deriving a new term */
+    public final static Term NOVEL = Atomic.the("novel");
+
     public final static Term INDEP_VAR = $.quote("$");
     public final static Term DEP_VAR = $.quote("#");
     public static final Atom unisubst = (Atom) Atomic.the("unisubst");
@@ -95,7 +97,7 @@ public class UniSubst extends Functor implements InlineFunctor {
 
         for (int p = 3; p < pp; p++) {
             Term ai = a.sub(p);
-            if (ai.equals(STRICT))
+            if (ai.equals(NOVEL))
                 strict = true;
             else if (ai.equals(INDEP_VAR)) {
                 //HACK is this ignored?

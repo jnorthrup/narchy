@@ -56,7 +56,7 @@ public abstract class Param {
 
 
 
-    public static final boolean SHUFFLE_TERMUTES = true;
+    public static final boolean SHUFFLE_TERMUTES = false;
 
 
     public static final boolean DT_DITHER_LOGARITHMICALLY = false;
@@ -314,17 +314,17 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
-    public static final int TTL_CONJ_BEFORE_AFTER = 6; //HACK this is a TTL supply, not a COST
+    public static final int TTL_CONJ_BEFORE_AFTER = 4; //HACK this is a TTL supply, not a COST
 
 
     /**
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 2f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
@@ -543,9 +543,9 @@ public abstract class Param {
                 //1;
                 //1.618f; //phi
                 //2; //nyquist
-                //4;
+                4;
                 //dur;
-                8;
+                //8;
                 //64;
 
         double decayTime = falloffDurs * dur;
