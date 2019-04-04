@@ -457,6 +457,7 @@ public class NAL5Test extends NALTest {
     void conditional_deduction() {
         test
                 .confMin(0.75f)
+                .termVolMax(14)
                 .believe("<(&&,(robin --> [flying]),(robin --> [withWings])) ==> a>")
                 .believe("(robin --> [flying])")
                 .mustBelieve(cycles, " <(robin --> [withWings]) ==> a>", 1.00f, 0.81f);
@@ -619,6 +620,7 @@ public class NAL5Test extends NALTest {
     void conditional_abduction3_semigeneric3() {
 
         TestNAR tester = test;
+        tester.termVolMax(14);
         tester.believe("((&&,(R --> [f]),(R --> [w])) ==> (R --> [l]))", 0.9f, 0.9f);
         tester.believe("((&&,(R --> [f]),(R --> b)) ==> (R --> [l]))");
         tester.mustBelieve(cycles, "((R --> b) ==> (R --> [w]))", 1f, 0.42f /*0.36f*/);

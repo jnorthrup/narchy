@@ -3,6 +3,7 @@ package nars.op;
 import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.$;
 import nars.NAR;
@@ -49,7 +50,7 @@ public class FileContext extends NARService {
      */
     public static class FileBelief {
 
-        final PLinkArrayBag<URL> active = new PLinkArrayBag<URL>(PriMerge.plus, 128);
+        final PriReferenceArrayBag<URL,jcog.pri.PriReference<URL>> active = new PLinkArrayBag<URL>(PriMerge.plus, 128);
 
         public FileBelief() {
 

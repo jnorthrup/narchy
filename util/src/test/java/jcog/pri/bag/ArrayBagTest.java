@@ -7,6 +7,7 @@ import jcog.pri.PriReference;
 import jcog.pri.UnitPri;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -33,7 +34,7 @@ class ArrayBagTest {
 
     @Test
     void testBudgetMerge() {
-        PLinkArrayBag<String> a = new PLinkArrayBag<String>(plus, 4);
+        PriReferenceArrayBag<String, PriReference<String>> a = new PLinkArrayBag<String>(plus, 4);
         assertEquals(0, a.size());
 
         a.put(new PLink("x", 0.1f));
@@ -68,7 +69,7 @@ class ArrayBagTest {
 
     @Test
     void testSort() {
-        PLinkArrayBag a = new PLinkArrayBag(plus, 4);
+        PriReferenceArrayBag a = new PLinkArrayBag(plus, 4);
 
         a.put(new PLink("x", 0.1f));
         a.put(new PLink("y", 0.2f));
@@ -102,7 +103,7 @@ class ArrayBagTest {
 
     @Test
     void testCapacity() {
-        PLinkArrayBag a = new PLinkArrayBag(plus, 2);
+        PriReferenceArrayBag a = new PLinkArrayBag(plus, 2);
 
         a.put(new PLink("x", 0.1f));
         a.put(new PLink("y", 0.2f));

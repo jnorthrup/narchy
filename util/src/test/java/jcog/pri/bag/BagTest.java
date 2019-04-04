@@ -5,7 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.pri.*;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.HijackBag;
-import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Tensor;
@@ -154,7 +154,7 @@ class BagTest {
         assertEquals(0, a.size());
         assertTrue(a.isEmpty());
         if (a instanceof ArrayBag) {
-            assertTrue(((PLinkArrayBag) a).listCopy().isEmpty());
+            assertTrue(((PriReferenceArrayBag) a).listCopy().isEmpty());
             //assertTrue(((PLinkArrayBag) a).keySet().isEmpty());
         }
 

@@ -3,9 +3,10 @@ package jcog.pri.bag.util;
 import com.google.common.collect.Iterables;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
+import jcog.pri.PriBuffer;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 
 import java.util.Iterator;
@@ -33,7 +34,8 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
     }
 
     public Bagregate(Iterable<? extends X> src, int capacity) {
-        this.bag = new PLinkArrayBag<>(PriMerge.max /*PriMerge.replace*/, capacity) {
+        this.bag = new PriReferenceArrayBag<>(PriMerge.max /*PriMerge.replace*/,
+                capacity, PriBuffer.newMap(false)) {
             @Override
             public void onRemove(PriReference<X> value) {
                 Bagregate.this.onRemove(value);

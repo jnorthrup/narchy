@@ -57,16 +57,17 @@ public class PriBuffer<Y> {
      * */
     @Paper
     public static <X,Y> Map<X,Y> newMap(boolean linked) {
-        float load = 0.9f;
+        float load = 0.99f;
         if (Exe.concurrent()) {
             return linked ?
-                new java.util.concurrent.ConcurrentHashMap<>(0, load)
+                new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
                     :
                 new NonBlockingHashMap();
+                //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors());
+                //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0);
+                //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f);
+                //new CustomConcurrentHashMap();
 
-            //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f);
-            //new CustomConcurrentHashMap(64);
-            //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0);
         } else {
              return
                  linked ?

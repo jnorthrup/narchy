@@ -1298,9 +1298,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             long as = aa.shiftOrZero(), bs = bb.shiftOrZero();
             long abShift = Math.min(as, bs);
             ConjBuilder dd = newConjSharingTermMap(cc);
-//            if (eternal && as == 0 && bs == 0) {
-//                as = bs = ETERNAL;
-//            }
+            if (eternal && as == 0 && bs == 0) {
+                as = bs = ETERNAL;
+            }
             if (dd.add(as, A.neg()))
                 dd.add(bs, B.neg());
 
@@ -1311,8 +1311,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             if (cc.eventOccurrences() == 0)
                 return D.neg();
             else {
-                cc.add((cc.eventCount(ETERNAL) > 0 && !Conj.isSeq(A) && !Conj.isSeq(B)) ?
-                        ETERNAL : (abShift), D.neg());
+//                if (cc.eventCount(ETERNAL) > 0 && !Conj.isSeq(A) && !Conj.isSeq(B))
+//                    abShift = ETERNAL;
+                if (eternal && as == ETERNAL && bs == ETERNAL)
+                    abShift = ETERNAL;
+                cc.add(abShift, D.neg());
                 return cc.term().neg();
             }
         }

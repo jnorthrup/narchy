@@ -239,7 +239,8 @@ abstract public class NAgentX extends NAgent {
 
                         new CaffeineMemory(
                             //    16*1024
-                            64 * 1024
+                                32 * 1024
+                            //64 * 1024
                     //96 * 1024
 //                                64 * 1024
 ////                                //32 * 1024

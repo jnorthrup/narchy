@@ -77,11 +77,9 @@ public class NonBlockingHashMap<TypeK, TypeV>
   extends AbstractMap<TypeK, TypeV>
   implements ConcurrentMap<TypeK, TypeV>, Cloneable, Serializable {
 
+  /** TODO how to tune this */
+  private static final int REPROBE_LIMIT = 10; // Too many reprobes then force a table-resize
 
-  /*
-   * Written by Cliff Click and released to the public domain, as explained at
-   * http://creativecommons.org/licenses/publicdomain
-   */
 
   /**
    * An auto-resizing table of {@code longs}, supporting low-contention CAS
@@ -206,7 +204,7 @@ public class NonBlockingHashMap<TypeK, TypeV>
 
 
       private static long rawIndex(long[] ary, int i) {
-        assert i >= 0 && i < ary.length;
+//        assert i >= 0 && i < ary.length;
         return _Lbase + i * _Lscale;
       }
       private static boolean CAS(long[] A, int idx, long old, long nnn ) {
@@ -350,7 +348,6 @@ public class NonBlockingHashMap<TypeK, TypeV>
 
 
 
-  private static final int REPROBE_LIMIT=10; // Too many reprobes then force a table-resize
 
   // --- Bits to allow Unsafe access to arrays
   private static final Unsafe _unsafe = Util.unsafe;//UtilUnsafe.getUnsafe();
@@ -358,7 +355,7 @@ public class NonBlockingHashMap<TypeK, TypeV>
   private static final int _Oscale = _unsafe.arrayIndexScale(Object[].class);
   private static final int _Olog   = _Oscale==4?2:(_Oscale==8?3:9999);
   private static long rawIndex(final Object[] ary, final int idx) {
-    assert idx >= 0 && idx < ary.length;
+//    assert idx >= 0 && idx < ary.length;
     // Note the long-math requirement, to handle arrays of more than 2^31 bytes
     // - or 2^28 - or about 268M - 8-byte pointer elements.
     return _Obase + ((long)idx << _Olog);
@@ -415,8 +412,8 @@ public class NonBlockingHashMap<TypeK, TypeV>
   // Number of K,V pairs in the table
   private static int len(Object[] kvs) { return (kvs.length-2)>>1; }
 
-  // Time since last resize
-  private transient long _last_resize_milli;
+  // Timepoint of last resize
+  private transient long _lastResizeTime;
 
   // --- Minimum table size ----------------
   // Pick size 8 K/V pairs, which turns into (8*2+2)*4+12 = 84 bytes on a
@@ -549,7 +546,7 @@ public class NonBlockingHashMap<TypeK, TypeV>
     _kvs = new Object[((1<<i)<<1)+2];
     _kvs[0] = new CHM(new ConcurrentAutoTable()); // CHM in slot 0
     _kvs[1] = new int[1<<i];          // Matching hash entries
-    _last_resize_milli = System.currentTimeMillis();
+    _lastResizeTime = System.nanoTime();
   }
   // Version for subclassed readObject calls, to be called after the defaultReadObject
   protected final void initialize() { initialize(MIN_SIZE); }
@@ -634,7 +631,7 @@ public class NonBlockingHashMap<TypeK, TypeV>
     if( oldVal == null ) oldVal = TOMBSTONE;
     if( newVal == null ) newVal = TOMBSTONE;
     final TypeV res = (TypeV)putIfMatch( this, _kvs, key, newVal, oldVal );
-    assert !(res instanceof Prime);
+//    assert !(res instanceof Prime);
     //assert res != null;
     return res == TOMBSTONE ? null : res;
   }
@@ -642,8 +639,8 @@ public class NonBlockingHashMap<TypeK, TypeV>
   private TypeV putIfMatch(Object key, Object newVal, Object oldVal) {
     if (oldVal == null || newVal == null) throw new NullPointerException();
     final Object res = putIfMatch( this, _kvs, key, newVal, oldVal );
-    assert !(res instanceof Prime);
-    assert res != null;
+//    assert !(res instanceof Prime);
+//    assert res != null;
     return res == TOMBSTONE ? null : (TypeV)res;
   }
 
@@ -784,9 +781,9 @@ public class NonBlockingHashMap<TypeK, TypeV>
   @Override
   public TypeV get( Object key ) {
     final Object V = get_impl(this,_kvs,key);
-    assert !(V instanceof Prime); // Never return a Prime
-    assert V != TOMBSTONE;
-    assert V != READONLY;
+//    assert !(V instanceof Prime); // Never return a Prime
+//    assert V != TOMBSTONE;
+//    assert V != READONLY;
     return (TypeV)V;
   }
 
@@ -902,9 +899,9 @@ public class NonBlockingHashMap<TypeK, TypeV>
   // putIfMatch only returns a null if passed in an expected null.
   private static volatile int DUMMY_VOLATILE;
   private static Object putIfMatch(final NonBlockingHashMap topmap, final Object[] kvs, final Object key, final Object putval, final Object expVal ) {
-    assert putval != null;
-    assert !(putval instanceof Prime);
-    assert !(expVal instanceof Prime);
+//    assert putval != null;
+//    assert !(putval instanceof Prime);
+//    assert !(expVal instanceof Prime);
     if( kvs == READONLY ) {     // Update attempt in a locked table?
       if( expVal == NO_MATCH_OLD || expVal == MATCH_ANY )
         throw new IllegalStateException("attempting to modify a locked table");
@@ -1014,7 +1011,7 @@ public class NonBlockingHashMap<TypeK, TypeV>
 
     // ---
     // We are finally prepared to update the existing table
-    assert !(V instanceof Prime);
+//    assert !(V instanceof Prime);
 
     // Must match old, and we do not?  Then bail out now.  Note that either V
     // or expVal might be TOMBSTONE.  Also V can be null, if we've never
@@ -1187,9 +1184,9 @@ public class NonBlockingHashMap<TypeK, TypeV>
       // forever grow the table.  If there is a high key churn rate
       // the table needs a steady state of rare same-size resize
       // operations to clean out the dead keys.
-      long tm = System.currentTimeMillis();
+      long tm = System.nanoTime();
       if( newsz <= oldlen && // New table would shrink or hold steady?
-          tm <= topmap._last_resize_milli+10000)  // Recent resize (less than 10 sec ago)
+          tm > topmap._lastResizeTime /* + min wait time */ )  // Recent resize
         newsz = oldlen<<1;      // Double the existing size
 
       // Do not shrink, ever.  If we hit this size once, assume we
@@ -1355,11 +1352,11 @@ public class NonBlockingHashMap<TypeK, TypeV>
 
     // --- copy_check_and_promote --------------------------------------------
     private void copy_check_and_promote(NonBlockingHashMap topmap, Object[] oldkvs, int workdone ) {
-      assert chm(oldkvs) == this;
+      //assert chm(oldkvs) == this;
       int oldlen = len(oldkvs);
       // We made a slot unusable and so did some of the needed copy work
       long copyDone = _copyDone;
-      assert (copyDone+workdone) <= oldlen;
+      //assert (copyDone+workdone) <= oldlen;
       if( workdone > 0 ) {
         while( !_copyDoneUpdater.compareAndSet(this,copyDone,copyDone+workdone) ) {
           copyDone = _copyDone; // Reload, retry
@@ -1377,7 +1374,7 @@ public class NonBlockingHashMap<TypeK, TypeV>
           _newkvs != READONLY &&     // Table is locked down?
           // Attempt to promote
           topmap.CAS_kvs(oldkvs,_newkvs) ) {
-        topmap._last_resize_milli = System.currentTimeMillis(); // Record resize time for next check
+        topmap._lastResizeTime = System.nanoTime(); // Record resize time for next check
       }
     }
 
