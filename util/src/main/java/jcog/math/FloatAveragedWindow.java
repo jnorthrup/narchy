@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import jcog.TODO;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.AtomicFloatArray;
-import jcog.signal.tensor.RingTensor;
+import jcog.signal.tensor.TensorRing;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 /**
@@ -21,7 +21,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction {
 
     private final FloatRange alpha;
-    final RingTensor window;
+    final TensorRing window;
     final AtomicDouble current = new AtomicDouble(Double.NaN);
 
     @Override
@@ -93,7 +93,7 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     }
 
     public FloatAveragedWindow(int windowSize, FloatRange alpha) {
-        this.window = new RingTensor(new AtomicFloatArray(windowSize), 1, windowSize);
+        this.window = new TensorRing(new AtomicFloatArray(windowSize), 1, windowSize);
         this.alpha = alpha;
         window.fillAll(Float.NaN);
     }

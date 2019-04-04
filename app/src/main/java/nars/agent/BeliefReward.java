@@ -29,13 +29,20 @@ public class BeliefReward extends Reward {
 
     @Override
     public final float happiness() {
-        return reward();
+        //     belief(reward) - goal(reward)
+
+        float b = this.rewardBelief;
+        float g = reward(false);
+        if ((b!=b) || (g!=g))
+            return 0; //dead
+        else
+            return b - g;
     }
 
     @Override
-    protected float reward() {
+    protected float reward(boolean beliefOrGoal) {
         NAR n = nar();
-        Truth t = concept.beliefs().truth(n.time(), n);
+        Truth t = (beliefOrGoal ? concept.beliefs() : concept.goals()).truth(n.time(), n);
         if (t!=null)
             return negate ? 1 - t.freq() : t.freq();
         else

@@ -18,8 +18,8 @@ public class HaiQae extends HaiQ {
 
 
     public Autoencoder ae;
-    float perceptionAlpha = 0.02f;
-    float perceptionNoise = 0.005f;
+    float perceptionAlpha = 0.01f;
+    float perceptionNoise = 0.0f;
     float perceptionCorruption = 0; //0.01f;
 //    float perceptionForget;
     public float perceptionError;
@@ -27,7 +27,7 @@ public class HaiQae extends HaiQ {
     
 
     /**
-     * "horizontal" state selection
+     * "horizontal" input state selection
      */
     protected Deciding decideState = //DecideEpsilonGreedy.ArgMax;
                                     new DecideSoftmax(0.5f, rng);
@@ -49,14 +49,12 @@ public class HaiQae extends HaiQ {
 
     @Override
     protected int perceive(float[] input) {
-        //System.out.println(Texts.n2(input));
 
-        perceptionError = ae.put(input, perceptionAlpha, perceptionNoise, perceptionCorruption, true)
+        perceptionError = ae.put(input, perceptionAlpha, perceptionNoise, perceptionCorruption,
+                false, true, true)
             / input.length;
 
 
-//        if (perceptionForget > 0)
-//            ae.forget(perceptionForget);
         return decideState.applyAsInt(ae.y);
     }
 

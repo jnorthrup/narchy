@@ -69,7 +69,8 @@ public class NoiseVectorChip extends Splitting {
             L(view = new BitmapMatrixView((this.outputVector = new TensorLERP(oNext, momentum)).data));
         }
 
-        out.out(outputVector.update());
+        outputVector.update();
+        out.out(outputVector);
         view.updateIfShowing();
     }
 }

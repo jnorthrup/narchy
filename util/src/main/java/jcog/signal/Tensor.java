@@ -30,6 +30,7 @@ public interface Tensor  {
     int[] v3Shape = new int[] { 3 };
     /** quaternions */
     int[] v4Shape = new int[] { 4 };
+    Tensor[] EmptyArray = new Tensor[0];
 
     static Tensor vectorFromTo(int start, int end) {
 
@@ -365,15 +366,19 @@ public interface Tensor  {
     }
 
     /** linearized, shape is lost */
-    default float[] toFloatArray() {
+    default float[] floatArray() {
         int v = volume();
         float[] xx = new float[v];
         forEach((i,x)-> xx[i] = x);
         return xx;
     }
 
-    default float[] toFloatArrayShared() {
-        return toFloatArray();
+    /** by default provides a float[] clone instance.
+     *  but this can be overridden for providing a reference to
+     *  shareable (preferably read-only) float[] cache instances
+     */
+    default float[] floatArrayShared() {
+        return floatArray();
     }
 
 

@@ -1,7 +1,11 @@
 package jcog.learn;
 
+import jcog.signal.Tensor;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * lowest common denominator markov decision process / reinforcement learning agent interface
+ * TODO support continuous output vectors
  */
 public abstract class Agent {
 
@@ -15,6 +19,13 @@ public abstract class Agent {
     }
 
 
+    public final int act(float reward, Tensor input) {
+        return act(null, reward, input);
+    }
+    public final int act(@Nullable Tensor actionFeedback, float reward, Tensor input) {
+        return act(actionFeedback!=null ? actionFeedback.floatArrayShared() : null, reward, input.floatArrayShared());
+    }
+
     /** assumes the previous action decided had ideal compliance of the motor system and so no
      * transformation or reduction or noise etc was experienced.
      */
@@ -22,7 +33,9 @@ public abstract class Agent {
         return act(null, reward, nextInput);
     }
 
-    public final int act(float[] actionFeedback, float reward, float[] input) {
+
+    /** TODO use tensor */
+    public final int act(@Deprecated @Nullable float[] actionFeedback, float reward, @Deprecated float[] input) {
         if (actionFeedback == null) {
             actionFeedback = new float[actions];
             if (lastDecision > 0)

@@ -41,5 +41,5 @@ abstract public class BatchArrayTensor extends ArrayTensor {
     }
 
     /** triggers the update */
-    public abstract BatchArrayTensor update();
+    public abstract void update();
 }

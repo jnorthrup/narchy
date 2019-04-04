@@ -6,7 +6,7 @@ import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatRange;
-import jcog.signal.tensor.RingTensor;
+import jcog.signal.tensor.TensorRing;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -556,7 +556,7 @@ abstract public class NAgentX extends NAgent {
         g.add(NARui.taskBufferView(b, n)).sizeRel(0.75f,0.25f);
         //g.add(new PIDChip(pid)).sizeRel(0.2f,0.2f);
 
-        RingTensor history = new RingTensor(3, 8);
+        TensorRing history = new TensorRing(3, 8);
         HaiQae q = new HaiQae(history.volume(), 32,5);
 
         HaiQChip haiQChip = new HaiQChip(q);
@@ -722,7 +722,7 @@ abstract public class NAgentX extends NAgent {
                             new PaintUpdateMatrixView(q.q),
                             new PaintUpdateMatrixView(q.et)
                     ),
-                    plot = new Plot2D(100, Plot2D.Line)
+                    plot = new Plot2D(1024, Plot2D.Line)
             );
 //        hw.add(LabeledPane.the("input", new TypedPort<>(float[].class, (i) -> {
 //            System.arraycopy(i, 0, in, 0, i.length);
@@ -733,9 +733,9 @@ abstract public class NAgentX extends NAgent {
 
 
             rewardSum = new AtomicDouble();
-            plot.add("Reward", ()->{
-                return rewardSum.getAndSet(0); //clear
-            });
+//            plot.add("Reward", ()->{
+//                return rewardSum.getAndSet(0); //clear
+//            });
 
             set(inner, plot);
         }

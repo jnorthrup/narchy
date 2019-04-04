@@ -2,7 +2,7 @@ package jcog.signal.wave1d;
 
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
-import jcog.signal.tensor.RingTensor;
+import jcog.signal.tensor.TensorRing;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class FreqDomain {
     @Deprecated
-    public final RingTensor freq;
+    public final TensorRing freq;
     final SlidingDFTTensor dft;
     private final SignalInput in;
 
@@ -20,7 +20,7 @@ public class FreqDomain {
     public FreqDomain(SignalInput in, int fftSize, int history) {
         this.in = in;
         dft = new SlidingDFTTensor( fftSize, true);
-        freq = new RingTensor(dft.volume(), history);
+        freq = new TensorRing(dft.volume(), history);
 
         next = new ArrayTensor(1); //empty
 

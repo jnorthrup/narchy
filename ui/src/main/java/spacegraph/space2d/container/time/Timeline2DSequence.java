@@ -3,7 +3,7 @@ package spacegraph.space2d.container.time;
 import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import jcog.signal.Tensor;
-import jcog.signal.tensor.RingTensor;
+import jcog.signal.tensor.TensorRing;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
 
@@ -12,13 +12,13 @@ import java.util.List;
 /** ring-buffer sequence of (evenly-timed non-overlapping?) events */
 public class Timeline2DSequence implements Timeline2D.TimelineEvents<Pair<Longerval,Tensor>> {
 
-    public final RingTensor buffer;
+    public final TensorRing buffer;
 
     public Timeline2DSequence(int bufferSamples, int buffers) {
-        this(new RingTensor(bufferSamples, buffers));
+        this(new TensorRing(bufferSamples, buffers));
     }
 
-    public Timeline2DSequence(RingTensor buffer) {
+    public Timeline2DSequence(TensorRing buffer) {
         this.buffer = buffer;
     }
 

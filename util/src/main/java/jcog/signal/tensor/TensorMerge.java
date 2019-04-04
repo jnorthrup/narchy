@@ -48,10 +48,9 @@ public class TensorMerge extends BatchArrayTensor {
 
 
     @Override
-    public TensorMerge update() {
+    public void update() {
         commit();
         from.writeTo(func, data);
-        return this;
     }
 
 

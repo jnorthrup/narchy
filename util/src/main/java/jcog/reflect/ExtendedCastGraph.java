@@ -1407,7 +1407,7 @@ public class ExtendedCastGraph extends CastGraph {
             if (t instanceof ArrayTensor) {
                 return (ArrayTensor) t; //does this happen
             }
-            return new ArrayTensor(t.toFloatArrayShared());
+            return new ArrayTensor(t.floatArrayShared());
         }), ArrayTensor.class);
         addEdge(ArrayTensor.class, (Function<ArrayTensor, float[]>) (a -> a.data), float[].class);
 

@@ -41,7 +41,7 @@ class AutoencoderTest {
         DescriptiveStatistics meanErrorPerInput = new DescriptiveStatistics(train_N * 2);
         for (int epoch = 0; epoch < training_epochs; epoch++) {
             for (int i = 0; i < train_N; i++) {
-                float err = da.put(train_X[i], learning_rate, noise_level, corruption_level, sigmoid,normalize);
+                float err = da.put(train_X[i], learning_rate, noise_level, corruption_level, sigmoid, normalize, true);
                 System.out.println(err);
                 meanErrorPerInput.addValue(err/train_X[i].length);
             }

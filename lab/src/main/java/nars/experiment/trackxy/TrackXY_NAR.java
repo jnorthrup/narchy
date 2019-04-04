@@ -2,7 +2,7 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.AgentBuilder;
+import jcog.learn.Agenterator;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatNormalized;
@@ -179,7 +179,7 @@ public class TrackXY_NAR extends NAgentX {
 //            return true; //TODO check change
 //        });
 
-        FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(32, 0.05f);
+        FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(8, 0.05f);
         actionUnipolar($.inh(id, $.the("speed")), (float a)->{
 //            System.out.println(a);
             //track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
@@ -338,18 +338,20 @@ public class TrackXY_NAR extends NAgentX {
 //                g.add(new PIDChip(new MiniPID(0.01, 0.01, 0.01))).sizeRel(0.1f, 0.1f);
 
                 {
-                    AgentBuilder.WiredAgent aa = n.control.agent(
-                            () -> Util.or((float) a.dexteritySum(), a.happinessMean()),
-                            (i, o) -> new HaiQae(i, 64, o));
+                    FloatAveragedWindow dexThrough = new FloatAveragedWindow(16, 0.1f);
+                    Agenterator aa = n.control.agent(
+                            () -> dexThrough.valueOf((float) (a.dexteritySum() + 0.01f * a.happinessMean())),
+                            (i, o) -> new HaiQae(i, 32, o));
                     HaiQChip haiQChip = new HaiQChip((HaiQae) aa.agent);
                     g.add(haiQChip).posRel(0.5f, 0.5f, 0.2f, 0.2f);
 
-//                    g.add(LabeledPane.the("Q", haiQChip)).sizeRel(0.2f, 0.2f);
+
+                    haiQChip.getPlot().add("reward", aa::asFloat /* warning: THIS asFloat CALL ACTUALLY INVOKES THE AGENT */);
 
 //        n.onCycle(()->haiQChip.next(reward));
                     n.onCycle(
                     //DurService.on(n,
-                            ()->{ aa.next(); haiQChip.next(); });
+                            ()->{  haiQChip.next(); });
                 }
 
                 g.add(new LogContainer(32) {

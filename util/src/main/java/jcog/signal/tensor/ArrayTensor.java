@@ -62,7 +62,7 @@ public class ArrayTensor extends AbstractMutableTensor
     }
 
     /** optimized case */
-    @Override public float[] toFloatArrayShared() {
+    @Override public float[] floatArrayShared() {
         return data;
     }
 

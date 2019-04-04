@@ -6,7 +6,7 @@ import jcog.Texts;
 import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
-import jcog.signal.tensor.RingTensor;
+import jcog.signal.tensor.TensorRing;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
@@ -462,10 +462,10 @@ public class Plot2D extends Widget {
     }
     public static class RingTensorSeries extends AbstractSeries {
 
-        private final RingTensor data;
+        private final TensorRing data;
 
         public RingTensorSeries(String name, int capacity) {
-            data = new RingTensor(1, capacity, true);
+            data = new TensorRing(1, capacity, true);
             setName(name);
             clear();
             this.capacity = capacity;

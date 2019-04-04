@@ -296,7 +296,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
                 short[] po = null;
                 if (learn) {
-                    float regionError = ae.put(ins, alpha, noise, 0, true, false);
+                    float regionError = ae.put(ins, alpha, noise, (float) 0, true, false, true);
                     sumErr += regionError;
 
 

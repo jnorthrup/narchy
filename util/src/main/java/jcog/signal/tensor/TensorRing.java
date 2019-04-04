@@ -7,7 +7,7 @@ import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.jetbrains.annotations.Nullable;
 
 /** TODO delegate not inherit */
-public class RingTensor extends AbstractShapedTensor implements WritableTensor {
+public class TensorRing extends AbstractShapedTensor implements WritableTensor {
     public final int width;
     private final int num;
     private final AtomicCycle.AtomicCycleN target;
@@ -15,18 +15,18 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
     private final int _volume;
 
 
-    public RingTensor(int width, int history) {
+    public TensorRing(int width, int history) {
         this(width, history, false);
     }
 
-    public RingTensor(int width, int history, boolean atomic) {
+    public TensorRing(int width, int history, boolean atomic) {
         this(atomic ?
                 new AtomicFloatArray(width*history) :
                 new ArrayTensor(width*history),
                 width, history);
     }
 
-    public RingTensor(WritableTensor x, int width, int history) {
+    public TensorRing(WritableTensor x, int width, int history) {
         super(/*new int[] { volume,history}*/ new int[] { width * history });
         assert(x.volume() >= (width*history));
         this.buffer = x;
@@ -146,11 +146,11 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
         return this;
     }
 
-    public RingTensor set(float[] t) {
+    public TensorRing set(float[] t) {
         setAt(target(), t);
         return this;
     }
-    public RingTensor setSpin(float[] t) {
+    public TensorRing setSpin(float[] t) {
         setAt(targetSpin(), t);
         return this;
     }

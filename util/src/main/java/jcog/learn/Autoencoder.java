@@ -21,7 +21,7 @@ public class Autoencoder {
     /**
      * input vector after preprocessing (noise, corruption, etc..)
      */
-    public final float[] x;
+    public float[] x;
 
     /**
      * output vector
@@ -129,6 +129,8 @@ public class Autoencoder {
 
 
     public float[] encode(float[] _x, float[] y, float noise, float corruption, boolean sigmoid, boolean normalize) {
+
+        this.x = _x;
 
         float[] x = preprocess(_x, noise, corruption);
 
@@ -260,13 +262,7 @@ public class Autoencoder {
     public float put(float[] x, float learningRate,
                      float noiseLevel, float corruptionRate,
                      boolean sigmoid) {
-        return put(x, learningRate, noiseLevel, corruptionRate, sigmoid, false);
-    }
-
-    public float put(float[] x, float learningRate,
-                     float noiseLevel, float corruptionRate,
-                     boolean sigmoidIn, boolean normalize) {
-        return put(x, learningRate, noiseLevel, corruptionRate, sigmoidIn, normalize, true);
+        return put(x, learningRate, noiseLevel, corruptionRate, sigmoid, false, true);
     }
 
     /**

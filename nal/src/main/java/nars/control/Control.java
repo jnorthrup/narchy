@@ -9,6 +9,7 @@ import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.learn.AgentBuilder;
+import jcog.learn.Agenterator;
 import jcog.math.FloatSupplier;
 import jcog.pri.PriBuffer;
 import jcog.service.Service;
@@ -374,7 +375,7 @@ import java.util.function.Consumer;
      *  it will be consistent as long as the NAR architecture remains the same.
      *  TODO kill signal notifying changed architecture and unwiring any created WiredAgent
      *  */
-    public AgentBuilder.WiredAgent agent(FloatSupplier reward, IntIntToObjectFunction<Agent> a) {
+    public Agenterator agent(FloatSupplier reward, IntIntToObjectFunction<Agent> a) {
         AgentBuilder b = new AgentBuilder(reward);
         for (MetaGoal m : MetaGoal.values()) {
             b.out(5, i->{
@@ -393,17 +394,23 @@ import java.util.function.Consumer;
 
         for (Cause c : causes) {
 
-            //b.in(c::amp);
+            b.in(() -> {
+                float ca = c.amp();
+                return ca==ca ? ca : 0;
+            });
 
-            for (MetaGoal m : MetaGoal.values()) {
-                Traffic mm = c.credit[m.ordinal()];
-                b.in(()-> mm.current);
-            }
+//            for (MetaGoal m : MetaGoal.values()) {
+//                Traffic mm = c.credit[m.ordinal()];
+//                b.in(()-> mm.current);
+//            }
             //TODO other data
         }
 
         for (Causable c : active) {
-            b.in(c::pri);
+            b.in(() -> {
+                PriNode cp = c.pri;
+                return Util.unitize(cp.priElseZero());
+            });
             //TODO other data
         }
 

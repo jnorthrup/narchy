@@ -5,7 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.math.FloatRange;
-import jcog.signal.tensor.RingTensor;
+import jcog.signal.tensor.TensorRing;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -41,7 +41,7 @@ public class RLBooster implements Consumer<NAR> {
     private final ConsumerX<ITask> in;
     private final List<Term> inputs;
     private final int actionDiscretization;
-    private final RingTensor history;
+    private final TensorRing history;
 
     transient private float[] _in = null;
     public double lastReward = Float.NaN;
@@ -88,7 +88,7 @@ public class RLBooster implements Consumer<NAR> {
 
         in = env.nar().newChannel(this);
 
-        this.history = new RingTensor(inD, history);
+        this.history = new TensorRing(inD, history);
         this.agent = agent.apply(inD * history, outD);
 
         env.onFrame(this);

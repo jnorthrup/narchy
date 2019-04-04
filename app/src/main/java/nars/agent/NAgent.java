@@ -1,5 +1,6 @@
 package nars.agent;
 
+import jcog.Paper;
 import jcog.TODO;
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
@@ -136,16 +137,15 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
     /**
-     * happiness = sum( 1 - abs(rewardBeliefExp - rewardGoalExp) )
-     * in range 0..1
+     * happiness = rewardBeliefExp - rewardGoalExp
+     *
      * avg reward satisfaction, current measurement
      */
+    @Paper
     public final float happinessMean() {
         return (float) rewards.meanBy(rr -> {
             float r = rr.happiness();
-            if (r!=r)
-                return 0.5f;
-            return r;
+            return r != r ? 0f : r;
         });
     }
 

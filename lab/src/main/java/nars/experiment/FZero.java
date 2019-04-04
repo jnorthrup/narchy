@@ -200,7 +200,7 @@ public class FZero extends NAgentX {
 //        });
 
         //auto-restore health
-        FloatAveragedWindow progressFilter = new FloatAveragedWindow(16, 0.8f);
+        FloatAveragedWindow progressFilter = new FloatAveragedWindow(8, 0.8f);
 
         onFrame(()-> {
 

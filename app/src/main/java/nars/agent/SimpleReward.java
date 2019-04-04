@@ -59,13 +59,8 @@ public class SimpleReward extends BeliefReward {
     }
 
 
-    @Override
-    protected float reward() {
-        return rewardFunc.asFloat();
-    }
-
     @Override protected Signal newConcept() {
-        Signal concept = new Signal(id, in.id, () -> reward, /*linker, */nar()) {
+        Signal concept = new Signal(id, in.id, () -> rewardBelief, /*linker, */nar()) {
             @Override
             protected AttnBranch newAttn(Term term) {
                 return new AttnBranch(term, this.components());
@@ -83,6 +78,7 @@ public class SimpleReward extends BeliefReward {
 
     @Override
     protected final void updateReward(long prev, long now) {
+        this.rewardBelief = rewardFunc.asFloat();
         ((Signal)concept).update(prev, now, nar());
     }
 }

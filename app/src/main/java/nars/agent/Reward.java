@@ -33,7 +33,7 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     protected final NAgent agent;
 
-    protected transient volatile float reward = Float.NaN;
+    protected transient volatile float rewardBelief = Float.NaN;
 
     protected final CauseChannel<ITask> in;
 
@@ -53,16 +53,19 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     }
 
-    /** estimated current happiness/satisfaction of this reward */
+    /** estimated current happiness/satisfaction of this reward
+     *
+     * happiness = rewardBeliefExp - rewardGoalExp
+     * */
     abstract public float happiness();
 
     /** scalar value representing the reward state (0..1.0) */
-    protected abstract float reward();
+    protected abstract float reward(boolean beliefOrGoal);
 
     public final NAR nar() { return agent.nar(); }
 
     public final void update(long prev, long now) {
-        reward = reward();
+        rewardBelief = reward(true);
         updateReward(prev, now);
     }
 
