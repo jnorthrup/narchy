@@ -40,9 +40,9 @@ final public class Ranking {
 
     @Override
     public String toString() {
-        return "{" +
+        return '{' +
                 tree.getDescription() +
-                "=" + Arrays.toString(fitness) +
+                '=' + Arrays.toString(fitness) +
                 '}';
     }
 

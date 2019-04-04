@@ -62,7 +62,7 @@ public class HopfieldMap<X> {
     public String toString() {
         StringBuilder sb = new StringBuilder(x.length * 6);
         for (X xx : x) {
-            sb.append(Texts.n4(in.floatValueOf(xx))).append(",");
+            sb.append(Texts.n4(in.floatValueOf(xx))).append(',');
         }
         return sb.toString();
     }

@@ -25,7 +25,7 @@ class QuickLZTest {
 
         float ratio = ((float)compressed.length) / (input.length);
         System.out.println(input.length + " input, " + compressed.length + " compressed = "  +
-                Texts.n2(100f * ratio) + "%");
+                Texts.n2(100f * ratio) + '%');
         return ratio;
     }
 

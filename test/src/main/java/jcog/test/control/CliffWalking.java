@@ -120,10 +120,10 @@ public class CliffWalking extends AbstractAgentTest {
         }
 
 
-        System.out.println(getClass().getSimpleName() + "\t" + a + "\t" +
+        System.out.println(getClass().getSimpleName() + '\t' + a + '\t' +
                 Texts.n4(episodeReward.average()) + " mean episode reward (" + episodeReward.size() + " episodes)"
                 //Texts.n4(rewardSum/cycles) + " mean reward; "
-                + "\t" +
+                + '\t' +
                 goals + " goals, " + deaths + " deaths");
 
 //            episodeReward.forEachWithIndex((r, i) -> {

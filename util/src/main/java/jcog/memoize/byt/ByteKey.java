@@ -37,7 +37,7 @@ abstract public class ByteKey extends UnitPri {
 
     @Override
     public String toString() {
-        return Texts.i(array(),0, length(), 16) + " [" + Integer.toUnsignedString(hashCode(),32) + "]";
+        return Texts.i(array(),0, length(), 16) + " [" + Integer.toUnsignedString(hashCode(),32) + ']';
     }
 
 

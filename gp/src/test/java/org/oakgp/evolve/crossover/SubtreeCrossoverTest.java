@@ -85,7 +85,7 @@ public class SubtreeCrossoverTest {
         assertNodeEquals("(+ 4 7)", c.apply(dummySelector));
         assertNodeEquals("(+ 4 8)", c.apply(dummySelector));
         assertNodeEquals("(+ 4 9)", c.apply(dummySelector));
-        assertNodeEquals("(+ 4 " + output + ")", c.apply(dummySelector));
+        assertNodeEquals("(+ 4 " + output + ')', c.apply(dummySelector));
 
         dummyRandom.assertEmpty();
         dummySelector.assertEmpty();

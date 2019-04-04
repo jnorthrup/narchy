@@ -366,14 +366,14 @@ class NarseseBaseTest extends NarseseTest {
     void testQueryVariableTask() throws Narsese.NarseseException {
         String term = "hear(Time,(the,?x))";
         assertEquals("hear(Time,(the,?x))", term(term).toString());
-        assertEquals("hear(Time,(the,?1))?", task(term + "?").toStringWithoutBudget());
+        assertEquals("hear(Time,(the,?1))?", task(term + '?').toStringWithoutBudget());
     }
 
     @Test
     void testQueryVariableTaskQuotes() throws Narsese.NarseseException {
         String term = "hear(\"Time\",(\"the\",?x))";
         assertEquals("hear(\"Time\",(\"the\",?x))", term(term).toString());
-        assertEquals("hear(\"Time\",(\"the\",?1))?", task(term + "?").toStringWithoutBudget());
+        assertEquals("hear(\"Time\",(\"the\",?1))?", task(term + '?').toStringWithoutBudget());
     }
 
     @Test
@@ -512,9 +512,9 @@ class NarseseBaseTest extends NarseseTest {
     void testMultilineQuotes() throws Narsese.NarseseException {
 
         String a = "js(\"\"\"\n" + "1\n" + "\"\"\")";
-        System.out.println(a + " " + $.$(a));
+        System.out.println(a + ' ' + $.$(a));
         assertEquals(a, $.$(a).toString());
-        List<Task> l = tasks(a + "!");
+        List<Task> l = tasks(a + '!');
         assertEquals(1, l.size());
     }
 

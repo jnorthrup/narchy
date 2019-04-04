@@ -301,7 +301,7 @@ public class Timeline2D extends Stacking implements Finger.WheelAbsorb {
 
         @Override
         public String toString() {
-            return name + "[" + start + ((start != end) ? (end + "]") : "]");
+            return name + '[' + start + ((start != end) ? (end + "]") : "]");
         }
 
         @Override

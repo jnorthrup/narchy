@@ -54,6 +54,6 @@ public class Ceil extends SlingFunction {
 	 * Returns a string representation of this function.
 	 */
 	public String toString() {
-		return "ceil(" + source[0] + ")";
+		return "ceil(" + source[0] + ')';
 	}
 }

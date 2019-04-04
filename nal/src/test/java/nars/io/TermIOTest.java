@@ -81,7 +81,7 @@ class TermIOTest {
         
 
         
-        out.println("\t" + (copy == orig ? "same" : "copy") + ": " + copy);
+        out.println('\t' + (copy == orig ? "same" : "copy") + ": " + copy);
 
         
 

@@ -33,8 +33,8 @@ public class RDP extends NAgent {
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RDP.class);
 
     public RDP(NAR n, String host, int port) throws RdesktopException {
-        super($$("rdp(\"" + host + "\", " + port + ")"), FrameTrigger.durs(1), n);
-        RdesktopFrame w = Rdesktop.RDPwindow(host + ":" + port);
+        super($$("rdp(\"" + host + "\", " + port + ')'), FrameTrigger.durs(1), n);
+        RdesktopFrame w = Rdesktop.RDPwindow(host + ':' + port);
 
         //senseCameraRetina(("video"), ()->w.canvas.backstore.getBufferedImage(), 64, 64);
 

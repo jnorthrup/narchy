@@ -3,7 +3,6 @@ package nars.table;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.control.op.Remember;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.truth.Truth;

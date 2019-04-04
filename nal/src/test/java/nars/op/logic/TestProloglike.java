@@ -146,21 +146,21 @@ class TestProloglike {
         n.input("((&&, symbol($Rs0, #Sym, #RsRest),once(rule($Q0, #Sym, #Q1, #NewSym, #Action)),action(#Action, $Ls0, #Ls1, concat(#NewSym,#RsRest), #Rs1),perform(#Q1, #Ls1, $Ls, #Rs1, $Rs)) ==> perform($Q0, $Ls0, $Ls, $Rs0, $Rs)).");
         n.input("symbol((), b, ()).\n" +
         "        symbol(concat(#Sym,#Rs), #Sym, #Rs).\n" +
-        "\n" +
+                '\n' +
         "        (left($Ls0, $Ls, $Rs0, $Rs) ==> action(#left, $Ls0, $Ls, $Rs0, $Rs)).\n" +
         "        action(stay, #Ls, #Ls, #Rs, #Rs).\n" +
         "        action(right, #Ls0, concat(#Sym,#Ls0), concat(#Sym,#Rs), #Rs).\n" +
-        "\n" +
+                '\n' +
         "        left((), (), #Rs0, concat(b,#Rs0)).\n" +
         "        left(concat(#L,#Ls), #Ls, #Rs, concat(#L,#Rs)).\n" +
 
-        
-        "\n" +
+
+                '\n' +
         "        rule(q0, 1, q0, 1, right).\n" +
         "        rule(q0, b, qf, 1, stay).\n" +
 
-        
-        "\n" +
+
+                '\n' +
         "        turing((1,1,1), #Ts)?\n");
         n.run(100);
 

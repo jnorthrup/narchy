@@ -962,7 +962,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
             @Override
             public String toString() {
-                return id + "(" + Arrays.toString(path) + ")";
+                return id + '(' + Arrays.toString(path) + ')';
             }
 
             @Override

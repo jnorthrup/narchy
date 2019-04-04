@@ -58,7 +58,7 @@ class ImplicationTest {
 
                         @Nullable Truth nzt = n.beliefTruth(nz, ETERNAL);
 
-                        o.append(z + ". %" + n2(condFreq) + "% " + impl + ". " + nz + "=" + nzt + "\n");
+                        o.append(z + ". %" + n2(condFreq) + "% " + impl + ". " + nz + '=' + nzt + '\n');
                     }
                 }
             }
@@ -102,7 +102,7 @@ class ImplicationTest {
 
                         Term nz = sp ? y : x;
                         @Nullable Truth nzt = n.goalTruth(nz, ETERNAL);
-                        o.append(cond + "! " + impl + ". " + nz + "=" + nzt + "\n");
+                        o.append(cond + "! " + impl + ". " + nz + '=' + nzt + '\n');
                     }
                 }
             }

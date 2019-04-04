@@ -3,7 +3,8 @@ package nars.term.util.conj;
 import jcog.WTF;
 import org.junit.jupiter.api.Test;
 
-import static nars.time.Tense.*;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

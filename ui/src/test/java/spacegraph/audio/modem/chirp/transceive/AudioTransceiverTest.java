@@ -27,6 +27,6 @@ class AudioTransceiverTest {
         assertTrue(b.length > 100);
 
         x.process(new AudioEvent(x.fmt, b));
-        assertEquals("[" + msg + "]", recv.toString());
+        assertEquals('[' + msg + ']', recv.toString());
     }
 }

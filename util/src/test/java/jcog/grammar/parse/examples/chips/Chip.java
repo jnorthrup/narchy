@@ -88,6 +88,6 @@ public class Chip {
 	 * @return a textual description of this chip
 	 */
 	public String toString() {
-		return "chip(" + chipID + ", " + chipName + ", " + price + ", " + ounces + ", " + oil + ")";
+		return "chip(" + chipID + ", " + chipName + ", " + price + ", " + ounces + ", " + oil + ')';
 	}
 }

@@ -661,7 +661,7 @@ public enum Texts {
         if (ns < 1_000_000) return n4(ns / 1_000d) + "us";
         if (ns < 1_000_000_000) return n4(ns / 1_000_000d) + "ms";
 
-        if (ns < 1_000_000_000_000d) return n2(ns / 1_000_000_000d) + "s";
+        if (ns < 1_000_000_000_000d) return n2(ns / 1_000_000_000d) + 's';
         long sec = Math.round(ns / 1_000_000_000d);
         if (sec < 5 * 60) return (sec / 60) + "m" + (sec % 60) + 's';
         long min = sec / 60;
@@ -728,8 +728,8 @@ public enum Texts {
     public static void histogramDecode(DoubleHistogram h, String header, double linearStep, BiConsumer<String, Object> x) {
         final char[] order = {'a'};
         h.linearBucketValues(linearStep).forEach((p) -> {
-            x.accept(header + " " + (order[0]++) +
-                            "[" + n4(p.getValueIteratedFrom()) + ".." + n4(p.getValueIteratedTo()) + ']',
+            x.accept(header + ' ' + (order[0]++) +
+                            '[' + n4(p.getValueIteratedFrom()) + ".." + n4(p.getValueIteratedTo()) + ']',
                     p.getCountAddedInThisIterationStep());
         });
     }
@@ -764,7 +764,7 @@ public enum Texts {
         if (percentiles) {
             histogramDecode(h, "", (label, value) -> {
                 try {
-                    out.append(label + " " + value + "\n");
+                    out.append(label + ' ' + value + '\n');
                 } catch (IOException e) {
                     throw new WTF(e);
                 }
@@ -785,7 +785,7 @@ public enum Texts {
 
             }
         } else {
-            s = ("\"" + quoteEscaper.build().escape(s) + '"');
+            s = ('"' + quoteEscaper.build().escape(s) + '"');
         }
 
         return s;

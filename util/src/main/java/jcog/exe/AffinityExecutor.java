@@ -138,7 +138,7 @@ public class AffinityExecutor implements Executor {
         for (int i = 0; i < count; i++) {
             R w = workerBuilder.get();
             AffinityThread at = new AffinityThread(
-                    id + "_" + serial.getAndIncrement(),
+                    id + '_' + serial.getAndIncrement(),
                     w,
                     tryPin);
             add(at);
@@ -166,12 +166,12 @@ public class AffinityExecutor implements Executor {
 
         for (Thread t : threads) {
             ThreadInfo threadInfo = threadMXBean.getThreadInfo(t.getId());
-            sb.append("{");
-            sb.append("name=").append(t.getName()).append(",");
-            sb.append("id=").append(t.getId()).append(",");
-            sb.append("state=").append(threadInfo.getThreadState()).append(",");
+            sb.append('{');
+            sb.append("name=").append(t.getName()).append(',');
+            sb.append("id=").append(t.getId()).append(',');
+            sb.append("state=").append(threadInfo.getThreadState()).append(',');
             sb.append("lockInfo=").append(threadInfo.getLockInfo());
-            sb.append("}");
+            sb.append('}');
         }
 
         return sb.toString();

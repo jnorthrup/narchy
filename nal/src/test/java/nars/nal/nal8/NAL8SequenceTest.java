@@ -48,7 +48,7 @@ public class NAL8SequenceTest extends NALTest {
         
         test
                 .input( "x!")
-                .input( "(" + conj + ",x,y,z).")
+                .input('(' + conj + ",x,y,z).")
                 .mustGoal(cycles, "(y"+conj+"z)", 1, 0.81f) //81% for one step
         ;
     }

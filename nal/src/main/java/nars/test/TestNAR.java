@@ -400,7 +400,7 @@ public class TestNAR {
         int tv = term.volume();
         int tvMax = nar.termVolumeMax.intValue();
         if (tv > tvMax) {
-            throw new TermException("condition term volume (" + tv + ") exceeds volume max (" + tvMax + ")", term);
+            throw new TermException("condition term volume (" + tv + ") exceeds volume max (" + tvMax + ')', term);
         }
 
         float hf = freqTolerance / 2.0f, hc = confTolerance / 2.0f;

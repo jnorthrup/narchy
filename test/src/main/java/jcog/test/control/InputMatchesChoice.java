@@ -37,7 +37,7 @@ public class InputMatchesChoice extends AbstractAgentTest {
             rewardSum += nextReward;
         }
         float rewardMean = rewardSum / cycles;
-        System.out.println(agent.getClass() + " " + agent.summary() + "\n" + acts + " " + rewardMean);
+        System.out.println(agent.getClass() + " " + agent.summary() + '\n' + acts + ' ' + rewardMean);
         assertTrue(rewardMean > 0); //should be tougher
     }
 

@@ -19,6 +19,6 @@ public class TaskJson {
 
     @Override
     public String toString() {
-        return new StringBuilder().append('$').append(pri).append(' ').append(term).append(punc).append(" ").append(truth).append(" ").append(start).append(" ").append(end).toString();
+        return new StringBuilder().append('$').append(pri).append(' ').append(term).append(punc).append(' ').append(truth).append(' ').append(start).append(' ').append(end).toString();
     }
 }

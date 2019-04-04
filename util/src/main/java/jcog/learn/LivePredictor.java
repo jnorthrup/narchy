@@ -108,7 +108,7 @@ public class LivePredictor {
 
         @Override
         public String toString() {
-            return super.toString() + "[" + lstm + "]";
+            return super.toString() + '[' + lstm + ']';
         }
 
         @Override

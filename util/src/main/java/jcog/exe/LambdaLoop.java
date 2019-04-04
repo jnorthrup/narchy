@@ -9,7 +9,7 @@ public class LambdaLoop extends Loop {
 
     @Override
     public String toString() {
-        return super.toString() + "[" + iteration + "]";
+        return super.toString() + '[' + iteration + ']';
     }
 
     @Override

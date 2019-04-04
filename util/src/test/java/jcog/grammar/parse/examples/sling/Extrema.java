@@ -46,6 +46,6 @@ public class Extrema {
 	 * 
 	 */
 	public String toString() {
-		return "(" + min + ", " + max + ")";
+		return "(" + min + ", " + max + ')';
 	}
 }

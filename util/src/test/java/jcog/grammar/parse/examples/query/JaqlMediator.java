@@ -48,7 +48,7 @@ public class JaqlMediator implements ActionListener {
 				if (ex.getMessage() != null) {
 					text = ex.getMessage();
 				}
-				resultArea.append(text + "\n");
+				resultArea.append(text + '\n');
 				return;
 			}
 		}

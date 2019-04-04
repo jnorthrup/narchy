@@ -160,7 +160,7 @@ public class ForCommand extends Command {
 	 * @return a string description of this for command
 	 */
 	public String toString() {
-		return "for, setUpCommand: " + setupCommand + "\n" + "     condition:    " + condition + "\n" + "     endCommand:   "
-				+ endCommand + "\n" + "     bodyCommand:  " + bodyCommand;
+		return "for, setUpCommand: " + setupCommand + '\n' + "     condition:    " + condition + '\n' + "     endCommand:   "
+				+ endCommand + '\n' + "     bodyCommand:  " + bodyCommand;
 	}
 }

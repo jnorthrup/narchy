@@ -34,8 +34,8 @@ public class ShowAnonymous {
 		Query q = new Query(p, new Structure("marriage", new Term[] { id, hub, a, a, a }));
 
 		
-		System.out.println("Program: \n" + p + "\n");
-		System.out.println("Query:   \n" + q + "\n");
+		System.out.println("Program: \n" + p + '\n');
+		System.out.println("Query:   \n" + q + '\n');
 		System.out.println("Results: \n");
 
 		while (q.canFindNextProof()) {

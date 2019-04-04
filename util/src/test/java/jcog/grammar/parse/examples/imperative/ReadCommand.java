@@ -94,6 +94,6 @@ public class ReadCommand extends Command {
 	 * @return a string description of this read command
 	 */
 	public String toString() {
-		return "read(" + variable.name + ")";
+		return "read(" + variable.name + ')';
 	}
 }

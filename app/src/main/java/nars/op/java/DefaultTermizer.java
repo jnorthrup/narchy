@@ -306,7 +306,7 @@ public class DefaultTermizer implements Termizer {
             } else if (o instanceof Long /* beyond an Int's capacity */) {
                 return $.the(Long.toString((Long) o));
             } else {
-                throw new TODO("support: " + o + " (" + o.getClass() + ")");
+                throw new TODO("support: " + o + " (" + o.getClass() + ')');
             }
         } else if (o instanceof String) {
             return Atomic.the((String) o);

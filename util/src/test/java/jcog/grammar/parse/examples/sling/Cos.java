@@ -54,6 +54,6 @@ public class Cos extends SlingFunction {
 	 * Returns a string representation of this function.
 	 */
 	public String toString() {
-		return "cos(" + source[0] + ")";
+		return "cos(" + source[0] + ')';
 	}
 }

@@ -209,11 +209,11 @@ public class ParserTestCase {
 	}
 
 	@Test public void testMultilineComments() throws InvalidTermException {
-		String theory = "t1." + "\n" +
-		                "/*" + "\n" +
-		                "t2" + "\n" +
-		                "*/" + "\n" +
-		                "t3." + "\n";
+		String theory = "t1." + '\n' +
+		                "/*" + '\n' +
+		                "t2" + '\n' +
+		                "*/" + '\n' +
+		                "t3." + '\n';
 		Parser p = new Parser(theory);
 		assertEquals(new Struct("t1"), p.nextTerm(true));
 		assertEquals(new Struct("t3"), p.nextTerm(true));

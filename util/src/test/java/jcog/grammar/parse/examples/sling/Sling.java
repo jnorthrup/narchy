@@ -70,6 +70,6 @@ public class Sling extends SlingFunction {
 	 * Return a string representation of this function.
 	 */
 	public String toString() {
-		return "sling(" + source[0] + ", " + source[1] + ")";
+		return "sling(" + source[0] + ", " + source[1] + ')';
 	}
 }

@@ -83,7 +83,7 @@ public class KaratePuzzle {
 	 */
     private void showStudents() {
 		for (int i = 0; i < students.length; i++)
-			System.out.println("\t" + students[i] + " ");
+			System.out.println("\t" + students[i] + ' ');
 	}
 
 	/**

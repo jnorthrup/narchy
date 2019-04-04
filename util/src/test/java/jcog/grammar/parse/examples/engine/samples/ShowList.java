@@ -30,7 +30,7 @@ public class ShowList {
 		System.out.println("\n... unifies with: " + abc);
 
 		abc.unify(snakes);
-		System.out.println("\n... giving: \n" + "A: " + a + "\n" + "B: " + b + "\n" + "C: " + c + "\n");
+		System.out.println("\n... giving: \n" + "A: " + a + '\n' + "B: " + b + '\n' + "C: " + c + '\n');
 
 		
 		
@@ -41,6 +41,6 @@ public class ShowList {
 		System.out.println("\n... and unifies with: " + ht);
 
 		ht.unify(snakes);
-		System.out.println("\n... giving: \n" + "Head: " + head + "\n" + "Tail: " + tail + "\n");
+		System.out.println("\n... giving: \n" + "Head: " + head + '\n' + "Tail: " + tail + '\n');
 	}
 }

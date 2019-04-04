@@ -376,7 +376,7 @@ public class Clausifier  {
 
         
         Formula negQF = new Formula();
-        negQF.read("(not " + qF.theFormula + ")");
+        negQF.read("(not " + qF.theFormula + ')');
 
         
         
@@ -607,8 +607,8 @@ public class Clausifier  {
                 String third = thisFormula.caddr();
                 Clausifier thirdF = new Clausifier(third);
                 String newThird = thirdF.equivalencesOut().theFormula;           
-                theNewFormula = ("(and (=> " + newSecond + " " + newThird
-                                 + ") (=> " + newThird + " " + newSecond + "))");
+                theNewFormula = ("(and (=> " + newSecond + ' ' + newThird
+                                 + ") (=> " + newThird + ' ' + newSecond + "))");
             }
             else {
                 Clausifier fourth = new Clausifier(thisFormula.cdrAsFormula().theFormula);
@@ -648,7 +648,7 @@ public class Clausifier  {
                 String third = thisFormula.caddr();
                 Clausifier thirdF = new Clausifier(third);
                 String newThird = thirdF.implicationsOut().theFormula;
-                theNewFormula = ("(or (not " + newSecond + ") " + newThird + ")");
+                theNewFormula = ("(or (not " + newSecond + ") " + newThird + ')');
             }
             else {
                 Clausifier fourth = new Clausifier(thisFormula.cdrAsFormula().theFormula);
@@ -727,16 +727,16 @@ public class Clausifier  {
                     	quant = Formula.EQUANT;
                     else
                     	quant = Formula.UQUANT;
-                    arg2_of_arg1 = ("(not " + arg2_of_arg1 + ")");
+                    arg2_of_arg1 = ("(not " + arg2_of_arg1 + ')');
                     Formula arg2_of_arg1F = new Formula();
                     arg2_of_arg1F.read(arg2_of_arg1);
-                    String theNewFormula = ("(" + quant + " " + vars + " " 
-                                            + negationsIn_1(arg2_of_arg1F).theFormula + ")");
+                    String theNewFormula = ('(' + quant + ' ' + vars + ' '
+                                            + negationsIn_1(arg2_of_arg1F).theFormula + ')');
                     Formula newF = new Formula();
                     newF.read(theNewFormula);
                     return newF;
                 }
-                String theNewFormula = ("(not " + negationsIn_1(arg1F).theFormula + ")");
+                String theNewFormula = ("(not " + negationsIn_1(arg1F).theFormula + ')');
                 Formula newF = new Formula();
                 newF.read(theNewFormula);
                 return newF;
@@ -746,7 +746,7 @@ public class Clausifier  {
                 Formula arg2F = new Formula();
                 arg2F.read(arg2);
                 String newArg2 = negationsIn_1(arg2F).theFormula;
-                String theNewFormula = ("(" + arg0 + " " + arg1 + " " + newArg2 + ")");
+                String theNewFormula = ('(' + arg0 + ' ' + arg1 + ' ' + newArg2 + ')');
                 Formula newF = new Formula();
                 newF.read(theNewFormula);
                 return newF;
@@ -941,7 +941,7 @@ public class Clausifier  {
             if (m.keySet().contains(thisFormula.theFormula)) {
                 thisFormula.theFormula = m.get(thisFormula.theFormula);
                 if (thisFormula.listP()) 
-                    thisFormula.theFormula = "(" + thisFormula.theFormula + ")";
+                    thisFormula.theFormula = '(' + thisFormula.theFormula + ')';
             }
             return thisFormula;
         }
@@ -1228,9 +1228,9 @@ public class Clausifier  {
                 String arg2 = thisFormula.caddr();
                 Formula arg2F = new Formula();
                 arg2F.read(arg2);
-                String theNewFormula = ("(forall " + varList + " " 
+                String theNewFormula = ("(forall " + varList + ' '
                                         + existentialsOut(arg2F, evSubs, iUQVs, 
-                                                          newScopedUQVs).theFormula + ")");
+                                                          newScopedUQVs).theFormula + ')');
                 thisFormula.read(theNewFormula);
                 return thisFormula;
             }

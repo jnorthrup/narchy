@@ -35,7 +35,7 @@ class BeliefTableTest {
         Task t = n.belief(cc, start, end);
         assertNotNull(t);
         assertEquals(start, t.start());
-        assertEquals(end, t.end(), ()-> t + " but end should be: " + end + "\n" + t.proof());
+        assertEquals(end, t.end(), ()-> t + " but end should be: " + end + '\n' + t.proof());
     }
 
 

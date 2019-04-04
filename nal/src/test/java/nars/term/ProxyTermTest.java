@@ -14,7 +14,7 @@ class ProxyTermTest {
     void testEveryTermMethodProxied() {
 
         Function<Method, String> methodSummarizer = x ->
-                x.getName() + "(" + Arrays.toString(x.getParameterTypes()) + ")";
+                x.getName() + '(' + Arrays.toString(x.getParameterTypes()) + ')';
 
 
         for (Class proxy : new Class[] { ProxyTerm.class }) {
@@ -24,7 +24,7 @@ class ProxyTermTest {
                 if (c == proxy || c == Object.class)
                     continue;
 
-                System.out.println(proxy + " does not override: " + c + " " + m);
+                System.out.println(proxy + " does not override: " + c + ' ' + m);
 
                 unoverriden++;
             }

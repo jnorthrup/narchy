@@ -63,6 +63,6 @@ public class PrintlnCommand extends Command {
 	 * @return a string description of this print command
 	 */
 	public String toString() {
-		return "println(" + term + ")";
+		return "println(" + term + ')';
 	}
 }

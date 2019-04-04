@@ -64,7 +64,7 @@ class MarkovChainTest {
             String s = Joiner.on(' ').join(phrase);
             sentences.add(s);
 
-            System.out.println(s + "\t" + (end - start) + " ms");
+            System.out.println(s + '\t' + (end - start) + " ms");
         }
 
         assertTrue(sentences.size() >= (ii / 5), "unique sentences");

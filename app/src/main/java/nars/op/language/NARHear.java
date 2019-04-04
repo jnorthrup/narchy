@@ -185,7 +185,7 @@ public class NARHear extends Loop {
 
         NARHear.hear(n, strippedText, url, 250, 0.1f);
 
-        return Operator.log(n.time(), "Reading " + url + ":" + strippedText.length() + " characters");
+        return Operator.log(n.time(), "Reading " + url + ':' + strippedText.length() + " characters");
     }
 
     public static void hear(NAR nar, String t, String source) {

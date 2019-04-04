@@ -167,16 +167,16 @@ class JTarTest {
 			byte data[] = new byte[BUFFER];
 
 			if (entry.isDirectory()) {
-				new File(destFolder + "/" + entry.getName()).mkdirs();
+				new File(destFolder + '/' + entry.getName()).mkdirs();
 				continue;
 			} else {
 				int di = entry.getName().lastIndexOf('/');
 				if (di != -1) {
-					new File(destFolder + "/" + entry.getName().substring(0, di)).mkdirs();
+					new File(destFolder + '/' + entry.getName().substring(0, di)).mkdirs();
 				}
 			}
 
-			FileOutputStream fos = new FileOutputStream(destFolder + "/" + entry.getName());
+			FileOutputStream fos = new FileOutputStream(destFolder + '/' + entry.getName());
 			dest = new BufferedOutputStream(fos);
 
 			while ((count = tis.read(data)) != -1) {
@@ -199,7 +199,7 @@ class JTarTest {
 			files[0] = f.getName();
 		}
 
-		parent = ((parent == null) ? (f.isFile()) ? "" : f.getName() + "/" : parent + f.getName() + "/");
+		parent = ((parent == null) ? (f.isFile()) ? "" : f.getName() + '/' : parent + f.getName() + '/');
 
 		for (int i = 0; i < files.length; i++) {
 			System.out.println("Adding: " + files[i]);
@@ -215,7 +215,7 @@ class JTarTest {
 				if (fl != null && fl.length != 0) {
 					tarFolder(parent, fe.getPath(), out);
 				} else {
-					TarEntry entry = new TarEntry(fe, parent + files[i] + "/");
+					TarEntry entry = new TarEntry(fe, parent + files[i] + '/');
 					out.putNextEntry(entry);
 				}
 				continue;

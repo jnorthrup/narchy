@@ -100,6 +100,6 @@ public class Arithmetic extends SlingFunction {
 	 * Returns a string representation of this function.
 	 */
 	public String toString() {
-		return operator + "(" + source[0] + ", " + source[1] + ")";
+		return operator + "(" + source[0] + ", " + source[1] + ')';
 	}
 }

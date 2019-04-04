@@ -136,9 +136,9 @@ public class WebClient {
                 .withAttr("type", "x-shader/x-vertex").withText(
                         "                attribute vec3 positionAttr;\n" +
                                 "        attribute vec4 colorAttr;\n" +
-                                "\n" +
+                                '\n' +
                                 "        varying vec4 vColor;\n" +
-                                "\n" +
+                                '\n' +
                                 "        void main(void) {\n" +
                                 "                gl_Position = vec4(positionAttr, 1.0);\n" +
                                 "        vColor = colorAttr;\n" +

@@ -27,7 +27,7 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
 			this.a = a;
 			this.b = b;
 		} else {
-			throw new RuntimeException("wrong Interval ordering; b >= a but attempted creation of: [" + a + ".." + b + "]");
+			throw new RuntimeException("wrong Interval ordering; b >= a but attempted creation of: [" + a + ".." + b + ']');
 		}
 	}
 

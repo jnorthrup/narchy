@@ -326,7 +326,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     }
 
     private static String wrapAtom(String n) {
-        return "_" + n;
+        return '_' + n;
     }
 
     private static Term theTwoArity(Op inherit, Struct s) {

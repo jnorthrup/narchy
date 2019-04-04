@@ -21,6 +21,6 @@ public class ShowStringFunction {
 	 */
 	public static void main(String[] args) {
 		StringFunction func = new Trim(new LowerCase());
-		System.out.println(">" + func.f(" TAKE IT EASY ") + "<");
+		System.out.println('>' + func.f(" TAKE IT EASY ") + '<');
 	}
 }

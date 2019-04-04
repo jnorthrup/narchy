@@ -53,6 +53,6 @@ public class WhileCommand extends Command {
 	 * @return a string description of this while command
 	 */
 	public String toString() {
-		return "while" + "(" + condition + ")" + "{" + command + "}";
+		return "while" + '(' + condition + ')' + '{' + command + '}';
 	}
 }

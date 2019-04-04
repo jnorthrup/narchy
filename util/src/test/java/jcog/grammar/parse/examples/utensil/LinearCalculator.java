@@ -96,6 +96,6 @@ public class LinearCalculator {
 	 * @return a textual description of this object
 	 */
 	public String toString() {
-		return "" + xFrom + ":" + xTo + "::" + yFrom + ":" + yTo;
+		return "" + xFrom + ':' + xTo + "::" + yFrom + ':' + yTo;
 	}
 }

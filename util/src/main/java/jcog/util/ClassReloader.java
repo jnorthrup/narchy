@@ -507,7 +507,7 @@ public class ClassReloader extends ClassLoader {
             } else if (file.isDirectory()) {
                 String newPkg;
                 if (!pkg.isEmpty()) {
-                    newPkg = pkg + "." + file.getName();
+                    newPkg = pkg + '.' + file.getName();
                 } else {
                     newPkg = file.getName();
                 }
@@ -522,7 +522,7 @@ public class ClassReloader extends ClassLoader {
         int lastDotIdx = classSimpleName.lastIndexOf('.');
         className = classSimpleName.substring(0, lastDotIdx);
         if (!pkg.isEmpty()) {
-            className = pkg + "." + className;
+            className = pkg + '.' + className;
         }
         return className;
     }
@@ -793,11 +793,11 @@ public class ClassReloader extends ClassLoader {
         @Override
         public String toString() {
             String res = "";
-            res += "Reuse bytecode      : " + ByteCodeContainer.reuseByteCode + "\n";
-            res += "Verify file changes : " + this.verifyFileChanges + "\n";
-            res += "Classes to reload   : \n" + classesToReloadAsString(true) + "\n";
-            res += "File per class      : \n" + filePerClassAsString(true) + "\n";
-            res += "Bytecode per class  : \n" + byteCodePerClass(true, false) + "\n";
+            res += "Reuse bytecode      : " + ByteCodeContainer.reuseByteCode + '\n';
+            res += "Verify file changes : " + this.verifyFileChanges + '\n';
+            res += "Classes to reload   : \n" + classesToReloadAsString(true) + '\n';
+            res += "File per class      : \n" + filePerClassAsString(true) + '\n';
+            res += "Bytecode per class  : \n" + byteCodePerClass(true, false) + '\n';
             return res;
         }
 

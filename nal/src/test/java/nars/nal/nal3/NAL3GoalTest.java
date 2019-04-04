@@ -50,8 +50,8 @@ class NAL3GoalTest {
             second = X;
         }
         String diff = (true) ?
-                "((" + first + "~" + second + ")-->A)" :
-                "(A-->(" + first + "-" + second + "))";
+                "((" + first + '~' + second + ")-->A)" :
+                "(A-->(" + first + '-' + second + "))";
         String XX = true ? Xe : Xi;
         String YY = true ? Ye : Yi;
         if (diffIsGoal) {
@@ -62,17 +62,17 @@ class NAL3GoalTest {
             goalTerm = XX;
         }
         if (!goalPolarity)
-            goalTerm = "(--," + goalTerm + ")";
+            goalTerm = "(--," + goalTerm + ')';
         if (!beliefPolarity)
-            beliefTerm = "(--," + beliefTerm + ")";
+            beliefTerm = "(--," + beliefTerm + ')';
 
-        String goalTask = goalTerm + "!";
-        String beliefTask = beliefTerm + ".";
+        String goalTask = goalTerm + '!';
+        String beliefTask = beliefTerm + '.';
 
-        String expectedTask = YY + "!";
-        if (f < 0.5f) expectedTask = "(--," + expectedTask + ")";
+        String expectedTask = YY + '!';
+        if (f < 0.5f) expectedTask = "(--," + expectedTask + ')';
 
-        System.out.println(goalTask + "\t" + beliefTask + "\t=>\t" + expectedTask);
+        System.out.println(goalTask + '\t' + beliefTask + "\t=>\t" + expectedTask);
 
 
         new TestNAR(NARS.tmp(3))

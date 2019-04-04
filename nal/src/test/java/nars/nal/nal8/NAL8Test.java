@@ -713,7 +713,7 @@ public class NAL8Test extends NALTest {
         assertEquals(2, subjPred.length);
 
         test
-                .inputAt(start, "(" + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + " " + subjPred[1] + "). |")
+                .inputAt(start, '(' + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + ' ' + subjPred[1] + "). |")
                 .inputAt(when, "b! |")
                 .mustGoal(when * 32, subjPred[0], 1f, 0.45f,
                         (t) -> t >= goalAt)

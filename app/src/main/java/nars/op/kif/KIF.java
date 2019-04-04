@@ -133,23 +133,23 @@ public class KIF {
 
         StringBuilder result = new StringBuilder();
         result.append(inRule);
-        result.append("\t");
+        result.append('\t');
         result.append(inAntecedent);
-        result.append("\t");
+        result.append('\t');
         result.append(inConsequent);
-        result.append("\t");
+        result.append('\t');
         result.append(st.ttype);
-        result.append("\t");
+        result.append('\t');
         result.append(argumentNum);
-        result.append("\t");
+        result.append('\t');
         result.append(parenLevel);
-        result.append("\t");
+        result.append('\t');
         result.append(st.sval);
-        result.append("\t");
+        result.append('\t');
         result.append(st.nval);
-        result.append("\t");
+        result.append('\t');
         result.append(st);
-        result.append("\t");
+        result.append('\t');
         result.append(key);
     }
 
@@ -234,12 +234,12 @@ public class KIF {
                         }
                     }
                     if ((parenLevel != 0) && (lastVal != 40) && (expression.length() > 0))
-                        expression.append(" "); 
-                    expression.append("(");
+                        expression.append(' ');
+                    expression.append('(');
                 }
                 else if (st.ttype == 41) { 
                     parenLevel--;
-                    expression.append(")");
+                    expression.append(')');
                     if (parenLevel == 0) { 
                         String fstr = StringUtil.normalizeSpaceChars(expression.toString());
                         f.theFormula = fstr.intern();
@@ -309,19 +309,19 @@ public class KIF {
                 else if (st.ttype == 34) { 
                     st.sval = StringUtil.escapeQuoteChars(st.sval);
                     if (lastVal != 40) 
-                        expression.append(" ");
-                    expression.append("\"");
+                        expression.append(' ');
+                    expression.append('"');
                     String com = st.sval;
                     totalLinesForComments += countChar(com, (char) 0X0A);
                     expression.append(com);
-                    expression.append("\"");
+                    expression.append('"');
                     if (parenLevel < 2) 
                         argumentNum = argumentNum + 1;
                 }
                 else if ((st.ttype == StreamTokenizer.TT_NUMBER) || 
                         (st.sval != null && (Character.isDigit(st.sval.charAt(0))))) {
                     if (lastVal != 40) 
-                        expression.append(" ");
+                        expression.append(' ');
                     if (st.nval == 0)
                         expression.append(st.sval);
                     else
@@ -335,7 +335,7 @@ public class KIF {
                     if (parenLevel < 2) 
                         argumentNum = argumentNum + 1;
                     if (lastVal != 40) 
-                        expression.append(" ");
+                        expression.append(' ');
                     expression.append(st.sval);
                     if (expression.length() > 64000) {
                         errStr = (errStart + ": Sentence over 64000 characters new line " + f.startLine);

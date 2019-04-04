@@ -48,6 +48,6 @@ public class AddFunctionCommand extends Command {
 	 * @return   a string description of this command
 	 */
 	public String toString() {
-		return "add(" + f + ", " + renderables + ")";
+		return "add(" + f + ", " + renderables + ')';
 	}
 }

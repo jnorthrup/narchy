@@ -2159,7 +2159,7 @@ public enum Util {
     public static float softmax(float x, float temp) {
         float f = (float) Math.exp(x / temp);
         if (!Float.isFinite(f))
-            throw new RuntimeException("softmax(" + f + "," + temp + ") is non-finite");
+            throw new RuntimeException("softmax(" + f + ',' + temp + ") is non-finite");
         return f;
     }
 
@@ -2220,13 +2220,13 @@ public enum Util {
 
     public static void toMap(HashBag<?> f, String header, BiConsumer<String, Object> x) {
         f.forEachWithIndex((e, n) -> {
-            x.accept(header + " " + e, n);
+            x.accept(header + ' ' + e, n);
         });
     }
 
     public static void toMap(Iterator<? extends Map.Entry<?, ?>> f, String header, BiConsumer<String, Object> x) {
         f.forEachRemaining((e) -> {
-            x.accept(header + " " + e.getKey(), e.getValue());
+            x.accept(header + ' ' + e.getKey(), e.getValue());
         });
     }
 

@@ -199,7 +199,7 @@ class CountMinSketchTest {
             for (int j = 0; j < i; j++)
                 c.add(i); 
         }
-        System.out.println(c.toString() + " " + c.summary());
+        System.out.println(c.toString() + ' ' + c.summary());
         assertTrue(c.toString().startsWith("1x1,2x2,3x3,4x4,5x5,6x6,7x7,8x8,9x9"));
     }
 }

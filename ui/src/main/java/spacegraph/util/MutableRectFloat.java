@@ -152,7 +152,7 @@ public class MutableRectFloat<X> extends v2 {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" +
+        return getClass().getSimpleName() + '{' +
                 "cx=" + x +
                 ", cy=" + y +
                 ", w=" + w +

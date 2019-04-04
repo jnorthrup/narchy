@@ -208,8 +208,8 @@ public class TermTestMisc {
 
         assertEquals(yc, y.root().toString());
 
-        Term x = $.$("(tetris(isRowClear,10,true) ==>+- " + ys + ")");
-        assertEquals("(tetris(isRowClear,10,true) ==>+- " + yc + ")", x.concept().toString());
+        Term x = $.$("(tetris(isRowClear,10,true) ==>+- " + ys + ')');
+        assertEquals("(tetris(isRowClear,10,true) ==>+- " + yc + ')', x.concept().toString());
 
     }
 

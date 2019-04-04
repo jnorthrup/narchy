@@ -38,7 +38,7 @@ public class CheckBox extends ToggleButton {
 
     @Override
     public String term() {
-        return "\"" + text + "\"";
+        return '"' + text + '"';
     }
 
     public CheckBox(String text, ObjectBooleanProcedure<ToggleButton> on) {

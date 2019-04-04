@@ -92,7 +92,7 @@ public class TestServer {
         public String toString() {
             return "test(" +
                     "id='" + id + '\'' +
-                    " " + status +
+                    ' ' + status +
                     " @ " + when +
                     " wallTimeNS=" + Texts.timeStr(wallTimeNS) +
                     '}';

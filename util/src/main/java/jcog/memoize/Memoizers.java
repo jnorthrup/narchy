@@ -107,7 +107,7 @@ public class Memoizers {
         }
 
         public void print() {
-            System.out.println(name + "\n" + memoize.summary() + "\n");
+            System.out.println(name + '\n' + memoize.summary() + '\n');
         }
     }
 }

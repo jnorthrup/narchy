@@ -71,7 +71,7 @@ class VolumeQuery2 {
 		p.put(new IAssembler() {
 			public void accept(Assembly a) {
 				Object o = a.pop();
-				a.push("VOL(" + o + ")");
+				a.push("VOL(" + o + ')');
 			}
 		});
 

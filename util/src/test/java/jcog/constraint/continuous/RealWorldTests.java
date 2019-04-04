@@ -352,7 +352,7 @@ class RealWorldTests {
         Iterator<Map.Entry<String, DoubleVar>> it = variableHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, DoubleVar> pairs = it.next();
-            System.out.println(" " + pairs.getKey() + " = " + pairs.getValue().value() + " (address:" + pairs.getValue().hashCode() + ")");
+            System.out.println(' ' + pairs.getKey() + " = " + pairs.getValue().value() + " (address:" + pairs.getValue().hashCode() + ')');
         }
     }
 

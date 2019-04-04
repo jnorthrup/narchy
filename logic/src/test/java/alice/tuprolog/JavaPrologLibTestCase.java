@@ -224,7 +224,7 @@ public class JavaPrologLibTestCase {
 		info = prolog.solve("demo(Value).");
         assertTrue(info.isSuccess());
         assertTrue(info.getTerm("Value").isList());
-		assertEquals("[" + paths + "]", info.getTerm("Value").toString());
+		assertEquals('[' + paths + ']', info.getTerm("Value").toString());
 		
 
 
@@ -355,12 +355,12 @@ public class JavaPrologLibTestCase {
 		
 		if(valid)
 		{
-			paths = "'" + file.getCanonicalPath() + "'," +
-					"'" + file.getCanonicalPath() 
+			paths = '\'' + file.getCanonicalPath() + "'," +
+                    '\'' + file.getCanonicalPath()
 					+ File.separator + "test"
 					+ File.separator + "unit" 
 					+ File.separator + "TestURLClassLoader.jar'";
-			paths += "," +	"'" + file.getCanonicalPath() 
+			paths += ',' + '\'' + file.getCanonicalPath()
 					+ File.separator + "test"
 					+ File.separator + "unit" 
 					+ File.separator + "TestInterfaces.jar'";
@@ -368,7 +368,7 @@ public class JavaPrologLibTestCase {
 		
 		else
 		{
-			paths = "'" + file.getCanonicalPath() + "'";
+			paths = '\'' + file.getCanonicalPath() + '\'';
 		}
 	}
 }

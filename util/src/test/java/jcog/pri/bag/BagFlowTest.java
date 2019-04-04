@@ -96,7 +96,7 @@ public class BagFlowTest {
 
             f.commit();
 
-            System.out.println(time[0] + " " + f.size() + "/" + f.capacity());
+            System.out.println(time[0] + " " + f.size() + '/' + f.capacity());
             //f.print();
             Texts.histogramPrint(f.activeDuration, System.out);
 

@@ -180,9 +180,9 @@ public class FormulaPreprocessor {
                         begin = false;
                     }
                     if (!t.endsWith("+"))
-                        sb.append(" (instance " + unquantifiedV + " " + t + ") ");
+                        sb.append(" (instance " + unquantifiedV + ' ' + t + ") ");
                     else
-                        sb.append(" (subclass " + unquantifiedV + " " + t.substring(0, t.length() - 1) + ") ");
+                        sb.append(" (subclass " + unquantifiedV + ' ' + t.substring(0, t.length() - 1) + ") ");
                 }
             }
         }
@@ -205,7 +205,7 @@ public class FormulaPreprocessor {
             f.read(form.theFormula);
         if (debug) System.out.println("addTypeRestrictions: result: " + f);
         if (debug) System.out.println("addTypeRestrictions: form at end: " + form);
-        if (debug) System.out.println("addTypeRestrictions: sb at end: '" + sb + "'");
+        if (debug) System.out.println("addTypeRestrictions: sb at end: '" + sb + '\'');
         return f;
     }
 
@@ -226,12 +226,12 @@ public class FormulaPreprocessor {
         String carstr = f.car();
         if (debug) System.out.println("addTypeRestrictionsRecurse: carstr: " + carstr);
         if (Formula.atom(carstr) && (Formula.isLogicalOperator(carstr) || carstr.equals(Formula.EQUAL))) {
-            sb.append("(" + carstr + " ");
+            sb.append('(' + carstr + ' ');
             if (debug) System.out.println("addTypeRestrictionsRecurse: interior sb: " + sb);
             if (carstr.equals(Formula.EQUANT) || carstr.equals(Formula.UQUANT)) {
 
 
-                sb.append(f.getArgument(1) + " ");
+                sb.append(f.getArgument(1) + ' ');
                 ArrayList<String> quantifiedVariables = collectVariables(f.getArgument(1));
 
 
@@ -265,18 +265,18 @@ public class FormulaPreprocessor {
                     if (types != null && !types.isEmpty()) {
                         for (String t : types) {
                             if (!t.endsWith("+"))
-                                sb.append(" (instance " + existentiallyQV + " " + t + ") ");
+                                sb.append(" (instance " + existentiallyQV + ' ' + t + ") ");
                             else
-                                sb.append(" (subclass " + existentiallyQV + " " + t.substring(0, t.length() - 1) + ") ");
+                                sb.append(" (subclass " + existentiallyQV + ' ' + t.substring(0, t.length() - 1) + ") ");
                         }
                     }
                 }
                 if (addSortals && carstr.equals(Formula.UQUANT))
-                    sb.append(")");
+                    sb.append(')');
                 for (int i = 2; i < f.listLength(); i++)
                     addTypeRestrictionsRecurse(kb, new Formula(f.getArgument(i)), sb);
                 if (addSortals)
-                    sb.append(")");
+                    sb.append(')');
             } else {
                 if (debug) System.out.println("addTypeRestrictionsRecurse: input interior: " + f);
                 if (debug) System.out.println("addTypeRestrictionsRecurse: args: " + f.complexArgumentsToArrayList(1));
@@ -291,7 +291,7 @@ public class FormulaPreprocessor {
                 for (int i = 1; i < f.listLength(); i++)
                     addTypeRestrictionsRecurse(kb, new Formula(f.getArgument(i)), sb);
             }
-            sb.append(")");
+            sb.append(')');
         } else if (f.isSimpleClause(kb) || f.atom()) {
             if (debug) System.out.println("addTypeRestrictionsRecurse: here2");
             sb.append(f + " ");
@@ -505,7 +505,7 @@ public class FormulaPreprocessor {
                 if (!cl.startsWith("?")) {
                     if (varExplicitClasses.containsKey(var))
                         hs = varExplicitClasses.get(var);
-                    hs.add(cl + "+");
+                    hs.add(cl + '+');
                 } else {
                     if (varExplicitClasses.containsKey(var))
                         hs = varExplicitClasses.get(var);
@@ -641,13 +641,13 @@ public class FormulaPreprocessor {
             String pred = f.car();
             if (Formula.isQuantifier(pred)) {
 
-                result.append(" ");
+                result.append(' ');
                 result.append(f.cadr());
 
                 String next = f.caddr();
                 Formula nextF = new Formula();
                 nextF.read(next);
-                result.append(" ");
+                result.append(' ');
                 result.append(preProcessRecurse(nextF, "", ignoreStrings, translateIneq, translateMath, kb));
             } else {
                 if (kb.isInstanceOf(pred, "VariableArityRelation")) {
@@ -655,7 +655,7 @@ public class FormulaPreprocessor {
                     String oldPred = pred;
 
 
-                    pred = pred + "_" + arity;
+                    pred = pred + '_' + arity;
                     kb.kbCache.copyNewPredFromVariableArity(pred, oldPred, arity);
                     if (debug) System.out.println("preProcessRecurse: pred: " + pred);
                 }
@@ -669,16 +669,16 @@ public class FormulaPreprocessor {
                     argF.read(arg);
                     if (argF.listP()) {
                         String res = preProcessRecurse(argF, pred, ignoreStrings, translateIneq, translateMath, kb);
-                        result.append(" ");
+                        result.append(' ');
                         if (!Formula.isLogicalOperator(pred) &&
                                 !Formula.isComparisonOperator(pred) &&
                                 !Formula.isMathFunction(pred) &&
                                 !argF.isFunctionalTerm()) {
-                            result.append("`");
+                            result.append('`');
                         }
                         result.append(res);
                     } else
-                        result.append(" " + arg);
+                        result.append(' ' + arg);
                     restF.theFormula = restF.cdr();
 
 
@@ -705,8 +705,8 @@ public class FormulaPreprocessor {
             }
             result.insert(0, pred);
             result.insert(0, prefix);
-            result.insert(0, "(");
-            result.append(")");
+            result.insert(0, '(');
+            result.append(')');
 
         }
         return result.toString();
@@ -1026,7 +1026,7 @@ public class FormulaPreprocessor {
         m.find();
         String var = m.group(1);
         String cl = m.group(2);
-        System.out.println("FormulaPreprocessor.testExplicit(): " + var + " " + cl);
+        System.out.println("FormulaPreprocessor.testExplicit(): " + var + ' ' + cl);
         System.out.println("Explicit types: " + findExplicitTypesInAntecedent(kb, f));
     }
 
@@ -1120,7 +1120,7 @@ public class FormulaPreprocessor {
         System.out.println();
         FormulaPreprocessor fp = new FormulaPreprocessor();
         FormulaPreprocessor.debug = true;
-        String strf = "\n" +
+        String strf = '\n' +
                 "(<=>\n" +
                 "    (and\n" +
                 "        (equal\n" +

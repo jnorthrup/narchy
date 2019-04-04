@@ -28,7 +28,7 @@ class AbbreviationTest {
             }
         };
         for (int i = 0; i < 5; i++) {
-            n.believe("((x,y)-->a" + i + ")");
+            n.believe("((x,y)-->a" + i + ')');
         }
         n.run(6);
 

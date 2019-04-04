@@ -213,7 +213,7 @@ class NarseseExtendedTest extends NarseseTest {
         for (char n : new char[] { '1', 'x' } )
             for (char t : new char[] { '%', '$', '#', '?' } ) {
                 assertEquals("(--," + t + n + ')', term("--" + t + n).toString());
-                assertEquals("(a,(--," + t + n + "))", term("(a, --" + t + n +")").toString());
+                assertEquals("(a,(--," + t + n + "))", term("(a, --" + t + n + ')').toString());
             }
 
     }

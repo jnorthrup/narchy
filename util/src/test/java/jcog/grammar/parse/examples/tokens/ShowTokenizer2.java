@@ -39,13 +39,13 @@ public class ShowTokenizer2 {
 			case StreamTokenizer.TT_WORD:
 			case '\"':
 			case '\'':
-				System.out.println("(" + t.sval + ")");
+				System.out.println('(' + t.sval + ')');
 				break;
 			case StreamTokenizer.TT_NUMBER:
-				System.out.println("(" + t.nval + ")");
+				System.out.println("(" + t.nval + ')');
 				break;
 			default:
-				System.out.println("(" + (char) t.ttype + ")");
+				System.out.println("(" + (char) t.ttype + ')');
 				break;
 			}
 		}

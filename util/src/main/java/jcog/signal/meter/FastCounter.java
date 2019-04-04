@@ -12,7 +12,7 @@ public class FastCounter extends AtomicLong {
 
     @Override
     public String toString() {
-        return name + "=" + super.toString();
+        return name + '=' + super.toString();
     }
 
     public final void increment() {

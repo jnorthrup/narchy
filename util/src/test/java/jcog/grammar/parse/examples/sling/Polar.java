@@ -78,6 +78,6 @@ public class Polar extends SlingFunction {
 	 * Return a string representation of this function.
 	 */
 	public String toString() {
-		return "polar(" + source[0] + ", " + source[1] + ")";
+		return "polar(" + source[0] + ", " + source[1] + ')';
 	}
 }

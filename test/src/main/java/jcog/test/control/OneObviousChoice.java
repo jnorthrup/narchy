@@ -41,7 +41,7 @@ public class OneObviousChoice extends AbstractAgentTest {
                     throw new UnsupportedOperationException();
             }
         }
-        System.out.println(this.getClass().getSimpleName() + "\t" + agent.getClass() + " " + agent.summary() + "\n" + acts);
+        System.out.println(this.getClass().getSimpleName() + '\t' + agent.getClass() + ' ' + agent.summary() + '\n' + acts);
         assertTrue(acts.get(1) > acts.get(0));
         assertTrue(acts.get(1) / minRatio > acts.get(0));
 

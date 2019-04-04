@@ -160,7 +160,7 @@ public class Variable implements ArithmeticTerm, ComparisonTerm {
 		if (instantiation != null) {
 			return instantiation.listTailString();
 		}
-		return "|" + name;
+		return '|' + name;
 	}
 
 	/**

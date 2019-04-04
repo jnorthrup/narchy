@@ -14,6 +14,6 @@ public class TerminalNode extends ComponentNode {
 	 */
 	protected String toString(int depth, boolean label, java.util.Vector ignored) {
 
-		return indent(depth) + value + "\n";
+		return indent(depth) + value + '\n';
 	}
 }

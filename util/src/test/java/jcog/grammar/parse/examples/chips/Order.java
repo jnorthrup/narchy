@@ -65,6 +65,6 @@ public class Order {
 	 * @return a textual description of this order
 	 */
 	public String toString() {
-		return "order(" + customer.getCustomerID() + ", " + chip.getChipID() + ", " + bagsPerMonth + ")";
+		return "order(" + customer.getCustomerID() + ", " + chip.getChipID() + ", " + bagsPerMonth + ')';
 	}
 }

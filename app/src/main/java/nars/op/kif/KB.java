@@ -758,13 +758,13 @@ public class KB implements Serializable {
 
         StringBuffer b = new StringBuffer();
         if (literal instanceof List) {
-            b.append("(");
+            b.append('(');
             for (int i = 0; i < literal.size(); i++) {
                 if (i > 0)
-                    b.append(" ");
+                    b.append(' ');
                 b.append(literal.get(i));
             }
-            b.append(")");
+            b.append(')');
         }
         return b.toString();
     }
@@ -1095,9 +1095,9 @@ public class KB implements Serializable {
         ArrayList<Formula> tmp = null;
         String key = null;
         if (kind.equals("arg"))
-            key = kind + "-" + argnum + "-" + term;
+            key = kind + '-' + argnum + '-' + term;
         else
-            key = kind + "-" + term;
+            key = kind + '-' + term;
         ArrayList<String> alstr = formulas.get(key);
 
         tmp = stringsToFormulas(alstr);
@@ -2783,7 +2783,7 @@ public class KB implements Serializable {
                 Iterator<String> it = ai.iterator();
                 while (it.hasNext()) {
                     inst = it.next();
-                    fStr = ("(instance " + inst + " " + className + ")");
+                    fStr = ("(instance " + inst + ' ' + className + ')');
                     f = new Formula();
                     f.read(fStr);
                     ans.add(f);
@@ -2798,7 +2798,7 @@ public class KB implements Serializable {
                     String inst = it.next();
                     valence = kbCache.valences.get(inst);
                     if (valence > 0) {
-                        String fStr = ("(valence " + inst + " " + valence + ")");
+                        String fStr = ("(valence " + inst + ' ' + valence + ')');
                         Formula f = new Formula();
                         f.read(fStr);
                         ans.add(f);

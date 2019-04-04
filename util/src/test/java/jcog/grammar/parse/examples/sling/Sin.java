@@ -54,6 +54,6 @@ public class Sin extends SlingFunction {
 	 * Returns a string representation of this function.
 	 */
 	public String toString() {
-		return "sin(" + source[0] + ")";
+		return "sin(" + source[0] + ')';
 	}
 }

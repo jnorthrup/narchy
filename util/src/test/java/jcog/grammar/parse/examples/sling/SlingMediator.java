@@ -150,7 +150,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 			if (e.getMessage() != null) {
 				text = e.getMessage();
 			}
-			messageArea.append(text + "\n");
+			messageArea.append(text + '\n');
 			return;
 		}
 	}
@@ -198,7 +198,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 			if (e.getMessage() != null) {
 				text = e.getMessage();
 			}
-			messageArea.append(text + "\n");
+			messageArea.append(text + '\n');
 			setComputing(false);
 		}
 	}

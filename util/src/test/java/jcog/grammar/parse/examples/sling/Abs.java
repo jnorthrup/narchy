@@ -67,6 +67,6 @@ public class Abs extends SlingFunction {
 	 * Returns a string representation of this function.
 	 */
 	public String toString() {
-		return "abs(" + source[0] + ")";
+		return "abs(" + source[0] + ')';
 	}
 }

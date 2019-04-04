@@ -174,7 +174,7 @@ public class IntermpolationTest {
         Compound a = $.$("(a &&+1 (b &&+1 c))");
         Compound b = $.$("(a && (b &&+1 c))");
 
-        RevisionTest.permuteChoose(a, b, "[" + e + "]");
+        RevisionTest.permuteChoose(a, b, "[" + e + ']');
     }
 
     @Test

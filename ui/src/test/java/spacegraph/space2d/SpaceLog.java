@@ -40,7 +40,7 @@ public class SpaceLog {
         this.udp.receive.on(this::input);
         this.udp.setFPS(20f);
 
-        logger = LoggerFactory.getLogger(SpaceLog.class.getSimpleName() + "@" + udp.name());
+        logger = LoggerFactory.getLogger(SpaceLog.class.getSimpleName() + '@' + udp.name());
 
 
     }

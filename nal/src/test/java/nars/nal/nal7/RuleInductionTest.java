@@ -91,7 +91,7 @@ class RuleInductionTest {
 
 
         {
-            System.out.println("<" + aConjB + " @ " + n.time() + ">");
+            System.out.println("<" + aConjB + " @ " + n.time() + '>');
             System.out.println("expectation vs. time: \t" + aConjB_exp.yStats());
             System.out.println("\tslope=" + aConjB_exp.leastSquaresFit().slope());
 

@@ -363,7 +363,7 @@ class MyCMAESOptimizerTest {
                 new InitialGuess(start),
                 new SimpleBounds(lower, upper)).getPoint();
         assertTrue(
-                result[0] <= upper[0], ()->"Out of bounds (" + result[0] + " > " + upper[0] + ")");
+                result[0] <= upper[0], ()->"Out of bounds (" + result[0] + " > " + upper[0] + ')');
     }
 
     /**

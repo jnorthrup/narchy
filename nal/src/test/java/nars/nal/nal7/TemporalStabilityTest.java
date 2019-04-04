@@ -53,11 +53,11 @@ abstract class TemporalStabilityTest {
                 return; //ignore. it is natural for it to be curious!!!!
 
             if (ts < minInput || te > maxInput) {
-                System.err.println("  OOB: " + "\n" + t.proof() + "\n");
+                System.err.println("  OOB: " + '\n' + t.proof() + '\n');
                 unstable = true;
             } else if (!validOccurrence(ts) || !validOccurrence(te) || refersToOOBEvents(t)) {
 
-                System.err.println("  instability: " + "\n" + t.proof() + "\n");
+                System.err.println("  instability: " + '\n' + t.proof() + '\n');
                 unstable = true;
 
 

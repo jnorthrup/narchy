@@ -52,6 +52,6 @@ public class AVPair implements Comparable, Serializable {
      */
     public String toString() {
 
-        return "[" + attribute + "," + value + "]";
+        return '[' + attribute + ',' + value + ']';
     }
 }

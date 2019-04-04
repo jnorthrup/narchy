@@ -117,7 +117,7 @@ class LogikusFacade {
 	 */
 	private static Object reportLeftovers(Assembly out, String type) {
 
-		throw new LogikusException("> Input for " + type + " appears complete after : \n> " + out.consumed(" ") + "\n");
+		throw new LogikusException("> Input for " + type + " appears complete after : \n> " + out.consumed(" ") + '\n');
 	}
 
 	/*
@@ -126,6 +126,6 @@ class LogikusFacade {
 	private static void reportNoMatch(TokenString ts, String type) {
 
 		checkForUppercase(ts, type);
-		throw new LogikusException("> Cannot parse " + type + " : " + ts + "\n");
+		throw new LogikusException("> Cannot parse " + type + " : " + ts + '\n');
 	}
 }

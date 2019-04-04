@@ -253,11 +253,11 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     public String toString() {
         StringBuilder appendable = new StringBuilder();
-        appendable.append("{");
+        appendable.append('{');
         boolean first = true;
         if (this.sentinelValues != null) {
             if (this.sentinelValues.containsZeroKey) {
-                appendable.append(0).append("=").append(this.sentinelValues.zeroValue);
+                appendable.append(0).append('=').append(this.sentinelValues.zeroValue);
                 first = false;
             }
 
@@ -266,7 +266,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                     appendable.append(", ");
                 }
 
-                appendable.append(1).append("=").append(this.sentinelValues.oneValue);
+                appendable.append(1).append('=').append(this.sentinelValues.oneValue);
                 first = false;
             }
         }
@@ -278,12 +278,12 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
                     appendable.append(", ");
                 }
 
-                appendable.append(key).append("=").append(this.values[i]);
+                appendable.append(key).append('=').append(this.values[i]);
                 first = false;
             }
         }
 
-        appendable.append("}");
+        appendable.append('}');
         return appendable.toString();
     }
 

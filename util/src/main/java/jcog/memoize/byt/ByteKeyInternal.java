@@ -51,6 +51,6 @@ public final class ByteKeyInternal<Y> extends ByteKey implements PriProxy<ByteKe
 
     @Override
     public String toString() {
-        return result + " = $" + Texts.n4(pri()) + " " + super.toString();
+        return result + " = $" + Texts.n4(pri()) + ' ' + super.toString();
     }
 }

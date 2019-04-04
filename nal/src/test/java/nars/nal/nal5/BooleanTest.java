@@ -59,10 +59,10 @@ class BooleanTest {
                 "d"};
 
 
-        d.believe("( (--i && --j) ==> " + outcomes[0] + ")");
-        d.believe("( (--i && j) ==> " + outcomes[1] + ")");
-        d.believe("( (i && --j) ==> " + outcomes[2] + ")");
-        d.believe("( (i && j) ==> " + outcomes[3] + ")");
+        d.believe("( (--i && --j) ==> " + outcomes[0] + ')');
+        d.believe("( (--i && j) ==> " + outcomes[1] + ')');
+        d.believe("( (i && --j) ==> " + outcomes[2] + ')');
+        d.believe("( (i && j) ==> " + outcomes[3] + ')');
 
         Term I = $.$("i").negIf(i == 0);
         Term J = $.$("j").negIf(j == 0);
@@ -73,7 +73,7 @@ class BooleanTest {
 
         d.run(1024);
 
-        System.out.println(i + " " + j + " ");
+        System.out.println(i + " " + j + ' ');
         for (int k = 0, outcomesLength = outcomes.length; k < outcomesLength; k++) {
             String s = outcomes[k];
             Concept dc = d.conceptualize(s);
@@ -81,7 +81,7 @@ class BooleanTest {
             @Nullable Task t = d.belief(dc, d.time());
             Truth b = t != null ? t.truth() : null;
 
-            System.out.println("\t" + dc.term() + "\t" + s + "\t" + b + "\t" + outcomes[k]);
+            System.out.println("\t" + dc.term() + '\t' + s + '\t' + b + '\t' + outcomes[k]);
 
 
             int ex = -1, ey = -1;
@@ -157,7 +157,7 @@ class BooleanTest {
                         n.believe(condition);
                         n.run(128);
 
-                        System.out.println(goal + "!   " + condition + ".");
+                        System.out.println(goal + "!   " + condition + '.');
                         for (Term t : concepts) {
                             if (!t.equals(goal.unneg()))
                                 System.out.println("\t " + t + "! == " + n.goalTruth(t, ETERNAL));
@@ -278,7 +278,7 @@ class BooleanTest {
             }
         }
         for (int i = 0; i < s; i++) {
-            System.out.println(t[i] + " " + b[i] + " " + r[i]);
+            System.out.println(t[i] + " " + b[i] + ' ' + r[i]);
             int ii = i;
             n.concept(t[i])
                 .tasks()

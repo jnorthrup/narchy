@@ -77,7 +77,7 @@ public class TemporalOneShotPseudoMetric implements BiConsumer<ActiveQuestionTas
         for (int i=0;i<randomEvents;i++) {
             final String a = randomTerm(), b = randomTerm();
             if (!a.equals(b)) {
-                nar.input("$" + lowPri + " " +
+                nar.input("$" + lowPri + ' ' +
                         //format("<%s-->%s>", a, b)
                         format("%s", a)
                         + ". |"

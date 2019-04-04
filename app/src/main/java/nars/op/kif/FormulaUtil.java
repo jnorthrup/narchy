@@ -16,13 +16,13 @@ public class FormulaUtil {
     public static String toProlog(Formula f) {
 
         StringBuffer sb = new StringBuffer();
-        sb.append(f.car() + "(");
+        sb.append(f.car() + '(');
         for (int i = 1; i < f.argumentsToArrayList(0).size(); i ++) {
             if (i != 1)
-                sb.append(",");
+                sb.append(',');
             sb.append(f.getArgument(i));
         }
-        sb.append(")");
+        sb.append(')');
         return sb.toString();
     }
 
@@ -129,7 +129,7 @@ public class FormulaUtil {
         @Override
         public String toString() {
 
-            return "{" +
+            return '{' +
                     "f1='" + f1 + '\'' +
                     ", f2='" + f2 + '\'' +
                     '}';

@@ -91,10 +91,10 @@ public class Program implements AxiomSource {
 		Iterator<Axiom> e = axioms.iterator();
 		while (e.hasNext()) {
 			if (haveShownALine) {
-				buf.append("\n");
+				buf.append('\n');
 			}
 			buf.append(e.next());
-			buf.append(";");
+			buf.append(';');
 			haveShownALine = true;
 		}
 		return buf.toString();

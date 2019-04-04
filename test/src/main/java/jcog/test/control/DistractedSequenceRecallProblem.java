@@ -338,7 +338,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
                     r = Math.min( 0.999f, Math.max( 0f, r ) );
                     int n = (int)( r * 100f ); // 0..99
                     String val = String.valueOf( n );
-                    while( val.length() < 3 ) val = " " + val;
+                    while( val.length() < 3 ) val = ' ' + val;
                     ideal += val;
 //                }
                 System.err.print( ideal );
@@ -346,8 +346,8 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
             }
 
             String seq = String.valueOf( sequence );
-            while( seq.length() < 3 ) seq = " " + seq;
-            System.err.print( "-" + seq + "-" );
+            while( seq.length() < 3 ) seq = ' ' + seq;
+            System.err.print('-' + seq + '-');
 
             if( sequence == this.seq) {
                 String agent = "";
@@ -357,7 +357,7 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
                     r = Math.min( 0.999f, Math.max( 0f, r ) );
                     int n = (int)( r * 100f ); // 0..99
                     String val = String.valueOf( n );
-                    while( val.length() < 3 ) val = " " + val;
+                    while( val.length() < 3 ) val = ' ' + val;
                     agent += val;
                 }
 

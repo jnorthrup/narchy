@@ -248,7 +248,7 @@ public class NodeReaderTest {
     @Test
     public void testMulipleNodes() {
         String[] inputs = {"6", "(+ v0 v1)", "42", "v0", "(+ 1 2)", "v98"};
-        String combinedInput = " " + inputs[0] + inputs[1] + inputs[2] + " " + inputs[3] + "\n\r\t\t\t" + inputs[4] + "       \n   " + inputs[5] + "\r\n";
+        String combinedInput = ' ' + inputs[0] + inputs[1] + inputs[2] + ' ' + inputs[3] + "\n\r\t\t\t" + inputs[4] + "       \n   " + inputs[5] + "\r\n";
         List<Node> outputs = readNodes(combinedInput);
         assertEquals(inputs.length, outputs.size());
         for (int i = 0; i < inputs.length; i++) {

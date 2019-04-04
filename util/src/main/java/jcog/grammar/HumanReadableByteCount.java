@@ -160,7 +160,7 @@ public final class HumanReadableByteCount implements Comparable<HumanReadableByt
                     + "kibibytes (k), mebibytes (m), gibibytes (g), tebibytes (t), or pebibytes(p). "
                     + "E.g. 50b, 100k, or 250m.";
 
-            throw new NumberFormatException(byteError + "\n" + e.getMessage());
+            throw new NumberFormatException(byteError + '\n' + e.getMessage());
         }
     }
 

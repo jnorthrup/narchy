@@ -142,13 +142,13 @@ public class NALDataTableTest {
     static final String xorARFF = "%\n" +
             "% XOR\n" +
             "%\n" +
-            "\n" +
+            '\n' +
             "@RELATION XOR\n" +
-            "\n" +
+            '\n' +
             "@ATTRIBUTE input1 REAL\n" +
             "@ATTRIBUTE input2 REAL\n" +
             "@ATTRIBUTE y REAL\n" +
-            "\n" +
+            '\n' +
             "@DATA\n" +
             "0.0,0.0,0.0\n" +
             "0.0,1.0,1.0\n" +
@@ -297,15 +297,15 @@ public class NALDataTableTest {
             "%     petal width: 0.1  2.5   1.20  0.76    0.9565  (high!)\n" +
             "% \n" +
             "% 9. Class Distribution: 33.3% for each of 3 classes.\n" +
-            "\n" +
+            '\n' +
             "@RELATION iris\n" +
-            "\n" +
+            '\n' +
             "@ATTRIBUTE \"(sepal,length)\"\tREAL\n" +
             "@ATTRIBUTE \"(sepal,width)\"\tREAL\n" +
             "@ATTRIBUTE \"(petal,length)\"\tREAL\n" +
             "@ATTRIBUTE \"(petal,width)\"\tREAL\n" +
             "@ATTRIBUTE class \t{Iris_setosa,Iris_versicolor,Iris_virginica}\n" +
-            "\n" +
+            '\n' +
             "@DATA\n" +
             "5.1,3.5,1.4,0.2,Iris_setosa\n" +
             "4.9,3.0,1.4,0.2,Iris_setosa\n" +

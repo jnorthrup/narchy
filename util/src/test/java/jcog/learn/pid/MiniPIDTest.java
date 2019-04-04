@@ -32,7 +32,7 @@ class MiniPIDTest {
 
             output = miniPID.out(actual, target);
             actual += output;
-            System.out.println(n4(output) + " " + n4(actual));
+            System.out.println(n4(output) + ' ' + n4(actual));
         }
         assertTrue(Math.abs(target - actual) < 0.05f);
     }

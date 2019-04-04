@@ -31,7 +31,7 @@ class MetaGoalTest {
 
         SortedMap<String, Object> x = n.stats();
         x.forEach((k, v) -> {
-            System.out.println(k + "\t" + v);
+            System.out.println(k + '\t' + v);
         });
 
         n.control.causes.forEach(c -> {

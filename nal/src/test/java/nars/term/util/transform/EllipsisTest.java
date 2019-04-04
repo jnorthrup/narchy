@@ -360,7 +360,7 @@ public class EllipsisTest {
     }
 
     private void testSect(String o) throws Narsese.NarseseException {
-        new CommutiveEllipsisTest1("%2..+", p("(" + o + ",", ")")).test(2, 2, 4);
+        new CommutiveEllipsisTest1("%2..+", p('(' + o + ',', ")")).test(2, 2, 4);
     }
 
 

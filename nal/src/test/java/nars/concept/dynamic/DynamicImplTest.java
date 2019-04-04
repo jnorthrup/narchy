@@ -242,7 +242,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
     }
 
     private static void testImpl(int mode, int outer, int inner, String x, String y, String xy, Term pt_p, boolean truthIntersectOrUnion) throws Narsese.NarseseException {
-        String cccase = dts(inner) + "\t" + dts(outer) + "\t\t" + x + "\t" + y + "\t" + xy;
+        String cccase = dts(inner) + '\t' + dts(outer) + "\t\t" + x + '\t' + y + '\t' + xy;
         System.out.println(cccase);
 
         for (float xf : new float[] { 1, 0 }) {

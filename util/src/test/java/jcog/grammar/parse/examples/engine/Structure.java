@@ -317,18 +317,18 @@ public class Structure implements Term {
 			 * Show the brackets, the head, and the tail. The tail prints itself
 			 * recursively, until the empty list stops the recursion.
 			 */
-			return "[" + listTermsToString() + "]";
+			return '[' + listTermsToString() + ']';
 		}
 		StringBuffer buf = new StringBuffer(functor.toString());
 		if (terms.length > 0) {
-			buf.append("(");
+			buf.append('(');
 			for (int i = 0; i < terms.length; i++) {
 				if (i > 0) {
 					buf.append(", ");
 				}
 				buf.append(terms[i]);
 			}
-			buf.append(")");
+			buf.append(')');
 		}
 		return buf.toString();
 	}

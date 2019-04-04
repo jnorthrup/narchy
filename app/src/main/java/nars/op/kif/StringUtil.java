@@ -317,7 +317,7 @@ public class StringUtil {
         for (int i = 0; i < s.length; i++) {
             sb.append(s[i]);
             if ((i+1) < s.length) {
-                sb.append("_");
+                sb.append('_');
             }
         }
         return sb.toString();
@@ -534,7 +534,7 @@ public class StringUtil {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < al.size(); i++) {
             if (i != 0)
-                sb.append(" ");
+                sb.append(' ');
             sb.append(al.get(i));
         }
         return sb.toString();
@@ -558,12 +558,12 @@ public class StringUtil {
         if (s.charAt(0) != '?' &&
                 (!Character.isJavaIdentifierStart(s.charAt(0)) ||
                         s.charAt(0) > 122))
-            s = "S" + s.substring(1);
+            s = 'S' + s.substring(1);
         int i = 1;
         while (i < s.length()) {
             if (!Character.isJavaIdentifierPart(s.charAt(i)) ||
                     s.charAt(i) > 122)
-                s = s.substring(0, i) + "-" + s.substring(i + 1);
+                s = s.substring(0, i) + '-' + s.substring(i + 1);
             i++;
         }
         return s;
@@ -583,13 +583,13 @@ public class StringUtil {
         if (Character.isUpperCase(s.charAt(0)))
             s = Character.toLowerCase(s.charAt(0)) + s.substring(1);
         if (!Character.isLetter(s.charAt(0)))
-            s = "s" + s.substring(1);
+            s = 's' + s.substring(1);
         int i = 1;
         while (i < s.length()) {
             if (!Character.isLetter(s.charAt(i)) &&
                     !Character.isDigit(s.charAt(i)) &&
                     s.charAt(i) != '_')
-                s = s.substring(0, i) + "_" + s.substring(i + 1);
+                s = s.substring(0, i) + '_' + s.substring(i + 1);
             i++;
         }
         return s;
@@ -1105,15 +1105,15 @@ public class StringUtil {
                     Formula f = new Formula();
                     f.read(tree);
                     List tuple = f.literalToArrayList();
-                    sb.append("(");
+                    sb.append('(');
                     int i = 0;
                     for (Iterator it = tuple.iterator(); it.hasNext(); i++) {
-                        if (i > 0) sb.append(" ");
+                        if (i > 0) sb.append(' ');
                         sb.append(treeReplace(oldPattern,
                                 newTerm,
                                 (String) it.next()));
                     }
-                    sb.append(")");
+                    sb.append(')');
                 }
             } else {
                 sb.append(tree);
@@ -1362,7 +1362,7 @@ public class StringUtil {
             int fc = 0;
             while (result.exists()) {
                 fc++;
-                result = new File(base + "-" + fc + suff);
+                result = new File(base + '-' + fc + suff);
             }
         }
         catch (Exception ex) {
@@ -1463,7 +1463,7 @@ public class StringUtil {
                 if (Character.isJavaIdentifierPart(input.charAt(i)) && input.charAt(i) != '$')
                     result.append(input.charAt(i));
                 else
-                    result.append("x");
+                    result.append('x');
             }
 
         }

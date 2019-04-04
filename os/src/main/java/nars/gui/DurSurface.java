@@ -72,7 +72,7 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
 
             @Override
             public String toString() {
-                return "DurSurface[" + x + "," + eachDur + "]";
+                return "DurSurface[" + x + ',' + eachDur + ']';
             }
         };
     }

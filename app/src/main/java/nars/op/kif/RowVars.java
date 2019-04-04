@@ -90,7 +90,7 @@ public class RowVars {
                 
                 
                 int nonRowVar = 0;
-                int start = f.theFormula.indexOf("("+pred);
+                int start = f.theFormula.indexOf('(' +pred);
                 int end = f.theFormula.indexOf(')', start);
                 String simpleFS = f.theFormula.substring(start, end+1);
                 Formula simpleF = new Formula();
@@ -291,12 +291,12 @@ public class RowVars {
                 maxArity = rowVarMaxArities.get(var).intValue();
             for (int j = 0; j < maxArity; j++) {
                 if (j > 0)
-                    replaceString.append(" ");
+                    replaceString.append(' ');
                 replaceString.append(replaceVar + (j + 1));
                 if (DEBUG)
                     System.out.println("Info in RowVars.expandRowVars(): replace: " + replaceString);
                 for (String form : result) {
-                    form = form.replaceAll("\\"+var, replaceString.toString());
+                    form = form.replaceAll('\\' +var, replaceString.toString());
                     if (DEBUG)
                         System.out.println("Info in RowVars.expandRowVars(): form: " + form);
                     newresult.add(form);

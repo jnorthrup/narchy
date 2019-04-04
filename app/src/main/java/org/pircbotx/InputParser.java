@@ -652,7 +652,7 @@ public class InputParser implements Closeable {
 		motdBuilder = new StringBuilder(); else if (code == RPL_MOTD) 
 		//Example: 372 PircBotX :- Welcome to wolfe.freenode.net in Manchester, England, Uk!  Thanks to
 		//This is part of the MOTD, add a new line
-		motdBuilder.append((parsedResponse.get(1).substring(1)).trim()).append("\n"); else if (code == RPL_ENDOFMOTD) {
+		motdBuilder.append((parsedResponse.get(1).substring(1)).trim()).append('\n'); else if (code == RPL_ENDOFMOTD) {
 			//Example: PircBotX :End of /MOTD command.
 			//End of MOTD, clean it and dispatch MotdEvent
 			ServerInfo serverInfo = bot.getServerInfo();
@@ -709,7 +709,7 @@ public class InputParser implements Closeable {
 			//330 TheLQ Utoxin Utoxin :is logged in as
 			//Make sure we set registered as to the nick, not to the note after the colon
 			String registeredNick = "";
-			if (!rawResponse.endsWith(":" + parsedResponse.get(2))) registeredNick = parsedResponse.get(2);
+			if (!rawResponse.endsWith(':' + parsedResponse.get(2))) registeredNick = parsedResponse.get(2);
 			whoisBuilder.get(parsedResponse.get(1)).registeredAs(registeredNick);
 		} else if (code == 307) {
 			//If shown, tells us that the user is registered with nickserv

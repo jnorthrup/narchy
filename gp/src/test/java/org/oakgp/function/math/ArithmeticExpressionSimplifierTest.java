@@ -131,7 +131,7 @@ public class ArithmeticExpressionSimplifierTest {
     }
 
     private void assertAdditionSimplification(String firstArg, String secondArg, String expectedOutput) {
-        assertSimplify("(+ " + firstArg + " " + secondArg + ")", expectedOutput);
+        assertSimplify("(+ " + firstArg + ' ' + secondArg + ')', expectedOutput);
     }
 
     private void assertSimplify(String input, String expectedOutput) {

@@ -59,7 +59,7 @@ public class NAL6DecomposeTest extends NALTest {
         String AB = conjOrDisj ? "(A && B)" : "(A || B)";
         test
                 .termVolMax(conjOrDisj ? 5 : 8)
-                .believe("(" + AB + " ==> X)", fAB, c)
+                .believe('(' + AB + " ==> X)", fAB, c)
                 .believe("(A ==> X)", fA, c)
                 .mustBelieve(cycles, "(B ==> X)", fB, cB)
         ;

@@ -69,12 +69,12 @@ class TemporalInductionTest {
         TestNAR t = new TestNAR(NARS.tmp())
                 .input(a + ". |")
                 .inputAt(dt, b + ". |")
-                .mustBelieve(cycles, "(" + a + " &&+" + dt + " " + b + ")", 1.00f, 0.81f /*intersectionConf*/, 0)
-                .mustBelieve(cycles, "(" + a + " ==>+" + dt + " " + (bNeg ? b.substring(2) /* unneg */ : b) + ")",
+                .mustBelieve(cycles, '(' + a + " &&+" + dt + ' ' + b + ')', 1.00f, 0.81f /*intersectionConf*/, 0)
+                .mustBelieve(cycles, '(' + a + " ==>+" + dt + ' ' + (bNeg ? b.substring(2) /* unneg */ : b) + ')',
                         bNeg ? 0 : 1.00f,
                         0.45f /*abductionConf*/, 0);
         if (!(a.contains("--") /*NEG*/ && a.equals(b)))
-            t.mustBelieve(cycles, "(" + b + " ==>-" + dt + " " + a + ")", 1.00f, 0.45f /*inductionConf*/, dt);
+            t.mustBelieve(cycles, '(' + b + " ==>-" + dt + ' ' + a + ')', 1.00f, 0.45f /*inductionConf*/, dt);
 
         t.run(cycles);
     }

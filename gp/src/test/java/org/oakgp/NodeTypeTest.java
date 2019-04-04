@@ -168,14 +168,14 @@ public class NodeTypeTest {
         NodeType t = s.get();
         assertSame(t, s.get());
         assertSame(t, NodeType.arrayType(NodeType.type(name)));
-        assertEquals("array [" + name + "]", t.toString());
+        assertEquals("array [" + name + ']', t.toString());
     }
 
     private void assertNullableType(String name, Supplier<NodeType> s) {
         NodeType t = NodeType.type("nullable", s.get());
         assertSame(t, NodeType.type("nullable", s.get()));
         assertSame(t, NodeType.nullableType(s.get()));
-        assertEquals("nullable [" + name + "]", t.toString());
+        assertEquals("nullable [" + name + ']', t.toString());
     }
 
     private void assertSameTypes(NodeType[] a, NodeType[] b) {

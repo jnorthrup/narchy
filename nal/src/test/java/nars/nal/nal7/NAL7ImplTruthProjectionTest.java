@@ -51,7 +51,7 @@ class NAL7ImplTruthProjectionTest {
 
                 double yConfMax = max[1];
                 long eventBeliefDelta = Math.abs(eventTime - implTime);
-                System.out.println("+-" + eventBeliefDelta + " -> " + max[0] + "=" + max[1]);
+                System.out.println("+-" + eventBeliefDelta + " -> " + max[0] + '=' + max[1]);
 
                 n.stop();
             }

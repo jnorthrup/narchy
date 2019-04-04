@@ -106,7 +106,7 @@ public class LogikusMediator implements ActionListener, Runnable {
 			if (e.getMessage() != null) {
 				text = e.getMessage();
 			}
-			resultsArea.append(text + "\n");
+			resultsArea.append(text + '\n');
 			setComputing(false);
 			return;
 		}

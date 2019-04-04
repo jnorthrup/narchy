@@ -80,6 +80,6 @@ public class Cartesian extends SlingFunction {
 	 * Returns a string representation of this function.
 	 */
 	public String toString() {
-		return "cartesian(" + source[0] + ", " + source[1] + ")";
+		return "cartesian(" + source[0] + ", " + source[1] + ')';
 	}
 }

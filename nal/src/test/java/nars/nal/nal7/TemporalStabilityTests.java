@@ -72,33 +72,33 @@ public class TemporalStabilityTests {
     };
     private static final IntToObjectFunction<String> implicator = (j) -> {
         char c = (char) ('a' + j);
-        return "(" + (c + "==>" + (c + "" + c)) + ")";
+        return '(' + (c + "==>" + (c + "" + c)) + ')';
     };
     private static final IntToObjectFunction<String> atomizer = (j) -> String.valueOf((char)('a' + j));
-    private static final IntToObjectFunction<String> productor = (j) -> "(" + atomizer.apply(j) + ")";
+    private static final IntToObjectFunction<String> productor = (j) -> '(' + atomizer.apply(j) + ')';
     private static final IntToObjectFunction<String> biproductor = (j) -> {
         char c = (char) ('a' + j);
-        return "(" + c + "," + (c + "" + c) + ")";
+        return "(" + c + ',' + (c + "" + c) + ')';
     };
     private static final IntToObjectFunction<String> linkedproductor = (j) -> {
         char c = (char) ('a' + j);
         char d = (char) ('a' + (j+1)); 
-        return "(" + c + "," + d + ")";
+        return "(" + c + ',' + d + ')';
     };
     private static final IntToObjectFunction<String> linkedinh= (j) -> {
         char c = (char) ('a' + j);
         char d = (char) ('a' + (j+1)); 
-        return "(" + c + "-->" + d + ")";
+        return "(" + c + "-->" + d + ')';
     };
     private static final IntToObjectFunction<String> linkedimpl= (j) -> {
         char c = (char) ('a' + j);
         char d = (char) ('a' + (j+1)); 
-        return "(" + c + "==>" + d + ")";
+        return "(" + c + "==>" + d + ')';
     };
     protected static final IntToObjectFunction<String> conjSeq2 = (j) -> {
         char c = (char) ('a' + j);
         char d = (char) ('a' + (j+1)); 
-        return "(" + c + " &&+5 " + d + ")";
+        return "(" + c + " &&+5 " + d + ')';
     };
     protected static final IntToObjectFunction<String> conjInvertor = (j) -> {
         char c = (char) ('a' + j);

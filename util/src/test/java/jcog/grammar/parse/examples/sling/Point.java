@@ -47,6 +47,6 @@ public class Point extends SlingFunction {
 	 * Returns a string representation of this point.
 	 */
 	public String toString() {
-		return "(" + x + ", " + y + ")";
+		return "(" + x + ", " + y + ')';
 	}
 }

@@ -18,6 +18,6 @@ public class BiFunctionChip<X,Y,Z> extends AbstractBiFunctionChip<X,Y,Z> {
 
     @Override
     public String toString() {
-        return BiFunctionChip.class.getSimpleName() + "[" + f + "]";
+        return BiFunctionChip.class.getSimpleName() + '[' + f + ']';
     }
 }

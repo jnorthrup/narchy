@@ -224,7 +224,7 @@ public class KBcache implements Serializable {
     public boolean childOfP(String rel, String parent, String child) {
 
         if (debug) System.out.println("INFO in KBcache.childOfP(): relation, parent, child: "
-                + rel + " " + parent + " " + child);
+                + rel + ' ' + parent + ' ' + child);
         if (parent.equals(child)) {
             return false;
         }
@@ -235,7 +235,7 @@ public class KBcache implements Serializable {
         if (debug) System.out.println("INFO in KBcache.childOfP(): children of " + parent + " : " + childSet);
         if (childSet == null) {
         	if (debug) System.out.println("INFO in KBcache.childOfP(): null childset for relation, parent, child: "
-                + rel + " " + parent + " " + child);
+                + rel + ' ' + parent + ' ' + child);
         	return false;
         }
         if (debug) System.out.println("INFO in KBcache.childOfP(): child setAt contains " + child + " : " + childSet.contains(child));
@@ -939,7 +939,7 @@ public class KBcache implements Serializable {
                     Formula form = forms.get(i);
                     int arg = Integer.valueOf(form.getArgument(2));
                     String type = form.getArgument(3);                
-                    domainArray[arg] = type + "+";
+                    domainArray[arg] = type + '+';
                     if (arg > maxIndex)
                         maxIndex = arg;
                 }
@@ -963,7 +963,7 @@ public class KBcache implements Serializable {
                 for (int i = 0; i < forms.size(); i++) {
                     Formula form = forms.get(i);
                     String type = form.getArgument(2);
-                    domainArray[0] = type + "+";
+                    domainArray[0] = type + '+';
                 }
             }
 
@@ -1054,7 +1054,7 @@ public class KBcache implements Serializable {
                     Iterator<String> it3 = prents.iterator();
                     while (it3.hasNext()) {
                         String parent = it3.next();
-                        String tuple = "(" + rel + " " + child + " " + parent + ")";
+                        String tuple = '(' + rel + ' ' + child + ' ' + parent + ')';
                         if (!kb.formulaMap.containsKey(tuple)) {
                             fw.write(tuple);
                             fw.write(System.getProperty("line.separator"));
@@ -1069,7 +1069,7 @@ public class KBcache implements Serializable {
                 Iterator<String> it2 = valSet.iterator();
                 while (it2.hasNext()) {
                     String parent = it2.next();
-                    String tuple = "(instance " + inst + " " + parent + ")";
+                    String tuple = "(instance " + inst + ' ' + parent + ')';
                     if (!kb.formulaMap.containsKey(tuple)) {
                         fw.write(tuple);
                         fw.write(System.getProperty("line.separator"));
@@ -1177,13 +1177,13 @@ public class KBcache implements Serializable {
         System.out.println("-------------- relations ----------------");
         Iterator<String> it = this.relations.iterator();
         while (it.hasNext())
-            System.out.print(it.next() + " ");
+            System.out.print(it.next() + ' ');
         System.out.println();
         
         System.out.println("-------------- transitives ----------------");
         it = this.transRels.iterator();
         while (it.hasNext())
-            System.out.print(it.next() + " ");
+            System.out.print(it.next() + ' ');
         System.out.println();
         System.out.println("-------------- parents ----------------");
         

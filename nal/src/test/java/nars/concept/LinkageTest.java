@@ -112,9 +112,9 @@ import static org.junit.jupiter.api.Assertions.*;
     }
 
     private static Supplier<String> why(NAR nar, Termed premise1, Termed premise2) {
-        return () -> premise1 + " no link to " + premise2 + "\n" +
-                (((nar.concept(premise1) != null) ? nar.concept(premise1).printToString() : (premise1 + " unconceptualized"))) + "\n" +
-                (((nar.concept(premise2) != null) ? nar.concept(premise2).printToString() : (premise2 + " unconceptualized"))) + "\n";
+        return () -> premise1 + " no link to " + premise2 + '\n' +
+                (((nar.concept(premise1) != null) ? nar.concept(premise1).printToString() : (premise1 + " unconceptualized"))) + '\n' +
+                (((nar.concept(premise2) != null) ? nar.concept(premise2).printToString() : (premise2 + " unconceptualized"))) + '\n';
     }
 
     private static String getTask(byte punc, Termed premise1) {

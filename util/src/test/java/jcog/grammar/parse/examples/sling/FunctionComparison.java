@@ -99,6 +99,6 @@ public class FunctionComparison extends Gateway implements BooleanTerm {
 	 * @return   a string representation of this comparison
 	 */
 	public String toString() {
-		return operator + "(" + f0 + ", " + f1 + ")";
+		return operator + '(' + f0 + ", " + f1 + ')';
 	}
 }

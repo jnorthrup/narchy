@@ -229,7 +229,7 @@ public class AnonTest {
             assertTrue(
                     UniSubterm.class == t.subterms().getClass() ||
                             AnonSubterms.class == t.subterms().getClass(),
-                    () -> t.getClass().toString() + " " + t.subterms().getClass());
+                    () -> t.getClass().toString() + ' ' + t.subterms().getClass());
             assertFalse(t.isNormalized(), () -> t + " auto-normalized but should not be");
         }
     }

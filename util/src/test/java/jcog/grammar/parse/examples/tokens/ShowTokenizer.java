@@ -33,7 +33,7 @@ public class ShowTokenizer {
 			if (tok.equals(Token.EOF)) {
 				break;
 			}
-			System.out.println("(" + tok + ")");
+			System.out.println("(" + tok + ')');
 		}
 	}
 }

@@ -138,7 +138,7 @@ public class ReSurface {
 
     @Override
     public String toString() {
-        return scaleX + "x" + scaleY + " " + main.size() + " renderables";
+        return scaleX + "x" + scaleY + ' ' + main.size() + " renderables";
     }
 
     public void play(List<BiConsumer<GL2, ReSurface>> render) {

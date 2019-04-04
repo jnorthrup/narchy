@@ -1102,7 +1102,7 @@ public final class Intern {
         /*@SideEffectFree*/
         @Override
         public String toString(/*>>>@GuardSatisfied SequenceAndIndices<T> this*/) {
-            return "SAI(" + start + "," + end + ") from: " + (seq);
+            return "SAI(" + start + ',' + end + ") from: " + (seq);
         }
     }
 

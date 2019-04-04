@@ -68,7 +68,7 @@ public class CompositeNode extends ComponentNode {
 		if (label) {
 			buf.append(indent(depth));
 			buf.append(value);
-			buf.append("\n");
+			buf.append('\n');
 		}
 		Enumeration e = children.elements();
 		while (e.hasMoreElements()) {

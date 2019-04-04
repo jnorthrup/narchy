@@ -488,7 +488,7 @@ public class Reflect {
         }
         while (t != null);
 
-        throw new NoSuchMethodException("No similar method " + name + " with params " + Arrays.toString(types) + " could be found on type " + type() + ".");
+        throw new NoSuchMethodException("No similar method " + name + " with params " + Arrays.toString(types) + " could be found on type " + type() + '.');
     }
 
     /**

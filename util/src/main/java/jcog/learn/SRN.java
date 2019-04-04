@@ -127,7 +127,7 @@ public class SRN  {
 
 
     public String toString() {
-        return "RecurrentMLP:" + firstConnectionLayer.length + "/" + secondConnectionLayer.length + "/" + outputs.length;
+        return "RecurrentMLP:" + firstConnectionLayer.length + '/' + secondConnectionLayer.length + '/' + outputs.length;
     }
 
     public void setMutationMagnitude(double mutationMagnitude) {

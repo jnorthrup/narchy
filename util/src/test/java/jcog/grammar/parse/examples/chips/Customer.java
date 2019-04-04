@@ -65,6 +65,6 @@ public class Customer {
 	 * @return a textual description of this customer
 	 */
 	public String toString() {
-		return "customer(" + customerID + ", " + lastName + ", " + firstName + ")";
+		return "customer(" + customerID + ", " + lastName + ", " + firstName + ')';
 	}
 }

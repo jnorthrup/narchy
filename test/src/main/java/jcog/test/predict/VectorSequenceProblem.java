@@ -32,7 +32,7 @@ public class VectorSequenceProblem extends SequenceLearner {
         if (printSequences) {
             for (int t = 0; t < slen; t++) {
                 double[] actual = output[t].getOutput();
-                System.out.println("\t" + sequenceNum + "#" + t + ":\t" + toNiceString(ideal[t]) + " =?= " + toNiceString(actual));
+                System.out.println("\t" + sequenceNum + '#' + t + ":\t" + toNiceString(ideal[t]) + " =?= " + toNiceString(actual));
             }
         }
 

@@ -63,7 +63,7 @@ public class CommandSequence extends Command {
 		boolean needLine = false;
 		for (Command each : commands()) {
 			if (needLine) {
-				buf.append("\n");
+				buf.append('\n');
 			}
 			buf.append(each);
 			needLine = true;

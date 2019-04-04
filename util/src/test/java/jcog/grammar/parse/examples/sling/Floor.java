@@ -54,6 +54,6 @@ public class Floor extends SlingFunction {
 	 * Returns a string representation of this function.
 	 */
 	public String toString() {
-		return "floor(" + source[0] + ")";
+		return "floor(" + source[0] + ')';
 	}
 }

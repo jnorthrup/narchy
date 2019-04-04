@@ -101,7 +101,7 @@ public class PatternMatcher {
                 type = "ADVANCED: ";
                 break;
         }
-        return "PatternMatcher{" + type + mPattern + "}";
+        return "PatternMatcher{" + type + mPattern + '}';
     }
 
 

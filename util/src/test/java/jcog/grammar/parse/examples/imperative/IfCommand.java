@@ -89,6 +89,6 @@ public class IfCommand extends Command {
 	 * @return a string description of this if command
 	 */
 	public String toString() {
-		return "if" + "(" + condition + ")" + "{" + ifCommand + "}" + "else" + "{" + elseCommand + "}";
+		return "if" + '(' + condition + ')' + '{' + ifCommand + '}' + "else" + '{' + elseCommand + '}';
 	}
 }

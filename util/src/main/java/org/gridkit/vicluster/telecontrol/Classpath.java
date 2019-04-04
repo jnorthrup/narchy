@@ -352,7 +352,7 @@ public class Classpath {
             if (uri.getAuthority() == null) {
                 return new File(uri);
             } else {
-                String path = "file:////" + uri.getAuthority() + "/" + uri.getPath();
+                String path = "file:////" + uri.getAuthority() + '/' + uri.getPath();
 
                 try {
                     return new File(new URI(path));

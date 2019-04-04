@@ -43,7 +43,7 @@ public class Wire {
 
     @Override
     public String toString() {
-        return Wire.class.getSimpleName() + "(" + a + "," + b + ")";
+        return Wire.class.getSimpleName() + '(' + a + ',' + b + ')';
     }
 
 

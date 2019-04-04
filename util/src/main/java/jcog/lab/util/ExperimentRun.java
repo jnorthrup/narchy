@@ -74,7 +74,7 @@ public class ExperimentRun<E> implements Runnable {
 
         if (data instanceof DataTable) {
             ((ARFF)data).setComment(experiment + ": " + procedure +
-                    "\t@" + startTime + ".." + endTime + " (" + new Date(startTime) + " .. " + new Date(endTime) + ")");
+                    "\t@" + startTime + ".." + endTime + " (" + new Date(startTime) + " .. " + new Date(endTime) + ')');
         }
     }
 

@@ -26,7 +26,7 @@ public class DoubleVar {
 
     @Override
     public String toString() {
-        return name + "=" + value;
+        return name + '=' + value;
     }
 
     @Override

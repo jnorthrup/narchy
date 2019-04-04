@@ -71,7 +71,7 @@ public class PiTester {
 
 
     private static void run(final Class mutee, final Predicate<String> testFilter) {
-        final Set<String> mutees = Collections.singleton(mutee.getName() + "*");
+        final Set<String> mutees = Collections.singleton(mutee.getName() + '*');
         run(mutees, testFilter);
     }
 
@@ -191,8 +191,8 @@ public class PiTester {
             results.forEach(m -> {
 
                 MutationDetails d = m.getDetails();
-                System.out.println(m.getStatusDescription() + " " + d.getFilename() + " " +
-                        d.getMethod() + " " + " line " + d.getLineNumber());
+                System.out.println(m.getStatusDescription() + ' ' + d.getFilename() + ' ' +
+                        d.getMethod() + ' ' + " line " + d.getLineNumber());
                 System.out.print("\t");
                 System.out.println(m);
             });
@@ -203,7 +203,7 @@ public class PiTester {
             stats.getStatistics().report(System.out);
 
             CoverageSummary cs = coverageData.createSummary();
-            System.out.println("coverage=" + cs.getCoverage() + "% (" + cs.getNumberOfCoveredLines() + "/" + cs.getNumberOfLines() + ")");
+            System.out.println("coverage=" + cs.getCoverage() + "% (" + cs.getNumberOfCoveredLines() + '/' + cs.getNumberOfLines() + ')');
 
         } finally {
             agent.close();

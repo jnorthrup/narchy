@@ -404,12 +404,12 @@ public class Grok implements Serializable {
                 if (gdef != null) {
                     try {
                         addPattern(gpat, gdef);
-                        group.put("name", gname + "=" + gdef);
+                        group.put("name", gname + '=' + gdef);
                     } catch (RuntimeException e) {
                         throw new RuntimeException(e);
                     }
                 }
-                int count = countMatches(namedRegex, "%{" + gname + "}");
+                int count = countMatches(namedRegex, "%{" + gname + '}');
                 for (int i = 0; i < count; i++) {
                     String definitionOfPattern = grokPatternDefinition.get(gpat);
                     if (definitionOfPattern == null) {
@@ -424,7 +424,7 @@ public class Grok implements Serializable {
                     namedRegexCollection.put("name" + index,
                             (gsub != null ? gsub : gname));
                     namedRegex =
-                            replace(namedRegex, "%{" + gname + "}", replacement, 1);
+                            replace(namedRegex, "%{" + gname + '}', replacement, 1);
                     
                     index++;
                 }
@@ -545,7 +545,7 @@ public class Grok implements Serializable {
     }
 
 
-    private final static Pattern complexity = Pattern.compile("\\Q" + "|" + "\\E");
+    private final static Pattern complexity = Pattern.compile("\\Q" + '|' + "\\E");
     private final static Pattern wordBoundary = Pattern.compile(".\\b.");
 
     /**
@@ -628,7 +628,7 @@ public class Grok implements Serializable {
                 try {
                     g.addPatterns(gPatterns);
                     g.savedPattern = key;
-                    g.compile("%{" + key + "}");
+                    g.compile("%{" + key + '}');
                     groks.put(key, g);
                 } catch (RuntimeException e) {
                     
@@ -671,7 +671,7 @@ public class Grok implements Serializable {
                 if (ma2.find()) {
                     continue;
                 }
-                texte = replace(texte, part, "%{" + key + "}");
+                texte = replace(texte, part, "%{" + key + '}');
             }
             
 
@@ -1323,12 +1323,12 @@ public class Grok implements Serializable {
                     "(?<name>" +
                     "(?<pattern>[A-z0-9]+)" +
                     "(?::(?<subname>[A-z0-9_:;\\/\\s\\.]+))?" +
-                    ")" +
+                    ')' +
                     "(?:=(?<definition>" +
                     "(?:" +
                     "(?:[^{}]+|\\.+)+" +
                     ")+" +
-                    ")" +
+                    ')' +
                     ")?" +
                     "\\}");
 

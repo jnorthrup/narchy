@@ -60,7 +60,7 @@ class AutoencoderTest {
             System.out.println(Texts.n4(reconstructed_X));
             float[] encoded_X = new float[n_hidden];
             da.encode(test_X[i], encoded_X, 0, 0, sigmoid,normalize);
-            System.out.println("\t" + Texts.n4(encoded_X));
+            System.out.println('\t' + Texts.n4(encoded_X));
             System.out.println();
         }
     }

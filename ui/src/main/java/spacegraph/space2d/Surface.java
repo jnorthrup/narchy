@@ -1,6 +1,5 @@
 package spacegraph.space2d;
 
-import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.WTF;
 import jcog.math.v2;

@@ -70,7 +70,7 @@ public class TextInputTest {
 
                 System.out.println(sb);
                 if (e.value() != null) {
-                    System.out.println("value: " + e.value() + "\n");
+                    System.out.println("value: " + e.value() + '\n');
                 }
             }
         }

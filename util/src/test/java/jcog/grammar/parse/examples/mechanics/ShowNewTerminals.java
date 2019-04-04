@@ -31,14 +31,14 @@ public class ShowNewTerminals {
 		variable.put(new IAssembler() {
 			public void accept(Assembly a) {
 				Object o = a.pop();
-				a.push("VAR(" + o + ")");
+				a.push("VAR(" + o + ')');
 			}
 		});
 
 		known.put(new IAssembler() {
 			public void accept(Assembly a) {
 				Object o = a.pop();
-				a.push("KNOWN(" + o + ")");
+				a.push("KNOWN(" + o + ')');
 			}
 		});
 

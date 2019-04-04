@@ -21,6 +21,6 @@ public class Student {
 	 * @return String, a textual description of the Student
 	 */
 	public String toString() {
-		return firstName + " " + lastName + ": " + specialty;
+		return firstName + ' ' + lastName + ": " + specialty;
 	}
 }

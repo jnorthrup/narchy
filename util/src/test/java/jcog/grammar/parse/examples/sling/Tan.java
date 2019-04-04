@@ -54,6 +54,6 @@ public class Tan extends SlingFunction {
 	 * Returns a string representation of this function.
 	 */
 	public String toString() {
-		return "tan(" + source[0] + ")";
+		return "tan(" + source[0] + ')';
 	}
 }

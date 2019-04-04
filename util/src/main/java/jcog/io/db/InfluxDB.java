@@ -50,7 +50,7 @@ public class InfluxDB {
     $ echo "cpu value=1"> /dev/udp/localhost/8089
          */
     public void send() {
-        String s = "cpu,host=server01,region=uswest load=" + (Math.random() * 100) +  " " + System.currentTimeMillis();
+        String s = "cpu,host=server01,region=uswest load=" + (Math.random() * 100) + ' ' + System.currentTimeMillis();
 
         
         
@@ -83,13 +83,13 @@ public class InfluxDB {
         if ((c !='*') && (c!='\"'))
             value = '"' + value + '"';
 
-        String query = "SELECT " + value + " FROM \"" + measurement + "\" WHERE \"time\" >= \"" + rfc(from) + "\" AND \"time\" <= \"" + rfc(to) + "\"";
+        String query = "SELECT " + value + " FROM \"" + measurement + "\" WHERE \"time\" >= \"" + rfc(from) + "\" AND \"time\" <= \"" + rfc(to) + '"';
 
         String epoch = "ms";
 
         URL u = null;
         try {
-            u = new URL("http://" + host + ":" + port + "/query?db=" + db + "&epoch=" + epoch + "&q=" + UrlEscapers.urlFragmentEscaper().escape( query) );
+            u = new URL("http://" + host + ':' + port + "/query?db=" + db + "&epoch=" + epoch + "&q=" + UrlEscapers.urlFragmentEscaper().escape( query) );
             System.out.println(u);
         } catch (MalformedURLException e) {
             e.printStackTrace();

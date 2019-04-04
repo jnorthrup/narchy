@@ -70,7 +70,7 @@ class NarseseTimeUnitTest {
             for (String nowStr : new String[] { "|", "+0", ":|:" }) {
                 String taskStr = "(a-->b). " + nowStr + "..+5m";
                 Task x = n.inputTask(taskStr);
-                System.out.println(taskStr + " " + x);
+                System.out.println(taskStr + ' ' + x);
                 assertEquals(x.start() - n.time(), 0, 1000);
                 assertEquals(x.end() - n.time(), 5 * 60 * 1000, 1000);
             }

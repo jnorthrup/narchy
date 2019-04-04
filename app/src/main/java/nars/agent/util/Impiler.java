@@ -454,7 +454,7 @@ public class Impiler {
 
         @Override
         public String toString() {
-            return super.toString() + " " + (conf > 0 ? ("%" + freq + ";" + conf + "%") : "") + (dt == DTERNAL ? "" : (".." + dt));
+            return super.toString() + ' ' + (conf > 0 ? ("%" + freq + ';' + conf + '%') : "") + (dt == DTERNAL ? "" : (".." + dt));
         }
 
     }
