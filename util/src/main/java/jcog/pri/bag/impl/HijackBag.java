@@ -240,7 +240,6 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         if (mode == PUT)
             pressurize(incomingPri);
 
-        int mutexTicket = -1;
         V toAdd = null, toRemove = null, toReturn = null;
 
         int start = (kHash % c);
@@ -248,8 +247,13 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             start += c;
 
 
-        if (mode != GET) {
+        boolean locking;
+        int mutexTicket = -1;
+        if (mode != GET && !allowDuplicates()) {
+            locking = true;
             mutexTicket = mutex.start(id, kHash);
+        } else {
+            locking = false;
         }
 
         try {
@@ -363,7 +367,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             throw new RuntimeException(t);
 
         } finally {
-            if (mode != GET)
+            if (locking)
                 mutex.end(mutexTicket);
         }
 
@@ -394,6 +398,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
 
         return toReturn;
+    }
+
+    /** allow duplicates and other unexpected phenomena resulting from disabling locking write access */
+    protected boolean allowDuplicates() {
+        return false;
     }
 
     protected boolean chooseVictim(float potentialVictimPri, float currentVictimPri) {

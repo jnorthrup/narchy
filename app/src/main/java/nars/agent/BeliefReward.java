@@ -32,15 +32,15 @@ public class BeliefReward extends Reward {
         //     belief(reward) - goal(reward)
 
         float b = this.rewardBelief;
-        float g = reward(false);
+        float g = rewardFreq(false);
         if ((b!=b) || (g!=g))
             return 0; //dead
         else
-            return b - g;
+            return 1 - Math.abs(b - g)/Math.max(b,g);
     }
 
     @Override
-    protected float reward(boolean beliefOrGoal) {
+    protected float rewardFreq(boolean beliefOrGoal) {
         NAR n = nar();
         Truth t = (beliefOrGoal ? concept.beliefs() : concept.goals()).truth(n.time(), n);
         if (t!=null)

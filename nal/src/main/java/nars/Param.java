@@ -545,9 +545,9 @@ public abstract class Param {
         double falloffDurs =
                 //0.5f;
                 //1;
-                //1.618f; //phi
+                1.618f; //phi
                 //2; //nyquist
-                4;
+                //4;
                 //dur;
                 //8;
                 //64;

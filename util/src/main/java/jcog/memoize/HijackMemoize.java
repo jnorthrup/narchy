@@ -25,7 +25,7 @@ import java.util.function.Function;
  */
 public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
-    protected final MyHijackBag bag;
+    protected final MemoizeHijackBag bag;
     private final Function<X, Y> func;
     private final boolean soft;
 
@@ -40,7 +40,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         this.soft = soft;
         this.func = f;
 
-        bag = new MyHijackBag(initialCapacity, reprobes);
+        bag = new MemoizeHijackBag(initialCapacity, reprobes);
         bag.resize(initialCapacity);
     }
 
@@ -50,7 +50,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         bag.clear();
     }
 
-    public float statReset(ObjectLongProcedure<String> eachStat) {
+    private float statReset(ObjectLongProcedure<String> eachStat) {
 
         long H, M, R, E;
         eachStat.accept("H" /* hit */, H = hit.getAndSet(0));
@@ -137,7 +137,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     /**
      * can be overridden in implementations to compact or otherwise react to the interning of an input key
      */
-    protected void onIntern(X x) {
+    private void onIntern(X x) {
 
     }
 
@@ -173,12 +173,17 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     }
 
 
-    protected class MyHijackBag extends PriHijackBag<X, PriProxy<X,Y>> {
-        public MyHijackBag(int cap, int reprobes) {
+    protected class MemoizeHijackBag extends PriHijackBag<X, PriProxy<X,Y>> {
+
+        MemoizeHijackBag(int cap, int reprobes) {
             super(cap, reprobes);
         }
 
-
+        @Override
+        protected boolean allowDuplicates() {
+            /* experimental */
+            return true;
+        }
 
         @Override
         protected PriProxy<X, Y> merge(PriProxy<X, Y> existing, PriProxy<X, Y> incoming, NumberX overflowing) {

@@ -16,12 +16,20 @@ import static nars.time.Tense.ETERNAL;
 
 public class WorkerExec extends ThreadedExec {
 
+    /** value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive */
+    float workResponsibility =
+            //1f;
+            2f;
+
+    //randomize the rescheduling so that the workers tend to be out of phase with each other's next rescheduling
+    int rescheduleDithersMin = 16-2, rescheduleDithersMax = 16+2;
+
     /**
      * process sub-timeslice divisor
      * TODO auto-calculate
      */
-    double granularity = 8;
-    private static final long subCycleMinNS = 50_000;
+    double granularity = 4;
+    private static final long subCycleMinNS = 150_000;
     private long subCycleMaxNS;
 
     public WorkerExec(int threads) {
@@ -87,8 +95,10 @@ public class WorkerExec extends ThreadedExec {
             int skip = 0;
 
             do {
-                if (!queueSafe())
-                    work(1, schedule);
+                if (!queueSafe()) {
+
+                    work(workResponsibility, schedule);
+                }
 
                 long now = nar.time();
                 if (reprioritize || now > prioLast + rescheduleCycles) {
@@ -167,10 +177,10 @@ public class WorkerExec extends ThreadedExec {
 //                double expectedWorkTimeNS = (((double)workTimeNS) * expectedWorkTimeFactor); //TODO meter and predict
 
             //TODO abstract
-            //randomize the rescheduling so that the workers tend to be out of phase with each other's next rescheduling
+            int dither = nar.dtDither();
             rescheduleCycles =
                     //nar.dur(); //update current dur
-                    Util.lerp(nar.random().nextFloat(), 2 * nar.dtDither(), 4 * nar.dtDither());
+                    Util.lerp(nar.random().nextFloat(), rescheduleDithersMin * dither, rescheduleDithersMax * dither);
 
             subCycleMaxNS = (long) ((workTimeNS) / granularity);
 

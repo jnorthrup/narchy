@@ -55,17 +55,17 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     /** estimated current happiness/satisfaction of this reward
      *
-     * happiness = rewardBeliefExp - rewardGoalExp
+     * happiness = 1 - Math.abs(rewardBeliefExp - rewardGoalExp)/Math.max(rewardBeliefExp,rewardGoalExp)
      * */
     abstract public float happiness();
 
     /** scalar value representing the reward state (0..1.0) */
-    protected abstract float reward(boolean beliefOrGoal);
+    protected abstract float rewardFreq(boolean beliefOrGoal);
 
     public final NAR nar() { return agent.nar(); }
 
     public final void update(long prev, long now) {
-        rewardBelief = reward(true);
+        rewardBelief = rewardFreq(true);
         updateReward(prev, now);
     }
 

@@ -46,51 +46,59 @@ abstract public class ThreadedExec extends MultiExec {
     }
 
     @Override protected void execute(/*@NotNull */Object x) {
-        in.add(x, (xx)->{
-            Exec.logger.warn("{} blocked queue on: {}", this, xx);
-            executeNow(xx);
-        });
+        in.add(x, this::executeBlocked);
+    }
+
+    private void executeBlocked(Object x) {
+        Exec.logger.warn("{} exe queue blocked on: {}", this, x);
+        executeNow(x);
     }
 
     @Override
     protected void update() {
 
-        if (!affinity ) { //HACK should somehow work in affinity mode too
-            long ci = this.cycleIdealNS;
-            if (ci > 0) {
-                int idealThreads = Util.clamp(
-                        (int) Math.ceil((nar.loop.throttle.floatValue()) * concurrencyMax()),
-                    1,
-                        concurrencyMax());
+        int concurrency = concurrency();
 
-                //TODO fix this
-                int currentThreads = concurrency();
-                if (idealThreads > currentThreads) {
-                    //spawn more
-                    int demand = idealThreads - currentThreads;
-                    logger.info("add {} worker threads (ideal={})", demand, idealThreads);
-                    synchronized (exe) {
-                        exe.execute(loop(), demand, affinity);
-                    }
-                } else if (currentThreads > idealThreads) {
-                    //stop some
-                    int excess = currentThreads - idealThreads;
-                    logger.info("stop {} worker threads (ideal={})", excess, idealThreads);
-                    synchronized (exe) {
-                        while (concurrency() > idealThreads)
-                            exe.remove(concurrency() - 1);
-                    }
-                }
-            }
-        }
+        updateThreads(concurrency);
 
         workGranularity =
                 //concurrency() + 1;
                 //Math.max(1, concurrency() - 1);
-                concurrency();
+                concurrency;
 
         super.update();
 
+    }
+
+    private void updateThreads(int currentThreads) {
+        if (affinity)
+            return;  //HACK should somehow work in affinity mode too
+
+        long ci = this.cycleIdealNS;
+        if (ci > 0) {
+            int idealThreads = Util.clamp(
+                    (int) Math.ceil((nar.loop.throttle.floatValue()) * concurrencyMax()),
+                1,
+                    concurrencyMax());
+
+            //TODO fix this
+            if (idealThreads > currentThreads) {
+                //spawn more
+                int demand = idealThreads - currentThreads;
+                logger.info("add {} worker threads (ideal={})", demand, idealThreads);
+                synchronized (exe) {
+                    exe.execute(loop(), demand, affinity);
+                }
+            } else if (currentThreads > idealThreads) {
+                //stop some
+                int excess = currentThreads - idealThreads;
+                logger.info("stop {} worker threads (ideal={})", excess, idealThreads);
+                synchronized (exe) {
+                    while (concurrency() > idealThreads)
+                        exe.remove(concurrency() - 1);
+                }
+            }
+        }
     }
 
     @Override

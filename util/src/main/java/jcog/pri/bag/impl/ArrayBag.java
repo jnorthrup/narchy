@@ -695,6 +695,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             lock.unlockWrite(l);
         }
 
+        incoming.delete();
+
         if (over != 0 && overflow != null)
             overflow.add(over);
 
@@ -703,7 +705,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             massAdd(delta);
         }
 
-        incoming.delete();
 
         return result;
     }

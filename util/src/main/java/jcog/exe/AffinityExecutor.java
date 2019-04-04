@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 
 /**
  * uses affinity locking to pin new threads to their own unique, stable CPU core/hyperthread etc
+ * TODO use ThreadGroup
  */
 public class AffinityExecutor implements Executor {
 
