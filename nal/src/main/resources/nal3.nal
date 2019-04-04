@@ -5,23 +5,23 @@
 //  corresponds to extensional union, and extensional intersection corresponds
 //  to intensional union.
 
-    (P --> M), (S --> M),               neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeBelief(S), "|") --> M), (Belief:IntersectionDepolarized)
-    (P --> M), (S --> M),               neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S), "&") --> M), (Belief:UnionDepolarized)
+    (P --> M), (S --> M),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeBelief(S), "|") --> M), (Belief:IntersectionDepolarized)
+    (P --> M), (S --> M),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S), "&") --> M), (Belief:UnionDepolarized)
 
-        (P --> M), (S --> M), task("!"),   neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeRandom(S), "|") --> M), (Punctuation:Quest)
-         (P --> M), (S --> M), task("?@"), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,polarizeRandom(S), "|") --> M)
+        (P --> M), (S --> M), task("!"),   neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeRandom(S), "|") --> M), (Punctuation:Quest)
+         (P --> M), (S --> M), task("?@"), neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,polarizeRandom(S), "|") --> M)
 
 
-    (M --> P), (M --> S),               neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeBelief(S), "&")), (Belief:IntersectionDepolarized)
-    (M --> P), (M --> S),               neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S), "|")), (Belief:UnionDepolarized)
-        (M --> P), (M --> S), task("!"),   neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeRandom(S), "&")), (Punctuation:Quest)
-         (M --> P), (M --> S), task("?@"), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,polarizeRandom(S), "&"))
+    (M --> P), (M --> S),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeBelief(S), "&")), (Belief:IntersectionDepolarized)
+    (M --> P), (M --> S),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S), "|")), (Belief:UnionDepolarized)
+        (M --> P), (M --> S), task("!"),   neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeRandom(S), "&")), (Punctuation:Quest)
+         (M --> P), (M --> S), task("?@"), neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,polarizeRandom(S), "&"))
 
 
 //  union of opposites (coincidentia oppositorum)
 //    necessary as its own rule if neqRCom is used to exclude common subterms in the composition rules (above)
-    ((&,X,Y,A..*) --> M), ((&,--X,Z,A..*) --> M),neq(Y,Z) |- ((&,Y,Z,A..*) --> M), (Belief:Union)
-    (M --> (|,X,Y,A..*)), (M --> (|,--X,Z,A..*)),neq(Y,Z) |- (M --> (|,Y,Z,A..*)), (Belief:Union)
+    ((&,X,Y,A..*) --> M), ((&,--X,Z,A..*) --> M), neqRCom(Y,Z), neqRoot(Y,Z) |- ((&,Y,Z,A..*) --> M), (Belief:Union)
+    (M --> (|,X,Y,A..*)), (M --> (|,--X,Z,A..*)), neqRCom(Y,Z), neqRoot(Y,Z) |- (M --> (|,Y,Z,A..*)), (Belief:Union)
 
 //intersection question formation
 //    (W --> S), (W --> B), task("?@"), is(S,"|"), neqRCom(S,B) |- (W --> (S | B)), (Time:Intersect)

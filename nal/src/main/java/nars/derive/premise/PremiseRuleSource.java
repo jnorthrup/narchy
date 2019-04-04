@@ -63,16 +63,16 @@ public class PremiseRuleSource extends ProxyTerm {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
     public final String source;
-    public final Truthify truthify;
+    final Truthify truthify;
 
     /**
      * conditions which can be tested before unification
      */
 
     private final MutableSet<UnifyConstraint> constraints;
-    protected final ImmutableSet<UnifyConstraint> CONSTRAINTS;
+    final ImmutableSet<UnifyConstraint> CONSTRAINTS;
     private final MutableSet<PREDICATE<PreDerivation>> pre;
-    protected final PREDICATE[] PRE;
+    final PREDICATE[] PRE;
     protected final Occurrify.OccurrenceSolver time;
 
 
@@ -85,7 +85,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
     private static final PatternTermBuilder INDEX = new PatternTermBuilder();
-    protected final Termify termify;
+    final Termify termify;
 
     private final BytePredicate taskPunc;
 
@@ -183,7 +183,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "neqRCom":
                     neqRoot(XX, YY);
-                    constraints.add(new NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf(XX, YY));
+                    constraints.add(new NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf(XX, YY));
                     break;
 
                 case "notSetsOrDifferentSets":
@@ -579,6 +579,10 @@ public class PremiseRuleSource extends ProxyTerm {
 
     }
 
+    public static Term volMin(int volMin) {
+        return $.func("volMin", $.the(volMin));
+    }
+
     private PREDICATE[] preconditions() {
         int rules = pre.size();
         PREDICATE[] PRE = pre.toArray(new PREDICATE[rules + 1 /* extra to be filled in later stage */]);
@@ -706,7 +710,7 @@ public class PremiseRuleSource extends ProxyTerm {
         return mc;
     }
 
-    protected PremiseRuleSource(PremiseRuleSource raw) {
+    PremiseRuleSource(PremiseRuleSource raw) {
         super((/*index.rule*/(raw.ref)));
 
         this.termify = raw.termify;
@@ -913,7 +917,7 @@ public class PremiseRuleSource extends ProxyTerm {
     private static final class TaskPunc extends AbstractPred<PreDerivation> {
         private final BytePredicate taskPunc;
 
-        public TaskPunc(BytePredicate taskPunc) {
+        TaskPunc(BytePredicate taskPunc) {
             super($.funcFast(TaskPunc.class.getSimpleName(), $.quote(taskPunc)));
             this.taskPunc = taskPunc;
         }
@@ -933,7 +937,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
         final String id;
 
-        protected RootTermAccessor(String id) {
+        RootTermAccessor(String id) {
             this.id = id;
         }
 
@@ -951,9 +955,14 @@ public class PremiseRuleSource extends ProxyTerm {
             private final byte[] path;
             private final int hash;
 
-            public SubRootTermAccessor(byte... path) {
+            SubRootTermAccessor(byte... path) {
                 this.path = path;
                 this.hash = Util.hashCombine(id, Util.hash(path));
+            }
+
+            @Override
+            public String toString() {
+                return id + "(" + Arrays.toString(path) + ")";
             }
 
             @Override
@@ -966,7 +975,7 @@ public class PremiseRuleSource extends ProxyTerm {
                 if (this == obj) return true;
                 if (!(obj instanceof SubRootTermAccessor)) return false;
                 SubRootTermAccessor s = (SubRootTermAccessor)obj;
-                return hash == s.hash && id.equals(s.id()) && Arrays.equals(path, s.path);
+                return hash == s.hash && Arrays.equals(path, s.path) && id.equals(s.id());
             }
 
             private String id() {

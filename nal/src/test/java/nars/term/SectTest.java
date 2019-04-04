@@ -1,14 +1,13 @@
 package nars.term;
 
-import nars.term.atom.Bool;
 import nars.term.util.TermTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.SECTi;
+import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** intersection / diff terms */
 public class SectTest {
@@ -58,13 +57,7 @@ public class SectTest {
 
     }
 
-    @Test
-    void testDiffConceptualization() {
-        assertEq("((a ==>+1 b)~(a ==>+2 b))", "((a==>+1 b)~(a ==>+2 b))");
 
-
-        //TermTest.assertEq("((--,(c ==>+2 d))&(a ==>+1 b))", "((X &&+837 Y)~(--,(Y &&+1424 X)))");
-    }
     @Test void testSectDiff() {
         Term t = SECTi.the((Term)$$("(--,(?2~(|,(--,(?2~?1)),?2,?3)))"), $$("?2"), $$("?3"));
         assertEquals(t, t);
@@ -89,13 +82,18 @@ public class SectTest {
 
     }
 
-    @Test void testConceptualizationOfSectConjunctions() {
-        //TODO
-        //this should be possible. involves intersection or union of conjunction intervals.
-        String s = "((((--,(tetris-->score)) &&+96 (--,(tetris-->height)))&tetris)-->(((--,(tetris-->height)) &&+40 (--,(tetris-->score)))|((--,(tetris-->score)) &&+96 (--,(tetris-->height))))). 38440⋈38480 %.75;.11%";
-        Term x = $$(s);
-        Term y = x.concept();
-        assertTrue(!y.equals(Bool.Null));
-        //TODO assertEquals("", c.term().toString());
+    @Test void testInvalidTemporal1() {
+        assertEq(Null, "((x &&+1 y)|(x &&+2 y))");
+    }
+    @Test void testInvalidTemporal2() {
+        assertEq(Null, "(|,a,(x &&+1 y),(x &&+2 y))");
+    }
+    @Test
+    void testInvalidTemporal3() {
+        assertEq(Null, "((a==>+1 b)~(a ==>+2 b))");
+        //TermTest.assertEq("((--,(c ==>+2 d))&(a ==>+1 b))", "((X &&+837 Y)~(--,(Y &&+1424 X)))");
+    }
+    @Test void testValidTemporal1() {
+        assertEq("((x &&+1 y)|(x &&+2 z))", "((x &&+1 y)|(x &&+2 z))");
     }
 }

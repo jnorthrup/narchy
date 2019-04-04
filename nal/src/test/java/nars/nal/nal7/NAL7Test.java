@@ -708,6 +708,7 @@ public class NAL7Test extends NALTest {
     void variable_elimination_on_temporal_statements() {
 
         test
+                .termVolMax(17)
                 .inputAt(0, "(on({t002},#1) &| at(SELF,#1)). |")
                 .inputAt(1, "((on($1,#2) &| at(SELF,#2)) =|> reachable(SELF,$1)).")
                 .mustBelieve(cycles, "reachable(SELF,{t002})",

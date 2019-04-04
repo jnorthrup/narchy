@@ -2,6 +2,7 @@ package nars.unify.constraint;
 
 import nars.$;
 import nars.Op;
+import nars.derive.premise.PremiseRuleSource;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Variable;
@@ -15,16 +16,19 @@ import static nars.Op.VAR_PATTERN;
 
 abstract public class TermMatch {
 
+    public static TermMatch get(Term x, int depth) {
+        assert (!(x.op() == VAR_PATTERN));
+
+        int xs = x.subterms().structure() & (~VAR_PATTERN.bit);
+
+        int v = x.volume();
+        return (xs != 0 || v > 1) ? new IsHas(x.op(), xs, v, depth) : new Is(x.op());
+    }
+
     /**
      * test the exact target, if found
      */
     abstract public boolean test(Term t);
-
-    /**
-     * test what can be inferred from the superterm if the direct locator was not possible
-     * this is not the direct superterm but the root of the target in which the path may be longer than length 1 so several layers may separate them
-     */
-    abstract public boolean testSuper(Term x);
 
     //    abstract public static class TermMatchEliminatesFalseSuper extends TermMatch {
 //
@@ -35,6 +39,12 @@ abstract public class TermMatch {
 //
 //        abstract public boolean testSuperCant(Term x);
 //    }
+
+    /**
+     * test what can be inferred from the superterm if the direct locator was not possible
+     * this is not the direct superterm but the root of the target in which the path may be longer than length 1 so several layers may separate them
+     */
+    abstract public boolean testSuper(Term x);
 
     /**
      * target representing any unique parameters beyond the the class name which is automatically incorporated into the predicate it forms
@@ -48,6 +58,34 @@ abstract public class TermMatch {
 
     public abstract float cost();
 
+//    public static class Eventable extends TermMatch {
+//
+//
+//        public static final Eventable the = new Eventable();
+//
+//        private Eventable() {
+//            super();
+//        }
+//
+//        @Override
+//        public float cost() {
+//            return 0.035f;
+//        }
+//
+//        @Override
+//        public boolean test(Term x) {
+//            return x.unneg().op().eventable;
+//        }
+//
+//        @Override
+//        public boolean testSuper(Term sx) {
+//            return true; ///TODO
+//        }
+//
+//        @Nullable @Override public Term param() {
+//            return null;
+//        }
+//    }
 
     /**
      * is the op one of the true bits of the provide vector ("is any")
@@ -85,35 +123,6 @@ abstract public class TermMatch {
         }
     }
 
-//    public static class Eventable extends TermMatch {
-//
-//
-//        public static final Eventable the = new Eventable();
-//
-//        private Eventable() {
-//            super();
-//        }
-//
-//        @Override
-//        public float cost() {
-//            return 0.035f;
-//        }
-//
-//        @Override
-//        public boolean test(Term x) {
-//            return x.unneg().op().eventable;
-//        }
-//
-//        @Override
-//        public boolean testSuper(Term sx) {
-//            return true; ///TODO
-//        }
-//
-//        @Nullable @Override public Term param() {
-//            return null;
-//        }
-//    }
-
     public static class IsUnneg extends Is {
 
         public IsUnneg(Op op) {
@@ -135,9 +144,13 @@ abstract public class TermMatch {
      * has the target in its structure, one of the true bits of the provide vector ("has any")
      */
     public final static class Has extends TermMatch {
+        private static final Atom ANY = (Atom) Atomic.the("any");
+        private static final Atom ALL = (Atom) Atomic.the("all");
         final int struct;
         private final boolean anyOrAll;
         private final int volMin;
+        private final Term param;
+        private float cost;
 
         public Has(Op op, boolean anyOrAll) {
             this(op.bit, anyOrAll, 0);
@@ -147,13 +160,15 @@ abstract public class TermMatch {
             this.struct = struct;
             this.anyOrAll = anyOrAll;
             this.volMin = volMin;
+            this.param = $.p(Op.strucTerm(struct), anyOrAll ? ANY : ALL, PremiseRuleSource.volMin(volMin));
+            this.cost = Math.max(
+                    (anyOrAll ? 0.21f : 0.19f) - 0.001f * Integer.bitCount(struct),
+                    0.1f);
         }
 
-        private static final Atom ANY = (Atom) Atomic.the("any");
-        private static final Atom ALL = (Atom) Atomic.the("all");
         @Override
         public Term param() {
-            return $.p( Op.strucTerm(struct), anyOrAll ? ANY : ALL, $.the(volMin));
+            return param;
         }
 
         @Override
@@ -161,9 +176,7 @@ abstract public class TermMatch {
 
             //all is more specific so should be prioritized ahead
             //more # of bits decreases the cost
-            return Math.max(
-                    (anyOrAll ? 0.21f : 0.19f) - 0.001f * Integer.bitCount(struct),
-                    0.1f);
+            return cost;
 
         }
 
@@ -175,7 +188,7 @@ abstract public class TermMatch {
         @Override
         public boolean testSuper(Term superTerm) {
 
-            if (volMin == 0 || superTerm.volume() >= 1+volMin) {
+            if (volMin == 0 || superTerm.volume() >= 1 + volMin) {
                 Subterms subs = superTerm.subterms();
                 return (anyOrAll ? subs.hasAny(struct) : subs.hasAll(struct)) && subs.OR(x -> anyOrAll ? x.hasAny(struct) : x.hasAll(struct));
             }
@@ -192,48 +205,54 @@ abstract public class TermMatch {
         final int struct;
         private final int volMin;
         private final byte is;
-        private final int depth;
 
-        public static TermMatch get(Term x, int depth) {
-            assert(!(x.op()==VAR_PATTERN));
-
-            int xs = x.subterms().structure() & (~VAR_PATTERN.bit);
-
-            return xs != 0 ? new IsHas(x.op(), xs, x.complexity(), depth) : new Is(x.op());
-        }
+        private final Term param;
+        private final float cost;
 
         private IsHas(Op is, int struct, int volMin, int depth) {
             this.is = is.id;
             this.struct = struct;
             this.volMin = volMin;
             this.structAll = struct | is.bit;
-            this.depth = depth;
+            this.cost = (0.07f + (0.01f * depth)) * (1f / (1 + ((volMin-1)+Integer.bitCount(struct))));
+
+            Atom isParam = Op.ops[this.is].strAtom;
+            if (struct > 0 && volMin > 1) {
+                this.param = $.p(isParam, Op.strucTerm(struct), PremiseRuleSource.volMin(volMin));
+            } else if (struct > 0) {
+                this.param = $.p(isParam, Op.strucTerm(struct));
+            } else {
+                this.param = $.p(isParam, PremiseRuleSource.volMin(volMin));
+            }
         }
-
-
-        @Override
-        public Term param() {
-            return $.p( Op.ops[is].strAtom, Op.strucTerm(struct), $.the(volMin));
-        }
-
-        @Override
-        public float cost() {
-            return 0.15f + 0.001f * depth;
-        }
-
         @Override
         public boolean test(Term term) {
-            return term.op().id == is && term.hasAll(structAll) && (volMin == 0 || term.volume() >= volMin);
+            return term.op().id == is && term.hasAll(structAll) && testVol(term);
         }
 
         @Override
         public boolean testSuper(Term x) {
+            return testVol(x) && x.subterms().hasAll(structAll);
+        }
 
-            return (volMin == 0 || x.volume() >= 1 + volMin) && x.subterms().hasAll(structAll);
+        private boolean testVol(Term term) {
+            return volMin <= 1 || term.volume() >= volMin;
+        }
+
+        @Override
+        public Term param() {
+            return param;
+        }
+
+        @Override
+        public float cost() {
+            return cost;
         }
     }
 
-    /** non-recursive containment */
+    /**
+     * non-recursive containment
+     */
     public final static class Contains extends TermMatch {
 
         public final Term x;
@@ -262,7 +281,10 @@ abstract public class TermMatch {
             return x.containsRecursively(this.x);
         }
     }
-    /** non-recursive containment */
+
+    /**
+     * non-recursive containment
+     */
     public final static class Equals extends TermMatch {
 
         public final Term x;
@@ -291,7 +313,10 @@ abstract public class TermMatch {
             return x.containsRecursively(this.x);
         }
     }
-    /** non-recursive containment */
+
+    /**
+     * non-recursive containment
+     */
     public final static class EqualsRoot extends TermMatch {
 
         public final Term x;
@@ -307,7 +332,7 @@ abstract public class TermMatch {
 
         @Override
         public float cost() {
-            return 0.08f;
+            return 0.15f;
         }
 
         @Override
@@ -320,12 +345,13 @@ abstract public class TermMatch {
             return !x.impossibleSubTerm(this.x);
         }
     }
+
     public final static class SubsMin extends TermMatch {
 
         final short subsMin;
 
         public SubsMin(short subsMin) {
-            this.subsMin = subsMin;
+            this.subsMin = subsMin; assert(subsMin > 0);
         }
 
         @Override
@@ -345,7 +371,7 @@ abstract public class TermMatch {
 
         @Override
         public float cost() {
-            return 0.15f;
+            return 0.075f;
         }
 
     }
@@ -356,7 +382,7 @@ abstract public class TermMatch {
 
         MyUnifyConstraint(Variable x, boolean trueOrFalse) {
             super(x, TermMatch.this.getClass().getSimpleName(),
-                    ($.p(TermMatch.this.param()!=null ? TermMatch.this.param() : Op.EmptyProduct).negIf(!trueOrFalse)));
+                    ($.p(TermMatch.this.param() != null ? TermMatch.this.param() : Op.EmptyProduct).negIf(!trueOrFalse)));
             this.trueOrFalse = trueOrFalse;
         }
 

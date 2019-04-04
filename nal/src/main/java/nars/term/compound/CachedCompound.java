@@ -36,7 +36,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
         Compound c;
         if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
-            assert (dt == DTERNAL);
+            //assert (dt == DTERNAL);
             if (subterms.isNormalized())
                 c = new SimpleCachedCompound(op, subterms);
             else

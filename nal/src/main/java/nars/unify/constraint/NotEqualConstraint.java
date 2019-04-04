@@ -2,17 +2,13 @@ package nars.unify.constraint;
 
 import com.google.common.collect.Iterables;
 import nars.Op;
-import nars.derive.PreDerivation;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.control.AbstractPred;
-import nars.term.control.PREDICATE;
 import nars.term.var.Img;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-import static nars.$.$$;
 import static nars.Op.INH;
 import static nars.Op.NEG;
 
@@ -47,18 +43,18 @@ public final class NotEqualConstraint extends RelationConstraint {
 
     public static final class NotEqualRootConstraint extends RelationConstraint {
 
-        public NotEqualRootConstraint(Variable target, Variable other) {
+        NotEqualRootConstraint(Variable target, Variable other) {
             super("neqRoot", target, other);
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+        protected RelationConstraint newMirror(Variable newX, Variable newY) {
             return new NotEqualRootConstraint(newX, newY);
         }
 
         @Override
         public float cost() {
-            return 0.2f;
+            return 0.3f;
         }
 
         @Override
@@ -74,18 +70,18 @@ public final class NotEqualConstraint extends RelationConstraint {
 //        }
     }
 
-    static final PREDICATE<PreDerivation> TaskOrBeliefHasNeg = new AbstractPred<>($$("TaskOrBeliefHasNeg")) {
-
-        @Override
-        public boolean test(PreDerivation d) {
-            return d.taskTerm.hasAny(Op.NEG) || d.beliefTerm.hasAny(Op.NEG);
-        }
-
-        @Override
-        public float cost() {
-            return 0.12f;
-        }
-    };
+//    static final PREDICATE<PreDerivation> TaskOrBeliefHasNeg = new AbstractPred<>($$("TaskOrBeliefHasNeg")) {
+//
+//        @Override
+//        public boolean test(PreDerivation d) {
+//            return d.taskTerm.hasAny(Op.NEG) || d.beliefTerm.hasAny(Op.NEG);
+//        }
+//
+//        @Override
+//        public float cost() {
+//            return 0.12f;
+//        }
+//    };
 
     public static final class EqualNegConstraint extends RelationConstraint {
 
@@ -163,15 +159,17 @@ public final class NotEqualConstraint extends RelationConstraint {
     /**
      * containment test of x to y's subterms and y to x's subterms
      */
-    public static final class NeqRootAndNotRecursiveSubtermOf extends RelationConstraint {
+    public static final class NotEqualAndNotRecursiveSubtermOf extends RelationConstraint {
 
-        public NeqRootAndNotRecursiveSubtermOf(Variable x, Variable y) {
+        private static boolean root = false;
+
+        public NotEqualAndNotRecursiveSubtermOf(Variable x, Variable y) {
             super("neqRCom", x, y);
         }
 
         @Override
         protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
-            return new NeqRootAndNotRecursiveSubtermOf(newX, newY);
+            return new NotEqualAndNotRecursiveSubtermOf(newX, newY);
         }
 
         @Override
@@ -226,8 +224,8 @@ public final class NotEqualConstraint extends RelationConstraint {
         private static boolean test(Term a, boolean recurse, boolean excludeVariables, Term b) {
             if ((!excludeVariables || !(b instanceof Variable)) && !(b instanceof Img)) {
                 return recurse ?
-                        a.containsRecursively(b, true, limit) :
-                        a.contains(b);
+                        a.containsRecursively(b, root, limit) :
+                        a.contains(root ? b.root() : b);
             } else
                 return false;
         }
@@ -263,7 +261,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+        protected RelationConstraint newMirror(Variable newX, Variable newY) {
             return new NoCommonInh(newX, newY);
         }
 

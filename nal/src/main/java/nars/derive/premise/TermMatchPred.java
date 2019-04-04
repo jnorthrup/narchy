@@ -26,7 +26,7 @@ public final class TermMatchPred<X> extends AbstractTermMatchPred<X> {
         this(match, true, true, resolve, cost(pathLen));
     }
 
-    public TermMatchPred(TermMatch match, boolean trueOrFalse, boolean exactOrSuper, boolean taskOrBelief, byte[] path) {
+    TermMatchPred(TermMatch match, boolean trueOrFalse, boolean exactOrSuper, boolean taskOrBelief, byte[] path) {
         this(match, trueOrFalse, exactOrSuper, TaskOrBelief(taskOrBelief).path(path), cost(path.length));
     }
     private TermMatchPred(TermMatch match, boolean trueOrFalse, boolean exactOrSuper, Function/*<X, Term>*/ resolve, float resolveCost) {
@@ -39,7 +39,7 @@ public final class TermMatchPred<X> extends AbstractTermMatchPred<X> {
             throw new WTF();
     }
 
-    static Term name(TermMatch match, @Deprecated Function resolve, boolean exactOrSuper) {
+    private static Term name(TermMatch match, @Deprecated Function resolve, boolean exactOrSuper) {
         Atomic a = Atomic.the(match.getClass().getSimpleName());
         Term r = $.the(resolve.toString());
         r = exactOrSuper ? r : $.func("in", r);
@@ -47,7 +47,7 @@ public final class TermMatchPred<X> extends AbstractTermMatchPred<X> {
         return p!=null ? $.func(a, r, p) : $.func(a, r);
     }
 
-    protected static PremiseRuleSource.RootTermAccessor TaskOrBelief(boolean taskOrBelief) {
+    private static PremiseRuleSource.RootTermAccessor TaskOrBelief(boolean taskOrBelief) {
         return taskOrBelief ? PremiseRuleSource.TaskTerm : PremiseRuleSource.BeliefTerm;
     }
 

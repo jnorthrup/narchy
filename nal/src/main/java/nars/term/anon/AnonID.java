@@ -190,10 +190,15 @@ public abstract class AnonID implements Atomic, The {
     }
 
     @Override
-    public final boolean equals(Object obj) {
-        return obj == this;
+    public final boolean equals(Object x) {
+        return x == this;
 //                   ||
 //              (obj instanceof AnonID) && id==((AnonID)obj).id;
+    }
+
+    @Override
+    public final boolean equalsRoot(Term x) {
+        return x == this;
     }
 
 }

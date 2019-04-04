@@ -57,7 +57,6 @@ import java.util.function.*;
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 
 /**
@@ -602,13 +601,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     /**
      * the skeleton of a target, without any temporal or other meta-assumptions
      */
-    default Term root() {
-        return this;
-    }
+    Term root();
 
-    default boolean equalsRoot(Term x) {
-        return this==x || root().equals(x.root());
-    }
 
     /** TODO make Compound only */
     default int dt() {
@@ -654,6 +648,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     default boolean these() {
         return the();
     }
+
+    boolean equalsRoot(Term x);
 
     default boolean equalsNeg(Term t) {
         if (this == t) {

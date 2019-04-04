@@ -20,7 +20,7 @@ class UnifyConstraintTest {
 
     @Test
     void testNeqComRecursiveConstraint() throws Narsese.NarseseException {
-        NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf c = new NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf($.varQuery(1), $.varQuery(2));
+        NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf c = new NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf($.varQuery(1), $.varQuery(2));
         assertFalse(
                 c.invalid($.$("X"), (Term)$.$("Y"))
         );

@@ -5,10 +5,13 @@ import jcog.data.iterator.ArrayIterator;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermConstructor;
+import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -92,6 +95,8 @@ public class SetSectDiff {
             }
         }
 
+        //TODO if there are no negations or embedded sect's, use a simple deduplication
+
         /** if the boolean value of a key is false, then the entry is negated */
         ObjectByteHashMap<Term> y = intersect(o, o == SECTe || o == SECTi, union, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
         if (y == null)
@@ -102,13 +107,22 @@ public class SetSectDiff {
         else if (s == 1)
             return y.keysView().getOnly();
         else {
+            TermList yyy = new TermList(s);
+            y.keyValuesView().forEachWith((e,YYY) -> YYY.addWithoutResizeTest(e.getOne().negIf(e.getTwo() == -1)), yyy);
 
-            Term[] yyy = new Term[s];
-            final int[] k = {0};
-            y.keyValuesView().forEach(e ->
-                    yyy[k[0]++] = e.getOne().negIf(e.getTwo() == -1)
-            );
-            return Op.compound(b, o, yyy);
+            //Filter temporal terms that resolve to the same roots
+            if (yyy.hasAny(Temporal)) {
+                if (s == 2) {
+                    //simple test
+                    if (yyy.get(0).unneg().equalsRoot(yyy.get(1).unneg()))
+                        return Null;
+                } else {
+                    java.util.Set<Term> roots = new UnifiedSet(s, 1f);
+                    if (!yyy.allSatisfyWith((Predicate2<Term, java.util.Set<Term>>)(x, r)->roots.add(x.unneg().root()), roots))
+                        return Null; //duplicate caught
+                }
+            }
+            return Op.compound(b, o, yyy.arrayKeep());
         }
 
 
@@ -184,26 +198,26 @@ public class SetSectDiff {
                     byte p = (byte) (x.op() != NEG ? +1 : -1);
                     if (p == -1) x = x.unneg();
                     int existing = y.getIfAbsent(x, Byte.MIN_VALUE);
-                    if (existing != Byte.MIN_VALUE) {
-                        if (existing == p)
-                            continue; //same exact target and polarity present
-                        else {
-                            if (!union) {
-                                return null; //intersection of X and its opposite = contradiction
-                            } else {
+                    if (existing == Byte.MIN_VALUE) {
+                        y.put(x, p); //first
+                    } else {
+                        if (existing == p) {
+                            //same exact target and polarity present
+                        } else {
+                            if (union) {
                                 //union of X and its opposite = true, so ignore
                                 y.remove(x);
-                                continue;
+                            } else {
+                                return null; //intersection of X and its opposite = contradiction
                             }
                         }
-                    } else {
-                        y.put(x, p);
                     }
                 } else {
                     y.put(x, (byte) 0); //as-is, doesnt matter
                 }
             } else {
                 //recurse
+                //TODO handle (x & --(y & z)) |- (&,x,... ?
                 if (intersect(o, sect, union, x.subterms(), y) == null)
                     return null;
             }
