@@ -603,10 +603,12 @@ public class TermTestMisc {
 
     @Test
     void testSetOpFlags() throws Narsese.NarseseException {
-        assertTrue($("{x}").op().isSet());
-        assertTrue($("[y]}").op().isSet());
-        assertFalse($("x").op().isSet());
-        assertFalse($("a:b").op().isSet());
+        Term e = $("{x}");
+        assertTrue(e.op().set);
+        Term i = $("[y]");
+        assertTrue(i.op().set);
+        assertFalse($("x").op().set);
+        assertFalse($("a:b").op().set);
     }
 
     @Test

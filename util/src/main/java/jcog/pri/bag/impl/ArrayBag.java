@@ -154,36 +154,30 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             free = s + 1 <= c;
         }
 
-        Y lastToRemove;
         if (!free) {
-            lastToRemove = table.items.last();
+            Y lastToRemove = table.items.last();
             float priMin = pri(lastToRemove);
             if (toAddPri <= priMin)
                 return false;
 
+            removeFromMap(lastToRemove);
+
+            boolean removed = table.items.removeFast(lastToRemove, s - 1);
+            if (!removed) throw new WTF(); //assert(removed);
+
         } else {
             //space has been cleared for the new item
-            lastToRemove = null;
         }
 
 
-        if (lastToRemove != null) {
-            //removeFromMap(items.removeLast());
-            boolean removed = table.items.removeFast(lastToRemove, s - 1);
-            //assert(removed);
-            if (!removed)
-                throw new WTF();
-            removeFromMap(lastToRemove);
-        }
-
-        int i = table.items.add(incoming, table);
-        assert (i >= 0);
 
         Y existing = table.map.put(key, incoming);
         assert (existing == null);
 
-        return true;
+        int i = table.items.add(incoming, table);
+        assert (i >= 0);
 
+        return true;
     }
 
     /**
@@ -285,7 +279,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
             } else {
-                removeFromMap(items2.remove(i));
+                boolean removed = items2.removeFast(y, i); assert(removed);
+                removeFromMap(y);
                 s--;
 //                q = Float.NaN;
             }

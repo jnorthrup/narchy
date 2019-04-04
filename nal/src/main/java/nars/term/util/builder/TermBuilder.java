@@ -50,7 +50,7 @@ public abstract class TermBuilder implements TermConstructor {
         return theCompound(o, dt, u, null);
     }
 
-    protected final Term theCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
+    final Term theCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
         assert (!o.atomic) : o + " is atomic, yet given subterms: " + Arrays.toString(t);
 
 
@@ -84,7 +84,7 @@ public abstract class TermBuilder implements TermConstructor {
         return compoundN(o, dt, t, key);
     }
 
-    protected Compound compoundN(Op o, int dt, Term[] t, @Nullable DynBytes key) {
+    private Compound compoundN(Op o, int dt, Term[] t, @Nullable DynBytes key) {
         return CachedCompound.newCompound(o, dt, subterms(o, t, dt, key));
     }
 

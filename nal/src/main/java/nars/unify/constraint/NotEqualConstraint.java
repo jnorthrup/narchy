@@ -316,7 +316,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         @Override
         public boolean invalid(Term x, Term y) {
             Op xo = x.op();
-            return xo.isSet() && (xo == y.op());
+            return xo.set && (xo == y.op());
         }
     }
 }

@@ -8,7 +8,6 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -32,7 +31,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 
 import static nars.term.Terms.sorted;
@@ -166,30 +164,32 @@ public enum Op {
      * intensional setAt
      */
     SETi("[", true, 2, Args.GTEOne) {
-        @Override
-        public boolean isSet() {
-            return true;
-        }
 
         @Override
-        public final Term the(TermBuilder b, int dt, Collection<Term> sub) {
-            return b.theCompound(this, dt, Terms.sorted(sub)); //already sorted
+        public Term the(TermBuilder b, int dt, Term... u) {
+            return SetSectDiff.intersect(b, SETi, u);
         }
+
+        //        @Override
+//        public final Term the(TermBuilder b, int dt, Collection<Term> sub) {
+//            return b.theCompound(this, dt, Terms.sorted(sub)); //already sorted
+//        }
     },
 
     /**
      * extensional setAt
      */
     SETe("{", true, 2, Args.GTEOne) {
-        @Override
-        public boolean isSet() {
-            return true;
-        }
 
         @Override
-        public final Term the(TermBuilder b, int dt, Collection<Term> sub) {
-            return b.theCompound(this, dt, Terms.sorted(sub)); //already sorted
+        public Term the(TermBuilder b, int dt, Term... u) {
+            return SetSectDiff.intersect(b, SETe, u);
         }
+
+//        @Override
+//        public final Term the(TermBuilder b, int dt, Collection<Term> sub) {
+//            return b.theCompound(this, dt, Terms.sorted(sub)); //already sorted
+//        }
     },
 
 
@@ -437,6 +437,7 @@ public enum Op {
 
     /** whether the target of this op is valid, by tiself, as an event or condition */
     public boolean eventable;
+    public boolean set;
 
 
     Op(char c, int minLevel) {
@@ -484,14 +485,14 @@ public enum Op {
 
         this.bit = (1 << ordinal());
 
-        final Set<String> ATOMICS = java.util.Set.of(".", "+", "B", "/");
-        this.atomic = var || ATOMICS.contains(str);
+        this.atomic = var || java.util.Set.of(".", "+", "B", "/").contains(str);
 
         boolean isBool = str.equals("B");
         boolean isInt = str.equals("+");
         boolean isNeg = str.equals("--");
         boolean isImg = str.equals("/");
         boolean isSect = str.equals("|") || str.equals("&");
+        this.set = str.equals("{") || str.equals("[");
 
         conceptualizable =
                 !var &&
@@ -759,21 +760,9 @@ public enum Op {
         return compound(o, DTERNAL, u);
     }
 
-//    /**
-//     * true if matches any of the on bits of the vector
-//     */
-//    public final boolean in(int vector) {
-//        return in(bit, vector);
-//    }
-
-    public boolean isSet() {
-        return false;
-    }
-
     public boolean isAny(int bits) {
         return ((bit & bits) != 0);
     }
-
 
     enum Args {
         ;

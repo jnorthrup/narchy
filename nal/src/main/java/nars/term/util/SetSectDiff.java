@@ -56,13 +56,13 @@ public class SetSectDiff {
 
         switch (t.length) {
             case 0:
-                return True;
+                return empty(o);
             case 1:
-                return t[0];
+                return single(t[0], o, b);
             case 2:
                 Op o0 = t[0].op(), o1 = t[1].op();
                 if (o0 == o1 && t[0].equals(t[1]))
-                    return t[0];
+                    return single(t[0], o, b);
 
                 //fast eliminate contradiction
 
@@ -103,9 +103,9 @@ public class SetSectDiff {
             return Null;
         int s = y.size();
         if (s == 0)
-            return True;
+            return empty(o);
         else if (s == 1)
-            return y.keysView().getOnly();
+            return single(y.keysView().getOnly(), o, b);
         else {
             TermList yyy = new TermList(s);
             y.keyValuesView().forEachWith((e,YYY) -> YYY.addWithoutResizeTest(e.getOne().negIf(e.getTwo() == -1)), yyy);
@@ -126,6 +126,16 @@ public class SetSectDiff {
         }
 
 
+    }
+
+    /** result for an empty set/sect */
+    private static Term empty(Op o) {
+        return o.set ? Null : True;
+    }
+
+    /** result for a 1-ary set/sect */
+    private static Term single(Term only, Op o, TermConstructor b) {
+        return (o.set) ? Op.compound(b, o, only) /* wrapped */ : only  /* raw */;
     }
 
     public static Term intersectProd(Op o, boolean union, Term x, Term y) {
@@ -421,7 +431,7 @@ public class SetSectDiff {
     /*@NotNull*/
     public static Term differenceSet(/*@NotNull*/ Op o, Term a, Term b) {
 
-        assert (o.isSet() && a.op() == o && b.op() == o);
+        assert (o.set && a.op() == o && b.op() == o);
 
         if (a.equals(b))
             return Null;

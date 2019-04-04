@@ -14,9 +14,9 @@ import java.util.Arrays;
  */
 public class VerifyingTermBuilder extends TermBuilder {
 
-    private final TermBuilder a, b;
+    private final TermConstructor a, b;
 
-    public VerifyingTermBuilder(TermBuilder a, TermBuilder b) {
+    public VerifyingTermBuilder(TermConstructor a, TermConstructor b) {
         this.a = a;
         this.b = b;
     }

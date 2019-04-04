@@ -316,7 +316,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(5 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(12, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 4; //HACK this is a TTL supply, not a COST
@@ -326,7 +326,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 3f;
+    public static final float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)
@@ -545,9 +545,9 @@ public abstract class Param {
         double falloffDurs =
                 //0.5f;
                 //1;
-                1.618f; //phi
+                //1.618f; //phi
                 //2; //nyquist
-                //4;
+                4;
                 //dur;
                 //8;
                 //64;

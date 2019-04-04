@@ -12,7 +12,7 @@ import nars.term.anon.AnonWithVarShift;
 import nars.term.util.TermTest;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
-import nars.term.util.builder.TermBuilder;
+import nars.term.util.builder.TermConstructor;
 import nars.term.util.transform.UnifyTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class AnonTest {
         return a;
     }
 
-    private static void testAnonTermVectorProducedByTermBuilder(TermBuilder b) {
+    private static void testAnonTermVectorProducedByTermBuilder(TermConstructor b) {
         {
             Subterms tri = b.subterms($.varDep(1), Anom.the(2), Anom.the(1));
             assertEquals(AnonSubterms.class, tri.getClass());

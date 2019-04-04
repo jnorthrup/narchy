@@ -119,7 +119,7 @@ public class Factorize {
 
                 if (Functor.func(s).equals(Member.the) && (var = s.subPath((byte) 0, (byte) 0)) instanceof Variable) {
                     Term r = s.subPath((byte) 0, (byte) 1);
-                    if (r.op().isSet()) {
+                    if (r.op().set) {
                         if (xLength == 2) {
                             //special case: there is no reason to process this because it consists of one member and one non-member
                             return null;

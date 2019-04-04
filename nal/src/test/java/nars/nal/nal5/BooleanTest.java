@@ -47,9 +47,9 @@ class BooleanTest {
         final float confThresh = 0.7f;
 
 
-        NAR d = NARS.tmp();
-        d.freqResolution.set(0.1f);
-        d.termVolumeMax.set(10);
+        NAR d = NARS.tmp(6);
+        d.freqResolution.set(0.05f);
+        d.termVolumeMax.set(7);
 
 
         String[] outcomes = {
@@ -71,7 +71,7 @@ class BooleanTest {
         d.believe(CONJ.the(I, J));
 
 
-        d.run(768);
+        d.run(1024);
 
         System.out.println(i + " " + j + " ");
         for (int k = 0, outcomesLength = outcomes.length; k < outcomesLength; k++) {
@@ -104,7 +104,7 @@ class BooleanTest {
                     break;
             }
             boolean positive = ((ex == i) && (ey == j));
-            if (positive != (b != null)) {
+            if (positive == (b == null)) {
                 if (positive)
                     fail("unrecognized true case");
                 else if (b.conf() > confThresh)

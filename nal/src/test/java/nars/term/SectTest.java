@@ -83,11 +83,31 @@ public class SectTest {
     }
 
     @Test void testInvalidTemporal1() {
-        assertEq(Null, "((x &&+1 y)|(x &&+2 y))");
+        String a = "(x &&+1 y)";
+        String b = "(x &&+2 y)";
+        String c = "z";
+        assertEq(Null, '(' + a + '|' + b + ')');
+        assertEq(Null, '(' + a + '&' + b + ')');
+        assertEq(Null, '{' + a + ',' + b + '}');
+        assertEq(Null, '[' + a + ',' + b + ']');
+        assertEq(Null, '(' + a + "<->" + b + ')');
+
+        //one is negated
+        assertEq(Null, '(' + a + "| --" + b + ')');
+        assertEq(Null, '(' + a + "& --" + b + ')');
+        assertEq(Null, '{' + a + ",--" + b + '}');
+        assertEq(Null, '[' + a + ",--" + b + ']');
+        assertEq(Null, '(' + a + "<-> --" + b + ')');
+
+        //3-ary
+        assertEq(Null, "(|," + a + ',' + b + ',' + c + ')');
+        assertEq(Null, "(&," + a + ',' + b + ',' + c + ')');
+        assertEq(Null, '{' + a + ',' + b + ',' + c + '}');
+        assertEq(Null, '[' + a + ',' + b + ',' + c + ']');
+
     }
-    @Test void testInvalidTemporal2() {
-        assertEq(Null, "(|,a,(x &&+1 y),(x &&+2 y))");
-    }
+
+
     @Test
     void testInvalidTemporal3() {
         assertEq(Null, "((a==>+1 b)~(a ==>+2 b))");

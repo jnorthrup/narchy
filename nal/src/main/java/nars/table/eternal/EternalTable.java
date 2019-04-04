@@ -12,8 +12,8 @@ import nars.control.CauseMerge;
 import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
-import nars.task.Revision;
 import nars.task.ProxyTask;
+import nars.task.Revision;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
@@ -48,7 +48,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     public final void forEachTask(Consumer<? super Task> x) {
 //        long r = lock.readLock();
 //        try {
-            this.forEach(x);
+        this.forEach(x);
 //        } finally {
 //            lock.unlockRead(r);
 //        }
@@ -83,7 +83,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     public void match(Answer t) {
         //long r = lock.readLock();
         //try {
-            whileEach(t::tryAccept);
+        whileEach(t::tryAccept);
 //        } finally {
 //            lock.unlockRead(r);
 //        }
@@ -91,24 +91,20 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public void setTaskCapacity(int c) {
-        assert (c >= 0);
-
         if (capacity() == c)
             return;
+
+        assert (c >= 0);
 
         List<Task> trash = null;
 
         long r = lock.writeLock();
         try {
             int wasCapacity = this.capacity();
-
-            //synchronized (this) {
             if (wasCapacity != c) {
 
-                //r = lock.tryConvertToWriteLock(r); //TODO
-
                 int s = size;
-                if (s > 0 && (s > c)) {
+                if (s > c) {
                     trash = new FasterList(s - c);
                     while (c < s--) {
                         trash.add(removeLast());
@@ -117,7 +113,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
                 resize(c);
             }
-            //}
         } finally {
             lock.unlockWrite(r);
         }
@@ -132,13 +127,13 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
         //long l = lock.readLock();
 //        try {
-            int s = this.size;
-            if (s == 0)
-                return Task.EmptyArray;
-            else {
-                Task[] list = this.items;
-                return Arrays.copyOf(list, Math.min(s, list.length));
-            }
+        int s = this.size;
+        if (s == 0)
+            return Task.EmptyArray;
+        else {
+            Task[] list = this.items;
+            return Arrays.copyOf(list, Math.min(s, list.length));
+        }
 //        } finally {
 //            lock.unlock(l);
 //        }
@@ -149,18 +144,19 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     //    @Override
     public void clear() {
 
-        if (size() > 0) {
-            //long l = lock.readLock();
-            long l = lock.writeLock();
-            try {
+        long l = lock.readLock();
+        try {
+            if (size() > 0) {
+                l = Util.readToWrite(l, lock);
                 if (size() > 0) {
                     //        forEach(ScalarValue::delete);
                     super.clear();
                 }
-            } finally {
-                lock.unlock(l);
             }
+        } finally {
+            lock.unlock(l);
         }
+
 
     }
 
@@ -216,7 +212,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         if (!x.isEternal())
             return false;
 
-        Task removed;
+        Task removed = null;
 
         //TODO use optimistic read here
         long r = lock.readLock();
@@ -226,18 +222,18 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             if (index != -1) {
                 Task xx = get(index);
-                long rr = lock.tryConvertToWriteLock(r);
-                if (rr==0) { lock.unlockRead(r); r = lock.writeLock(); } else { r = rr; }
 
-                if (get(index)!=xx) { //moved while waiting for lock, retry:
+                r = Util.readToWrite(r, lock);
+
+                if (get(index) != xx) { //moved while waiting for lock, retry:
                     index = indexOf(x, this);
-                    assert(index!=-1);
                 }
 
-                removed = remove(index);
-                assert (removed != null);
-            } else {
-                removed = null;
+                if (index != -1) {
+                    boolean wasRemoved = removeFast(xx, index);
+                    assert (wasRemoved);
+                    removed = xx;
+                }
             }
 
         } finally {
@@ -266,7 +262,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         //else: ignore
     }
 
-    /** lock begins as read */
+    /**
+     * lock begins as read
+     */
     private long reviseOrTryInsertion(Remember r, long lock) {
         Object[] list = this.items;
 
@@ -283,7 +281,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         NAR nar = r.nar;
 
         for (Object _x : list) {
-            if (_x == null)  break; //HACK
+            if (_x == null) break; //HACK
             Task x = (Task) _x;
 
             Truth yt = null;
@@ -308,7 +306,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                 yt = Revision.revise(input.truth(), xt);
             }
 
-            if (yt!=null) {
+            if (yt != null) {
 
                 float _aProp = (float) (ie / (ie + x.evi()));
                 if (inputTerm.equals(xTerm)) {
@@ -333,7 +331,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                 if (yt == null || (nt.equals(inputTerm) && ((yt.equalTruth(xt, nar) || yt.equalTruth(input.truth(), nar)))))
                     continue;
 
-                if (conclusion!=null) {
+                if (conclusion != null) {
                     //a previous conclusion exists; try if by originality this one is stronger
                     if (conclusion.evi() * oldBelief.originality() >= yt.evi() * x.originality()) {
                         continue;
@@ -409,7 +407,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                 }
             }
 
-            if (existing==null) {
+            if (existing == null) {
                 l = reviseOrTryInsertion(r, l);
                 return;
             }

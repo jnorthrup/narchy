@@ -432,7 +432,7 @@ public enum Terms {
 
                 Term remain = cs.sub(1 - i);
                 Op o = container.op();
-                return o.isSet() ? o.the(remain) : remain;
+                return o.set ? o.the(remain) : remain;
             default:
                 return container.op().the(container.dt(), cs.subsExcluding(i));
         }
