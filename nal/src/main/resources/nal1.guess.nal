@@ -44,3 +44,25 @@
       //(P --> S), (S --> P), task("?"), belief(negative) |- (--,(P --> S)),   (Belief:ConversionPN, Punctuation:Belief)
 
 
+
+
+
+
+    //this is basically a duplicate of the generalized analogy; see analogy.nal
+    //(M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Goal:Weak)
+            //TODO write test case for this
+
+
+
+
+
+
+
+    //(X <-> Y), X, task("?") |- (Y-->X),   (Punctuation:Question)
+    //(X <-> Y), Y, task("?") |- (X-->Y),   (Punctuation:Question)
+    //(X <-> Y), X, task("?") |- Y,   (Punctuation:Question)
+    //(X <-> Y), X, task("@") |- Y,   (Punctuation:Quest)
+
+
+
+/////////    (S <-> --P), (P <-> --S) |- (--S <-> --P), (Belief:Intersection)

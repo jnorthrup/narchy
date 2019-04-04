@@ -1036,6 +1036,7 @@ public class NAL7Test extends NALTest {
     @Test
     void multiConditionSyllogismPrePre() {
         test
+                .termVolMax(14)
                 .input("((open(door)&|hold(key))=|>enter(room)). :|:")
                 .mustBelieve(cycles, "(open(door)=|>enter(room))", 1f, 0.73f, 0);
     }
