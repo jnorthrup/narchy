@@ -6,7 +6,6 @@ import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
 import nars.NAR;
-import nars.Param;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import org.slf4j.Logger;
@@ -47,12 +46,13 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
         }
     }
     private static void taskError(ITask t, ITask x, Throwable ee, NAR nar) {
-        if (t == x)
-            nar.logger.error("{} {}", x, ee);
-        else
-            nar.logger.error("{}->{} {}", t, x, ee);
-
-        if (Param.DEBUG)
+        //TODO: if(RELEASE)
+//        if (t == x)
+//            nar.logger.error("{} {}", x, ee);
+//        else
+//            nar.logger.error("{}->{} {}", t, x, ee);
+//
+//        if (Param.DEBUG)
             throw new RuntimeException(ee);
     }
 

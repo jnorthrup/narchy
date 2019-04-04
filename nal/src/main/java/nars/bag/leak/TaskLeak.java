@@ -7,7 +7,7 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.BufferedBag;
-import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
@@ -57,7 +57,7 @@ public abstract class TaskLeak extends Causable {
         this(
                 new BufferSource(
                         new BufferedBag.SimpleBufferedBag<>(
-                                new PLinkArrayBag<>(merge, capacity),
+                                new PriReferenceArrayBag<>(merge, capacity, PriBuffer.newMap(false)),
                                 new PriBuffer<>(merge))
                 )
                 , n, puncs

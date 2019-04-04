@@ -6,7 +6,9 @@ import jcog.Texts;
 import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
+import jcog.signal.tensor.RingTensor;
 import jcog.tree.rtree.rect.RectFloat;
+import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.video.Draw;
@@ -19,10 +21,140 @@ import java.util.function.Function;
 import static java.lang.Float.NaN;
 
 public class Plot2D extends Widget {
+    public static final PlotVis Line = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
+        plotLine(series, gl, minValue, maxValue, false, false);
+    };
+    public static final PlotVis LineLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
+        plotLine(series, gl, minValue, maxValue, true, false);
+    };
+    public static final PlotVis BarLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
+        plotLine(series, gl, minValue, maxValue, true, true);
+    };
     public final List<Series> series;
+    private final int maxHistory;
+    private final PlotVis vis;
+    private final float[] backgroundColor = {0, 0, 0, 0.75f};
     private String title;
     private Off on;
-    private volatile boolean requireUpdate = false;
+    private volatile boolean invalid = false;
+    private transient float minValue, maxValue;
+
+
+    public Plot2D(int history, PlotVis vis) {
+
+
+        this.series = new FasterList();
+        this.maxHistory = history;
+
+        this.vis = vis;
+
+    }
+
+    private static void plotLine(List<Series> series, GL2 gl, float minValue, float maxValue, boolean lanes, boolean filled) {
+        if (minValue == maxValue) {
+            float center = minValue;
+            minValue = center - (center / 2);
+            maxValue = center + (center / 2);
+        }
+
+        gl.glColor4f(1f, 1f, 1f, 1f);
+
+        gl.glLineWidth(2);
+
+        float W = 1.0f;
+        Draw.line(0, 0, W, 0, gl);
+        float H = 1.0f;
+        Draw.line(0, H, W, H, gl);
+
+        HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, Texts.n(maxValue, 7), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
+
+        int seriesSize = series.size();
+        float textScale = 1f / (seriesSize) * 0.5f;
+        float range = maxValue - minValue;
+        float laneHeight = 1f / seriesSize;
+
+        for (int i = 0; i < seriesSize; i++) {
+            Series s = series.get(i);
+
+
+            //float mid = ypos((s.minValue() + s.maxValue()) / 2f, lanes, sn, seriesSize, maxValue-minValue, minValue);
+//            float base = ypos(s.minValue(), lanes, i, seriesSize,
+//                    maxValue-minValue, minValue);
+            float yy = NaN;
+            float baseY = i * laneHeight;
+
+            if (range > Float.MIN_NORMAL) {
+
+                int histSize = s.size(), histCap = s.capacity();
+
+                float dx = (W / histCap);
+                float x = (histCap - histSize) * dx;
+
+
+                float[] color = s.color();
+                float r = color[0], g = color[1], b = color[2];
+
+                if (!filled) {
+                    gl.glLineWidth(3);
+                    gl.glBegin(GL.GL_LINE_STRIP);
+                }
+
+                for (int j = 0; j < histSize; j++) {
+
+                    float v = s.get(j);
+
+                    //gl.glColor3fv(color, 0);
+                    float a = ((v == v) ? ((v - minValue) / range) : 0) * 0.5f + 0.5f;
+                    gl.glColor4f(r, g, b, a);
+
+                    yy = yLane(ypos(v, minValue, range), i, laneHeight);
+
+                    if (filled) {
+                        //TODO fill to an edge (barchart), or the center (waveform)
+                        gl.glRectf(x - dx, baseY, x, yy);
+                    } else {
+                        gl.glVertex2f(x, yy);
+                    }
+                    x += dx;
+                }
+                if (filled) {
+
+                } else {
+                    gl.glEnd();
+                }
+            }
+
+            if (yy != yy)
+                yy = baseY + laneHeight / 2;
+
+
+            gl.glColor3f(1, 1, 1);
+
+            gl.glLineWidth(2);
+
+
+            HersheyFont.hersheyText(gl, s.name(), 0.04f * textScale, W, filled ? 0 : yy, 0, Draw.TextAlignment.Right);
+
+
+        }
+    }
+
+    private static float yLane(float unitY, int i, float laneHeight) {
+        return unitY * laneHeight + (laneHeight * i);
+    }
+
+    private static float ypos(float v, boolean lanes, int sn, int seriesSize, float range, float minValue) {
+        return lanes ? ypos(minValue, range, v, sn, seriesSize) : ypos(v, minValue, range);
+    }
+
+    private static float ypos(float v, float minValue, float range) {
+        return (v - minValue) / range;
+    }
+
+    private static float ypos(float minValue, float range, float v, int lane, int numLanes) {
+        return (v == v ? ((v - minValue) / range) : (0.5f)) / numLanes + (((float) lane) / numLanes);
+    }
 
     public void setTitle(String title) {
         this.title = title;
@@ -37,276 +169,23 @@ public class Plot2D extends Widget {
         return this;
     }
 
-
-    public interface Series {
-
-        String name();
-
-        void update();
-
-        float maxValue();
-
-        float minValue();
-
-        float[] color();
-
-        int capacity();
-
-        int size();
-
-        float get(int i);
-
-        void clear();
-
-        //void forEach(IntFloatConsumer value);
-    }
-
-    public static class ArraySeries extends FloatArrayList implements Series {
-
-        private String name;
-
-        private final int capacity;
-
-        private transient float maxValue;
-        private transient float minValue;
-
-        private final float[] color = {1, 1, 1, 0.75f};
-
-        @Override
-        public float[] toArray() {
-            return items;
-        }
-
-        @SuppressWarnings("ConstructorNotProtectedInAbstractClass")
-        public ArraySeries(String name, int capacity) {
-            super(capacity);
-            setName(name);
-            this.capacity = capacity;
-        }
-
-        public ArraySeries(String name, float[] data) {
-            super(data);
-            setName(name);
-            capacity = data.length;
-        }
-
-        private void setName(String name) {
-            this.name = name;
-            Draw.colorHash(name, color());
-        }
-
-        @Override
-        public float get(int index) {
-            float[] ii = this.items;
-            if (ii.length > index)
-                return ii[index];
-            else
-                return Float.NaN; //HACK
-        }
-
-        @Override
-        public String toString() {
-            return name();
-        }
-
-        @Override
-        public void update() {
-
-        }
-
-        public Series autorange() {
-            this.minValue = Float.POSITIVE_INFINITY;
-            this.maxValue = Float.NEGATIVE_INFINITY;
-            forEach(v -> {
-                if (v < minValue()) this.minValue = v;
-                if (v > maxValue()) this.maxValue = v;
-            });
-            return this;
-        }
-
-        public Series range(float min, float max) {
-            this.minValue = min;
-            this.maxValue = max;
-            return this;
-        }
-
-        void limit() {
-            int over = size() - (this.capacity - 1);
-            for (int i = 0; i < over; i++)
-                removeAtIndex(0);
-        }
-
-        public float[] array() {
-            return items;
-        }
-
-        @Override
-        public String name() {
-            return name;
-        }
-
-
-        @Override
-        public int capacity() {
-            return capacity;
-        }
-
-        @Override
-        public float maxValue() {
-            return maxValue;
-        }
-
-        @Override
-        public float minValue() {
-            return minValue;
-        }
-
-        @Override
-        public float[] color() {
-            return color;
-        }
-
-
-    }
-
-    private transient float minValue, maxValue;
-
-    private final int maxHistory;
-
-
-    private final PlotVis vis;
-
-
-    public Plot2D(int history, PlotVis vis) {
-
-
-        this.series = new FasterList();
-        this.maxHistory = history;
-
-        this.vis = vis;
-
-    }
-
     public Plot2D add(Series s) {
         series.add(s);
-        requireUpdate = true;
+        invalid = true;
         return this;
     }
 
     public Plot2D add(String name, float[] data) {
-        return add(new ArraySeries(name, data).autorange());
+        return add(newSeries(name, data).autorange());
+    }
+
+    protected AbstractSeries newSeries(String name, float[] data) {
+        //return new ArraySeries(name, data);
+        return new RingTensorSeries(name, data);
     }
 
     public Plot2D add(String name, float[] data, float min, float max) {
-        return add(new ArraySeries(name, data).range(min, max));
-    }
-
-    public Plot2D add(String name, DoubleSupplier valueFunc, float min, float max) {
-        ArraySeries s;
-        add(s = new ArraySeries(name, maxHistory) {
-            @Override
-            public void update() {
-                double v = valueFunc.getAsDouble();
-
-                limit();
-                if (v != v) {
-
-                    super.add(NaN);
-                } else {
-                    if (v < min) v = min;
-                    if (v > max) v = max;
-                    super.add((float) v);
-                }
-
-            }
-        });
-        s.minValue = min;
-        s.maxValue = max;
-        return this;
-    }
-
-    public Plot2D add(String name, DoubleSupplier valueFunc) {
-        add(new ArraySeries(name, maxHistory) {
-            @Override
-            public void update() {
-                limit();
-                super.add((float) valueFunc.getAsDouble());
-                autorange();
-            }
-        });
-        return this;
-    }
-
-    /** TODO use a FloatRingBuffer or something non-Box */
-    @Deprecated public Plot2D add(String name, MetalConcurrentQueue<Float> buffer) {
-        add(new ArraySeries(name, maxHistory) {
-            @Override
-            public void update() {
-                limit();
-                buffer.clear(super::add);
-                autorange();
-            }
-        });
-        return this;
-    }
-
-    @Override
-    protected void paintWidget(RectFloat bounds, GL2 gl) {
-        Draw.bounds(bounds, gl, this::paintUnit);
-    }
-
-    private void paintUnit(GL2 gl) {
-
-        if (requireUpdate) {
-            commit();
-            requireUpdate = false;
-        }
-
-        List<Series> series = this.series;
-
-
-        if (series.isEmpty()) {
-            return;
-        }
-
-
-        gl.glColor4fv(backgroundColor, 0);
-        Draw.rect(gl, 0, 0, 1, 1);
-
-        vis.draw(series, minValue, maxValue, gl);
-
-        if (title != null) {
-
-
-            gl.glColor3f(1f, 1f, 1f);
-            gl.glLineWidth(1f);
-            HersheyFont.hersheyText(gl, title, 0.1f, 0.5f, 0.5f, 0);
-
-        }
-
-    }
-
-    @FunctionalInterface
-    public interface PlotVis {
-
-        /**
-         * externally triggered update function
-         */
-        default void update() {
-
-        }
-
-        void draw(List<Series> series, float minValue, float maxValue, GL2 g);
-
-        default void stop() {
-
-        }
-    }
-
-    @Override
-    protected void stopping() {
-        vis.stop();
-        super.stopping();
+        return add(newSeries(name, data).range(min, max));
     }
 
 
@@ -349,126 +228,104 @@ public class Plot2D extends Widget {
 //        }
 //    };
 
+    public Plot2D add(String name, DoubleSupplier valueFunc, float min, float max) {
+        AbstractSeries s;
+        add(s = new RingTensorSeries(name, maxHistory) {
+            @Override
+            public void update() {
+                double v = valueFunc.getAsDouble();
 
-    private final float[] backgroundColor = {0, 0, 0, 0.75f};
+                limit();
+                if (v != v) {
+
+                    add(NaN);
+                } else {
+                    if (v < min) v = min;
+                    if (v > max) v = max;
+                    add((float) v);
+                }
+
+            }
+
+
+        });
+        s.minValue = min;
+        s.maxValue = max;
+        return this;
+    }
 
 // TODO
 //    float _minValue = NaN, _maxValue = NaN;
 //    String minValueStr = "", maxValueStr = "";
 
-    public static final PlotVis Line = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
-        plotLine(series, gl, minValue, maxValue, false,false);
-    };
-    public static final PlotVis LineLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
-        plotLine(series, gl, minValue, maxValue, true, false);
-    };
-    public static final PlotVis BarLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
-        plotLine(series, gl, minValue, maxValue, true, true);
-    };
-
-    private static void plotLine(List<Series> series, GL2 gl, float minValue, float maxValue, boolean lanes, boolean filled) {
-        if (minValue == maxValue) {
-            float center = minValue;
-            minValue = center - (center / 2);
-            maxValue = center + (center / 2);
-        }
-
-        gl.glColor4f(1f, 1f, 1f, 1f);
-
-        gl.glLineWidth(2);
-
-        float W = 1.0f;
-        Draw.line(0, 0, W, 0, gl);
-        float H = 1.0f;
-        Draw.line(0, H, W, H, gl);
-
-        HersheyFont.hersheyText(gl, Texts.n(minValue, 7), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
-        HersheyFont.hersheyText(gl, Texts.n(maxValue, 7), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
-
-        int seriesSize = series.size();
-        float textScale = 1f/(seriesSize) * 0.5f;
-        float range = maxValue - minValue;
-        float laneHeight = 1f/seriesSize;
-
-        for (int i = 0; i < seriesSize; i++) {
-            Series s = series.get(i);
-
-
-            //float mid = ypos((s.minValue() + s.maxValue()) / 2f, lanes, sn, seriesSize, maxValue-minValue, minValue);
-//            float base = ypos(s.minValue(), lanes, i, seriesSize,
-//                    maxValue-minValue, minValue);
-            float yy = NaN;
-            float baseY = i * laneHeight;
-
-            if (range > Float.MIN_NORMAL) {
-
-                int histSize = s.size(), histCap = s.capacity();
-
-                float dx = (W / histCap);
-                float x = (histCap - histSize) * dx;
-
-
-                float[] color = s.color();
-                float r = color[0], g = color[1], b = color[2];
-
-                if (!filled) {
-                    gl.glLineWidth(3);
-                    gl.glBegin(GL.GL_LINE_STRIP);
-                }
-
-                for (int j = 0; j < histSize; j++) {
-
-                    float v = s.get(j);
-
-                    //gl.glColor3fv(color, 0);
-                    float a = ((v==v) ? ((v-minValue)/range) : 0) * 0.5f + 0.5f;
-                    gl.glColor4f(r,g,b,a);
-
-                    yy = yLane(ypos(v, minValue, range), i, laneHeight);
-
-                    if (filled) {
-                        //TODO fill to an edge (barchart), or the center (waveform)
-                        gl.glRectf(x-dx, baseY, x, yy);
-                    } else {
-                        gl.glVertex2f(x, yy);
-                    }
-                    x += dx;
-                }
-                if (filled) {
-
-                } else {
-                    gl.glEnd();
-                }
+    public Plot2D add(String name, DoubleSupplier valueFunc) {
+        add(new RingTensorSeries(name, maxHistory) {
+            @Override
+            public void update() {
+                limit();
+                add((float) valueFunc.getAsDouble());
+                autorange();
             }
+        });
+        return this;
+    }
 
-            if (yy != yy)
-                yy = baseY + laneHeight/2;
+    /**
+     * TODO use a FloatRingBuffer or something non-Box
+     */
+    @Deprecated
+    public Plot2D add(String name, MetalConcurrentQueue<Float> buffer) {
+        add(new RingTensorSeries(name, maxHistory) {
+            @Override
+            public void update() {
+                limit();
+                buffer.clear(this::add);
+                autorange();
+            }
+        });
+        return this;
+    }
+
+    @Override
+    protected void paintWidget(RectFloat bounds, GL2 gl) {
+        Draw.bounds(bounds, gl, this::paintUnit);
+    }
+
+    private void paintUnit(GL2 gl) {
+
+        if (invalid) {
+            commit();
+            invalid = false;
+        }
+
+        List<Series> series = this.series;
 
 
-            gl.glColor3f(1,1,1);
+        if (series.isEmpty()) {
+            return;
+        }
 
-            gl.glLineWidth(2);
+
+        gl.glColor4fv(backgroundColor, 0);
+        Draw.rect(gl, 0, 0, 1, 1);
+
+        vis.draw(series, minValue, maxValue, gl);
+
+        if (title != null) {
 
 
-            HersheyFont.hersheyText(gl, s.name(), 0.04f * textScale, W , filled ? 0 : yy, 0, Draw.TextAlignment.Right);
-
+            gl.glColor3f(1f, 1f, 1f);
+            gl.glLineWidth(1f);
+            HersheyFont.hersheyText(gl, title, 0.1f, 0.5f, 0.5f, 0);
 
         }
+
     }
 
-    private static float yLane(float unitY, int i, float laneHeight) {
-        return unitY * laneHeight + (laneHeight * i);
-    }
-
-    private static float ypos(float v, boolean lanes, int sn, int seriesSize, float range, float minValue) {
-        return lanes ? ypos(minValue, range, v, sn, seriesSize) : ypos(v, minValue, range);
-    }
-
-    private static float ypos(float v, float minValue, float range) {
-        return (v - minValue) / range;
-    }
-    private static float ypos(float minValue, float range, float v, int lane, int numLanes) {
-        return (v == v ? ((v - minValue) / range) : (0.5f)) /numLanes + (((float)lane)/numLanes);
+    @Override
+    protected void stopping() {
+        vis.stop();
+        super.stopping();
     }
 
     public void commit() {
@@ -479,9 +336,8 @@ public class Plot2D extends Widget {
             final float[] maxValue = {Float.NEGATIVE_INFINITY};
             series.forEach((Series s) -> {
                 s.update();
-                float min = s.minValue();
-                float max = s.maxValue();
-                if (min==min && max == max) {
+                float min = s.minValue(), max = s.maxValue();
+                if (min == min && max == max) {
                     minValue[0] = Math.min(minValue[0], min);
                     maxValue[0] = Math.max(maxValue[0], max);
                 }
@@ -496,6 +352,160 @@ public class Plot2D extends Widget {
         }
     }
 
+    public interface Series {
+
+        String name();
+
+        void update();
+
+        float maxValue();
+
+        float minValue();
+
+        float[] color();
+
+        int capacity();
+
+        int size();
+
+        float get(int i);
+
+        void clear();
+
+        //void forEach(IntFloatConsumer value);
+    }
+
+    @FunctionalInterface
+    public interface PlotVis {
+
+        /**
+         * externally triggered update function
+         */
+        default void update() {
+
+        }
+
+        void draw(List<Series> series, float minValue, float maxValue, GL2 g);
+
+        default void stop() {
+
+        }
+    }
+
+    public static class ArraySeries extends AbstractSeries {
+
+        protected final MyFloatArrayList data;
+
+        @SuppressWarnings("ConstructorNotProtectedInAbstractClass")
+        public ArraySeries(String name, int capacity) {
+            data = new MyFloatArrayList(capacity);
+            setName(name);
+            this.capacity = capacity;
+        }
+
+        public ArraySeries(String name, float[] data) {
+            this.data = new MyFloatArrayList(data);
+            setName(name);
+            capacity = data.length;
+        }
+
+        @Override
+        public float get(int i) {
+            return data.get(i);
+        }
+
+        @Override
+        public void clear() {
+            data.clear();
+        }
+
+        @Override
+        public int size() {
+            return data.size();
+        }
+
+        @Override
+        public void forEach(FloatProcedure f) {
+            data.forEach(f);
+        }
+
+        @Override
+        void limit() {
+            int over = data.size() - (ArraySeries.this.capacity - 1);
+            for (int i = 0; i < over; i++)
+                data.removeAtIndex(0);
+        }
+
+        private static final class MyFloatArrayList extends FloatArrayList {
+            public MyFloatArrayList(int initialCapacity) {
+                super(initialCapacity);
+            }
+
+            public MyFloatArrayList(float... array) {
+                super(array);
+            }
+
+            @Override
+            public float[] toArray() {
+                return items;
+            }
+
+            @Override
+            public float get(int index) {
+                float[] ii = this.items;
+                if (ii.length > index)
+                    return ii[index];
+                else
+                    return Float.NaN; //HACK
+            }
+        }
+    }
+    public static class RingTensorSeries extends AbstractSeries {
+
+        private final RingTensor data;
+
+        public RingTensorSeries(String name, int capacity) {
+            data = new RingTensor(1, capacity, true);
+            setName(name);
+            clear();
+            this.capacity = capacity;
+        }
+
+        public RingTensorSeries(String name, float[] data) {
+            this(name, data.length);
+            for (float f : data)
+                add(f);
+        }
+
+        public void add(float v) {
+            data.setSpin(v);
+        }
+
+        @Override
+        public float get(int i) {
+            return data.getAt(i);
+        }
+
+        @Override
+        public void clear() {
+            data.fillAll(Float.NaN);
+        }
+
+        @Override
+        public int size() {
+            return capacity;
+        }
+
+        @Override
+        public void forEach(FloatProcedure f) {
+            data.forEach(f);
+        }
+
+        @Override
+        void limit() {
+            //N/A
+        }
+    }
 
 //    /**
 //     * TODO merge with BitmapWave
@@ -690,5 +700,78 @@ public class Plot2D extends Widget {
 //        }
 //
 //    }
+
+    public abstract static class AbstractSeries implements Series {
+        protected int capacity;
+        private final float[] color = {1, 1, 1, 0.75f};
+        private String name;
+        protected transient float maxValue;
+        protected transient float minValue;
+
+        @Override
+        public abstract float get(int i);
+
+        @Override
+        public abstract void clear();
+
+        protected void setName(String name) {
+            AbstractSeries.this.name = name;
+            Draw.colorHash(name, color());
+        }
+
+        @Override
+        public void update() {
+
+        }
+
+        @Override
+        public abstract int size();
+
+        public Series autorange() {
+            AbstractSeries.this.minValue = Float.POSITIVE_INFINITY;
+            AbstractSeries.this.maxValue = Float.NEGATIVE_INFINITY;
+            forEach(v -> {
+                if (v < minValue()) AbstractSeries.this.minValue = v;
+                if (v > maxValue()) AbstractSeries.this.maxValue = v;
+            });
+            return AbstractSeries.this;
+        }
+
+        abstract public void forEach(FloatProcedure f);
+
+        public Series range(float min, float max) {
+            AbstractSeries.this.minValue = min;
+            AbstractSeries.this.maxValue = max;
+            return AbstractSeries.this;
+        }
+
+        abstract void limit();
+
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+        @Override
+        public int capacity() {
+            return capacity;
+        }
+
+        @Override
+        public float maxValue() {
+            return maxValue;
+        }
+
+        @Override
+        public float minValue() {
+            return minValue;
+        }
+
+        @Override
+        public float[] color() {
+            return color;
+        }
+    }
 }
 

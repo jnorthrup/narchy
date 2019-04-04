@@ -10,6 +10,7 @@ import jcog.signal.tensor.TensorTensorFunc;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
+import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
 import java.util.Arrays;
@@ -182,6 +183,10 @@ public interface Tensor  {
         for (int i = 1; i < s.length; i++)
             v *= s[i];
         return v;
+    }
+
+    default /* final */ void forEach(FloatProcedure each) {
+        forEach((i,x)->each.value(x));
     }
 
     /**

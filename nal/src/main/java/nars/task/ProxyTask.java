@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
   * equality than the origin task. hashcode here is calculated lazily.
  * the only mutable components are the hashcode and the cyclic status which is optionally inherited from the source.
  * */
-public class TaskProxy extends UnitPri implements Task {
+public class ProxyTask extends UnitPri implements Task {
 
     public final Task task;
 
@@ -19,7 +19,7 @@ public class TaskProxy extends UnitPri implements Task {
     volatile long creation;
     private volatile boolean cyclic = false;
 
-    public TaskProxy(Task task) {
+    public ProxyTask(Task task) {
 
         this.task = task;
 //        if (task instanceof TaskProxy) {
@@ -78,7 +78,7 @@ public class TaskProxy extends UnitPri implements Task {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || (obj instanceof Task && hashCode()==obj.hashCode() && Task.equal(this, (Task) obj));
+        return Task.equal(this, obj);
     }
 
     @Override
@@ -98,10 +98,6 @@ public class TaskProxy extends UnitPri implements Task {
 
 
 
-    @Override
-    public float coordF(int dimension, boolean maxOrMin) {
-        return task.coordF(dimension, maxOrMin);
-    }
 
     @Override
     public long creation() {

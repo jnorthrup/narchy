@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 850;
+    public static final int cycles = 350;
 
     @BeforeEach
     void setTolerance() {
@@ -50,7 +50,7 @@ public class NAL8Test extends NALTest {
     void subsent_1_even_simpler_simplerGoalTemporal() {
 
         test
-
+                .termVolMax(9)
                 .input("(open(t1) &&+5 opened(t1))! |")
                 .mustGoal(cycles, "open(t1)", 1.0f, 0.81f, 0)
                 .mustNotOutput(cycles, "open(t1)", GOAL, t -> t != 0)
@@ -210,7 +210,7 @@ public class NAL8Test extends NALTest {
             $.07 (x(intValue,(),3) ==>-48 x(intValue,(),3)). 3600 %1.0;.19% {5415: 1;2;4;9;d;e;l}
         */
         test
-            .termVolMax(12)
+            .termVolMax(13)
                 .goal("x(intValue,(),3)", Tense.Present, 1f, 0.9f)
                 .believe("(x(intValue,(),3) ==>-48 x(intValue,(),3))")
                 .mustGoal(cycles, "x(intValue,(),3)", 1f, 0.81f, 48, 48);
@@ -354,7 +354,7 @@ public class NAL8Test extends NALTest {
     @Test
     void conditionalDisjDecomposePos() {
 
-        test.termVolMax(4)
+        test.termVolMax(6)
                 .goal("(x || y)", Tense.Present, 1f, 0.9f)
                 .inputAt(2, "--x. |")
                 .mustGoal(cycles, "y", 1f, 0.45f, 2)
@@ -364,7 +364,7 @@ public class NAL8Test extends NALTest {
     @Test
     void conditionalDisjDecomposeNeg() {
 
-        test.termVolMax(4)
+        test.termVolMax(7)
                 .goal("(--x || y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "y", 1f, 0.81f, 0)
@@ -1028,7 +1028,7 @@ public class NAL8Test extends NALTest {
     @Test
     void condition_goal_deduction_2_neg_event() {
         test
-            .termVolMax(11)
+            .termVolMax(13)
                 .input("--on({t002},{t003}).")
                 .input("(--on({t002},#1) &&+0 at(SELF,#1))!")
                 .mustGoal(cycles, "at(SELF,{t003})", 1.0f, 0.81f, ETERNAL);
@@ -1065,7 +1065,7 @@ public class NAL8Test extends NALTest {
 
     private void conditionalGoalDeduction(boolean eteBelief) {
         test
-            .termVolMax(10)
+            .termVolMax(12)
                 .input("on({t002},{t003})." + (eteBelief ? "" :" |"))
                 .input("(on({t002},#1) &&+0 at(SELF,#1))!")
                 .mustGoal(cycles, "at(SELF,{t003})", 1.0f, 0.81f, eteBelief ? ETERNAL : 0);

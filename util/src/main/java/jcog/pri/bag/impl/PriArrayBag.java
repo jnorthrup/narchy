@@ -1,8 +1,8 @@
 package jcog.pri.bag.impl;
 
+import jcog.pri.PriBuffer;
 import jcog.pri.Prioritizable;
 import jcog.pri.op.PriMerge;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -14,7 +14,7 @@ public class PriArrayBag<X extends Prioritizable> extends ArrayBag<X,X> {
     }
 
     public PriArrayBag(PriMerge merge, int capacity) {
-        this(merge, new UnifiedMap<>(capacity));
+        this(merge, PriBuffer.newMap(false));
         setCapacity(capacity);
     }
 

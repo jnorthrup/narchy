@@ -184,7 +184,7 @@ public class DynamicStatementTruth {
 
                 //IMPL: compute innerDT for the conjunction
                 ConjBuilder c =
-                        //new Conj(); //TODO LazyConj
+                        //new Conj();
                         new ConjLazy(components.size());
 
                 for (TaskRegion x : components) {
@@ -192,7 +192,7 @@ public class DynamicStatementTruth {
 
                     Term xxu = xx.unneg();
                     int tdt = xxu.dt();
-                    long tWhen = tdt == DTERNAL ? ETERNAL :
+                    long tWhen = (tdt == DTERNAL || tdt == XTERNAL) ? ETERNAL :
                             (subjOrPred ? (-tdt) : (+tdt));
 
                     boolean forceNegate = false;
@@ -230,9 +230,9 @@ public class DynamicStatementTruth {
                 if (sect == Null)
                     return null; //allow non-Null Bool's?
 
-                int cs = c.shiftOrDTERNAL();
-                if (cs == DTERNAL) {
-                    outerDT = DTERNAL; //some temporal information destroyed
+                long cs = c.shift();
+                if (cs == ETERNAL) {
+                    outerDT = DTERNAL; //temporal information not available or was destroyed
                 } else {
                     outerDT = Tense.occToDT(subjOrPred ? -cs - sect.eventRange() : cs);
                 }

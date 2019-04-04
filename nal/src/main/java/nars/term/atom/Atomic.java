@@ -117,11 +117,6 @@ public interface Atomic extends Term {
     }
 
     @Override
-    default boolean hasAny(Op op) {
-        return isAny(op.bit);
-    }
-
-    @Override
     default boolean hasAny(int structuralVector) {
         return isAny(structuralVector);
     }

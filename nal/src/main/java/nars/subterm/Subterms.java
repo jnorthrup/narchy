@@ -44,7 +44,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     @Override
     default boolean hasXternal() {
-        return hasAny(Op.Temporal) && OR(Term::hasXternal);
+        return hasAny(Op.Temporal) && ORrecurse(Term::hasXternal);
     }
 
     default boolean contains(Term t) {
@@ -460,6 +460,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return r[0];
     }
 
+
     @Override
     default boolean containsRecursively(/*@NotNull*/ Term x, boolean root, Predicate<Term> subTermOf) {
 
@@ -625,14 +626,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //
 //    }
 
-    @Override
-    default boolean containsNeg(Term x) {
-        if (x.op() == NEG)
-            return contains(x.unneg());
-        else {
-            return !impossibleSubTerm(x) && hasAny(NEG) && contains(x.neg());
-        }
-    }
+
 
     /**
      * const/variable phase version

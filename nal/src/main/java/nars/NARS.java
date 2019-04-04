@@ -135,12 +135,12 @@ public class NARS {
                 n.termVolumeMax.set(26);
 
                 n.attn.linksMax.set(96);
-                n.attn.decay.set(0.01f);
+                n.attn.decay.set(0.05f);
 
                 n.beliefPriDefault.set(0.1f);
                 n.goalPriDefault.set(0.1f);
-                n.questionPriDefault.set(0.04f);
-                n.questPriDefault.set(0.04f);
+                n.questionPriDefault.set(0.03f);
+                n.questPriDefault.set(0.03f);
 
 
             });

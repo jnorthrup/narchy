@@ -61,7 +61,7 @@ public class Remember extends AbstractTask {
         }
 
         if (x.isBeliefOrGoal() && x.conf() < n.confMin.floatValue()) {
-            if (!(x instanceof TaskProxy)) {
+            if (!(x instanceof ProxyTask)) {
                 if (Param.DEBUG)
                     throw new TaskException(x, "insufficient evidence for non-input Task");
                 else

@@ -641,11 +641,35 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
     @Override
+    default float conf() {
+        return truth().conf(); //direct from truth, avoids evidence calculation if DiscreteTruth
+    }
+
+    @Override
     default float freqMean() {
         return freq();
     }
 
+    @Override
+    default float freqMin() {
+        return freqMean();
+    }
+    @Override
+    default float freqMax() {
+        return freqMean();
+    }
 
+    @Override default float confMean() {
+        return conf();
+    }
+    @Override
+    default float confMin() {
+        return confMean();
+    }
+    @Override
+    default float confMax() {
+        return confMean();
+    }
 
     /**
      * POINT EVIDENCE

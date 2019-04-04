@@ -70,8 +70,13 @@ public class LongObjectArraySet<X> extends FasterList<X> {
      * List semantics are changed in this overridden method. this is just an alias for the addAt(long, X) method
      */
     @Override
-    public void add(int when, X t) {
-        this.add((long) when, t);
+    public final void add(int when, X t) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeInstance(X term) {
+        throw new UnsupportedOperationException();
     }
 
     /** returns true if duplicate found; returns */

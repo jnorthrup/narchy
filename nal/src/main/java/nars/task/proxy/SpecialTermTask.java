@@ -1,7 +1,7 @@
 package nars.task.proxy;
 
 import nars.Task;
-import nars.task.TaskProxy;
+import nars.task.ProxyTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  * accepts a separate target as a facade to replace the apparent content target of
  * a proxied task
  */
-public class SpecialTermTask extends TaskProxy {
+public class SpecialTermTask extends ProxyTask {
 
     private final Term term;
 

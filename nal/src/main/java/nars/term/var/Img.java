@@ -28,10 +28,6 @@ public final class Img extends AnonID {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Term root() {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public Op op() {

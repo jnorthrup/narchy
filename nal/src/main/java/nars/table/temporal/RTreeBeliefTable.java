@@ -11,8 +11,8 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.op.Remember;
+import nars.task.ProxyTask;
 import nars.task.Revision;
-import nars.task.TaskProxy;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
@@ -122,7 +122,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             float conf =
                     //(((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
-                    Math.max(Param.TRUTH_EPSILON, r.coordF(2, false));
+                    Math.max(Param.TRUTH_EPSILON, r.confMin());
 
             y = y * (1 - conf);
             if (y < min)
@@ -199,9 +199,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
         Task input;
-        if (r.input instanceof TaskProxy) {
+        if (r.input instanceof ProxyTask) {
             //dont store TaskProxy's
-            input = ((TaskProxy) r.input).the();
+            input = ((ProxyTask) r.input).the();
             if (input == null)
                 throw new WTF();
         } else {

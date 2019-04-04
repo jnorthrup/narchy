@@ -562,14 +562,17 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (capacity == 0)
             return null;
 
+        float xp = x.priElseZero();
+        if (xp!=xp)
+            return null; //already deleted
+
         X key = key(x);
-        float p = x.priElseZero();
 
         long l = 0;
 
         Map<X, Y> map = table.map;
         if (map instanceof ConcurrentMap) {
-            //TODO check map first, and elide acquiring a lock if merge can be performed
+            //check map first, and elide acquiring a lock if merge can be performed
         } else {
             l = lock.readLock();
         }
@@ -579,29 +582,27 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (existing==null || existing == x) {
             Y y;
             if (existing == x) {
+                //exact same instance
                 if (l!=0)
                     lock.unlockRead(l);
-
-                //exact same instance
-
                 y = x;
             } else {
-                y = insert(x, key, p, l);
+                y = insert(x, key, xp, l);
             }
 
-            pressurize(p);
+            pressurize(xp);
             return y;
         } else  {
             //merge() handles the correct delta pressurization, so prssurize after the lock is released
-            return merge(existing, x, overflow, l);
+            return merge(existing, x, xp, overflow, l);
         }
 
 
     }
 
-    private Y insert(Y incoming,  X key, float pri, long lock) {
+    private Y insert(Y incoming,  X key, float pri, long l) {
         boolean inserted;
-        lock = readToWrite(lock);
+        l = readToWrite(l);
         try {
             int capacity = capacity();
             int s = table.size();
@@ -612,7 +613,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                 inserted = true;
             }
         } finally {
-            this.lock.unlockWrite(lock);
+            this.lock.unlockWrite(l);
         }
 
 
@@ -644,17 +645,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     /** TODO extract this as a lock utility method */
     private long readToWrite(long l) {
-        if (l != 0) {
-            long ll = lock.tryConvertToWriteLock(l);
-            if (ll != 0)
-                return ll;
-
-            lock.unlockRead(l);
-        }
-
-        return lock.writeLock();
+        return Util.readToWrite(l, this.lock);
     }
-
 
 
     /**
@@ -663,17 +655,18 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      * handles delta pressurization
      * postcondition: write-lock will be unlocked asap
      */
-    private Y merge(Y existing, Y incoming, @Nullable NumberX overflow, long l) {
+    private Y merge(Y existing, Y incoming, float incomingPri, @Nullable NumberX overflow, long l) {
 
         Y result;
 
-        float overflo, delta;
+        float over, delta;
+        float priBefore = existing.pri();
 
         l = readToWrite(l);
         try {
-            float priBefore = existing.pri();
 
-            overflo = merge(existing, incoming);
+            over = merge(existing, incoming, incomingPri, overflow);
+
             float priAfter = existing.pri();
             if (priAfter != priAfter) {
                 priAfter = 0;
@@ -702,8 +695,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             lock.unlockWrite(l);
         }
 
-        if (overflo != 0 && overflow != null)
-            overflow.add(overflo);
+        if (over != 0 && overflow != null)
+            overflow.add(over);
 
         if (Math.abs(delta) > Float.MIN_NORMAL) {
             pressurize(delta);
@@ -713,6 +706,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         incoming.delete();
 
         return result;
+    }
+
+    protected float merge(Y existing, Y incoming, float incomingPri, @Nullable NumberX overflow) {
+        return merge().merge(existing, incomingPri, PriMerge.MergeResult.Overflow);
     }
 
     /** whether to attempt re-sorting the list after each merge, in-between commits */
@@ -725,10 +722,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     private int posBefore(Y existing, float priBefore) {
         return table.items.indexOf(existing, priBefore, table, true, false);
-    }
-
-    protected float merge(Y existing, Y incoming) {
-        return merge().merge(existing, ((Prioritized) incoming).pri(), PriMerge.MergeResult.Overflow);
     }
 
     private Y removeFromMap(Y y) {

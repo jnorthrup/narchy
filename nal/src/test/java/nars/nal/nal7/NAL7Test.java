@@ -22,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 850;
+    private final static int cycles = 500;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolumeMax.set(18);
-        test.nar.confMin.set(0.3f);
+        test.nar.termVolumeMax.set(12);
+        test.nar.confMin.set(0.2f);
     }
 
 
@@ -49,6 +49,7 @@ public class NAL7Test extends NALTest {
     void temporal_explification() {
 
         TestNAR tester = test;
+        test.termVolMax(11);
         tester.believe("(enter($x, room) ==>-5 open($x, door))", 0.9f, 0.9f);
         tester.believe("(open($y, door) ==>-5 hold($y, key))", 0.8f, 0.9f);
 
@@ -61,6 +62,7 @@ public class NAL7Test extends NALTest {
     void temporal_analogy() {
 
         test
+                .termVolMax(11)
             .believe("( open($x, door) ==>+5 enter($x, room) )", 0.95f, 0.9f)
             .believe("( enter($x, room) =|> leave($x, corridor_100) )", 1.0f, 0.9f)
             .believe("( leave($x, corridor_100) =|> enter($x, room) )", 1.0f, 0.9f)
@@ -346,6 +348,7 @@ public class NAL7Test extends NALTest {
     void temporal_deduction() {
 
         test
+                .termVolMax(11)
                 .believe("(enter($x, room) ==>-3 open($x, door))", 0.9f, 0.9f)
                 .believe("(open($y, door) ==>-4 hold($y, key))", 0.8f, 0.9f)
                 .mustBelieve(cycles, "(enter($1,room) ==>-7 hold($1,key))", 0.72f, 0.58f)
@@ -357,7 +360,7 @@ public class NAL7Test extends NALTest {
     void temporal_induction_comparison() {
 
         test
-
+                .termVolMax(11)
 
                 .believe("((( $x, door) --> open) ==>+5 (( $x, room) --> enter))", 0.9f, 0.9f)
                 .believe("((( $y, door) --> open) ==>-4 (( $y, key) --> hold))", 0.8f, 0.9f)
@@ -422,7 +425,7 @@ public class NAL7Test extends NALTest {
 
     @Test
     void induction_on_events_0() {
-
+        test.termVolMax(11);
         test
 
                 .inputAt(4, "enter(John,room). :|:")
@@ -435,6 +438,7 @@ public class NAL7Test extends NALTest {
     void induction_on_events_0_neg() {
 
         test
+                .termVolMax(12)
                 .input("(--,open(John,door)). :|:")
                 .inputAt(4, "enter(John,room). :|:")
                 .mustBelieve(cycles, "( (--,open(John, door)) ==>+4 enter(John, room) )",
@@ -446,6 +450,7 @@ public class NAL7Test extends NALTest {
 
     @Test
     void induction_on_events2() {
+        test.termVolMax(11);
 
         test
                 .input("<(John,door) --> open>. :|:")
@@ -457,6 +462,7 @@ public class NAL7Test extends NALTest {
 
     @Test
     void induction_on_events3() {
+        test.termVolMax(11);
 
         test
                 .input("open(John,door). :|:")
@@ -475,8 +481,8 @@ public class NAL7Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.inputAt(1, "<door --> open>. :|:");
-        tester.inputAt(2, "<room --> enter>. :|:");
+        tester.inputAt(1, "<door --> open>. |");
+        tester.inputAt(2, "<room --> enter>. |");
 
         tester.mustBelieve(cycles, "(<door --> open> ==>+1 <room --> enter>)",
                 1.00f, 0.45f,
@@ -487,8 +493,8 @@ public class NAL7Test extends NALTest {
     void induction_on_events_pos_neg() {
 
         test
-                .inputAt(1, "a. :|:")
-                .inputAt(2, "--b. :|:")
+                .inputAt(1, "a. |")
+                .inputAt(2, "--b. |")
                 .mustBelieve(cycles, "(a &&+1 --b)", 1.00f, 0.81f, 1)
                 .mustBelieve(cycles, "(--b ==>-1 a)", 1.00f, 0.45f, 2)
                 .mustBelieve(cycles, "(a ==>+1 b)", 0.00f, 0.45f, 1)
@@ -528,7 +534,8 @@ public class NAL7Test extends NALTest {
     }
 
     @Test void conjuction_on_events_with_variable_introduction() {
-        test.inputAt(0, "open(John, door). |").inputAt(2, "enter(John, room). |")
+        test.termVolMax(11).inputAt(0, "open(John, door). |")
+            .inputAt(2, "enter(John, room). |")
             .mustBelieve(cycles,
                 "(open(#1,door) &&+2 enter(#1,room))",
                 1.00f, 0.81f, 0
@@ -540,7 +547,8 @@ public class NAL7Test extends NALTest {
     }
 
     @Test void conjuction_on_events_with_variable_introduction_pos_neg() {
-        test.inputAt(0, "open(John, door). |").inputAt(2, "--enter(John, room). |")
+        test.termVolMax(12)
+                .inputAt(0, "open(John, door). |").inputAt(2, "--enter(John, room). |")
                 .mustBelieve(cycles,
                         "(open(#1,door) &&+2 --enter(#1,room))",
                         1.00f, 0.81f, 0
@@ -551,7 +559,7 @@ public class NAL7Test extends NALTest {
     void abduction_on_events_with_variable_introduction() {
 
         TestNAR tester = test;
-
+        test.termVolMax(11);
         tester.input("open(John,door). :|:");
         tester.inputAt(2, "enter(John, room). :|:");
 
@@ -570,7 +578,7 @@ public class NAL7Test extends NALTest {
 
         TestNAR tester = test;
 
-
+        test.termVolMax(11);
         tester.input("open(John, door). :|:");
         tester.inputAt(2, "enter(John, room). :|:");
 
@@ -589,7 +597,8 @@ public class NAL7Test extends NALTest {
     void induction_on_events_composition_pre() {
 
         test
-
+                .termVolMax(17)
+                .confMin(0.4f)
                 .input("hold(John,key). :|:")
                 .input("(open(John,door) <-> enter(John,room)). :|:")
                 .mustBelieve(cycles, "(hold(John,key) &| (open(John,door) <-> enter(John,room)))",
@@ -619,6 +628,8 @@ public class NAL7Test extends NALTest {
     @ParameterizedTest
     void induction_on_events_composition_post(int dt) {
         TestNAR tester = test;
+
+        test.termVolMax(17);
 
         int t = 0;
         String component = "(open(John,door) &| hold(John,key))";
@@ -660,6 +671,7 @@ public class NAL7Test extends NALTest {
 
         TestNAR tester = test;
 
+        tester.termVolMax(14);
         tester.input("at(SELF,{t003}). :|:");
         tester.inputAt(4, "on({t002},{t003}). :|:");
 
@@ -1225,7 +1237,7 @@ public class NAL7Test extends NALTest {
             $.50;.90$ (d-->e). 10 %1.0;.90% {10: 8} Scheduled
             $.11;.81$ ((a-->b) &&+4 (c==>d)). 1⋈5 %1.0;.81% {1⋈5: 3;5} ((%1,%2,task(positive),belief(positive),task("."),time(raw),time(dtAfter)),((%1 &&+- %2),((Intersection-->Belief))))
         */
-
+        test.termVolMax(11);
         test
                 .inputAt(1, "((a-->b) &&+4 (c-->d)). :|:")
                 .inputAt(10, "(d-->e). :|:")
@@ -1428,8 +1440,8 @@ public class NAL7Test extends NALTest {
         test.termVolMax(5);
         test.believe("((x1 && a) ==>+2 c)");
         test.believe("((y1 && a) ==>+1 c)");
-        test.mustBelieve(cycles*4 , "(x1 ==>+1 y1)", 1.00f, 0.45f);
-        test.mustBelieve(cycles*4 , "(y1 ==>-1 x1)", 1.00f, 0.45f);
+        test.mustBelieve(cycles , "(x1 ==>+1 y1)", 1.00f, 0.45f);
+        test.mustBelieve(cycles , "(y1 ==>-1 x1)", 1.00f, 0.45f);
     }
 
     @Test public void occtestShiftWorkingRight() {

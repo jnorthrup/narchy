@@ -163,17 +163,13 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
         }
     }
 
-    /** impossible for AnonVector to contain Xternal, or ANY temporal compound */
-    @Override public boolean hasXternal() {
-        return false;
-    }
 
     @Override
     public final Term sub(int i) {
         return term(subRaw(i));
     }
 
-    public final short subRaw(int i) {
+    final short subRaw(int i) {
         return subterms[i];
     }
 

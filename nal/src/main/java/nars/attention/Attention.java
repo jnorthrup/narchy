@@ -1,11 +1,11 @@
 package nars.attention;
 
-import jcog.TODO;
 import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.Forgetting;
+import jcog.pri.PriBuffer;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
@@ -22,7 +22,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.time.event.DurService;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -300,15 +299,14 @@ public class Attention extends DurService implements Sampler<TaskLink> {
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {
 
         public TaskLinkArrayBag(int initialCapacity) {
-            super(Param.tasklinkMerge, initialCapacity, new UnifiedMap());
+            super(Param.tasklinkMerge, initialCapacity, PriBuffer.newMap(false));
         }
 
         @Override
-        protected float merge(TaskLink existing, TaskLink incoming) {
+        protected float merge(TaskLink existing, TaskLink incoming, float incomingPri, @Nullable NumberX overflow) {
             return existing.mergeAndGetDelta(incoming, merge());
         }
-
-        //        @Override
+//        @Override
 //        protected float sortedness() {
 //            return 0.33f;
 //        }
@@ -333,7 +331,10 @@ public class Attention extends DurService implements Sampler<TaskLink> {
 
         @Override
         protected TaskLink merge(TaskLink existing, TaskLink incoming, NumberX overflowing) {
-            throw new TODO();
+            float o = existing.mergeAndGetDelta(incoming, merge());
+            if (overflowing!=null)
+                overflowing.add(o);
+            return existing;
         }
     }
 

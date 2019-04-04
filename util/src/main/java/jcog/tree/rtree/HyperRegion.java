@@ -106,11 +106,6 @@ public interface HyperRegion {
      */
     double coord(int dimension, boolean maxOrMin);
 
-    default float coordF(int dimension, boolean maxOrMin) {
-        return (float)coord(dimension, maxOrMin);
-    }
-
-
     default double center(int d) {
         return (coord(d, true) + coord(d, false)) / 2.0;
     }

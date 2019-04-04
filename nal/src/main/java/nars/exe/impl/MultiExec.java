@@ -10,7 +10,7 @@ import nars.exe.Exec;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.TaskProxy;
+import nars.task.ProxyTask;
 import nars.time.clock.RealTime;
 import nars.time.event.DurService;
 
@@ -57,7 +57,7 @@ abstract public class MultiExec extends UniExec {
 
     @Override
     public final void input(Object x) {
-        if (x instanceof NALTask || x instanceof TaskProxy)
+        if (x instanceof NALTask || x instanceof ProxyTask)
             input((ITask) x);
         else
             execute(x);

@@ -1,6 +1,7 @@
 package nars.task.util;
 
 import jcog.TODO;
+import jcog.data.NumberX;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.OverflowDistributor;
@@ -18,6 +19,7 @@ import nars.control.channel.ConsumerX;
 import nars.exe.Exec;
 import nars.task.ITask;
 import nars.task.NALTask;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -231,12 +233,12 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         {
             final PriMerge merge = Param.tasklinkMerge;
             tasks = new BufferedBag.SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
-                        @Override
-                        protected float merge(ITask existing, ITask incoming) {
-                            return TaskBuffer.merge(existing, incoming);
-                        }
+                @Override
+                protected float merge(ITask existing, ITask incoming, float incomingPri, @Nullable NumberX overflow) {
+                    return TaskBuffer.merge(existing, incoming);
+                }
 
-                        @Override
+                @Override
                         protected int histogramBins() {
                             return 0; /* since sampling is not used */
                         }

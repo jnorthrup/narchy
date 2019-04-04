@@ -70,7 +70,7 @@ public class BagClustering<X> {
 
 
         this.bag = new BufferedBag.SimpleBufferedBag<>(
-                new PriReferenceArrayBag<>(merge, initialCap),
+                new PriReferenceArrayBag<>(merge, initialCap, PriBuffer.newMap(false)),
                 new PriBuffer<>(merge));
 
     }

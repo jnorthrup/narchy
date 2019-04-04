@@ -5,7 +5,6 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.builder.TermBuilder;
-import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 
@@ -19,8 +18,10 @@ public interface ConjBuilder {
      * now corrupt and its result via .target() should be considered final
      */
     default boolean add(long at, Term x) {
-        if (at == DTERNAL || at == XTERNAL)//TEMPORARY
+        if (at == DTERNAL || at == XTERNAL)//HACK TEMPORARY
             throw new WTF("probably meant ETERNAL or TIMELESS");
+        if (at == TIMELESS)
+            throw new WTF("invalid time");
 
         return
                 (x instanceof Compound && x.op() == CONJ) ?
@@ -102,12 +103,18 @@ public interface ConjBuilder {
         return add(t.dt() == DTERNAL ? ETERNAL : 0, t);
     }
 
-    default int shiftOrDTERNAL() {
-        return eventOccurrences() == 1 && eventCount(ETERNAL) > 0 ? DTERNAL : Tense.occToDT(shift());
+    default long shiftOrZero() {
+        long s = shift();
+        if (s == ETERNAL)
+            return 0;
+        else {
+            assert(s!=TIMELESS);
+            return s;
+        }
     }
 
     default long shift() {
-        long min = Long.MAX_VALUE;
+        long min = TIMELESS;
         LongIterator ii = eventOccIterator();
         while (ii.hasNext()) {
             long t = ii.next();
@@ -116,6 +123,6 @@ public interface ConjBuilder {
                     min = t;
             }
         }
-        return min == Long.MAX_VALUE ? 0 : min;
+        return min == Long.MAX_VALUE ? ETERNAL : min;
     }
 }

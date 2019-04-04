@@ -16,7 +16,14 @@ public class RingTensor extends AbstractShapedTensor implements WritableTensor {
 
 
     public RingTensor(int width, int history) {
-        this(new ArrayTensor(width*history), width, history);
+        this(width, history, false);
+    }
+
+    public RingTensor(int width, int history, boolean atomic) {
+        this(atomic ?
+                new AtomicFloatArray(width*history) :
+                new ArrayTensor(width*history),
+                width, history);
     }
 
     public RingTensor(WritableTensor x, int width, int history) {

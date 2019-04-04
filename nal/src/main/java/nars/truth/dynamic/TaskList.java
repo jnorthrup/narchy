@@ -73,15 +73,30 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     }
 
     @Override
-    public float coordF(int dimension, boolean maxOrMin) {
-        throw new TODO();
-    }
-
-    @Override
     @Nullable
     public short[] cause() {
         return CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(),
                 Util.map(0, size(), short[][]::new, x -> get(x).cause()));
+    }
+
+    @Override
+    public float freqMin() {
+        throw new TODO();
+    }
+
+    @Override
+    public float freqMax() {
+        throw new TODO();
+    }
+
+    @Override
+    public float confMin() {
+        throw new TODO();
+    }
+
+    @Override
+    public float confMax() {
+        throw new TODO();
     }
 
     @Override

@@ -63,6 +63,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.locks.StampedLock;
 import java.util.function.*;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -2735,5 +2736,22 @@ public enum Util {
 
     public static Logger logger(Class c) {
         return LoggerFactory.getLogger(c);
+    }
+
+    public static long readToWrite(long l, StampedLock lock) {
+        return readToWrite(l, lock, true);
+    }
+
+    public static long readToWrite(long l, StampedLock lock, boolean strong) {
+        if (l != 0) {
+            long ll = lock.tryConvertToWriteLock(l);
+            if (ll != 0) return ll;
+
+            if (!strong) return 0;
+
+            lock.unlockRead(l);
+        }
+
+        return strong ? lock.writeLock() : lock.tryWriteLock();
     }
 }

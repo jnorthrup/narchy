@@ -13,7 +13,7 @@ import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
 import nars.task.Revision;
-import nars.task.TaskProxy;
+import nars.task.ProxyTask;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
@@ -119,7 +119,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             }
             //}
         } finally {
-            lock.unlock(r);
+            lock.unlockWrite(r);
         }
 
         if (trash != null)
@@ -193,8 +193,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
 
 
-        if (incoming instanceof TaskProxy) {
-            incoming = ((TaskProxy) incoming).the();
+        if (incoming instanceof ProxyTask) {
+            incoming = ((ProxyTask) incoming).the();
         }
 
         int r = add(incoming, this);
@@ -348,7 +348,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
 
         NALTask revised;
-        if (oldBelief != null && conclusion != null) {
+        if (oldBelief != null) {
 
 
             Task finalOldBelief = oldBelief;
@@ -370,13 +370,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             revised = null;
         }
 
-        long ll = this.lock.tryConvertToWriteLock(lock);
-        if (ll==0) {
-            this.lock.unlockRead(lock);
-            lock = this.lock.writeLock();
-        } else {
-            lock = ll;
-        }
+        lock = Util.readToWrite(lock, this.lock);
 
         if (revised == null) {
             tryPut(input, r);
@@ -423,17 +417,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             lock.unlock(l);
         }
 
-        if (existing != null) {
-            r.merge(existing);
-            return;
-        }
-
-        int cap = capacity();
-        if (cap == 0) {
-            if (input.isInput())
-                throw new RuntimeException("input task rejected by " + EternalTable.class + " with 0 capacity): " + input);
-            r.forget(input);
-        }
+        r.merge(existing);
+        return;
 
     }
 

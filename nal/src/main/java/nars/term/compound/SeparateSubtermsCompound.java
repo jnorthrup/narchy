@@ -16,6 +16,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static nars.time.Tense.XTERNAL;
+
 /** delegates certain methods to a specific impl */
 public abstract class SeparateSubtermsCompound implements Compound {
 
@@ -139,6 +141,11 @@ public abstract class SeparateSubtermsCompound implements Compound {
     @Override
     public final boolean containsNeg(Term x) {
         return subterms().containsNeg(x);
+    }
+
+    @Override
+    public boolean hasXternal() {
+        return dt()==XTERNAL || (hasAny(Op.Temporal) && subterms().hasXternal());
     }
 
     @Override

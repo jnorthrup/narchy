@@ -1,5 +1,6 @@
 package jcog.pri;
 
+import jcog.Paper;
 import jcog.data.map.NonBlockingHashMap;
 import jcog.exe.Exe;
 import jcog.pri.op.PriMerge;
@@ -48,7 +49,13 @@ public class PriBuffer<Y> {
         return newMap(true);
     }
 
-    /** returns concurrent map for use in bags and buffers */
+    /** returns concurrent map for use in bags and buffers
+     *
+     * TODO expand into smart implementation chooser based on context,
+     *      profiling history using current stack context as a clue, etc
+     *
+     * */
+    @Paper
     public static <X,Y> Map<X,Y> newMap(boolean linked) {
         float load = 0.9f;
         if (Exe.concurrent()) {

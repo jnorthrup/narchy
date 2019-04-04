@@ -1246,7 +1246,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     }
                 }
                 Term newConjUnneg = c.term();
-                int shift = Tense.occToDT(c.shift());
+                long shift = c.shiftOrZero();
 
                 Term newConj = newConjUnneg.neg();
                 if (shift != 0) {
@@ -1254,7 +1254,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         dt = 0;
 
                     ConjLazy d = new ConjLazy(2);
-                    d.add(dt, incoming);
+                    d.add((long)dt, incoming);
                     d.add(shift, newConj);
                     return d.term();
 
@@ -1295,12 +1295,12 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             Term B = bb.term();
             if (b == Null)
                 return Null;
-            long as = aa.shift(), bs = bb.shift();
+            long as = aa.shiftOrZero(), bs = bb.shiftOrZero();
             long abShift = Math.min(as, bs);
             ConjBuilder dd = newConjSharingTermMap(cc);
-            if (eternal && as == 0 && bs == 0) {
-                as = bs = ETERNAL;
-            }
+//            if (eternal && as == 0 && bs == 0) {
+//                as = bs = ETERNAL;
+//            }
             if (dd.add(as, A.neg()))
                 dd.add(bs, B.neg());
 
@@ -1311,7 +1311,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             if (cc.eventOccurrences() == 0)
                 return D.neg();
             else {
-                cc.add((eternal && (cc.eventOccurrences() == 1 && cc.eventCount(ETERNAL) > 0 && !Conj.isSeq(A) && !Conj.isSeq(B))) ?
+                cc.add((cc.eventCount(ETERNAL) > 0 && !Conj.isSeq(A) && !Conj.isSeq(B)) ?
                         ETERNAL : (abShift), D.neg());
                 return cc.term().neg();
             }

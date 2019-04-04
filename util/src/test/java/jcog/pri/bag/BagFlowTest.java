@@ -10,8 +10,6 @@ import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-
 public class BagFlowTest {
 
     static class InstrumentedPLink<X> extends PLink<X> {
@@ -83,7 +81,7 @@ public class BagFlowTest {
         int variety = cap * 2;
         int batchSize = cap;
         final long[] time = new long[1];
-        BagFlow f = new BagFlow<String,String>(new PriArrayBag<>(PriMerge.plus, new HashMap())) {
+        BagFlow f = new BagFlow<String,String>(new PriArrayBag(PriMerge.plus)) {
             @Override long now() {
                 return time[0];
             }

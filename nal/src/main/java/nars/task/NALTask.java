@@ -160,21 +160,6 @@ public abstract class NALTask extends UnitPri implements Task {
         return appendTo(null).toString();
     }
 
-    @Override
-    public float coordF(int dimension, boolean maxOrMin) {
-        switch (dimension) {
-            case 0:
-                return maxOrMin ? end() : start();
-            case 1:
-                return freq();
-            case 2:
-                return conf();
-            default:
-                throw new UnsupportedOperationException();
-        }
-    }
-
-
     /**
      * extended: with meta table
      */

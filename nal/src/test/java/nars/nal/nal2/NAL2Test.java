@@ -22,8 +22,8 @@ public class NAL2Test extends NALTest {
     protected NAR nar() {
 
         NAR n = NARS.tmp(2);
-        n.confMin.set(0.3f);
-        n.termVolumeMax.set(8);
+        n.confMin.set(0.2f);
+        n.termVolumeMax.set(7);
         return n;
     }
 
@@ -230,6 +230,7 @@ public class NAL2Test extends NALTest {
     @Test
     void testIntersectDiffUnionOfCommonSubterms() {
         test
+                .termVolMax(6)
                 .believe("<{x,y}-->c>")
                 .believe("<{x,z}-->c>")
                 .mustBelieve(cycles, "<{x,y,z}-->c>", 1f, 0.81f)

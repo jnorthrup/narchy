@@ -2,6 +2,7 @@ package nars.term;
 
 import jcog.TODO;
 import nars.Op;
+import nars.subterm.util.TermMetadata;
 import nars.term.atom.Bool;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.jetbrains.annotations.Nullable;
@@ -177,10 +178,6 @@ public interface Termlike {
      */
     boolean contains(Term t);
 
-    default boolean containsNeg(Term x) {
-        return contains(x.neg());
-    }
-
     boolean hasXternal();
 
     default /* final */boolean containsRecursively(Term t) {
@@ -190,11 +187,22 @@ public interface Termlike {
     default /* final */boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
         return !impossibleSubTerm(t) && containsRecursively(t, false, inSubtermsOf);
     }
+    default boolean containsNeg(Term x) {
+        if (x.op() == NEG)
+            return contains(x.unneg());
+        else {
+            return !(this instanceof TermMetadata && !(!impossibleSubTerm(x) && hasAny(NEG)))
+                    &&
+                    contains(x.neg());
+        }
+    }
 
     /**
      * if root is true, the root()'s of the terms will be compared
      */
     boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf);
+
+
 
 
     default boolean hasAll(int structuralVector) {
@@ -204,17 +212,6 @@ public interface Termlike {
     default boolean hasAny(int structuralVector) {
         return Op.has(structure(), structuralVector, false);
     }
-
-//    default boolean hasAny(Op... oo) {
-//        if (oo.length == 0)
-//            return false;
-//
-//        int checkStruct = 0;
-//        for (Op o : oo)
-//            checkStruct |= o.bit;
-//
-//        return hasAny(checkStruct);
-//    }
 
     default /* final */ boolean hasAny(/*@NotNull*/ Op op) {
         return hasAny(op.bit);

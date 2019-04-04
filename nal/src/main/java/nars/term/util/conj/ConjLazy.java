@@ -1,5 +1,6 @@
 package nars.term.util.conj;
 
+import jcog.WTF;
 import jcog.data.set.LongObjectArraySet;
 import nars.Task;
 import nars.term.Term;
@@ -9,8 +10,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
 import static nars.Op.CONJ;
 import static nars.term.atom.Bool.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.*;
 
 /**
  * prepares construction of a conjunction target from components,
@@ -28,6 +28,16 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     public ConjLazy() {
         this(4);
     }
+
+    @Override
+    public final boolean add(long when, Term t) {
+        if (when == TIMELESS)
+            throw new WTF("invalid time");
+        return super.add(when, t);
+    }
+
+
+
 
     /** TODO add support for supersampling to include task.end() features */
     public static Term sequence(Task[] events) {
@@ -59,6 +69,9 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
      */
     @Override
     public boolean addEvent(long when, Term t) {
+        if (when == TIMELESS)
+            throw new WTF();
+
         boolean result = true;
         if (t == True)
             return true; //ignore

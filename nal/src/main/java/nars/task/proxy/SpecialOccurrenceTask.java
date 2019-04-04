@@ -1,9 +1,9 @@
 package nars.task.proxy;
 
 import nars.Task;
-import nars.task.TaskProxy;
+import nars.task.ProxyTask;
 
-public class SpecialOccurrenceTask extends TaskProxy {
+public class SpecialOccurrenceTask extends ProxyTask {
     protected final long start;
     protected final long end;
 

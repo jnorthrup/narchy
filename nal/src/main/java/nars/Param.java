@@ -140,6 +140,7 @@ public abstract class Param {
     /** whether INT atoms can name a concept directly */
     public static final boolean INT_CONCEPTUALIZABLE = false;
 
+    public static final boolean PREMISE_KEY_DITHER = true;
 
     public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
 
@@ -217,7 +218,7 @@ public abstract class Param {
     /** memory reconsolidation period - time period for a memory to be refreshed as new
      *  useful as a novelty threshold:
      *          >=0, higher values decrease the rate at which repeated tasks can be reactivated */
-    public static int REMEMBER_REPEAT_THRESH_DURS = 2;
+    public static int REMEMBER_REPEAT_THRESH_DURS = 1;
 
 
     /**
@@ -329,7 +330,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 3;
+    public static final int TIMEGRAPH_ITERATIONS = 2;
 
 
     @Range(min = 0, max = 64)

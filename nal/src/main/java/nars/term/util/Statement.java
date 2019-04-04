@@ -72,11 +72,7 @@ public class Statement {
                     if (dt == DTERNAL || dt == XTERNAL) {
                         newSubj = CONJ.the(B, dt, subject, inner);
                     } else {
-                        if (dt == XTERNAL || dt == DTERNAL) {
-                            newSubj = CONJ.the(B, dt, subject, inner);
-                        } else {
-                            newSubj = ConjSeq.sequence(subject, 0, inner, subject.eventRange() + dt, B);
-                        }
+                        newSubj = ConjSeq.sequence(subject, 0, inner, subject.eventRange() + dt, B);
                     }
                     return statement(B, IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
                 }
@@ -143,23 +139,23 @@ public class Statement {
 
 
                         if (dt != DTERNAL) {
-                            int shift = Tense.occToDT(newPredConj.shift());
-//                            if (shift == DTERNAL || shift == XTERNAL) {
-//                                if (Param.DEBUG)
-//                                    throw new TODO();
-//                                else
-//                                    return Null; //??
-//                            }
+                            long shift = newPredConj.shift();
+                            if (shift == ETERNAL) {
+                                //??
+                                dt = DTERNAL;
+                            } else {
+//
 
-                            dt = shift - subjRange;
+                                dt = Tense.occToDT(shift - subjRange);
 
-                            if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
-                                //HACK return to dternal
-                                if (newPred instanceof Compound)
-                                    newPred = ((Compound)newPred).dt(DTERNAL, B);
+                                if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
+                                    //HACK return to dternal
+                                    if (newPred instanceof Compound)
+                                        newPred = ((Compound) newPred).dt(DTERNAL, B);
 
-                                if (newPred instanceof Bool) {
-                                    return newPred;
+                                    if (newPred instanceof Bool) {
+                                        return newPred;
+                                    }
                                 }
                             }
                         }

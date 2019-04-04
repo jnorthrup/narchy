@@ -52,10 +52,10 @@ public final class TasksRegion implements TaskRegion {
         } else {
             return new TasksRegion(
                     Math.min(r.start(), xs), Math.max(r.end(), xe),
-                    Math.min(r.coordF(1, false), ef),
-                    Math.max(r.coordF(1, true), ef),
-                    Math.min(r.coordF(2, false), ec),
-                    Math.max(r.coordF(2, true), ec)
+                    Math.min(r.freqMin(), ef),
+                    Math.max(r.freqMax(), ef),
+                    Math.min(r.confMin(), ec),
+                    Math.max(r.confMax(), ec)
             );
         }
     }
@@ -90,33 +90,20 @@ public final class TasksRegion implements TaskRegion {
         return Arrays.toString(new double[]{start, end, freqMin, freqMax, confMin, confMax});
     }
 
-
     @Override
-    public final float coordF(int dimension, boolean maxOrMin) {
-        if (maxOrMin) {
-            switch (dimension) {
-                case 0:
-                    return end;
-                case 1:
-                    return freqMax;
-                case 2:
-                    return confMax;
-            }
-        } else {
-            switch (dimension) {
-                case 0:
-                    return start;
-                case 1:
-                    return freqMin;
-                case 2:
-                    return confMin;
-            }
-        }
-
-
-        throw new UnsupportedOperationException();
+    public final float freqMin() {
+        return freqMin;
     }
-
+    public final float freqMax() {
+        return freqMax;
+    }
+    public final float confMin() {
+        return confMin;
+    }
+    @Override
+    public float confMax() {
+        return confMax;
+    }
 
     @Override
     public @Nullable Task task() {

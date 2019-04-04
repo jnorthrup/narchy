@@ -109,23 +109,6 @@ public class ConjTest {
         assertEquals(byte[].class, c.event.get(ETERNAL).getClass());
     }
 
-    @Test
-    void testSimpleEternalsNeg() {
-        ConjBuilder c = new Conj();
-        c.add(ETERNAL, x);
-        c.add(ETERNAL, y.neg());
-        assertEquals("((--,y)&&x)", c.term().toString());
-    }
-
-    @Test
-    void testSimpleEvents() {
-        Conj c = new Conj();
-        c.add(1, x);
-        c.add(2, y);
-        assertEquals("(x &&+1 y)", c.term().toString());
-        assertEquals(1, c.shift());
-        assertEquals(2, c.event.size());
-    }
 
     @Test
     void testRoaringBitmapNeededManyEventsAtSameTime() {

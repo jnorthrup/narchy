@@ -208,9 +208,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
 
-    default boolean hasXternal() {
-        return (dt() == XTERNAL) || (hasAny(Op.Temporal) && OR(Term::hasXternal));
-    }
+
 
 
     @Override

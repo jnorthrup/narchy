@@ -64,10 +64,10 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
         TasksRegion z = new TasksRegion(
                 Math.min(x.start(), y.start()), Math.max(x.end(), y.end()),
-                Math.min(x.coordF(1, false), y.coordF(1, false)),
-                Math.max(x.coordF(1, true), y.coordF(1, true)),
-                Math.min(x.coordF(2, false), y.coordF(2, false)),
-                Math.max(x.coordF(2, true), y.coordF(2, true))
+                Math.min(x.freqMin(), y.freqMin()),
+                Math.max(x.freqMax(), y.freqMax()),
+                Math.min(x.confMin(), y.confMin()),
+                Math.max(x.confMax(), y.confMax())
         );
         if (x instanceof TasksRegion && z.equals(x))
             return x; //contains or equals y
@@ -198,11 +198,9 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     default double coord(int dimension, boolean maxOrMin) {
-        return coordF(dimension, maxOrMin);
+        //return coordF(dimension, maxOrMin);
+        throw new UnsupportedOperationException();
     }
-
-    @Override
-    float coordF(int dimension, boolean maxOrMin);
 
     default boolean intersectsConf(float cMin, float cMax) {
         return (cMin <= confMax() && cMax >= confMin());
@@ -213,23 +211,15 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     default float freqMean() {
-        return (freqMin() + freqMax()) * 0.5f;
+        return (freqMin() + freqMax()) / 2;
+    }
+    default float confMean() {
+        return (confMin() + confMax()) / 2;
     }
 
-    default float freqMin() {
-        return coordF(1, false);
-    }
-
-    default float freqMax() {
-        return coordF(1, true);
-    }
-
-    default float confMin() {
-        return coordF(2, false);
-    }
-
-    default float confMax() {
-        return coordF(2, true);
-    }
+    float freqMin();
+    float freqMax();
+    float confMin();
+    float confMax();
 
 }

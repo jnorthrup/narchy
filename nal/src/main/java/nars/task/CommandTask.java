@@ -53,11 +53,6 @@ public class CommandTask implements Task {
     }
 
     @Override
-    public float coordF(int dimension, boolean maxOrMin) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public byte punc() {
         return COMMAND;
     }

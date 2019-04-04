@@ -32,6 +32,7 @@ public interface TermedDelegate extends Termlike, Termed {
         return term().hasAny(structuralVector);
     }
 
+
     @Override
     default int structureSurface() {
         return term().structureSurface();
