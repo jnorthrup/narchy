@@ -84,7 +84,7 @@ public class Tex {
                 texture = TextureIO.newTexture(gl, data);
             }
         }
-        if (texture!=null && data!=null) {
+        if (texture != null && data != null) {
             if (updated.compareAndSet(true, false)) {
                 texture.updateImage(gl, data);
             }
@@ -94,16 +94,18 @@ public class Tex {
     }
 
     public boolean set(BufferedImage iimage) {
-        if (iimage == null || profile == null)
+//        if (/*iimage == null || */profile == null)
+//            return false;
+        if (!ready())
             return false;
 
-        if (data == null || this.src != iimage) {
+        if (data == null) {
             DataBuffer b = iimage.getRaster().getDataBuffer();
             int W = iimage.getWidth(), H = iimage.getHeight();
             if (b instanceof DataBufferInt)
-                set(((DataBufferInt) b).getData(), W, H, iimage.getColorModel().hasAlpha());
+                _set(((DataBufferInt) b).getData(), W, H, iimage.getColorModel().hasAlpha());
             else if (b instanceof DataBufferByte) {
-                set(((DataBufferByte) b).getData(), W, H);
+                _set(((DataBufferByte) b).getData(), W, H);
             } else
                 throw new TODO();
         }
@@ -112,46 +114,52 @@ public class Tex {
         return true;
     }
 
-    private void set(byte[] iimage, int width, int height) {
-        if (this.src != iimage) {
+    private void _set(byte[] iimage, int width, int height) {
 
-            this.src = iimage;
+        this.src = iimage;
 
-            ByteBuffer buffer = ByteBuffer.wrap(iimage);
-            data = new TextureData(profile, GL_RGB,
-                    width, height,
-                    0 /* border */,
-                    GL_RGB,
-                    GL_UNSIGNED_BYTE,
-                    mipmap,
-                    false,
-                    false,
-                    buffer, null
-            );
-        }
+        ByteBuffer buffer = ByteBuffer.wrap(iimage);
+        data = new TextureData(profile, GL_RGB,
+                width, height,
+                0 /* border */,
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                mipmap,
+                false,
+                false,
+                buffer, null
+        );
+
     }
 
-    void set(int[] iimage, int width, int height) {
-        set(iimage, width, height, true);
+    public void set(int[] iimage, int width, int height) {
+        if (!ready())
+            return;
+
+        if (data == null) {
+            _set(iimage, width, height, true);
+        }
+
+        updated.set(true);
     }
 
-    void set(int[] iimage, int width, int height, boolean alpha) {
+    private void _set(int[] iimage, int width, int height, boolean alpha) {
 
-        if (this.src != iimage) {
-            this.src = iimage;
-            //TODO if iimage is the same instance
 
-            IntBuffer buffer = IntBuffer.wrap(iimage);
-            data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
-                    width, height,
-                    0 /* border */,
-                    GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
-                    mipmap,
-                    false,
-                    false,
-                    buffer, null
-            );
-        }
+        this.src = iimage;
+        //TODO if iimage is the same instance
+
+        IntBuffer buffer = IntBuffer.wrap(iimage);
+        data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
+                width, height,
+                0 /* border */,
+                GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
+                mipmap,
+                false,
+                false,
+                buffer, null
+        );
+
     }
 
     public TexSurface view() {
@@ -172,11 +180,12 @@ public class Tex {
     public BufferedImage set(GrayU8 x, BufferedImage b) {
         this.src = x;
 
-        if (b == null || b.getWidth() != x.width || b.getHeight() != x.height)
-            b = new BufferedImage(x.width, x.height, BufferedImage.TYPE_INT_ARGB);
+        if (data == null) {
+            if (b == null || b.getWidth() != x.width || b.getHeight() != x.height)
+                b = new BufferedImage(x.width, x.height, BufferedImage.TYPE_INT_ARGB);
 
-
-        set(ConvertBufferedImage.convertTo(x, b));
+            set(ConvertBufferedImage.convertTo(x, b));
+        }
 
         return b;
 
@@ -184,7 +193,7 @@ public class Tex {
     }
 
     public final boolean ready() {
-        return texture != null;
+        return profile != null;
     }
 
     public void stop(Surface x) {
@@ -206,7 +215,7 @@ public class Tex {
     private static class MyTexSurface extends TexSurface {
         private final BufferedImage b;
 
-        public MyTexSurface(BufferedImage b) {
+        MyTexSurface(BufferedImage b) {
             this.b = b;
         }
 

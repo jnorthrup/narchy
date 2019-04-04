@@ -11,7 +11,7 @@ import jcog.lab.var.FloatVar;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.Range;
-import jcog.table.ARFF;
+import jcog.table.DataTable;
 import org.eclipse.collections.api.block.function.primitive.BooleanFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
@@ -75,7 +75,7 @@ public class Lab<X> {
     /**
      * records all sensors ()
      */
-    public static <X> Object[] record(X x, ARFF data, List<Sensor<X, ?>> sensors) {
+    public static <X> Object[] record(X x, DataTable data, List<Sensor<X, ?>> sensors) {
         synchronized (data) {
             Object[] row = row(x, sensors);
             data.add(row);

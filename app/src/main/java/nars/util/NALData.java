@@ -28,16 +28,16 @@ import java.util.stream.StreamSupport;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
-/** schema+data -> beliefs/questions */
-public class NALSchema {
+/** translates a schema+data table to a set of beliefs and questions */
+public class NALData {
 
-    public static void believe(NAR n, ARFF data, BiFunction<Term, Term[], Term> pointGenerator) {
+    public static void believe(NAR n, DataTable data, BiFunction<Term, Term[], Term> pointGenerator) {
         n.input(
-                Stream.concat(metaBeliefs(n, data, pointGenerator), data(n, data, pointGenerator))
+                Stream.concat(metaBeliefs(n, data, pointGenerator), tasks(n, data, pointGenerator))
         );
     }
 
-    public static void ask(NAR n, ARFF data, BiFunction<Term, Term[], Term> pointGenerator) {
+    public static void ask(NAR n, DataTable data, BiFunction<Term, Term[], Term> pointGenerator) {
         n.input(
                 data(n, data, QUESTION, pointGenerator)
         );
@@ -55,7 +55,7 @@ public class NALSchema {
 //        };
 //    }
     /** all elements except a specified row become the subj of an impl to the element in the specified column*/
-    public static BiFunction<Term, Term[], Term> predictsLast = (ctx, tt) -> {
+    static BiFunction<Term, Term[], Term> predictsLast = (ctx, tt) -> {
         int lastCol = tt.length - 1;
         Term[] subj = Arrays.copyOf(tt, lastCol);
         Term pred = tt[lastCol];
@@ -65,7 +65,7 @@ public class NALSchema {
 
 
     /** beliefs representing the schema's metadata */
-    public static Stream<Task> metaBeliefs(NAR nar, ARFF a, BiFunction<Term, Term[], Term> pointGenerator) {
+    private static Stream<Task> metaBeliefs(NAR nar, DataTable a, BiFunction<Term, Term[], Term> pointGenerator) {
         List<Term> meta = new FasterList();
 
         int n = a.columnCount();
@@ -94,11 +94,11 @@ public class NALSchema {
         );
     }
 
-    static Term attrTerm(String ai) {
+    private static Term attrTerm(String ai) {
         return $.$$(Texts.unquote(ai));
     }
 
-    public static Stream<Task> data(NAR n, ARFF a, BiFunction<Term, Term[], Term> pointGenerator) {
+    public static Stream<Task> tasks(NAR n, DataTable a, BiFunction<Term, Term[], Term> pointGenerator) {
         return data(n, a, (byte)0, pointGenerator);
     }
 
@@ -118,7 +118,7 @@ public class NALSchema {
      *      (a,b,c,d) -> ((a,b,c)-->d)
      *
      */
-    public static Stream<Task> data(NAR n, ARFF a, byte punc, BiFunction<Term, Term[], Term> pointGenerator) {
+    public static Stream<Task> data(NAR n, DataTable a, byte punc, BiFunction<Term, Term[], Term> pointGenerator) {
         long now = n.time();
         return terms(a, pointGenerator).map(point->{
 
@@ -133,7 +133,7 @@ public class NALSchema {
         });
     }
 
-    public static Stream<Term> terms(ARFF a, BiFunction<Term, Term[], Term> generator) {
+    public static Stream<Term> terms(DataTable a, BiFunction<Term, Term[], Term> generator) {
         Term ctx = name(a);
         return StreamSupport.stream(a.spliterator(),false).map((Row point)->{
             //ImmutableList point = instance.data;
@@ -153,8 +153,8 @@ public class NALSchema {
         });
     }
 
-    public static Term name(ARFF a) {
-        String r = a.getRelation();
+    public static Term name(DataTable a) {
+        String r = a instanceof DataTable ? ((ARFF)a).getRelation() : a.toString();
         if (r == null)
             r = ("ARFF_" + System.identityHashCode(a));
         return $.the(r);

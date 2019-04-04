@@ -4,6 +4,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.table.ARFF;
+import jcog.table.DataTable;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
@@ -48,7 +49,7 @@ public class NALDataTableTest {
     static NAR validatePrediction(NAR n, String arffData, String... hints) throws IOException, ARFF.ARFFParseError {
         ArrayHashSet<Row> data = new ArrayHashSet<>();
 
-        ARFF dataset = new ARFF(arffData) {
+        DataTable dataset = new ARFF(arffData) {
             @Override
             public boolean add(Object... point) {
                 
@@ -108,7 +109,7 @@ public class NALDataTableTest {
 
 
 
-        NALSchema.believe(n, dataset, NALSchema.predictsLast);
+        NALData.believe(n, dataset, NALData.predictsLast);
 
 
 

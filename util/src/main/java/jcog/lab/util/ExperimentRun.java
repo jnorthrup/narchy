@@ -4,6 +4,7 @@ import jcog.data.list.FasterList;
 import jcog.lab.Lab;
 import jcog.lab.Sensor;
 import jcog.table.ARFF;
+import jcog.table.DataTable;
 
 import java.util.Date;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ExperimentRun<E> implements Runnable {
      * data specific to this experiment; can be merged with multi-experiment
      * data collections later
      */
-    public final ARFF data;
+    public final DataTable data;
     private final BiConsumer<E, ExperimentRun<E>> procedure;
     /**
      * enabled sensors
@@ -37,7 +38,7 @@ public class ExperimentRun<E> implements Runnable {
     private long startTime;
     private long endTime;
 
-    public ExperimentRun(E experiment, ARFF data, List<Sensor<E, ?>> sensors, BiConsumer<E, ExperimentRun<E>> procedure) {
+    public ExperimentRun(E experiment, DataTable data, List<Sensor<E, ?>> sensors, BiConsumer<E, ExperimentRun<E>> procedure) {
         this.experiment = experiment;
         this.procedure = procedure;
         this.data = data;
@@ -52,8 +53,8 @@ public class ExperimentRun<E> implements Runnable {
     /**
      * creates a new ARFF data with the headers appropriate for the sensors
      */
-    public static <X> ARFF newData(Iterable<Sensor<X,?>> sensors) {
-        ARFF data = new ARFF();
+    public static <X> DataTable newData(Iterable<Sensor<X,?>> sensors) {
+        DataTable data = new ARFF();
         sensors.forEach(s -> s.addToSchema(data));
         return data;
     }
@@ -71,8 +72,10 @@ public class ExperimentRun<E> implements Runnable {
 
         endTime = System.currentTimeMillis();
 
-        data.setComment(experiment + ": " + procedure +
-                "\t@" + startTime + ".." + endTime + " (" + new Date(startTime) + " .. " + new Date(endTime) + ")");
+        if (data instanceof DataTable) {
+            ((ARFF)data).setComment(experiment + ": " + procedure +
+                    "\t@" + startTime + ".." + endTime + " (" + new Date(startTime) + " .. " + new Date(endTime) + ")");
+        }
     }
 
     public Object[] record() {

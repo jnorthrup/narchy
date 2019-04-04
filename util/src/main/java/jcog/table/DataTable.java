@@ -23,10 +23,11 @@ import java.util.zip.GZIPOutputStream;
 /**
  * specified semantics of a data record / structure
  * TODO move most of this to 'MutableDataTable' implementation of interface DataTable
+ * see: https://github.com/jdmp/java-data-mining-package/blob/master/jdmp-core/src/main/java/org/jdmp/core/dataset/DataSet.java
  **/
 public class DataTable extends Table implements Externalizable {
 
-    protected final Map<String, String[]> nominalCats;
+    private final Map<String, String[]> nominalCats;
 
     @Override
     public void writeExternal(ObjectOutput objectOutput) throws IOException {
@@ -80,7 +81,7 @@ public class DataTable extends Table implements Externalizable {
 
 
 
-    public boolean equalSchema(DataTable other) {
+    boolean equalSchema(DataTable other) {
 
         return (this == other) ||
 
@@ -193,7 +194,7 @@ public class DataTable extends Table implements Externalizable {
         return data;
     }
 
-    public float[] toFloatArray(Row rr) {
+    private float[] toFloatArray(Row rr) {
         int cols = rr.columnCount();
         float[] r = new float[cols];
         for (int i = 0; i < cols; i++) {
@@ -222,7 +223,7 @@ public class DataTable extends Table implements Externalizable {
         });
     }
 
-    public void printCSV(OutputStream o) {
+    private void printCSV(OutputStream o) {
         throw new TODO();
 //        CsvWriteOptions.builder(o).header(true).build();
 //                .write();
@@ -281,7 +282,7 @@ public class DataTable extends Table implements Externalizable {
 //
 //    }
 
-    public DataTable defineNominal(String nominalAttribute, String... categories) {
+    DataTable defineNominal(String nominalAttribute, String... categories) {
         if (categories.length < 2)
             throw new RuntimeException("nominal types require > 1 categories");
 
@@ -362,3 +363,51 @@ public class DataTable extends Table implements Externalizable {
 
     }
 }
+/*
+from: https://github.com/jdmp/java-data-mining-package/blob/master/jdmp-core/src/main/java/org/jdmp/core/variable/Variable.java
+public interface Variable extends CoreObject, ListMatrix<Matrix> {
+	public static final Class<?>[] VARIABLEARRAY = new Class<?>[] { new Variable[] {}.getClass() };
+
+	public static final String TAGS = "Tags";
+	public static final String TOTAL = "Total";
+	public static final String URL = "URL";
+	public static final String CONTENT = "Content";
+	public static final String LINKS = "Links";
+	public static final String TYPE = "Type";
+	public static final String SOURCE = "Source";
+	public static final String DIMENSION = "Dimension";
+	public static final String IGNORENAN = "IgnoreNaN";
+	public static final String TARGET = "Target";
+	public static final String INPUT = "Input";
+	public static final String DIFFERENCE = "Difference";
+	public static final String RMSE = "RMSE";
+	public static final String PREDICTED = "Predicted";
+	public static final String WEIGHT = "Weight";
+	public static final String SCORE = "Score";
+	public static final String PROBABILITY = "Probability";
+	public static final String COUNT = "Count";
+	public static final String SUGGESTEDTAGS = "SuggestedTags";
+	public static final String BYTES = "Bytes";
+	public static final String SENSITIVITY = "Sensitivity";
+	public static final String SPECIFICITY = "Specificity";
+	public static final String PRECISION = "Precision";
+	public static final String RECALL = "Recall";
+	public static final String FMEASURE = "FMeasure";
+	public static final String ERRORCOUNT = "ErrorCount";
+	public static final String CONFUSION = "Confusion";
+	public static final String ACCURACY = "Accuracy";
+	public static final String FMEASUREMACRO = "FMeasureMacro";
+	public static final String COMPRESSED = "Compressed";
+	public static final String DECOMPRESSED = "Decompressed";
+	public static final String HASH = "Hash";
+	public static final String TARGETCLASS = "TargetClass";
+	public static final String TARGETLABEL = "TargetLabel";
+
+	public static final VariableFactory Factory = new DefaultVariableFactory();
+
+	public Matrix getAsListMatrix();
+
+	public Variable clone();
+
+}
+ */
