@@ -8,7 +8,7 @@ import java.util.Collection;
 public interface BufferLineListener {
   void update(BufferLine bl);
 
-  void addChar(BufferChar bufferChar);
+  void addChar(BufferChar bufferChar, int col);
 
   void removeChar(BufferChar bufferChar);
 
@@ -26,8 +26,8 @@ public interface BufferLineListener {
     }
 
     @Override
-    public void addChar(BufferChar bufferChar) {
-      listeners.forEach(l -> l.addChar(bufferChar));
+    public void addChar(BufferChar bufferChar, int col) {
+      listeners.forEach(l -> l.addChar(bufferChar, col));
     }
 
     @Override

@@ -1,21 +1,19 @@
 package spacegraph.space2d.widget.textedit.view;
 
 import com.jogamp.opengl.GL2;
-import jcog.data.list.FasterList;
+import jcog.data.list.FastCoWList;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.widget.textedit.buffer.*;
-
-import java.util.Collections;
 
 public class TextEditView implements BufferListener {
 
     private final Buffer document;
     private final CursorView cursor;
-    private final FasterList<LineView> lines = new FasterList<>();
+    private final FastCoWList<LineView> lines = new FastCoWList(LineView[]::new);
 
 
-    public TextEditView(Buffer buffer) {
+    protected TextEditView(Buffer buffer) {
         this.document = buffer;
         this.cursor = new CursorView(buffer.cursor());
         document.lines.forEach(this::_addLine);
@@ -43,8 +41,9 @@ public class TextEditView implements BufferListener {
             this.cursor.draw(g);
 
         float ox = x1 - vx;
-        for (int y = y1; y < y2; y++) {
-            LineView line = lines.getSafe(y);
+        LineView[] ll  = lines.array();
+        for (int y = Math.max(0, y1); y < Math.min(ll.length, y2); y++) {
+            LineView line = ll[y];
             if (line != null) {
                 line.draw(g, x1, x2, ox, y1 - y);
             }
@@ -71,52 +70,50 @@ public class TextEditView implements BufferListener {
 
     @Override
     public void update(Buffer buffer) {
-        updatePositions();
+        updateY();
         updateCursor(document.cursor());
     }
 
     @Override
     public void addLine(BufferLine bufferLine) {
         _addLine(bufferLine);
-        updatePositions();
+        updateY();
     }
 
-    protected void _addLine(BufferLine bufferLine) {
+    private void _addLine(BufferLine bufferLine) {
         lines.add(new LineView(bufferLine));
     }
 
     @Override
     public void removeLine(BufferLine bufferLine) {
         lines.removeIf(lineView -> lineView.getBufferLine() == bufferLine);
-//        for (LineView lv : lines) {
-//            if (lv.getBufferLine() == bufferLine) {
-//                lines.remove(lv);
-//            }
-//        }
-        updatePositions();
+        updateY();
     }
 
     @Override
     public void moveChar(BufferLine fromLine, BufferLine toLine, BufferChar c) {
+        final int[] k = new int[] { 0 };
         lines.stream().filter(l -> l.getBufferLine() == fromLine).findFirst().ifPresent(
                 (from) -> lines.stream().filter(l -> l.getBufferLine() == toLine).
                         findFirst().ifPresent((to) -> {
             float fromY = from.position.y, toY = to.position.y;
             CharView leaveChar = from.leaveChar(c);
             leaveChar.position.y = -(toY - fromY);
-            to.addChar(leaveChar);
+            to.addChar(leaveChar, k[0]++);
+            to.update();
         }));
     }
 
-    protected void updatePositions() {
-        FasterList<LineView> ll = this.lines;
-        if (ll.size() > 1)
-            Collections.sort(ll);
+    /** update y positions of each line */
+    protected void updateY() {
+        synchronized (lines) {
+            lines.sort();
 
-        float h = 0;
-        for (LineView lv : ll) {
-            lv.position.y = h;
-            h -= LineView.getHeight();
+            float h = 0;
+            for (LineView lv : lines) {
+                lv.position.y = h;
+                h -= LineView.getHeight();
+            }
         }
     }
 

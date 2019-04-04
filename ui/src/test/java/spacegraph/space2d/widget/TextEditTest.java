@@ -13,7 +13,7 @@ public class TextEditTest {
 
     public static void main(String[] args) {
         ScrollXY x = new TextEdit("xyz")
-                .scroll(80, 25);
+                .scroll(40, 12);
         SpaceGraph.window(x, 800, 800);
     }
 

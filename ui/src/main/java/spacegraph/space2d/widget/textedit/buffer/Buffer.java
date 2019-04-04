@@ -56,7 +56,7 @@ public class Buffer {
         observer.addListener(listener);
     }
 
-    private void update() {
+    @Deprecated private void update() {
         IntStream.range(0, lines.size()).forEach(i -> lines.get(i).updatePosition(i));
         observer.update(this);
         observer.updateCursor(currentCursor);
@@ -106,7 +106,7 @@ public class Buffer {
                 BufferLine line = currentLine();
                 int colStart = currentCursor.getCol();
                 for (int i = 0; i < n; i++) {
-                    line.insertChar(colStart + i, string.charAt(i));
+                    line.insertChar(string.charAt(i), colStart + i);
                 }
                 currentCursor.incCol(n);
                 if (update)
@@ -117,23 +117,36 @@ public class Buffer {
 
     public void insertEnter(boolean update) {
         synchronized (this) {
-            BufferLine currentLine = currentLine();
+            BufferLine currentRow = currentLine();
 
-            List<BufferChar> leaveChars = currentLine.insertEnter(currentCursor.getCol());
+            List<BufferChar> nextLineChars = currentRow.splitReturn(currentCursor.getCol());
 
             BufferLine nextLine = new BufferLine();
             lines.add(currentCursor.getRow() + 1, nextLine);
+            observer.addLine(nextLine);
+            currentCursor.setCol(0);
+            currentCursor.incRow(1);
+
+            if (update) {
+                update();
+                //observer.update(this); //light
+            }
+
+
+            //List<BufferChar> nlc = nextLine.getChars();
+            final int[] k = {0};
+            nextLineChars.forEach(c -> {
+                //nlc.add(c);
+                //observer.moveChar(currentLine, nextLine, c);
+                nextLine.insertChar(k[0]++, c);
+
+            });
+
+            nextLine.update();
+
             if (update) {
                 update();
             }
-            observer.addLine(nextLine);
-            leaveChars.forEach(c -> {
-                nextLine.getChars().add(c);
-                observer.moveChar(currentLine, nextLine, c);
-            });
-            currentCursor.setCol(0);
-            currentCursor.incRow(1);
-            observer.updateCursor(currentCursor);
         }
     }
 
@@ -228,7 +241,11 @@ public class Buffer {
                         BufferLine currentLine = currentLine();
                         BufferLine removedLine = lines.remove(currentCursor.getRow() + 1);
                         currentLine.join(removedLine);
-                        removedLine.getChars().forEach(c -> observer.moveChar(removedLine, currentLine, c));
+                        removedLine.getChars().forEach(c -> {
+                            //TODO fix where characters are appended here. to not use moveChar() then remove that method
+                            //see splitReturn() for similarity
+                            observer.moveChar(removedLine, currentLine, c);
+                        });
                         observer.removeLine(removedLine);
                     }
                 }

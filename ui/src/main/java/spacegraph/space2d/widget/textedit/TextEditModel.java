@@ -36,8 +36,8 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
             buffer = buf;
             view = new TextEditView(buf) {
                 @Override
-                protected void updatePositions() {
-                    super.updatePositions();
+                protected void updateY() {
+                    super.updateY();
                     updated();
                 }
             };

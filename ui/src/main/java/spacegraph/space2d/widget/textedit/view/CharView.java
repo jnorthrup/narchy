@@ -6,16 +6,12 @@ import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.util.texture.Texture;
 import spacegraph.space2d.widget.textedit.buffer.BufferChar;
 
-import java.util.function.Consumer;
-
-public class CharView extends TextEditRenderable implements Consumer<BufferChar>, Comparable<CharView> {
+public class CharView extends TextEditRenderable  {
   private final BufferChar bufferChar;
   private Texture texture;
 
-  public CharView(BufferChar bufferChar) {
+  CharView(BufferChar bufferChar) {
     this.bufferChar = bufferChar;
-    bufferChar.addListener(this);
-    accept(bufferChar);
   }
 
   public float width() {
@@ -48,18 +44,9 @@ public class CharView extends TextEditRenderable implements Consumer<BufferChar>
     texture.disable(gl);
   }
 
-  @Override
-  public void accept(BufferChar bc) {
-    // TODO
-  }
 
-  public BufferChar bufferChar() {
+  BufferChar bufferChar() {
     return bufferChar;
-  }
-
-  @Override
-  public int compareTo(CharView o) {
-    return bufferChar.compareTo(o.bufferChar);
   }
 
 }

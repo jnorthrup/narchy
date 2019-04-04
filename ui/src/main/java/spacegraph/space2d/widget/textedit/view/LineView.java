@@ -18,7 +18,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     private final FastCoWList<CharView> chars;
     private float width;
 
-    public LineView(BufferLine bufferLine) {
+    LineView(BufferLine bufferLine) {
         this.bufferLine = bufferLine;
         bufferLine.addListener(this);
         List<BufferChar> bufferChars = bufferLine.getChars();
@@ -48,7 +48,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
         }
     }
 
-    private void update() {
+    protected void update() {
         update((c) -> {  /* */ });
     }
 
@@ -57,8 +57,8 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
             with.accept(cc);
 
-            if (cc.size() > 1)
-                cc.sortThis();
+//            if (cc.size() > 1)
+//                cc.sortThis();
 
             float width = 0;
             for (CharView c : cc) {
@@ -79,8 +79,8 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     }
 
     @Override
-    public void addChar(BufferChar bufferChar) {
-        addChar(new CharView(bufferChar));
+    public void addChar(BufferChar bufferChar, int col) {
+        addChar(new CharView(bufferChar), col);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
         update((chars) -> chars.removeIf(x -> x.bufferChar() == removed));
     }
 
-    public BufferLine getBufferLine() {
+    BufferLine getBufferLine() {
         return bufferLine;
     }
 
@@ -101,7 +101,7 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
         return bufferLine.compareTo(o.bufferLine);
     }
 
-    public CharView leaveChar(BufferChar bc) {
+    CharView leaveChar(BufferChar bc) {
 
         final CharView[] leaved = new CharView[1];
         update((chars) -> {
@@ -112,10 +112,11 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
         return leaved[0];
     }
 
-    public void addChar(CharView cv) {
-        update((chars)->{
-            chars.add(cv);
-        });
+    void addChar(CharView cv, int col) {
+        chars.add(col, cv);
+//        update((chars)->{
+//            chars.add(col, cv);
+//        });
     }
 
     public LineView apply(int from, int to, TextStyle highlight) {
@@ -132,16 +133,23 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     }
 
     public void draw(GL2 gl, int x1, int x2, float dx, float dy) {
+
         gl.glPushMatrix();
+
         gl.glTranslatef(position.x - x1 + dx, dy, position.z);
+
         if (scale!=null)
             gl.glScalef(scale.x, scale.y, scale.z);
+
         gl.glColor4f(color.x, color.y, color.z, color.w);
+
+        //TODO line height, margin etc
         for (int x = x1; x < x2; x++) {
             CharView c = chars.get(x);
             if (c != null)
                 c.draw(gl);
         }
+
         gl.glPopMatrix();
     }
 }

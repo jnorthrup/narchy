@@ -3,7 +3,6 @@ package spacegraph.space2d.widget.textedit.buffer;
 
 import jcog.data.list.FasterList;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class BufferLine implements Comparable<BufferLine> {
@@ -16,16 +15,13 @@ public class BufferLine implements Comparable<BufferLine> {
         observer.addListener(listener);
     }
 
-    public void updatePosition(int rowNum, int fromCol, int toCol) {
-        this.rowNum = rowNum;
-        for (int i = fromCol; i < toCol; i++) {
-            chars.get(i).updatePosition(rowNum, i);
-        }
-        observer.update(this);
-    }
-
-    public void updatePosition(int rowNum) {
-        updatePosition(rowNum, 0, chars.size());
+    void updatePosition(int row) {
+        this.rowNum = row;
+//        int cols = chars.size();
+//        for (int col = 0; col < cols; col++) {
+//            chars.get(col).updatePosition(row, col);
+//        }
+        update();
     }
 
     public int length() {
@@ -36,41 +32,46 @@ public class BufferLine implements Comparable<BufferLine> {
         if (length()==0)
             return "";
 
-        StringBuilder buf = new StringBuilder();
+        StringBuilder buf = new StringBuilder(chars.size());
         for (BufferChar bc : chars) {
             buf.append(bc.getChar());
         }
         return buf.toString();
     }
 
-    public String posString(int position) {
-        return chars.get(position).getChar();
+    void insertChar(char c, int col) {
+
+        BufferChar bc = new BufferChar(c);
+        insertChar(col, bc);
     }
 
-    public void insertChar(int col, char c) {
-        insertChar(col, String.valueOf(c));
-    }
-
-    public void insertChar(int col, String c) {
-        BufferChar bc = new BufferChar(c, rowNum, col);
+    public void insertChar(int col, BufferChar bc) {
         chars.add(col, bc);
-        updatePosition(rowNum); //, col, col+1);
-        observer.addChar(bc);
+//        updatePosition(rowNum); //, col, col+1);
+        observer.addChar(bc, col);
     }
 
-    public List<BufferChar> insertEnter(int col) {
-        List<BufferChar> results = new LinkedList<>();
-        if (col == chars.size()) {
-            return results;
+    /** returns the right=most substring intended to be moved to the new line */
+    List<BufferChar> splitReturn(int col) {
+
+        int cs = chars.size();
+        if (col == cs)
+            return List.of(); //EOL, nothing
+
+        FasterList<BufferChar> results = new FasterList<>(cs-col);
+        while (cs-- > col) {
+            BufferChar c = removeChar(col);
+            results.addWithoutResizeTest(c);
         }
-        while (chars.size() > col) {
-            results.add(chars.remove(col));
-        }
-        observer.update(this);
+        update();
         return results;
     }
 
-    public BufferChar removeChar(int col) {
+    public void update() {
+        observer.update(this);
+    }
+
+    BufferChar removeChar(int col) {
         BufferChar removedChar = chars.remove(col);
         observer.removeChar(removedChar);
         return removedChar;
