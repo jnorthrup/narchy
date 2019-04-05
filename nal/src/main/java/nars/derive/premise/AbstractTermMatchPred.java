@@ -15,7 +15,7 @@ public abstract class AbstractTermMatchPred<X> extends AbstractPred<X> {
         this.resolveCost = resolveCost;
     }
 
-    static float cost(int pathLen) {
+    protected static float cost(int pathLen) {
         return pathLen * 0.01f;
     }
 

@@ -7,6 +7,7 @@ import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.util.builder.TermBuilder;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
@@ -29,6 +30,7 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     public final Term[] arrayClone() {
         return new Term[]{sub()};
     }
+
 
     @Override
     public final Term sub(int i) {

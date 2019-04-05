@@ -33,7 +33,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
         this.contentPath = contentPath;
     }
 
-    public static void tryFilter(boolean commInTaskOrBelief, Term taskPattern, Term beliefPattern, Collection<PREDICATE<PreDerivation>> pre) {
+    public static void tryFilter(boolean commInTaskOrBelief, Term taskPattern, Term beliefPattern, Collection<PREDICATE<? extends PreDerivation>> pre) {
 
         Term commutiveContainer = (commInTaskOrBelief) ? taskPattern : beliefPattern;
 

@@ -67,7 +67,7 @@ import static nars.time.Tense.DTERNAL;
  * Hence in terms of "in the language or phraseology peculiar to."
  * https://www.etymonline.com/word/term
  */
-public interface Term extends Termlike, Termed, Comparable<Termed> {
+public interface Term extends Termlike, Termed, Comparable<Term> {
 
     static <X> boolean pathsTo(Term that, ByteArrayList p, Predicate<Term> descendIf, Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
         if (!descendIf.test(that))
@@ -485,15 +485,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      */
     int opX();
 
-    /**
-     * GLOBAL TERM COMPARATOR FUNCTION
-     */
-    @Override
-    default int compareTo(Termed _y) {
-        if (this == _y) return 0;
-
-        return compareTo(_y.term());
-    }
 
     default int compareTo(Term t) {
         if (this == t) return 0;

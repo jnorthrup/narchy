@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
 
 import static nars.Op.VAR_PATTERN;
 
-abstract public class TermMatch {
+abstract public class TermMatcher {
 
-    public static TermMatch get(Term x, int depth) {
+    public static TermMatcher get(Term x, int depth) {
         assert (!(x.op() == VAR_PATTERN));
 
         int xs = x.subterms().structure() & (~VAR_PATTERN.bit);
@@ -90,7 +90,7 @@ abstract public class TermMatch {
     /**
      * is the op one of the true bits of the provide vector ("is any")
      */
-    public static class Is extends TermMatch {
+    public static class Is extends TermMatcher {
 
         public final int struct;
 
@@ -143,7 +143,7 @@ abstract public class TermMatch {
     /**
      * has the target in its structure, one of the true bits of the provide vector ("has any")
      */
-    public final static class Has extends TermMatch {
+    public final static class Has extends TermMatcher {
         private static final Atom ANY = (Atom) Atomic.the("any");
         private static final Atom ALL = (Atom) Atomic.the("all");
         final int struct;
@@ -199,7 +199,7 @@ abstract public class TermMatch {
     /**
      * is of a specific type, and has the target in its structure
      */
-    public final static class IsHas extends TermMatch {
+    public final static class IsHas extends TermMatcher {
 
         final int structAll;
         final int struct;
@@ -253,7 +253,7 @@ abstract public class TermMatch {
     /**
      * non-recursive containment
      */
-    public final static class Contains extends TermMatch {
+    public final static class Contains extends TermMatcher {
 
         public final Term x;
 
@@ -285,7 +285,7 @@ abstract public class TermMatch {
     /**
      * non-recursive containment
      */
-    public final static class Equals extends TermMatch {
+    public final static class Equals extends TermMatcher {
 
         public final Term x;
 
@@ -317,7 +317,7 @@ abstract public class TermMatch {
     /**
      * non-recursive containment
      */
-    public final static class EqualsRoot extends TermMatch {
+    public final static class EqualsRoot extends TermMatcher {
 
         public final Term x;
 
@@ -346,7 +346,7 @@ abstract public class TermMatch {
         }
     }
 
-    public final static class SubsMin extends TermMatch {
+    public final static class SubsMin extends TermMatcher {
 
         final short subsMin;
 
@@ -381,19 +381,19 @@ abstract public class TermMatch {
         private final boolean trueOrFalse;
 
         MyUnifyConstraint(Variable x, boolean trueOrFalse) {
-            super(x, TermMatch.this.getClass().getSimpleName(),
-                    ($.p(TermMatch.this.param() != null ? TermMatch.this.param() : Op.EmptyProduct).negIf(!trueOrFalse)));
+            super(x, TermMatcher.this.getClass().getSimpleName(),
+                    ($.p(TermMatcher.this.param() != null ? TermMatcher.this.param() : Op.EmptyProduct).negIf(!trueOrFalse)));
             this.trueOrFalse = trueOrFalse;
         }
 
         @Override
         public float cost() {
-            return TermMatch.this.cost(); //TODO
+            return TermMatcher.this.cost(); //TODO
         }
 
         @Override
         public boolean invalid(Term y, Unify f) {
-            return TermMatch.this.test(y) != trueOrFalse;
+            return TermMatcher.this.test(y) != trueOrFalse;
         }
     }
 }

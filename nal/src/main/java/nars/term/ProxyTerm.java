@@ -22,6 +22,7 @@ public class ProxyTerm implements SameSubtermsCompound {
         this.ref = t;
     }
 
+
     @Override
     public final boolean the() {
         return false;

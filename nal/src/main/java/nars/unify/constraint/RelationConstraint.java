@@ -2,7 +2,7 @@ package nars.unify.constraint;
 
 import jcog.WTF;
 import nars.$;
-import nars.derive.PreDerivation;
+import nars.derive.premise.op.ConstraintAsPremisePredicate;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
@@ -13,11 +13,11 @@ import org.jetbrains.annotations.Nullable;
 import static nars.Op.NEG;
 
 /** tests a relation between two terms which may be involved (and prevened) from unifying */
-abstract public class RelationConstraint extends UnifyConstraint {
+abstract public class RelationConstraint<U extends Unify> extends UnifyConstraint<U> {
 
 
     protected final Variable y;
-    protected final boolean yNeg;
+    private final boolean yNeg;
 
     private RelationConstraint(Term id, Variable x, Variable y) {
         super(id, x);
@@ -26,7 +26,7 @@ abstract public class RelationConstraint extends UnifyConstraint {
         this.yNeg = y.op()==NEG;
     }
 
-    protected RelationConstraint(String func, Variable x, Variable y, Term... args) {
+    RelationConstraint(String func, Variable x, Variable y, Term... args) {
         this($.func(func, x, args.length > 0 ? $.p(y, $.p(args)) : y), x, y);
     }
 
@@ -47,7 +47,7 @@ abstract public class RelationConstraint extends UnifyConstraint {
     }
 
     @Override
-    public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
+    public @Nullable PREDICATE preFilter(Term taskPattern, Term beliefPattern) {
 
 //        //only test one of the directions
 //        // because the opposite y->x will also be created so we only need one predicate filter for both
@@ -65,7 +65,7 @@ abstract public class RelationConstraint extends UnifyConstraint {
             byte[] yInTask = Terms.pathConstant(taskPattern, y);
             byte[] yInBelief = Terms.pathConstant(beliefPattern, y);
             if ((yInTask != null || yInBelief != null)) {
-                return ConstraintAsPredicate.the(this, xInTask, xInBelief, yInTask, yInBelief);
+                return ConstraintAsPremisePredicate.the(this, xInTask, xInBelief, yInTask, yInBelief);
             }
         }
 
@@ -123,8 +123,8 @@ abstract public class RelationConstraint extends UnifyConstraint {
         }
 
         @Override
-        public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
-            PREDICATE<PreDerivation> p = r.preFilter(taskPattern, beliefPattern);
+        public @Nullable PREDICATE preFilter(Term taskPattern, Term beliefPattern) {
+            PREDICATE p = r.preFilter(taskPattern, beliefPattern);
             return p != null ? p.neg() : null;
         }
     }

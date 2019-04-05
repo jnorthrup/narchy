@@ -1,7 +1,6 @@
 package nars.derive.premise;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.$;
@@ -17,6 +16,8 @@ import nars.derive.op.ConjParallel;
 import nars.derive.op.Occurrify;
 import nars.derive.op.Termify;
 import nars.derive.op.Truthify;
+import nars.derive.premise.op.TaskPunc;
+import nars.derive.premise.op.TermMatch;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.term.Variable;
@@ -24,7 +25,6 @@ import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.DirectTermTransform;
@@ -71,7 +71,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     private final MutableSet<UnifyConstraint> constraints;
     final ImmutableSet<UnifyConstraint> CONSTRAINTS;
-    private final MutableSet<PREDICATE<PreDerivation>> pre;
+    private final MutableSet<PREDICATE<? extends PreDerivation>> pre;
     final PREDICATE[] PRE;
     protected final Occurrify.OccurrenceSolver time;
 
@@ -161,7 +161,7 @@ public class PremiseRuleSource extends ProxyTerm {
                     neqRoot(XX, YY);
                     break;
                 case "eqRoot":
-                    match(XX, new TermMatch.EqualsRoot(YY));
+                    match(XX, new TermMatcher.EqualsRoot(YY));
                     break;
                 case "subCountEqual":
                     constraints.add(new NotEqualConstraint.SubCountEqual(XX, YY));
@@ -198,7 +198,7 @@ public class PremiseRuleSource extends ProxyTerm {
                         constraints.add(new SubOfConstraint(XX, ((Variable) (Y.unneg())),
                                 Subterm, Y.op() == NEG ? -1 : +1).negIf(negated));
                     } else {
-                        match(XX, new TermMatch.Contains(Y), true);
+                        match(XX, new TermMatcher.Contains(Y), true);
                     }
 
                     if (negated)
@@ -223,7 +223,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "eventOf":
                 case "eventOfNeg":
-                    match(X, new TermMatch.Is(CONJ));
+                    match(X, new TermMatcher.Is(CONJ));
                     neq(constraints, XX, YY);
                     constraints.add(new SubOfConstraint(XX, YY, Event, pred.contains("Neg") ? -1 : +1).negIf(negated));
                     if (negated) negationApplied = true;
@@ -233,7 +233,7 @@ public class PremiseRuleSource extends ProxyTerm {
                 case "eventFirstOfNeg":
                 case "eventLastOf":
                 case "eventLastOfNeg":
-                    match(X, new TermMatch.Is(CONJ));
+                    match(X, new TermMatcher.Is(CONJ));
                     neq(constraints, XX, YY);
                     constraints.add(new SubOfConstraint(XX, YY, pred.contains("First") ? EventFirst : EventLast, pred.contains("Neg") ? -1 : +1).negIf(negated));
                     if (negated) negationApplied = true;
@@ -241,7 +241,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "eventOfPN":
                     neq(constraints, XX, YY);
-                    match(X, new TermMatch.Is(CONJ));
+                    match(X, new TermMatcher.Is(CONJ));
 
                     constraints.add(new SubOfConstraint(XX, YY, Event, 0));
                     break;
@@ -260,15 +260,15 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                     neq(constraints, XX, YY);
-                    match(X, new TermMatch.Is(CONJ));
-                    match(Y, new TermMatch.Is(CONJ));
+                    match(X, new TermMatcher.Is(CONJ));
+                    match(Y, new TermMatcher.Is(CONJ));
                     constraints.add(new CommonSubEventConstraint(XX, YY));
 
                     break;
 
 
                 case "subsMin":
-                    match(X, new TermMatch.SubsMin((short) $.intValue(Y)));
+                    match(X, new TermMatcher.SubsMin((short) $.intValue(Y)));
                     break;
 
 
@@ -279,26 +279,26 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                 case "is": {
-                    match(X, new TermMatch.Is(Op.the($.unquote(Y))), !negated);
+                    match(X, new TermMatcher.Is(Op.the($.unquote(Y))), !negated);
                     if (negated)
                         negationApplied = true;
                     break;
                 }
                 case "isVar": {
-                    match(X, new TermMatch.Is(Op.Variable), !negated);
+                    match(X, new TermMatcher.Is(Op.Variable), !negated);
                     if (negated)
                         negationApplied = true;
                     break;
                 }
                 case "hasVar": {
-                    match(X, new TermMatch.Has(Op.Variable, true, 2), !negated);
+                    match(X, new TermMatcher.Has(Op.Variable, true, 2), !negated);
                     if (negated)
                         negationApplied = true;
                     break;
                 }
 
                 case "isUnneg": {
-                    match(X, new TermMatch.IsUnneg(Op.the($.unquote(Y))), !negated);
+                    match(X, new TermMatcher.IsUnneg(Op.the($.unquote(Y))), !negated);
                     if (negated)
                         negationApplied = true;
                     break;
@@ -306,7 +306,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "has": {
                     //hasAny
-                    match(X, new TermMatch.Has(Op.the($.unquote(Y)), true), !negated);
+                    match(X, new TermMatcher.Has(Op.the($.unquote(Y)), true), !negated);
                     if (negated)
                         negationApplied = true;
                     break;
@@ -656,12 +656,12 @@ public class PremiseRuleSource extends ProxyTerm {
         return y;
     }
 
-    private void tryGuard(RootTermAccessor r, Term root) {
+    private void tryGuard(PremiseTermAccessor r, Term root) {
         tryGuard(r, root,
                 new ByteArrayList(2));
     }
 
-    private void tryGuard(RootTermAccessor r, Term root, ByteArrayList p) {
+    private void tryGuard(PremiseTermAccessor r, Term root, ByteArrayList p) {
 
 
         byte[] pp = p.toByteArray(); //HACK
@@ -676,7 +676,7 @@ public class PremiseRuleSource extends ProxyTerm {
 //        int ts = t.structure() & (~Op.VAR_PATTERN.bit);
 //        pre.addAt(new TermMatchPred<>(new TermMatch.Is(to),  rr));
 //        pre.addAt(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
-        pre.add(new TermMatchPred<>(TermMatch.IsHas.get(t, depth), rr, depth));
+        pre.add(new TermMatch<>(TermMatcher.IsHas.get(t, depth), rr, depth));
 
         int n = t.subs();
         if (!to.commutative || n == 1) {
@@ -769,13 +769,13 @@ public class PremiseRuleSource extends ProxyTerm {
         return new BiSubterm(a, b);
     }
 
-    private void matchSuper(boolean taskOrBelief, TermMatch m, boolean trueOrFalse) {
-        pre.add(new TermMatchPred<>(m, trueOrFalse, false, taskOrBelief, ArrayUtils.EMPTY_BYTE_ARRAY));
+    private void matchSuper(boolean taskOrBelief, TermMatcher m, boolean trueOrFalse) {
+        pre.add(new TermMatch(m, trueOrFalse, false, taskOrBelief, ArrayUtils.EMPTY_BYTE_ARRAY));
     }
 
 
-    private void match(boolean taskOrBelief, byte[] path, TermMatch m, boolean isOrIsnt) {
-        pre.add(new TermMatchPred<>(m, isOrIsnt, true, taskOrBelief, path));
+    private void match(boolean taskOrBelief, byte[] path, TermMatcher m, boolean isOrIsnt) {
+        pre.add(new TermMatch(m, isOrIsnt, true, taskOrBelief, path));
     }
 
 
@@ -820,15 +820,15 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
 
-    private void match(Term x, TermMatch m) {
+    private void match(Term x, TermMatcher m) {
         match(x, m, true);
     }
 
-    private void matchNot(Term x, TermMatch m) {
+    private void matchNot(Term x, TermMatcher m) {
         match(x, m, false);
     }
 
-    private void match(Term x, TermMatch m, boolean trueOrFalse) {
+    private void match(Term x, TermMatcher m, boolean trueOrFalse) {
         match(x, (pathInTask, pathInBelief) -> {
 
 
@@ -858,12 +858,12 @@ public class PremiseRuleSource extends ProxyTerm {
         } else if (y instanceof Variable) {
             constraints.add(new NotEqualConstraint(x, (Variable) y));
         } else {
-            match(x, new TermMatch.Equals(y), false);
+            match(x, new TermMatcher.Equals(y), false);
         }
     }
 
     private void neqRoot(Variable x, Variable y) {
-        match(x, new TermMatch.EqualsRoot(y), false);
+        match(x, new TermMatcher.EqualsRoot(y), false);
         //constraints.addAt(new NotEqualConstraint.NotEqualRootConstraint(x, y));
     }
 
@@ -872,13 +872,15 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
 
-    final static RootTermAccessor TaskTerm = new RootTermAccessor("taskTerm") {
+    public final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, "taskTerm") {
         @Override
         public Term apply(PreDerivation d) {
             return d.taskTerm;
         }
     };
-    final static RootTermAccessor BeliefTerm = new RootTermAccessor("beliefTerm") {
+
+    public final static PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, "beliefTerm") {
+
         @Override
         public Term apply(PreDerivation d) {
             return d.beliefTerm;
@@ -912,81 +914,6 @@ public class PremiseRuleSource extends ProxyTerm {
             return atomic;
         }
 
-    }
-
-    private static final class TaskPunc extends AbstractPred<PreDerivation> {
-        private final BytePredicate taskPunc;
-
-        TaskPunc(BytePredicate taskPunc) {
-            super($.funcFast(TaskPunc.class.getSimpleName(), $.quote(taskPunc)));
-            this.taskPunc = taskPunc;
-        }
-
-        @Override
-        public float cost() {
-            return 0.02f;
-        }
-
-        @Override
-        public boolean test(PreDerivation preDerivation) {
-            return taskPunc.accept(preDerivation.taskPunc);
-        }
-    }
-
-    abstract static class RootTermAccessor implements Function<PreDerivation, Term> {
-
-        final String id;
-
-        RootTermAccessor(String id) {
-            this.id = id;
-        }
-
-        @Override
-        public String toString() {
-            return id;
-        }
-
-        public Function<PreDerivation, Term> path(byte... path) {
-            return (path.length == 0) ? this : new SubRootTermAccessor(path);
-        }
-
-        private class SubRootTermAccessor implements Function<PreDerivation, Term> {
-
-            private final byte[] path;
-            private final int hash;
-
-            SubRootTermAccessor(byte... path) {
-                this.path = path;
-                this.hash = Util.hashCombine(id, Util.hash(path));
-            }
-
-            @Override
-            public String toString() {
-                return id + '(' + Arrays.toString(path) + ')';
-            }
-
-            @Override
-            public int hashCode() {
-                return hash;
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (this == obj) return true;
-                if (!(obj instanceof SubRootTermAccessor)) return false;
-                SubRootTermAccessor s = (SubRootTermAccessor)obj;
-                return hash == s.hash && Arrays.equals(path, s.path) && id.equals(s.id());
-            }
-
-            private String id() {
-                return id;
-            }
-
-            @Override
-            public Term apply(PreDerivation d) {
-                return RootTermAccessor.this.apply(d).subPath(path);
-            }
-        }
     }
 
     /** conclusion post-processing */

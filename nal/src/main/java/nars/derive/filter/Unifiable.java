@@ -44,7 +44,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
         this.isStrict = isStrict;
     }
 
-    private static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, int varBits, boolean strict, MutableSet<PREDICATE<PreDerivation>> pre) {
+    private static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, int varBits, boolean strict, MutableSet<PREDICATE<? extends PreDerivation>> pre) {
         //some structure exists that can be used to prefilter
         byte[] xpInT = Terms.pathConstant(taskPattern, x);
         byte[] xpInB = Terms.pathConstant(beliefPattern, x); //try the belief
@@ -77,7 +77,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
         return f;
     }
 
-    public static Compound transform(Compound c, PremiseRuleSource p, MutableSet<PREDICATE<PreDerivation>> pre) {
+    public static Compound transform(Compound c, PremiseRuleSource p, MutableSet<PREDICATE<? extends PreDerivation>> pre) {
         Term concFunc = Functor.func(c);
 
         if (concFunc.equals(UniSubst.unisubst)) {

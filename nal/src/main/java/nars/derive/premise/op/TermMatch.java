@@ -1,13 +1,17 @@
-package nars.derive.premise;
+package nars.derive.premise.op;
 
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.Op;
+import nars.derive.premise.AbstractTermMatchPred;
+import nars.derive.premise.PremiseRuleSource;
+import nars.derive.premise.PremiseTermAccessor;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.control.PREDICATE;
-import nars.unify.constraint.TermMatch;
+import nars.unify.constraint.TermMatcher;
 
 import java.util.function.Function;
 
@@ -16,20 +20,22 @@ import java.util.function.Function;
  * decodes a target from a provied context (X)
  * and matches it according to the matcher impl
  */
-public final class TermMatchPred<X> extends AbstractTermMatchPred<X> {
+public final class TermMatch<X> extends AbstractTermMatchPred<X> {
 
-    public final TermMatch match;
+    static final Atom IN_ATOM = Atomic.atom("in");
+
+    public final TermMatcher match;
     private final boolean trueOrFalse;
     private final boolean exactOrSuper;
 
-    @Deprecated public TermMatchPred(TermMatch match, Function<X, Term> resolve, int pathLen) {
+    @Deprecated public TermMatch(TermMatcher match, Function<X, Term> resolve, int pathLen) {
         this(match, true, true, resolve, cost(pathLen));
     }
 
-    TermMatchPred(TermMatch match, boolean trueOrFalse, boolean exactOrSuper, boolean taskOrBelief, byte[] path) {
+    public TermMatch(TermMatcher match, boolean trueOrFalse, boolean exactOrSuper, boolean taskOrBelief, byte[] path) {
         this(match, trueOrFalse, exactOrSuper, TaskOrBelief(taskOrBelief).path(path), cost(path.length));
     }
-    private TermMatchPred(TermMatch match, boolean trueOrFalse, boolean exactOrSuper, Function/*<X, Term>*/ resolve, float resolveCost) {
+    private TermMatch(TermMatcher match, boolean trueOrFalse, boolean exactOrSuper, Function/*<X, Term>*/ resolve, float resolveCost) {
         super(name(match, resolve, exactOrSuper).negIf(!trueOrFalse), resolve, resolveCost);
 
         this.match = match;
@@ -39,15 +45,15 @@ public final class TermMatchPred<X> extends AbstractTermMatchPred<X> {
             throw new WTF();
     }
 
-    private static Term name(TermMatch match, @Deprecated Function resolve, boolean exactOrSuper) {
+    private static Term name(TermMatcher match, @Deprecated Function resolve, boolean exactOrSuper) {
         Atomic a = Atomic.the(match.getClass().getSimpleName());
         Term r = $.the(resolve.toString());
-        r = exactOrSuper ? r : $.func("in", r);
+        r = exactOrSuper ? r : $.func(IN_ATOM, r);
         Term p = match.param();
         return p!=null ? $.func(a, r, p) : $.func(a, r);
     }
 
-    private static PremiseRuleSource.RootTermAccessor TaskOrBelief(boolean taskOrBelief) {
+    private static PremiseTermAccessor TaskOrBelief(boolean taskOrBelief) {
         return taskOrBelief ? PremiseRuleSource.TaskTerm : PremiseRuleSource.BeliefTerm;
     }
 
@@ -56,10 +62,10 @@ public final class TermMatchPred<X> extends AbstractTermMatchPred<X> {
         if (resolveCost == 0)
             return false; //dont bother grouping root accessors
 
-        TermMatchPred other = null;
+        TermMatch other = null;
         for (PREDICATE x : p) {
-            if (x != this && x instanceof TermMatchPred) {
-                TermMatchPred t = ((TermMatchPred) x);
+            if (x != this && x instanceof TermMatch) {
+                TermMatch t = ((TermMatch) x);
                 if (resolve.equals(t.resolve)) {
                     other = t;
                     break;
@@ -69,10 +75,10 @@ public final class TermMatchPred<X> extends AbstractTermMatchPred<X> {
         if (other!=null) {
 
             int myIndex = p.indexOfInstance(this);
-            TermMatchPred a = this; p.remove(this);
-            TermMatchPred b = other; p.removeFirstInstance(other);
+            TermMatch a = this; p.remove(this);
+            TermMatch b = other; p.removeFirstInstance(other);
             if (a.match.cost() > b.match.cost()) {
-                TermMatchPred x = a;
+                TermMatch x = a;
                 a = b;
                 b = x;
             }
@@ -86,7 +92,7 @@ public final class TermMatchPred<X> extends AbstractTermMatchPred<X> {
     }
 
 
-    private AbstractTermMatchPred<X> merge(TermMatchPred a, TermMatchPred b) {
+    private AbstractTermMatchPred<X> merge(TermMatch a, TermMatch b) {
         return new AbstractTermMatchPred<>(Op.SETe.the(a, b), resolve, resolveCost) {
                     @Override
                     protected boolean match(Term y) {
