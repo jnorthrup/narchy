@@ -2,6 +2,7 @@ package nars.exe.impl;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
@@ -19,6 +20,8 @@ abstract public class ThreadedExec extends MultiExec {
 
     final boolean affinity;
     protected int workGranularity = Integer.MAX_VALUE;
+    protected final MetalConcurrentQueue in;
+
 
 
     final AffinityExecutor exe;
@@ -34,14 +37,13 @@ abstract public class ThreadedExec extends MultiExec {
     public ThreadedExec(int maxThreads, boolean affinity) {
         super(maxThreads);
 
+        in = new MetalConcurrentQueue(inputQueueCapacityPerThread * concurrencyMax());
+
         this.exe = new AffinityExecutor(maxThreads);
         this.affinity = affinity;
 
 
-        if (maxThreads > Runtime.getRuntime().availableProcessors() / 2) {
-            /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
-            Exe.setExecutor(this);
-        }
+
 
     }
 
@@ -68,6 +70,15 @@ abstract public class ThreadedExec extends MultiExec {
 
         super.update();
 
+    }
+
+    public int queueSize() {
+        return in.size();
+    }
+
+    void flush() {
+        Object next;
+        while ((next = in.poll()) != null) executeNow(next);
     }
 
     private void updateThreads(int currentThreads) {
@@ -166,13 +177,13 @@ abstract public class ThreadedExec extends MultiExec {
 
         exe.shutdownNow();
 
-        sync();
+        flush();
 
         super.stop();
     }
 
 
-    public boolean queueSafe() {
+    boolean queueSafe() {
         if (inputQueueSizeSafetyThreshold < 1)
             return in.availablePct(inputQueueCapacityPerThread) >= inputQueueSizeSafetyThreshold;
         else

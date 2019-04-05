@@ -1,6 +1,7 @@
 package nars.op.stm;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.math.FloatRange;
@@ -41,7 +42,7 @@ import static nars.truth.func.TruthFunctions.confCompose;
 public class ConjClustering extends Causable {
 
     public final BagClustering<Task> data;
-    final CentroidConjoiner conjoiner = new CentroidConjoiner();
+    //final CentroidConjoiner conjoiner = new CentroidConjoiner();
     private final BagClustering.Dimensionalize<Task> model;
     private final CauseChannel in;
     private final byte punc;
@@ -60,8 +61,13 @@ public class ConjClustering extends Causable {
     private final boolean popConjoinedTasks = false;
     static final boolean priCopyOrMove = true;
 
-    final AtomicBoolean learn = new AtomicBoolean(true);
+    final AtomicBoolean busy = new AtomicBoolean(false);
     private int inputTermVolMax, stampLenMax;
+
+    private volatile long lastLearn;
+
+    private int learningIterations = 1;
+    private int minDurationsPerLearning = 1;
 
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
@@ -119,7 +125,7 @@ public class ConjClustering extends Causable {
         this.punc = punc;
         this.filter = filter;
 
-        this.now = Long.MIN_VALUE;
+        this.now = lastLearn = nar.time();
         update(nar);
 
         nar.on(this);
@@ -130,8 +136,6 @@ public class ConjClustering extends Causable {
 
         super.starting(nar);
 
-        //on(DurService.on(nar, () -> learn.set(true)));
-        on(nar.onCycle(()->learn.set(true)));
 
         on(nar.onTask(t -> {
             if (!t.isEternal()
@@ -165,11 +169,6 @@ public class ConjClustering extends Causable {
 
         update(nar);
 
-        if (learn.compareAndSet(true, false)) {
-            //learn once per duration
-            data.learn(forgetRate(), 1);
-        }
-
         //round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
         FasterList<TaskList> centroids = new FasterList<>(this.data.net.centroidCount());
         data.forEachCentroid(TaskList::new, tt ->{
@@ -188,12 +187,14 @@ public class ConjClustering extends Causable {
         if (cc > 1)
             centroids.shuffleThis(nar.random());
 
-
+        CentroidConjoiner conjoiner = null;
         do {
 
             Iterator<TaskList> ii = centroids.iterator();
             while (ii.hasNext()) {
                 FasterList<Task> l = ii.next();
+                if (conjoiner == null)
+                    conjoiner = new CentroidConjoiner();
                 if (conjoiner.conjoinCentroid(l, tasksPerIterationPerCentroid, nar) == 0 || l.size()<=1)
                     ii.remove();
 
@@ -222,6 +223,17 @@ public class ConjClustering extends Causable {
                     (this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxPct.floatValue()) +
                     -2 /* for the super-CONJ itself and another term of at least volume 1 */
             );
+
+            if (busy.compareAndSet(false, true)) {
+                try {
+                    if (now - lastLearn > minDurationsPerLearning*dur) {
+                        data.learn(forgetRate(), learningIterations);
+                        lastLearn = now;
+                    }
+                } finally {
+                    busy.lazySet(false);
+                }
+            }
         }
     }
 
@@ -359,6 +371,9 @@ public class ConjClustering extends Causable {
                             if (items.isEmpty() || (conf <= confMinThresh) || (volEstimate  >= volMax) || (trying.size() >= Param.STAMP_CAPACITY)) {
                                 Task[] x = trying.toArray(Task.EmptyArray);
                                 trying.clear();
+
+                                //TEMPORARY
+                                for (Task c : x) if (c == null) throw new WTF();
 
                                 Task y = conjoin(x, freq, conf, start);
                                 boolean conjoined = y != null;

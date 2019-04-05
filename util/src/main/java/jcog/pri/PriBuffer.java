@@ -62,9 +62,9 @@ public class PriBuffer<Y> {
             return linked ?
                 new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
                     :
+                //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0);
                 new NonBlockingHashMap();
                 //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors());
-                //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0);
                 //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f);
                 //new CustomConcurrentHashMap();
 

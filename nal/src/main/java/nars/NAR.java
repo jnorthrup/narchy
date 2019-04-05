@@ -1430,7 +1430,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * invokes any pending tasks without advancing the clock
      */
     public final NAR synch() {
-        time.synch(this);
+        synchronized (exe) {
+            time.synch(this);
+            exe.synch();
+        }
         return this;
     }
 

@@ -20,7 +20,7 @@ import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
-import nars.exe.impl.WorkerExec;
+import nars.exe.impl.ForkJoinExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineMemory;
 import nars.op.Arithmeticize;
@@ -102,7 +102,7 @@ abstract public class NAgentX extends NAgent {
     public static NAR runRT(Function<NAR, NAgent> init, int threads, float narFPS, float durFPS) {
         NAR n = baseNAR(durFPS, threads);
 
-        n.runLater(() -> {
+        n.run(() -> {
 
             NAgent a = init.apply(n);
 
@@ -205,11 +205,11 @@ abstract public class NAgentX extends NAgent {
                 .exe(
                 //new UniExec()
 
-                new WorkerExec(
-                        threads,
-                        false/* affinity */)
+//                new WorkerExec(
+//                        threads,
+//                        false/* affinity */)
 
-//                new ForkJoinExec(val, threads)
+                new ForkJoinExec(threads)
 
 //                new SuperExec(
 //                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads

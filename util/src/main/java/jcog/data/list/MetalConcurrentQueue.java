@@ -354,7 +354,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             // we must take a difference in values here to guard against integer overflow
             int tail = tail();
             int s = tail - head;
-            if (s == 0)
+            if (s <= 0)
                 return k; //empty
 
             int headLocal = i(head, cap);

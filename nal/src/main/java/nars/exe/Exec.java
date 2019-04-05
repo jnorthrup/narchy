@@ -174,4 +174,7 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
     }
 
 
+    public void synch() {
+
+    }
 }

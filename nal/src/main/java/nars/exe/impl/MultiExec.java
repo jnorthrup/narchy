@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.exe.Exe;
 import jcog.math.FloatAveragedWindow;
 import nars.NAR;
 import nars.exe.Exec;
@@ -47,6 +48,7 @@ abstract public class MultiExec extends UniExec {
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
         super(concurrencyMax);
     }
+
 
     @Deprecated @Override
     public void print(Appendable out) {
@@ -127,6 +129,12 @@ abstract public class MultiExec extends UniExec {
 
     @Override
     public void start(NAR n) {
+
+        if (concurrencyMax() > Runtime.getRuntime().availableProcessors() / 2) {
+            /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
+            Exe.setExecutor(this);
+        }
+
         if (!(n.time instanceof RealTime))
             throw new UnsupportedOperationException("non-realtime clock not supported");
 

@@ -179,11 +179,11 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
             super(cap, reprobes);
         }
 
-        @Override
-        protected boolean allowDuplicates() {
-            /* experimental */
-            return true;
-        }
+//        @Override
+//        protected boolean allowDuplicates() {
+//            /* experimental */
+//            return true;
+//        }
 
         @Override
         protected PriProxy<X, Y> merge(PriProxy<X, Y> existing, PriProxy<X, Y> incoming, NumberX overflowing) {

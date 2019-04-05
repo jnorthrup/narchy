@@ -1,6 +1,5 @@
 package nars.exe.impl;
 
-import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Offs;
 import nars.NAR;
 import nars.exe.Exec;
@@ -13,7 +12,6 @@ public class UniExec extends Exec {
 
     static final int inputQueueCapacityPerThread = 256;
 
-    protected final MetalConcurrentQueue in;
 
     Offs ons = null;
 
@@ -23,12 +21,9 @@ public class UniExec extends Exec {
 
     public UniExec(int concurrencyMax) {
         super(concurrencyMax);
-        in = new MetalConcurrentQueue(inputQueueCapacityPerThread * concurrencyMax());
     }
 
-    public int queueSize() {
-        return in.size();
-    }
+
 
     @Override
     public int concurrency() {
@@ -59,20 +54,10 @@ public class UniExec extends Exec {
 
 
     protected void onCycle(NAR nar) {
-
-        sync();
         nar.time.schedule(this::executeNow);
 
         /* flat 1 work unit per each. returns immediately after first iteration */
         nar.control.active.forEach(x -> x.next(nar, () -> false ));
     }
-
-    void sync() {
-        Object next;
-        while ((next = in.poll()) != null) executeNow(next);
-    }
-
-
-
 
 }

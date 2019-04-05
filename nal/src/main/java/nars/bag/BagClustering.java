@@ -4,7 +4,6 @@ import jcog.data.list.FasterList;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
 import jcog.pri.PriBuffer;
-import jcog.pri.Prioritized;
 import jcog.pri.VLink;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.BufferedBag;
@@ -138,23 +137,16 @@ public class BagClustering<X> {
     }
     public void learn(float forgetRate, int learningIterations) {
 
-//        int s = bag.size();
-//        if (s > 0) {
-
             @Nullable Consumer<VLink<X>> f = bag.forget(forgetRate);
-            bag.commit(v -> {
-                X tt = v.get();
-                if ((tt instanceof Prioritized) && ((Prioritized) tt).isDeleted())
-                    v.delete();
-                else if (f!=null)
-                    f.accept(v);
-            });
+            bag.commit(v -> v.update(f));
 
 //            net.alpha.setAt(0.8f / s);
             float lambdaFactor = 1f;
             net.setLambdaPeriod((int) Math.ceil((bag.capacity()) * lambdaFactor));
+
+            Consumer<VLink<X>> l = this::learn;
             for (int i = 0; i < learningIterations; i++)
-                bag.forEach(this::learn);
+                bag.forEach(l);
 //        }
     }
 

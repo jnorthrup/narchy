@@ -219,7 +219,7 @@ import java.util.function.Consumer;
 
     private void prioritize() {
         root.pri(1);
-        graph.forEachBF(root, (PriNode x)->x.update(graph));
+        graph.forEachBF(root, x->x.update(graph));
     }
 
 

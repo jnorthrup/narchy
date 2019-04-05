@@ -1,6 +1,9 @@
 package jcog.pri;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 /**
  * prioritized vector link
@@ -39,5 +42,11 @@ public final class VLink<X> extends PLinkHashCached<X> {
     }
 
 
-
+    public void update(@Nullable Consumer<VLink<X>> f) {
+        X tt = get();
+        if ((tt instanceof Prioritized) && ((Prioritized) tt).isDeleted())
+            delete();
+        else if (f!=null)
+            f.accept(this);
+    }
 }

@@ -13,8 +13,9 @@ import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
 import nars.control.Causable;
 import nars.control.MetaGoal;
+import nars.exe.Exec;
 import nars.exe.NARLoop;
-import nars.exe.impl.UniExec;
+import nars.exe.impl.ThreadedExec;
 import nars.time.clock.RealTime;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
@@ -110,7 +111,9 @@ public class ExeCharts {
 
             final Off c = n.onCycle((nn) -> {
                 busyBuffer.offer(nn.feel.busyVol.asFloat());
-                queueSize.offer((float)((UniExec) n.exe).queueSize());
+                Exec nexe = n.exe;
+                if (nexe instanceof ThreadedExec)
+                    queueSize.offer((float)((ThreadedExec) nexe).queueSize());
             });
 
             @Override
