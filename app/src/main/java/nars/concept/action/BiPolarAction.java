@@ -82,7 +82,7 @@ public class BiPolarAction extends AbstractSensor {
     /** the pos and neg .update() method should have been called just prior to this since this is
      * invoked by the frame listeners at the end of the NAgent cycle
      */
-    @Override public void update(long prev, long now, Game g) {
+    @Override public void update(Game g) {
 
 
         Truth p, n;
@@ -92,6 +92,7 @@ public class BiPolarAction extends AbstractSensor {
             n = neg.actionTruth();
 
 
+        long prev = g.prev, now = g.now, next = g.next;
         float x = model.update(p, n, prev, now);
 
         //System.out.println(p + " vs " + n + " -> " + x);

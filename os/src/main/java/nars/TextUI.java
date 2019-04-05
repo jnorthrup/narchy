@@ -29,7 +29,6 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.control.NARPart;
-import nars.link.Activate;
 import nars.op.language.NARHear;
 import nars.time.part.DurPart;
 import org.slf4j.LoggerFactory;
@@ -228,18 +227,18 @@ public class TextUI {
             menu.addItem(new View("Tasks", defaultMenu = () -> {
                 return new TaskListBox(64);
             }));
-            menu.addItem(new View("Concepts", () -> {
-                return new BagListBox<Activate>(64) {
-                    @Override
-                    public void update() {
-                        NAR n = TextGUI.this.nar;
-                        if (n == null)
-                            return;
-                        n.attn._concepts().forEach(this::add);
-                        super.update();
-                    }
-                };
-            }));
+//            menu.addItem(new View("Concepts", () -> {
+//                return new BagListBox<Activate>(64) {
+//                    @Override
+//                    public void update() {
+//                        NAR n = TextGUI.this.nar;
+//                        if (n == null)
+//                            return;
+//                        n.attn._concepts().forEach(this::add);
+//                        super.update();
+//                    }
+//                };
+//            }));
             menu.addItem(new View("Stats", () -> {
                 return new EmotionDashboard();
             }));

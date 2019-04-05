@@ -10,7 +10,7 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
-import nars.concept.action.ActionConcept;
+import nars.concept.action.AgentAction;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -37,7 +37,7 @@ public class RLBooster implements Consumer<NAR> {
     public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
     final float[] input;
     final int inD, outD;
-    final ActionConcept[] actions;
+    final AgentAction[] actions;
     private final ConsumerX<ITask> in;
     private final List<Term> inputs;
     private final int actionDiscretization;
@@ -121,7 +121,7 @@ public class RLBooster implements Consumer<NAR> {
         NAR n = env.nar();
 
         float[] feedback = new float[actions()];
-        for (ActionConcept s : actions) {
+        for (AgentAction s : actions) {
             Truth t = n.beliefTruth(s, prev, now);
             feedback[i++] = t!=null ? t.freq() : noise();
         }

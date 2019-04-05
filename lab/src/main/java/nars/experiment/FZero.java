@@ -8,7 +8,7 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
-import nars.concept.action.ActionConcept;
+import nars.concept.action.AgentAction;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.DigitizedScalar;
@@ -127,7 +127,7 @@ public class FZero extends GameX {
                 //new Bitmap2DConceptsView(c, this).withControls()
         ), 500, 500);
 
-        ActionConcept F = initUnipolarLinear(5f);
+        AgentAction F = initUnipolarLinear(5f);
 
         initPushButtonTank();
 
@@ -445,7 +445,7 @@ public class FZero extends GameX {
 
     }
 
-    public ActionConcept initUnipolarLinear(float fwdFactor) {
+    public AgentAction initUnipolarLinear(float fwdFactor) {
 //        final float[] _a = {0};
 //        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 

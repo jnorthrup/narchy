@@ -82,7 +82,7 @@ public class CameraSensorTest {
     }
 
     public static void next(NAR n, AbstractSensor c) {
-        c.update(n.time()-1, n.time(), null);
+        c.updatePrevNow(n.time()-1, n.time(), null);
     }
 
     static final float tolerance = 0.47f;

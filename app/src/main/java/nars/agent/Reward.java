@@ -78,7 +78,7 @@ public abstract class Reward implements AgentLoop, TermedDelegate, Iterable<Conc
 
     public final NAR nar() { return agent.nar(); }
 
-    public final void update(long prev, long now, Game g) {
+    public final void updatePrevNow(long prev, long now, Game g) {
         rewardBelief = rewardFreq(true);
         updateReward(prev, now, g);
     }

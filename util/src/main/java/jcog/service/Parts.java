@@ -106,21 +106,17 @@ public class Parts<K /* service key */, C /* context */  > {
 
     /** restart an already added part */
     public final boolean start(K key) {
-        _start(part(key));
+        tryStart(part(key));
         return false;
     }
 
-    public final boolean stop(K key) {
-        return stop(part(key));
-    }
 
     public final Part<C> part(K key) {
         return parts.get(key);
     }
 
-    public boolean stop(Part<C> s) {
-        return stop(s, null);
-    }
+
+
 
     /** add and starts it */
     public final boolean start(K key, Part<C> instance) {
@@ -132,8 +128,11 @@ public class Parts<K /* service key */, C /* context */  > {
         return set(key, instance, false);
     }
 
-    public final boolean remove(K serviceID) {
-        return set(serviceID, (Part)null, false);
+    public final boolean remove(K k) {
+        return set(k, (Part)null, false);
+    }
+    public boolean stop(K k) {
+        return set(k, part(k), false);
     }
 
 //    public final boolean add(K key, Function<K, ? extends Part<C>> builder) {
@@ -159,9 +158,7 @@ public class Parts<K /* service key */, C /* context */  > {
 
     /** stops all parts (but does not remove them) */
     public Parts<K, C> stopAll() {
-        for (Part<C> part : parts.values()) {
-            stop(part);
-        }
+        parts.keySet().forEach(this::stop);
         return this;
     }
 
@@ -194,7 +191,7 @@ public class Parts<K /* service key */, C /* context */  > {
             logger.error("{} {} {}", what, this, e);
     }
 
-    boolean stop(Part<C> part, @Nullable Runnable afterOff) {
+    private boolean _stop(Part<C> part, @Nullable Runnable afterOff) {
 
         if (!part.state.compareAndSet(ServiceState.On, ServiceState.OnToOff))
             return false;
@@ -267,25 +264,25 @@ public class Parts<K /* service key */, C /* context */  > {
         if (x != removed) {
             if (removed != null) {
 
-                stop(removed, start ? () -> _start(x) : null);
+                _stop(removed, start ? () -> tryStart(x) : null);
 
                 return true;
 
             } else {
-                return !start || _start(x);
+                return !start || tryStart(x);
             }
 
         } else {
             if (start && x.isOff()) {
-                return _start(x);
-            } else if (!start && x.isOn()) {
-                return stop(x);
+                return tryStart(x);
+            } else if (!start && x!=null && x.isOn()) {
+                return _stop(x,null);
             } else
                 return false;
         }
     }
 
-    private boolean _start(@Nullable Part<C> x) {
+    private boolean tryStart(@Nullable Part<C> x) {
         if (x.state.compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
             executor.execute(() -> {
                 try {

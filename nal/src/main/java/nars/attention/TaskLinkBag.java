@@ -17,7 +17,6 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.NARPart;
 import nars.derive.Derivation;
-import nars.link.Activate;
 import nars.link.AtomicTaskLink;
 import nars.link.TaskLink;
 import nars.link.TermLinker;
@@ -288,11 +287,6 @@ public class TaskLinkBag extends NARPart implements Attention {
         ;
     }
 
-    /** active concepts */
-    @Deprecated public Stream<Activate> _concepts() {
-        //HACK could be better
-        return concepts().map(c -> new Activate(c, 1));
-    }
 
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {
 

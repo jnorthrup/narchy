@@ -8,12 +8,12 @@ import jcog.event.Topic;
 import jcog.math.FloatClamped;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
+import jcog.service.Part;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
 import nars.attention.PriNode;
-import nars.concept.action.AbstractGoalActionConcept;
-import nars.concept.action.ActionConcept;
+import nars.concept.action.AgentAction;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.DefaultCuriosity;
 import nars.concept.sensor.AgentLoop;
@@ -63,7 +63,7 @@ public class Game extends NARPart implements NSense, NAct {
 
     public final FastCoWList<AgentLoop> sensors = new FastCoWList<>(AgentLoop[]::new);
 
-    public final FastCoWList<ActionConcept> actions = new FastCoWList<>(ActionConcept[]::new);
+    public final FastCoWList<AgentAction> actions = new FastCoWList<>(AgentAction[]::new);
 
     public final FastCoWList<Reward> rewards = new FastCoWList<>(Reward[]::new);
 
@@ -75,7 +75,7 @@ public class Game extends NARPart implements NSense, NAct {
     private final PriNode pri;
 
     public volatile long prev = ETERNAL;
-    protected volatile long now = ETERNAL;
+    public volatile long now = ETERNAL;
     public volatile long next = ETERNAL;
 
 
@@ -125,7 +125,7 @@ public class Game extends NARPart implements NSense, NAct {
         if (n == 0)
             return 0;
         else
-            return actions.sumBy(ActionConcept::dexterity);
+            return actions.sumBy(AgentAction::dexterity);
     }
 
     public double dexterityMean() {
@@ -162,7 +162,7 @@ public class Game extends NARPart implements NSense, NAct {
     }
 
     @Override
-    public final <A extends ActionConcept> A addAction(A c) {
+    public final <A extends AgentAction> A addAction(A c) {
         actions.add(c);
 
         nar().add(c);
@@ -186,8 +186,8 @@ public class Game extends NARPart implements NSense, NAct {
             ((Signal) s).attn.parent(nar, target);
         } else if (s instanceof Reward) {
             ((Reward) s).attn.parent(nar, target);
-        } else if (s instanceof ActionConcept) {
-            ((ActionConcept) s).attn.parent(nar, target);
+        } else if (s instanceof AgentAction) {
+            ((AgentAction) s).attn.parent(nar, target);
         } else if (s instanceof PriNode)
             ((PriNode) s).parent(nar, target);
         else
@@ -344,12 +344,12 @@ public class Game extends NARPart implements NSense, NAct {
             @Override
             public void next(Game a, int iteration, long prev, long now) {
 
-                a.sense(prev, now);
+                a.sense();
 
 //                a.reinforce(prev, now, next);
 
                 //long adjustedPrev = Math.max(prev, now - (next-now)); //prevent stretching and evaluating too far in the past
-                a.act(prev, now);
+                a.act();
 
                 a.frame();
             }
@@ -368,12 +368,12 @@ public class Game extends NARPart implements NSense, NAct {
                 switch (iteration % 2) {
                     case 0:
                         //SENSE
-                        a.sense(prev, now);
+                        a.sense();
                         break;
                     case 1:
                         //ACT
 //                        a.reinforce(prev, now, next);
-                        a.act(prev, now);
+                        a.act();
                         a.frame();
                         break;
                 }
@@ -435,28 +435,29 @@ public class Game extends NARPart implements NSense, NAct {
         return nar;
     }
 
-    protected void act(long prev, long now) {
+    protected void act() {
         //ActionConcept[] aaa = actions.array();
-        ActionConcept[] aaa = actions.array().clone();
+        AgentAction[] aaa = actions.array().clone();
         ArrayUtils.shuffle(aaa, random()); //HACK shuffle cloned copy for thread safety
 
-
-        //curiosity conf initial setting  HACK
-
-
-        for (ActionConcept a : aaa) {
-
-            //HACK temporary
-            if (a instanceof AbstractGoalActionConcept)
-                ((AbstractGoalActionConcept) a).curiosity(curiosity);
-
-            a.update(prev, now, this);
-        }
+        //TODO fork here
+        for (AgentAction a : aaa)
+            update(a);
     }
 
-    protected void sense(long prev, long now) {
-        sensors.forEach(s -> s.update(prev, now, this));
-        rewards.forEach(r -> r.update(prev, now, this));
+
+    protected void sense() {
+        //TODO fork here
+        sensors.forEach(this::update);
+        rewards.forEach(this::update);
+    }
+
+    private void update(AgentLoop s) {
+        if (s instanceof Part) {
+            if (!((Part)s).isOn())
+                return; //the part is disabled
+        }
+        s.update(this);
     }
 
 //    @Deprecated protected void reinforce(long prev, long now, long next) {
@@ -516,7 +517,7 @@ public class Game extends NARPart implements NSense, NAct {
     }
 
 
-    public FastCoWList<ActionConcept> actions() {
+    public FastCoWList<AgentAction> actions() {
         return actions;
     }
 

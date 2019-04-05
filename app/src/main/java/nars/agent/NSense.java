@@ -308,7 +308,7 @@ public interface NSense {
         pn.pos.attn.parent(nar, pn.attn);
         pn.neg.attn.parent(nar, pn.attn);
 
-        onFrame(x -> pn.update(a.prev, a.now, a));
+        onFrame(x -> pn.updatePrevNow(a.prev, a.now, a));
         return pn;
     }
 

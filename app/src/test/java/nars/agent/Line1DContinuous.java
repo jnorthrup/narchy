@@ -3,7 +3,7 @@ package nars.agent;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.concept.action.ActionConcept;
+import nars.concept.action.AgentAction;
 import nars.concept.sensor.Signal;
 import nars.term.atom.Atomic;
 
@@ -59,7 +59,7 @@ public class Line1DContinuous extends Game {
                     () -> ins[size + ii], n));
         }
 
-        ActionConcept a;
+        AgentAction a;
 
         actionBipolar($.inh(Atomic.the("move"), Atomic.the("x")), (v) -> {
 

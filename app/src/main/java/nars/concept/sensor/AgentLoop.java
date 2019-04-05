@@ -13,7 +13,11 @@ import nars.term.Termed;
  **/
 public interface AgentLoop extends Termed {
 
-    default void update(long last, long now, Game a) {
+    default void update(Game a) {
+        updatePrevNow(a.prev, a.now, a);
+    }
+
+    @Deprecated default void updatePrevNow(long last, long now, Game a) {
 
     }
 

@@ -34,7 +34,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * ActionConcept which is driven by Goals that are interpreted into feedback Beliefs
  */
-public class AbstractGoalActionConcept extends ActionConcept {
+public class AbstractGoalActionConcept extends AgentAction {
 
 
     @Nullable private Curiosity curiosity = null;
@@ -91,7 +91,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return n.newChannel(this);
     }
 
-    public AbstractGoalActionConcept curiosity(Curiosity curiosity) {
+    public AbstractGoalActionConcept updateCuriosity(Curiosity curiosity) {
         this.curiosity = curiosity;
         return this;
     }
@@ -213,7 +213,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
     @Override
-    public void update(long prev, long now, Game a) {
+    public void updatePrevNow(@Deprecated long prev, @Deprecated long now, Game a) {
+        //HACK temporary
+
+        updateCuriosity(a.curiosity);
 
         NAR n = a.nar();
         int narDur = n.dur();

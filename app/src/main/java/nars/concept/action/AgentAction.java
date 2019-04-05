@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 
-public abstract class ActionConcept extends TaskConcept implements AgentLoop, PermanentConcept {
+public abstract class AgentAction extends TaskConcept implements AgentLoop, PermanentConcept {
 
     public final AttnBranch attn;
 
-    protected ActionConcept(Term term, TermLinker linker, NAR n) {
+    protected AgentAction(Term term, TermLinker linker, NAR n) {
         this(term,
                 new SensorBeliefTables(term, true),
 
@@ -37,11 +37,11 @@ public abstract class ActionConcept extends TaskConcept implements AgentLoop, Pe
                 n);
     }
 
-    protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
+    protected AgentAction(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
         this(term, beliefs, goals, n.conceptBuilder.termlinker(term), n);
     }
 
-    protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
+    protected AgentAction(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
         super(term, beliefs, goals, l, n.conceptBuilder);
 
         this.attn = new AttnBranch(term, List.of(term));
@@ -76,7 +76,7 @@ public abstract class ActionConcept extends TaskConcept implements AgentLoop, Pe
         }
     }
 
-    public ActionConcept resolution(float v) {
+    public AgentAction resolution(float v) {
         resolution().set(v);
         return this;
     }

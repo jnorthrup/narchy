@@ -9,7 +9,7 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.agent.util.UnipolarMotor;
-import nars.concept.action.ActionConcept;
+import nars.concept.action.AgentAction;
 import nars.concept.action.GoalActionConcept;
 import nars.term.Term;
 import nars.term.atom.Int;
@@ -85,7 +85,7 @@ public interface NAct {
     }
 
 
-    <A extends ActionConcept> A addAction(A c);
+    <A extends AgentAction> A addAction(A c);
 
     @Nullable
     default GoalActionConcept actionTriStateContinuous(Term s, IntPredicate i) {
@@ -137,8 +137,8 @@ public interface NAct {
     }
 
     @Nullable
-    default ActionConcept actionTriStatePWM(Term s, IntConsumer i) {
-        ActionConcept m = new GoalActionConcept(s, nar(), (b, d) -> {
+    default AgentAction actionTriStatePWM(Term s, IntConsumer i) {
+        AgentAction m = new GoalActionConcept(s, nar(), (b, d) -> {
 
 
             int ii;
@@ -498,7 +498,7 @@ public interface NAct {
      */
     default GoalActionConcept actionUnipolar(Term s, boolean freqOrExp, FloatToFloatFunction ifGoalMissing, FloatToFloatFunction update) {
 
-        ActionConcept.MotorFunction motor = new UnipolarMotor(freqOrExp, ifGoalMissing, update,
+        AgentAction.MotorFunction motor = new UnipolarMotor(freqOrExp, ifGoalMissing, update,
             (feedbackFreq,goalConf) ->
                 $.t(feedbackFreq,
                         //Math.max(nar().confMin.floatValue(), goalConf)
