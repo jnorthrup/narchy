@@ -7,6 +7,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSortedSet;
+import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.Param;
 import nars.subterm.util.TermMetadata;
@@ -32,6 +33,7 @@ import java.util.Set;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static nars.Op.*;
 
@@ -335,9 +337,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
     default /*@NotNull*/ TermList toList() {
-        TermList u = new TermList(subs());
-        forEach(u::add);
-        return u;
+        return new TermList(this);
     }
 
     /**
@@ -497,13 +497,18 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    default void addTo(Collection<Term> target) {
+    default void addAllTo(Collection<Term> target) {
         forEach(target::add);
     }
 
-    @Override
-    default boolean impossibleSubStructure(int structure) {
-        return !hasAll(structure);
+    default /* final */ boolean impossibleSubStructure(int structure) {
+        //return !hasAll(structure);
+        return !Op.has(structureSub(), structure, true);
+    }
+
+    default int structureSub() {
+        assert(!(this instanceof Compound));
+        return structure();
     }
 
 //
@@ -548,6 +553,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
     default void forEach(Consumer<? super Term> action, int start, int stop) {
+        if (start < 0 || stop > subs())
+            throw new ArrayIndexOutOfBoundsException();
+
         for (int i = start; i < stop; i++)
             action.accept(sub(i));
     }
@@ -578,31 +586,68 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         return -1;
     }
+    default boolean impossibleSubTerm(Termlike target) {
+        return impossibleSubStructure(target.structure()) || impossibleSubVolume(target.volume());
+    }
 
+    default boolean impossibleSubVolume(int otherTermVolume) {
+        return otherTermVolume > volume() - subs();
+    }
+
+//    /**
+//     * if it's larger than this target it can not be equal to this.
+//     * if it's larger than some number less than that, it can't be a subterm.
+//     */
+//    default boolean impossibleSubTermOrEqualityVolume(int otherTermsVolume) {
+//        return otherTermsVolume > volume();
+//    }
+
+//    default boolean impossibleSubTermOrEquality(/*@NotNull*/Term target) {
+//        return ((!hasAll(target.structure())) ||
+//                (impossibleSubTermOrEqualityVolume(target.volume())));
+//    }
+
+
+    /**
+     * stream of each subterm
+     */
+    default Stream<Term> subStream() {
+        int subs = subs();
+        switch (subs) {
+            case 0:
+                return Stream.empty();
+            case 1:
+                return Stream.of(sub(0));
+            case 2:
+                return Stream.of(sub(0), sub(1));
+            case 3:
+                return Stream.of(sub(0), sub(1), sub(2));
+            default:
+                return IntStream.range(0, subs).mapToObj(this::sub);
+        }
+    }
 
     /**
      * of all the matches to the predicate, chooses one at random and returns its index
      */
     default int indexOf(Predicate<Term> t, Random r) {
-        IntArrayList a = indicesOf(t);
-        return (a == null) ? -1 :
-                a.get(a.size() == 1 ? 0
-                        : r.nextInt(a.size()));
+        int[] a = indicesOf(t);
+        int l = a.length;
+        return (l == 0) ? -1 :
+                a[l == 1 ? 0 : r.nextInt(l)];
 
     }
 
     @Nullable
-    default IntArrayList indicesOf(Predicate<Term> t) {
-        IntArrayList a = null;
+    default int[] indicesOf(Predicate<Term> t) {
+        IntArrayList a = new IntArrayList(1);
         int s = subs();
         for (int i = 0; i < s; i++) {
             if (t.test(sub(i))) {
-                if (a == null)
-                    a = new IntArrayList(1);
                 a.add(i);
             }
         }
-        return a;
+        return a.isEmpty() ? ArrayUtils.EMPTY_INT_ARRAY : a.toArray();
     }
 
     /**
@@ -612,56 +657,62 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return Subterms.hash(this);
     }
 
+    static boolean unifyLinear(Subterms x, Subterms y, Unify u) {
+        int n;
+        switch(n = x.subs()) {
+            case 0:
+                return true;
+            case 1:
+                return x.sub(0).unify(y.sub(0), u);
+            case 2:
+                return unifyLinear2_complexityHeuristic(x, y, u);
+            default:
+                return unifyLinearN_TwoPhase(x, y, n, u);
+        }
+    }
 
-
-//    default boolean unifyLinearSimple(Subterms Y, /*@NotNull*/ Unify u) {
-//
-//
-//        int s = subs();
-//        for (int i = 0; i < s; i++) {
-//            if (!sub(i).unify(Y.sub(i), u))
-//                return false;
-//        }
-//        return true;
-//
-//    }
-
-
-
-    /**
-     * const/variable phase version
-     */
-    default boolean unifyLinear(Subterms y, /*@NotNull*/ Unify u) {
-        int n = subs();
-        if (n == 1) {
-            return sub(0).unify(y.sub(0), u);
-        } else if (n == 2) {
-            Term x0 = sub(0), x1 = sub(1);
-            Term y0 = y.sub(0), y1 = y.sub(1);
-            boolean cx = u.var(x0), cy = u.var(x1);
-            boolean forward;
-            if (cx == cy) {
-                if (!cx) {
-                    boolean dx = !u.var(y0), dy = !u.var(y1);
-                    if (dx && dy)
-                        forward = y0.volume() <= y1.volume();
-                    else
-                        forward = dx;
-                } else
-                    forward = x0.volume() <= x1.volume();
+    static boolean unifyLinear2_complexityHeuristic(Subterms x, Subterms y, Unify u) {
+        Term x0 = x.sub(0), x1 = x.sub(1);
+        Term y0 = y.sub(0), y1 = y.sub(1);
+        boolean xv = u.var(x0), yv = u.var(x1);
+        boolean forward;
+        if (xv == yv) {
+            if (!xv) {
+                boolean dx = !u.var(y0), dy = !u.var(y1);
+                if (dx && dy)
+                    forward = choose(1f/y0.volume(), 1f/y1.volume(), u);
+                else
+                    forward = dx;
             } else {
-                forward = cx;
+                forward = choose(
+                        1f/(x0.voluplexity() + y0.voluplexity()),
+                        1f/(x1.voluplexity() + y1.voluplexity()),
+                        u);
             }
-            return forward ?
-                    x0.unify(y0, u) && x1.unify(y1, u) :
-                    x1.unify(y1, u) && x0.unify(y0, u);
+        } else {
+            forward = xv;
         }
 
+        return forward ?
+                x0.unify(y0, u) && x1.unify(y1, u) :
+                x1.unify(y1, u) && x0.unify(y0, u);
+    }
 
-        Term[] deferredPairs = null;
+
+    static boolean unifyLinearN_Simple(Subterms x, Subterms y, /*@NotNull*/ Unify u) {
+        int s = x.subs();
+        for (int i = 0; i < s; i++) {
+            if (!x.sub(i).unify(y.sub(i), u))
+                return false;
+        }
+        return true;
+    }
+
+    static boolean unifyLinearN_TwoPhase(Subterms x, Subterms y, int n, Unify u) {
+        Term[] p = null;
         int dynPairs = 0;
         for (int i = 0; i < n; i++) {
-            Term xi = sub(i);
+            Term xi = x.sub(i);
             Term yi = y.sub(i);
 
             if (xi == yi)
@@ -674,27 +725,56 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 if (!xi.unify(yi, u))
                     return false;
             } else {
-                if (deferredPairs == null)
-                    deferredPairs = new Term[(n - i - 1) * 2];
+                if (p == null)
+                    p = new Term[(n - i - 1) * 2];
 
                 //backwards order
-                deferredPairs[dynPairs++] = yi;
-                deferredPairs[dynPairs++] = xi;
+                p[dynPairs++] = yi;
+                p[dynPairs++] = xi;
             }
         }
 
 
-        if (deferredPairs != null) {
+        if (p != null) {
+            int pairs = dynPairs/2;
+            if (pairs == 1) {
+                return p[1].unify(p[0], u);
+            } else {
 
-            //TODO sort deferredPairs so that smaller non-commutive subterms are tried first
+                //TODO sort deferredPairs so that smaller non-commutive subterms are tried first
+                if (pairs ==2 ) {
+                    boolean forward = choose(1f/(p[0].voluplexity() + p[1].voluplexity()), 1f/(p[2].voluplexity() + p[3].voluplexity()), u
+                    );
 
-            do {
-                if (!deferredPairs[--dynPairs].unify(deferredPairs[--dynPairs], u))
-                    return false;
-            } while (dynPairs > 0);
+                    if (forward) {
+                        return p[1].unify(p[0], u) && p[3].unify(p[2], u);
+                    } else {
+                        return p[3].unify(p[2], u) && p[1].unify(p[0], u);
+                    }
+                } else {
+
+                    do {
+                        if (!p[--dynPairs].unify(p[--dynPairs], u))
+                            return false;
+                    } while (dynPairs > 0);
+                }
+            }
         }
 
         return true;
+    }
+
+    static boolean choose(float forwardWeight, float reverseWeight, Unify u) {
+        return u.random.nextFloat() < (forwardWeight /(forwardWeight + reverseWeight));
+
+//                    if (v01 < v23) {
+//                        //try 01 first
+//                        forward = true;
+//                    } else if (v01 > v23) {
+//                        forward = false;
+//                    } else {
+//                        forward = u.random.nextBoolean();
+//                    }
     }
 
     /**
@@ -760,12 +840,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     }
 
-    /**
-     * assume equality, structure commonality, and equal subterm count have been tested
-     */
-    default boolean unifyCommute(Subterms y, Unify u) {
 
-        TermList xx = toList(), yy = y.toList();
+    /**
+     * assumes that equality, structure commonality, and equal subterm count have been tested
+     */
+    static boolean unifyCommute(Subterms x, Subterms y, Unify u) {
+        TermList xx = x.toList(), yy = y.toList();
 
         int i = possiblyUnifiableWhileEliminatingEqualAndConstants(xx, yy, u);
         switch (i) {
@@ -775,17 +855,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return true;
             default: {
                 if (xx.size() == 1) {
-                    return xx.get(0).unify(yy.get(0), u);
+                    return xx.getFirstFast().unify(yy.getFirstFast(), u);
                 } else {
-//                    int xs = xx.structure();
-//                    if (!u.constant(xs) || !u.constant(yy)) {
-//                        if (Terms.commonStructureTest(xs, yy, u)) {
-//                    if (xx==this || xx.subs()==subs()) {
-//                        //no change
-//                        u.termutes.add(new CommutivePermutations(this, y)); //use the original subs
-//                    } else {
+                    if (xx==x || xx.subs()==x.subs()) {
+                        u.termutes.add(new CommutivePermutations(x, y)); //use the original subs since nothing was removed from either
+                    } else {
                         u.termutes.add(new CommutivePermutations(xx, yy));
-//                    }
+                    }
                     return true;
                 }
             }
@@ -1190,7 +1266,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 }
 
                 if (y != null)
-                    y.addWithoutResizeTest(yi);
+                    y.addFast(yi);
 
             }
         }
@@ -1219,7 +1295,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 else
                     return null;
             } else {
-                out.addWithoutResizeTest(k);
+                out.addFast(k);
             }
         }
         return out;

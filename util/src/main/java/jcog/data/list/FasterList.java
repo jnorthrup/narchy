@@ -209,6 +209,11 @@ public class FasterList<X> extends FastList<X> {
         return items[index];
     }
 
+
+    public final X getFirstFast() {
+        return items[0];
+    }
+
     @Nullable
     public X get(Random random) {
         int s = this.size;
@@ -518,13 +523,13 @@ public class FasterList<X> extends FastList<X> {
     @Override
     public boolean add(X x) {
         ensureCapacityForAdditional(1);
-        addWithoutResizeTest(x);
+        addFast(x);
         return true;
     }
 
     public int addAndGetSize(X x) {
         ensureCapacityForAdditional(1);
-        addWithoutResizeTest(x);
+        addFast(x);
         return size;
     }
 
@@ -658,22 +663,22 @@ public class FasterList<X> extends FastList<X> {
     /**
      * dangerous unless you know the array has enough capacity
      */
-    public final void addWithoutResizeTest(X x) {
+    public final void addFast(X x) {
         this.items[this.size++] = x;
     }
 
     public final void addAll(X a, X b) {
         ensureCapacityForAdditional(2);
-        addWithoutResizeTest(a);
-        addWithoutResizeTest(b);
+        addFast(a);
+        addFast(b);
     }
 
     public final void addAll(X... x) {
         ensureCapacityForAdditional(x.length);
-        addWithoutResizeTest(x, x.length);
+        addFast(x, x.length);
     }
 
-    public final void addWithoutResizeTest(X[] x, int n) {
+    public final void addFast(X[] x, int n) {
         //if (n > 0) {
         X[] items = this.items;
         int size = this.size;

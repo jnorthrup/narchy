@@ -279,7 +279,7 @@ public interface Compound extends Term, IPair, Subterms {
                             xx = $.vFast(xxx.toArray(EmptyTermArray));
                         }
 
-                        return xx.equals(yy) || xx.unifyCommute(yy, u);
+                        return xx.equals(yy) || Subterms.unifyCommute(xx, yy, u);
                     }
 
                     return false; //differing #subterms and neither is XTERNAL
@@ -304,7 +304,7 @@ public interface Compound extends Term, IPair, Subterms {
                     return false;
 
                 if (o == CONJ)
-                    return (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
+                    return (xdt >= 0) == (ydt >= 0) ? Subterms.unifyLinear(xx, yy, u) : Subterms.unifyLinear(xx, yy.reversed(), u);
             }
 
 
@@ -320,9 +320,9 @@ public interface Compound extends Term, IPair, Subterms {
         }
 
         if (o.commutative /* subs>1 */) {
-            return xx.unifyCommute(yy, u);
+            return Subterms.unifyCommute(xx, yy, u);
         } else { //TODO if temporal, compare in the correct order
-            return xx.unifyLinear(yy, u);
+            return Subterms.unifyLinear(xx, yy, u);
         }
 
 //            if (result) {
@@ -420,18 +420,18 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default void addTo(/*@NotNull*/ Collection<Term> set) {
-        subterms().addTo(set);
+    default void addAllTo(/*@NotNull*/ Collection<Term> set) {
+        subterms().addAllTo(set);
     }
 
-    @Override
-    default boolean impossibleSubStructure(int structure) {
-        return !subterms().hasAll(structure);
-    }
 
     @Override
     default boolean isNormalized() {
         return subterms().isNormalized();
+    }
+
+    default int structureSub() {
+        return subterms().structure();
     }
 
     /**

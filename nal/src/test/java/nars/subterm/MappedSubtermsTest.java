@@ -49,7 +49,7 @@ public class MappedSubtermsTest {
     /** subterms as array/vector */
     public static Subterms assertEq(Term[] aa, Term[] bb) {
         ArrayTermVector a = new ArrayTermVector(aa);
-        Subterms b = SortedSubterms.the(bb, Op.terms::subterms, false);
+        Subterms b = SortedSubterms.the(bb, Op.terms::subterms);
         TermTest.assertEq(a, b);
         return b;
     }

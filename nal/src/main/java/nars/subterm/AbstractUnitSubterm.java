@@ -136,13 +136,6 @@ abstract class AbstractUnitSubterm implements Subterms {
         c.accept(sub());
     }
 
-    @Override
-    public void forEach(Consumer<? super Term> c, int start, int stop) {
-        if (start != 0 ||
-                stop != 1)
-            throw new ArrayIndexOutOfBoundsException();
-        c.accept(sub());
-    }
 
     @Override
     public Stream<Term> subStream() {

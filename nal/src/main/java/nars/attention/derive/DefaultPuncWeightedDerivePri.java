@@ -9,6 +9,7 @@ import nars.derive.Derivation;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
+/** TODO strength parameter */
 public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
     long lastUpdate = ETERNAL;

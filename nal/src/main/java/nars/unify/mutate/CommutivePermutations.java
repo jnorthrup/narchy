@@ -46,7 +46,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
         while (p.shuffle()) {
 
-            if (p.unifyLinear(y, u)) {
+            if (Subterms.unifyLinear(p, y, u)) {
                 if (!u.tryMutate(chain, current))
                     break;
             }

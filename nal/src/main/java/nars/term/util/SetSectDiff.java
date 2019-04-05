@@ -108,7 +108,7 @@ public class SetSectDiff {
             return single(y.keysView().getOnly(), o, b);
         else {
             TermList yyy = new TermList(s);
-            y.keyValuesView().forEachWith((e,YYY) -> YYY.addWithoutResizeTest(e.getOne().negIf(e.getTwo() == -1)), yyy);
+            y.keyValuesView().forEachWith((e,YYY) -> YYY.addFast(e.getOne().negIf(e.getTwo() == -1)), yyy);
 
             //Filter temporal terms that resolve to the same roots
             if (yyy.hasAny(Temporal)) {

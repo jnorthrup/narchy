@@ -86,18 +86,8 @@ abstract public class Causable extends Part {
     }
 
 
-    /**
-     * if false, allows multiple threads to execute this instance
-     * otherwise it is like being synchronized
-     * TODO generalize to one of N execution contexts:
-     * --singleton
-     * --threadsafe
-     * --thread local
-     * --threadgroup local
-     * --remote?
-     * --etc
-     */
-    public boolean singleton() {
+    /** by default, causable are singleton */
+    @Override public boolean singleton() {
         return true;
     }
 

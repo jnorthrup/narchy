@@ -162,8 +162,8 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     }
 
     @Override
-    public final boolean impossibleSubStructure(int structure) {
-        return !sub().hasAll(structure);
+    public int structureSub() {
+        return sub().structure();
     }
 
     @Override

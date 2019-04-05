@@ -117,8 +117,8 @@ public class SetFunc {
             return (Term) a;
 
         TreeSet<Term> t = new TreeSet<>();
-        a.addTo(t);
-        b.addTo(t);
+        a.addAllTo(t);
+        b.addAllTo(t);
         if (bothTerms) {
             int as = a.subs();
             int bs = b.subs();

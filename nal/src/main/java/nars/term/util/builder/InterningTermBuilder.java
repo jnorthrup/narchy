@@ -33,7 +33,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int volMaxDefault = 18;
+    protected static final int volMaxDefault = 14;
     protected static final boolean deepDefault = true;
 
     /**
@@ -87,12 +87,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
             Function<Intermed.InternedCompoundByComponents, Term> c;
             if (o == CONJ) {
                 c = newOpCache("conj",
-                        (InternedCompoundByComponents j) -> super.conj(true, j.dt, j.subs()), cacheSizePerOp);
+                        j -> super.conj(true, j.dt, j.subs()), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {
                 c = newOpCache(o.str,
-                        (InternedCompoundByComponents x) -> theCompound(ops[x.op], x.dt, x.subs(), x.key), s);
+                        x -> theCompound(ops[x.op], x.dt, x.subs(), x.key), s);
             }
             terms[i] = c;
         }
@@ -149,23 +149,25 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public Subterms subterms(@Nullable Op inOp, Term... t) {
-
         if (t.length == 0)
             return EmptySubterms;
-        else if (!internableSubs(t))
+        else if (internableSubs(t))
+            return subtermsInterned(t);
+        else
             return super.subterms(inOp, t);
-        else {
-            //TODO separate cache for anon's
-            if (AnonID.isAnon(t))
-                return subsInterned(anonSubterms, t);
-            else if (sortCanonically)
-                return SortedSubterms.the(t, this::newSubterms, false);
-            else
-                return newSubterms(t);
-        }
     }
 
-    private Subterms newSubterms(Term... u) {
+    private Subterms subtermsInterned(Term[] t) {
+        //TODO separate cache for anon's
+        if (AnonID.isAnon(t))
+            return subsInterned(anonSubterms, t);
+        else if (sortCanonically)
+            return SortedSubterms.the(t, this::subsInterned);
+        else
+            return subsInterned(t);
+    }
+
+    private Subterms subsInterned(Term... u) {
         return subsInterned(subterms, u);
     }
 

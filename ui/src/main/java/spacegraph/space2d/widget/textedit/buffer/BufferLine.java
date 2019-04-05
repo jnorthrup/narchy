@@ -61,7 +61,7 @@ public class BufferLine implements Comparable<BufferLine> {
         FasterList<BufferChar> results = new FasterList<>(cs-col);
         while (cs-- > col) {
             BufferChar c = removeChar(col);
-            results.addWithoutResizeTest(c);
+            results.addFast(c);
         }
         update();
         return results;

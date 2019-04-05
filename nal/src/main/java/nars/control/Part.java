@@ -39,7 +39,7 @@ import org.slf4j.Logger;
  *
  *
  * */
-public class Part extends Service<NAR> implements Termed {
+abstract public class Part extends Service<NAR> implements Termed {
 
     private static final Logger logger = Util.logger(Part.class);
 
@@ -68,9 +68,13 @@ public class Part extends Service<NAR> implements Termed {
     }
 
     protected Part(@Nullable Term id) {
-        Term instanceID = $.identity(this);
-        this.id = id != null ? id : instanceID;
-        this.instanceID = id == null ? instanceID : $.p(id,instanceID);
+        if (!singleton()) {
+            Term instanceID = $.identity(this);
+            this.id = id != null ? id : instanceID;
+            this.instanceID = id == null ? instanceID : $.p(id, instanceID);
+        } else {
+            this.id = instanceID = (id != null) ? id : $.identity(this);
+        }
     }
 
     /** optional event occurrence information.  null if not applicable. */
@@ -126,6 +130,21 @@ public class Part extends Service<NAR> implements Termed {
 
     }
 
+    /**
+     * if false, allows multiple threads to execute this instance
+     * otherwise it is like being synchronized
+     * TODO generalize to one of N execution contexts:
+     * --singleton
+     * --threadsafe
+     * --thread local
+     * --threadgroup local
+     * --remote?
+     * --etc
+     */
+    /*abstract*/ public boolean singleton() {
+        return false;
+    }
+
     public final Term id() {
         //return id;
         return instanceID;
@@ -135,6 +154,7 @@ public class Part extends Service<NAR> implements Termed {
     public Term term() {
         return id;
     }
+
 
     //    public Term instanceID() {
 //        return instanceID;

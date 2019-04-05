@@ -71,9 +71,7 @@ abstract public class Deriver extends Causable {
     }
 
     protected Deriver(DeriverRules rules, DerivePri pri, NAR nar) {
-        super(
-                $.func("deriver", $.the(serial.getAndIncrement()))
-        );
+        super();
         this.pri = pri;
         this.rules = rules;
 //        this.source = source;

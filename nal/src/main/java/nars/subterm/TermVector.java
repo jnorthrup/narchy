@@ -69,11 +69,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
 
     @Override
     public abstract Iterator<Term> iterator();
-
-
-    @Override
-    abstract public boolean equals(Object obj);
-
+    
 
 //    protected transient byte[] bytes = null;
 

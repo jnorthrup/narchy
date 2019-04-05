@@ -243,7 +243,7 @@ public class Remember extends AbstractTask {
 
         if (this.remembered == null) {
             remembered = new FasterList<>(2);
-            remembered.addWithoutResizeTest(x);
+            remembered.addFast(x);
         } else {
             add(x, this.remembered);
         }

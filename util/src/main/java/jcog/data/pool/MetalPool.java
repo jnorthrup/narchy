@@ -70,7 +70,7 @@ public abstract class MetalPool<X> implements Pool<X> {
         }
 
         data.ensureCapacityForAdditional(size);
-        data.addWithoutResizeTest(items, size);
+        data.addFast(items, size);
     }
 
     @Override

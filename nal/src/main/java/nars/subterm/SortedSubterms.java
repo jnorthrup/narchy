@@ -12,6 +12,10 @@ import static nars.Op.NEG;
 /** canonical subterm sorting and permutation wrapping for advanced interning */
 public class SortedSubterms {
 
+    public static Subterms the(final Term[] x, Function<Term[],Subterms> b) {
+        return the(x, b, false);
+    }
+
     public static Subterms the(final Term[] x, Function<Term[],Subterms> b, boolean dedup) {
 
         switch (x.length) {

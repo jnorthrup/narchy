@@ -28,7 +28,6 @@ import nars.truth.dynamic.TaskList;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -187,14 +186,12 @@ public class ConjClustering extends Causable {
         if (cc > 1)
             centroids.shuffleThis(nar.random());
 
-        CentroidConjoiner conjoiner = null;
+        CentroidConjoiner conjoiner = new CentroidConjoiner();
         do {
 
             Iterator<TaskList> ii = centroids.iterator();
             while (ii.hasNext()) {
                 FasterList<Task> l = ii.next();
-                if (conjoiner == null)
-                    conjoiner = new CentroidConjoiner();
                 if (conjoiner.conjoinCentroid(l, tasksPerIterationPerCentroid, nar) == 0 || l.size()<=1)
                     ii.remove();
 
@@ -209,10 +206,11 @@ public class ConjClustering extends Causable {
     private void update(NAR nar) {
         long now = nar.time();
         long lastNow = this.now;
-        if (lastNow != now) {
+        if (this.nar==null || lastNow < now) {
             //parameters must be set even if data is empty due to continued use in the filter
             //but at most once per cycle or duration
             this.now = now;
+            this.nar = nar;
             this.dur = nar.dur();
             this.stampLenMax =
                     //Param.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
@@ -224,15 +222,16 @@ public class ConjClustering extends Causable {
                     -2 /* for the super-CONJ itself and another term of at least volume 1 */
             );
 
-            if (busy.compareAndSet(false, true)) {
-                try {
-                    if (now - lastLearn > minDurationsPerLearning*dur) {
-                        data.learn(forgetRate(), learningIterations);
-                        lastLearn = now;
-                    }
-                } finally {
-                    busy.lazySet(false);
+        }
+
+        if (busy.compareAndSet(false, true)) {
+            try {
+                if (now - lastLearn >= minDurationsPerLearning*dur) {
+                    data.learn(forgetRate(), learningIterations);
+                    lastLearn = now;
                 }
+            } finally {
+                busy.lazySet(false);
             }
         }
     }
@@ -262,13 +261,13 @@ public class ConjClustering extends Causable {
         }
     }
 
-    class CentroidConjoiner {
+    private final class CentroidConjoiner {
 
 //        private final Map<LongObjectPair<Term>, Task> vv = new UnifiedMap<>(16);
-        private final List<Task> trying = new FasterList();
-        FasterList<Task> tried = new FasterList();
+        final List<Task> trying = new FasterList(8);
+        final FasterList<Task> tried = new FasterList(8);
 
-        private final MetalLongSet actualStamp = new MetalLongSet(Param.STAMP_CAPACITY * 2);
+        final MetalLongSet actualStamp = new MetalLongSet(Param.STAMP_CAPACITY * 2);
 
         private int conjoinCentroid(FasterList<Task> items, int limit, NAR nar) {
             int s = items.size();
@@ -398,7 +397,7 @@ public class ConjClustering extends Causable {
                                 } else {
 
                                     //recycle to be reused
-                                    tried.addAll(Arrays.asList(x));
+                                    tried.addAll(x);
                                 }
 
                             }

@@ -12,7 +12,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.attention.derive.DefaultDerivePri;
+import nars.attention.derive.DefaultPuncWeightedDerivePri;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.Part;
@@ -74,8 +74,8 @@ public class TaskLinkBag extends Part implements Attention {
      * */
     @Deprecated public DerivePri derivePri =
             //new DirectDerivePri();
-            new DefaultDerivePri();
-            //new DefaultPuncWeightedDerivePri();
+            //new DefaultDerivePri();
+            new DefaultPuncWeightedDerivePri();
 
 
     @Override

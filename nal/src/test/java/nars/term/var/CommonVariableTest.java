@@ -7,6 +7,9 @@ import nars.term.Variable;
 import nars.unify.UnifyAny;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import static nars.$.$$;
 import static nars.term.util.TermTest.assertEq;
 import static nars.term.var.CommonVariable.common;
@@ -85,15 +88,24 @@ class CommonVariableTest {
     }
 
     @Test void testUnifyCommonVar_DepIndep() {
-        UnifyAny u = new UnifyAny();
-        assertTrue(
-                $$("x($1,#1)").unify($$("x(#1,$1)"), u)
-        );
+        Set<String> uu = new TreeSet();
+        for (int i = 0; i < 16; i++) {
+            UnifyAny u = new UnifyAny();
+            assertTrue(
+                    $$("x($1,#1)").unify($$("x(#1,$1)"), u)
+            );
+            uu.add(u.toString());
+            u.xy.values().forEach(c -> assertSerialize((Variable)c));
+            //System.out.println(u);
+        }
+
+        assertEquals(1, uu.size());
         assertEquals(
-                "{#1=$1, #2=$2}$0", u.toString());
+                "[{#1=$1, #2=$2}$0]", uu.toString());
+                //"[{#1=##1#2, #2=##1#2, $1=$$1$2, $2=$$1$2}$0, {#1=$1, #2=$2}$0]", uu.toString());
                 //"{$1=##1$1, #1=##1$1, #2=##2$2, $2=##2$2}$0", u.toString());
-        u.xy.values().forEach(c -> assertSerialize((Variable)c));
-        System.out.println(u);
+
+
     }
 
 }

@@ -33,7 +33,12 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     public TermList(Iterable<Term> copied) {
         super(0);
-        copied.forEach(this::add);
+        copied.forEach(this::addFast);
+    }
+
+    public TermList(Subterms copied) {
+        super(copied.subs());
+        copied.forEach(this::addFast);
     }
 
     @Override
@@ -58,7 +63,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
      @Override
     public TermList toList() {
-        return new TermList(this);
+        return new TermList(arrayClone());
     }
 
     @Override
@@ -94,9 +99,11 @@ public class TermList extends FasterList<Term> implements Subterms {
         if ((obj instanceof TermList)) {
             return nonNullEquals(((TermList)obj));
         } else {
-            if (hashCode()!=obj.hashCode())
+            Subterms ss = ((Subterms)obj);
+            if (hashCodeSubterms()!=ss.hashCodeSubterms())
                 return false;
-            return ((Subterms)obj).equalTerms(this);
+            else
+                return ss.equalTerms(this);
         }
     }
 
