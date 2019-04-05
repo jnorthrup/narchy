@@ -4,7 +4,7 @@ import jcog.Util;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.term.Term;
 
 import java.io.PrintStream;
@@ -17,7 +17,7 @@ import static nars.Op.*;
 
 /** fast summarization of certain Task features used for control feedback.  gathers statistics concurrently
  *  and produces a snapshot on request */
-public class TaskSummarizer extends Part implements Consumer<Task> {
+public class TaskSummarizer extends NARPart implements Consumer<Task> {
 
     final AtomicReference<TaskSummary> summary = new AtomicReference<>();
 

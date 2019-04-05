@@ -1,0 +1,102 @@
+package jcog.service;
+
+import jcog.Paper;
+import jcog.event.Off;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicReference;
+
+/**
+ * component of a system.
+ *
+ * The generic name of 'Part' is to imply generality.
+ * this class was originally derived from Guava's "Service" class and related API.
+ * but Service implies some server/served activity while in reality this releationship
+ * is necessarily relevant or clearly defined.  instead the simpler container/contained
+ * relationship does certainly exist.  the components may 'serve' the collection,
+ * and at the same time the collection may 'serve' the components.  but from the
+ * system's perspective, this becomes subjective ontologically.
+ *
+ * @param C to whatever may be (whether temporarily or permanently):
+ *          dynamically attached
+ *          interfaced with
+ *          integrated to
+ *
+ *
+ *
+ * they are dynamically registerable and de-registerable.
+ * multiple instances of the same type of Part may be present unless explicitly restricted by singleton flag.
+ *
+ * this is meant to be flexible and dynamic, to support runtime metaprogramming, telemetry, performance metrics
+ *   accessible to both external control and internal reasoner decision processes.
+ *
+ * TODO methods of accessing parts by different features:
+ *      --function
+ *      --class
+ *      --name
+ *      --etc
+ *
+ */
+@Paper
+public abstract class Part<C> implements Off {
+
+    final AtomicReference<Parts.ServiceState> state = new AtomicReference<>(Parts.ServiceState.Off);
+
+    public final boolean isOn() {
+        return state.getOpaque() == Parts.ServiceState.On;
+    }
+
+    public final boolean isOff() {
+        return state.getOpaque() == Parts.ServiceState.Off;
+    }
+
+    protected Part() {
+        super();
+    }
+
+    @Override
+    public String toString() {
+        String nameString = getClass().getName();
+
+        if (nameString.startsWith("jcog.") || nameString.startsWith("nars.")) //HACK
+            nameString = getClass().getSimpleName();
+
+        return nameString + ':' + super.toString();
+    }
+
+    public final void start(Parts<C,?> x) {
+        start(x, x.exe);
+    }
+
+    public final void start(Parts<C,?> x, Executor exe) {
+
+        if (state.compareAndSet(Parts.ServiceState.Off, Parts.ServiceState.OffToOn)) {
+            x.start(this, exe);
+        }
+    }
+
+
+    public final void stop(Parts<C,?> x) {
+        stop(x, null);
+    }
+
+    public final void stop(Parts<C,?> x, @Nullable Runnable afterOff) {
+        stop(x, x.exe, afterOff);
+    }
+
+    public final void stop(Parts<C,?> x, Executor exe, @Nullable Runnable afterOff) {
+        if (state.compareAndSet(Parts.ServiceState.On, Parts.ServiceState.OnToOff)) {
+            x.stop(this, afterOff, exe);
+        }
+    }
+
+    abstract protected void start(C x);
+
+    abstract protected void stop(C x);
+
+
+    public Parts.ServiceState state() {
+        return state.getOpaque();
+    }
+}

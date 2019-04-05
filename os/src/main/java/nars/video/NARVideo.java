@@ -3,23 +3,23 @@ package nars.video;
 import com.github.sarxos.webcam.Webcam;
 import nars.$;
 import nars.NAR;
-import nars.control.Part;
-import nars.control.PartSet;
+import nars.control.NARPart;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.WebCam;
 
-public class NARVideo extends PartSet<NARVideo.Video> {
+public class NARVideo extends NARPart {
 
     public NARVideo(NAR nar) {
         super(nar);
 
-        Webcam.getWebcams().forEach(w -> add(new Video(nar, w)));
+        //TODO better, with hotplug-able device selector
+        Webcam.getWebcams().forEach(w -> nar.add(new Video(nar, w)));
     }
 
-    static class Video extends Part {
+    static class Video extends NARPart {
 
         private WebCam c;
         public final Webcam cam;

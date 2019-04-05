@@ -15,7 +15,7 @@ import nars.Task;
 import nars.attention.derive.DefaultPuncWeightedDerivePri;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.derive.Derivation;
 import nars.link.Activate;
 import nars.link.AtomicTaskLink;
@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 
 /** abstract attention economy model.
  *  determines the active attention dynamics */
-public class TaskLinkBag extends Part implements Attention {
+public class TaskLinkBag extends NARPart implements Attention {
 
 
 

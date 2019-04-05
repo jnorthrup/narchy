@@ -4,13 +4,13 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.table.TaskTable;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 
 import java.util.function.Consumer;
 
-public class BeliefContradictionDetector extends Part implements Consumer<Task> {
+public class BeliefContradictionDetector extends NARPart implements Consumer<Task> {
 
     public BeliefContradictionDetector(NAR n) {
         super(n);

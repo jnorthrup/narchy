@@ -1,14 +1,14 @@
 package nars.time.part;
 
 import nars.NAR;
-import nars.control.Part;
+import nars.control.NARPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
 /** per-cycle invoked part */
-abstract public class CycPart extends Part implements Consumer<NAR> {
+abstract public class CycPart extends NARPart implements Consumer<NAR> {
 
     static final Logger logger = LoggerFactory.getLogger(CycPart.class);
 

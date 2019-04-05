@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.event.Off;
 import jcog.event.Offs;
-import jcog.service.Service;
+import jcog.service.Part;
 import nars.$;
 import nars.NAR;
 import nars.term.Term;
@@ -15,33 +15,13 @@ import org.slf4j.Logger;
 
 /**
  *
- * a runtime component of a NAR.
- *
- * it is given a generic name such as 'Part' to imply generality in
- * whatever may be
- *          dynamically attached
- *          interfaced with
- *          integrated to
- * any reasoner instance (whether temporarily or permanently).
- *
- *
- * they are dynamically registerable and de-registerable.
- * multiple instances of the same type of Part may be present unless explicitly restricted singleton.
- *
- * this is meant to be flexible and dynamic, to support runtime metaprogramming, telemetry, performance metrics
- *   accessible to both external control and internal reasoner decision processes.
- *
- * TODO methods of accessing parts by different features:
- *      --function
- *      --class
- *      --name
- *      --etc
+
  *
  *
  * */
-abstract public class Part extends Service<NAR> implements Termed {
+abstract public class NARPart extends Part<NAR> implements Termed {
 
-    private static final Logger logger = Util.logger(Part.class);
+    private static final Logger logger = Util.logger(NARPart.class);
 
     public final Term id;
     private final Term instanceID;
@@ -52,22 +32,22 @@ abstract public class Part extends Service<NAR> implements Termed {
 
     protected NAR nar;
 
-    protected Part() {
+    protected NARPart() {
         this((NAR)null);
     }
 
-    protected Part(NAR nar) {
+    protected NARPart(NAR nar) {
         this(null, nar);
     }
 
-    protected Part(Term id, NAR nar) {
+    protected NARPart(Term id, NAR nar) {
         this(id);
 
         if (nar != null)
             (this.nar = nar).add(this);
     }
 
-    protected Part(@Nullable Term id) {
+    protected NARPart(@Nullable Term id) {
         if (!singleton()) {
             Term instanceID = $.identity(this);
             this.id = id != null ? id : instanceID;

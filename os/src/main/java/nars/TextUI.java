@@ -28,7 +28,7 @@ import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.link.Activate;
 import nars.op.language.NARHear;
 import nars.time.part.DurPart;
@@ -92,7 +92,7 @@ public class TextUI {
     }
 
 
-    private class TextGUI extends Part implements Runnable {
+    private class TextGUI extends NARPart implements Runnable {
 
 
         public final FloatRange guiUpdateFPS;

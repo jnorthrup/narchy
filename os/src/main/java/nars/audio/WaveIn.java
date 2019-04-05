@@ -3,7 +3,7 @@ package nars.audio;
 import jcog.math.FloatRange;
 import jcog.signal.wave1d.SignalInput;
 import nars.NAR;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.term.Term;
 
 /**
@@ -12,7 +12,7 @@ import nars.term.Term;
  * emits event on buffer fill.
  *
  */
-public class WaveIn extends Part {
+public class WaveIn extends NARPart {
 
     final SignalInput in;
 

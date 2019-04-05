@@ -24,7 +24,7 @@ import nars.agent.util.RLBooster;
 import nars.attention.TaskLinkBag;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
@@ -142,7 +142,7 @@ public class NARui {
     public static HashMap<String, Supplier<Surface>> pluginsMenu(NAR n) {
         HashMap<String,Supplier<Surface>> m = new HashMap<>();
         n.plugins().forEach(s -> {
-            m.put( ((Part)s).id().toString(), ()-> new ObjectSurface(s));
+            m.put( ((NARPart)s).id().toString(), ()-> new ObjectSurface(s));
         });
         return m;
     }

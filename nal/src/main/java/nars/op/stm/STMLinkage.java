@@ -5,7 +5,7 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.link.TaskLink;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +20,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * Creates links between sequences of perceived events
  * Empties task buffer when plugin is (re)started.
  */
-public class STMLinkage extends Part {
+public class STMLinkage extends NARPart {
 
 
     public final FloatRange strength = new FloatRange(0.5f, 0f, 1f);

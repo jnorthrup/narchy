@@ -18,7 +18,7 @@ import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.agent.Game;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -51,7 +51,7 @@ import static nars.time.Tense.ETERNAL;
 
 
 
-public class ShapeSensor extends Part {
+public class ShapeSensor extends NARPart {
 
     private final Bitmap2D input;
     private final ConsumerX<ITask> in;

@@ -1,23 +1,22 @@
 package jcog;
 
-import jcog.service.Service;
-import jcog.service.Services;
+import jcog.service.Part;
+import jcog.service.Parts;
 import org.junit.jupiter.api.Test;
 
-class ServicesTest {
+class PartsTest {
 
     @Test
-    void testServices1() {
+    void testParts1() {
 
-        Services<?, String> s = new Services("");
+        Parts<?, String> s = new Parts("");
         StringBuilder sb = new StringBuilder();
 
-        s.add("x", new DummyService(sb));
-        s.add("y", new DummyService(sb));
+        s.add("x", new DummyPart(sb));
+        s.add("y", new DummyPart(sb));
 
         s.print(System.out);
 
-        
 
         s.stop();
 
@@ -26,10 +25,10 @@ class ServicesTest {
         
     }
 
-    private static class DummyService extends Service {
+    private static class DummyPart extends Part {
         private final StringBuilder sb;
 
-        DummyService(StringBuilder sb) {
+        DummyPart(StringBuilder sb) {
             this.sb = sb;
         }
 

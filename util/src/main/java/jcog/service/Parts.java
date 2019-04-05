@@ -30,13 +30,32 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.stream.Stream;
 
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
+
 /**
- * Modifications of Guava's ServiceManager
+ * CONTRAINER / OBJENOME
+ * A collection or container of 'parts'.
+ * Smart Dependency Injection (DI) container with:
  *
+ *      autowiring
+ *          type resolution assisted by CastGraph, with diverse of builtin transformers
+ *
+ *      hints from commandline args, env variables, or constructor string:
+ *
+ *             "parts={<key>:<value>,[<key>:<value>] }"
+ *                 key = interface name | variable name
+ *                 value = JSON-parseable java constant
+
+ *         the hints keys and values are fuzzy matchable, with levenshtein dist as a decider in case of ambiguity
+ *
+ *         note: such syntax should be parseable both in JSON and NAL
+ *
+ *
+ * Original docs:
  * <p>
- * A manager for monitoring and controlling a set of {@linkplain Service services}. This class
+ * A manager for monitoring and controlling a set of {@linkplain Part services}. This class
  * provides methods for {@linkplain #startAsync() starting}, {@linkplain #stopAsync() stopping} and
- * {@linkplain #servicesByState inspecting} a collection of {@linkplain Service services}.
+ * {@linkplain #servicesByState inspecting} a collection of {@linkplain Part services}.
  * Additionally, users can monitor state transitions with the {@linkplain Listener listener}
  * mechanism.
  * <p>
@@ -84,16 +103,16 @@ import java.util.stream.Stream;
  *
  * @author Luke Sandberg (original)
  */
-public class Services<C /* context */, K /* service key */> {
+public class Parts<C /* context */, K /* service key */> {
 
     public final C id;
     final Logger logger;
     protected final Executor exe;
-    public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>();
-    private final ConcurrentMap<K, Service<C>> services;
+    public final Topic<ObjectBooleanPair<Part<C>>> change = new ListTopic<>();
+    private final ConcurrentMap<K, Part<C>> services;
 
 
-    public Services(C id) {
+    public Parts(C id) {
         this(id,
                 Exe.executor()
                 //MoreExecutors.directExecutor()
@@ -109,22 +128,22 @@ public class Services<C /* context */, K /* service key */> {
      * @throws IllegalArgumentException if not all services are {@linkplain ServiceState#NEW new} or if there
      *                                  are any duplicate services.
      */
-    public Services(@Nullable C id, Executor exe) {
+    public Parts(@Nullable C id, Executor exe) {
         this.id = id == null ? (C) this : id;
         this.logger = LoggerFactory.getLogger(id.toString());
         this.exe = exe;
         this.services = new ConcurrentHashMap<>(32);
     }
 
-    public final Stream<Service<C>> stream() {
+    public final Stream<Part<C>> stream() {
         return services.values().stream();
     }
 
-    public final Set<Map.Entry<K, Service<C>>> entrySet() {
+    public final Set<Map.Entry<K, Part<C>>> entrySet() {
         return services.entrySet();
     }
 
-    public final void add(K key, Service<C> s) {
+    public final void add(K key, Part<C> s) {
         set(key, s, true);
     }
 
@@ -132,16 +151,16 @@ public class Services<C /* context */, K /* service key */> {
         remove(serviceID, null);
     }
 
-    public final void remove(K serviceID, Service<C> s) {
+    public final void remove(K serviceID, Part<C> s) {
         set(serviceID, s, false);
     }
 
-    private void set(K key, @Nullable Service<C> added, boolean start) {
+    private void set(K key, @Nullable Part<C> added, boolean start) {
 
         if (added == null && start)
             throw new WTF();
 
-        Service<C> removed = added!=null ? services.put(key, added) : services.remove(key);
+        Part<C> removed = added!=null ? services.put(key, added) : services.remove(key);
 
         if (added!=removed) {
             if (removed != null) {
@@ -164,9 +183,9 @@ public class Services<C /* context */, K /* service key */> {
 
 
 
-    public Services<C, K> stop() {
-        for (Service<C> service: services.values()) {
-            service.stop(this);
+    public Parts<C, K> stop() {
+        for (Part<C> part : services.values()) {
+            part.stop(this);
         }
         return this;
     }
@@ -177,7 +196,55 @@ public class Services<C /* context */, K /* service key */> {
 
 
     public void print(PrintStream out) {
-        services.forEach((k, s) -> out.println(k + " " + s.get()));
+        services.forEach((k, s) -> out.println(k + " " + s.state()));
+    }
+
+    void error(@Nullable Part part, Throwable e, String what) {
+        if (part!=null)
+            logger.error("{} {} {} {}", part, what, this, e);
+        else
+            logger.error("{} {} {}", what, this, e);
+    }
+
+    public void start(Part<C> part, Executor exe) {
+        exe.execute(() -> {
+            try {
+
+                part.start(id);
+
+                boolean toggledOn = part.state.compareAndSet(Parts.ServiceState.OffToOn, Parts.ServiceState.On);
+                if (!toggledOn)
+                    throw new WTF();
+
+                change.emitAsync(pair(part, true), exe);
+
+            } catch (Throwable e) {
+                part.state.set(Parts.ServiceState.Off);
+                error(part, e, "start");
+            }
+        });
+    }
+
+    public void stop(Part<C> part, @Nullable Runnable afterOff, Executor exe) {
+        exe.execute(() -> {
+            try {
+
+                part.stop(id);
+
+                boolean toggledOff = part.state.compareAndSet(Parts.ServiceState.OnToOff, Parts.ServiceState.Off);
+                if (!toggledOff)
+                    throw new WTF();
+
+                if (afterOff!=null)
+                    afterOff.run();
+
+                change.emitAsync(pair(part, false), exe);
+
+            } catch (Throwable e) {
+                part.state.set(Parts.ServiceState.Off);
+                error(part, e, "stop");
+            }
+        });
     }
 
 

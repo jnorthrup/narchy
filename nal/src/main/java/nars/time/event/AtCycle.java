@@ -1,10 +1,7 @@
 package nars.time.event;
 
 import nars.NAR;
-import nars.control.Part;
 import nars.term.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 

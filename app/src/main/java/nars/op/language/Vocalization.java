@@ -4,7 +4,7 @@ import com.google.common.collect.TreeBasedTable;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.term.Term;
 import nars.time.part.DurPart;
 import nars.truth.Truth;
@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Consumer;
 
-public class Vocalization extends Part {
+public class Vocalization extends NARPart {
 
     public static final Term PREPOSITION = $.the("preposition");
     public static final Term PRONOUN = $.the("pronoun");

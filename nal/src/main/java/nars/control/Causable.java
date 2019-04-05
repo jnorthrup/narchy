@@ -26,7 +26,7 @@ import static nars.time.Tense.TIMELESS;
  * records runtime instrumentation, profiling, and other telemetry for a particular Causable
  * both per individual threads, and collectively
  */
-abstract public class Causable extends Part {
+abstract public class Causable extends NARPart {
 
 //    private static final Logger logger = LoggerFactory.getLogger(Causable.class);
 

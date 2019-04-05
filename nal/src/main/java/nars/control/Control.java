@@ -12,7 +12,7 @@ import jcog.learn.AgentBuilder;
 import jcog.learn.Agenterator;
 import jcog.math.FloatSupplier;
 import jcog.pri.PriBuffer;
-import jcog.service.Service;
+import jcog.service.Part;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -90,8 +90,8 @@ import java.util.function.Consumer;
     public Control(NAR nar) {
         this.nar = nar;
 
-        Consumer<ObjectBooleanPair<Service<NAR>>> serviceChange = (xb) -> {
-            Service<NAR> s = xb.getOne();
+        Consumer<ObjectBooleanPair<Part<NAR>>> serviceChange = (xb) -> {
+            Part<NAR> s = xb.getOne();
             if (s instanceof Causable) {
                 Causable c = (Causable) s;
                 if (xb.getTwo())

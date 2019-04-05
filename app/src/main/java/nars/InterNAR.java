@@ -6,7 +6,7 @@ import jcog.func.TriConsumer;
 import jcog.math.FloatRange;
 import jcog.net.UDPeer;
 import nars.bag.leak.TaskLeak;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
 import nars.io.IO;
 import nars.io.TaskIO;
@@ -27,7 +27,7 @@ import static jcog.net.UDPeer.Command.TELL;
 /**
  * InterNARchy / InterNARS P2P Network Interface for a NAR
  */
-public class InterNAR extends Part implements TriConsumer<NAR, ActiveQuestionTask, Task> {
+public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestionTask, Task> {
 
     public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
     private final int port;

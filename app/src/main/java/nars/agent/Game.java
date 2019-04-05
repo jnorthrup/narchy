@@ -19,7 +19,7 @@ import nars.concept.action.curiosity.DefaultCuriosity;
 import nars.concept.sensor.AgentLoop;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +49,7 @@ import static nars.truth.func.TruthFunctions.w2cSafe;
  *
  */
 @Paper @Skill({"Game_studies", "Game_theory"})
-public class Game extends Part implements NSense, NAct {
+public class Game extends NARPart implements NSense, NAct {
 
     private final Topic<NAR> eventFrame = new ListTopic();
 

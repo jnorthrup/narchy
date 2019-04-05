@@ -8,7 +8,7 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.Param;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
@@ -32,7 +32,7 @@ import java.util.function.Predicate;
  * temporal events.  at any given time it will contain zero or one of this
  * Dur's immutable and re-usable AtDur event.
  */
-abstract public class DurPart extends Part {
+abstract public class DurPart extends NARPart {
 
     private static final Logger logger = Util.logger(DurPart.class);
 

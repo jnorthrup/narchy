@@ -2,8 +2,8 @@ package spacegraph.space2d.widget.meta;
 
 import com.jogamp.opengl.GL2;
 import jcog.event.Off;
-import jcog.service.Service;
-import jcog.service.Services;
+import jcog.service.Parts;
+import jcog.service.Part;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
@@ -24,14 +24,14 @@ import java.util.stream.Collectors;
 
 public class ServicesTable extends Gridding implements GridModel, GridRenderer {
 
-    private final Services context;
+    private final Parts context;
     private Off updater;
     private DynGrid grid;
 
     
-    private final List<Service> services = new CopyOnWriteArrayList<>();
+    private final List<Part> parts = new CopyOnWriteArrayList<>();
 
-    public ServicesTable(Services<?,?> s) {
+    public ServicesTable(Parts<?,?> s) {
         super();
 
         this.context = s;
@@ -62,8 +62,8 @@ public class ServicesTable extends Gridding implements GridModel, GridRenderer {
 
     private void update() {
         synchronized (this) {
-            services.clear();
-            context.stream().collect(Collectors.toCollection(()-> services));
+            parts.clear();
+            context.stream().collect(Collectors.toCollection(()-> parts));
         }
 //        grid.refresh();
     }
@@ -75,14 +75,14 @@ public class ServicesTable extends Gridding implements GridModel, GridRenderer {
 
     @Override
     public int cellsY() {
-        return services.size();
+        return parts.size();
     }
 
     @Nullable
     @Override
     public Object get(int x, int y) {
         try {
-            Service s = services.get(y);
+            Part s = parts.get(y);
             switch (x) {
                 case 0: {
                     return new Bordering(
@@ -101,9 +101,9 @@ public class ServicesTable extends Gridding implements GridModel, GridRenderer {
 
     static class ServiceToggle extends Gridding {
 
-        final Service s;
+        final Part s;
 
-        ServiceToggle(Services n, Service s) {
+        ServiceToggle(Parts n, Part s) {
             this.s = s;
             set(
                 new PushButton("On").clicked(()->s.start(n, ForkJoinPool.commonPool())),

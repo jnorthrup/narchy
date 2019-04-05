@@ -13,8 +13,8 @@ import jcog.exe.Cycled;
 import jcog.func.TriConsumer;
 import jcog.math.MutableInteger;
 import jcog.pri.Prioritized;
-import jcog.service.Service;
-import jcog.service.Services;
+import jcog.service.Parts;
+import jcog.service.Part;
 import nars.Narsese.NarseseException;
 import nars.attention.TaskLinkBag;
 import nars.concept.Concept;
@@ -24,7 +24,7 @@ import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.Cause;
 import nars.control.Control;
-import nars.control.Part;
+import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
 import nars.eval.Evaluator;
 import nars.eval.Facts;
@@ -102,7 +102,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * the dynamically composeable components of this NAR
      */
-    public final Services<NAR, Term> part;
+    public final Parts<NAR, Term> part;
     public final Time time;
     public final Memory memory;
     public final MemoryExternal memoryExternal = new MemoryExternal(this);
@@ -149,7 +149,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.exe = exe;
 
-        this.part = new Services<>(this, exe);
+        this.part = new Parts<>(this, exe);
 
         this.conceptBuilder = conceptBuilder;
         memory.start(this);
@@ -618,11 +618,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * asynchronously adds the service
      */
-    public final void add(Part s) {
+    public final void add(NARPart s) {
         part.add(s.id(), s);
     }
 
-    public final void remove(Part s) {
+    public final void remove(NARPart s) {
         part.remove(s.id(), s);
     }
 
@@ -1344,7 +1344,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
-    public Stream<Service<NAR>> plugins() {
+    public Stream<Part<NAR>> plugins() {
         return part.stream();
     }
 
@@ -1456,7 +1456,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 Streams.stream(eventCycle).map(AtCycle::new),
                 Streams.stream(eventClear).map(AtClear::new),
                 part.stream()
-                        .map((s) -> ((Part) s).event()).filter(Objects::nonNull),
+                        .map((s) -> ((NARPart) s).event()).filter(Objects::nonNull),
                 time.events()
                         .filter(t -> !(t instanceof DurPart.AtDur)) //HACK (these are included in service's events)
 //            causes.stream(),
