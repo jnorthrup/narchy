@@ -1685,7 +1685,7 @@ public enum Util {
      * adaptive spinlock behavior
      * see: https:
      */
-    public static void pauseNextIterative(int previousContiguousPauses) {
+    public static void pauseSpin(int previousContiguousPauses) {
 //        if (previousContiguousPauses < 256) {
 //            return;
         //} else

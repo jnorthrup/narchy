@@ -21,7 +21,9 @@ import static java.lang.System.nanoTime;
 
 abstract public class MultiExec extends UniExec {
 
-    protected static final float inputQueueSizeSafetyThreshold = 1f;
+    protected static final float inputQueueSizeSafetyThreshold =
+            0.99f;
+            //1f;
 
     private static final float UPDATE_DURS =
             1;

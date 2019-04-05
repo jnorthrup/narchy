@@ -8,11 +8,17 @@ import static jcog.Texts.n4;
 
 /**
  * stores 4 (four) 16-bit fixed-point numbers, covering a unit range [0..1.0]
+ * TODO use VarHandle with offsets to CAS the specific sub-vector.  see
+ *             XX = MethodHandles.arrayElementVarHandle(X[].class);
+ *             .getAndSet(a, (cap - 1) & --s, null)
+ *             VarHandleBytes
  * TODO test
  */
 public class AtomicQuad16Vector implements WritableTensor {
 
-    public static final float SHORT_TO_FLOAT_SCALE = Short.MAX_VALUE*2 + 1;
+
+
+    private static final float SHORT_TO_FLOAT_SCALE = Short.MAX_VALUE*2 + 1;
 
     //TODO atomic addAt methods
     static final int[] QUAD_16_SHAPE = new int[] { 4 };
@@ -39,6 +45,7 @@ public class AtomicQuad16Vector implements WritableTensor {
 
     @Override
     public float sumValues() {
+
         long x = X.get(this);
         float /* double? */ s = 0;
         for (int i = 0; i < 4; i++)
@@ -78,7 +85,7 @@ public class AtomicQuad16Vector implements WritableTensor {
         return getAtStr(0) + ',' + getAtStr(1) + ',' + getAtStr(2) + ',' + getAtStr(3);
     }
 
-    protected String getAtStr(int i) {
+    private String getAtStr(int i) {
         return n4(getAt(i));
     }
 
@@ -87,6 +94,8 @@ public class AtomicQuad16Vector implements WritableTensor {
         long mask = ~((((long)('\uffff'))) << shift);
         long _x, _y;
         float x, y;
+
+
         do {
             _x = X.get(this);
 

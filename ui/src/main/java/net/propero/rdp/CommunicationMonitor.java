@@ -61,7 +61,7 @@ public class CommunicationMonitor {
             while (locker != null) {
 
                     
-                    Util.pauseNextIterative(p++);
+                    Util.pauseSpin(p++);
 
 
 

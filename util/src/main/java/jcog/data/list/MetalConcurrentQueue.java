@@ -59,6 +59,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
 
     // the sequence number of the start of the queue
+    // TODO use AtomicCycle ?
     final AtomicInteger
             head = new AtomicInteger(),
             nextHead = new AtomicInteger(),
@@ -73,20 +74,22 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
     public void forEach(Consumer<? super X> each) {
 
-
-
         int h = head();
         int s = tail() - h;
         if (s > 0) {
             int c = capacity();
-            h = h % c;
-            do {
+            h = i(h, c);
+            while(true) {
                 X next = getOpaque(h);
                 if (next != null)
                     each.accept(next);
+                /*else
+                    break; //assume we reached the end? */
+
+                if (--s <= 0) break;
 
                 if (++h == c) h = 0; //wrap
-            } while (--s > 0);
+            }
         }
     }
 
@@ -96,34 +99,9 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         return head.getAcquire();
     }
 
-
-//    public boolean whileEach(Predicate<? super X> each, int start, int end) {
-//
-//        if (end == start) return true;
-//
-//        //TODO detect if this.head moved while iteratnig
-//
-//        int s = size();
-//        if (end > start) {
-//            start = Math.max(0, start);
-//            end = Math.min(end, s);
-//            for (int i = start; i < end; i++) {
-//                X x = peek(i);
-//                if (x != null)
-//                    if (!each.test(x)) return false;
-//            }
-//        } else {
-//            start = Math.min(start, s - 1);
-//            end = Math.max(0, end);
-//            for (int i = start; i >= end; i--) {
-//                X x = peek(i);
-//                if (x != null)
-//                    if (!each.test(x)) return false;
-//            }
-//        }
-//
-//        return true;
-//    }
+    public final int headNext() {
+        return nextHead.getAcquire();
+    }
 
 
     /**
@@ -134,8 +112,6 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
      *
      * @param capacity maximum capacity of this queue
      */
-
-
     public MetalConcurrentQueue(final int capacity) {
         super(capacity);
     }
@@ -156,18 +132,17 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         return pushed;
     }
 
-    @Override
-    public boolean offer(X x) {
+
+    @Override public boolean offer(X x) {
         int spin = 0;
 
         int cap = capacity();
         for (; ; ) {
             final int tail = tail();
             // never offer onto the slot that is currently being polled off
-            final int queueStart = tail - cap;
 
             // will this sequence exceed the capacity
-            if (head() > queueStart) {
+            if (head() > tail - cap) {
                 // does the sequence still have the expected
                 // value
                 if (canTake(tail, 1)) {
@@ -185,13 +160,12 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
                 return false;
 
 
-            spin = progressiveYield(spin);
+            Util.pauseSpin(spin++);
         }
     }
 
-    private boolean canTake(int tail, int n) {
-        return this.nextTail.compareAndSet(tail, tail + n);
-    }
+
+
 
 
     private int i(int x) {
@@ -204,13 +178,6 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
     }
 
 
-    /*
-     * progressively transition from spin to yield over time
-     */
-    static int progressiveYield(final int n) {
-        Util.pauseNextIterative(n);
-        return n + 1;
-    }
 
     @Override
     @Nullable
@@ -237,14 +204,12 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             } // else - somebody else is reading this spot already: retry
 
             // this is the spin waiting for access to the queue
-            spin = progressiveYield(spin);
+            Util.pauseSpin(spin++);
 
         } while (true);
     }
 
-    public boolean canPut(int head, int n) {
-        return this.nextHead.compareAndSet(head, head + n);
-    }
+
 
     @Override
     public final X peek() {
@@ -275,10 +240,29 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         return remove(x, x.length);
     }
 
+    //TODO
+//    public int remove(final FasterList<X> x, IntToIntFunction availToDemand) {
+//
+//    }
+
     public int remove(final FasterList<X> x, int maxElements) {
-        int drained = remove(x.array(), maxElements);
-        x.setSize(drained);
-        return drained;
+        if (maxElements == 1) {
+            X xx = poll();
+            if (xx == null)
+                return 0;
+            else {
+                x.add(xx);
+                return 1;
+            }
+        } else {
+            int initialSize = x.size();
+            final int[] i = {initialSize};
+            X[] a = x.array();
+            int tryToGet = Math.min(a.length - initialSize, maxElements);
+            int drained = clear(y -> a[i[0]++] = y, tryToGet);
+            x.setSize(drained);
+            return drained;
+        }
     }
 
     // drain the whole queue at once
@@ -288,44 +272,54 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
      */
     public int remove(final X[] x, int maxElements) {
 
-        maxElements = Math.min(x.length, maxElements);
-        assert(maxElements > 0);
+        throw new TODO("impl with clear(..)");
 
-        int spin = 0;
+//        maxElements = Math.min(x.length, maxElements);
+//        assert(maxElements > 0);
+//
+//        int spin = 0;
+//
+//        for (; ; ) {
+//            final int head = head(); // prepare to qualify?
+//            // is there data for us to poll
+//            // note we must take a difference in values here to guard against
+//            // integer overflow
+//            int tail = tail();
+//            if (tail == head) return 0; //empty
+//
+//            final int r = Math.min((tail - head), maxElements);
+//            if (r > 0) {
+//                // if we still control the sequence, update and return
+//                if(canPut(head, r)) {
+//
+//                    int cap = capacity();
+//                    int n = i(head, cap);
+//                    for (int i = 0; i < r; i++) {
+//                        x[i] = getAndSet(n, null);
+//                        if (++n == cap) n = 0;
+//                    }
+//
+//                    put(head, r);
+//                    return r;
+//                } else {
+//                    spin = progressiveYield(spin); // wait for access
+//                }
+//
+//
+//            } else {
+//                // nothing to read now
+//                return 0;
+//            }
+//
+//        }
+    }
 
-        for (; ; ) {
-            final int head = head(); // prepare to qualify?
-            // is there data for us to poll
-            // note we must take a difference in values here to guard against
-            // integer overflow
-            int tail = tail();
-            if (tail == head) return 0; //empty
+    private boolean canTake(int tail, int n) {
+        return this.nextTail.weakCompareAndSetAcquire(tail, tail + n);
+    }
 
-            final int r = Math.min((tail - head), maxElements);
-            if (r > 0) {
-                // if we still control the sequence, update and return
-                if(canPut(head, r)) {
-
-                    int cap = capacity();
-                    int n = i(head, cap);
-                    for (int i = 0; i < r; i++) {
-                        x[i] = getAndSet(n, null);
-                        if (++n == cap) n = 0;
-                    }
-
-                    put(head, r);
-                    return r;
-                } else {
-                    spin = progressiveYield(spin); // wait for access
-                }
-
-
-            } else {
-                // nothing to read now
-                return 0;
-            }
-
-        }
+    private boolean canPut(int head, int n) {
+        return this.nextHead.weakCompareAndSetAcquire(head, head + n);
     }
 
     private void take(int tail, int n) {
@@ -338,7 +332,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
     }
 
     public int clear(Consumer<X> each) {
-        return clear(each, -1);
+        return clear(each, Integer.MAX_VALUE);
     }
 
     /** TODO make a custom clear impl, avoiding lambda */
@@ -346,50 +340,52 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         return clear((x)->each.accept(x, param));
     }
 
-//    public int clear(Consumer<X> each, int limit) {
-//        int count = 0;
-//        int s = limit >= 0 ? Math.min(limit, size()) : size();
-//        X next;
-//        while ((s-- > 0) && (next = poll()) != null) {
-//            each.accept(next);
-//            count++;
-//        }
-//        return count;
-//    }
+    /** TODO clearWith(IntObjectConsumer... */
     public int clear(final Consumer<X> each, int limit) {
+        assert(limit > 0);
 
-
+        int cap = capacity();
 
         int spin = 0;
-        for (; ; ) {
-            final int head = head(); // prepare to qualify?
+        int k = 0;
+        main: while (true) {
+            int head = head(); // prepare to qualify?
             // is there data for us to poll
             // we must take a difference in values here to guard against integer overflow
             int tail = tail();
-            int s = tail-head;
-            if (s == 0) return 0; //empty
-            assert(s > 0);
-            s = limit >= 0 ? Math.min(limit, s) : s;
+            int s = tail - head;
             if (s == 0)
-                return 0;
+                return k; //empty
 
-            final int r = Math.min((tail - head), s);
-            if (r <= 0)
-                return 0; // nothing to read now
+            int headLocal = i(head, cap);
 
-            // if we still control the sequence, update and return
-            if(canPut(head, r)) {
-                int cap = capacity();
-                int n = i(head, cap);
-                for (int i = 0; i < r; i++) {
-                    each.accept( getAndSet(n, null) );
-                    if (++n == cap) n = 0;
+            while (head < tail) {
+
+                if (canPut(head, 1)) {
+                    //get, nullify, and advance
+                    X next = getAndSet(headLocal, null);
+                    put(head, 1);
+
+                    //callback
+                    if (next!=null) {
+                        each.accept(next);
+
+                        //done?
+                        if (++k >= limit)
+                            return k;
+                    }
+
+                    if (++headLocal == cap) headLocal = 0;
+                    head++;
+                    spin = 0; //reset spin now that we are reading again
+
+                } else {
+
+                    Util.pauseSpin(spin++); // wait for access
+
+                    continue main; //restart
                 }
-
-                this.head.addAndGet(r);
-                return n;
-            } else
-                spin = progressiveYield(spin); // wait for access
+            }
 
 
         }
@@ -424,7 +420,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
     @Override
     public void clear() {
-        clear((x) -> {}, -1);
+        clear((x) -> {}, Integer.MAX_VALUE);
 
         //throw new TODO("review");
 //        int spin = 0;

@@ -108,28 +108,38 @@ abstract public class ThreadedExec extends MultiExec {
 
     protected long work(float responsibility, FasterList buffer) {
 
-        int available = in.size();
-        if (available > 0) {
+        int available;
+        boolean kontinue = true;
+        long workStart = Long.MIN_VALUE;
+        while (kontinue && (available = in.size()) > 0) {
+
             //do {
-            long workStart = nanoTime();
+
+            if (workStart == Long.MIN_VALUE)
+                workStart = nanoTime();
 
             int batchSize = //Util.lerp(throttle,
                     //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
                     Math.max(1, (int) Math.floor(((responsibility * available) / workGranularity)));
                     //)
 
+
             int got = in.remove(buffer, batchSize);
-            if (got > 0)
+            if (got > 0) {
                 execute(buffer, 1, ThreadedExec.this::executeNow);
+                kontinue = !queueSafe();
+            } else
+                kontinue = false;
 
-
-            long workEnd = nanoTime();
             //} while (!queueSafe());
 
-            return workEnd - workStart;
         }
-
-        return 0;
+        if (workStart!=Long.MIN_VALUE) {
+            long workEnd = nanoTime();
+            return workEnd - workStart;
+        } else {
+            return 0; //HACK
+        }
     }
 
 
