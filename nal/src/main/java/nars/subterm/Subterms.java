@@ -50,8 +50,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default boolean contains(Term t) {
-        //return indexOf(t)!=-1;
         return ORwith(Term::equals, t);
+    }
+    default boolean containsInstance(Term t) {
+        return ORwith((tt, u) -> tt == u, t);
     }
 
 

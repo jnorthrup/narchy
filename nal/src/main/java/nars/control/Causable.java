@@ -70,7 +70,7 @@ abstract public class Causable extends NARPart {
         this.busy = //new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
                 singleton() ? new AtomicBoolean(false) : null;
         if (nar != null)
-            nar.add(this);
+            nar.start(this);
     }
 
     @Override

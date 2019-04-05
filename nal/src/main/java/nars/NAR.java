@@ -5,6 +5,7 @@ import com.google.common.collect.Streams;
 import com.google.common.primitives.Longs;
 import jcog.Texts;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.event.ListTopic;
 import jcog.event.Off;
@@ -13,7 +14,6 @@ import jcog.exe.Cycled;
 import jcog.func.TriConsumer;
 import jcog.math.MutableInteger;
 import jcog.pri.Prioritized;
-import jcog.service.Parts;
 import jcog.service.Part;
 import nars.Narsese.NarseseException;
 import nars.attention.TaskLinkBag;
@@ -48,7 +48,10 @@ import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
 import nars.time.Tense;
 import nars.time.Time;
-import nars.time.event.*;
+import nars.time.event.AtClear;
+import nars.time.event.AtCycle;
+import nars.time.event.AtTime;
+import nars.time.event.InternalEvent;
 import nars.time.part.DurPart;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -60,8 +63,6 @@ import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
@@ -96,13 +97,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     static final String VERSION = "NARchy v?.?";
     private static final Set<String> loggedEvents = java.util.Set.of("eventTask");
-    final static private int outputBufferSize = 128 * 1024;
     public final Exec exe;
     public final NARLoop loop;
-    /**
-     * the dynamically composeable components of this NAR
-     */
-    public final Parts<NAR, Term> part;
     public final Time time;
     public final Memory memory;
     public final MemoryExternal memoryExternal = new MemoryExternal(this);
@@ -120,12 +116,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * atomic for thread-safe schizophrenia
      */
     private final AtomicReference<Term> self = new AtomicReference<>(null);
-    /**
-     * default attention; other attentions can be attached as services
-     */
-    public Logger logger;
+
 
     public NAR(Memory memory, Exec exe, TaskLinkBag attn, Time time, TaskBuffer in, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
+        super(exe);
 
         this.random = rng;
 
@@ -149,14 +143,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.exe = exe;
 
-        this.part = new Parts<>(this, exe);
-
         this.conceptBuilder = conceptBuilder;
         memory.start(this);
 
         this.feel = new Emotion(this);
 
-        add(this.attn);
+        start(this.attn);
 
         this.control = new Control(this);
 
@@ -320,11 +312,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return named(Atomic.the(self));
     }
 
-    public final NAR named(Term self) {
-        Logger nextLogger = LoggerFactory.getLogger("NAR:" + self);
+    public final NAR named(Term nextSelf) {
         this.self.updateAndGet((prevSelf) -> {
-            logger = nextLogger;
-            return self;
+            return nextSelf;
         });
         return this;
     }
@@ -615,16 +605,45 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         input(task);
     }
 
-    /**
-     * asynchronously adds the service
-     */
-    public final void add(NARPart s) {
-        part.add(s.id(), s);
+
+    public final boolean start(NARPart p) {
+        return start(NARPart.id(null, p), p);
+    }
+    public final boolean add(NARPart p) {
+        return add(NARPart.id(null, p), p);
     }
 
-    public final void remove(NARPart s) {
-        part.remove(s.id(), s);
+    public final NARPart start(Class<? extends NARPart> p) {
+        return start(null, p);
     }
+
+    public final NARPart start(@Nullable Term key, Class<? extends NARPart> p) {
+        NARPart pp = null;
+        if (key!=null)
+            pp = (NARPart) parts.get(key);
+
+        if (pp == null) {
+            //HACK
+            //TODO make sure this is atomic
+            pp = build(p).get();
+            if (parts.get(key==null ? NARPart.id(null, pp) : key)==pp) {
+                return pp; //already added in its constructor HACK
+            }
+        } else {
+            if (p.isAssignableFrom(pp.getClass()))
+                return (NARPart)pp; //ok
+            else {
+                stop(key);
+            }
+        }
+
+        if (key!=null ? start(key, pp) : start(pp))
+            return pp;
+        else
+            throw new WTF();
+    }
+
+
 
     /**
      * simplified wrapper for use cases where only the arguments of an operation task, and not the task itself matter
@@ -743,8 +762,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             pause();
 
-            part.stop();
-
             exe.stop();
 
         }
@@ -836,11 +853,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final void run(Runnable t) {
         exe.execute(t);
-    }
-
-    @Override
-    public String toString() {
-        return self() + ":" + getClass().getSimpleName();
     }
 
     public NAR input(String... ss) throws NarseseException {
@@ -1082,7 +1094,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public NAR inputBinary(File input) throws IOException {
-        return inputBinary(new GZIPInputStream(new BufferedInputStream(new FileInputStream(input), IO.STREAM_BUFFER_SIZE), IO.GZIP_BUFFER_SIZE));
+        return inputBinary(new GZIPInputStream(new BufferedInputStream(new FileInputStream(input), IO.streamBufferBytesDefault), IO.gzipWindowBytesDefault));
     }
 
     public NAR outputBinary(File f) throws IOException {
@@ -1099,7 +1111,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public NAR outputBinary(File f, boolean append, Function<Task, Task> each) throws IOException {
         FileOutputStream f1 = new FileOutputStream(f, append);
-        OutputStream ff = new GZIPOutputStream(f1, IO.GZIP_BUFFER_SIZE);
+        OutputStream ff = new GZIPOutputStream(f1, IO.gzipWindowBytesDefault);
         outputBinary(ff, each);
         return this;
     }
@@ -1187,11 +1199,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public NAR output(File o, boolean binary) throws FileNotFoundException {
-        return output(new BufferedOutputStream(new FileOutputStream(o), outputBufferSize), binary);
+        return output(new BufferedOutputStream(new FileOutputStream(o), IO.outputBufferBytesDefault), binary);
     }
 
     public NAR output(File o, Function<Task, Task> f) throws FileNotFoundException {
-        return outputBinary(new BufferedOutputStream(new FileOutputStream(o), outputBufferSize), f);
+        return outputBinary(new BufferedOutputStream(new FileOutputStream(o), IO.outputBufferBytesDefault), f);
     }
 
     public NAR output(OutputStream o, boolean binary) {
@@ -1345,7 +1357,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
     public Stream<Part<NAR>> plugins() {
-        return part.stream();
+        return this.partStream();
     }
 
     public void conceptualize(Term term, Consumer<Concept> with) {
@@ -1455,7 +1467,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 //TODO Streams.stream(eventTask).map(t -> ), // -> AtTask events
                 Streams.stream(eventCycle).map(AtCycle::new),
                 Streams.stream(eventClear).map(AtClear::new),
-                part.stream()
+                this.partStream()
                         .map((s) -> ((NARPart) s).event()).filter(Objects::nonNull),
                 time.events()
                         .filter(t -> !(t instanceof DurPart.AtDur)) //HACK (these are included in service's events)

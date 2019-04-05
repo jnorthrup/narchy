@@ -28,6 +28,11 @@ public class BeliefReward extends Reward {
     }
 
     @Override
+    protected void updateReward(long prev, long now, Game g) {
+        //..
+    }
+
+    @Override
     public final float happiness() {
         //     belief(reward) - goal(reward)
 
@@ -57,11 +62,6 @@ public class BeliefReward extends Reward {
     @Override
     public final Iterator<Concept> iterator() {
         return Iterators.singletonIterator(concept);
-    }
-
-    @Override
-    protected void updateReward(long prev, long now) {
-        //nothing
     }
 
     @Override

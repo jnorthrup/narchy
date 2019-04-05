@@ -87,6 +87,10 @@ public interface TermedDelegate extends Termlike, Termed {
     default boolean contains(Term t) {
         return term().contains(t);
     }
+    @Override
+    default boolean containsInstance(Term t) {
+        return term().containsInstance(t);
+    }
 
 
 

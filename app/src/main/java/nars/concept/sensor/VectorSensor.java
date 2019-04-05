@@ -3,6 +3,7 @@ package nars.concept.sensor;
 import com.google.common.collect.Iterables;
 import nars.$;
 import nars.NAR;
+import nars.agent.Game;
 import nars.attention.AttnBranch;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
@@ -54,7 +55,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
 
     @Override
-    public void update(long last, long now, NAR nar) {
+    public void update(long last, long now, Game g) {
 
         float confDefault = nar.confDefault(BELIEF);
         float min = nar.confMin.floatValue();

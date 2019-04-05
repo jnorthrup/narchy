@@ -166,6 +166,7 @@ public interface TermIO {
 
                 writeSubterms((t instanceof SeparateSubtermsCompound ? t.subterms() : ((Subterms) t)), out);
 
+
             }
         }
 

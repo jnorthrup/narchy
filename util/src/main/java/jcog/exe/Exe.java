@@ -84,11 +84,14 @@ public enum Exe {;
 
     private static final ThreadLocal<Boolean> singleThreaded = ThreadLocal.withInitial(()->false);
 
-    /** promises that this thread is single threaded */
-    public static void singleThread() {
+    /** if set, promises that the remainder of this thread executes in a single threaded context */
+    public static void single() {
         singleThreaded.set(true);
     }
 
+    public static void multi() {
+        singleThreaded.set(false);
+    }
 
     public static boolean concurrent() {
         return !singleThreaded.get();

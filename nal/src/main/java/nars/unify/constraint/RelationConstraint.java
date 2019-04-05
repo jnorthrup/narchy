@@ -6,6 +6,8 @@ import nars.derive.premise.op.ConstraintAsPremisePredicate;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.term.control.PREDICATE;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +28,11 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         this.yNeg = y.op()==NEG;
     }
 
-    RelationConstraint(String func, Variable x, Variable y, Term... args) {
+    @Deprecated RelationConstraint(String func, Variable x, Variable y, Term... args) {
+        this(Atomic.atom(func), x, y, args);
+    }
+
+    RelationConstraint(Atom func, Variable x, Variable y, Term... args) {
         this($.func(func, x, args.length > 0 ? $.p(y, $.p(args)) : y), x, y);
     }
 

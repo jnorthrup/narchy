@@ -57,7 +57,7 @@ import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meta.ServicesTable;
+import spacegraph.space2d.widget.meta.PartsTable;
 import spacegraph.space2d.widget.meta.TriggeredSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
@@ -142,7 +142,7 @@ public class NARui {
     public static HashMap<String, Supplier<Surface>> pluginsMenu(NAR n) {
         HashMap<String,Supplier<Surface>> m = new HashMap<>();
         n.plugins().forEach(s -> {
-            m.put( ((NARPart)s).id().toString(), ()-> new ObjectSurface(s));
+            m.put( ((NARPart)s).id.toString(), ()-> new ObjectSurface(s));
         });
         return m;
     }
@@ -159,7 +159,7 @@ public class NARui {
                 //ExeCharts.focusPanel(n),
                 ///causePanel(n),
                 "grp", () -> BagregateConceptGraph2D.get(n),
-                "svc", () -> new ServicesTable(n.part),
+                "svc", () -> new PartsTable(n),
                 "pri", () -> priView(n),
                 "cpt", () -> new ConceptBrowser(n)
         );

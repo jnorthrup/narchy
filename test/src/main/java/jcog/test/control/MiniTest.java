@@ -30,7 +30,7 @@ abstract public class MiniTest extends Game {
         });
 
 
-        n.add(this);
+        n.start(this);
     }
 
 

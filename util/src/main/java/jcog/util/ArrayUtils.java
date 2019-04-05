@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 import static com.google.common.math.IntMath.factorial;
 
@@ -2975,9 +2976,9 @@ public enum ArrayUtils {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int indexOf(final Object[] array, final Object objectToFind, int startIndex) {
-        if (array == null) {
-            return INDEX_NOT_FOUND;
-        }
+//        if (array == null) {
+//            return INDEX_NOT_FOUND;
+//        }
         if (startIndex < 0) {
             startIndex = 0;
         }
@@ -2997,6 +2998,21 @@ public enum ArrayUtils {
         return INDEX_NOT_FOUND;
     }
 
+    public static <X> int indexOf(final X[] array, final Predicate<X> test) {
+        return indexOf(array, test, 0);
+    }
+
+    public static <X> int indexOf(final X[] array, final Predicate<X> test, int startIndex) {
+//        if (startIndex < 0)
+//            startIndex = 0;
+
+        for (int i = startIndex; i < array.length; i++) {
+            if (test.test(array[i]))
+                return i;
+        }
+
+        return INDEX_NOT_FOUND;
+    }
     /**
      * <p>Finds the last index of the given object within the array.
      *

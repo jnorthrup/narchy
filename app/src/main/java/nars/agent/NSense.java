@@ -299,8 +299,8 @@ public interface NSense {
                 motor, nar());
 
         Game a = (Game) this;
-        a.addAction(pn.pos);
-        a.addAction(pn.neg);
+//        a.addAction(pn.pos);
+//        a.addAction(pn.neg);
 
         NAR nar = a.nar();
         pn.attn.parent(nar, a.attnAction);
@@ -308,7 +308,7 @@ public interface NSense {
         pn.pos.attn.parent(nar, pn.attn);
         pn.neg.attn.parent(nar, pn.attn);
 
-        onFrame(x -> pn.update(a.prev, a.now, a.nar()));
+        onFrame(x -> pn.update(a.prev, a.now, a));
         return pn;
     }
 

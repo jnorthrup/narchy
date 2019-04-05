@@ -86,7 +86,7 @@ public class FileContext extends NARPart {
 
         this.rootPath = path;
 
-        n.add(this);
+        n.start(this);
     }
 
     /**

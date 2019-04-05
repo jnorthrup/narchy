@@ -1,6 +1,5 @@
 package nars.attention;
 
-import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
 

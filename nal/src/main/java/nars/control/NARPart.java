@@ -24,7 +24,6 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     private static final Logger logger = Util.logger(NARPart.class);
 
     public final Term id;
-    private final Term instanceID;
 
     /** TODO encapsulate */
     private final Offs ons = new Offs();
@@ -44,17 +43,18 @@ abstract public class NARPart extends Part<NAR> implements Termed {
         this(id);
 
         if (nar != null)
-            (this.nar = nar).add(this);
+            (this.nar = nar).start(this);
     }
 
     protected NARPart(@Nullable Term id) {
-        if (!singleton()) {
-            Term instanceID = $.identity(this);
-            this.id = id != null ? id : instanceID;
-            this.instanceID = id == null ? instanceID : $.p(id, instanceID);
-        } else {
-            this.id = instanceID = (id != null) ? id : $.identity(this);
-        }
+        this.id = id != null ? id : $.identity(this);
+    }
+
+    public static Term id(@Nullable Term key, NARPart s) {
+        if (s.singleton())
+            return s.id;
+        else
+            return key == null ? $.identity(s) : $.p(key, $.identity(s));
     }
 
     /** optional event occurrence information.  null if not applicable. */
@@ -72,14 +72,14 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     public final void off() {
         NAR n = nar;
         if (n != null) {
-            n.part.remove(id);
+            n.remove(id);
         }
     }
 
     @Override
     protected final void start(NAR nar) {
 
-        logger.debug("start {}", id());
+        logger.debug("start {}", this);
 
         if (!(this.nar == null || this.nar == nar))
             throw new WTF("NAR mismatch");
@@ -98,7 +98,7 @@ abstract public class NARPart extends Part<NAR> implements Termed {
 
         stopping(nar);
 
-        logger.debug("stop {}", id());
+        logger.debug("stop {}", this);
     }
 
 
@@ -125,10 +125,6 @@ abstract public class NARPart extends Part<NAR> implements Termed {
         return false;
     }
 
-    public final Term id() {
-        //return id;
-        return instanceID;
-    }
 
     @Override
     public Term term() {

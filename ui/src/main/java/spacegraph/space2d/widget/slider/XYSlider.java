@@ -119,8 +119,8 @@ public class XYSlider extends SimpleSurface implements HudHover {
         v2 hitPoint = f.posRelative(XYSlider.this);
 
         pressing = true;
-        float p = hitPoint.x;
-        if (Float.isFinite(p) && knob.setIfChanged(unitize(p), unitize(hitPoint.y), Spatialization.EPSILONf))
+        float px = hitPoint.x, py = hitPoint.y;
+        if (Float.isFinite(px) && Float.isFinite(py) && knob.setIfChanged(unitize(px), unitize(py), Spatialization.EPSILONf))
             updated();
 
     }

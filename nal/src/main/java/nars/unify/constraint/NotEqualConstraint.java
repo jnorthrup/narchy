@@ -4,6 +4,8 @@ import com.google.common.collect.Iterables;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.term.var.Img;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,8 +17,10 @@ import static nars.Op.NEG;
 
 public final class NotEqualConstraint extends RelationConstraint {
 
+    public static final Atom neq = Atomic.atom("neq");
+
     public NotEqualConstraint(Variable target, Variable other) {
-        super("neq", target, other);
+        super(neq, target, other);
     }
 
     @Override
@@ -161,14 +165,17 @@ public final class NotEqualConstraint extends RelationConstraint {
      */
     public static final class NotEqualAndNotRecursiveSubtermOf extends RelationConstraint {
 
-        private static boolean root = false;
+        public static final Atom neqRCom = Atomic.atom("neqRCom");
+
+        /** TODO move to subclass */
+        @Deprecated private static boolean root = false;
 
         public NotEqualAndNotRecursiveSubtermOf(Variable x, Variable y) {
-            super("neqRCom", x, y);
+            super(neqRCom, x, y);
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+        protected RelationConstraint newMirror(Variable newX, Variable newY) {
             return new NotEqualAndNotRecursiveSubtermOf(newX, newY);
         }
 

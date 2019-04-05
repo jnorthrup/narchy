@@ -115,7 +115,7 @@ public class Abbreviation/*<S extends Term>*/ extends Causable {
 
         volume = new MutableIntRange(volMin, volMax);
 
-        nar.add(this);
+        nar.start(this);
     }
 
     private void abbreviateNext() {

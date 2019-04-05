@@ -112,7 +112,7 @@ public class Game extends NARPart implements NSense, NAct {
         */
 
         //nar.runLater(()-> nar.on(this));
-        nar.add(this);
+        nar.start(this);
     }
 
 
@@ -456,7 +456,7 @@ public class Game extends NARPart implements NSense, NAct {
 
     protected void sense(long prev, long now) {
         sensors.forEach(s -> s.update(prev, now, this));
-        rewards.forEach(r -> r.update(prev, now));
+        rewards.forEach(r -> r.update(prev, now, this));
     }
 
 //    @Deprecated protected void reinforce(long prev, long now, long next) {

@@ -52,7 +52,7 @@ abstract public class DurPart extends NARPart {
         super((NAR) null); //dont call through super constructor
         durations.set(durs);
         if (n != null) {
-            (this.nar = n).add(this);
+            (this.nar = n).start(this);
         }
     }
 
@@ -168,7 +168,7 @@ abstract public class DurPart extends NARPart {
         MyDurRunnable(NAR nar, @NotNull Runnable r) {
             super();
             this.r = r;
-            nar.add(this);
+            nar.start(this);
         }
 
         @Override
@@ -189,7 +189,7 @@ abstract public class DurPart extends NARPart {
         MyDurNARConsumer(NAR nar, @NotNull Consumer<NAR> r) {
             super();
             this.r = r;
-            nar.add(this);
+            nar.start(this);
         }
 
         @Override

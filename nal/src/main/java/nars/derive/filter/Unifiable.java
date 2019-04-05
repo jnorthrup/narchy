@@ -13,6 +13,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
+import nars.unify.Unify;
 import org.eclipse.collections.api.set.MutableSet;
 
 import java.util.Arrays;
@@ -44,7 +45,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
         this.isStrict = isStrict;
     }
 
-    private static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, int varBits, boolean strict, MutableSet<PREDICATE<? extends PreDerivation>> pre) {
+    private static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, int varBits, boolean strict, MutableSet<PREDICATE<? extends Unify>> pre) {
         //some structure exists that can be used to prefilter
         byte[] xpInT = Terms.pathConstant(taskPattern, x);
         byte[] xpInB = Terms.pathConstant(beliefPattern, x); //try the belief
@@ -77,7 +78,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
         return f;
     }
 
-    public static Compound transform(Compound c, PremiseRuleSource p, MutableSet<PREDICATE<? extends PreDerivation>> pre) {
+    public static Compound transform(Compound c, PremiseRuleSource p, MutableSet<PREDICATE<? extends Unify>> pre) {
         Term concFunc = Functor.func(c);
 
         if (concFunc.equals(UniSubst.unisubst)) {

@@ -5,6 +5,7 @@ import jcog.func.IntIntToObjectFunction;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
+import nars.agent.Game;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.Signal;
@@ -193,9 +194,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     @Override
-    public void update(long last, long now, NAR nar) {
+    public void update(long last, long now, Game g) {
         src.update();
-        super.update(last, now, nar);
+        super.update(last, now, g);
     }
 
     public final TaskConcept get(int x, int y) {

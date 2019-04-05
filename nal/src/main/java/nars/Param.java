@@ -4,8 +4,11 @@ import jcog.Util;
 import jcog.math.*;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
+import jcog.service.Parts;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.attention.PriNode;
+import nars.exe.Exec;
+import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.util.builder.MemoizingTermBuilder;
 import nars.term.util.transform.Conceptualization;
@@ -21,10 +24,7 @@ import static nars.truth.func.TruthFunctions.w2cSafe;
 /**
  * NAR Parameters
  */
-public abstract class Param {
-
-
-
+public abstract class Param extends Parts<Term,NAR> {
 
     static {
         Op.terms =
@@ -273,6 +273,10 @@ public abstract class Param {
 
     public static final int UNIFY_COMMON_VAR_MAX = 8;
 
+    protected Param(Exec exe) {
+        super(exe);
+    }
+
     /** priority of sensor task, with respect to how significantly it changed from a previous value */
     public static float surprise(Task prev, Task next, FloatSupplier pri, NAR n) {
 
@@ -316,7 +320,7 @@ public abstract class Param {
      */
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange matchTTL = new IntRange(12, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 4; //HACK this is a TTL supply, not a COST

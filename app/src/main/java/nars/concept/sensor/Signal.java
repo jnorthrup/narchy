@@ -5,6 +5,7 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.agent.Game;
 import nars.attention.AttnBranch;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
@@ -130,7 +131,8 @@ public class Signal extends TaskConcept implements AgentLoop, FloatFunction<Term
     }
 
     @Override
-    public void update(long prev, long now, NAR nar) {
+    public void update(long prev, long now, Game g) {
+        NAR nar = g.nar();
         update(prev, now,
                 (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)),
                 attn::pri,

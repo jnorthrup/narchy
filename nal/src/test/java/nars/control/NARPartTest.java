@@ -16,7 +16,7 @@ class NARPartTest {
     void testRemoveDurServiceWhenOff() {
         NAR n = NARS.shell();
 
-        Set<Part<NAR>> before = n.part.stream().collect(toSet());
+        Set<Part<NAR>> before = n.partStream().collect(toSet());
 
         DurPart d = DurPart.on(n, () -> {
             
@@ -24,13 +24,13 @@ class NARPartTest {
 
         n.synch();
 
-        Set<Part<NAR>> during = n.part.stream().collect(toSet());
+        Set<Part<NAR>> during = n.partStream().collect(toSet());
 
         d.off();
 
         n.synch();
 
-        Set<Part<NAR>> after = n.part.stream().collect(toSet());
+        Set<Part<NAR>> after = n.partStream().collect(toSet());
 
         assertEquals(before, after);
         assertEquals(before.size()+1, during.size());

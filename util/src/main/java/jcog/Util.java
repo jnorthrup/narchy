@@ -2734,6 +2734,9 @@ public enum Util {
         }
     }
 
+    public static Logger logger(String c) {
+        return LoggerFactory.getLogger(c);
+    }
     public static Logger logger(Class c) {
         return LoggerFactory.getLogger(c);
     }

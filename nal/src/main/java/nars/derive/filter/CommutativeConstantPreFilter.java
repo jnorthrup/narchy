@@ -6,10 +6,12 @@ import nars.derive.premise.PremiseRuleSource;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.var.ellipsis.Ellipsislike;
+import nars.unify.Unify;
 
 import java.util.Collection;
 
@@ -21,7 +23,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
     private final byte[] ellipsisPath, contentPath;
     private final boolean ellipsisInTaskOrBelief;
 
-    private static final Atomic id = Atomic.the("ellipsisCommutativeConstant");
+    private static final Atom id = Atomic.atom("ellipsisCommutativeConstant");
 
     /**
      * from = non-ellipsis target to check if present as a subterm of what appears at to
@@ -33,7 +35,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
         this.contentPath = contentPath;
     }
 
-    public static void tryFilter(boolean commInTaskOrBelief, Term taskPattern, Term beliefPattern, Collection<PREDICATE<? extends PreDerivation>> pre) {
+    public static void tryFilter(boolean commInTaskOrBelief, Term taskPattern, Term beliefPattern, Collection<PREDICATE<? extends Unify>> pre) {
 
         Term commutiveContainer = (commInTaskOrBelief) ? taskPattern : beliefPattern;
 

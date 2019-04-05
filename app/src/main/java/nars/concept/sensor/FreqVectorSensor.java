@@ -6,6 +6,7 @@ import jcog.math.FloatRange;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.wave1d.SlidingDFT;
 import nars.NAR;
+import nars.agent.Game;
 import nars.term.Term;
 
 import java.util.Iterator;
@@ -56,7 +57,7 @@ public class FreqVectorSensor extends VectorSensor {
 
     private float[] inBuf = null;
     @Override
-    public void update(long last, long now, NAR nar) {
+    public void update(long last, long now, Game g) {
 
         //TODO only if buffer changed
         inBuf = buf.peekLast(inBuf, sampleWindow);
@@ -79,7 +80,7 @@ public class FreqVectorSensor extends VectorSensor {
         }
         Util.normalize(componentValue, 0, intensity = Util.max(componentValue));
 
-        super.update(last, now, nar);
+        super.update(last, now, g);
     }
 
     @Override

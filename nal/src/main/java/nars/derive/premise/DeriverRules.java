@@ -6,8 +6,8 @@ import jcog.decide.MutableRoulette;
 import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
-import nars.derive.PreDerivation;
 import nars.term.control.PREDICATE;
+import nars.unify.Unify;
 
 import java.io.PrintStream;
 import java.util.stream.Stream;
@@ -32,7 +32,7 @@ public class DeriverRules {
 
     public final DeriverPlanner planner;
 
-    static short[] what(PreDerivation p) {
+    static short[] what(Unify p) {
         Derivation d = (Derivation)p;
         d.canCollector.clear();
         d.deriver.rules.what.test(d);

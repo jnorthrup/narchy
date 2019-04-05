@@ -1,8 +1,6 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.event.Offs;
-import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.DerivePri;
@@ -16,7 +14,6 @@ import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.term.Term;
 
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
@@ -32,35 +29,22 @@ import java.util.stream.Stream;
  */
 abstract public class Deriver extends Causable {
 
-
     /**
-     * determines the time for beliefs to be matched during premise formation
+     * determines the temporal focus of (TODO tasklink and ) belief resolution to be matched during premise formation
      * input: premise Task, premise belief target
      * output: long[2] time interval
      **/
     public BiFunction<Task, Term, long[]> timing;
 
-
     public final DeriverRules rules;
 
-//    /**
-//     * source of concepts supplied to this for this deriver
-//     */
-//    protected final Consumer<Predicate<Activate>> source;
-
     public DerivePri pri;
-    private Offs outputOffs;
-
-//    public final IntRange tasklinkSpread =  new IntRange(Param.TaskLinkSpreadDefault, 1, 32);
-
 
     protected Deriver(Set<PremiseRuleProto> rules, NAR nar) {
         this(PremiseDeriverCompiler.the(rules), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
     }
-
-
 
     protected Deriver(PremiseDeriverRuleSet rules) {
         this(rules, rules.nar);
@@ -82,7 +66,7 @@ abstract public class Deriver extends Causable {
                 new NonEternalTaskOccurenceOrPresentDeriverTiming(nar);
 
 
-        nar.add(this);
+        nar.start(this);
     }
 
     public static Stream<Deriver> derivers(NAR n) {
@@ -134,8 +118,6 @@ abstract public class Deriver extends Causable {
         return v;
     }
 
-    @Deprecated
-    private static final AtomicInteger serial = new AtomicInteger();
 
     public final short[] what(PreDerivation d) {
         return rules.planner.apply(d);

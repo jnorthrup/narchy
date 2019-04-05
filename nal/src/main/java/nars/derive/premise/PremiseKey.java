@@ -6,8 +6,9 @@ import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.io.TermIO;
+import nars.unify.Unify;
 
-class PremiseKey extends ByteKeyExternalWithParameter<PreDerivation> {
+class PremiseKey extends ByteKeyExternalWithParameter<Unify> {
 
     public PremiseKey(PreDerivation d) {
         this(d, ((Derivation)d).ditherDT);
@@ -16,6 +17,7 @@ class PremiseKey extends ByteKeyExternalWithParameter<PreDerivation> {
     public PremiseKey(PreDerivation d, int ditherDT) {
         super(d);
 
+        /* TODO move dithering option to parameter */
         if (Param.PREMISE_KEY_DITHER && ditherDT > 0) {
             TermIO.DeferredTemporalTermIO io = new TermIO.DeferredTemporalTermIO();
             io.write(d.taskTerm, key);

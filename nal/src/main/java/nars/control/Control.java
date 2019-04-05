@@ -101,7 +101,7 @@ import java.util.function.Consumer;
             }
         };
         refreshServices();
-        nar.part.change.on(serviceChange);
+        nar.eventAddRemove.on(serviceChange);
         refreshServices(); //again to be sure
 
         updater = DurPart.on(nar, this::update);

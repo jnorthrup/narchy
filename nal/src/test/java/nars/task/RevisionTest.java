@@ -117,7 +117,7 @@ public class RevisionTest {
 
             assertEquals("(b-->a). 0⋈102 %1.0;.41%", merge(t02, t100_102, n).toStringWithoutBudget());
 
-            assertEquals("(b-->a). 0⋈5 %1.0;.91%", merge(t03, t35, n).toStringWithoutBudget());
+            assertEquals("(b-->a). 0⋈5 %1.0;.93%", merge(t03, t35, n).toStringWithoutBudget());
             assertEquals("(b-->a). 0⋈5 %1.0;.90%", merge(t02, t35, n).toStringWithoutBudget());
 //        }
 

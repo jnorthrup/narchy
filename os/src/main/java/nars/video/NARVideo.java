@@ -16,7 +16,7 @@ public class NARVideo extends NARPart {
         super(nar);
 
         //TODO better, with hotplug-able device selector
-        Webcam.getWebcams().forEach(w -> nar.add(new Video(nar, w)));
+        Webcam.getWebcams().forEach(w -> nar.start(new Video(nar, w)));
     }
 
     static class Video extends NARPart {
@@ -30,7 +30,7 @@ public class NARVideo extends NARPart {
             super($.p($.the("video"), $.the(cam.getName())));
             this.cam = cam;
             surface = new Gridding(); 
-            nar.remove(this);
+            //nar.remove(this);
         }
 
         public Surface surface() {

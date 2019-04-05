@@ -75,10 +75,9 @@ public class SimpleReward extends BeliefReward {
         return concept.term();
     }
 
-
     @Override
-    protected final void updateReward(long prev, long now) {
+    public void updateReward(long prev, long now, Game a) {
         this.rewardBelief = rewardFunc.asFloat();
-        ((Signal)concept).update(prev, now, nar());
+        ((Signal)concept).update(prev, now, a);
     }
 }

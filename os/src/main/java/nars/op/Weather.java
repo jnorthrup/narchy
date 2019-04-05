@@ -44,7 +44,7 @@ public class Weather extends NARPart {
 
         assert (nar.time instanceof RealTime.MS && ((RealTime)nar.time).relativeToStart);
 
-        nar.add(this);
+        nar.start(this);
     }
 
     @Override

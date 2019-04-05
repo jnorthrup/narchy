@@ -49,11 +49,11 @@ public class IO {
     @Deprecated public static final byte SPECIAL_BYTE = (byte) 0xff;
 
 
-    public static final int STREAM_BUFFER_SIZE = 64 * 1024;
-    public static final int GZIP_BUFFER_SIZE =
+    public static final int streamBufferBytesDefault = 64 * 1024;
+    public static final int gzipWindowBytesDefault =
             //512; //default
             1024;
-    //4 * 1024;
+    public final static int outputBufferBytesDefault = 128 * 1024;
 
     public static int readTasks(byte[] t, Consumer<Task> each) throws IOException {
         return readTasks(new ByteArrayInputStream(t), each);

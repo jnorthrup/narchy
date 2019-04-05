@@ -104,7 +104,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
 
 
 
-        nar.add(this);
+        nar.start(this);
 
     }
 
@@ -129,7 +129,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
             }
         });
 
-        nar.add(send);
+        nar.start(send);
 
 
     }
@@ -137,7 +137,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
     @Override
     protected void stopping(NAR nar) {
 
-        nar.remove(send);
+        nar.stop(send);
 
         peer.stop();
     }

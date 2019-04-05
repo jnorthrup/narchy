@@ -5,6 +5,7 @@ import jcog.learn.Autoencoder;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
+import nars.agent.Game;
 import nars.concept.Concept;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.ConsumerX;
@@ -13,7 +14,6 @@ import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.part.DurPart;
 import nars.truth.Truth;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
@@ -50,9 +50,9 @@ public class AutoConceptualizer extends AbstractSensor {
 
     @Override
     protected void starting(NAR nar) {
-        on(
-            DurPart.on(nar, this::update)
-        );
+//        on(
+//            DurPart.on(nar, this::update)
+//        );
     }
 
 
@@ -62,7 +62,7 @@ public class AutoConceptualizer extends AbstractSensor {
     }
 
     @Override
-    public void update(long last, long now, NAR nar) {
+    public void update(long last, long now, Game g) {
         update(nar);
     }
 

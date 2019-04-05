@@ -13,21 +13,28 @@
  */
 package jcog.service;
 
+import com.google.common.util.concurrent.MoreExecutors;
+import jcog.TODO;
+import jcog.Util;
 import jcog.WTF;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import jcog.exe.Exe;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -36,88 +43,38 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * CONTRAINER / OBJENOME
  * A collection or container of 'parts'.
  * Smart Dependency Injection (DI) container with:
+ * 
+ * autowiring
+ * type resolution assisted by CastGraph, with diverse of builtin transformers
+ * 
+ * hints from commandline args, env variables, or constructor string:
+ * 
+ * "parts={<key>:<value>,[<key>:<value>] }"
+ * key = interface name | variable name
+ * value = JSON-parseable java constant
+ * 
+ * the hints keys and values are fuzzy matchable, with levenshtein dist as a decider in case of ambiguity
+ * 
+ * note: such syntax should be parseable both in JSON and NAL
  *
- *      autowiring
- *          type resolution assisted by CastGraph, with diverse of builtin transformers
+ * @param K service key
+ * @param C service context
  *
- *      hints from commandline args, env variables, or constructor string:
- *
- *             "parts={<key>:<value>,[<key>:<value>] }"
- *                 key = interface name | variable name
- *                 value = JSON-parseable java constant
-
- *         the hints keys and values are fuzzy matchable, with levenshtein dist as a decider in case of ambiguity
- *
- *         note: such syntax should be parseable both in JSON and NAL
- *
- *
- * Original docs:
- * <p>
- * A manager for monitoring and controlling a set of {@linkplain Part services}. This class
- * provides methods for {@linkplain #startAsync() starting}, {@linkplain #stopAsync() stopping} and
- * {@linkplain #servicesByState inspecting} a collection of {@linkplain Part services}.
- * Additionally, users can monitor state transitions with the {@linkplain Listener listener}
- * mechanism.
- * <p>
- * <p>While it is recommended that service lifecycles be managed via this class, state transitions
- * initiated via other mechanisms do not impact the correctness of its methods. For example, if the
- * services are started by some mechanism besides {@link #startAsync}, the listeners will be invoked
- * when appropriate and {@link #awaitHealthy} will still work as expected.
- * <p>
- * <p>Here is a simple example of how to use a {@code ServiceManager} to start a server.
- * <pre>   {@code
- * class Server {
- *   public static void main(String[] args) {
- *     Set<Service> services = ...;
- *     ServiceManager manager = new ServiceManager(services);
- *     manager.addListener(new Listener() {
- *         public void stopped() {}
- *         public void healthy() {
- *
- *         }
- *         public void failure(Service service) {
- *
- *
- *           System.exit(1);
- *         }
- *       },
- *       MoreExecutors.directExecutor());
- *
- *     Runtime.getRuntime().addShutdownHook(new Thread() {
- *       public void run() {
- *
- *
- *         try {
- *           manager.stopAsync().awaitStopped(5, TimeUnit.SECONDS);
- *         } catch (TimeoutException timeout) {
- *
- *         }
- *       }
- *     });
- *     manager.startAsync();
- *   }
- * }}</pre>
- * <p>
- * <p>This class uses the ServiceManager's methods to start all of its services, to respond to
- * service failure and to ensure that when the JVM is shutting down all the services are stopped.
- *
- * @author Luke Sandberg (original)
  */
-public class Parts<C /* context */, K /* service key */> {
+public class Parts<K /* service key */, C /* context */  > {
 
-    public final C id;
-    final Logger logger;
-    protected final Executor exe;
-    public final Topic<ObjectBooleanPair<Part<C>>> change = new ListTopic<>();
-    private final ConcurrentMap<K, Part<C>> services;
+    private final C id;
+    public final Topic<ObjectBooleanPair<Part<C>>> eventAddRemove = new ListTopic<>();
+    public final Executor executor;
+    public final Logger logger;
+    protected final ConcurrentMap<K, Part<C>> parts;
 
+    protected Parts() {
+        this(ForkJoinPool.commonPool());
+    }
 
-    public Parts(C id) {
-        this(id,
-                Exe.executor()
-                //MoreExecutors.directExecutor()
-                /*ForkJoinPool.commonPool()*/
-        );
+    protected Parts(Executor executor) {
+        this(null, executor);
     }
 
     /**
@@ -128,124 +85,148 @@ public class Parts<C /* context */, K /* service key */> {
      * @throws IllegalArgumentException if not all services are {@linkplain ServiceState#NEW new} or if there
      *                                  are any duplicate services.
      */
-    public Parts(@Nullable C id, Executor exe) {
-        this.id = id == null ? (C) this : id;
-        this.logger = LoggerFactory.getLogger(id.toString());
-        this.exe = exe;
-        this.services = new ConcurrentHashMap<>(32);
+    private Parts(@Nullable C id, Executor executor) {
+        if (id == null)
+            id = (C)this; //attempts cast
+
+        this.id = id;
+        this.logger = Util.logger(id.toString());
+        this.executor = executor;
+        this.parts = new ConcurrentHashMap<>();
     }
 
-    public final Stream<Part<C>> stream() {
-        return services.values().stream();
+    public Parts(@Nullable C id) {
+        this(id,
+                Exe.concurrent() ? Exe.executor() : MoreExecutors.directExecutor()
+                //MoreExecutors.directExecutor()
+                /*ForkJoinPool.commonPool()*/
+        );
     }
 
-    public final Set<Map.Entry<K, Part<C>>> entrySet() {
-        return services.entrySet();
+
+    /** restart an already added part */
+    public final boolean start(K key) {
+        _start(part(key));
+        return false;
     }
 
-    public final void add(K key, Part<C> s) {
-        set(key, s, true);
+    public final boolean stop(K key) {
+        return stop(part(key));
     }
 
-    public final void remove(K serviceID) {
-        remove(serviceID, null);
+    public final Part<C> part(K key) {
+        return parts.get(key);
     }
 
-    public final void remove(K serviceID, Part<C> s) {
-        set(serviceID, s, false);
+    public boolean stop(Part<C> s) {
+        return stop(s, null);
     }
 
-    private void set(K key, @Nullable Part<C> added, boolean start) {
+    /** add and starts it */
+    public final boolean start(K key, Part<C> instance) {
+        return set(key, instance, true);
+    }
 
-        if (added == null && start)
+    /** tries to add the new instance, replacing any existing one, but doesnt start */
+    public final boolean add(K key, Part<C> instance) {
+        return set(key, instance, false);
+    }
+
+    public final boolean remove(K serviceID) {
+        return set(serviceID, (Part)null, false);
+    }
+
+//    public final boolean add(K key, Function<K, ? extends Part<C>> builder) {
+//        return add(key, builder.apply(key));
+//    }
+
+    public final Part<C> start(K key, Class<? extends Part<C>> instanceOf) {
+        return set(key, instanceOf, true);
+    }
+
+    public final Part<C> add(K key, Class<? extends Part<C>> instanceOf) {
+        return set(key, instanceOf, false);
+    }
+
+    public final Part<C> set(K key, Class<? extends Part<C>> instanceOf, boolean start) {
+        Part<C> p = build(key, instanceOf).get();
+        if (set(key, p, start))
+            return p;
+        else
             throw new WTF();
-
-        Part<C> removed = added!=null ? services.put(key, added) : services.remove(key);
-
-        if (added!=removed) {
-            if (removed != null) {
-
-                removed.stop(this, start ? () -> added.start(this, exe) : null);
-
-            } else {
-
-                if (start)
-                    added.start(this);
-            }
-        } else {
-            if (start && added.isOff()) {
-                added.start(this);
-            } else if (!start && added.isOn()) {
-                added.stop(this);
-            }
-        }
     }
 
 
-
-    public Parts<C, K> stop() {
-        for (Part<C> part : services.values()) {
-            part.stop(this);
+    /** stops all parts (but does not remove them) */
+    public Parts<K, C> stopAll() {
+        for (Part<C> part : parts.values()) {
+            stop(part);
         }
         return this;
     }
 
+    public final Stream<Part<C>> partStream() {
+        return parts.values().stream();
+    }
+
+    public final Set<Map.Entry<K, Part<C>>> partEntrySet() {
+        return parts.entrySet();
+    }
+
     public int size() {
-        return services.size();
+        return parts.size();
     }
 
-
+    /** TODO construct a table, using TableSaw of the following schema, and pretty print the table instance:
+     *      K key
+     *      state
+     *      Part value
+     *      Class valueClass
+     * */
     public void print(PrintStream out) {
-        services.forEach((k, s) -> out.println(k + " " + s.state()));
+        parts.forEach((k, s) -> out.println(s.state() + "\t" + k + "\t" + s + "\t" + s.getClass() ));
     }
 
-    void error(@Nullable Part part, Throwable e, String what) {
-        if (part!=null)
+    private void error(@Nullable Part part, Throwable e, String what) {
+        if (part != null)
             logger.error("{} {} {} {}", part, what, this, e);
         else
             logger.error("{} {} {}", what, this, e);
     }
 
-    public void start(Part<C> part, Executor exe) {
-        exe.execute(() -> {
+    boolean stop(Part<C> part, @Nullable Runnable afterOff) {
+
+        if (!part.state.compareAndSet(ServiceState.On, ServiceState.OnToOff))
+            return false;
+
+        executor.execute(() -> {
             try {
-
-                part.start(id);
-
-                boolean toggledOn = part.state.compareAndSet(Parts.ServiceState.OffToOn, Parts.ServiceState.On);
-                if (!toggledOn)
-                    throw new WTF();
-
-                change.emitAsync(pair(part, true), exe);
-
-            } catch (Throwable e) {
-                part.state.set(Parts.ServiceState.Off);
-                error(part, e, "start");
-            }
-        });
-    }
-
-    public void stop(Part<C> part, @Nullable Runnable afterOff, Executor exe) {
-        exe.execute(() -> {
-            try {
-
-                part.stop(id);
 
                 boolean toggledOff = part.state.compareAndSet(Parts.ServiceState.OnToOff, Parts.ServiceState.Off);
                 if (!toggledOff)
                     throw new WTF();
 
-                if (afterOff!=null)
+                if (afterOff != null)
                     afterOff.run();
 
-                change.emitAsync(pair(part, false), exe);
+                eventAddRemove.emitAsync(pair(part, false), executor);
 
             } catch (Throwable e) {
                 part.state.set(Parts.ServiceState.Off);
                 error(part, e, "stop");
             }
         });
+        return true;
     }
+
+    public final Set<K> partKeySet() {
+        return parts.keySet();
+    }
+
+//    public final void toggle(K key) {
+//        Part<C> part = part(key);
+//        set(key, part, !part.isOn());
+//    }
 
 
     enum ServiceState {
@@ -275,4 +256,136 @@ public class Parts<C /* context */, K /* service key */> {
         }
     }
 
+    /** returns true if a state change could be attempted; not whether it was actually successful (since it is invoked async) */
+    private boolean set(K key, @Nullable Part<C> x, boolean start) {
+
+        if (x == null && start)
+            throw new WTF();
+
+        Part<C> removed = x != null ? parts.put(key, x) : parts.remove(key);
+
+        if (x != removed) {
+            if (removed != null) {
+
+                stop(removed, start ? () -> _start(x) : null);
+
+                return true;
+
+            } else {
+                return !start || _start(x);
+            }
+
+        } else {
+            if (start && x.isOff()) {
+                return _start(x);
+            } else if (!start && x.isOn()) {
+                return stop(x);
+            } else
+                return false;
+        }
+    }
+
+    private boolean _start(@Nullable Part<C> x) {
+        if (x.state.compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
+            executor.execute(() -> {
+                try {
+
+                    x.start(id);
+
+                    boolean toggledOn = x.state.compareAndSet(ServiceState.OffToOn, ServiceState.On);
+                    if (!toggledOn)
+                        throw new WTF();
+
+                    eventAddRemove.emitAsync(pair(x, true), executor);
+
+                } catch (Throwable e) {
+                    x.state.set(ServiceState.Off);
+                    error(x, e, "start");
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+
+    public final <X extends Part<C>> Supplier<X> build(Class<X> klass) {
+        return build(null, klass);
+    }
+
+    public <X extends Part<C>> Supplier<X> build(@Nullable K key, Class<X> klass) {
+        if (!(klass.isInterface() || Modifier.isAbstract(klass.getModifiers()))) {
+            //concrete class, attempt constructor injection
+            return new PartResolveByConstructorInjection(key, klass);
+        } else {
+            return new PartResolveByClass(key, klass);
+        }
+    }
+
+    class PartResolveByClass<X extends Part<C>> implements Supplier<X> {
+
+        private final Class<X> klass;
+
+        private PartResolveByClass(K key, Class<X> klass) {
+            this.klass = klass;
+        }
+
+        @Override
+        public X get() {
+            throw new TODO();
+        }
+    }
+
+    class PartResolveByConstructorInjection<X extends Part<C>> implements Supplier<X> {
+
+        private final Class<X> klass;
+
+        PartResolveByConstructorInjection(K key, Class<X> klass) {
+            this.klass = klass;
+        }
+
+        @Override
+        public X get() {
+
+            Constructor[] constructors = klass.getConstructors();
+
+
+            Object[] args = null;
+            int constructor = -1;
+
+            //TODO try new Part(key, thisContext) constructors
+
+            //TODO try new Part(key) constructors
+
+            //try new Part(thisContext) constructors
+            if (args == null) {
+                int partsIDSettable = ArrayUtils.indexOf(constructors, c -> c.getParameterTypes().length == 1 && c.getParameterTypes()[0].isAssignableFrom(id.getClass()));
+                if (partsIDSettable != -1) {
+                    constructor = partsIDSettable;
+                    args = new Object[]{id};
+                }
+            }
+
+            //try no-arg constructors
+            if (args == null) {
+                int noArgConstructor = ArrayUtils.indexOf(constructors, c->c.getParameterTypes().length == 0);
+                if (noArgConstructor!=-1) {
+                    constructor = noArgConstructor;
+                    args = ArrayUtils.EMPTY_OBJECT_ARRAY;
+                }
+            }
+
+            if (args!=null) {
+                try {
+                    Constructor cc = constructors[constructor];
+                    if (cc.trySetAccessible())
+                        return (X) cc.newInstance(args);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            throw new TODO();
+        }
+    }
 }

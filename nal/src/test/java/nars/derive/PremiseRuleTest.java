@@ -215,7 +215,7 @@ class PremiseRuleTest {
     void testOpIsPreFilterSubPath() {
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "(Z,X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
-        assertTrue( d.what.toString().contains("Is(taskTerm,\"*\")"), ()-> d.what.toString());
+        assertTrue( d.what.toString().contains("IsHas"), ()-> d.what.toString());
     }
     @Test
     void testOpIsPreFilterSubPathNot() {

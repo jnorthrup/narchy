@@ -182,7 +182,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         }
 
 
-        nar.add(this);
+        nar.start(this);
 
     }
 

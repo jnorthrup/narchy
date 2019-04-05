@@ -323,6 +323,8 @@ public interface Atomic extends Term {
         return false;
     }
 
+    @Override
+    default boolean containsInstance(Term t) { return false; }
 
     @Override
     default boolean isCommutative() {

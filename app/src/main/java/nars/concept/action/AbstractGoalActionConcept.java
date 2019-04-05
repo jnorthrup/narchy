@@ -211,10 +211,6 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return pair(next, new long[]{ss, ee});
     }
 
-    @Override
-    @Deprecated public final void update(long last, long now, NAR nar) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public void update(long prev, long now, Game a) {

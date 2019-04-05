@@ -31,6 +31,7 @@ import nars.term.util.transform.DirectTermTransform;
 import nars.term.util.transform.TermTransform;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
+import nars.unify.Unify;
 import nars.unify.constraint.*;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
@@ -71,7 +72,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     private final MutableSet<UnifyConstraint> constraints;
     final ImmutableSet<UnifyConstraint> CONSTRAINTS;
-    private final MutableSet<PREDICATE<? extends PreDerivation>> pre;
+    private final MutableSet<PREDICATE<? extends Unify>> pre;
     final PREDICATE[] PRE;
     protected final Occurrify.OccurrenceSolver time;
 
@@ -319,7 +320,8 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                         case "\"?\"":
-                            taskPunc = t -> t == QUESTION;
+                            BytePredicate QUESTION_QUESTION = t -> t == QUESTION; //TODO toString() all of these
+                            taskPunc = QUESTION_QUESTION;
                             break;
                         case "\"@\"":
                             taskPunc = t -> t == QUEST;
@@ -539,7 +541,7 @@ public class PremiseRuleSource extends ProxyTerm {
 //            if (post!=null) {
 //            }
 
-            PREDICATE<PreDerivation> p = cc.preFilter(taskPattern, beliefPattern);
+            PREDICATE<Unify> p = cc.preFilter(taskPattern, beliefPattern);
             if (p != null) {
                 pre.add(p);
                 return true;

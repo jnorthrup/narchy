@@ -1,19 +1,23 @@
 package nars.agent;
 
+import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
+import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.AttnBranch;
 import nars.attention.PriNode;
 import nars.concept.Concept;
+import nars.concept.sensor.AgentLoop;
 import nars.control.channel.CauseChannel;
 import nars.op.mental.Inperience;
 import nars.table.eternal.DefaultOnlyEternalTable;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.TermedDelegate;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
@@ -27,7 +31,7 @@ import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
 /** TODO extends AgentLoop */
-public abstract class Reward implements TermedDelegate, Iterable<Concept> {
+public abstract class Reward implements AgentLoop, TermedDelegate, Iterable<Concept> {
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
 
@@ -53,6 +57,16 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     }
 
+    @Override
+    public Iterable<Termed> components() {
+        return Iterables.transform(this, x-> x); //HACK
+    }
+
+    @Override
+    public FloatRange resolution() {
+        return nar().freqResolution;
+    }
+
     /** estimated current happiness/satisfaction of this reward
      *
      * happiness = 1 - Math.abs(rewardBeliefExp - rewardGoalExp)/Math.max(rewardBeliefExp,rewardGoalExp)
@@ -64,12 +78,12 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     public final NAR nar() { return agent.nar(); }
 
-    public final void update(long prev, long now) {
+    public final void update(long prev, long now, Game g) {
         rewardBelief = rewardFreq(true);
-        updateReward(prev, now);
+        updateReward(prev, now, g);
     }
 
-    abstract protected void updateReward(long prev, long now);
+    protected abstract void updateReward(long prev, long now, Game g);
 
     @Deprecated protected FloatFloatToObjectFunction<Truth> truther() {
         return (prev, next) -> (next == next) ?

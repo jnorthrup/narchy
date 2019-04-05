@@ -37,7 +37,7 @@ public class STMLinkage extends NARPart {
 
 //        cause = nar.newCause(this);
 
-        nar.add(this);
+        nar.start(this);
     }
 
     @Override

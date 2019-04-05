@@ -25,7 +25,7 @@ public abstract class NALTest {
 
     protected NALTest() {
 
-        Exe.singleThread();
+        Exe.single();
 
         test = new TestNAR(nar());
     }

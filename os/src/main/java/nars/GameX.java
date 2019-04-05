@@ -106,7 +106,7 @@ abstract public class GameX extends Game {
 
             Game a = init.apply(n);
 
-            n.add(a);
+            n.start(a);
 
             initPlugins(n);
             initPlugins2(n, a);
@@ -154,7 +154,7 @@ abstract public class GameX extends Game {
 
             a.curiosity.enable.set(false);
 
-            n.add(a);
+            n.start(a);
 
 
             window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
@@ -456,7 +456,7 @@ abstract public class GameX extends Game {
 
         //new StatementLinker(n);
         //new PuncNoise(n);
-        new Eternalizer(n);
+        n.start(Eternalizer.class); //new Eternalizer(n);
 
 //        new STMLinkage(n, 1);
 

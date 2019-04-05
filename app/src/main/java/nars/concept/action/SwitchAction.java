@@ -4,6 +4,7 @@ import jcog.decide.DecideSoftmax;
 import jcog.decide.Deciding;
 import jcog.math.FloatSupplier;
 import nars.NAR;
+import nars.agent.Game;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
@@ -43,12 +44,12 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
 
     /** truth -> decidability */
     public float q(Truth g) {
-        return g.expectation();
-        //return g.freq();
+        //return g.expectation();
+        return g.freq();
     }
 
     @Override
-    public void update(long prev, long now, NAR n) {
+    public void update(long prev, long now, Game g) {
         int d = decide(prev, now);
 
         if (d!=-1 && action.test(d))
@@ -56,6 +57,6 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
         else
             value.set(Float.NaN);
 
-        super.update(prev, now, n);
+        super.update(prev, now, g);
     }
 }

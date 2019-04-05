@@ -30,7 +30,7 @@ public class NARLoop extends InstrumentedLoop {
         this.service = new NARPart($.inh(NAR_LOOP, n.self()), n) {
 
         };
-        n.add(service);
+        n.start(service);
     }
 
 //    @Override

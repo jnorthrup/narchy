@@ -4,6 +4,7 @@ import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.FloatSupplier;
 import nars.NAR;
+import nars.agent.Game;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -23,12 +24,12 @@ abstract public class DemultiplexedScalarSensor extends VectorSensor implements 
         this.input = input;
     }
 
-    public void update(long prev, long now, NAR n) {
+    public void update(long prev, long now, Game g) {
 
         if (input!=null)
             value.set(input.asFloat());
 
-        super.update(prev, now, n);
+        super.update(prev, now, g);
     }
 
 

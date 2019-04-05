@@ -178,6 +178,8 @@ public interface Termlike {
      */
     boolean contains(Term t);
 
+    boolean containsInstance(Term t);
+
     boolean hasXternal();
 
     default /* final */boolean containsRecursively(Term t) {
@@ -375,6 +377,7 @@ public interface Termlike {
     default boolean these() {
         throw new TODO();
     }
+
 
 }
 

@@ -2,9 +2,7 @@ package jcog.service;
 
 import jcog.Paper;
 import jcog.event.Off;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -55,41 +53,15 @@ public abstract class Part<C> implements Off {
         super();
     }
 
-    @Override
-    public String toString() {
-        String nameString = getClass().getName();
-
-        if (nameString.startsWith("jcog.") || nameString.startsWith("nars.")) //HACK
-            nameString = getClass().getSimpleName();
-
-        return nameString + ':' + super.toString();
-    }
-
-    public final void start(Parts<C,?> x) {
-        start(x, x.exe);
-    }
-
-    public final void start(Parts<C,?> x, Executor exe) {
-
-        if (state.compareAndSet(Parts.ServiceState.Off, Parts.ServiceState.OffToOn)) {
-            x.start(this, exe);
-        }
-    }
-
-
-    public final void stop(Parts<C,?> x) {
-        stop(x, null);
-    }
-
-    public final void stop(Parts<C,?> x, @Nullable Runnable afterOff) {
-        stop(x, x.exe, afterOff);
-    }
-
-    public final void stop(Parts<C,?> x, Executor exe, @Nullable Runnable afterOff) {
-        if (state.compareAndSet(Parts.ServiceState.On, Parts.ServiceState.OnToOff)) {
-            x.stop(this, afterOff, exe);
-        }
-    }
+//    @Override
+//    public String toString() {
+//        String nameString = getClass().getName();
+//
+//        if (nameString.startsWith("jcog.") || nameString.startsWith("nars.")) //HACK
+//            nameString = getClass().getSimpleName();
+//
+//        return nameString + ':' + super.toString();
+//    }
 
     abstract protected void start(C x);
 
