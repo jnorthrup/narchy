@@ -147,6 +147,7 @@ abstract public class DurService extends NARService {
 
     @Override
     protected void starting(NAR nar) {
+        //initialize
         at.run();
     }
 

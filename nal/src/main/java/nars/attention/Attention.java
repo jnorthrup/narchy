@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  *  determines the active attention dynamics */
 public class Attention extends DurService implements Sampler<TaskLink> {
 
-    public Forgetting forgetting = new Forgetting.AsyncForgetting();
+
 
     /**
      * short target memory, TODO abstract and remove, for other forms of attention that dont involve TaskLinks or anything like them
@@ -65,6 +65,8 @@ public class Attention extends DurService implements Sampler<TaskLink> {
         }
     };
 
+
+//    public Forgetting forgetting = new Forgetting.AsyncForgetting();
     /** system default deriver pri model
      *  however, each deriver instance can be configured individually.
      * */

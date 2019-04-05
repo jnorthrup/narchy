@@ -121,7 +121,7 @@ abstract public class Causable extends NARService {
         return sleeping(nar.time());
     }
 
-    public boolean sleeping(long now) {
+    boolean sleeping(long now) {
         if (sleepUntil < now) {
             sleepUntil = TIMELESS;
             return sleeping = true;
@@ -149,19 +149,11 @@ abstract public class Causable extends NARService {
      */
     public abstract float value();
 
-    @Deprecated
-    public InternalEvent event() {
-        return new AtCause();
-    }
-
     public final void pri(float p) {
         pri.pri(p);
     }
 
-    //        void addAt(long t, long reserve) {
-//            time.accumulateAndGet(t, (x,tt) -> Util.clamp(x + t, -reserve, reserve));
-//        }
-    void use(long t) {
+    private void use(long t) {
         used.addAndGet(t);
     }
 
@@ -169,15 +161,29 @@ abstract public class Causable extends NARService {
         return used.getAndSet(0);
     }
 
-    public CausableMetrics timing() {
-        return new CausableMetrics();
-    }
-
     public final float pri() {
         return pri.pri();
     }
 
-    private class AtCause extends InternalEvent {
+
+
+    @Deprecated
+    public InternalEvent event() {
+        return myCause;
+    }
+    public CausableMetrics timing() {
+        return new CausableMetrics();
+    }
+
+    private final InternalEvent myCause = new AtCause(id);
+
+    static private class AtCause extends InternalEvent {
+
+        private final Term id;
+
+        AtCause(Term id) {
+            this.id = id;
+        }
 
         @Override
         public Term term() {

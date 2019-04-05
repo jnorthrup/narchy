@@ -49,10 +49,7 @@ import nars.term.functor.LambdaFunctor;
 import nars.time.ScheduledTask;
 import nars.time.Tense;
 import nars.time.Time;
-import nars.time.event.AtClear;
-import nars.time.event.AtCycle;
-import nars.time.event.DurService;
-import nars.time.event.InternalEvent;
+import nars.time.event.*;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.Timed;
@@ -952,11 +949,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * schedule a task to be executed no sooner than a given NAR time
      */
     public final void runAt(long whenOrAfter, Runnable then) {
-        time.runAt(whenOrAfter, then);
+        runAt(new AtTime(whenOrAfter, then));
     }
 
     public final void runAt(ScheduledTask t) {
-        time.runAt(t);
+        if (t.start() <= time())
+            exe.execute(t); //immediate
+        else
+            time.runAt(t);
     }
 
     /**
@@ -964,7 +964,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * after the end of the current frame before the next frame.
      */
     public final void runLater(Runnable t) {
-        runAt(time(), t);
+        runAt(time()+1, t);
     }
 
     /**

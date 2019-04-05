@@ -4,7 +4,6 @@ import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.MetalConcurrentQueue;
 import nars.NAR;
 import nars.Param;
-import nars.time.event.AtTime;
 
 import javax.measure.Quantity;
 import java.io.Serializable;
@@ -82,12 +81,7 @@ public abstract class Time implements Serializable {
     }
 
 
-    public final void runAt(long whenOrAfter, Runnable then) {
-        runAt(new AtTime(whenOrAfter, then));
-    }
-
-
-    public void runAt(ScheduledTask event) {
+    public final void runAt(ScheduledTask event) {
 //        long w = event.start();
 //        assert(w!=ETERNAL && w!=TIMELESS);
 

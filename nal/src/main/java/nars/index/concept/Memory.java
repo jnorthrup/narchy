@@ -159,7 +159,8 @@ public abstract class Memory {
     final void onRemove(Concept value) {
 //        if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
-                nar.runLater(() -> set(value));
+                set(value);
+                //nar.runLater(() -> set(value));
             } else {
                 value.delete(nar);
             }

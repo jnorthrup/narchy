@@ -315,7 +315,7 @@ public class TrackXY_NAR extends NAgentX {
 
 
         if (gui) {
-            n.runLater(() -> {
+            n.run(() -> {
 
 
 

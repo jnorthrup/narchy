@@ -148,7 +148,7 @@ abstract public class NAgentX extends NAgent {
         NAR n = baseNAR(clockFPS, 1);
 
 
-        n.runLater(() -> {
+        n.run(() -> {
 
             NAgent a = init.apply(n);
 
