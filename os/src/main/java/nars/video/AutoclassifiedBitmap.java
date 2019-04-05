@@ -10,7 +10,7 @@ import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
@@ -68,7 +68,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
     private final int sw, sh;
     private final int nw, nh;
     private final int pw, ph;
-    private final NAgent agent;
+    private final Game agent;
     private final boolean reconstruct = true;
     private final Term[] feature;
 
@@ -129,24 +129,24 @@ public class AutoclassifiedBitmap extends VectorSensor {
         }
      */
 
-    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, int states, NAgent agent) {
+    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, int states, Game agent) {
         this(root, pixIn, sw, sh, NoMetaBits, states, agent);
     }
 
-    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
+    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, Game agent) {
         this($$(root), pixIn, sw, sh, metabits, states, agent);
     }
 
-    public AutoclassifiedBitmap(Term root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
+    public AutoclassifiedBitmap(Term root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, Game agent) {
         this(root, (x, y) -> pixIn[x][y],
                 pixIn.length, pixIn[0].length,
                 sw, sh, metabits, states, agent);
     }
-    public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, int states, NAgent agent) {
+    public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, int states, Game agent) {
         this(root, b, sw, sh, NoMetaBits, states, agent);
     }
 
-    public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
+    public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, MetaBits metabits, int states, Game agent) {
         this(root, b::brightness,
                 b.width(), b.height(),
                 sw, sh, metabits, states, agent);
@@ -158,7 +158,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
     /**
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
-    public AutoclassifiedBitmap(@Nullable Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, NAgent agent) {
+    public AutoclassifiedBitmap(@Nullable Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, Game agent) {
         super(agent.nar());
 
         NAR nar = agent.nar();

@@ -15,10 +15,10 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 public class Launcher {
 
     static class Experiment implements Runnable {
-        final Class<? extends NAgentX> env;
+        final Class<? extends GameX> env;
         final float fps = 25f;
 
-        Experiment(Class<? extends NAgentX> env) {
+        Experiment(Class<? extends GameX> env) {
             this.env = env;
         }
 
@@ -26,7 +26,7 @@ public class Launcher {
         public void run() {
 
             new Thread(()-> {
-                NAgentX.runRT((n) -> {
+                GameX.runRT((n) -> {
                     try {
 
                         return env.getConstructor(NAR.class).newInstance(n);
@@ -68,7 +68,7 @@ public class Launcher {
     public static void main(String[] args) {
 
 
-        Set<Class<? extends NAgentX>> envs = new Reflections("nars").getSubTypesOf(NAgentX.class);
+        Set<Class<? extends GameX>> envs = new Reflections("nars").getSubTypesOf(GameX.class);
 
         Surface m = grid(
                 new ObjectSurface<>(

@@ -1,16 +1,16 @@
 package nars.agent.util;
 
 import nars.NAR;
-import nars.agent.NAgent;
-import nars.time.event.DurService;
+import nars.agent.Game;
+import nars.time.part.DurPart;
 import nars.util.TaskSummarizer;
 
 public class AgentControlFeedback {
 
-    public AgentControlFeedback(NAgent a) {
+    public AgentControlFeedback(Game a) {
 
         NAR n = a.nar();
-        DurService.on(n, new Runnable() {
+        DurPart.on(n, new Runnable() {
 
             final TaskSummarizer ts = new TaskSummarizer(n);
             static final int snapshotEvery = 8;

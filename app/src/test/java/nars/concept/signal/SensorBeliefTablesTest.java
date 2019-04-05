@@ -5,7 +5,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.concept.sensor.Signal;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.task.util.series.RingBufferTaskSeries;
@@ -24,7 +24,7 @@ class SensorBeliefTablesTest {
     void test1() {
         NAR n = NARS.shell();
 
-        NAgent a = new NAgent("a", n);
+        Game a = new Game("a", n);
 
         AtomicFloat xx = new AtomicFloat(0);
 

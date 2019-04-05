@@ -7,7 +7,7 @@ import jcog.math.v2;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.task.NALTask;
 import nars.time.clock.RealTime;
 import org.apache.commons.io.IOUtils;
@@ -26,7 +26,7 @@ import static nars.Op.BELIEF;
 /**
  * weather and meteorlogical model
  */
-public class Weather extends NARService {
+public class Weather extends Part {
     public final v2 lonLat;
 
     /** current day daylight param */
@@ -44,7 +44,7 @@ public class Weather extends NARService {
 
         assert (nar.time instanceof RealTime.MS && ((RealTime)nar.time).relativeToStart);
 
-        nar.on(this);
+        nar.add(this);
     }
 
     @Override

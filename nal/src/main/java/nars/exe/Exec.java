@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  */
 abstract public class Exec extends ConsumerX<ITask> implements Executor {
 
-    protected static final Logger logger = Util.logger(Exec.class);
+    public static final Logger logger = Util.logger(Exec.class);
 
     protected NAR nar;
     private final int concurrencyMax;

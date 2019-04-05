@@ -1,11 +1,11 @@
 package nars.concept.action.curiosity;
 
-import nars.agent.NAgent;
+import nars.agent.Game;
 
 public enum DefaultCuriosity {
     ;
 
-    public static Curiosity defaultCuriosity(NAgent a) {
+    public static Curiosity defaultCuriosity(Game a) {
         Curiosity c = new Curiosity(a, 0.1f);
         c.add(new EchoDerivedCuriosity().withPri(0.02f));
         c.add(new EchoNegatedDerivedCuriosity().withPri(0.01f));

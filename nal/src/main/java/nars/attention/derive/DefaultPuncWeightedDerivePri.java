@@ -4,10 +4,15 @@ import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Task;
+import nars.derive.Derivation;
 
 import static nars.Op.*;
+import static nars.time.Tense.ETERNAL;
 
 public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
+
+    long lastUpdate = ETERNAL;
+    final static float updateDurs = 1;
 
     /** cache of punctuation priorities */
     transient private float beliefPri, goalPri, questionPri, questPri;
@@ -15,8 +20,16 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
     public DefaultPuncWeightedDerivePri() {
     }
 
+    @Override
+    public void premise(Derivation d) {
+        if (lastUpdate == ETERNAL || d.time - lastUpdate > updateDurs * d.dur) {
+            cache(d.nar);
+            lastUpdate = d.time;
+        }
+    }
+
     /** repurposes nar's default punctuation priorities (for input) as the derivation punctuation weighting */
-    @Override public void update(NAR nar) {
+    public void cache(NAR nar) {
 
         float beliefPri = nar.beliefPriDefault.floatValue();
         float goalPri = nar.goalPriDefault.floatValue();

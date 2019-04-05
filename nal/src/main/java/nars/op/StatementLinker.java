@@ -5,7 +5,7 @@ import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.link.TaskLink;
 import nars.subterm.Subterms;
 import nars.term.Term;
@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
 
-public class StatementLinker extends NARService implements Consumer<Task> {
+public class StatementLinker extends Part implements Consumer<Task> {
     private Off off;
 
     public StatementLinker(NAR n) {

@@ -25,7 +25,7 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
     private final float maxIterationRemovalPct = 0.05f;
     private final float descentRate = 0.618f;
-    float overflowSafetyPct = 0.1f;
+    private float overflowSafetyPct = 0.1f;
 
 
     public final ConceptRadixTree concepts;
@@ -162,7 +162,7 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
         private final int sizeLimit;
 
-        public ConceptRadixTree(int sizeLimit) {
+        ConceptRadixTree(int sizeLimit) {
             this.sizeLimit = sizeLimit;
         }
 

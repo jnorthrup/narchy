@@ -1,8 +1,6 @@
 package nars.agent;
 
-import jcog.Paper;
-import jcog.TODO;
-import jcog.WTF;
+import jcog.*;
 import jcog.data.list.FastCoWList;
 import jcog.event.ListTopic;
 import jcog.event.Off;
@@ -13,7 +11,6 @@ import jcog.math.FloatSupplier;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
-import nars.Task;
 import nars.attention.PriNode;
 import nars.concept.action.AbstractGoalActionConcept;
 import nars.concept.action.ActionConcept;
@@ -22,13 +19,11 @@ import nars.concept.action.curiosity.DefaultCuriosity;
 import nars.concept.sensor.AgentLoop;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -42,17 +37,25 @@ import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * an integration of sensor concepts and motor functions
+ * forming a sensori-motor loop.
+ *
+ * these include all forms of problems including
+ *   optimization
+ *   reinforcement learning
+ *   etc
+ *
+ * the name 'Game' is used, in the most general sense of the
+ * word 'game'.
+ *
  */
-public class NAgent extends NARService implements NSense, NAct {
+@Paper @Skill({"Game_studies", "Game_theory"})
+public class Game extends Part implements NSense, NAct {
 
     private final Topic<NAR> eventFrame = new ListTopic();
 
-    private static final Logger logger = LoggerFactory.getLogger(NAgent.class);
+    private static final Logger logger = Util.logger(Game.class);
 
-    public final FrameTrigger frameTrigger;
-
-
-
+    public final GameTime time;
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
     private final AtomicBoolean busy = new AtomicBoolean(false);
@@ -75,28 +78,24 @@ public class NAgent extends NARService implements NSense, NAct {
     protected volatile long now = ETERNAL;
     public volatile long next = ETERNAL;
 
-    @FunctionalInterface
-    public interface ReinforcedTask {
-        @Nullable Task get(long prev, long now, long next);
-    }
 
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
             Cycles.Interleaved;
 
-    public NAgent(String id, NAR nar) {
-        this(id, FrameTrigger.durs(1), nar);
+    public Game(String id, NAR nar) {
+        this(id, GameTime.durs(1), nar);
     }
 
-    public NAgent(String id, FrameTrigger frameTrigger, NAR nar) {
-        this(id.isEmpty() ? null : Atomic.the(id), frameTrigger, nar);
+    public Game(String id, GameTime time, NAR nar) {
+        this(id.isEmpty() ? null : Atomic.the(id), time, nar);
     }
 
-    public NAgent(Term id, FrameTrigger frameTrigger, NAR nar) {
+    public Game(Term id, GameTime time, NAR nar) {
         super(id);
         this.nar = nar;
 
-        this.frameTrigger = frameTrigger;
+        this.time = time;
 
         this.pri = nar.control.newPri(id);
         this.attnAction = new PriNode($.func("action", id))
@@ -113,7 +112,7 @@ public class NAgent extends NARService implements NSense, NAct {
         */
 
         //nar.runLater(()-> nar.on(this));
-        nar.on(this);
+        nar.add(this);
     }
 
 
@@ -137,7 +136,6 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
     /**
-     * happiness = rewardBeliefExp - rewardGoalExp
      *
      * avg reward satisfaction, current measurement
      */
@@ -167,7 +165,7 @@ public class NAgent extends NARService implements NSense, NAct {
     public final <A extends ActionConcept> A addAction(A c) {
         actions.add(c);
 
-        nar().on(c);
+        nar().add(c);
         addAttention(attnAction, c);
         return c;
     }
@@ -205,7 +203,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
         return id +
-                " dex=" + /*n4*/(dexteritySum()) +
+                " dex=" + /*n4*/(dexterityMean()) +
+                " hapy=" + /*n4*/(happinessMean()) +
 
                 /*" var=" + n4(varPct(nar)) + */ '\t' + nar.memory.summary() + ' ' +
                 nar.feel.summary();
@@ -220,7 +219,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
         super.starting(nar);
 
-        this.frameTrigger.start(this);
+        this.time.start(this);
 
         enabled.set(true);
     }
@@ -231,8 +230,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
         enabled.set(false);
 
-        if (frameTrigger != null) {
-            frameTrigger.stop();
+        if (time != null) {
+            time.stop();
         } else {
             throw new WTF(this + " stopped twice");
         }
@@ -333,7 +332,7 @@ public class NAgent extends NARService implements NSense, NAct {
          * <p>
          * a.act(...) - reads/invokes goals and feedback
          */
-        void next(NAgent a, int iteration, long prev, long now);
+        void next(Game a, int iteration, long prev, long now);
     }
 
     public enum Cycles implements NAgentCycle {
@@ -343,7 +342,7 @@ public class NAgent extends NARService implements NSense, NAct {
          */
         Interleaved() {
             @Override
-            public void next(NAgent a, int iteration, long prev, long now) {
+            public void next(Game a, int iteration, long prev, long now) {
 
                 a.sense(prev, now);
 
@@ -362,7 +361,7 @@ public class NAgent extends NARService implements NSense, NAct {
          */
         Biphasic() {
             @Override
-            public void next(NAgent a, int iteration, long prev, long now) {
+            public void next(Game a, int iteration, long prev, long now) {
 
                 //System.out.println(a.nar.time() + ": " + (iteration%2) + " " + prev + " " + now + " " + next);
 
@@ -405,7 +404,7 @@ public class NAgent extends NARService implements NSense, NAct {
                 return; //too early
 
 
-            long idealPrev = frameTrigger.prev(now);
+            long idealPrev = time.prev(now);
             if (now <= idealPrev)
                 return; //too early
 
@@ -413,7 +412,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
             long next =
                     //(Math.max(now, frameTrigger.next(now)), d);
-                    Math.max(now, frameTrigger.next(now));
+                    Math.max(now, time.next(now));
 
             assert (prev < now && now < next);
             this.prev = prev;
@@ -429,6 +428,11 @@ public class NAgent extends NARService implements NSense, NAct {
             busy.set(false);
         }
 
+    }
+
+    @Override
+    public final NAR nar() {
+        return nar;
     }
 
     protected void act(long prev, long now) {

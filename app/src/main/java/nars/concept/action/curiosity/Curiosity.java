@@ -8,7 +8,7 @@ import jcog.math.FloatRange;
 import jcog.math.MutableEnum;
 import nars.NAR;
 import nars.Param;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.concept.action.AbstractGoalActionConcept;
 import nars.task.Revision;
 import nars.truth.Truth;
@@ -30,7 +30,7 @@ public class Curiosity {
     public final FasterList<CuriosityMode> curiosity = new FasterList<>(8); //new FastCoWList(8, CuriosityMode[]::new);
 
     private final IntToFloatFunction pri = i -> curiosity.get(i).priElseZero();
-    public final NAgent agent;
+    public final Game agent;
 
     public final AtomicBoolean goal = new AtomicBoolean(true);
 
@@ -72,7 +72,7 @@ public class Curiosity {
 
     private MutableRoulette select = null;
 
-    public Curiosity(NAgent a, float initialRate) {
+    public Curiosity(Game a, float initialRate) {
 
         this.agent = a;
 

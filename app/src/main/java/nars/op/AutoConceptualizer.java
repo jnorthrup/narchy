@@ -13,7 +13,7 @@ import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import nars.truth.Truth;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
@@ -51,7 +51,7 @@ public class AutoConceptualizer extends AbstractSensor {
     @Override
     protected void starting(NAR nar) {
         on(
-            DurService.on(nar, this::update)
+            DurPart.on(nar, this::update)
         );
     }
 

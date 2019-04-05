@@ -7,7 +7,7 @@ package jcog.exe;
  * <p>
  * accumulates, in nanoseconds (long) the time spent, and the # of work items (int)
  */
-public class Can  {
+@Deprecated public class Can  {
 
 
 

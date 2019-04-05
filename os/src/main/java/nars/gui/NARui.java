@@ -19,12 +19,12 @@ import nars.AttentionUI;
 import nars.NAR;
 import nars.Narsese;
 import nars.Task;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.agent.util.RLBooster;
-import nars.attention.Attention;
+import nars.attention.TaskLinkBag;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
@@ -32,7 +32,7 @@ import nars.link.TaskLink;
 import nars.op.stm.ConjClustering;
 import nars.task.util.TaskBuffer;
 import nars.term.Termed;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import nars.truth.Truth;
 import nars.util.MemorySnapshot;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
@@ -142,7 +142,7 @@ public class NARui {
     public static HashMap<String, Supplier<Surface>> pluginsMenu(NAR n) {
         HashMap<String,Supplier<Surface>> m = new HashMap<>();
         n.plugins().forEach(s -> {
-            m.put( ((NARService)s).term().toString(), ()-> new ObjectSurface(s));
+            m.put( ((Part)s).id().toString(), ()-> new ObjectSurface(s));
         });
         return m;
     }
@@ -159,7 +159,7 @@ public class NARui {
                 //ExeCharts.focusPanel(n),
                 ///causePanel(n),
                 "grp", () -> BagregateConceptGraph2D.get(n),
-                "svc", () -> new ServicesTable(n.plugin),
+                "svc", () -> new ServicesTable(n.part),
                 "pri", () -> priView(n),
                 "cpt", () -> new ConceptBrowser(n)
         );
@@ -183,7 +183,7 @@ public class NARui {
     }
 
     private static Surface priView(NAR n) {
-        Attention cc = n.attn;
+        TaskLinkBag cc = n.attn;
 
         return Splitting.row(
                 new BagView<>(cc.links, n),
@@ -437,7 +437,7 @@ public class NARui {
         window(new ConceptSurface(t, n), 500, 500);
     }
 
-    public static Surface agent(NAgent a) {
+    public static Surface agent(Game a) {
 
         Iterable<? extends Concept> rewards = () -> a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false)).iterator();
         Iterable<? extends Concept> actions = a.actions;
@@ -585,7 +585,7 @@ public class NARui {
                 new MetaFrame(b),
                 new Gridding(
                     new FloatRangePort(
-                        DurService.cache(b::load, 0, 1, 1, n).getOne(),
+                        DurPart.cache(b::load, 0, 1, 1, n).getOne(),
                     "load"
                     )
                 )
@@ -597,7 +597,7 @@ public class NARui {
     }
     public static Surface attentionUI(NAR n) {
         final Bordering m = new Bordering();
-        Attention attn = n.attn;
+        TaskLinkBag attn = n.attn;
         m.center(new TabMenu(Map.of(
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
                 "Histogram", ()->new BagView(attn.links, n),

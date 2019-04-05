@@ -11,7 +11,7 @@ public class SimpleReward extends BeliefReward {
     private final FloatSupplier rewardFunc;
 
 
-    public SimpleReward(Term id, FloatSupplier r, NAgent a) {
+    public SimpleReward(Term id, FloatSupplier r, Game a) {
         super(id, a);
 
         this.rewardFunc = r;

@@ -2,7 +2,7 @@ package nars.exe.impl;
 
 import nars.NAR;
 import nars.NARS;
-import nars.attention.Attention;
+import nars.attention.TaskLinkBag;
 
 import java.util.function.Supplier;
 
@@ -21,7 +21,7 @@ public class SuperExec extends ThreadedExec {
     private static class SubExec extends UniExec {
         //TODO
     }
-    private static class SubAttention extends Attention {
+    private static class SubAttention extends TaskLinkBag {
         //TODO
     }
 

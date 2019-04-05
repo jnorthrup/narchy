@@ -8,7 +8,7 @@ import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.util.Timed;
@@ -34,7 +34,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
     final NeuralGasNet net;
 
-    public CameraGasNet(Atomic root, P src, NAgent agent, int blobs) {
+    public CameraGasNet(Atomic root, P src, Game agent, int blobs) {
 
         this.src = src;
 

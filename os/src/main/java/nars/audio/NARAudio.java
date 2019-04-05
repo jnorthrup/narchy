@@ -5,7 +5,7 @@ import jcog.signal.wave1d.SignalInput;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.concept.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorView;
 import spacegraph.audio.AudioSource;
@@ -26,7 +26,7 @@ public class NARAudio extends WaveIn {
     public NARAudio(NAR nar, SignalInput src, float fps) {
         super($.quote(src.toString()/*HACK*/), src, fps);
 
-        NAgent h = new NAgent("hear", nar);
+        Game h = new Game("hear", nar);
 
         /**
          * buffer time in seconds
@@ -48,7 +48,7 @@ public class NARAudio extends WaveIn {
                 new ObjectSurface(hear), hearView), 400, 400);
 
 
-        nar.on(this);
+        nar.add(this);
 
     }
 

@@ -28,7 +28,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     public final Bitmap2DConcepts<P> concepts;
     public final P src;
-    private final NAR nar;
 
     public final int width, height;
     private FloatFloatToObjectFunction<Truth> mode;
@@ -46,11 +45,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         this.height = src.height();
         this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, res, n);
         this.src = concepts.src;
-        this.nar = n;
+
 
         if (src instanceof PixelBag) {
             //HACK steal the actions for this attn group
-            ((PixelBag)src).actions.forEach(aa -> aa.attn.parent(nar(), attn));
+            ((PixelBag)src).actions.forEach(aa -> aa.attn.parent(n, attn));
         }
 
         /** modes */

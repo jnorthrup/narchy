@@ -1,102 +1,90 @@
-package nars.time.event;
+package nars.time.part;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.NumberX;
-import jcog.data.atomic.AtomicFloat;
 import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.Param;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * executes approximately once every N durations
+ * a part that executes a given procedure once every N durations (approximate)
+ * N is an adjustable duration factor (float, so fractional values are ok)
+ * the part is retriggered asynchronously so it is not guaranteed consistent
+ * timing although some adjustment is applied to help correct for expectable
+ * amounts of lag, jitter, latency, etc.
+ *
+ * these are scheduled by the NAR's Time which holds a priority queue of
+ * temporal events.  at any given time it will contain zero or one of this
+ * Dur's immutable and re-usable AtDur event.
  */
-abstract public class DurService extends NARService {
+abstract public class DurPart extends Part {
 
-    private static final Logger logger = LoggerFactory.getLogger(DurService.class);
+    private static final Logger logger = Util.logger(DurPart.class);
 
     /**
      * ideal duration multiple to be called, since time after implementation's procedure finished last
      */
-    private final NumberX durations = new AtomicFloat(1f);
+    public final FloatRange durations = new FloatRange(1f, 0.1f, 100f);
+
+    private final AtDur at = new AtDur();
 
     @Override
-    public InternalEvent event() {
+    public final AtDur event() {
         return at;
     }
 
-    protected DurService(NAR n, float durs) {
+    protected DurPart(NAR n, float durs) {
         super((NAR) null); //dont call through super constructor
         durations.set(durs);
         if (n != null) {
-            (this.nar = n).on(this);
+            (this.nar = n).add(this);
         }
     }
 
 
-    protected DurService(Term id) {
+    protected DurPart(Term id) {
         super(id);
     }
 
-    protected DurService(NAR nar) {
+    protected DurPart(NAR nar) {
         this(nar, 1f);
     }
 
     /**
      * if using this constructor, a subclass must call nar.on(this) manually
      */
-    protected DurService() {
+    protected DurPart() {
         this((NAR) null);
     }
 
     /**
      * simple convenient adapter for Runnable's
      */
-    public static DurService on(NAR nar, Runnable r) {
-        return new DurService(nar) {
-            @Override
-            protected void run(NAR n, long dt) {
-                r.run();
-            }
-
-            @Override
-            public String toString() {
-                return r.toString();
-            }
-        };
+    public static DurPart on(NAR nar, @NotNull Runnable r) {
+        return new MyDurRunnable(nar, r);
     }
 
-    public static DurService on(NAR nar, Consumer<NAR> r) {
-        return new DurService(nar) {
-            @Override
-            protected void run(NAR n, long dt) {
-                r.accept(n);
-            }
-
-            @Override
-            public String toString() {
-                return r.toString();
-            }
-        };
+    public static DurPart on(NAR nar, @NotNull Consumer<NAR> r) {
+        return new MyDurNARConsumer(nar, r);
     }
 
-    public static DurService onWhile(NAR nar, Predicate<NAR> r) {
-        return new DurService(nar) {
+    public static DurPart onWhile(NAR nar, Predicate<NAR> r) {
+        return new DurPart(nar) {
             @Override
             protected void run(NAR n, long dt) {
                 if (!r.test(n)) {
@@ -114,7 +102,7 @@ abstract public class DurService extends NARService {
     /**
      * creates a duration-cached float range that is automatically destroyed when its parent context is
      */
-    public static FloatRange cache(FloatSupplier o, float min, float max, DurService parent, @Deprecated NAR nar) {
+    public static FloatRange cache(FloatSupplier o, float min, float max, DurPart parent, @Deprecated NAR nar) {
         Pair<FloatRange, Off> p = cache(o, min, max, 1, nar);
         parent.on(p.getTwo());
         return p.getOne();
@@ -123,7 +111,7 @@ abstract public class DurService extends NARService {
     public static Pair<FloatRange, Off> cache(FloatSupplier o, float min, float max, float durPeriod, NAR n) {
         assert (min < max);
         FloatRange r = new FloatRange((min + max) / 2, min, max);
-        DurService d = DurService.on(n, () -> {
+        DurPart d = DurPart.on(n, () -> {
             float x = o.asFloat();
             if (x==x) {
                 r.set(
@@ -140,19 +128,17 @@ abstract public class DurService extends NARService {
     /**
      * set period (in durations)
      */
-    public DurService durs(float durations) {
+    public DurPart durs(float durations) {
         this.durations.set(durations);
         return this;
     }
 
-    @Override
-    protected void starting(NAR nar) {
-        //initialize
+    @Override protected void starting(@NotNull NAR nar) {
+        this.nar = nar;
         at.run();
     }
 
 
-    private final AtDur at = new AtDur();
 
     public long durCycles() {
         return Math.max(1, Math.round((double) (durations.floatValue()) * this.nar.dur()));
@@ -175,6 +161,48 @@ abstract public class DurService extends NARService {
     }
 
     private static final Atomic DUR = Atomic.the("dur");
+
+    private static final class MyDurRunnable extends DurPart {
+        private final Runnable r;
+
+        MyDurRunnable(NAR nar, @NotNull Runnable r) {
+            super();
+            this.r = r;
+            nar.add(this);
+        }
+
+        @Override
+        protected void run(NAR n, long dt) {
+            r.run();
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + ':' + r;
+        }
+    }
+
+    private static final class MyDurNARConsumer extends DurPart {
+
+        final Consumer<NAR> r;
+
+        MyDurNARConsumer(NAR nar, @NotNull Consumer<NAR> r) {
+            super();
+            this.r = r;
+            nar.add(this);
+        }
+
+        @Override
+        protected void run(NAR n, long dt) {
+            r.accept(n);
+        }
+
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + ':' + r;
+        }
+    }
 
     public class AtDur extends RecurringTask {
 
@@ -210,12 +238,12 @@ abstract public class DurService extends NARService {
                 long d = durCycles(); //get prior in case dur changes during execution
 
                 try {
-                    DurService.this.run(nar, delta);
+                    DurPart.this.run(nar, delta);
                 } catch (Throwable t) {
                     logger.error("{} {}", this, t);
                 }
 
-                if (!DurService.this.isOff()) {
+                if (!DurPart.this.isOff()) {
                     scheduleNext(d, atStart);
                 }
 

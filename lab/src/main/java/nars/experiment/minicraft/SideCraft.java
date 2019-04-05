@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
 import nars.NAR;
-import nars.NAgentX;
+import nars.GameX;
 import nars.Narsese;
 import nars.experiment.minicraft.side.SideScrollMinicraft;
 import nars.experiment.minicraft.side.awtgraphics.AwtGraphicsHandler;
@@ -20,7 +20,7 @@ import static nars.$.$;
 /**
  * Created by me on 9/19/16.
  */
-public class SideCraft extends NAgentX {
+public class SideCraft extends GameX {
 
     private final SideScrollMinicraft craft;
     private final Bitmap2DSensor<PixelBag> pixels;

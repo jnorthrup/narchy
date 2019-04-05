@@ -9,11 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 /** parent service node managing a set of child devices, which are disabled if this service is disabled.
  *  establishes a hierarchy of devices/peripherals/components
  **/
-public class NARServiceSet<X extends NARService> extends NARService {
+public class PartSet<X extends Part> extends Part {
 
     final Map<Term,X> devices = new ConcurrentHashMap<>();
 
-    public NARServiceSet(NAR nar) {
+    public PartSet(NAR nar) {
         super(nar);
     }
 
@@ -29,18 +29,18 @@ public class NARServiceSet<X extends NARService> extends NARService {
         X removed = devices.put(x.id, x);
         if (removed!=null && removed!=x) {
             if (!removed.isOff())
-                nar.off(removed);
+                nar.remove(removed);
         }
 
         if (enable) {
-            nar.on(x);
+            nar.add(x);
         }
     }
 
     @Override
     protected void stopping(NAR nar) {
         synchronized (devices) {
-            devices.values().forEach(nar::off);
+            devices.values().forEach(nar::remove);
         }
     }
 

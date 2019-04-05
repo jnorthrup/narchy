@@ -20,7 +20,9 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
-import nars.time.event.DurService;
+import nars.term.atom.Atomic;
+import nars.term.functor.LambdaFunctor;
+import nars.time.part.DurPart;
 import nars.truth.PreciseTruth;
 import nars.util.AtomicOperations;
 import nars.util.Timed;
@@ -94,7 +96,7 @@ public class Opjects extends DefaultTermizer {
     final ByteBuddy bb = new ByteBuddy();
 
     public final FloatRange exeThresh = new FloatRange(0.75f, 0.5f, 1f);
-    private final DurService on;
+    private final DurPart on;
 
     /**
      * determines evidence weighting for reporting specific feedback values
@@ -211,7 +213,7 @@ public class Opjects extends DefaultTermizer {
     public Opjects(NAR n) {
         in = (nar = n).newChannel(this);
         update(n);
-        this.on = DurService.on(n, this::update);
+        this.on = DurPart.on(n, this::update);
     }
 
     /**
@@ -242,9 +244,9 @@ public class Opjects extends DefaultTermizer {
      * registers an alias/binding shortcut target rewrite macro
      */
     public Concept alias(String op, Term instance, String method) {
-        return nar.on(op, (s) ->
+        return nar.add(LambdaFunctor.f(op, s ->
                 $.func(method, instance, s.subs() == 1 ? s.sub(0) : PROD.the(s))
-        );
+        ));
     }
 
 
@@ -630,7 +632,7 @@ public class Opjects extends DefaultTermizer {
         String n = m.getName();
         return opCache.computeIfAbsent(n, (mn) -> {
             MethodExec methodExec = new MethodExec(mn);
-            Operator op = nar.onOp(mn, methodExec);
+            Operator op = nar.addOp(Atomic.atom(mn), methodExec);
             methodExec.operator = op;
             return methodExec;
         });

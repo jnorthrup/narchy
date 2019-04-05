@@ -9,7 +9,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.op.java.Opjects;
 import nars.op.mental.Abbreviation;
 import nars.op.stm.ConjClustering;
@@ -29,7 +29,7 @@ import static nars.Op.BELIEF;
 /**
  * provides support for watching particular file or directory for live changes, notified by the filesystem asynchronously
  */
-public class FileContext extends NARService {
+public class FileContext extends Part {
 
     static final Logger logger = LoggerFactory.getLogger(FileContext.class);
 
@@ -86,7 +86,7 @@ public class FileContext extends NARService {
 
         this.rootPath = path;
 
-        n.on(this);
+        n.add(this);
     }
 
     /**

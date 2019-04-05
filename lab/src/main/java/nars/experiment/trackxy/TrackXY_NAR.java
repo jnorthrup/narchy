@@ -10,7 +10,7 @@ import jcog.math.FloatSupplier;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
-import nars.agent.FrameTrigger;
+import nars.agent.GameTime;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.util.stream.Collectors.toList;
 import static nars.Op.IMPL;
 
-public class TrackXY_NAR extends NAgentX {
+public class TrackXY_NAR extends GameX {
 
     static boolean
             sourceNumerics = true,
@@ -69,7 +69,7 @@ public class TrackXY_NAR extends NAgentX {
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super("trackXY",
                 //FrameTrigger.cycles(W*H*2),
-                FrameTrigger.durs(1),
+                GameTime.durs(1),
                 //FrameTrigger.fps(fps),
                 nar);
 
@@ -340,7 +340,7 @@ public class TrackXY_NAR extends NAgentX {
                 {
                     FloatAveragedWindow dexThrough = new FloatAveragedWindow(16, 0.1f);
                     Agenterator aa = n.control.agent(
-                            () -> dexThrough.valueOf((float) (a.dexteritySum() + 0.01f * a.happinessMean())),
+                            () -> dexThrough.valueOf((float) (a.dexterityMean() + 0.01f * a.happinessMean())),
                             (i, o) -> new HaiQae(i, 32, o));
                     HaiQChip haiQChip = new HaiQChip((HaiQae) aa.agent);
                     g.add(haiQChip).posRel(0.5f, 0.5f, 0.2f, 0.2f);

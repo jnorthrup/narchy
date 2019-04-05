@@ -5,11 +5,11 @@ import jcog.math.FloatRange;
 import jcog.signal.wave2d.AbstractBitmap2D;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
+import nars.GameX;
 import nars.NAR;
 import nars.NARS;
-import nars.NAgentX;
 import nars.agent.BeliefReward;
-import nars.agent.FrameTrigger;
+import nars.agent.GameTime;
 import nars.gui.sensor.VectorSensorView;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
@@ -28,7 +28,7 @@ import static spacegraph.SpaceGraph.window;
 /**
  * Created by me on 7/28/16.
  */
-public class Tetris extends NAgentX {
+public class Tetris extends GameX {
 
     final static float FPS = 24f;
 
@@ -67,7 +67,7 @@ public class Tetris extends NAgentX {
      */
     public Tetris(Term id, NAR n, int width, int height, int timePerFall) {
         super(id,
-                FrameTrigger.fps(24f),
+                GameTime.fps(24f),
                 //FrameTrigger.durs(1),
                 n);
 
@@ -150,7 +150,7 @@ public class Tetris extends NAgentX {
     public static void main(String[] args) {
 
 
-        NAgentX.runRT(n -> {
+        GameX.runRT(n -> {
             //n.freqResolution.setAt(0.02f);
 
 

@@ -4,8 +4,8 @@ import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
-import nars.NAgentX;
-import nars.agent.FrameTrigger;
+import nars.GameX;
+import nars.agent.GameTime;
 import nars.experiment.pacman.PacmanGame;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
@@ -16,12 +16,12 @@ import spacegraph.space2d.container.grid.Gridding;
 import static spacegraph.SpaceGraph.window;
 
 
-public class Pacman extends NAgentX {
+public class Pacman extends GameX {
 
     private final PacmanGame g;
 
     public Pacman(NAR nar) {
-        super("Pac", FrameTrigger.fps(20), nar);
+        super("Pac", GameTime.fps(20), nar);
 
         this.g = new PacmanGame();
 
@@ -106,7 +106,7 @@ public class Pacman extends NAgentX {
 
 
     public static void main(String[] args) {
-        NAgentX.runRT((n) -> {
+        GameX.runRT((n) -> {
 
             Pacman a = new Pacman(n);
             return a;

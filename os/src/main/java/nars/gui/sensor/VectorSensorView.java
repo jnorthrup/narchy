@@ -6,14 +6,14 @@ import jcog.math.FloatRange;
 import jcog.random.SplitMix64Random;
 import nars.NAR;
 import nars.Param;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.VectorSensor;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.util.Answer;
 import nars.time.Tense;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import nars.truth.Truth;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
@@ -43,7 +43,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private final VectorSensor sensor;
     private final NAR nar;
 
-    private DurService on;
+    private DurPart on;
 
     private long start, end;
 
@@ -72,7 +72,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
     private Answer answer = null;
 
-    public VectorSensorView(Bitmap2DSensor sensor, NAgent a) {
+    public VectorSensorView(Bitmap2DSensor sensor, Game a) {
         super(sensor.width, sensor.height);
         this.sensor = sensor;
         this.nar = a.nar();
@@ -176,7 +176,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     @Override
     protected void starting() {
         super.starting();
-        on = DurService.on(nar, this::accept);
+        on = DurPart.on(nar, this::accept);
     }
 
     @Override
@@ -270,7 +270,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     public static class CameraSensorViewControls extends Gridding {
 
         private final VectorSensorView view;
-        private DurService on;
+        private DurPart on;
 
         /** the procedure to run in the next duration. limits activity to one
          * of these per duration. */
@@ -279,7 +279,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         @Override
         protected void starting() {
             super.starting();
-            on = DurService.on(view.nar, this::commit);
+            on = DurPart.on(view.nar, this::commit);
         }
 
         @Override

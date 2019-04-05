@@ -303,13 +303,13 @@ public class Builtin {
 
     private static void registerFunctors(NAR nar) {
         for (Functor t : Builtin.statik) {
-            nar.on(t);
+            nar.add(t);
         }
 
-        nar.on(SetFunc.sort(nar));
+        nar.add(SetFunc.sort(nar));
 
         /** dynamic target builder - useful for NAR specific contexts like clock etc.. */
-        nar.on(Functor.f("target", (Subterms s) -> {
+        nar.add(Functor.f("target", (Subterms s) -> {
             Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
             Term[] args = s.sub(1).subterms().arrayShared();
             if (args.length == 2) {
@@ -332,14 +332,14 @@ public class Builtin {
         }));
 
         /** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
-        nar.on(Functor.f1Inline("varIntro", x -> {
+        nar.add(Functor.f1Inline("varIntro", x -> {
             Pair<Term, Map<Term, Term>> result = nars.op.DepIndepVarIntroduction.the.apply(x, nar.random());
             //return result != null ? result.getOne() : Null;
             return result != null && result.getOne().op().conceptualizable ? result.getOne() : x;
         }));
 
         /** subterm, but specifically inside an ellipsis. otherwise pass through */
-        nar.on(Functor.f("esubterm", (Subterms c) -> {
+        nar.add(Functor.f("esubterm", (Subterms c) -> {
 
 
             Term x = c.sub(0, null);
@@ -369,18 +369,18 @@ public class Builtin {
 
         }));
 
-        nar.on(new AbstractInlineFunctor1("negateEvents") {
+        nar.add(new AbstractInlineFunctor1("negateEvents") {
             @Override protected Term apply1(Term arg) {
                 return Conj.negateEvents(arg);
             }
         });
-        nar.on(new AbstractInlineFunctor2("without") {
+        nar.add(new AbstractInlineFunctor2("without") {
             @Override
             protected Term apply(Term container, Term content) {
                 return Terms.without(container, x -> x.equals(content), nar.random());
             }
         });
-        nar.on(new AbstractInlineFunctor2("withoutPosOrNeg") {
+        nar.add(new AbstractInlineFunctor2("withoutPosOrNeg") {
             @Override
             protected Term apply(Term container, Term content) {
                 Term c = content.unneg();
@@ -436,14 +436,14 @@ public class Builtin {
 //            return CONJ.the(t.dt(), s);
 //        }));
 
-        nar.on(Functor.f1Inline("unneg", Term::unneg));
+        nar.add(Functor.f1Inline("unneg", Term::unneg));
 
 //        /** drops a random contained event, whether at first layer or below */
 //        nar.on(Functor.f1Inline("dropAnyEvent", (Term x) -> Conj.dropAnyEvent(x, nar)));
 
 
         /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
-        nar.on(new AbstractInlineFunctor2("conjWithoutPN") {
+        nar.add(new AbstractInlineFunctor2("conjWithoutPN") {
             @Override
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.diff(conj, event, true);
@@ -454,7 +454,7 @@ public class Builtin {
         });
 
 
-    nar.on(new AbstractInlineFunctor1("chooseAnySubEvent") {
+    nar.add(new AbstractInlineFunctor1("chooseAnySubEvent") {
 
         @Override
         protected Term apply1(Term conj) {
@@ -464,7 +464,7 @@ public class Builtin {
         }
     });
 
-   nar.on(new AbstractInlineFunctor2("chooseUnifiableSubEvent") {
+   nar.add(new AbstractInlineFunctor2("chooseUnifiableSubEvent") {
            @Override
            protected Term apply(Term conj, Term event) {
                if (event instanceof nars.term.Variable)
@@ -489,12 +489,12 @@ public class Builtin {
        });
 
 
-        nar.on(Functor.f1Concept("beliefTruth", nar, (c, n) -> $.quote(n.belief(c, n.time()))));
+        nar.add(Functor.f1Concept("beliefTruth", nar, (c, n) -> $.quote(n.belief(c, n.time()))));
 //        nar.on(Functor.f1Concept("goalTruth", nar, (c, n) -> $.quote(n.goal(c, n.time()))));
 
-        nar.on(f0("self", nar::self));
+        nar.add(f0("self", nar::self));
 
-        nar.on(Functor.f1("the", what -> {
+        nar.add(Functor.f1("the", what -> {
 
 
             if (what instanceof Atom) {
@@ -517,7 +517,7 @@ public class Builtin {
         }));
 
 
-        nar.on(Functor.f("slice", (args) -> {
+        nar.add(Functor.f("slice", (args) -> {
             if (args.subs() == 2) {
                 Term x = args.sub(0);
                 if (x.subs() > 0) {
@@ -564,16 +564,16 @@ public class Builtin {
     private static void registerOperators(NAR nar) {
 
 
-        nar.onOp(Op.Belief, (x, nn) -> Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term, truth) -> NALTask.the(term, BELIEF, truth, nn.time(), ETERNAL, ETERNAL, nn.evidence()).priSet(nn.priDefault(BELIEF)))
+        nar.addOp(Op.Belief, (x, nn) -> Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term, truth) -> NALTask.the(term, BELIEF, truth, nn.time(), ETERNAL, ETERNAL, nn.evidence()).priSet(nn.priDefault(BELIEF)))
         );
 
 
-        nar.onOp1("assertTrue", (x, nn) -> {
+        nar.addOp1("assertTrue", (x, nn) -> {
             if (!x.op().var)
                 assertSame(True, x);
         });
 
-        nar.onOp2("assertEquals", (x, y, nn) -> {
+        nar.addOp2("assertEquals", (x, y, nn) -> {
             if (!x.op().var && !y.op().var)
                 assertEquals(/*msg,*/ x, y);
         });
@@ -595,7 +595,7 @@ public class Builtin {
     }
 
     private static void initMemoryOps(NAR nar) {
-        nar.onOp1("load", (id, nn) -> {
+        nar.addOp1("load", (id, nn) -> {
             Runnable r = nn.memoryExternal.copy(id, nn.self());
             if (r != null)
                 nn.runLater(r);
@@ -617,7 +617,7 @@ public class Builtin {
 //            });
 //        });
 
-        nar.onOp2("memory2txtfile", (id, filePath, nn) -> nn.runLater(() -> {
+        nar.addOp2("memory2txtfile", (id, filePath, nn) -> nn.runLater(() -> {
             try {
                 PrintStream p = new PrintStream(new FileOutputStream($.unquote(filePath)));
                 User.the().get(id.toString(), (byte[] x) -> {

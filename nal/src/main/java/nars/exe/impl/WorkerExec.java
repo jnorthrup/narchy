@@ -5,10 +5,8 @@ import jcog.data.list.FasterList;
 import jcog.random.SplitMix64Random;
 import jcog.util.ArrayUtils;
 import nars.control.Causable;
-import nars.exe.Exec;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import static java.lang.System.nanoTime;
@@ -50,12 +48,11 @@ public class WorkerExec extends ThreadedExec {
 
         private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
 
-        Causable.CausableMetrics[] play = new Causable.CausableMetrics[0];
+        Causable.Causation[] play = new Causable.Causation[0];
 
         private final AtomicBoolean alive = new AtomicBoolean(true);
 
         final SplitMix64Random rng;
-        private long deadline;
 
         int i = 0;
         long prioLast = ETERNAL;
@@ -64,7 +61,7 @@ public class WorkerExec extends ThreadedExec {
         boolean reprioritize = true;
 
 
-        private final BooleanSupplier deadlineFn = this::deadline;
+//        private final BooleanSupplier deadlineFn = this::deadline;
         private int n;
 
         WorkPlayLoop() {
@@ -112,7 +109,7 @@ public class WorkerExec extends ThreadedExec {
                 int playable = play.length; if (playable == 0) return;
 
                 if (i + 1 >= playable) i = 0; else i++;
-                Causable.CausableMetrics next = play[i];
+                Causable.Causation next = play[i];
 
                 long sTime = next.time;
 
@@ -130,17 +127,7 @@ public class WorkerExec extends ThreadedExec {
 
                         long useNS = Util.clampSafe(sTime / rescheduleCycles, subCycleMinNS, subCycleMaxNS);
 
-                        try {
-
-                            deadline = before + useNS;
-                            c.next(nar, deadlineFn);
-
-                        } catch (Throwable t) {
-                            Exec.logger.error("{} {}", this, t);
-                        } finally {
-                            if (singleton)
-                                c.busy.set(false);
-                        }
+                        next.runFor(useNS);
 
                         played = true;
                         after = nanoTime();
@@ -194,10 +181,10 @@ public class WorkerExec extends ThreadedExec {
             //TODO Util.max((TimedLink.MyTimedLink m) -> m.time, play);
 //            long existingTime = Util.sum((TimedLink.MyTimedLink x) -> Math.max(0, x.time), play);
 //            long remainingTime = workTimeNS - existingTime;
-            long minTime = -Util.max((Causable.CausableMetrics x) -> -x.time, play);
+            long minTime = -Util.max((Causable.Causation x) -> -x.time, play);
             long shift = minTime < 0 ? 1 - minTime : 0;
 //            System.out.println(subCycleMinNS + " " + subCycleMaxNS /* actualCycleNS */);
-            for (Causable.CausableMetrics m : play) {
+            for (Causable.Causation m : play) {
                 double t = workTimeNS * m.pri();
                 m.add(Math.max(subCycleMinNS, (long) (shift + t * rescheduleCycles)),
                         -workTimeNS * rescheduleCycles, +workTimeNS * rescheduleCycles);
@@ -206,9 +193,9 @@ public class WorkerExec extends ThreadedExec {
             return true;
         }
 
-        private boolean deadline() {
-            return nanoTime() < deadline;
-        }
+//        private boolean deadline() {
+//            return nanoTime() < deadline;
+//        }
 
         void sleep() {
             long i = (long) (WorkerExec.this.threadIdleTimePerCycle * (((float)concurrency())/exe.maxThreads));

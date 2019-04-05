@@ -54,9 +54,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     private static final SpinMutex mutex = new SpinMutexArray();
     private static final AtomicInteger serial = new AtomicInteger();
 
-    private static final int PUT_ATTEMPTS = 2;
+    private static final int PUT_ATTEMPTS = 1;
 
-    private static final float VICTIM_NOISE = 0.25f;
+    private static final float VICTIM_NOISE = 0.15f;
 
 
     /**

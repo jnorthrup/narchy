@@ -298,7 +298,7 @@ public interface NSense {
                 new BiPolarAction.DefaultPolarization(fair),
                 motor, nar());
 
-        NAgent a = (NAgent) this;
+        Game a = (Game) this;
         a.addAction(pn.pos);
         a.addAction(pn.neg);
 

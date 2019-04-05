@@ -15,7 +15,7 @@ import static java.lang.System.out;
 /**
  * Created by me on 5/4/16.
  */
-public class Line1DContinuous extends NAgent {
+public class Line1DContinuous extends Game {
 
     static {
 
@@ -34,7 +34,7 @@ public class Line1DContinuous extends NAgent {
     final float[] ins;
 
     public Line1DContinuous(NAR n, int size, IntToFloatFunction target) {
-        super("x", FrameTrigger.durs(1), n);
+        super("x", GameTime.durs(1), n);
         this.size = size;
         ins = new float[size * 2];
         this.targetFunc = target;

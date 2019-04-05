@@ -10,9 +10,9 @@ import jcog.signal.tensor.TensorRing;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
-import nars.agent.FrameTrigger;
+import nars.agent.Game;
+import nars.agent.GameTime;
 import nars.agent.MetaAgent;
-import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
@@ -35,7 +35,7 @@ import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.clock.RealTime;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
@@ -66,7 +66,7 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  * --chart output (spacegraph)
  * --cameras (Swing and OpenGL)
  */
-abstract public class NAgentX extends NAgent {
+abstract public class GameX extends Game {
 
 //    static {
 //        try {
@@ -77,42 +77,42 @@ abstract public class NAgentX extends NAgent {
 //    }
 
     @Deprecated
-    public NAgentX(String id, NAR nar) {
-        this(id, FrameTrigger.durs(1), nar);
+    public GameX(String id, NAR nar) {
+        this(id, GameTime.durs(1), nar);
     }
 
     @Deprecated
-    public NAgentX(Term id, NAR nar) {
-        this(id, FrameTrigger.durs(1), nar);
+    public GameX(Term id, NAR nar) {
+        this(id, GameTime.durs(1), nar);
     }
 
 
-    public NAgentX(String id, FrameTrigger frameTrigger, NAR nar) {
-        super(id, frameTrigger, nar);
+    public GameX(String id, GameTime gameTime, NAR nar) {
+        super(id, gameTime, nar);
     }
 
-    public NAgentX(Term id, FrameTrigger frameTrigger, NAR nar) {
-        super(id, frameTrigger, nar);
+    public GameX(Term id, GameTime gameTime, NAR nar) {
+        super(id, gameTime, nar);
     }
 
-    public static NAR runRT(Function<NAR, NAgent> init, float clockFPS) {
+    public static NAR runRT(Function<NAR, Game> init, float clockFPS) {
         return runRT(init, -1, clockFPS*2, clockFPS);
     }
 
-    public static NAR runRT(Function<NAR, NAgent> init, int threads, float narFPS, float durFPS) {
+    public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS, float durFPS) {
         NAR n = baseNAR(durFPS, threads);
 
         n.run(() -> {
 
-            NAgent a = init.apply(n);
+            Game a = init.apply(n);
 
-            n.on(a);
+            n.add(a);
 
             initPlugins(n);
             initPlugins2(n, a);
             //initPlugins3(n, a);
 
-            window(new Gridding(n.plugins(NAgent.class).map(NARui::agent).collect(toList())), 500, 500);
+            window(new Gridding(n.plugins(Game.class).map(NARui::agent).collect(toList())), 500, 500);
             window(NARui.top(n), 800, 500);
             window(NARui.inputUI(n), 500, 500);//.sizeRel(0.25f, 0.25f);
 
@@ -132,10 +132,10 @@ abstract public class NAgentX extends NAgent {
      * agent builder should name each agent instance uniquely
      * ex: new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n);
      */
-    public static NAR runRTNet(Function<NAR, NAgent> a, int threads, float narFPS, float durFPS, float netFPS) {
+    public static NAR runRTNet(Function<NAR, Game> a, int threads, float narFPS, float durFPS, float netFPS) {
         return runRT((n) -> {
 
-            NAgent aa = a.apply(n);
+            Game aa = a.apply(n);
 
             new InterNAR(n).runFPS(netFPS);
 
@@ -144,17 +144,17 @@ abstract public class NAgentX extends NAgent {
         }, threads, narFPS, durFPS);
     }
 
-    public static NAR runRL(Function<NAR, NAgent> init, float narFPS, float clockFPS) {
+    public static NAR runRL(Function<NAR, Game> init, float narFPS, float clockFPS) {
         NAR n = baseNAR(clockFPS, 1);
 
 
         n.run(() -> {
 
-            NAgent a = init.apply(n);
+            Game a = init.apply(n);
 
             a.curiosity.enable.set(false);
 
-            n.on(a);
+            n.add(a);
 
 
             window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
@@ -234,19 +234,16 @@ abstract public class NAgentX extends NAgent {
                 .time(clock)
                 .index(
 
-//                        new RadixTreeMemory(64*1024)
+                        //new RadixTreeMemory(64*1024)
+
                         //CaffeineIndex.soft()
 
                         new CaffeineMemory(
                             //    16*1024
-                                32 * 1024
-                            //64 * 1024
-                    //96 * 1024
-//                                64 * 1024
-////                                //32 * 1024
-////////                                //16 * 1024
+                                64 * 1024
+                        )
                                  //, c -> (int) Math.ceil(c.term().voluplexity()))
-                )
+
 //                        new HijackConceptIndex(
 //
 //                                //192 * 1024,
@@ -266,7 +263,7 @@ abstract public class NAgentX extends NAgent {
         return n;
     }
 
-    static void initPlugins2(NAR n, NAgent a) {
+    static void initPlugins2(NAR n, Game a) {
 
 
         PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
@@ -302,7 +299,7 @@ abstract public class NAgentX extends NAgent {
 //           }
 //        });
     }
-    static void initPlugins3(NAR n, NAgent a) {
+    static void initPlugins3(NAR n, Game a) {
 
         MetaAgent meta = new MetaAgent(n, 16);
         RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
@@ -565,7 +562,7 @@ abstract public class NAgentX extends NAgent {
 
 //        n.onCycle(()->haiQChip.next(reward));
         //n.onCycle(
-        DurService.on(n,
+        DurPart.on(n,
                 new Runnable() {
 
             private float[] sense;

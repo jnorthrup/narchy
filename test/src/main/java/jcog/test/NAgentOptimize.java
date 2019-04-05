@@ -6,7 +6,7 @@ import jcog.test.control.BooleanReactionTest;
 import nars.NAR;
 import nars.NARS;
 import nars.Param;
-import nars.agent.NAgent;
+import nars.agent.Game;
 
 import java.util.function.Function;
 
@@ -28,7 +28,7 @@ public class NAgentOptimize {
         ,96, 4);
     }
 
-    public NAgentOptimize(Function<NAR,NAgent> agent, int experimentCycles, int repeats) {
+    public NAgentOptimize(Function<NAR, Game> agent, int experimentCycles, int repeats) {
 
 
         Lab<NAR> l = new Lab<>(() -> {
@@ -92,8 +92,8 @@ public class NAgentOptimize {
 
 
 
-        Optilive<NAR, NAgent> o = l.optilive(n->agent.apply(n.get()),
-                jcog.lab.Optimize.repeat((NAgent t) -> {
+        Optilive<NAR, Game> o = l.optilive(n->agent.apply(n.get()),
+                jcog.lab.Optimize.repeat((Game t) -> {
                     final double[] rewardSum = {0}, dexSum = { 0 };
                     t.onFrame(()-> {
                         rewardSum[0] += t.happinessMean();

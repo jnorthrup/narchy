@@ -128,7 +128,7 @@ public class ConjClustering extends Causable {
         this.now = lastLearn = nar.time();
         update(nar);
 
-        nar.on(this);
+        nar.add(this);
     }
 
     @Override

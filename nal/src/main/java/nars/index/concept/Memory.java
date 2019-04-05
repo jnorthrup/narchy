@@ -156,11 +156,16 @@ public abstract class Memory {
         });
     }
 
-    final void onRemove(Concept value) {
+    /** call this after each removal */
+    protected final void onRemove(Concept value) {
 //        if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
-                set(value);
-                //nar.runLater(() -> set(value));
+
+//                if (nar.exe.concurrent()) {
+//                    nar.runLater(() -> set(value));
+//                } else
+                    set(value);
+
             } else {
                 value.delete(nar);
             }

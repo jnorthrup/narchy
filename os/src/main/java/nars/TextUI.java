@@ -28,10 +28,10 @@ import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.link.Activate;
 import nars.op.language.NARHear;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -57,7 +57,7 @@ public class TextUI {
     final Set<TextGUI> sessions = Sets.newConcurrentHashSet();
 
     /** HACK because Lanterna's Component.onRemove doesnt get called reliably */
-    private final Set<DurService> updaters = Sets.newConcurrentHashSet();
+    private final Set<DurPart> updaters = Sets.newConcurrentHashSet();
 
     public TextUI(NAR n) {
         this.nar = n;
@@ -92,7 +92,7 @@ public class TextUI {
     }
 
 
-    private class TextGUI extends NARService implements Runnable {
+    private class TextGUI extends Part implements Runnable {
 
 
         public final FloatRange guiUpdateFPS;
@@ -278,7 +278,7 @@ public class TextUI {
 
         @Override
         protected void stopping(NAR nar) {
-            updaters.forEach(DurService::off);
+            updaters.forEach(DurPart::off);
             updaters.clear();
 
             Collection<Window> w = tui.getWindows();
@@ -362,8 +362,8 @@ public class TextUI {
         }
 
 
-        DurService newGUIUpdate(Runnable r) {
-            DurService u = DurService.on(nar, r);
+        DurPart newGUIUpdate(Runnable r) {
+            DurPart u = DurPart.on(nar, r);
             updaters.add(u);
             return u;
 
@@ -420,7 +420,7 @@ public class TextUI {
 
         private class EmotionDashboard extends Panel {
             private final TextBox stats;
-            private final DurService on;
+            private final DurPart on;
             private final AtomicBoolean busy = new AtomicBoolean(false);
 
             public EmotionDashboard() {
@@ -477,7 +477,7 @@ public class TextUI {
             protected final AtomicBoolean changed = new AtomicBoolean(false);
             protected final MutableInteger visible = new MutableInteger();
 
-            protected final DurService update;
+            protected final DurPart update;
             float priInfluenceRate = 1f;
             private boolean autoupdate = true;
 

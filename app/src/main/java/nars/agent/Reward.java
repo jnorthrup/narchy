@@ -31,7 +31,7 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
 
-    protected final NAgent agent;
+    protected final Game agent;
 
     protected transient volatile float rewardBelief = Float.NaN;
 
@@ -41,7 +41,7 @@ public abstract class Reward implements TermedDelegate, Iterable<Concept> {
 
     final PriNode attn;
 
-    public Reward(NAgent a) {
+    public Reward(Game a) {
     //TODO
     //public Reward(NAgent a, FloatSupplier r, float confFactor) {
         this.agent = a;

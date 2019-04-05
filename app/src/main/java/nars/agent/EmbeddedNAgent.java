@@ -18,7 +18,7 @@ public class EmbeddedNAgent extends Agent {
     /** increase for more power */
     final static int DUR_CYCLES = 1;
 
-    private final NAgent env;
+    private final Game env;
     final float[] senseValue;
     private final AgentLoop[] sense;
     private final SwitchAction act;
@@ -43,7 +43,7 @@ public class EmbeddedNAgent extends Agent {
 
         n.time.dur(DUR_CYCLES);
 
-        this.env = new NAgent("agent", n);
+        this.env = new Game("agent", n);
 
         this.sense = IntStream.range(0, inputs).mapToObj(i->
             env.sense($.inh($.the(i), env.id), ()-> senseValue[i])

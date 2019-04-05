@@ -143,7 +143,7 @@ public class ExeCharts {
 
         CausableWidget(Causable c) {
             this.c = c;
-            label = new VectorLabel(new Can(c.term().toString()).id);
+            label = new VectorLabel(new Can(c.id().toString()).id);
             set(label);
 
         }

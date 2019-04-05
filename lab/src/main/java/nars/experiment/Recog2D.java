@@ -5,9 +5,9 @@ import jcog.Util;
 import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
+import nars.GameX;
 import nars.NAR;
-import nars.NAgentX;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.agent.Reward;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -41,7 +41,7 @@ import static nars.Op.GOAL;
 /**
  * Created by me on 10/8/16.
  */
-public class Recog2D extends NAgentX {
+public class Recog2D extends GameX {
 
 
     private final Graphics2D g;
@@ -244,7 +244,7 @@ public class Recog2D extends NAgentX {
 
     public static void main(String[] arg) {
 
-        NAgentX.runRT((n) -> {
+        GameX.runRT((n) -> {
 
             Recog2D a = new Recog2D(n);
 
@@ -405,7 +405,7 @@ public class Recog2D extends NAgentX {
         boolean verify;
 
 
-        public BeliefVector(IntFunction<Term> namer, int maxStates, NAgent a) {
+        public BeliefVector(IntFunction<Term> namer, int maxStates, Game a) {
 
             this.states = maxStates;
             this.neurons = new Neuron[maxStates];

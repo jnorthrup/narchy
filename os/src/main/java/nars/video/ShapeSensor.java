@@ -17,8 +17,8 @@ import georegression.struct.shapes.Rectangle2D_I32;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
-import nars.agent.NAgent;
-import nars.control.NARService;
+import nars.agent.Game;
+import nars.control.Part;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -51,7 +51,7 @@ import static nars.time.Tense.ETERNAL;
 
 
 
-public class ShapeSensor extends NARService {
+public class ShapeSensor extends Part {
 
     private final Bitmap2D input;
     private final ConsumerX<ITask> in;
@@ -127,7 +127,7 @@ public class ShapeSensor extends NARService {
         }
     }
 
-    public ShapeSensor(Term id, Bitmap2D input, NAgent a) {
+    public ShapeSensor(Term id, Bitmap2D input, Game a) {
         super(a.nar());
         this.id = id;
         this.input = input;

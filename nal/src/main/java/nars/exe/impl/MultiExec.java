@@ -13,7 +13,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.ProxyTask;
 import nars.time.clock.RealTime;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -96,7 +96,7 @@ abstract public class MultiExec extends UniExec {
     }
 
 
-    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(4, 0.25f);
+    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(8, 0.5f);
 
     private void updateTiming(long _cycleDeltaNS) {
 
@@ -140,7 +140,7 @@ abstract public class MultiExec extends UniExec {
 
         super.start(n);
 
-        DurService updater = DurService.on(n, this::update);
+        DurPart updater = DurPart.on(n, this::update);
         updater.durs(UPDATE_DURS);
         ons.add(updater);
         //ons.add(n.onCycle(this::update));

@@ -229,7 +229,7 @@ public class NAL8SequenceTest extends NALTest {
         n.termVolumeMax.set(20);
         n.time.dur(4);
 
-        n.onOp1("f", (x,nar)->{
+        n.addOp1("f", (x, nar)->{
             System.err.println(x);
 
             nar.want($.func("f", x).neg(), Tense.Present, 1f); //quench

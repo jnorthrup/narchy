@@ -3,15 +3,15 @@ package nars.video;
 import com.github.sarxos.webcam.Webcam;
 import nars.$;
 import nars.NAR;
-import nars.control.NARService;
-import nars.control.NARServiceSet;
+import nars.control.Part;
+import nars.control.PartSet;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.WebCam;
 
-public class NARVideo extends NARServiceSet<NARVideo.Video> {
+public class NARVideo extends PartSet<NARVideo.Video> {
 
     public NARVideo(NAR nar) {
         super(nar);
@@ -19,7 +19,7 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
         Webcam.getWebcams().forEach(w -> add(new Video(nar, w)));
     }
 
-    static class Video extends NARService {
+    static class Video extends Part {
 
         private WebCam c;
         public final Webcam cam;
@@ -30,7 +30,7 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
             super($.p($.the("video"), $.the(cam.getName())));
             this.cam = cam;
             surface = new Gridding(); 
-            nar.off(this); 
+            nar.remove(this);
         }
 
         public Surface surface() {

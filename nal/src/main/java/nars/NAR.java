@@ -16,7 +16,7 @@ import jcog.pri.Prioritized;
 import jcog.service.Service;
 import jcog.service.Services;
 import nars.Narsese.NarseseException;
-import nars.attention.Attention;
+import nars.attention.TaskLinkBag;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
@@ -24,7 +24,7 @@ import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.Cause;
 import nars.control.Control;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.control.channel.CauseChannel;
 import nars.eval.Evaluator;
 import nars.eval.Facts;
@@ -45,11 +45,11 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.functor.LambdaFunctor;
 import nars.time.ScheduledTask;
 import nars.time.Tense;
 import nars.time.Time;
 import nars.time.event.*;
+import nars.time.part.DurPart;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.Timed;
@@ -77,7 +77,6 @@ import java.util.zip.GZIPOutputStream;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.*;
-import static nars.term.Functor.f;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.c2w;
 import static org.fusesource.jansi.Ansi.ansi;
@@ -96,45 +95,37 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled, Timed {
 
     static final String VERSION = "NARchy v?.?";
-
+    private static final Set<String> loggedEvents = java.util.Set.of("eventTask");
+    final static private int outputBufferSize = 128 * 1024;
     public final Exec exe;
     public final NARLoop loop;
-
-    public final Services<NAR, Term> plugin;
-
+    /**
+     * the dynamically composeable components of this NAR
+     */
+    public final Services<NAR, Term> part;
     public final Time time;
-
     public final Memory memory;
     public final MemoryExternal memoryExternal = new MemoryExternal(this);
-
     public final ConceptBuilder conceptBuilder;
-
     public final Emotion feel;
-    public final Attention attn;
-
+    public final TaskLinkBag attn;
     public final TaskBuffer in;  //perception?
-
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
     public final TaskTopic eventTask = new TaskTopic();
-
     public final Control control;
-
     public final Evaluator evaluator = new Evaluator(this::axioms);
-
     protected final Supplier<Random> random;
-
     /**
      * atomic for thread-safe schizophrenia
      */
     private final AtomicReference<Term> self = new AtomicReference<>(null);
-
     /**
      * default attention; other attentions can be attached as services
      */
     public Logger logger;
 
-    public NAR(Memory memory, Exec exe, Attention attn, Time time, TaskBuffer in, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
+    public NAR(Memory memory, Exec exe, TaskLinkBag attn, Time time, TaskBuffer in, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
 
         this.random = rng;
 
@@ -152,20 +143,20 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         if (!in.async(target)) {
             Consumer<NAR> p = nn -> in.commit(nn.time(), target);
             //if (cycleOrDur)
-                onCycle(p);
+            onCycle(p);
 //                DurService.on(this, p)
         }
 
         this.exe = exe;
 
-        this.plugin = new Services<>(this, exe);
+        this.part = new Services<>(this, exe);
 
         this.conceptBuilder = conceptBuilder;
         memory.start(this);
 
         this.feel = new Emotion(this);
 
-        on(this.attn);
+        add(this.attn);
 
         this.control = new Control(this);
 
@@ -444,11 +435,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return Tense.getRelativeOccurrence(tense, this);
     }
 
-    public NAR believe(String termString, float freq, float conf)  {
+    public NAR believe(String termString, float freq, float conf) {
         return believe(termString, freq, conf, ETERNAL, ETERNAL);
     }
 
-    public NAR believe(String termString, float freq, float conf, long start, long end)  {
+    public NAR believe(String termString, float freq, float conf, long start, long end) {
         believe($$(termString), start, end, freq, conf);
         return this;
     }
@@ -519,7 +510,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return input(pri, term, BELIEF, start, end, freq, conf);
     }
 
-
     public Task want(float pri, Term goal, long start, long end, float freq, float conf) throws TaskException {
         return input(pri, goal, GOAL, start, end, freq, conf);
     }
@@ -556,6 +546,23 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return que(term, punc, when, when);
     }
 
+//    public NAR logWhen(Appendable out) {
+//
+//        if (past && present && future)
+//            return log(out);
+//
+//        return log(out, v -> {
+//            if (v instanceof Task) {
+//                Task t = (Task) v;
+//                long now = time();
+//                return
+//
+//                                (future && t.isDuring(now));
+//            }
+//            return false;
+//        });
+//    }
+
     public Task que(Term term, byte punc, long start, long end) {
         assert ((punc == QUESTION) || (punc == QUEST));
 
@@ -580,23 +587,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             return b != null && b.priElseZero() > priThresh;
         });
     }
-
-//    public NAR logWhen(Appendable out) {
-//
-//        if (past && present && future)
-//            return log(out);
-//
-//        return log(out, v -> {
-//            if (v instanceof Task) {
-//                Task t = (Task) v;
-//                long now = time();
-//                return
-//
-//                                (future && t.isDuring(now));
-//            }
-//            return false;
-//        });
-//    }
 
     @Override
     public final void input(ITask t) {
@@ -628,30 +618,26 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * asynchronously adds the service
      */
-    public final void on(NARService s) {
-        plugin.add(s.term(), s);
+    public final void add(Part s) {
+        part.add(s.id(), s);
     }
 
-    public final void off(NARService s) {
-        plugin.remove(s.term(), s);
+    public final void remove(Part s) {
+        part.remove(s.id(), s);
     }
 
     /**
      * simplified wrapper for use cases where only the arguments of an operation task, and not the task itself matter
      */
-    public final void onOpN(String atom, BiConsumer<Subterms, NAR> exe) {
-        onOp(atom, (task, nar) -> {
+    public final void addOpN(String atom, BiConsumer<Subterms, NAR> exe) {
+        addOp(Atomic.atom(atom), (task, nar) -> {
             exe.accept(task.term().sub(0).subterms(), nar);
             return null;
         });
     }
 
-    public final Operator onOp1(String atom, BiConsumer<Term, NAR> exe) {
-        return onOp1((Atom) Atomic.the(atom), exe);
-    }
-
-    public final Operator onOp1(Atom atom, BiConsumer<Term, NAR> exe) {
-        return onOp(atom, (task, nar) -> {
+    public final Operator addOp1(String atom, BiConsumer<Term, NAR> exe) {
+        return addOp(Atomic.atom(atom), (task, nar) -> {
 
             Subterms ss = task.term().sub(0).subterms();
             if (ss.subs() == 1)
@@ -660,8 +646,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         });
     }
 
-    public final void onOp2(String atom, TriConsumer<Term, Term, NAR> exe) {
-        onOp(atom, (task, nar) -> {
+    public final void addOp2(String atom, TriConsumer<Term, Term, NAR> exe) {
+        addOp(Atomic.atom(atom), (task, nar) -> {
 
             Subterms ss = task.term().sub(0).subterms();
             if (ss.subs() == 2)
@@ -670,28 +656,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         });
     }
 
-    /**
-     * registers an operator
-     */
-    public final void onOp(String a, BiConsumer<Task, NAR> exe) {
-        onOp(a, (task, nar) -> {
-
-            exe.accept(task, nar);
-            return null;
-        });
-    }
 
     /**
      * registers an operator
      */
-    public final Operator onOp(String a, BiFunction<Task, NAR, Task> exe) {
-        return onOp((Atom) $.the(a), exe);
-    }
-
-    /**
-     * registers an operator
-     */
-    public final Operator onOp(Atom name, BiFunction<Task, NAR, Task> exe) {
+    public final Operator addOp(Atom name, BiFunction<Task, NAR, Task> exe) {
         Operator op = Operator.simple(name, exe);
         memory.set(op);
         return op;
@@ -719,7 +688,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final BeliefTable table(Termed concept, byte punc) {
         assert (punc == BELIEF || punc == GOAL);
         @Nullable Concept c = conceptualizeDynamic(concept);
-        return c!=null ? (BeliefTable) c.table(punc): null;
+        return c != null ? (BeliefTable) c.table(punc) : null;
     }
 
     /**
@@ -756,6 +725,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return truth(concept, GOAL, when);
     }
 
+    /* Print all statically known events (discovered via reflection)
+     *  for this reasoner to a stream
+     * */
+
     @Nullable
     public final Truth goalTruth(Termed concept, long start, long end) {
         return truth(concept, GOAL, start, end);
@@ -770,7 +743,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             pause();
 
-            plugin.stop();
+            part.stop();
 
             exe.stop();
 
@@ -778,10 +751,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         return this;
     }
-
-    /* Print all statically known events (discovered via reflection)
-     *  for this reasoner to a stream
-     * */
 
     /**
      * steps 1 frame forward. cyclesPerFrame determines how many cycles this frame consists of
@@ -843,7 +812,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public NAR log(Appendable out, Predicate includeValue) {
         return trace(out, NAR.loggedEvents::contains, includeValue);
     }
-    private static final Set<String> loggedEvents = java.util.Set.of("eventTask");
 
     /**
      * Runs until stopped, at a given delay period between frames (0= no delay). Main loop
@@ -870,26 +838,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         exe.execute(t);
     }
 
-//    /**
-//     * executes task either synchronously or asynchronously according to the executor's mode.
-//     * this is different from input(ITask) because it will force async if available whereas input will
-//     * execute AbstractTask inline by defaul
-//     */
-//    public final void run(ITask t) {
-//        //HACK
-//        if (exe.concurrent())
-//        input(t)
-//        exe.execute(t);
-//    }
-
-
-
-
     @Override
     public String toString() {
         return self() + ":" + getClass().getSimpleName();
     }
-
 
     public NAR input(String... ss) throws NarseseException {
         for (String s : ss)
@@ -964,7 +916,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * after the end of the current frame before the next frame.
      */
     public final void runLater(Runnable t) {
-        runAt(time()+1, t);
+        runAt(time() + 1, t);
     }
 
     /**
@@ -1069,7 +1021,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return eventTask.on(listener, punctuations);
     }
 
-
     public NAR trace() {
         trace(System.out);
         return this;
@@ -1102,7 +1053,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * activate/"turn-ON"/install a concept in the index and activates it, used for setup of custom concept implementations
      * implementations should apply active concept capacity policy
      */
-    public final Concept on(PermanentConcept c) {
+    public final <Permanent_Concept extends PermanentConcept> Permanent_Concept add(Permanent_Concept c) {
 
         Termed existing = memory.remove(c.term());
         if ((existing != null)) {
@@ -1123,19 +1074,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 //        }
 
         return c;
-    }
-
-    /**
-     * registers a target rewrite functor
-     */
-
-    public final LambdaFunctor on(String termAtom, Function<Subterms, Term> f) {
-        return (LambdaFunctor) on(f(termAtom, f));
-    }
-
-
-    public final Concept on1(String termAtom, Function<Term, Term> f) {
-        return on(termAtom, (Subterms s) -> s.subs() == 1 ? f.apply(s.sub(0)) : null);
     }
 
     @Override
@@ -1248,9 +1186,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this;
     }
 
-
-    final static private int outputBufferSize = 128 * 1024;
-
     public NAR output(File o, boolean binary) throws FileNotFoundException {
         return output(new BufferedOutputStream(new FileOutputStream(o), outputBufferSize), binary);
     }
@@ -1321,7 +1256,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         boolean negate;
         Term tt = t.term();
-        if (tt.op()==NEG) {
+        if (tt.op() == NEG) {
             negate = true;
             t = tt = tt.unneg();
         } else {
@@ -1410,7 +1345,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
     public Stream<Service<NAR>> plugins() {
-        return plugin.stream();
+        return part.stream();
     }
 
     public void conceptualize(Term term, Consumer<Concept> with) {
@@ -1512,29 +1447,35 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 //        return answer(content, GOAL, start, end);
 //    }
 
-    /** stream of all (explicitly and inferrable) internal events */
+    /**
+     * stream of all (explicitly and inferrable) internal events
+     */
     public Stream<? extends InternalEvent> at() {
         return Streams.concat(
-            //TODO Streams.stream(eventTask).map(t -> ), // -> AtTask events
-            Streams.stream(eventCycle).map(AtCycle::new),
-            Streams.stream(eventClear).map(AtClear::new),
-            plugin.stream()
-                .map((s) -> ((NARService)s).event()).filter(Objects::nonNull),
-            time.events()
-                .filter(t -> !(t instanceof DurService.AtDur)) //HACK (these are included in service's events)
+                //TODO Streams.stream(eventTask).map(t -> ), // -> AtTask events
+                Streams.stream(eventCycle).map(AtCycle::new),
+                Streams.stream(eventClear).map(AtClear::new),
+                part.stream()
+                        .map((s) -> ((Part) s).event()).filter(Objects::nonNull),
+                time.events()
+                        .filter(t -> !(t instanceof DurPart.AtDur)) //HACK (these are included in service's events)
 //            causes.stream(),
         );
     }
 
-    /** map of internal events organized by category */
-    public final Map<Term,List<InternalEvent>> atMap() {
+    /**
+     * map of internal events organized by category
+     */
+    public final Map<Term, List<InternalEvent>> atMap() {
         return at().collect(Collectors.groupingBy(InternalEvent::category));
     }
 
-    /** stream of all registered services */
+    /**
+     * stream of all registered services
+     */
     public final <X> Stream<X> plugins(Class<? extends X> nAgentClass) {
         return plugins().filter(x -> nAgentClass.isAssignableFrom(x.getClass()))
-                .map(x -> (X)x);
+                .map(x -> (X) x);
     }
 
 

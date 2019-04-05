@@ -5,7 +5,7 @@ import jcog.math.v2;
 import jcog.random.SplitMix64Random;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.concept.action.ActionConcept;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -255,11 +255,11 @@ public class PixelBag implements Bitmap2D {
         return f;
     }
 
-    public PixelBag addActions(Term termRoot, NAgent a) {
+    public PixelBag addActions(Term termRoot, Game a) {
         return addActions(termRoot, a, true, true, true);
     }
 
-    public PixelBag addActions(Term termRoot, NAgent a, boolean horizontal, boolean vertical, boolean zoom) {
+    public PixelBag addActions(Term termRoot, Game a, boolean horizontal, boolean vertical, boolean zoom) {
         if (this.actions != null && !this.actions.isEmpty())
             throw new UnsupportedOperationException("actions already added");
 

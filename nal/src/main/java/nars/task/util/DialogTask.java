@@ -8,7 +8,7 @@ import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.derive.Deriver;
 import nars.op.SubUnify;
 import nars.term.Term;
@@ -19,7 +19,7 @@ import java.util.Set;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
-public class DialogTask extends NARService {
+public class DialogTask extends Part {
 
     final ConcurrentFastIteratingHashSet<Task> tasks = new ConcurrentFastIteratingHashSet<>(Task.EmptyArray);
     private final Deriver deriver;
@@ -68,7 +68,7 @@ public class DialogTask extends NARService {
 
         monitor = n.onTask(this::onTask, listenPuncs);
 
-        n.on(this);
+        n.add(this);
     }
 
     @Override

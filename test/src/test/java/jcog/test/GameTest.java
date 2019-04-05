@@ -7,9 +7,9 @@ import jcog.test.control.MiniTest;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.agent.FrameTrigger;
-import nars.agent.NAgent;
-import nars.time.event.DurService;
+import nars.agent.GameTime;
+import nars.agent.Game;
+import nars.time.part.DurPart;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanBooleanPredicate;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import static jcog.Texts.n4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class NAgentTest {
+public class GameTest {
 
     static NAR nar(int dur) {
 
@@ -194,12 +194,12 @@ public class NAgentTest {
 
         NAR nar = NARS.tmp();
         nar.time.dur(dur);
-        NAgent a = new NAgent("x", FrameTrigger.durs(dursPerFrame), nar);
+        Game a = new Game("x", GameTime.durs(dursPerFrame), nar);
 
         a.onFrame(()->{
             aFrames.add(nar.time());
         });
-        DurService.on(nar,()->{
+        DurPart.on(nar,()->{
             sFrames.add(nar.time());
         }).durs(dursPerService);
         nar.run(50);

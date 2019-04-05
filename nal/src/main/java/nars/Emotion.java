@@ -7,7 +7,7 @@ import jcog.signal.meter.ExplainedCounter;
 import jcog.signal.meter.FastCounter;
 import jcog.signal.meter.Meter;
 import nars.control.MetaGoal;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 
 import java.io.PrintStream;
 import java.util.function.BiConsumer;
@@ -88,7 +88,7 @@ public class Emotion implements Meter {
         super();
         this.nar = n;
         //nar.onCycle((Runnable)this::commit);
-        DurService.on(nar, (Runnable) this::commit);
+        DurPart.on(nar, (Runnable) this::commit);
 
     }
 

@@ -15,8 +15,8 @@ import jcog.signal.wave2d.BrightnessNormalize;
 import jcog.signal.wave2d.ImageFlip;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
+import nars.GameX;
 import nars.NAR;
-import nars.NAgentX;
 import nars.Narsese;
 import nars.concept.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorView;
@@ -41,7 +41,7 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 /**
  * Created by me on 9/22/16.
  */
-public class Jake2Agent extends NAgentX implements Runnable {
+public class Jake2Agent extends GameX implements Runnable {
 
     static final int FPS = 24;
     static float timeScale = 2.5f;

@@ -5,8 +5,8 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
+import nars.GameX;
 import nars.NAR;
-import nars.NAgentX;
 import nars.agent.Reward;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.sensor.VectorSensorView;
@@ -19,13 +19,13 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.$.$$;
-import static nars.agent.FrameTrigger.fps;
+import static nars.agent.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 4/30/17.
  */
-public class Gradius extends NAgentX {
+public class Gradius extends GameX {
 
     private final Gradius4K g = new Gradius4K();
 
@@ -36,7 +36,7 @@ public class Gradius extends NAgentX {
 
     public static void main(String[] args) {
 
-        NAgentX.runRT(Gradius::new, 25f);
+        GameX.runRT(Gradius::new, 25f);
 
     }
 

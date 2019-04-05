@@ -6,7 +6,7 @@ import jcog.func.TriConsumer;
 import jcog.math.FloatRange;
 import jcog.net.UDPeer;
 import nars.bag.leak.TaskLeak;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.control.channel.CauseChannel;
 import nars.io.IO;
 import nars.io.TaskIO;
@@ -27,7 +27,7 @@ import static jcog.net.UDPeer.Command.TELL;
 /**
  * InterNARchy / InterNARS P2P Network Interface for a NAR
  */
-public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuestionTask, Task> {
+public class InterNAR extends Part implements TriConsumer<NAR, ActiveQuestionTask, Task> {
 
     public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
     private final int port;
@@ -104,7 +104,7 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
 
 
 
-        nar.on(this);
+        nar.add(this);
 
     }
 
@@ -114,7 +114,7 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
         on(peer.receive.on(this::receive));
 
         //HACK temporary:
-        nar.onOp1("ping", (term,nn)->{
+        nar.addOp1("ping", (term, nn)->{
             try {
                 String s = Texts.unquote(term.toString());
                 String[] addressPort = s.split(":");
@@ -129,7 +129,7 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
             }
         });
 
-        nar.on(send);
+        nar.add(send);
 
 
     }
@@ -137,7 +137,7 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
     @Override
     protected void stopping(NAR nar) {
 
-        nar.off(send);
+        nar.remove(send);
 
         peer.stop();
     }

@@ -1,7 +1,7 @@
 package nars;
 
 import jcog.data.list.FasterList;
-import nars.attention.Attention;
+import nars.attention.TaskLinkBag;
 import nars.concept.Concept;
 import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
@@ -40,7 +40,7 @@ public class NARS {
         NAR n = new NAR(
             index.get(),
             exec.get(),
-            new Attention(),
+            new TaskLinkBag(),
             time,
             in.get(),
             rng,

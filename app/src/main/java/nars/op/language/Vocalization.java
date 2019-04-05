@@ -4,9 +4,9 @@ import com.google.common.collect.TreeBasedTable;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.term.Term;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import nars.truth.Truth;
 import nars.truth.util.TruthAccumulator;
 import org.eclipse.collections.api.tuple.Pair;
@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Consumer;
 
-public class Vocalization extends NARService {
+public class Vocalization extends Part {
 
     public static final Term PREPOSITION = $.the("preposition");
     public static final Term PRONOUN = $.the("pronoun");
@@ -37,13 +37,13 @@ public class Vocalization extends NARService {
         this.durationsPerWord = durationsPerWord;
         this.speak = speak;
         this.energy = 0;
-        nar.on(this);
+        nar.add(this);
     }
 
     @Override
     protected void starting(NAR nar) {
         on(
-                DurService.on(nar, () -> {
+                DurPart.on(nar, () -> {
                     energy = Math.min(1f, energy + 1f / (this.durationsPerWord));
                     if (energy >= 1f) {
                         energy = 0;

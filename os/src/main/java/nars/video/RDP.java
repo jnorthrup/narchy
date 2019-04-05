@@ -14,9 +14,9 @@
 package nars.video;
 
 import nars.NAR;
-import nars.NAgentX;
-import nars.agent.FrameTrigger;
-import nars.agent.NAgent;
+import nars.GameX;
+import nars.agent.GameTime;
+import nars.agent.Game;
 import net.propero.rdp.Rdesktop;
 import net.propero.rdp.RdesktopException;
 import net.propero.rdp.RdesktopFrame;
@@ -28,12 +28,12 @@ import static nars.$.$$;
 /**
  * Remote Desktop Protocol
  */
-public class RDP extends NAgent {
+public class RDP extends Game {
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RDP.class);
 
     public RDP(NAR n, String host, int port) throws RdesktopException {
-        super($$("rdp(\"" + host + "\", " + port + ')'), FrameTrigger.durs(1), n);
+        super($$("rdp(\"" + host + "\", " + port + ')'), GameTime.durs(1), n);
         RdesktopFrame w = Rdesktop.RDPwindow(host + ':' + port);
 
         //senseCameraRetina(("video"), ()->w.canvas.backstore.getBufferedImage(), 64, 64);
@@ -41,7 +41,7 @@ public class RDP extends NAgent {
     }
 
     public static void main(String[] args) {
-        NAgentX.runRT((n)->{
+        GameX.runRT((n)->{
             try {
                 return new RDP(n, "localhost", 3389) {
 

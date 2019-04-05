@@ -1,7 +1,7 @@
 package nars.concept.action;
 
 import nars.NAR;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.term.Term;
 import nars.truth.Truth;
 
@@ -20,7 +20,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
     }
 
     @Override
-    public void update(long prev, long now, NAgent a) {
+    public void update(long prev, long now, Game a) {
         //long agentDur = now - prev;
 //        long dur = agentDur;
         //narDur; //Math.min(narDur, agentDur);

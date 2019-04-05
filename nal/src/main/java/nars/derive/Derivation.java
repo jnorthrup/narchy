@@ -501,10 +501,8 @@ public class Derivation extends PreDerivation {
 
 
 
-    public Derivation next(Deriver deri) {
+    public Derivation next(Deriver deri, NAR nar) {
         NAR pnar = this.nar;
-
-        NAR nar = deri.nar();
 
         if (pnar != nar) {
             init(nar);

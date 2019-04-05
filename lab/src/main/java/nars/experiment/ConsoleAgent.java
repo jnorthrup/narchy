@@ -5,8 +5,8 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatRange;
 import nars.$;
+import nars.GameX;
 import nars.NAR;
-import nars.NAgentX;
 import nars.attention.PriNode;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
@@ -25,7 +25,7 @@ import static nars.$.$$;
  * executes a unix shell and perceives the output as a grid of symbols
  * which can be interactively tagged by human, and optionally edited by NARS
  */
-public class ConsoleAgent extends NAgentX {
+public class ConsoleAgent extends GameX {
 
 
     static final Atomic WRITE = Atomic.the("write");
@@ -154,7 +154,7 @@ public class ConsoleAgent extends NAgentX {
     public static void main(String[] args) {
 
 
-        NAgentX.runRT((n) -> {
+        GameX.runRT((n) -> {
             ConsoleAgent a = new ConsoleAgent(n);
             SpaceGraph.window(a.R, WIDTH * 100, HEIGHT * 100);
             SpaceGraph.window(a.W, WIDTH * 100, HEIGHT * 100);

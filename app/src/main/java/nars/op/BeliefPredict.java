@@ -14,7 +14,7 @@ import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
@@ -39,7 +39,7 @@ public class BeliefPredict {
     public final FloatRange conf = new FloatRange(0.5f, 0, 1f);
     public final FloatRange confFadeFactor = new FloatRange(0.9f, 0, 1f);
 
-    final DurService on;
+    final DurPart on;
     //final List<ITask> currentPredictions = new FasterList<>();
     private final CauseChannel predict;
     private final LivePredictor predictor;
@@ -80,7 +80,7 @@ public class BeliefPredict {
 
         this.predict = nar.newChannel(this);
 
-        this.on = DurService.on(nar, this::predict);
+        this.on = DurPart.on(nar, this::predict);
     }
 
     protected void predict() {

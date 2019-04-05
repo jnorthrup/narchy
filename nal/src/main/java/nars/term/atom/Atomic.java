@@ -153,6 +153,10 @@ public interface Atomic extends Term {
         return reduce.intValueOf(v, this);
     }
 
+    static Atom atom(String id) {
+        return (Atom)the(id);
+    }
+
     /*@NotNull*/
     static Atomic the(String id) {
         int l = id.length();

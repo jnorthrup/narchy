@@ -2,7 +2,7 @@ package nars.gui;
 
 import jcog.event.Off;
 import nars.NAR;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.AbstractCachedSurface;
@@ -20,7 +20,7 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
     public static final double minUpdateTimeSeconds = 1 / 30.0; /* 30fps */
 
     protected final NAR nar;
-    DurService on;
+    DurPart on;
     final long minUpdateTimeNS;
     private boolean autolayout;
 
@@ -35,7 +35,7 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
 
     @Override
     public Off on() {
-        return on = DurService.on(nar, this::updateIfShowing);
+        return on = DurPart.on(nar, this::updateIfShowing);
     }
 
     public DurSurface durs(float durs) {

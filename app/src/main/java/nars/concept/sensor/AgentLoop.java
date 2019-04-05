@@ -2,7 +2,7 @@ package nars.concept.sensor;
 
 import jcog.math.FloatRange;
 import nars.NAR;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.term.Termed;
 
 /**
@@ -14,7 +14,7 @@ import nars.term.Termed;
  **/
 public interface AgentLoop extends Termed {
 
-    default void update(long last, long now, NAgent a) {
+    default void update(long last, long now, Game a) {
         update(last, now, a.nar());
     }
 

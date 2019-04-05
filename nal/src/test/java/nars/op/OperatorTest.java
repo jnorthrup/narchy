@@ -3,6 +3,7 @@ package nars.op;
 import nars.*;
 import nars.concept.Concept;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.test.TestNAR;
 import nars.time.Tense;
 import nars.util.AtomicOperations;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.COMMAND;
+import static nars.term.Functor.f;
 import static nars.term.Functor.funcArgsArray;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,11 +26,11 @@ class OperatorTest {
     void testEcho() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         AtomicBoolean invoked = new AtomicBoolean();
-        n.on("c", (args) -> {
+        n.add(f("c", (args) -> {
             assertEquals("(x)", args.toString());
             invoked.set(true);
             return null;
-        });
+        }));
         Task t = Narsese.the().task("c(x);", n);
         assertNotNull(t);
         assertEquals(COMMAND, t.punc());
@@ -62,11 +64,11 @@ class OperatorTest {
     void testAtomicExec() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         final int[] count = {0};
-        
-        n.onOp("x", new AtomicOperations((x, nar) -> {
+
+        n.addOp(Atomic.atom("x"), new AtomicOperations((x, nar) -> {
             System.err.println("INVOKE " + x);
             count[0]++;
-            n.believe(x); 
+            n.believe(x);
         }, 0.66f));
         n.run(1);
         n.input("x(1)! :|:");
@@ -83,7 +85,7 @@ class OperatorTest {
     void testChoose() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.time.dur(10);
-        n.onOp("x", new AtomicOperations((x, nar) -> {
+        n.addOp(Atomic.atom("x"), new AtomicOperations((x, nar) -> {
             Term[] args = funcArgsArray(x);
             if (args.length > 0) {
                 Term r;
@@ -99,7 +101,7 @@ class OperatorTest {
                 n.believe($.impl(x.term(), r), Tense.Present);
             }
         }, 0.51f));
-        
+
         n.input("x(1)! :|:");
         n.run(4);
         n.input("x(0)! :|:");
@@ -111,14 +113,14 @@ class OperatorTest {
     @Test
     void testGoal2() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
-        n.onOp("x", new AtomicOperations((t, nar) -> {
+        n.addOp(Atomic.atom("x"), new AtomicOperations((t, nar) -> {
             Term x = t.term();
             Term[] args = funcArgsArray(t);
             Term y = $.func("args", args);
             Term xy = $.impl(x, y);
             n.believe(xy, Tense.Present);
         }, 1));
-        
+
         n.run(1);
         n.input("x(1)! :|:");
         n.run(1);

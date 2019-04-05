@@ -3,7 +3,7 @@ package nars.gui.concept;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.term.Termed;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 
@@ -11,7 +11,7 @@ abstract public class ConceptView extends MutableUnitContainer {
 
     public final Termed term;
     public final NAR nar;
-    private DurService on;
+    private DurPart on;
 
     public ConceptView(Termed t, NAR n) {
         super();
@@ -29,7 +29,7 @@ abstract public class ConceptView extends MutableUnitContainer {
     @Override
     protected void starting() {
         super.starting();
-        on = DurService.on(nar, this::update);
+        on = DurPart.on(nar, this::update);
     }
 
     @Override

@@ -9,7 +9,7 @@ import jcog.signal.tensor.TensorRing;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.concept.action.ActionConcept;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
@@ -32,7 +32,7 @@ public class RLBooster implements Consumer<NAR> {
 
     public static final Logger logger = LoggerFactory.getLogger(RLBooster.class);
 
-    public final NAgent env;
+    public final Game env;
     public final Agent agent;
     public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
     final float[] input;
@@ -50,7 +50,7 @@ public class RLBooster implements Consumer<NAR> {
 //        this(env, rl, true);
 //    }
 
-    @Deprecated public RLBooster(NAgent env, IntIntToObjectFunction<Agent> agent, boolean nothingAction) {
+    @Deprecated public RLBooster(Game env, IntIntToObjectFunction<Agent> agent, boolean nothingAction) {
         this(env, agent, 1, 1, nothingAction);
     }
 
@@ -59,7 +59,7 @@ public class RLBooster implements Consumer<NAR> {
      * @param agent
      * @param nothingAction        reserve 0 for nothing
      */
-    public RLBooster(NAgent env, IntIntToObjectFunction<Agent> agent, int history, int actionDiscetization, boolean nothingAction) {
+    public RLBooster(Game env, IntIntToObjectFunction<Agent> agent, int history, int actionDiscetization, boolean nothingAction) {
 
         this.actionDiscretization = actionDiscetization;
 

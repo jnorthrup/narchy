@@ -68,7 +68,7 @@ public class Cause extends InternalEvent implements Comparable<Cause> {
      * value may be in any range (not normalized); 0 is neutral
      */
     public void setValue(float nextValue) {
-        assert(Float.isFinite(nextValue));
+        //assert(Float.isFinite(nextValue));
         value = nextValue;
     }
 

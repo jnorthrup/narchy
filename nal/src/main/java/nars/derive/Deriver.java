@@ -84,7 +84,7 @@ abstract public class Deriver extends Causable {
                 new NonEternalTaskOccurenceOrPresentDeriverTiming(nar);
 
 
-        nar.on(this);
+        nar.add(this);
     }
 
     public static Stream<Deriver> derivers(NAR n) {
@@ -97,7 +97,7 @@ abstract public class Deriver extends Causable {
     public final void next(NAR n, final BooleanSupplier kontinue) {
 
 
-        derive(Derivation.derivation.get().next(this), kontinue);
+        derive(Derivation.derivation.get().next(this, n), kontinue);
 
     }
 

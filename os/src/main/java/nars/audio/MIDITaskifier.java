@@ -89,7 +89,7 @@ public class MIDITaskifier {
                 else
                     return null;
             });
-            nar.on(c);
+            nar.add(c);
 
 
             nar.input(NALTask.the(c.term(), BELIEF, $.t(0f, 0.35f), (long) 0, ETERNAL, ETERNAL, nar.evidence()));

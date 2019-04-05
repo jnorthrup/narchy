@@ -1,12 +1,16 @@
 package nars.exe.impl;
 
+import jcog.data.list.FasterList;
 import nars.NAR;
+import nars.control.Causable;
 
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
-/** TODO not finished */
+/**
+ * TODO not finished
+ */
 public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionHandler {
 
     private ForkJoinPool pool = ForkJoinPool.commonPool(); //intermediate state
@@ -19,7 +23,6 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
     public void start(NAR n) {
         super.start(n);
 
-        ForkJoinPool prevPool = this.pool;
 
         //public ForkJoinPool(int parallelism, ForkJoinPool.ForkJoinWorkerThreadFactory factory, UncaughtExceptionHandler handler, boolean asyncMode, int corePoolSize, int maximumPoolSize, int minimumRunnable, Predicate<? super ForkJoinPool> saturate, long keepAliveTime, TimeUnit unit) {
         int proc = Runtime.getRuntime().availableProcessors();
@@ -27,17 +30,18 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
                 proc,
                 ForkJoinPool.defaultForkJoinWorkerThreadFactory,
                 this,
-                true, proc, proc /* ?? */, 0,
-                null, 60000L, TimeUnit.MILLISECONDS);
+                true, proc, proc + 1, 0,
+                null, 10000L, TimeUnit.MILLISECONDS);
 
         //Exe.setExecutor(pool);
 
-        prevPool.awaitQuiescence(1, TimeUnit.SECONDS);
+//        ForkJoinPool prevPool = this.pool;
+//        prevPool.awaitQuiescence(1, TimeUnit.SECONDS);
 
 //        pool.submit(()->{
 //
 //        });
-                //ForkJoinPool.commonPool();
+        //ForkJoinPool.commonPool();
 
 //        new Thread(()->{
 //            Util.sleepMS(50000);
@@ -63,24 +67,39 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
     protected void update() {
         super.update();
 
-        //inject play
+        play();
 
+    }
+
+
+    /**
+     * inject play tasks
+     */
+    private void play() {
         //HACK
-        int p = 6;
-        for (int i = 0; i < p; i++) {
-            nar.control.active.forEach(x -> {
-                execute(() -> {
-                    float ms = 0.5f;
-                    long durationNS = Math.round(1_000_000.0 * ms);
-                    long start = System.nanoTime();
-                    long deadline = start + durationNS;
-                    x.next(nar, () -> System.nanoTime() < deadline);
-                });
-            });
-        }
+        int throttle = 6 * concurrency();
+
+        FasterList<Runnable> batch = new FasterList();
+        nar.control.active.forEach(can -> {
+
+            if (can.sleeping())
+                return; //HACK
+
+            Causable.Causation t = can.timing();
+            float pri = can.pri();
+
+            for (int i = 0; i < Math.max(1, pri * throttle); i++) {
+                float ms = 0.35f;
+                long durationNS = Math.round(1_000_000.0 * ms);
+//                    System.out.println(pri);
+                batch.add(() -> t.runFor(durationNS));
+            }
+        });
+        batch.shuffleThis();
+        batch.forEach(pool::execute);
+
 //        if (ThreadLocalRandom.current().nextFloat() < 0.01f)
 //            System.out.println(pool);
-
     }
 
     //    @Override
@@ -91,16 +110,16 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
     protected String summary() {
         return Map.of(
-            "pool", pool.toString(),
-            "time", nar.time(),
-            "pool threads", pool.getActiveThreadCount(),
-            "pool tasks pending", pool.getQueuedTaskCount()
+                "pool", pool.toString(),
+                "time", nar.time(),
+                "pool threads", pool.getActiveThreadCount(),
+                "pool tasks pending", pool.getQueuedTaskCount()
         ).toString();
     }
 
     @Override
     protected void execute(Object x) {
-        pool.execute(x instanceof Runnable ? ((Runnable)x) : ()->{
+        pool.execute(x instanceof Runnable ? ((Runnable) x) : () -> {
             executeNow(x);
         }); //HACK
     }

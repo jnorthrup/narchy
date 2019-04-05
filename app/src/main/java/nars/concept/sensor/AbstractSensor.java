@@ -2,10 +2,10 @@ package nars.concept.sensor;
 
 import jcog.math.FloatRange;
 import nars.NAR;
-import nars.control.NARService;
+import nars.control.Part;
 import nars.term.Term;
 
-abstract public class AbstractSensor extends NARService implements AgentLoop {
+abstract public class AbstractSensor extends Part implements AgentLoop {
 
     protected final FloatRange res;
 

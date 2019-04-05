@@ -5,8 +5,8 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
+import nars.GameX;
 import nars.NAR;
-import nars.NAgentX;
 import nars.agent.Reward;
 import nars.concept.sensor.AbstractSensor;
 import nars.gui.sensor.VectorSensorView;
@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static spacegraph.SpaceGraph.window;
 
 /** NARkanoid */
-public class ArkaNAR extends NAgentX {
+public class ArkaNAR extends GameX {
 
     static boolean numeric = true;
     static boolean cam = true;

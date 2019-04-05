@@ -35,9 +35,9 @@ public class FilteredScalar extends DemultiplexedScalarSensor {
         }
 
         for (Signal s : filter)
-            nar.on(s);
+            nar.add(s);
 
-        nar.on(this);
+        nar.add(this);
 
         this.components = List.of(filter);
     }

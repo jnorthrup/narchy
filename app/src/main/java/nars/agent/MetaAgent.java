@@ -13,7 +13,7 @@ import static nars.$.$$;
 /**
  * supraself agent metavisor
  */
-public class MetaAgent extends NAgent {
+public class MetaAgent extends Game {
 
     static final Atomic curiosity = Atomic.the("curi"),
             forget = Atomic.the("forget"),
@@ -44,7 +44,7 @@ public class MetaAgent extends NAgent {
 
 
     public MetaAgent(NAR n, float fps) {
-        super(n.self() /* HACK */,FrameTrigger.fps(fps),  n);
+        super(n.self() /* HACK */, GameTime.fps(fps),  n);
 
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
         actionDial($.inh(id, $.p(forget, $.the(1))), $.inh(id, $.p(forget, $.the(-1))), n.attn.decay, 40);
@@ -85,13 +85,13 @@ public class MetaAgent extends NAgent {
         senseNumberDifference($.inh(id, $$("deriveTask")), n.feel.deriveTask::get);
 
 
-        n.plugins(NAgent.class).forEach(a -> {
+        n.plugins(Game.class).forEach(a -> {
             if(MetaAgent.this!=a)
                 add(a, false);
         });
     }
 
-    private void add(NAgent a, boolean allowPause) {
+    private void add(Game a, boolean allowPause) {
 
         Reward r = rewardNormalized($.inh(a.id, happy), -Float.MIN_NORMAL, +Float.MIN_NORMAL,
             new FloatFirstOrderDifference(nar::time, ((((() -> {
@@ -143,7 +143,7 @@ public class MetaAgent extends NAgent {
     }
 
 
-    public GoalActionConcept[] dial(NAgent a, Atomic label, FloatRange var, int steps) {
+    public GoalActionConcept[] dial(Game a, Atomic label, FloatRange var, int steps) {
         GoalActionConcept[] priAction = actionDial(
                 $.inh(id, $.p(label, $.the(-1))),
                 $.inh(id, $.p(label, $.the(+1))),
@@ -159,7 +159,7 @@ public class MetaAgent extends NAgent {
     /**
      * curiosity frequency -> probability mapping curve
      */
-    static float curiosity(NAgent agent, long start, float c) {
+    static float curiosity(Game agent, long start, float c) {
 
         float min;
         float durs = (float) (((double) (agent.nar().time() - start)) / agent.nar().dur());

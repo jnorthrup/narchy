@@ -6,7 +6,7 @@ import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -19,7 +19,7 @@ public class CaffeineMemory extends Memory implements CacheLoader<Term, Concept>
 
     private final Cache<Term, Concept> concepts;
     private final boolean weightDynamic;
-    private DurService cleanup;
+    private DurPart cleanup;
 
     public static CaffeineMemory soft() {
         return new CaffeineMemory(Caffeine.newBuilder().softValues(), false);
@@ -143,7 +143,7 @@ public class CaffeineMemory extends Memory implements CacheLoader<Term, Concept>
     @Override
     public final void onRemoval(Term key, Concept value, RemovalCause cause) {
         
-        if (value != null)
+        if (value != null && cause.wasEvicted())
             onRemove(value);
     }
 

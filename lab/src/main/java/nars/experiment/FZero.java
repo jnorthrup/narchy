@@ -6,8 +6,8 @@ import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
+import nars.GameX;
 import nars.NAR;
-import nars.NAgentX;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
@@ -30,14 +30,14 @@ import java.awt.image.BufferedImage;
 import static jcog.Util.compose;
 import static nars.$.$$;
 import static nars.Op.INH;
-import static nars.agent.FrameTrigger.fps;
+import static nars.agent.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Created by me on 3/21/17.
  */
-public class FZero extends NAgentX {
+public class FZero extends GameX {
 
     public static final double DRAG = 0.98;
     private final FZeroGame fz;
@@ -50,7 +50,7 @@ public class FZero extends NAgentX {
 
 
     public static void main(String[] args) {
-        NAgentX.runRT(n -> {
+        GameX.runRT(n -> {
 //            n.onTask(tt->{
 //                if (tt.isGoal() && !tt.isInput()) {
 //                    System.out.println(tt.proof());

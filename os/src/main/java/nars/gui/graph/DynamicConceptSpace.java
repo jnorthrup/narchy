@@ -17,7 +17,7 @@ import nars.gui.concept.ConceptSurface;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
@@ -53,9 +53,9 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
     public SpaceWidget.TermVis vis;
 
-    private DurService onDur;
+    private DurPart onDur;
     private Offs onClear;
-    private DurService updater;
+    private DurPart updater;
 
     public DynamicConceptSpace(NAR nar, @Nullable Iterable<? extends Concept> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super();
@@ -90,7 +90,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         synchronized (this) {
             super.start(space);
             init();
-            updater = DurService.on(nar, nn->{
+            updater = DurPart.on(nar, nn->{
                concepts.commit();
             });
         }
@@ -105,7 +105,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             if (onClear != null)
                 onClear.off();
 
-            onDur = DurService.on(nar, () -> {
+            onDur = DurPart.on(nar, () -> {
                 if (concepts.commit()) {
                     updated.set(true);
                 }

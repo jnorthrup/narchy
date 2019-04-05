@@ -3,8 +3,8 @@ package nars.experiment;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
+import nars.GameX;
 import nars.NAR;
-import nars.NAgentX;
 import nars.agent.Reward;
 import nars.attention.PriNode;
 import nars.concept.action.BiPolarAction;
@@ -25,11 +25,11 @@ import javax.swing.*;
 import java.util.List;
 
 import static nars.$.$$;
-import static nars.agent.FrameTrigger.fps;
+import static nars.agent.GameTime.fps;
 import static nars.experiment.mario.level.Level.*;
 import static spacegraph.SpaceGraph.window;
 
-public class NARio extends NAgentX {
+public class NARio extends GameX {
 
     private final MarioComponent game;
 //    private final AbstractSensor cam;

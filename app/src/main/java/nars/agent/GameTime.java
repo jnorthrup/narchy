@@ -5,15 +5,16 @@ import jcog.event.Off;
 import jcog.exe.Loop;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 
-abstract public class FrameTrigger {
+/** model for timing a game */
+abstract public class GameTime {
 
     private volatile Off on = null;
 
-    abstract protected Off install(NAgent a);
+    abstract protected Off install(Game a);
 
-    public void start(NAgent a) {
+    public void start(Game a) {
         synchronized (this) {
             assert(on == null);
             on = install(a);
@@ -42,12 +43,12 @@ abstract public class FrameTrigger {
     /** measured in realtime
      * TODO async loop for extended sleep periods
      * */
-    public static class FPS extends FrameTrigger {
+    public static class FPS extends GameTime {
 
         private transient final float initialFPS;
 
         public final Loop loop;
-        private NAgent agent = null;
+        private Game agent = null;
 
         public FPS(float fps) {
             this.initialFPS = fps;
@@ -74,7 +75,7 @@ abstract public class FrameTrigger {
             return now + Math.round(t.secondsToUnits(loop.periodMS.getOpaque()*0.001));
         }
 
-        @Override protected Off install(NAgent a) {
+        @Override protected Off install(Game a) {
             if (!(a.nar().time instanceof RealTime))
                 throw new UnsupportedOperationException("realtime clock required");
 
@@ -87,17 +88,17 @@ abstract public class FrameTrigger {
     }
 
     /** measured in # of perceptual durations */
-    public static class Durs extends FrameTrigger {
+    public static class Durs extends GameTime {
 
         private transient final float durPeriod;
 
-        public DurService loop = null;
+        public DurPart loop = null;
 
         public Durs(float durPeriod) {
             this.durPeriod = durPeriod;
         }
-        @Override protected Off install(NAgent a) {
-            loop = DurService.on(a.nar(), a::next);
+        @Override protected Off install(Game a) {
+            loop = DurPart.on(a.nar(), a::next);
             loop.durs(durPeriod);
             return loop;
         }
@@ -109,12 +110,12 @@ abstract public class FrameTrigger {
 
         @Override
         public long next(long now) {
-            DurService l = this.loop;
+            DurPart l = this.loop;
             return l !=null ?  now + l.durCycles() : now;
         }
     }
     /** measured in # of cycles */
-    public static class Cycs extends FrameTrigger {
+    public static class Cycs extends GameTime {
 
         private final transient float cyclePeriod;
 
@@ -125,7 +126,7 @@ abstract public class FrameTrigger {
                 throw new TODO();
             this.cyclePeriod = cyclePeriod;
         }
-        @Override protected Off install(NAgent a) {
+        @Override protected Off install(Game a) {
             //loop = DurService.on(a.nar(), a::next);
             //loop.durs(initialCycs);
             loop = a.nar().eventCycle.on(a::next);

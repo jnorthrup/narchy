@@ -3,7 +3,7 @@ package nars.experiment.minicraft;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
 import nars.NAR;
-import nars.NAgentX;
+import nars.GameX;
 import nars.Narsese;
 import nars.experiment.minicraft.top.InputHandler;
 import nars.experiment.minicraft.top.TopDownMinicraft;
@@ -16,7 +16,7 @@ import spacegraph.SpaceGraph;
 /**
  * Created by me on 9/19/16.
  */
-public class TopCraft extends NAgentX {
+public class TopCraft extends GameX {
 
     private final TopDownMinicraft craft;
     private final AutoclassifiedBitmap camAE;

@@ -22,7 +22,7 @@ import nars.control.op.Remember;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
@@ -85,7 +85,7 @@ import java.util.function.Consumer;
             //1;
             2;
 
-    private final DurService updater;
+    private final DurPart updater;
 
     public Control(NAR nar) {
         this.nar = nar;
@@ -101,10 +101,10 @@ import java.util.function.Consumer;
             }
         };
         refreshServices();
-        nar.plugin.change.on(serviceChange);
+        nar.part.change.on(serviceChange);
         refreshServices(); //again to be sure
 
-        updater = DurService.on(nar, this::update);
+        updater = DurPart.on(nar, this::update);
         updater.durs(updatePeriods);
     }
 
@@ -185,7 +185,7 @@ import java.util.function.Consumer;
                 //double cyclesUsed = ((double) tUsed) / cycleIdealNS;
                 //vr = (float) (v / (1 + cyclesUsed));
 
-                vr = v > Float.MIN_NORMAL ? (float) (v / ((1.0 + tUsed)/1.0E-3)) : 0;
+                vr = v > Float.MIN_NORMAL ? (float) (v / ((1.0 + tUsed)/1.0E9)) : 0;
                 assert (vr == vr);
             }
 

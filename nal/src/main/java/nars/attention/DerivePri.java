@@ -12,9 +12,6 @@ public interface DerivePri {
 
     }
 
-    default void update(NAR n) {
-
-    }
 
     /**
      *

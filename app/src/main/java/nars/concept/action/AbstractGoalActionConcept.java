@@ -4,7 +4,7 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.agent.NAgent;
+import nars.agent.Game;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityTask;
 import nars.control.channel.CauseChannel;
@@ -217,11 +217,11 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Override
-    public void update(long prev, long now, NAgent a) {
+    public void update(long prev, long now, Game a) {
 
         NAR n = a.nar();
         int narDur = n.dur();
-        int agentDur = a.frameTrigger.dur();
+        int agentDur = a.time.dur();
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
 

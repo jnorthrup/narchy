@@ -72,7 +72,7 @@ public abstract class TaskLeak extends Causable {
         this.source = src;
 
         if (n!=null)
-            n.on(this);
+            n.add(this);
     }
 
     /**

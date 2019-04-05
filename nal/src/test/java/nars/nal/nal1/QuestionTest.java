@@ -16,6 +16,7 @@ import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 
 import static nars.$.$$$;
+import static nars.term.Functor.f;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -147,7 +148,7 @@ class QuestionTest {
         NAR n = NARS.tmp();
 
 
-        n.on("odd", a -> {
+        n.add(f("odd", a -> {
             if (a.subs() == 1 && a.sub(0).op() == Op.ATOM) {
                 try {
                     return $.intValue(a.sub(0)) % 2 == 0 ? Bool.False : Bool.True;
@@ -156,7 +157,7 @@ class QuestionTest {
                 }
             }
             return null;
-        });
+        }));
         n.termVolumeMax.set(24);
         n.input(
                 "({1,2,3,4} --> number).",

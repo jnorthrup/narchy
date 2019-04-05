@@ -6,13 +6,13 @@ import nars.$;
 import nars.NAR;
 import nars.concept.sensor.Signal;
 
-import static nars.agent.FrameTrigger.durs;
+import static nars.agent.GameTime.durs;
 
 
 /**
  * 1 input x 1 output environment
  */
-public class Line1DSimplest extends NAgent {
+public class Line1DSimplest extends Game {
 
 
     /**

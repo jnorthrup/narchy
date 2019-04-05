@@ -76,7 +76,7 @@ public class Signal extends TaskConcept implements AgentLoop, FloatFunction<Term
 
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
 
-        n.on(this);
+        n.add(this);
     }
 
     protected AttnBranch newAttn(Term term) {

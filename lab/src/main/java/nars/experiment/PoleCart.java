@@ -5,8 +5,8 @@ import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
+import nars.GameX;
 import nars.NAR;
-import nars.NAgentX;
 import nars.agent.Reward;
 import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.DigitizedScalar;
@@ -19,7 +19,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static nars.agent.FrameTrigger.fps;
+import static nars.agent.GameTime.fps;
 
 /**
  * adapted from:
@@ -28,7 +28,7 @@ import static nars.agent.FrameTrigger.fps;
  * <p>
  * see also: https:
  */
-public class PoleCart extends NAgentX {
+public class PoleCart extends GameX {
 
 
     private final DigitizedScalar xVel;

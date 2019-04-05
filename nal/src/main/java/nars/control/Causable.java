@@ -1,9 +1,10 @@
 package nars.control;
 
+import jcog.TODO;
 import jcog.Util;
-import jcog.exe.Can;
 import nars.NAR;
 import nars.attention.PriNode;
+import nars.exe.Exec;
 import nars.term.Term;
 import nars.time.event.InternalEvent;
 
@@ -25,7 +26,7 @@ import static nars.time.Tense.TIMELESS;
  * records runtime instrumentation, profiling, and other telemetry for a particular Causable
  * both per individual threads, and collectively
  */
-abstract public class Causable extends NARService {
+abstract public class Causable extends Part {
 
 //    private static final Logger logger = LoggerFactory.getLogger(Causable.class);
 
@@ -69,7 +70,7 @@ abstract public class Causable extends NARService {
         this.busy = //new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
                 singleton() ? new AtomicBoolean(false) : null;
         if (nar != null)
-            nar.on(this);
+            nar.add(this);
     }
 
     @Override
@@ -84,10 +85,6 @@ abstract public class Causable extends NARService {
         super.stopping(nar);
     }
 
-    @Override
-    public String toString() {
-        return new Can(term().toString()).toString();
-    }
 
     /**
      * if false, allows multiple threads to execute this instance
@@ -171,8 +168,8 @@ abstract public class Causable extends NARService {
     public InternalEvent event() {
         return myCause;
     }
-    public CausableMetrics timing() {
-        return new CausableMetrics();
+    public Causation timing() {
+        return new Causation();
     }
 
     private final InternalEvent myCause = new AtCause(id);
@@ -193,8 +190,9 @@ abstract public class Causable extends NARService {
 
     /**
      * thread-local view
+     * instance of a cause invocation
      */
-    public final class CausableMetrics {
+    public final class Causation {
 
         public final Causable can = Causable.this;
         /**
@@ -220,6 +218,30 @@ abstract public class Causable extends NARService {
         }
 
 
+        public void runUntilMS(long msTime) {
+            throw new TODO();
+        }
+
+        public void runUntilNS(long nanoTime) {
+            throw new TODO();
+        }
+
+        public final void runFor(long durationNS) {
+//TODO
+//            if (singleton)
+//                c.busy.set(false);
+
+            long start = System.nanoTime();
+            long deadline = start + durationNS;
+            try {
+                can.next(nar, () -> System.nanoTime() < deadline);
+            } catch (Throwable t) {
+                Exec.logger.error("{} {}", can, t);
+            } finally {
+                long end = System.nanoTime();
+                use(end - start);
+            }
+        }
     }
 
 

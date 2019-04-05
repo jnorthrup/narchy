@@ -10,7 +10,7 @@ import nars.gui.NARui;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.event.DurService;
+import nars.time.part.DurPart;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.graph.EdgeVis;
 import spacegraph.space2d.container.graph.Graph2D;
@@ -30,7 +30,7 @@ import static nars.Op.*;
 public class ConceptGraph2D extends Graph2D<Term> {
 
     private final NAR nar;
-    private DurService on;
+    private DurPart on;
 
     Iterable<Term> source;
 
@@ -123,7 +123,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
     @Override
     protected void starting() {
         super.starting();
-        on = DurService.on(nar, this::commit);
+        on = DurPart.on(nar, this::commit);
     }
 
     @Override
