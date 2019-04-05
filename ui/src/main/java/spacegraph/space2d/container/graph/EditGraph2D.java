@@ -117,7 +117,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     @Override
     protected final void stopping() {
-        loop.off();
+        loop.pause();
         raw.stop();
         physics.stop();
         super.stopping();

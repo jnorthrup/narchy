@@ -213,14 +213,16 @@ public class AbstractGoalActionConcept extends AgentAction {
 
 
     @Override
-    public void updatePrevNow(@Deprecated long prev, @Deprecated long now, Game a) {
+    public void update( Game g) {
+        long prev = g.prev, now = g.now;
+
         //HACK temporary
 
-        updateCuriosity(a.curiosity);
+        updateCuriosity(g.curiosity);
 
-        NAR n = a.nar();
+        NAR n = g.nar();
         int narDur = n.dur();
-        int agentDur = a.time.dur();
+        int agentDur = g.time.dur();
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
 

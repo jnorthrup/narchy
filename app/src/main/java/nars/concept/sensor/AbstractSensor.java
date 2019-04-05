@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.control.NARPart;
 import nars.term.Term;
 
-abstract public class AbstractSensor extends NARPart implements AgentLoop {
+abstract public class AbstractSensor extends NARPart implements GameLoop {
 
     protected final FloatRange res;
 

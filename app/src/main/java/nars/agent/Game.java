@@ -16,7 +16,7 @@ import nars.attention.PriNode;
 import nars.concept.action.AgentAction;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.DefaultCuriosity;
-import nars.concept.sensor.AgentLoop;
+import nars.concept.sensor.GameLoop;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.control.NARPart;
@@ -57,11 +57,10 @@ public class Game extends NARPart implements NSense, NAct {
 
     public final GameTime time;
 
-    public final AtomicBoolean enabled = new AtomicBoolean(false);
     private final AtomicBoolean busy = new AtomicBoolean(false);
     public final AtomicBoolean trace = new AtomicBoolean(false);
 
-    public final FastCoWList<AgentLoop> sensors = new FastCoWList<>(AgentLoop[]::new);
+    public final FastCoWList<GameLoop> sensors = new FastCoWList<>(GameLoop[]::new);
 
     public final FastCoWList<AgentAction> actions = new FastCoWList<>(AgentAction[]::new);
 
@@ -172,7 +171,7 @@ public class Game extends NARPart implements NSense, NAct {
 
 
     @Override
-    public final <S extends AgentLoop> S addSensor(S s) {
+    public final <S extends GameLoop> S addSensor(S s) {
         //TODO check for existing
         sensors.add(s);
         addAttention(attnSensor, s);
@@ -220,15 +219,11 @@ public class Game extends NARPart implements NSense, NAct {
         super.starting(nar);
 
         this.time.start(this);
-
-        enabled.set(true);
     }
 
 
     @Override
     protected void stopping(NAR nar) {
-
-        enabled.set(false);
 
         if (time != null) {
             time.stop();
@@ -387,13 +382,14 @@ public class Game extends NARPart implements NSense, NAct {
      */
     protected final void next() {
 
-        if (!enabled.getOpaque())
-            return;
-
         if (!busy.compareAndSet(false, true))
             return;
 
         try {
+
+            if (!isOn())
+                return; //can this happen?
+
             long now = nar.time();
             long prev = this.now;
             if (prev == ETERNAL) {
@@ -452,7 +448,7 @@ public class Game extends NARPart implements NSense, NAct {
         rewards.forEach(this::update);
     }
 
-    private void update(AgentLoop s) {
+    private void update(GameLoop s) {
         if (s instanceof Part) {
             if (!((Part)s).isOn())
                 return; //the part is disabled

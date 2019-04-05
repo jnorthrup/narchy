@@ -88,7 +88,9 @@ abstract public class DurPart extends NARPart {
             @Override
             protected void run(NAR n, long dt) {
                 if (!r.test(n)) {
-                    off();
+                    pause();
+                } else {
+                    resume();
                 }
             }
 

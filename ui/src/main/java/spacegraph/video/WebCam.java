@@ -200,7 +200,7 @@ public class WebCam {
 
         @Override
         protected void stopping() {
-            on.off();
+            on.pause();
             on = null;
             super.stopping();
         }

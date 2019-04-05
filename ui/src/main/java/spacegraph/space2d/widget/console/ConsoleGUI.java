@@ -169,7 +169,7 @@ public class ConsoleGUI extends ConsoleTerminal {
         }
 
         if (updates!=null) {
-            updates.off();
+            updates.pause();
             updates = null;
         }
 

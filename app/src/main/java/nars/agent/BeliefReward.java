@@ -28,7 +28,7 @@ public class BeliefReward extends Reward {
     }
 
     @Override
-    protected void updateReward(long prev, long now, Game g) {
+    protected void updateReward(Game g) {
         //..
     }
 

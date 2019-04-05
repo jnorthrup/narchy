@@ -62,7 +62,7 @@ public class AutoConceptualizer extends AbstractSensor {
     }
 
     @Override
-    public void updatePrevNow(long last, long now, Game g) {
+    public void update(Game g) {
         update(nar);
     }
 

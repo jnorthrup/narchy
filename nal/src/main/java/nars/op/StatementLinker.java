@@ -69,7 +69,7 @@ public class StatementLinker extends NARPart implements Consumer<Task> {
 
     @Override
     protected void stopping(NAR nar) {
-        off.off();
+        off.pause();
         off = null;
     }
 

@@ -135,7 +135,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
     private void off() {
         if (this.onTask != null) {
-            this.onTask.off();
+            this.onTask.pause();
             this.onTask = null;
         }
     }

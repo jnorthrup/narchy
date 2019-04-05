@@ -27,7 +27,7 @@ abstract public class AbstractOff<V> implements Off {
         this(t::disable);
     }
 
-    abstract public void off();
+    abstract public void pause();
 
     public static class Strong<V> extends AbstractOff<V> {
 
@@ -40,7 +40,7 @@ abstract public class AbstractOff<V> implements Off {
         }
 
         @Override
-        public void off() {
+        public void pause() {
             disconnector.accept(reaction);
         }
 
@@ -78,16 +78,16 @@ abstract public class AbstractOff<V> implements Off {
                     c.accept(v);
                 } catch (Throwable any) {
                     logger.error(" {}", any);
-                    off();
+                    pause();
                 }
             } else {
                 
-                off();
+                pause();
             }
         }
 
         @Override
-        public void off() {
+        public void pause() {
             disconnector.accept(this);
         }
 

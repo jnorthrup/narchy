@@ -45,7 +45,7 @@ public class UniExec extends Exec {
     @Override
     public void stop() {
         if (ons != null) {
-            ons.off();
+            ons.pause();
             ons = null;
         }
 

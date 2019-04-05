@@ -151,13 +151,16 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
      * operator goes into active probing mode
      */
     protected void enable(NAR n) {
-        if (onCycle.getOpaque() == null) {
+        DurPart d = onCycle.getOpaque();
+        if (d == null) {
             onCycle.updateAndGet((x)->{
                 if (x == null)
                     return DurPart.on(n, this::update);
                 else
                     return x;
             });
+        } else {
+            d.resume();
         }
     }
 
@@ -168,7 +171,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
         if (onCycle.getOpaque() != null) {
             onCycle.getAndUpdate((x)->{
                 if (x != null)
-                    x.off();
+                    x.pause();
                 return null;
             });
         }

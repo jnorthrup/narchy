@@ -194,9 +194,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     @Override
-    public void updatePrevNow(long last, long now, Game g) {
+    public void update(Game g) {
         src.update();
-        super.updatePrevNow(last, now, g);
     }
 
     public final TaskConcept get(int x, int y) {

@@ -122,7 +122,7 @@ public class ExeCharts {
                     exeQueue.commit();
                     busy.commit();
                 } else{
-                    c.off();
+                    c.pause();
                 }
             }
         });

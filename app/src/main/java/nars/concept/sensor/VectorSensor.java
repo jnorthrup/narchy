@@ -1,6 +1,7 @@
 package nars.concept.sensor;
 
 import com.google.common.collect.Iterables;
+import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.agent.Game;
@@ -55,7 +56,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
 
     @Override
-    public void updatePrevNow(long last, long now, Game g) {
+    public void update(Game g) {
 
         float confDefault = nar.confDefault(BELIEF);
         float min = nar.confMin.floatValue();
@@ -65,8 +66,9 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         };
 
         short cause = in.id;
+        FloatSupplier aPri = attn::pri;
         for (Signal s : this) {
-            s.update(last, now, truther, attn::pri, cause, this.nar);
+            s.update(truther, aPri, cause, g);
         }
     }
 

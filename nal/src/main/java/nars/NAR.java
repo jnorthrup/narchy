@@ -17,6 +17,7 @@ import jcog.pri.Prioritized;
 import jcog.service.Part;
 import nars.Narsese.NarseseException;
 import nars.attention.TaskLinkBag;
+import nars.bag.leak.TaskLeak;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
@@ -609,9 +610,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final boolean start(NARPart p) {
         return start(NARPart.id(null, p), p);
     }
+
     public final boolean add(NARPart p) {
         return add(NARPart.id(null, p), p);
     }
+
 
     public final NARPart start(Class<? extends NARPart> p) {
         return start(null, p);
@@ -1489,6 +1492,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return plugins().filter(x -> nAgentClass.isAssignableFrom(x.getClass()))
                 .map(x -> (X) x);
     }
+
 
 
 }

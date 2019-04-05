@@ -20,9 +20,9 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
     }
 
     @Override
-    public void update(Game a) {
+    public void update(Game g) {
 
-        long prev = a.prev, now = a.now, next = a.next;
+        long prev = g.prev, now = g.now, next = g.next;
 
         //long agentDur = now - prev;
 //        long dur = agentDur;
@@ -48,7 +48,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
                 0;
                 //n.dur();
 
-        super.updatePrevNow(prev, now, a);
+        super.update(g);
 
         Truth goal = actionTruth;
 
@@ -57,7 +57,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
                 goal
         );
 
-        feedback(fb, prev + feedbackShift, now + feedbackShift, cause, a.nar());
+        feedback(fb, prev + feedbackShift, now + feedbackShift, cause, g.nar());
     }
 
 

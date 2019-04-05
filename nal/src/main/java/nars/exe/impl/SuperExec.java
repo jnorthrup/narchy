@@ -54,7 +54,7 @@ public class SuperExec extends ThreadedExec {
         }
 
         @Override
-        public void off() {
+        public void pause() {
             running = false; sub.stop();
         }
     }

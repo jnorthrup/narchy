@@ -131,9 +131,29 @@ public class Parts<K /* service key */, C /* context */  > {
     public final boolean remove(K k) {
         return set(k, (Part)null, false);
     }
+
     public boolean stop(K k) {
         return set(k, part(k), false);
     }
+    public boolean stop(Part<C> p) {
+        //HACK TODO improve
+        K k = key(p);
+        if (k==null)
+            return false;
+
+        return set(k, part(k), false);
+    }
+
+    /** reverse lookup by instance */
+    @Nullable public K key(Part<C> p) {
+        //HACK TODO improve
+        Map.Entry<K, Part<C>> e = partEntrySet().stream().filter(z -> z.getValue() == p).findFirst().get();
+        if (e!=null) {
+            return e.getKey();
+        } else
+            return null;
+    }
+
 
 //    public final boolean add(K key, Function<K, ? extends Part<C>> builder) {
 //        return add(key, builder.apply(key));

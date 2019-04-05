@@ -124,15 +124,16 @@ public class MetaAgent extends Game {
                 //TODO integrate and threshold, pause for limited time
                 if (!e) {
                     if (disableCountDown++ >= disableThreshold) {
-                        a.enabled.set(false);
-                        a.nar().runAt(a.nar().time() + disablePeriod * a.nar().dur(), () -> {
+                        a.pause();
+                        NAR n = a.nar();
+                        n.runAt(n.time() + disablePeriod * n.dur(), () -> {
                             //re-enable
-                            enabled.set(true);
+                            a.resume();
                             disableCountDown = 0;
                         });
                     }
                 } else {
-                    a.enabled.set(true);
+                    a.resume();
                     disableCountDown = 0;
                 }
             });

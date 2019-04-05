@@ -163,7 +163,7 @@ public class Plot2D extends Widget {
     public Plot2D on(Function<Runnable, Off> trigger) {
         synchronized (series) {
             if (on != null)
-                on.off();
+                on.pause();
             this.on = trigger.apply(this::commit);
         }
         return this;

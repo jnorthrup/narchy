@@ -59,7 +59,7 @@ class VerletSurfaceTest {
 
         @Override
         protected void stopping() {
-            update.off();
+            update.pause();
             update = null;
         }
 

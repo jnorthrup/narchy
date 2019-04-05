@@ -127,7 +127,7 @@ public class Wire {
     }
 
     public final void remove() {
-        offs.off();
+        offs.pause();
     }
 
     /** override in subclasses to implement behavior to be executed after wire connection has been established in the graph. */

@@ -10,7 +10,7 @@ import nars.Task;
 import nars.attention.AttnBranch;
 import nars.attention.PriNode;
 import nars.concept.Concept;
-import nars.concept.sensor.AgentLoop;
+import nars.concept.sensor.GameLoop;
 import nars.control.channel.CauseChannel;
 import nars.op.mental.Inperience;
 import nars.table.eternal.DefaultOnlyEternalTable;
@@ -31,7 +31,7 @@ import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
 /** TODO extends AgentLoop */
-public abstract class Reward implements AgentLoop, TermedDelegate, Iterable<Concept> {
+public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Concept> {
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
 
@@ -78,12 +78,12 @@ public abstract class Reward implements AgentLoop, TermedDelegate, Iterable<Conc
 
     public final NAR nar() { return agent.nar(); }
 
-    public final void updatePrevNow(long prev, long now, Game g) {
+    public final void update(Game g) {
         rewardBelief = rewardFreq(true);
-        updateReward(prev, now, g);
+        updateReward(g);
     }
 
-    protected abstract void updateReward(long prev, long now, Game g);
+    protected abstract void updateReward(Game g);
 
     @Deprecated protected FloatFloatToObjectFunction<Truth> truther() {
         return (prev, next) -> (next == next) ?

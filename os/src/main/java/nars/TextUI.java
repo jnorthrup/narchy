@@ -562,7 +562,7 @@ public class TextUI {
 
             @Override
             public synchronized void onRemoved(Container container) {
-                onTask.off();
+                onTask.pause();
                 updaters.remove(onTask);
                 super.onRemoved(container);
                 clearItems();

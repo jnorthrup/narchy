@@ -49,7 +49,9 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
     }
 
     @Override
-    public void updatePrevNow(long prev, long now, Game g) {
+    public void update(Game g) {
+        long prev = g.prev, now = g.now;
+
         int d = decide(prev, now);
 
         if (d!=-1 && action.test(d))
@@ -57,6 +59,6 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
         else
             value.set(Float.NaN);
 
-        super.updatePrevNow(prev, now, g);
+        super.update(g);
     }
 }

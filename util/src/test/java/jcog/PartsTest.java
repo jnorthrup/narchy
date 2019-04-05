@@ -66,7 +66,7 @@ class PartsTest {
         }
 
         @Override
-        public void off() {
+        public void pause() {
 
         }
 

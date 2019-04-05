@@ -31,7 +31,7 @@ public class AudioCaptureChip extends Bordering {
 
     @Override
     protected void stopping() {
-        on.off();
+        on.pause();
         on = null;
         super.stopping();
     }

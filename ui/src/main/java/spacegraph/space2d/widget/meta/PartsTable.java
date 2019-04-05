@@ -46,7 +46,7 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
 
     @Override
     protected void stopping() {
-        updater.off();
+        updater.pause();
         updater = null;
         super.stopping();
     }

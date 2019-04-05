@@ -28,9 +28,9 @@ public class Offs extends jcog.data.list.FastCoWList<Off> implements Off {
         add((Off)(r::run));
     }
 
-    public final void off() {
+    public final void pause() {
         super.removeIf(o -> {
-            o.off();
+            o.pause();
             return true;
         });
     }

@@ -29,7 +29,7 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     private final Offs ons = new Offs();
 
 
-    protected NAR nar;
+    public NAR nar;
 
     protected NARPart() {
         this((NAR)null);
@@ -69,11 +69,17 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     }
 
 
-    public final void off() {
+    public final void pause() {
         NAR n = nar;
         if (n != null) {
-            n.remove(id);
+            boolean stopped = n.stop(id);
+            assert(stopped);
         }
+    }
+
+    public final void resume() {
+        boolean started = nar.start(id);
+        assert(started);
     }
 
     @Override
@@ -94,7 +100,7 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     @Override
     protected final void stop(NAR nar) {
 
-        this.ons.off();
+        this.ons.pause();
 
         stopping(nar);
 

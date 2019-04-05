@@ -74,7 +74,7 @@ public class VerletSurface extends SimpleSurface implements Animated {
 
     @Override
     protected void stopping() {
-        update.off();
+        update.pause();
         update = null;
     }
 

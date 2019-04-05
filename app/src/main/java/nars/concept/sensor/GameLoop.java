@@ -11,15 +11,9 @@ import nars.term.Termed;
  *          priority
  *          cause channel
  **/
-public interface AgentLoop extends Termed {
+public interface GameLoop extends Termed {
 
-    default void update(Game a) {
-        updatePrevNow(a.prev, a.now, a);
-    }
-
-    @Deprecated default void updatePrevNow(long last, long now, Game a) {
-
-    }
+    void update(Game a);
 
     /** numeric resolution of scalar signals */
     FloatRange resolution();

@@ -24,7 +24,7 @@ abstract public class GameTime {
     public void stop() {
         synchronized (this) {
             if (on != null) {
-                on.off();
+                on.pause();
                 on = null;
             }
         }
