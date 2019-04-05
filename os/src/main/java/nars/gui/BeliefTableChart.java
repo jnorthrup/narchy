@@ -233,9 +233,9 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
                     float w = taskWidthMin; //visible width
                     float center = (end + start) / 2;
 //                    float yMid = freq;
-//                    float thick = taskWidthMin/32;
+                    float thick = taskWidthMin/2;
                     //Draw.rectFrame(center, yMid, w, thick, ph, gl);
-                    Draw.rectStroke(center - w / 2, yBottom, w, ph, gl);
+                    Draw.rectCross(center - w / 2, yBottom, w, ph, thick, gl);
                 } else {
                     //solid
                     Draw.rect(start, yBottom, width, ph, gl);

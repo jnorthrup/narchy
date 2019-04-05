@@ -78,9 +78,9 @@ public class PixelBag implements Bitmap2D {
     }
 
     @Override
-    public void update() {
+    public void updateBitmap() {
 
-        src.update();
+        src.updateBitmap();
 
         int sw = sw(), sh = sh();
 

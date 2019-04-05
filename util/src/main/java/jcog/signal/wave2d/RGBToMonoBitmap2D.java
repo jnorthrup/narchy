@@ -18,7 +18,7 @@ public class RGBToMonoBitmap2D extends PlanarBitmap2D {
 
     public void update(RGBBufImgBitmap2D src) {
         this.src = src;
-        update();
+        updateBitmap();
         //resize(src.width(), src.height(), 1); //HACK FIX
     }
 

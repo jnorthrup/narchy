@@ -81,8 +81,15 @@ public class CameraSensorTest {
 
     }
 
-    public static void next(NAR n, AbstractSensor c) {
-        c.updatePrevNow(n.time()-1, n.time(), null);
+    MyGame tmp;
+
+    void next(NAR n, AbstractSensor c) {
+        if (tmp==null)
+             tmp = new MyGame(n);
+
+        tmp.prev(n.time()-1);
+        tmp.now(n.time() );
+        c.update(tmp);
     }
 
     static final float tolerance = 0.47f;
@@ -101,6 +108,18 @@ public class CameraSensorTest {
                 assertNotNull(t, ()->p.term + " is null");
                 Assertions.assertEquals(f[i][j], t.freq(), tolerance, ()->p + " has inaccurate result @ t=" + n.time());
             }
+        }
+    }
+
+    static class MyGame extends Game {
+        public MyGame(NAR n) {
+            super("tmp", n);
+        }
+        public void prev(long l) {
+            prev = l;
+        }
+        public void now(long l) {
+            now = l;
         }
     }
 

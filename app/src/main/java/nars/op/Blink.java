@@ -27,10 +27,10 @@ public class Blink implements Bitmap2D {
     }
 
     @Override
-    public void update() {
+    public void updateBitmap() {
         blinked = rng.nextFloat() < visibleProb.floatValue();
         if (!blinked) {
-            in.update();
+            in.updateBitmap();
         }
     }
 

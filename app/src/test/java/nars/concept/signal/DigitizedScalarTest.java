@@ -3,18 +3,12 @@ package nars.concept.signal;
 import jcog.Util;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.FloatNormalized;
-import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.concept.sensor.DigitizedScalar;
-import nars.truth.Truth;
 import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by me on 7/2/16.
@@ -77,49 +71,49 @@ class DigitizedScalarTest {
                 , n);
     }
 
-    @Disabled
-    @Test
-    void testServiceAndFluidEncoder() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
-
-        FloatRange x = new FloatRange(0f, 0f, 1f);
-        DigitizedScalar xc = new DigitizedScalar(x, DigitizedScalar.Fluid, n,
-                $.$("x(0)"), $.$("x(1)")
-        );
-
-        int dt = 20;
-
-        for (float v : new float[]{0f, 0.5f, 1f}) {
-
-
-            x.set(v);
-            xc.updatePrevNow(n.time() - n.dur(), n.time(), null);
-            n.run(1);
-
-            System.out.println("\n" + n.time() + " x=" + x);
-            xc.forEach(d -> {
-                Truth bt = n.beliefTruth(d, n.time());
-                System.out.println(d + "\t" + bt);
-            });
-
-            int m = (dt - 1) / 2;
-            n.run(m);
-
-            Truth[] f = xc.belief(n.time(), n);
-            float tolerance = 0.18f;
-            if (v == 0) {
-                assertEquals(0.0f, f[0].freq(), tolerance);
-                assertEquals(0.0f, f[1].freq(), tolerance);
-            } else if (v == 0.5f) {
-                assertEquals(1.0f, f[0].freq(), tolerance);
-                assertEquals(0.0f, f[1].freq(), tolerance);
-            } else if (v == 1f) {
-                assertEquals(1.0f, f[0].freq(), tolerance);
-                assertEquals(1.0f, f[1].freq(), tolerance);
-            }
-
-            n.run(dt - 1 - m);
-
-        }
-    }
+//    @Disabled
+//    @Test
+//    void testServiceAndFluidEncoder() throws Narsese.NarseseException {
+//        NAR n = NARS.tmp();
+//
+//        FloatRange x = new FloatRange(0f, 0f, 1f);
+//        DigitizedScalar xc = new DigitizedScalar(x, DigitizedScalar.Fluid, n,
+//                $.$("x(0)"), $.$("x(1)")
+//        );
+//
+//        int dt = 20;
+//
+//        for (float v : new float[]{0f, 0.5f, 1f}) {
+//
+//
+//            x.set(v);
+//            xc.updatePrevNow(n.time() - n.dur(), n.time(), null);
+//            n.run(1);
+//
+//            System.out.println("\n" + n.time() + " x=" + x);
+//            xc.forEach(d -> {
+//                Truth bt = n.beliefTruth(d, n.time());
+//                System.out.println(d + "\t" + bt);
+//            });
+//
+//            int m = (dt - 1) / 2;
+//            n.run(m);
+//
+//            Truth[] f = xc.belief(n.time(), n);
+//            float tolerance = 0.18f;
+//            if (v == 0) {
+//                assertEquals(0.0f, f[0].freq(), tolerance);
+//                assertEquals(0.0f, f[1].freq(), tolerance);
+//            } else if (v == 0.5f) {
+//                assertEquals(1.0f, f[0].freq(), tolerance);
+//                assertEquals(0.0f, f[1].freq(), tolerance);
+//            } else if (v == 1f) {
+//                assertEquals(1.0f, f[0].freq(), tolerance);
+//                assertEquals(1.0f, f[1].freq(), tolerance);
+//            }
+//
+//            n.run(dt - 1 - m);
+//
+//        }
+//    }
 }

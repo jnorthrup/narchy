@@ -396,9 +396,13 @@ public enum Draw {
         gl.glEnd();
     }
 
+
     /** note: (cx,cy,w,h) */
     public static void rectFrame(float cx, float cy, float wi, float hi, float thick, GL2 gl) {
-        rectFrame(cx, cy, wi, hi, wi + thick, hi + thick, gl);
+        rectFrame(cx-thick/2, cy-thick/2, wi, hi, wi + thick, hi + thick, gl);
+    }
+    public static void rectCross(float cx, float cy, float wi, float hi, float thick, GL2 gl) {
+        rectCross(cx-thick/2, cy-thick/2, wi, hi, wi + thick, hi + thick, gl);
     }
 
     public static void rectFrame(RectFloat bounds, float thick, GL2 gl) {
@@ -408,8 +412,8 @@ public enum Draw {
      *  wo,ho - outer width/height
      *  */
     public static void rectFrame(float cx, float cy, float wi, float hi, float wo, float ho, GL2 gl) {
-        //N
         float vthick = (ho - hi) / 2;
+        //N
         Draw.rect(cx-wo/2, cy-ho/2, wo, vthick, gl );
         //S
         Draw.rect(cx-wo/2, cy+ho/2 - vthick, wo, vthick, gl );
@@ -420,6 +424,17 @@ public enum Draw {
         //E
         Draw.rect(cx+wo/2 - hthick, cy - hi/2, hthick, hi, gl );
     }
+
+    /** a rectangle but instead of drawing the outside edges, draws a cross-hair cross through the center
+     * TODO rotation angle param
+     * */
+    public static void rectCross(float cx, float cy, float wi, float hi, float wo, float ho, GL2 gl) {
+        float vthick = (ho - hi) / 2;
+        Draw.rect(cx-wo/2, cy-vthick/2, wo, vthick, gl ); //horiz
+        float hthick = (wo - wi) / 2;
+        Draw.rect(cx-hthick/2, cy - hi/2, hthick, hi, gl ); //vert
+    }
+
 
     public static void circle(GL2 gl, v2 center, boolean solid, float radius, int NUM_CIRCLE_POINTS) {
 
@@ -1121,6 +1136,9 @@ public enum Draw {
     public static void rectUnit(GL2 g) {
         Draw.rect(g, 0, 0, 1, 1);
     }
+
+
+
 
     public enum TextAlignment {
         Left, Center, Right

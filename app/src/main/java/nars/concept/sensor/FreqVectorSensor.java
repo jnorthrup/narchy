@@ -81,6 +81,7 @@ public class FreqVectorSensor extends VectorSensor {
         }
         Util.normalize(componentValue, 0, intensity = Util.max(componentValue));
 
+        super.update(g);
     }
 
     @Override

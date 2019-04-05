@@ -30,7 +30,7 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
         this.pw = pw;
         this.ph = ph;
         this.source = source;
-        update();
+        updateBitmap();
     }
 
     public ScaledBitmap2D crop(float sx1, float sy1, float sx2, float sy2) {
@@ -49,9 +49,9 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
     }
 
     @Override
-    public void update() {
+    public void updateBitmap() {
         if (source instanceof Bitmap2D)
-            ((Bitmap2D) source).update();
+            ((Bitmap2D) source).updateBitmap();
 
         if (source == null)
             return;

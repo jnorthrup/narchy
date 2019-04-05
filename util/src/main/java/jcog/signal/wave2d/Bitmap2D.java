@@ -34,7 +34,7 @@ public interface Bitmap2D extends Tensor {
     /**
      * explicit refresh update the image
      */
-    default void update() {
+    default void updateBitmap() {
 
     }
 

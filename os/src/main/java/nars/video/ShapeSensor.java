@@ -199,7 +199,7 @@ public class ShapeSensor extends NARPart {
         if (last == ETERNAL)
             last = now;
 
-        input.update();
+        input.updateBitmap();
 
         if (imgF == null || imgF.width != input.width() || imgF.height != input.height()) {
             imgF = new GrayF32(input.width(), input.height());

@@ -21,15 +21,15 @@ public class ProxyBitmap2D implements Bitmap2D {
 
     public synchronized <P extends ProxyBitmap2D> P set(@Nullable Bitmap2D src) {
         this.src = src;
-        update();
+        updateBitmap();
         return (P) this;
     }
 
 
     @Override
-    public void update() {
+    public void updateBitmap() {
         if (src!=null) {
-            src.update();
+            src.updateBitmap();
             w = src.width();
             h = src.height();
         } else {

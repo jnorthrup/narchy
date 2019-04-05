@@ -86,7 +86,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
 
 
     @Override
-    public void update() {
+    public void updateBitmap() {
 
         Supplier<BufferedImage> src = this.source;
 

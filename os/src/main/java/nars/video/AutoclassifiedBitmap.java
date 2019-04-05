@@ -220,9 +220,9 @@ public class AutoclassifiedBitmap extends VectorSensor {
     }
 
     @Override
-    public void update(Game g) {
-        this.update();
-
+    public final void update(Game g) {
+        this.updateAutoclassifier();
+        super.update(g);
     }
 
     @Override
@@ -245,10 +245,10 @@ public class AutoclassifiedBitmap extends VectorSensor {
         //return $.funcImageLast(root, $.p($.the(x), $.the(y)), feature[f]);
     }
 
-    private void update() {
+    private void updateAutoclassifier() {
 
         if (src!=null)
-            src.update();
+            src.updateBitmap();
 
         float minConf = nar.confMin.floatValue();
         float baseConf = nar.confDefault(BELIEF);

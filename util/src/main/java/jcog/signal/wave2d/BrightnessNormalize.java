@@ -20,13 +20,13 @@ public class BrightnessNormalize implements Bitmap2D {
 
     public BrightnessNormalize(Bitmap2D src) {
         this.src = src;
-        update(); //initialize
+        updateBitmap(); //initialize
     }
 
     @Override
-    public synchronized void update() {
+    public synchronized void updateBitmap() {
 
-        src.update();
+        src.updateBitmap();
 
 //        BufferedImage from = src.get();
 //        if (from == null) {

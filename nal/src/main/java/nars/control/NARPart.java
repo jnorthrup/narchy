@@ -28,7 +28,6 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     /** TODO encapsulate */
     private final Offs ons = new Offs();
 
-
     public NAR nar;
 
     protected NARPart() {
@@ -63,7 +62,7 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     }
 
     /** register a future deactivation 'off' of an instance which has been switched 'on'. */
-    protected final void on(Off... x) {
+    @Deprecated protected final void on(Off... x) {
         for (Off xx : x)
             ons.add(xx);
     }
@@ -72,15 +71,24 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     public final void pause() {
         NAR n = nar;
         if (n != null) {
-            boolean stopped = n.stop(id);
-            assert(stopped);
+            boolean ok = n.stop(id); assert(ok);
+        } else {
+            throw new NullPointerException();
+        }
+    }
+
+    /** stops and removes this part */
+    public void off() {
+        NAR n = nar;
+        if (n != null) {
+            boolean ok = n.remove(id); assert(ok);
         }
     }
 
     public final void resume() {
-        boolean started = nar.start(id);
-        assert(started);
+        boolean ok = nar.start(id); assert(ok);
     }
+
 
     @Override
     protected final void start(NAR nar) {
@@ -136,6 +144,8 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     public Term term() {
         return id;
     }
+
+
 
 
     //    public Term instanceID() {

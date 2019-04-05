@@ -41,8 +41,8 @@ public class AutoencodedBitmap implements Bitmap2D {
     }
 
     @Override
-    public void update() {
-        source.update();
+    public void updateBitmap() {
+        source.updateBitmap();
 
         
         int w = source.width();

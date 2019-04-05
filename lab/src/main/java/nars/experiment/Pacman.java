@@ -29,7 +29,7 @@ public class Pacman extends GameX {
 
         Gridding gg = new Gridding();
         ScaledBitmap2D camScale = new ScaledBitmap2D(new SwingBitmap2D(g.view), 16, 16);
-        onFrame(camScale::update);
+        onFrame(camScale::updateBitmap);
 
         for (MonoBufImgBitmap2D.ColorMode cm : new MonoBufImgBitmap2D.ColorMode[]{
                 MonoBufImgBitmap2D.ColorMode.R,

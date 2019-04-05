@@ -8,7 +8,7 @@ import nars.op.AutoConceptualizer;
 import nars.sensor.Bitmap2DSensor;
 import org.junit.jupiter.api.Test;
 
-public class AutoConceptualizerTest {
+public class AutoConceptualizerTest extends CameraSensorTest {
 
     @Test
     public void test1() {
@@ -38,7 +38,7 @@ public class AutoConceptualizerTest {
 
         n.log();
         for (int i =0; i< 155; i++) {
-            CameraSensorTest.next(n, ac);
+            next(n, ac);
             n.run(1);
         }
 
