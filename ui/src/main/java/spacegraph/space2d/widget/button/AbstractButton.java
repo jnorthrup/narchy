@@ -48,7 +48,7 @@ public abstract class AbstractButton extends Widget {
             }
 
         }
-        return this;
+        return f;
     }
 
     public final boolean enabled() {

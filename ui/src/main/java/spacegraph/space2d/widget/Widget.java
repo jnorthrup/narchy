@@ -114,21 +114,31 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     @Override
     public Surface finger(Finger finger) {
 
-        if (finger.touching()==this)
-            pri(0.8f);
+//        if (finger.touching()==this)
+//            pri(0.8f);
 
         Surface s = super.finger(finger);
         if (s == null) {
 
-            priAtleast(0.1f);
+            if (tangible() && finger.intersects(bounds)) {
+                priAtleast(0.5f);
 
-            if (!focused && finger.pressedNow(0) || finger.pressedNow(2))
-                focus();
+                if (!focused && finger.pressedNow(0) || finger.pressedNow(2))
+                    focus();
 
-            return this;
+                return this;
+            } else {
+                return null;
+            }
+
+        } else {
+            return s;
         }
+    }
 
-        return s;
+    public boolean tangible() {
+
+        return true;
     }
 
     private void priAtleast(float p) {

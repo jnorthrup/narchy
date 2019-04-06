@@ -154,7 +154,7 @@ public class BitmapMatrixView extends TexSurface {
 
     public boolean updateTouch(Finger finger) {
 
-        finger.posGlobal(this).scaled(w, h, touchPos);
+        finger.posGlobal().scaled(w, h, touchPos);
 
         touchPixel.set(
                 clampSafe((int) Math.floor(touchPos.x),0,w-1),

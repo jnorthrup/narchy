@@ -6,9 +6,10 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.hud.Zoomed;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
+
+import java.util.function.Function;
 
 /** ordinary desktop/laptop computer mouse, as perceived through jogamp NEWT's native interface */
 public class NewtMouseFinger extends MouseFinger implements MouseListener, WindowListener {
@@ -34,51 +35,39 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
     }
 
     /** called for each layer. returns true if continues down to next layer */
-    public boolean touch(Surface s) {
+    public void touch(Surface s) {
 
         Fingering ff = this.fingering.get();
 
-        if (touchNext == null) {
-
-            if (s instanceof Zoomed) {
-                //TODO may need to be a stack
-
-                //ENTER ORTHO
-                _screenToGlobal = ((Zoomed) s).cam::screenToGlobal;
-                _posGlobal.set(_screenToGlobal.apply(posPixel));
-
-            }
-
-            Surface next = touchNext = (ff == Fingering.Null || ff.escapes()) ? s.finger(this) : touching.get();
-
-            if (s instanceof Zoomed) {
-                //EXIT ORTHO
-                _screenToGlobal = null; //HACK
-            }
-
-            return next == null;
+        if (ff == Fingering.Null || ff.escapes()) {
+            Surface touchNext = s.finger(this);
+            touching.accumulateAndGet(touchNext, ff::touchNext);
         }
 
-        return true;
     }
 
-    @Override
-    public v2 posGlobal(Surface c) {
+    public void setTransform(Function<v2, v2> transform) {
+        pixelToGlobal = transform;
+        updatePos();
+    }
+
+    private void updatePos() {
+        _posGlobal.set(pixelToGlobal.apply(posPixel));
+    }
+
+    /** global position of the cursor center */
+    @Override public v2 posGlobal() {
         //Function<v2,v2> z = this._screenToGlobal;
         //Function<v2,v2> z = _z !=null ? _z : (c instanceof Zoomed ? ((Zoomed)c) : c.parentOrSelf(Zoomed.class));
-         return _posGlobal;
+        return _posGlobal;
     }
 
     @Override protected void doUpdate() {
-        touchNext = null;
 
-        ((OrthoSurfaceGraph) this.space).layers.whileEachReverse(this::touch);
-
-        Surface touchNext = this.touchNext;
+        touch(((OrthoSurfaceGraph) this.space).layers);
 
         Fingering ff = this.fingering.get();
 
-        @Nullable Surface touchPrev = touching(touchNext);
         if (ff != Fingering.Null) {
             if (!ff.update(this)) {
                 ff.stop(this);
@@ -98,10 +87,11 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         JoglWindow win = space.display;
 
         if (moved) {
-            int pmx = e.getX(), pmy = win.getHeight() - e.getY();
+            int pmx = e.getX(), pmy = win.window.getHeight() - e.getY();
 
             posPixel.set(pmx, pmy);
-            posScreen.set(win.getX() + pmx, win.getScreenY() - (e.getY() + win.getY()));
+
+            posScreen.set(win.getX() + pmx, win.getScreenH() - (win.getY() + e.getY()));
         }
 
         if (buttonsDown != null) {

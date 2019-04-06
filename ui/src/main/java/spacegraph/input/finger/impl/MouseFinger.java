@@ -3,7 +3,6 @@ package spacegraph.input.finger.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.input.finger.Finger;
-import spacegraph.space2d.Surface;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -12,7 +11,6 @@ abstract public class MouseFinger extends Finger {
     final AtomicBoolean updating = new AtomicBoolean(false);
 
 
-    protected Surface touchNext;
 
     protected MouseFinger(int buttons) {
         super(buttons);

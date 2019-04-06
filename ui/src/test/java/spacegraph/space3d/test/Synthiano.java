@@ -92,7 +92,7 @@ public class Synthiano extends Widget {
             @Override
             public boolean updateTouch(Finger finger) {
                 if (super.updateTouch(finger)) {
-                    if (finger.pressing(0))
+                    if (finger.pressed(0))
                         key(Math.round((touchPos.y * 4) + touchPos.x));
                     return true;
                 }

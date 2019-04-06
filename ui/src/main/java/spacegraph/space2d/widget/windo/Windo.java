@@ -90,7 +90,7 @@ public class Windo extends MutableUnitContainer {
         this.potentialDragMode = potentialDragMode;
 
 
-        if (finger.pressing(Zoomed.PAN_BUTTON)) {
+        if (finger.pressed(Zoomed.PAN_BUTTON)) {
             Dragging d =
                     potentialDragMode != null ? (Dragging) fingering(potentialDragMode) : null;
 

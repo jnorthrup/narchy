@@ -12,6 +12,7 @@ import jcog.math.v3;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.*;
 import spacegraph.input.finger.impl.NewtKeyboard;
+import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
@@ -37,7 +38,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     /**
      * middle mouse button (wheel when pressed, apart from its roll which are detected in the wheel/wheelabsorber)
      */
-    public final static short ZOOM_BUTTON = 1;
+    public final static short ZOOM_BUTTON = 2;
 
     private static final int ZOOM_STACK_MAX = 8;
     private final static float focusAngle = (float) Math.toRadians(45);
@@ -56,23 +57,32 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
     private final float camZmin = 1;
     private final float zoomMargin = 0.1f;
-    private final float wheelZoomRate = 0.5f;
+    private final float wheelZoomRate = 0.6f;
 
     private final Fingering zoomDrag = new Dragging(ZOOM_BUTTON) {
 
         final v2 start = new v2();
+        float maxIterationChange = 0.25f;
+        float rate = 0.4f;
 
         @Override
         protected boolean startDrag(Finger f) {
-            start.set(f.posScreen.clone());
+            start.set(f.posPixel);
             return super.startDrag(f);
         }
 
         @Override
         protected boolean drag(Finger f) {
-            float dy = start.distanceToY(f.posScreen);
 
-            return false;
+            v2 current = f.posPixel;
+
+            float d = start.distanceToY(current) + start.distanceToX(current);
+
+            zoomDelta(Util.clamp((float) Math.pow(d * rate, 1), -maxIterationChange, +maxIterationChange));
+
+            start.set(current); //incremental
+
+            return true;
         }
     };
     private final Fingering contentPan = new FingerMoveWindow(PAN_BUTTON) {
@@ -168,6 +178,8 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
             gl.glScalef(scale.x, scale.y, 1);
             gl.glTranslatef((w() / 2) / scale.x - cam.x, (h() / 2) / scale.y - cam.y, 0);
+
+
         });
 
         the().tryRender(render);
@@ -180,42 +192,50 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     @Override
     public Surface finger(Finger finger) {
 
-        Surface innerTouched = super.finger(finger);
 
-        if (!(innerTouched instanceof WheelAbsorb)) {
-            //wheel zoom: absorb remaining rotationY
-            float dy = finger.rotationY(true);
-            if (dy != 0) {
-                zoomDelta(finger, dy * wheelZoomRate);
-                zoomStackReset();
-            }
-        }
+        //TODO may need to be a stack
 
 
-        if (innerTouched != null && finger.clickedNow(2 /*right button*/)) {
-            /** click-zoom */
-            zoomNext(finger, innerTouched);
-        }
+        ((NewtMouseFinger) finger).setTransform(cam::pixelToGlobal); //ENTER ORTHO
 
+        try {
 
-        if (innerTouched == null) {
-            if (finger.tryFingering(zoomDrag))
-                return this;
+            Surface innerTouched = super.finger(finger);
 
-            //if (finger.touching() == null) {
-            if (finger.tryFingering(contentPan)) {
-                zoomStackReset();
-                return this;
+            if (!(innerTouched instanceof WheelAbsorb)) {
+                //wheel zoom: absorb remaining rotationY
+                float dy = finger.rotationY(true);
+                if (dy != 0) {
+                    zoomDeltaTo(finger, dy * wheelZoomRate);
+                    zoomStackReset();
+                }
             }
 
-            //}
-        }
 
-        return innerTouched;
+            if (innerTouched != null && finger.clickedNow(2 /*right button*/)) {
+                /** click-zoom */
+                zoomNext(finger, innerTouched);
+            }
+
+
+            if (innerTouched == null) {
+                if (finger.tryFingering(zoomDrag)) {
+                    zoomStackReset();
+                } else if (finger.tryFingering(contentPan)) {
+                    zoomStackReset();
+                }
+
+                //}
+            }
+
+            return innerTouched;
+        } finally {
+            ((NewtMouseFinger) finger).setTransform(x -> x); //EXIT ORTHO
+        }
     }
 
     private void zoomStackReset() {
-        synchronized(zoomStack) {
+        synchronized (zoomStack) {
             zoomStack.clear();
             zoomStack.add(this);
         }
@@ -262,16 +282,25 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
      * POSITIVE = ?
      * NEGATIVE = ?
      */
-    public void zoomDelta(Finger finger, float delta) {
-        v2 xy = cam.screenToGlobal(delta < 0 ?
+    public void zoomDeltaTo(Finger finger, float deltaPct) {
+        if (Math.abs(deltaPct) < Float.MIN_NORMAL)
+            return; //no effect
+
+        v2 xy = finger.posGlobal(); /*cam.screenToGlobal(deltaPct < 0 ?
                         finger.posPixel
                         :
                         //TODO fix this zoom-out calculation
                         //finger.posPixel
                         new v2(finger.posPixel.x, finger.posPixel.y)
                 //new v2(w()-finger.posPixel.x, h()-finger.posPixel.y)
-        );
-        cam.set(xy.x, xy.y, cam.z * (1f + delta));
+        )*/
+        cam.set(xy.x, xy.y, cam.z * (1f + deltaPct));
+    }
+
+    public void zoomDelta(float deltaPct) {
+        if (Math.abs(deltaPct) < Float.MIN_NORMAL)
+            return; //no effect
+        cam.set(cam.x, cam.y, cam.z * (1f + deltaPct));
     }
 
     private void zoomNext(Finger finger, Surface x) {
@@ -389,67 +418,67 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 //    }
 
 
-public class Camera extends AnimVector3f {
+    public class Camera extends AnimVector3f {
 
-    /**
-     * TODO atomic
-     */
-    private final float CAM_RATE = 3f;
+        /**
+         * TODO atomic
+         */
+        private final float CAM_RATE = 3f;
 
-    {
-        setDirect(0, 0, 1); //(camZmin + camZmax) / 2);
-    }
+        {
+            setDirect(0, 0, 1); //(camZmin + camZmax) / 2);
+        }
 
-    public Camera() {
-        super(1);
-    }
+        public Camera() {
+            super(1);
+        }
 
 //        public v3 snapshot() {
 //            return new v3(target.x, target.y, target.z);
 //        }
 
-    @Override
-    public boolean animate(float dt) {
-        //System.out.println(this);
-        if (super.animate(dt)) {
-            update();
-            return true;
+        @Override
+        public boolean animate(float dt) {
+            //System.out.println(this);
+            if (super.animate(dt)) {
+                update();
+                return true;
+            }
+            return false;
         }
-        return false;
-    }
 
-    protected void update() {
-        if (!Zoomed.this.visible())
-            return;
+        protected void update() {
+            if (!Zoomed.this.visible())
+                return;
 
-        //System.out.println(z);
-        float W = bounds.w;
-        float H = bounds.h;
-        speed.set(Math.max(W, H) * CAM_RATE);
+            //System.out.println(z);
+            float W = bounds.w;
+            float H = bounds.h;
+            speed.set(Math.max(W, H) * CAM_RATE);
 
-        float visW = W / scale.x / 2, visH = H / scale.y / 2; //TODO optional extra margin
-        camXmin = 0 + visW;
-        camYmin = 0 + visH;
-        camXmax = bounds.w - visW;
-        camYmax = bounds.h - visH;
-    }
+            float visW = W / scale.x / 2, visH = H / scale.y / 2; //TODO optional extra margin
+            camXmin = 0 + visW;
+            camYmin = 0 + visH;
+            camXmax = bounds.w - visW;
+            camYmax = bounds.h - visH;
+        }
 
-    @Override
-    public void setDirect(float x, float y, float z) {
-        super.setDirect(camX(x), camY(y), camZ(z));
-    }
+        @Override
+        public void setDirect(float x, float y, float z) {
+            super.setDirect(camX(x), camY(y), camZ(z));
+        }
 
-    public float camZ(float z) {
-        return Util.clamp(z, camZmin, Math.max(camZmin, camZMax()));
-    }
+        public float camZ(float z) {
+            return Util.clamp(z, camZmin, Math.max(camZmin, camZMax()));
+        }
 
-    public float camY(float y) {
-        return Util.clamp(y, camYmin, Math.max(camYmin, camYmax));
-    }
+        public float camY(float y) {
+            return Util.clamp(y, camYmin, Math.max(camYmin, camYmax));
+        }
 
-    public float camX(float x) {
-        return Util.clamp(x, camXmin, Math.max(camXmin, camXmax));
-    }
+        public float camX(float x) {
+            return Util.clamp(x, camXmin, Math.max(camXmin, camXmax));
+        }
 
 //        public float motionSq() {
 //            v3 t = new v3(target);
@@ -457,48 +486,45 @@ public class Camera extends AnimVector3f {
 //            return t.lengthSquared();
 //        }
 
-    public v2 globalToScreen(float wx, float wy) {
-        return new v2(
-                ((wx - cam.x) * scale.x) + w() / 2,
-                ((wy - cam.y) * scale.y) + h() / 2
-        );
-    }
+        public v2 globalToPixel(float wx, float wy) {
+            return new v2(
+                    ((wx - cam.x) * scale.x) + w() / 2,
+                    ((wy - cam.y) * scale.y) + h() / 2
+            );
+        }
+//    public RectFloat globalToPixel(RectFloat b) {
+//        v2 ul = globalToPixel(new v2(b.left(), b.bottom()));
+//        v2 br = globalToPixel(new v2(b.right(), b.top()));
+//        return RectFloat.XYXY(ul, br);
+//    }
+//    public final v2 globalToPixel(v2 xy) {
+//        return globalToPixel(xy.x, xy.y);
+//    }
 
-    public final v2 globalToScreen(v2 xy) {
-        return globalToScreen(xy.x, xy.y);
-    }
+        public final v2 pixelToGlobal(v2 xy) {
+            return pixelToGlobal(xy.x, xy.y);
+        }
 
-    public final v2 screenToGlobal(v2 xy) {
-        return screenToGlobal(xy.x, xy.y);
-    }
+        public v2 pixelToGlobal(float x, float y) {
+            return new v2(
+                    ((x - w() / 2) / scale.x + cam.x),
+                    ((y - h() / 2) / scale.y + cam.y)
+            );
+        }
 
-    public v2 screenToGlobal(float x, float y) {
-        return new v2(
-                ((x - w() / 2) / scale.x + cam.x),
-                ((y - h() / 2) / scale.y + cam.y)
-        );
-    }
+        /**
+         * immediately get to where its going
+         */
+        public void complete() {
+            setDirect(target.x, target.y, target.z);
+        }
+//
+//    public final RectFloat globalToPixel(Surface t) {
+//        return globalToPixel(t.bounds);
+//    }
+//
+//
 
-    /**
-     * immediately get to where its going
-     */
-    public void complete() {
-        setDirect(target.x, target.y, target.z);
     }
-
-    public final RectFloat globalToScreen(Surface t) {
-        return globalToScreen(t.bounds);
-    }
-
-
-    /**
-     * TODO optimize
-     */
-    public RectFloat globalToScreen(RectFloat b) {
-        v2 ul = globalToScreen(new v2(b.left(), b.bottom()));
-        v2 br = globalToScreen(new v2(b.right(), b.top()));
-        return RectFloat.XYXY(ul, br);
-    }
-}
 
 }

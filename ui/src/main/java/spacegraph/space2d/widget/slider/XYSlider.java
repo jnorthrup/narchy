@@ -10,6 +10,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.SurfaceDragging;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
@@ -94,12 +95,12 @@ public class XYSlider extends PaintSurface implements Hovered {
         return this;
     }
 
-    final Dragging drag = new Dragging(BUTTON) {
+
+    final Dragging drag = new SurfaceDragging(this, BUTTON) {
 
         @Override
         protected boolean startDrag(Finger f) {
-            pressing = true;
-            return super.startDrag(f);
+            return pressing = super.startDrag(f);
         }
 
         @Override

@@ -229,7 +229,7 @@ public class OsmSurface extends PaintSurface {
         if (finger.tryFingering(pan)) {
             return this;
         } else {
-            v2 pos = finger.posGlobal(this); //posPixel;
+            v2 pos = finger.posGlobal(); //posPixel;
             float wx = -bounds.w / 2 + pos.x;
             float wy = -bounds.h / 2 + pos.y;
             float wz = 0;

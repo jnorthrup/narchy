@@ -10,7 +10,7 @@ public abstract class FingerResize extends Dragging {
     private final boolean invY;
     private RectFloat before;
 
-    private v2 posStart;
+    private final v2 posStart = new v2();
 
     FingerResize(int button) {
         this(button, false);
@@ -23,12 +23,16 @@ public abstract class FingerResize extends Dragging {
 
     @Override
     protected boolean startDrag(Finger f) {
-        this.posStart = pos(f);
-        this.before = size();
-        return super.startDrag(f);
+        //if (f.pressed(button)) { //HACK prefilter
+            this.posStart.set(pos(f));
+            this.before = size();
+            return super.startDrag(f);
+//        } else {
+//            return false;
+//        }
     }
 
-    public abstract DragEdit mode();
+    public abstract DragEdit mode(Finger finger);
 
     @Override
     public boolean drag(Finger finger) {
@@ -37,107 +41,105 @@ public abstract class FingerResize extends Dragging {
         float fx = pos.x;
         float fy = pos.y;
 
-        DragEdit m = mode();
-        switch (m) {
-            case RESIZE_S: {
-                float pmy = before.top();
-                float bh = before.h;
-                float ty = (fy - posStart.y);
-                resize(before.left(), pmy - bh + ty, before.right(), pmy);
-                break;
-            }
-
-            case RESIZE_SW: {
-                float pmx = before.right();
-                float pmy = before.top();
-                float bw = before.w;
-                float bh = before.h;
-                float tx = (fx - posStart.x);
-                float ty = (fy - posStart.y);
-                resize(pmx - bw + tx, pmy - bh + ty, pmx, pmy);
-                break;
-            }
-
-            case RESIZE_NE: {
-                float pmx = before.left();
-                float pmy = before.bottom();
-                float bw = before.w;
-                float bh = before.h;
-                float tx = (fx - posStart.x);
-                float ty = (fy - posStart.y);
-                resize( pmx, pmy,
-                        Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx),
-                        Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
-                break;
-            }
-            case RESIZE_SE: {
-                float pmx = before.left();
-                float pmy = before.top();
-                float bw = before.w;
-                float bh = before.h;
-                float tx = (fx - posStart.x);
-                float ty = (fy - posStart.y);
-                resize(pmx, pmy - bh + ty, Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx), pmy);
-                break;
-            }
-            case RESIZE_N: {
-                float top, bottom;
-                float bh = before.h;
-                float ty = (fy - posStart.y);
-                if (!invY) {
-                    top = before.bottom();
-                    bottom = Math.max(top + aspectRatioRatioLimit * bh, top + bh + ty);
-                } else {
-                    bottom = before.top();
-                    top = Math.min(bottom - aspectRatioRatioLimit * bh, bottom - bh - ty);
+        DragEdit m = mode(finger);
+        if (m!=null) {
+            switch (m) {
+                case RESIZE_S: {
+                    float pmy = before.top();
+                    float bh = before.h;
+                    float ty = (fy - posStart.y);
+                    resize(before.left(), pmy - bh + ty, before.right(), pmy);
+                    break;
                 }
-                resize(
-                        before.left(),
-                        top,
-                        before.right(),
-                        bottom
-                );
-                break;
+
+                case RESIZE_SW: {
+                    float pmx = before.right();
+                    float pmy = before.top();
+                    float bw = before.w;
+                    float bh = before.h;
+                    float tx = (fx - posStart.x);
+                    float ty = (fy - posStart.y);
+                    resize(pmx - bw + tx, pmy - bh + ty, pmx, pmy);
+                    break;
+                }
+
+                case RESIZE_NE: {
+                    float pmx = before.left();
+                    float pmy = before.bottom();
+                    float bw = before.w;
+                    float bh = before.h;
+                    float tx = (fx - posStart.x);
+                    float ty = (fy - posStart.y);
+                    resize(pmx, pmy,
+                            Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx),
+                            Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
+                    break;
+                }
+                case RESIZE_SE: {
+                    float pmx = before.left();
+                    float pmy = before.top();
+                    float bw = before.w;
+                    float bh = before.h;
+                    float tx = (fx - posStart.x);
+                    float ty = (fy - posStart.y);
+                    resize(pmx, pmy - bh + ty, Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx), pmy);
+                    break;
+                }
+                case RESIZE_N: {
+                    float top, bottom;
+                    float bh = before.h;
+                    float ty = (fy - posStart.y);
+                    if (!invY) {
+                        top = before.bottom();
+                        bottom = Math.max(top + aspectRatioRatioLimit * bh, top + bh + ty);
+                    } else {
+                        bottom = before.top();
+                        top = Math.min(bottom - aspectRatioRatioLimit * bh, bottom - bh - ty);
+                    }
+                    resize(
+                            before.left(),
+                            top,
+                            before.right(),
+                            bottom
+                    );
+                    break;
+                }
+
+                case RESIZE_NW: {
+                    float pmx = before.right();
+                    float pmy = before.bottom();
+                    float bw = before.w;
+                    float bh = before.h;
+                    float tx = (fx - posStart.x);
+                    float ty = (fy - posStart.y);
+                    resize(pmx - bw + tx, pmy,
+                            pmx,
+                            Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
+                    break;
+                }
+
+
+                case RESIZE_E: {
+                    float pmx = before.left();
+                    float bw = before.w;
+                    float tx = (fx - posStart.x);
+                    resize(pmx, before.bottom(),
+                            pmx + Math.max(aspectRatioRatioLimit * bw, bw + tx), before.top());
+                    break;
+                }
+                case RESIZE_W: {
+                    float pmx = before.right();
+                    float bw = before.w;
+                    float tx = (posStart.x - fx);
+                    resize(pmx - Math.max(aspectRatioRatioLimit * bw, bw + tx), before.bottom(),
+                            pmx, before.top());
+                    break;
+                }
             }
-
-            case RESIZE_NW: {
-                float pmx = before.right();
-                float pmy = before.bottom();
-                float bw = before.w;
-                float bh = before.h;
-                float tx = (fx - posStart.x);
-                float ty = (fy - posStart.y);
-                resize( pmx -bw + tx, pmy,
-                        pmx,
-                        Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
-                break;
-            }
-
-
-            case RESIZE_E: {
-                float pmx = before.left();
-                float bw = before.w;
-                float tx = (fx - posStart.x);
-                resize(pmx, before.bottom(),
-                       pmx + Math.max(aspectRatioRatioLimit * bw, bw + tx), before.top());
-                break;
-            }
-            case RESIZE_W: {
-                float pmx = before.right();
-                float bw = before.w;
-                float tx = (posStart.x - fx);
-                resize(pmx - Math.max(aspectRatioRatioLimit * bw, bw + tx), before.bottom(),
-                        pmx, before.top());
-                break;
-            }
-
-            
-
-            default:
-                return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     abstract protected v2 pos(Finger finger);
@@ -148,8 +150,8 @@ public abstract class FingerResize extends Dragging {
     protected abstract void resize(float x1, float y1, float x2, float y2);
 
     @Override
-    public @Nullable FingerRenderer renderer() {
-        DragEdit mode = mode();
+    public @Nullable FingerRenderer renderer(Finger finger) {
+        DragEdit mode = mode(finger);
         return mode != null ? mode.cursor() : null;
     }
 

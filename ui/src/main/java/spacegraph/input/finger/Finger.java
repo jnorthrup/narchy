@@ -11,6 +11,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.hud.SurfaceHiliteOverlay;
 import spacegraph.space2d.hud.Zoomed;
+import spacegraph.video.JoglWindow;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,7 +33,7 @@ abstract public class Finger {
     private final int buttons;
 
     /** drag threshold (in screen pixels) */
-    private final float dragThresholdPx = 3f;
+    private final float dragThresholdPx = 5f;
 
     public final v2 posPixel = new v2(), posScreen = new v2();
 
@@ -46,7 +47,7 @@ abstract public class Finger {
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
 
     /**
-     * exclusive state which may be requested by a surface
+     * a exclusive locking/latching state which may be requested by a surface
      */
     protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Fingering.Null);
 
@@ -59,10 +60,10 @@ abstract public class Finger {
     protected final AtomicBoolean active = new AtomicBoolean(false);
 
     /** caches current ortho while traversing it */
-    @Deprecated protected transient Function<v2, v2> _screenToGlobal;
+    @Deprecated protected transient Function<v2, v2> pixelToGlobal = x -> x;
     //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
 
-    @Deprecated protected final v2 _posGlobal = new v2();
+    protected final v2 _posGlobal = new v2();
 
 
     protected Finger(int buttons) {
@@ -101,7 +102,7 @@ abstract public class Finger {
                     if (clicked != null)
                         clicked.accept(f);
 
-                } else if (f.pressing(button) ) {
+                } else if (f.pressed(button) ) {
                     if (armed!=null)
                         armed.run();
 
@@ -178,7 +179,7 @@ abstract public class Finger {
             }
         }
 
-        //System.out.println(buttonSummary());
+//        System.out.println(buttonSummary());
     }
 
     /** call once per frame */
@@ -188,17 +189,6 @@ abstract public class Finger {
     }
 
 
-    protected Surface touching(Surface next) {
-        Surface prev = touching.getAndSet(next);
-        if (prev!=next) {
-//            if (prev!=null)
-//                prev.fingerTouch(this, false);
-//
-//            if (next!=null)
-//                next.fingerTouch(this, true);
-        }
-        return prev;
-    }
 
     private boolean _dragging(int button) {
         v2 g = pressPosPixel[button];
@@ -206,7 +196,7 @@ abstract public class Finger {
     }
 
     public boolean dragging(int button) {
-        return pressedNow(button) && !releasedNow(button) && _dragging(button);
+        return pressed(button) && _dragging(button);
     }
 
 
@@ -235,10 +225,10 @@ abstract public class Finger {
     }
 
     public boolean released(int button) {
-        return !pressing(button);
+        return !pressed(button);
     }
 
-    public boolean pressing(int button) {
+    public boolean pressed(int button) {
         return buttonDown.get(button);
     }
 
@@ -252,20 +242,13 @@ abstract public class Finger {
     }
 
     private boolean releasedNow(int button) {
-        return !pressing(button) && wasPressed(button);
+        return !pressed(button) && wasPressed(button);
     }
 
     public boolean pressedNow(int button) {
-        return pressing(button) && !wasPressed(button);
+        return pressed(button) && !wasPressed(button);
     }
-
-//
-//    public boolean releasedNow(int button, Surface c) {
-//        return releasedNow(button) && relativePos(pressPosPixel[button], c).inUnit();
-//    }
-
-
-
+    
     /**
      * additionally tests for no dragging while pressed
      */
@@ -278,7 +261,7 @@ abstract public class Finger {
 //        System.out.println(pressing(i) + "<-" + wasPressed(i));
 
         if (releasedNow(button) && !_dragging(button)) {
-            if (c==null || c.bounds.contains(posGlobal(c))) {
+            if (c==null || c.bounds.contains(posGlobal())) {
                 commitButton(button); //absorb the event
                 return true;
             }
@@ -309,7 +292,7 @@ abstract public class Finger {
 
                     prev.stop(this);
 
-                    @Nullable FingerRenderer r = next.renderer();
+                    @Nullable FingerRenderer r = next.renderer(this);
                     renderer = (r != null) ? r : rendererDefault;
 
                     return true;
@@ -326,7 +309,7 @@ abstract public class Finger {
     }
 
     /** warning: the vector instance returned by this and other methods are mutable.  so they may need to be cloned when accessed to record the state across time. */
-    abstract public v2 posGlobal(Surface c);
+    abstract public v2 posGlobal();
 
     //{
 //        Ortho co = this._ortho;
@@ -391,20 +374,35 @@ abstract public class Finger {
         return active.getOpaque();
     }
 
-    private static v2 posRelative(v2 p, Surface s) {
+    public static v2 posRelative(v2 p, JoglWindow win) {
         v2 y = new v2(p);
-        RectFloat b = s.bounds;
+        y.scale(1f / win.getWidth(), 1f / win.getHeight());
+        return y;
+    }
+
+    public static v2 posRelative(v2 p, RectFloat b) {
+        v2 y = new v2(p);
         y.sub(b.x, b.y);
         y.scale(1f / b.w, 1f / b.h);
         return y;
     }
 
     public v2 posRelative(Surface s) {
-        return posRelative(posGlobal(s), s);
+        return posRelative(s.bounds);
+    }
+
+    public v2 posRelative(RectFloat b) {
+        return posRelative(posGlobal(), b);
     }
 
     public Fingering fingering() {
         return fingering.getOpaque();
+    }
+
+    public boolean intersects(RectFloat bounds) {
+        //System.out.println(bounds + " contains " + posGlobal() + " ? " + bounds.contains(posGlobal()));
+        return bounds.contains(posGlobal());
+        //return posRelative(bounds).inUnit();
     }
 
 

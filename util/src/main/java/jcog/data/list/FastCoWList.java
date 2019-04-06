@@ -350,9 +350,9 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         return true;
     }
     public boolean whileEachReverse(Predicate<X> o) {
-        @Nullable X[] copy = this.array();
-        for (int i = copy.length - 1; i >= 0; i--) {
-            X x = copy[i];
+        @Nullable X[] xx = this.array();
+        for (int i = xx.length - 1; i >= 0; i--) {
+            X x = xx[i];
             if (x!=null && !o.test(x))
                 return false;
         }

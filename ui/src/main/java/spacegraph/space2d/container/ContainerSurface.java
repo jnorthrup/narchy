@@ -67,7 +67,8 @@ abstract public class ContainerSurface extends Surface {
     /**
      * first sub-layer
      */
-    @Deprecated protected void paintIt(GL2 gl, ReSurface r) {
+    @Deprecated
+    protected void paintIt(GL2 gl, ReSurface r) {
 
     }
 
@@ -103,32 +104,20 @@ abstract public class ContainerSurface extends Surface {
     @Override
     public Surface finger(Finger finger) {
 
-        if (showing() && childrenCount() > 0) {
+        if (showing() && childrenCount() > 0 && (!clipBounds || finger.intersects(bounds))) {
+            Surface[] found = new Surface[1];
+            whileEachReverse(c -> {
 
-            v2 fp = finger.posGlobal(this);
-//            if (bounds.contains(fp)) {
+                Surface s = c.finger(finger);
+                if (s != null) {
+                    found[0] = s;
+                    return false;
+                }
 
-                Surface[] found = new Surface[1];
-                whileEachReverse(c -> {
+                return true;
 
-                    if (c.showing() && (!c.clipBounds || c.bounds.contains(fp))) {
-
-                        Surface s = c.finger(finger);
-                        if (s != null) {
-
-                            found[0] = s;
-
-                            return false;
-                        }
-
-                    }
-
-                    return true;
-
-                });
-                return found[0];
-//            }
-
+            });
+            return found[0];
         }
 
         return null;
@@ -162,8 +151,11 @@ abstract public class ContainerSurface extends Surface {
     public abstract boolean whileEachReverse(Predicate<Surface> o);
 
 
-    public final void forEachReverse(Consumer<Surface> each) {
-        whileEachReverse((s)->{each.accept(s); return true;});
-    }
+//    public final void forEachReverse(Consumer<Surface> each) {
+//        whileEachReverse((s) -> {
+//            each.accept(s);
+//            return true;
+//        });
+//    }
 
 }

@@ -5,7 +5,6 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
-import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.Finger;
@@ -39,36 +38,11 @@ public class OrthoSurfaceGraph extends JoglSpace implements SurfaceGraph {
     private final Finger finger;
     private final NewtKeyboard keyboard;
     private final static short MOVE_WINDOW_BUTTON = 1;
+    private final static short RESIZE_WINDOW_BUTTON = MOVE_WINDOW_BUTTON;
 
-    private final Fingering windowResize = new FingerResizeWindow(this, MOVE_WINDOW_BUTTON) {
-
-
-        private final v2 windowStart = new v2();
-
-        @Override
-        public boolean escapes() {
-            return false;
-        }
-
-        @Override
-        protected boolean startDrag(Finger f) {
-            windowStart.set(display.getX(), display.getY());
-            //System.out.println("window start=" + windowStart);
-            return super.startDrag(f);
-        }
-
-        @Override
-        protected v2 pos(Finger finger) {
-            return finger.posScreen.clone();
-        }
-
-
-    };
+    private final Fingering windowResize = new FingerResizeWindow(this, RESIZE_WINDOW_BUTTON);
 
     private final Fingering windowMove = new FingerMoveWindow(MOVE_WINDOW_BUTTON) {
-
-
-        private final v2 windowStart = new v2();
 
         @Override
         protected JoglSpace window() {
@@ -76,24 +50,18 @@ public class OrthoSurfaceGraph extends JoglSpace implements SurfaceGraph {
         }
 
         @Override
-        public boolean escapes() {
-            return false;
-        }
-
-        @Override
-        protected boolean startDrag(Finger f) {
-            windowStart.set(display.getX(), display.getY());
-            //System.out.println("window start=" + windowStart);
-            return super.startDrag(f);
-        }
-
-        @Override
         public void move(float dx, float dy) {
-            display.setPosition(
-                    Math.round(windowStartX + dx),
-                    Math.round(windowStartY - dy));
+            int nx = Math.round(windowStartX + dx);
+            int ny = Math.round(windowStartY - dy);
+            if (nx!=windowStartX || ny!=windowStartY)
+                display.setPosition(nx, ny);
         }
 
+        @Override
+        public Surface touchNext(Surface prev, Surface next) {
+            //return prev; //dont change
+            return null;
+        }
     };
 
     public final Stacking layers = new Stacking() {
@@ -104,25 +72,32 @@ public class OrthoSurfaceGraph extends JoglSpace implements SurfaceGraph {
             rr.pw = _w;
             rr.ph = _h;
             rr.x1 = rr.y1 = 0;
-            rr.x2 = _w; rr.y2 = _h;
+            rr.x2 = w(); rr.y2 = h();
         };
 
         @Override
         public Surface finger(Finger finger) {
-            if (finger.tryFingering(windowMove))
-                return this;
-            else if (finger.tryFingering(windowResize))
-                return this;
-            else
-                return super.finger(finger);
+
+            Surface s = super.finger(finger);
+
+            if (s == null) {
+                //check windowResize first since it is a more exclusive condition than windowMove
+                if (finger.tryFingering(windowResize)) {
+                    //..
+                    return this;
+                } else if (finger.tryFingering(windowMove)) {
+                    //..
+                    return this;
+                }
+            }
+
+            return s;
         }
 
         @Override protected void renderChildren(ReSurface r) {
             _w = display.getWidth(); _h = display.getHeight();
-            forEach(c -> {
-                r.on(reset);
-                c.tryRender(r);
-            });
+            r.on(reset);
+            super.renderChildren(r);
         }
     };
 
@@ -137,15 +112,16 @@ public class OrthoSurfaceGraph extends JoglSpace implements SurfaceGraph {
 
         keyboard = new NewtKeyboard(/*TODO this */);
 
+        display.window.setPointerVisible(false); //HACK
 
-        later(() -> {
-            display.window.addWindowListener(new com.jogamp.newt.event.WindowAdapter(){
-                @Override
-                public void windowResized(WindowEvent e) {
-                    resize();
-                }
-            });
-            display.window.setPointerVisible(false); //HACK
+        display.window.addWindowListener(new com.jogamp.newt.event.WindowAdapter(){
+            @Override
+            public void windowResized(WindowEvent e) {
+                resize();
+            }
+        });
+
+
             layers.start(this);
 
             Zoomed content = new Zoomed(this, keyboard); content.set(_content);
@@ -162,7 +138,7 @@ public class OrthoSurfaceGraph extends JoglSpace implements SurfaceGraph {
 //            }
 
             resize();
-        });
+
     }
 
     protected void resize() {

@@ -105,9 +105,16 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //            }
 //        };
 
+        //Threading.invokeOnOpenGLThread(false, () -> {
+        //GLWorkerThread.invokeLater(()->{
+        //Exe.invokeLater(() -> {
+
+        GLWindow W = window();
+        this.window = W;
+
         renderer = new GameAnimatorControl();
 
-
+        windows.add(this);
     }
 
     private static final GLCapabilitiesImmutable config = config();
@@ -265,19 +272,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     private GLWindow show(String title, int w, int h, int x, int y) {
 
-        //Threading.invokeOnOpenGLThread(false, () -> {
-        //GLWorkerThread.invokeLater(()->{
-        //Exe.invokeLater(() -> {
-
-        if (window != null) {
-            return window;
-        }
-
-        GLWindow W = window();
-        this.window = W;
-
-        windows.add(this);
-
+        GLWindow W = this.window;
         W.addGLEventListener(this);
         W.addWindowListener(this);
 
@@ -430,7 +425,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return window.getY();
     }
 
-    public float getScreenY() {
+    public float getScreenW() {
+        return window.getScreen().getWidth();
+    }
+    public float getScreenH() {
         return window.getScreen().getHeight();
     }
 

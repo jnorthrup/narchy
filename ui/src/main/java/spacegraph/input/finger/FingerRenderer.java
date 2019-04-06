@@ -104,9 +104,9 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
                 gl.glTranslatef(smx, smy, 0);
                 gl.glRotatef(angle, 0, 0, 1);
 
-                if (finger.pressing(0)) {
+                if (finger.pressed(0)) {
                     gl.glColor4f(0.5f, 1, 0.5f, alpha);
-                } else if (finger.pressing(2)) {
+                } else if (finger.pressed(2)) {
                     gl.glColor4f(0.5f, 0.5f, 1f, alpha);
                 } else {
                     gl.glColor4f((phaseSec * 0.5f) + 0.5f, 0.25f, ((1-phaseSec) * 0.5f) + 0.5f, alpha);

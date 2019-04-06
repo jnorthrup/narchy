@@ -46,15 +46,15 @@ public class FingerMoveSurface extends FingerMove {
         return super.drag(f);
     }
 
-//    @Override
-//    public void stop(Finger finger) {
-//        before = null;
-//        super.stop(finger);
-//    }
+    @Override
+    public void stop(Finger finger) {
+        before = null;
+        super.stop(finger);
+    }
 
     @Override
     public v2 pos(Finger finger) {
-        return finger.posGlobal(moving);
+        return finger.posGlobal();
     }
 
     @Override
@@ -64,10 +64,13 @@ public class FingerMoveSurface extends FingerMove {
 //            tx += before.x;
 //            ty += before.y;
 ////        }
-        moving.pos(RectFloat.X0Y0WH(tx + before.x, ty + before.y, moving.w(), moving.h()));
+        moving.pos(RectFloat.X0Y0WH(tx + before.x, ty + before.y, before.w, before.h));
         //moving.pos(RectFloat.XYWH(tx + before.x, ty + before.y, moving.w() + tx, moving.h() + ty));
         //moving.pos(tx + before.x, ty + before.y);
     }
 
-
+    @Override
+    public Surface touchNext(Surface prev, Surface next) {
+        return moving;
+    }
 }

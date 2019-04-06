@@ -12,7 +12,14 @@ abstract public class Dragging extends Fingering {
 
     @Override
     final public boolean start(Finger f) {
-        return pressing(f) && startDrag(f) && drag(f);
+        if (pressed(f) && startDrag(f)) {
+            stopped = false;
+            if (drag(f)) {
+                return true;
+            }
+        }
+        stopped = true;
+        return false;
     }
 
     protected boolean startDrag(Finger f) {
@@ -36,13 +43,14 @@ abstract public class Dragging extends Fingering {
 
     @Override
     public final boolean update(Finger finger) {
-        return pressing(finger) && drag(finger);
+        return pressed(finger) && drag(finger);
     }
 
-    private boolean pressing(Finger f) {
-        return f.pressing(button);
+    private boolean pressed(Finger f) {
+        return f.pressed(button);
     }
 
     /** return false to cancel the operation */
     abstract protected boolean drag(Finger f);
+
 }

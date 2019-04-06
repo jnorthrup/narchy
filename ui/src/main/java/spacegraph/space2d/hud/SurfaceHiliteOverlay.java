@@ -12,8 +12,8 @@ public abstract class SurfaceHiliteOverlay extends PaintSurface {
 
     protected final Zoomed.Camera cam;
 
-    protected float thick = 1;
-    protected final Color4f color = new Color4f(0.5f, 0.5f, 0.5f, 0.5f);
+    protected float thick = 3;
+    protected final Color4f color = new Color4f(1f, 1f, 1f, 0.5f);
 
     public SurfaceHiliteOverlay(Zoomed.Camera cam) {
         this.cam = cam;
@@ -77,8 +77,8 @@ public abstract class SurfaceHiliteOverlay extends PaintSurface {
 
     private void paintFrame(Surface t, GL2 gl) {
         float tx = t.x(), ty = t.y();
-        v2 p = cam.globalToScreen(tx, ty);
-        v2 q = cam.globalToScreen(tx + t.w(), ty + t.h());
+        v2 p = cam.globalToPixel(tx, ty);
+        v2 q = cam.globalToPixel(tx + t.w(), ty + t.h());
 
         color.apply(gl);
 

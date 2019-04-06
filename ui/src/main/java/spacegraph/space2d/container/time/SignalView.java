@@ -78,13 +78,13 @@ public class SignalView extends Timeline2D {
 
         @Override
         protected boolean startDrag(Finger f) {
-            selectStart = sample(f.posGlobal(SignalView.this).x);
+            selectStart = sample(f.posGlobal().x);
             return true;
         }
 
         @Override
         protected boolean drag(Finger f) {
-            selectEnd = sample(f.posGlobal(SignalView.this).x);
+            selectEnd = sample(f.posGlobal().x);
             return true;
         }
     };

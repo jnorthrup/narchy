@@ -79,7 +79,7 @@ public class DoubleClicking {
                 break;
             case 2:
                 reset();
-                onDoubleClick.accept(finger.posGlobal(clicked));
+                onDoubleClick.accept(finger.posGlobal());
                 return true;
         }
 

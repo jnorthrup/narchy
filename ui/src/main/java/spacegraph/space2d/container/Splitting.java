@@ -226,7 +226,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 //                return false;
 //            }
             @Override
-            public @Nullable FingerRenderer renderer() {
+            public @Nullable FingerRenderer renderer(Finger finger) {
                 return vertical ? FingerRenderer.rendererResizeNS : FingerRenderer.rendererResizeEW;
             }
             @Override

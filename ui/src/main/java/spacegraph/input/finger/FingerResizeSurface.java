@@ -19,14 +19,15 @@ public class FingerResizeSurface extends FingerResize {
         this.resizing = target;
     }
 
-    /** move most of Windo.drag() logic here */
-    @Override @Deprecated public DragEdit mode() {
+    /** move most of Windo.drag() logic here
+     * @param finger*/
+    @Override @Deprecated public DragEdit mode(Finger finger) {
         return mode;
     }
 
     @Override
     protected v2 pos(Finger finger) {
-        return finger.posGlobal(resizing).clone();
+        return finger.posGlobal().clone();
     }
 
     @Override
@@ -39,4 +40,8 @@ public class FingerResizeSurface extends FingerResize {
         resizing.pos(x1, y1, x2, y2);
     }
 
+//    @Override
+//    public Surface touchNext(Surface prev, Surface next) {
+//        return resizing;
+//    }
 }

@@ -8,6 +8,7 @@ import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedur
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.SurfaceDragging;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
@@ -71,7 +72,7 @@ public class SliderModel extends PaintSurface {
         return this;
     }
 
-    final Dragging drag = new Dragging(BUTTON) {
+    final Dragging drag = new SurfaceDragging(this, BUTTON) {
         @Override
         protected boolean drag(Finger f) {
             setPoint(f);

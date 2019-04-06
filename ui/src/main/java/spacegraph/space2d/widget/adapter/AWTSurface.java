@@ -203,7 +203,7 @@ public class AWTSurface extends Widget implements KeyPressed {
             return;
         }
 
-        v2 rp = finger.posGlobal(this);
+        v2 rp = finger.posGlobal();
         int px = Math.round(rp.x * component.getWidth());
         int py = Math.round((1f - rp.y) * component.getHeight());
         if (lpx == -1) {
@@ -228,14 +228,14 @@ public class AWTSurface extends Widget implements KeyPressed {
         }
 
 
-        if (finger.pressing(0) && !finger.prevButtonDown.get(0)) {
+        if (finger.pressed(0) && !finger.prevButtonDown.get(0)) {
             handle(new MouseEvent(target,
                     MouseEvent.MOUSE_PRESSED,
                     now, InputEvent.BUTTON1_DOWN_MASK,
                     px, py, px, py, 0, false, MouseEvent.BUTTON1
             ));
         }
-        if (!finger.pressing(0) && finger.prevButtonDown.get(0)) {
+        if (!finger.pressed(0) && finger.prevButtonDown.get(0)) {
             handle(new MouseEvent(target,
                     MouseEvent.MOUSE_RELEASED,
                     now, InputEvent.BUTTON1_DOWN_MASK,
@@ -251,7 +251,7 @@ public class AWTSurface extends Widget implements KeyPressed {
         boolean moved = lpx != px || lpy != py;
 
 
-        if (finger.pressing(0)) {
+        if (finger.pressed(0)) {
 
             if (moved && finger.prevButtonDown.get(0)) {
                 handle(new MouseEvent(target,

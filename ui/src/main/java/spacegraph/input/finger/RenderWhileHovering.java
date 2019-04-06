@@ -45,7 +45,7 @@ public class RenderWhileHovering extends Fingering {
     }
 
     @Override
-    public @Nullable FingerRenderer renderer() {
+    public @Nullable FingerRenderer renderer(Finger finger) {
         return cursor;
     }
 

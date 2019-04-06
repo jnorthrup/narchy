@@ -98,7 +98,7 @@ class VerletSurfaceTest {
                 mousePos.set(mouseX, mouseY);
 
 
-                if (finger.pressing(0)) {
+                if (finger.pressed(0)) {
                     synchronized (physics) {
                         if (mouseAttractor == null) {
                             mouseAttractor = new AttractionBehavior2D(mousePos, 400, 32f);
@@ -164,7 +164,7 @@ class VerletSurfaceTest {
                         mousePos.set(mouseX, mouseY);
 
 
-                        if (finger.pressing(0)) {
+                        if (finger.pressed(0)) {
                             addParticle(mouseX, mouseY);
                         } else {
 

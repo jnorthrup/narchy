@@ -1,6 +1,7 @@
 package spacegraph.input.finger;
 
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.Surface;
 
 /** exclusive finger control state which a surface can activate in reaction to input events.
  * it has a specified termination condition (ex: button release) and
@@ -29,8 +30,9 @@ abstract public class Fingering {
         return false;
     }
 
-    /** override to provide a custom renderer (cursor) */
-    @Nullable public FingerRenderer renderer() {
+    /** override to provide a custom renderer (cursor)
+     * @param finger*/
+    @Nullable public FingerRenderer renderer(Finger finger) {
         return null;
     }
 
@@ -68,4 +70,10 @@ abstract public class Fingering {
         }
     };
 
+    /** post-filter for what will be set next in Finger.touching() while this is Fingering.
+     *  by default it is a pass-through for the next
+     **/
+    public Surface touchNext(Surface prev, Surface next) {
+        return next;
+    }
 }

@@ -138,7 +138,7 @@ public class NewtKeyboard extends Finger implements KeyListener {
     }
 
     @Override
-    public v2 posGlobal(Surface c) {
+    public v2 posGlobal() {
         throw new TODO("estimate based on position of the focused element (if any)");
     }
 
